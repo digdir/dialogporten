@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Digdir.Domain.Dialogporten.Application.Common.Interfaces;
-using Digdir.Domain.Dialogporten.Domain;
+using Digdir.Domain.Dialogporten.Domain.Dialogues;
 using MediatR;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.Dialogues.Commands.Create;

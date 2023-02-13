@@ -25,16 +25,17 @@ internal sealed class ListDialogueQueryHandler : IRequestHandler<ListDialogueQue
 
     public async Task<List<ListDialogueDto>> Handle(ListDialogueQuery request, CancellationToken cancellationToken)
     {
-        var query = _db.Dialogues.AsNoTracking();
+        //var query = _db.Dialogues.AsNoTracking();
 
-        if (!string.IsNullOrWhiteSpace(request.Title))
-        {
-            query = query.Where(x => x.Title.Contains(request.Title.Trim()));
-        }
+        //if (!string.IsNullOrWhiteSpace(request.Title))
+        //{
+        //    query = query.Where(x => x.Title.Contains(request.Title.Trim()));
+        //}
 
-        return await query
-            .OrderBy(x => x.Title)
-            .ProjectTo<ListDialogueDto>(_mapper.ConfigurationProvider)
-            .ToListAsync(cancellationToken);
+        //return await query
+        //    .OrderBy(x => x.Title)
+        //    .ProjectTo<ListDialogueDto>(_mapper.ConfigurationProvider)
+        //    .ToListAsync(cancellationToken);
+        throw new NotImplementedException();
     }
 }

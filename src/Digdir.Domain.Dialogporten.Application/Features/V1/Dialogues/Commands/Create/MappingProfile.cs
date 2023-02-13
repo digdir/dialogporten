@@ -8,8 +8,8 @@ internal sealed class MappingProfile : Profile
 {
 	public MappingProfile()
 	{
-		CreateMap<CreateDialogueDto, DialogueEntity>()
-			.ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.Title));
+		//CreateMap<CreateDialogueDto, DialogueEntity>()
+		//	.ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.Title));
 	}
 }
 

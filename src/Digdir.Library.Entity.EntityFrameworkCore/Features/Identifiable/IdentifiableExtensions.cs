@@ -9,7 +9,11 @@ internal static class IdentifiableExtensions
     public static ModelBuilder AddIdentifiableEntities(this ModelBuilder modelBuilder)
     {
         return modelBuilder.EntitiesOfType<IIdentifiableEntity>(builder =>
-            builder.Property(nameof(IIdentifiableEntity.Id)).HasDefaultValueSql("NEWID()"));
+        {
+            builder.Property(nameof(IIdentifiableEntity.Id)).HasDefaultValueSql("NEWID()");
+            builder.HasAlternateKey(nameof(IIdentifiableEntity.Id));
+            builder.HasKey(nameof(IIdentifiableEntity.InternalId));
+        });
     }
 
     public static ChangeTracker HandleIdentifiableEntities(this ChangeTracker changeTracker)

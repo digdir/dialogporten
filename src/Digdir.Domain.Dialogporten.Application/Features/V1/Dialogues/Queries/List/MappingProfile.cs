@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Digdir.Domain.Dialogporten.Domain;
+using Digdir.Domain.Dialogporten.Domain.Dialogues;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.Dialogues.Queries.List;
 

@@ -1,5 +1,5 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Common.Interfaces;
-using Digdir.Domain.Dialogporten.Domain;
+using Digdir.Domain.Dialogporten.Domain.Dialogues;
 using Digdir.Library.Entity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 

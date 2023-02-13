@@ -1,4 +1,4 @@
-﻿using Digdir.Domain.Dialogporten.Domain;
+﻿using Digdir.Domain.Dialogporten.Domain.Dialogues;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
