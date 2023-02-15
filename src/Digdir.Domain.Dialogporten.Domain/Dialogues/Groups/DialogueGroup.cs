@@ -1,7 +1,7 @@
 ﻿using Digdir.Domain.Dialogporten.Domain.Common;
 using Digdir.Library.Entity.Abstractions;
 
-namespace Digdir.Domain.Dialogporten.Domain.Dialogues;
+namespace Digdir.Domain.Dialogporten.Domain.Dialogues.Groups;
 
 public class DialogueGroup : IEntity
 {
@@ -11,8 +11,11 @@ public class DialogueGroup : IEntity
     public Guid CreatedByUserId { get; set; }
     public DateTime UpdatedAtUtc { get; set; }
     public Guid UpdatedByUserId { get; set; }
-
     public int Order { get; set; }
 
+    // === Single principal relationships ===
     public LocalizationSet Name { get; set; } = null!;
+
+    // === Plural principal relationships === 
+    public List<DialogueEntity> Dialogues { get; set; } = new();
 }

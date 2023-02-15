@@ -2,7 +2,7 @@
 using Digdir.Library.Entity.Abstractions.Features.Creatable;
 using Digdir.Library.Entity.Abstractions.Features.Identifiable;
 
-namespace Digdir.Domain.Dialogporten.Domain.Dialogues;
+namespace Digdir.Domain.Dialogporten.Domain.Dialogues.Activities;
 
 public class DialogueActivity : IIdentifiableEntity, ICreatableEntity
 {
@@ -25,4 +25,8 @@ public class DialogueActivity : IIdentifiableEntity, ICreatableEntity
 
     public Uri? DetailsApiUrl { get; set; }
     public Uri? DetailsGuiUrl { get; set; }
+
+    // === Dependent relationships ===
+    public long DialogueId { get; set; }
+    public DialogueEntity Dialogue { get; set; } = null!;
 }

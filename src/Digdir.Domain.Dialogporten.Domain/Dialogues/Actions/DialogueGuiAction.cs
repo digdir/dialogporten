@@ -1,9 +1,9 @@
 ﻿using Digdir.Domain.Dialogporten.Domain.Common;
 using Digdir.Library.Entity.Abstractions;
 
-namespace Digdir.Domain.Dialogporten.Domain.Dialogues;
+namespace Digdir.Domain.Dialogporten.Domain.Dialogues.Actions;
 
-public class DialogueContent : IEntity
+public class DialogueGuiAction : IEntity
 {
     public long InternalId { get; set; }
     public Guid Id { get; set; }
@@ -12,12 +12,15 @@ public class DialogueContent : IEntity
     public DateTime UpdatedAtUtc { get; set; }
     public Guid UpdatedByUserId { get; set; }
 
+    public string Action { get; set; } = null!;
+    public DialogueGuiActionType Type { get; set; } = null!;
+    public LocalizationSet Title { get; set; } = null!;
+    public Uri Url { get; set; } = null!;
+    public string? Resource { get; set; }
+    public bool IsBackChannel { get; set; }
+    public bool IsDeleteAction { get; set; }
+
     // === Dependent relationships ===
     public long DialogueId { get; set; }
     public DialogueEntity Dialogue { get; set; } = null!;
-
-    // === Single principal relationships ===
-    public LocalizationSet Body { get; set; } = null!;
-    public LocalizationSet Title { get; set; } = null!;
-    public LocalizationSet SenderName { get; set; } = null!;
 }

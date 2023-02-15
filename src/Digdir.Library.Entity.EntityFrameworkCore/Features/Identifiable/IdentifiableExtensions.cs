@@ -11,7 +11,7 @@ internal static class IdentifiableExtensions
         return modelBuilder.EntitiesOfType<IIdentifiableEntity>(builder =>
         {
             builder.Property(nameof(IIdentifiableEntity.Id)).HasDefaultValueSql("NEWID()");
-            builder.HasAlternateKey(nameof(IIdentifiableEntity.Id));
+            builder.HasIndex(nameof(IIdentifiableEntity.Id)).IsUnique();
             builder.HasKey(nameof(IIdentifiableEntity.InternalId));
         });
     }

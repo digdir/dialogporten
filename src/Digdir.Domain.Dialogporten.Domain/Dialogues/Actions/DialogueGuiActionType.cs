@@ -1,6 +1,6 @@
 ﻿using Digdir.Library.Entity.Abstractions.Features.Lookup;
 
-namespace Digdir.Domain.Dialogporten.Domain.Dialogues;
+namespace Digdir.Domain.Dialogporten.Domain.Dialogues.Actions;
 
 public class DialogueGuiActionType : AbstractLookupEntity<DialogueGuiActionType, DialogueGuiActionType.Enum>
 {
@@ -9,8 +9,8 @@ public class DialogueGuiActionType : AbstractLookupEntity<DialogueGuiActionType,
 
     public enum Enum
     {
-        Primary = 0,
-        Secondary = 1,
-        Tertiary = 2
+        Primary = 1,
+        Secondary = 2,
+        Tertiary = 3,
     }
 }

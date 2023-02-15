@@ -1,4 +1,8 @@
-﻿using Digdir.Library.Entity.Abstractions;
+﻿using Digdir.Domain.Dialogporten.Domain.Dialogues.Actions;
+using Digdir.Domain.Dialogporten.Domain.Dialogues.Activities;
+using Digdir.Domain.Dialogporten.Domain.Dialogues.Attachments;
+using Digdir.Domain.Dialogporten.Domain.Dialogues.Groups;
+using Digdir.Library.Entity.Abstractions;
 
 namespace Digdir.Domain.Dialogporten.Domain.Dialogues;
 
@@ -22,34 +26,37 @@ public class DialogueEntity : IEntity
     /// Organisasjonsnummer, fødselsnummer eller brukernavn (aka "avgiver" eller "aktør") - altså hvem sin dialogboks 
     /// skal dialogen tilhøre. Brukernavn benyttes for selv-registrerte bruker, og er typisk en e-postadresse.
     /// </summary>
+    // TODO: Burde dette være et oppslagsverk? Altså en egen tabell for å lettere kunne søke? kommer selvfølgelig helt an på db tech som brukes.
     public string Party { get; set; } = null!;
 
     /// <summary>
     /// Vilkårlig referanse som presenteres sluttbruker i UI. Dialogporten tilegger denne ingen semantikk (trenger f.eks. ikke
     /// være unik). Merk at identifikator/primærnøkkel vil kunne være den samme gjennom at tjenestetilbyder kan oppgi "id"
     /// </summary>
-    public string ExternalReference { get; set; } = null!;
+    public string? ExternalReference { get; set; } 
 
     /// <summary>
     /// En vilkårlig streng som er tjenestespesifikk
     /// </summary>
-    public string ExtendedStatus { get; set; } = null!;
+    public string? ExtendedStatus { get; set; }
 
-    public long ContentId { get; set; }
-
+    // === Dependent relationships ===
+    public DialogueStatus.Enum StatusId { get; set; }
     public DialogueStatus Status { get; set; } = null!;
 
-    // TODO: Kan dette flates ut? 
-    public DialogueDates Dates { get; set; } = null!;
-    public DialogueContent Content { get; set; } = null!;
-    public DialogueConfiguration Configuration { get; set; } = null!;
-    // TODO: Hva er dette konseptet?
-    /// <summary>
-    /// Alle dialoger som har samme dialoggruppe-id vil kunne grupperes eller på annet vis samles i GUI  
-    /// </summary>
-    public DialogueGroup DialogueGroup { get; set; } = null!;
+    public long? DialogueGroupId { get; set; }
+    public DialogueGroup? DialogueGroup { get; set; } = null!;
 
-    public List<DialogueAttachements> Attachments { get; set; } = new();
+    // === Single principal relationships ===
+    // TODO: Dette er 1-til-1 relasjon. Noe grunn for å ikke flate ut dersom navnene er gjennomtenkt?
+    // eks ContentBody, ContentTitle, ContentSenderName. Jeg har flatet ut actions objektet, se det 
+    // for flere eksempler.
+    public DialogueContent Content { get; set; } = null!;
+    public DialogueDate Dates { get; set; } = null!;
+    public DialogueConfiguration Configuration { get; set; } = null!;
+
+    // === Plural principal relationships === 
+    public List<DialogueAttachement> Attachments { get; set; } = new();
     public List<DialogueGuiAction> GuiActions { get; set; } = new();
     public List<DialogueApiAction> ApiActions { get; set; } = new();
     public List<DialogueActivity> History { get; set; } = new();

@@ -1,6 +1,6 @@
 ﻿using Digdir.Library.Entity.Abstractions.Features.Lookup;
 
-namespace Digdir.Domain.Dialogporten.Domain.Dialogues;
+namespace Digdir.Domain.Dialogporten.Domain.Dialogues.Activities;
 
 public class DialogueActivityType : AbstractLookupEntity<DialogueActivityType, DialogueActivityType.Enum>
 {
@@ -12,30 +12,30 @@ public class DialogueActivityType : AbstractLookupEntity<DialogueActivityType, D
         /// <summary>
         /// Refererer en innsending utført av party som er mottatt hos tjenestetilbyder.
         /// </summary>
-        Submission = 0,
+        Submission = 1,
 
         /// <summary>
         /// Indikerer en tilbakemelding fra tjenestetilbyder på en innsending. Inneholder 
         /// referanse til den aktuelle innsendingen.
         /// </summary>
-        Feedback = 1,
+        Feedback = 2,
 
         /// <summary>
         /// Informasjon fra tjenestetilbyder, ikke (direkte) relatert til noen innsending.  
         /// </summary>
-        Information = 2,
+        Information = 3,
 
         /// <summary>
         /// Brukes for å indikere en feilsituasjon, typisk på en innsending. Inneholder en 
         /// tjenestespesifikk activityErrorCode.
         /// </summary>
-        Error = 3,
+        Error = 4,
 
         /// <summary>
         /// Indikerer at dialogen er lukket for videre endring. Dette skjer typisk ved fullføring
         /// av dialogen, eller sletting.
         /// </summary>
-        Closed = 4,
+        Closed = 5,
 
         /// <summary>
         /// Når dialogen først ble hentet og av hvem. Kan brukes for å avgjøre om purring 
@@ -43,11 +43,11 @@ public class DialogueActivityType : AbstractLookupEntity<DialogueActivityType, D
         /// Merk at dette ikke er det samme som "lest", dette må tjenestetilbyder selv håndtere 
         /// i egne løsninger.
         /// </summary>
-        Seen = 5,
+        Seen = 6,
 
         /// <summary>
         /// Når dialogen blir videresendt (tilgang delegert) av noen med tilgang til andre.
         /// </summary>
-        Forwarded = 6
+        Forwarded = 7,
     }
 }

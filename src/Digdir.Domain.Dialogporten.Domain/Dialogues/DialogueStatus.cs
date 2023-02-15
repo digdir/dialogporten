@@ -13,33 +13,33 @@ public class DialogueStatus : AbstractLookupEntity<DialogueStatus, DialogueStatu
         /// Dialogen har ingen spesiell status. Brukes typisk for enkle meldinger som ikke krever noe 
         /// interaksjon. Dette er default. 
         /// </summary>
-        Unspecified = 0,
+        Unspecified = 1,
 
         /// <summary>
         /// Under arbeid. Generell status som brukes for dialogtjenester der ytterligere bruker-input er 
         /// forventet.
         /// </summary>
-        UnderProgress = 1,
+        UnderProgress = 2,
 
         /// <summary>
         /// Venter på tilbakemelding fra tjenesteeier
         /// </summary>
-        Waiting = 2,
+        Waiting = 3,
 
         /// <summary>
         /// Dialogen er i en tilstand hvor den venter på signering. Typisk siste steg etter at all  
         /// utfylling er gjennomført og validert. 
         /// </summary>
-        Signing = 3,
+        Signing = 4,
 
         /// <summary>
         /// Dialogen ble avbrutt. Dette gjør at dialogen typisk fjernes fra normale GUI-visninger.
         /// </summary>
-        Cancelled = 4,
+        Cancelled = 5,
 
         /// <summary>
         /// Dialigen ble fullført. Dette gjør at dialogen typisk flyttes til et GUI-arkiv eller lignende.
         /// </summary>
-        Completed = 5
+        Completed = 6,
     }
 }
