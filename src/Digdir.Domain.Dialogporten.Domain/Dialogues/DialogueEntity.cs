@@ -1,6 +1,7 @@
 ﻿using Digdir.Domain.Dialogporten.Domain.Dialogues.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogues.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogues.Attachments;
+using Digdir.Domain.Dialogporten.Domain.Dialogues.Configuration;
 using Digdir.Domain.Dialogporten.Domain.Dialogues.Groups;
 using Digdir.Library.Entity.Abstractions;
 

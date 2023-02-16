@@ -1,6 +1,6 @@
 ﻿using Digdir.Library.Entity.Abstractions;
 
-namespace Digdir.Domain.Dialogporten.Domain.Dialogues;
+namespace Digdir.Domain.Dialogporten.Domain.Dialogues.Configuration;
 
 public class DialogueConfiguration : IEntity
 {
@@ -11,12 +11,6 @@ public class DialogueConfiguration : IEntity
     public DateTime UpdatedAtUtc { get; set; }
     public Guid UpdatedByUserId { get; set; }
 
-    ///// <summary>
-    ///// Tjenestetilbyder kan oppgi et selvpålagt tokenkrav, som innebærer at dette dialogen vil kreve at det 
-    ///// autoriseres med et Maskinporten-token som inneholder følgende scopes i tillegg til 
-    ///// </summary>
-    //public List<string> ServiceProviderScopesRequired { get; set; } = new();
-
     /// <summary>
     /// Når blir dialogen synlig hos party. Muliggjør opprettelse i forveien og samtidig tilgjengeliggjøring 
     /// for mange parties.
@@ -26,4 +20,7 @@ public class DialogueConfiguration : IEntity
     // === Dependent relationships ===
     public long DialogueId { get; set; }
     public DialogueEntity Dialogue { get; set; } = null!;
+
+    // == Plural principal relationships ===
+    public List<DialogueConfigurationTokenScope> TokenScopes { get; set; } = new();
 }

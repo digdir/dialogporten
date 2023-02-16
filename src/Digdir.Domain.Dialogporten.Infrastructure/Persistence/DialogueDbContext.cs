@@ -11,8 +11,11 @@ public sealed class DialogueDbContext : DbContext, IDialogueDbContext
 
     public DbSet<DialogueEntity> Dialogues => Set<DialogueEntity>();
 
-    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder) =>
+    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+    {
         configurationBuilder.Properties<string>(x => x.HaveMaxLength(255));
+        configurationBuilder.Properties<Uri>(x => x.HaveMaxLength(1023));
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) =>
         modelBuilder.RemovePluralizingTableNameConvention()

@@ -13,7 +13,6 @@ public class DialogueGuiAction : IEntity
     public Guid UpdatedByUserId { get; set; }
 
     public string Action { get; set; } = null!;
-    public DialogueGuiActionType Type { get; set; } = null!;
     public LocalizationSet Title { get; set; } = null!;
     public Uri Url { get; set; } = null!;
     public string? Resource { get; set; }
@@ -21,6 +20,9 @@ public class DialogueGuiAction : IEntity
     public bool IsDeleteAction { get; set; }
 
     // === Dependent relationships ===
+    public DialogueGuiActionType.Enum TypeId { get; set; }
+    public DialogueGuiActionType Type { get; set; } = null!;
+
     public long DialogueId { get; set; }
     public DialogueEntity Dialogue { get; set; } = null!;
 }
