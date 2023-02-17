@@ -18,5 +18,8 @@ internal sealed class DialogueContentConfiguration : IEntityTypeConfiguration<Di
         builder.HasOne(x => x.Body).WithOne()
             .HasForeignKey<DialogueContent>($"{nameof(DialogueContent.Body)}InternalId")
             .OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne(x => x.SearchTitle).WithOne()
+            .HasForeignKey<DialogueContent>($"{nameof(DialogueContent.SearchTitle)}InternalId")
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

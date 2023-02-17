@@ -18,7 +18,7 @@ public class DialogueActivity : IImutableEntity
     /// </summary>
     public string? PerformedBy { get; set; }
 
-    public string? ActivityExtendedType { get; set; }
+    public string? ExtendedType { get; set; }
     public LocalizationSet Description { get; set; } = null!;
 
     public Uri? DetailsApiUrl { get; set; }

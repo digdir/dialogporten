@@ -20,4 +20,5 @@ public class DialogueContent : IEntity
     public LocalizationSet Body { get; set; } = null!;
     public LocalizationSet Title { get; set; } = null!;
     public LocalizationSet SenderName { get; set; } = null!;
+    public LocalizationSet SearchTitle { get; set; } = null!;
 }
