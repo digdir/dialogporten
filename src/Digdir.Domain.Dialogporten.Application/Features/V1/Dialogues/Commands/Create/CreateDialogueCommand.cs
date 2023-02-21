@@ -24,6 +24,7 @@ internal sealed class CreateDialogueCommandHandler : IRequestHandler<CreateDialo
     {
         var dialogue = _mapper.Map<DialogueEntity>(request);
         await _db.Dialogues.AddAsync(dialogue, cancellationToken);
+        // TODO: Publish event
         await _unitOfWork.SaveChangesAsync(cancellationToken);
         return dialogue.Id;
     }

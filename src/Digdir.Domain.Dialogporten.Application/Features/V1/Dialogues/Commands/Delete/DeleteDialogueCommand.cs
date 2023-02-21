@@ -31,7 +31,10 @@ internal sealed class DeleteDialogueCommandHandler : AsyncRequestHandler<DeleteD
             throw new Exception($"Dialogue with id {request.Id} not found.");
         }
 
+        // TODO: Delete localization sets
+
         _db.Dialogues.Remove(dialogue);
+        // TODO: Publish event
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
 }

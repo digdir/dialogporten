@@ -27,7 +27,7 @@ internal sealed class GetDialogueQueryHandler : IRequestHandler<GetDialogueQuery
         var dialogue = await _db.Dialogues
             .AsNoTracking()
             .ProjectTo<GetDialogueDto>(_mapper.ConfigurationProvider)
-            .FirstOrDefaultAsync(x => x.Id== request.Id);
+            .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
 
         if (dialogue is null)
         {

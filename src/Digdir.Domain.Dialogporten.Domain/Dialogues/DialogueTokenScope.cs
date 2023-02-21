@@ -1,8 +1,8 @@
 ﻿using Digdir.Library.Entity.Abstractions;
 
-namespace Digdir.Domain.Dialogporten.Domain.Dialogues.Configuration;
+namespace Digdir.Domain.Dialogporten.Domain.Dialogues;
 
-public class DialogueConfigurationTokenScope : IImutableEntity
+public class DialogueTokenScope : IImutableEntity
 {
     public long InternalId { get; set; }
     public Guid Id { get; set; }
@@ -11,6 +11,6 @@ public class DialogueConfigurationTokenScope : IImutableEntity
     public string Value { get; set; } = null!;
 
     // === Dependent relationships ===
-    public long DialogueConfigurationId { get; set; }
-    public DialogueConfiguration Configuration { get; set; } = null!;
+    public long DialogueId { get; set; }
+    public DialogueEntity Dialogue { get; set; } = null!;
 }

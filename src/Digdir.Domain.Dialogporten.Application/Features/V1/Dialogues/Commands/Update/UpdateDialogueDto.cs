@@ -3,11 +3,10 @@ using Digdir.Domain.Dialogporten.Domain.Dialogues;
 using Digdir.Domain.Dialogporten.Domain.Dialogues.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogues.Activities;
 
-namespace Digdir.Domain.Dialogporten.Application.Features.V1.Dialogues.Commands.Create;
+namespace Digdir.Domain.Dialogporten.Application.Features.V1.Dialogues.Commands.Update;
 
-public class CreateDialogueDto
+public class UpdateDialogueDto
 {
-    public Guid Id { get; set; }
     public string Org { get; set; } = null!;
     public string ServiceResourceIdentifier { get; set; } = null!;
     public string Party { get; set; } = null!;
@@ -22,19 +21,19 @@ public class CreateDialogueDto
     public List<LocalizationDto> Title { get; set; } = new();
     public List<LocalizationDto> SenderName { get; set; } = new();
     public List<LocalizationDto> SearchTitle { get; set; } = new();
-    public List<CreateDialogueDialogueAttachmentDto> Attachments { get; set; } = new();
-    public List<CreateDialogueDialogueGuiActionDto> GuiActions { get; set; } = new();
-    public List<CreateDialogueDialogueApiActionDto> ApiActions { get; set; } = new();
-    public List<CreateDialogueDialogueActivityDto> History { get; set; } = new();
-    public List<CreateDialogueDialogueTokenScopeDto> TokenScopes { get; set; } = new();
+    public List<UpdateDialogueDialogueAttachmentDto> Attachments { get; set; } = new();
+    public List<UpdateDialogueDialogueGuiActionDto> GuiActions { get; set; } = new();
+    public List<UpdateDialogueDialogueApiActionDto> ApiActions { get; set; } = new();
+    public List<UpdateDialogueDialogueActivityDto> History { get; set; } = new();
+    public List<UpdateDialogueDialogueTokenScopeDto> TokenScopes { get; set; } = new();
 }
 
-public sealed class CreateDialogueDialogueTokenScopeDto
+public sealed class UpdateDialogueDialogueTokenScopeDto
 {
     public string Value { get; set; } = null!;
 }
 
-public sealed class CreateDialogueDialogueActivityDto
+public sealed class UpdateDialogueDialogueActivityDto
 {
     public Guid? Id { get; set; }
     public DateTime? CreatedAtUtc { get; set; }
@@ -46,8 +45,9 @@ public sealed class CreateDialogueDialogueActivityDto
     public Uri? DetailsGuiUrl { get; set; }
 }
 
-public sealed class CreateDialogueDialogueApiActionDto
+public sealed class UpdateDialogueDialogueApiActionDto
 {
+    public Guid Id { get; set; }
     public string Action { get; set; } = null!;
     public string HttpMethod { get; set; } = null!;
     public Uri Url { get; set; } = null!;
@@ -56,8 +56,9 @@ public sealed class CreateDialogueDialogueApiActionDto
     public Uri? ResponseSchema { get; set; }
 }
 
-public sealed class CreateDialogueDialogueGuiActionDto
+public sealed class UpdateDialogueDialogueGuiActionDto
 {
+    public Guid Id { get; set; }
     public string Action { get; set; } = null!;
     public DialogueGuiActionType.Enum TypeId { get; set; }
     public List<LocalizationDto> Title { get; set; } = new();
@@ -67,8 +68,9 @@ public sealed class CreateDialogueDialogueGuiActionDto
     public bool IsDeleteAction { get; set; }
 }
 
-public sealed class CreateDialogueDialogueAttachmentDto
+public sealed class UpdateDialogueDialogueAttachmentDto
 {
+    public Guid Id { get; set; }
     public List<LocalizationDto> DisplayName { get; set; } = new();
     public long SizeInBytes { get; set; }
     public string ContentType { get; set; } = null!;

@@ -1,5 +1,4 @@
 ﻿using Digdir.Library.Entity.Abstractions.Features.Creatable;
-using Digdir.Library.Entity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 

@@ -15,11 +15,8 @@ public class DialogueApiAction : IEntity
     public Uri Url { get; set; } = null!;
     // TODO: Skal vi ha noe strengere validering her?
     public string HttpMethod { get; set; } = null!;
-    public string? Resource { get; set; }
-
     public Uri? DocumentationUrl { get; set; }
     public Uri? RequestSchema { get; set; }
-    // TODO: Hvorfor trenger vi dette?
     public Uri? ResponseSchema { get; set; }
 
     // === Dependent relationships ===

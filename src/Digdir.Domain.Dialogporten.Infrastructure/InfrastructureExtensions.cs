@@ -27,6 +27,7 @@ public static class InfrastructureExtensions
             .AddHostedService<DevelopmentMigratorHostedService>()
 
             // Scoped
+            .AddScoped<IUnitOfWork, UnitOfWork>()
             .AddScoped<IDialogueDbContext>(x => x.GetRequiredService<DialogueDbContext>());
     }
 }

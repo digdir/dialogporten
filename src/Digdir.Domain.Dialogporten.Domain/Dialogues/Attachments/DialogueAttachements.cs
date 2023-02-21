@@ -1,4 +1,4 @@
-﻿using Digdir.Domain.Dialogporten.Domain.Common;
+﻿using Digdir.Domain.Dialogporten.Domain.Localizations;
 using Digdir.Library.Entity.Abstractions;
 
 namespace Digdir.Domain.Dialogporten.Domain.Dialogues.Attachments;
