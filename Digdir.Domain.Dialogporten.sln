@@ -5,8 +5,6 @@ VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{320B47A0-5EB8-4B6E-8C84-90633A1849CA}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{CA9CD386-02BF-440E-BC38-D73F1230CDBE}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Digdir.Domain.Dialogporten.Domain", "src\Digdir.Domain.Dialogporten.Domain\Digdir.Domain.Dialogporten.Domain.csproj", "{6302BDB6-CECE-4F4B-A49D-14128392BC96}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Digdir.Domain.Dialogporten.Infrastructure", "src\Digdir.Domain.Dialogporten.Infrastructure\Digdir.Domain.Dialogporten.Infrastructure.csproj", "{39722D85-71E3-4E4A-B9A3-9DFF1B660430}"
@@ -22,6 +20,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Digdir.Library.Entity.EntityFrameworkCore", "src\Digdir.Library.Entity.EntityFrameworkCore\Digdir.Library.Entity.EntityFrameworkCore.csproj", "{0EE4AC8C-BDB9-474A-821D-23FB95CB54A7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Digdir.Library.Entity.Abstractions", "src\Digdir.Library.Entity.Abstractions\Digdir.Library.Entity.Abstractions.csproj", "{E7288616-9358-47C2-8650-EA019AB9D16F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{CADB8189-4AA1-4732-844A-C41DBF3EC8B7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Digdir.Domain.Dialogporten.Application", "tests\Digdir.Domain.Dialogporten.Application\Digdir.Domain.Dialogporten.Application.csproj", "{FBFC38D2-5BD7-43A7-9245-2B185F56ED3F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -53,6 +55,10 @@ Global
 		{E7288616-9358-47C2-8650-EA019AB9D16F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E7288616-9358-47C2-8650-EA019AB9D16F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E7288616-9358-47C2-8650-EA019AB9D16F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FBFC38D2-5BD7-43A7-9245-2B185F56ED3F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FBFC38D2-5BD7-43A7-9245-2B185F56ED3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FBFC38D2-5BD7-43A7-9245-2B185F56ED3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FBFC38D2-5BD7-43A7-9245-2B185F56ED3F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -66,6 +72,7 @@ Global
 		{CC70CBB9-D57A-4095-8786-956012537B1C} = {096E9B69-6783-4446-A895-0B6D7729A0D9}
 		{0EE4AC8C-BDB9-474A-821D-23FB95CB54A7} = {CC70CBB9-D57A-4095-8786-956012537B1C}
 		{E7288616-9358-47C2-8650-EA019AB9D16F} = {CC70CBB9-D57A-4095-8786-956012537B1C}
+		{FBFC38D2-5BD7-43A7-9245-2B185F56ED3F} = {CADB8189-4AA1-4732-844A-C41DBF3EC8B7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B2FE67FF-7622-4AFB-AD8E-961B6A39D888}

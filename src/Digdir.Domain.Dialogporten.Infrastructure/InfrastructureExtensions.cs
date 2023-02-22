@@ -21,9 +21,10 @@ public static class InfrastructureExtensions
 
             // Framework
             .AddDbContext<DialogueDbContext>((services, options) => options
-                .UseSqlServer(services
-                    .GetRequiredService<IOptions<InfrastructureSettings>>()
-                    .Value.DialogueDbConnectionString))
+                .UseNpgsql("Server=localhost;Port=5432;Database=mydb;User ID=course;Password=changeme;"))
+                //.UseSqlServer(services
+                //    .GetRequiredService<IOptions<InfrastructureSettings>>()
+                //    .Value.DialogueDbConnectionString))
             .AddHostedService<DevelopmentMigratorHostedService>()
 
             // Scoped

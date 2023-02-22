@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
@@ -17,8 +18,8 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                 name: "DialogueActivityType",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false),
+                    Name = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -29,8 +30,8 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                 name: "DialogueGuiActionType",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false),
+                    Name = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -41,8 +42,8 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                 name: "DialogueStatus",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false),
+                    Name = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -54,10 +55,10 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                 columns: table => new
                 {
                     InternalId = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
-                    CreatedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
-                    CreatedByUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
+                    CreatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "current_timestamp at time zone 'utc'"),
+                    CreatedByUserId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -69,21 +70,21 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                 columns: table => new
                 {
                     InternalId = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
-                    CreatedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
-                    CreatedByUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UpdatedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
-                    UpdatedByUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Org = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    ServiceResourceIdentifier = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    Party = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    ExtendedStatus = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    VisibleFromUtc = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DueAtUtc = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    ExpiresAtUtc = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    ReadAtUtc = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    StatusId = table.Column<int>(type: "int", nullable: false),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
+                    CreatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "current_timestamp at time zone 'utc'"),
+                    CreatedByUserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    UpdatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "current_timestamp at time zone 'utc'"),
+                    UpdatedByUserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Org = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    ServiceResourceIdentifier = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    Party = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    ExtendedStatus = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    VisibleFromUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    DueAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    ExpiresAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    ReadAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    StatusId = table.Column<int>(type: "integer", nullable: false),
                     BodyId = table.Column<long>(type: "bigint", nullable: false),
                     TitleId = table.Column<long>(type: "bigint", nullable: false),
                     SenderNameId = table.Column<long>(type: "bigint", nullable: false),
@@ -128,13 +129,13 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                 name: "Localization",
                 columns: table => new
                 {
-                    CultureCode = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false),
+                    CultureCode = table.Column<string>(type: "character varying(15)", maxLength: 15, nullable: false),
                     LocalizationSetId = table.Column<long>(type: "bigint", nullable: false),
-                    CreatedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
-                    CreatedByUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UpdatedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
-                    UpdatedByUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Value = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false)
+                    CreatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "current_timestamp at time zone 'utc'"),
+                    CreatedByUserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    UpdatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "current_timestamp at time zone 'utc'"),
+                    UpdatedByUserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Value = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -152,16 +153,16 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                 columns: table => new
                 {
                     InternalId = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
-                    CreatedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
-                    CreatedByUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    PerformedBy = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    ExtendedType = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
+                    CreatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "current_timestamp at time zone 'utc'"),
+                    CreatedByUserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    PerformedBy = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    ExtendedType = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
                     DescriptionInternalId = table.Column<long>(type: "bigint", nullable: false),
-                    DetailsApiUrl = table.Column<string>(type: "nvarchar(1023)", maxLength: 1023, nullable: true),
-                    DetailsGuiUrl = table.Column<string>(type: "nvarchar(1023)", maxLength: 1023, nullable: true),
-                    TypeId = table.Column<int>(type: "int", nullable: false),
+                    DetailsApiUrl = table.Column<string>(type: "character varying(1023)", maxLength: 1023, nullable: true),
+                    DetailsGuiUrl = table.Column<string>(type: "character varying(1023)", maxLength: 1023, nullable: true),
+                    TypeId = table.Column<int>(type: "integer", nullable: false),
                     DialogueId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
@@ -192,18 +193,18 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                 columns: table => new
                 {
                     InternalId = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
-                    CreatedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
-                    CreatedByUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UpdatedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
-                    UpdatedByUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Action = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    Url = table.Column<string>(type: "nvarchar(1023)", maxLength: 1023, nullable: false),
-                    HttpMethod = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    DocumentationUrl = table.Column<string>(type: "nvarchar(1023)", maxLength: 1023, nullable: true),
-                    RequestSchema = table.Column<string>(type: "nvarchar(1023)", maxLength: 1023, nullable: true),
-                    ResponseSchema = table.Column<string>(type: "nvarchar(1023)", maxLength: 1023, nullable: true),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
+                    CreatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "current_timestamp at time zone 'utc'"),
+                    CreatedByUserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    UpdatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "current_timestamp at time zone 'utc'"),
+                    UpdatedByUserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Action = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    Url = table.Column<string>(type: "character varying(1023)", maxLength: 1023, nullable: false),
+                    HttpMethod = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    DocumentationUrl = table.Column<string>(type: "character varying(1023)", maxLength: 1023, nullable: true),
+                    RequestSchema = table.Column<string>(type: "character varying(1023)", maxLength: 1023, nullable: true),
+                    ResponseSchema = table.Column<string>(type: "character varying(1023)", maxLength: 1023, nullable: true),
                     DialogueId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
@@ -222,17 +223,17 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                 columns: table => new
                 {
                     InternalId = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
-                    CreatedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
-                    CreatedByUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UpdatedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
-                    UpdatedByUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
+                    CreatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "current_timestamp at time zone 'utc'"),
+                    CreatedByUserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    UpdatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "current_timestamp at time zone 'utc'"),
+                    UpdatedByUserId = table.Column<Guid>(type: "uuid", nullable: false),
                     DisplayNameInternalId = table.Column<long>(type: "bigint", nullable: false),
                     SizeInBytes = table.Column<long>(type: "bigint", nullable: false),
-                    ContentType = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    Url = table.Column<string>(type: "nvarchar(1023)", maxLength: 1023, nullable: false),
-                    Resource = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    ContentType = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    Url = table.Column<string>(type: "character varying(1023)", maxLength: 1023, nullable: false),
+                    Resource = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
                     DialogueId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
@@ -257,19 +258,19 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                 columns: table => new
                 {
                     InternalId = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
-                    CreatedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
-                    CreatedByUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UpdatedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
-                    UpdatedByUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Action = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
+                    CreatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "current_timestamp at time zone 'utc'"),
+                    CreatedByUserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    UpdatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "current_timestamp at time zone 'utc'"),
+                    UpdatedByUserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Action = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     TitleInternalId = table.Column<long>(type: "bigint", nullable: false),
-                    Url = table.Column<string>(type: "nvarchar(1023)", maxLength: 1023, nullable: false),
-                    Resource = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    IsBackChannel = table.Column<bool>(type: "bit", nullable: false),
-                    IsDeleteAction = table.Column<bool>(type: "bit", nullable: false),
-                    TypeId = table.Column<int>(type: "int", nullable: false),
+                    Url = table.Column<string>(type: "character varying(1023)", maxLength: 1023, nullable: false),
+                    Resource = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    IsBackChannel = table.Column<bool>(type: "boolean", nullable: false),
+                    IsDeleteAction = table.Column<bool>(type: "boolean", nullable: false),
+                    TypeId = table.Column<int>(type: "integer", nullable: false),
                     DialogueId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
@@ -300,11 +301,11 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                 columns: table => new
                 {
                     InternalId = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
-                    CreatedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
-                    CreatedByUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Value = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
+                    CreatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "current_timestamp at time zone 'utc'"),
+                    CreatedByUserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Value = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     DialogueId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
