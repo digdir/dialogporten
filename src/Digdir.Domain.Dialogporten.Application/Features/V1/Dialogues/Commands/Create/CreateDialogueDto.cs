@@ -8,16 +8,13 @@ namespace Digdir.Domain.Dialogporten.Application.Features.V1.Dialogues.Commands.
 public class CreateDialogueDto
 {
     public Guid Id { get; set; }
-    public string Org { get; set; } = null!;
     public string ServiceResourceIdentifier { get; set; } = null!;
     public string Party { get; set; } = null!;
     public DialogueStatus.Enum StatusId { get; set; }
     public string? ExtendedStatus { get; set; }
     public DateTime VisibleFromUtc { get; set; }
-    public DateTime CreatedAtUtc { get; set; }
-    public DateTime UpdatedAtUtc { get; set; }
-    public DateTime? ReadAtUtc { get; set; }
     public DateTime? DueAtUtc { get; set; }
+    public DateTime? ExpiresAtUtc { get; set; }
     public List<LocalizationDto> Body { get; set; } = new();
     public List<LocalizationDto> Title { get; set; } = new();
     public List<LocalizationDto> SenderName { get; set; } = new();

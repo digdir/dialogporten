@@ -15,7 +15,8 @@ public class DialogueEntity : IEntity
     public DateTime UpdatedAtUtc { get; set; }
     public Guid UpdatedByUserId { get; set; }
 
-    public string Org { get; set; } = null!;
+    // TODO: Hent dette fra token?
+    public string Org { get; set; } = "DummyOrg";
     public string ServiceResourceIdentifier { get; set; } = null!;
     public string Party { get; set; } = null!;
     public string? ExtendedStatus { get; set; }

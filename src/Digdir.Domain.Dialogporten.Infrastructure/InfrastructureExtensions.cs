@@ -2,7 +2,6 @@
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure;
 
@@ -22,13 +21,13 @@ public static class InfrastructureExtensions
             // Framework
             .AddDbContext<DialogueDbContext>((services, options) => options
                 .UseNpgsql("Server=localhost;Port=5432;Database=mydb;User ID=course;Password=changeme;"))
-                //.UseSqlServer(services
-                //    .GetRequiredService<IOptions<InfrastructureSettings>>()
-                //    .Value.DialogueDbConnectionString))
+            //.UseSqlServer(services
+            //    .GetRequiredService<IOptions<InfrastructureSettings>>()
+            //    .Value.DialogueDbConnectionString))
             .AddHostedService<DevelopmentMigratorHostedService>()
 
             // Scoped
-            .AddScoped<IUnitOfWork, UnitOfWork>()
-            .AddScoped<IDialogueDbContext>(x => x.GetRequiredService<DialogueDbContext>());
+            .AddScoped<IDialogueDbContext>(x => x.GetRequiredService<DialogueDbContext>())
+            .AddScoped<IUnitOfWork, UnitOfWork>();
     }
 }

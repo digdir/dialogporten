@@ -349,7 +349,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                 values: new object[,]
                 {
                     { 1, "Unspecified" },
-                    { 2, "UnderProgress" },
+                    { 2, "InProgress" },
                     { 3, "Waiting" },
                     { 4, "Signing" },
                     { 5, "Cancelled" },

@@ -19,7 +19,7 @@ public class DialogueStatus : AbstractLookupEntity<DialogueStatus, DialogueStatu
         /// Under arbeid. Generell status som brukes for dialogtjenester der ytterligere bruker-input er 
         /// forventet.
         /// </summary>
-        UnderProgress = 2,
+        InProgress = 2,
 
         /// <summary>
         /// Venter på tilbakemelding fra tjenesteeier

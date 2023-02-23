@@ -1,4 +1,5 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Features.V1.Dialogues.Commands.Create;
+using Digdir.Domain.Dialogporten.Application.Features.V1.Dialogues.Queries.Get;
 using Digdir.Domain.Dialogporten.Application.Tests.Integration.Common;
 using Digdir.Domain.Dialogporten.Domain.Dialogues;
 using Digdir.Domain.Dialogporten.Domain.Dialogues.Actions;
@@ -6,21 +7,22 @@ using Digdir.Domain.Dialogporten.Domain.Dialogues.Activities;
 using FluentAssertions;
 using Xunit;
 
-namespace Digdir.Domain.Dialogporten.Application.Tests.Integration.Features.V1.Dialogues.Commands;
+namespace Digdir.Domain.Dialogporten.Application.Tests.Integration.Features.V1.Dialogues.Queries;
 
 [Collection(nameof(DialogueCqrsCollectionFixture))]
-public class CreateDialogueTests : ApplicationCollectionFixture
+public class GetDialogueTests : ApplicationCollectionFixture
 {
-    public CreateDialogueTests(DialogueApplication application) : base(application) { }
+    public GetDialogueTests(DialogueApplication application) : base(application)
+    {
+    }
 
     [Fact]
-    public async Task Create_CreateDialogue_WhenDataIsValid()
+    public async Task Get_ReturnsDialogue_WhenDialogueExists()
     {
         // Arrange
-        var expectedId = Guid.NewGuid();
         var createCommand = new CreateDialogueCommand
         {
-            Id = expectedId,
+            Id = Guid.NewGuid(),
             ServiceResourceIdentifier = "example_dialogue_service",
             Party = "org:991825827",
             StatusId = DialogueStatus.Enum.InProgress,
@@ -87,7 +89,7 @@ public class CreateDialogueTests : ApplicationCollectionFixture
                     Url = new("https://example.com/api/dialogues/123456789"),
                     HttpMethod = "DELETE"},
             },
-            History= new()
+            History = new()
             {
                 new()
                 {
@@ -102,13 +104,14 @@ public class CreateDialogueTests : ApplicationCollectionFixture
                 }
             }
         };
+        var dialogueId = await Application.Send(createCommand);
 
         // Act
-        var result = await Application.Send(createCommand);
+        var response = await Application.Send(new GetDialogueQuery { Id = dialogueId });
 
         // Assert
-        result.Should().Be(expectedId);
+        response.Should().NotBeNull();
+        response.Should().BeEquivalentTo(createCommand);
     }
-
     // TODO: Add tests
 }

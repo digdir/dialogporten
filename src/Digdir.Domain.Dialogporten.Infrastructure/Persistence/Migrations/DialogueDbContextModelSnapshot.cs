@@ -486,7 +486,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         new
                         {
                             Id = 2,
-                            Name = "UnderProgress"
+                            Name = "InProgress"
                         },
                         new
                         {

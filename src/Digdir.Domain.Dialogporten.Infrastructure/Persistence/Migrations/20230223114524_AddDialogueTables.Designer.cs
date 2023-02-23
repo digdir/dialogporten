@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(DialogueDbContext))]
-    [Migration("20230222134740_AddDialogueTables")]
+    [Migration("20230223114524_AddDialogueTables")]
     partial class AddDialogueTables
     {
         /// <inheritdoc />
@@ -489,7 +489,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         new
                         {
                             Id = 2,
-                            Name = "UnderProgress"
+                            Name = "InProgress"
                         },
                         new
                         {
