@@ -4,10 +4,6 @@ internal delegate Task<IEnumerable<TDestination>> CreatesDelegade<TDestination, 
 internal delegate Task UpdatesDelegade<TDestination, TSource>(IEnumerable<UpdateSet<TDestination, TSource>> updateSets, CancellationToken cancellationToken = default);
 internal delegate Task DeletesDelegade<TDestination>(IEnumerable<TDestination> deletables, CancellationToken cancellationToken = default);
 
-//internal delegate Task<TDestination> CreateDelegade<TSource, TDestination>(TSource source, CancellationToken cancellationToken = default);
-//internal delegate Task UpdateDelegade<TSource, TDestination>(TSource source, TDestination destination, CancellationToken cancellationToken = default);
-//internal delegate Task DeleteDelegade<TDestination>(TDestination destination, CancellationToken cancellationToken = default);
-
 internal static class EnumerableExtensions
 {
     public static async Task<List<TDestination>> MergeAsync<TDestination, TSource, TKey>(
@@ -43,12 +39,13 @@ internal static class EnumerableExtensions
                 (destination, source) => new UpdateSet<TDestination, TSource> { Destination = destination, Source = source },
                 comparer)
             .ToList();
-        var creates = sources.Except(updates.Select(x => x.Source)).ToList();
-        var deleates = destinations.Except(updates.Select(x => x.Destination)).ToList();
 
         var result = destinations;
         if (create is not null)
         {
+            var creates = sources
+                .Except(updates.Select(x => x.Source))
+                .ToList();
             result = result.Concat(await create(creates, cancellationToken));
         }
 
@@ -59,6 +56,9 @@ internal static class EnumerableExtensions
 
         if (delete is not null)
         {
+            var deleates = destinations
+                .Except(updates.Select(x => x.Destination))
+                .ToList();
             await delete(deleates, cancellationToken);
             result = result.Except(deleates);
         }
