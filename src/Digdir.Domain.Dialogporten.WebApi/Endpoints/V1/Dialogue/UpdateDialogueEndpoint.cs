@@ -7,7 +7,7 @@ namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.Dialogue;
 
 [AllowAnonymous]
 [HttpPut("dialogue/{id}")]
-public sealed class UpdateDialogueEndpoint : Endpoint<UpdateDialogueCommand>
+public sealed class UpdateDialogueEndpoint : Endpoint<UpdateDialogueRequest>
 {
     private readonly ISender _sender;
 
@@ -16,9 +16,18 @@ public sealed class UpdateDialogueEndpoint : Endpoint<UpdateDialogueCommand>
         _sender = sender ?? throw new ArgumentNullException(nameof(sender));
     }
 
-    public override async Task HandleAsync(UpdateDialogueCommand req, CancellationToken ct)
+    public override async Task HandleAsync(UpdateDialogueRequest req, CancellationToken ct)
     {
-        var result = await _sender.Send(req, ct);
+        var command = new UpdateDialogueCommand { Id = req.Id, Dto = req.Dto };
+        await _sender.Send(command, ct);
         await SendNoContentAsync(ct);
     }
+}
+
+public class UpdateDialogueRequest
+{
+    public Guid Id { get; set; }
+
+    [FromBody]
+    public UpdateDialogueDto Dto { get; set; } = null!;
 }
