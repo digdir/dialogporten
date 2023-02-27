@@ -23,8 +23,8 @@ public static class ApplicationExtensions
 
             // Framework
             .AddAutoMapper(thisAssembly)
-            .AddMediatR(thisAssembly)
-            .AddValidatorsFromAssembly(thisAssembly)
+            .AddMediatR(x => x.RegisterServicesFromAssembly(thisAssembly))
+            .AddValidatorsFromAssembly(thisAssembly, includeInternalTypes: true)
 
             // Transient
             .AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));

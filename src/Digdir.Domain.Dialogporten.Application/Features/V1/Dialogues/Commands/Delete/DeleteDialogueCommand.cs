@@ -9,7 +9,7 @@ public sealed class DeleteDialogueCommand : IRequest
     public Guid Id { get; set; }
 }
 
-internal sealed class DeleteDialogueCommandHandler : AsyncRequestHandler<DeleteDialogueCommand>
+internal sealed class DeleteDialogueCommandHandler : IRequestHandler<DeleteDialogueCommand>
 {
     private readonly IDialogueDbContext _db;
     private readonly IUnitOfWork _unitOfWork;
@@ -20,7 +20,7 @@ internal sealed class DeleteDialogueCommandHandler : AsyncRequestHandler<DeleteD
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
     }
 
-    protected override async Task Handle(DeleteDialogueCommand request, CancellationToken cancellationToken)
+    public async Task Handle(DeleteDialogueCommand request, CancellationToken cancellationToken)
     {
         var dialogue = await _db.Dialogues
             .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);

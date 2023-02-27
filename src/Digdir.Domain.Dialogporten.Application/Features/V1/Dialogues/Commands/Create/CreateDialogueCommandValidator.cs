@@ -2,7 +2,7 @@
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.Dialogues.Commands.Create;
 
-internal class CreateDialogueCommandValidator : AbstractValidator<CreateDialogueCommand>
+internal sealed class CreateDialogueCommandValidator : AbstractValidator<CreateDialogueCommand>
 {
     public CreateDialogueCommandValidator()
     {

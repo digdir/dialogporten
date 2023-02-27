@@ -7,5 +7,7 @@ internal sealed class UpdateDialogueCommandValidator : AbstractValidator<UpdateD
     public UpdateDialogueCommandValidator()
     {
         // TODO: Add validation rules.
+        RuleFor(x => x.Dto).NotEmpty();
+        RuleFor(x => x.Dto.Org).NotEmpty();
     }
 }

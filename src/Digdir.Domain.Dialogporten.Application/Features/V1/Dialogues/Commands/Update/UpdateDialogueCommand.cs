@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Common.Interfaces;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
@@ -9,16 +10,18 @@ using Digdir.Domain.Dialogporten.Domain.Dialogues.Attachments;
 using Digdir.Domain.Dialogporten.Domain.Localizations;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using OneOf;
+using OneOf.Types;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.Dialogues.Commands.Update;
 
-public class UpdateDialogueCommand : IRequest 
+public class UpdateDialogueCommand : IRequest<OneOf<Success, NotFound, ValidationFailed>>
 {
     public Guid Id { get; set; }
     public UpdateDialogueDto Dto { get; set; } = null!;
 }
 
-internal sealed class UpdateDialogueCommandHandler : AsyncRequestHandler<UpdateDialogueCommand>
+internal sealed class UpdateDialogueCommandHandler : IRequestHandler<UpdateDialogueCommand, OneOf<Success, NotFound, ValidationFailed>>
 {
     private readonly IDialogueDbContext _db;
     private readonly IMapper _mapper;
@@ -31,7 +34,7 @@ internal sealed class UpdateDialogueCommandHandler : AsyncRequestHandler<UpdateD
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
     }
 
-    protected override async Task Handle(UpdateDialogueCommand request, CancellationToken cancellationToken)
+    public async Task<OneOf<Success, NotFound, ValidationFailed>> Handle(UpdateDialogueCommand request, CancellationToken cancellationToken)
     {
         var dialogue = await _db.Dialogues
             .Include(x => x.Body.Localizations)
@@ -48,7 +51,7 @@ internal sealed class UpdateDialogueCommandHandler : AsyncRequestHandler<UpdateD
 
         if (dialogue is null)
         {
-            throw new Exception();
+            return new NotFound();
         }
 
         // Update primitive properties
@@ -132,6 +135,7 @@ internal sealed class UpdateDialogueCommandHandler : AsyncRequestHandler<UpdateD
         // TODO: Publish event
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+        return new Success();
     }
 
     private Task<IEnumerable<Localization>> CreateLocalization(IEnumerable<LocalizationDto> creatables, CancellationToken cancellationToken)

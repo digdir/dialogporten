@@ -27,11 +27,16 @@ internal class ValidationBehaviour<TRequest, TResponse> : IPipelineBehavior<TReq
             .Where(x => x != null)
             .ToList();
 
-        if (failures.Any())
+        if (!failures.Any())
         {
-            throw new ValidationException(failures);
+            return await next();
         }
 
-        return await next();
+        if (OneOfExtensions.TryToOneOf<TResponse>(new ValidationFailed(failures), out var result))
+        {
+            return result;
+        }
+
+        throw new ValidationException(failures);
     }
 }
