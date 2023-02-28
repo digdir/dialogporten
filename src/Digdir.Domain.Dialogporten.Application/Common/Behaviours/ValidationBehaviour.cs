@@ -32,7 +32,7 @@ internal class ValidationBehaviour<TRequest, TResponse> : IPipelineBehavior<TReq
             return await next();
         }
 
-        if (OneOfExtensions.TryToOneOf<TResponse>(new ValidationFailed(failures), out var result))
+        if (OneOfExtensions.TryConvertToOneOf<TResponse>(new ValidationFailed(failures), out var result))
         {
             return result;
         }

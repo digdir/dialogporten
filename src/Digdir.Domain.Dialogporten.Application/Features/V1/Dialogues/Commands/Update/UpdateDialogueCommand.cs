@@ -15,13 +15,13 @@ using OneOf.Types;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.Dialogues.Commands.Update;
 
-public class UpdateDialogueCommand : IRequest<OneOf<Success, NotFound, ValidationFailed>>
+public class UpdateDialogueCommand : IRequest<OneOf<Success, EntityNotFound, ValidationFailed>>
 {
     public Guid Id { get; set; }
     public UpdateDialogueDto Dto { get; set; } = null!;
 }
 
-internal sealed class UpdateDialogueCommandHandler : IRequestHandler<UpdateDialogueCommand, OneOf<Success, NotFound, ValidationFailed>>
+internal sealed class UpdateDialogueCommandHandler : IRequestHandler<UpdateDialogueCommand, OneOf<Success, EntityNotFound, ValidationFailed>>
 {
     private readonly IDialogueDbContext _db;
     private readonly IMapper _mapper;
@@ -34,7 +34,7 @@ internal sealed class UpdateDialogueCommandHandler : IRequestHandler<UpdateDialo
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
     }
 
-    public async Task<OneOf<Success, NotFound, ValidationFailed>> Handle(UpdateDialogueCommand request, CancellationToken cancellationToken)
+    public async Task<OneOf<Success, EntityNotFound, ValidationFailed>> Handle(UpdateDialogueCommand request, CancellationToken cancellationToken)
     {
         var dialogue = await _db.Dialogues
             .Include(x => x.Body.Localizations)
@@ -51,7 +51,7 @@ internal sealed class UpdateDialogueCommandHandler : IRequestHandler<UpdateDialo
 
         if (dialogue is null)
         {
-            return new NotFound();
+            return new EntityNotFound<DialogueEntity>(request.Id);
         }
 
         // Update primitive properties

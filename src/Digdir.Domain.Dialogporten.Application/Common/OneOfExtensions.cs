@@ -10,7 +10,7 @@ internal static class OneOfExtensions
 {
     private static readonly ConcurrentDictionary<(Type, Type), MethodInfo?> _oneOfFactoryByType = new();
 
-    public static bool TryToOneOf<TOneOf>(object value, [NotNullWhen(true)] out TOneOf? result)
+    public static bool TryConvertToOneOf<TOneOf>(object value, [NotNullWhen(true)] out TOneOf? result)
     {
         ArgumentNullException.ThrowIfNull(value);
         var oneOfFactory = _oneOfFactoryByType.GetOrAdd(

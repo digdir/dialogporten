@@ -1,5 +1,6 @@
 using Digdir.Domain.Dialogporten.Application;
 using Digdir.Domain.Dialogporten.Infrastructure;
+using Digdir.Domain.Dialogporten.WebApi;
 using FastEndpoints;
 using FastEndpoints.Swagger;
 using System.Text.Json.Serialization;
@@ -23,7 +24,7 @@ builder.Services
 
 var app = builder.Build();
 
-app.UseDefaultExceptionHandler()
+app.UseProblemDetailsExceptionHandler()
     .UseHttpsRedirection()
     .UseAuthorization()
     .UseFastEndpoints(x =>
@@ -33,9 +34,9 @@ app.UseDefaultExceptionHandler()
         x.Versioning.PrependToRoute = true;
         x.Versioning.DefaultVersion = 1;
         x.Serializer.Options.Converters.Add(new JsonStringEnumConverter());
+        x.Errors.ResponseBuilder = ErrorResponseBuilderExtensions.ResponseBuilder;
     })
     .UseOpenApi()
     .UseSwaggerUi3(x => x.ConfigureDefaults());
 
 app.Run();
-
