@@ -1,4 +1,4 @@
-﻿using Digdir.Domain.Dialogporten.Application.Common.Interfaces;
+﻿using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Domain.Dialogues;
 using Digdir.Domain.Dialogporten.Domain.Dialogues.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogues.Activities;

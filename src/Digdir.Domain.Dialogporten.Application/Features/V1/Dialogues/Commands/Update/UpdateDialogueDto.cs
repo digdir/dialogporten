@@ -5,7 +5,7 @@ using Digdir.Domain.Dialogporten.Domain.Dialogues.Activities;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.Dialogues.Commands.Update;
 
-public class UpdateDialogueDto
+public sealed class UpdateDialogueDto
 {
     public string Org { get; set; } = null!;
     public string ServiceResourceIdentifier { get; set; } = null!;

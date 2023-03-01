@@ -1,8 +1,8 @@
 ﻿namespace Digdir.Domain.Dialogporten.Application.Common.Extensions;
 
-internal delegate Task<IEnumerable<TDestination>> CreatesDelegade<TDestination, TSource>(IEnumerable<TSource> creatables, CancellationToken cancellationToken = default);
-internal delegate Task UpdatesDelegade<TDestination, TSource>(IEnumerable<UpdateSet<TDestination, TSource>> updateSets, CancellationToken cancellationToken = default);
-internal delegate Task DeletesDelegade<TDestination>(IEnumerable<TDestination> deletables, CancellationToken cancellationToken = default);
+internal delegate Task<IEnumerable<TDestination>> CreatesDelegade<TDestination, in TSource>(IEnumerable<TSource> creatables, CancellationToken cancellationToken = default);
+internal delegate Task UpdatesDelegade<in TDestination, in TSource>(IEnumerable<IUpdateSet<TDestination, TSource>> updateSets, CancellationToken cancellationToken = default);
+internal delegate Task DeletesDelegade<in TDestination>(IEnumerable<TDestination> deletables, CancellationToken cancellationToken = default);
 
 internal static class EnumerableExtensions
 {
@@ -36,7 +36,11 @@ internal static class EnumerableExtensions
             .Join(sources,
                 destinationKeySelector,
                 sourceKeySelector,
-                (destination, source) => new UpdateSet<TDestination, TSource> { Destination = destination, Source = source },
+                (destination, source) => (IUpdateSet<TDestination, TSource>)new UpdateSet<TDestination, TSource> 
+                    { 
+                        Destination = destination, 
+                        Source = source 
+                    },
                 comparer)
             .ToList();
 
@@ -86,10 +90,16 @@ internal static class EnumerableExtensions
                 $"keys were detected for {typename}: [{string.Join(",", duplicateKeys)}].");
         }
     }
+
+    private readonly struct UpdateSet<TDestination, TSource> : IUpdateSet<TDestination, TSource>
+    {
+        public required TDestination Destination { get; init; }
+        public required TSource Source { get; init; }
+    }
 }
 
-internal readonly struct UpdateSet<TDestination, TSource>
+internal interface IUpdateSet<out TDestination, out TSource>
 {
-    public required TDestination Destination { get; init; }
-    public required TSource Source { get; init; }
+    TDestination Destination { get; }
+    TSource Source { get; }
 }

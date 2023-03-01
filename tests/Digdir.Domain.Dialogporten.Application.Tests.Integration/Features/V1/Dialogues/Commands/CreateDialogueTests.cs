@@ -107,7 +107,7 @@ public class CreateDialogueTests : ApplicationCollectionFixture
         var result = await Application.Send(createCommand);
 
         // Assert
-        result.Should().Be(expectedId);
+        result.AsT0.Should().Be(expectedId);
     }
 
     // TODO: Add tests

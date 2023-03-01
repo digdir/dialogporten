@@ -2,7 +2,7 @@
 
 namespace Digdir.Domain.Dialogporten.Application.Common.Exceptions;
 
-public class CriticalApplicationException : ApplicationException
+public sealed class CriticalApplicationException : ApplicationException
 {
     public CriticalApplicationException()
     {

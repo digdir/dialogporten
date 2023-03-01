@@ -1,4 +1,4 @@
-﻿using Digdir.Domain.Dialogporten.Application.Common.Interfaces;
+﻿using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Infrastructure;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence;
 using Digdir.Library.Entity.Abstractions.Features.Lookup;

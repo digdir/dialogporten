@@ -1,4 +1,5 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Common.Behaviours;
+using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,6 +28,7 @@ public static class ApplicationExtensions
             .AddValidatorsFromAssembly(thisAssembly, includeInternalTypes: true)
 
             // Transient
+            .AddTransient<ILocalizationService, LocalizationService>()
             .AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
     }
 }

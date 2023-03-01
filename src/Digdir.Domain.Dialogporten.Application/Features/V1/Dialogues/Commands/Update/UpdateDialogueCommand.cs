@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
-using Digdir.Domain.Dialogporten.Application.Common.Interfaces;
+using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
+using Digdir.Domain.Dialogporten.Application.Features.V1.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Domain.Dialogues;
 using Digdir.Domain.Dialogporten.Domain.Dialogues.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogues.Activities;
@@ -15,32 +15,35 @@ using OneOf.Types;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.Dialogues.Commands.Update;
 
-public class UpdateDialogueCommand : IRequest<OneOf<Success, EntityNotFound, ValidationFailed>>
+public sealed class UpdateDialogueCommand : IRequest<OneOf<Success, EntityNotFound, ValidationError>>
 {
     public Guid Id { get; set; }
     public UpdateDialogueDto Dto { get; set; } = null!;
 }
 
-internal sealed class UpdateDialogueCommandHandler : IRequestHandler<UpdateDialogueCommand, OneOf<Success, EntityNotFound, ValidationFailed>>
+internal sealed class UpdateDialogueCommandHandler : IRequestHandler<UpdateDialogueCommand, OneOf<Success, EntityNotFound, ValidationError>>
 {
     private readonly IDialogueDbContext _db;
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ILocalizationService _localizationService;
 
-    public UpdateDialogueCommandHandler(IDialogueDbContext db, IMapper mapper, IUnitOfWork unitOfWork)
+    public UpdateDialogueCommandHandler(IDialogueDbContext db, IMapper mapper, IUnitOfWork unitOfWork, ILocalizationService localizationService)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+        _localizationService = localizationService ?? throw new ArgumentNullException(nameof(localizationService));
     }
 
-    public async Task<OneOf<Success, EntityNotFound, ValidationFailed>> Handle(UpdateDialogueCommand request, CancellationToken cancellationToken)
+    public async Task<OneOf<Success, EntityNotFound, ValidationError>> Handle(UpdateDialogueCommand request, CancellationToken cancellationToken)
     {
         var dialogue = await _db.Dialogues
             .Include(x => x.Body.Localizations)
             .Include(x => x.Title.Localizations)
             .Include(x => x.SenderName.Localizations)
             .Include(x => x.SearchTitle.Localizations)
+            .Include(x => x.History)
             .Include(x => x.Attachments)
                 .ThenInclude(attachment => attachment.DisplayName.Localizations)
             .Include(x => x.GuiActions)
@@ -57,44 +60,17 @@ internal sealed class UpdateDialogueCommandHandler : IRequestHandler<UpdateDialo
         // Update primitive properties
         _mapper.Map(request.Dto, dialogue);
 
-        // History is append only, therefore no need to load history
-        // TODO: What if consumer sends existing history id? 
-        dialogue.History.AddRange(await CreateHistory(request.Dto.History, cancellationToken));
+        await _localizationService.Merge(dialogue.Body, request.Dto.Body, cancellationToken);
+        await _localizationService.Merge(dialogue.Title, request.Dto.Title, cancellationToken);
+        await _localizationService.Merge(dialogue.SenderName, request.Dto.SenderName, cancellationToken);
+        await _localizationService.Merge(dialogue.SearchTitle, request.Dto.SearchTitle, cancellationToken);
 
-        dialogue.Body.Localizations = await dialogue.Body.Localizations
-            .MergeAsync(request.Dto.Body,
-                destinationKeySelector: x => x.CultureCode,
-                sourceKeySelector: x => x.CultureCode,
-                create: CreateLocalization,
-                update: UpdateLocalization,
-                delete: DeleteLocalization,
-                cancellationToken: cancellationToken);
-
-        dialogue.Title.Localizations = await dialogue.Title.Localizations
-            .MergeAsync(request.Dto.Title,
-                destinationKeySelector: x => x.CultureCode,
-                sourceKeySelector: x => x.CultureCode,
-                create: CreateLocalization,
-                update: UpdateLocalization,
-                delete: DeleteLocalization,
-                cancellationToken: cancellationToken);
-
-        dialogue.SenderName.Localizations = await dialogue.SenderName.Localizations
-            .MergeAsync(request.Dto.SenderName,
-                destinationKeySelector: x => x.CultureCode,
-                sourceKeySelector: x => x.CultureCode,
-                create: CreateLocalization,
-                update: UpdateLocalization,
-                delete: DeleteLocalization,
-                cancellationToken: cancellationToken);
-
-        dialogue.SearchTitle.Localizations = await dialogue.SearchTitle.Localizations
-            .MergeAsync(request.Dto.SearchTitle,
-                destinationKeySelector: x => x.CultureCode,
-                sourceKeySelector: x => x.CultureCode,
-                create: CreateLocalization,
-                update: UpdateLocalization,
-                delete: DeleteLocalization,
+        dialogue.History = await dialogue.History
+            .MergeAsync(request.Dto.History,
+                destinationKeySelector: x => x.Id,
+                sourceKeySelector: x => x.Id,
+                create: CreateHistory,
+                update: UpdateHistory,
                 cancellationToken: cancellationToken);
 
         dialogue.Attachments = await dialogue.Attachments
@@ -138,28 +114,6 @@ internal sealed class UpdateDialogueCommandHandler : IRequestHandler<UpdateDialo
         return new Success();
     }
 
-    private Task<IEnumerable<Localization>> CreateLocalization(IEnumerable<LocalizationDto> creatables, CancellationToken cancellationToken)
-    {
-        var result = _mapper.Map<List<Localization>>(creatables);
-        return Task.FromResult<IEnumerable<Localization>>(result);
-    }
-
-    private Task UpdateLocalization(IEnumerable<UpdateSet<Localization, LocalizationDto>> updateSets, CancellationToken cancellationToken)
-    {
-        foreach (var updateSet in updateSets)
-        {
-            _mapper.Map(updateSet.Source, updateSet.Destination);
-        }
-
-        return Task.CompletedTask;
-    }
-
-    private Task DeleteLocalization(IEnumerable<Localization> deletables, CancellationToken cancellationToken)
-    {
-        _db.Localizations.RemoveRange(deletables);
-        return Task.CompletedTask;
-    }
-
     private Task<IEnumerable<DialogueTokenScope>> CreateTokenScope(IEnumerable<UpdateDialogueDialogueTokenScopeDto> creatables, CancellationToken cancellationToken)
     {
         var result = _mapper.Map<List<DialogueTokenScope>>(creatables);
@@ -172,10 +126,19 @@ internal sealed class UpdateDialogueCommandHandler : IRequestHandler<UpdateDialo
         return Task.CompletedTask;
     }
 
-    private Task<IEnumerable<DialogueActivity>> CreateHistory(List<UpdateDialogueDialogueActivityDto> creatables, CancellationToken cancellationToken)
+    private Task<IEnumerable<DialogueActivity>> CreateHistory(IEnumerable<UpdateDialogueDialogueActivityDto> creatables, CancellationToken cancellationToken)
     {
         var result = _mapper.Map<List<DialogueActivity>>(creatables);
         return Task.FromResult<IEnumerable<DialogueActivity>>(result);
+    }
+
+    private Task UpdateHistory(IEnumerable<IUpdateSet<DialogueActivity, UpdateDialogueDialogueActivityDto>> updateSets, CancellationToken cancellationToken)
+    {
+        if (updateSets.Any())
+        {
+            // TODO: DomainError?
+        }
+        return Task.CompletedTask;
     }
 
     private Task<IEnumerable<DialogueApiAction>> CreateApiActions(IEnumerable<UpdateDialogueDialogueApiActionDto> creatables, CancellationToken cancellationToken)
@@ -184,7 +147,7 @@ internal sealed class UpdateDialogueCommandHandler : IRequestHandler<UpdateDialo
         return Task.FromResult<IEnumerable<DialogueApiAction>>(result);
     }
 
-    private Task UpdateApiActions(IEnumerable<UpdateSet<DialogueApiAction, UpdateDialogueDialogueApiActionDto>> updateSets, CancellationToken cancellationToken)
+    private Task UpdateApiActions(IEnumerable<IUpdateSet<DialogueApiAction, UpdateDialogueDialogueApiActionDto>> updateSets, CancellationToken cancellationToken)
     {
         foreach (var updateSet in updateSets)
         {
@@ -210,20 +173,12 @@ internal sealed class UpdateDialogueCommandHandler : IRequestHandler<UpdateDialo
         }));
     }
 
-    private async Task UpdateGuiActions(IEnumerable<UpdateSet<DialogueGuiAction, UpdateDialogueDialogueGuiActionDto>> updateSets, CancellationToken cancellationToken)
+    private async Task UpdateGuiActions(IEnumerable<IUpdateSet<DialogueGuiAction, UpdateDialogueDialogueGuiActionDto>> updateSets, CancellationToken cancellationToken)
     {
         foreach (var updateSet in updateSets)
         {
             _mapper.Map(updateSet.Source, updateSet.Destination);
-
-            updateSet.Destination.Title.Localizations = await updateSet.Destination.Title.Localizations
-                .MergeAsync(updateSet.Source.Title,
-                    destinationKeySelector: x => x.CultureCode,
-                    sourceKeySelector: x => x.CultureCode,
-                    create: CreateLocalization,
-                    update: UpdateLocalization,
-                    delete: DeleteLocalization,
-                    cancellationToken: cancellationToken);
+            await _localizationService.Merge(updateSet.Destination.Title, updateSet.Source.Title, cancellationToken);
         }
     }
 
@@ -245,20 +200,12 @@ internal sealed class UpdateDialogueCommandHandler : IRequestHandler<UpdateDialo
         }));
     }
 
-    private async Task UpdateAttachments(IEnumerable<UpdateSet<DialogueAttachement, UpdateDialogueDialogueAttachmentDto>> updateSets, CancellationToken cancellationToken)
+    private async Task UpdateAttachments(IEnumerable<IUpdateSet<DialogueAttachement, UpdateDialogueDialogueAttachmentDto>> updateSets, CancellationToken cancellationToken)
     {
         foreach (var updateSet in updateSets)
         {
             _mapper.Map(updateSet.Source, updateSet.Destination);
-
-            updateSet.Destination.DisplayName.Localizations = await updateSet.Destination.DisplayName.Localizations
-                .MergeAsync(updateSet.Source.DisplayName,
-                    destinationKeySelector: x => x.CultureCode,
-                    sourceKeySelector: x => x.CultureCode,
-                    create: CreateLocalization,
-                    update: UpdateLocalization,
-                    delete: DeleteLocalization,
-                    cancellationToken: cancellationToken);
+            await _localizationService.Merge(updateSet.Destination.DisplayName, updateSet.Source.DisplayName, cancellationToken);
         }
     }
 

@@ -2,7 +2,7 @@
 
 namespace Digdir.Domain.Dialogporten.Application.Common.Pagination;
 
-public static class PaginationExtensions
+internal static class PaginationExtensions
 {
     public static Task<PaginatedList<TDestination>> ToPaginatedListAsync<TDestination>(this IQueryable<TDestination> queryable, int pageIndex, int pageSize, CancellationToken cancellationToken = default)
         => CreateAsync(queryable, pageIndex, pageSize, cancellationToken);

@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using Digdir.Domain.Dialogporten.Application.Common.Interfaces;
+using Digdir.Domain.Dialogporten.Application.Externals;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
@@ -8,7 +8,7 @@ using OneOf.Types;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.Dialogues.Queries.Get;
 
-public class GetDialogueQuery : IRequest<OneOf<GetDialogueDto, NotFound>>
+public sealed class GetDialogueQuery : IRequest<OneOf<GetDialogueDto, NotFound>>
 {
     public Guid Id { get; set; }
 }

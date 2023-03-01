@@ -21,7 +21,7 @@ public class DefaultPaginationParameter : IPaginationParameter
     }
 }
 
-internal class PaginationParameterValidator : AbstractValidator<IPaginationParameter>
+internal sealed class PaginationParameterValidator : AbstractValidator<IPaginationParameter>
 {
     public PaginationParameterValidator()
     {

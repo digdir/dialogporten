@@ -4,7 +4,7 @@ using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
-namespace Digdir.Domain.Dialogporten.Application.Common;
+namespace Digdir.Domain.Dialogporten.Application.Common.Extensions;
 
 internal static class OneOfExtensions
 {
@@ -37,8 +37,8 @@ internal static class OneOfExtensions
             bindingAttr: ImplicitOperatorFlags,
             types: new[] { type });
 
-        return oneOfImplicitOperator is not null 
-            ? oneOfImplicitOperator 
+        return oneOfImplicitOperator is not null
+            ? oneOfImplicitOperator
             : throw new CriticalApplicationException(
                 $"Could not find expected implicit operator on {duType} that accepts {type}. " +
                 $"This may be due to a change in OneOf and must be fixed.");

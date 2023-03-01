@@ -5,7 +5,7 @@ using Digdir.Domain.Dialogporten.Domain.Dialogues.Attachments;
 using Digdir.Domain.Dialogporten.Domain.Localizations;
 using Microsoft.EntityFrameworkCore;
 
-namespace Digdir.Domain.Dialogporten.Application.Common.Interfaces;
+namespace Digdir.Domain.Dialogporten.Application.Externals;
 
 public interface IDialogueDbContext
 {

@@ -1,15 +1,15 @@
 ﻿using AutoMapper;
-using Digdir.Domain.Dialogporten.Application.Common;
-using Digdir.Domain.Dialogporten.Application.Common.Interfaces;
+using Digdir.Domain.Dialogporten.Application.Externals;
+using Digdir.Domain.Dialogporten.Application.Features.V1.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Domain.Dialogues;
 using MediatR;
 using OneOf;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.Dialogues.Commands.Create;
 
-public class CreateDialogueCommand : CreateDialogueDto, IRequest<OneOf<Guid, ValidationFailed>> { }
+public sealed class CreateDialogueCommand : CreateDialogueDto, IRequest<OneOf<Guid, ValidationError>> { }
 
-internal sealed class CreateDialogueCommandHandler : IRequestHandler<CreateDialogueCommand, OneOf<Guid, ValidationFailed>>
+internal sealed class CreateDialogueCommandHandler : IRequestHandler<CreateDialogueCommand, OneOf<Guid, ValidationError>>
 {
     private readonly IDialogueDbContext _db;
     private readonly IMapper _mapper;
@@ -22,7 +22,7 @@ internal sealed class CreateDialogueCommandHandler : IRequestHandler<CreateDialo
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
     }
 
-    public async Task<OneOf<Guid, ValidationFailed>> Handle(CreateDialogueCommand request, CancellationToken cancellationToken)
+    public async Task<OneOf<Guid, ValidationError>> Handle(CreateDialogueCommand request, CancellationToken cancellationToken)
     {
         var dialogue = _mapper.Map<DialogueEntity>(request);
         await _db.Dialogues.AddAsync(dialogue, cancellationToken);

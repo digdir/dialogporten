@@ -104,14 +104,15 @@ public class GetDialogueTests : ApplicationCollectionFixture
                 }
             }
         };
-        var dialogueId = await Application.Send(createCommand);
+        var createCommandResponse = await Application.Send(createCommand);
 
         // Act
-        var response = await Application.Send(new GetDialogueQuery { Id = dialogueId });
+        var response = await Application.Send(new GetDialogueQuery { Id = createCommandResponse.AsT0 });
 
         // Assert
-        response.Should().NotBeNull();
-        response.Should().BeEquivalentTo(createCommand);
+        response.TryPickT0(out var result, out var _).Should().BeTrue();
+        result.Should().NotBeNull();
+        result.Should().BeEquivalentTo(createCommand);
     }
     // TODO: Add tests
 }

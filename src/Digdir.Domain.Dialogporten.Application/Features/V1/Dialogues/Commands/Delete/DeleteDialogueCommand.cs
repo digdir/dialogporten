@@ -1,4 +1,4 @@
-﻿using Digdir.Domain.Dialogporten.Application.Common.Interfaces;
+﻿using Digdir.Domain.Dialogporten.Application.Externals;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;

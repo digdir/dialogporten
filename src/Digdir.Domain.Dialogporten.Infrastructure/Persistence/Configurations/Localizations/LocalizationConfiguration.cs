@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Configurations.Localizations;
 
-internal class LocalizationConfiguration : IEntityTypeConfiguration<Localization>
+internal sealed class LocalizationConfiguration : IEntityTypeConfiguration<Localization>
 {
     public void Configure(EntityTypeBuilder<Localization> builder)
     {
