@@ -19,6 +19,8 @@ public class GetDialogueEndpoint : Endpoint<GetDialogueQuery>
     public override async Task HandleAsync(GetDialogueQuery req, CancellationToken ct)
     {
         var result = await _sender.Send(req, ct);
-        await SendOkAsync(result, ct);
+        await result.Match(
+            dto => SendOkAsync(dto, ct),
+            notFound => this.NotFoundAsync(notFound, ct));
     }
 }

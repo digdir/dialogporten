@@ -1,19 +1,20 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Digdir.Domain.Dialogporten.Application.Externals;
+using Digdir.Domain.Dialogporten.Application.Features.V1.Common.ReturnTypes;
+using Digdir.Domain.Dialogporten.Domain.Dialogues;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
-using OneOf.Types;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.Dialogues.Queries.Get;
 
-public sealed class GetDialogueQuery : IRequest<OneOf<GetDialogueDto, NotFound>>
+public sealed class GetDialogueQuery : IRequest<OneOf<GetDialogueDto, EntityNotFound>>
 {
     public Guid Id { get; set; }
 }
 
-internal sealed class GetDialogueQueryHandler : IRequestHandler<GetDialogueQuery, OneOf<GetDialogueDto, NotFound>>
+internal sealed class GetDialogueQueryHandler : IRequestHandler<GetDialogueQuery, OneOf<GetDialogueDto, EntityNotFound>>
 {
     private readonly IDialogueDbContext _db;
     private readonly IMapper _mapper;
@@ -24,7 +25,7 @@ internal sealed class GetDialogueQueryHandler : IRequestHandler<GetDialogueQuery
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
-    public async Task<OneOf<GetDialogueDto, NotFound>> Handle(GetDialogueQuery request, CancellationToken cancellationToken)
+    public async Task<OneOf<GetDialogueDto, EntityNotFound>> Handle(GetDialogueQuery request, CancellationToken cancellationToken)
     {
         var dialogue = await _db.Dialogues
             .AsNoTracking()
@@ -33,9 +34,7 @@ internal sealed class GetDialogueQueryHandler : IRequestHandler<GetDialogueQuery
 
         if (dialogue is null)
         {
-            // TODO: Handle with specific exception OR result object
-            //throw new Exception($"Dialogue with id {request.Id} not found.");
-            return new NotFound();
+            return new EntityNotFound<DialogueEntity>(request.Id);
         }
 
         return dialogue;

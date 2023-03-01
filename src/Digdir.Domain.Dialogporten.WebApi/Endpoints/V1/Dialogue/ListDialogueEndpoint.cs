@@ -19,6 +19,8 @@ public class ListDialogueEndpoint : Endpoint<ListDialogueQuery>
     public override async Task HandleAsync(ListDialogueQuery req, CancellationToken ct)
     {
         var result = await _sender.Send(req, ct);
-        await SendOkAsync(result, ct);
+        await result.Match(
+            paginatedDto => SendOkAsync(paginatedDto, ct),
+            validationError => this.BadRequestAsync(validationError, ct));
     }
 }

@@ -19,6 +19,9 @@ public sealed class CreateDialogueEndpoint : Endpoint<CreateDialogueCommand>
     public override async Task HandleAsync(CreateDialogueCommand req, CancellationToken ct)
     {
         var result = await _sender.Send(req, ct);
-        await SendCreatedAtAsync<GetDialogueEndpoint>(new { id = result }, result, cancellation: ct);
+        await result.Match(
+            id => SendCreatedAtAsync<GetDialogueEndpoint>(new { id }, id, cancellation: ct),
+            entityExists => this.UnprocessableEntityAsync(entityExists, ct),
+            validationError => this.BadRequestAsync(validationError, ct));
     }
 }

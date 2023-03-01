@@ -16,4 +16,10 @@ public static class EndpointExtensions
             new() { new ValidationFailure(notFound.Name, notFound.Message) }, 
             StatusCodes.Status404NotFound, 
             cancellation: cancellationToken);
+
+    public static Task UnprocessableEntityAsync(this IEndpoint ep, EntityExists entityExists, CancellationToken cancellationToken = default)
+        => ep.HttpContext.Response.SendErrorsAsync(
+            new() { new ValidationFailure(entityExists.Name, entityExists.Message) },
+            StatusCodes.Status422UnprocessableEntity,
+            cancellation: cancellationToken);
 }

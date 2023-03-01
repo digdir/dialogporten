@@ -18,7 +18,9 @@ public sealed class DeleteDialogueEndpoint : Endpoint<DeleteDialogueCommand>
 
     public override async Task HandleAsync(DeleteDialogueCommand req, CancellationToken ct)
     {
-        await _sender.Send(req, ct);
-        await SendNoContentAsync(ct);
+        var result = await _sender.Send(req, ct);
+        await result.Match(
+            success => SendNoContentAsync(ct),
+            notFound => this.NotFoundAsync(notFound, ct));
     }
 }

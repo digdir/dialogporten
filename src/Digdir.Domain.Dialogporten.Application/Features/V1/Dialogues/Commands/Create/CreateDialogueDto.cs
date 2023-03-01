@@ -7,7 +7,7 @@ namespace Digdir.Domain.Dialogporten.Application.Features.V1.Dialogues.Commands.
 
 public class CreateDialogueDto
 {
-    public Guid Id { get; set; }
+    public Guid? Id { get; set; }
     public string ServiceResourceIdentifier { get; set; } = null!;
     public string Party { get; set; } = null!;
     public DialogueStatus.Enum StatusId { get; set; }
