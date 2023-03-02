@@ -11,7 +11,7 @@ using System.Text.Json.Serialization;
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
     .Enrich.FromLogContext()
-    .WriteTo.Console()
+    .WriteTo.Debug()
     .CreateBootstrapLogger();
 
 try
@@ -35,7 +35,7 @@ static void BuildAndRun(string[] args)
         .ReadFrom.Configuration(context.Configuration)
         .ReadFrom.Services(services)
         .Enrich.FromLogContext()
-        .WriteTo.Console());
+        .WriteTo.Debug());
 
     builder.Services
         .AddEndpointsApiExplorer()

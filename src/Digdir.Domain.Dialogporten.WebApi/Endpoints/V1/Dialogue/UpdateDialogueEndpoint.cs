@@ -19,8 +19,8 @@ public sealed class UpdateDialogueEndpoint : Endpoint<UpdateDialogueRequest>
     public override async Task HandleAsync(UpdateDialogueRequest req, CancellationToken ct)
     {
         var command = new UpdateDialogueCommand { Id = req.Id, Dto = req.Dto };
-        var updateDualogueResult = await _sender.Send(command, ct);
-        await updateDualogueResult.Match(
+        var updateDialogueResult = await _sender.Send(command, ct);
+        await updateDialogueResult.Match(
             success => SendNoContentAsync(ct),
             entityNotFound => this.NotFoundAsync(entityNotFound, ct),
             entityExists => this.ConflictAsync(entityExists, ct),
