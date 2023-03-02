@@ -15,13 +15,13 @@ using OneOf.Types;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.Dialogues.Commands.Update;
 
-public sealed class UpdateDialogueCommand : IRequest<OneOf<Success, EntityNotFound, ValidationError>>
+public sealed class UpdateDialogueCommand : IRequest<OneOf<Success, EntityNotFound, EntityExists, ValidationError>>
 {
     public Guid Id { get; set; }
     public UpdateDialogueDto Dto { get; set; } = null!;
 }
 
-internal sealed class UpdateDialogueCommandHandler : IRequestHandler<UpdateDialogueCommand, OneOf<Success, EntityNotFound, ValidationError>>
+internal sealed class UpdateDialogueCommandHandler : IRequestHandler<UpdateDialogueCommand, OneOf<Success, EntityNotFound, EntityExists, ValidationError>>
 {
     private readonly IDialogueDbContext _db;
     private readonly IMapper _mapper;
@@ -36,14 +36,13 @@ internal sealed class UpdateDialogueCommandHandler : IRequestHandler<UpdateDialo
         _localizationService = localizationService ?? throw new ArgumentNullException(nameof(localizationService));
     }
 
-    public async Task<OneOf<Success, EntityNotFound, ValidationError>> Handle(UpdateDialogueCommand request, CancellationToken cancellationToken)
+    public async Task<OneOf<Success, EntityNotFound, EntityExists, ValidationError>> Handle(UpdateDialogueCommand request, CancellationToken cancellationToken)
     {
         var dialogue = await _db.Dialogues
             .Include(x => x.Body.Localizations)
             .Include(x => x.Title.Localizations)
             .Include(x => x.SenderName.Localizations)
             .Include(x => x.SearchTitle.Localizations)
-            .Include(x => x.History)
             .Include(x => x.Attachments)
                 .ThenInclude(attachment => attachment.DisplayName.Localizations)
             .Include(x => x.GuiActions)
@@ -57,21 +56,22 @@ internal sealed class UpdateDialogueCommandHandler : IRequestHandler<UpdateDialo
             return new EntityNotFound<DialogueEntity>(request.Id);
         }
 
+        var existingHistoryIds = await GetExistingHistoryIds(request.Dto.History, cancellationToken);
+        if (existingHistoryIds.Any())
+        {
+            return new EntityExists<DialogueActivity>(existingHistoryIds);
+        }
+
         // Update primitive properties
         _mapper.Map(request.Dto, dialogue);
+
+        // Append history
+        dialogue.History.AddRange(request.Dto.History.Select(_mapper.Map<DialogueActivity>));
 
         await _localizationService.Merge(dialogue.Body, request.Dto.Body, cancellationToken);
         await _localizationService.Merge(dialogue.Title, request.Dto.Title, cancellationToken);
         await _localizationService.Merge(dialogue.SenderName, request.Dto.SenderName, cancellationToken);
         await _localizationService.Merge(dialogue.SearchTitle, request.Dto.SearchTitle, cancellationToken);
-
-        dialogue.History = await dialogue.History
-            .MergeAsync(request.Dto.History,
-                destinationKeySelector: x => x.Id,
-                sourceKeySelector: x => x.Id,
-                create: CreateHistory,
-                update: UpdateHistory,
-                cancellationToken: cancellationToken);
 
         dialogue.Attachments = await dialogue.Attachments
             .MergeAsync(request.Dto.Attachments,
@@ -109,9 +109,28 @@ internal sealed class UpdateDialogueCommandHandler : IRequestHandler<UpdateDialo
                 cancellationToken: cancellationToken);
 
         // TODO: Publish event
-
         await _unitOfWork.SaveChangesAsync(cancellationToken);
         return new Success();
+    }
+
+    private async Task<IEnumerable<Guid>> GetExistingHistoryIds(
+        List<UpdateDialogueDialogueActivityDto> historyDtos,
+        CancellationToken cancellationToken)
+    {
+        var historyDtoIds = historyDtos
+            .Select(x => x.Id)
+            .Where(x => x.HasValue)
+            .ToList();
+
+        if (!historyDtoIds.Any())
+        {
+            return Enumerable.Empty<Guid>();
+        }
+
+        return await _db.DialogueActivities
+            .Select(x => x.Id)
+            .Where(x => historyDtoIds.Contains(x))
+            .ToListAsync(cancellationToken);
     }
 
     private Task<IEnumerable<DialogueTokenScope>> CreateTokenScope(IEnumerable<UpdateDialogueDialogueTokenScopeDto> creatables, CancellationToken cancellationToken)
@@ -123,21 +142,6 @@ internal sealed class UpdateDialogueCommandHandler : IRequestHandler<UpdateDialo
     private Task DeleteTokenScope(IEnumerable<DialogueTokenScope> deletables, CancellationToken cancellationToken)
     {
         _db.DialogueTokenScopes.RemoveRange(deletables);
-        return Task.CompletedTask;
-    }
-
-    private Task<IEnumerable<DialogueActivity>> CreateHistory(IEnumerable<UpdateDialogueDialogueActivityDto> creatables, CancellationToken cancellationToken)
-    {
-        var result = _mapper.Map<List<DialogueActivity>>(creatables);
-        return Task.FromResult<IEnumerable<DialogueActivity>>(result);
-    }
-
-    private Task UpdateHistory(IEnumerable<IUpdateSet<DialogueActivity, UpdateDialogueDialogueActivityDto>> updateSets, CancellationToken cancellationToken)
-    {
-        if (updateSets.Any())
-        {
-            // TODO: DomainError?
-        }
         return Task.CompletedTask;
     }
 

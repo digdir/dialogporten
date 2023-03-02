@@ -1,7 +1,5 @@
 ﻿using FastEndpoints;
 using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
 
 namespace Digdir.Domain.Dialogporten.WebApi;
 

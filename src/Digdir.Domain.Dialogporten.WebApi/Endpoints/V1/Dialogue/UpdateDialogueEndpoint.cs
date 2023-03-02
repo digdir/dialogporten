@@ -22,7 +22,8 @@ public sealed class UpdateDialogueEndpoint : Endpoint<UpdateDialogueRequest>
         var updateDualogueResult = await _sender.Send(command, ct);
         await updateDualogueResult.Match(
             success => SendNoContentAsync(ct),
-            notFound => this.NotFoundAsync(notFound, ct),
+            entityNotFound => this.NotFoundAsync(entityNotFound, ct),
+            entityExists => this.ConflictAsync(entityExists, ct),
             validationFailed => this.BadRequestAsync(validationFailed, ct));
     }
 }
