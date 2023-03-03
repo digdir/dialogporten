@@ -8,17 +8,20 @@ using Digdir.Domain.Dialogporten.Domain.Dialogues.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogues.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogues.Attachments;
 using Digdir.Domain.Dialogporten.Domain.Localizations;
+using FluentValidation;
+using Json.Patch;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
 using OneOf.Types;
+using System.Text.Json;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.Dialogues.Commands.Update;
 
 public sealed class UpdateDialogueCommand : IRequest<OneOf<Success, EntityNotFound, EntityExists, ValidationError>>
 {
     public Guid Id { get; set; }
-    public UpdateDialogueDto Dto { get; set; } = null!;
+    public OneOf<UpdateDialogueDto, JsonPatch> Dto { get; set; }
 }
 
 internal sealed class UpdateDialogueCommandHandler : IRequestHandler<UpdateDialogueCommand, OneOf<Success, EntityNotFound, EntityExists, ValidationError>>
@@ -27,13 +30,20 @@ internal sealed class UpdateDialogueCommandHandler : IRequestHandler<UpdateDialo
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILocalizationService _localizationService;
+    private readonly IEnumerable<IValidator<UpdateDialogueDto>> _validators;
 
-    public UpdateDialogueCommandHandler(IDialogueDbContext db, IMapper mapper, IUnitOfWork unitOfWork, ILocalizationService localizationService)
+    public UpdateDialogueCommandHandler(
+        IDialogueDbContext db,
+        IMapper mapper,
+        IUnitOfWork unitOfWork,
+        ILocalizationService localizationService,
+        IEnumerable<IValidator<UpdateDialogueDto>> validators)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _localizationService = localizationService ?? throw new ArgumentNullException(nameof(localizationService));
+        _validators = validators ?? throw new ArgumentNullException(nameof(validators));
     }
 
     public async Task<OneOf<Success, EntityNotFound, EntityExists, ValidationError>> Handle(UpdateDialogueCommand request, CancellationToken cancellationToken)
@@ -56,25 +66,33 @@ internal sealed class UpdateDialogueCommandHandler : IRequestHandler<UpdateDialo
             return new EntityNotFound<DialogueEntity>(request.Id);
         }
 
-        var existingHistoryIds = await GetExistingHistoryIds(request.Dto.History, cancellationToken);
+        var dtoOrValidationError = request.Dto.Match(
+            dto => dto, 
+            jsonPatch => CreateDto(dialogue, jsonPatch));
+        if (dtoOrValidationError.TryPickT1(out var validationError, out var dto))
+        {
+            return validationError;
+        }
+
+        var existingHistoryIds = await GetExistingHistoryIds(dto.History, cancellationToken);
         if (existingHistoryIds.Any())
         {
             return new EntityExists<DialogueActivity>(existingHistoryIds);
         }
 
         // Update primitive properties
-        _mapper.Map(request.Dto, dialogue);
+        _mapper.Map(dto, dialogue);
 
         // Append history
-        dialogue.History.AddRange(request.Dto.History.Select(_mapper.Map<DialogueActivity>));
+        dialogue.History.AddRange(dto.History.Select(_mapper.Map<DialogueActivity>));
 
-        await _localizationService.Merge(dialogue.Body, request.Dto.Body, cancellationToken);
-        await _localizationService.Merge(dialogue.Title, request.Dto.Title, cancellationToken);
-        await _localizationService.Merge(dialogue.SenderName, request.Dto.SenderName, cancellationToken);
-        await _localizationService.Merge(dialogue.SearchTitle, request.Dto.SearchTitle, cancellationToken);
+        await _localizationService.Merge(dialogue.Body, dto.Body, cancellationToken);
+        await _localizationService.Merge(dialogue.Title, dto.Title, cancellationToken);
+        await _localizationService.Merge(dialogue.SenderName, dto.SenderName, cancellationToken);
+        await _localizationService.Merge(dialogue.SearchTitle, dto.SearchTitle, cancellationToken);
 
         dialogue.Attachments = await dialogue.Attachments
-            .MergeAsync(request.Dto.Attachments,
+            .MergeAsync(dto.Attachments,
                 destinationKeySelector: x => x.Id,
                 sourceKeySelector: x => x.Id,
                 create: CreateAttachments,
@@ -83,7 +101,7 @@ internal sealed class UpdateDialogueCommandHandler : IRequestHandler<UpdateDialo
                 cancellationToken: cancellationToken);
 
         dialogue.GuiActions = await dialogue.GuiActions
-            .MergeAsync(request.Dto.GuiActions,
+            .MergeAsync(dto.GuiActions,
                 destinationKeySelector: x => x.Id,
                 sourceKeySelector: x => x.Id,
                 create: CreateGuiActions,
@@ -92,7 +110,7 @@ internal sealed class UpdateDialogueCommandHandler : IRequestHandler<UpdateDialo
                 cancellationToken: cancellationToken);
 
         dialogue.ApiActions = await dialogue.ApiActions
-            .MergeAsync(request.Dto.ApiActions,
+            .MergeAsync(dto.ApiActions,
                 destinationKeySelector: x => x.Id,
                 sourceKeySelector: x => x.Id,
                 create: CreateApiActions,
@@ -101,7 +119,7 @@ internal sealed class UpdateDialogueCommandHandler : IRequestHandler<UpdateDialo
                 cancellationToken: cancellationToken);
 
         dialogue.TokenScopes = await dialogue.TokenScopes
-            .MergeAsync(request.Dto.TokenScopes,
+            .MergeAsync(dto.TokenScopes,
                 destinationKeySelector: x => x.Value,
                 sourceKeySelector: x => x.Value,
                 create: CreateTokenScope,
@@ -111,6 +129,28 @@ internal sealed class UpdateDialogueCommandHandler : IRequestHandler<UpdateDialo
         // TODO: Publish event
         await _unitOfWork.SaveChangesAsync(cancellationToken);
         return new Success();
+    }
+
+    private OneOf<UpdateDialogueDto, ValidationError> CreateDto(DialogueEntity dialogue, JsonPatch jsonPatch)
+    {
+        var originalAsDto = _mapper.Map<UpdateDialogueDto>(dialogue);
+        var modifiedAsDto = jsonPatch.Apply(originalAsDto, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        if (modifiedAsDto is null)
+        {
+            // TODO: Better exception.
+            throw new Exception();
+        }
+
+        var context = new ValidationContext<UpdateDialogueDto>(modifiedAsDto);
+        var failures = _validators
+            .Select(x => x.Validate(context))
+            .SelectMany(x => x.Errors)
+            .Where(x => x is not null)
+            .ToList();
+
+        return failures.Any()
+            ? new ValidationError(failures)
+            : modifiedAsDto;
     }
 
     private async Task<IEnumerable<Guid>> GetExistingHistoryIds(

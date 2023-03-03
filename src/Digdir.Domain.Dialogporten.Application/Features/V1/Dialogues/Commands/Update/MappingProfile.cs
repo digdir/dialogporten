@@ -11,16 +11,29 @@ internal sealed class MappingProfile : Profile
 {
     public MappingProfile()
     {
+        // In
         CreateMap<UpdateDialogueDto, DialogueEntity>()
             .IgnoreComplexDestinationProperties();
-        CreateMap<UpdateDialogueDialogueTokenScopeDto, DialogueTokenScope>();
-        CreateMap<UpdateDialogueDialogueActivityDto, DialogueActivity>();
-        CreateMap<UpdateDialogueDialogueApiActionDto, DialogueApiAction>();
-        CreateMap<UpdateDialogueDialogueApiActionDto, DialogueApiAction>();
+        CreateMap<UpdateDialogueDialogueTokenScopeDto, DialogueTokenScope>()
+            .IgnoreComplexDestinationProperties();
+        CreateMap<UpdateDialogueDialogueActivityDto, DialogueActivity>()
+            .IgnoreComplexDestinationProperties();
+        CreateMap<UpdateDialogueDialogueApiActionDto, DialogueApiAction>()
+            .IgnoreComplexDestinationProperties();
+        CreateMap<UpdateDialogueDialogueApiActionDto, DialogueApiAction>()
+            .IgnoreComplexDestinationProperties();
         CreateMap<UpdateDialogueDialogueGuiActionDto, DialogueGuiAction>()
             .IgnoreComplexDestinationProperties();
-
         CreateMap<UpdateDialogueDialogueAttachmentDto, DialogueAttachement>()
             .IgnoreComplexDestinationProperties();
+
+        // To support json patch
+        CreateMap<DialogueEntity, UpdateDialogueDto>();
+        CreateMap<DialogueTokenScope, UpdateDialogueDialogueTokenScopeDto>();
+        CreateMap<DialogueActivity, UpdateDialogueDialogueActivityDto>();
+        CreateMap<DialogueApiAction, UpdateDialogueDialogueApiActionDto>();
+        CreateMap<DialogueApiAction, UpdateDialogueDialogueApiActionDto>();
+        CreateMap<DialogueGuiAction, UpdateDialogueDialogueGuiActionDto>();
+        CreateMap<DialogueAttachement, UpdateDialogueDialogueAttachmentDto>();
     }
 }

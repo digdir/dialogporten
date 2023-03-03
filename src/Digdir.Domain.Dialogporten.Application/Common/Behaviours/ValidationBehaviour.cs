@@ -26,7 +26,7 @@ internal sealed class ValidationBehaviour<TRequest, TResponse> : IPipelineBehavi
         var validationResults = await Task.WhenAll(_validators.Select(v => v.ValidateAsync(context, cancellationToken)));
         var failures = validationResults
             .SelectMany(x => x.Errors)
-            .Where(x => x != null)
+            .Where(x => x is not null)
             .ToList();
 
         if (!failures.Any())

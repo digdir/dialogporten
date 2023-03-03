@@ -1,5 +1,4 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Features.V1.Dialogues.Commands.Update;
-using Digdir.Domain.Dialogporten.Application.Features.V1.Dialogues.Queries.Get;
 using FastEndpoints;
 using Json.Patch;
 using MediatR;
@@ -21,15 +20,9 @@ public sealed class PatchDialogueEndpoint : Endpoint<PatchDialogueRequest>
 
     public override async Task HandleAsync(PatchDialogueRequest req, CancellationToken ct)
     {
-        var getDialogueResult = await _sender.Send(new GetDialogueQuery { Id = req.Id }, ct);
-        if (!getDialogueResult.TryPickT0(out var dialogue, out var _))
-        {
-            await SendNotFoundAsync(ct);
-        }
-
-        var updateDialogueDto = req.PatchDocument!.Apply<GetDialogueDto, UpdateDialogueDto>(dialogue);
-        var updateDialogueResult = await _sender.Send(new UpdateDialogueCommand { Id = req.Id, Dto = updateDialogueDto! }, ct);
-        await updateDialogueResult.Match(
+        var command = new UpdateDialogueCommand { Id = req.Id, Dto = req.PatchDocument };
+        var result = await _sender.Send(command, ct);
+        await result.Match(
             success => SendNoContentAsync(ct),
             entityNotFound => this.NotFoundAsync(entityNotFound, ct),
             entityExists => this.ConflictAsync(entityExists, ct),
@@ -43,5 +36,5 @@ public class PatchDialogueRequest : IPlainTextRequest
 
     [FromBody]
     public string Content { get; set; } = null!;
-    public JsonPatch? PatchDocument => JsonSerializer.Deserialize<JsonPatch>(Content);
+    public JsonPatch PatchDocument => JsonSerializer.Deserialize<JsonPatch>(Content);
 }

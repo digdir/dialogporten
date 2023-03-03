@@ -8,6 +8,6 @@ internal sealed class UpdateDialogueCommandValidator : AbstractValidator<UpdateD
     {
         // TODO: Add validation rules.
         RuleFor(x => x.Dto).NotEmpty();
-        RuleFor(x => x.Dto.Org).NotEmpty();
+        //RuleFor(x => x.Dto.Org).NotEmpty();
     }
 }
