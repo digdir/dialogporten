@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(DialogueDbContext))]
-    [Migration("20230223114524_AddDialogueTables")]
+    [Migration("20230303124246_AddDialogueTables")]
     partial class AddDialogueTables
     {
         /// <inheritdoc />
@@ -65,6 +65,10 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.Property<string>("RequestSchema")
                         .HasMaxLength(1023)
                         .HasColumnType("character varying(1023)");
+
+                    b.Property<string>("Resource")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
 
                     b.Property<string>("ResponseSchema")
                         .HasMaxLength(1023)

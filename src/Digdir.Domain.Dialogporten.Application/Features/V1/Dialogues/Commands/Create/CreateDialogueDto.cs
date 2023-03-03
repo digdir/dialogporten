@@ -46,6 +46,7 @@ public sealed class CreateDialogueDialogueActivityDto
 public sealed class CreateDialogueDialogueApiActionDto
 {
     public string Action { get; set; } = null!;
+    public string? Resource { get; set; }
     public string HttpMethod { get; set; } = null!;
     public Uri Url { get; set; } = null!;
     public Uri? DocumentationUrl { get; set; }

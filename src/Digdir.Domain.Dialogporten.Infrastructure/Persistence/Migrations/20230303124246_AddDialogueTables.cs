@@ -200,6 +200,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     UpdatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "current_timestamp at time zone 'utc'"),
                     UpdatedByUserId = table.Column<Guid>(type: "uuid", nullable: false),
                     Action = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    Resource = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
                     Url = table.Column<string>(type: "character varying(1023)", maxLength: 1023, nullable: false),
                     HttpMethod = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     DocumentationUrl = table.Column<string>(type: "character varying(1023)", maxLength: 1023, nullable: true),
