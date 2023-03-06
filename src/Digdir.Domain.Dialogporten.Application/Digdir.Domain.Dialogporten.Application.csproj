@@ -23,8 +23,4 @@
 		<InternalsVisibleTo Include="Digdir.Domain.Dialogporten.Application.Tests.Integration" />
 	</ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Features\V1\Dialogues\EventHandlers\" />
-  </ItemGroup>
-
 </Project>

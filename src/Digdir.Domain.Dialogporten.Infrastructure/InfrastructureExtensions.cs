@@ -1,5 +1,7 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence;
+using Digdir.Domain.Dialogporten.Infrastructure.Persistence.Outbox;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -20,14 +22,25 @@ public static class InfrastructureExtensions
         return services
 
             // Framework
-            .AddDbContext<DialogueDbContext>((services, options) => options
-                .UseNpgsql(services
+            .AddDbContext<DialogueDbContext>((services, options) =>
+            {
+                var connectionString = services
                     .GetRequiredService<IOptions<InfrastructureSettings>>()
-                    .Value.DialogueDbConnectionString))
+                    .Value.DialogueDbConnectionString;
+                var interceptor = services
+                    .GetRequiredService<ConvertDomainEventsToOutboxMessagesInterceptor>();
+                options.UseNpgsql(connectionString).AddInterceptors(interceptor);
+            })
             .AddHostedService<DevelopmentMigratorHostedService>()
+
+            // Singleton
+            .AddSingleton<ConvertDomainEventsToOutboxMessagesInterceptor>()
 
             // Scoped
             .AddScoped<IDialogueDbContext>(x => x.GetRequiredService<DialogueDbContext>())
-            .AddScoped<IUnitOfWork, UnitOfWork>();
+            .AddScoped<IUnitOfWork, UnitOfWork>()
+            
+            // Decorate
+            .Decorate(typeof(INotificationHandler<>), typeof(IdempotentDomainEventHandler<>));
     }
 }
