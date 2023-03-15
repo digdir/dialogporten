@@ -4,10 +4,11 @@ using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Domain.Dialogues;
-using Digdir.Domain.Dialogporten.Domain.Dialogues.Actions;
-using Digdir.Domain.Dialogporten.Domain.Dialogues.Activities;
-using Digdir.Domain.Dialogporten.Domain.Dialogues.Attachments;
-using Digdir.Domain.Dialogporten.Domain.Dialogues.TokenScopes;
+using Digdir.Domain.Dialogporten.Domain.Dialogues.Entities;
+using Digdir.Domain.Dialogporten.Domain.Dialogues.Entities.Actions;
+using Digdir.Domain.Dialogporten.Domain.Dialogues.Entities.Activities;
+using Digdir.Domain.Dialogporten.Domain.Dialogues.Entities.Attachments;
+using Digdir.Domain.Dialogporten.Domain.Dialogues.Entities.TokenScopes;
 using Digdir.Domain.Dialogporten.Domain.Localizations;
 using FluentValidation;
 using Json.Patch;
@@ -32,19 +33,22 @@ internal sealed class UpdateDialogueCommandHandler : IRequestHandler<UpdateDialo
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILocalizationService _localizationService;
     private readonly IEnumerable<IValidator<UpdateDialogueDto>> _validators;
+    private readonly IDomainEventPublisher _eventPublisher;
 
     public UpdateDialogueCommandHandler(
         IDialogueDbContext db,
         IMapper mapper,
         IUnitOfWork unitOfWork,
         ILocalizationService localizationService,
-        IEnumerable<IValidator<UpdateDialogueDto>> validators)
+        IEnumerable<IValidator<UpdateDialogueDto>> validators,
+        IDomainEventPublisher eventPublisher)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _localizationService = localizationService ?? throw new ArgumentNullException(nameof(localizationService));
         _validators = validators ?? throw new ArgumentNullException(nameof(validators));
+        _eventPublisher = eventPublisher ?? throw new ArgumentNullException(nameof(eventPublisher));
     }
 
     public async Task<OneOf<Success, EntityNotFound, EntityExists, ValidationError>> Handle(UpdateDialogueCommand request, CancellationToken cancellationToken)
@@ -128,6 +132,7 @@ internal sealed class UpdateDialogueCommandHandler : IRequestHandler<UpdateDialo
                 cancellationToken: cancellationToken);
 
         // TODO: Publish event
+        _eventPublisher.Publish(new DialogueUpdatedDomainEvent(dialogue.Id));
         await _unitOfWork.SaveChangesAsync(cancellationToken);
         return new Success();
     }

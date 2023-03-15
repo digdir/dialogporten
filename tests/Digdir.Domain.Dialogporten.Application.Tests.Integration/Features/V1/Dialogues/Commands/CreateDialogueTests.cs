@@ -1,8 +1,8 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Features.V1.Dialogues.Commands.Create;
 using Digdir.Domain.Dialogporten.Application.Tests.Integration.Common;
-using Digdir.Domain.Dialogporten.Domain.Dialogues;
-using Digdir.Domain.Dialogporten.Domain.Dialogues.Actions;
-using Digdir.Domain.Dialogporten.Domain.Dialogues.Activities;
+using Digdir.Domain.Dialogporten.Domain.Dialogues.Entities;
+using Digdir.Domain.Dialogporten.Domain.Dialogues.Entities.Actions;
+using Digdir.Domain.Dialogporten.Domain.Dialogues.Entities.Activities;
 using FluentAssertions;
 using Xunit;
 

@@ -1,6 +1,7 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Domain.Dialogues;
+using Digdir.Domain.Dialogporten.Domain.Dialogues.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
@@ -17,11 +18,13 @@ internal sealed class DeleteDialogueCommandHandler : IRequestHandler<DeleteDialo
 {
     private readonly IDialogueDbContext _db;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IDomainEventPublisher _eventPublisher;
 
-    public DeleteDialogueCommandHandler(IDialogueDbContext db, IUnitOfWork unitOfWork)
+    public DeleteDialogueCommandHandler(IDialogueDbContext db, IUnitOfWork unitOfWork, IDomainEventPublisher eventPublisher)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+        _eventPublisher = eventPublisher ?? throw new ArgumentNullException(nameof(eventPublisher));
     }
 
     public async Task<OneOf<Success, EntityNotFound>> Handle(DeleteDialogueCommand request, CancellationToken cancellationToken)
@@ -37,7 +40,7 @@ internal sealed class DeleteDialogueCommandHandler : IRequestHandler<DeleteDialo
         // TODO: Delete localization sets
 
         _db.Dialogues.Remove(dialogue);
-        // TODO: Publish event
+        _eventPublisher.Publish(new DialogueDeletedDomainEvent(dialogue.Id));
         await _unitOfWork.SaveChangesAsync(cancellationToken);
         return new Success();
     }

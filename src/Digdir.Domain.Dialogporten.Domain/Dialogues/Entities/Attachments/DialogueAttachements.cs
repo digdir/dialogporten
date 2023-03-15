@@ -1,7 +1,7 @@
 ﻿using Digdir.Domain.Dialogporten.Domain.Localizations;
 using Digdir.Library.Entity.Abstractions;
 
-namespace Digdir.Domain.Dialogporten.Domain.Dialogues.Attachments;
+namespace Digdir.Domain.Dialogporten.Domain.Dialogues.Entities.Attachments;
 
 public class DialogueAttachement : IEntity
 {

@@ -1,6 +1,7 @@
-﻿using Digdir.Library.Entity.Abstractions.Features.Immutable;
+﻿using Digdir.Domain.Dialogporten.Domain.Dialogues.Entities;
+using Digdir.Library.Entity.Abstractions.Features.Immutable;
 
-namespace Digdir.Domain.Dialogporten.Domain.Dialogues.TokenScopes;
+namespace Digdir.Domain.Dialogporten.Domain.Dialogues.Entities.TokenScopes;
 
 public class DialogueTokenScope : IImmutableEntity
 {

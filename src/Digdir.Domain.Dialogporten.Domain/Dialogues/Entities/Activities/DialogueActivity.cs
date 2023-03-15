@@ -1,7 +1,7 @@
 ﻿using Digdir.Domain.Dialogporten.Domain.Localizations;
 using Digdir.Library.Entity.Abstractions.Features.Immutable;
 
-namespace Digdir.Domain.Dialogporten.Domain.Dialogues.Activities;
+namespace Digdir.Domain.Dialogporten.Domain.Dialogues.Entities.Activities;
 
 public class DialogueActivity : IImmutableEntity
 {

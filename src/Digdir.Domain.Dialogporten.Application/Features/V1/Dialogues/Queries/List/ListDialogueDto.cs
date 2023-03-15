@@ -1,5 +1,5 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
-using Digdir.Domain.Dialogporten.Domain.Dialogues;
+using Digdir.Domain.Dialogporten.Domain.Dialogues.Entities;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.Dialogues.Queries.List;
 

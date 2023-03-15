@@ -1,4 +1,4 @@
-﻿using Digdir.Domain.Dialogporten.Domain.Dialogues.TokenScopes;
+﻿using Digdir.Domain.Dialogporten.Domain.Dialogues.Entities.TokenScopes;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

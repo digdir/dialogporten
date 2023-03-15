@@ -1,8 +1,8 @@
-﻿using Digdir.Domain.Dialogporten.Domain.Dialogues;
-using Digdir.Domain.Dialogporten.Domain.Dialogues.Actions;
-using Digdir.Domain.Dialogporten.Domain.Dialogues.Activities;
-using Digdir.Domain.Dialogporten.Domain.Dialogues.Attachments;
-using Digdir.Domain.Dialogporten.Domain.Dialogues.TokenScopes;
+﻿using Digdir.Domain.Dialogporten.Domain.Dialogues.Entities;
+using Digdir.Domain.Dialogporten.Domain.Dialogues.Entities.Actions;
+using Digdir.Domain.Dialogporten.Domain.Dialogues.Entities.Activities;
+using Digdir.Domain.Dialogporten.Domain.Dialogues.Entities.Attachments;
+using Digdir.Domain.Dialogporten.Domain.Dialogues.Entities.TokenScopes;
 using Digdir.Domain.Dialogporten.Domain.Localizations;
 using Microsoft.EntityFrameworkCore;
 
