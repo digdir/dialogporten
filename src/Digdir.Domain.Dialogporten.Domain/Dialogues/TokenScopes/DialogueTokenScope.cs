@@ -1,8 +1,8 @@
-﻿using Digdir.Library.Entity.Abstractions;
+﻿using Digdir.Library.Entity.Abstractions.Features.Immutable;
 
-namespace Digdir.Domain.Dialogporten.Domain.Dialogues;
+namespace Digdir.Domain.Dialogporten.Domain.Dialogues.TokenScopes;
 
-public class DialogueTokenScope : IImutableEntity
+public class DialogueTokenScope : IImmutableEntity
 {
     public long InternalId { get; set; }
     public Guid Id { get; set; }

@@ -12,6 +12,7 @@ using Digdir.Library.Entity.Abstractions.Features.Identifiable;
 using Digdir.Library.Entity.Abstractions.Features.Lookup;
 using Digdir.Library.Entity.Abstractions.Features.SoftDeletable;
 using Digdir.Library.Entity.Abstractions.Features.Updatable;
+using Digdir.Library.Entity.EntityFrameworkCore.Features.Immutable;
 
 namespace Digdir.Library.Entity.EntityFrameworkCore;
 
@@ -42,6 +43,7 @@ public static class EntityLibraryEfCoreExtensions
         return changeTracker
             .HandleLookupEntities()
             .HandleIdentifiableEntities()
+            .HandleImmutableEntities()
             .HandleCreatableEntities(userId, utcNow)
             .HandleUpdatableEntities(userId, utcNow)
             .HandleSoftDeletableEntities(userId, utcNow);
@@ -64,6 +66,7 @@ public static class EntityLibraryEfCoreExtensions
         return modelBuilder
             .EnableSoftDeletableQueryFilter()
             .AddIdentifiableEntities()
+            .AddImmutableEntities()
             .AddUpdatableEntities()
             .AddCreatableEntities()
             .AddLookupEntities();

@@ -10,7 +10,7 @@ internal static class IdentifiableExtensions
     {
         return modelBuilder.EntitiesOfType<IIdentifiableEntity>(builder =>
         {
-            builder.Property(nameof(IIdentifiableEntity.Id)).HasDefaultValueSql("gen_random_uuid()");// HasDefaultValueSql("NEWID()");
+            builder.Property(nameof(IIdentifiableEntity.Id)).HasDefaultValueSql("gen_random_uuid()");
             builder.HasIndex(nameof(IIdentifiableEntity.Id)).IsUnique();
             builder.HasKey(nameof(IIdentifiableEntity.InternalId));
         });
@@ -18,14 +18,13 @@ internal static class IdentifiableExtensions
 
     public static ChangeTracker HandleIdentifiableEntities(this ChangeTracker changeTracker)
     {
-        var identifiableEntities = changeTracker.Entries()
-            .Where(x => x.State == EntityState.Added)
-            .Where(x => x.Entity is IIdentifiableEntity);
+        var identifiableEntities = changeTracker
+            .Entries<IIdentifiableEntity>()
+            .Where(x => x.State == EntityState.Added);
 
         foreach (var entity in identifiableEntities)
         {
-            var identifiable = (IIdentifiableEntity)entity.Entity;
-            identifiable.CreateId();
+            entity.Entity.CreateId();
         }
 
         return changeTracker;

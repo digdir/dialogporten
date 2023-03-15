@@ -1,4 +1,4 @@
-﻿using Digdir.Domain.Dialogporten.Domain;
+﻿using Digdir.Domain.Dialogporten.Domain.Common;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
 
@@ -28,18 +28,17 @@ internal static class JsonSerializerExtensions
     {
         TypeInfoResolver = new DefaultJsonTypeInfoResolver
         {
-            Modifiers =
-                {
-                    static typeInfo =>
-                    {
-                        if (typeInfo.Type != typeof(IDomainEvent))
-                        {
-                            return;
-                        }
-
-                        typeInfo.PolymorphismOptions = _polymorphismOptions.Value;
-                    },
-                }
+            Modifiers = { DomainEventModifier }
         }
     };
+
+    private static void DomainEventModifier(JsonTypeInfo typeInfo)
+    {
+        if (typeInfo.Type != typeof(IDomainEvent))
+        {
+            return;
+        }
+
+        typeInfo.PolymorphismOptions = _polymorphismOptions.Value;
+    }
 }

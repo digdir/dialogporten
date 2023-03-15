@@ -1,9 +1,9 @@
 ﻿using Digdir.Domain.Dialogporten.Domain.Localizations;
-using Digdir.Library.Entity.Abstractions;
+using Digdir.Library.Entity.Abstractions.Features.Immutable;
 
 namespace Digdir.Domain.Dialogporten.Domain.Dialogues.Activities;
 
-public class DialogueActivity : IImutableEntity
+public class DialogueActivity : IImmutableEntity
 {
     public long InternalId { get; set; }
     public Guid Id { get; set; }

@@ -27,15 +27,13 @@ internal static class SoftDeletableExtensions
 
     public static ChangeTracker HandleSoftDeletableEntities(this ChangeTracker changeTracker, Guid userId, DateTime utcNow)
     {
-        var softDeletableEneities = changeTracker.Entries()
-            .Where(x => x.State == EntityState.Deleted)
-            .Where(x => x.Entity is ISoftDeletableEntity);
+        var softDeletableEneities = changeTracker
+            .Entries<ISoftDeletableEntity>()
+            .Where(x => x.State == EntityState.Deleted);
 
         foreach (var entity in softDeletableEneities)
         {
-            var softDeletable = (ISoftDeletableEntity)entity.Entity;
-            softDeletable.Delete(userId, utcNow);
-
+            entity.Entity.Delete(userId, utcNow);
             // Change to modified so EF will update the soft deleted 
             // entity, instead of hard deleting it.
             entity.State = EntityState.Modified;

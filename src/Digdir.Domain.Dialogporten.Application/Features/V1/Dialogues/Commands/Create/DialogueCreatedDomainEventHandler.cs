@@ -1,4 +1,4 @@
-﻿using Digdir.Domain.Dialogporten.Domain;
+﻿using Digdir.Domain.Dialogporten.Domain.Dialogues;
 using MediatR;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.Dialogues.Commands.Create;
@@ -7,7 +7,7 @@ internal class DialogueCreatedDomainEventHandler : INotificationHandler<Dialogue
 {
     public Task Handle(DialogueCreatedDomainEvent notification, CancellationToken cancellationToken)
     {
-        // TODO: Send to message service
-        throw new NotImplementedException();
+        // TODO: implement eventhandler
+        return Task.CompletedTask;
     }
 }

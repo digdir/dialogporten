@@ -14,14 +14,13 @@ internal static class UpdatableExtensions
 
     public static ChangeTracker HandleUpdatableEntities(this ChangeTracker changeTracker, Guid userId, DateTime utcNow)
     {
-        var updatableEntities = changeTracker.Entries()
-            .Where(x => x.State == EntityState.Added || x.State == EntityState.Modified)
-            .Where(x => x.Entity is IUpdateableEntity);
+        var updatableEntities = changeTracker
+            .Entries<IUpdateableEntity>()
+            .Where(x => x.State == EntityState.Added || x.State == EntityState.Modified);
 
         foreach (var entity in updatableEntities)
         {
-            var updatable = (IUpdateableEntity)entity.Entity;
-            updatable.Update(userId, utcNow);
+            entity.Entity.Update(userId, utcNow);
         }
 
         return changeTracker;

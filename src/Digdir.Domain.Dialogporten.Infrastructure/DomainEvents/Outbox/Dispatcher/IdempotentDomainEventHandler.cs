@@ -1,8 +1,10 @@
-﻿using Digdir.Domain.Dialogporten.Domain;
+﻿using Digdir.Domain.Dialogporten.Domain.Common;
+using Digdir.Domain.Dialogporten.Infrastructure.DomainEvents.Outbox.Entities;
+using Digdir.Domain.Dialogporten.Infrastructure.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Outbox;
+namespace Digdir.Domain.Dialogporten.Infrastructure.DomainEvents.Outbox.Dispatcher;
 
 internal sealed class IdempotentDomainEventHandler<TDomainEvent> : INotificationHandler<TDomainEvent>
     where TDomainEvent : IDomainEvent
@@ -11,7 +13,7 @@ internal sealed class IdempotentDomainEventHandler<TDomainEvent> : INotification
     private readonly DialogueDbContext _db;
 
     public IdempotentDomainEventHandler(
-        INotificationHandler<TDomainEvent> decorated, 
+        INotificationHandler<TDomainEvent> decorated,
         DialogueDbContext db)
     {
         _decorated = decorated ?? throw new ArgumentNullException(nameof(decorated));
@@ -22,7 +24,7 @@ internal sealed class IdempotentDomainEventHandler<TDomainEvent> : INotification
     {
         string consumer = _decorated.GetType().Name;
         var isHandledByConsumer = await _db.Set<OutboxMessageConsumer>()
-            .AnyAsync(x => x.Id == notification.EventId && x.Name == consumer, cancellationToken);
+            .AnyAsync(x => x.EventId == notification.EventId && x.Name == consumer, cancellationToken);
         if (isHandledByConsumer)
         {
             return;
@@ -30,12 +32,11 @@ internal sealed class IdempotentDomainEventHandler<TDomainEvent> : INotification
 
         await _decorated.Handle(notification, cancellationToken);
 
-        _db.Set<OutboxMessageConsumer>()
-            .Add(new OutboxMessageConsumer
-            {
-                Id = notification.EventId,
-                Name = consumer
-            });
+        _db.Set<OutboxMessageConsumer>().Add(new OutboxMessageConsumer
+        {
+            EventId = notification.EventId,
+            Name = consumer
+        });
         await _db.SaveChangesAsync(cancellationToken);
     }
 }

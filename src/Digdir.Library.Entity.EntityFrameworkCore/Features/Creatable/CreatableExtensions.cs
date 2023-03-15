@@ -14,14 +14,13 @@ internal static class CreatableExtensions
 
     public static ChangeTracker HandleCreatableEntities(this ChangeTracker changeTracker, Guid userId, DateTime utcNow)
     {
-        var creatableEntities = changeTracker.Entries()
-            .Where(x => x.State == EntityState.Added)
-            .Where(x => x.Entity is ICreatableEntity);
+        var creatableEntities = changeTracker
+            .Entries<ICreatableEntity>()
+            .Where(x => x.State == EntityState.Added);
 
         foreach (var entity in creatableEntities)
         {
-            var creatable = (ICreatableEntity)entity.Entity;
-            creatable.Create(userId, utcNow);
+            entity.Entity.Create(userId, utcNow);
         }
 
         return changeTracker;

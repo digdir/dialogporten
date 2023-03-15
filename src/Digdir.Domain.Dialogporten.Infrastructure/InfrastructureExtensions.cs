@@ -1,6 +1,8 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Externals;
+using Digdir.Domain.Dialogporten.Infrastructure.DomainEvents;
+using Digdir.Domain.Dialogporten.Infrastructure.DomainEvents.Outbox;
+using Digdir.Domain.Dialogporten.Infrastructure.DomainEvents.Outbox.Dispatcher;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence;
-using Digdir.Domain.Dialogporten.Infrastructure.Persistence.Outbox;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,18 +29,23 @@ public static class InfrastructureExtensions
                 var connectionString = services
                     .GetRequiredService<IOptions<InfrastructureSettings>>()
                     .Value.DialogueDbConnectionString;
-                var interceptor = services
-                    .GetRequiredService<ConvertDomainEventsToOutboxMessagesInterceptor>();
-                options.UseNpgsql(connectionString).AddInterceptors(interceptor);
+                options.UseNpgsql(connectionString)
+                    .AddInterceptors(services.GetRequiredService<ConvertDomainEventsToOutboxMessagesInterceptor>());
             })
             .AddHostedService<DevelopmentMigratorHostedService>()
+            .AddHostedService<OutboxScheduler>()
 
             // Singleton
-            .AddSingleton<ConvertDomainEventsToOutboxMessagesInterceptor>()
 
             // Scoped
+            .AddScoped<ConvertDomainEventsToOutboxMessagesInterceptor>()
+            .AddScoped<DomainEventPublisher>()
+            .AddScoped<IDomainEventPublisher>(x => x.GetRequiredService<DomainEventPublisher>())
             .AddScoped<IDialogueDbContext>(x => x.GetRequiredService<DialogueDbContext>())
             .AddScoped<IUnitOfWork, UnitOfWork>()
+
+            // Transient
+            .AddTransient<OutboxDispatcher>()
             
             // Decorate
             .Decorate(typeof(INotificationHandler<>), typeof(IdempotentDomainEventHandler<>));

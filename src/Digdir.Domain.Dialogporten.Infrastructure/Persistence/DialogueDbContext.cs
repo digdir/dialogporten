@@ -3,6 +3,7 @@ using Digdir.Domain.Dialogporten.Domain.Dialogues;
 using Digdir.Domain.Dialogporten.Domain.Dialogues.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogues.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogues.Attachments;
+using Digdir.Domain.Dialogporten.Domain.Dialogues.TokenScopes;
 using Digdir.Domain.Dialogporten.Domain.Localizations;
 using Digdir.Library.Entity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;

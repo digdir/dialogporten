@@ -2,7 +2,7 @@
 using Digdir.Library.Entity.Abstractions.Features.Identifiable;
 using Digdir.Library.Entity.Abstractions.Features.Updatable;
 
-namespace Digdir.Library.Entity.Abstractions;
+namespace Digdir.Library.Entity.Abstractions.Features.Immutable;
 
 /// <summary>
 /// Convenience interface to mark an entity with 
@@ -13,7 +13,7 @@ namespace Digdir.Library.Entity.Abstractions;
 /// Differs from <see cref="IEntity"/> by not 
 /// including <see cref="IUpdateableEntity"/>.
 /// </remarks>
-public interface IImutableEntity :
+public interface IImmutableEntity :
     IIdentifiableEntity,
     ICreatableEntity
 { }

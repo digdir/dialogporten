@@ -32,10 +32,7 @@ internal static class LookupEntityExtensions
 
     public static ChangeTracker HandleLookupEntities(this ChangeTracker changeTracker)
     {
-        var changeTrackerEntries = changeTracker.Entries()
-            .Where(x => x.Entity is ILookupEntity);
-
-        foreach (var entity in changeTrackerEntries)
+        foreach (var entity in changeTracker.Entries<ILookupEntity>())
         {
             entity.State = EntityState.Unchanged;
         }

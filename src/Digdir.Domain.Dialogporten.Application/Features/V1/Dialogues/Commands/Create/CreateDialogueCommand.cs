@@ -2,6 +2,7 @@
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Domain.Dialogues;
+using Digdir.Library.Entity.Abstractions.Features.Identifiable;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
@@ -15,12 +16,14 @@ internal sealed class CreateDialogueCommandHandler : IRequestHandler<CreateDialo
     private readonly IDialogueDbContext _db;
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IDomainEventPublisher _eventPublisher;
 
-    public CreateDialogueCommandHandler(IDialogueDbContext db, IMapper mapper, IUnitOfWork unitOfWork)
+    public CreateDialogueCommandHandler(IDialogueDbContext db, IMapper mapper, IUnitOfWork unitOfWork, IDomainEventPublisher eventPublisher)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+        _eventPublisher = eventPublisher ?? throw new ArgumentNullException(nameof(eventPublisher));
     }
 
     public async Task<OneOf<Guid, EntityExists, ValidationError>> Handle(CreateDialogueCommand request, CancellationToken cancellationToken)
@@ -30,10 +33,10 @@ internal sealed class CreateDialogueCommandHandler : IRequestHandler<CreateDialo
             return new EntityExists<DialogueEntity>(request.Id!.Value);
         }
 
-
         var dialogue = _mapper.Map<DialogueEntity>(request);
+        dialogue.CreateId();
         await _db.Dialogues.AddAsync(dialogue, cancellationToken);
-        // TODO: Publish event
+        _eventPublisher.Publish(new DialogueCreatedDomainEvent(dialogue.Id));
         await _unitOfWork.SaveChangesAsync(cancellationToken);
         return dialogue.Id;
     }
