@@ -1,3 +1,3 @@
-# Preliminary R&D site
+# Dialogporten Docs
 
-This is the Jekyll site for https://elsand.github.io/
+This is the Jekyll site for https://digdir.github.io/dialogporten

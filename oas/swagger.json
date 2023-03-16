@@ -2,7 +2,7 @@
   "openapi" : "3.0.2",
   "info" : {
     "title" : "Dialogporten",
-    "description" : "This is is a exploratory draft for a possible API specification for [Dialogporten](https://elsand.github.io/dialogporten.html).",
+    "description" : "This is is a exploratory draft for a possible API specification for [Dialogporten](https://digdir.github.io/dialogporten).",
     "version" : "0.0.1"
   },
   "servers" : [ {

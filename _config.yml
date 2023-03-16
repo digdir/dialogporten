@@ -18,12 +18,12 @@
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
 
-title: Digdir R&D
+title: Dialogporten
 email: bdl@digdir.no
 description: >- # this means to ignore newlines until "baseurl:"
   Random notes
-baseurl: "" # the subpath of your site, e.g. /blog
-url: "https://elsand.github.io" # the base hostname & protocol for your site, e.g. http://example.com
+baseurl: "/" # the subpath of your site, e.g. /blog
+url: "https://digdir.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: bjolan
 github_username:  elsand
 
