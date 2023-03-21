@@ -72,7 +72,7 @@ jobs:
       - name: Login to azure
         uses: azure/login@v1
         with:
-          client-id: ${{ secrets.AZURE_CREDENTIALS }}
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Apply EF migration script
         uses: azure/postgresql@v1
