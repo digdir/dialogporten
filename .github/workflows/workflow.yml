@@ -46,7 +46,7 @@ jobs:
         run: | 
           dotnet tool install --global dotnet-ef
           dotnet tool restore
-          dotnet ef migrations script --no-build --idempotent --startup-project src/Digdir.Domain.Dialogporten.Infrastructure --output ${{env.DOTNET_ROOT}}/myapp/migrate.sql
+          dotnet ef migrations script --idempotent --startup-project src/Digdir.Domain.Dialogporten.Infrastructure --output ${{env.DOTNET_ROOT}}/myapp/migrate.sql
           #dotnet ef migrations bundle --no-build --startup-project src/Digdir.Domain.Dialogporten.Infrastructure --output ${{env.DOTNET_ROOT}}/myapp/efbundle.exe --configuration Release
           #dotnet ef migrations bundle --startup-project src/Digdir.Domain.Dialogporten.Infrastructure --output ${{env.DOTNET_ROOT}}/myapp/efbundle.exe --configuration Bundle
 
