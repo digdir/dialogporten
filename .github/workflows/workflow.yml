@@ -1,4 +1,4 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
+﻿# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
 name: Build and deploy ASP.Net Core app to Azure Web App - dialogporten-poc
@@ -39,14 +39,15 @@ jobs:
       #- name: Test
       #  run: dotnet test --no-build --verbosity normal
 
-      - name: Publish
+      - name: Publish web api
         run: dotnet publish src/Digdir.Domain.Dialogporten.WebApi --no-build -c Release -o ${{env.DOTNET_ROOT}}/myapp
 
       - name: Generate EF migration script
         run: | 
           dotnet tool install --global dotnet-ef
           dotnet tool restore
-          dotnet ef migrations bundle --no-build --startup-project src/Digdir.Domain.Dialogporten.Infrastructure --output ${{env.DOTNET_ROOT}}/myapp/efbundle.exe --configuration Release
+          dotnet ef migrations script --no-build --idempotent --startup-project src/Digdir.Domain.Dialogporten.Infrastructure --output ${{env.DOTNET_ROOT}}/myapp/migrate.sql
+          #dotnet ef migrations bundle --no-build --startup-project src/Digdir.Domain.Dialogporten.Infrastructure --output ${{env.DOTNET_ROOT}}/myapp/efbundle.exe --configuration Release
           #dotnet ef migrations bundle --startup-project src/Digdir.Domain.Dialogporten.Infrastructure --output ${{env.DOTNET_ROOT}}/myapp/efbundle.exe --configuration Bundle
 
       - name: Upload artifact for deployment job
@@ -68,8 +69,20 @@ jobs:
         with:
           name: .net-app
 
+      - name: Login to azure
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CREDENTIALS }}
+
       - name: Apply EF migration script
-        run: ./efbundle.exe --connection "${{ secrets.DIALOGPORTENCONNECTIONSTRING }}"
+        uses: azure/postgresql@v1
+        with:
+          connection-string: ${{ secrets.DIALOGPORTENCONNECTIONSTRING }}
+          server-name: dialogportenpgprod
+          plsql-file: "./migrate.sql"
+
+      #- name: Apply EF migration script
+      #  run: ./efbundle.exe --connection "${{ secrets.DIALOGPORTENCONNECTIONSTRING }}"
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
@@ -79,3 +92,6 @@ jobs:
           slot-name: 'production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_1234 }}
           package: .
+
+      - name: Logout from azure
+        run: az logout
