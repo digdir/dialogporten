@@ -1,7 +1,7 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.ReturnTypes;
-using Digdir.Domain.Dialogporten.Domain.Dialogues;
 using Digdir.Domain.Dialogporten.Domain.Dialogues.Entities;
+using Digdir.Domain.Dialogporten.Domain.Dialogues.Events;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
