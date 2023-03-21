@@ -1,5 +1,6 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Infrastructure;
+using Digdir.Domain.Dialogporten.Infrastructure.DomainEvents;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence;
 using Digdir.Library.Entity.Abstractions.Features.Lookup;
 using DotNet.Testcontainers.Builders;
@@ -36,6 +37,7 @@ public class DialogueApplication : IAsyncLifetime
 
             })
             .AddDbContext<DialogueDbContext>(x => x.UseNpgsql(_dbContainer.ConnectionString))
+            .AddScoped<IDomainEventPublisher, DomainEventPublisher>()
             .AddScoped<IDialogueDbContext>(x => x.GetRequiredService<DialogueDbContext>())
             .AddScoped<IUnitOfWork, UnitOfWork>()
             .BuildServiceProvider();
