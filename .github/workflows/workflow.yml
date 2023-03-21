@@ -40,7 +40,7 @@ jobs:
       #  run: dotnet test --no-build --verbosity normal
 
       - name: Publish
-        run: dotnet publish --no-build -c Release -o ${{env.DOTNET_ROOT}}/myapp
+        run: dotnet publish src/Digdir.Domain.Dialogporten.WebApi --no-build -c Release -o ${{env.DOTNET_ROOT}}/myapp
 
       - name: Generate EF migration script
         run: | 
