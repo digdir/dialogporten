@@ -36,6 +36,7 @@ jobs:
       - name: Build
         run: dotnet build --no-restore --configuration Release
 
+      # TODO: Fix tests
       #- name: Test
       #  run: dotnet test --no-build --verbosity normal
 
@@ -74,6 +75,13 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+      - name: App Settings Variable Substitution
+        uses: microsoft/variable-substitution@v1
+        with:
+          files: './appsettings.json'
+        env:
+          InfrastructureSettings.DialogueDbConnectionString: ${{ secrets.DIALOGPORTEN_ADO_CONNECTIONSTRING }}
+
       # TODO: Why is it not idempotent?
       #- name: Apply EF migration script
       #  uses: azure/postgresql@v1
@@ -93,13 +101,6 @@ jobs:
           slot-name: 'production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_1234 }}
           package: .
-
-      - name: App Settings Variable Substitution
-        uses: microsoft/variable-substitution@v1
-        with:
-          files: '${{env.DOTNET_ROOT}}/myapp/appsettings.json'
-        env:
-          InfrastructureSettings.DialogueDbConnectionString: ${{ secrets.DIALOGPORTEN_ADO_CONNECTIONSTRING }}
 
       #- name: Update config
       #  uses: Azure/appservice-settings@v1
