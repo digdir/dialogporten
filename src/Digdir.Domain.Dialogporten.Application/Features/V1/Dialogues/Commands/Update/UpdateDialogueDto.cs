@@ -7,7 +7,6 @@ namespace Digdir.Domain.Dialogporten.Application.Features.V1.Dialogues.Commands.
 
 public sealed class UpdateDialogueDto
 {
-    public string Org { get; set; } = null!;
     public string ServiceResourceIdentifier { get; set; } = null!;
     public string Party { get; set; } = null!;
     public DialogueStatus.Enum StatusId { get; set; }

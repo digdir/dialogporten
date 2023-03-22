@@ -8,7 +8,7 @@ using System.Text.Json;
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.Dialogue;
 
 [AllowAnonymous]
-[HttpPatch("dialogue/{id}")]
+[HttpPatch("dialogues/{id}")]
 public sealed class PatchDialogueEndpoint : Endpoint<PatchDialogueRequest>
 {
     private readonly ISender _sender;

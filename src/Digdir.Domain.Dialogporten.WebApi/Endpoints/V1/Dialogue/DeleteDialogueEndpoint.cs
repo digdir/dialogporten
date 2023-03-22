@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.Dialogue;
 
 [AllowAnonymous]
-[HttpDelete("dialogue/{id}")]
+[HttpDelete("dialogues/{id}")]
 public sealed class DeleteDialogueEndpoint : Endpoint<DeleteDialogueCommand>
 {
     private readonly ISender _sender;

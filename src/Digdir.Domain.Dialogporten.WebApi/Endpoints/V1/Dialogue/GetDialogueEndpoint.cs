@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.Dialogue;
 
 [AllowAnonymous]
-[HttpGet("dialogue/{id}")]
+[HttpGet("dialogues/{id}")]
 public class GetDialogueEndpoint : Endpoint<GetDialogueQuery>
 {
     private readonly ISender _sender;
