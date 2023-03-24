@@ -84,32 +84,42 @@ jobs:
       #    InfrastructureSettings.DialogueDbConnectionString: ${{ secrets.DIALOGPORTEN_ADO_CONNECTIONSTRING }}
 
       # TODO: This is not working due to the followin issue: https://github.com/Azure/postgresql/issues/33
-      #- name: Apply EF migration script
-      #  uses: azure/postgresql@v1
-      #  with:
-      #    connection-string: ${{ secrets.DIALOGPORTEN_PSQL_CONNECTIONSTRING }}
-      #    server-name: dialogportenpgprod
-      #    plsql-file: "./migrate.sql"
-      #    arguments: "-q"
-
-      - name: Fetch runners public IP
-        id: ip
-        uses: haythem/public-ip@v1.3
-
-      - name: Open postgre firewall for migrations
-        id: openFirewall
-        run: >
-          az postgres flexible-server firewall-rule create 
-          --rule-name GIthubActions 
-          --name dialogportenpgprod 
-          --resource-group dialogporten-poc-rg 
-          --start-ip-address ${{ steps.ip.outputs.ipv4 }}
-
-      #- name: Apply EF migration script
-      #  run: ./efbundle.exe --connection "${{ secrets.DIALOGPORTEN_ADO_CONNECTIONSTRING }}"
-
       - name: Apply EF migration script
-        run: psql -f ./migrate.sql -q "${{ secrets.DIALOGPORTEN_PSQL_CONNECTIONSTRING }}"
+        uses: azure/postgresql@v1
+        with:
+          connection-string: ${{ secrets.DIALOGPORTEN_PSQL_CONNECTIONSTRING }}
+          server-name: dialogportenpgprod
+          plsql-file: "./migrate.sql"
+          arguments: "-q"
+
+      #- name: Fetch runners public IP
+      #  id: ip
+      #  uses: haythem/public-ip@v1.3
+
+      #- name: Open postgre firewall for migrations
+      #  id: openFirewall
+      #  run: >
+      #    az postgres flexible-server firewall-rule create 
+      #    --rule-name GithubActions 
+      #    --name dialogportenpgprod 
+      #    --resource-group dialogporten-poc-rg 
+      #    --start-ip-address ${{ steps.ip.outputs.ipv4 }}
+
+      ##- name: Apply EF migration script
+      ##  run: ./efbundle.exe --connection "${{ secrets.DIALOGPORTEN_ADO_CONNECTIONSTRING }}"
+
+      #- name: Apply EF migration script
+      #  run: psql -f ./migrate.sql -q "${{ secrets.DIALOGPORTEN_PSQL_CONNECTIONSTRING }}"
+
+      #- name: Close postgre firewall
+      #  if: ${{failure() || success()}}
+      #  continue-on-error: true
+      #  run: >
+      #    az postgres flexible-server firewall-rule delete 
+      #    --rule-name GithubActions 
+      #    --name dialogportenpgprod 
+      #    --resource-group dialogporten-poc-rg
+      #    --yes
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
@@ -132,16 +142,6 @@ jobs:
                       "slotSetting": true
                   }
               ]
-
-      - name: Close postgre firewall
-        if: ${{failure() || success()}}
-        continue-on-error: true
-        run: >
-          az postgres flexible-server firewall-rule delete 
-          --rule-name GIthubActions 
-          --name dialogportenpgprod 
-          --resource-group dialogporten-poc-rg
-          --yes
 
       - name: Logout from azure
         if: ${{failure() || success()}}
