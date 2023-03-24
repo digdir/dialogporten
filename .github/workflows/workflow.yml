@@ -47,8 +47,8 @@ jobs:
         run: | 
           dotnet tool install --global dotnet-ef
           dotnet tool restore
-          #dotnet ef migrations script --idempotent --startup-project src/Digdir.Domain.Dialogporten.Infrastructure --output ${{env.DOTNET_ROOT}}/myapp/migrate.sql
-          dotnet ef migrations bundle --no-build --startup-project src/Digdir.Domain.Dialogporten.Infrastructure --output ${{env.DOTNET_ROOT}}/myapp/efbundle.exe --configuration Release
+          dotnet ef migrations script --idempotent --startup-project src/Digdir.Domain.Dialogporten.Infrastructure --output ${{env.DOTNET_ROOT}}/myapp/migrate.sql
+          #dotnet ef migrations bundle --no-build --startup-project src/Digdir.Domain.Dialogporten.Infrastructure --output ${{env.DOTNET_ROOT}}/myapp/efbundle.exe --configuration Release
           #dotnet ef migrations bundle --startup-project src/Digdir.Domain.Dialogporten.Infrastructure --output ${{env.DOTNET_ROOT}}/myapp/efbundle.exe --configuration Bundle
 
       - name: Upload artifact for deployment job
@@ -65,10 +65,6 @@ jobs:
     #  url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
-      - name: Fetch runners public IP
-        id: ip
-        uses: haythem/public-ip@v1.3
-
       - name: Download artifact from build job
         uses: actions/download-artifact@v3
         with:
@@ -96,28 +92,24 @@ jobs:
       #    plsql-file: "./migrate.sql"
       #    arguments: "-q"
 
+      - name: Fetch runners public IP
+        id: ip
+        uses: haythem/public-ip@v1.3
+
       - name: Open postgre firewall for migrations
         id: openFirewall
         run: >
           az postgres flexible-server firewall-rule create 
-          --rule-name FirewallRule1 
+          --rule-name GIthubActions 
           --name dialogportenpgprod 
           --resource-group dialogporten-poc-rg 
           --start-ip-address ${{ steps.ip.outputs.ipv4 }}
 
-      - name: Set up .NET
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: '7.x'
-
-      - name: Apply EF Core Migration
-        run: | 
-          dotnet tool install --global dotnet-ef
-          dotnet tool restore
-          dotnet ef migrations apply --bundle ./efbundle.exe
-
       #- name: Apply EF migration script
       #  run: ./efbundle.exe --connection "${{ secrets.DIALOGPORTEN_ADO_CONNECTIONSTRING }}"
+
+      - name: Apply EF migration script
+        run: psql -f ./migrate.sql -q "${{ secrets.DIALOGPORTEN_PSQL_CONNECTIONSTRING }}"
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
@@ -146,7 +138,7 @@ jobs:
         continue-on-error: true
         run: >
           az postgres flexible-server firewall-rule delete 
-          --rule-name FirewallRule1 
+          --rule-name GIthubActions 
           --name dialogportenpgprod 
           --resource-group dialogporten-poc-rg
           --yes
@@ -155,4 +147,3 @@ jobs:
         if: ${{failure() || success()}}
         continue-on-error: true
         run: az logout
-
