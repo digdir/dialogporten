@@ -86,12 +86,12 @@ jobs:
       #- name: Apply EF migration script
       #  uses: azure/postgresql@v1
       #  with:
-      #    connection-string: ${{ secrets.DIALOGPORTENCONNECTIONSTRING }}
+      #    connection-string: ${{ secrets.DIALOGPORTEN_PSQL_CONNECTIONSTRING }}
       #    server-name: dialogportenpgprod
       #    plsql-file: "./migrate.sql"
 
       #- name: Apply EF migration script
-      #  run: ./efbundle.exe --connection "${{ secrets.DIALOGPORTENCONNECTIONSTRING }}"
+      #  run: ./efbundle.exe --connection "${{ secrets.DIALOGPORTEN_PSQL_CONNECTIONSTRING }}"
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
@@ -99,7 +99,6 @@ jobs:
         with:
           app-name: 'dialogporten-poc'
           slot-name: 'production'
-          #publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_1234 }}
           package: .
 
       - name: Update config
