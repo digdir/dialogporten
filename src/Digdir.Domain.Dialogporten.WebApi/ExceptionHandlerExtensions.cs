@@ -21,9 +21,7 @@ internal static class ExceptionHandlerExtensions
                 var type = exHandlerFeature.Error.GetType().Name;
                 var error = exHandlerFeature.Error.Message;
                 var logger = ctx.Resolve<ILogger<ExceptionHandler>>();
-                logger.LogError("{@http}{@type}{@reason}", http, type, error);
-                // TODO: Logger will print forever if error comes from ef core / postgre. Figgure it out and print error again
-                //logger.LogError("{@http}{@type}{@reason}{@exception}", http, type, error, exHandlerFeature.Error);
+                logger.LogError(exHandlerFeature.Error, "{@http}{@type}{@reason}", http, type, error);
                 ctx.Response.StatusCode = StatusCodes.Status500InternalServerError;
                 ctx.Response.ContentType = "application/problem+json";
                 await ctx.Response.WriteAsJsonAsync(ctx.ResponseBuilder(ctx.Response.StatusCode));

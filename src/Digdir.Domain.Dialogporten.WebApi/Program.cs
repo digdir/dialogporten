@@ -3,15 +3,17 @@ using Digdir.Domain.Dialogporten.Infrastructure;
 using Digdir.Domain.Dialogporten.WebApi;
 using FastEndpoints;
 using FastEndpoints.Swagger;
+using Microsoft.ApplicationInsights.Extensibility;
 using Serilog;
-using Serilog.Events;
 using System.Text.Json.Serialization;
 
 // Using two-stage initialization to catch startup errors.
 Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+    .MinimumLevel.Warning()
     .Enrich.FromLogContext()
-    .WriteTo.Debug()
+    .WriteTo.ApplicationInsights(
+        TelemetryConfiguration.CreateDefault(), 
+        TelemetryConverter.Traces)
     .CreateBootstrapLogger();
 
 try
@@ -32,10 +34,14 @@ static void BuildAndRun(string[] args)
     var builder = WebApplication.CreateBuilder(args);
 
     builder.Host.UseSerilog((context, services, configuration) => configuration
+        .MinimumLevel.Warning()
+        .MinimumLevel.Override("Microsoft.EntityFrameworkCore", Serilog.Events.LogEventLevel.Fatal)
         .ReadFrom.Configuration(context.Configuration)
         .ReadFrom.Services(services)
         .Enrich.FromLogContext()
-        .WriteTo.Debug());
+        .WriteTo.ApplicationInsights(
+            services.GetRequiredService<TelemetryConfiguration>(),
+            TelemetryConverter.Traces));
 
     builder.Services
         .AddEndpointsApiExplorer()
@@ -50,7 +56,8 @@ static void BuildAndRun(string[] args)
                 s.Version = "v1.0";
             })
         .AddApplication(x => builder.Configuration.Bind(nameof(ApplicationSettings), x))
-        .AddInfrastructure(x => builder.Configuration.Bind(nameof(InfrastructureSettings), x));
+        .AddInfrastructure(x => builder.Configuration.Bind(nameof(InfrastructureSettings), x))
+        .AddApplicationInsightsTelemetry();
 
     var app = builder.Build();
 
