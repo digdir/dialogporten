@@ -105,8 +105,8 @@ jobs:
           --resource-group dialogporten-poc-rg 
           --start-ip-address ${{ steps.ip.outputs.ipv4 }}
 
-      - name: Apply EF migration script
-        run: ./efbundle.exe --connection "${{ secrets.DIALOGPORTEN_ADO_CONNECTIONSTRING }}"
+      #- name: Apply EF migration script
+      #  run: ./efbundle.exe --connection "${{ secrets.DIALOGPORTEN_ADO_CONNECTIONSTRING }}"
 
       - name: Close postgre firewall
         if: ${{failure() && steps.openFirewall.conclusion == 'success'}}
