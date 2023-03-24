@@ -104,7 +104,7 @@ jobs:
           --start-ip-address ${{ steps.ip.outputs.ipv4 }}
 
       - name: Apply EF migration script
-        run: ./efbundle.exe --connection "${{ secrets.DIALOGPORTEN_PSQL_CONNECTIONSTRING }}"
+        run: ./efbundle.exe --connection "${{ secrets.DIALOGPORTEN_ADO_CONNECTIONSTRING }}"
 
       - name: Close postgre firewall
         run: >
