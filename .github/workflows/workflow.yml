@@ -105,8 +105,16 @@ jobs:
           --resource-group dialogporten-poc-rg 
           --start-ip-address ${{ steps.ip.outputs.ipv4 }}
 
-      - name: Apply EF migration script
-        run: ./efbundle.exe --connection "${{ secrets.DIALOGPORTEN_ADO_CONNECTIONSTRING }}"
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '7.x'
+
+      - name: Apply EF Core Migration
+        run: dotnet ef migrations apply --bundle ./efbundle
+
+      #- name: Apply EF migration script
+      #  run: ./efbundle.exe --connection "${{ secrets.DIALOGPORTEN_ADO_CONNECTIONSTRING }}"
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
