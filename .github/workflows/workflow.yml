@@ -109,7 +109,7 @@ jobs:
         run: ./efbundle.exe --connection "${{ secrets.DIALOGPORTEN_ADO_CONNECTIONSTRING }}"
 
       - name: Close postgre firewall
-        if: ${{steps.openFirewall.conclusion == 'success'}}
+        if: ${{failure() && steps.openFirewall.conclusion == 'success'}}
         run: >
           az postgres flexible-server firewall-rule delete 
           --rule-name FirewallRule1 
@@ -139,5 +139,5 @@ jobs:
               ]
 
       - name: Logout from azure
-        if: ${{steps.azureLogin.conclusion == 'success'}}
+        if: ${{failure() && steps.azureLogin.conclusion == 'success'}}
         run: az logout
