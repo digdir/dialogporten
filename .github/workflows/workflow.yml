@@ -48,7 +48,7 @@ jobs:
           dotnet tool install --global dotnet-ef
           dotnet tool restore
           #dotnet ef migrations script --idempotent --startup-project src/Digdir.Domain.Dialogporten.Infrastructure --output ${{env.DOTNET_ROOT}}/myapp/migrate.sql
-          dotnet ef migrations bundle --no-build --startup-project src/Digdir.Domain.Dialogporten.Infrastructure --output ${{env.DOTNET_ROOT}}/myapp/efbundle.exe --configuration Release
+          dotnet ef migrations bundle --no-build --startup-project src/Digdir.Domain.Dialogporten.Infrastructure --output ${{env.DOTNET_ROOT}}/myapp/efbundle.exe --configuration Release --self-contained -r linux-x64
           #dotnet ef migrations bundle --startup-project src/Digdir.Domain.Dialogporten.Infrastructure --output ${{env.DOTNET_ROOT}}/myapp/efbundle.exe --configuration Bundle
 
       - name: Upload artifact for deployment job
@@ -105,17 +105,8 @@ jobs:
           --resource-group dialogporten-poc-rg 
           --start-ip-address ${{ steps.ip.outputs.ipv4 }}
 
-      #- name: Apply EF migration script
-      #  run: ./efbundle.exe --connection "${{ secrets.DIALOGPORTEN_ADO_CONNECTIONSTRING }}"
-
-      - name: Close postgre firewall
-        if: ${{failure() && steps.openFirewall.conclusion == 'success'}}
-        run: >
-          az postgres flexible-server firewall-rule delete 
-          --rule-name FirewallRule1 
-          --name dialogportenpgprod 
-          --resource-group dialogporten-poc-rg
-          --yes
+      - name: Apply EF migration script
+        run: ./efbundle.exe --connection "${{ secrets.DIALOGPORTEN_ADO_CONNECTIONSTRING }}"
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
@@ -139,6 +130,18 @@ jobs:
                   }
               ]
 
+      - name: Close postgre firewall
+        if: ${{failure() || success()}}
+        continue-on-error: true
+        run: >
+          az postgres flexible-server firewall-rule delete 
+          --rule-name FirewallRule1 
+          --name dialogportenpgprod 
+          --resource-group dialogporten-poc-rg
+          --yes
+
       - name: Logout from azure
-        if: ${{failure() && steps.azureLogin.conclusion == 'success'}}
+        if: ${{failure() || success()}}
+        continue-on-error: true
         run: az logout
+
