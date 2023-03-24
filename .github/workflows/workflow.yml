@@ -75,20 +75,20 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: App Settings Variable Substitution
-        uses: microsoft/variable-substitution@v1
-        with:
-          files: './appsettings.json'
-        env:
-          InfrastructureSettings.DialogueDbConnectionString: ${{ secrets.DIALOGPORTEN_ADO_CONNECTIONSTRING }}
+      #- name: App Settings Variable Substitution
+      #  uses: microsoft/variable-substitution@v1
+      #  with:
+      #    files: './appsettings.json'
+      #  env:
+      #    InfrastructureSettings.DialogueDbConnectionString: ${{ secrets.DIALOGPORTEN_ADO_CONNECTIONSTRING }}
 
       # TODO: Why is it not idempotent?
-      #- name: Apply EF migration script
-      #  uses: azure/postgresql@v1
-      #  with:
-      #    connection-string: ${{ secrets.DIALOGPORTEN_PSQL_CONNECTIONSTRING }}
-      #    server-name: dialogportenpgprod
-      #    plsql-file: "./migrate.sql"
+      - name: Apply EF migration script
+        uses: azure/postgresql@v1
+        with:
+          connection-string: ${{ secrets.DIALOGPORTEN_PSQL_CONNECTIONSTRING }}
+          server-name: dialogportenpgprod
+          plsql-file: "./migrate.sql"
 
       #- name: Apply EF migration script
       #  run: ./efbundle.exe --connection "${{ secrets.DIALOGPORTEN_PSQL_CONNECTIONSTRING }}"
