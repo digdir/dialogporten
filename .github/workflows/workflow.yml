@@ -75,6 +75,7 @@ jobs:
           name: .net-app
 
       - name: Login to azure
+        id: azureLogin
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
@@ -96,6 +97,7 @@ jobs:
       #    arguments: "-q"
 
       - name: Open postgre firewall for migrations
+        id: openFirewall
         run: >
           az postgres flexible-server firewall-rule create 
           --rule-name FirewallRule1 
@@ -107,6 +109,7 @@ jobs:
         run: ./efbundle.exe --connection "${{ secrets.DIALOGPORTEN_ADO_CONNECTIONSTRING }}"
 
       - name: Close postgre firewall
+        if: ${{steps.openFirewall.conclusion == 'success'}}
         run: >
           az postgres flexible-server firewall-rule delete 
           --rule-name FirewallRule1 
@@ -136,5 +139,5 @@ jobs:
               ]
 
       - name: Logout from azure
-        #continue-on-error: true
+        if: ${{steps.azureLogin.conclusion == 'success'}}
         run: az logout
