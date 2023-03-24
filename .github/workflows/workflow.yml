@@ -89,7 +89,7 @@ jobs:
           connection-string: ${{ secrets.DIALOGPORTEN_PSQL_CONNECTIONSTRING }}
           server-name: dialogportenpgprod
           plsql-file: "./migrate.sql"
-          arguments: "-q"
+          arguments: "-q -v SHOW_CONTEXT=never"
 
       #- name: Apply EF migration script
       #  run: ./efbundle.exe --connection "${{ secrets.DIALOGPORTEN_PSQL_CONNECTIONSTRING }}"
