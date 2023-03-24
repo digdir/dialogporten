@@ -115,6 +115,7 @@ jobs:
           --rule-name FirewallRule1 
           --name dialogportenpgprod 
           --resource-group dialogporten-poc-rg
+          --yes
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
