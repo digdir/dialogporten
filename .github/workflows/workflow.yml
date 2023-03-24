@@ -47,8 +47,8 @@ jobs:
         run: | 
           dotnet tool install --global dotnet-ef
           dotnet tool restore
-          dotnet ef migrations script --idempotent --startup-project src/Digdir.Domain.Dialogporten.Infrastructure --output ${{env.DOTNET_ROOT}}/myapp/migrate.sql
-          #dotnet ef migrations bundle --no-build --startup-project src/Digdir.Domain.Dialogporten.Infrastructure --output ${{env.DOTNET_ROOT}}/myapp/efbundle.exe --configuration Release
+          #dotnet ef migrations script --idempotent --startup-project src/Digdir.Domain.Dialogporten.Infrastructure --output ${{env.DOTNET_ROOT}}/myapp/migrate.sql
+          dotnet ef migrations bundle --no-build --startup-project src/Digdir.Domain.Dialogporten.Infrastructure --output ${{env.DOTNET_ROOT}}/myapp/efbundle.exe --configuration Release
           #dotnet ef migrations bundle --startup-project src/Digdir.Domain.Dialogporten.Infrastructure --output ${{env.DOTNET_ROOT}}/myapp/efbundle.exe --configuration Bundle
 
       - name: Upload artifact for deployment job
@@ -65,6 +65,10 @@ jobs:
     #  url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
+      - name: Fetch runners public IP
+        id: ip
+        uses: haythem/public-ip@v1.3
+
       - name: Download artifact from build job
         uses: actions/download-artifact@v3
         with:
@@ -82,17 +86,32 @@ jobs:
       #  env:
       #    InfrastructureSettings.DialogueDbConnectionString: ${{ secrets.DIALOGPORTEN_ADO_CONNECTIONSTRING }}
 
-      # TODO: Why is it not idempotent?
-      - name: Apply EF migration script
-        uses: azure/postgresql@v1
-        with:
-          connection-string: ${{ secrets.DIALOGPORTEN_PSQL_CONNECTIONSTRING }}
-          server-name: dialogportenpgprod
-          plsql-file: "./migrate.sql"
-          arguments: "-q -v client_min_messages=warning"
-
+      # TODO: This is not working due to the followin issue: https://github.com/Azure/postgresql/issues/33
       #- name: Apply EF migration script
-      #  run: ./efbundle.exe --connection "${{ secrets.DIALOGPORTEN_PSQL_CONNECTIONSTRING }}"
+      #  uses: azure/postgresql@v1
+      #  with:
+      #    connection-string: ${{ secrets.DIALOGPORTEN_PSQL_CONNECTIONSTRING }}
+      #    server-name: dialogportenpgprod
+      #    plsql-file: "./migrate.sql"
+      #    arguments: "-q"
+
+      - name: Open postgre firewall for migrations
+        run: >
+          az postgres flexible-server firewall-rule create 
+          --rule-name FirewallRule1 
+          --name dialogportenpgprod 
+          --resource-group dialogporten-poc-rg 
+          --start-ip-address ${{ steps.ip.outputs.ipv4 }}
+
+      - name: Apply EF migration script
+        run: ./efbundle.exe --connection "${{ secrets.DIALOGPORTEN_PSQL_CONNECTIONSTRING }}"
+
+      - name: Close postgre firewall
+        run: >
+          az postgres flexible-server firewall-rule delete 
+          --rule-name FirewallRule1 
+          --name dialogportenpgprod 
+          --resource-group dialogporten-poc-rg
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
@@ -117,4 +136,5 @@ jobs:
               ]
 
       - name: Logout from azure
+        #continue-on-error: true
         run: az logout
