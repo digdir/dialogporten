@@ -99,22 +99,22 @@ jobs:
         with:
           app-name: 'dialogporten-poc'
           slot-name: 'production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_1234 }}
+          #publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_1234 }}
           package: .
 
-      #- name: Update config
-      #  uses: Azure/appservice-settings@v1
-      #  with:
-      #    app-name: 'dialogporten-poc'
-      #    slot-name: 'production'
-      #    app-settings-json: |
-      #        [
-      #            {
-      #                "name": "InfrastructureSettings:DialogueDbConnectionString",
-      #                "value": "${{ secrets.DIALOGPORTEN_ADO_CONNECTIONSTRING }}",
-      #                "slotSetting": true
-      #            }
-      #        ]
+      - name: Update config
+        uses: Azure/appservice-settings@v1
+        with:
+          app-name: 'dialogporten-poc'
+          slot-name: 'production'
+          app-settings-json: |
+              [
+                  {
+                      "name": "InfrastructureSettings:DialogueDbConnectionString",
+                      "value": "${{ secrets.DIALOGPORTEN_ADO_CONNECTIONSTRING }}",
+                      "slotSetting": true
+                  }
+              ]
 
       - name: Logout from azure
         run: az logout
