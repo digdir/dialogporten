@@ -29,7 +29,7 @@ jobs:
 
       # TODO: Fix tests
       - name: Test
-        run: dotnet test --no-build --verbosity normal
+        run: dotnet test --no-build --verbosity normal --configuration Release
 
       - name: Publish web api
         run: dotnet publish src/Digdir.Domain.Dialogporten.WebApi --no-build -c Release -o ${{env.DOTNET_ROOT}}/myapp
