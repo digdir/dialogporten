@@ -23,13 +23,8 @@ jobs:
       - name: Build
         run: dotnet build --no-restore --configuration Release
 
-      - name: Check if runner has docker installed
-        run: docker version
-        continue-on-error: true
-
-      # TODO: Fix tests
       - name: Test
-        run: dotnet test --no-build --verbosity normal --configuration Release
+        run: dotnet test --no-build --configuration Release
 
       - name: Publish web api
         run: dotnet publish src/Digdir.Domain.Dialogporten.WebApi --no-build -c Release -o ${{env.DOTNET_ROOT}}/myapp
