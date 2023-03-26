@@ -1,3 +1,4 @@
+using Azure.Identity;
 using Digdir.Domain.Dialogporten.Application;
 using Digdir.Domain.Dialogporten.Infrastructure;
 using Digdir.Domain.Dialogporten.WebApi;
@@ -32,6 +33,11 @@ finally
 static void BuildAndRun(string[] args)
 {
     var builder = WebApplication.CreateBuilder(args);
+
+    if (Uri.TryCreate(builder.Configuration["AZURE_KEYVAULT_URI"], UriKind.Absolute, out var keyVaultUri))
+    {
+        builder.Configuration.AddAzureKeyVault(keyVaultUri, new DefaultAzureCredential());
+    }
 
     builder.Host.UseSerilog((context, services, configuration) => configuration
         .MinimumLevel.Warning()

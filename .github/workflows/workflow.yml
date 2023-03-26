@@ -33,7 +33,7 @@ jobs:
         run: | 
           dotnet tool install --global dotnet-ef
           dotnet tool restore
-          dotnet ef migrations script --idempotent --startup-project src/Digdir.Domain.Dialogporten.Infrastructure --output ${{env.DOTNET_ROOT}}/myapp/migrate.sql
+          dotnet ef migrations script --no-build --configuration Release --idempotent --startup-project src/Digdir.Domain.Dialogporten.Infrastructure --output ${{env.DOTNET_ROOT}}/myapp/migrate.sql
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3
@@ -91,19 +91,19 @@ jobs:
           slot-name: 'production'
           package: .
 
-      - name: Update config
-        uses: Azure/appservice-settings@v1
-        with:
-          app-name: 'dialogporten-poc'
-          slot-name: 'production'
-          app-settings-json: |
-              [
-                  {
-                      "name": "InfrastructureSettings:DialogueDbConnectionString",
-                      "value": "${{ secrets.DIALOGPORTEN_ADO_CONNECTIONSTRING }}",
-                      "slotSetting": true
-                  }
-              ]
+      #- name: Update config
+      #  uses: Azure/appservice-settings@v1
+      #  with:
+      #    app-name: 'dialogporten-poc'
+      #    slot-name: 'production'
+      #    app-settings-json: |
+      #        [
+      #            {
+      #                "name": "InfrastructureSettings:DialogueDbConnectionString",
+      #                "value": "${{ secrets.DIALOGPORTEN_ADO_CONNECTIONSTRING }}",
+      #                "slotSetting": true
+      #            }
+      #        ]
 
       - name: Close postgre firewall
         if: ${{failure() || success()}}
