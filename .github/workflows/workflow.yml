@@ -1,9 +1,9 @@
 ﻿name: Build and deploy ASP.Net Core app to Azure Web App - dialogporten-poc
 
 on:
+  workflow_dispatch:
   push:
     branches: [ feature/AddCleanArchitectureLayout ]
-  workflow_dispatch:
 
 jobs:
   build:
