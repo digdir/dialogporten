@@ -1,1 +1,0 @@
-docker run --name DialogportenLocalPostgreSql -p 5433:5432 -e POSTGRES_PASSWORD=changeme -e POSTGRES_USER=postgres -d postgres:alpine3.17 -c wal_level=logical

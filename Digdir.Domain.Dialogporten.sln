@@ -23,9 +23,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Digdir.Library.Entity.Abstr
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{CADB8189-4AA1-4732-844A-C41DBF3EC8B7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Digdir.Domain.Dialogporten.Application.Tests.Integration", "tests\Digdir.Domain.Dialogporten.Application.Tests.Integration\Digdir.Domain.Dialogporten.Application.Tests.Integration.csproj", "{A8C5A8ED-3A4A-43F9-A083-6F20FCEBB773}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Digdir.Domain.Dialogporten.Application.Tests.Integration", "tests\Digdir.Domain.Dialogporten.Application.Tests.Integration\Digdir.Domain.Dialogporten.Application.Tests.Integration.csproj", "{A8C5A8ED-3A4A-43F9-A083-6F20FCEBB773}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Digdir.Domain.Dialogporten.Infrastructure.Unit.Tests", "tests\Digdir.Domain.Dialogporten.Infrastructure.Unit.Tests\Digdir.Domain.Dialogporten.Infrastructure.Unit.Tests.csproj", "{38A843CE-EE54-4476-ADA1-D8084C3901A9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Digdir.Domain.Dialogporten.Infrastructure.Unit.Tests", "tests\Digdir.Domain.Dialogporten.Infrastructure.Unit.Tests\Digdir.Domain.Dialogporten.Infrastructure.Unit.Tests.csproj", "{38A843CE-EE54-4476-ADA1-D8084C3901A9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{33E486B1-3279-4645-B536-AB640D560C45}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
