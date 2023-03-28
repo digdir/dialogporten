@@ -3,14 +3,14 @@ using Digdir.Domain.Dialogporten.Infrastructure;
 using Digdir.Domain.Dialogporten.Infrastructure.DomainEvents;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence;
 using Digdir.Library.Entity.Abstractions.Features.Lookup;
-using DotNet.Testcontainers.Builders;
-using DotNet.Testcontainers.Configurations;
-using DotNet.Testcontainers.Containers;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
+using NSubstitute;
 using Respawn;
+using Testcontainers.PostgreSql;
 using Xunit;
 
 namespace Digdir.Domain.Dialogporten.Application.Tests.Integration.Common;
@@ -19,24 +19,15 @@ public class DialogueApplication : IAsyncLifetime
 {
     private Respawner _respawner = null!;
     private ServiceProvider _rootProvider = null!;
-    private readonly TestcontainerDatabase _dbContainer =
-        new ContainerBuilder<PostgreSqlTestcontainer>()
-            .WithDatabase(new PostgreSqlTestcontainerConfiguration("postgres:alpine3.17")
-            {
-                Database = "db",
-                Username = "postgres",
-                Password = "postgres",
-            })
-            .Build();
+    private readonly PostgreSqlContainer _dbContainer = new PostgreSqlBuilder()
+        .WithImage("postgres:alpine3.17")
+        .Build();
 
     public async Task InitializeAsync()
     {
         _rootProvider = new ServiceCollection()
-            .AddApplication(applicationSettings =>
-            {
-
-            })
-            .AddDbContext<DialogueDbContext>(x => x.UseNpgsql(_dbContainer.ConnectionString))
+            .AddApplication(Substitute.For<IConfiguration>())
+            .AddDbContext<DialogueDbContext>(x => x.UseNpgsql(_dbContainer.GetConnectionString()))
             .AddScoped<IDomainEventPublisher, DomainEventPublisher>()
             .AddScoped<IDialogueDbContext>(x => x.GetRequiredService<DialogueDbContext>())
             .AddScoped<IUnitOfWork, UnitOfWork>()
@@ -61,7 +52,7 @@ public class DialogueApplication : IAsyncLifetime
 
     public async Task ResetState()
     {
-        await using var connection = new NpgsqlConnection(_dbContainer.ConnectionString);
+        await using var connection = new NpgsqlConnection(_dbContainer.GetConnectionString());
         await connection.OpenAsync();
         await _respawner.ResetAsync(connection);
     }
@@ -75,7 +66,7 @@ public class DialogueApplication : IAsyncLifetime
 
     private async Task BuildRespawnState()
     {
-        await using var connection = new NpgsqlConnection(_dbContainer.ConnectionString);
+        await using var connection = new NpgsqlConnection(_dbContainer.GetConnectionString());
         await connection.OpenAsync();
         _respawner = await Respawner.CreateAsync(connection, new()
         {
