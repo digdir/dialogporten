@@ -2,4 +2,5 @@
 
 public sealed class ApplicationSettings
 {
+    public const string ConfigurationSectionName = "ApplicationSettings";
 }

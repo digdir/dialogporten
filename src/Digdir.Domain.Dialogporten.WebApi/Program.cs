@@ -33,8 +33,6 @@ static void BuildAndRun(string[] args)
 {
     var builder = WebApplication.CreateBuilder(args);
 
-    builder.Configuration.AddAzureConfiguration();
-
     builder.Host.UseSerilog((context, services, configuration) => configuration
         .MinimumLevel.Warning()
         .MinimumLevel.Override("Microsoft.EntityFrameworkCore", Serilog.Events.LogEventLevel.Fatal)
@@ -45,7 +43,10 @@ static void BuildAndRun(string[] args)
             services.GetRequiredService<TelemetryConfiguration>(),
             TelemetryConverter.Traces));
 
+    builder.Configuration.AddAzureConfiguration(builder.Environment.EnvironmentName);
+
     builder.Services
+        .AddAzureAppConfiguration()
         .AddEndpointsApiExplorer()
         .AddFastEndpoints()
         .AddSwaggerDoc(
@@ -57,8 +58,8 @@ static void BuildAndRun(string[] args)
                 s.DocumentName = "V1.0";
                 s.Version = "v1.0";
             })
-        .AddApplication(x => builder.Configuration.Bind(nameof(ApplicationSettings), x))
-        .AddInfrastructure(x => builder.Configuration.Bind(nameof(InfrastructureSettings), x))
+        .AddApplication(builder.Configuration.GetSection(ApplicationSettings.ConfigurationSectionName))
+        .AddInfrastructure(builder.Configuration.GetSection(InfrastructureSettings.ConfigurationSectionName))
         .AddApplicationInsightsTelemetry();
 
     var app = builder.Build();
@@ -67,6 +68,7 @@ static void BuildAndRun(string[] args)
         .UseSerilogRequestLogging()
         .UseProblemDetailsExceptionHandler()
         .UseAuthorization()
+        .UseAzureAppConfiguration()
         .UseFastEndpoints(x =>
         {
             x.Endpoints.RoutePrefix = "api";

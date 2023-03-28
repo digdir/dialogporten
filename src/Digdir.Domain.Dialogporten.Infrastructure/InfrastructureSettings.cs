@@ -2,5 +2,7 @@
 
 public sealed class InfrastructureSettings
 {
+    public const string ConfigurationSectionName = "InfrastructureSettings";
+
     public string DialogueDbConnectionString { get; set; } = string.Empty;
 }

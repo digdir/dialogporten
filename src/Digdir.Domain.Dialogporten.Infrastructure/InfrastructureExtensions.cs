@@ -5,6 +5,7 @@ using Digdir.Domain.Dialogporten.Infrastructure.DomainEvents.Outbox.Dispatcher;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
@@ -12,16 +13,13 @@ namespace Digdir.Domain.Dialogporten.Infrastructure;
 
 public static class InfrastructureExtensions
 {
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services, Action<InfrastructureSettings>? configure = null)
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configurationSection)
     {
-        ArgumentNullException.ThrowIfNull(services, nameof(services));
-
-        if (configure is not null)
-        {
-            services.Configure(configure);
-        }
-
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(configurationSection);
         return services
+            // Settings
+            .Configure<InfrastructureSettings>(configurationSection)
 
             // Framework
             .AddDbContext<DialogueDbContext>((services, options) =>
