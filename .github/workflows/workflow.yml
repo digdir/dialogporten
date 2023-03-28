@@ -91,20 +91,6 @@ jobs:
           slot-name: 'production'
           package: .
 
-      #- name: Update config
-      #  uses: Azure/appservice-settings@v1
-      #  with:
-      #    app-name: 'dialogporten-poc'
-      #    slot-name: 'production'
-      #    app-settings-json: |
-      #        [
-      #            {
-      #                "name": "InfrastructureSettings:DialogueDbConnectionString",
-      #                "value": "${{ secrets.DIALOGPORTEN_ADO_CONNECTIONSTRING }}",
-      #                "slotSetting": true
-      #            }
-      #        ]
-
       - name: Close postgre firewall
         if: ${{failure() || success()}}
         continue-on-error: true
