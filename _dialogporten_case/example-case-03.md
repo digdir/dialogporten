@@ -29,7 +29,7 @@ Partene er Rørlegger AS, Regnskapsfører AS og Etaten, som tilbyr denne innsend
 // POST /dialogporten/api/v1/instantiate
 {
     "serviceResourceIdentifier": "omsetningsrapportering",
-    "party": "org:912345678" // Rørlegger AS
+    "party": "org/912345678" // Rørlegger AS
 }
 ```
 
@@ -40,7 +40,7 @@ Partene er Rørlegger AS, Regnskapsfører AS og Etaten, som tilbyr denne innsend
 {
     "id": "b13bb496-e6ab-4444-8442-e15be9f96e9c",
     "serviceResourceIdentifier": "omsetningsrapportering",     
-    "party": "org:912345678",
+    "party": "org/912345678",
     "status": "under-progress", 
     "content": {
         "body": [ { "code": "nb_NO", "value": "Skjema er klart for utfylling" } ],
@@ -107,7 +107,7 @@ Partene er Rørlegger AS, Regnskapsfører AS og Etaten, som tilbyr denne innsend
         "gui": [ 
             { 
                 "action": "sign",
-                "resource": "general_manager_tasks", // Krever tilgang til "sign" på ressursen "general_manager_tasks"
+                "authorizationRequirement": "general_manager_tasks", // Krever tilgang til "sign" på ressursen "general_manager_tasks"
                 "type": "primary",
                 "title": [ { "code": "nb_NO", "value": "Se over og signer" } ],
                 "url": "https://www.etaten.no/tjenester/omsetningsrapportering/b13bb496-e6ab-4444-8442-e15be9f96e9c/sign_gm?latest_submission=12031cd2-5eb5-4ddf-b4f9-9d30e403d92c"
@@ -116,7 +116,7 @@ Partene er Rørlegger AS, Regnskapsfører AS og Etaten, som tilbyr denne innsend
         "api": [ 
             { 
                 "action": "sign",
-                "resource": "general_manager_tasks", // Krever tilgang til "sign" på ressursen "general_manager_tasks"
+                "authorizationRequirement": "general_manager_tasks", // Krever tilgang til "sign" på ressursen "general_manager_tasks"
                 "actionUrl": "https://api.etaten.no/tjenester/omsetningsrapportering/b13bb496-e6ab-4444-8442-e15be9f96e9c/sign?latest_submission=12031cd2-5eb5-4ddf-b4f9-9d30e403d92c",
                 "method": "POST",
                 // Dialogporten har her ikke noe spesielt forhold til signering som handling. Her kan man kanskje se for seg 
@@ -150,7 +150,7 @@ Partene er Rørlegger AS, Regnskapsfører AS og Etaten, som tilbyr denne innsend
     "notificationId": "79921fae-631a-4f8b-8db5-e359f2336658",
 
     // Ressurs i XACML som det kreves tilgang til
-    "resource": "general_manager_tasks",
+    "authorizationRequirement": "general_manager_tasks",
     "sms": {
             "text": [ { "code": "nb_NO", "value": "Du har mottatt et signeringsoppdrag for Omsetningsrapportering. Logg inn i Dialogporten for å signere." } ],
             
@@ -195,7 +195,7 @@ Partene er Rørlegger AS, Regnskapsfører AS og Etaten, som tilbyr denne innsend
         "gui": [ 
             { 
                 "action": "sign",
-                "resource": "accountant_tasks", // Krever tilgang til "sign" på ressursen "accountant_tasks"
+                "authorizationRequirement": "accountant_tasks", // Krever tilgang til "sign" på ressursen "accountant_tasks"
                 "type": "primary",
                 "title": [ { "code": "nb_NO", "value": "Se over og signer" } ],
                 "url": "https://www.etaten.no/tjenester/omsetningsrapportering/b13bb496-e6ab-4444-8442-e15be9f96e9c/sign_ac?latest_submission=12031cd2-5eb5-4ddf-b4f9-9d30e403d92c"
@@ -204,7 +204,7 @@ Partene er Rørlegger AS, Regnskapsfører AS og Etaten, som tilbyr denne innsend
         "api": [ 
             { 
                 "action": "sign",
-                "resource": "accountant_tasks", // Krever tilgang til "sign" på ressursen "accountant_tasks"
+                "authorizationRequirement": "accountant_tasks", // Krever tilgang til "sign" på ressursen "accountant_tasks"
                 "actionUrl": "https://api.etaten.no/tjenester/omsetningsrapportering/b13bb496-e6ab-4444-8442-e15be9f96e9c/sign_ac?latest_submission=12031cd2-5eb5-4ddf-b4f9-9d30e403d92c",
                 "method": "POST",
                 // Dialogporten har her ikke noe spesielt forhold til signering som handling. Her kan man kanskje se for seg 
@@ -232,7 +232,7 @@ Partene er Rørlegger AS, Regnskapsfører AS og Etaten, som tilbyr denne innsend
     "notificationId": "a61c66f5-1dcf-4a27-8c17-633cd2eb8b8d",
 
     // Ressurs i XACML som det kreves tilgang til
-    "resource": "accountant_tasks",
+    "authorizationRequirement": "accountant_tasks",
     "sms": {
             "text": [ { "code": "nb_NO", "value": "Du har mottatt et signeringsoppdrag for Omsetningsrapportering. Logg inn i Dialogporten for å signere." } ],
             
@@ -300,7 +300,7 @@ Partene er Rørlegger AS, Regnskapsfører AS og Etaten, som tilbyr denne innsend
         { 
             "activityDateTime": "2022-12-01T10:00:00.000Z",
             "activityType": "closed",
-            "activityExtendedType": "rf1305-closed",
+            "extendedActivityType": "rf1305-closed",
             "activityDescription": [ { "code": "nb_NO", "value": "Rapportering godkjent og fullført" } ]
         }
     ]

@@ -37,28 +37,44 @@
         "api": [ 
             { 
                 "action": "open",
-                "actionUrl": "https://example.com/api/dialogues/123456789",
-                "method": "GET",
-                "responseSchema": "https://schemas.altinn.no/dialogs/v1/dialogs.json",
-                "documentationUrl": "https://api-docs.example.com/dialogueservice/open-action"
+                "endpoints": [
+                    {
+                        "actionUrl": "https://example.com/api/dialogues/123456789",
+                        "method": "GET",
+                        "responseSchema": "https://schemas.altinn.no/dialogs/v1/dialogs.json",
+                        "documentationUrl": "https://api-docs.example.com/dialogueservice/open-action"
+                    }
+                ]
             },
             { 
                 "action": "confirm",
-                "method": "POST",
-                "actionUrl": "https://example.com/api/dialogues/123456789/confirmReceived",
-                "documentationUrl": "https://api-docs.example.com/dialogueservice/confirm-action"
+                "endpoints": [
+                    {
+                        "method": "POST",
+                        "actionUrl": "https://example.com/api/dialogues/123456789/confirmReceived",
+                        "documentationUrl": "https://api-docs.example.com/dialogueservice/confirm-action"
+                    }
+                ]
             },
             { 
                 "action": "submit",
-                "actionUrl": "https://example.com/api/dialogues/123456789/submit",
-                "method": "POST",
-                "requestSchema": "https://schemas.example.com/dialogueservice/v1/dialogueservice.json",
-                "responseSchema": "https://schemas.altinn.no/dialogs/v1/dialogs.json" 
+                "endpoints": [
+                    {
+                        "actionUrl": "https://example.com/api/dialogues/123456789/submit",
+                        "method": "POST",
+                        "requestSchema": "https://schemas.example.com/dialogueservice/v1/dialogueservice.json",
+                        "responseSchema": "https://schemas.altinn.no/dialogs/v1/dialogs.json" 
+                    }
+                ]
             },
             { 
                 "action": "delete",
-                "method": "DELETE",
-                "actionUrl": "https://example.com/api/dialogues/123456789"
+                "endpoints": [
+                    {
+                        "method": "DELETE",
+                        "actionUrl": "https://example.com/api/dialogues/123456789"
+                    }
+                ]
             }
         ]
     },

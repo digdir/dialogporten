@@ -18,10 +18,11 @@
 
     // Organisasjonsnummer, fødselsnummer eller brukernavn (aka "avgiver" eller "aktør") - altså hvem sin dialogboks 
     // skal dialogen tilhøre. Brukernavn benyttes for selv-registrerte bruker, og er typisk en e-postadresse.
-    "party": "org:991825827", 
+    "party": "org/991825827", 
                                   
     // Vilkårlig referanse som presenteres sluttbruker i UI. Dialogporten tilegger denne ingen semantikk (trenger f.eks. ikke
-    // være unik). Merk at identifikator/primærnøkkel vil kunne være den samme gjennom at tjenestetilbyder kan oppgi "id"
+    // være unik). Merk at identifikator/primærnøkkel vil kunne være den samme gjennom at tjenestetilbyder kan oppgi "id",
+    // så dette kan f.eks. brukes for et saksnummer eller en annen referanse hos party eller en tredjepart (systemleverandør). 
     "externalReference": "123456789",
 
     // Alle dialoger som har samme dialoggruppe-id vil kunne grupperes eller på annet vis samles i GUI    
@@ -73,9 +74,9 @@
             "contentType": "application/pdf",            
             "url": "https://example.com/api/dialogues/123456789/attachments/1",
 
-            // Det kan oppgis en valgfri referanse til en ressurs. Brukeren må ha tilgang til "open" i
-            // XACML-policy for oppgitt ressurs for å få tilgang til dialogen.
-            "resource": "attachment1"
+            // Det kan oppgis en valgfri referanse til det som mappes til en XACML-ressurs. Brukeren må ha tilgang til "open" i
+            // XACML-policy for oppgitt XACML-ressurs for å få tilgang til dialogen.
+            "authorizationRequirement": "attachment1"
         }
     ],
     "actions": {
@@ -88,7 +89,7 @@
             },
             {
                 "action": "confirm",
-                "resource": "somesubresource", // Det kan oppgis en valgfri referanse til en ressurs
+                "authorizationRequirement": "somesubresource", // Det kan oppgis en valgfri referanse til en XACML-ressurs
                 "type": "secondary",
                 "title": [ { "code": "nb_NO", "value": "Bekreft mottatt" } ],
 
@@ -114,37 +115,77 @@
         ],
         "api": [ 
             { 
-                "action": "open", // Denne kan refereres i XACML-policy
-                "actionUrl": "https://example.com/api/dialogues/123456789",
-                "method": "GET",
+                "action": "open", // Denne referes til i XACML-policy (som action)
+                "endpoints": [ 
+                    // Det støttes ulike parallelle versjoner av API-endepunkter. Første i lista er å regne som 
+                    // siste versjon og anbefalt brukt. GUI-actions er ikke versjonerte.
+                    {
+                        "version": "v2",
+                        "actionUrl": "https://example.com/api/v2/dialogues/123456789",
+                        "method": "GET",
 
-                // Indikerer hva API-konsumenter kan forvente å få slags svar
-                "responseSchema": "https://schemas.altinn.no/dialogs/v1/dialogs.json", 
-                // Lenke til dokumentasjon for denne actionen
-                "documentationUrl": "https://api-docs.example.com/dialogueservice/open-action" 
+                        // Indikerer hva API-konsumenter kan forvente å få slags svar
+                        "responseSchema": "https://schemas.altinn.no/dialogs/v2/dialogs.json", 
+                        // Lenke til dokumentasjon for denne actionen
+                        "documentationUrl": "https://api-docs.example.com/v2/dialogueservice/open-action"                         
+                    },
+                    {
+                        "version": "v1",
+
+                        // Tjenestetilbyder kan indikerer om en versjon er utgående, og evt oppgi en dato 
+                        // for når versjonen ikke lengre støttes
+                        "deprecated": true, 
+                        "sunsetDate": "2024-12-31T23:59:59.999Z",
+                        "actionUrl": "https://example.com/api/v1/dialogues/123456789",
+                        "method": "GET",
+
+                        // Indikerer hva API-konsumenter kan forvente å få slags svar
+                        "responseSchema": "https://schemas.altinn.no/dialogs/v1/dialogs.json", 
+                        // Lenke til dokumentasjon for denne actionen
+                        "documentationUrl": "https://api-docs.example.com/v1/dialogueservice/open-action",
+                    },
+                ]
             },
             { 
                 "action": "confirm",
-                "method": "POST",
-                "actionUrl": "https://example.com/api/dialogues/123456789/confirmReceived",
-                "documentationUrl": "https://api-docs.example.com/dialogueservice/confirm-action"
-                // Ingen requestmodell impliserer tom body
+                "endpoints": [
+                    {
+                        "version": "v1",
+                        "method": "POST",
+                        "actionUrl": "https://example.com/api/dialogues/123456789/confirmReceived/23456",
+                        // Hvis handlingen omfatter/berører en spesifikk entitet som utgjør en logisk del av dialogen
+                        // kan det oppgis en identifikator til denne her.
+                        "relatedEntityId": "23456",
+                        "documentationUrl": "https://api-docs.example.com/dialogueservice/confirm-action"
+                        // Ingen requestmodell impliserer tom body
+                    }
+                ]                
             },
-            { 
+            {
                 "action": "submit", // Denne kan refereres i XACML-policy
-                "actionUrl": "https://example.com/api/dialogues/123456789",
-                "method": "POST",
+                "endpoints": [
+                    {
+                        "version": "v1",
+                        "action": "submit", // Denne kan refereres i XACML-policy
+                        "actionUrl": "https://example.com/api/dialogues/123456789",
+                        "method": "POST",
                 
-                // Indikerer hva API-et forventer å få som input på dette endepunktet
-                "requestSchema": "https://schemas.example.com/dialogueservice/v1/dialogueservice.json", 
-                "responseSchema": "https://schemas.altinn.no/dialogs/v1/dialogs.json" 
+                        // Indikerer hva API-et forventer å få som input på dette endepunktet
+                        "requestSchema": "https://schemas.example.com/dialogueservice/v1/dialogueservice.json", 
+                        "responseSchema": "https://schemas.altinn.no/dialogs/v1/dialogs.json" 
+                    }
+                ]
             },
             { 
                 "action": "delete",
-                "method": "DELETE",
-
-                // Merk dette vil kreve at org gjør bakkanal-kall for å slette dialogen
-                "actionUrl": "https://example.com/api/dialogues/123456789"
+                "endpoints": [
+                    {
+                        "version": "v1",
+                        "method": "DELETE",
+                        // Merk dette vil kreve at org gjør bakkanal-kall for å slette dialogen
+                        "actionUrl": "https://example.com/api/dialogues/123456789"
+                    }
+                ]
             }
         ]
     },
@@ -189,7 +230,14 @@
             
             // Vilkårlig streng som er ment å være maskinlesbar, og er en tjenestespesifikk kode som gir ytterligere
             // informasjon om hva slags aktivitetstype dette innslaget er
-            "activityExtendedType": "SKE-1234-received-precheck-ok",
+            "extendedActivityType": "SKE-1234-received-precheck-ok",
+
+            // Hvis aktiviteten omfatter eller berør en eller annen entitet som utgjør en del av dialogen hos tjenestetilbyder,
+            // kan denne oppgis her. Denne underlegges ingen validering eller logikk i Dialogporten, men vil bli lagt ved i 
+            // events som genereres.
+            "relatedEntityId": "b323cef4-adbd-4d2c-b33d-5c0f3b11171b",
+
+            // Menneskelesbar beskrivelse av aktiviteten
             "activityDescription": [ { "code": "nb_NO", "value": "Innsending er mottatt og sendt til behandling" } ],
 
             // Ytterligere informasjon som bruker/SBS kan aksessere for å hente mer informasjon om det aktuelle innslaget.
@@ -199,9 +247,14 @@
             // data relatert til aktiviteten. 
             "activityDetailsUrls": {
                 // Når activityType er "submission" refererer API-lenken her typisk til den mottatte innsendingen
-                "api": "https://example.com/api/dialogues/123456789/received_submissions/fc6406df-6163-442a-92cd-e487423f2fd5",
+                "api": [
+                    {
+                        "version": "v1",
+                        "url": "https://example.com/api/dialogues/123456789/received_submissions/b323cef4-adbd-4d2c-b33d-5c0f3b11171b"
+                    }
+                ],
                 // ... mens GUI-lenken typisk tar brukeren til en innsynsside hvor hen kan se hva som ble sendt inn
-                "gui": "https://example.com/dialogues/123456789/view_submission/fc6406df-6163-442a-92cd-e487423f2fd5"
+                "gui": "https://example.com/dialogues/123456789/view_submission/b323cef4-adbd-4d2c-b33d-5c0f3b11171b"
             }
         }
     ],
