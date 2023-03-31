@@ -18,7 +18,7 @@
     "party": "org/991825827",
     "externalReference": "123456789",
     "status": "under-progress",
-    "extendedStatus": "SKE-ABC",
+    "externalStatus": "SKE-ABC",
     "dates": {
         "createdDateTime": "2022-12-01T10:00:00.000Z",
         "updatedDateTime": "2022-12-01T10:00:00.000Z",
@@ -134,8 +134,8 @@
             "activityDateTime": "2022-12-01T10:00:00.000Z",
             "activityType": "submission",
             "performedBy": "person:12018212345",
-            "extendedActivityType": "SKE-1234-received-precheck-ok",
-            "relatedEntityId": "b323cef4-adbd-4d2c-b33d-5c0f3b11171b",
+            "externalType": "SKE-1234-received-precheck-ok",
+            "externalId": "b323cef4-adbd-4d2c-b33d-5c0f3b11171b",
             "activityDescription": [ { "code": "nb_NO", "value": "Innsending er mottatt og sendt til behandling" } ],
             "activityDetailsUrls": {
                 "api": [
@@ -167,7 +167,7 @@
             "activityType": "feedback",
             // Feedback-typer har vanligvis en referanse til en submission-aktivitet som dette er feedback for
             "relatedActivityId": "fc6406df-6163-442a-92cd-e487423f2fd5",
-            "extendedActivityType": "SKE-2456-need-form-RF1337",
+            "externalType": "SKE-2456-need-form-RF1337",
             "activityDescription": [ { "code": "nb_NO", "value": "Behandling er utført. Ytterligere opplysninger kreves." } ],
             "activityDetailsUrls": {
                 // Feltene "api" og "gui" er begge valgfrie, såvel som feltet activityDetailsUrls i seg selv. I dette
@@ -182,8 +182,8 @@
             "activityId": "f6ef1a96-df3a-4d38-830f-853b5d090e16",
             "activityDateTime": "2022-12-01T12:00:00.000Z",
             "activityType": "submission",
-            "extendedActivityType": "SKE-2456-received-precheck-ok",
-            "relatedEntityId": "22366651-c1b6-4812-a97d-5ed43fc4fe57",
+            "externalType": "SKE-2456-received-precheck-ok",
+            "externalId": "22366651-c1b6-4812-a97d-5ed43fc4fe57",
             "activityDescription": [ { 
                 "code": "nb_NO", 
                 "value": "Innsending av ytterligere opplysninger er mottatt og sendt til behandling." 
@@ -204,7 +204,7 @@
             "activityType": "error",
             // Feilmeldinger har også vanligvis en referanse til en tidligere aktivitet som var årsak til at feilsituasjonen oppstod
             "relatedActivityId": "f6ef1a96-df3a-4d38-830f-853b5d090e16",
-            "relatedEntityId": "22366651-c1b6-4812-a97d-5ed43fc4fe57",
+            "externalId": "22366651-c1b6-4812-a97d-5ed43fc4fe57",
             "activityErrorCode": "SKE-error-12345",
             "activityDescription": [ { 
                 "code": "nb_NO", 
@@ -228,8 +228,8 @@
             "activityId": "4ce2e110-21c5-4783-94ed-b2a8695abb8a",
             "activityDateTime": "2022-12-01T14:00:00.000Z",
             "activityType": "submission",
-            "extendedActivityType": "SKE-2456-received-precheck-ok",
-            "relatedEntityId": "d1cbd317-277f-4521-b9b5-ee7d6b29ceaf",
+            "externalType": "SKE-2456-received-precheck-ok",
+            "externalId": "d1cbd317-277f-4521-b9b5-ee7d6b29ceaf",
             "activityDescription": [ { 
                 "code": "nb_NO", 
                 "value": "Innsending av ytterligere opplysninger er mottatt og sendt til behandling." 
@@ -249,7 +249,7 @@
             "activityDateTime": "2022-12-01T15:00:00.000Z",
             "activityType": "feedback",
             "relatedActivityId": "4ce2e110-21c5-4783-94ed-b2a8695abb8a",
-            "extendedActivityType": "SKE-2456-final-ok",
+            "externalType": "SKE-2456-final-ok",
             "activityDescription": [ { 
                 "code": "nb_NO", 
                 "value": "Saksbehandling er utført og vedtak er fattet, se vedlegg. 

@@ -22,6 +22,7 @@ Partene er Rørlegger AS, Regnskapsfører AS og Etaten, som tilbyr denne innsend
 7. Regnskapsfører varsles, logger inn i Dialogporten, og signerer innsendingen
 8. Etaten mottar siste signering og avslutter innsendingen
 
+{% include note.html type="warning" content="Modellene som vises under er forenklede ift de reelle modellene som må benyttes. Events som genereres er utelatt - for eksempler på disse se case-01" %}
 
 ## 1. Rørlegger AS instansierer en dialog
 
@@ -300,7 +301,7 @@ Partene er Rørlegger AS, Regnskapsfører AS og Etaten, som tilbyr denne innsend
         { 
             "activityDateTime": "2022-12-01T10:00:00.000Z",
             "activityType": "closed",
-            "extendedActivityType": "rf1305-closed",
+            "externalType": "rf1305-closed",
             "activityDescription": [ { "code": "nb_NO", "value": "Rapportering godkjent og fullført" } ]
         }
     ]

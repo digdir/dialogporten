@@ -50,7 +50,7 @@
     "status": "under-progress", 
     
     // En vilkårlig streng som er tjenestespesifikk
-    "extendedStatus": "SKE-ABC",
+    "externalStatus": "SKE-ABC",
     "dates": {
         // Hvis oppgitt blir dialogen satt med en frist 
         // (i Altinn2 er denne bare retningsgivende og har ingen effekt, skal dette fortsette?)
@@ -155,7 +155,7 @@
                         "actionUrl": "https://example.com/api/dialogues/123456789/confirmReceived/23456",
                         // Hvis handlingen omfatter/berører en spesifikk entitet som utgjør en logisk del av dialogen
                         // kan det oppgis en identifikator til denne her.
-                        "relatedEntityId": "23456",
+                        "externalId": "23456",
                         "documentationUrl": "https://api-docs.example.com/dialogueservice/confirm-action"
                         // Ingen requestmodell impliserer tom body
                     }
@@ -230,12 +230,12 @@
             
             // Vilkårlig streng som er ment å være maskinlesbar, og er en tjenestespesifikk kode som gir ytterligere
             // informasjon om hva slags aktivitetstype dette innslaget er
-            "extendedActivityType": "SKE-1234-received-precheck-ok",
+            "externalType": "SKE-1234-received-precheck-ok",
 
             // Hvis aktiviteten omfatter eller berør en eller annen entitet som utgjør en del av dialogen hos tjenestetilbyder,
             // kan denne oppgis her. Denne underlegges ingen validering eller logikk i Dialogporten, men vil bli lagt ved i 
             // events som genereres.
-            "relatedEntityId": "b323cef4-adbd-4d2c-b33d-5c0f3b11171b",
+            "externalId": "b323cef4-adbd-4d2c-b33d-5c0f3b11171b",
 
             // Menneskelesbar beskrivelse av aktiviteten
             "activityDescription": [ { "code": "nb_NO", "value": "Innsending er mottatt og sendt til behandling" } ],

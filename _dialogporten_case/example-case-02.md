@@ -24,6 +24,8 @@ Partene er Nortura og Skatteetaten.
 9. EggAPI gir beskjed i Dialogporten på at korrigering er mottatt
 10. EggAPI gir beskjed om at rapportering er godkjent, og lukker dialogen
 
+{% include note.html type="warning" content="Modellene som vises under er forenklede ift de reelle modellene som må benyttes. Events som genereres er utelatt - for eksempler på disse se case-01" %}
+
 ## 1. Nortura instansierer en dialog
 
 ```jsonc
@@ -95,11 +97,12 @@ Partene er Nortura og Skatteetaten.
             "activityDateTime": "2022-12-01T10:00:00.000Z",
             "activityType": "submission",
             "performedBy": "org/938752648",
-            "extendedActivityType": "rf1305-received-precheck-ok",
+            "externalType": "rf1305-received-precheck-ok",
+            "externalId": "936f4753-6271-431a-b618-208ac66ce0ef",
             "activityDescription": [ { "code": "nb_NO", "value": "Opprettet dialog for rapportering av 50 oppgaver" } ],
 
             "activityDetailsUrls": {
-                "api": "https://api.skatteetaten.no/tjenester/rf1305/e0300961-85fb-4ef2-abff-681d77f9960e/submissions/fc6406df-6163-442a-92cd-e487423f2fd5"
+                "api": "https://api.skatteetaten.no/tjenester/rf1305/e0300961-85fb-4ef2-abff-681d77f9960e/submissions/936f4753-6271-431a-b618-208ac66ce0ef"
             }
         }
     ]
@@ -125,7 +128,7 @@ Partene er Nortura og Skatteetaten.
                 "action": "open",
                 "type": "primary",
                 "title": [ { "code": "nb_NO", "value": "Send inn korrigering i vår GUI-tjeneste" } ],
-                "url": "https://www.skatteetaten.no/tjenester/rf1305/e0300961-85fb-4ef2-abff-681d77f9960e/correction"
+                "url": "https://www.skatteetaten.no/tjenester/rf1305/e0300961-85fb-4ef2-abff-681d77f9960e/correction/936f4753-6271-431a-b618-208ac66ce0ef"
             },
             { 
                 "action": "open", // Kan ha samme action, Dialogporten bryr seg ikke - action har bare med tilgangskontroll å gjøre
@@ -137,7 +140,7 @@ Partene er Nortura og Skatteetaten.
         "api": [ 
             { 
                 "action": "submit",
-                "actionUrl": "https://api.skatteetaten.no/tjenester/rf1305/e0300961-85fb-4ef2-abff-681d77f9960e/correction",
+                "actionUrl": "https://api.skatteetaten.no/tjenester/rf1305/e0300961-85fb-4ef2-abff-681d77f9960e/correction/936f4753-6271-431a-b618-208ac66ce0ef",
                 "method": "POST",
                 // Her kan man kanskje ha et egen JSON schema for korrigeringer
                 "requestSchema": "https://schemas.skatteetaten.no/tjenester/rf1305/submission_correction.json", 
@@ -151,12 +154,13 @@ Partene er Nortura og Skatteetaten.
             "activityDateTime": "2022-12-01T10:00:00.000Z",
             "activityType": "submission",
             "performedBy": "org/938752648",
-            "extendedActivityType": "rf1305-received-precheck-ok",
+            "externalType": "rf1305-received-precheck-ok",
+            "externalId": "d0d0b171-5bbf-44fa-8785-737ed46e7ae6",
             "activityDescription": [ { "code": "nb_NO", "value": "50 oppgaver er mottatt og maskinelt kontrollert" } ],
 
             "activityDetailsUrls": {
                 // Her kan det ligge en eller annen liste over de mottatt forsendelsene, med egne identifikatorer
-                "api": "https://api.skatteetaten.no/tjenester/rf1305/e0300961-85fb-4ef2-abff-681d77f9960e/submissions/7f91fb5e-4c79-4c01-82aa-84911ef13b75"
+                "api": "https://api.skatteetaten.no/tjenester/rf1305/e0300961-85fb-4ef2-abff-681d77f9960e/submissions/d0d0b171-5bbf-44fa-8785-737ed46e7ae6"
             }
         }
     ]
@@ -178,11 +182,12 @@ Partene er Nortura og Skatteetaten.
             "activityDateTime": "2022-12-01T10:00:00.000Z",
             "activityType": "submission",
             "performedBy": "org/938752648",
-            "extendedActivityType": "rf1305-correction-received-precheck-ok",
+            "externalType": "rf1305-correction-received-precheck-ok",
+            "externalId": "4d63ec64-4dd2-40f9-bc72-353ea45bb0cc",
             "activityDescription": [ { "code": "nb_NO", "value": "4 korrigering(er) er mottatt og maskinelt kontrollert" } ],
             "activityDetailsUrls": {
                 // Her kan det ligge en eller annen liste over mottatte korrigeringer
-                "api": "https://api.skatteetaten.no/tjenester/rf1305/e0300961-85fb-4ef2-abff-681d77f9960e/submissions/20c94e10-b95d-4cd0-b469-b4caa4532c4e"
+                "api": "https://api.skatteetaten.no/tjenester/rf1305/e0300961-85fb-4ef2-abff-681d77f9960e/submissions/4d63ec64-4dd2-40f9-bc72-353ea45bb0cc"
             }
         }
     ]
@@ -199,13 +204,14 @@ Partene er Nortura og Skatteetaten.
             "activityId": "4d005d87-4ba8-4bf7-bcac-7862744a3180",
             "activityDateTime": "2022-12-01T10:00:00.000Z",
             "activityType": "error",
-            "extendedActivityType": "rf1305-submissions-error",
+            "externalType": "rf1305-submissions-error",
+            "externalId": "4e6c9c96-435a-434d-a415-723cbbc6f3d4",
             "relatedActivityId": "7f91fb5e-4c79-4c01-82aa-84911ef13b75", // Enten den opprinnelige innsendingen, eller korrigeringen
             "activityErrorCode": "errors-detected-in:12,34",
             "activityDescription": [ { "code": "nb_NO", "value": "Feil ble funnet i oppgave nr: 12, 34. Vennligst send inn korrigeringer." } ],
             "activityDetailsUrls": {
                 // Her kan det ligge en eller annen liste over oppgaver som er feil, med ytterligere opplysninger
-                "api": "https://api.skatteetaten.no/tjenester/rf1305/e0300961-85fb-4ef2-abff-681d77f9960e/error/4d005d87-4ba8-4bf7-bcac-7862744a3180"
+                "api": "https://api.skatteetaten.no/tjenester/rf1305/e0300961-85fb-4ef2-abff-681d77f9960e/error/4e6c9c96-435a-434d-a415-723cbbc6f3d4"
             }
         }
     ]
@@ -227,11 +233,12 @@ Partene er Nortura og Skatteetaten.
             "activityDateTime": "2022-12-01T10:00:00.000Z",
             "activityType": "submission",
             "performedBy": "org/938752648",
-            "extendedActivityType": "rf1305-correction-received-precheck-ok",
+            "externalType": "rf1305-correction-received-precheck-ok",
+            "externalId": "1fe9fd6d-a544-4c7e-a989-1857613a90a8",
             "activityDescription": [ { "code": "nb_NO", "value": "2 korrigering(er) er mottatt og maskinelt kontrollert" } ],
             "activityDetailsUrls": {
                 // Her kan det ligge en eller annen liste over mottatte korrigeringer
-                "api": "https://api.skatteetaten.no/tjenester/rf1305/e0300961-85fb-4ef2-abff-681d77f9960e/submissions/da6087e9-ec7c-4a30-9605-2b753a104c21"
+                "api": "https://api.skatteetaten.no/tjenester/rf1305/e0300961-85fb-4ef2-abff-681d77f9960e/submissions/1fe9fd6d-a544-4c7e-a989-1857613a90a8"
             }
         }
     ]
@@ -266,7 +273,7 @@ Partene er Nortura og Skatteetaten.
         { 
             "activityDateTime": "2022-12-01T10:00:00.000Z",
             "activityType": "closed",
-            "extendedActivityType": "rf1305-closed",
+            "externalType": "rf1305-closed",
             "activityDescription": [ { "code": "nb_NO", "value": "Rapportering godkjent og fullført" } ]
         }
     ]

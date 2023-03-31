@@ -18,7 +18,7 @@
             "dueDateTime": "2022-12-01T12:00:00.000Z"  
         },
         "status": "under-progress",
-        "extendedStatus": "SKE-ABC",
+        "externalStatus": "SKE-ABC",
         // Inneholder ikke body, denne må hentes i detailsUrl
         "content": {
             // Bruker searchTitle hvis definert, se create-request
