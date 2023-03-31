@@ -1,0 +1,51 @@
+name: BuildTestPublish
+
+on:
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      publishArtifacts:
+        required: false
+        type: boolean
+        default: false
+  pull_request:
+    branches: [ main ]
+    paths: [ src/**, tests/** ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '7.x'
+    
+      - name: Restore
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --no-restore --configuration Release
+
+      - name: Test
+        run: dotnet test --no-build --configuration Release
+
+      - name: Publish web api
+        if: ${{inputs.publishArtifacts}}
+        run: dotnet publish src/Digdir.Domain.Dialogporten.WebApi --no-build -c Release -o ${{env.DOTNET_ROOT}}/artifacts/webApi
+
+      - name: Generate EF migration script
+        if: ${{inputs.publishArtifacts}}
+        run: | 
+          dotnet tool install --global dotnet-ef
+          dotnet tool restore
+          dotnet ef migrations script --no-build --configuration Release --idempotent --startup-project src/Digdir.Domain.Dialogporten.Infrastructure --output ${{env.DOTNET_ROOT}}/artifacts/database/migrate.sql
+
+      - name: Upload artifact for deployment job
+        if: ${{inputs.publishArtifacts}}
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifacts
+          path: ${{env.DOTNET_ROOT}}/artifacts

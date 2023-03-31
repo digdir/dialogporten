@@ -1,0 +1,66 @@
+﻿name: BuildTestDeploy
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main, feature/AddCleanArchitectureLayout ]
+    paths: [ src/**, tests/** ]
+
+jobs:
+  publish:
+    uses: ./.github/workflows/BuildTestPublish.yml
+    with:
+      publishArtifacts: true
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: publish
+    steps:
+      - name: Download artifact from publish job
+        uses: actions/download-artifact@v3
+        with:
+          name: artifacts
+
+      - name: Login to azure
+        id: azureLogin
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Fetch runners public IP
+        id: ip
+        uses: haythem/public-ip@v1.3
+
+      - name: Open postgre firewall for migrations
+        run: >
+          az postgres flexible-server firewall-rule create 
+          --rule-name GithubActions 
+          --name dialogportenpgprod 
+          --resource-group dialogporten-poc-rg 
+          --start-ip-address ${{ steps.ip.outputs.ipv4 }}
+
+      - name: Apply EF migration script
+        run: ${{ secrets.DIALOGPORTEN_PSQL_CONNECTIONSTRING }} -f ./database/migrate.sql -q
+
+      - name: Deploy to Azure Web App
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: 'dialogporten-poc'
+          slot-name: 'production'
+          package: ./webApi
+
+      - name: Close postgre firewall
+        if: ${{failure() || success()}}
+        continue-on-error: true
+        run: >
+          az postgres flexible-server firewall-rule delete 
+          --rule-name GithubActions 
+          --name dialogportenpgprod 
+          --resource-group dialogporten-poc-rg
+          --yes
+
+      - name: Logout from azure
+        if: ${{failure() || success()}}
+        continue-on-error: true
+        run: az logout
