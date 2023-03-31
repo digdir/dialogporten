@@ -7,6 +7,8 @@ using Microsoft.ApplicationInsights.Extensibility;
 using Serilog;
 using System.Text.Json.Serialization;
 
+// add comment to trigger github actions.
+
 // Using two-stage initialization to catch startup errors.
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Warning()
