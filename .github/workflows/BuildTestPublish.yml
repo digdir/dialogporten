@@ -10,7 +10,7 @@ on:
         default: false
   pull_request:
     branches: [ main ]
-    paths: [ src/**, tests/** ]
+    #paths: [ src/**, tests/** ]
 
 jobs:
   build:
