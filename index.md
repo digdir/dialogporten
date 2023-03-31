@@ -80,11 +80,13 @@ Alle dialoger kan referere en dialoggruppe (DG), som knytter disse sammen. En di
 
 _Hendelser_ refererer til tekniske applikasjonshendelser som genereres av Dialogporten (eller tjenestetilbyder) og publiseres gjennom [Event-komponenten i Altinn](https://docs.altinn.studio/technology/solutions/altinn-platform/events/). Hendelser kan konsumeres av autoriserte parter og tjenestetilbyder, i tråd med de autorisasjonsregler tjenestetilbyder har definert.
 
+Se også [Integrasjon med event-komponenten](#integrasjon-med-event-komponent) for tekniske detaljer.
+
 ## Handlinger
 
 En _handling_ (som i «action») beskriver en interaksjon som brukere kan gjøre med eller relatert til en dialog. Eksempler på handlinger er «Åpne», «Arkiver», «Slett», «Start signering», «Betal», «Bekreft», «Les mer» etc. Listen over aktuelle handlinger er en del av den strukturerte beskrivelsen av en dialogen, og kan når som helst endres av tjenestetilbyder gjennom API.
 
-En handling er enten en _«GUI»-handling_ eller en _«API»-handling_.
+En handling er enten en _«GUI»-handling_ eller en _«API»-handling_. Alle handlinger - både GUI og API - har en identifikator som mappes til en _action_ (og valgfritt en _subressurs_, indikert av feltet `authorizationRequirement`) i _autorisasjonspolicyen_ som er knyttet til en _tjenesteressurs._ 
 
 ### GUI-handlinger
 
@@ -96,11 +98,10 @@ Det er kun én GUI-handling som Dialogporten knytter semantikk til; slett. Denne
 
 ### API-handling
 
-En API-handling er tiltenkt SBS-er og portaler som benytter Dialogporten gjennom en egen integrasjon. Disse inneholder også en identifikator som indikerer hva slags type handling det er snakk om, hvilken URL som må kalles for å utføre handlingen, hvilken HTTP-operasjon som skal benyttes (typisk GET eller POST), og en lenke til en strukturert beskrivelse (JSON Schema) av datamodellen som enten returneres eller forventes som input.
+En API-handling er tiltenkt SBS-er og portaler som benytter Dialogporten gjennom en egen integrasjon. API-handlinger er versjonerte, og inneholder en liste med endepunkter som kan benyttes, evt. med informasjon om et endepunkt er under utfasing og når dette vil skje. Hver handling inneholder også en identifikator som indikerer hva slags type handling det er snakk om, og hvert endepunkt indikerer hvilken URL som må kalles for å utføre handlingen, hvilken HTTP-operasjon som skal benyttes (typisk GET eller POST), og en lenke til en strukturert beskrivelse (JSON Schema) av datamodellen som enten returneres eller forventes som input.
 
 {% include note.html type="info" content="Dialogporten foretar ikke validering av noe data, og ser ikke hvilke data som flyter mellom SBS-et og tjenestetilbyderens API." %}
 
-Alle handlinger - både GUI og API - har en identifikator som mappes til en _action_ (og valgfritt en _subressurs_) i _autorisasjonspolicyen_ som er knyttet til en _tjenesteressurs._
 
 ## Tjenesteressurs
 
@@ -108,7 +109,7 @@ Alle dialoger må referere en _tjenesteressurs_. En tjenesteressurs utgjør auto
 
 Eksempelvis vil GUI-handlingen «Signer» referere en _action_ kalt «sign» i XACML-policyen, som krever tilganger den innloggende brukeren ikke besitter. Knappen vil derfor være grået ut og deaktivert. Tjenesteressursen er det tilgangsstyrere i virksomhetene forholder seg til, mht hvem som skal ha tilgang til å gjøre hva på vegne av en virksomhet (tilsvarende dagens tjenestedelegering).
 
-Handlinger og andre deler (typisk referanser til vedlegg) av i dialogen kan også referere en _subressurs_, som kan ha andre autorisasjonsregler knyttet til seg. Dette muliggjør at man kan ha ulike autorisasjonskrav for samme type handling som er tilgjengelige ved ulike tilstander dialogen har. F.eks. vil det kunne brukes for å la et signeringssteg kun være tilgjengelig for en ekstern revisor/regnskapsfører.
+Handlinger og andre deler (typisk referanser til vedlegg) av i dialogen kan også referere en _subressurs_ gjennom feltet `authorizationRequirement`, som kan ha andre autorisasjonsregler knyttet til seg. Dette muliggjør at man kan ha ulike autorisasjonskrav for samme type handling som er tilgjengelige ved ulike tilstander dialogen har. F.eks. vil det kunne brukes for å la et signeringssteg kun være tilgjengelig for en ekstern revisor/regnskapsfører.
 
 På samme måte vil API-handlinger som ikke er tilgjengelige for SBS-et (med den identiteten SBS-et oppgir) ikke returneres. 
 
@@ -254,7 +255,105 @@ SBS->>TT: Foretar handling for dialog med beriket MP-token + MP-token m/scope fo
 TT->>TT: Validerer beriket MP-token og MP-token m/scope for tjeneste
 TT->>SBS: Returner respons på handling
 ```
+# Integrasjon med event-komponent
 
+Dialogporten vil generere events automatisk basert på endringer som gjøres på dialog-entiteten. Det vil også gjøres genereres events for hvert separate innslag i aktivitetshistorikken. Se 
+
+Se [case-01]({% link _dialogporten_case/example-case-01.md %}) for eksempler på hvordan events genereres.
+
+## Knyttet til dialog-entiteten
+
+Opprettelse/endring/sletting av dialog-entiteten genererer meldinger med følgende typer:
+
+| Type                                         | Når                           |
+| -------------------------------------------- | ----------------------------- |
+| `dialogporten.v1.dialog.created`             | Dialogen opprettes            |
+| `dialogporten.v1.dialog.updated.status`      | Status for dialogen er endret |
+| `dialogporten.v1.dialog.updated.actions`     | Listen med actions er endret  |
+| `dialogporten.v1.dialog.updated.attachments` | Listen med vedlegg er endret  |
+| `dialogporten.v1.dialog.deleted`             | Dialogen slettes              |
+
+### Eksempel
+
+```jsonc
+{
+    "specversion": "1.0",
+
+    // Unik event-id
+    "id": "91f2388f-bd8c-4647-8684-fd9f68af5b15",
+    
+    // Se "Type" i tabell over for liste over mulige hendelser
+    "type": "dialogporten.v1.dialog.created",
+    
+    // Timestamp for når hendelsen inntraff i Dialogporten
+    "time": "2023-02-20T08:00:06.4014168Z",
+    
+    // urn:altinn:resource:{serviceResourceIdentifier}
+    "resource": "urn:altinn:resource:super-simple-service", 
+    
+    // Dialog-ID
+    "resourceinstance": "f4e6df3c-7434-44c3-875e-8dca1cdf0b20",
+    
+    // Party
+    "subject": "org/91234578", 
+    
+    // URL til dialog i Dialogporten. Merk denne vil gi 410 Gone hvis type er `dialogporten.v1.dialog.deleted`
+    "source": "https://dialogporten.no/api/v1/dialogs/f4e6df3c-7434-44c3-875e-8dca1cdf0b20" 
+}
+```
+
+## Knyttet til aktivitetshistorikken 
+
+Det vil alltid bli generert egne events for hvert nye innslag i aktivitetshistorikken. `source` vil referere selve innslaget (ikke dialogen). Det vil også inkluderes en `data` som inneholder ytterligere informasjon som i mange tilfeller lar systemer kunne agere direkte mot tjenesteeiers API-er uten å måtte hente dialog/aktivitet først.
+
+Eventer har type som er prefikset/navnerommet `dialogporten.v1.dialog.activity`. Suffikset er gjenspeiler mulige verdier av `activityType`.
+
+| Type                                          | Når                                                                   |
+| --------------------------------------------- | --------------------------------------------------------------------- |
+| `dialogporten.v1.dialog.activity.submission`  | Tjenestetilbyder har lagt til en aktivitet av type `submission`       |
+| `dialogporten.v1.dialog.activity.feedback`    | Tjenestetilbyder har lagt til en aktivitet av type `feedback`         |
+| `dialogporten.v1.dialog.activity.information` | Tjenestetilbyder har lagt til en aktivitet av type `information`      |
+| `dialogporten.v1.dialog.activity.error`       | Tjenestetilbyder har lagt til en aktivitet av type `error`            |
+| `dialogporten.v1.dialog.activity.closed`      | Tjenestetilbyder har lagt til en aktivitet av type `closed`           |
+| `dialogporten.v1.dialog.activity.seen`        | Dialogen åpnes/lastes for første gang (etter en `feedback`-aktivitet) |
+| `dialogporten.v1.dialog.activity.forwarded`   | Dialogen er videresendt/delegert til noen andre.                      |
+
+### Eksempel
+
+```jsonc
+{
+    "specversion": "1.0",
+
+    // Unik event-id
+    "id": "91f2388f-bd8c-4647-8684-fd9f68af5b15",
+    
+    // Se "Type" i tabell over for liste over mulige hendelser
+    "type": "dialogporten.v1.dialog.created",
+    
+    // Timestamp for når hendelsen inntraff i Dialogporten
+    "time": "2023-02-20T08:00:06.4014168Z",
+    
+    // urn:altinn:resource:{serviceResourceIdentifier}
+    "resource": "urn:altinn:resource:super-simple-service", 
+    
+    // Dialog-ID
+    "resourceinstance": "f4e6df3c-7434-44c3-875e-8dca1cdf0b20",
+    
+    // Party
+    "subject": "org/91234578",
+
+    // URL til aktivitetshistorikk-innslag i Dialogporten
+    "source": "https://dialogporten.no/api/v1/dialogs/f4e6df3c-7434-44c3-875e-8dca1cdf0b20/activityhistory/21241c7e-819f-462b-b8a4-d5d32352311a",
+    
+    // Ytterligere data (activityId, externalType og externalId) fra aktivtetshistorikk-innslaget. 
+    // inkluderes verbatim, hvis satt.
+    "data": { 
+        "activityId": "21241c7e-819f-462b-b8a4-d5d32352311a",
+        "externalType": "additional-info-received",
+        "externalId": "54ae8387-7320-4693-8423-0ceb0efaf5fa"
+    }
+} 
+```
 
 # Sekvensbeskrivelser
 
