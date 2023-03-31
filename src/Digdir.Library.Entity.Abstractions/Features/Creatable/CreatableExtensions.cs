@@ -11,7 +11,7 @@ public static class CreatableExtensions
     /// <param name="creatable">The <see cref="ICreatableEntity"/> to update.</param>
     /// <param name="userId">The id of the user that created this entity.</param>
     /// <param name="utcNow">The creation time in UTC.</param>
-    public static void Create(this ICreatableEntity creatable, Guid userId, DateTime utcNow)
+    public static void Create(this ICreatableEntity creatable, Guid userId, DateTimeOffset utcNow)
     {
         creatable.CreatedAtUtc = creatable.CreatedAtUtc == default 
             ? utcNow 

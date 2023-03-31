@@ -11,7 +11,7 @@ public static class SoftDeletableExtensions
     /// <param name="deletable">The <see cref="ISoftDeletableEntity"/> to delete.</param>
     /// <param name="userId">The id of the user that deleted this entity.</param>
     /// <param name="now">The deletion time in UTC.</param>
-    public static void Delete(this ISoftDeletableEntity deletable, Guid userId, DateTime now)
+    public static void Delete(this ISoftDeletableEntity deletable, Guid userId, DateTimeOffset now)
     {
         deletable.DeletedByUserId = userId;
         deletable.DeletedAtUtc = now;

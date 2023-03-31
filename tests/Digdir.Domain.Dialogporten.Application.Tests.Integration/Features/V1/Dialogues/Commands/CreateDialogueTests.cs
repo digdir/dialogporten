@@ -92,7 +92,7 @@ public class CreateDialogueTests : ApplicationCollectionFixture
                 new()
                 {
                     Id = Guid.NewGuid(),
-                    CreatedAtUtc = DateTime.UtcNow,
+                    CreatedAtUtc = DateTimeOffset.UtcNow,
                     TypeId = DialogueActivityType.Enum.Submission,
                     PerformedBy = "person:12018212345",
                     ExtendedType = "SKE-1234-received-precheck-ok",

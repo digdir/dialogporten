@@ -38,7 +38,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
 
-                    b.Property<DateTime>("CreatedAtUtc")
+                    b.Property<DateTimeOffset>("CreatedAtUtc")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("current_timestamp at time zone 'utc'");
@@ -74,7 +74,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         .HasMaxLength(1023)
                         .HasColumnType("character varying(1023)");
 
-                    b.Property<DateTime>("UpdatedAtUtc")
+                    b.Property<DateTimeOffset>("UpdatedAtUtc")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("current_timestamp at time zone 'utc'");
@@ -110,7 +110,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
 
-                    b.Property<DateTime>("CreatedAtUtc")
+                    b.Property<DateTimeOffset>("CreatedAtUtc")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("current_timestamp at time zone 'utc'");
@@ -141,7 +141,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.Property<int>("TypeId")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime>("UpdatedAtUtc")
+                    b.Property<DateTimeOffset>("UpdatedAtUtc")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("current_timestamp at time zone 'utc'");
@@ -208,7 +208,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("InternalId"));
 
-                    b.Property<DateTime>("CreatedAtUtc")
+                    b.Property<DateTimeOffset>("CreatedAtUtc")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("current_timestamp at time zone 'utc'");
@@ -324,7 +324,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
 
-                    b.Property<DateTime>("CreatedAtUtc")
+                    b.Property<DateTimeOffset>("CreatedAtUtc")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("current_timestamp at time zone 'utc'");
@@ -349,7 +349,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.Property<long>("SizeInBytes")
                         .HasColumnType("bigint");
 
-                    b.Property<DateTime>("UpdatedAtUtc")
+                    b.Property<DateTimeOffset>("UpdatedAtUtc")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("current_timestamp at time zone 'utc'");
@@ -385,7 +385,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.Property<long>("BodyId")
                         .HasColumnType("bigint");
 
-                    b.Property<DateTime>("CreatedAtUtc")
+                    b.Property<DateTimeOffset>("CreatedAtUtc")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("current_timestamp at time zone 'utc'");
@@ -393,10 +393,10 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("CreatedByUserId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime?>("DueAtUtc")
+                    b.Property<DateTimeOffset?>("DueAtUtc")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime?>("ExpiresAtUtc")
+                    b.Property<DateTimeOffset?>("ExpiresAtUtc")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("ExtendedStatus")
@@ -417,7 +417,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
 
-                    b.Property<DateTime?>("ReadAtUtc")
+                    b.Property<DateTimeOffset?>("ReadAtUtc")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<long>("SearchTitleId")
@@ -437,7 +437,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.Property<long>("TitleId")
                         .HasColumnType("bigint");
 
-                    b.Property<DateTime>("UpdatedAtUtc")
+                    b.Property<DateTimeOffset>("UpdatedAtUtc")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("current_timestamp at time zone 'utc'");
@@ -445,7 +445,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("UpdatedByUserId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("VisibleFromUtc")
+                    b.Property<DateTimeOffset>("VisibleFromUtc")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("InternalId");
@@ -525,7 +525,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("InternalId"));
 
-                    b.Property<DateTime>("CreatedAtUtc")
+                    b.Property<DateTimeOffset>("CreatedAtUtc")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("current_timestamp at time zone 'utc'");
@@ -565,7 +565,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         .HasMaxLength(15)
                         .HasColumnType("character varying(15)");
 
-                    b.Property<DateTime>("CreatedAtUtc")
+                    b.Property<DateTimeOffset>("CreatedAtUtc")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("current_timestamp at time zone 'utc'");
@@ -573,7 +573,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("CreatedByUserId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("UpdatedAtUtc")
+                    b.Property<DateTimeOffset>("UpdatedAtUtc")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("current_timestamp at time zone 'utc'");
@@ -599,7 +599,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("InternalId"));
 
-                    b.Property<DateTime>("CreatedAtUtc")
+                    b.Property<DateTimeOffset>("CreatedAtUtc")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("current_timestamp at time zone 'utc'");

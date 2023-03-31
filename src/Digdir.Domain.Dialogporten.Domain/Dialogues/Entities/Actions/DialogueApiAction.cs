@@ -6,9 +6,9 @@ public class DialogueApiAction : IEntity
 {
     public long InternalId { get; set; }
     public Guid Id { get; set; }
-    public DateTime CreatedAtUtc { get; set; }
+    public DateTimeOffset CreatedAtUtc { get; set; }
     public Guid CreatedByUserId { get; set; }
-    public DateTime UpdatedAtUtc { get; set; }
+    public DateTimeOffset UpdatedAtUtc { get; set; }
     public Guid UpdatedByUserId { get; set; }
 
     public string Action { get; set; } = null!;

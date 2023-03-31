@@ -26,7 +26,7 @@ internal sealed class ConvertDomainEventsToOutboxMessagesInterceptor : SaveChang
 
         var outboxMessages = _eventPublisher
             .GetDomainEvents()
-            .Select(domainEvent => OutboxMessage.Create(domainEvent, DateTime.UtcNow))
+            .Select(domainEvent => OutboxMessage.Create(domainEvent, DateTimeOffset.UtcNow))
             .ToList();
         _eventPublisher.ClearDomainEvents();
 

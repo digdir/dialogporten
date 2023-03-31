@@ -19,7 +19,7 @@ internal sealed class UnitOfWork : IUnitOfWork
         // TODO: Eject if domain errors
         // TODO: Handle domain events
         // TODO: Get the correct user id.
-        _dialogueDbContext.ChangeTracker.HandleAuditableEntities(MockUserId, DateTime.UtcNow);
+        _dialogueDbContext.ChangeTracker.HandleAuditableEntities(MockUserId, DateTimeOffset.UtcNow);
         return _dialogueDbContext.SaveChangesAsync(cancellationToken);
     }
 }

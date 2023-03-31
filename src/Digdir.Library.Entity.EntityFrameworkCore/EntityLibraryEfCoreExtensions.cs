@@ -38,7 +38,7 @@ public static class EntityLibraryEfCoreExtensions
     /// <param name="userId">The id of the user that made the current changes.</param>
     /// <param name="utcNow">The time in UTC in which the changes tok place.</param>
     /// <returns>The same <see cref="ChangeTracker"/> instance so that multiple calls can be chained.</returns>
-    public static ChangeTracker HandleAuditableEntities(this ChangeTracker changeTracker, Guid userId, DateTime utcNow)
+    public static ChangeTracker HandleAuditableEntities(this ChangeTracker changeTracker, Guid userId, DateTimeOffset utcNow)
     {
         return changeTracker
             .HandleLookupEntities()

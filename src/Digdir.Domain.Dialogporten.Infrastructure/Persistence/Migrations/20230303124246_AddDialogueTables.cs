@@ -57,7 +57,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     InternalId = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
-                    CreatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "current_timestamp at time zone 'utc'"),
+                    CreatedAtUtc = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "current_timestamp at time zone 'utc'"),
                     CreatedByUserId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
@@ -72,18 +72,18 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     InternalId = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
-                    CreatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "current_timestamp at time zone 'utc'"),
+                    CreatedAtUtc = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "current_timestamp at time zone 'utc'"),
                     CreatedByUserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    UpdatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "current_timestamp at time zone 'utc'"),
+                    UpdatedAtUtc = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "current_timestamp at time zone 'utc'"),
                     UpdatedByUserId = table.Column<Guid>(type: "uuid", nullable: false),
                     Org = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     ServiceResourceIdentifier = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     Party = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     ExtendedStatus = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
-                    VisibleFromUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    DueAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    ExpiresAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    ReadAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    VisibleFromUtc = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    DueAtUtc = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    ExpiresAtUtc = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    ReadAtUtc = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     StatusId = table.Column<int>(type: "integer", nullable: false),
                     BodyId = table.Column<long>(type: "bigint", nullable: false),
                     TitleId = table.Column<long>(type: "bigint", nullable: false),
@@ -131,9 +131,9 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                 {
                     CultureCode = table.Column<string>(type: "character varying(15)", maxLength: 15, nullable: false),
                     LocalizationSetId = table.Column<long>(type: "bigint", nullable: false),
-                    CreatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "current_timestamp at time zone 'utc'"),
+                    CreatedAtUtc = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "current_timestamp at time zone 'utc'"),
                     CreatedByUserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    UpdatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "current_timestamp at time zone 'utc'"),
+                    UpdatedAtUtc = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "current_timestamp at time zone 'utc'"),
                     UpdatedByUserId = table.Column<Guid>(type: "uuid", nullable: false),
                     Value = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false)
                 },
@@ -155,7 +155,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     InternalId = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
-                    CreatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "current_timestamp at time zone 'utc'"),
+                    CreatedAtUtc = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "current_timestamp at time zone 'utc'"),
                     CreatedByUserId = table.Column<Guid>(type: "uuid", nullable: false),
                     PerformedBy = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
                     ExtendedType = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
@@ -195,9 +195,9 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     InternalId = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
-                    CreatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "current_timestamp at time zone 'utc'"),
+                    CreatedAtUtc = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "current_timestamp at time zone 'utc'"),
                     CreatedByUserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    UpdatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "current_timestamp at time zone 'utc'"),
+                    UpdatedAtUtc = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "current_timestamp at time zone 'utc'"),
                     UpdatedByUserId = table.Column<Guid>(type: "uuid", nullable: false),
                     Action = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     Resource = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
@@ -226,9 +226,9 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     InternalId = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
-                    CreatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "current_timestamp at time zone 'utc'"),
+                    CreatedAtUtc = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "current_timestamp at time zone 'utc'"),
                     CreatedByUserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    UpdatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "current_timestamp at time zone 'utc'"),
+                    UpdatedAtUtc = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "current_timestamp at time zone 'utc'"),
                     UpdatedByUserId = table.Column<Guid>(type: "uuid", nullable: false),
                     DisplayNameInternalId = table.Column<long>(type: "bigint", nullable: false),
                     SizeInBytes = table.Column<long>(type: "bigint", nullable: false),
@@ -261,9 +261,9 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     InternalId = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
-                    CreatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "current_timestamp at time zone 'utc'"),
+                    CreatedAtUtc = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "current_timestamp at time zone 'utc'"),
                     CreatedByUserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    UpdatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "current_timestamp at time zone 'utc'"),
+                    UpdatedAtUtc = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "current_timestamp at time zone 'utc'"),
                     UpdatedByUserId = table.Column<Guid>(type: "uuid", nullable: false),
                     Action = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     TitleInternalId = table.Column<long>(type: "bigint", nullable: false),
@@ -304,7 +304,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     InternalId = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
-                    CreatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "current_timestamp at time zone 'utc'"),
+                    CreatedAtUtc = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "current_timestamp at time zone 'utc'"),
                     CreatedByUserId = table.Column<Guid>(type: "uuid", nullable: false),
                     Value = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     DialogueId = table.Column<long>(type: "bigint", nullable: false)

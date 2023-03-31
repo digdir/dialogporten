@@ -11,9 +11,9 @@ public class DialogueEntity : IEntity
 {
     public long InternalId { get; set; }
     public Guid Id { get; set; }
-    public DateTime CreatedAtUtc { get; set; }
+    public DateTimeOffset CreatedAtUtc { get; set; }
     public Guid CreatedByUserId { get; set; }
-    public DateTime UpdatedAtUtc { get; set; }
+    public DateTimeOffset UpdatedAtUtc { get; set; }
     public Guid UpdatedByUserId { get; set; }
 
     // TODO: Hent dette fra token?
@@ -25,17 +25,17 @@ public class DialogueEntity : IEntity
     /// Når blir dialogen synlig hos party. Muliggjør opprettelse i forveien og samtidig tilgjengeliggjøring 
     /// for mange parties.
     /// </summary>
-    public DateTime VisibleFromUtc { get; set; }
+    public DateTimeOffset VisibleFromUtc { get; set; }
     /// <summary>
     /// Hvis oppgitt blir dialogen satt med en frist 
     /// (i Altinn2 er denne bare retningsgivende og har ingen effekt, skal dette fortsette?)
     /// </summary>
-    public DateTime? DueAtUtc { get; set; }
+    public DateTimeOffset? DueAtUtc { get; set; }
     /// <summary>
     /// Mulighet for å skjule/deaktivere en dialog på et eller annet tidspunkt?
     /// </summary>
-    public DateTime? ExpiresAtUtc { get; set; }
-    public DateTime? ReadAtUtc { get; set; }
+    public DateTimeOffset? ExpiresAtUtc { get; set; }
+    public DateTimeOffset? ReadAtUtc { get; set; }
 
     // === Dependent relationships ===
     public DialogueStatus.Enum StatusId { get; set; }

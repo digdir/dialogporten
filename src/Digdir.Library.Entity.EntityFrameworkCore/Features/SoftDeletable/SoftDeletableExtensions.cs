@@ -25,7 +25,7 @@ internal static class SoftDeletableExtensions
         return modelBuilder;
     }
 
-    public static ChangeTracker HandleSoftDeletableEntities(this ChangeTracker changeTracker, Guid userId, DateTime utcNow)
+    public static ChangeTracker HandleSoftDeletableEntities(this ChangeTracker changeTracker, Guid userId, DateTimeOffset utcNow)
     {
         var softDeletableEneities = changeTracker
             .Entries<ISoftDeletableEntity>()

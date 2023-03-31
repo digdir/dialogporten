@@ -11,11 +11,11 @@ public sealed class UpdateDialogueDto
     public string Party { get; set; } = null!;
     public DialogueStatus.Enum StatusId { get; set; }
     public string? ExtendedStatus { get; set; }
-    public DateTime VisibleFromUtc { get; set; }
-    public DateTime CreatedAtUtc { get; set; }
-    public DateTime UpdatedAtUtc { get; set; }
-    public DateTime? ReadAtUtc { get; set; }
-    public DateTime? DueAtUtc { get; set; }
+    public DateTimeOffset VisibleFromUtc { get; set; }
+    public DateTimeOffset CreatedAtUtc { get; set; }
+    public DateTimeOffset UpdatedAtUtc { get; set; }
+    public DateTimeOffset? ReadAtUtc { get; set; }
+    public DateTimeOffset? DueAtUtc { get; set; }
     public List<LocalizationDto> Body { get; set; } = new();
     public List<LocalizationDto> Title { get; set; } = new();
     public List<LocalizationDto> SenderName { get; set; } = new();
@@ -35,7 +35,7 @@ public sealed class UpdateDialogueDialogueTokenScopeDto
 public sealed class UpdateDialogueDialogueActivityDto
 {
     public Guid? Id { get; set; }
-    public DateTime? CreatedAtUtc { get; set; }
+    public DateTimeOffset? CreatedAtUtc { get; set; }
     public DialogueActivityType.Enum TypeId { get; set; }
     public string? PerformedBy { get; set; }
     public string? ExtendedType { get; set; }

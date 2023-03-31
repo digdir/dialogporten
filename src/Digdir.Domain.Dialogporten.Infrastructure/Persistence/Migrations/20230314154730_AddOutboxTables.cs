@@ -21,8 +21,8 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     Content = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     Status = table.Column<int>(type: "integer", nullable: false),
                     Error = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
-                    LastAttemptedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    CreatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    LastAttemptedAtUtc = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    CreatedAtUtc = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {

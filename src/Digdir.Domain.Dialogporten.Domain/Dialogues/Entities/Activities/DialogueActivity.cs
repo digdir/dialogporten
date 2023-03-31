@@ -7,7 +7,7 @@ public class DialogueActivity : IImmutableEntity
 {
     public long InternalId { get; set; }
     public Guid Id { get; set; }
-    public DateTime CreatedAtUtc { get; set; }
+    public DateTimeOffset CreatedAtUtc { get; set; }
     public Guid CreatedByUserId { get; set; }
 
 

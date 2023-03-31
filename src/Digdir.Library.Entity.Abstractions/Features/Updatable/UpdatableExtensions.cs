@@ -11,7 +11,7 @@ public static class UpdatableExtensions
     /// <param name="updateable">The <see cref="IUpdateableEntity"/> to update.</param>
     /// <param name="userId">The id of the user that updated this entity.</param>
     /// <param name="utcNow">The update time in UTC.</param>
-    public static void Update(this IUpdateableEntity updateable, Guid userId, DateTime utcNow)
+    public static void Update(this IUpdateableEntity updateable, Guid userId, DateTimeOffset utcNow)
     {
         updateable.UpdatedAtUtc = utcNow;
         updateable.UpdatedByUserId = userId;

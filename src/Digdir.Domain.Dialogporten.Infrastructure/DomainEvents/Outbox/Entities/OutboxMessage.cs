@@ -16,12 +16,12 @@ internal sealed class OutboxMessage
     public string Content { get; private set; } = string.Empty;
     public OutboxStatus Status { get; private set; }
     public string? Error { get; private set; }
-    public DateTime? LastAttemptedAtUtc { get; private set; }
-    public DateTime CreatedAtUtc { get; private set; }
+    public DateTimeOffset? LastAttemptedAtUtc { get; private set; }
+    public DateTimeOffset CreatedAtUtc { get; private set; }
 
     private OutboxMessage() { }
 
-    public static OutboxMessage Create(IDomainEvent domainEvent, DateTime createdAtUtc) => new()
+    public static OutboxMessage Create(IDomainEvent domainEvent, DateTimeOffset createdAtUtc) => new()
     {
         EventId = domainEvent.EventId,
         CreatedAtUtc = createdAtUtc,
@@ -42,7 +42,7 @@ internal sealed class OutboxMessage
 
     public void Success()
     {
-        LastAttemptedAtUtc = DateTime.UtcNow;
+        LastAttemptedAtUtc = DateTimeOffset.UtcNow;
         NumberOfAttempts++;
         Status = OutboxStatus.Processed;
     }
@@ -50,7 +50,7 @@ internal sealed class OutboxMessage
     public void Failure(string error)
     {
         Error = error;
-        LastAttemptedAtUtc = DateTime.UtcNow;
+        LastAttemptedAtUtc = DateTimeOffset.UtcNow;
         NumberOfAttempts++;
         if (NumberOfAttempts >= MaxNumberOfAttempts)
         {
