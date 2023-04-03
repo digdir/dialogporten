@@ -826,7 +826,7 @@
             } ]
           },
           "recipient" : "org:991825827",
-          "status" : "under-progress",
+          "status" : "in-progress",
           "dates" : {
             "createdDateTime" : "2022-12-01T10:00:00.000Z",
             "updatedDateTime" : "2022-12-01T10:00:00.000Z",
@@ -998,7 +998,7 @@
       "Status" : {
         "type" : "string",
         "description" : "",
-        "enum" : [ "unspecified", "under-progress", "waiting", "signing", "cancelled", "completed" ]
+        "enum" : [ "unspecified", "in-progress", "waiting", "signing", "cancelled", "completed" ]
       },
       "NotificationRequest" : {
         "title" : "Notifications",
@@ -1408,7 +1408,7 @@
               "value" : "Navn på dialoggruppe."
             } ]
           },
-          "status" : "under-progress",
+          "status" : "in-progress",
           "dates" : {
             "dueDateTime" : "2022-12-01T12:00:00.000Z",
             "expiryDate" : "2023-12-01T12:00:00.000Z"

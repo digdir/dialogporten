@@ -17,7 +17,7 @@
     },
     "party": "org/991825827",
     "externalReference": "123456789",
-    "status": "under-progress",
+    "status": "in-progress",
     "externalStatus": "SKE-ABC",
     "dates": {
         "createdDateTime": "2022-12-01T10:00:00.000Z",

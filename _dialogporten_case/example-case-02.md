@@ -47,7 +47,7 @@ Partene er Nortura og Skatteetaten.
     "id": "e0300961-85fb-4ef2-abff-681d77f9960e",
     "serviceResourceIdentifier": "rf1305_purchases_from_primary_industry_eggs",     
     "party": "org/938752648",
-    "status": "under-progress", 
+    "status": "in-progress", 
     "content": {
         "body": [ { "code": "nb_NO", "value": "Vi er klare for å motta de 50 oppgavene du har oppgitt at du vil rapportere" } ],
         "title": [ { "code": "nb_NO", "value": "RF-1305 Kjøp fra primærnæring – egg" } ],

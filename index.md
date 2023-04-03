@@ -267,11 +267,9 @@ Opprettelse/endring/sletting av dialog-entiteten genererer meldinger med følgen
 
 | Type                                         | Når                           |
 | -------------------------------------------- | ----------------------------- |
-| `dialogporten.v1.dialog.created`             | Dialogen opprettes            |
-| `dialogporten.v1.dialog.updated.status`      | Status for dialogen er endret |
-| `dialogporten.v1.dialog.updated.actions`     | Listen med actions er endret  |
-| `dialogporten.v1.dialog.updated.attachments` | Listen med vedlegg er endret  |
-| `dialogporten.v1.dialog.deleted`             | Dialogen slettes              |
+| `dialogporten.dialog.created.v1`             | Dialogen opprettes            |
+| `dialogporten.dialog.updated.v1`             | Status for dialogen er endret |
+| `dialogporten.dialog.deleted.v1`             | Dialogen slettes              |
 
 ### Eksempel
 
@@ -283,7 +281,7 @@ Opprettelse/endring/sletting av dialog-entiteten genererer meldinger med følgen
     "id": "91f2388f-bd8c-4647-8684-fd9f68af5b15",
     
     // Se "Type" i tabell over for liste over mulige hendelser
-    "type": "dialogporten.v1.dialog.created",
+    "type": "dialogporten.dialog.created.v1",
     
     // Timestamp for når hendelsen inntraff i Dialogporten
     "time": "2023-02-20T08:00:06.4014168Z",
@@ -297,7 +295,7 @@ Opprettelse/endring/sletting av dialog-entiteten genererer meldinger med følgen
     // Party
     "subject": "org/91234578", 
     
-    // URL til dialog i Dialogporten. Merk denne vil gi 410 Gone hvis type er `dialogporten.v1.dialog.deleted`
+    // URL til dialog i Dialogporten. Merk denne vil gi 410 Gone hvis type er `dialogporten.dialog.deleted.v1`
     "source": "https://dialogporten.no/api/v1/dialogs/f4e6df3c-7434-44c3-875e-8dca1cdf0b20" 
 }
 ```
@@ -306,17 +304,17 @@ Opprettelse/endring/sletting av dialog-entiteten genererer meldinger med følgen
 
 Det vil alltid bli generert egne events for hvert nye innslag i aktivitetshistorikken. `source` vil referere selve innslaget (ikke dialogen). Det vil også inkluderes en `data` som inneholder ytterligere informasjon som i mange tilfeller lar systemer kunne agere direkte mot tjenesteeiers API-er uten å måtte hente dialog/aktivitet først.
 
-Eventer har type som er prefikset/navnerommet `dialogporten.v1.dialog.activity`. Suffikset er gjenspeiler mulige verdier av `activityType`.
+Eventer har type som er prefikset/navnerommet `dialogporten.dialog.activity.v1`. Suffikset er gjenspeiler mulige verdier av `activityType`.
 
 | Type                                          | Når                                                                   |
 | --------------------------------------------- | --------------------------------------------------------------------- |
-| `dialogporten.v1.dialog.activity.submission`  | Tjenestetilbyder har lagt til en aktivitet av type `submission`       |
-| `dialogporten.v1.dialog.activity.feedback`    | Tjenestetilbyder har lagt til en aktivitet av type `feedback`         |
-| `dialogporten.v1.dialog.activity.information` | Tjenestetilbyder har lagt til en aktivitet av type `information`      |
-| `dialogporten.v1.dialog.activity.error`       | Tjenestetilbyder har lagt til en aktivitet av type `error`            |
-| `dialogporten.v1.dialog.activity.closed`      | Tjenestetilbyder har lagt til en aktivitet av type `closed`           |
-| `dialogporten.v1.dialog.activity.seen`        | Dialogen åpnes/lastes for første gang (etter en `feedback`-aktivitet) |
-| `dialogporten.v1.dialog.activity.forwarded`   | Dialogen er videresendt/delegert til noen andre.                      |
+| `dialogporten.dialog.activity.submission.v1`  | Tjenestetilbyder har lagt til en aktivitet av type `submission`       |
+| `dialogporten.dialog.activity.feedback.v1`    | Tjenestetilbyder har lagt til en aktivitet av type `feedback`         |
+| `dialogporten.dialog.activity.information.v1` | Tjenestetilbyder har lagt til en aktivitet av type `information`      |
+| `dialogporten.dialog.activity.error.v1`       | Tjenestetilbyder har lagt til en aktivitet av type `error`            |
+| `dialogporten.dialog.activity.closed.v1`      | Tjenestetilbyder har lagt til en aktivitet av type `closed`           |
+| `dialogporten.dialog.activity.seen.v1`        | Dialogen åpnes/lastes for første gang (etter en `feedback`-aktivitet) |
+| `dialogporten.dialog.activity.forwarded.v1`   | Dialogen er videresendt/delegert til noen andre.                      |
 
 ### Eksempel
 
@@ -328,7 +326,7 @@ Eventer har type som er prefikset/navnerommet `dialogporten.v1.dialog.activity`.
     "id": "91f2388f-bd8c-4647-8684-fd9f68af5b15",
     
     // Se "Type" i tabell over for liste over mulige hendelser
-    "type": "dialogporten.v1.dialog.created",
+    "type": "dialogporten.dialog.activity.submission.v1",
     
     // Timestamp for når hendelsen inntraff i Dialogporten
     "time": "2023-02-20T08:00:06.4014168Z",

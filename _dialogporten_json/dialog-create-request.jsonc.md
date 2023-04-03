@@ -40,14 +40,14 @@
     // Kjente statuser som bestemmer hvordan dialogen vises for bruker: 
     // "unspecified"    = Dialogen har ingen spesiell status. Brukes typisk for enkle meldinger som ikke krever noe 
     //                    interaksjon. Dette er default. 
-    // "under-progress" = Under arbeid. Generell status som brukes for dialogtjenester der ytterligere bruker-input er 
+    // "in-progress"    = Under arbeid. Generell status som brukes for dialogtjenester der ytterligere bruker-input er 
     //                    forventet.
     // "waiting"        = Venter på tilbakemelding fra tjenesteeier
     // "signing"        = Dialogen er i en tilstand hvor den venter på signering. Typisk siste steg etter at all  
     //                    utfylling er gjennomført og validert. 
     // "cancelled"      = Dialogen ble avbrutt. Dette gjør at dialogen typisk fjernes fra normale GUI-visninger.
     // "completed"      = Dialigen ble fullført. Dette gjør at dialogen typisk flyttes til et GUI-arkiv eller lignende.
-    "status": "under-progress", 
+    "status": "in-progress", 
     
     // En vilkårlig streng som er tjenestespesifikk
     "externalStatus": "SKE-ABC",

@@ -68,7 +68,7 @@ Opprettelsen av dialogen medfører at det genereres en eller flere events. Denne
 {
     "specversion": "1.0",
     "id": "91f2388f-bd8c-4647-8684-fd9f68af5b15", // unik event-id
-    "type": "dialogporten.v1.dialog.created",
+    "type": "dialogporten.dialog.created.v1",
     "time": "2023-02-20T08:00:06.4014168Z",
     "resource": "urn:altinn:resource:super-simple-service", // serviceResourceIdentifier
     "resourceinstance": "f4e6df3c-7434-44c3-875e-8dca1cdf0b20", // dialog-id
@@ -84,7 +84,7 @@ Ethvert nytt innslag i activityHistory genererer også events. Siden dette ble o
 {
     "specversion": "1.0",
     "id": "00301bf0-1497-426c-ab0a-b52636853139",
-    "type": "dialogporten.v1.dialog.activity.submission", // siste ledd svarer til activityType
+    "type": "dialogporten.dialog.activity.submission.v1", // siste ledd svarer til activityType
     "time": "2023-02-20T08:00:06.4014168Z",
     "resource": "urn:altinn:resource:super-simple-service",
     "resourceinstance": "f4e6df3c-7434-44c3-875e-8dca1cdf0b20",
@@ -119,7 +119,7 @@ Mens Skatteetaten behandler oppgaven går en eller annen ansatt for VIRKSOMHET A
 {
     "specversion": "1.0",
     "id": "6b19629c-79d9-45cf-884d-601b7d9d2041",
-    "type": "dialogporten.v1.dialog.activity.seen", 
+    "type": "dialogporten.dialog.activity.seen.v1", 
     "time": "2023-02-20T08:00:06.4014168Z",
     "resource": "urn:altinn:resource:super-simple-service",
     "resourceinstance": "f4e6df3c-7434-44c3-875e-8dca1cdf0b20",
@@ -160,14 +160,13 @@ Saksbehandlingen har avdekket at det er behov for å innhente ytterligere opplys
 
 ## 6. Dialogporten genererer events basert på endringen
  
-En PATCH kan medføre at flere events blir generert, som muliggjør finkornet filtering på events en bryr seg om (filter kan settes med prefix-match på "type" og/eller source, og på subject). Ikke alle endringer genererer events (f.eks. endring på `content` er ikke i seg selv noe som genererer en event)
 
 ```jsonc
 // activityHistory-innslag for "feedback"
 {
     "specversion": "1.0",
     "id": "1bbf3ebd-8a4a-44c6-a579-e3a97c10db27",
-    "type": "dialogporten.v1.dialog.activity.feedback",
+    "type": "dialogporten.dialog.activity.feedback.v1",
     "time": "2023-02-20T08:00:06.4014168Z",
     "resource": "urn:altinn:resource:super-simple-service",
     "resourceinstance": "f4e6df3c-7434-44c3-875e-8dca1cdf0b20",
@@ -184,19 +183,7 @@ En PATCH kan medføre at flere events blir generert, som muliggjør finkornet fi
 {
     "specversion": "1.0",
     "id": "522a658c-167f-4600-80f1-2f0782cfcec1",
-    "type": "dialogporten.v1.dialog.updated.status", // status ble endret
-    "time": "2023-02-20T08:00:06.4014168Z",
-    "resource": "urn:altinn:resource:super-simple-service",
-    "resourceinstance": "f4e6df3c-7434-44c3-875e-8dca1cdf0b20",
-    "subject": "org/91234578",
-    "source": "https://dialogporten.no/api/v1/dialogs/f4e6df3c-7434-44c3-875e-8dca1cdf0b20"
-}
-
-// Event for endring av dialog
-{
-    "specversion": "1.0",
-    "id": "17ea863c-6e77-4330-b585-1a5037765719",
-    "type": "dialogporten.v1.dialog.updated.actions", // actions ble endret
+    "type": "dialogporten.dialog.updated.v1", // status ble endret
     "time": "2023-02-20T08:00:06.4014168Z",
     "resource": "urn:altinn:resource:super-simple-service",
     "resourceinstance": "f4e6df3c-7434-44c3-875e-8dca1cdf0b20",
@@ -273,7 +260,7 @@ Skatteetaten mottar innsendingen, som valideres maskinelt. Dialogen kan nå avsl
 {
     "specversion": "1.0",
     "id": "1bbf3ebd-8a4a-44c6-a579-e3a97c10db27",
-    "type": "dialogporten.v1.dialog.activity.submission",
+    "type": "dialogporten.dialog.activity.submission.v1",
     "time": "2023-02-20T08:00:06.4014168Z",
     "resource": "urn:altinn:resource:super-simple-service",
     "resourceinstance": "f4e6df3c-7434-44c3-875e-8dca1cdf0b20",
@@ -290,7 +277,7 @@ Skatteetaten mottar innsendingen, som valideres maskinelt. Dialogen kan nå avsl
 {
     "specversion": "1.0",
     "id": "1bbf3ebd-8a4a-44c6-a579-e3a97c10db27",
-    "type": "dialogporten.v1.dialog.activity.closed",
+    "type": "dialogporten.dialog.activity.closed.v1",
     "time": "2023-02-20T08:00:06.4014168Z",
     "resource": "urn:altinn:resource:super-simple-service",
     "resourceinstance": "f4e6df3c-7434-44c3-875e-8dca1cdf0b20",
@@ -305,31 +292,7 @@ Skatteetaten mottar innsendingen, som valideres maskinelt. Dialogen kan nå avsl
 {
     "specversion": "1.0",
     "id": "9f584a96-ab05-476d-aa48-aaa8248802e6",
-    "type": "dialogporten.v1.dialog.updated.status", // status ble endret
-    "time": "2023-02-20T08:00:06.4014168Z",
-    "resource": "urn:altinn:resource:super-simple-service",
-    "resourceinstance": "f4e6df3c-7434-44c3-875e-8dca1cdf0b20",
-    "subject": "org/91234578",
-    "source": "https://dialogporten.no/api/v1/dialogs/f4e6df3c-7434-44c3-875e-8dca1cdf0b20"
-}
-
-// Event for endring av dialog
-{
-    "specversion": "1.0",
-    "id": "8c1bfe69-7a83-4965-bca9-d75ed21f7d8e",
-    "type": "dialogporten.v1.dialog.updated.actions", // actions ble endret
-    "time": "2023-02-20T08:00:06.4014168Z",
-    "resource": "urn:altinn:resource:super-simple-service",
-    "resourceinstance": "f4e6df3c-7434-44c3-875e-8dca1cdf0b20",
-    "subject": "org/91234578",
-    "source": "https://dialogporten.no/api/v1/dialogs/f4e6df3c-7434-44c3-875e-8dca1cdf0b20"
-}
-
-// Event for endring av dialog
-{
-    "specversion": "1.0",
-    "id": "7101c1bb-b008-4db8-9916-251940d0cef7",
-    "type": "dialogporten.v1.dialog.updated.attachments", // attachments ble endret
+    "type": "dialogporten.dialog.updated.v1",
     "time": "2023-02-20T08:00:06.4014168Z",
     "resource": "urn:altinn:resource:super-simple-service",
     "resourceinstance": "f4e6df3c-7434-44c3-875e-8dca1cdf0b20",

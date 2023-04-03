@@ -42,7 +42,7 @@ Partene er Rørlegger AS, Regnskapsfører AS og Etaten, som tilbyr denne innsend
     "id": "b13bb496-e6ab-4444-8442-e15be9f96e9c",
     "serviceResourceIdentifier": "omsetningsrapportering",     
     "party": "org/912345678",
-    "status": "under-progress", 
+    "status": "in-progress", 
     "content": {
         "body": [ { "code": "nb_NO", "value": "Skjema er klart for utfylling" } ],
         "title": [ { "code": "nb_NO", "value": "Omsetningsrapportering" } ],

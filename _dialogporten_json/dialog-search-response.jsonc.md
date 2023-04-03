@@ -17,7 +17,7 @@
             "updatedDateTime": "2022-12-01T10:00:00.000Z",
             "dueDateTime": "2022-12-01T12:00:00.000Z"  
         },
-        "status": "under-progress",
+        "status": "in-progress",
         "externalStatus": "SKE-ABC",
         // Inneholder ikke body, denne må hentes i detailsUrl
         "content": {
