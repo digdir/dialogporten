@@ -1,0 +1,27 @@
+﻿name: Workflow
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main, mainTestBranch ]
+    #paths: [ src/**, tests/** ]
+
+jobs:
+  publish:
+    uses: ./.github/workflows/BuildTestPublish.yml
+    with:
+      publishArtifacts: true
+
+  deployPoc:
+    needs: publish
+    uses: ./.github/workflows/Deploy.yml
+    secrets: inherit
+    with:
+      environment: ProofOfConsept
+
+  deployTest:
+    uses: ./.github/workflows/Deploy.yml
+    secrets: inherit
+    with:
+      environment: Test
+    
