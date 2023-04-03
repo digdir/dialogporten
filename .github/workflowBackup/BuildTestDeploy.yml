@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: publish
     steps:
-      - name: Download artifact from publish job
+      - name: Download artifacts
         uses: actions/download-artifact@v3
         with:
           name: artifacts
