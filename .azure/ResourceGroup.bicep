@@ -15,6 +15,7 @@ var resourceNamePrefix = 'dialogporten-${environment}'
 resource webApi 'Microsoft.Web/sites@2022-03-01' = {
 	name: '${resourceNamePrefix}-webapi'
 	location: location
+	properties: { }
 	identity: {
 		type: 'SystemAssigned'
 	}
@@ -75,6 +76,9 @@ resource secretKeyValues 'Microsoft.KeyVault/vaults/secrets@2022-11-01' = [for s
 resource postgres 'Microsoft.DBforPostgreSQL/flexibleServers@2022-12-01' = {
 	name: '${resourceNamePrefix}-postgres'
 	location: location
+	properties: {
+		version: '14'
+	}
 	sku: {
 		name: 'Standard_B1ms'
 		tier: 'Burstable'
