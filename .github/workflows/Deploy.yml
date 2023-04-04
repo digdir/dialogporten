@@ -29,6 +29,25 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+      - name: Deploy infrastructure
+        run: >
+          az deployment sub create
+          --name dialogportenDeployment
+          --location norwayeast
+          --template-file .azure/main.bicep
+          --parameters @.azure/main.parameters.json
+          --parameters @.azure/main.parameters.${{inputs.environment}}.json
+          --subscription 'Visual Studio Enterprise BDL'
+
+      - name: deploy
+        uses: azure/arm-deploy@v1
+        with:
+          subscriptionId: 052982ed-1e94-4e26-bfd4-a65252931325
+          resourceGroupName: DummyTextHere 
+          template: .azure/main.bicep
+          parameters: 'storagePrefix=mystore storageSKU=Standard_LRS'
+          failOnStdErr: false
+
       - name: Fetch runners public IP
         id: ip
         uses: haythem/public-ip@v1.3

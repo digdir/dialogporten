@@ -10,7 +10,7 @@ on:
         default: false
   pull_request:
     branches: [ main, mainTestBranch ]
-    #paths: [ src/**, tests/** ]
+    #paths: [ src/**, tests/**, .github/workflows/** ]
 
 jobs:
   build:
@@ -42,6 +42,10 @@ jobs:
           dotnet tool install --global dotnet-ef
           dotnet tool restore
           dotnet ef migrations script --no-build --configuration Release --idempotent --startup-project src/Digdir.Domain.Dialogporten.Infrastructure --output ${{env.DOTNET_ROOT}}/artifacts/database/migrate.sql
+
+      - name: Copy bicep files to artifacts folder
+        if: ${{inputs.publishArtifacts}}
+        run: cp -rp .azure artifacts/
 
       - name: Upload artifact for deployment job
         if: ${{inputs.publishArtifacts}}
