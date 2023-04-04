@@ -42,7 +42,7 @@ resource keyvault 'Microsoft.KeyVault/vaults@2022-11-01' = {
                 }
             }
 			{
-				objectId: webApi.id
+				objectId: webApi.identity.principalId
 				tenantId: subscription().tenantId
 				permissions: {
 					certificates: [ 'get', 'list' ]
@@ -79,6 +79,7 @@ resource postgres 'Microsoft.DBforPostgreSQL/flexibleServers@2022-12-01' = {
 	properties: {
 		version: '14'
 		administratorLogin: 'postgresAdmin'
+		// TODO: Fix this...
 		administratorLoginPassword: 'changeme'
 	}
 	sku: {
