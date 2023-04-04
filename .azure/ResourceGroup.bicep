@@ -22,7 +22,7 @@ resource webApi 'Microsoft.Web/sites@2022-03-01' = {
 }
 
 resource keyvault 'Microsoft.KeyVault/vaults@2022-11-01' = {
-	name: '${resourceNamePrefix}-keyveult'
+	name: '${resourceNamePrefix}-kv'
 	location: location
 	properties: {
 		sku: {
@@ -78,6 +78,8 @@ resource postgres 'Microsoft.DBforPostgreSQL/flexibleServers@2022-12-01' = {
 	location: location
 	properties: {
 		version: '14'
+		administratorLogin: 'postgresAdmin'
+		administratorLoginPassword: 'changeme'
 	}
 	sku: {
 		name: 'Standard_B1ms'
