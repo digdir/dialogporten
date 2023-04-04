@@ -1,0 +1,28 @@
+﻿name: Workflow
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ feature/AddCleanArchitectureLayout ]
+
+jobs:
+  bicep:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Login to azure
+      id: azureLogin
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Deploy infrastructure
+      run: >
+        az deployment sub create
+        --name dialogportenDeployment
+        --location norwayeast
+        --template-file .azure/main.bicep
+        --parameters @.azure/main.parameters.json
+        #--parameters @.azure/main.parameters.${{inputs.environment}}.json
+        --subscription 'Visual Studio Enterprise BDL'

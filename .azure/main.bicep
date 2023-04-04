@@ -1,7 +1,7 @@
 targetScope = 'subscription'
 
 param environment string
-param location string = deployment().
+param location string
 
 var resourceGroupName = 'dialogporten-${environment}-rg'
 
