@@ -15,5 +15,6 @@ module deployment 'ResourceGroup.bicep' = {
 	name: 'deploymentModuleName'
 	params: {
 		environment: environment
+		location: location
 	}
 }

@@ -3,9 +3,9 @@ targetScope = 'resourceGroup'
 @description('Specifies the location for resources.')
 param location string = resourceGroup().location
 param environment string
-param configuration object = {
-	Sentinel: '1'
-}
+//param configuration object = {
+//	Sentinel: '1'
+//}
 @secure()
 param secrets object = { }
 
@@ -58,19 +58,19 @@ resource secretKeyValues 'Microsoft.KeyVault/vaults/secrets@2022-11-01' = [for s
 	properties: { value: secret.value }
 }]
 
-resource appConfigurationStore 'Microsoft.AppConfiguration/configurationStores@2022-05-01' = {
-	name: '${resourceNamePrefix}-appconfiguration'
-	location: location
-	sku: {
-		name: 'free'
-	}
-}
+//resource appConfigurationStore 'Microsoft.AppConfiguration/configurationStores@2022-05-01' = {
+//	name: '${resourceNamePrefix}-appconfiguration'
+//	location: location
+//	sku: {
+//		name: 'free'
+//	}
+//}
 
-resource configurationKeyValues 'Microsoft.AppConfiguration/configurationStores/keyValues@2022-05-01' = [for config in items(configuration): {
-	parent: appConfigurationStore
-	name: config.key
-	properties: { value: config.value }
-}]
+//resource configurationKeyValues 'Microsoft.AppConfiguration/configurationStores/keyValues@2022-05-01' = [for config in items(configuration): {
+//	parent: appConfigurationStore
+//	name: config.key
+//	properties: { value: config.value }
+//}]
 
 resource postgres 'Microsoft.DBforPostgreSQL/flexibleServers@2022-12-01' = {
 	name: '${resourceNamePrefix}-postgres'
