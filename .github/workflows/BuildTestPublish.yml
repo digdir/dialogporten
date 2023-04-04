@@ -45,7 +45,7 @@ jobs:
 
       - name: Copy bicep files to artifacts folder
         if: ${{inputs.publishArtifacts}}
-        run: cp -rp ./.azure ${{env.DOTNET_ROOT}}/artifacts
+        run: cp -rp .azure ${{env.DOTNET_ROOT}}/artifacts
 
       - name: Upload artifact for deployment job
         if: ${{inputs.publishArtifacts}}
