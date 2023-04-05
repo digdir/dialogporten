@@ -78,9 +78,12 @@ resource postgres 'Microsoft.DBforPostgreSQL/flexibleServers@2022-12-01' = {
 	location: location
 	properties: {
 		version: '14'
-		administratorLogin: 'postgresAdmin'
+		administratorLogin: 'dialogportenPgAdmin'
 		// TODO: Fix this...
 		administratorLoginPassword: 'changeme'
+		storage: {
+			storageSizeGB: 32
+		}
 	}
 	sku: {
 		name: 'Standard_B1ms'
