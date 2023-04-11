@@ -12,12 +12,21 @@ param secrets object = { }
 var resourceNamePrefix = 'dialogporten-${environment}'
 
 
+resource servicePlan 'Microsoft.Web/serverfarms@2022-03-01' = {
+	name: '${resourceNamePrefix}-serviceplan'
+	location: location
+	kind: 'app'
+	sku: { name: 'F1' }
+}
+
 resource webApi 'Microsoft.Web/sites@2022-03-01' = {
 	name: '${resourceNamePrefix}-webapi'
 	location: location
-	properties: { }
 	identity: {
 		type: 'SystemAssigned'
+	}
+	properties: { 
+		serverFarmId: servicePlan.id
 	}
 }
 
@@ -25,6 +34,8 @@ resource keyvault 'Microsoft.KeyVault/vaults@2022-11-01' = {
 	name: '${resourceNamePrefix}-kv'
 	location: location
 	properties: {
+		// TODO: Fjern denne
+		enableSoftDelete: false
 		sku: {
 			family: 'A'
 			name: 'standard'
@@ -81,9 +92,7 @@ resource postgres 'Microsoft.DBforPostgreSQL/flexibleServers@2022-12-01' = {
 		administratorLogin: 'dialogportenPgAdmin'
 		// TODO: Fix this...
 		administratorLoginPassword: 'changeme'
-		storage: {
-			storageSizeGB: 32
-		}
+		storage: { storageSizeGB: 32 }
 	}
 	sku: {
 		name: 'Standard_B1ms'
@@ -111,4 +120,3 @@ resource lala 'Microsoft.KeyVault/vaults/secrets@2022-11-01' = {
 
 // TODO: 
 // - Application insights
-// - PostgreSQL
