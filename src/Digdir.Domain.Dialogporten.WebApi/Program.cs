@@ -68,7 +68,7 @@ static void BuildAndRun(string[] args)
         .UseSerilogRequestLogging()
         .UseProblemDetailsExceptionHandler()
         .UseAuthorization()
-        .UseAzureAppConfiguration()
+        .UseAzureConfiguration()
         .UseFastEndpoints(x =>
         {
             x.Endpoints.RoutePrefix = "api";
