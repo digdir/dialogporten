@@ -86,7 +86,7 @@ Se også [Integrasjon med event-komponenten](#integrasjon-med-event-komponent) f
 
 En _handling_ (som i «action») beskriver en interaksjon som brukere kan gjøre med eller relatert til en dialog. Eksempler på handlinger er «Åpne», «Arkiver», «Slett», «Start signering», «Betal», «Bekreft», «Les mer» etc. Listen over aktuelle handlinger er en del av den strukturerte beskrivelsen av en dialogen, og kan når som helst endres av tjenestetilbyder gjennom API.
 
-En handling er enten en _«GUI»-handling_ eller en _«API»-handling_. Alle handlinger - både GUI og API - har en identifikator som mappes til en _action_ (og valgfritt en _subressurs_, indikert av feltet `authorizationRequirement`) i _autorisasjonspolicyen_ som er knyttet til en _tjenesteressurs._ 
+En handling er enten en _«GUI»-handling_ eller en _«API»-handling_. Alle handlinger - både GUI og API - har en identifikator som mappes til en _action_ (og valgfritt en _subressurs_, indikert av feltet `subresource`) i _autorisasjonspolicyen_ (XACML) som er knyttet til en _tjenesteressurs._ 
 
 ### GUI-handlinger
 
@@ -98,20 +98,19 @@ Det er kun én GUI-handling som Dialogporten knytter semantikk til; slett. Denne
 
 ### API-handling
 
-En API-handling er tiltenkt SBS-er og portaler som benytter Dialogporten gjennom en egen integrasjon. API-handlinger er versjonerte, og inneholder en liste med endepunkter som kan benyttes, evt. med informasjon om et endepunkt er under utfasing og når dette vil skje. Hver handling inneholder også en identifikator som indikerer hva slags type handling det er snakk om, og hvert endepunkt indikerer hvilken URL som må kalles for å utføre handlingen, hvilken HTTP-operasjon som skal benyttes (typisk GET eller POST), og en lenke til en strukturert beskrivelse (JSON Schema) av datamodellen som enten returneres eller forventes som input.
+En API-handling er tiltenkt SBS-er og portaler som benytter Dialogporten gjennom en egen integrasjon. API-handlinger er versjonerte, og inneholder en liste med endepunkter som kan benyttes, evt. med informasjon om et endepunkt er under utfasing og når dette vil skje. Hver handling inneholder også en identifikator som indikerer hva slags type handling det er snakk om, og hvert endepunkt indikerer hvilken URL som må kalles for å utføre handlingen. Endepunktet inneholder også informasjon om hvilken HTTP-operasjon som skal benyttes (typisk GET eller POST), og valgfritt en lenke til en strukturert beskrivelse (JSON Schema) av datamodellen som enten returneres eller forventes som input, som kan brukes for dokumentasjonsformål.
 
 {% include note.html type="info" content="Dialogporten foretar ikke validering av noe data, og ser ikke hvilke data som flyter mellom SBS-et og tjenestetilbyderens API." %}
-
 
 ## Tjenesteressurs
 
 Alle dialoger må referere en _tjenesteressurs_. En tjenesteressurs utgjør autorisasjonsbæreren, og kan sammenlignes med moderne bruk av lenketjenester i Altinn 2. Dette er en beskrivelse av en tjeneste som ligger i [Altinn Resource Registry](https://docs.altinn.studio/technology/solutions/altinn-platform/authorization/resourceregistry/), en ny komponent i Altinn Autorisasjon. Hver tjenesteressurs har en autorisasjonspolicy uttrykt i [XACML](https://docs.altinn.studio/technology/solutions/altinn-platform/authorization/xacml/), som beskriver hvilke tilgangsregler som gjelder for alle dialoger som refererer den. XACML gir stor fleksibilitet i hvor grov- eller finkornet tilgangskontrollen skal være, og Dialogporten vil legge denne policyen til grunn for å bestemme hvem som kan se en gitt dialog, og hvilke handlinger som skal være tilgjengelige. 
 
-Eksempelvis vil GUI-handlingen «Signer» referere en _action_ kalt «sign» i XACML-policyen, som krever tilganger den innloggende brukeren ikke besitter. Knappen vil derfor være grået ut og deaktivert. Tjenesteressursen er det tilgangsstyrere i virksomhetene forholder seg til, mht hvem som skal ha tilgang til å gjøre hva på vegne av en virksomhet (tilsvarende dagens tjenestedelegering).
+Eksempelvis vil GUI-handlingen «Signer» referere en _action_ kalt «sign» i XACML-policyen, som krever tilganger den innloggende brukeren ikke besitter. Knappen vil derfor kunne være grået ut og deaktivert. Tjenesteressursen er det tilgangsstyrere i virksomhetene forholder seg til, mht hvem som skal ha tilgang til å gjøre hva på vegne av en virksomhet (tilsvarende dagens tjenestedelegering).
 
-Handlinger og andre deler (typisk referanser til vedlegg) av i dialogen kan også referere en _subressurs_ gjennom feltet `authorizationRequirement`, som kan ha andre autorisasjonsregler knyttet til seg. Dette muliggjør at man kan ha ulike autorisasjonskrav for samme type handling som er tilgjengelige ved ulike tilstander dialogen har. F.eks. vil det kunne brukes for å la et signeringssteg kun være tilgjengelig for en ekstern revisor/regnskapsfører.
+## Subressurs
 
-På samme måte vil API-handlinger som ikke er tilgjengelige for SBS-et (med den identiteten SBS-et oppgir) ikke returneres. 
+Handlinger og andre deler (f.eks. referanser til vedlegg eller ulike prosessteg) av dialogen kan også referere en vilkårlig _subressurs_ gjennom feltet `subresource`, som kan ha andre autorisasjonsregler knyttet til seg. Dette muliggjør at man kan ha ulike autorisasjonskrav for samme type handling som er tilgjengelige ved ulike tilstander dialogen har. F.eks. vil det kunne brukes for å la en signeringshandling kun være tilgjengelig for en ekstern revisor/regnskapsfører, mens en annen signeringshandling er tilgjengelig for daglig leder.
 
 # Scenarioer som påvirker Dialogporten
 
@@ -161,7 +160,7 @@ Tjenestetilbydere med et stort antall tjenester implementert over ulike systemer
 
 ## Håndhevelse av autorisasjon hos tjenestetilbyder
 
-Tokens utstedt av Maskinporten vil inneholde en systembruker-id, mens tokens utstedt av ID-porten vil inneholde et fnr/dnr. Det pålegges tjenestetilbyder å håndheve autorisasjon mot egne endepunkter gjennom at det foretas oppslag mot Altinn Autorisasjon hvor man verifiserer tilgangen en gitt systembruker-id eller fnr/dnr har for ressursen som er forsøkt aksessert. For GUI-endepunkter som aksesserer av sluttbruker gjennom felles arbeidsflate, vil single-sign-on (SSO) i ID-porten sørge for at tjenestetilbyder får autentisert fnr/dnr som står bak requesten og kan foreta autoriasjonsoppslag/håndhevelse som oppleves sømløst for sluttbruker. 
+Tokens utstedt av Maskinporten vil inneholde en systembruker-id, mens tokens utstedt av ID-porten vil inneholde et fnr/dnr. Det pålegges tjenestetilbyder å håndheve autorisasjon mot egne endepunkter gjennom at det foretas oppslag mot Altinn Autorisasjon hvor man verifiserer tilgangen en gitt systembruker-id eller fnr/dnr har for endepunktet/operasjonen som er forsøkt aksessert/utført. For GUI-endepunkter som aksesserer av sluttbruker gjennom felles arbeidsflate, vil single-sign-on (SSO) i ID-porten sørge for at tjenestetilbyder får autentisert fnr/dnr som står bak requesten og kan foreta autoriasjonsoppslag/håndhevelse som oppleves sømløst for sluttbruker. 
 
 Tokens mottatt fra Maskinporten eller ID-porten vil på sikt kunne berikes med finkornede autorisasjonsopplysninger basert på Rich Authorization Requests (RAR) fra SBS-et som Maskinporten/ID-porten verifiserer opp mot Altinn Autorisasjon som foretar en autorisasjonsbeslutning. Hvis tilgang er gitt, populeres tokenet med opplysninger som vil kunne brukes av både Dialogporten og tjenestetilbyder for å håndheve tilgangskontroll uten videre oppslag mot Altinn Autorisasjon (innenfor levetiden av tokenet).
 

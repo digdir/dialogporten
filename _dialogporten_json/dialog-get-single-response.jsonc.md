@@ -42,10 +42,14 @@
             "sizeInBytes": 123456,
             "contentType": "application/pdf",
             "url": "https://example.com/api/dialogues/123456789/attachments/1",
-            "authorizationRequirement": "attachment1"
+            "subresource": "attachment1"
         }
     ],
     "actions": {
+        // Indikerer hvilke actions autentisert bruker er autorisert for å utføre - finnes bare i response-modell for 
+        // sluttbrukere og populeres av Dialogporten utfra policy. Dette er et hint for GUI-implementasjoner som da kan 
+        // velge å skjule/gråe ut actions som ikke vil kunne gjennomføres.
+        "authorizedActions": ["open"],
         "gui": [ 
             { 
                 "action": "open", // Denne kan refereres i XACML-policy
@@ -55,7 +59,7 @@
             },
             {
                 "action": "confirm",
-                "authorizationRequirement": "somesubresource", 
+                "subresource": "somesubresource", 
                 "type": "secondary",
                 "title": [ { "code": "nb_NO", "value": "Bekreft mottatt" } ],
                 "isBackChannel": true,
@@ -278,7 +282,7 @@
         "serviceProviderScopesRequired": [ "serviceprovider:myservice" ],
         "visibleDateTime": "2022-12-01T12:00:00.000Z"
     },
-    // HAL til relaterte ressurser
+    // HAL til relatert informasjon
     "_links": {
         "self": { "href": "/dialogporten/api/v1/dialogs/e0300961-85fb-4ef2-abff-681d77f9960e" },        
         

@@ -13,7 +13,7 @@
 
     // Identifikator som refererer en tjenesteressurs ("Altinn Service Resource") i Altinn Autorisasjon
     // Se https://docs.altinn.studio/technology/solutions/altinn-platform/authorization/resourceregistry/
-    // Dette bestemmer også hvilken autorisasjonspolicy som legges til grunn for både ressursen og tilhørende
+    // Dette bestemmer også hvilken autorisasjonspolicy som legges til grunn.
     "serviceResourceIdentifier": "example_dialogue_service", 
 
     // Organisasjonsnummer, fødselsnummer eller brukernavn (aka "avgiver" eller "aktør") - altså hvem sin dialogboks 
@@ -76,7 +76,7 @@
 
             // Det kan oppgis en valgfri referanse til det som mappes til en XACML-ressurs. Brukeren må ha tilgang til "open" i
             // XACML-policy for oppgitt XACML-ressurs for å få tilgang til dialogen.
-            "authorizationRequirement": "attachment1"
+            "subresource": "attachment1"
         }
     ],
     "actions": {
@@ -89,7 +89,7 @@
             },
             {
                 "action": "confirm",
-                "authorizationRequirement": "somesubresource", // Det kan oppgis en valgfri referanse til en XACML-ressurs
+                "subresource": "somesubresource", // Det kan oppgis en valgfri referanse til en XACML-ressurs
                 "type": "secondary",
                 "title": [ { "code": "nb_NO", "value": "Bekreft mottatt" } ],
 

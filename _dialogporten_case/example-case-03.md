@@ -108,7 +108,7 @@ Partene er Rørlegger AS, Regnskapsfører AS og Etaten, som tilbyr denne innsend
         "gui": [ 
             { 
                 "action": "sign",
-                "authorizationRequirement": "general_manager_tasks", // Krever tilgang til "sign" på ressursen "general_manager_tasks"
+                "subresource": "general_manager_signature", // Krever tilgang til "sign" på subressursen "general_manager_signature"
                 "type": "primary",
                 "title": [ { "code": "nb_NO", "value": "Se over og signer" } ],
                 "url": "https://www.etaten.no/tjenester/omsetningsrapportering/b13bb496-e6ab-4444-8442-e15be9f96e9c/sign_gm?latest_submission=12031cd2-5eb5-4ddf-b4f9-9d30e403d92c"
@@ -117,7 +117,7 @@ Partene er Rørlegger AS, Regnskapsfører AS og Etaten, som tilbyr denne innsend
         "api": [ 
             { 
                 "action": "sign",
-                "authorizationRequirement": "general_manager_tasks", // Krever tilgang til "sign" på ressursen "general_manager_tasks"
+                "subresource": "general_manager_signature", // Krever tilgang til "sign" på subressursen "general_manager_signature"
                 "actionUrl": "https://api.etaten.no/tjenester/omsetningsrapportering/b13bb496-e6ab-4444-8442-e15be9f96e9c/sign?latest_submission=12031cd2-5eb5-4ddf-b4f9-9d30e403d92c",
                 "method": "POST",
                 // Dialogporten har her ikke noe spesielt forhold til signering som handling. Her kan man kanskje se for seg 
@@ -150,8 +150,8 @@ Partene er Rørlegger AS, Regnskapsfører AS og Etaten, som tilbyr denne innsend
     // Valgfri identifikator som tjenestetilbyder kan oppgi. Kan brukes for å unngå duplikatutsending.
     "notificationId": "79921fae-631a-4f8b-8db5-e359f2336658",
 
-    // Ressurs i XACML som det kreves tilgang til
-    "authorizationRequirement": "general_manager_tasks",
+    // Subressurs som det kreves tilgang til i XACML
+    "subresource": "general_manager_signature",
     "sms": {
             "text": [ { "code": "nb_NO", "value": "Du har mottatt et signeringsoppdrag for Omsetningsrapportering. Logg inn i Dialogporten for å signere." } ],
             
@@ -196,7 +196,7 @@ Partene er Rørlegger AS, Regnskapsfører AS og Etaten, som tilbyr denne innsend
         "gui": [ 
             { 
                 "action": "sign",
-                "authorizationRequirement": "accountant_tasks", // Krever tilgang til "sign" på ressursen "accountant_tasks"
+                "subresource": "accountant_signature", // Krever tilgang til "sign" på subressursen "accountant_signature"
                 "type": "primary",
                 "title": [ { "code": "nb_NO", "value": "Se over og signer" } ],
                 "url": "https://www.etaten.no/tjenester/omsetningsrapportering/b13bb496-e6ab-4444-8442-e15be9f96e9c/sign_ac?latest_submission=12031cd2-5eb5-4ddf-b4f9-9d30e403d92c"
@@ -205,7 +205,7 @@ Partene er Rørlegger AS, Regnskapsfører AS og Etaten, som tilbyr denne innsend
         "api": [ 
             { 
                 "action": "sign",
-                "authorizationRequirement": "accountant_tasks", // Krever tilgang til "sign" på ressursen "accountant_tasks"
+                "subresource": "accountant_signature", // Krever tilgang til "sign" på subressursen "accountant_signature"
                 "actionUrl": "https://api.etaten.no/tjenester/omsetningsrapportering/b13bb496-e6ab-4444-8442-e15be9f96e9c/sign_ac?latest_submission=12031cd2-5eb5-4ddf-b4f9-9d30e403d92c",
                 "method": "POST",
                 // Dialogporten har her ikke noe spesielt forhold til signering som handling. Her kan man kanskje se for seg 
@@ -232,8 +232,8 @@ Partene er Rørlegger AS, Regnskapsfører AS og Etaten, som tilbyr denne innsend
     // Valgfri identifikator som tjenestetilbyder kan oppgi. Kan brukes for å unngå duplikatutsending.
     "notificationId": "a61c66f5-1dcf-4a27-8c17-633cd2eb8b8d",
 
-    // Ressurs i XACML som det kreves tilgang til
-    "authorizationRequirement": "accountant_tasks",
+    // Subressurs som det kreves tilgang til
+    "subresource": "accountant_signature",
     "sms": {
             "text": [ { "code": "nb_NO", "value": "Du har mottatt et signeringsoppdrag for Omsetningsrapportering. Logg inn i Dialogporten for å signere." } ],
             
@@ -313,48 +313,56 @@ Partene er Rørlegger AS, Regnskapsfører AS og Etaten, som tilbyr denne innsend
 Her vises en XACML-policy i et tenkt JSON-basert format. Se https://github.com/Altinn/altinn-studio/issues/5016 for mer diskusjon rundt XACML-formater.
 
 ```jsonc
-[
-    {
-        "Subjects": [
-            "role:UTINN",
-            "role:DAGL",
-        ],
-        "Resources": [
-            "serviceresource:omsetningsrapportering"
-        ],
-        "Actions": [
-            "open",
-            "submit",
-            "delete"
-        ],
-        "Description": "Utfyller/innsender og daglig leder kan åpne, fylle ut og slette skjemaet",
-        "IsDelegable": true
-    },
-    {
-        "Subjects": [
-            "role:DAGL",
-        ],
-        "Resources": [
-            "serviceresource:omsetningsrapportering/general_manager_tasks",
-        ],
-        "Actions": [
-            "sign"
-        ],
-        "Description": "Kun daglig leder kan signere på vegne av virksomheten",
-        "IsDelegable": false
-    },
-    {
-        "Subjects": [
-            "role:A0239",
-        ],
-        "Resources": [
-            "serviceresource:omsetningsrapportering/accountant_tasks",
-        ],
-        "Actions": [
-            "sign"
-        ],
-        "Description": "Kun regnskapsfører med signeringsrett kan signere på vegne av registrert regnskapsfører",
-        "IsDelegable": false
-    }
-]
+{
+    "Rules": [
+        {
+            "Subjects": [
+                "urn:altinn:rolecode:UTINN",
+                "urn:altinn:rolecode:DAGL",
+            ],
+            "Resources": [
+                [
+                    "urn:altinn:resource:omsetningsrapportering"
+                ]
+            ],
+            "Actions": [
+                "open",
+                "submit",
+                "delete"
+            ],
+            "Description": "Utfyller/innsender og daglig leder kan åpne, fylle ut og slette skjemaet"
+        },
+        {
+            "Subjects": [
+                "role:DAGL",
+            ],
+            "Resources": [
+                [
+                    "urn:altinn:resource:omsetningsrapportering",
+                    "urn:altinn:subresource:general_manager_signature",
+                ]             
+            ],
+            "Actions": [
+                "sign"
+            ],
+            "Description": "Kun daglig leder kan signere på vegne av virksomheten",
+            "IsDelegable": false
+        },
+        {
+            "Subjects": [
+                "urn:altinn:rolecode:A0239",
+            ],
+            "Resources": [
+                [
+                    "urn:altinn:resource:omsetningsrapportering",
+                    "urn:altinn:subresource:accountant_signature"
+                ]                
+            ],
+            "Actions": [
+                "sign"
+            ],
+            "Description": "Kun regnskapsfører med signeringsrett kan signere på vegne av registrert regnskapsfører",
+        }
+    ]
+}
 ```

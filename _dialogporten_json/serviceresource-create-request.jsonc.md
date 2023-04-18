@@ -47,7 +47,7 @@
     "instantiationUrl": "https://example.com/api/v1/example_dialogue_service/instantiate"
 }
 
-// Velykket innsending returnerer en 201 Created med Location-lenke til den aktuelle ressursen. Policy settes så på 
-// ressursen med et kall som inneholder en XACML-policy til: 
+// Velykket innsending returnerer en 201 Created med Location-lenke til den aktuelle tjenesteressursen. Policy settes så på 
+// tjenesteressursen med et kall som inneholder en XACML-policy til: 
 // POST /resourceregistry/api/v1/resource/example_dialogue_service/policy
 ```
