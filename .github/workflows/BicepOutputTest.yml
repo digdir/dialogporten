@@ -14,6 +14,7 @@ jobs:
 
       - name: run bicep
         id: bicep
+        shell: pwsh
         run: >
           .azure/deployBicep.ps1 
           -environment test

@@ -33,6 +33,7 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Deploy infrastructure
+        shell: pwsh
         run: >
           .azure/deployBicep.ps1 
           -environment ${{ inputs.environment }}
