@@ -12,6 +12,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Login to azure
+        id: azureLogin
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
       - name: run bicep
         id: bicep
         shell: pwsh
