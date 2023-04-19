@@ -33,47 +33,49 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Deploy infrastructure
+        id: bicep
         shell: pwsh
         run: >
           .azure/deployBicep.ps1 
           -environment ${{ inputs.environment }}
           -subscriptionId ${{ vars.subscriptionId }}
 
+
+      - name: Get postgre connectionstring
+        id: postgreConnectionString
+        run: '"value=@(az keyvault secret show --query value --id ${{ steps.bicep.outputs.psqlConnectionStringSecretUri }} )" >> env:GITHUB_OUTPUT'
+
       - name: Fetch runners public IP
         id: ip
         uses: haythem/public-ip@v1.3
 
-      # This needs to target correct db
       - name: Open postgre firewall for migrations
         run: >
           az postgres flexible-server firewall-rule create 
           --rule-name GithubActions 
-          --name dialogportenpgprod 
-          --resource-group dialogporten-poc-rg 
+          --name ${{ steps.bicep.outputs.postgreServerName }}
+          --resource-group ${{ steps.bicep.outputs.resourceGroupName }}
           --start-ip-address ${{ steps.ip.outputs.ipv4 }}
 
-      # This needs to target correct connection string
       - name: Apply EF migration script
-        run: ${{ secrets.DIALOGPORTEN_PSQL_CONNECTIONSTRING }} -f ./database/migrate.sql -q
+        run: ${{ steps.postgreConnectionString.outputs.value }} -f ./database/migrate.sql -q
 
-      # This needs to target correct web service
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
-          app-name: 'dialogporten-poc'
+          app-name: ${{ steps.bicep.outputs.websiteName }}
           slot-name: 'production'
           package: ./webApi
 
-      # This needs to target correct db
       - name: Close postgre firewall
         if: ${{failure() || success()}}
         continue-on-error: true
         run: >
           az postgres flexible-server firewall-rule delete 
           --rule-name GithubActions 
-          --name dialogportenpgprod 
-          --resource-group dialogporten-poc-rg
+          --name ${{ steps.bicep.outputs.postgreServerName }}
+          --resource-group ${{ steps.bicep.outputs.resourceGroupName }}
           --yes
 
       - name: Logout from azure

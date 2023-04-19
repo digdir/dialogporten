@@ -126,6 +126,6 @@ module appConfigReaderAccessPolicy 'appConfiguration/addReaderRoles.bicep' = {
 }
 
 output resourceGroupName string = resourceGroup.name
-output postgresqlName string = postgresql.outputs.serverName
+output postgreServerName string = postgresql.outputs.serverName
 output psqlConnectionStringSecretUri string = postgresql.outputs.psqlConnectionStringSecretUri
 output websiteName string = website.outputs.name

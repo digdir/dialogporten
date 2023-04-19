@@ -30,23 +30,6 @@ AddMemberPath $paramsJson "parameters.environment.value" $environment
 
 #Write-Host (ConvertTo-Json -Depth 100 $paramsJson)
 
-# TESTING
-$deploymentOutputs = @( `
-	az deployment sub create `
-		--subscription $subscriptionId `
-		--location $paramsJson.parameters.location.value `
-		--name "test" `
-		--template-file "$($PSScriptRoot)/test.bicep" `
-		--parameters input=MyInput `
-		--query properties.outputs `
-	| ConvertFrom-Json `
-)
-
-foreach($Property in $deploymentOutputs | Get-Member -type NoteProperty, Property){
-    "$($Property.Name)=$($deploymentOutputs.$($Property.Name).value)" >> $env:GITHUB_OUTPUT
-}
-
-return 
 # Format parameters to be used in az deployment sub create
 $formatedParamsJson = $paramsJson `
 	| ConvertTo-Json -Compress -Depth 100 `

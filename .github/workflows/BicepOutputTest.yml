@@ -2,9 +2,6 @@
 
 on:
   workflow_dispatch:
-  push:
-    branches: [ feature/AddCleanArchitectureLayout ]
-    #paths: [ src/**, tests/**, .github/workflows/** ]
 
 jobs:
   build:
