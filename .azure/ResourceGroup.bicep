@@ -110,6 +110,14 @@ resource postgres 'Microsoft.DBforPostgreSQL/flexibleServers@2022-12-01' = {
 	}
 }
 
+resource postgresConnectionString 'Microsoft.KeyVault/vaults/secrets@2022-11-01' = {
+    parent: keyvault
+    name: 'PostgresConnectionString'
+    properties: {
+        value: postgres.properties.administratorLogin
+    }
+}
+
 resource lala 'Microsoft.KeyVault/vaults/secrets@2022-11-01' = {
 	parent: keyvault
 	name: 'DbConnectionString'

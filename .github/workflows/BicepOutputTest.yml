@@ -1,0 +1,22 @@
+﻿name: Workflow
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ feature/AddCleanArchitectureLayout ]
+    #paths: [ src/**, tests/**, .github/workflows/** ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: run bicep
+        id: bicep
+        run: >
+          .azure/deployBicep.ps1 
+          -environment test
+      
+      - name: print output
+        run: echo ${{ steps.bicep.outputs.myValue }}

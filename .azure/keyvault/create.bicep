@@ -1,7 +1,6 @@
-param environment string
+param namePrefix string
 param location string
 param adminObjectIds array = []
-param readerObjectIds array = []
 
 var adminAccessPolicies = [for admin in adminObjectIds: {
     objectId: admin
@@ -13,26 +12,19 @@ var adminAccessPolicies = [for admin in adminObjectIds: {
     }
 }]
 
-var readerAccessPolicies = [for reader in readerObjectIds: {
-	objectId: reader
-	tenantId: subscription().tenantId
-	permissions: {
-		certificates: [ 'get', 'list' ]
-		keys: [ 'get', 'list' ]
-		secrets: [ 'get', 'list' ]
-	}
-}]
-
 resource keyvault 'Microsoft.KeyVault/vaults@2022-11-01' = {
-	name: 'dialogporten-${environment}-kv'
+	name: '${namePrefix}-kv'
 	location: location
 	properties: {
+		// TODO: Remove
+		enablePurgeProtection: null // Null is the same as false and false is invalid for some reason
+		enabledForTemplateDeployment: false
 		sku: {
 			family: 'A'
 			name: 'standard'
 		}
 		tenantId: subscription().tenantId
-		accessPolicies: concat(adminAccessPolicies, readerAccessPolicies)
+		accessPolicies: adminAccessPolicies
 	}
 }
 

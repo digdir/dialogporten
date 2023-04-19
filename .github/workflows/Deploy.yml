@@ -6,6 +6,9 @@ on:
       environment:
         required: true
         type: string
+      #subscriptionId:
+      #  required: true
+      #  type: string
     secrets: 
       AZURE_CREDENTIALS:
         required: true
@@ -31,27 +34,15 @@ jobs:
 
       - name: Deploy infrastructure
         run: >
-          az deployment sub create
-          --name dialogportenDeployment
-          --location norwayeast
-          --template-file .azure/main.bicep
-          --parameters @.azure/main.parameters.json
-          --parameters @.azure/main.parameters.${{inputs.environment}}.json
-          --subscription 'Visual Studio Enterprise BDL'
-
-      - name: deploy
-        uses: azure/arm-deploy@v1
-        with:
-          subscriptionId: 052982ed-1e94-4e26-bfd4-a65252931325
-          resourceGroupName: DummyTextHere 
-          template: .azure/main.bicep
-          parameters: 'storagePrefix=mystore storageSKU=Standard_LRS'
-          failOnStdErr: false
+          .azure/deployBicep.ps1 
+          -environment ${{ inputs.environment }}
+          -subscriptionId ${{ vars.subscriptionId }}
 
       - name: Fetch runners public IP
         id: ip
         uses: haythem/public-ip@v1.3
 
+      # This needs to target correct db
       - name: Open postgre firewall for migrations
         run: >
           az postgres flexible-server firewall-rule create 
@@ -60,9 +51,11 @@ jobs:
           --resource-group dialogporten-poc-rg 
           --start-ip-address ${{ steps.ip.outputs.ipv4 }}
 
+      # This needs to target correct connection string
       - name: Apply EF migration script
         run: ${{ secrets.DIALOGPORTEN_PSQL_CONNECTIONSTRING }} -f ./database/migrate.sql -q
 
+      # This needs to target correct web service
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
@@ -71,6 +64,7 @@ jobs:
           slot-name: 'production'
           package: ./webApi
 
+      # This needs to target correct db
       - name: Close postgre firewall
         if: ${{failure() || success()}}
         continue-on-error: true
