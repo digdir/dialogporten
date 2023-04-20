@@ -33,7 +33,7 @@ jobs:
         shell: pwsh
         run: >
           .azure/powershell/fetchKeyvaultSecret.ps1
-          -secretId https://dppoc-kv-mdefv7a5ajvty.vault.azure.net/secrets/dialogportenPsqlConnectionString/80cac35665e74b3896f1ed9d758edd4d #${{ steps.bicep.outputs.psqlConnectionStringSecretUri }}
+          -secretId https://dppoc-kv-mdefv7a5ajvty.vault.azure.net/secrets/dialogportenPsqlConnectionString #${{ steps.bicep.outputs.psqlConnectionStringSecretUri }}
 
       - name: Apply EF migration script
         run: ${{ steps.postgreConnectionString.outputs.value }} -f ${{env.DOTNET_ROOT}}/artifacts/database/migrate.sql -q
