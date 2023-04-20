@@ -7,8 +7,10 @@ $secret = $( `
 	az keyvault secret show `
 	--query value `
 	--id $secretId 
-	#| % {$_ -replace '\\', ''} `
+	--output tsv
+	#| % {$_ -replace '\\"', ''''} `
 	#| % {$_ -replace '"', ''} `
+	#| % {$_ -replace '\\"', ''''} `
 )
 # Mark it as a secret in github actions log
 #echo "::add-mask::$secret"
