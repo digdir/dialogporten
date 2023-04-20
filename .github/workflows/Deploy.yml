@@ -6,9 +6,6 @@ on:
       environment:
         required: true
         type: string
-      #subscriptionId:
-      #  required: true
-      #  type: string
     secrets: 
       AZURE_CREDENTIALS:
         required: true
@@ -40,11 +37,12 @@ jobs:
           -environment ${{ inputs.environment }}
           -subscriptionId ${{ vars.subscriptionId }}
 
-
       - name: Get postgre connectionstring
         id: postgreConnectionString
         shell: pwsh
-        run: '"value=@(az keyvault secret show --query value --id ${{ steps.bicep.outputs.psqlConnectionStringSecretUri }} )" >> $env:GITHUB_OUTPUT'
+        run: |
+          $connectionString = $(az keyvault secret show --query value --id https://dppoc-kv-mdefv7a5ajvty.vault.azure.net/secrets/dialogportenPsqlConnectionString)
+          "value=$connectionString" >> $env:GITHUB_OUTPUT
 
       - name: Fetch runners public IP
         id: ip
