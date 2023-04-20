@@ -3,7 +3,7 @@
 on:
   workflow_dispatch:
   push:
-    branches: [ main, mainTestBranch, feature/AddCleanArchitectureLayout ]
+    branches: [ main ]
     #paths: [ src/**, tests/**, .github/workflows/** ]
 
 jobs:
@@ -19,10 +19,10 @@ jobs:
     with:
       environment: poc
 
-  #deployTest:
-  #  needs: [ publish, deployPoc ]
-  #  uses: ./.github/workflows/Deploy.yml
-  #  secrets: inherit
-  #  with:
-  #    environment: test
+  deployTest:
+    needs: [ publish ]
+    uses: ./.github/workflows/Deploy.yml
+    secrets: inherit
+    with:
+      environment: test
     

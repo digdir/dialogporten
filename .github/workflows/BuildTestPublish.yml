@@ -9,7 +9,7 @@ on:
         type: boolean
         default: false
   pull_request:
-    branches: [ main, mainTestBranch ]
+    branches: [ main ]
     #paths: [ src/**, tests/**, .github/workflows/** ]
 
 jobs:

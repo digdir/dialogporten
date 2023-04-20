@@ -2,8 +2,8 @@ param(
 	[Parameter(Mandatory)]
 	[string]$environment,
 
-	[Parameter()]
-	[string]$subscriptionId='052982ed-1e94-4e26-bfd4-a65252931325'
+	[Parameter(Mandatory)]
+	[string]$subscriptionId
 )
 Import-module "$PSScriptRoot/powershell/jsonMerge.ps1" -Force
 Import-module "$PSScriptRoot/powershell/pwdGenerator.ps1" -Force
