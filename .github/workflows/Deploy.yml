@@ -1,0 +1,83 @@
+﻿name: Deploy
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+    secrets: 
+      AZURE_CREDENTIALS:
+        required: true
+      DIALOGPORTEN_PSQL_CONNECTIONSTRING:
+        required: true
+
+jobs:
+  deploy:
+    name: Deploy to ${{ inputs.environment }}
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: artifacts
+
+      - name: Login to azure
+        id: azureLogin
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy infrastructure
+        id: bicep
+        shell: pwsh
+        run: >
+          .azure/deployBicep.ps1 
+          -environment ${{ inputs.environment }}
+          -subscriptionId ${{ vars.subscriptionId }}
+
+      - name: Get postgre connectionstring
+        id: postgreConnectionString
+        shell: pwsh
+        run: >
+          .azure/powershell/fetchKeyvaultSecret.ps1
+          -secretId ${{ steps.bicep.outputs.psqlConnectionStringSecretUri }}
+
+      - name: Fetch runners public IP
+        id: ip
+        uses: haythem/public-ip@v1.3
+
+      - name: Open postgre firewall for migrations
+        run: >
+          az postgres flexible-server firewall-rule create 
+          --rule-name GithubActions 
+          --name ${{ steps.bicep.outputs.postgreServerName }}
+          --resource-group ${{ steps.bicep.outputs.resourceGroupName }}
+          --start-ip-address ${{ steps.ip.outputs.ipv4 }}
+
+      - name: Apply EF migration script
+        run: ${{ steps.postgreConnectionString.outputs.value }} -f ./database/migrate.sql -q
+
+      - name: Deploy to Azure Web App
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ steps.bicep.outputs.websiteName }}
+          slot-name: 'production'
+          package: ./webApi
+
+      - name: Close postgre firewall
+        if: ${{failure() || success()}}
+        continue-on-error: true
+        run: >
+          az postgres flexible-server firewall-rule delete 
+          --rule-name GithubActions 
+          --name ${{ steps.bicep.outputs.postgreServerName }}
+          --resource-group ${{ steps.bicep.outputs.resourceGroupName }}
+          --yes
+
+      - name: Logout from azure
+        if: ${{failure() || success()}}
+        continue-on-error: true
+        run: az logout
