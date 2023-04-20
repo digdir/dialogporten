@@ -11,5 +11,5 @@ $secret = $( `
 	| % {$_ -replace '"', ''} `
 )
 # Mark it as a secret in github actions log
-echo "::add-mask::$secret"
+#echo "::add-mask::$secret"
 "value=$secret" >> $env:GITHUB_OUTPUT

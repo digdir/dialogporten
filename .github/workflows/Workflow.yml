@@ -3,7 +3,7 @@
 on:
   workflow_dispatch:
   push:
-    branches: [ main, mainTestBranch, feature/AddCleanArchitectureLayout ]
+    branches: [ main, mainTestBranch ] #, feature/AddCleanArchitectureLayout ]
     #paths: [ src/**, tests/**, .github/workflows/** ]
 
 jobs:
