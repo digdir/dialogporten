@@ -59,7 +59,7 @@ module psqlConnectionString '../keyvault/upsertSecret.bicep' = {
     params: {
         destKeyVaultName: keyVaultName
         secretName: 'dialogportenPsqlConnectionString'
-        secretValue: 'psql "host=${postgres.properties.fullyQualifiedDomainName} port=5432 dbname=${databaseName} user=${administratorLogin} password=${administratorLoginPassword} sslmode=require"'
+        secretValue: 'psql \'host=${postgres.properties.fullyQualifiedDomainName} port=5432 dbname=${databaseName} user=${administratorLogin} password=${administratorLoginPassword} sslmode=require\''
     }
 }
 
