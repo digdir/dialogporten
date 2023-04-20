@@ -17,7 +17,6 @@ jobs:
           dotnet-version: '7.x'
 
       - name: Generate EF migration script
-        if: ${{inputs.publishArtifacts}}
         run: | 
           dotnet tool install --global dotnet-ef
           dotnet tool restore
