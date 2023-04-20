@@ -9,8 +9,6 @@ on:
     secrets: 
       AZURE_CREDENTIALS:
         required: true
-      DIALOGPORTEN_PSQL_CONNECTIONSTRING:
-        required: true
 
 jobs:
   deploy:
