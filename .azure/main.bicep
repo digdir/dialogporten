@@ -121,7 +121,7 @@ module appConfigReaderAccessPolicy 'appConfiguration/addReaderRoles.bicep' = {
     name: 'appConfigReaderAccessPolicy'
     params: {
         appConfigurationName: appConfiguration.outputs.name
-        principalIds: [ website.outputs.identityPrincipalId ]
+        principalIds: [ website.outputs.identityPrincipalId, 'ce4fe21d-6e93-41af-8e2d-7ae6f7abef74' ]
     }
 }
 
