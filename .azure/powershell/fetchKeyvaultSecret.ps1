@@ -6,8 +6,8 @@ param(
 $secret = $( `
 	az keyvault secret show `
 	--query value `
-	--id $secretId 
-	--output tsv
+	--id $secretId `
+	--output tsv `
 	#| % {$_ -replace '\\"', ''''} `
 	#| % {$_ -replace '"', ''} `
 	#| % {$_ -replace '\\"', ''''} `
