@@ -2,8 +2,8 @@ name: MigrationTesting
 
 on:
   workflow_dispatch:
-  push:
-    branches: [ feature/AddCleanArchitectureLayout ]
+  #push:
+  #  branches: [ feature/AddCleanArchitectureLayout ]
 
 jobs:
   deploy:
