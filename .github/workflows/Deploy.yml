@@ -44,7 +44,7 @@ jobs:
       - name: Get postgre connectionstring
         id: postgreConnectionString
         shell: pwsh
-        run: '"value=@(az keyvault secret show --query value --id ${{ steps.bicep.outputs.psqlConnectionStringSecretUri }} )" >> env:GITHUB_OUTPUT'
+        run: '"value=@(az keyvault secret show --query value --id ${{ steps.bicep.outputs.psqlConnectionStringSecretUri }} )" >> $env:GITHUB_OUTPUT'
 
       - name: Fetch runners public IP
         id: ip
