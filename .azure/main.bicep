@@ -112,6 +112,7 @@ module keyVaultReaderAccessPolicy 'keyvault/addReaderRoles.bicep' = {
     name: 'keyVaultReaderAccessPolicy'
     params: {
         keyvaultName: keyVaultModule.outputs.name
+        // TODO: Har lagt til dialogporten-subscription-deploy-principal ettersom den må hente ut db connectionstring fra keyvault for migrasjon
         principalIds: [ website.outputs.identityPrincipalId, 'ce4fe21d-6e93-41af-8e2d-7ae6f7abef74' ]
     }
 }

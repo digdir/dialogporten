@@ -3,7 +3,7 @@ param(
 	[string]$secretId
 )
 
-$connectionString = $( `
+$secret = $( `
 	az keyvault secret show `
 	--query value `
 	--id $secretId `
@@ -11,5 +11,5 @@ $connectionString = $( `
 	| % {$_ -replace '"', ''} `
 )
 # Mark it as a secret in github actions log
-echo "::add-mask::$connectionString"
-"value='$connectionString'" >> $env:GITHUB_OUTPUT
+echo "::add-mask::$secret"
+"value=$secret" >> $env:GITHUB_OUTPUT
