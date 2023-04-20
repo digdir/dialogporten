@@ -40,9 +40,9 @@ jobs:
       - name: Get postgre connectionstring
         id: postgreConnectionString
         shell: pwsh
-        run: |
-          $connectionString = $(az keyvault secret show --query value --id https://dppoc-kv-mdefv7a5ajvty.vault.azure.net/secrets/dialogportenPsqlConnectionString)
-          "value=$connectionString" >> $env:GITHUB_OUTPUT
+        run: >
+          .azure/powershell/fetchKeyvaultSecret.ps1
+          -secretId ${{ steps.bicep.outputs.psqlConnectionStringSecretUri }}
 
       - name: Fetch runners public IP
         id: ip
