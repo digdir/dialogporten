@@ -1,4 +1,7 @@
+name: MigrationTesting
+
 on:
+  workflow_dispatch:
   push:
     branches: [ feature/AddCleanArchitectureLayout ]
 
