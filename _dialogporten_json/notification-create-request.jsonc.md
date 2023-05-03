@@ -21,13 +21,8 @@
             "from": [ { "code": "nb_NO", "value": "Etaten" } ]
     },
     "email": {
-            "subject": [ { "code": "nb_NO", "value": "emnefeltet på e-post" } ],
-            //
-            "template": "some-email-template",
-            "tokens": [
-                { "name": "header", "value": [ { "code": "nb_NO", "value": "dette er en header" } ] },
-                { "name": "body", "value": [ { "code": "nb_NO", "value": "Hei {{recipient.fullname}}!" } ] } 
-            ]
+            "subject": [ { "code": "nb_NO", "value": "Emnefeltet på e-post" } ],
+            "body": [ { "code": "nb_NO", "value": "Dette er en teksten i e-posten" } ]
     },
     "push": {
         // Basert på https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerRegistration/showNotification
