@@ -110,7 +110,7 @@ Eksempelvis vil GUI-handlingen «Signer» referere en _action_ kalt «sign» i X
 
 ## Subressurs
 
-Handlinger og andre deler (f.eks. referanser til ulike prosessteg) av dialogen kan også referere en vilkårlig _subressurs_ gjennom feltet `subresource`.
+Handlinger og andre deler (f.eks. referanser til vedlegg, eller ulike prosessteg) av dialogen kan også referere en vilkårlig _subressurs_ gjennom feltet `subresource`.
 
 Dette muliggjør at man kan ha ulike autorisasjonskrav for samme type handling som er tilgjengelige ved ulike tilstander dialogen har. F.eks. vil det kunne brukes for å la en signeringshandling kun være tilgjengelig for en ekstern revisor/regnskapsfører, mens en annen signeringshandling er tilgjengelig for daglig leder.
  
@@ -236,7 +236,7 @@ Subressurser er en ytterligere ressurs-attributt som kan refereres til i actions
         "gui": [ 
             { 
                 "action": "sign", // Denne refereres i "Action"-delen  i XACML-policy                
-                "subresource": "urn:altinn:subresource:urn:altinn:subresource:subressurs1", // Denne refereres i "Ressurs"-delen  i XACML-policy                
+                "subresource": "urn:altinn:subresource:subressurs1", // Denne refereres i "Ressurs"-delen  i XACML-policy                
                 "title": [ { "code": "nb_NO", "value": "Åpne" } ],
                 "url": "https://example.com/some/deep/link/to/dialogues/123456789"
             }
