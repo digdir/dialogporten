@@ -74,9 +74,9 @@
             "contentType": "application/pdf",            
             "url": "https://example.com/api/dialogues/123456789/attachments/1",
 
-            // Det kan oppgis en valgfri referanse til det som mappes til en XACML-ressurs. Brukeren må ha tilgang til "open" i
-            // XACML-policy for oppgitt XACML-ressurs for å få tilgang til dialogen.
-            "subresource": "attachment1"
+            // Det kan oppgis en valgfri referanse til det som mappes til en XACML-ressurs. Hvis oppgitt, må brukeren må ha tilgang 
+            // til actionen "download" i XACML-policy evt. begrenset til denne ressursen. Hvis ikke oppgitt kreves bare "read".
+            "subresource": "urn:altinn:subresource:attachment1"
         }
     ],
     "actions": {
@@ -89,7 +89,7 @@
             },
             {
                 "action": "confirm",
-                "subresource": "somesubresource", // Det kan oppgis en valgfri referanse til en XACML-ressurs
+                "subresource": "urn:altinn:subresource:somesubresource", // Det kan oppgis en valgfri referanse til en XACML-ressurs
                 "type": "secondary",
                 "title": [ { "code": "nb_NO", "value": "Bekreft mottatt" } ],
 

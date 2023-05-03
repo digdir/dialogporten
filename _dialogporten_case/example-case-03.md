@@ -108,7 +108,7 @@ Partene er Rørlegger AS, Regnskapsfører AS og Etaten, som tilbyr denne innsend
         "gui": [ 
             { 
                 "action": "sign",
-                "subresource": "general_manager_signature", // Krever tilgang til "sign" på subressursen "general_manager_signature"
+                "subresource": "urn:altinn:subresource:general_manager_signature", // Krever tilgang til "sign" på subressursen "general_manager_signature"
                 "type": "primary",
                 "title": [ { "code": "nb_NO", "value": "Se over og signer" } ],
                 "url": "https://www.etaten.no/tjenester/omsetningsrapportering/b13bb496-e6ab-4444-8442-e15be9f96e9c/sign_gm?latest_submission=12031cd2-5eb5-4ddf-b4f9-9d30e403d92c"
@@ -117,7 +117,7 @@ Partene er Rørlegger AS, Regnskapsfører AS og Etaten, som tilbyr denne innsend
         "api": [ 
             { 
                 "action": "sign",
-                "subresource": "general_manager_signature", // Krever tilgang til "sign" på subressursen "general_manager_signature"
+                "subresource": "urn:altinn:subresource:general_manager_signature", // Krever tilgang til "sign" på subressursen "general_manager_signature"
                 "actionUrl": "https://api.etaten.no/tjenester/omsetningsrapportering/b13bb496-e6ab-4444-8442-e15be9f96e9c/sign?latest_submission=12031cd2-5eb5-4ddf-b4f9-9d30e403d92c",
                 "method": "POST",
                 // Dialogporten har her ikke noe spesielt forhold til signering som handling. Her kan man kanskje se for seg 
@@ -151,7 +151,7 @@ Partene er Rørlegger AS, Regnskapsfører AS og Etaten, som tilbyr denne innsend
     "notificationId": "79921fae-631a-4f8b-8db5-e359f2336658",
 
     // Subressurs som det kreves tilgang til i XACML
-    "subresource": "general_manager_signature",
+    "subresource": "urn:altinn:subresource:general_manager_signature",
     "sms": {
             "text": [ { "code": "nb_NO", "value": "Du har mottatt et signeringsoppdrag for Omsetningsrapportering. Logg inn i Dialogporten for å signere." } ],
             
@@ -196,7 +196,7 @@ Partene er Rørlegger AS, Regnskapsfører AS og Etaten, som tilbyr denne innsend
         "gui": [ 
             { 
                 "action": "sign",
-                "subresource": "accountant_signature", // Krever tilgang til "sign" på subressursen "accountant_signature"
+                "subresource": "urn:altinn:subresource:accountant_signature", // Krever tilgang til "sign" på subressursen "accountant_signature"
                 "type": "primary",
                 "title": [ { "code": "nb_NO", "value": "Se over og signer" } ],
                 "url": "https://www.etaten.no/tjenester/omsetningsrapportering/b13bb496-e6ab-4444-8442-e15be9f96e9c/sign_ac?latest_submission=12031cd2-5eb5-4ddf-b4f9-9d30e403d92c"
@@ -205,7 +205,7 @@ Partene er Rørlegger AS, Regnskapsfører AS og Etaten, som tilbyr denne innsend
         "api": [ 
             { 
                 "action": "sign",
-                "subresource": "accountant_signature", // Krever tilgang til "sign" på subressursen "accountant_signature"
+                "subresource": "urn:altinn:subresource:accountant_signature", // Krever tilgang til "sign" på subressursen "accountant_signature"
                 "actionUrl": "https://api.etaten.no/tjenester/omsetningsrapportering/b13bb496-e6ab-4444-8442-e15be9f96e9c/sign_ac?latest_submission=12031cd2-5eb5-4ddf-b4f9-9d30e403d92c",
                 "method": "POST",
                 // Dialogporten har her ikke noe spesielt forhold til signering som handling. Her kan man kanskje se for seg 
@@ -233,7 +233,7 @@ Partene er Rørlegger AS, Regnskapsfører AS og Etaten, som tilbyr denne innsend
     "notificationId": "a61c66f5-1dcf-4a27-8c17-633cd2eb8b8d",
 
     // Subressurs som det kreves tilgang til
-    "subresource": "accountant_signature",
+    "subresource": "urn:altinn:subresource:accountant_signature",
     "sms": {
             "text": [ { "code": "nb_NO", "value": "Du har mottatt et signeringsoppdrag for Omsetningsrapportering. Logg inn i Dialogporten for å signere." } ],
             

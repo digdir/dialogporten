@@ -110,8 +110,10 @@ Eksempelvis vil GUI-handlingen «Signer» referere en _action_ kalt «sign» i X
 
 ## Subressurs
 
-Handlinger og andre deler (f.eks. referanser til vedlegg eller ulike prosessteg) av dialogen kan også referere en vilkårlig _subressurs_ gjennom feltet `subresource`, som kan ha andre autorisasjonsregler knyttet til seg. Dette muliggjør at man kan ha ulike autorisasjonskrav for samme type handling som er tilgjengelige ved ulike tilstander dialogen har. F.eks. vil det kunne brukes for å la en signeringshandling kun være tilgjengelig for en ekstern revisor/regnskapsfører, mens en annen signeringshandling er tilgjengelig for daglig leder.
+Handlinger og andre deler (f.eks. referanser til ulike prosessteg) av dialogen kan også referere en vilkårlig _subressurs_ gjennom feltet `subresource`.
 
+Dette muliggjør at man kan ha ulike autorisasjonskrav for samme type handling som er tilgjengelige ved ulike tilstander dialogen har. F.eks. vil det kunne brukes for å la en signeringshandling kun være tilgjengelig for en ekstern revisor/regnskapsfører, mens en annen signeringshandling er tilgjengelig for daglig leder.
+ 
 # Scenarioer som påvirker Dialogporten
 
 Det er typisk tre scenarioer som innebærer behov for interaksjon med Dialogporten og dialoger.
@@ -141,6 +143,171 @@ Det finnes andre scenarioer rundt oppslag/innsynstjenester og filoverføringer s
 ![](https://lucid.app/publicSegments/view/c3ce275d-9170-45d0-8c09-e50de2ffc690/image.png)
 
 # Autorisasjon
+
+## Relasjon til XACML
+
+Hver dialog refererer en [_tjenesteressurs_](https://docs.altinn.studio/technology/solutions/altinn-platform/authorization/resourceregistry/#altinn-service-resource) i [Altinn Autorisasjon](https://docs.altinn.studio/technology/solutions/altinn-platform/authorization/), som består av en XACML-policy samt metadata som beskriver tjenesten. 
+
+Hver action som defineres på en dialog mappes til en tilsvarende "action-id" i XACML. Eksempelvis, gitt følgende action på en dialog som refererer tjenesteressursen `min_fine_tjeneste`:
+
+```jsonc
+{
+    // ...
+    "serviceResourceIdentifier": "min_fine_tjeneste", 
+    // ...
+    "actions": {
+        "gui": [ 
+            { 
+                "action": "open", // Denne refereres i "Action"-delen  i XACML-policy                
+                "title": [ { "code": "nb_NO", "value": "Åpne" } ],
+                "url": "https://example.com/some/deep/link/to/dialogues/123456789"
+            }
+        ]
+    }
+}
+```
+
+Hvis man ønsker å lage en regel i en policy som gir innehavere av Enhetsregister-rollen `DAGL` (daglig leder) tilgang til en action `open` på dialoger som refererer tjenesteressursen med identifikator `min_fine_tjeneste`, kan dette uttrykkes i XACML som:
+
+```xml
+<xacml:Rule RuleId="urn:altinn:example:ruleid:1" Effect="Permit">
+    <xacml:Target>
+        <!-- Subjekt-del -->
+        <xacml:AnyOf>
+            <xacml:AllOf>
+                <xacml:Match MatchId="urn:oasis:names:tc:xacml:3.0:function:string-equal-ignore-case">
+                    <xacml:AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">DAGL</xacml:AttributeValue>
+                    <xacml:AttributeDesignator AttributeId="urn:altinn:rolecode" Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject" DataType="http://www.w3.org/2001/XMLSchema#string" MustBePresent="false"/>
+                </xacml:Match>
+            </xacml:AllOf>
+        </xacml:AnyOf>
+        <!-- Ressurs-del -->
+        <xacml:AnyOf>
+            <xacml:AllOf>
+                <xacml:Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+                    <xacml:AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">min_fine_tjeneste</xacml:AttributeValue>
+                    <xacml:AttributeDesignator AttributeId="urn:altinn:resource" Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource" DataType="http://www.w3.org/2001/XMLSchema#string" MustBePresent="false"/>
+                </xacml:Match>
+            </xacml:AllOf>
+        </xacml:AnyOf>
+        <!-- Action-del -->
+        <xacml:AnyOf>
+            <xacml:AllOf>
+                <xacml:Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+                    <xacml:AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">open</xacml:AttributeValue>
+                    <xacml:AttributeDesignator AttributeId="urn:oasis:names:tc:xacml:1.0:action:action-id" Category="urn:oasis:names:tc:xacml:3.0:attribute-category:action" DataType="http://www.w3.org/2001/XMLSchema#string" MustBePresent="false"/>
+                </xacml:Match>
+            </xacml:AllOf>
+        </xacml:AnyOf>
+    </xacml:Target>
+</xacml:Rule>
+```
+Dette kan uttrykkes i [forenklet JSON](https://github.com/Altinn/altinn-studio/issues/5016) som:
+
+```jsonc
+{
+    "Rules": [
+        {
+            "Subjects": [
+                "urn:altinn:rolecode:DAGL",
+            ],
+            "Resources": [
+                [
+                    "urn:altinn:resource:min_fine_tjeneste"
+                ]
+            ],
+            "Actions": [
+                "open"
+            ]
+        }
+}
+```
+
+
+Subressurser er en ytterligere ressurs-attributt som kan refereres til i actions og policies. F.eks. kan en action se slik ut:
+
+
+```jsonc
+{
+    // ...
+    "serviceResourceIdentifier": "min_fine_tjeneste", 
+    // ...
+    "actions": {
+        "gui": [ 
+            { 
+                "action": "sign", // Denne refereres i "Action"-delen  i XACML-policy                
+                "subresource": "urn:altinn:subresource:urn:altinn:subresource:subressurs1", // Denne refereres i "Ressurs"-delen  i XACML-policy                
+                "title": [ { "code": "nb_NO", "value": "Åpne" } ],
+                "url": "https://example.com/some/deep/link/to/dialogues/123456789"
+            }
+        ]
+    }
+}
+```
+
+Tilsvarende, for å lage en regel som gir `DAGL` lov til å utføre handlingen `sign` på subressursen `urn:altinn:subresource:subressurs1` på dialoger som refererer `min_fine_tjeneste`:
+
+```xml
+<xacml:Rule RuleId="urn:altinn:example:ruleid:1" Effect="Permit">
+    <xacml:Target>
+        <!-- Subjekt-del -->
+        <xacml:AnyOf>
+            <xacml:AllOf>
+                <xacml:Match MatchId="urn:oasis:names:tc:xacml:3.0:function:string-equal-ignore-case">
+                    <xacml:AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">DAGL</xacml:AttributeValue>
+                    <xacml:AttributeDesignator AttributeId="urn:altinn:rolecode" Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject" DataType="http://www.w3.org/2001/XMLSchema#string" MustBePresent="false"/>
+                </xacml:Match>
+            </xacml:AllOf>
+        </xacml:AnyOf>
+        <!-- Ressurs-del -->
+        <xacml:AnyOf>
+            <xacml:AllOf>
+                <xacml:Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+                    <xacml:AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">min_fine_tjeneste</xacml:AttributeValue>
+                    <xacml:AttributeDesignator AttributeId="urn:altinn:resource" Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource" DataType="http://www.w3.org/2001/XMLSchema#string" MustBePresent="false"/>
+                </xacml:Match>
+                <xacml:Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+                    <xacml:AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">subressurs1</xacml:AttributeValue>
+                    <xacml:AttributeDesignator AttributeId="urn:altinn:subresource" Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource" DataType="http://www.w3.org/2001/XMLSchema#string" MustBePresent="false"/>
+                </xacml:Match>
+            </xacml:AllOf>
+        </xacml:AnyOf>
+        <!-- Action-del -->
+        <xacml:AnyOf>
+            <xacml:AllOf>
+                <xacml:Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+                    <xacml:AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">sign</xacml:AttributeValue>
+                    <xacml:AttributeDesignator AttributeId="urn:oasis:names:tc:xacml:1.0:action:action-id" Category="urn:oasis:names:tc:xacml:3.0:attribute-category:action" DataType="http://www.w3.org/2001/XMLSchema#string" MustBePresent="false"/>
+                </xacml:Match>
+            </xacml:AllOf>
+        </xacml:AnyOf>
+    </xacml:Target>
+</xacml:Rule>
+```
+Dette kan uttrykkes i [forenklet JSON](https://github.com/Altinn/altinn-studio/issues/5016) som:
+
+```jsonc
+{
+    "Rules": [
+        {
+            "Subjects": [
+                "urn:altinn:rolecode:DAGL",
+            ],
+            "Resources": [
+                [
+                    "urn:altinn:resource:min_fine_tjeneste",
+                    "urn:altinn:subresource:subressurs1",
+                ]
+            ],
+            "Actions": [
+                "sign"
+            ]
+        }
+}
+```
+
+Merk at XACML gjør matching på attributter. Så en regel som gir f.eks. `sign` uten å oppgi subressurser, vil da gi tilgang til alle `sign`-actions uavhengig av hvilken subressurs som er definert på action-en.
+
 
 ## Bruk av Dialogportens API-er
 
@@ -180,10 +347,10 @@ Under beskrives hvordan SBS-er foretar autentisering for å kunne autoriseres i 
     * I Dialogporten er denne grovkornet (f.eks. `digdir:dialogporten` eller `altinn:instances.read`), og autoriserer kun for å kunne kalle API-et. Gir i seg selv ikke tilgang til noen tjenester. 
     * Scopes tolkes typisk mer finkornet hos tjenestetilbyder, som gjerne har scopes per tjeneste (f.eks. `skatteetaten:summertskattegrunnlag`).
   * Tjenestenivå
-    * Har tilgang til en eller flere actions på en tjeneste og/eller definert subressurs ("resource" i XACML, tradisjonelt "prosessteg" i Altinn2) av tjeneste
+    * Har tilgang til en eller flere actions på en tjeneste og/eller definert subressurs (egen ressurs-attributt i XACML, tradisjonelt "prosessteg" i Altinn2) av tjeneste
   * Dialognivå
     * Tilgang til konkret instans, aka "instansdelegering". 
-    * Tilgang på tjenestenivå gir tilgang til alle dialoger, men noen kan ha tilgang (til en eller flere actions til enkelte dialoger og/eller tilhørende definerte subressurser.
+    * Tilgang på tjenestenivå gir tilgang til alle dialoger, men noen kan ha tilgang til en eller flere actions til enkelte dialoger og/eller tilhørende definerte subressurser.
  * Det tas utgangspunkt i ikke-interaktive, virksomhetsautentiserte flyter med Maskinporten som IDP. Det er derfor fem prinsipielle aktører; sluttbrukersystemet, Dialogporten, Maskinporten, Altinn Autorisasjon og Tjenestetilbyders API for tjenesten, samt Altinn Token Exchange + Altinn Registry for håndtering av systembrukere. 
  * Varianter med ID-porten vil kunne fungere annerledes (f.eks. faller Token Exchange ut, siden man umiddelbart har en "bruker"), avhengig av grad av interaktivitet. Disse er ikke tegnet inn i denne omgang.
  * Bruk av flere tokens eller `aud`-claim forutsettes for å unngå problematikk rundt replay-angrep.

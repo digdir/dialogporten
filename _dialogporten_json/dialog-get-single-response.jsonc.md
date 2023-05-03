@@ -42,7 +42,7 @@
             "sizeInBytes": 123456,
             "contentType": "application/pdf",
             "url": "https://example.com/api/dialogues/123456789/attachments/1",
-            "subresource": "attachment1"
+            "subresource": "urn:altinn:subresource:attachment1"
         }
     ],
     "actions": {
@@ -59,7 +59,7 @@
             },
             {
                 "action": "confirm",
-                "subresource": "somesubresource", 
+                "subresource": "urn:altinn:subresource:somesubresource", 
                 "type": "secondary",
                 "title": [ { "code": "nb_NO", "value": "Bekreft mottatt" } ],
                 "isBackChannel": true,
