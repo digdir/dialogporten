@@ -1,4 +1,4 @@
-﻿using Digdir.Domain.Dialogporten.Infrastructure.DomainEvents.Outbox.Entities;
+﻿using Digdir.Domain.Dialogporten.Domain.Outboxes;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.DomainEvents.Outbox;
@@ -26,7 +26,7 @@ internal sealed class ConvertDomainEventsToOutboxMessagesInterceptor : SaveChang
 
         var outboxMessages = _eventPublisher
             .GetDomainEvents()
-            .Select(domainEvent => OutboxMessage.Create(domainEvent, DateTimeOffset.UtcNow))
+            .Select(domainEvent => OutboxMessage.Create(domainEvent))
             .ToList();
         _eventPublisher.ClearDomainEvents();
 

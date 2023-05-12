@@ -36,7 +36,6 @@ public static class InfrastructureExtensions
             // Singleton
 
             // Scoped
-            .AddScoped<ConvertDomainEventsToOutboxMessagesInterceptor>()
             .AddScoped<DomainEventPublisher>()
             .AddScoped<IDomainEventPublisher>(x => x.GetRequiredService<DomainEventPublisher>())
             .AddScoped<IDialogueDbContext>(x => x.GetRequiredService<DialogueDbContext>())
@@ -44,7 +43,8 @@ public static class InfrastructureExtensions
 
             // Transient
             .AddTransient<OutboxDispatcher>()
-            
+            .AddTransient<ConvertDomainEventsToOutboxMessagesInterceptor>()
+
             // Decorate
             .Decorate(typeof(INotificationHandler<>), typeof(IdempotentDomainEventHandler<>));
     }

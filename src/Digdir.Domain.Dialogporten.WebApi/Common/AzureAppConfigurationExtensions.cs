@@ -3,7 +3,7 @@ using Azure.Identity;
 using Microsoft.Extensions.Configuration.AzureAppConfiguration;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Digdir.Domain.Dialogporten.WebApi;
+namespace Digdir.Domain.Dialogporten.WebApi.Common;
 
 /// <summary>
 /// Wrapper around azure app configuration bootstraping such that azure app 
@@ -15,9 +15,9 @@ internal static class AzureAppConfigurationExtensions
     private const string SentinelKey = "Sentinel";
 
     public static IConfigurationBuilder AddAzureConfiguration(
-        this ConfigurationManager config, 
+        this ConfigurationManager config,
         string? environment,
-        TokenCredential? credential = null, 
+        TokenCredential? credential = null,
         TimeSpan? refreshRate = null)
     {
         if (!config.TryGetAzureAppConfigUri(out var appConfigUri))
@@ -32,7 +32,7 @@ internal static class AzureAppConfigurationExtensions
             .Connect(appConfigUri, credential)
             .Select(KeyFilter.Any, LabelFilter.Null)
             .SelectIf(!string.IsNullOrWhiteSpace(environment),
-                keyFilter: KeyFilter.Any, 
+                keyFilter: KeyFilter.Any,
                 labelFilter: environment!)
             .ConfigureRefresh(refresh => refresh
                 .Register(SentinelKey, refreshAll: true)
@@ -50,8 +50,8 @@ internal static class AzureAppConfigurationExtensions
         // configuration before using azure app configuration middleware.
         return builder.ApplicationServices
             .GetRequiredService<IConfiguration>()
-            .TryGetAzureAppConfigUri(out var _) 
-                ? builder.UseAzureAppConfiguration() 
+            .TryGetAzureAppConfigUri(out var _)
+                ? builder.UseAzureAppConfiguration()
                 : builder;
     }
 
@@ -59,7 +59,7 @@ internal static class AzureAppConfigurationExtensions
         this AzureAppConfigurationOptions options,
         bool predicate,
         string keyFilter,
-        string labelFilter = "\0") 
+        string labelFilter = "\0")
         => predicate ? options.Select(keyFilter, labelFilter) : options;
 
     private static bool TryGetAzureAppConfigUri(this IConfiguration config, [NotNullWhen(true)] out Uri? uri)

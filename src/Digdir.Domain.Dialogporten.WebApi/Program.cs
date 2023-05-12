@@ -1,6 +1,7 @@
 using Digdir.Domain.Dialogporten.Application;
 using Digdir.Domain.Dialogporten.Infrastructure;
 using Digdir.Domain.Dialogporten.WebApi;
+using Digdir.Domain.Dialogporten.WebApi.Common;
 using FastEndpoints;
 using FastEndpoints.Swagger;
 using Microsoft.ApplicationInsights.Extensibility;

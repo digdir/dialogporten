@@ -1,5 +1,5 @@
 ﻿using Digdir.Domain.Dialogporten.Domain.Common;
-using Digdir.Domain.Dialogporten.Infrastructure.DomainEvents.Outbox.Entities;
+using Digdir.Domain.Dialogporten.Domain.Outboxes;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -24,7 +24,7 @@ internal sealed class IdempotentDomainEventHandler<TDomainEvent> : INotification
     {
         string consumer = _decorated.GetType().Name;
         var isHandledByConsumer = await _db.Set<OutboxMessageConsumer>()
-            .AnyAsync(x => x.EventId == notification.EventId && x.Name == consumer, cancellationToken);
+            .AnyAsync(x => x.EventId == notification.EventId && x.ConsumerName == consumer, cancellationToken);
         if (isHandledByConsumer)
         {
             return;
@@ -35,7 +35,7 @@ internal sealed class IdempotentDomainEventHandler<TDomainEvent> : INotification
         _db.Set<OutboxMessageConsumer>().Add(new OutboxMessageConsumer
         {
             EventId = notification.EventId,
-            Name = consumer
+            ConsumerName = consumer
         });
         await _db.SaveChangesAsync(cancellationToken);
     }

@@ -1,5 +1,5 @@
 ﻿using Digdir.Domain.Dialogporten.Domain.Common;
-using Digdir.Domain.Dialogporten.Infrastructure.DomainEvents.Outbox.Entities;
+using Digdir.Domain.Dialogporten.Domain.Outboxes;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -26,36 +26,36 @@ internal sealed class OutboxDispatcher
 
     public async Task Execute(CancellationToken cancellationToken = default)
     {
-        var outboxMessages = await _db
-            .Set<OutboxMessage>()
-            .Where(x => x.Status == OutboxStatus.Unprocessed)
-            .OrderBy(x => x.LastAttemptedAtUtc)
-            .Take(20)
-            .ToListAsync(cancellationToken);
+        //var outboxMessages = await _db
+        //    .Set<OutboxMessage>()
+        //    .Where(x => x.Status == OutboxStatus.Unprocessed)
+        //    .OrderBy(x => x.LastAttemptedAtUtc)
+        //    .Take(20)
+        //    .ToListAsync(cancellationToken);
 
-        foreach (var outboxMessage in outboxMessages)
-        {
-            if (!outboxMessage.TryParseDomainEvent<IDomainEvent>(out var domainEvent))
-            {
-                // TODO: Handle better
-                outboxMessage.Discard();
-                continue;
-            }
+        //foreach (var outboxMessage in outboxMessages)
+        //{
+        //    if (!outboxMessage.TryParseDomainEvent<IDomainEvent>(out var domainEvent))
+        //    {
+        //        // TODO: Handle better
+        //        outboxMessage.Discard();
+        //        continue;
+        //    }
 
-            var result = await _retryPolicy
-                .ExecuteAndCaptureAsync(
-                    ct => _publisher.Publish(domainEvent, ct),
-                    cancellationToken);
+        //    var result = await _retryPolicy
+        //        .ExecuteAndCaptureAsync(
+        //            ct => _publisher.Publish(domainEvent, ct),
+        //            cancellationToken);
 
-            if (result.Outcome == OutcomeType.Failure)
-            {
-                outboxMessage.Failure(result.FinalException.Message);
-                continue;
-            }
+        //    if (result.Outcome == OutcomeType.Failure)
+        //    {
+        //        outboxMessage.Failure(result.FinalException.Message);
+        //        continue;
+        //    }
 
-            outboxMessage.Success();
-        }
+        //    outboxMessage.Success();
+        //}
 
-        await _db.SaveChangesAsync(cancellationToken);
+        //await _db.SaveChangesAsync(cancellationToken);
     }
 }

@@ -10,6 +10,19 @@ param administratorLoginPassword string
 var administratorLogin = 'dialogportenPgAdmin'
 var databaseName = 'dialogporten'
 
+// Uncomment the following lines to add logical replication.
+// see https://learn.microsoft.com/en-us/azure/postgresql/flexible-server/concepts-logical#pre-requisites-for-logical-replication-and-logical-decoding
+var postgresqlConfiguration = {
+	wal_level: 'logical'
+	max_worker_processes: '16'
+
+	// The leading theory is that we are using pgoutput as the replication protocol 
+	// which comes out of the box in postgresql. Therefore we may not need the 
+	// following two lines.
+	//'azure.extensions': 'pglogical'
+	//shared_preload_libraries: 'pglogical'
+}
+
 module saveAdmPassword '../keyvault/upsertSecret.bicep' = {
 	name: 'Save_${srcSecretName}'
 	scope: resourceGroup(srcKeyVault.subscriptionId, srcKeyVault.resourceGroupName)
@@ -43,6 +56,12 @@ resource postgres 'Microsoft.DBforPostgreSQL/flexibleServers@2022-12-01' = {
 			endIpAddress: '0.0.0.0'
 		}
 	}
+	resource configurations 'configurations' = [for config in items(postgresqlConfiguration): {
+		name: config.key
+		properties: {
+            value: config.value
+        }
+	}]
 }
 
 module adoConnectionString '../keyvault/upsertSecret.bicep' = {
