@@ -36,82 +36,93 @@
         "searchTitle": [ { "code": "nb_NO", "value": "En eksempel på en tittel brukt i listevisning" } ],
         "senderName": [ { "code": "nb_NO", "value": "Overstyrt avsendernavn (bruker default tjenesteeiers navn)" } ]            
     },
-    "dialogElements": {
-        "gui": [
-            {
-                "dialogElementId": "5b5446a7-9b65-4faf-8888-5a5802ce7de7",
-                "url": "https://example.com/api/dialogs/123456789/dialogelements/5b5446a7.pdf",
-                "displayName": [ { "code": "nb_NO", "value": "Innsendt skjema" } ],
-                "contentType": "application/pdf"
-            },
-            {
-                "dialogElementId": "cd6bf231-2347-4131-8ccc-513a6345ef0b",
-                "url": "https://example.com/api/dialogs/123456789/dialogelements/cd6bf231.pdf",
-                "displayName": [ { "code": "nb_NO", "value": "Innsendt korrigering #1" } ],
-                "contentType": "application/pdf"
-            },
-            {
-                "dialogElementId": "a8e0ed0d-1b26-4132-9823-28a5e8ecb24e",
-                "url": "https://example.com/api/dialogs/123456789/dialogelements/a8e0ed0d.pdf",
-                "displayName": [ { "code": "nb_NO", "value": "Innsendt korrigering #2" } ],
-                "contentType": "application/pdf"
-            },
-            {
-                "dialogElementId": "a12fce1f-b2de-4837-bdd8-8743f80d74fc",
-                "url": "https://example.com/api/dialogs/123456789/dialogelements/a12fce1f.pdf",
-                "displayName": [ { "code": "nb_NO", "value": "Vedtaksbrev" } ],
-                "contentType": "application/pdf",                        
-                "authorizationResource": "urn:altinn:subresource:somesubresource",
-                // Dette flagget er bare synlig på response-modellen, og indikerer om konsumenten er autorisert til 
-                // å aksessere "url". Gjelder bare dialogelementer og actions for GUI. For dialogelementer og actions 
-                // for API utelates disse helt.
-                "isAuthorized": false
-            },
-
-        ],
-        "api": [
-            {
-                "dialogElementId": "5b5446a7-9b65-4faf-8888-5a5802ce7de7",
-                "url": "https://example.com/api/dialogs/123456789/dialogelements/5b5446a7.xml",
-                "dialogElementType": "form-type-1",
-                "dialogElementSchema": "https://schemas.example.com/dialogservice/v1/form-type-1.json",                        
-                "authorizationResource": "urn:altinn:subresource:someothersubresource"
-            },
-            {
-                "dialogElementId": "cd6bf231-2347-4131-8ccc-513a6345ef0",
-                "url": "https://example.com/api/dialogs/123456789/dialogelements/cd6bf231.xml",
-                "dialogElementType": "form-type-1",
-                "dialogElementSchema": "https://schemas.example.com/dialogservice/v1/form-type-1.json",                        
-                "authorizationResource": "urn:altinn:subresource:someothersubresource"
-            },
-            {
-                "dialogElementId": "22366651-c1b6-4812-a97d-5ed43fc4fe57",
-                "url": "https://example.com/api/dialogs/123456789/dialogelements/22366651.xml",
-                "dialogElementType": "error-for-form-type-1",
-                "dialogElementSchema": "https://schemas.example.com/dialogservice/v1/error-for-form-type-1.json",                        
-                "authorizationResource": "urn:altinn:subresource:someothersubresource"
-            },
-            {
-                "dialogElementId": "a8e0ed0d-1b26-4132-9823-28a5e8ecb24e",
-                "url": "https://example.com/api/dialogs/123456789/dialogelements/a8e0ed0d.xml",
-                "dialogElementType": "form-type-1",
-                "dialogElementSchema": "https://schemas.example.com/dialogservice/v1/form-type-1.json",                        
-                "authorizationResource": "urn:altinn:subresource:someothersubresource"
-            },
-            {
-                "dialogElementId": "a12fce1f-b2de-4837-bdd8-8743f80d74fc",
-                "url": "https://example.com/api/dialogs/123456789/dialogelements/a12fce1f.xml",
-                "dialogElementType": "resolution-type-1",
-                "dialogElementSchema": "https://schemas.example.com/dialogservice/v1/resolution-type-1.json",                        
-                "authorizationResource": "urn:altinn:subresource:someothersubresource"
-            },
-        ]        
-    },
+    "dialogElements": [
+        {
+            "dialogElementId": "5b5446a7-9b65-4faf-8888-5a5802ce7de7",
+            "displayName": [ { "code": "nb_NO", "value": "Innsendt skjema" } ],
+            "urls": [
+                {
+                    "consumerType": "gui",
+                    "url": "https://example.com/api/dialogs/123456789/dialogelements/5b5446a7.pdf",
+                    "contentType": "application/pdf"
+                },
+                {
+                    "consumerType": "api",
+                    "url": "https://example.com/api/dialogs/123456789/dialogelements/5b5446a7.xml",
+                    "contentType": "application/json",
+                    "contentSchema": "https://schemas.example.com/dialogservice/v1/form-type-1.json",   
+                }
+            ]
+        },
+        {
+            "dialogElementId": "cd6bf231-2347-4131-8ccc-513a6345ef0b",
+            "displayName": [ { "code": "nb_NO", "value": "Innsendt korrigering #1" } ],
+            "urls": [
+                {
+                    "consumerType": "gui",
+                    "url": "https://example.com/api/dialogs/123456789/dialogelements/cd6bf231.pdf",
+                    "contentType": "application/pdf"
+                },
+                {
+                    "consumerType": "api",
+                    "url": "https://example.com/api/dialogs/123456789/dialogelements/cd6bf231.xml",
+                    "contentType": "application/json",
+                    "contentSchema": "https://schemas.example.com/dialogservice/v1/form-type-1.json",
+                }
+            ]
+        },
+        {
+            "dialogElementId": "22366651-c1b6-4812-a97d-5ed43fc4fe57",
+            "authorizationResource": "urn:altinn:subresource:someothersubresource",
+            "uris": [
+                {
+                    "consumerType": "api",
+                    "uri": "https://example.com/api/dialogs/123456789/dialogelements/22366651.xml",
+                    "contentType": "application/json",
+                    "contentSchema": "https://schemas.example.com/dialogservice/v1/error-for-form-type-1.json"
+                }
+            ]
+        },
+        {
+            "dialogElementId": "a8e0ed0d-1b26-4132-9823-28a5e8ecb24e",            
+            "displayName": [ { "code": "nb_NO", "value": "Innsendt korrigering #2" } ],
+            "urls": [
+                {
+                    "consumerType": "gui",
+                    "url": "https://example.com/api/dialogs/123456789/dialogelements/a8e0ed0d.pdf",
+                    "contentType": "application/pdf"
+                },
+                {
+                    "consumerType": "api",
+                    "url": "https://example.com/api/dialogs/123456789/dialogelements/a8e0ed0d.xml",
+                    "contentType": "application/json",
+                    "dialogElementSchema": "https://schemas.example.com/dialogservice/v1/form-type-1.json",        
+                }
+            ]            
+        },
+        {
+            "dialogElementId": "a12fce1f-b2de-4837-bdd8-8743f80d74fc",            
+            "displayName": [ { "code": "nb_NO", "value": "Vedtaksbrev" } ],
+            "authorizationResource": "urn:altinn:subresource:somesubresource",
+            // Indikerer om autentisert bruker er autorisert til å lese ("elementread") - finnes bare i response-modell for 
+            // sluttbrukere og populeres av Dialogporten utfra policy. Dette er et hint for GUI-implementasjoner som da kan 
+            // velge å skjule/gråe ut actions som ikke vil kunne gjennomføres.
+            "isAuthorized": false,
+            "urls": [
+                {
+                    "consumerType": "gui",
+                    "url": "https://example.com/api/dialogs/123456789/dialogelements/a12fce1f.pdf",
+                    "contentType": "application/pdf",                        
+                },
+                {
+                    "consumerType": "api",
+                    "url": "https://example.com/api/dialogs/123456789/dialogelements/a12fce1f.xml",
+                    "dialogElementSchema": "https://schemas.example.com/dialogservice/v1/resolution-type-1.json",           
+                }
+            ]
+        }
+    ],
     "actions": {
-        // Indikerer hvilke actions autentisert bruker er autorisert for å utføre - finnes bare i response-modell for 
-        // sluttbrukere og populeres av Dialogporten utfra policy. Dette er et hint for GUI-implementasjoner som da kan 
-        // velge å skjule/gråe ut actions som ikke vil kunne gjennomføres.
-        "authorizedActions": ["open"],
         "gui": [ 
             { 
                 "action": "open", // Denne kan refereres i XACML-policy

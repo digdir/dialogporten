@@ -67,50 +67,43 @@
         "title": [ { "code": "nb_NO", "value": "En eksempel på en tittel" } ],
         "senderName": [ { "code": "nb_NO", "value": "Overstyrt avsendernavn (bruker default tjenesteeiers navn)" } ]            
     },
-    // Det skilles mellom dialogelementer som er ment for GUI og for API. GUI-dialogelementer er typiske filvedlegg i 
+    // Dialogelementer kan være tiltenkt enten GUI eller API, eller begge. GUI-dialogelementer er typiske filvedlegg i 
     // menneskelesbart format, f.eks. PDF, som tjenestetilbyder legger ved dialogen. Dette kan være utsendinger fra 
-    // tjenestilbyder eller innsendinger fra parten.     // API-dialogelementer er strukturerte filer tiltenkt SBS-er. 
+    // tjenestilbyder eller innsendinger fra parten. API-dialogelementer er strukturerte filer tiltenkt SBS-er. 
     // Dette kan være enkelteskjemaer, egne prefill-modeller, strukturerte feilmeldinger,tidligere innsendte skjema etc.
     //
     // Dialogelementer kan hentes (leses) gjennom oppgitt URL. Actions kan peke på et spesifikt dialogelement for andre
     // operasjoner direkte knyttet til et dialogelement.
-    "dialogElements": {
-        "gui": [
-            {
-                // Unik identifikator for dialogElement. Kan oppgis av tjenestetilbyder for å sikre idempotens.
-                "dialogElementId": "5b5446a7-9b65-4faf-8888-5a5802ce7de7",
-                "url": "https://example.com/api/dialogs/123456789/dialogelements/1.pdf",
-
-                // Brukes for å vise sluttbrukeren hva dette er 
-                "displayName": [ { "code": "nb_NO", "value": "Innsendt skjema" } ],
-                
-                // Valgfri: MIME-type. Brukes i GUI for hint om hva slags dokument dette er 
-                "contentType": "application/pdf",                        
-
-                // Valgfri: Det kan oppgis en referanse til det som mappes til en XACML-ressurs. Hvis oppgitt, må 
-                // brukeren må ha tilgang  til actionen "elementread" i XACML-policy evt. begrenset til denne ressursen. 
-                // Hvis ikke oppgitt kreves bare "read".
-                "authorizationResource": "urn:altinn:subresource:somesubresource"
-            }
-        ],
-        "api": [
-            {
-                "dialogElementId": "8bf7c93c-ab32-49a6-a890-d2b450b3e7ad",
-                "url": "https://example.com/api/dialogs/123456789/dialogelements/1.xml",
-                
-                // Valgfri: Tjenestetilbyder-oppgitt type-betegnelse som er maskinlesbar.  
-                "dialogElementType": "somethingservicespecific",
-                
-                // Valgfri: JSON-schema som indikerer schemaet til dialogelementet
-                "dialogElementSchema": "https://schemas.example.com/dialogservice/v1/somethingservicespecific.json",                        
-
-                // Valgfri: Det kan oppgis en referanse til det som mappes til en XACML-ressurs. Hvis oppgitt, må 
-                // brukeren må ha tilgang  til actionen "elementread" i XACML-policy evt. begrenset til denne ressursen. 
-                // Hvis ikke oppgitt kreves bare "read".
-                "authorizationResource": "urn:altinn:subresource:someothersubresource"
-            }
-        ]        
-    },
+    "dialogElements": [
+        {
+            // Unik identifikator for dialogElement. Kan oppgis av tjenestetilbyder for å sikre idempotens.
+            "dialogElementId": "5b5446a7-9b65-4faf-8888-5a5802ce7de7",
+            
+            // Valgfri: Brukes for å vise sluttbrukeren hva dette er, typisk bare brukt i GUI
+            "displayName": [ { "code": "nb_NO", "value": "Innsendt skjema" } ],
+            
+            // Valgfri: Det kan oppgis en referanse til det som mappes til en XACML-ressurs. Hvis oppgitt, må 
+            // brukeren må ha tilgang  til actionen "elementread" i XACML-policy evt. begrenset til denne ressursen. 
+            // Hvis ikke oppgitt kreves bare "read".
+            "authorizationResource": "urn:altinn:subresource:somesubresource",
+            "urls": [
+                {
+                    // Indikerer hvilken type konsument denne URL-en er tiltenkt (menneske/GUI eller maskin/API)
+                    "consumerType": "gui",
+                    "url": "https://example.com/api/dialogs/123456789/dialogelements/5b5446a7.pdf",
+                    // Valgfri: MIME-type. Brukes i GUI for hint om hva slags dokument dette er 
+                    "contentType": "application/pdf"
+                },
+                {
+                    "consumerType": "api",
+                    "url": "https://example.com/api/dialogs/123456789/dialogelements/5b5446a7.xml",
+                    "contentType": "application/json",
+                    // Valgfri: JSON-schema som indikerer type og schemaet til dialogelementet
+                    "contentSchema": "https://schemas.example.com/dialogservice/v1/form-type-1.json",   
+                }
+            ]
+        },   
+    ],
     "actions": {
         "gui": [ 
             { 
