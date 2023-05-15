@@ -21,8 +21,12 @@
             "from": [ { "code": "nb_NO", "value": "Etaten" } ]
     },
     "email": {
-            "subject": [ { "code": "nb_NO", "value": "Emnefeltet på e-post" } ],
-            "body": [ { "code": "nb_NO", "value": "Dette er en teksten i e-posten" } ]
+            "subject": [ { "code": "nb_NO", "value": "Signeringsoppdrag for Omsetningsrapportering" } ],
+            "template": "general-notification",
+            "tokens": [
+                { "name": "header", "value": [ { "code": "nb_NO", "value": "Signeringsoppdrag for Omsetningsrapportering" } ] },
+                { "name": "body", "value": [ { "code": "nb_NO", "value": "Hei {{recipient.fullname}}!<br><br>Du er bedt om å signere for {{party.fullname}} i Dialogporten" } ] } 
+            ]
     },
     "push": {
         // Basert på https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerRegistration/showNotification

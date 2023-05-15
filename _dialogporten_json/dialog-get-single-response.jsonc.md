@@ -9,8 +9,8 @@
 {
     "id": "e0300961-85fb-4ef2-abff-681d77f9960e",
     "org": "digdir", // Identifikator for tjenestetilbyder
-    "serviceResourceIdentifier": "example_dialogue_service", 
-    "dialogueGroup": {
+    "serviceResourceIdentifier": "example_dialog_service", 
+    "dialogGroup": {
         "id": "some-arbitrary-id",
         "order": 1,
         "name": [ { "code": "nb_NO", "value": "Navn på dialoggruppe." } ]
@@ -18,7 +18,7 @@
     "party": "org/991825827",
     "externalReference": "123456789",
     "status": "in-progress",
-    "externalStatus": "SKE-ABC",
+    "extendedStatus": "SKE-ABC",
     "dates": {
         "createdDateTime": "2022-12-01T10:00:00.000Z",
         "updatedDateTime": "2022-12-01T10:00:00.000Z",
@@ -36,15 +36,30 @@
         "searchTitle": [ { "code": "nb_NO", "value": "En eksempel på en tittel brukt i listevisning" } ],
         "senderName": [ { "code": "nb_NO", "value": "Overstyrt avsendernavn (bruker default tjenesteeiers navn)" } ]            
     },
-    "attachments": [
-        {
-            "displayName": [ { "code": "nb_NO", "value": "dette er et vedlegg" } ],
-            "sizeInBytes": 123456,
-            "contentType": "application/pdf",
-            "url": "https://example.com/api/dialogues/123456789/attachments/1",
-            "subresource": "urn:altinn:subresource:attachment1"
-        }
-    ],
+    "dialogElements": {
+        "gui": [
+            {
+                "dialogElementId": "5b5446a7-9b65-4faf-8888-5a5802ce7de7",
+                "url": "https://example.com/api/dialogs/123456789/dialogelements/1.pdf",
+                "dialogElementType": "somethingservicespecific",
+                "displayName": [ { "code": "nb_NO", "value": "Innsendt skjema" } ],
+                "contentType": "application/pdf",                        
+                "authorizationResource": "urn:altinn:subresource:somesubresource",
+                // Dette flagget er bare synlig på response-modellen, og indikerer om konsumenten er autorisert til å aksessere "url"
+                // Gjelder bare dialogelementer og actions for GUI. For dialogelementer og actions for API utelates disse helt.
+                "isAuthorized": false
+            }
+        ],
+        "api": [
+            {
+                "dialogElementId": "8bf7c93c-ab32-49a6-a890-d2b450b3e7ad",
+                "url": "https://example.com/api/dialogs/123456789/dialogelements/1.xml",
+                "dialogElementType": "somethingservicespecific",
+                "dialogElementSchema": "https://schemas.example.com/dialogservice/v1/somethingservicespecific.json",                        
+                "authorizationResource": "urn:altinn:subresource:someothersubresource"
+            }
+        ]        
+    },
     "actions": {
         // Indikerer hvilke actions autentisert bruker er autorisert for å utføre - finnes bare i response-modell for 
         // sluttbrukere og populeres av Dialogporten utfra policy. Dette er et hint for GUI-implementasjoner som da kan 
@@ -53,24 +68,27 @@
         "gui": [ 
             { 
                 "action": "open", // Denne kan refereres i XACML-policy
-                "type": "primary", // Dette bestemmer hvordan handlingen presenteres.
+                "importance": "primary", // Dette bestemmer hvordan handlingen presenteres.
                 "title": [ { "code": "nb_NO", "value": "Åpne i dialogtjeneste" } ],
-                "url": "https://example.com/some/deep/link/to/dialogues/123456789"
+                "url": "https://example.com/some/deep/link/to/dialogs/123456789"
             },
             {
                 "action": "confirm",
-                "subresource": "urn:altinn:subresource:somesubresource", 
-                "type": "secondary",
+                "authorizationResource": "urn:altinn:subresource:somesubresource",
+                // Dette flagget er bare synlig på response-modellen, og indikerer om konsumenten er autorisert til å aksessere "url"
+                // Gjelder bare dialogelementer og actions for GUI. For dialogelementer og actions for API utelates disse helt.
+                "isAuthorized": false,
+                "importance": "secondary",
                 "title": [ { "code": "nb_NO", "value": "Bekreft mottatt" } ],
                 "isBackChannel": true,
-                "url": "https://example.com/some/deep/link/to/dialogues/123456789/confirmReceived"
+                "url": "https://example.com/some/deep/link/to/dialogs/123456789/confirmReceived"
             },
             { 
                 "action": "delete",
-                "type": "tertiary",
+                "importance": "tertiary",
                 "title": [ { "code": "nb_NO", "value": "Avbryt" } ],
                 "isDeleteAction": true,
-                "url": "https://example.com/some/deep/link/to/dialogues/123456789"
+                "url": "https://example.com/some/deep/link/to/dialogs/123456789"
             }
         ],
         "api": [ 
@@ -79,19 +97,19 @@
                 "endpoints": [ 
                     {
                         "version": "v2",
-                        "actionUrl": "https://example.com/api/v2/dialogues/123456789",
+                        "actionUrl": "https://example.com/api/v2/dialogs/123456789",
                         "method": "GET",
                         "responseSchema": "https://schemas.altinn.no/dialogs/v2/dialogs.json", 
-                        "documentationUrl": "https://api-docs.example.com/v2/dialogueservice/open-action"                         
+                        "documentationUrl": "https://api-docs.example.com/v2/dialogservice/open-action"                         
                     },
                     {
                         "version": "v1",
                         "deprecated": true, 
                         "sunsetDate": "2024-12-31T23:59:59.999Z",
-                        "actionUrl": "https://example.com/api/v1/dialogues/123456789",
+                        "actionUrl": "https://example.com/api/v1/dialogs/123456789",
                         "method": "GET",
                         "responseSchema": "https://schemas.altinn.no/dialogs/v1/dialogs.json", 
-                        "documentationUrl": "https://api-docs.example.com/v1/dialogueservice/open-action",
+                        "documentationUrl": "https://api-docs.example.com/v1/dialogservice/open-action",
                     },
                 ]
             },
@@ -101,8 +119,8 @@
                     {
                         "version": "v1",
                         "method": "POST",
-                        "actionUrl": "https://example.com/api/dialogues/123456789/confirmReceived",
-                        "documentationUrl": "https://api-docs.example.com/dialogueservice/confirm-action"
+                        "actionUrl": "https://example.com/api/dialogs/123456789/confirmReceived",
+                        "documentationUrl": "https://api-docs.example.com/dialogservice/confirm-action"
                     }
                 ]                
             },
@@ -112,9 +130,9 @@
                     {
                         "version": "v1",
                         "action": "submit", // Denne kan refereres i XACML-policy
-                        "actionUrl": "https://example.com/api/dialogues/123456789",
+                        "actionUrl": "https://example.com/api/dialogs/123456789",
                         "method": "POST",
-                        "requestSchema": "https://schemas.example.com/dialogueservice/v1/dialogueservice.json", 
+                        "requestSchema": "https://schemas.example.com/dialogservice/v1/dialogservice.json", 
                         "responseSchema": "https://schemas.altinn.no/dialogs/v1/dialogs.json" 
                     }
                 ]
@@ -125,7 +143,7 @@
                     {
                         "version": "v1",
                         "method": "DELETE",
-                        "actionUrl": "https://example.com/api/dialogues/123456789"
+                        "actionUrl": "https://example.com/api/dialogs/123456789"
                     }
                 ]
             }
@@ -138,17 +156,17 @@
             "activityDateTime": "2022-12-01T10:00:00.000Z",
             "activityType": "submission",
             "performedBy": "person:12018212345",
-            "externalType": "SKE-1234-received-precheck-ok",
-            "externalId": "b323cef4-adbd-4d2c-b33d-5c0f3b11171b",
+            "extendedActivityType": "SKE-1234-received-precheck-ok",
+            "dialogElementId": "b323cef4-adbd-4d2c-b33d-5c0f3b11171b",
             "activityDescription": [ { "code": "nb_NO", "value": "Innsending er mottatt og sendt til behandling" } ],
             "activityDetailsUrls": {
                 "api": [
                     {
                         "version": "v1",
-                        "url": "https://example.com/api/dialogues/123456789/received_submissions/b323cef4-adbd-4d2c-b33d-5c0f3b11171b"
+                        "url": "https://example.com/api/dialogs/123456789/received_submissions/b323cef4-adbd-4d2c-b33d-5c0f3b11171b"
                     }
                 ],
-                "gui": "https://example.com/dialogues/123456789/view_submission/b323cef4-adbd-4d2c-b33d-5c0f3b11171b"
+                "gui": "https://example.com/dialogs/123456789/view_submission/b323cef4-adbd-4d2c-b33d-5c0f3b11171b"
             },
         }
         { 
@@ -171,7 +189,7 @@
             "activityType": "feedback",
             // Feedback-typer har vanligvis en referanse til en submission-aktivitet som dette er feedback for
             "relatedActivityId": "fc6406df-6163-442a-92cd-e487423f2fd5",
-            "externalType": "SKE-2456-need-form-RF1337",
+            "extendedActivityType": "SKE-2456-need-form-RF1337",
             "activityDescription": [ { "code": "nb_NO", "value": "Behandling er utført. Ytterligere opplysninger kreves." } ],
             "activityDetailsUrls": {
                 // Feltene "api" og "gui" er begge valgfrie, såvel som feltet activityDetailsUrls i seg selv. I dette
@@ -186,8 +204,8 @@
             "activityId": "f6ef1a96-df3a-4d38-830f-853b5d090e16",
             "activityDateTime": "2022-12-01T12:00:00.000Z",
             "activityType": "submission",
-            "externalType": "SKE-2456-received-precheck-ok",
-            "externalId": "22366651-c1b6-4812-a97d-5ed43fc4fe57",
+            "extendedActivityType": "SKE-2456-received-precheck-ok",
+            "dialogElementId": "22366651-c1b6-4812-a97d-5ed43fc4fe57",
             "activityDescription": [ { 
                 "code": "nb_NO", 
                 "value": "Innsending av ytterligere opplysninger er mottatt og sendt til behandling." 
@@ -196,10 +214,10 @@
                 "api": [
                     {
                         "version": "v1",
-                        "url": "https://example.com/api/dialogues/123456789/received_submissions/22366651-c1b6-4812-a97d-5ed43fc4fe57"
+                        "url": "https://example.com/api/dialogs/123456789/received_submissions/22366651-c1b6-4812-a97d-5ed43fc4fe57"
                     }
                 ],
-                "gui": "https://example.com/dialogues/123456789/view_submission/22366651-c1b6-4812-a97d-5ed43fc4fe57"
+                "gui": "https://example.com/dialogs/123456789/view_submission/22366651-c1b6-4812-a97d-5ed43fc4fe57"
             }
         },
         { 
@@ -208,7 +226,7 @@
             "activityType": "error",
             // Feilmeldinger har også vanligvis en referanse til en tidligere aktivitet som var årsak til at feilsituasjonen oppstod
             "relatedActivityId": "f6ef1a96-df3a-4d38-830f-853b5d090e16",
-            "externalId": "22366651-c1b6-4812-a97d-5ed43fc4fe57",
+            "dialogElementId": "22366651-c1b6-4812-a97d-5ed43fc4fe57",
             "activityErrorCode": "SKE-error-12345",
             "activityDescription": [ { 
                 "code": "nb_NO", 
@@ -220,7 +238,7 @@
                 "api": [
                     {
                         "version": "v1",
-                        "url": "https://example.com/api/dialogues/123456789/received_submissions/22366651-c1b6-4812-a97d-5ed43fc4fe57/errors"
+                        "url": "https://example.com/api/dialogs/123456789/received_submissions/22366651-c1b6-4812-a97d-5ed43fc4fe57/errors"
                     }
                 ],
                 // Her kan det for GUI-brukere lenkes til en eller annen dokumentasjon som forklarer mer om hva som
@@ -232,8 +250,8 @@
             "activityId": "4ce2e110-21c5-4783-94ed-b2a8695abb8a",
             "activityDateTime": "2022-12-01T14:00:00.000Z",
             "activityType": "submission",
-            "externalType": "SKE-2456-received-precheck-ok",
-            "externalId": "d1cbd317-277f-4521-b9b5-ee7d6b29ceaf",
+            "extendedActivityType": "SKE-2456-received-precheck-ok",
+            "dialogElementId": "d1cbd317-277f-4521-b9b5-ee7d6b29ceaf",
             "activityDescription": [ { 
                 "code": "nb_NO", 
                 "value": "Innsending av ytterligere opplysninger er mottatt og sendt til behandling." 
@@ -242,10 +260,10 @@
                 "api": [
                     {
                         "version": "v1",
-                        "url": "https://example.com/api/dialogues/123456789/received_submissions/d1cbd317-277f-4521-b9b5-ee7d6b29ceaf"
+                        "url": "https://example.com/api/dialogs/123456789/received_submissions/d1cbd317-277f-4521-b9b5-ee7d6b29ceaf"
                     }
                 ],
-                "gui": "https://example.com/dialogues/123456789/view_submission/d1cbd317-277f-4521-b9b5-ee7d6b29ceaf"
+                "gui": "https://example.com/dialogs/123456789/view_submission/d1cbd317-277f-4521-b9b5-ee7d6b29ceaf"
             }
         },
         { 
@@ -253,7 +271,7 @@
             "activityDateTime": "2022-12-01T15:00:00.000Z",
             "activityType": "feedback",
             "relatedActivityId": "4ce2e110-21c5-4783-94ed-b2a8695abb8a",
-            "externalType": "SKE-2456-final-ok",
+            "extendedActivityType": "SKE-2456-final-ok",
             "activityDescription": [ { 
                 "code": "nb_NO", 
                 "value": "Saksbehandling er utført og vedtak er fattet, se vedlegg. 
@@ -290,13 +308,13 @@
         "notificationlog": { "href": "/dialogporten/api/v1/dialogs/e0300961-85fb-4ef2-abff-681d77f9960e/notificationlog" }, 
 
         // Dyplenke til portalvisning for dialogen i Dialogporten
-        "serviceresource": { "href": "/resourceregistry/api/v1/resource/example_dialogue_service/" }, 
+        "serviceresource": { "href": "/resourceregistry/api/v1/resource/example_dialog_service/" }, 
 
         // Dyplenke til portalvisning for dialogen i Dialogporten
         "selfgui": { "href": "https://www.dialogporten.no/?expandDialog=e0300961-85fb-4ef2-abff-681d77f9960e" }, 
 
         // Dyplenke til portalvisning for dialogen hos tjenesteeier
-        "externalgui": { "href": "https://example.com/some/deep/link/to/dialogues/123456789" } 
+        "externalgui": { "href": "https://example.com/some/deep/link/to/dialogs/123456789" } 
     }
 }
 ```

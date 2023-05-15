@@ -53,7 +53,7 @@ Dialogen opprettes i DP, og settes i en tilstand som indikerer at den er under b
             "activityId": "1470986f-6d48-4caa-916e-0dc77e08bc8b", 
             "activityType": "submission",
             "activityDescription": "Søknad sendt til behandling",
-            "externalId": "58dafb71-8838-4077-84e2-ecd3ea069812",
+            "dialogElementId": "58dafb71-8838-4077-84e2-ecd3ea069812",
             "activityDetailsUrl": "<url-referanse til innsending>"
         }
     ]
@@ -93,8 +93,8 @@ Ethvert nytt innslag i activityHistory genererer også events. Siden dette ble o
     // Under er felter hentet fra activityHistory-innslag som mulliggjør at et SBS kan agere uten å måtte slå opp dialogen eller aktivitetslogg-innslaget
     "data": { 
         "activityId": "1470986f-6d48-4caa-916e-0dc77e08bc8b",
-        "externalType": "SKE-1234-received-precheck-ok",
-        "externalId": "58dafb71-8838-4077-84e2-ecd3ea069812"
+        "extendedActivityType": "SKE-1234-received-precheck-ok",
+        "dialogElementId": "58dafb71-8838-4077-84e2-ecd3ea069812"
     }
 } 
 ```
@@ -150,7 +150,7 @@ Saksbehandlingen har avdekket at det er behov for å innhente ytterligere opplys
             "activityId": "a4df1787-a6d1-453e-8ab1-47c06e7d90bd",
             "activityType": "feedback",
             "relatedActivityId": "1470986f-6d48-4caa-916e-0dc77e08bc8b", // peker på aktiviteten som beskrve innsendingen
-            "externalType": "form-rf1234-required", // maskinlesbar
+            "extendedActivityType": "form-rf1234-required", // maskinlesbar
             "activityDescription": "Behandling foretatt, mer informasjon forespurt",
             "activityDetailsUrl": "<evt. referanse som gir mer informasjon om hva som har skjedd>"
         }
@@ -174,7 +174,7 @@ Saksbehandlingen har avdekket at det er behov for å innhente ytterligere opplys
     "source": "https://dialogporten.no/api/v1/dialogs/f4e6df3c-7434-44c3-875e-8dca1cdf0b20/activityhistory/a4df1787-a6d1-453e-8ab1-47c06e7d90bd",    
     "data": { 
         "activityId": "a4df1787-a6d1-453e-8ab1-47c06e7d90bd",
-        "externalType": "form-rf1234-required",
+        "extendedActivityType": "form-rf1234-required",
         "relatedActivityId": "1470986f-6d48-4caa-916e-0dc77e08bc8b"
     }
 } 
@@ -238,9 +238,9 @@ Skatteetaten mottar innsendingen, som valideres maskinelt. Dialogen kan nå avsl
         {            
             "activityId": "21241c7e-819f-462b-b8a4-d5d32352311a", 
             "activityType": "submission",
-            "externalType": "additional-info-received",
+            "extendedActivityType": "additional-info-received",
             "activityDescription": "Søknad med ytterligere opplysninger mottatt",
-            "externalId": "54ae8387-7320-4693-8423-0ceb0efaf5fa",
+            "dialogElementId": "54ae8387-7320-4693-8423-0ceb0efaf5fa",
             "activityDetailsUrl": "<url-referanse til ytterligere innsending>"
         },
         {
@@ -268,8 +268,8 @@ Skatteetaten mottar innsendingen, som valideres maskinelt. Dialogen kan nå avsl
     "source": "https://dialogporten.no/api/v1/dialogs/f4e6df3c-7434-44c3-875e-8dca1cdf0b20/activityhistory/21241c7e-819f-462b-b8a4-d5d32352311a",    
     "data": { 
         "activityId": "21241c7e-819f-462b-b8a4-d5d32352311a", // peker til vår 
-        "externalType": "additional-info-received",
-        "externalId": "54ae8387-7320-4693-8423-0ceb0efaf5fa"
+        "extendedActivityType": "additional-info-received",
+        "dialogElementId": "54ae8387-7320-4693-8423-0ceb0efaf5fa"
     }
 } 
 

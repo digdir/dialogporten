@@ -8,7 +8,7 @@
         { 
             "activityDateTime": "2022-12-22T15:00:00.000Z",
             "activityType": "closed",
-            "externalType": "SKE-5678",
+            "extendedActivityType": "SKE-5678",
             "activityDescription": [ { 
                 "code": "nb_NO", 
                 "value": "Klagefrist utløpt, sak avsluttet." 

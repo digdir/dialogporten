@@ -14,6 +14,30 @@ Versjon 0.5 - Bjørn Dybvik Langfors, sist endret: {{ page.last_modified_at  | d
 
 I dette notatet beskrives et konsept for hvordan tjenester, som i denne konteksten er begrenset til dialogtjenester, kan nyttiggjøre seg av fellesfunksjonalitet i økosystemet av Altinn-produkter, herunder dagens "innboks", sluttbrukers arkiv, autorisasjon, varsling og hendelser uten at det innebærer behov for å benytte seg av Altinns utviklingsmiljøer eller applikasjonskjøretidsmiljø. Alle interaksjoner mellom tjenestetilbydere og denne løsningen foregår via API-er, og det legges opp til stor fleksibilitet i hvorvidt løsningen involveres og det legges ingen begrensninger på hvordan forretningslogikken eller ulike brukerflater hos tjenestetilbyder realiseres.
 
+# Scenarioer som påvirker Dialogporten
+
+Det er typisk tre scenarioer som innebærer behov for interaksjon med Dialogporten og dialoger.
+
+1. **Sluttbruker-initiert dialog**, hvor sluttbruker (på vegne av seg selv eller annen part) finner og starter tjeneste ved hjelp av  
+    * Offentlig tjenestekatalog
+    * Søkemotor
+    * Etatenes nettsider
+    * SBS (enten manuelt eller fordi SBS agerer på en hendelse  
+    Dette fører til at tjenestetilbyder oppretter en dialog i Dialogporten som tilhører den aktuelle mottakeren.  
+
+2. **Tjenestetilbyder-initiert dialog**, hvor tjenestetilbyder oppretter dialogen selv i Dialogporten som tilhører den aktuelle mottakeren. Dette er typisk:
+    * «Prefill»-scenarioer, hvor tjenestetilbyderen trenger å innhente opplysninger og gir aktøren et delvis forhåndsutfylt skjema å begynne med
+    * Proaktive/sammenhengende tjenester, hvor en tjenestetilbyder igangsetter en dialog som følge av en hendelse (som kan ha oppstått i en annen tjeneste)  
+
+3. **Sending av digital post**
+    * DPV, DPI
+    * Typisk én-veis (foruten «rekommandert»-funksjonalitet hvor tjenestetilbyder trenger bekreftelse på at melding er mottatt og lest)
+    * Ikke-muterbar - meldingen forandrer seg ikke etter at den er mottatt (annet enn «lest»-status og arkiv/slettet-tilstand)
+    * Kan være utgangspunkt for sluttbruker-initiert dialog, med lenker til «neste trinn» 
+    * Teknisk/funksjonelt subset av tjenestetilbyder-initiert dialog, men kan også være del av en sluttbruker-initiert dialog (f.eks. et vedtaksbrev)
+
+Det finnes andre scenarioer rundt oppslag/innsynstjenester og filoverføringer som trolig ikke vil behøve en representasjon i en Dialogporten, og er følgelig out-of-scope for dette arbeidet.
+
 # Viktige begreper
 
 ## GUI 
@@ -70,6 +94,10 @@ Dialoger har en UUID som identifikator. Tjenesteeier kan selv oppgi ønsket UUID
 
 Med _spesialisert dialog_, refereres det til en konkret dialog (f.eks. innsending av Skattemelding)mellom en tjenestetilbyder og en eller flere parter, og som typisk refererer en saksgang eller prosess hos tjenestetilbyderen, og/eller realiserer et behov parten har for innsyn i opplysninger hos tjenestetilbyder. En spesialisert dialog kan ses på som en tilstandsfull "instans" av en dialogtjeneste. All håndtering og forretningslogikk/semantikk knyttet til en spesialisert dialog håndteres av tjenestetilbyderen.
 
+## Dialogelement
+
+Dialogelementer utgjør distinkte bestanddeler av en dialog og kan brukes i komplekse dialoger hvor det kan være hensiktsmessig for sluttbrukere og systemer å forholde seg til enkelte deler av dialogen i stedet for dialogen som helhet. Dette kan være pre-utfylte skjemaer fra tjenestetilbyder, innsendte skjemaer fra parten, kvitteringer, strukturerte feilmeldinger, rapporter, ustrukturerte vedlegg til meldinger etc. som utgjør en del av den totale dialogen. Dialogelementer blir typisk referert av innslag i activityHistory. Handlinger kan også referere et enkelt dialogelement. 
+
 ## Dialoggruppe (DG)
 
 Enkelte typer saksganger består av flere distinkte delprosesser/dialoger som ikke enkelt eller hensiktsmessig kan knyttes til en og samme dialog, f.eks. når det er ulike dialoger som må gjennomføres med ulike parter og som ikke nødvendigvis skal foregå sekvensielt.
@@ -86,7 +114,7 @@ Se også [Integrasjon med event-komponenten](#integrasjon-med-event-komponent) f
 
 En _handling_ (som i «action») beskriver en interaksjon som brukere kan gjøre med eller relatert til en dialog. Eksempler på handlinger er «Åpne», «Arkiver», «Slett», «Start signering», «Betal», «Bekreft», «Les mer» etc. Listen over aktuelle handlinger er en del av den strukturerte beskrivelsen av en dialogen, og kan når som helst endres av tjenestetilbyder gjennom API.
 
-En handling er enten en _«GUI»-handling_ eller en _«API»-handling_. Alle handlinger - både GUI og API - har en identifikator som mappes til en _action_ (og valgfritt en _subressurs_, indikert av feltet `subresource`) i _autorisasjonspolicyen_ (XACML) som er knyttet til en _tjenesteressurs._ 
+En handling er enten en _«GUI»-handling_ eller en _«API»-handling_. Alle handlinger - både GUI og API - har en identifikator som mappes til en _action_ (og valgfritt en _subressurs_, indikert av feltet `authorizationResource`) i _autorisasjonspolicyen_ (XACML) som er knyttet til en _tjenesteressurs._ 
 
 ### GUI-handlinger
 
@@ -110,35 +138,19 @@ Eksempelvis vil GUI-handlingen «Signer» referere en _action_ kalt «sign» i X
 
 ## Subressurs
 
-Handlinger og andre deler (f.eks. referanser til vedlegg, eller ulike prosessteg) av dialogen kan også referere en vilkårlig _subressurs_ gjennom feltet `subresource`.
+Handlinger og andre deler (f.eks. referanser til vedlegg, eller ulike prosessteg) av dialogen kan også referere en vilkårlig _subressurs_ gjennom feltet `authorizationResource`.
 
 Dette muliggjør at man kan ha ulike autorisasjonskrav for samme type handling som er tilgjengelige ved ulike tilstander dialogen har. F.eks. vil det kunne brukes for å la en signeringshandling kun være tilgjengelig for en ekstern revisor/regnskapsfører, mens en annen signeringshandling er tilgjengelig for daglig leder.
- 
-# Scenarioer som påvirker Dialogporten
 
-Det er typisk tre scenarioer som innebærer behov for interaksjon med Dialogporten og dialoger.
+# Begrepsmodell
 
-1. **Sluttbruker-initiert dialog**, hvor sluttbruker (på vegne av seg selv eller annen part) finner og starter tjeneste ved hjelp av  
-    * Offentlig tjenestekatalog
-    * Søkemotor
-    * Etatenes nettsider
-    * SBS (enten manuelt eller fordi SBS agerer på en hendelse  
-    Dette fører til at tjenestetilbyder oppretter en dialog i Dialogporten som tilhører den aktuelle mottakeren.  
+Under er en forenklet modell som viser relasjonene mellom de ulike begrepene. For en mer overordnet modell av konseptet, se [Overordnet modell over konsept](#overordnet-diagram-over-konsept).
 
-2. **Tjenestetilbyder-initiert dialog**, hvor tjenestetilbyder oppretter dialogen selv i Dialogporten som tilhører den aktuelle mottakeren. Dette er typisk:
-    * «Prefill»-scenarioer, hvor tjenestetilbyderen trenger å innhente opplysninger og gir aktøren et delvis forhåndsutfylt skjema å begynne med
-    * Proaktive/sammenhengende tjenester, hvor en tjenestetilbyder igangsetter en dialog som følge av en hendelse (som kan ha oppstått i en annen tjeneste)  
+![](https://lucid.app/publicSegments/view/763e5fd0-eb36-4d9a-becb-efe9b76ab3dc/image.png)
 
-3. **Sending av digital post**
-    * DPV, DPI
-    * Typisk én-veis (foruten «rekommandert»-funksjonalitet hvor tjenestetilbyder trenger bekreftelse på at melding er mottatt og lest)
-    * Ikke-muterbar - meldingen forandrer seg ikke etter at den er mottatt (annet enn «lest»-status og arkiv/slettet-tilstand)
-    * Kan være utgangspunkt for sluttbruker-initiert dialog, med lenker til «neste trinn» 
-    * Teknisk/funksjonelt subset av tjenestetilbyder-initiert dialog, men kan også være del av en sluttbruker-initiert dialog (f.eks. et vedtaksbrev)
+# Overordnet modell over konsept
 
-Det finnes andre scenarioer rundt oppslag/innsynstjenester og filoverføringer som trolig ikke vil behøve en representasjon i en Dialogporten, og er følgelig out-of-scope for dette arbeidet.
-
-# Overordnet diagram over konsept
+Under er en overordnet modell som viser relasjonen mellom Dialogporten, tjenesteplattformene som benytter den og sluttbrukere/systemer som konsumerer dialogene som er realisert.
 
 ![](https://lucid.app/publicSegments/view/c3ce275d-9170-45d0-8c09-e50de2ffc690/image.png)
 
@@ -160,7 +172,7 @@ Hver action som defineres på en dialog mappes til en tilsvarende "action-id" i 
             { 
                 "action": "open", // Denne refereres i "Action"-delen  i XACML-policy                
                 "title": [ { "code": "nb_NO", "value": "Åpne" } ],
-                "url": "https://example.com/some/deep/link/to/dialogues/123456789"
+                "url": "https://example.com/some/deep/link/to/dialogs/123456789"
             }
         ]
     }
@@ -223,8 +235,10 @@ Dette kan uttrykkes i [forenklet JSON](https://github.com/Altinn/altinn-studio/i
 }
 ```
 
+### Subressurser
+Subressurser er en ytterligere ressurs-attributt i en regel i en policy, som kan refereres til i actions og dialogelementer gjennom feltet `authorizationResource`. En slik ressurs er en URN som i eksemplene i dette dokumentet tilhører navnerommet `urn:altinn:subresource`, men andre navnerom kan også benyttes; f.eks. bruker Altinn Studio vanligvis navnerommet `urn:altinn:task`. 
 
-Subressurser er en ytterligere ressurs-attributt som kan refereres til i actions og policies. F.eks. kan en action se slik ut:
+En action som refererer en subsressurs kan se slik ut:
 
 
 ```jsonc
@@ -236,9 +250,9 @@ Subressurser er en ytterligere ressurs-attributt som kan refereres til i actions
         "gui": [ 
             { 
                 "action": "sign", // Denne refereres i "Action"-delen  i XACML-policy                
-                "subresource": "urn:altinn:subresource:subressurs1", // Denne refereres i "Ressurs"-delen  i XACML-policy                
+                "authorizationResource": "urn:altinn:subresource:subressurs1", // Denne refereres i "Ressurs"-delen  i XACML-policy                
                 "title": [ { "code": "nb_NO", "value": "Åpne" } ],
-                "url": "https://example.com/some/deep/link/to/dialogues/123456789"
+                "url": "https://example.com/some/deep/link/to/dialogs/123456789"
             }
         ]
     }
@@ -306,8 +320,7 @@ Dette kan uttrykkes i [forenklet JSON](https://github.com/Altinn/altinn-studio/i
 }
 ```
 
-Merk at XACML gjør matching på attributter. Så en regel som gir f.eks. `sign` uten å oppgi subressurser, vil da gi tilgang til alle `sign`-actions uavhengig av hvilken subressurs som er definert på action-en.
-
+{% include note.html type="info" content="Merk at XACML gjør matching på attributter. Så en regel som gir f.eks. `sign` uten å oppgi subressurser, vil da gi tilgang til alle `sign`-actions uavhengig av hvilken subressurs som er definert på action-en." %}
 
 ## Bruk av Dialogportens API-er
 
@@ -431,11 +444,11 @@ Se [case-01]({% link _dialogporten_case/example-case-01.md %}) for eksempler på
 
 Opprettelse/endring/sletting av dialog-entiteten genererer meldinger med følgende typer:
 
-| Type                                         | Når                           |
-| -------------------------------------------- | ----------------------------- |
-| `dialogporten.dialog.created.v1`             | Dialogen opprettes            |
-| `dialogporten.dialog.updated.v1`             | Status for dialogen er endret |
-| `dialogporten.dialog.deleted.v1`             | Dialogen slettes              |
+| Type                             | Når                            |
+| -------------------------------- | ------------------------------ |
+| `dialogporten.dialog.created.v1` | Dialogen opprettes             |
+| `dialogporten.dialog.updated.v1` | Tilstand på dialogen er endret |
+| `dialogporten.dialog.deleted.v1` | Dialogen slettes               |
 
 ### Eksempel
 
@@ -470,7 +483,7 @@ Opprettelse/endring/sletting av dialog-entiteten genererer meldinger med følgen
 
 Det vil alltid bli generert egne events for hvert nye innslag i aktivitetshistorikken. `source` vil referere selve innslaget (ikke dialogen). Det vil også inkluderes en `data` som inneholder ytterligere informasjon som i mange tilfeller lar systemer kunne agere direkte mot tjenesteeiers API-er uten å måtte hente dialog/aktivitet først.
 
-Eventer har type som er prefikset/navnerommet `dialogporten.dialog.activity.v1`. Suffikset er gjenspeiler mulige verdier av `activityType`.
+Eventer har type som er prefikset/navnerommet `dialogporten.dialog.activity`. Suffikset er gjenspeiler mulige verdier av `activityType`.
 
 | Type                                          | Når                                                                   |
 | --------------------------------------------- | --------------------------------------------------------------------- |
@@ -509,12 +522,14 @@ Eventer har type som er prefikset/navnerommet `dialogporten.dialog.activity.v1`.
     // URL til aktivitetshistorikk-innslag i Dialogporten
     "source": "https://dialogporten.no/api/v1/dialogs/f4e6df3c-7434-44c3-875e-8dca1cdf0b20/activityhistory/21241c7e-819f-462b-b8a4-d5d32352311a",
     
-    // Ytterligere data (activityId, externalType og externalId) fra aktivtetshistorikk-innslaget. 
-    // inkluderes verbatim, hvis satt.
+    // Disse hentes verbatim fra aktivitetshistorikk-innslaget. Kun "activityId" er alltid oppgitt, alle andre felter
+    // vil kunne være utelatt siden de er valgfrie i activityHistory
     "data": { 
         "activityId": "21241c7e-819f-462b-b8a4-d5d32352311a",
-        "externalType": "additional-info-received",
-        "externalId": "54ae8387-7320-4693-8423-0ceb0efaf5fa"
+        "relatedActivityId": "cfdd19a4-8cf9-4138-9930-36478fdce398",
+        "extendedActivityType": "additional-info-received",
+        "dialogElementId": "54ae8387-7320-4693-8423-0ceb0efaf5fa",
+        "relatedDialogElementId": "a508fafc-e6c0-4746-af2d-9634028da725",
     }
 } 
 ```

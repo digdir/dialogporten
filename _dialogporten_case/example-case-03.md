@@ -51,13 +51,13 @@ Partene er Rørlegger AS, Regnskapsfører AS og Etaten, som tilbyr denne innsend
         "gui": [ 
             { 
                 "action": "open",
-                "type": "primary",
+                "importance": "primary",
                 "title": [ { "code": "nb_NO", "value": "Fyll ut" } ],
                 "url": "https://www.etaten.no/tjenester/omsetningsrapportering/b13bb496-e6ab-4444-8442-e15be9f96e9c"
             },
             { 
                 "action": "delete",
-                "type": "secondary",
+                "importance": "secondary",
                 "title": [ { "code": "nb_NO", "value": "Avbryt" } ],
                 "isDeleteAction": true, 
                 // Blir kalt fra Dialogporten med DELETE i bakkanal. Må returnere 204 eller en RFC7807-kompatibel feilmelding.
@@ -108,8 +108,8 @@ Partene er Rørlegger AS, Regnskapsfører AS og Etaten, som tilbyr denne innsend
         "gui": [ 
             { 
                 "action": "sign",
-                "subresource": "urn:altinn:subresource:general_manager_signature", // Krever tilgang til "sign" på subressursen "general_manager_signature"
-                "type": "primary",
+                "authorizationResource": "urn:altinn:subresource:general_manager_signature", // Krever tilgang til "sign" på subressursen "general_manager_signature"
+                "importance": "primary",
                 "title": [ { "code": "nb_NO", "value": "Se over og signer" } ],
                 "url": "https://www.etaten.no/tjenester/omsetningsrapportering/b13bb496-e6ab-4444-8442-e15be9f96e9c/sign_gm?latest_submission=12031cd2-5eb5-4ddf-b4f9-9d30e403d92c"
             }
@@ -117,7 +117,7 @@ Partene er Rørlegger AS, Regnskapsfører AS og Etaten, som tilbyr denne innsend
         "api": [ 
             { 
                 "action": "sign",
-                "subresource": "urn:altinn:subresource:general_manager_signature", // Krever tilgang til "sign" på subressursen "general_manager_signature"
+                "authorizationResource": "urn:altinn:subresource:general_manager_signature", // Krever tilgang til "sign" på subressursen "general_manager_signature"
                 "actionUrl": "https://api.etaten.no/tjenester/omsetningsrapportering/b13bb496-e6ab-4444-8442-e15be9f96e9c/sign?latest_submission=12031cd2-5eb5-4ddf-b4f9-9d30e403d92c",
                 "method": "POST",
                 // Dialogporten har her ikke noe spesielt forhold til signering som handling. Her kan man kanskje se for seg 
@@ -151,7 +151,7 @@ Partene er Rørlegger AS, Regnskapsfører AS og Etaten, som tilbyr denne innsend
     "notificationId": "79921fae-631a-4f8b-8db5-e359f2336658",
 
     // Subressurs som det kreves tilgang til i XACML
-    "subresource": "urn:altinn:subresource:general_manager_signature",
+    "authorizationResource": "urn:altinn:subresource:general_manager_signature",
     "sms": {
             "text": [ { "code": "nb_NO", "value": "Du har mottatt et signeringsoppdrag for Omsetningsrapportering. Logg inn i Dialogporten for å signere." } ],
             
@@ -196,8 +196,8 @@ Partene er Rørlegger AS, Regnskapsfører AS og Etaten, som tilbyr denne innsend
         "gui": [ 
             { 
                 "action": "sign",
-                "subresource": "urn:altinn:subresource:accountant_signature", // Krever tilgang til "sign" på subressursen "accountant_signature"
-                "type": "primary",
+                "authorizationResource": "urn:altinn:subresource:accountant_signature", // Krever tilgang til "sign" på subressursen "accountant_signature"
+                "importance": "primary",
                 "title": [ { "code": "nb_NO", "value": "Se over og signer" } ],
                 "url": "https://www.etaten.no/tjenester/omsetningsrapportering/b13bb496-e6ab-4444-8442-e15be9f96e9c/sign_ac?latest_submission=12031cd2-5eb5-4ddf-b4f9-9d30e403d92c"
             }
@@ -205,7 +205,7 @@ Partene er Rørlegger AS, Regnskapsfører AS og Etaten, som tilbyr denne innsend
         "api": [ 
             { 
                 "action": "sign",
-                "subresource": "urn:altinn:subresource:accountant_signature", // Krever tilgang til "sign" på subressursen "accountant_signature"
+                "authorizationResource": "urn:altinn:subresource:accountant_signature", // Krever tilgang til "sign" på subressursen "accountant_signature"
                 "actionUrl": "https://api.etaten.no/tjenester/omsetningsrapportering/b13bb496-e6ab-4444-8442-e15be9f96e9c/sign_ac?latest_submission=12031cd2-5eb5-4ddf-b4f9-9d30e403d92c",
                 "method": "POST",
                 // Dialogporten har her ikke noe spesielt forhold til signering som handling. Her kan man kanskje se for seg 
@@ -233,7 +233,7 @@ Partene er Rørlegger AS, Regnskapsfører AS og Etaten, som tilbyr denne innsend
     "notificationId": "a61c66f5-1dcf-4a27-8c17-633cd2eb8b8d",
 
     // Subressurs som det kreves tilgang til
-    "subresource": "urn:altinn:subresource:accountant_signature",
+    "authorizationResource": "urn:altinn:subresource:accountant_signature",
     "sms": {
             "text": [ { "code": "nb_NO", "value": "Du har mottatt et signeringsoppdrag for Omsetningsrapportering. Logg inn i Dialogporten for å signere." } ],
             
@@ -275,7 +275,7 @@ Partene er Rørlegger AS, Regnskapsfører AS og Etaten, som tilbyr denne innsend
         "gui": [ 
             { 
                 "action": "open",
-                "type": "primary",
+                "importance": "primary",
                 "title": [ { "code": "nb_NO", "value": "Se kvittering" } ],
                 "url": "https://www.etaten.no/tjenester/omsetningsrapportering/b13bb496-e6ab-4444-8442-e15be9f96e9c/finalreceipt"
             }
@@ -301,7 +301,7 @@ Partene er Rørlegger AS, Regnskapsfører AS og Etaten, som tilbyr denne innsend
         { 
             "activityDateTime": "2022-12-01T10:00:00.000Z",
             "activityType": "closed",
-            "externalType": "rf1305-closed",
+            "extendedActivityType": "rf1305-closed",
             "activityDescription": [ { "code": "nb_NO", "value": "Rapportering godkjent og fullført" } ]
         }
     ]

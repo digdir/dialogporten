@@ -15,23 +15,23 @@
         "gui": [            
             { 
                 "action": "send",
-                "type": "primary",
+                "importance": "primary",
                 "title": [ { "code": "nb_NO", "value": "Send inn" } ],
-                "url": "https://example.com/some/deep/link/to/dialogues/123456789/send",
+                "url": "https://example.com/some/deep/link/to/dialogs/123456789/send",
                 "httpMethod": "POST"
             },
             { 
                 "action": "open", 
-                "type": "secondary",
+                "importance": "secondary",
                 "title": [ { "code": "nb_NO", "value": "Se over før innsending" } ],
-                "url": "https://example.com/some/deep/link/to/dialogues/123456789"
+                "url": "https://example.com/some/deep/link/to/dialogs/123456789"
             }, 
             { 
                 "action": "delete",
-                "type": "tertiary",
+                "importance": "tertiary",
                 "title": [ { "code": "nb_NO", "value": "Avbryt" } ],
                 "isDeleteAction": true, 
-                "url": "https://example.com/some/deep/link/to/dialogues/123456789" 
+                "url": "https://example.com/some/deep/link/to/dialogs/123456789" 
             }
         ],
         "api": [ 
@@ -39,10 +39,10 @@
                 "action": "open",
                 "endpoints": [
                     {
-                        "actionUrl": "https://example.com/api/dialogues/123456789",
+                        "actionUrl": "https://example.com/api/dialogs/123456789",
                         "method": "GET",
                         "responseSchema": "https://schemas.altinn.no/dialogs/v1/dialogs.json",
-                        "documentationUrl": "https://api-docs.example.com/dialogueservice/open-action"
+                        "documentationUrl": "https://api-docs.example.com/dialogservice/open-action"
                     }
                 ]
             },
@@ -51,8 +51,8 @@
                 "endpoints": [
                     {
                         "method": "POST",
-                        "actionUrl": "https://example.com/api/dialogues/123456789/confirmReceived",
-                        "documentationUrl": "https://api-docs.example.com/dialogueservice/confirm-action"
+                        "actionUrl": "https://example.com/api/dialogs/123456789/confirmReceived",
+                        "documentationUrl": "https://api-docs.example.com/dialogservice/confirm-action"
                     }
                 ]
             },
@@ -60,9 +60,9 @@
                 "action": "submit",
                 "endpoints": [
                     {
-                        "actionUrl": "https://example.com/api/dialogues/123456789/submit",
+                        "actionUrl": "https://example.com/api/dialogs/123456789/submit",
                         "method": "POST",
-                        "requestSchema": "https://schemas.example.com/dialogueservice/v1/dialogueservice.json",
+                        "requestSchema": "https://schemas.example.com/dialogservice/v1/dialogservice.json",
                         "responseSchema": "https://schemas.altinn.no/dialogs/v1/dialogs.json" 
                     }
                 ]
@@ -72,7 +72,7 @@
                 "endpoints": [
                     {
                         "method": "DELETE",
-                        "actionUrl": "https://example.com/api/dialogues/123456789"
+                        "actionUrl": "https://example.com/api/dialogs/123456789"
                     }
                 ]
             }

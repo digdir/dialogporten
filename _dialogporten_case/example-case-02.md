@@ -56,13 +56,13 @@ Partene er Nortura og Skatteetaten.
         "gui": [ 
             { 
                 "action": "open",
-                "type": "primary",
+                "importance": "primary",
                 "title": [ { "code": "nb_NO", "value": "Fyll ut 50 oppgaver i vår GUI-tjeneste" } ],
                 "url": "https://www.skatteetaten.no/tjenester/rf1305/e0300961-85fb-4ef2-abff-681d77f9960e"
             },
             { 
                 "action": "delete",
-                "type": "secondary",
+                "importance": "secondary",
                 "title": [ { "code": "nb_NO", "value": "Avbryt" } ],
                 "isDeleteAction": true, 
                 // Blir kalt fra Dialogporten med DELETE i bakkanal. Må returnere 204 eller en RFC7807-kompatibel feilmelding.
@@ -97,8 +97,8 @@ Partene er Nortura og Skatteetaten.
             "activityDateTime": "2022-12-01T10:00:00.000Z",
             "activityType": "submission",
             "performedBy": "org/938752648",
-            "externalType": "rf1305-received-precheck-ok",
-            "externalId": "936f4753-6271-431a-b618-208ac66ce0ef",
+            "extendedActivityType": "rf1305-received-precheck-ok",
+            "dialogElementId": "936f4753-6271-431a-b618-208ac66ce0ef",
             "activityDescription": [ { "code": "nb_NO", "value": "Opprettet dialog for rapportering av 50 oppgaver" } ],
 
             "activityDetailsUrls": {
@@ -126,13 +126,13 @@ Partene er Nortura og Skatteetaten.
         "gui": [ 
             { 
                 "action": "open",
-                "type": "primary",
+                "importance": "primary",
                 "title": [ { "code": "nb_NO", "value": "Send inn korrigering i vår GUI-tjeneste" } ],
                 "url": "https://www.skatteetaten.no/tjenester/rf1305/e0300961-85fb-4ef2-abff-681d77f9960e/correction/936f4753-6271-431a-b618-208ac66ce0ef"
             },
             { 
                 "action": "open", // Kan ha samme action, Dialogporten bryr seg ikke - action har bare med tilgangskontroll å gjøre
-                "type": "secondary",
+                "importance": "secondary",
                 "title": [ { "code": "nb_NO", "value": "Se status på saksbehandling" } ],
                 "url": "https://www.skatteetaten.no/tjenester/rf1305/e0300961-85fb-4ef2-abff-681d77f9960e/status"
             },
@@ -154,8 +154,8 @@ Partene er Nortura og Skatteetaten.
             "activityDateTime": "2022-12-01T10:00:00.000Z",
             "activityType": "submission",
             "performedBy": "org/938752648",
-            "externalType": "rf1305-received-precheck-ok",
-            "externalId": "d0d0b171-5bbf-44fa-8785-737ed46e7ae6",
+            "extendedActivityType": "rf1305-received-precheck-ok",
+            "dialogElementId": "d0d0b171-5bbf-44fa-8785-737ed46e7ae6",
             "activityDescription": [ { "code": "nb_NO", "value": "50 oppgaver er mottatt og maskinelt kontrollert" } ],
 
             "activityDetailsUrls": {
@@ -182,8 +182,8 @@ Partene er Nortura og Skatteetaten.
             "activityDateTime": "2022-12-01T10:00:00.000Z",
             "activityType": "submission",
             "performedBy": "org/938752648",
-            "externalType": "rf1305-correction-received-precheck-ok",
-            "externalId": "4d63ec64-4dd2-40f9-bc72-353ea45bb0cc",
+            "extendedActivityType": "rf1305-correction-received-precheck-ok",
+            "dialogElementId": "4d63ec64-4dd2-40f9-bc72-353ea45bb0cc",
             "activityDescription": [ { "code": "nb_NO", "value": "4 korrigering(er) er mottatt og maskinelt kontrollert" } ],
             "activityDetailsUrls": {
                 // Her kan det ligge en eller annen liste over mottatte korrigeringer
@@ -204,8 +204,8 @@ Partene er Nortura og Skatteetaten.
             "activityId": "4d005d87-4ba8-4bf7-bcac-7862744a3180",
             "activityDateTime": "2022-12-01T10:00:00.000Z",
             "activityType": "error",
-            "externalType": "rf1305-submissions-error",
-            "externalId": "4e6c9c96-435a-434d-a415-723cbbc6f3d4",
+            "extendedActivityType": "rf1305-submissions-error",
+            "dialogElementId": "4e6c9c96-435a-434d-a415-723cbbc6f3d4",
             "relatedActivityId": "7f91fb5e-4c79-4c01-82aa-84911ef13b75", // Enten den opprinnelige innsendingen, eller korrigeringen
             "activityErrorCode": "errors-detected-in:12,34",
             "activityDescription": [ { "code": "nb_NO", "value": "Feil ble funnet i oppgave nr: 12, 34. Vennligst send inn korrigeringer." } ],
@@ -233,8 +233,8 @@ Partene er Nortura og Skatteetaten.
             "activityDateTime": "2022-12-01T10:00:00.000Z",
             "activityType": "submission",
             "performedBy": "org/938752648",
-            "externalType": "rf1305-correction-received-precheck-ok",
-            "externalId": "1fe9fd6d-a544-4c7e-a989-1857613a90a8",
+            "extendedActivityType": "rf1305-correction-received-precheck-ok",
+            "dialogElementId": "1fe9fd6d-a544-4c7e-a989-1857613a90a8",
             "activityDescription": [ { "code": "nb_NO", "value": "2 korrigering(er) er mottatt og maskinelt kontrollert" } ],
             "activityDetailsUrls": {
                 // Her kan det ligge en eller annen liste over mottatte korrigeringer
@@ -255,7 +255,7 @@ Partene er Nortura og Skatteetaten.
         "gui": [ 
             { 
                 "action": "open",
-                "type": "primary",
+                "importance": "primary",
                 "title": [ { "code": "nb_NO", "value": "Se kvittering" } ],
                 "url": "https://www.skatteetaten.no/tjenester/rf1305/e0300961-85fb-4ef2-abff-681d77f9960e/finalreceipt"
             }
@@ -273,7 +273,7 @@ Partene er Nortura og Skatteetaten.
         { 
             "activityDateTime": "2022-12-01T10:00:00.000Z",
             "activityType": "closed",
-            "externalType": "rf1305-closed",
+            "extendedActivityType": "rf1305-closed",
             "activityDescription": [ { "code": "nb_NO", "value": "Rapportering godkjent og fullført" } ]
         }
     ]

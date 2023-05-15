@@ -2,7 +2,7 @@
 ---
 ```jsonc
 // Input modell som tjenesteeiere oppgir for å opprette en dialog.
-// Modellen kan også oppdateres/muteres med PATCH-kall som inneholder de feltene som en ønsker å endre. 
+// Modellen kan også oppdateres/muteres med PATCH-kall (se https://jsonpatch.com/)
 //Ikke-komplekse felter som ligger på rotnivå kan ikke endres (med unntak av "status").
 
 // POST /dialogporten/api/v1/dialogs
@@ -14,7 +14,7 @@
     // Identifikator som refererer en tjenesteressurs ("Altinn Service Resource") i Altinn Autorisasjon
     // Se https://docs.altinn.studio/technology/solutions/altinn-platform/authorization/resourceregistry/
     // Dette bestemmer også hvilken autorisasjonspolicy som legges til grunn.
-    "serviceResourceIdentifier": "example_dialogue_service", 
+    "serviceResourceIdentifier": "example_dialog_service", 
 
     // Organisasjonsnummer, fødselsnummer eller brukernavn (aka "avgiver" eller "aktør") - altså hvem sin dialogboks 
     // skal dialogen tilhøre. Brukernavn benyttes for selv-registrerte bruker, og er typisk en e-postadresse.
@@ -26,10 +26,10 @@
     "externalReference": "123456789",
 
     // Alle dialoger som har samme dialoggruppe-id vil kunne grupperes eller på annet vis samles i GUI    
-    "dialogueGroup": {
+    "dialogGroup": {
         "id": "some-arbitrary-id",
         
-        // Bestemmer rekkefølgen denne dialogen har blant alle dialoger som har samme dialogueGroup.id
+        // Bestemmer rekkefølgen denne dialogen har blant alle dialoger som har samme dialogGroup.id
         "order": 1,
         
         // Trenger bare oppgis av én dialog. Hvis oppgitt av flere, er det den med høyest "order"-verdi 
@@ -37,7 +37,7 @@
         "name": [ { "code": "nb_NO", "value": "Navn på dialoggruppe." } ]
     },
 
-    // Kjente statuser som bestemmer hvordan dialogen vises for bruker: 
+    // Kjente aggregerte statuser som bestemmer hvordan dialogen vises for bruker: 
     // "unspecified"    = Dialogen har ingen spesiell status. Brukes typisk for enkle meldinger som ikke krever noe 
     //                    interaksjon. Dette er default. 
     // "in-progress"    = Under arbeid. Generell status som brukes for dialogtjenester der ytterligere bruker-input er 
@@ -50,7 +50,7 @@
     "status": "in-progress", 
     
     // En vilkårlig streng som er tjenestespesifikk
-    "externalStatus": "SKE-ABC",
+    "extendedStatus": "SKE-ABC",
     "dates": {
         // Hvis oppgitt blir dialogen satt med en frist 
         // (i Altinn2 er denne bare retningsgivende og har ingen effekt, skal dette fortsette?)
@@ -66,31 +66,59 @@
             "value": "Innhold med <em>begrenset</em> HTML-støtte. Dette innholdet vises når dialogen ekspanderes." } ],
         "title": [ { "code": "nb_NO", "value": "En eksempel på en tittel" } ],
         "senderName": [ { "code": "nb_NO", "value": "Overstyrt avsendernavn (bruker default tjenesteeiers navn)" } ]            
-    },  
-    "attachments": [
-        {
-            "displayName": [ { "code": "nb_NO", "value": "dette er et vedlegg" } ],
-            "sizeInBytes": 123456,
-            "contentType": "application/pdf",            
-            "url": "https://example.com/api/dialogues/123456789/attachments/1",
+    },
+    // Det skilles mellom dialogelementer som er ment for GUI og for API. Førstnevnte er typiske filvedlegg i menneskelesbart format,
+    // f.eks. PDF, som tjenestetilbyder legger ved dialogen. Sistnevnte er typisk 
+    //
+    // Dialogelementer kan hentes (leses) gjennom oppgitt URL. Actions kan peke på et spesifikt dialogelement for andre operasjoner direkte
+    // knyttet til et dialogelement.
+    "dialogElements": {
+        "gui": [
+            {
+                // Unik identifikator for dialogElement. Kan oppgis av tjenestetilbyder for å sikre idempotens.
+                "dialogElementId": "5b5446a7-9b65-4faf-8888-5a5802ce7de7",
+                "url": "https://example.com/api/dialogs/123456789/dialogelements/1.pdf",
 
-            // Det kan oppgis en valgfri referanse til det som mappes til en XACML-ressurs. Hvis oppgitt, må brukeren må ha tilgang 
-            // til actionen "download" i XACML-policy evt. begrenset til denne ressursen. Hvis ikke oppgitt kreves bare "read".
-            "subresource": "urn:altinn:subresource:attachment1"
-        }
-    ],
+                // Brukes for å vise sluttbrukeren hva dette er 
+                "displayName": [ { "code": "nb_NO", "value": "Innsendt skjema" } ],
+                
+                // Valgfri: MIME-type. Brukes i GUI for hint om hva slags dokument dette er 
+                "contentType": "application/pdf",                        
+
+                // Valgfri: Det kan oppgis en referanse til det som mappes til en XACML-ressurs. Hvis oppgitt, må brukeren må ha tilgang 
+                // til actionen "elementread" i XACML-policy evt. begrenset til denne ressursen. Hvis ikke oppgitt kreves bare "read".
+                "authorizationResource": "urn:altinn:subresource:somesubresource"
+            }
+        ],
+        "api": [
+            {
+                "dialogElementId": "8bf7c93c-ab32-49a6-a890-d2b450b3e7ad",
+                "url": "https://example.com/api/dialogs/123456789/dialogelements/1.xml",
+                
+                // Valgfri: Tjenestetilbyder-oppgitt type-betegnelse som er maskinlesbar.  
+                "dialogElementType": "somethingservicespecific",
+                
+                // Valgfri: JSON-schema som indikerer schemaet til dialogelementet
+                "dialogElementSchema": "https://schemas.example.com/dialogservice/v1/somethingservicespecific.json",                        
+
+                // Valgfri: Det kan oppgis en referanse til det som mappes til en XACML-ressurs. Hvis oppgitt, må brukeren må ha tilgang 
+                // til actionen "elementread" i XACML-policy evt. begrenset til denne ressursen. Hvis ikke oppgitt kreves bare "read".
+                "authorizationResource": "urn:altinn:subresource:someothersubresource"
+            }
+        ]        
+    },
     "actions": {
         "gui": [ 
             { 
                 "action": "open", // Denne kan refereres i XACML-policy                
-                "type": "primary", // Dette bestemmer hvordan handlingen presenteres.
+                "importance": "primary", // Dette bestemmer hvordan handlingen presenteres.
                 "title": [ { "code": "nb_NO", "value": "Åpne i dialogtjeneste" } ],
-                "url": "https://example.com/some/deep/link/to/dialogues/123456789"
+                "url": "https://example.com/some/deep/link/to/dialogs/123456789"
             },
             {
                 "action": "confirm",
-                "subresource": "urn:altinn:subresource:somesubresource", // Det kan oppgis en valgfri referanse til en XACML-ressurs
-                "type": "secondary",
+                "authorizationResource": "urn:altinn:subresource:somesubresource", // Det kan oppgis en valgfri referanse til en XACML-ressurs
+                "importance": "secondary",
                 "title": [ { "code": "nb_NO", "value": "Bekreft mottatt" } ],
 
                 // Dette foretar et POST bakkanal-kall til oppgitt URL, og det vises i frontend bare en spinner mens 
@@ -98,11 +126,11 @@
                 // oppdatert i annet bakkanal-kall), eller en RFC7807-kompatibel feilmelding.
                 "isBackChannel": true, 
 
-                "url": "https://example.com/some/deep/link/to/dialogues/123456789/confirmReceived"
+                "url": "https://example.com/some/deep/link/to/dialogs/123456789/confirmReceived"
             },
             { 
                 "action": "delete",
-                "type": "tertiary",
+                "importance": "tertiary",
                 "title": [ { "code": "nb_NO", "value": "Avbryt" } ],
 
                 // Dette impliserer isBackChannel=true, og viser i tillegg en "Er du sikker?"-prompt. 
@@ -110,7 +138,7 @@
                 "isDeleteAction": true, 
 
                 // Blir kalt med DELETE i bakkanal. Må returnere 204 eller en RFC7807-kompatibel feilmelding.
-                "url": "https://example.com/some/deep/link/to/dialogues/123456789" 
+                "url": "https://example.com/some/deep/link/to/dialogs/123456789" 
             }
         ],
         "api": [ 
@@ -121,13 +149,13 @@
                     // siste versjon og anbefalt brukt. GUI-actions er ikke versjonerte.
                     {
                         "version": "v2",
-                        "actionUrl": "https://example.com/api/v2/dialogues/123456789",
+                        "actionUrl": "https://example.com/api/v2/dialogs/123456789",
                         "method": "GET",
 
                         // Indikerer hva API-konsumenter kan forvente å få slags svar
-                        "responseSchema": "https://schemas.altinn.no/dialogs/v2/dialogs.json", 
+                        "responseSchema": "https://schemas.example.com/dialogservice/v2/dialogservice-prelim-receipt.json" , 
                         // Lenke til dokumentasjon for denne actionen
-                        "documentationUrl": "https://api-docs.example.com/v2/dialogueservice/open-action"                         
+                        "documentationUrl": "https://api-docs.example.com/v2/dialogservice/open-action"                         
                     },
                     {
                         "version": "v1",
@@ -136,27 +164,27 @@
                         // for når versjonen ikke lengre støttes
                         "deprecated": true, 
                         "sunsetDate": "2024-12-31T23:59:59.999Z",
-                        "actionUrl": "https://example.com/api/v1/dialogues/123456789",
+                        "actionUrl": "https://example.com/api/v1/dialogs/123456789",
                         "method": "GET",
 
                         // Indikerer hva API-konsumenter kan forvente å få slags svar
-                        "responseSchema": "https://schemas.altinn.no/dialogs/v1/dialogs.json", 
+                        "responseSchema": "https://schemas.example.com/dialogservice/v1/dialogservice-prelim-receipt.json" , 
                         // Lenke til dokumentasjon for denne actionen
-                        "documentationUrl": "https://api-docs.example.com/v1/dialogueservice/open-action",
+                        "documentationUrl": "https://api-docs.example.com/v1/dialogservice/open-action",
                     },
                 ]
             },
             { 
                 "action": "confirm",
+                // Hvis handlingen omfatter/berører et spesifikt dialogelement
+                // kan det oppgis en identifikator til dette her.
+                "relatedDialogElementId": "4558064e-4049-4075-a58f-d67bda83f88c",
                 "endpoints": [
                     {
                         "version": "v1",
                         "method": "POST",
-                        "actionUrl": "https://example.com/api/dialogues/123456789/confirmReceived/23456",
-                        // Hvis handlingen omfatter/berører en spesifikk entitet som utgjør en logisk del av dialogen
-                        // kan det oppgis en identifikator til denne her.
-                        "externalId": "23456",
-                        "documentationUrl": "https://api-docs.example.com/dialogueservice/confirm-action"
+                        "actionUrl": "https://example.com/api/dialogs/123456789/confirmReceived/23456",
+                        "documentationUrl": "https://api-docs.example.com/dialogservice/confirm-action"
                         // Ingen requestmodell impliserer tom body
                     }
                 ]                
@@ -167,12 +195,12 @@
                     {
                         "version": "v1",
                         "action": "submit", // Denne kan refereres i XACML-policy
-                        "actionUrl": "https://example.com/api/dialogues/123456789",
+                        "actionUrl": "https://example.com/api/dialogs/123456789",
                         "method": "POST",
                 
                         // Indikerer hva API-et forventer å få som input på dette endepunktet
-                        "requestSchema": "https://schemas.example.com/dialogueservice/v1/dialogueservice.json", 
-                        "responseSchema": "https://schemas.altinn.no/dialogs/v1/dialogs.json" 
+                        "requestSchema": "https://schemas.example.com/dialogservice/v1/dialogservice.json", 
+                        "responseSchema": "https://schemas.example.com/dialogservice/v1/dialogservice-prelim-receipt.json" 
                     }
                 ]
             },
@@ -183,7 +211,7 @@
                         "version": "v1",
                         "method": "DELETE",
                         // Merk dette vil kreve at org gjør bakkanal-kall for å slette dialogen
-                        "actionUrl": "https://example.com/api/dialogues/123456789"
+                        "actionUrl": "https://example.com/api/dialogs/123456789"
                     }
                 ]
             }
@@ -230,32 +258,20 @@
             
             // Vilkårlig streng som er ment å være maskinlesbar, og er en tjenestespesifikk kode som gir ytterligere
             // informasjon om hva slags aktivitetstype dette innslaget er
-            "externalType": "SKE-1234-received-precheck-ok",
+            "extendedActivityType": "SKE-1234-received-precheck-ok",
 
-            // Hvis aktiviteten omfatter eller berør en eller annen entitet som utgjør en del av dialogen hos tjenestetilbyder,
-            // kan denne oppgis her. Denne underlegges ingen validering eller logikk i Dialogporten, men vil bli lagt ved i 
+            // Hvis denne aktiviteten har direkte avstedkommet et dialogelement, kan dette oppgis her. Det valideres at 
+            // oppgitt dialogElementId også oppgis i "dialogElements" i samme request. Denne identifikatoren blir lagt ved 
             // events som genereres.
-            "externalId": "b323cef4-adbd-4d2c-b33d-5c0f3b11171b",
+            "dialogElementId": "b323cef4-adbd-4d2c-b33d-5c0f3b11171b",
+
+            // Hvis aktiviteten har en relasjon til et annet dialogelement, f.eks. en tidligere innsending, kan dette 
+            // oppgis her. Det valideres at oppgitt dialogElementId finnes i "dialogElements"; enten som oppgitt i samme 
+            // request eller at den finnes fra før. Denne identifikatoren blir lagt ved events som genereres.
+            "relatedDialogElementId": "dbce996a-cc67-4cb2-ad2f-df61cee6683a",
 
             // Menneskelesbar beskrivelse av aktiviteten
-            "activityDescription": [ { "code": "nb_NO", "value": "Innsending er mottatt og sendt til behandling" } ],
-
-            // Ytterligere informasjon som bruker/SBS kan aksessere for å hente mer informasjon om det aktuelle innslaget.
-            // Semantikk rundt disse er tjenestespesifikke, men skal henge sammen med activityType. Tilbyder kan oppgi én 
-            // av dem, eller begge. GUI-lenker er ment for å sende sluttbrukere til en lenke som gir innsyn og/eller mer
-            // informasjon knyttet til den aktuelle aktivitet. API-lenker er ment for å kunne gi SBS-er strukturerte 
-            // data relatert til aktiviteten. 
-            "activityDetailsUrls": {
-                // Når activityType er "submission" refererer API-lenken her typisk til den mottatte innsendingen
-                "api": [
-                    {
-                        "version": "v1",
-                        "url": "https://example.com/api/dialogues/123456789/received_submissions/b323cef4-adbd-4d2c-b33d-5c0f3b11171b"
-                    }
-                ],
-                // ... mens GUI-lenken typisk tar brukeren til en innsynsside hvor hen kan se hva som ble sendt inn
-                "gui": "https://example.com/dialogues/123456789/view_submission/b323cef4-adbd-4d2c-b33d-5c0f3b11171b"
-            }
+            "activityDescription": [ { "code": "nb_NO", "value": "Innsending er mottatt og sendt til behandling" } ]
         }
     ],
     // Dette er ulike innstillinger som kun kan oppgis og er synlig for tjenesteeier
