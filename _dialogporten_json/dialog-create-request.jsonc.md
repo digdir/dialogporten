@@ -67,8 +67,10 @@
         "title": [ { "code": "nb_NO", "value": "En eksempel på en tittel" } ],
         "senderName": [ { "code": "nb_NO", "value": "Overstyrt avsendernavn (bruker default tjenesteeiers navn)" } ]            
     },
-    // Det skilles mellom dialogelementer som er ment for GUI og for API. Førstnevnte er typiske filvedlegg i menneskelesbart format,
-    // f.eks. PDF, som tjenestetilbyder legger ved dialogen. Sistnevnte er typisk 
+    // Det skilles mellom dialogelementer som er ment for GUI og for API. GUI-dialogelementer er typiske filvedlegg i menneskelesbart format,
+    // f.eks. PDF, som tjenestetilbyder legger ved dialogen. Dette kan være utsendinger fra tjenestilbyder eller innsendinger fra parten. 
+    // API-dialogelementer er strukturerte filer tiltenkt SBS-er. Dette kan være enkelteskjemaer, egne prefill-modeller, strukturerte feilmeldinger,
+    // tidligere innsendte skjema etc.
     //
     // Dialogelementer kan hentes (leses) gjennom oppgitt URL. Actions kan peke på et spesifikt dialogelement for andre operasjoner direkte
     // knyttet til et dialogelement.
