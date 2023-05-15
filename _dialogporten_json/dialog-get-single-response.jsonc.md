@@ -40,24 +40,70 @@
         "gui": [
             {
                 "dialogElementId": "5b5446a7-9b65-4faf-8888-5a5802ce7de7",
-                "url": "https://example.com/api/dialogs/123456789/dialogelements/1.pdf",
-                "dialogElementType": "somethingservicespecific",
+                "url": "https://example.com/api/dialogs/123456789/dialogelements/5b5446a7.pdf",
                 "displayName": [ { "code": "nb_NO", "value": "Innsendt skjema" } ],
+                "contentType": "application/pdf"
+            },
+            {
+                "dialogElementId": "cd6bf231-2347-4131-8ccc-513a6345ef0b",
+                "url": "https://example.com/api/dialogs/123456789/dialogelements/cd6bf231.pdf",
+                "displayName": [ { "code": "nb_NO", "value": "Innsendt korrigering #1" } ],
+                "contentType": "application/pdf"
+            },
+            {
+                "dialogElementId": "a8e0ed0d-1b26-4132-9823-28a5e8ecb24e",
+                "url": "https://example.com/api/dialogs/123456789/dialogelements/a8e0ed0d.pdf",
+                "displayName": [ { "code": "nb_NO", "value": "Innsendt korrigering #2" } ],
+                "contentType": "application/pdf"
+            },
+            {
+                "dialogElementId": "a12fce1f-b2de-4837-bdd8-8743f80d74fc",
+                "url": "https://example.com/api/dialogs/123456789/dialogelements/a12fce1f.pdf",
+                "displayName": [ { "code": "nb_NO", "value": "Vedtaksbrev" } ],
                 "contentType": "application/pdf",                        
                 "authorizationResource": "urn:altinn:subresource:somesubresource",
                 // Dette flagget er bare synlig på response-modellen, og indikerer om konsumenten er autorisert til å aksessere "url"
                 // Gjelder bare dialogelementer og actions for GUI. For dialogelementer og actions for API utelates disse helt.
                 "isAuthorized": false
-            }
+            },
+
         ],
         "api": [
             {
-                "dialogElementId": "8bf7c93c-ab32-49a6-a890-d2b450b3e7ad",
-                "url": "https://example.com/api/dialogs/123456789/dialogelements/1.xml",
-                "dialogElementType": "somethingservicespecific",
-                "dialogElementSchema": "https://schemas.example.com/dialogservice/v1/somethingservicespecific.json",                        
+                "dialogElementId": "5b5446a7-9b65-4faf-8888-5a5802ce7de7",
+                "url": "https://example.com/api/dialogs/123456789/dialogelements/5b5446a7.xml",
+                "dialogElementType": "form-type-1",
+                "dialogElementSchema": "https://schemas.example.com/dialogservice/v1/form-type-1.json",                        
                 "authorizationResource": "urn:altinn:subresource:someothersubresource"
-            }
+            },
+            {
+                "dialogElementId": "cd6bf231-2347-4131-8ccc-513a6345ef0",
+                "url": "https://example.com/api/dialogs/123456789/dialogelements/cd6bf231.xml",
+                "dialogElementType": "form-type-1",
+                "dialogElementSchema": "https://schemas.example.com/dialogservice/v1/form-type-1.json",                        
+                "authorizationResource": "urn:altinn:subresource:someothersubresource"
+            },
+            {
+                "dialogElementId": "22366651-c1b6-4812-a97d-5ed43fc4fe57",
+                "url": "https://example.com/api/dialogs/123456789/dialogelements/22366651.xml",
+                "dialogElementType": "error-for-form-type-1",
+                "dialogElementSchema": "https://schemas.example.com/dialogservice/v1/error-for-form-type-1.json",                        
+                "authorizationResource": "urn:altinn:subresource:someothersubresource"
+            },
+            {
+                "dialogElementId": "a8e0ed0d-1b26-4132-9823-28a5e8ecb24e",
+                "url": "https://example.com/api/dialogs/123456789/dialogelements/a8e0ed0d.xml",
+                "dialogElementType": "form-type-1",
+                "dialogElementSchema": "https://schemas.example.com/dialogservice/v1/form-type-1.json",                        
+                "authorizationResource": "urn:altinn:subresource:someothersubresource"
+            },
+            {
+                "dialogElementId": "a12fce1f-b2de-4837-bdd8-8743f80d74fc",
+                "url": "https://example.com/api/dialogs/123456789/dialogelements/a12fce1f.xml",
+                "dialogElementType": "resolution-type-1",
+                "dialogElementSchema": "https://schemas.example.com/dialogservice/v1/resolution-type-1.json",                        
+                "authorizationResource": "urn:altinn:subresource:someothersubresource"
+            },
         ]        
     },
     "actions": {
@@ -157,17 +203,8 @@
             "activityType": "submission",
             "performedBy": "person:12018212345",
             "extendedActivityType": "SKE-1234-received-precheck-ok",
-            "dialogElementId": "b323cef4-adbd-4d2c-b33d-5c0f3b11171b",
-            "activityDescription": [ { "code": "nb_NO", "value": "Innsending er mottatt og sendt til behandling" } ],
-            "activityDetailsUrls": {
-                "api": [
-                    {
-                        "version": "v1",
-                        "url": "https://example.com/api/dialogs/123456789/received_submissions/b323cef4-adbd-4d2c-b33d-5c0f3b11171b"
-                    }
-                ],
-                "gui": "https://example.com/dialogs/123456789/view_submission/b323cef4-adbd-4d2c-b33d-5c0f3b11171b"
-            },
+            "dialogElementId": "5b5446a7-9b65-4faf-8888-5a5802ce7de7",
+            "activityDescription": [ { "code": "nb_NO", "value": "Innsending er mottatt og sendt til behandling" } ]
         }
         { 
             "activityId": "7f91fb5e-4c79-4c01-82aa-84911ef13b75",
@@ -189,99 +226,59 @@
             "activityType": "feedback",
             // Feedback-typer har vanligvis en referanse til en submission-aktivitet som dette er feedback for
             "relatedActivityId": "fc6406df-6163-442a-92cd-e487423f2fd5",
+            // Kan også oppgi en direkte referanse til relatert dialogelement
+            "relatedDialogElementId": "5b5446a7-9b65-4faf-8888-5a5802ce7de7",
             "extendedActivityType": "SKE-2456-need-form-RF1337",
             "activityDescription": [ { "code": "nb_NO", "value": "Behandling er utført. Ytterligere opplysninger kreves." } ],
-            "activityDetailsUrls": {
-                // Feltene "api" og "gui" er begge valgfrie, såvel som feltet activityDetailsUrls i seg selv. I dette
-                // eksemplet er det ikke ytterligere opplysninger til SBS-er (input/output-modeller er indikert av action)
-
-                // Her kan det for GUI-brukere lenkes til en eller annen dokumentasjon som forklarer mer om hva som
-                // kreves, hvorfor prosessen krever dette nå etc.
-                "gui": "https://docs.example.com/forms/additional_info_for_service/faq"
-            }
         },
         { 
             "activityId": "f6ef1a96-df3a-4d38-830f-853b5d090e16",
             "activityDateTime": "2022-12-01T12:00:00.000Z",
             "activityType": "submission",
             "extendedActivityType": "SKE-2456-received-precheck-ok",
-            "dialogElementId": "22366651-c1b6-4812-a97d-5ed43fc4fe57",
+            "dialogElementId": "cd6bf231-2347-4131-8ccc-513a6345ef0b",
             "activityDescription": [ { 
                 "code": "nb_NO", 
                 "value": "Innsending av ytterligere opplysninger er mottatt og sendt til behandling." 
-            } ],
-            "activityDetailsUrls": {
-                "api": [
-                    {
-                        "version": "v1",
-                        "url": "https://example.com/api/dialogs/123456789/received_submissions/22366651-c1b6-4812-a97d-5ed43fc4fe57"
-                    }
-                ],
-                "gui": "https://example.com/dialogs/123456789/view_submission/22366651-c1b6-4812-a97d-5ed43fc4fe57"
-            }
+            } ]
         },
         { 
             "activityId": "7d971b46-fb66-4a97-8f5e-333c1df54678",
             "activityDateTime": "2022-12-01T13:00:00.000Z",
             "activityType": "error",
-            // Feilmeldinger har også vanligvis en referanse til en tidligere aktivitet som var årsak til at feilsituasjonen oppstod
+            // Feilmeldinger har også vanligvis en referanse til en tidligere aktivitet og/eller 
+            // dialogelement som var årsak til at feilsituasjonen oppstod
             "relatedActivityId": "f6ef1a96-df3a-4d38-830f-853b5d090e16",
+            // Feilmeldinger kan også ha et eget dialogelement som inneholder en strukturert feilmelding 
             "dialogElementId": "22366651-c1b6-4812-a97d-5ed43fc4fe57",
+            "relatedDialogElementId": "cd6bf231-2347-4131-8ccc-513a6345ef0b",
             "activityErrorCode": "SKE-error-12345",
             "activityDescription": [ { 
                 "code": "nb_NO", 
-                "value": "Saksbehandling har avdekket feil i innsending. Følg lenken for mer detaljer." 
-            } ],
-            "activityDetailsUrls": {
-                // For API-brukere kan denne f.eks. inneholde en eller annen modell som inneholder en 
-                // strukturert liste over feil som har oppstått.
-                "api": [
-                    {
-                        "version": "v1",
-                        "url": "https://example.com/api/dialogs/123456789/received_submissions/22366651-c1b6-4812-a97d-5ed43fc4fe57/errors"
-                    }
-                ],
-                // Her kan det for GUI-brukere lenkes til en eller annen dokumentasjon som forklarer mer om hva som
-                // er feil. 
-                "gui": "https://docs.example.com/forms/errors/SKE-error-12345"
-            }
+                "value": "Saksbehandling har avdekket feil i innsending." 
+            } ]
         },
         { 
             "activityId": "4ce2e110-21c5-4783-94ed-b2a8695abb8a",
             "activityDateTime": "2022-12-01T14:00:00.000Z",
             "activityType": "submission",
             "extendedActivityType": "SKE-2456-received-precheck-ok",
-            "dialogElementId": "d1cbd317-277f-4521-b9b5-ee7d6b29ceaf",
+            "dialogElementId": "a8e0ed0d-1b26-4132-9823-28a5e8ecb24e",
             "activityDescription": [ { 
                 "code": "nb_NO", 
                 "value": "Innsending av ytterligere opplysninger er mottatt og sendt til behandling." 
-            } ],
-            "activityDetailsUrls": {
-                "api": [
-                    {
-                        "version": "v1",
-                        "url": "https://example.com/api/dialogs/123456789/received_submissions/d1cbd317-277f-4521-b9b5-ee7d6b29ceaf"
-                    }
-                ],
-                "gui": "https://example.com/dialogs/123456789/view_submission/d1cbd317-277f-4521-b9b5-ee7d6b29ceaf"
-            }
+            } ]
         },
         { 
             "activityId": "20c94e10-b95d-4cd0-b469-b4caa4532c4e",
             "activityDateTime": "2022-12-01T15:00:00.000Z",
             "activityType": "feedback",
-            "relatedActivityId": "4ce2e110-21c5-4783-94ed-b2a8695abb8a",
             "extendedActivityType": "SKE-2456-final-ok",
+            "dialogElementId": "a12fce1f-b2de-4837-bdd8-8743f80d74fc",
             "activityDescription": [ { 
                 "code": "nb_NO", 
-                "value": "Saksbehandling er utført og vedtak er fattet, se vedlegg. 
-                          Følg lenken for generell informasjon om videre prosess." 
-            } ],
-            "activityDetailsUrls": {
-                // Her kan det  lenkes til en eller annen dokumentasjon som forklarer mer om vedtaket, 
-                // informasjon om videre prosess, klageadgang også videre.
-                "gui": "https://docs.example.com/forms/additional_info_for_service/faq"
-            }
+                "value": "Saksbehandling er utført og vedtak er fattet, se vedlagt vedtaksbrev." 
+            } ]
         },
         { 
             "activityId": "b6d96fc1-edac-407e-aa96-147f07878092",
