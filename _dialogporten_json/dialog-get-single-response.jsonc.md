@@ -62,8 +62,9 @@
                 "displayName": [ { "code": "nb_NO", "value": "Vedtaksbrev" } ],
                 "contentType": "application/pdf",                        
                 "authorizationResource": "urn:altinn:subresource:somesubresource",
-                // Dette flagget er bare synlig på response-modellen, og indikerer om konsumenten er autorisert til å aksessere "url"
-                // Gjelder bare dialogelementer og actions for GUI. For dialogelementer og actions for API utelates disse helt.
+                // Dette flagget er bare synlig på response-modellen, og indikerer om konsumenten er autorisert til 
+                // å aksessere "url". Gjelder bare dialogelementer og actions for GUI. For dialogelementer og actions 
+                // for API utelates disse helt.
                 "isAuthorized": false
             },
 
@@ -121,8 +122,9 @@
             {
                 "action": "confirm",
                 "authorizationResource": "urn:altinn:subresource:somesubresource",
-                // Dette flagget er bare synlig på response-modellen, og indikerer om konsumenten er autorisert til å aksessere "url"
-                // Gjelder bare dialogelementer og actions for GUI. For dialogelementer og actions for API utelates disse helt.
+                // Dette flagget er bare synlig på response-modellen, og indikerer om konsumenten er autorisert til å 
+                // aksessere "url". Gjelder bare dialogelementer og actions for GUI. For dialogelementer og actions for 
+                // API utelates disse helt.
                 "isAuthorized": false,
                 "importance": "secondary",
                 "title": [ { "code": "nb_NO", "value": "Bekreft mottatt" } ],

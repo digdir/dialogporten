@@ -67,13 +67,13 @@
         "title": [ { "code": "nb_NO", "value": "En eksempel på en tittel" } ],
         "senderName": [ { "code": "nb_NO", "value": "Overstyrt avsendernavn (bruker default tjenesteeiers navn)" } ]            
     },
-    // Det skilles mellom dialogelementer som er ment for GUI og for API. GUI-dialogelementer er typiske filvedlegg i menneskelesbart format,
-    // f.eks. PDF, som tjenestetilbyder legger ved dialogen. Dette kan være utsendinger fra tjenestilbyder eller innsendinger fra parten. 
-    // API-dialogelementer er strukturerte filer tiltenkt SBS-er. Dette kan være enkelteskjemaer, egne prefill-modeller, strukturerte feilmeldinger,
-    // tidligere innsendte skjema etc.
+    // Det skilles mellom dialogelementer som er ment for GUI og for API. GUI-dialogelementer er typiske filvedlegg i 
+    // menneskelesbart format, f.eks. PDF, som tjenestetilbyder legger ved dialogen. Dette kan være utsendinger fra 
+    // tjenestilbyder eller innsendinger fra parten.     // API-dialogelementer er strukturerte filer tiltenkt SBS-er. 
+    // Dette kan være enkelteskjemaer, egne prefill-modeller, strukturerte feilmeldinger,tidligere innsendte skjema etc.
     //
-    // Dialogelementer kan hentes (leses) gjennom oppgitt URL. Actions kan peke på et spesifikt dialogelement for andre operasjoner direkte
-    // knyttet til et dialogelement.
+    // Dialogelementer kan hentes (leses) gjennom oppgitt URL. Actions kan peke på et spesifikt dialogelement for andre
+    // operasjoner direkte knyttet til et dialogelement.
     "dialogElements": {
         "gui": [
             {
@@ -87,8 +87,9 @@
                 // Valgfri: MIME-type. Brukes i GUI for hint om hva slags dokument dette er 
                 "contentType": "application/pdf",                        
 
-                // Valgfri: Det kan oppgis en referanse til det som mappes til en XACML-ressurs. Hvis oppgitt, må brukeren må ha tilgang 
-                // til actionen "elementread" i XACML-policy evt. begrenset til denne ressursen. Hvis ikke oppgitt kreves bare "read".
+                // Valgfri: Det kan oppgis en referanse til det som mappes til en XACML-ressurs. Hvis oppgitt, må 
+                // brukeren må ha tilgang  til actionen "elementread" i XACML-policy evt. begrenset til denne ressursen. 
+                // Hvis ikke oppgitt kreves bare "read".
                 "authorizationResource": "urn:altinn:subresource:somesubresource"
             }
         ],
@@ -103,8 +104,9 @@
                 // Valgfri: JSON-schema som indikerer schemaet til dialogelementet
                 "dialogElementSchema": "https://schemas.example.com/dialogservice/v1/somethingservicespecific.json",                        
 
-                // Valgfri: Det kan oppgis en referanse til det som mappes til en XACML-ressurs. Hvis oppgitt, må brukeren må ha tilgang 
-                // til actionen "elementread" i XACML-policy evt. begrenset til denne ressursen. Hvis ikke oppgitt kreves bare "read".
+                // Valgfri: Det kan oppgis en referanse til det som mappes til en XACML-ressurs. Hvis oppgitt, må 
+                // brukeren må ha tilgang  til actionen "elementread" i XACML-policy evt. begrenset til denne ressursen. 
+                // Hvis ikke oppgitt kreves bare "read".
                 "authorizationResource": "urn:altinn:subresource:someothersubresource"
             }
         ]        
@@ -119,7 +121,8 @@
             },
             {
                 "action": "confirm",
-                "authorizationResource": "urn:altinn:subresource:somesubresource", // Det kan oppgis en valgfri referanse til en XACML-ressurs
+                // Det kan oppgis en valgfri referanse til en XACML-ressurs
+                "authorizationResource": "urn:altinn:subresource:somesubresource", 
                 "importance": "secondary",
                 "title": [ { "code": "nb_NO", "value": "Bekreft mottatt" } ],
 
