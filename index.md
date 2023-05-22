@@ -142,6 +142,10 @@ Handlinger og andre deler (f.eks. referanser til dialogelementer) av dialogen ka
 
 Dette muliggjør at man kan ha ulike autorisasjonskrav for samme type handling som er tilgjengelige ved ulike tilstander dialogen har. F.eks. vil det kunne brukes for å la en signeringshandling kun være tilgjengelig for en ekstern revisor/regnskapsfører, mens en annen signeringshandling er tilgjengelig for daglig leder.
 
+## Aktivitet
+
+En _aktivitet_ beskriver en eller annen utført handling eller hendelse som har skjedd i tilknytning til dialogen. Hver aktivitet inngår i aktivitetshistorikken, som er en kronologisk liste over aktiviteter. Det er tjenestetilbyder som populerer aktivitetshistorikken etter hvert som ulike tilstandsendringer inntreffer. Dialogporten kan også foreta innslag i aktivitetshistorikken, f.eks. om en dialog blir åpnet for første gang, eller tilgang til dialogen delegeres videre.
+
 # Begrepsmodell
 
 Under er en forenklet modell som viser relasjonene mellom de ulike begrepene. For en mer overordnet modell av konseptet, se [Overordnet modell over konsept](#overordnet-diagram-over-konsept).
