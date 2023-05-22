@@ -12,7 +12,7 @@
     "id": "e0300961-85fb-4ef2-abff-681d77f9960e",
 
     // Identifikator som refererer en tjenesteressurs ("Altinn Service Resource") i Altinn Autorisasjon
-    // Se https://docs.altinn.studio/technology/solutions/altinn-platform/authorization/resourceregistry/
+    // Se https://docs.altinn.studio/authorization/modules/resourceregistry/
     // Dette bestemmer også hvilken autorisasjonspolicy som legges til grunn.
     "serviceResourceIdentifier": "example_dialog_service", 
 

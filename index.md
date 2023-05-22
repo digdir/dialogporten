@@ -132,7 +132,7 @@ En API-handling er tiltenkt SBS-er og portaler som benytter Dialogporten gjennom
 
 ## Tjenesteressurs
 
-Alle dialoger må referere en _tjenesteressurs_. En tjenesteressurs utgjør autorisasjonsbæreren, og kan sammenlignes med moderne bruk av lenketjenester i Altinn 2. Dette er en beskrivelse av en tjeneste som ligger i [Altinn Resource Registry](https://docs.altinn.studio/technology/solutions/altinn-platform/authorization/resourceregistry/), en ny komponent i Altinn Autorisasjon. Hver tjenesteressurs har en autorisasjonspolicy uttrykt i [XACML](https://docs.altinn.studio/technology/solutions/altinn-platform/authorization/xacml/), som beskriver hvilke tilgangsregler som gjelder for alle dialoger som refererer den. XACML gir stor fleksibilitet i hvor grov- eller finkornet tilgangskontrollen skal være, og Dialogporten vil legge denne policyen til grunn for å bestemme hvem som kan se en gitt dialog, og hvilke handlinger som skal være tilgjengelige. 
+Alle dialoger må referere en _tjenesteressurs_. En tjenesteressurs utgjør autorisasjonsbæreren, og kan sammenlignes med moderne bruk av lenketjenester i Altinn 2. Dette er en beskrivelse av en tjeneste som ligger i [Altinn Resource Registry](https://docs.altinn.studio/authorization/modules/resourceregistry/), en ny komponent i Altinn Autorisasjon. Hver tjenesteressurs har en autorisasjonspolicy uttrykt i [XACML](hhttps://docs.altinn.studio/authorization/guide/xacml/), som beskriver hvilke tilgangsregler som gjelder for alle dialoger som refererer den. XACML gir stor fleksibilitet i hvor grov- eller finkornet tilgangskontrollen skal være, og Dialogporten vil legge denne policyen til grunn for å bestemme hvem som kan se en gitt dialog, og hvilke handlinger som skal være tilgjengelige. 
 
 Eksempelvis vil GUI-handlingen «Signer» referere en _action_ kalt «sign» i XACML-policyen, som krever tilganger den innloggende brukeren ikke besitter. Knappen vil derfor kunne være grået ut og deaktivert. Tjenesteressursen er det tilgangsstyrere i virksomhetene forholder seg til, mht hvem som skal ha tilgang til å gjøre hva på vegne av en virksomhet (tilsvarende dagens tjenestedelegering).
 
@@ -158,7 +158,7 @@ Under er en overordnet modell som viser relasjonen mellom Dialogporten, tjeneste
 
 ## Relasjon til XACML
 
-Hver dialog refererer en [_tjenesteressurs_](https://docs.altinn.studio/technology/solutions/altinn-platform/authorization/resourceregistry/#altinn-service-resource) i [Altinn Autorisasjon](https://docs.altinn.studio/technology/solutions/altinn-platform/authorization/), som består av en XACML-policy samt metadata som beskriver tjenesten. 
+Hver dialog refererer en [_tjenesteressurs_](https://docs.altinn.studio/authorization/modules/resourceregistry/) i [Altinn Autorisasjon](https://docs.altinn.studio/authorization/), som består av en XACML-policy samt metadata som beskriver tjenesten. 
 
 Hver action som defineres på en dialog mappes til en tilsvarende "action-id" i XACML. Eksempelvis, gitt følgende action på en dialog som refererer tjenesteressursen `min_fine_tjeneste`:
 

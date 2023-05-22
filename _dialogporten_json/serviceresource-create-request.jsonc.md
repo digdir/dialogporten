@@ -2,7 +2,7 @@
 ---
 ```jsonc
 // Input modell her vil være en ServiceResource som beskrevet på 
-// https://docs.altinn.studio/technology/solutions/altinn-platform/authorization/resourceregistry/
+// https://docs.altinn.studio/authorization/modules/resourceregistry/
 // Modellen må utvides med en "instantiationUrl", som er lagt til under.
 
 // POST /resourceregistry/api/v1/resource
