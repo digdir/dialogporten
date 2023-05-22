@@ -96,7 +96,7 @@ Med _spesialisert dialog_, refereres det til en konkret dialog (f.eks. innsendin
 
 ## Dialogelement
 
-Dialogelementer utgjør distinkte bestanddeler av en dialog og kan brukes i komplekse dialoger hvor det kan være hensiktsmessig for sluttbrukere og systemer å forholde seg til enkelte deler av dialogen i stedet for dialogen som helhet. Dette kan være pre-utfylte skjemaer fra tjenestetilbyder, innsendte skjemaer fra parten, kvitteringer, strukturerte feilmeldinger, rapporter, ustrukturerte vedlegg til meldinger etc. som utgjør en del av den totale dialogen. Dialogelementer blir typisk referert av innslag i activityHistory. Handlinger kan også referere et enkelt dialogelement. 
+Dialogelementer utgjør distinkte bestanddeler av en dialog og kan brukes i komplekse dialoger hvor det kan være hensiktsmessig for sluttbrukere og systemer å forholde seg til enkelte deler av dialogen i stedet for dialogen som helhet. Dette kan være meldinger og pre-utfylte skjemaer fra tjenestetilbyder, innsendte skjemaer fra parten, kvitteringer, strukturerte feilmeldinger, rapporter, ustrukturerte vedlegg til meldinger etc. som utgjør en del av den totale dialogen. Dialogelementer blir typisk referert av innslag i activityHistory. Handlinger kan også referere et enkelt dialogelement. 
 
 ## Dialoggruppe (DG)
 
@@ -138,7 +138,7 @@ Eksempelvis vil GUI-handlingen «Signer» referere en _action_ kalt «sign» i X
 
 ## Subressurs
 
-Handlinger og andre deler (f.eks. referanser til vedlegg, eller ulike prosessteg) av dialogen kan også referere en vilkårlig _subressurs_ gjennom feltet `authorizationResource`.
+Handlinger og andre deler (f.eks. referanser til dialogelementer) av dialogen kan også referere en vilkårlig _subressurs_ gjennom feltet `authorizationResource`.
 
 Dette muliggjør at man kan ha ulike autorisasjonskrav for samme type handling som er tilgjengelige ved ulike tilstander dialogen har. F.eks. vil det kunne brukes for å la en signeringshandling kun være tilgjengelig for en ekstern revisor/regnskapsfører, mens en annen signeringshandling er tilgjengelig for daglig leder.
 
@@ -597,10 +597,8 @@ end
     * Frist
     * "Fra"-felt
     * Dato for når dialogen skal aktiveres
-    * Tjenestetilbyder sin egen referanse/ID
     * Eventuell tilhørlighet til dialog-gruppe
     * Inneholder (valgfri) URI for å hente oppdatering strukturert versjon av dialogen, hvis hensiktsmessig for tjenesten. Brukes typisk i det brukeren ekspanderer/åpner en grafisk fremvisning av dialogen for å vise
-        * Dynamisk rikt innhold hentet i sanntid
         * Hvilke handlinger som kan utføres på dialogen (se under)
         * Hvis ikke oppgitt, vises de metadata/handlinger jf. siste oppdatering som ble gjort av tjenestetilbyder (hvis noen, etter opprettelse)
     * Beskriver tilgjengelige handlinger (for både API og GUI)
@@ -620,12 +618,11 @@ end
             * Hvilken http-metode som skal benyttes
             * En URI som handlingen skal utføres mot
             * JSON Schema el.l. som beskriver datamodellen som skal pushes/pulles
-    * Inneholder informasjon om varsling på SMS/e-post/push etc
-    * Inneholder valgfri liste over filvedlegg, som består av
-        * En tittel på flere språk
-        * En MIME-filtype som brukes for å indikere til brukeren type vedlegg (PDF etc)
-        * En URI som dyplenker til vedlegget
-        * Størrelse på vedlegget i bytes
+    * Inneholder valgfri liste over dialogelementer, som består av
+        * En identifikator som kan være oppgitt av tjenesteeier
+        * Indikator på hva slags tjenestespesifikk type dialogelement er
+        * Indikator på om dialogelementet er tiltenkt API eller GUI-kanaler
+        * URL til dialogelementet hvor det kan hentes (GET) evt omdirigeres til
     * Kan muteres etter opprettelse
         * Tilgjengelige handlinger kan oppdateres når som helst av tjenestetilbyder 
         * Tittel og annen tekstlig metadata
@@ -890,9 +887,9 @@ end
 
 # OpenAPI
 
-En foreløpig OpenAPI 3.0.1 specification (OAS) basert på modellene beskrevet under kan sees på [https://app.swaggerhub.com/apis-docs/Altinn/Dialogporten](https://app.swaggerhub.com/apis-docs/Altinn/Dialogporten). 
+En foreløpig OpenAPI 3.0.1 specification (OAS) basert på modellene beskrevet under kan sees på [https://dppoc-webapi.azurewebsites.net/swagger/V1.0/swagger.json](https://dppoc-webapi.azurewebsites.net/swagger/V1.0/swagger.json). 
 
-{% include note.html type="warning" content="OpenAPI-spesifikasjonen kan være ute av synk med modellene som vises på denne siden. Det er modellene som ligger på denne siden som skal legges til grunn." %}
+{% include note.html type="warning" content="OpenAPI-spesifikasjonen kan være har ulike tekniske forskjeller med modellene som vises på denne siden. De funksjonelle beskrivelsene som ligger på denne siden skal legges til grunn." %}
 
 # Eksempel-modeller
 
