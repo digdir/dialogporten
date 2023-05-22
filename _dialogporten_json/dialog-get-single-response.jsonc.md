@@ -73,7 +73,7 @@
         },
         {
             "dialogElementId": "22366651-c1b6-4812-a97d-5ed43fc4fe57",
-            "authorizationResource": "urn:altinn:subresource:someothersubresource",
+            "authorizationAttribute": "urn:altinn:subresource:someothersubresource",
             "uris": [
                 {
                     "consumerType": "api",
@@ -103,7 +103,7 @@
         {
             "dialogElementId": "a12fce1f-b2de-4837-bdd8-8743f80d74fc",            
             "displayName": [ { "code": "nb_NO", "value": "Vedtaksbrev" } ],
-            "authorizationResource": "urn:altinn:subresource:somesubresource",
+            "authorizationAttribute": "urn:altinn:subresource:somesubresource",
             // Indikerer om autentisert bruker er autorisert til å lese ("elementread") - finnes bare i response-modell for 
             // sluttbrukere og populeres av Dialogporten utfra policy. Dette er et hint for GUI-implementasjoner som da kan 
             // velge å skjule/gråe ut actions som ikke vil kunne gjennomføres.
@@ -132,7 +132,7 @@
             },
             {
                 "action": "confirm",
-                "authorizationResource": "urn:altinn:subresource:somesubresource",
+                "authorizationAttribute": "urn:altinn:subresource:somesubresource",
                 // Dette flagget er bare synlig på response-modellen, og indikerer om konsumenten er autorisert til å 
                 // aksessere "url". Gjelder bare dialogelementer og actions for GUI. For dialogelementer og actions for 
                 // API utelates disse helt.

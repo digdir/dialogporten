@@ -82,10 +82,10 @@
             // Valgfri: Brukes for å vise sluttbrukeren hva dette er, typisk bare brukt i GUI
             "displayName": [ { "code": "nb_NO", "value": "Innsendt skjema" } ],
             
-            // Valgfri: Det kan oppgis en referanse til det som mappes til en XACML-ressurs. Hvis oppgitt, må 
+            // Valgfri: Det kan oppgis en referanse til det som mappes til en XACML-ressurs-attributt. Hvis oppgitt, må 
             // brukeren må ha tilgang  til actionen "elementread" i XACML-policy evt. begrenset til denne ressursen. 
             // Hvis ikke oppgitt kreves bare "read".
-            "authorizationResource": "urn:altinn:subresource:somesubresource",
+            "authorizationAttribute": "urn:altinn:subresource:somesubresource",
             "urls": [
                 {
                     // Indikerer hvilken type konsument denne URL-en er tiltenkt (menneske/GUI eller maskin/API)
@@ -114,8 +114,8 @@
             },
             {
                 "action": "confirm",
-                // Det kan oppgis en valgfri referanse til en XACML-ressurs
-                "authorizationResource": "urn:altinn:subresource:somesubresource", 
+                // Det kan oppgis en valgfri referanse til en XACML-ressurs-attributt
+                "authorizationAttribute": "urn:altinn:subresource:somesubresource", 
                 "importance": "secondary",
                 "title": [ { "code": "nb_NO", "value": "Bekreft mottatt" } ],
 

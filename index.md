@@ -114,7 +114,7 @@ Se også [Integrasjon med event-komponenten](#integrasjon-med-event-komponent) f
 
 En _handling_ (som i «action») beskriver en interaksjon som brukere kan gjøre med eller relatert til en dialog. Eksempler på handlinger er «Åpne», «Arkiver», «Slett», «Start signering», «Betal», «Bekreft», «Les mer» etc. Listen over aktuelle handlinger er en del av den strukturerte beskrivelsen av en dialogen, og kan når som helst endres av tjenestetilbyder gjennom API.
 
-En handling er enten en _«GUI»-handling_ eller en _«API»-handling_. Alle handlinger - både GUI og API - har en identifikator som mappes til en _action_ (og valgfritt en _subressurs_, indikert av feltet `authorizationResource`) i _autorisasjonspolicyen_ (XACML) som er knyttet til en _tjenesteressurs._ 
+En handling er enten en _«GUI»-handling_ eller en _«API»-handling_. Alle handlinger - både GUI og API - har en identifikator som mappes til en _action_ (og valgfritt et _autorisasjonsattributt_, indikert av feltet `authorizationAttribute`) i _autorisasjonspolicyen_ (XACML) som er knyttet til en _tjenesteressurs._ 
 
 ### GUI-handlinger
 
@@ -136,9 +136,9 @@ Alle dialoger må referere en _tjenesteressurs_. En tjenesteressurs utgjør auto
 
 Eksempelvis vil GUI-handlingen «Signer» referere en _action_ kalt «sign» i XACML-policyen, som krever tilganger den innloggende brukeren ikke besitter. Knappen vil derfor kunne være grået ut og deaktivert. Tjenesteressursen er det tilgangsstyrere i virksomhetene forholder seg til, mht hvem som skal ha tilgang til å gjøre hva på vegne av en virksomhet (tilsvarende dagens tjenestedelegering).
 
-## Subressurs
+## Autorisasjonsattributt
 
-Handlinger og andre deler (f.eks. referanser til dialogelementer) av dialogen kan også referere en vilkårlig _subressurs_ gjennom feltet `authorizationResource`.
+Handlinger og andre deler (f.eks. referanser til dialogelementer) av dialogen kan også oppgi et ekstra _autorisasjonsattributt_ gjennom feltet `authorizationAttribute`.
 
 Dette muliggjør at man kan ha ulike autorisasjonskrav for samme type handling som er tilgjengelige ved ulike tilstander dialogen har. F.eks. vil det kunne brukes for å la en signeringshandling kun være tilgjengelig for en ekstern revisor/regnskapsfører, mens en annen signeringshandling er tilgjengelig for daglig leder.
 
@@ -235,8 +235,8 @@ Dette kan uttrykkes i [forenklet JSON](https://github.com/Altinn/altinn-studio/i
 }
 ```
 
-### Subressurser
-Subressurser er en ytterligere ressurs-attributt i en regel i en policy, som kan refereres til i actions og dialogelementer gjennom feltet `authorizationResource`. En slik ressurs er en URN som i eksemplene i dette dokumentet tilhører navnerommet `urn:altinn:subresource`, men andre navnerom kan også benyttes; f.eks. bruker Altinn Studio vanligvis navnerommet `urn:altinn:task`. 
+### Autorisasjonsattributter
+Autorisasjonsattributter er ytterligere ressurs-attributter som det vil matches mot i en regel i en policy, som kan refereres til i actions og dialogelementer gjennom feltet `authorizationAttribute`. En slik ressurs er en URN som i eksemplene i dette dokumentet tilhører navnerommet `urn:altinn:subresource`, men andre navnerom kan også benyttes; f.eks. bruker Altinn Studio vanligvis navnerommet `urn:altinn:task`. 
 
 En action som refererer en subsressurs kan se slik ut:
 
@@ -250,7 +250,7 @@ En action som refererer en subsressurs kan se slik ut:
         "gui": [ 
             { 
                 "action": "sign", // Denne refereres i "Action"-delen  i XACML-policy                
-                "authorizationResource": "urn:altinn:subresource:subressurs1", // Denne refereres i "Ressurs"-delen  i XACML-policy                
+                "authorizationAttribute": "urn:altinn:subresource:autorisasjonsattributt1", // Denne refereres i "Ressurs"-delen  i XACML-policy                
                 "title": [ { "code": "nb_NO", "value": "Åpne" } ],
                 "url": "https://example.com/some/deep/link/to/dialogs/123456789"
             }
@@ -259,7 +259,7 @@ En action som refererer en subsressurs kan se slik ut:
 }
 ```
 
-Tilsvarende, for å lage en regel som gir `DAGL` lov til å utføre handlingen `sign` på subressursen `urn:altinn:subresource:subressurs1` på dialoger som refererer `min_fine_tjeneste`:
+Tilsvarende, for å lage en regel som gir `DAGL` lov til å utføre handlingen `sign` på autorisasjonsattributtet `urn:altinn:subresource:autorisasjonsattributt1` på dialoger som refererer `min_fine_tjeneste`:
 
 ```xml
 <xacml:Rule RuleId="urn:altinn:example:ruleid:1" Effect="Permit">
@@ -281,7 +281,7 @@ Tilsvarende, for å lage en regel som gir `DAGL` lov til å utføre handlingen `
                     <xacml:AttributeDesignator AttributeId="urn:altinn:resource" Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource" DataType="http://www.w3.org/2001/XMLSchema#string" MustBePresent="false"/>
                 </xacml:Match>
                 <xacml:Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
-                    <xacml:AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">subressurs1</xacml:AttributeValue>
+                    <xacml:AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">autorisasjonsattributt1</xacml:AttributeValue>
                     <xacml:AttributeDesignator AttributeId="urn:altinn:subresource" Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource" DataType="http://www.w3.org/2001/XMLSchema#string" MustBePresent="false"/>
                 </xacml:Match>
             </xacml:AllOf>
@@ -310,7 +310,7 @@ Dette kan uttrykkes i [forenklet JSON](https://github.com/Altinn/altinn-studio/i
             "Resources": [
                 [
                     "urn:altinn:resource:min_fine_tjeneste",
-                    "urn:altinn:subresource:subressurs1",
+                    "urn:altinn:subresource:autorisasjonsattributt1",
                 ]
             ],
             "Actions": [
@@ -320,7 +320,7 @@ Dette kan uttrykkes i [forenklet JSON](https://github.com/Altinn/altinn-studio/i
 }
 ```
 
-{% include note.html type="info" content="Merk at XACML gjør matching på attributter. Så en regel som gir f.eks. `sign` uten å oppgi subressurser, vil da gi tilgang til alle `sign`-actions uavhengig av hvilken subressurs som er definert på action-en." %}
+{% include note.html type="info" content="Merk at XACML gjør matching på attributter. Så en regel som gir f.eks. `sign` uten å oppgi et ekstra autorisasjonsattributt, vil da gi tilgang til alle `sign`-actions uavhengig av hvilket autorisasjonsattributt som er definert på action-en." %}
 
 ## Bruk av Dialogportens API-er
 
@@ -360,10 +360,10 @@ Under beskrives hvordan SBS-er foretar autentisering for å kunne autoriseres i 
     * I Dialogporten er denne grovkornet (f.eks. `digdir:dialogporten` eller `altinn:instances.read`), og autoriserer kun for å kunne kalle API-et. Gir i seg selv ikke tilgang til noen tjenester. 
     * Scopes tolkes typisk mer finkornet hos tjenestetilbyder, som gjerne har scopes per tjeneste (f.eks. `skatteetaten:summertskattegrunnlag`).
   * Tjenestenivå
-    * Har tilgang til en eller flere actions på en tjeneste og/eller definert subressurs (egen ressurs-attributt i XACML, tradisjonelt "prosessteg" i Altinn2) av tjeneste
+    * Har tilgang til en eller flere actions på en tjeneste og/eller definert autorisasjonsattributt (egen ressurs-attributt i XACML, tradisjonelt "prosessteg" i Altinn2) av tjeneste
   * Dialognivå
     * Tilgang til konkret instans, aka "instansdelegering". 
-    * Tilgang på tjenestenivå gir tilgang til alle dialoger, men noen kan ha tilgang til en eller flere actions til enkelte dialoger og/eller tilhørende definerte subressurser.
+    * Tilgang på tjenestenivå gir tilgang til alle dialoger, men noen kan ha tilgang til en eller flere actions til enkelte dialoger og/eller tilhørende definerte autorisasjonsattributter.
  * Det tas utgangspunkt i ikke-interaktive, virksomhetsautentiserte flyter med Maskinporten som IDP. Det er derfor fem prinsipielle aktører; sluttbrukersystemet, Dialogporten, Maskinporten, Altinn Autorisasjon og Tjenestetilbyders API for tjenesten, samt Altinn Token Exchange + Altinn Registry for håndtering av systembrukere. 
  * Varianter med ID-porten vil kunne fungere annerledes (f.eks. faller Token Exchange ut, siden man umiddelbart har en "bruker"), avhengig av grad av interaktivitet. Disse er ikke tegnet inn i denne omgang.
  * Bruk av flere tokens eller `aud`-claim forutsettes for å unngå problematikk rundt replay-angrep.
@@ -604,7 +604,7 @@ end
     * Beskriver tilgjengelige handlinger (for både API og GUI)
         * Strukturert liste over handlinger som kan gjøres på dialogen, typisk "Åpne", "Arkiver", "Slett", "Bekreft", "Signer", "Betal", "Les mer", etc. 
         * GUI-handlinger kan flagges som primær, sekundær og tertiær-handlinger som påvirker hvordan dette vises til bruker (f.eks. kan primær og sekundærhandlinger vises som ulike typer knapper, mens tertiærhandlinger vises i en nedtrekksliste/tekstlenker).
-        * Er gjenstand for autorisasjon definert av referert tjenesteressurs og eventuell subressurs. F.eks. vil f.eks. "Signer" kunne kreve andre rettigheter avhengig av policy knyttet til tjenesteressursen.
+        * Er gjenstand for autorisasjon definert av referert tjenesteressurs og eventuelt autorisasjonsattributt. F.eks. vil f.eks. "Signer" kunne kreve andre rettigheter avhengig av policy knyttet til tjenesteressursen.
         * Hver GUI-handling inneholder
             * En identifikator for handlingen. "Standard"-handlinger vil kunne oppgis som allerede finnes oversatt i Dialogporten.
             * Hvis ikke standard-handling, tekst som beskriver handlingen i flere språk
