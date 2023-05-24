@@ -6,12 +6,12 @@ using Npgsql.Replication.PgOutput.Messages;
 
 namespace Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture;
 
-internal interface ISubscription
+internal interface IPostgresCdcSubscription
 {
-    IAsyncEnumerable<string> Subscribe(SubscriptionOptions options, CancellationToken ct);
+    IAsyncEnumerable<object> Subscribe(CancellationToken ct);
 }
 
-public record SubscriptionOptions(
+public record PostgresCdcSSubscriptionOptions(
     string ConnectionString,
     string ReplicationSlotName,
     string PublicationName,
@@ -23,17 +23,22 @@ public record SubscriptionOptions(
     internal string PublicationName { get; init; } = PublicationName.ToLower();
 }
 
-public class Subscription : ISubscription
+public class PostgresCdcSubscription : IPostgresCdcSubscription
 {
-    public async IAsyncEnumerable<string> Subscribe(
-        SubscriptionOptions options,
-        [EnumeratorCancellation] CancellationToken ct = default)
+    private readonly PostgresCdcSSubscriptionOptions _options;
+
+    public PostgresCdcSubscription(PostgresCdcSSubscriptionOptions options)
     {
-        var (connectionString, slotName, publicationName, tableName, dataMapper) = options;
+        _options = options ?? throw new ArgumentNullException(nameof(options));
+    }
+
+    public async IAsyncEnumerable<object> Subscribe([EnumeratorCancellation] CancellationToken ct = default)
+    {
+        var (connectionString, slotName, publicationName, tableName, dataMapper) = _options;
         await using var connection = new LogicalReplicationConnection(connectionString);
         await connection.Open(ct);
 
-        await foreach (var reader in CreateSubscription(options, connection, ct))
+        await foreach (var reader in CreateSubscription(connection, ct))
         {
             yield return await dataMapper.ReadFromSnapshot(reader, ct);
         }
@@ -54,12 +59,11 @@ public class Subscription : ISubscription
         }
     }
 
-    private static async IAsyncEnumerable<NpgsqlDataReader> CreateSubscription(
-        SubscriptionOptions options,
+    private async IAsyncEnumerable<NpgsqlDataReader> CreateSubscription(
         LogicalReplicationConnection connection,
         [EnumeratorCancellation] CancellationToken ct)
     {
-        var (connectionString, slotName, publicationName, tableName, _) = options;
+        var (connectionString, slotName, publicationName, tableName, _) = _options;
         var dataSource = NpgsqlDataSource.Create(connectionString);
 
         var publicationExists = await dataSource.Exists("pg_publication", "pubname = $1", new object[] { publicationName }, ct);
@@ -75,9 +79,6 @@ public class Subscription : ISubscription
                 slotSnapshotInitMode: LogicalSlotSnapshotInitMode.Export,
                 cancellationToken: ct);
 
-            // Get the records before creating a subscription
-            // TODO: What if some of these fail? 
-            // TODO: Do we even need them? 
             await foreach (var reader in dataSource.ReadExistingRowsFromSnapshot(replicationSlot.SnapshotName!, tableName, ct))
             {
                 yield return reader;
