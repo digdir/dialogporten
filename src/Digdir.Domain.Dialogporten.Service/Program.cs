@@ -26,8 +26,8 @@ builder.Services
         var channel = x.GetRequiredService<IConnection>().CreateModel();
         channel.BasicQos(
             prefetchSize: Unlimited,
-                prefetchCount: PrefetchCount,
-                global: false);
+            prefetchCount: PrefetchCount,
+            global: false);
         return channel;
     })
     .AddSingleton<RabbitMqSubscription>()
@@ -37,3 +37,5 @@ builder.Services
 var app = builder.Build();
 app.UseHttpsRedirection();
 app.Run();
+
+

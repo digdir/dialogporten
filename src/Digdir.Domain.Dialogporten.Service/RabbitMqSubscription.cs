@@ -8,7 +8,7 @@ using System.Threading.Channels;
 
 namespace Digdir.Domain.Dialogporten.Service;
 
-public sealed class RabbitMqSubscription
+internal sealed class RabbitMqSubscription
 {
     private readonly IHostApplicationLifetime _applicationLifetime;
     private readonly ILogger<RabbitMqSubscription> _logger;
@@ -27,7 +27,7 @@ public sealed class RabbitMqSubscription
         _consumer = new AsyncEventingBasicConsumer(_channel);
         _eventqueue = Channel.CreateUnbounded<RabbitMqMessage>(new()
         {
-            SingleWriter= true,
+            SingleWriter = true,
         });
     }
 
@@ -49,7 +49,7 @@ public sealed class RabbitMqSubscription
                 }
                 finally
                 {
-                    await message.DisposeAsync();
+                    await message.Nack(cancellationToken);
                 }
             }
         }
@@ -80,7 +80,7 @@ public sealed class RabbitMqSubscription
         _applicationLifetime.StopApplication();
     }
 
-    public sealed class RabbitMqMessage : IAsyncDisposable
+    internal sealed class RabbitMqMessage 
     {
         private const int MaxNumberOfAttempts = 10;
         private readonly IModel _channel;
@@ -123,11 +123,6 @@ public sealed class RabbitMqSubscription
             }
 
             return Task.CompletedTask;
-        }
-
-        public ValueTask DisposeAsync()
-        {
-            return new ValueTask(Nack(default));
         }
 
         private object GetDomainEvent(BasicDeliverEventArgs delivery)

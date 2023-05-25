@@ -24,17 +24,15 @@ internal sealed class RabbitMqSubscriber : BackgroundService
         {
             try
             {
-                // TODO: Retry
                 using var scope = _scopeFactory.CreateScope();
                 await scope.ServiceProvider
                     .GetRequiredService<IPublisher>()
                     .Publish(message.DomainEvent, stoppingToken);
                 await message.Ack(stoppingToken);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                _logger.LogError("Unable to process domain event, sending it to dead letter queue.");
-                await message.Nack(stoppingToken);
+                _logger.LogError(ex, "Unable to process domain event, sending it to dead letter queue.");
             }
         }
     }
