@@ -587,6 +587,8 @@ Et eksempel:
 }
 ```
 
+Les mer om [Event-komponenten på Altinn Docs](https://docs.altinn.studio/events/).
+
 
 # Sekvensbeskrivelser
 
