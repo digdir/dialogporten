@@ -6,7 +6,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.DomainEvents.Outbox.Dispatch
 
 internal sealed class OutboxScheduler : BackgroundService
 {
-    private readonly PeriodicTimer _timer = new(TimeSpan.FromSeconds(10));
+    private readonly PeriodicTimer _timer = new(TimeSpan.FromSeconds(5));
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly ILogger<OutboxScheduler> _logger;
 
@@ -49,11 +49,9 @@ internal sealed class OutboxScheduler : BackgroundService
                 .GetRequiredService<OutboxDispatcher>()
                 .Execute(stoppingToken);
         }
-        catch (OperationCanceledException) { throw; }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is not OperationCanceledException)
         {
-            // TODO: Log better error.
-            _logger.LogError(ex, "Background task failed");
+            _logger.LogError(ex, "Outbox background processing failed.");
         }
     }
 }

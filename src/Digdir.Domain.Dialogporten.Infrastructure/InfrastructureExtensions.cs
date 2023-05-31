@@ -31,7 +31,7 @@ public static class InfrastructureExtensions
                     .AddInterceptors(services.GetRequiredService<ConvertDomainEventsToOutboxMessagesInterceptor>());
             })
             .AddHostedService<DevelopmentMigratorHostedService>()
-            //.AddHostedService<OutboxScheduler>()
+            .AddHostedService<OutboxScheduler>()
 
             // Singleton
 
