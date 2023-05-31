@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using Digdir.Domain.Dialogporten.Domain.Outboxes;
 using Npgsql;
 using Npgsql.Replication;
 using Npgsql.Replication.PgOutput;
@@ -6,9 +7,9 @@ using Npgsql.Replication.PgOutput.Messages;
 
 namespace Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture;
 
-internal interface IPostgresCdcSubscription
+internal interface ICdcSubscription<T>
 {
-    IAsyncEnumerable<object> Subscribe(CancellationToken ct);
+    IAsyncEnumerable<T> Subscribe(CancellationToken ct);
 }
 
 public record PostgresCdcSSubscriptionOptions(
@@ -16,14 +17,14 @@ public record PostgresCdcSSubscriptionOptions(
     string ReplicationSlotName,
     string PublicationName,
     string TableName,
-    IJsonReplicationDataMapper DataMapper
+    IReplicationDataMapper<OutboxMessage> DataMapper
 )
 {
     internal string ReplicationSlotName { get; init; } = ReplicationSlotName.ToLower();
     internal string PublicationName { get; init; } = PublicationName.ToLower();
 }
 
-public class PostgresCdcSubscription : IPostgresCdcSubscription
+internal sealed class PostgresCdcSubscription : ICdcSubscription<OutboxMessage>
 {
     private readonly PostgresCdcSSubscriptionOptions _options;
 
@@ -32,7 +33,7 @@ public class PostgresCdcSubscription : IPostgresCdcSubscription
         _options = options ?? throw new ArgumentNullException(nameof(options));
     }
 
-    public async IAsyncEnumerable<object> Subscribe([EnumeratorCancellation] CancellationToken ct = default)
+    public async IAsyncEnumerable<OutboxMessage> Subscribe([EnumeratorCancellation] CancellationToken ct = default)
     {
         var (connectionString, slotName, publicationName, tableName, dataMapper) = _options;
         await using var connection = new LogicalReplicationConnection(connectionString);

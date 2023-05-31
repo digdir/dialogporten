@@ -22,7 +22,7 @@ internal sealed class IdempotentDomainEventHandler<TDomainEvent> : INotification
 
     public async Task Handle(TDomainEvent notification, CancellationToken cancellationToken)
     {
-        string consumer = _decorated.GetType().Name;
+        var consumer = _decorated.GetType().Name;
         var isHandledByConsumer = await _db.Set<OutboxMessageConsumer>()
             .AnyAsync(x => x.EventId == notification.EventId && x.ConsumerName == consumer, cancellationToken);
         if (isHandledByConsumer)

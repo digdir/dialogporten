@@ -9,5 +9,6 @@ internal sealed class OutboxMessageConfiguration : IEntityTypeConfiguration<Outb
     public void Configure(EntityTypeBuilder<OutboxMessage> builder)
     {
         builder.HasKey(x => x.EventId);
+        builder.Property(x => x.EventPayload).HasColumnType("jsonb");
     }
 }

@@ -1,7 +1,7 @@
 ﻿using Digdir.Domain.Dialogporten.Application;
 using Digdir.Domain.Dialogporten.Infrastructure;
-using Digdir.Domain.Dialogporten.Service;
-using RabbitMQ.Client;
+using MassTransit;
+using System.Reflection;
 
 // TODO: Add application insights and serilog logging with two stage initialization
 // TODO: Add AppConfiguration and keyvault
@@ -9,33 +9,38 @@ using RabbitMQ.Client;
 // TODO: Configure Postgres connection settings
 // TODO: Improve exceptions thrown in this assembly
 
+var thisAssembly = Assembly.GetExecutingAssembly();
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services
-    .AddHostedService<RabbitMqSubscriber>()
-    .AddSingleton<IConnection>(x => new ConnectionFactory
+    .AddMassTransit(x =>
     {
-        ClientProvidedName = "Digdir.Domain.Dialogporten.Service",
-        DispatchConsumersAsync = true,
-    }.CreateConnection())
-    .AddSingleton<IModel>(x =>
-    {
-        const uint Unlimited = 0;
-        const ushort PrefetchCount = 100;
-
-        var channel = x.GetRequiredService<IConnection>().CreateModel();
-        channel.BasicQos(
-            prefetchSize: Unlimited,
-            prefetchCount: PrefetchCount,
-            global: false);
-        return channel;
+        x.AddConsumers(thisAssembly);
+        x.UsingRabbitMq((context, cfg) =>
+        {
+            cfg.Host("localhost", "/", h => {
+                h.Username("guest");
+                h.Password("guest");
+            });
+            cfg.ReceiveEndpoint(thisAssembly.GetName().Name!, x => 
+            {
+                x.UseMessageRetry(r => r.Intervals(
+                    TimeSpan.FromSeconds(1),
+                    TimeSpan.FromSeconds(3),
+                    TimeSpan.FromSeconds(10)));
+                // TODO: Add delayed redelivery - but we need a rabbitmq plugin for this
+                //x.UseDelayedRedelivery(r => r.Intervals(
+                //    TimeSpan.FromMinutes(1),
+                //    TimeSpan.FromMinutes(3),
+                //    TimeSpan.FromMinutes(10)));
+                x.SetQuorumQueue();
+                x.ConfigureConsumers(context);
+            });
+        });
     })
-    .AddSingleton<RabbitMqSubscription>()
     .AddApplication(builder.Configuration.GetSection(ApplicationSettings.ConfigurationSectionName))
     .AddInfrastructure(builder.Configuration.GetSection(InfrastructureSettings.ConfigurationSectionName));
 
 var app = builder.Build();
 app.UseHttpsRedirection();
 app.Run();
-
-

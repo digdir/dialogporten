@@ -21,7 +21,7 @@ try
 {
     BuildAndRun(args);
 }
-catch (Exception ex)
+catch (Exception ex) when (ex is not OperationCanceledException)
 {
     Log.Fatal(ex, "Application terminated unexpectedly");
 }
@@ -48,6 +48,7 @@ static void BuildAndRun(string[] args)
 
     builder.Services
         .AddAzureAppConfiguration()
+        .AddApplicationInsightsTelemetry()
         .AddEndpointsApiExplorer()
         .AddFastEndpoints()
         .AddSwaggerDoc(
@@ -60,8 +61,7 @@ static void BuildAndRun(string[] args)
                 s.Version = "v1.0";
             })
         .AddApplication(builder.Configuration.GetSection(ApplicationSettings.ConfigurationSectionName))
-        .AddInfrastructure(builder.Configuration.GetSection(InfrastructureSettings.ConfigurationSectionName))
-        .AddApplicationInsightsTelemetry();
+        .AddInfrastructure(builder.Configuration.GetSection(InfrastructureSettings.ConfigurationSectionName));
 
     var app = builder.Build();
 
