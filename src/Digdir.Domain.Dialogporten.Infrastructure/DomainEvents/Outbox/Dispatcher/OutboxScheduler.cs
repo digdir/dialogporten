@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.DomainEvents.Outbox.Dispatcher;
 
-internal sealed class OutboxScheduler : BackgroundService
+public sealed class OutboxScheduler : BackgroundService
 {
     private readonly PeriodicTimer _timer = new(TimeSpan.FromSeconds(5));
     private readonly IServiceScopeFactory _scopeFactory;

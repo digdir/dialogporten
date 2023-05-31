@@ -1,5 +1,6 @@
 using Digdir.Domain.Dialogporten.Application;
 using Digdir.Domain.Dialogporten.Infrastructure;
+using Digdir.Domain.Dialogporten.Infrastructure.DomainEvents.Outbox.Dispatcher;
 using Digdir.Domain.Dialogporten.WebApi;
 using Digdir.Domain.Dialogporten.WebApi.Common;
 using FastEndpoints;
@@ -47,6 +48,7 @@ static void BuildAndRun(string[] args)
     builder.Configuration.AddAzureConfiguration(builder.Environment.EnvironmentName);
 
     builder.Services
+        .AddHostedService<OutboxScheduler>()
         .AddAzureAppConfiguration()
         .AddApplicationInsightsTelemetry()
         .AddEndpointsApiExplorer()
