@@ -538,6 +538,56 @@ Eventer har type som er prefikset/navnerommet `dialogporten.dialog.activity`. Su
 } 
 ```
 
+## Autorisasjon knyttet til produsering/konsumering av events
+
+Tilgang til events reguleres også av den samme autoriasjonspolicyen for tjenestressursen som dialogene benytter, gitt gjennom `resource`. Dialogporten har imidlertid en privilgert tilgang til eventkomponenten som gjør at den kan generere events for alle tjenesteressurser, som da innebærer at det ikke behøves å opprettes egne regler i policyen for Dialogporten.
+
+For alle andre konsumenter reguleres konsum (herunder opprettelse av abonnement) av actionen `subscribe`. Hvis tjenesteeier (eller andre parter) skal kunne produsere vilkårlige events, må det opprettes regler med action `publish`. [Les mer om dette i dokumentasjonen for event-komponenten](https://docs.altinn.studio/events/publish-events/get-started/resource-registry/).
+
+Et eksempel:
+
+```jsonc
+{
+    "Rules": [
+        // Gir ID-porten-autentiserte personer med DAGL hos party og Maskinporten-autentiserte 912345678 tilgang 
+        // til å konsumere events av type "dialogporten.dialog.activity.submission.v1" for ressursen
+        // "urn:altinn:resource:super-simple-service"
+        {
+            "Subjects": [
+                "urn:altinn:rolecode:DAGL",
+                "urn:altinn:organizationnumber:912345678",
+            ],
+            "Resources": [
+                [
+                    "urn:altinn:resource:super-simple-service",
+
+                    // Regler kan også begrenses på event-type
+                    "urn:altinn:eventtype:dialogporten.dialog.activity.submission.v1",
+                ]
+            ],
+            "Actions": [
+                "subscribe"
+            ]
+        },
+        // Gir Maskinporten-autentiserte 912345678 tilgang til å produsere hvilken som helst event-type for ressursen
+        // "urn:altinn:resource:super-simple-service"
+        {
+            "Subjects": [
+                "urn:altinn:organizationnumber:912345678",
+            ],
+            "Resources": [
+                [
+                    "urn:altinn:resource:super-simple-service",
+                ]
+            ],
+            "Actions": [
+                "publish"
+            ]
+        }
+}
+```
+
+
 # Sekvensbeskrivelser
 
 Under følger punktvis beskrivelser av fire ulike sekvenser. Det er to måter en dialog kan initieres på; enten av sluttbruker eller tjenestetilbyder. Hver av disse kan gjennomføres ved hjelp av GUI eller API.
