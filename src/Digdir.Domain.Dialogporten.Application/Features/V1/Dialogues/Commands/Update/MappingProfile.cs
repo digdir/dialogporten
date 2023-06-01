@@ -17,8 +17,6 @@ internal sealed class MappingProfile : Profile
             .IgnoreComplexDestinationProperties();
         CreateMap<UpdateDialogueDialogueTokenScopeDto, DialogueTokenScope>()
             .IgnoreComplexDestinationProperties();
-        CreateMap<UpdateDialogueDialogueActivityDto, DialogueActivity>()
-            .IgnoreComplexDestinationProperties();
         CreateMap<UpdateDialogueDialogueApiActionDto, DialogueApiAction>()
             .IgnoreComplexDestinationProperties();
         CreateMap<UpdateDialogueDialogueApiActionDto, DialogueApiAction>()
@@ -27,6 +25,10 @@ internal sealed class MappingProfile : Profile
             .IgnoreComplexDestinationProperties();
         CreateMap<UpdateDialogueDialogueAttachmentDto, DialogueAttachement>()
             .IgnoreComplexDestinationProperties();
+
+        // Since this is append only, we don't need to merge with existing
+        // history records and thus can map complex properties
+        CreateMap<UpdateDialogueDialogueActivityDto, DialogueActivity>();
 
         // To support json patch
         CreateMap<DialogueEntity, UpdateDialogueDto>();
