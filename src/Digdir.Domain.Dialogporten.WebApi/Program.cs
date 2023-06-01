@@ -7,6 +7,7 @@ using FastEndpoints;
 using FastEndpoints.Swagger;
 using Microsoft.ApplicationInsights.Extensibility;
 using Serilog;
+using System.Text;
 using System.Text.Json.Serialization;
 
 // Using two-stage initialization to catch startup errors.
@@ -46,9 +47,10 @@ static void BuildAndRun(string[] args)
             TelemetryConverter.Traces));
 
     builder.Configuration.AddAzureConfiguration(builder.Environment.EnvironmentName);
-
     builder.Services
+        // Temporary configuration for outbox through Web api
         .AddHostedService<OutboxScheduler>()
+
         .AddAzureAppConfiguration()
         .AddApplicationInsightsTelemetry()
         .AddEndpointsApiExplorer()

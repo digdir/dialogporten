@@ -1,4 +1,9 @@
-﻿using Digdir.Domain.Dialogporten.Application.Externals;
+﻿using Altinn.ApiClients.Maskinporten.Config;
+using Altinn.ApiClients.Maskinporten.Extensions;
+using Altinn.ApiClients.Maskinporten.Interfaces;
+using Altinn.ApiClients.Maskinporten.Services;
+using Digdir.Domain.Dialogporten.Application.Externals;
+using Digdir.Domain.Dialogporten.Application.Externals.CloudEvents;
 using Digdir.Domain.Dialogporten.Infrastructure.DomainEvents;
 using Digdir.Domain.Dialogporten.Infrastructure.DomainEvents.Outbox;
 using Digdir.Domain.Dialogporten.Infrastructure.DomainEvents.Outbox.Dispatcher;
@@ -44,8 +49,29 @@ public static class InfrastructureExtensions
             // Transient
             .AddTransient<OutboxDispatcher>()
             .AddTransient<ConvertDomainEventsToOutboxMessagesInterceptor>()
+            .AddTransient<ICloudEventBus, AltinnEventsClient>()
 
             // Decorate
-            .Decorate(typeof(INotificationHandler<>), typeof(IdempotentDomainEventHandler<>));
+            .Decorate(typeof(INotificationHandler<>), typeof(IdempotentDomainEventHandler<>))
+
+            // Maskinporten 
+            .AddHttpClient< ICloudEventBus, AltinnEventsClient>()
+                .Services
+            //.AddMaskinportenHttpClient<ICloudEventBus, AltinnEventsClient, SettingsJwkClientDefinition>(configurationSection)
+            //    .Services
+            ;
+    }
+
+    private static IHttpClientBuilder AddMaskinportenHttpClient<TClient, TImplementation, TClientDefinition>(
+        this IServiceCollection services, 
+        IConfiguration configuration, 
+        Action<TClientDefinition>? configureClientDefinition = null) 
+        where TClient : class
+        where TImplementation : class, TClient
+        where TClientDefinition : class, IClientDefinition
+    {
+        var settings = configuration.GetSection("MaskinportenSettings").Get<MaskinportenSettings>();
+        services.RegisterMaskinportenClientDefinition<TClientDefinition>(typeof(TClient)!.FullName, settings);
+        return services.AddHttpClient<TClient, TImplementation>().AddMaskinportenHttpMessageHandler<TClientDefinition, TClient>(configureClientDefinition);
     }
 }
