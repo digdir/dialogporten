@@ -66,6 +66,19 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "OutboxMessage",
+                columns: table => new
+                {
+                    EventId = table.Column<Guid>(type: "uuid", nullable: false),
+                    EventType = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    EventPayload = table.Column<string>(type: "jsonb", maxLength: 255, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OutboxMessage", x => x.EventId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Dialogue",
                 columns: table => new
                 {
@@ -145,6 +158,24 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         column: x => x.LocalizationSetId,
                         principalTable: "LocalizationSet",
                         principalColumn: "InternalId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "OutboxMessageConsumer",
+                columns: table => new
+                {
+                    EventId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ConsumerName = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OutboxMessageConsumer", x => new { x.EventId, x.ConsumerName });
+                    table.ForeignKey(
+                        name: "FK_OutboxMessageConsumer_OutboxMessage_EventId",
+                        column: x => x.EventId,
+                        principalTable: "OutboxMessage",
+                        principalColumn: "EventId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -502,6 +533,9 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                 name: "Localization");
 
             migrationBuilder.DropTable(
+                name: "OutboxMessageConsumer");
+
+            migrationBuilder.DropTable(
                 name: "DialogueActivityType");
 
             migrationBuilder.DropTable(
@@ -509,6 +543,9 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 
             migrationBuilder.DropTable(
                 name: "Dialogue");
+
+            migrationBuilder.DropTable(
+                name: "OutboxMessage");
 
             migrationBuilder.DropTable(
                 name: "DialogueStatus");
