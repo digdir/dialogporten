@@ -10,6 +10,7 @@ using Digdir.Domain.Dialogporten.Domain.Dialogues.Entities.Attachments;
 using Digdir.Domain.Dialogporten.Domain.Dialogues.Entities.TokenScopes;
 using Digdir.Domain.Dialogporten.Domain.Dialogues.Events;
 using Digdir.Domain.Dialogporten.Domain.Localizations;
+using Digdir.Library.Entity.Abstractions.Features.Identifiable;
 using FluentValidation;
 using Json.Patch;
 using MediatR;
@@ -72,7 +73,7 @@ internal sealed class UpdateDialogueCommandHandler : IRequestHandler<UpdateDialo
         }
 
         var dtoOrValidationError = request.Dto.Match(
-            dto => dto, 
+            dto => dto,
             jsonPatch => CreateDto(dialogue, jsonPatch));
         if (dtoOrValidationError.TryPickT1(out var validationError, out var dto))
         {
@@ -89,7 +90,7 @@ internal sealed class UpdateDialogueCommandHandler : IRequestHandler<UpdateDialo
         _mapper.Map(dto, dialogue);
 
         // Append history
-        dialogue.History.AddRange(dto.History.Select(_mapper.Map<DialogueActivity>));
+        AppendHistory(dialogue, dto);
 
         await _localizationService.Merge(dialogue.Body, dto.Body, cancellationToken);
         await _localizationService.Merge(dialogue.Title, dto.Title, cancellationToken);
@@ -131,10 +132,19 @@ internal sealed class UpdateDialogueCommandHandler : IRequestHandler<UpdateDialo
                 delete: DeleteTokenScope,
                 cancellationToken: cancellationToken);
 
-        // TODO: Publish event
         _eventPublisher.Publish(new DialogueUpdatedDomainEvent(dialogue.Id));
         await _unitOfWork.SaveChangesAsync(cancellationToken);
         return new Success();
+    }
+
+    private void AppendHistory(DialogueEntity dialogue, UpdateDialogueDto dto)
+    {
+        var newDialogueActivities = dto.History
+            .Select(_mapper.Map<DialogueActivity>)
+            .ToList();
+        dialogue.History.AddRange(newDialogueActivities);
+        _eventPublisher.Publish(newDialogueActivities.Select(x => new DialogueActivityCreatedDomainEvent(dialogue.Id, x.CreateId())));
+
     }
 
     private OneOf<UpdateDialogueDto, ValidationError> CreateDto(DialogueEntity dialogue, JsonPatch jsonPatch)

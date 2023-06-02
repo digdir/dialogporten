@@ -17,15 +17,9 @@ internal class AltinnEventsClient : ICloudEventBus
     {
         var msg = new HttpRequestMessage(HttpMethod.Post, "https://platform.tt02.altinn.no/events/api/v1/events")
         {
-            //Headers =
-            //{
-            //    { "Accept", "text/plain" },
-            //    { "Content-Type", "application/json" }
-            //},
             Content = JsonContent.Create(cloudEvent)
         };
-        msg.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-        msg.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+        msg.Content.Headers.ContentType = new MediaTypeHeaderValue("application/cloudevents+json");
 
         var response = await _client.SendAsync(msg, cancellationToken);
         var lala = await response.Content.ReadAsStringAsync();

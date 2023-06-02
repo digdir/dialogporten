@@ -55,10 +55,10 @@ public static class InfrastructureExtensions
             .Decorate(typeof(INotificationHandler<>), typeof(IdempotentDomainEventHandler<>))
 
             // Maskinporten 
-            .AddHttpClient< ICloudEventBus, AltinnEventsClient>()
-                .Services
-            //.AddMaskinportenHttpClient<ICloudEventBus, AltinnEventsClient, SettingsJwkClientDefinition>(configurationSection)
+            //.AddHttpClient< ICloudEventBus, AltinnEventsClient>()
             //    .Services
+            .AddMaskinportenHttpClient<ICloudEventBus, AltinnEventsClient, SettingsJwkClientDefinition>(configurationSection, x => x.ClientSettings.ExhangeToAltinnToken = true)
+                .Services
             ;
     }
 

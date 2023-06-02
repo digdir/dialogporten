@@ -10,13 +10,6 @@ services:
     - POSTGRES_DB=Dialogporten
     ports:
     - "5432:5432"
-  azurite:
-    image: mcr.microsoft.com/azure-storage/azurite
-    restart: always
-    ports:
-    - "10000:10000"
-    - "10001:10001"
-    - "10002:10002"
   rabbitmq:
     image: rabbitmq:3-management
     restart: always

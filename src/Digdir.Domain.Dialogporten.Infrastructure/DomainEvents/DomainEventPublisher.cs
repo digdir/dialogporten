@@ -16,4 +16,13 @@ internal sealed class DomainEventPublisher : IDomainEventPublisher
         ArgumentNullException.ThrowIfNull(domainEvent);
         _domainEvents.Add(domainEvent);
     }
+
+    public void Publish(IEnumerable<IDomainEvent> domainEvents)
+    {
+        ArgumentNullException.ThrowIfNull(domainEvents);
+        foreach (var domainEvent in domainEvents)
+        {
+            Publish(domainEvent);
+        }
+    }
 }

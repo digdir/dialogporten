@@ -57,10 +57,9 @@ internal sealed class OutboxDispatcher
 
             if (result.Outcome == OutcomeType.Failure)
             {
-                _logger.LogError(result.FinalException, "Failed to process OutboxMessage {EventType} {EventId}. Retrying next OutboxMessage processing iteration.",
+                _logger.LogError(result.FinalException, "Failed to process OutboxMessage {EventType} {EventId}. Will not attempt again.",
                     outboxMessage.EventType,
                     outboxMessage.EventId);
-                continue;
             }
 
             _db.OutboxMessages.Remove(outboxMessage);
