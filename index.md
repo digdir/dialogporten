@@ -169,7 +169,7 @@ Hver action som defineres på en dialog mappes til en tilsvarende "action-id" i 
 ```jsonc
 {
     // ...
-    "serviceResourceIdentifier": "min_fine_tjeneste", 
+    "serviceResource": "min_fine_tjeneste", 
     // ...
     "actions": {
         "gui": [ 
@@ -248,7 +248,7 @@ En action som refererer en subsressurs kan se slik ut:
 ```jsonc
 {
     // ...
-    "serviceResourceIdentifier": "min_fine_tjeneste", 
+    "serviceResource": "min_fine_tjeneste", 
     // ...
     "actions": {
         "gui": [ 
@@ -469,7 +469,7 @@ Opprettelse/endring/sletting av dialog-entiteten genererer meldinger med følgen
     // Timestamp for når hendelsen inntraff i Dialogporten
     "time": "2023-02-20T08:00:06.4014168Z",
     
-    // urn:altinn:resource:{serviceResourceIdentifier}
+    // urn:altinn:resource:{serviceResource}
     "resource": "urn:altinn:resource:super-simple-service", 
     
     // Dialog-ID
@@ -514,7 +514,7 @@ Eventer har type som er prefikset/navnerommet `dialogporten.dialog.activity`. Su
     // Timestamp for når hendelsen inntraff i Dialogporten
     "time": "2023-02-20T08:00:06.4014168Z",
     
-    // urn:altinn:resource:{serviceResourceIdentifier}
+    // urn:altinn:resource:{serviceResource}
     "resource": "urn:altinn:resource:super-simple-service", 
     
     // Dialog-ID
@@ -588,6 +588,7 @@ Et eksempel:
 ```
 
 Les mer om [Event-komponenten på Altinn Docs](https://docs.altinn.studio/events/).
+
 
 
 # Sekvensbeskrivelser

@@ -7,7 +7,7 @@
 
 // POST /resourceregistry/api/v1/resource
 {
-    "identifier": "example_dialog_service",
+    "identifier": "super-simple-service",
     "title": [
         {
             "title": "Tittel på tjenesten",
@@ -27,11 +27,11 @@
     "contactpoint": [
         {
             "phone": "1231324",
-            "email": "example_dialog_service@example.com"
+            "email": "super-simple-service@example.com"
         }
     ],
     "isPartOf": "someportal",
-    "homepage": "https://example.com/about_example_dialog_service",
+    "homepage": "https://example.com/about_super-simple-service",
     "status": "Completed",
     "thematicArea": [],
     "type": [],
@@ -44,10 +44,10 @@
             "keyword": "access management"
         }
     ],
-    "instantiationUrl": "https://example.com/api/v1/example_dialog_service/instantiate"
+    "instantiationUrl": "https://example.com/api/v1/super-simple-service/instantiate"
 }
 
 // Velykket innsending returnerer en 201 Created med Location-lenke til den aktuelle tjenesteressursen. Policy settes så på 
 // tjenesteressursen med et kall som inneholder en XACML-policy til: 
-// POST /resourceregistry/api/v1/resource/example_dialog_service/policy
+// POST /resourceregistry/api/v1/resource/super-simple-service/policy
 ```

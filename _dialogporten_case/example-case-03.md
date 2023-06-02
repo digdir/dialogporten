@@ -29,7 +29,7 @@ Partene er Rørlegger AS, Regnskapsfører AS og Etaten, som tilbyr denne innsend
 ```jsonc
 // POST /dialogporten/api/v1/instantiate
 {
-    "serviceResourceIdentifier": "omsetningsrapportering",
+    "serviceResource": "omsetningsrapportering",
     "party": "org/912345678" // Rørlegger AS
 }
 ```
@@ -40,7 +40,7 @@ Partene er Rørlegger AS, Regnskapsfører AS og Etaten, som tilbyr denne innsend
 // POST /dialogporten/api/v1/dialogs
 {
     "id": "b13bb496-e6ab-4444-8442-e15be9f96e9c",
-    "serviceResourceIdentifier": "omsetningsrapportering",     
+    "serviceResource": "omsetningsrapportering",     
     "party": "org/912345678",
     "status": "in-progress", 
     "content": {

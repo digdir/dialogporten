@@ -44,7 +44,7 @@ Dialogen opprettes i DP, og settes i en tilstand som indikerer at den er under b
 {
     "id": "f4e6df3c-7434-44c3-875e-8dca1cdf0b20",
     "party": "org/91234578",
-    "serviceResourceIdentifier": "super-simple-service",
+    "serviceResource": "super-simple-service",
     "status": "waiting",
     "actions": [ "open", "cancel-application", "read-more-about-process" ],
     "activityHistory": [
@@ -70,7 +70,7 @@ Opprettelsen av dialogen medfører at det genereres en eller flere events. Denne
     "id": "91f2388f-bd8c-4647-8684-fd9f68af5b15", // unik event-id
     "type": "dialogporten.dialog.created.v1",
     "time": "2023-02-20T08:00:06.4014168Z",
-    "resource": "urn:altinn:resource:super-simple-service", // serviceResourceIdentifier
+    "resource": "urn:altinn:resource:super-simple-service", // serviceResource
     "resourceinstance": "f4e6df3c-7434-44c3-875e-8dca1cdf0b20", // dialog-id
     "subject": "org/91234578",
     "source": "https://dialogporten.no/api/v1/dialogs/f4e6df3c-7434-44c3-875e-8dca1cdf0b20"

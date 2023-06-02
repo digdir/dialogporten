@@ -9,7 +9,7 @@
     {
         "id": "e0300961-85fb-4ef2-abff-681d77f9960e",
         "org": "digdir",
-        "serviceResourceIdentifier": "example_dialog_service",
+        "serviceResource": "super-simple-service",
         "externalReference": "someReference",
         "party": "12018212345",        
         "dates": {

@@ -14,7 +14,7 @@
     // Identifikator som refererer en tjenesteressurs ("Altinn Service Resource") i Altinn Autorisasjon
     // Se https://docs.altinn.studio/authorization/modules/resourceregistry/
     // Dette bestemmer også hvilken autorisasjonspolicy som legges til grunn.
-    "serviceResourceIdentifier": "example_dialog_service", 
+    "serviceResource": "urn:altinn:resource:super-simple-service", 
 
     // Organisasjonsnummer, fødselsnummer eller brukernavn (aka "avgiver" eller "aktør") - altså hvem sin dialogboks 
     // skal dialogen tilhøre. Brukernavn benyttes for selv-registrerte bruker, og er typisk en e-postadresse.
@@ -78,6 +78,10 @@
         {
             // Unik identifikator for dialogElement. Kan oppgis av tjenestetilbyder for å sikre idempotens.
             "dialogElementId": "5b5446a7-9b65-4faf-8888-5a5802ce7de7",
+
+            // Hvis dialogelementet har en relasjon til et annet dialogelement, f.eks. en tidligere innsending, kan dette 
+            // oppgis her. 
+            "relatedDialogElementId": "dbce996a-cc67-4cb2-ad2f-df61cee6683a",
             
             // Valgfri: Brukes for å vise sluttbrukeren hva dette er, typisk bare brukt i GUI
             "displayName": [ { "code": "nb_NO", "value": "Innsendt skjema" } ],
@@ -262,11 +266,6 @@
             // oppgitt dialogElementId også oppgis i "dialogElements" i samme request. Denne identifikatoren blir lagt ved 
             // events som genereres.
             "dialogElementId": "b323cef4-adbd-4d2c-b33d-5c0f3b11171b",
-
-            // Hvis aktiviteten har en relasjon til et annet dialogelement, f.eks. en tidligere innsending, kan dette 
-            // oppgis her. Det valideres at oppgitt dialogElementId finnes i "dialogElements"; enten som oppgitt i samme 
-            // request eller at den finnes fra før. Denne identifikatoren blir lagt ved events som genereres.
-            "relatedDialogElementId": "dbce996a-cc67-4cb2-ad2f-df61cee6683a",
 
             // Menneskelesbar beskrivelse av aktiviteten
             "activityDescription": [ { "code": "nb_NO", "value": "Innsending er mottatt og sendt til behandling" } ]

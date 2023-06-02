@@ -9,7 +9,7 @@
 {
     "id": "e0300961-85fb-4ef2-abff-681d77f9960e",
     "org": "digdir", // Identifikator for tjenestetilbyder
-    "serviceResourceIdentifier": "example_dialog_service", 
+    "serviceResource": "urn:altinn:resource:super-simple-service", 
     "dialogGroup": {
         "id": "some-arbitrary-id",
         "order": 1,
@@ -318,7 +318,7 @@
         "notificationlog": { "href": "/dialogporten/api/v1/dialogs/e0300961-85fb-4ef2-abff-681d77f9960e/notificationlog" }, 
 
         // Dyplenke til portalvisning for dialogen i Dialogporten
-        "serviceresource": { "href": "/resourceregistry/api/v1/resource/example_dialog_service/" }, 
+        "serviceresource": { "href": "/resourceregistry/api/v1/resource/super-simple-service/" }, 
 
         // Dyplenke til portalvisning for dialogen i Dialogporten
         "selfgui": { "href": "https://www.dialogporten.no/?expandDialog=e0300961-85fb-4ef2-abff-681d77f9960e" }, 

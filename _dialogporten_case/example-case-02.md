@@ -31,7 +31,7 @@ Partene er Nortura og Skatteetaten.
 ```jsonc
 // POST /dialogporten/api/v1/instantiate
 {
-    "serviceResourceIdentifier": "rf1305_purchases_from_primary_industry_eggs",
+    "serviceResource": "rf1305_purchases_from_primary_industry_eggs",
     "party": "org/938752648",
     "inputParameters": { 
         "antallOppgaver": 50
@@ -45,7 +45,7 @@ Partene er Nortura og Skatteetaten.
 // POST /dialogporten/api/v1/dialogs
 {
     "id": "e0300961-85fb-4ef2-abff-681d77f9960e",
-    "serviceResourceIdentifier": "rf1305_purchases_from_primary_industry_eggs",     
+    "serviceResource": "rf1305_purchases_from_primary_industry_eggs",     
     "party": "org/938752648",
     "status": "in-progress", 
     "content": {
