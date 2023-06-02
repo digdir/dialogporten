@@ -17,7 +17,7 @@ AddMemberPath $paramsJson "parameters.keyVault.value.source.keys" @( `
 		--vault-name $paramsJson.parameters.keyVault.value.source.name `
 		--subscription $paramsJson.parameters.keyVault.value.source.subscriptionId `
 		--query "[].name" `
-		--output tsv
+		--output tsv `
 )
 
 # Add auto generated secrets to parameters
@@ -47,7 +47,7 @@ $deploymentOutputs = @( `
 		--parameters $formatedParamsJson `
 		--query properties.outputs `
 		#--confirm-with-what-if
-	| ConvertFrom-Json
+	| ConvertFrom-Json `
 )
 
 # Write outputs to GITHUB_OUTPUT so that they can be used in other steps

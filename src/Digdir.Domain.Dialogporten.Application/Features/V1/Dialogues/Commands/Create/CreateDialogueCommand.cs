@@ -35,9 +35,9 @@ internal sealed class CreateDialogueCommandHandler : IRequestHandler<CreateDialo
         }
 
         var dialogue = _mapper.Map<DialogueEntity>(request);
-        dialogue.CreateId();
         await _db.Dialogues.AddAsync(dialogue, cancellationToken);
-        _eventPublisher.Publish(new DialogueCreatedDomainEvent(dialogue.Id));
+        _eventPublisher.Publish(new DialogueCreatedDomainEvent(dialogue.CreateId()));
+        _eventPublisher.Publish(dialogue.History.Select(x => new DialogueActivityCreatedDomainEvent(dialogue.Id, x.CreateId())));
         await _unitOfWork.SaveChangesAsync(cancellationToken);
         return dialogue.Id;
     }

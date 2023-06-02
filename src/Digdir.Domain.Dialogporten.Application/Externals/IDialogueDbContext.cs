@@ -4,6 +4,7 @@ using Digdir.Domain.Dialogporten.Domain.Dialogues.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogues.Entities.Attachments;
 using Digdir.Domain.Dialogporten.Domain.Dialogues.Entities.TokenScopes;
 using Digdir.Domain.Dialogporten.Domain.Localizations;
+using Digdir.Domain.Dialogporten.Domain.Outboxes;
 using Microsoft.EntityFrameworkCore;
 
 namespace Digdir.Domain.Dialogporten.Application.Externals;
@@ -21,4 +22,7 @@ public interface IDialogueDbContext
     DbSet<DialogueAttachement> DialogueAttachements { get; }
     DbSet<DialogueGuiActionType> DialogueGuiActionTypes { get; }
     DbSet<DialogueActivityType> DialogueActivityTypes { get; }
+
+    DbSet<OutboxMessage> OutboxMessages { get; }
+    DbSet<OutboxMessageConsumer> OutboxMessageConsumers { get; }
 }

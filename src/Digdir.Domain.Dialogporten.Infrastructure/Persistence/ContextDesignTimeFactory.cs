@@ -7,7 +7,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence;
 
 internal sealed class ContextDesignTimeFactory : IDesignTimeDbContextFactory<DialogueDbContext>
 {
-    private const string ConnectionStringConfigName = "InfrastructureSettings:DialogueDbConnectionString";
+    private const string ConnectionStringConfigName = "Infrastructure:DialogueDbConnectionString";
 
     public DialogueDbContext CreateDbContext(string[] args)
     {

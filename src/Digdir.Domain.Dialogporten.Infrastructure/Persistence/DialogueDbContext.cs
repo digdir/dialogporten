@@ -5,6 +5,7 @@ using Digdir.Domain.Dialogporten.Domain.Dialogues.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogues.Entities.Attachments;
 using Digdir.Domain.Dialogporten.Domain.Dialogues.Entities.TokenScopes;
 using Digdir.Domain.Dialogporten.Domain.Localizations;
+using Digdir.Domain.Dialogporten.Domain.Outboxes;
 using Digdir.Library.Entity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,6 +26,9 @@ internal sealed class DialogueDbContext : DbContext, IDialogueDbContext
     public DbSet<DialogueAttachement> DialogueAttachements => Set<DialogueAttachement>();
     public DbSet<DialogueGuiActionType> DialogueGuiActionTypes => Set<DialogueGuiActionType>();
     public DbSet<DialogueActivityType> DialogueActivityTypes => Set<DialogueActivityType>();
+
+    public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
+    public DbSet<OutboxMessageConsumer> OutboxMessageConsumers => Set<OutboxMessageConsumer>();
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {

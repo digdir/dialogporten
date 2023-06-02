@@ -28,7 +28,8 @@ public class DialogueApplication : IAsyncLifetime
         _rootProvider = new ServiceCollection()
             .AddApplication(Substitute.For<IConfiguration>())
             .AddDbContext<DialogueDbContext>(x => x.UseNpgsql(_dbContainer.GetConnectionString()))
-            .AddScoped<IDomainEventPublisher, DomainEventPublisher>()
+            .AddScoped<DomainEventPublisher>()
+            .AddScoped<IDomainEventPublisher>(x => x.GetRequiredService<DomainEventPublisher>())
             .AddScoped<IDialogueDbContext>(x => x.GetRequiredService<DialogueDbContext>())
             .AddScoped<IUnitOfWork, UnitOfWork>()
             .BuildServiceProvider();

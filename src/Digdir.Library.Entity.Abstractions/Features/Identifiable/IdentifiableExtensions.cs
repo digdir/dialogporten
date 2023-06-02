@@ -9,9 +9,9 @@ public static class IdentifiableExtensions
     /// Populates <see cref="IIdentifiableEntity.Id"/> with a new guid if the id is <see cref="Guid.Empty"/>.
     /// </summary>
     /// <param name="identifiable">The <see cref="IIdentifiableEntity"/> to update.</param>
-    public static void CreateId(this IIdentifiableEntity identifiable)
+    public static Guid CreateId(this IIdentifiableEntity identifiable)
     {
-        identifiable.Id = identifiable.Id == Guid.Empty
+        return identifiable.Id = identifiable.Id == Guid.Empty
             ? Guid.NewGuid()
             : identifiable.Id;
     }

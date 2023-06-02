@@ -1,8 +1,7 @@
 ﻿using Digdir.Domain.Dialogporten.Domain.Common;
-using Digdir.Domain.Dialogporten.Infrastructure.DomainEvents.Outbox.Entities;
+using Digdir.Domain.Dialogporten.Domain.Outboxes;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.DomainEvents.Outbox.Dispatcher;
 
@@ -22,20 +21,22 @@ internal sealed class IdempotentDomainEventHandler<TDomainEvent> : INotification
 
     public async Task Handle(TDomainEvent notification, CancellationToken cancellationToken)
     {
-        string consumer = _decorated.GetType().Name;
-        var isHandledByConsumer = await _db.Set<OutboxMessageConsumer>()
-            .AnyAsync(x => x.EventId == notification.EventId && x.Name == consumer, cancellationToken);
-        if (isHandledByConsumer)
+        var consumer = _decorated.GetType().Name;
+        var outboxMessageConsumer = await _db
+            .OutboxMessageConsumers
+            .FindAsync(new object[] { notification.EventId, consumer }, cancellationToken);
+        if (outboxMessageConsumer is not null)
         {
+            // I've handled this event before, so I'm not going to do it again.
             return;
         }
 
         await _decorated.Handle(notification, cancellationToken);
 
-        _db.Set<OutboxMessageConsumer>().Add(new OutboxMessageConsumer
+        _db.OutboxMessageConsumers.Add(new OutboxMessageConsumer
         {
             EventId = notification.EventId,
-            Name = consumer
+            ConsumerName = consumer
         });
         await _db.SaveChangesAsync(cancellationToken);
     }
