@@ -9,7 +9,7 @@ public class CloudEvent
     public string Resource { get; set; }
     public string ResourceInstance { get; set; }
     public string Subject { get; set; }
+    public string AlternativeSubject { get; set; }
     public string Source { get; set; }
-
-    public IDictionary<string, object> Data { get; set; } = new Dictionary<string, object>();
+    public IDictionary<string, object> Data { get; set; } = null;
 }

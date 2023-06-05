@@ -45,9 +45,9 @@ internal sealed class DomainEventToAltinnForwarder :
             Id = notification.EventId,
             Type = DialogueCreated,
             Time = notification.OccuredAtUtc,
-            Resource = SuperSimpleResource, //dialogue.ServiceResourceIdentifier, 
+            Resource = dialogue.ServiceResourceIdentifier, 
             ResourceInstance = dialogue.Id.ToString(), 
-            Subject = dialogue.Party, 
+            AlternativeSubject = dialogue.Party, 
             Source = $"https://dialogporten.no/api/v1/dialogs/{notification.DialogueId}"
         };
         await _cloudEventBus.Publish(cloudEvent, cancellationToken);
@@ -72,9 +72,9 @@ internal sealed class DomainEventToAltinnForwarder :
             Id = notification.EventId,
             Type = DialogueUpdated,
             Time = notification.OccuredAtUtc,
-            Resource = SuperSimpleResource, //dialogue.ServiceResourceIdentifier,
+            Resource = dialogue.ServiceResourceIdentifier,
             ResourceInstance = dialogue.Id.ToString(),
-            Subject = dialogue.Party,
+            AlternativeSubject = dialogue.Party,
             Source = $"https://dialogporten.no/api/v1/dialogs/{notification.DialogueId}"
         };
         await _cloudEventBus.Publish(cloudEvent, cancellationToken);
@@ -99,9 +99,9 @@ internal sealed class DomainEventToAltinnForwarder :
             Id = notification.EventId,
             Type = DialogueDeleted,
             Time = notification.OccuredAtUtc,
-            Resource = SuperSimpleResource, //dialogue.ServiceResourceIdentifier,
+            Resource = dialogue.ServiceResourceIdentifier,
             ResourceInstance = dialogue.Id.ToString(),
-            Subject = dialogue.Party,
+            AlternativeSubject = dialogue.Party,
             Source = $"https://dialogporten.no/api/v1/dialogs/{notification.DialogueId}"
         };
         await _cloudEventBus.Publish(cloudEvent, cancellationToken);
@@ -139,11 +139,11 @@ internal sealed class DomainEventToAltinnForwarder :
             Id = notification.EventId,
             Type = cloudEventType,
             Time = notification.OccuredAtUtc,
-            Resource = SuperSimpleResource, //dialogueActivity.Dialogue.ServiceResourceIdentifier,
+            Resource = dialogueActivity.Dialogue.ServiceResourceIdentifier,
             ResourceInstance = dialogueActivity.Dialogue.Id.ToString(),
-            Subject = dialogueActivity.Dialogue.Party,
+            AlternativeSubject = dialogueActivity.Dialogue.Party,
             Source = $"https://dialogporten.no/api/v1/dialogs/{dialogueActivity.Dialogue.Id}/activityhistory/{dialogueActivity.Id}",
-            Data =
+            Data = new Dictionary<string, object>
             {
                 // TODO: Add stuff
                 ["activityId"] = dialogueActivity.Id,
