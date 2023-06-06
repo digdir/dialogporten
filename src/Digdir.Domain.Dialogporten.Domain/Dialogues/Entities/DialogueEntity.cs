@@ -12,9 +12,7 @@ public class DialogueEntity : IEntity
     public long InternalId { get; set; }
     public Guid Id { get; set; }
     public DateTimeOffset CreatedAtUtc { get; set; }
-    public Guid CreatedByUserId { get; set; }
     public DateTimeOffset UpdatedAtUtc { get; set; }
-    public Guid UpdatedByUserId { get; set; }
 
     // TODO: Hent dette fra token?
     public string Org { get; set; } = "DummyOrg";

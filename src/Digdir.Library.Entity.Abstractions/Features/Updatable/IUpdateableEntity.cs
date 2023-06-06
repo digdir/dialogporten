@@ -9,9 +9,4 @@ public interface IUpdateableEntity
     /// Time at which the entity was last updated in UTC.
     /// </summary>
     DateTimeOffset UpdatedAtUtc { get; set; }
-
-    /// <summary>
-    /// Id of the user that last updated the entity.
-    /// </summary>
-    Guid UpdatedByUserId { get; set; }
 }

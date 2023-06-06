@@ -12,7 +12,7 @@ internal static class CreatableExtensions
             builder.Property(nameof(ICreatableEntity.CreatedAtUtc)).HasDefaultValueSql("current_timestamp at time zone 'utc'"));
     }
 
-    public static ChangeTracker HandleCreatableEntities(this ChangeTracker changeTracker, Guid userId, DateTimeOffset utcNow)
+    public static ChangeTracker HandleCreatableEntities(this ChangeTracker changeTracker, DateTimeOffset utcNow)
     {
         var creatableEntities = changeTracker
             .Entries<ICreatableEntity>()
@@ -20,7 +20,7 @@ internal static class CreatableExtensions
 
         foreach (var entity in creatableEntities)
         {
-            entity.Entity.Create(userId, utcNow);
+            entity.Entity.Create(utcNow);
         }
 
         return changeTracker;

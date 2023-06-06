@@ -5,9 +5,7 @@ namespace Digdir.Domain.Dialogporten.Domain.Localizations;
 public class Localization : IJoinEntity
 {
     public DateTimeOffset CreatedAtUtc { get; set; }
-    public Guid CreatedByUserId { get; set; }
     public DateTimeOffset UpdatedAtUtc { get; set; }
-    public Guid UpdatedByUserId { get; set; }
 
     public string Value { get; set; } = null!;
     public string CultureCode { get; set; } = null!;

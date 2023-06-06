@@ -35,18 +35,17 @@ public static class EntityLibraryEfCoreExtensions
     /// Should be called right before saving the entities.
     /// </remarks>
     /// <param name="changeTracker">The change tracker.</param>
-    /// <param name="userId">The id of the user that made the current changes.</param>
     /// <param name="utcNow">The time in UTC in which the changes tok place.</param>
     /// <returns>The same <see cref="ChangeTracker"/> instance so that multiple calls can be chained.</returns>
-    public static ChangeTracker HandleAuditableEntities(this ChangeTracker changeTracker, Guid userId, DateTimeOffset utcNow)
+    public static ChangeTracker HandleAuditableEntities(this ChangeTracker changeTracker,DateTimeOffset utcNow)
     {
         return changeTracker
             .HandleLookupEntities()
             .HandleIdentifiableEntities()
             .HandleImmutableEntities()
-            .HandleCreatableEntities(userId, utcNow)
-            .HandleUpdatableEntities(userId, utcNow)
-            .HandleSoftDeletableEntities(userId, utcNow);
+            .HandleCreatableEntities(utcNow)
+            .HandleUpdatableEntities(utcNow)
+            .HandleSoftDeletableEntities(utcNow);
     }
 
     /// <summary>

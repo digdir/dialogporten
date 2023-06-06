@@ -18,12 +18,4 @@ public interface ISoftDeletableEntity
     /// Value will be null if the entity never has been soft deleted, or it is restored.
     /// </remarks>
     DateTimeOffset? DeletedAtUtc { get; set; }
-
-    /// <summary>
-    /// Id of the user that deleted the entity.
-    /// </summary>
-    /// /// <remarks>
-    /// Value will be null if the entity never has been soft deleted, or it is restored.
-    /// </remarks>
-    Guid? DeletedByUserId { get; set; }
 }

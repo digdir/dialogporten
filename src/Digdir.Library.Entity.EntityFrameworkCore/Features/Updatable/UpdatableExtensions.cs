@@ -12,15 +12,15 @@ internal static class UpdatableExtensions
             builder.Property(nameof(IUpdateableEntity.UpdatedAtUtc)).HasDefaultValueSql("current_timestamp at time zone 'utc'"));
     }
 
-    public static ChangeTracker HandleUpdatableEntities(this ChangeTracker changeTracker, Guid userId, DateTimeOffset utcNow)
+    public static ChangeTracker HandleUpdatableEntities(this ChangeTracker changeTracker, DateTimeOffset utcNow)
     {
         var updatableEntities = changeTracker
             .Entries<IUpdateableEntity>()
-            .Where(x => x.State == EntityState.Added || x.State == EntityState.Modified);
+            .Where(x => x.State is EntityState.Added or EntityState.Modified);
 
         foreach (var entity in updatableEntities)
         {
-            entity.Entity.Update(userId, utcNow);
+            entity.Entity.Update(utcNow);
         }
 
         return changeTracker;

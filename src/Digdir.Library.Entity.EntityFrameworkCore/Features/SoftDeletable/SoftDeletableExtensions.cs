@@ -25,7 +25,7 @@ internal static class SoftDeletableExtensions
         return modelBuilder;
     }
 
-    public static ChangeTracker HandleSoftDeletableEntities(this ChangeTracker changeTracker, Guid userId, DateTimeOffset utcNow)
+    public static ChangeTracker HandleSoftDeletableEntities(this ChangeTracker changeTracker, DateTimeOffset utcNow)
     {
         var softDeletableEneities = changeTracker
             .Entries<ISoftDeletableEntity>()
@@ -33,7 +33,7 @@ internal static class SoftDeletableExtensions
 
         foreach (var entity in softDeletableEneities)
         {
-            entity.Entity.Delete(userId, utcNow);
+            entity.Entity.Delete(utcNow);
             // Change to modified so EF will update the soft deleted 
             // entity, instead of hard deleting it.
             entity.State = EntityState.Modified;

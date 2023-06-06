@@ -9,9 +9,4 @@ public interface ICreatableEntity
     /// Time at which the entity was first created in UTC.
     /// </summary>
     DateTimeOffset CreatedAtUtc { get; set; }
-
-    /// <summary>
-    /// Id of the user that created the entity. 
-    /// </summary>
-    Guid CreatedByUserId { get; set; }
 }

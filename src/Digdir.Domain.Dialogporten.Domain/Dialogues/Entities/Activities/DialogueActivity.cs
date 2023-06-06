@@ -8,10 +8,7 @@ public class DialogueActivity : IImmutableEntity
     public long InternalId { get; set; }
     public Guid Id { get; set; }
     public DateTimeOffset CreatedAtUtc { get; set; }
-    public Guid CreatedByUserId { get; set; }
 
-
-    // TODO: ikke det samme som created by?
     /// <summary>
     /// Indikerer hvem som står bak denne aktiviteten. Fravær av dette feltet indikerer at det er tjenesteilbyder
     /// som har utført aktiviteten.

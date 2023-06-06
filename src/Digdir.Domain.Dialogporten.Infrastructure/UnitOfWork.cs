@@ -7,7 +7,6 @@ namespace Digdir.Domain.Dialogporten.Infrastructure;
 
 internal sealed class UnitOfWork : IUnitOfWork
 {
-    private static readonly Guid MockUserId = Guid.Parse("9b0f57e3-4bc8-449f-8bc1-f29b3f992333");
     private readonly DialogueDbContext _dialogueDbContext;
     private readonly DomainEventPublisher _domainEventPublisher;
 
@@ -23,7 +22,7 @@ internal sealed class UnitOfWork : IUnitOfWork
         // TODO: Handle domain events
         // TODO: Get the correct user id.
         var now = DateTimeOffset.UtcNow;
-        _dialogueDbContext.ChangeTracker.HandleAuditableEntities(MockUserId, now);
+        _dialogueDbContext.ChangeTracker.HandleAuditableEntities(now);
         foreach (var domainEvent in _domainEventPublisher.GetDomainEvents())
         {
             domainEvent.OccuredAtUtc = now;
