@@ -73,6 +73,7 @@
         },
         {
             "dialogElementId": "22366651-c1b6-4812-a97d-5ed43fc4fe57",
+            "relatedDialogElementId": "cd6bf231-2347-4131-8ccc-513a6345ef0b",
             "authorizationAttribute": "urn:altinn:subresource:someothersubresource",
             "uris": [
                 {
@@ -239,8 +240,6 @@
             "activityType": "feedback",
             // Feedback-typer har vanligvis en referanse til en submission-aktivitet som dette er feedback for
             "relatedActivityId": "fc6406df-6163-442a-92cd-e487423f2fd5",
-            // Kan også oppgi en direkte referanse til relatert dialogelement
-            "relatedDialogElementId": "5b5446a7-9b65-4faf-8888-5a5802ce7de7",
             "extendedActivityType": "SKE-2456-need-form-RF1337",
             "activityDescription": [ { "code": "nb_NO", "value": "Behandling er utført. Ytterligere opplysninger kreves." } ],
         },
@@ -263,8 +262,7 @@
             // dialogelement som var årsak til at feilsituasjonen oppstod
             "relatedActivityId": "f6ef1a96-df3a-4d38-830f-853b5d090e16",
             // Feilmeldinger kan også ha et eget dialogelement som inneholder en strukturert feilmelding 
-            "dialogElementId": "22366651-c1b6-4812-a97d-5ed43fc4fe57",
-            "relatedDialogElementId": "cd6bf231-2347-4131-8ccc-513a6345ef0b",
+            "dialogElementId": "22366651-c1b6-4812-a97d-5ed43fc4fe57",            
             "activityErrorCode": "SKE-error-12345",
             "activityDescription": [ { 
                 "code": "nb_NO", 

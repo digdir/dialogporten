@@ -18,7 +18,7 @@
 
     // Organisasjonsnummer, fødselsnummer eller brukernavn (aka "avgiver" eller "aktør") - altså hvem sin dialogboks 
     // skal dialogen tilhøre. Brukernavn benyttes for selv-registrerte bruker, og er typisk en e-postadresse.
-    "party": "org/991825827", 
+    "party": "/org/991825827", 
                                   
     // Vilkårlig referanse som presenteres sluttbruker i UI. Dialogporten tilegger denne ingen semantikk (trenger f.eks. ikke
     // være unik). Merk at identifikator/primærnøkkel vil kunne være den samme gjennom at tjenestetilbyder kan oppgi "id",
@@ -124,8 +124,8 @@
                 "title": [ { "code": "nb_NO", "value": "Bekreft mottatt" } ],
 
                 // Dette foretar et POST bakkanal-kall til oppgitt URL, og det vises i frontend bare en spinner mens 
-                // kallet går. Må returnere en oppdatert DE-modell (som da vises bruker) eller 204 (hvis dialogen 
-                // oppdatert i annet bakkanal-kall), eller en RFC7807-kompatibel feilmelding.
+                // kallet går. Må returnere en oppdatert dialog-modell (som da vises bruker) eller 204 (hvis dialogen 
+                // synkront oppdateres i annet bakkanal-kall), eller en RFC7807-kompatibel feilmelding.
                 "isBackChannel": true, 
 
                 "url": "https://example.com/some/deep/link/to/dialogs/123456789/confirmReceived"
@@ -135,9 +135,8 @@
                 "importance": "tertiary",
                 "title": [ { "code": "nb_NO", "value": "Avbryt" } ],
 
-                // Dette impliserer isBackChannel=true, og viser i tillegg en "Er du sikker?"-prompt. 
-                // Vil ved vellykket kall skjule dialogen fra GUI, og legge dialogen i søppelkasse
-                "isDeleteAction": true, 
+                "isBackChannel": true, 
+                "yesNoPrompt": [ { "code": "nb_NO", "value": "Bekreft mottatt" } ],
 
                 // Blir kalt med DELETE i bakkanal. Må returnere 204 eller en RFC7807-kompatibel feilmelding.
                 "url": "https://example.com/some/deep/link/to/dialogs/123456789" 

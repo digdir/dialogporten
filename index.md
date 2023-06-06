@@ -532,8 +532,7 @@ Eventer har type som er prefikset/navnerommet `dialogporten.dialog.activity`. Su
         "activityId": "21241c7e-819f-462b-b8a4-d5d32352311a",
         "relatedActivityId": "cfdd19a4-8cf9-4138-9930-36478fdce398",
         "extendedActivityType": "additional-info-received",
-        "dialogElementId": "54ae8387-7320-4693-8423-0ceb0efaf5fa",
-        "relatedDialogElementId": "a508fafc-e6c0-4746-af2d-9634028da725",
+        "dialogElementId": "54ae8387-7320-4693-8423-0ceb0efaf5fa"
     }
 } 
 ```
