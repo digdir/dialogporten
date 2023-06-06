@@ -1,5 +1,6 @@
 ﻿using Digdir.Domain.Dialogporten.Domain.Common;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Common.Extensions;
@@ -24,6 +25,11 @@ internal static class JsonSerializerExtensions
         return options;
     });
 
+    public static readonly JsonSerializerOptions CloudEventSerializerOptions = new()
+    {
+        PropertyNamingPolicy = new LowerCaseNamingPolicy(),
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault
+    };
     public static JsonSerializerOptions DomainEventPolymorphismOptions = new()
     {
         TypeInfoResolver = new DefaultJsonTypeInfoResolver
@@ -41,4 +47,10 @@ internal static class JsonSerializerExtensions
 
         typeInfo.PolymorphismOptions = _polymorphismOptions.Value;
     }
+}
+
+internal class LowerCaseNamingPolicy : JsonNamingPolicy
+{
+    public override string ConvertName(string name) =>
+        name.ToLower();
 }
