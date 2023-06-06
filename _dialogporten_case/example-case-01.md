@@ -109,7 +109,7 @@ Mens Skatteetaten behandler oppgaven går en eller annen ansatt for VIRKSOMHET A
     "activityId": "387cfaa8-8113-43c1-a457-603be651ecb9", // Dialogporten genererer en activityId
     "activityDateTime": "2022-12-01T10:15:00.000Z",
     "activityType": "seen",
-    "performedBy": "person:12018212345",
+    "performedBy": [ { "code": "nb_NO", "value": "Anne Olsen" } ],,
 }
 ```
 

@@ -127,7 +127,7 @@
         "gui": [ 
             { 
                 "action": "open", // Denne kan refereres i XACML-policy
-                "importance": "primary", // Dette bestemmer hvordan handlingen presenteres.
+                "priority": "primary", // Dette bestemmer hvordan handlingen presenteres.
                 "title": [ { "code": "nb_NO", "value": "Åpne i dialogtjeneste" } ],
                 "url": "https://example.com/some/deep/link/to/dialogs/123456789"
             },
@@ -138,14 +138,14 @@
                 // aksessere "url". Gjelder bare dialogelementer og actions for GUI. For dialogelementer og actions for 
                 // API utelates disse helt.
                 "isAuthorized": false,
-                "importance": "secondary",
+                "priority": "secondary",
                 "title": [ { "code": "nb_NO", "value": "Bekreft mottatt" } ],
                 "isBackChannel": true,
                 "url": "https://example.com/some/deep/link/to/dialogs/123456789/confirmReceived"
             },
             { 
                 "action": "delete",
-                "importance": "tertiary",
+                "priority": "tertiary",
                 "title": [ { "code": "nb_NO", "value": "Avbryt" } ],
                 "isDeleteAction": true,
                 "url": "https://example.com/some/deep/link/to/dialogs/123456789"
@@ -215,7 +215,7 @@
             "activityId": "fc6406df-6163-442a-92cd-e487423f2fd5",
             "activityDateTime": "2022-12-01T10:00:00.000Z",
             "activityType": "submission",
-            "performedBy": "person:12018212345",
+            "performedBy": [ { "code": "nb_NO", "value": "Anne Olsen" } ],
             "extendedActivityType": "SKE-1234-received-precheck-ok",
             "dialogElementId": "5b5446a7-9b65-4faf-8888-5a5802ce7de7",
             "activityDescription": [ { "code": "nb_NO", "value": "Innsending er mottatt og sendt til behandling" } ]
@@ -224,15 +224,15 @@
             "activityId": "7f91fb5e-4c79-4c01-82aa-84911ef13b75",
             "activityDateTime": "2022-12-01T10:15:00.000Z",
             "activityType": "seen",
-            "performedBy": "person:12018212345",
+            "performedBy": [ { "code": "nb_NO", "value": "Anne Olsen" } ],
         },
         { 
             "activityId": "e13b308b-3873-460b-8486-205ce934f4b0",
             "activityDateTime": "2022-12-01T10:16:00.000Z",
             "activityType": "forwarded",
-            "performedBy": "person:12018212345",
+            "performedBy": [ { "code": "nb_NO", "value": "Anne Olsen" } ],
             // Mottaker av delegering
-            "recipient": "person:24058412345",
+            "recipient": [ { "code": "nb_NO", "value": "Kari Pettersen" } ],
         },
         { 
             "activityId": "ab06af62-6067-477f-b18c-bf54222273b9",            

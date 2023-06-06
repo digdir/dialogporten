@@ -51,13 +51,13 @@ Partene er Rørlegger AS, Regnskapsfører AS og Etaten, som tilbyr denne innsend
         "gui": [ 
             { 
                 "action": "open",
-                "importance": "primary",
+                "priority": "primary",
                 "title": [ { "code": "nb_NO", "value": "Fyll ut" } ],
                 "url": "https://www.etaten.no/tjenester/omsetningsrapportering/b13bb496-e6ab-4444-8442-e15be9f96e9c"
             },
             { 
                 "action": "delete",
-                "importance": "secondary",
+                "priority": "secondary",
                 "title": [ { "code": "nb_NO", "value": "Avbryt" } ],
                 "isDeleteAction": true, 
                 // Blir kalt fra Dialogporten med DELETE i bakkanal. Må returnere 204 eller en RFC7807-kompatibel feilmelding.
@@ -84,7 +84,7 @@ Partene er Rørlegger AS, Regnskapsfører AS og Etaten, som tilbyr denne innsend
         { 
             "activityDateTime": "2022-12-01T10:00:00.000Z",
             "activityType": "submission",
-            "performedBy": "person:12345678901",
+            "performedBy": [ { "code": "nb_NO", "value": "Anne Olsen" } ],
             "activityDescription": [ { "code": "nb_NO", "value": "Opprettet dialog" } ]
         }
     ]
@@ -109,7 +109,7 @@ Partene er Rørlegger AS, Regnskapsfører AS og Etaten, som tilbyr denne innsend
             { 
                 "action": "sign",
                 "authorizationAttribute": "urn:altinn:subresource:general_manager_signature", // Krever tilgang til "sign" på autorisasjonsattributtet "general_manager_signature"
-                "importance": "primary",
+                "priority": "primary",
                 "title": [ { "code": "nb_NO", "value": "Se over og signer" } ],
                 "url": "https://www.etaten.no/tjenester/omsetningsrapportering/b13bb496-e6ab-4444-8442-e15be9f96e9c/sign_gm?latest_submission=12031cd2-5eb5-4ddf-b4f9-9d30e403d92c"
             }
@@ -132,7 +132,7 @@ Partene er Rørlegger AS, Regnskapsfører AS og Etaten, som tilbyr denne innsend
             "activityId": "12031cd2-5eb5-4ddf-b4f9-9d30e403d92c",
             "activityDateTime": "2022-12-01T10:00:00.000Z",
             "activityType": "submission",
-            "performedBy": "person:12345678901",
+            "performedBy": [ { "code": "nb_NO", "value": "Anne Olsen" } ],
             "activityDescription": [ { "code": "nb_NO", "value": "Skjema sendt inn og klar til signering" } ],
             "activityDetailsUrls": {
                 // Her ligger innsendt skjema som kan hentes ned SBS for å vise hva som skal signeres
@@ -197,7 +197,7 @@ Partene er Rørlegger AS, Regnskapsfører AS og Etaten, som tilbyr denne innsend
             { 
                 "action": "sign",
                 "authorizationAttribute": "urn:altinn:subresource:accountant_signature", // Krever tilgang til "sign" på autorisasjonsattributtet "accountant_signature"
-                "importance": "primary",
+                "priority": "primary",
                 "title": [ { "code": "nb_NO", "value": "Se over og signer" } ],
                 "url": "https://www.etaten.no/tjenester/omsetningsrapportering/b13bb496-e6ab-4444-8442-e15be9f96e9c/sign_ac?latest_submission=12031cd2-5eb5-4ddf-b4f9-9d30e403d92c"
             }
@@ -221,7 +221,7 @@ Partene er Rørlegger AS, Regnskapsfører AS og Etaten, som tilbyr denne innsend
             "relatedActivityId": "12031cd2-5eb5-4ddf-b4f9-9d30e403d92c", // Aktiviteten som refererer innsendingen som ble signert
             "activityDateTime": "2022-12-01T10:00:00.000Z",
             "activityType": "submission",
-            "performedBy": "person:23456789012", // Daglig leder
+            "performedBy": [ { "code": "nb_NO", "value": "Kari Nordmann" } ],, // Daglig leder
             "activityDescription": [ { "code": "nb_NO", "value": "Mottatt signatur av daglig leder" } ]
         }
     ]
@@ -275,7 +275,7 @@ Partene er Rørlegger AS, Regnskapsfører AS og Etaten, som tilbyr denne innsend
         "gui": [ 
             { 
                 "action": "open",
-                "importance": "primary",
+                "priority": "primary",
                 "title": [ { "code": "nb_NO", "value": "Se kvittering" } ],
                 "url": "https://www.etaten.no/tjenester/omsetningsrapportering/b13bb496-e6ab-4444-8442-e15be9f96e9c/finalreceipt"
             }
@@ -295,7 +295,7 @@ Partene er Rørlegger AS, Regnskapsfører AS og Etaten, som tilbyr denne innsend
             "relatedActivityId": "12031cd2-5eb5-4ddf-b4f9-9d30e403d92c", // Aktiviteten som refererer innsendingen som ble signert
             "activityDateTime": "2022-12-01T10:00:00.000Z",
             "activityType": "submission",
-            "performedBy": "person:31067890121", // Regnskapsfører
+            "performedBy": [ { "code": "nb_NO", "value": "Ola Nordmann" } ],, // Regnskapsfører
             "activityDescription": [ { "code": "nb_NO", "value": "Mottatt signatur av regnskapsfører" } ]
         },
         { 

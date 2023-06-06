@@ -112,7 +112,7 @@
         "gui": [ 
             { 
                 "action": "open", // Denne kan refereres i XACML-policy                
-                "importance": "primary", // Dette bestemmer hvordan handlingen presenteres.
+                "priority": "primary", // Dette bestemmer hvordan handlingen presenteres.
                 "title": [ { "code": "nb_NO", "value": "Åpne i dialogtjeneste" } ],
                 "url": "https://example.com/some/deep/link/to/dialogs/123456789"
             },
@@ -120,7 +120,7 @@
                 "action": "confirm",
                 // Det kan oppgis en valgfri referanse til en XACML-ressurs-attributt
                 "authorizationAttribute": "urn:altinn:subresource:somesubresource", 
-                "importance": "secondary",
+                "priority": "secondary",
                 "title": [ { "code": "nb_NO", "value": "Bekreft mottatt" } ],
 
                 // Dette foretar et POST bakkanal-kall til oppgitt URL, og det vises i frontend bare en spinner mens 
@@ -132,7 +132,7 @@
             },
             { 
                 "action": "delete",
-                "importance": "tertiary",
+                "priority": "tertiary",
                 "title": [ { "code": "nb_NO", "value": "Avbryt" } ],
 
                 "isBackChannel": true, 
@@ -255,7 +255,7 @@
 
             // Indikerer hvem som står bak denne aktiviteten. Fravær av dette feltet indikerer at det er tjenesteilbyder
             // som har utført aktiviteten.
-            "performedBy": "person:12018212345",
+            "performedBy": [ { "code": "nb_NO", "value": "Anne Olsen" } ],
             
             // Vilkårlig streng som er ment å være maskinlesbar, og er en tjenestespesifikk kode som gir ytterligere
             // informasjon om hva slags aktivitetstype dette innslaget er

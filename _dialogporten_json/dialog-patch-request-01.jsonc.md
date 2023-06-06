@@ -15,20 +15,20 @@
         "gui": [            
             { 
                 "action": "send",
-                "importance": "primary",
+                "priority": "primary",
                 "title": [ { "code": "nb_NO", "value": "Send inn" } ],
                 "url": "https://example.com/some/deep/link/to/dialogs/123456789/send",
                 "httpMethod": "POST"
             },
             { 
                 "action": "open", 
-                "importance": "secondary",
+                "priority": "secondary",
                 "title": [ { "code": "nb_NO", "value": "Se over før innsending" } ],
                 "url": "https://example.com/some/deep/link/to/dialogs/123456789"
             }, 
             { 
                 "action": "delete",
-                "importance": "tertiary",
+                "priority": "tertiary",
                 "title": [ { "code": "nb_NO", "value": "Avbryt" } ],
                 "isDeleteAction": true, 
                 "url": "https://example.com/some/deep/link/to/dialogs/123456789" 
@@ -78,13 +78,14 @@
             }
         ]
     },
-    // Merk at vi her bryter med vanlig PATCH/merge-semantikk, så her legges bare til et nytt innslag
+    // Merk at vi her bryter med vanlig PATCH/merge-semantikk; her skal det kun legges til et element
+    // Det reelle API-et vil støtte POST på et activityhistory-endepunkt, samt JSON PATCH for å kunne gjøre alt atomisk
     "activityHistory": [
         { 
             "activityDateTime": "2022-12-01T10:00:00.000Z",
             "activityType": "information",
             "activityType": "SKE-34355",
-            "performedBy": "person:12018212345",
+            "performedBy": [ { "code": "nb_NO", "value": "Anne Olsen" } ],
             "activityDescription": [ { "code": "nb_NO", "value": "Dokumentet 'X' ble signert og kan sendes inn" } ]
         }
     ]
