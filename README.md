@@ -10,7 +10,7 @@
 docker run --name DialogportenLocalPostgreSql -p 5432:5432 -e POSTGRES_PASSWORD=supersecret -e POSTGRES_USER=postgres -d postgres:14.7 -c wal_level=logical
 
 # 2. Add the connection string to your local secrets
-dotnet user-secrets set -p .\src\Digdir.Domain.Dialogporten.WebApi\ "Infrastructure:DialogueDbConnectionString" "Server=localhost;Port=5432;Database=Dialogporten;User ID=postgres;Password=supersecret;"
+dotnet user-secrets set -p .\src\Digdir.Domain.Dialogporten.WebApi\ "Infrastructure:DialogDbConnectionString" "Server=localhost;Port=5432;Database=Dialogporten;User ID=postgres;Password=supersecret;"
 
 # 3. Run the web api through your favorite IDE, or through the CLI
 dotnet run --project .\src\Digdir.Domain.Dialogporten.WebApi\

@@ -4,9 +4,9 @@ namespace Digdir.Domain.Dialogporten.Application.Tests.Integration.Common;
 
 public abstract class ApplicationCollectionFixture : IAsyncLifetime
 {
-    protected readonly DialogueApplication Application;
+    protected readonly DialogApplication Application;
 
-    protected ApplicationCollectionFixture(DialogueApplication application)
+    protected ApplicationCollectionFixture(DialogApplication application)
     {
         Application = application;
     }
@@ -15,8 +15,8 @@ public abstract class ApplicationCollectionFixture : IAsyncLifetime
     public Task InitializeAsync() => Application.ResetState();
 }
 
-//[CollectionDefinition(nameof(DialogueApplicationFixture))]
-//public class DialogueApplicationFixture : ICollectionFixture<DialogueApplication>
+//[CollectionDefinition(nameof(DialogApplicationFixture))]
+//public class DialogApplicationFixture : ICollectionFixture<DialogApplication>
 //{
 //    // This class has no code, and is never created. Its purpose is simply
 //    // to be the place to apply [CollectionDefinition] and all the

@@ -2,7 +2,7 @@
 
 namespace Digdir.Domain.Dialogporten.Application.Tests.Integration.Common;
 
-public abstract class ApplicationClassFixture : ApplicationCollectionFixture, IClassFixture<DialogueApplication>
+public abstract class ApplicationClassFixture : ApplicationCollectionFixture, IClassFixture<DialogApplication>
 {
-    protected ApplicationClassFixture(DialogueApplication application) : base(application) { }
+    protected ApplicationClassFixture(DialogApplication application) : base(application) { }
 }

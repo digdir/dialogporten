@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 {
-    [DbContext(typeof(DialogueDbContext))]
+    [DbContext(typeof(DialogDbContext))]
     [Migration("20230223114420_Init")]
     partial class Init
     {

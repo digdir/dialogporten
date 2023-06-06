@@ -5,16 +5,16 @@ using System.Reflection;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence;
 
-internal sealed class ContextDesignTimeFactory : IDesignTimeDbContextFactory<DialogueDbContext>
+internal sealed class ContextDesignTimeFactory : IDesignTimeDbContextFactory<DialogDbContext>
 {
-    private const string ConnectionStringConfigName = "Infrastructure:DialogueDbConnectionString";
+    private const string ConnectionStringConfigName = "Infrastructure:DialogDbConnectionString";
 
-    public DialogueDbContext CreateDbContext(string[] args)
+    public DialogDbContext CreateDbContext(string[] args)
     {
         var localPostgresConnectionString = new ConfigurationBuilder()
             .AddUserSecrets(Assembly.GetExecutingAssembly(), true)
             .Build()[ConnectionStringConfigName];
-        return new(new DbContextOptionsBuilder<DialogueDbContext>()
+        return new(new DbContextOptionsBuilder<DialogDbContext>()
             .UseNpgsql(localPostgresConnectionString)
             .Options);
     }

@@ -7,12 +7,12 @@ namespace Digdir.Domain.Dialogporten.Infrastructure;
 
 internal sealed class UnitOfWork : IUnitOfWork
 {
-    private readonly DialogueDbContext _dialogueDbContext;
+    private readonly DialogDbContext _dialogDbContext;
     private readonly DomainEventPublisher _domainEventPublisher;
 
-    public UnitOfWork(DialogueDbContext dialogueDbContext, DomainEventPublisher domainEventPublisher)
+    public UnitOfWork(DialogDbContext dialogDbContext, DomainEventPublisher domainEventPublisher)
     {
-        _dialogueDbContext = dialogueDbContext ?? throw new ArgumentNullException(nameof(dialogueDbContext));
+        _dialogDbContext = dialogDbContext ?? throw new ArgumentNullException(nameof(dialogDbContext));
         _domainEventPublisher = domainEventPublisher ?? throw new ArgumentNullException(nameof(domainEventPublisher));
     }
 
@@ -22,11 +22,11 @@ internal sealed class UnitOfWork : IUnitOfWork
         // TODO: Handle domain events
         // TODO: Get the correct user id.
         var now = DateTimeOffset.UtcNow;
-        _dialogueDbContext.ChangeTracker.HandleAuditableEntities(now);
+        _dialogDbContext.ChangeTracker.HandleAuditableEntities(now);
         foreach (var domainEvent in _domainEventPublisher.GetDomainEvents())
         {
             domainEvent.OccuredAtUtc = now;
         }
-        return _dialogueDbContext.SaveChangesAsync(cancellationToken);
+        return _dialogDbContext.SaveChangesAsync(cancellationToken);
     }
 }

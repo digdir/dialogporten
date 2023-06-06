@@ -11,7 +11,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 {
-    [DbContext(typeof(DialogueDbContext))]
+    [DbContext(typeof(DialogDbContext))]
     [Migration("20230602121149_AddDialogueTables")]
     partial class AddDialogueTables
     {

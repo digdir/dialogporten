@@ -18,12 +18,12 @@ internal sealed class OutboxDispatcher
         .Handle<Exception>()
         .WaitAndRetryAsync(3, attempt => TimeSpan.FromMilliseconds(50 * attempt));
 
-    private readonly DialogueDbContext _db;
+    private readonly DialogDbContext _db;
     private readonly IMediator _mediatr;
     private readonly ILogger<OutboxDispatcher> _logger;
 
     public OutboxDispatcher(
-        DialogueDbContext db,
+        DialogDbContext db,
         IMediator mediatr,
         ILogger<OutboxDispatcher> logger)
     {

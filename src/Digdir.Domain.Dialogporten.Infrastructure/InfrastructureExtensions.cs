@@ -27,11 +27,11 @@ public static class InfrastructureExtensions
             .Configure<InfrastructureSettings>(configurationSection)
 
             // Framework
-            .AddDbContext<DialogueDbContext>((services, options) =>
+            .AddDbContext<DialogDbContext>((services, options) =>
             {
                 var connectionString = services
                     .GetRequiredService<IOptions<InfrastructureSettings>>()
-                    .Value.DialogueDbConnectionString;
+                    .Value.DialogDbConnectionString;
                 options.UseNpgsql(connectionString)
                     .AddInterceptors(services.GetRequiredService<ConvertDomainEventsToOutboxMessagesInterceptor>());
             })
@@ -43,7 +43,7 @@ public static class InfrastructureExtensions
             // Scoped
             .AddScoped<DomainEventPublisher>()
             .AddScoped<IDomainEventPublisher>(x => x.GetRequiredService<DomainEventPublisher>())
-            .AddScoped<IDialogueDbContext>(x => x.GetRequiredService<DialogueDbContext>())
+            .AddScoped<IDialogDbContext>(x => x.GetRequiredService<DialogDbContext>())
             .AddScoped<IUnitOfWork, UnitOfWork>()
 
             // Transient

@@ -4,5 +4,5 @@ public sealed class InfrastructureSettings
 {
     public const string ConfigurationSectionName = "Infrastructure";
 
-    public string DialogueDbConnectionString { get; set; } = string.Empty;
+    public string DialogDbConnectionString { get; set; } = string.Empty;
 }

@@ -98,10 +98,10 @@ module appsettings 'website/upsertAppsettings.bicep' = {
 
 module appConfigConfigurations 'appConfiguration/upsertKeyValue.bicep' = {
     scope: resourceGroup
-    name: 'AppConfig_Add_DialogueDbConnectionString'
+    name: 'AppConfig_Add_DialogDbConnectionString'
     params: {
         configStoreName: appConfiguration.outputs.name
-        key: 'Infrastructure:DialogueDbConnectionString' 
+        key: 'Infrastructure:DialogDbConnectionString' 
         value: postgresql.outputs.adoConnectionStringSecretUri
         keyValueType: 'keyVaultReference'
     }
@@ -112,7 +112,7 @@ module keyVaultReaderAccessPolicy 'keyvault/addReaderRoles.bicep' = {
     name: 'keyVaultReaderAccessPolicy'
     params: {
         keyvaultName: keyVaultModule.outputs.name
-        // TODO: Har lagt til dialogporten-subscription-deploy-principal ettersom den må hente ut db connectionstring fra keyvault for migrasjon
+        // TODO: Har lagt til dialogporten-subscription-deploy-principal ettersom den mï¿½ hente ut db connectionstring fra keyvault for migrasjon
         principalIds: [ website.outputs.identityPrincipalId, 'ce4fe21d-6e93-41af-8e2d-7ae6f7abef74' ]
     }
 }

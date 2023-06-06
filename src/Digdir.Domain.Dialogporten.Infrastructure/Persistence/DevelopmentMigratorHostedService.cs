@@ -23,7 +23,7 @@ internal sealed class DevelopmentMigratorHostedService : IHostedService
         }
 
         using var scope = _serviceScopeFactory.CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<DialogueDbContext>();
+        var dbContext = scope.ServiceProvider.GetRequiredService<DialogDbContext>();
         await dbContext.Database.MigrateAsync(cancellationToken);
     }
 

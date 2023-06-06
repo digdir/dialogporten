@@ -15,9 +15,9 @@ public class DeleteOutboxMessagesCommand : IRequest<OneOf<Success, EntityNotFoun
 internal sealed class DeleteOutboxMessagesCommandHandler : IRequestHandler<DeleteOutboxMessagesCommand, OneOf<Success, EntityNotFound>>
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IDialogueDbContext _db;
+    private readonly IDialogDbContext _db;
 
-    public DeleteOutboxMessagesCommandHandler(IUnitOfWork unitOfWork, IDialogueDbContext db)
+    public DeleteOutboxMessagesCommandHandler(IUnitOfWork unitOfWork, IDialogDbContext db)
     {
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _db = db ?? throw new ArgumentNullException(nameof(db));

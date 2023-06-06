@@ -9,11 +9,11 @@ internal sealed class IdempotentDomainEventHandler<TDomainEvent> : INotification
     where TDomainEvent : IDomainEvent
 {
     private readonly INotificationHandler<TDomainEvent> _decorated;
-    private readonly DialogueDbContext _db;
+    private readonly DialogDbContext _db;
 
     public IdempotentDomainEventHandler(
         INotificationHandler<TDomainEvent> decorated,
-        DialogueDbContext db)
+        DialogDbContext db)
     {
         _decorated = decorated ?? throw new ArgumentNullException(nameof(decorated));
         _db = db ?? throw new ArgumentNullException(nameof(db));

@@ -68,7 +68,7 @@ static void BuildAndRun(string[] args)
         })
         .AddSingleton(x => new PostgresCdcSSubscriptionOptions
             (
-                ConnectionString: builder.Configuration["Infrastructure:DialogueDbConnectionString"]!,
+                ConnectionString: builder.Configuration["Infrastructure:DialogDbConnectionString"]!,
                 ReplicationSlotName: builder.Configuration["ReplicationSlotName"]!,
                 PublicationName: builder.Configuration["PublicationName"]!,
                 TableName: builder.Configuration["TableName"]!,

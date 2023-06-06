@@ -9,9 +9,9 @@ namespace Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localization
 internal sealed class LocalizationService : ILocalizationService
 {
     private readonly IMapper _mapper;
-    private readonly IDialogueDbContext _db;
+    private readonly IDialogDbContext _db;
 
-    public LocalizationService(IMapper mapper, IDialogueDbContext db)
+    public LocalizationService(IMapper mapper, IDialogDbContext db)
     {
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _db = db ?? throw new ArgumentNullException(nameof(db));
