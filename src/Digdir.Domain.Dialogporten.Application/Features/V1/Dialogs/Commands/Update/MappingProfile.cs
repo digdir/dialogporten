@@ -4,6 +4,7 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements.DialogElementUrls;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Commands.Update;
 
@@ -20,7 +21,7 @@ internal sealed class MappingProfile : Profile
             .IgnoreComplexDestinationProperties();
         CreateMap<UpdateDialogDialogGuiActionDto, DialogGuiAction>()
             .IgnoreComplexDestinationProperties();
-        CreateMap<UpdateDialogDialogDialogElementDto, DialogElement>()
+        CreateMap<UpdateDialogDialogElementDto, DialogElement>()
             .IgnoreComplexDestinationProperties();
 
         // Since this is append only, we don't need to merge with existing
@@ -33,6 +34,7 @@ internal sealed class MappingProfile : Profile
         CreateMap<DialogApiAction, UpdateDialogDialogApiActionDto>();
         CreateMap<DialogApiAction, UpdateDialogDialogApiActionDto>();
         CreateMap<DialogGuiAction, UpdateDialogDialogGuiActionDto>();
-        CreateMap<DialogElement, UpdateDialogDialogDialogElementDto>();
+        CreateMap<DialogElement, UpdateDialogDialogElementDto>();
+        CreateMap<DialogElementUrl, UpdateDialogDialogElementUrlDto>();
     }
 }

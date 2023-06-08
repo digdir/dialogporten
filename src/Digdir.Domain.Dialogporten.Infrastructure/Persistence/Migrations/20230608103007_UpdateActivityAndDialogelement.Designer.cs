@@ -3,6 +3,7 @@ using System;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(DialogDbContext))]
-    partial class DialogueDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230608103007_UpdateActivityAndDialogelement")]
+    partial class UpdateActivityAndDialogelement
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -204,7 +207,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.Property<Guid?>("DialogElementId")
                         .HasColumnType("uuid");
 
-                    b.Property<long?>("DialogElementInternalId")
+                    b.Property<long>("DialogElementInternalId")
                         .HasColumnType("bigint");
 
                     b.Property<long>("DialogId")
@@ -225,7 +228,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.Property<Guid?>("RelatedActivityId")
                         .HasColumnType("uuid");
 
-                    b.Property<long?>("RelatedActivityInternalId")
+                    b.Property<long>("RelatedActivityInternalId")
                         .HasColumnType("bigint");
 
                     b.Property<int>("TypeId")
@@ -331,7 +334,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.Property<Guid?>("RelatedDialogElementId")
                         .HasColumnType("uuid");
 
-                    b.Property<long?>("RelatedDialogElementInternalId")
+                    b.Property<long>("RelatedDialogElementInternalId")
                         .HasColumnType("bigint");
 
                     b.Property<string>("Type")
@@ -678,7 +681,9 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 
                     b.HasOne("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements.DialogElement", "DialogElement")
                         .WithMany()
-                        .HasForeignKey("DialogElementInternalId");
+                        .HasForeignKey("DialogElementInternalId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogEntity", "Dialog")
                         .WithMany("History")
@@ -688,7 +693,9 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 
                     b.HasOne("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities.DialogActivity", "RelatedActivity")
                         .WithMany()
-                        .HasForeignKey("RelatedActivityInternalId");
+                        .HasForeignKey("RelatedActivityInternalId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities.DialogActivityType", "Type")
                         .WithMany()
@@ -723,7 +730,9 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 
                     b.HasOne("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements.DialogElement", "RelatedDialogElement")
                         .WithMany()
-                        .HasForeignKey("RelatedDialogElementInternalId");
+                        .HasForeignKey("RelatedDialogElementInternalId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Dialog");
 

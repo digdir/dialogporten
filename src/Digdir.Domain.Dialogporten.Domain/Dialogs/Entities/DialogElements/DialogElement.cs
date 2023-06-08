@@ -1,4 +1,5 @@
-﻿using Digdir.Domain.Dialogporten.Domain.Localizations;
+﻿using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements.DialogElementUrls;
+using Digdir.Domain.Dialogporten.Domain.Localizations;
 using Digdir.Library.Entity.Abstractions;
 
 namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements;
@@ -9,19 +10,15 @@ public class DialogElement : IEntity
     public Guid Id { get; set; }
     public DateTimeOffset CreatedAtUtc { get; set; }
     public DateTimeOffset UpdatedAtUtc { get; set; }
-
+    public Uri? Type { get; set; }
     public LocalizationSet DisplayName { get; set; } = null!;
-    public long SizeInBytes { get; set; }
-    public string ContentType { get; set; } = null!;
-    public Uri Url { get; set; } = null!;
-
-    /// <summary>
-    /// Det kan oppgis en valgfri referanse til en ressurs. Brukeren må ha tilgang til "open" i
-    /// XACML-policy for oppgitt ressurs for å få tilgang til dialogen.
-    /// </summary>
-    public string? Resource { get; set; }
+    public string? AuthorizationAttribute { get; set; }
+    public List<DialogElementUrl> Urls { get; set; } = null!;
 
     // === Dependent relationships ===
     public long DialogId { get; set; }
     public DialogEntity Dialog { get; set; } = null!;
+
+    public Guid? RelatedDialogElementId { get; set; }
+    public DialogElement? RelatedDialogElement { get; set; } = null!;
 }

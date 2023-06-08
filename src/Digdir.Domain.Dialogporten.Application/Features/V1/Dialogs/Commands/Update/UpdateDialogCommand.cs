@@ -58,8 +58,8 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
             .Include(x => x.Title.Localizations)
             .Include(x => x.SenderName.Localizations)
             .Include(x => x.SearchTitle.Localizations)
-            .Include(x => x.Attachments)
-                .ThenInclude(attachment => attachment.DisplayName.Localizations)
+            .Include(x => x.Elements)
+                .ThenInclude(element => element.DisplayName.Localizations)
             .Include(x => x.GuiActions)
                 .ThenInclude(guiAction => guiAction.Title.Localizations)
             .Include(x => x.ApiActions)
@@ -95,8 +95,8 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         await _localizationService.Merge(dialog.SenderName, dto.SenderName, cancellationToken);
         await _localizationService.Merge(dialog.SearchTitle, dto.SearchTitle, cancellationToken);
 
-        dialog.Attachments = await dialog.Attachments
-            .MergeAsync(dto.DialogElements,
+        dialog.Elements = await dialog.Elements
+            .MergeAsync(dto.Elements,
                 destinationKeySelector: x => x.Id,
                 sourceKeySelector: x => x.Id,
                 create: CreateAttachments,
@@ -228,17 +228,17 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         return Task.CompletedTask;
     }
 
-    private Task<IEnumerable<DialogElement>> CreateAttachments(IEnumerable<UpdateDialogDialogDialogElementDto> creatables, CancellationToken cancellationToken)
+    private Task<IEnumerable<DialogElement>> CreateAttachments(IEnumerable<UpdateDialogDialogElementDto> creatables, CancellationToken cancellationToken)
     {
         return Task.FromResult(creatables.Select(dto =>
         {
-            var attachment = _mapper.Map<DialogElement>(dto);
-            attachment.DisplayName = _mapper.Map<LocalizationSet>(dto.DisplayName);
-            return attachment;
+            var element = _mapper.Map<DialogElement>(dto);
+            element.DisplayName = _mapper.Map<LocalizationSet>(dto.DisplayName);
+            return element;
         }));
     }
 
-    private async Task UpdateAttachments(IEnumerable<IUpdateSet<DialogElement, UpdateDialogDialogDialogElementDto>> updateSets, CancellationToken cancellationToken)
+    private async Task UpdateAttachments(IEnumerable<IUpdateSet<DialogElement, UpdateDialogDialogElementDto>> updateSets, CancellationToken cancellationToken)
     {
         foreach (var updateSet in updateSets)
         {
@@ -251,7 +251,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
     {
         deletables = deletables is List<DialogGuiAction> ? deletables : deletables.ToList();
         _db.LocalizationSets.RemoveRange(deletables.Select(x => x.DisplayName));
-        _db.DialogElements.RemoveRange(deletables);
+        _db.Elements.RemoveRange(deletables);
         return Task.CompletedTask;
     }
 }

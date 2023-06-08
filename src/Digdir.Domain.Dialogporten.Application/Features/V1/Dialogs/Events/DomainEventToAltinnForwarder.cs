@@ -43,7 +43,7 @@ internal sealed class DomainEventToAltinnForwarder :
             Id = notification.EventId,
             Type = dialogCreated,
             Time = notification.OccuredAtUtc,
-            Resource = dialog.ServiceResourceIdentifier, 
+            Resource = dialog.ServiceResource,
             ResourceInstance = dialog.Id.ToString(), 
             AlternativeSubject = dialog.Party, 
             Source = $"https://dialogporten.no/api/v1/dialogs/{notification.DialogId}"
@@ -70,7 +70,7 @@ internal sealed class DomainEventToAltinnForwarder :
             Id = notification.EventId,
             Type = dialogUpdated,
             Time = notification.OccuredAtUtc,
-            Resource = dialog.ServiceResourceIdentifier,
+            Resource = dialog.ServiceResource,
             ResourceInstance = dialog.Id.ToString(),
             AlternativeSubject = dialog.Party,
             Source = $"https://dialogporten.no/api/v1/dialogs/{notification.DialogId}"
@@ -97,7 +97,7 @@ internal sealed class DomainEventToAltinnForwarder :
             Id = notification.EventId,
             Type = dialogDeleted,
             Time = notification.OccuredAtUtc,
-            Resource = dialog.ServiceResourceIdentifier,
+            Resource = dialog.ServiceResource,
             ResourceInstance = dialog.Id.ToString(),
             AlternativeSubject = dialog.Party,
             Source = $"https://dialogporten.no/api/v1/dialogs/{notification.DialogId}"
@@ -120,7 +120,7 @@ internal sealed class DomainEventToAltinnForwarder :
             throw new Exception("DialogActivity not found!");
         }
 
-        var cloudEventType = dialogActivity.Type.Id switch
+        var cloudEventType = dialogActivity.TypeId switch
         {
             DialogActivityType.Enum.Submission => "dialogporten.dialog.activity.submission.v1",
             DialogActivityType.Enum.Feedback => "dialogporten.dialog.activity.feedback.v1",
@@ -137,20 +137,46 @@ internal sealed class DomainEventToAltinnForwarder :
             Id = notification.EventId,
             Type = cloudEventType,
             Time = notification.OccuredAtUtc,
-            Resource = dialogActivity.Dialog.ServiceResourceIdentifier,
+            Resource = dialogActivity.Dialog.ServiceResource,
             ResourceInstance = dialogActivity.Dialog.Id.ToString(),
             AlternativeSubject = dialogActivity.Dialog.Party,
             Source = $"https://dialogporten.no/api/v1/dialogs/{dialogActivity.Dialog.Id}/activityhistory/{dialogActivity.Id}",
-            Data = new Dictionary<string, object>
-            {
-                // TODO: Add stuff
-                ["activityId"] = dialogActivity.Id,
-                //["relatedActivityId"] = dialogActivity.RelatedActivityId,
-                ["extendedActivityType"] = dialogActivity.ExtendedType,
-                //["dialogElementId"] = dialogActivity.DialogElementId
-            }
+            Data = GetCloudEventData(dialogActivity)
         };
 
         await _cloudEventBus.Publish(cloudEvent, cancellationToken);
+    }
+
+    private IDictionary<string, object> GetCloudEventData(DialogActivity dialogActivity)
+    {
+        var data = new Dictionary<string, object>
+        {
+            ["activityId"] = dialogActivity.Id.ToString(),
+        };
+
+        if (dialogActivity.ExtendedType is not null)
+        {
+            data["extendedActivityType"] = dialogActivity.ExtendedType.ToString();
+        }
+
+        if (dialogActivity.RelatedActivityId is not null)
+        {
+            data["extendedActivityType"] = dialogActivity.RelatedActivityId.ToString()!;
+        }
+
+        if (dialogActivity.DialogElementId is null) return data;
+
+        data["dialogElementId"] = dialogActivity.DialogElementId.ToString()!;
+        if (dialogActivity.DialogElement!.Type is not null)
+        {
+            data["dialogElementType"] = dialogActivity.DialogElement.Type.ToString();
+        }
+
+        if (dialogActivity.DialogElement.RelatedDialogElementId is not null)
+        {
+            data["relatedDialogElementId"] = dialogActivity.DialogElement.RelatedDialogElementId.ToString()!;
+        }
+
+        return data;
     }
 }

@@ -7,7 +7,7 @@ public sealed class ListDialogDto
 {
     public Guid Id { get; set; }
     public string Org { get; set; } = null!;
-    public string ServiceResourceIdentifier { get; set; } = null!;
+    public string ServiceResource { get; set; } = null!;
     public string Party { get; set; } = null!;
     public string? ExtendedStatus { get; set; }
     public DateTimeOffset CreatedAtUtc { get; set; }

@@ -10,7 +10,7 @@ public class DialogApiAction : IEntity
     public DateTimeOffset UpdatedAtUtc { get; set; }
 
     public string Action { get; set; } = null!;
-    public string? Resource { get; set; }
+    public string? AuthorizationAttribute { get; set; }
     public Uri Url { get; set; } = null!;
     // TODO: Skal vi ha noe strengere validering her?
     public string HttpMethod { get; set; } = null!;

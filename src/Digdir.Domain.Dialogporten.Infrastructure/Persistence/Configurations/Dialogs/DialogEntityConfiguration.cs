@@ -11,7 +11,7 @@ internal sealed class DialogEntityConfiguration : IEntityTypeConfiguration<Dialo
     {
         builder.ToTable("Dialog");
 
-        // TODO: er det korrekt delete behavior her? 
+        // TODO: er det korrekt delete behavior her?
         builder.HasOne(x => x.SenderName).WithOne()
             .HasPrincipalKey<LocalizationSet>(x => x.InternalId)
             .OnDelete(DeleteBehavior.Restrict);

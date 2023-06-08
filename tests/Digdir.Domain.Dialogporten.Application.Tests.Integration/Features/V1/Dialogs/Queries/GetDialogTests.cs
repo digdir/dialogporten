@@ -4,6 +4,7 @@ using Digdir.Domain.Dialogporten.Application.Tests.Integration.Common;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements.DialogElementUrls;
 using FluentAssertions;
 using Xunit;
 
@@ -20,10 +21,11 @@ public class GetDialogTests : ApplicationCollectionFixture
     public async Task Get_ReturnsDialog_WhenDialogExists()
     {
         // Arrange
+        var dialogElementGuid = Guid.NewGuid();
         var createCommand = new CreateDialogCommand
         {
             Id = Guid.NewGuid(),
-            ServiceResourceIdentifier = "example_dialog_service",
+            ServiceResource = "example_dialog_service",
             Party = "org:991825827",
             StatusId = DialogStatus.Enum.InProgress,
             ExtendedStatus = "SKE-ABC",
@@ -32,16 +34,24 @@ public class GetDialogTests : ApplicationCollectionFixture
             Title = new() { new() { CultureCode = "nb_NO", Value = "Et eksempel på en tittel" } },
             SenderName = new() { new() { CultureCode = "nb_NO", Value = "Overstyrt avsendernavn (bruker default tjenesteeiers navn)" } },
             Body = new() { new() { CultureCode = "nb_NO", Value = "Innhold med <em>begrenset</em> HTML-støtte. Dette innholdet vises når dialogen ekspanderes." } },
-            DialogElements = new()
+            Elements = new()
             {
                 new()
                 {
+                    Id = dialogElementGuid,
                     DisplayName = new() { new() { CultureCode = "nb_NO", Value = "Dette er et vedlegg" } },
-                    SizeInBytes = 123456,
-                    ContentType = "application/pdf",
-                    Url = new("https://example.com/api/dialogs/123456789/attachments/1"),
-                    Resource = "attachment1"
-                }
+                    Type = new Uri("some:type"),
+                    AuthorizationAttribute = "attachment1",
+                    Urls = new List<CreateDialogDialogElementUrlDto>
+                    {
+                        new ()
+                        {
+                            ConsumerTypeId = DialogElementUrlConsumerType.Enum.Gui,
+                            ContentTypeHint = "application/pdf",
+                            Url = new Uri("http://example.com/some/deep/link/to/attachment1.pdf")
+                        }
+                    }
+                },
             },
             GuiActions = new()
             {
@@ -55,7 +65,7 @@ public class GetDialogTests : ApplicationCollectionFixture
                     TypeId = DialogGuiActionType.Enum.Secondary,
                     Title = new() { new() { CultureCode = "nb_NO", Value = "Bekreft mottatt" } },
                     Url = new("https://example.com/some/deep/link/to/dialogs/123456789/confirmReceived"),
-                    Resource = "somesubresource",
+                    AuthorizationAttribute = "somesubresource",
                     IsBackChannel = true},
                 new() {
                     Action = "delete",
@@ -96,10 +106,9 @@ public class GetDialogTests : ApplicationCollectionFixture
                     CreatedAtUtc = DateTimeOffset.UtcNow,
                     TypeId = DialogActivityType.Enum.Submission,
                     PerformedBy = "Some Name",
-                    ExtendedType = "SKE-1234-received-precheck-ok",
+                    ExtendedType = new Uri("SKE:1234-received-precheck-ok"),
                     Description = new() { new() { CultureCode = "nb_NO", Value = "Innsending er mottatt og sendt til behandling" } },
-                    DetailsApiUrl = new("https://example.com/api/dialogs/123456789/received_submissions/fc6406df-6163-442a-92cd-e487423f2fd5"),
-                    DetailsGuiUrl = new("https://example.com/dialogs/123456789/view_submission/fc6406df-6163-442a-92cd-e487423f2fd5")
+                    DialogElementId = dialogElementGuid
                 }
             }
         };

@@ -3,6 +3,7 @@ using System;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(DialogDbContext))]
-    partial class DialogueDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230607105723_AddDialogElement")]
+    partial class AddDialogElement
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -201,18 +204,12 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.Property<long>("DescriptionInternalId")
                         .HasColumnType("bigint");
 
-                    b.Property<Guid?>("DialogElementId")
-                        .HasColumnType("uuid");
-
-                    b.Property<long?>("DialogElementInternalId")
-                        .HasColumnType("bigint");
-
                     b.Property<long>("DialogId")
                         .HasColumnType("bigint");
 
                     b.Property<string>("ExtendedType")
-                        .HasMaxLength(1023)
-                        .HasColumnType("character varying(1023)");
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
 
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid")
@@ -222,10 +219,10 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
 
-                    b.Property<Guid?>("RelatedActivityId")
+                    b.Property<Guid?>("RelatedDialogElementId")
                         .HasColumnType("uuid");
 
-                    b.Property<long?>("RelatedActivityInternalId")
+                    b.Property<long>("RelatedDialogElementInternalId")
                         .HasColumnType("bigint");
 
                     b.Property<int>("TypeId")
@@ -235,14 +232,12 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("DescriptionInternalId");
 
-                    b.HasIndex("DialogElementInternalId");
-
                     b.HasIndex("DialogId");
 
                     b.HasIndex("Id")
                         .IsUnique();
 
-                    b.HasIndex("RelatedActivityInternalId");
+                    b.HasIndex("RelatedDialogElementInternalId");
 
                     b.HasIndex("TypeId");
 
@@ -331,17 +326,18 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.Property<Guid?>("RelatedDialogElementId")
                         .HasColumnType("uuid");
 
-                    b.Property<long?>("RelatedDialogElementInternalId")
+                    b.Property<long>("RelatedDialogElementInternalId")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("Type")
-                        .HasMaxLength(1023)
-                        .HasColumnType("character varying(1023)");
 
                     b.Property<DateTimeOffset>("UpdatedAtUtc")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("current_timestamp at time zone 'utc'");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasMaxLength(1023)
+                        .HasColumnType("character varying(1023)");
 
                     b.HasKey("InternalId");
 
@@ -368,7 +364,11 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.Property<int>("ConsumerTypeId")
                         .HasColumnType("integer");
 
-                    b.Property<string>("ContentTypeHint")
+                    b.Property<string>("ContentSchema")
+                        .HasMaxLength(1023)
+                        .HasColumnType("character varying(1023)");
+
+                    b.Property<string>("ContentType")
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
 
@@ -676,19 +676,17 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements.DialogElement", "DialogElement")
-                        .WithMany()
-                        .HasForeignKey("DialogElementInternalId");
-
                     b.HasOne("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogEntity", "Dialog")
                         .WithMany("History")
                         .HasForeignKey("DialogId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities.DialogActivity", "RelatedActivity")
+                    b.HasOne("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements.DialogElement", "RelatedDialogElement")
                         .WithMany()
-                        .HasForeignKey("RelatedActivityInternalId");
+                        .HasForeignKey("RelatedDialogElementInternalId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities.DialogActivityType", "Type")
                         .WithMany()
@@ -700,9 +698,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 
                     b.Navigation("Dialog");
 
-                    b.Navigation("DialogElement");
-
-                    b.Navigation("RelatedActivity");
+                    b.Navigation("RelatedDialogElement");
 
                     b.Navigation("Type");
                 });
@@ -723,7 +719,9 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 
                     b.HasOne("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements.DialogElement", "RelatedDialogElement")
                         .WithMany()
-                        .HasForeignKey("RelatedDialogElementInternalId");
+                        .HasForeignKey("RelatedDialogElementInternalId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Dialog");
 
