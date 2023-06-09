@@ -20,11 +20,11 @@ public sealed class GetDialogDto
     public DateTimeOffset? DueAtUtc { get; set; }
     public List<LocalizationDto> Body { get; set; } = new();
     public List<LocalizationDto> Title { get; set; } = new();
-    public List<LocalizationDto> SenderName { get; set; } = new();
-    public List<LocalizationDto> SearchTitle { get; set; } = new();
-    public List<GetDialogDialogElementDto> Elements { get; set; } = new();
-    public List<GetDialogDialogGuiActionDto> GuiActions { get; set; } = new();
-    public List<GetDialogDialogApiActionDto> ApiActions { get; set; } = new();
+    public List<LocalizationDto>? SenderName { get; set; }
+    public List<LocalizationDto>? SearchTitle { get; set; }
+    public List<GetDialogDialogElementDto>? Elements { get; set; }
+    public List<GetDialogDialogGuiActionDto>? GuiActions { get; set; }
+    public List<GetDialogDialogApiActionDto>? ApiActions { get; set; }
     public List<GetDialogDialogActivityDto> History { get; set; } = new();
     // TODO: Lenker her
 }
@@ -37,8 +37,7 @@ public sealed class GetDialogDialogActivityDto
     public string? PerformedBy { get; set; }
     public string? ExtendedType { get; set; }
     public List<LocalizationDto> Description { get; set; } = new();
-    public Uri? DetailsApiUrl { get; set; }
-    public Uri? DetailsGuiUrl { get; set; }
+    public Guid? DialogElementId { get; set; }
 }
 
 public sealed class GetDialogDialogApiActionDto
@@ -72,7 +71,7 @@ public sealed class GetDialogDialogElementDto
     public Uri? Type { get; set; }
     public List<LocalizationDto> DisplayName { get; set; } = new();
     public string? AuthorizationAttribute { get; set; }
-    public List<GetDialogDialogElementUrlDto> Urls { get; set; } = null!;
+    public List<GetDialogDialogElementUrlDto> Urls { get; set; } = new();
 }
 
 public sealed class GetDialogDialogElementUrlDto

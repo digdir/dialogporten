@@ -17,5 +17,5 @@ public sealed class ListDialogDto
     // TODO: Denne må vi finne ut hvordan vi mapper
     public DialogStatus.Enum StatusId { get; set; }
     public List<LocalizationDto> Title { get; set; } = new();
-    public List<LocalizationDto> SenderName { get; set; } = new();
+    public List<LocalizationDto>? SenderName { get; set; }
 }

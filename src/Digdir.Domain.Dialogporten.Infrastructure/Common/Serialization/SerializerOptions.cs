@@ -1,11 +1,11 @@
-﻿using Digdir.Domain.Dialogporten.Domain.Common;
-using System.Text.Json;
+﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
+using Digdir.Domain.Dialogporten.Domain.Common;
 
-namespace Digdir.Domain.Dialogporten.Infrastructure.Common.Extensions;
+namespace Digdir.Domain.Dialogporten.Infrastructure.Common.Serialization;
 
-internal static class JsonSerializerExtensions
+internal static class SerializerOptions
 {
     private static readonly Lazy<JsonPolymorphismOptions> _polymorphismOptions = new(() =>
     {
@@ -54,3 +54,4 @@ internal class LowerCaseNamingPolicy : JsonNamingPolicy
     public override string ConvertName(string name) =>
         name.ToLower();
 }
+

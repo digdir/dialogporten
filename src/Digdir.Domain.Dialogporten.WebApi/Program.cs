@@ -9,6 +9,8 @@ using Microsoft.ApplicationInsights.Extensibility;
 using Serilog;
 using System.Text;
 using System.Text.Json.Serialization;
+using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
+using Digdir.Domain.Dialogporten.Infrastructure.Common.Serialization;
 
 // Using two-stage initialization to catch startup errors.
 Log.Logger = new LoggerConfiguration()
@@ -61,8 +63,8 @@ static void BuildAndRun(string[] args)
             settings: s =>
             {
                 s.Title = "Dialogporten";
-                s.DocumentName = "V1.0";
-                s.Version = "v1.0";
+                s.DocumentName = "V0.1";
+                s.Version = "v0.1";
             })
         .AddApplication(builder.Configuration.GetSection(ApplicationSettings.ConfigurationSectionName))
         .AddInfrastructure(builder.Configuration.GetSection(InfrastructureSettings.ConfigurationSectionName));
@@ -80,6 +82,7 @@ static void BuildAndRun(string[] args)
             x.Versioning.Prefix = "v";
             x.Versioning.PrependToRoute = true;
             x.Versioning.DefaultVersion = 1;
+            x.Serializer.Options.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault;
             x.Serializer.Options.Converters.Add(new JsonStringEnumConverter());
             x.Errors.ResponseBuilder = ErrorResponseBuilderExtensions.ResponseBuilder;
         })

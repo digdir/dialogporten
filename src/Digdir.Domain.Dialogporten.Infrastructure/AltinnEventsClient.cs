@@ -1,9 +1,7 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Externals.CloudEvents;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using Digdir.Domain.Dialogporten.Infrastructure.Common.Extensions;
+using Digdir.Domain.Dialogporten.Infrastructure.Common.Serialization;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure;
 
@@ -21,7 +19,7 @@ internal class AltinnEventsClient : ICloudEventBus
         // TODO: Config Altinn endpoint
         var msg = new HttpRequestMessage(HttpMethod.Post, "https://platform.tt02.altinn.no/events/api/v1/events")
         {
-            Content = JsonContent.Create(cloudEvent, options: JsonSerializerExtensions.CloudEventSerializerOptions)
+            Content = JsonContent.Create(cloudEvent, options: SerializerOptions.CloudEventSerializerOptions)
         };
         msg.Content.Headers.ContentType = new MediaTypeHeaderValue("application/cloudevents+json");
         var response = await _client.SendAsync(msg, cancellationToken);
