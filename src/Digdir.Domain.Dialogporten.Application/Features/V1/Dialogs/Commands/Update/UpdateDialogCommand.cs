@@ -84,6 +84,8 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
             return new EntityExists<DialogActivity>(existingHistoryIds);
         }
 
+        // TODO! Handle/validate internal relations as in CreateDialog
+
         // Update primitive properties
         _mapper.Map(dto, dialog);
 
@@ -99,9 +101,9 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
             .MergeAsync(dto.Elements,
                 destinationKeySelector: x => x.Id,
                 sourceKeySelector: x => x.Id,
-                create: CreateAttachments,
-                update: UpdateAttachments,
-                delete: DeleteAttachments,
+                create: CreateElements,
+                update: UpdateElements,
+                delete: DeleteElements,
                 cancellationToken: cancellationToken);
 
         dialog.GuiActions = await dialog.GuiActions
@@ -228,7 +230,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         return Task.CompletedTask;
     }
 
-    private Task<IEnumerable<DialogElement>> CreateAttachments(IEnumerable<UpdateDialogDialogElementDto> creatables, CancellationToken cancellationToken)
+    private Task<IEnumerable<DialogElement>> CreateElements(IEnumerable<UpdateDialogDialogElementDto> creatables, CancellationToken cancellationToken)
     {
         return Task.FromResult(creatables.Select(dto =>
         {
@@ -238,7 +240,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         }));
     }
 
-    private async Task UpdateAttachments(IEnumerable<IUpdateSet<DialogElement, UpdateDialogDialogElementDto>> updateSets, CancellationToken cancellationToken)
+    private async Task UpdateElements(IEnumerable<IUpdateSet<DialogElement, UpdateDialogDialogElementDto>> updateSets, CancellationToken cancellationToken)
     {
         foreach (var updateSet in updateSets)
         {
@@ -247,7 +249,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         }
     }
 
-    private Task DeleteAttachments(IEnumerable<DialogElement> deletables, CancellationToken cancellationToken)
+    private Task DeleteElements(IEnumerable<DialogElement> deletables, CancellationToken cancellationToken)
     {
         deletables = deletables is List<DialogGuiAction> ? deletables : deletables.ToList();
         _db.LocalizationSets.RemoveRange(deletables.Select(x => x.DisplayName));

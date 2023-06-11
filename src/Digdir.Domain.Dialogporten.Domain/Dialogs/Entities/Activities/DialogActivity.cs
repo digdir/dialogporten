@@ -21,11 +21,8 @@ public class DialogActivity : IImmutableEntity
     public long DialogId { get; set; }
     public DialogEntity Dialog { get; set; } = null!;
 
-
     public long? RelatedActivityInternalId { get; set; }
     public DialogActivity? RelatedActivity { get; set; }
-
-    public List<DialogActivity>? RelatingActivities { get; set; }
 
     public long? DialogElementInternalId { get; set; }
     public DialogElement? DialogElement { get; set; }

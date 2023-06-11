@@ -9,13 +9,13 @@ internal sealed class DialogActivityConfiguration : IEntityTypeConfiguration<Dia
     public void Configure(EntityTypeBuilder<DialogActivity> builder)
     {
         builder
-            .HasOne(e => e.DialogElement)
-            .WithMany(e => e.Activities)
-            .HasForeignKey(e => e.DialogElementInternalId);
+            .HasOne(e => e.RelatedActivity)
+            .WithMany()
+            .HasForeignKey(e => e.RelatedActivityInternalId);
 
         builder
-            .HasOne(e => e.RelatedActivity)
-            .WithMany(e => e.RelatingActivities)
-            .HasForeignKey(e => e.RelatedActivityInternalId);
+            .HasOne(e => e.DialogElement)
+            .WithMany()
+            .HasForeignKey(e => e.DialogElementInternalId);
     }
 }
