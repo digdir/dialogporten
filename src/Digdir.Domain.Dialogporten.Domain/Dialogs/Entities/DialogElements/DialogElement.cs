@@ -1,4 +1,5 @@
-﻿using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements.DialogElementUrls;
+﻿using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements.DialogElementUrls;
 using Digdir.Domain.Dialogporten.Domain.Localizations;
 using Digdir.Library.Entity.Abstractions;
 
@@ -13,12 +14,15 @@ public class DialogElement : IEntity
     public Uri? Type { get; set; }
     public LocalizationSet DisplayName { get; set; } = null!;
     public string? AuthorizationAttribute { get; set; }
-    public List<DialogElementUrl> Urls { get; set; } = null!;
 
     // === Dependent relationships ===
     public long DialogId { get; set; }
     public DialogEntity Dialog { get; set; } = null!;
 
-    public Guid? RelatedDialogElementId { get; set; }
-    public DialogElement? RelatedDialogElement { get; set; } = null!;
+    public List<DialogElementUrl> Urls { get; set; } = null!;
+
+    public long? RelatedDialogElementInternalId { get; set; }
+    public DialogElement? RelatedDialogElement { get; set; }
+
+    public List<DialogActivity>? Activities { get; set; }
 }

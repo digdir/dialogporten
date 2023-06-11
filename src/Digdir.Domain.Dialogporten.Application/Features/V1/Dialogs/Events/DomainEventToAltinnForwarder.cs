@@ -84,6 +84,7 @@ internal sealed class DomainEventToAltinnForwarder :
         Console.WriteLine($"Dialog {notification.DialogId} deleted.");
         var dialog = await _db.Dialogs
             .AsNoTracking()
+            .Include(x => x.Elements)
             .FirstOrDefaultAsync(x => x.Id == notification.DialogId, cancellationToken);
 
         if (dialog is null)
@@ -110,7 +111,9 @@ internal sealed class DomainEventToAltinnForwarder :
     public async Task Handle(DialogActivityCreatedDomainEvent notification, CancellationToken cancellationToken)
     {
         var dialogActivity = await _db.DialogActivities
-            .Include(x => x.Dialog)
+            .Include(e => e.Dialog)
+            .Include(e => e.DialogElement)
+            .Include(e => e.RelatedActivity)
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == notification.DialogActivityId, cancellationToken);
 
@@ -159,22 +162,22 @@ internal sealed class DomainEventToAltinnForwarder :
             data["extendedActivityType"] = dialogActivity.ExtendedType.ToString();
         }
 
-        if (dialogActivity.RelatedActivityId is not null)
+        if (dialogActivity.RelatedActivity is not null)
         {
-            data["extendedActivityType"] = dialogActivity.RelatedActivityId.ToString()!;
+            data["extendedActivityType"] = dialogActivity.RelatedActivity.Id.ToString()!;
         }
 
-        if (dialogActivity.DialogElementId is null) return data;
+        if (dialogActivity.DialogElement is null) return data;
 
-        data["dialogElementId"] = dialogActivity.DialogElementId.ToString()!;
+        data["dialogElementId"] = dialogActivity.DialogElement.Id.ToString()!;
         if (dialogActivity.DialogElement!.Type is not null)
         {
             data["dialogElementType"] = dialogActivity.DialogElement.Type.ToString();
         }
 
-        if (dialogActivity.DialogElement.RelatedDialogElementId is not null)
+        if (dialogActivity.DialogElement.RelatedDialogElement is not null)
         {
-            data["relatedDialogElementId"] = dialogActivity.DialogElement.RelatedDialogElementId.ToString()!;
+            data["relatedDialogElementId"] = dialogActivity.DialogElement.RelatedDialogElement.Id.ToString()!;
         }
 
         return data;

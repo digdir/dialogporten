@@ -24,12 +24,21 @@ internal sealed class MappingProfile : Profile
                 dest => dest.ApiActions,
                 opt => opt.MapFrom(src => src.ApiActions.Any() ? src.ApiActions : null));
             */
-
         CreateMap<DialogGuiAction, GetDialogDialogGuiActionDto>();
         CreateMap<DialogApiAction, GetDialogDialogApiActionDto>();
-        CreateMap<DialogElement, GetDialogDialogElementDto>();
+        CreateMap<DialogElement, GetDialogDialogElementDto>()
+            .ForMember(
+                dest => dest.RelatedDialogElementId,
+                opt => opt.MapFrom(src => src.RelatedDialogElement == null ? (Guid?)null : src.RelatedDialogElement.Id)
+            );
         CreateMap<DialogElementUrl, GetDialogDialogElementUrlDto>();
-        CreateMap<DialogActivity, GetDialogDialogActivityDto>();
+        CreateMap<DialogActivity, GetDialogDialogActivityDto>()
+            .ForMember(
+                dest => dest.RelatedActivityId,
+                opt => opt.MapFrom(src => src.RelatedActivity == null ? (Guid?)null : src.RelatedActivity.Id))
+            .ForMember(
+                dest => dest.DialogElementId,
+                opt => opt.MapFrom(src => src.DialogElement == null ? (Guid?)null : src.DialogElement.Id));
 
     }
 }

@@ -3,6 +3,7 @@ using System;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(DialogDbContext))]
-    partial class DialogueDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230609140417_ActivityDialogElementRelation")]
+    partial class ActivityDialogElementRelation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -201,7 +204,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.Property<long>("DescriptionInternalId")
                         .HasColumnType("bigint");
 
-                    b.Property<long?>("DialogElementInternalId")
+                    b.Property<long?>("DialogElementId")
                         .HasColumnType("bigint");
 
                     b.Property<long>("DialogId")
@@ -219,7 +222,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
 
-                    b.Property<long?>("RelatedActivityInternalId")
+                    b.Property<long?>("RelatedActivityId")
                         .HasColumnType("bigint");
 
                     b.Property<int>("TypeId")
@@ -229,14 +232,14 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("DescriptionInternalId");
 
-                    b.HasIndex("DialogElementInternalId");
+                    b.HasIndex("DialogElementId");
 
                     b.HasIndex("DialogId");
 
                     b.HasIndex("Id")
                         .IsUnique();
 
-                    b.HasIndex("RelatedActivityInternalId");
+                    b.HasIndex("RelatedActivityId");
 
                     b.HasIndex("TypeId");
 
@@ -322,7 +325,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         .HasColumnType("uuid")
                         .HasDefaultValueSql("gen_random_uuid()");
 
-                    b.Property<long?>("RelatedDialogElementInternalId")
+                    b.Property<long?>("RelatedDialogElementId")
                         .HasColumnType("bigint");
 
                     b.Property<string>("Type")
@@ -343,7 +346,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.HasIndex("Id")
                         .IsUnique();
 
-                    b.HasIndex("RelatedDialogElementInternalId");
+                    b.HasIndex("RelatedDialogElementId");
 
                     b.ToTable("DialogElement");
                 });
@@ -669,7 +672,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 
                     b.HasOne("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements.DialogElement", "DialogElement")
                         .WithMany("Activities")
-                        .HasForeignKey("DialogElementInternalId");
+                        .HasForeignKey("DialogElementId");
 
                     b.HasOne("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogEntity", "Dialog")
                         .WithMany("History")
@@ -678,8 +681,8 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         .IsRequired();
 
                     b.HasOne("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities.DialogActivity", "RelatedActivity")
-                        .WithMany("RelatingActivities")
-                        .HasForeignKey("RelatedActivityInternalId");
+                        .WithMany()
+                        .HasForeignKey("RelatedActivityId");
 
                     b.HasOne("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities.DialogActivityType", "Type")
                         .WithMany()
@@ -714,7 +717,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 
                     b.HasOne("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements.DialogElement", "RelatedDialogElement")
                         .WithMany()
-                        .HasForeignKey("RelatedDialogElementInternalId");
+                        .HasForeignKey("RelatedDialogElementId");
 
                     b.Navigation("Dialog");
 
@@ -793,11 +796,6 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("OutboxMessage");
-                });
-
-            modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities.DialogActivity", b =>
-                {
-                    b.Navigation("RelatingActivities");
                 });
 
             modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements.DialogElement", b =>

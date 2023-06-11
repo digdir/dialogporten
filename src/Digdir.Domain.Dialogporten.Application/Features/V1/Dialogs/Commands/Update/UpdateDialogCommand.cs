@@ -251,7 +251,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
     {
         deletables = deletables is List<DialogGuiAction> ? deletables : deletables.ToList();
         _db.LocalizationSets.RemoveRange(deletables.Select(x => x.DisplayName));
-        _db.Elements.RemoveRange(deletables);
+        _db.DialogElements.RemoveRange(deletables);
         return Task.CompletedTask;
     }
 }

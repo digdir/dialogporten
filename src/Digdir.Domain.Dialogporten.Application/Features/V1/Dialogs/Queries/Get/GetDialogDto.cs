@@ -32,6 +32,7 @@ public sealed class GetDialogDto
 public sealed class GetDialogDialogActivityDto
 {
     public Guid Id { get; set; }
+    public Guid? RelatedActivityId { get; set; }
     public DateTimeOffset CreatedAtUtc { get; set; }
     public DialogActivityType.Enum TypeId { get; set; }
     public string? PerformedBy { get; set; }
