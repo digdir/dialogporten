@@ -75,10 +75,7 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
         foreach (var elementDto in elementsDto)
         {
             var element = dialog.Elements.FirstOrDefault(e => e.Id == elementDto.Id);
-            if (element is null)
-            {
-                throw new InvalidOperationException($"Mapping broken! element with id {elementDto.Id} not found in mapped entity");
-            }
+            if (element is null) throw new InvalidOperationException($"Mapping broken! element with id {elementDto.Id} not found in mapped entity");
 
             if (!elementDto.RelatedDialogElementId.HasValue) continue;
             var relatedElement = dialog.Elements.FirstOrDefault(e => e.Id == elementDto.RelatedDialogElementId.Value);
@@ -92,9 +89,7 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
             {
                 // TODO! Check soft-deletion?
                 var dbElement = await _db.DialogElements
-                    .Where(e =>
-                        e.Id == elementDto.RelatedDialogElementId.Value
-                        && e.DialogId == dialog.InternalId)
+                    .Where(e => e.Id == elementDto.RelatedDialogElementId.Value && e.DialogId == dialog.InternalId)
                     .SingleOrDefaultAsync();
 
                 if (dbElement is not null)
@@ -104,8 +99,7 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
                 }
                 else
                 {
-                    var validationFailure = new ValidationFailure(
-                        "RelatedDialogElementId",
+                    var validationFailure = new ValidationFailure("RelatedDialogElementId",
                         $"A dialog element attempted to refer to a dialog element with id {elementDto.RelatedDialogElementId}, which does not exist or is not assoicated with this dialog");
                     return new ValidationError(validationFailure);
                 }
@@ -120,40 +114,32 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
         foreach (var activityDto in activitiesDto)
         {
             var activity = dialog.History.FirstOrDefault(a => a.Id == activityDto.Id);
-            if (activity is null)
-            {
-                throw new InvalidOperationException($"Mapping broken! activity with id {activityDto.Id} does not exist in mapped entity");
-            }
+            if (activity is null) throw new InvalidOperationException($"Mapping broken! activity with id {activityDto.Id} does not exist in mapped entity");
 
-            if (activityDto.RelatedActivityId.HasValue)
+            if (!activityDto.RelatedActivityId.HasValue) continue;
+            var relatedActivity = dialog.History.FirstOrDefault(a => a.Id == activityDto.RelatedActivityId.Value);
+            if (relatedActivity is not null)
             {
-                var relatedActivity = dialog.History.FirstOrDefault(a => a.Id == activityDto.RelatedActivityId.Value);
-                if (relatedActivity is not null)
+                activity.RelatedActivity = relatedActivity;
+                activity.RelatedActivityInternalId = relatedActivity.InternalId;
+            }
+            else
+            {
+                // TODO! Check soft-deletion?
+                var dbActivity = await _db.DialogActivities
+                    .Where(a => a.Id == activityDto.RelatedActivityId.Value && a.DialogId == dialog.InternalId)
+                    .SingleOrDefaultAsync();
+
+                if (dbActivity is not null)
                 {
-                    activity.RelatedActivity = relatedActivity;
-                    activity.RelatedActivityInternalId = relatedActivity.InternalId;
+                    activity.RelatedActivity = dbActivity;
+                    activity.RelatedActivityInternalId = dbActivity.InternalId;
                 }
                 else
                 {
-                    // TODO! Check soft-deletion?
-                    var dbActivity = await _db.DialogActivities
-                        .Where(a =>
-                            a.Id == activityDto.RelatedActivityId.Value
-                            && a.DialogId == dialog.InternalId)
-                        .SingleOrDefaultAsync();
-
-                    if (dbActivity is not null)
-                    {
-                        activity.RelatedActivity = dbActivity;
-                        activity.RelatedActivityInternalId = dbActivity.InternalId;
-                    }
-                    else
-                    {
-                        var validationFailure = new ValidationFailure(
-                            "RelatedActivityId",
-                            $"An activity attempted to refer a related activity with id {activityDto.RelatedActivityId}, which does not exist or is not assoicated with this dialog");
-                        return new ValidationError(validationFailure);
-                    }
+                    var validationFailure = new ValidationFailure("RelatedActivityId",
+                        $"An activity attempted to refer a related activity with id {activityDto.RelatedActivityId}, which does not exist or is not assoicated with this dialog");
+                    return new ValidationError(validationFailure);
                 }
             }
         }
@@ -166,40 +152,32 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
         foreach (var activityDto in activitiesDto)
         {
             var activity = dialog.History.FirstOrDefault(a => a.Id == activityDto.Id);
-            if (activity is null)
-            {
-                throw new InvalidOperationException($"Mapping broken! activity with id {activityDto.Id} does not exist in mapped entity");
-            }
+            if (activity is null) throw new InvalidOperationException($"Mapping broken! activity with id {activityDto.Id} does not exist in mapped entity");
 
-            if (activityDto.DialogElementId.HasValue)
+            if (!activityDto.DialogElementId.HasValue) continue;
+            var relatedElement = dialog.Elements.FirstOrDefault(e => e.Id == activityDto.DialogElementId.Value);
+            if (relatedElement is not null)
             {
-                var relatedElement = dialog.Elements.FirstOrDefault(e => e.Id == activityDto.DialogElementId.Value);
-                if (relatedElement is not null)
+                activity.DialogElement = relatedElement;
+                activity.DialogElementInternalId = relatedElement.InternalId;
+            }
+            else
+            {
+                // TODO! Check soft-deletion?
+                var dbElement = await _db.DialogElements
+                    .Where(e => e.Id == activityDto.DialogElementId.Value && e.DialogId == dialog.InternalId)
+                    .SingleOrDefaultAsync();
+
+                if (dbElement is not null)
                 {
-                    activity.DialogElement = relatedElement;
-                    activity.DialogElementInternalId = relatedElement.InternalId;
+                    activity.DialogElement = dbElement;
+                    activity.DialogElementInternalId = dbElement.InternalId;
                 }
                 else
                 {
-                    // TODO! Check soft-deletion?
-                    var dbElement = await _db.DialogElements
-                        .Where(e =>
-                            e.Id == activityDto.DialogElementId.Value
-                            && e.DialogId == dialog.InternalId)
-                        .SingleOrDefaultAsync();
-
-                    if (dbElement is not null)
-                    {
-                        activity.DialogElement = dbElement;
-                        activity.DialogElementInternalId = dbElement.InternalId;
-                    }
-                    else
-                    {
-                        var validationFailure = new ValidationFailure(
-                            "DialogElementId",
-                            $"An activity attempted to refer a dialogElement with id {activityDto.DialogElementId}, which does not exist or is not assoicated with this dialog");
-                        return new ValidationError(validationFailure);
-                    }
+                    var validationFailure = new ValidationFailure("DialogElementId",
+                        $"An activity attempted to refer a dialogElement with id {activityDto.DialogElementId}, which does not exist or is not assoicated with this dialog");
+                    return new ValidationError(validationFailure);
                 }
             }
         }
