@@ -169,8 +169,8 @@ internal sealed class DomainEventToAltinnForwarder :
 
         if (dialogActivity.DialogElement is null) return data;
 
-        data["dialogElementId"] = dialogActivity.DialogElement.Id.ToString()!;
-        if (dialogActivity.DialogElement!.Type is not null)
+        data["dialogElementId"] = dialogActivity.DialogElement.Id.ToString();
+        if (dialogActivity.DialogElement.Type is not null)
         {
             data["dialogElementType"] = dialogActivity.DialogElement.Type.ToString();
         }

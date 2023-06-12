@@ -11,5 +11,5 @@ public class CloudEvent
     public string? Subject { get; set; }
     public string? AlternativeSubject { get; set; }
     public string Source { get; set; } = null!;
-    public IDictionary<string, object> Data { get; set; } = null!;
+    public IDictionary<string, object>? Data { get; set; }
 }

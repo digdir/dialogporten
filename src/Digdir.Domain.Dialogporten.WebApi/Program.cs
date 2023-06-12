@@ -82,6 +82,9 @@ static void BuildAndRun(string[] args)
             x.Versioning.Prefix = "v";
             x.Versioning.PrependToRoute = true;
             x.Versioning.DefaultVersion = 1;
+
+            // TODO! Do we want this for numerics (ie. zero)?
+            // TODO! Determine if this is desirable for all endpoints and all properties with regards to discoverability
             x.Serializer.Options.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault;
             x.Serializer.Options.Converters.Add(new JsonStringEnumConverter());
             x.Errors.ResponseBuilder = ErrorResponseBuilderExtensions.ResponseBuilder;
