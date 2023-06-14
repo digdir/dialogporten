@@ -82,9 +82,7 @@ Som det pekes på i avsnittet [Scenarioer som påvirker Dialogporten](#scenarioe
 
 ## Dialog
 
-Tilstand i Dialogporten begrenser seg til metadata for en gitt dialog hos tjenestetilbyder, og manifesterer seg i Dialogporten i form av en _dialog_, som er en logisk entitet tilgjengelig gjennom API og gjort synlig i GUI som f.eks. Felles Arbeidsflate, tilsvarende det en ser i dagens "Innboks" i Altinn. Dialogen 
-
-Dialogen fungerer som en abstrakt og felles modell for alle pågående eller avsluttede [spesialiserte dialoger](#spesialisert-dialog) hos en tjenestetilbyder, og inneholder beskrivende metadata, f.eks. hvem som er mottakende part, adresse (URL), overskrift, dato, status samt en liste over aktuelle _handlinger_ som kan utføres av brukeren. Dialogporten knytter semantikk kun til slette-handlinger, hvis dette gjøres tilgjengelig av tjenestetilbyder. Andre handlinger kan vilkårlig defineres av tjenestetilbyder, og all interaksjon med den dialogen foregår i tjenestetilbyders brukerflater (unntaket er GUI-handlinger som går gjennom bakkanal, se mer om dette i avsnittet [Hendelser](#hendelser)).
+Dialogen er en abstrakt og felles modell for alle pågående eller avsluttede [spesialiserte dialoger](#spesialisert-dialog) hos en tjenestetilbyder, og inneholder beskrivende metadata, f.eks. hvem som er mottakende part, adresse (URL), overskrift, dato, status samt en liste over aktuelle _handlinger_ som kan utføres av brukeren. Dialogporten knytter semantikk kun til slette-handlinger, hvis dette gjøres tilgjengelig av tjenestetilbyder. Andre handlinger kan vilkårlig defineres av tjenestetilbyder, og all interaksjon med den dialogen foregår i tjenestetilbyders brukerflater (unntaket er GUI-handlinger som går gjennom bakkanal, se mer om dette i avsnittet [Hendelser](#hendelser)).
 
 En viktig forskjell mot dagens «correspondence» i Altinn, er at dialogene i Dialogporten er _mutérbare_. Tjenestetilbyder kan når som helst oppdatere metadata og tilgjengelige handlinger på dialogen. Enhver endring fører til at det genereres _hendelser_, som autoriserte parter kan agere på, f.eks. at det sendes et varsel eller at et SBS foretar seg noe.
 
@@ -96,7 +94,7 @@ Med _spesialisert dialog_, refereres det til en konkret dialog (f.eks. innsendin
 
 ## Dialogelement
 
-Dialogelementer utgjør distinkte bestanddeler av en dialog og kan brukes i komplekse dialoger hvor det kan være hensiktsmessig for sluttbrukere og systemer å forholde seg til enkelte deler av dialogen i stedet for dialogen som helhet. Dette kan være meldinger og pre-utfylte skjemaer fra tjenestetilbyder, innsendte skjemaer fra parten, kvitteringer, strukturerte feilmeldinger, rapporter, ustrukturerte vedlegg til meldinger etc. som utgjør en del av den totale dialogen. Dialogelementer blir typisk referert av innslag i activityHistory. Handlinger kan også referere et enkelt dialogelement. 
+Dialogelementer utgjør distinkte bestanddeler av en dialog og kan brukes i komplekse dialoger hvor det kan være hensiktsmessig for sluttbrukere og systemer å forholde seg til enkelte deler av dialogen i tillegg til dialogen som helhet. Dette kan være meldinger og pre-utfylte skjemaer fra tjenestetilbyder, innsendte skjemaer fra parten, kvitteringer, strukturerte feilmeldinger, rapporter, ustrukturerte vedlegg til meldinger etc. som utgjør en del av den totale dialogen. Dialogelementer blir typisk referert av innslag i activityHistory. Handlinger kan også referere et enkelt dialogelement. 
 
 ## Dialoggruppe (DG)
 
@@ -157,6 +155,12 @@ Under er en forenklet modell som viser relasjonene mellom de ulike begrepene. Fo
 Under er en overordnet modell som viser relasjonen mellom Dialogporten, tjenesteplattformene som benytter den og sluttbrukere/systemer som konsumerer dialogene som er realisert.
 
 ![](https://lucid.app/publicSegments/view/c3ce275d-9170-45d0-8c09-e50de2ffc690/image.png)
+
+# Teknisk ER-diagram
+
+Under er et ER-diagram som viser de konkrete relasjonene mellom de ulike entitetene som er definert. Merk at disse kan ha avvik i navngivning i forhold til modellene og beskrivelsene i dette dokumentet
+
+<img src="{{ "/assets/dialogporten-er.svg" | relative_url }}">
 
 # Autorisasjon
 
