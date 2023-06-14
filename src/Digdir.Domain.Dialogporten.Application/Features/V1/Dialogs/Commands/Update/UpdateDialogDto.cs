@@ -24,7 +24,7 @@ public sealed class UpdateDialogDto
     public List<UpdateDialogDialogElementDto> Elements { get; set; } = new();
     public List<UpdateDialogDialogGuiActionDto> GuiActions { get; set; } = new();
     public List<UpdateDialogDialogApiActionDto> ApiActions { get; set; } = new();
-    public List<UpdateDialogDialogActivityDto> History { get; set; } = new();
+    public List<UpdateDialogDialogActivityDto> Activity { get; set; } = new();
 }
 
 public sealed class UpdateDialogDialogActivityDto

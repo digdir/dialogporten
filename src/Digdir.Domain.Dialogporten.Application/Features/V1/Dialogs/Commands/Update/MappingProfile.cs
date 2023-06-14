@@ -24,7 +24,7 @@ internal sealed class MappingProfile : Profile
             .IgnoreComplexDestinationProperties();
 
         // Since this is append only, we don't need to merge with existing
-        // history records and thus can map complex properties
+        // activity records and thus can map complex properties
         CreateMap<UpdateDialogDialogActivityDto, DialogActivity>();
 
         // To support json patch

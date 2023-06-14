@@ -13,17 +13,17 @@ public class CreateDialogDto
     public string Party { get; set; } = null!;
     public DialogStatus.Enum StatusId { get; set; }
     public string? ExtendedStatus { get; set; }
-    public DateTimeOffset VisibleFrom { get; set; }
+    public DateTimeOffset? VisibleFrom { get; set; }
     public DateTimeOffset? DueAt { get; set; }
     public DateTimeOffset? ExpiresAt { get; set; }
     public List<LocalizationDto> Body { get; set; } = new();
     public List<LocalizationDto> Title { get; set; } = new();
-    public List<LocalizationDto> SenderName { get; set; } = new();
-    public List<LocalizationDto> SearchTitle { get; set; } = new();
+    public List<LocalizationDto>? SenderName { get; set; } = new();
+    public List<LocalizationDto>? SearchTitle { get; set; } = new();
     public List<CreateDialogDialogElementDto> Elements { get; set; } = new();
     public List<CreateDialogDialogGuiActionDto> GuiActions { get; set; } = new();
     public List<CreateDialogDialogApiActionDto> ApiActions { get; set; } = new();
-    public List<CreateDialogDialogActivityDto> History { get; set; } = new();
+    public List<CreateDialogDialogActivityDto> Activity { get; set; } = new();
 }
 
 public sealed class CreateDialogDialogActivityDto

@@ -98,7 +98,7 @@ public class GetDialogTests : ApplicationCollectionFixture
                     Url = new("https://example.com/api/dialogs/123456789"),
                     HttpMethod = "DELETE"},
             },
-            History = new()
+            Activity = new()
             {
                 new()
                 {

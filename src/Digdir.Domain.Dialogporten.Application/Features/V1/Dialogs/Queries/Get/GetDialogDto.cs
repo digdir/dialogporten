@@ -25,7 +25,7 @@ public sealed class GetDialogDto
     public List<GetDialogDialogElementDto>? Elements { get; set; }
     public List<GetDialogDialogGuiActionDto>? GuiActions { get; set; }
     public List<GetDialogDialogApiActionDto>? ApiActions { get; set; }
-    public List<GetDialogDialogActivityDto> History { get; set; } = new();
+    public List<GetDialogDialogActivityDto> Activity { get; set; } = new();
     // TODO: Lenker her
 }
 

@@ -78,10 +78,10 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
             return validationError;
         }
 
-        var existingHistoryIds = await GetExistingHistoryIds(dto.History, cancellationToken);
-        if (existingHistoryIds.Any())
+        var existingActivityIds = await GetExistingActivityIds(dto.Activity, cancellationToken);
+        if (existingActivityIds.Any())
         {
-            return new EntityExists<DialogActivity>(existingHistoryIds);
+            return new EntityExists<DialogActivity>(existingActivityIds);
         }
 
         // TODO! Handle/validate internal relations as in CreateDialog
@@ -89,8 +89,8 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         // Update primitive properties
         _mapper.Map(dto, dialog);
 
-        // Append history
-        AppendHistory(dialog, dto);
+        // Append activity
+        AppendActivity(dialog, dto);
 
         await _localizationService.Merge(dialog.Body, dto.Body, cancellationToken);
         await _localizationService.Merge(dialog.Title, dto.Title, cancellationToken);
@@ -129,9 +129,9 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         return new Success();
     }
 
-    private void AppendHistory(DialogEntity dialog, UpdateDialogDto dto)
+    private void AppendActivity(DialogEntity dialog, UpdateDialogDto dto)
     {
-        var newDialogActivities = dto.History
+        var newDialogActivities = dto.Activity
             .Select(_mapper.Map<DialogActivity>)
             .ToList();
         dialog.Activity.AddRange(newDialogActivities);
@@ -161,23 +161,23 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
             : modifiedAsDto;
     }
 
-    private async Task<IEnumerable<Guid>> GetExistingHistoryIds(
-        List<UpdateDialogDialogActivityDto> historyDtos,
+    private async Task<IEnumerable<Guid>> GetExistingActivityIds(
+        List<UpdateDialogDialogActivityDto> activityDtos,
         CancellationToken cancellationToken)
     {
-        var historyDtoIds = historyDtos
+        var activityDtoIds = activityDtos
             .Select(x => x.Id)
             .Where(x => x.HasValue)
             .ToList();
 
-        if (!historyDtoIds.Any())
+        if (!activityDtoIds.Any())
         {
             return Enumerable.Empty<Guid>();
         }
 
         return await _db.DialogActivities
             .Select(x => x.Id)
-            .Where(x => historyDtoIds.Contains(x))
+            .Where(x => activityDtoIds.Contains(x))
             .ToListAsync(cancellationToken);
     }
 

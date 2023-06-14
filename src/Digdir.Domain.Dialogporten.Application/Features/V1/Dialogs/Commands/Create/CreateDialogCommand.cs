@@ -30,17 +30,20 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
 
     public async Task<OneOf<Guid, EntityExists, ValidationError>> Handle(CreateDialogCommand request, CancellationToken cancellationToken)
     {
-        if (await IsExistingDialogId(request.Id, cancellationToken))
+        if (await DialogExists(request.Id, cancellationToken))
         {
             return new EntityExists<DialogEntity>(request.Id!.Value);
         }
 
+        var dialog = _mapper.Map<DialogEntity>(request);
+
+        
+
         // We need to populate the Ids of the elements and activities before we map to the entity
         // so we can match the DTO and entity Ids when handling internal relationships below
         PopulateDialogElementIds(request.Elements);
-        PopulateDialogActivityIds(request.History);
+        PopulateDialogActivityIds(request.Activity);
 
-        var dialog = _mapper.Map<DialogEntity>(request);
 
         // Internal relationships (dialogelement -> dialogelement, activity -> activity, activity -> dialogelement)
         // are handled below. We allow specifying activities/dialogelements that are not part of the payload but in
@@ -50,10 +53,10 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
         var validationError = HandleDialogElementRelationships(request.Elements, dialog);
         if (validationError is not null) return validationError;
 
-        validationError = HandleActivityToActivityRelationships(request.History, dialog);
+        validationError = HandleActivityToActivityRelationships(request.Activity, dialog);
         if (validationError is not null) return validationError;
 
-        validationError = HandleActivityToDialogElementRelationships(request.History, dialog);
+        validationError = HandleActivityToDialogElementRelationships(request.Activity, dialog);
         if (validationError is not null) return validationError;
 
         await _db.Dialogs.AddAsync(dialog, cancellationToken);
@@ -69,7 +72,7 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
     private static void PopulateDialogActivityIds(List<CreateDialogDialogActivityDto> requestActivities) =>
         requestActivities.ForEach(x => x.Id ??= Guid.NewGuid());
 
-    private async Task<bool> IsExistingDialogId(Guid? id, CancellationToken cancellationToken) =>
+    private async Task<bool> DialogExists(Guid? id, CancellationToken cancellationToken) =>
         id.HasValue && await _db.Dialogs.AnyAsync(x => x.Id == id, cancellationToken);
 
     private ValidationError? HandleDialogElementRelationships(List<CreateDialogDialogElementDto> elementsDto, DialogEntity dialog)
