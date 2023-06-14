@@ -83,6 +83,9 @@
             // oppgis her. 
             "relatedDialogElementId": "dbce996a-cc67-4cb2-ad2f-df61cee6683a",
             
+            // Vilkårlig URI som indikerer type dialogElement
+            "dialogElementType": "skd:form-type-1",   
+
             // Valgfri: Brukes for å vise sluttbrukeren hva dette er, typisk bare brukt i GUI
             "displayName": [ { "code": "nb_NO", "value": "Innsendt skjema" } ],
             
@@ -96,14 +99,12 @@
                     "consumerType": "gui",
                     "url": "https://example.com/api/dialogs/123456789/dialogelements/5b5446a7.pdf",
                     // Valgfri: MIME-type. Brukes i GUI for hint om hva slags dokument dette er 
-                    "contentType": "application/pdf"
+                    "mimeType": "application/pdf"
                 },
                 {
                     "consumerType": "api",
                     "url": "https://example.com/api/dialogs/123456789/dialogelements/5b5446a7.xml",
-                    "contentType": "application/json",
-                    // Valgfri: JSON-schema som indikerer type og schemaet til dialogelementet
-                    "contentSchema": "https://schemas.example.com/dialogservice/v1/form-type-1.json",   
+                    "mimeType": "application/json"
                 }
             ]
         },   
@@ -179,7 +180,7 @@
                 "action": "confirm",
                 // Hvis handlingen omfatter/berører et spesifikt dialogelement
                 // kan det oppgis en identifikator til dette her.
-                "relatedDialogElementId": "4558064e-4049-4075-a58f-d67bda83f88c",
+                "dialogElementId": "4558064e-4049-4075-a58f-d67bda83f88c",
                 "endpoints": [
                     {
                         "version": "v1",
