@@ -13,7 +13,7 @@ public class CreateDialogDto
     public string Party { get; set; } = null!;
     public DialogStatus.Enum StatusId { get; set; }
     public string? ExtendedStatus { get; set; }
-    public DateTimeOffset VisibleFromUtc { get; set; }
+    public DateTimeOffset VisibleFrom { get; set; }
     public DateTimeOffset? DueAt { get; set; }
     public DateTimeOffset? ExpiresAt { get; set; }
     public List<LocalizationDto> Body { get; set; } = new();

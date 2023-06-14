@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(DialogDbContext))]
-    [Migration("20230614091354_AddDialogTables")]
+    [Migration("20230614110249_AddDialogTables")]
     partial class AddDialogTables
     {
         /// <inheritdoc />
@@ -543,7 +543,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("current_timestamp at time zone 'utc'");
 
-                    b.Property<DateTimeOffset?>("VisibleFromUtc")
+                    b.Property<DateTimeOffset?>("VisibleFrom")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("InternalId");

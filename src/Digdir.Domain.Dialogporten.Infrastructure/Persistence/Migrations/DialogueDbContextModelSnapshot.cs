@@ -540,7 +540,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("current_timestamp at time zone 'utc'");
 
-                    b.Property<DateTimeOffset?>("VisibleFromUtc")
+                    b.Property<DateTimeOffset?>("VisibleFrom")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("InternalId");

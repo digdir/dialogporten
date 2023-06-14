@@ -102,7 +102,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     ServiceResource = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     Party = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     ExtendedStatus = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
-                    VisibleFromUtc = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    VisibleFrom = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     DueAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     ExpiresAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     ReadAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
