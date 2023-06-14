@@ -947,13 +947,13 @@ end
 
 # Implementasjon / Proof-of-concept
 
-En foreløpig implementasjon er publisert, se https://dppoc-webapi.azurewebsites.net/swagger/. Git-repository er åpent tilgjengelig, og ligger på https://github.com/digdir/dialogporten 
+En foreløpig implementasjon er publisert, se [https://dppoc-webapi.azurewebsites.net/swagger/](https://dppoc-webapi.azurewebsites.net/swagger/). Git-repository er åpent tilgjengelig, og ligger på [Github](https://github.com/digdir/dialogporten). 
 
 # OpenAPI
 
-En foreløpig OpenAPI 3.0.1 specification (OAS) basert på modellene beskrevet under kan sees på [https://dppoc-webapi.azurewebsites.net/swagger/V1.0/swagger.json](https://dppoc-webapi.azurewebsites.net/swagger/V1.0/swagger.json). 
+En OpenAPI 3.0.1 specification (OAS) basert på modellene beskrevet under kan sees på [https://dppoc-webapi.azurewebsites.net/swagger/V0.1/swagger.json](https://dppoc-webapi.azurewebsites.net/swagger/V0.1/swagger.json). 
 
-{% include note.html type="warning" content="OpenAPI-spesifikasjonen har visse tekniske (spesielt mht navngivning) forskjeller med modellene som vises på denne siden, men skal funksjonelt tilby det samme" %}
+{% include note.html type="warning" content="OpenAPI-spesifikasjonen har visse tekniske (spesielt mht navngivning) forskjeller med modellene som vises på denne siden, og kan være ute av synk" %}
 
 # Eksempel-modeller
 
