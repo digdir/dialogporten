@@ -945,11 +945,15 @@ end
 8.  Tjenestetilbyder returner OK til SBS-et. Parallelt (asynkront) opprettes dialog i Dialogporten, og tjenesteeier oppgir å bruke samme identifikator for dialogen.
 9. På et senere tidspunkt kan SBS-er jobbe videre med dialogen gjennom dialogen i Dialogporten, eller fortsette å benytte API-ene til tjenestetilbuder direkte.
 
+# Implementasjon / Proof-of-concept
+
+En foreløpig implementasjon er publisert, se https://dppoc-webapi.azurewebsites.net/swagger/. Git-repository er åpent tilgjengelig, og ligger på https://github.com/digdir/dialogporten 
+
 # OpenAPI
 
 En foreløpig OpenAPI 3.0.1 specification (OAS) basert på modellene beskrevet under kan sees på [https://dppoc-webapi.azurewebsites.net/swagger/V1.0/swagger.json](https://dppoc-webapi.azurewebsites.net/swagger/V1.0/swagger.json). 
 
-{% include note.html type="warning" content="OpenAPI-spesifikasjonen kan være har ulike tekniske forskjeller med modellene som vises på denne siden. De funksjonelle beskrivelsene som ligger på denne siden skal legges til grunn." %}
+{% include note.html type="warning" content="OpenAPI-spesifikasjonen har visse tekniske (spesielt mht navngivning) forskjeller med modellene som vises på denne siden, men skal funksjonelt tilby det samme" %}
 
 # Eksempel-modeller
 
