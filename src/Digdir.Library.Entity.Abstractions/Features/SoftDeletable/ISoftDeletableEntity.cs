@@ -17,5 +17,5 @@ public interface ISoftDeletableEntity
     /// <remarks>
     /// Value will be null if the entity never has been soft deleted, or it is restored.
     /// </remarks>
-    DateTimeOffset? DeletedAtUtc { get; set; }
+    DateTimeOffset? DeletedAt { get; set; }
 }

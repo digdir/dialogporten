@@ -10,9 +10,9 @@ public sealed class ListDialogDto
     public string ServiceResource { get; set; } = null!;
     public string Party { get; set; } = null!;
     public string? ExtendedStatus { get; set; }
-    public DateTimeOffset CreatedAtUtc { get; set; }
-    public DateTimeOffset UpdatedAtUtc { get; set; }
-    public DateTimeOffset? DueAtUtc { get; set; }
+    public DateTimeOffset CreatedAt { get; set; }
+    public DateTimeOffset UpdatedAt { get; set; }
+    public DateTimeOffset? DueAt { get; set; }
 
     // TODO: Denne må vi finne ut hvordan vi mapper
     public DialogStatus.Enum StatusId { get; set; }

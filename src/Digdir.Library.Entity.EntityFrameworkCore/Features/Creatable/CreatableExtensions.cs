@@ -9,7 +9,7 @@ internal static class CreatableExtensions
     public static ModelBuilder AddCreatableEntities(this ModelBuilder modelBuilder)
     {
         return modelBuilder.EntitiesOfType<ICreatableEntity>(builder =>
-            builder.Property(nameof(ICreatableEntity.CreatedAtUtc)).HasDefaultValueSql("current_timestamp at time zone 'utc'"));
+            builder.Property(nameof(ICreatableEntity.CreatedAt)).HasDefaultValueSql("current_timestamp at time zone 'utc'"));
     }
 
     public static ChangeTracker HandleCreatableEntities(this ChangeTracker changeTracker, DateTimeOffset utcNow)

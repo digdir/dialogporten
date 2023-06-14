@@ -1,4 +1,5 @@
 ﻿using Digdir.Domain.Dialogporten.Domain.Outboxes;
+using Digdir.Library.Entity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -9,6 +10,8 @@ internal sealed class OutboxMessageConfiguration : IEntityTypeConfiguration<Outb
     public void Configure(EntityTypeBuilder<OutboxMessage> builder)
     {
         builder.HasKey(x => x.EventId);
-        builder.Property(x => x.EventPayload).HasColumnType("jsonb");
+        builder.Property(x => x.EventPayload)
+            .HasUnlimitedLength()
+            .HasColumnType("jsonb");
     }
 }

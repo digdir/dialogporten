@@ -58,7 +58,7 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
 
         await _db.Dialogs.AddAsync(dialog, cancellationToken);
         _eventPublisher.Publish(new DialogCreatedDomainEvent(dialog.CreateId()));
-        _eventPublisher.Publish(dialog.History.Select(x => new DialogActivityCreatedDomainEvent(dialog.Id, x.CreateId())));
+        _eventPublisher.Publish(dialog.Activity.Select(x => new DialogActivityCreatedDomainEvent(dialog.Id, x.CreateId())));
         await _unitOfWork.SaveChangesAsync(cancellationToken);
         return dialog.Id;
     }
@@ -99,9 +99,9 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
         foreach (var activityDto in activitiesDto)
         {
             if (!activityDto.RelatedActivityId.HasValue) continue;
-            var activity = dialog.History.FirstOrDefault(a => a.Id == activityDto.Id);
+            var activity = dialog.Activity.FirstOrDefault(a => a.Id == activityDto.Id);
             if (activity is null) throw new InvalidOperationException($"Mapping broken! activity with id {activityDto.Id} does not exist in mapped entity");
-            var relatedActivity = dialog.History.FirstOrDefault(a => a.Id == activityDto.RelatedActivityId.Value);
+            var relatedActivity = dialog.Activity.FirstOrDefault(a => a.Id == activityDto.RelatedActivityId.Value);
 
             if (relatedActivity is null)
             {
@@ -121,7 +121,7 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
         foreach (var activityDto in activitiesDto)
         {
             if (!activityDto.DialogElementId.HasValue) continue;
-            var activity = dialog.History.FirstOrDefault(a => a.Id == activityDto.Id);
+            var activity = dialog.Activity.FirstOrDefault(a => a.Id == activityDto.Id);
             if (activity is null) throw new InvalidOperationException($"Mapping broken! activity with id {activityDto.Id} does not exist in mapped entity");
             var relatedElement = dialog.Elements.FirstOrDefault(e => e.Id == activityDto.DialogElementId.Value);
 

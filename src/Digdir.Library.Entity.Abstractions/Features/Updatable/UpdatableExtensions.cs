@@ -12,6 +12,6 @@ public static class UpdatableExtensions
     /// <param name="utcNow">The update time in UTC.</param>
     public static void Update(this IUpdateableEntity updateable, DateTimeOffset utcNow)
     {
-        updateable.UpdatedAtUtc = utcNow;
+        updateable.UpdatedAt = utcNow;
     }
 }

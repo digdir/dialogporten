@@ -9,13 +9,9 @@ internal sealed class DialogActivityConfiguration : IEntityTypeConfiguration<Dia
     public void Configure(EntityTypeBuilder<DialogActivity> builder)
     {
         builder
-            .HasOne(e => e.RelatedActivity)
-            .WithMany()
-            .HasForeignKey(e => e.RelatedActivityInternalId);
-
-        builder
-            .HasOne(e => e.DialogElement)
-            .WithMany()
-            .HasForeignKey(e => e.DialogElementInternalId);
+            .HasOne(x => x.RelatedActivity)
+            .WithMany(x => x.RelatedActivities)
+            .HasForeignKey(x => x.RelatedActivityId)
+            .OnDelete(DeleteBehavior.SetNull);
     }
 }

@@ -3,7 +3,7 @@ using Digdir.Domain.Dialogporten.Application.Tests.Integration.Common;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements.DialogElementUrls;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements;
 using FluentAssertions;
 using Xunit;
 
@@ -27,8 +27,8 @@ public class CreateDialogTests : ApplicationCollectionFixture
             Party = "org:991825827",
             StatusId = DialogStatus.Enum.InProgress,
             ExtendedStatus = "SKE-ABC",
-            //DueAtUtc = new(2022, 12, 01),
-            //ExpiresAtUtc = new(2023, 12, 01),
+            //DueAt = new(2022, 12, 01),
+            //ExpiresAt = new(2023, 12, 01),
             Title = new() { new() { CultureCode = "nb_NO", Value = "Et eksempel på en tittel" } },
             SenderName = new() { new() { CultureCode = "nb_NO", Value = "Overstyrt avsendernavn (bruker default tjenesteeiers navn)" } },
             Body = new() { new() { CultureCode = "nb_NO", Value = "Innhold med <em>begrenset</em> HTML-støtte. Dette innholdet vises når dialogen ekspanderes." } },
@@ -71,19 +71,19 @@ public class CreateDialogTests : ApplicationCollectionFixture
             {
                 new() {
                     Action = "open",
-                    TypeId = DialogGuiActionType.Enum.Primary,
+                    TypeId = DialogGuiActionPriority.Enum.Primary,
                     Title = new() { new() { CultureCode = "nb_NO", Value = "Åpne i dialogtjeneste" } },
                     Url = new("https://example.com/some/deep/link/to/dialogs/123456789")},
                 new() {
                     Action = "confirm",
-                    TypeId = DialogGuiActionType.Enum.Secondary,
+                    TypeId = DialogGuiActionPriority.Enum.Secondary,
                     Title = new() { new() { CultureCode = "nb_NO", Value = "Bekreft mottatt" } },
                     Url = new("https://example.com/some/deep/link/to/dialogs/123456789/confirmReceived"),
                     AuthorizationAttribute = "somesubresource",
                     IsBackChannel = true},
                 new() {
                     Action = "delete",
-                    TypeId = DialogGuiActionType.Enum.Tertiary,
+                    TypeId = DialogGuiActionPriority.Enum.Tertiary,
                     Title = new() { new() { CultureCode = "nb_NO", Value = "Avbryt" } },
                     Url = new("https://example.com/some/deep/link/to/dialogs/123456789/confirmReceived"),
                     IsDeleteAction = true}
@@ -117,7 +117,7 @@ public class CreateDialogTests : ApplicationCollectionFixture
                 new()
                 {
                     Id = Guid.NewGuid(),
-                    CreatedAtUtc = DateTimeOffset.UtcNow,
+                    CreatedAt = DateTimeOffset.UtcNow,
                     TypeId = DialogActivityType.Enum.Submission,
                     PerformedBy = "person:12018212345",
                     ExtendedType = new Uri("SKE:1234-received-precheck-ok"),

@@ -8,5 +8,5 @@ public interface ICreatableEntity
     /// <summary>
     /// Time at which the entity was first created in UTC.
     /// </summary>
-    DateTimeOffset CreatedAtUtc { get; set; }
+    DateTimeOffset CreatedAt { get; set; }
 }

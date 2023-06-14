@@ -9,7 +9,7 @@ internal static class UpdatableExtensions
     public static ModelBuilder AddUpdatableEntities(this ModelBuilder modelBuilder)
     {
         return modelBuilder.EntitiesOfType<IUpdateableEntity>(builder =>
-            builder.Property(nameof(IUpdateableEntity.UpdatedAtUtc)).HasDefaultValueSql("current_timestamp at time zone 'utc'"));
+            builder.Property(nameof(IUpdateableEntity.UpdatedAt)).HasDefaultValueSql("current_timestamp at time zone 'utc'"));
     }
 
     public static ChangeTracker HandleUpdatableEntities(this ChangeTracker changeTracker, DateTimeOffset utcNow)

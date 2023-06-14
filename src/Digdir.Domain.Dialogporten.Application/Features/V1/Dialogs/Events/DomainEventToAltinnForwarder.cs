@@ -42,7 +42,7 @@ internal sealed class DomainEventToAltinnForwarder :
         {
             Id = notification.EventId,
             Type = dialogCreated,
-            Time = notification.OccuredAtUtc,
+            Time = notification.OccuredAt,
             Resource = dialog.ServiceResource,
             ResourceInstance = dialog.Id.ToString(), 
             AlternativeSubject = dialog.Party, 
@@ -69,7 +69,7 @@ internal sealed class DomainEventToAltinnForwarder :
         {
             Id = notification.EventId,
             Type = dialogUpdated,
-            Time = notification.OccuredAtUtc,
+            Time = notification.OccuredAt,
             Resource = dialog.ServiceResource,
             ResourceInstance = dialog.Id.ToString(),
             AlternativeSubject = dialog.Party,
@@ -97,7 +97,7 @@ internal sealed class DomainEventToAltinnForwarder :
         {
             Id = notification.EventId,
             Type = dialogDeleted,
-            Time = notification.OccuredAtUtc,
+            Time = notification.OccuredAt,
             Resource = dialog.ServiceResource,
             ResourceInstance = dialog.Id.ToString(),
             AlternativeSubject = dialog.Party,
@@ -139,7 +139,7 @@ internal sealed class DomainEventToAltinnForwarder :
         {
             Id = notification.EventId,
             Type = cloudEventType,
-            Time = notification.OccuredAtUtc,
+            Time = notification.OccuredAt,
             Resource = dialogActivity.Dialog.ServiceResource,
             ResourceInstance = dialogActivity.Dialog.Id.ToString(),
             AlternativeSubject = dialogActivity.Dialog.Party,

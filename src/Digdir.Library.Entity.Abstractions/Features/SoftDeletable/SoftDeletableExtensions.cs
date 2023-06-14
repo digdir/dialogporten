@@ -12,7 +12,7 @@ public static class SoftDeletableExtensions
     /// <param name="now">The deletion time in UTC.</param>
     public static void Delete(this ISoftDeletableEntity deletable, DateTimeOffset now)
     {
-        deletable.DeletedAtUtc = now;
+        deletable.DeletedAt = now;
         deletable.Deleted = true;
     }
 
@@ -22,7 +22,7 @@ public static class SoftDeletableExtensions
     /// <param name="deletable">The <see cref="ISoftDeletableEntity"/> to restore.</param>
     public static void Restore(this ISoftDeletableEntity deletable)
     {
-        deletable.DeletedAtUtc = null;
+        deletable.DeletedAt = null;
         deletable.Deleted = false;
     }
 }

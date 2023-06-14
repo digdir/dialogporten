@@ -25,7 +25,7 @@ internal sealed class UnitOfWork : IUnitOfWork
         _dialogDbContext.ChangeTracker.HandleAuditableEntities(now);
         foreach (var domainEvent in _domainEventPublisher.GetDomainEvents())
         {
-            domainEvent.OccuredAtUtc = now;
+            domainEvent.OccuredAt = now;
         }
         return _dialogDbContext.SaveChangesAsync(cancellationToken);
     }

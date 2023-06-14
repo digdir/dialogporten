@@ -134,7 +134,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         var newDialogActivities = dto.History
             .Select(_mapper.Map<DialogActivity>)
             .ToList();
-        dialog.History.AddRange(newDialogActivities);
+        dialog.Activity.AddRange(newDialogActivities);
         _eventPublisher.Publish(newDialogActivities.Select(x => new DialogActivityCreatedDomainEvent(dialog.Id, x.CreateId())));
 
     }

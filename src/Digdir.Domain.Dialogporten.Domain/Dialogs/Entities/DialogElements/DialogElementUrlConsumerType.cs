@@ -1,6 +1,6 @@
 ﻿using Digdir.Library.Entity.Abstractions.Features.Lookup;
 
-namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements.DialogElementUrls;
+namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements;
 
 public class DialogElementUrlConsumerType : AbstractLookupEntity<DialogElementUrlConsumerType, DialogElementUrlConsumerType.Enum>
 {
