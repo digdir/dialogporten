@@ -6,7 +6,6 @@ namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 
 public class DialogActivity : IImmutableEntity
 {
-    public long InternalId { get; set; }
     public Guid Id { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
 
@@ -16,19 +15,19 @@ public class DialogActivity : IImmutableEntity
     public DialogActivityType.Enum TypeId { get; set; }
     public DialogActivityType Type { get; set; } = null!;
 
-    public long DescriptionId { get; set; }
+    public Guid DescriptionId { get; set; }
     public LocalizationSet Description { get; set; } = null!;
 
-    public long? PerformedById { get; set; }
+    public Guid? PerformedById { get; set; }
     public LocalizationSet? PerformedBy { get; set; }
 
-    public long DialogId { get; set; }
+    public Guid DialogId { get; set; }
     public DialogEntity Dialog { get; set; } = null!;
 
-    public long? RelatedActivityId { get; set; }
+    public Guid? RelatedActivityId { get; set; }
     public DialogActivity? RelatedActivity { get; set; }
 
-    public long? DialogElementId { get; set; }
+    public Guid? DialogElementId { get; set; }
     public DialogElement? DialogElement { get; set; }
 
     // === Principal relationships ===

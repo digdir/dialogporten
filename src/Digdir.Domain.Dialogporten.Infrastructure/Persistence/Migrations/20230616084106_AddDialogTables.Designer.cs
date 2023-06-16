@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(DialogDbContext))]
-    [Migration("20230614110249_AddDialogTables")]
+    [Migration("20230616084106_AddDialogTables")]
     partial class AddDialogTables
     {
         /// <inheritdoc />
@@ -27,11 +27,10 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions.DialogApiAction", b =>
                 {
-                    b.Property<long>("InternalId")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("InternalId"));
+                        .HasColumnType("uuid")
+                        .HasDefaultValueSql("gen_random_uuid()");
 
                     b.Property<string>("Action")
                         .IsRequired()
@@ -47,43 +46,35 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("current_timestamp at time zone 'utc'");
 
-                    b.Property<long?>("DialogElementId")
-                        .HasColumnType("bigint");
+                    b.Property<Guid?>("DialogElementId")
+                        .HasColumnType("uuid");
 
-                    b.Property<long>("DialogId")
-                        .HasColumnType("bigint");
-
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid")
-                        .HasDefaultValueSql("gen_random_uuid()");
+                    b.Property<Guid>("DialogId")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTimeOffset>("UpdatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("current_timestamp at time zone 'utc'");
 
-                    b.HasKey("InternalId");
+                    b.HasKey("Id");
 
                     b.HasIndex("DialogElementId");
 
                     b.HasIndex("DialogId");
-
-                    b.HasIndex("Id")
-                        .IsUnique();
 
                     b.ToTable("DialogApiAction");
                 });
 
             modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions.DialogApiActionEndpoint", b =>
                 {
-                    b.Property<long>("InternalId")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
+                        .HasColumnType("uuid")
+                        .HasDefaultValueSql("gen_random_uuid()");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("InternalId"));
-
-                    b.Property<long>("ActionId")
-                        .HasColumnType("bigint");
+                    b.Property<Guid>("ActionId")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .ValueGeneratedOnAdd()
@@ -101,10 +92,6 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
-
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid")
-                        .HasDefaultValueSql("gen_random_uuid()");
 
                     b.Property<string>("RequestSchema")
                         .HasMaxLength(1023)
@@ -131,23 +118,19 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
 
-                    b.HasKey("InternalId");
+                    b.HasKey("Id");
 
                     b.HasIndex("ActionId");
-
-                    b.HasIndex("Id")
-                        .IsUnique();
 
                     b.ToTable("DialogApiActionEndpoint");
                 });
 
             modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions.DialogGuiAction", b =>
                 {
-                    b.Property<long>("InternalId")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("InternalId"));
+                        .HasColumnType("uuid")
+                        .HasDefaultValueSql("gen_random_uuid()");
 
                     b.Property<string>("Action")
                         .IsRequired()
@@ -163,12 +146,8 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("current_timestamp at time zone 'utc'");
 
-                    b.Property<long>("DialogId")
-                        .HasColumnType("bigint");
-
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid")
-                        .HasDefaultValueSql("gen_random_uuid()");
+                    b.Property<Guid>("DialogId")
+                        .HasColumnType("uuid");
 
                     b.Property<bool>("IsBackChannel")
                         .HasColumnType("boolean");
@@ -179,8 +158,8 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.Property<int>("PriorityId")
                         .HasColumnType("integer");
 
-                    b.Property<long>("TitleId")
-                        .HasColumnType("bigint");
+                    b.Property<Guid>("TitleId")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTimeOffset>("UpdatedAt")
                         .ValueGeneratedOnAdd()
@@ -192,12 +171,9 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         .HasMaxLength(1023)
                         .HasColumnType("character varying(1023)");
 
-                    b.HasKey("InternalId");
+                    b.HasKey("Id");
 
                     b.HasIndex("DialogId");
-
-                    b.HasIndex("Id")
-                        .IsUnique();
 
                     b.HasIndex("PriorityId");
 
@@ -240,53 +216,45 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities.DialogActivity", b =>
                 {
-                    b.Property<long>("InternalId")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("InternalId"));
+                        .HasColumnType("uuid")
+                        .HasDefaultValueSql("gen_random_uuid()");
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("current_timestamp at time zone 'utc'");
 
-                    b.Property<long>("DescriptionId")
-                        .HasColumnType("bigint");
+                    b.Property<Guid>("DescriptionId")
+                        .HasColumnType("uuid");
 
-                    b.Property<long?>("DialogElementId")
-                        .HasColumnType("bigint");
+                    b.Property<Guid?>("DialogElementId")
+                        .HasColumnType("uuid");
 
-                    b.Property<long>("DialogId")
-                        .HasColumnType("bigint");
+                    b.Property<Guid>("DialogId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("ExtendedType")
                         .HasMaxLength(1023)
                         .HasColumnType("character varying(1023)");
 
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid")
-                        .HasDefaultValueSql("gen_random_uuid()");
+                    b.Property<Guid?>("PerformedById")
+                        .HasColumnType("uuid");
 
-                    b.Property<long?>("PerformedById")
-                        .HasColumnType("bigint");
-
-                    b.Property<long?>("RelatedActivityId")
-                        .HasColumnType("bigint");
+                    b.Property<Guid?>("RelatedActivityId")
+                        .HasColumnType("uuid");
 
                     b.Property<int>("TypeId")
                         .HasColumnType("integer");
 
-                    b.HasKey("InternalId");
+                    b.HasKey("Id");
 
                     b.HasIndex("DescriptionId");
 
                     b.HasIndex("DialogElementId");
 
                     b.HasIndex("DialogId");
-
-                    b.HasIndex("Id")
-                        .IsUnique();
 
                     b.HasIndex("PerformedById");
 
@@ -351,11 +319,10 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements.DialogElement", b =>
                 {
-                    b.Property<long>("InternalId")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("InternalId"));
+                        .HasColumnType("uuid")
+                        .HasDefaultValueSql("gen_random_uuid()");
 
                     b.Property<string>("AuthorizationAttribute")
                         .HasMaxLength(255)
@@ -366,18 +333,14 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("current_timestamp at time zone 'utc'");
 
-                    b.Property<long>("DialogId")
-                        .HasColumnType("bigint");
+                    b.Property<Guid>("DialogId")
+                        .HasColumnType("uuid");
 
-                    b.Property<long>("DisplayNameId")
-                        .HasColumnType("bigint");
+                    b.Property<Guid>("DisplayNameId")
+                        .HasColumnType("uuid");
 
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid")
-                        .HasDefaultValueSql("gen_random_uuid()");
-
-                    b.Property<long?>("RelatedDialogElementId")
-                        .HasColumnType("bigint");
+                    b.Property<Guid?>("RelatedDialogElementId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Type")
                         .HasMaxLength(1023)
@@ -388,14 +351,11 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("current_timestamp at time zone 'utc'");
 
-                    b.HasKey("InternalId");
+                    b.HasKey("Id");
 
                     b.HasIndex("DialogId");
 
                     b.HasIndex("DisplayNameId");
-
-                    b.HasIndex("Id")
-                        .IsUnique();
 
                     b.HasIndex("RelatedDialogElementId");
 
@@ -404,11 +364,10 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements.DialogElementUrl", b =>
                 {
-                    b.Property<long>("InternalId")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("InternalId"));
+                        .HasColumnType("uuid")
+                        .HasDefaultValueSql("gen_random_uuid()");
 
                     b.Property<int>("ConsumerTypeId")
                         .HasColumnType("integer");
@@ -418,12 +377,8 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("current_timestamp at time zone 'utc'");
 
-                    b.Property<long>("DialogElementId")
-                        .HasColumnType("bigint");
-
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid")
-                        .HasDefaultValueSql("gen_random_uuid()");
+                    b.Property<Guid>("DialogElementId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("MimeType")
                         .HasMaxLength(255)
@@ -439,14 +394,11 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         .HasMaxLength(1023)
                         .HasColumnType("character varying(1023)");
 
-                    b.HasKey("InternalId");
+                    b.HasKey("Id");
 
                     b.HasIndex("ConsumerTypeId");
 
                     b.HasIndex("DialogElementId");
-
-                    b.HasIndex("Id")
-                        .IsUnique();
 
                     b.ToTable("DialogElementUrl");
                 });
@@ -480,14 +432,13 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogEntity", b =>
                 {
-                    b.Property<long>("InternalId")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
+                        .HasColumnType("uuid")
+                        .HasDefaultValueSql("gen_random_uuid()");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("InternalId"));
-
-                    b.Property<long>("BodyId")
-                        .HasColumnType("bigint");
+                    b.Property<Guid>("BodyId")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .ValueGeneratedOnAdd()
@@ -504,10 +455,6 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
 
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid")
-                        .HasDefaultValueSql("gen_random_uuid()");
-
                     b.Property<string>("Org")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -521,11 +468,11 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.Property<DateTimeOffset?>("ReadAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<long?>("SearchTitleId")
-                        .HasColumnType("bigint");
+                    b.Property<Guid?>("SearchTitleId")
+                        .HasColumnType("uuid");
 
-                    b.Property<long?>("SenderNameId")
-                        .HasColumnType("bigint");
+                    b.Property<Guid?>("SenderNameId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("ServiceResource")
                         .IsRequired()
@@ -535,8 +482,8 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.Property<int>("StatusId")
                         .HasColumnType("integer");
 
-                    b.Property<long>("TitleId")
-                        .HasColumnType("bigint");
+                    b.Property<Guid>("TitleId")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTimeOffset>("UpdatedAt")
                         .ValueGeneratedOnAdd()
@@ -546,12 +493,9 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.Property<DateTimeOffset?>("VisibleFrom")
                         .HasColumnType("timestamp with time zone");
 
-                    b.HasKey("InternalId");
+                    b.HasKey("Id");
 
                     b.HasIndex("BodyId");
-
-                    b.HasIndex("Id")
-                        .IsUnique();
 
                     b.HasIndex("SearchTitleId");
 
@@ -613,8 +557,8 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.Localizations.Localization", b =>
                 {
-                    b.Property<long>("LocalizationSetId")
-                        .HasColumnType("bigint");
+                    b.Property<Guid>("LocalizationSetId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("CultureCode")
                         .HasMaxLength(15)
@@ -642,25 +586,17 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.Localizations.LocalizationSet", b =>
                 {
-                    b.Property<long>("InternalId")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("InternalId"));
+                        .HasColumnType("uuid")
+                        .HasDefaultValueSql("gen_random_uuid()");
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("current_timestamp at time zone 'utc'");
 
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid")
-                        .HasDefaultValueSql("gen_random_uuid()");
-
-                    b.HasKey("InternalId");
-
-                    b.HasIndex("Id")
-                        .IsUnique();
+                    b.HasKey("Id");
 
                     b.ToTable("LocalizationSet");
                 });
@@ -767,7 +703,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         .HasForeignKey("DialogElementId");
 
                     b.HasOne("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogEntity", "Dialog")
-                        .WithMany("Activity")
+                        .WithMany("Activities")
                         .HasForeignKey("DialogId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -932,7 +868,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogEntity", b =>
                 {
-                    b.Navigation("Activity");
+                    b.Navigation("Activities");
 
                     b.Navigation("ApiActions");
 

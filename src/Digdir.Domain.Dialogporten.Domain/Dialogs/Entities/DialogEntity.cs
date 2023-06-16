@@ -8,7 +8,6 @@ namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 
 public class DialogEntity : IEntity
 {
-    public long InternalId { get; set; }
     public Guid Id { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
     public DateTimeOffset UpdatedAt { get; set; }
@@ -27,16 +26,16 @@ public class DialogEntity : IEntity
     public DialogStatus.Enum StatusId { get; set; }
     public DialogStatus Status { get; set; } = null!;
 
-    public long BodyId { get; set; }
+    public Guid BodyId { get; set; }
     public LocalizationSet Body { get; set; } = null!;
 
-    public long TitleId { get; set; }
+    public Guid TitleId { get; set; }
     public LocalizationSet Title { get; set; } = null!;
 
-    public long? SenderNameId { get; set; }
+    public Guid? SenderNameId { get; set; }
     public LocalizationSet? SenderName { get; set; }
 
-    public long? SearchTitleId { get; set; }
+    public Guid? SearchTitleId { get; set; }
     public LocalizationSet? SearchTitle { get; set; }
 
     // === Principal relationships === 

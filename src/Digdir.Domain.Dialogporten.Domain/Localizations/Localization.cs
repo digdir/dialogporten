@@ -11,6 +11,6 @@ public class Localization : IJoinEntity
     public string CultureCode { get; set; } = null!;
 
     // === Dependent relationships ===
-    public long LocalizationSetId { get; set; }
+    public Guid LocalizationSetId { get; set; }
     public LocalizationSet LocalizationSet { get; set; } = null!;
 }

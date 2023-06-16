@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
@@ -66,14 +65,12 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                 name: "LocalizationSet",
                 columns: table => new
                 {
-                    InternalId = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
                     CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "current_timestamp at time zone 'utc'")
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_LocalizationSet", x => x.InternalId);
+                    table.PrimaryKey("PK_LocalizationSet", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -93,8 +90,6 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                 name: "Dialog",
                 columns: table => new
                 {
-                    InternalId = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
                     CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "current_timestamp at time zone 'utc'"),
                     UpdatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "current_timestamp at time zone 'utc'"),
@@ -107,14 +102,14 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     ExpiresAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     ReadAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     StatusId = table.Column<int>(type: "integer", nullable: false),
-                    BodyId = table.Column<long>(type: "bigint", nullable: false),
-                    TitleId = table.Column<long>(type: "bigint", nullable: false),
-                    SenderNameId = table.Column<long>(type: "bigint", nullable: true),
-                    SearchTitleId = table.Column<long>(type: "bigint", nullable: true)
+                    BodyId = table.Column<Guid>(type: "uuid", nullable: false),
+                    TitleId = table.Column<Guid>(type: "uuid", nullable: false),
+                    SenderNameId = table.Column<Guid>(type: "uuid", nullable: true),
+                    SearchTitleId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Dialog", x => x.InternalId);
+                    table.PrimaryKey("PK_Dialog", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Dialog_DialogStatus_StatusId",
                         column: x => x.StatusId,
@@ -125,25 +120,25 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         name: "FK_Dialog_LocalizationSet_BodyId",
                         column: x => x.BodyId,
                         principalTable: "LocalizationSet",
-                        principalColumn: "InternalId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Dialog_LocalizationSet_SearchTitleId",
                         column: x => x.SearchTitleId,
                         principalTable: "LocalizationSet",
-                        principalColumn: "InternalId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Dialog_LocalizationSet_SenderNameId",
                         column: x => x.SenderNameId,
                         principalTable: "LocalizationSet",
-                        principalColumn: "InternalId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Dialog_LocalizationSet_TitleId",
                         column: x => x.TitleId,
                         principalTable: "LocalizationSet",
-                        principalColumn: "InternalId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -152,7 +147,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                 columns: table => new
                 {
                     CultureCode = table.Column<string>(type: "character varying(15)", maxLength: 15, nullable: false),
-                    LocalizationSetId = table.Column<long>(type: "bigint", nullable: false),
+                    LocalizationSetId = table.Column<Guid>(type: "uuid", nullable: false),
                     CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "current_timestamp at time zone 'utc'"),
                     UpdatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "current_timestamp at time zone 'utc'"),
                     Value = table.Column<string>(type: "character varying(4095)", maxLength: 4095, nullable: false)
@@ -164,7 +159,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         name: "FK_Localization_LocalizationSet_LocalizationSetId",
                         column: x => x.LocalizationSetId,
                         principalTable: "LocalizationSet",
-                        principalColumn: "InternalId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -190,37 +185,35 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                 name: "DialogElement",
                 columns: table => new
                 {
-                    InternalId = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
                     CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "current_timestamp at time zone 'utc'"),
                     UpdatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "current_timestamp at time zone 'utc'"),
                     AuthorizationAttribute = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
                     Type = table.Column<string>(type: "character varying(1023)", maxLength: 1023, nullable: true),
-                    DialogId = table.Column<long>(type: "bigint", nullable: false),
-                    DisplayNameId = table.Column<long>(type: "bigint", nullable: false),
-                    RelatedDialogElementId = table.Column<long>(type: "bigint", nullable: true)
+                    DialogId = table.Column<Guid>(type: "uuid", nullable: false),
+                    DisplayNameId = table.Column<Guid>(type: "uuid", nullable: false),
+                    RelatedDialogElementId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DialogElement", x => x.InternalId);
+                    table.PrimaryKey("PK_DialogElement", x => x.Id);
                     table.ForeignKey(
                         name: "FK_DialogElement_DialogElement_RelatedDialogElementId",
                         column: x => x.RelatedDialogElementId,
                         principalTable: "DialogElement",
-                        principalColumn: "InternalId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.SetNull);
                     table.ForeignKey(
                         name: "FK_DialogElement_Dialog_DialogId",
                         column: x => x.DialogId,
                         principalTable: "Dialog",
-                        principalColumn: "InternalId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_DialogElement_LocalizationSet_DisplayNameId",
                         column: x => x.DisplayNameId,
                         principalTable: "LocalizationSet",
-                        principalColumn: "InternalId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -228,8 +221,6 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                 name: "DialogGuiAction",
                 columns: table => new
                 {
-                    InternalId = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
                     CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "current_timestamp at time zone 'utc'"),
                     UpdatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "current_timestamp at time zone 'utc'"),
@@ -239,12 +230,12 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     IsBackChannel = table.Column<bool>(type: "boolean", nullable: false),
                     IsDeleteAction = table.Column<bool>(type: "boolean", nullable: false),
                     PriorityId = table.Column<int>(type: "integer", nullable: false),
-                    TitleId = table.Column<long>(type: "bigint", nullable: false),
-                    DialogId = table.Column<long>(type: "bigint", nullable: false)
+                    TitleId = table.Column<Guid>(type: "uuid", nullable: false),
+                    DialogId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DialogGuiAction", x => x.InternalId);
+                    table.PrimaryKey("PK_DialogGuiAction", x => x.Id);
                     table.ForeignKey(
                         name: "FK_DialogGuiAction_DialogGuiActionPriority_PriorityId",
                         column: x => x.PriorityId,
@@ -255,13 +246,13 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         name: "FK_DialogGuiAction_Dialog_DialogId",
                         column: x => x.DialogId,
                         principalTable: "Dialog",
-                        principalColumn: "InternalId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_DialogGuiAction_LocalizationSet_TitleId",
                         column: x => x.TitleId,
                         principalTable: "LocalizationSet",
-                        principalColumn: "InternalId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -269,21 +260,19 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                 name: "DialogActivity",
                 columns: table => new
                 {
-                    InternalId = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
                     CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "current_timestamp at time zone 'utc'"),
                     ExtendedType = table.Column<string>(type: "character varying(1023)", maxLength: 1023, nullable: true),
                     TypeId = table.Column<int>(type: "integer", nullable: false),
-                    DescriptionId = table.Column<long>(type: "bigint", nullable: false),
-                    PerformedById = table.Column<long>(type: "bigint", nullable: true),
-                    DialogId = table.Column<long>(type: "bigint", nullable: false),
-                    RelatedActivityId = table.Column<long>(type: "bigint", nullable: true),
-                    DialogElementId = table.Column<long>(type: "bigint", nullable: true)
+                    DescriptionId = table.Column<Guid>(type: "uuid", nullable: false),
+                    PerformedById = table.Column<Guid>(type: "uuid", nullable: true),
+                    DialogId = table.Column<Guid>(type: "uuid", nullable: false),
+                    RelatedActivityId = table.Column<Guid>(type: "uuid", nullable: true),
+                    DialogElementId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DialogActivity", x => x.InternalId);
+                    table.PrimaryKey("PK_DialogActivity", x => x.Id);
                     table.ForeignKey(
                         name: "FK_DialogActivity_DialogActivityType_TypeId",
                         column: x => x.TypeId,
@@ -294,30 +283,30 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         name: "FK_DialogActivity_DialogActivity_RelatedActivityId",
                         column: x => x.RelatedActivityId,
                         principalTable: "DialogActivity",
-                        principalColumn: "InternalId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.SetNull);
                     table.ForeignKey(
                         name: "FK_DialogActivity_DialogElement_DialogElementId",
                         column: x => x.DialogElementId,
                         principalTable: "DialogElement",
-                        principalColumn: "InternalId");
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_DialogActivity_Dialog_DialogId",
                         column: x => x.DialogId,
                         principalTable: "Dialog",
-                        principalColumn: "InternalId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_DialogActivity_LocalizationSet_DescriptionId",
                         column: x => x.DescriptionId,
                         principalTable: "LocalizationSet",
-                        principalColumn: "InternalId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_DialogActivity_LocalizationSet_PerformedById",
                         column: x => x.PerformedById,
                         principalTable: "LocalizationSet",
-                        principalColumn: "InternalId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -325,29 +314,27 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                 name: "DialogApiAction",
                 columns: table => new
                 {
-                    InternalId = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
                     CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "current_timestamp at time zone 'utc'"),
                     UpdatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "current_timestamp at time zone 'utc'"),
                     Action = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     AuthorizationAttribute = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
-                    DialogId = table.Column<long>(type: "bigint", nullable: false),
-                    DialogElementId = table.Column<long>(type: "bigint", nullable: true)
+                    DialogId = table.Column<Guid>(type: "uuid", nullable: false),
+                    DialogElementId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DialogApiAction", x => x.InternalId);
+                    table.PrimaryKey("PK_DialogApiAction", x => x.Id);
                     table.ForeignKey(
                         name: "FK_DialogApiAction_DialogElement_DialogElementId",
                         column: x => x.DialogElementId,
                         principalTable: "DialogElement",
-                        principalColumn: "InternalId");
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_DialogApiAction_Dialog_DialogId",
                         column: x => x.DialogId,
                         principalTable: "Dialog",
-                        principalColumn: "InternalId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -355,19 +342,17 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                 name: "DialogElementUrl",
                 columns: table => new
                 {
-                    InternalId = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
                     CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "current_timestamp at time zone 'utc'"),
                     UpdatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "current_timestamp at time zone 'utc'"),
                     Url = table.Column<string>(type: "character varying(1023)", maxLength: 1023, nullable: false),
                     MimeType = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
                     ConsumerTypeId = table.Column<int>(type: "integer", nullable: false),
-                    DialogElementId = table.Column<long>(type: "bigint", nullable: false)
+                    DialogElementId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DialogElementUrl", x => x.InternalId);
+                    table.PrimaryKey("PK_DialogElementUrl", x => x.Id);
                     table.ForeignKey(
                         name: "FK_DialogElementUrl_DialogElementUrlConsumerType_ConsumerTypeId",
                         column: x => x.ConsumerTypeId,
@@ -378,7 +363,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         name: "FK_DialogElementUrl_DialogElement_DialogElementId",
                         column: x => x.DialogElementId,
                         principalTable: "DialogElement",
-                        principalColumn: "InternalId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -386,8 +371,6 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                 name: "DialogApiActionEndpoint",
                 columns: table => new
                 {
-                    InternalId = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
                     CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "current_timestamp at time zone 'utc'"),
                     UpdatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "current_timestamp at time zone 'utc'"),
@@ -399,16 +382,16 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     ResponseSchema = table.Column<string>(type: "character varying(1023)", maxLength: 1023, nullable: true),
                     Deprecated = table.Column<bool>(type: "boolean", nullable: false),
                     SunsetAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    ActionId = table.Column<long>(type: "bigint", nullable: false)
+                    ActionId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DialogApiActionEndpoint", x => x.InternalId);
+                    table.PrimaryKey("PK_DialogApiActionEndpoint", x => x.Id);
                     table.ForeignKey(
                         name: "FK_DialogApiActionEndpoint_DialogApiAction_ActionId",
                         column: x => x.ActionId,
                         principalTable: "DialogApiAction",
-                        principalColumn: "InternalId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -464,12 +447,6 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                 column: "BodyId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Dialog_Id",
-                table: "Dialog",
-                column: "Id",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Dialog_SearchTitleId",
                 table: "Dialog",
                 column: "SearchTitleId");
@@ -505,12 +482,6 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                 column: "DialogId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DialogActivity_Id",
-                table: "DialogActivity",
-                column: "Id",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_DialogActivity_PerformedById",
                 table: "DialogActivity",
                 column: "PerformedById");
@@ -536,21 +507,9 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                 column: "DialogId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DialogApiAction_Id",
-                table: "DialogApiAction",
-                column: "Id",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_DialogApiActionEndpoint_ActionId",
                 table: "DialogApiActionEndpoint",
                 column: "ActionId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_DialogApiActionEndpoint_Id",
-                table: "DialogApiActionEndpoint",
-                column: "Id",
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_DialogElement_DialogId",
@@ -561,12 +520,6 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                 name: "IX_DialogElement_DisplayNameId",
                 table: "DialogElement",
                 column: "DisplayNameId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_DialogElement_Id",
-                table: "DialogElement",
-                column: "Id",
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_DialogElement_RelatedDialogElementId",
@@ -584,21 +537,9 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                 column: "DialogElementId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DialogElementUrl_Id",
-                table: "DialogElementUrl",
-                column: "Id",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_DialogGuiAction_DialogId",
                 table: "DialogGuiAction",
                 column: "DialogId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_DialogGuiAction_Id",
-                table: "DialogGuiAction",
-                column: "Id",
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_DialogGuiAction_PriorityId",
@@ -609,12 +550,6 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                 name: "IX_DialogGuiAction_TitleId",
                 table: "DialogGuiAction",
                 column: "TitleId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_LocalizationSet_Id",
-                table: "LocalizationSet",
-                column: "Id",
-                unique: true);
         }
 
         /// <inheritdoc />

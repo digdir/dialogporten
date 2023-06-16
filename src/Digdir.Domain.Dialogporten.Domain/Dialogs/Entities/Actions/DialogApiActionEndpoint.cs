@@ -4,7 +4,6 @@ namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 
 public class DialogApiActionEndpoint : IEntity
 {
-    public long InternalId { get; set; }
     public Guid Id { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
     public DateTimeOffset UpdatedAt { get; set; }
@@ -19,6 +18,6 @@ public class DialogApiActionEndpoint : IEntity
     public DateTimeOffset? SunsetAt { get; set; }
 
     // === Dependent relationships ===
-    public long ActionId { get; set; }
+    public Guid ActionId { get; set; }
     public DialogApiAction Action { get; set; } = null!;
 }

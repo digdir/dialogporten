@@ -5,7 +5,6 @@ namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 
 public class DialogGuiAction : IEntity
 {
-    public long InternalId { get; set; }
     public Guid Id { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
     public DateTimeOffset UpdatedAt { get; set; }
@@ -20,9 +19,9 @@ public class DialogGuiAction : IEntity
     public DialogGuiActionPriority.Enum PriorityId { get; set; }
     public DialogGuiActionPriority Priority { get; set; } = null!;
 
-    public long TitleId { get; set; }
+    public Guid TitleId { get; set; }
     public LocalizationSet Title { get; set; } = null!;
 
-    public long DialogId { get; set; }
+    public Guid DialogId { get; set; }
     public DialogEntity Dialog { get; set; } = null!;
 }

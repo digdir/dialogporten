@@ -10,9 +10,8 @@ internal static class IdentifiableExtensions
     {
         return modelBuilder.EntitiesOfType<IIdentifiableEntity>(builder =>
         {
+            builder.HasKey(nameof(IIdentifiableEntity.Id));
             builder.Property(nameof(IIdentifiableEntity.Id)).HasDefaultValueSql("gen_random_uuid()");
-            builder.HasIndex(nameof(IIdentifiableEntity.Id)).IsUnique();
-            builder.HasKey(nameof(IIdentifiableEntity.InternalId));
         });
     }
 
