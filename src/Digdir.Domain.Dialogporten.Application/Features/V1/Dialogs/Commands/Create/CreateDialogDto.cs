@@ -62,7 +62,7 @@ public sealed class CreateDialogDialogApiActionEndpointDto
     public Uri? DocumentationUrl { get; set; }
     public Uri? RequestSchema { get; set; }
     public Uri? ResponseSchema { get; set; }
-    public bool? Deprecated { get; set; }
+    public bool Deprecated { get; set; }
     public DateTimeOffset? SunsetAt { get; set; }
 }
 
@@ -71,8 +71,8 @@ public sealed class CreateDialogDialogGuiActionDto
     public string Action { get; set; } = null!;
     public Uri Url { get; set; } = null!;
     public string? AuthorizationAttribute { get; set; }
-    public bool? IsBackChannel { get; set; }
-    public bool? IsDeleteAction { get; set; }
+    public bool IsBackChannel { get; set; }
+    public bool IsDeleteAction { get; set; }
 
     public DialogGuiActionPriority.Enum PriorityId { get; set; }
 

@@ -16,7 +16,31 @@ public class GetDialogTests : ApplicationCollectionFixture
     {
     }
 
-    [Fact(Skip = "While preparing github actions")]
+    [Fact]
+    public async Task Get_ReturnsSimpleDialog_WhenDialogExists()
+    {
+        // Arrange
+        var createDialogCommand = new CreateDialogCommand
+        {
+            Id = Guid.NewGuid(),
+            ServiceResource = "example_dialog_service",
+            Party = "org:991825827",
+            StatusId = DialogStatus.Enum.InProgress
+        };
+
+        var createCommandResponse = await Application.Send(createDialogCommand);
+
+        // Act
+        var response = await Application.Send(new GetDialogQuery { Id = createCommandResponse.AsT0 });
+
+        // Assert
+        response.TryPickT0(out var result, out var _).Should().BeTrue();
+        result.Should().NotBeNull();
+        result.Should().BeEquivalentTo(createDialogCommand);
+    }
+
+    //[Fact(Skip = "While preparing github actions")]
+    [Fact]
     public async Task Get_ReturnsDialog_WhenDialogExists()
     {
         // Arrange
@@ -28,8 +52,9 @@ public class GetDialogTests : ApplicationCollectionFixture
             Party = "org:991825827",
             StatusId = DialogStatus.Enum.InProgress,
             ExtendedStatus = "SKE-ABC",
-            //DueAt = new(2022, 12, 01),
-            //ExpiresAt = new(2023, 12, 01),
+            DueAt = new(new DateTime(2022, 12, 01), TimeSpan.Zero),
+            ExpiresAt = new(new DateTime(2022, 12, 01), TimeSpan.Zero),
+            SearchTitle = new() { new() { CultureCode = "nb_NO", Value = "Et eksempel på en tittel" } },
             Title = new() { new() { CultureCode = "nb_NO", Value = "Et eksempel på en tittel" } },
             SenderName = new() { new() { CultureCode = "nb_NO", Value = "Overstyrt avsendernavn (bruker default tjenesteeiers navn)" } },
             Body = { new() { CultureCode = "nb_NO", Value = "Innhold med <em>begrenset</em> HTML-støtte. Dette innholdet vises når dialogen ekspanderes." } },

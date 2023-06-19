@@ -7,10 +7,9 @@ using FastEndpoints;
 using FastEndpoints.Swagger;
 using Microsoft.ApplicationInsights.Extensibility;
 using Serilog;
-using System.Text;
 using System.Text.Json.Serialization;
-using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
-using Digdir.Domain.Dialogporten.Infrastructure.Common.Serialization;
+using System.Text.Json.Serialization.Metadata;
+using System.Collections;
 
 // Using two-stage initialization to catch startup errors.
 Log.Logger = new LoggerConfiguration()
@@ -82,10 +81,12 @@ static void BuildAndRun(string[] args)
             x.Versioning.Prefix = "v";
             x.Versioning.PrependToRoute = true;
             x.Versioning.DefaultVersion = 1;
-
-            // TODO! Do we want this for numerics (ie. zero)?
-            // TODO! Determine if this is desirable for all endpoints and all properties with regards to discoverability
-            x.Serializer.Options.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault;
+            x.Serializer.Options.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+            // Do not serialize empty collections
+            x.Serializer.Options.TypeInfoResolver = new DefaultJsonTypeInfoResolver
+            {
+                Modifiers = { IgnoreEmptyCollections }
+            };
             x.Serializer.Options.Converters.Add(new JsonStringEnumConverter());
             x.Errors.ResponseBuilder = ErrorResponseBuilderExtensions.ResponseBuilder;
         })
@@ -93,4 +94,15 @@ static void BuildAndRun(string[] args)
         .UseSwaggerUi3(x => x.ConfigureDefaults());
 
     app.Run();
+}
+
+static void IgnoreEmptyCollections(JsonTypeInfo type_info)
+{
+    foreach (var property in type_info.Properties)
+    {
+        if (property.PropertyType.IsAssignableTo(typeof(ICollection)))
+        {
+            property.ShouldSerialize = (_, val) => val is ICollection collection && collection.Count > 0;
+        }
+    }
 }
