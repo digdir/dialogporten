@@ -104,8 +104,8 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     StatusId = table.Column<int>(type: "integer", nullable: false),
                     BodyId = table.Column<Guid>(type: "uuid", nullable: false),
                     TitleId = table.Column<Guid>(type: "uuid", nullable: false),
-                    SenderNameId = table.Column<Guid>(type: "uuid", nullable: true),
-                    SearchTitleId = table.Column<Guid>(type: "uuid", nullable: true)
+                    SenderNameId = table.Column<Guid>(type: "uuid", nullable: false),
+                    SearchTitleId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -265,7 +265,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     ExtendedType = table.Column<string>(type: "character varying(1023)", maxLength: 1023, nullable: true),
                     TypeId = table.Column<int>(type: "integer", nullable: false),
                     DescriptionId = table.Column<Guid>(type: "uuid", nullable: false),
-                    PerformedById = table.Column<Guid>(type: "uuid", nullable: true),
+                    PerformedById = table.Column<Guid>(type: "uuid", nullable: false),
                     DialogId = table.Column<Guid>(type: "uuid", nullable: false),
                     RelatedActivityId = table.Column<Guid>(type: "uuid", nullable: true),
                     DialogElementId = table.Column<Guid>(type: "uuid", nullable: true)

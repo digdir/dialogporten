@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(DialogDbContext))]
-    [Migration("20230616092522_AddDialogTables")]
+    [Migration("20230619062941_AddDialogTables")]
     partial class AddDialogTables
     {
         /// <inheritdoc />
@@ -239,7 +239,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         .HasMaxLength(1023)
                         .HasColumnType("character varying(1023)");
 
-                    b.Property<Guid?>("PerformedById")
+                    b.Property<Guid>("PerformedById")
                         .HasColumnType("uuid");
 
                     b.Property<Guid?>("RelatedActivityId")
@@ -468,10 +468,10 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.Property<DateTimeOffset?>("ReadAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid?>("SearchTitleId")
+                    b.Property<Guid>("SearchTitleId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("SenderNameId")
+                    b.Property<Guid>("SenderNameId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("ServiceResource")
@@ -713,7 +713,8 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.HasOne("Digdir.Domain.Dialogporten.Domain.Localizations.LocalizationSet", "PerformedBy")
                         .WithMany()
                         .HasForeignKey("PerformedById")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities.DialogActivity", "RelatedActivity")
                         .WithMany("RelatedActivities")
@@ -795,12 +796,14 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.HasOne("Digdir.Domain.Dialogporten.Domain.Localizations.LocalizationSet", "SearchTitle")
                         .WithMany()
                         .HasForeignKey("SearchTitleId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Digdir.Domain.Dialogporten.Domain.Localizations.LocalizationSet", "SenderName")
                         .WithMany()
                         .HasForeignKey("SenderNameId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogStatus", "Status")
                         .WithMany()

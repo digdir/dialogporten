@@ -47,7 +47,7 @@ public class GetDialogTests : ApplicationCollectionFixture
                         new ()
                         {
                             ConsumerTypeId = DialogElementUrlConsumerType.Enum.Gui,
-                            ContentTypeHint = "application/pdf",
+                            MimeType = "application/pdf",
                             Url = new Uri("http://example.com/some/deep/link/to/attachment1.pdf")
                         }
                     }

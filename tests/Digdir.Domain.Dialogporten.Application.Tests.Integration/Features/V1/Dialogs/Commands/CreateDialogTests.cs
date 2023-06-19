@@ -45,7 +45,7 @@ public class CreateDialogTests : ApplicationCollectionFixture
                         new ()
                         {
                             ConsumerTypeId = DialogElementUrlConsumerType.Enum.Gui,
-                            ContentTypeHint = "application/pdf",
+                            MimeType = "application/pdf",
                             Url = new Uri("http://example.com/some/deep/link/to/attachment1.pdf")
                         }
                     }
@@ -61,7 +61,7 @@ public class CreateDialogTests : ApplicationCollectionFixture
                         new ()
                         {
                             ConsumerTypeId = DialogElementUrlConsumerType.Enum.Api,
-                            ContentTypeHint = "application/xml",
+                            MimeType = "application/xml",
                             Url = new Uri("http://example.com/some/deep/link/to/attachment1.xml")
                         }
                     }
