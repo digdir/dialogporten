@@ -18,8 +18,8 @@ public class DialogActivity : IImmutableEntity
     public Guid DescriptionId { get; set; }
     public LocalizationSet Description { get; set; } = null!;
 
-    public Guid? PerformedById { get; set; }
-    public LocalizationSet? PerformedBy { get; set; }
+    public Guid PerformedById { get; set; }
+    public LocalizationSet PerformedBy { get; set; } = null!;
 
     public Guid DialogId { get; set; }
     public DialogEntity Dialog { get; set; } = null!;

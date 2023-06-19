@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(DialogDbContext))]
-    [Migration("20230616084106_AddDialogTables")]
+    [Migration("20230616092522_AddDialogTables")]
     partial class AddDialogTables
     {
         /// <inheritdoc />
@@ -639,7 +639,8 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                 {
                     b.HasOne("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements.DialogElement", "DialogElement")
                         .WithMany("ApiActions")
-                        .HasForeignKey("DialogElementId");
+                        .HasForeignKey("DialogElementId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogEntity", "Dialog")
                         .WithMany("ApiActions")
@@ -700,7 +701,8 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 
                     b.HasOne("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements.DialogElement", "DialogElement")
                         .WithMany("Activities")
-                        .HasForeignKey("DialogElementId");
+                        .HasForeignKey("DialogElementId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogEntity", "Dialog")
                         .WithMany("Activities")

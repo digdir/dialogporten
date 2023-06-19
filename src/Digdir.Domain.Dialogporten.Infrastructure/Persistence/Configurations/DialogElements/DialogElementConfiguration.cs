@@ -8,10 +8,8 @@ internal sealed class DialogElementConfiguration : IEntityTypeConfiguration<Dial
 {
     public void Configure(EntityTypeBuilder<DialogElement> builder)
     {
-        builder
-            .HasOne(x => x.RelatedDialogElement)
+        builder.HasOne(x => x.RelatedDialogElement)
             .WithMany(x => x.RelatedDialogElements)
-            .HasForeignKey(x => x.RelatedDialogElementId)
             .OnDelete(DeleteBehavior.SetNull);
     }
 }

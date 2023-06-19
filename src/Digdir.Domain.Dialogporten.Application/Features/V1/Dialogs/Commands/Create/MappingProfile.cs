@@ -12,9 +12,10 @@ internal sealed class MappingProfile : Profile
 	{
 		CreateMap<CreateDialogDto, DialogEntity>();
 		CreateMap<CreateDialogDialogElementDto, DialogElement>();
-		CreateMap<CreateDialogDialogElementUrlDto, DialogElementUrl>();
+        CreateMap<CreateDialogDialogElementUrlDto, DialogElementUrl>();
 		CreateMap<CreateDialogDialogGuiActionDto, DialogGuiAction>();
 		CreateMap<CreateDialogDialogApiActionDto, DialogApiAction>();
+        CreateMap<CreateDialogDialogApiActionEndpointDto, DialogApiActionEndpoint>();
 		CreateMap<CreateDialogDialogActivityDto, DialogActivity>();
 	}
 }

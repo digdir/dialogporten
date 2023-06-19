@@ -289,7 +289,8 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         name: "FK_DialogActivity_DialogElement_DialogElementId",
                         column: x => x.DialogElementId,
                         principalTable: "DialogElement",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
                     table.ForeignKey(
                         name: "FK_DialogActivity_Dialog_DialogId",
                         column: x => x.DialogId,
@@ -329,7 +330,8 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         name: "FK_DialogApiAction_DialogElement_DialogElementId",
                         column: x => x.DialogElementId,
                         principalTable: "DialogElement",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_DialogApiAction_Dialog_DialogId",
                         column: x => x.DialogId,

@@ -14,8 +14,8 @@ public sealed class ListDialogDto
     public DateTimeOffset UpdatedAt { get; set; }
     public DateTimeOffset? DueAt { get; set; }
 
-    // TODO: Denne må vi finne ut hvordan vi mapper
     public DialogStatus.Enum StatusId { get; set; }
+
     public List<LocalizationDto> Title { get; set; } = new();
-    public List<LocalizationDto>? SenderName { get; set; }
+    public List<LocalizationDto> SenderName { get; set; } = new();
 }

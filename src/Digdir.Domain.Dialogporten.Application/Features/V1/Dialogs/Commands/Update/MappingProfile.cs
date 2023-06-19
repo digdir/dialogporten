@@ -20,7 +20,11 @@ internal sealed class MappingProfile : Profile
             .IgnoreComplexDestinationProperties();
         CreateMap<UpdateDialogDialogGuiActionDto, DialogGuiAction>()
             .IgnoreComplexDestinationProperties();
+        CreateMap<UpdateDialogDialogApiActionEndpointDto, DialogApiActionEndpoint>()
+            .IgnoreComplexDestinationProperties();
         CreateMap<UpdateDialogDialogElementDto, DialogElement>()
+            .IgnoreComplexDestinationProperties();
+        CreateMap<UpdateDialogDialogElementUrlDto, DialogElementUrl>()
             .IgnoreComplexDestinationProperties();
 
         // Since this is append only, we don't need to merge with existing
@@ -31,7 +35,7 @@ internal sealed class MappingProfile : Profile
         CreateMap<DialogEntity, UpdateDialogDto>();
         CreateMap<DialogActivity, UpdateDialogDialogActivityDto>();
         CreateMap<DialogApiAction, UpdateDialogDialogApiActionDto>();
-        CreateMap<DialogApiAction, UpdateDialogDialogApiActionDto>();
+        CreateMap<DialogApiActionEndpoint, UpdateDialogDialogApiActionEndpointDto>();
         CreateMap<DialogGuiAction, UpdateDialogDialogGuiActionDto>();
         CreateMap<DialogElement, UpdateDialogDialogElementDto>();
         CreateMap<DialogElementUrl, UpdateDialogDialogElementUrlDto>();

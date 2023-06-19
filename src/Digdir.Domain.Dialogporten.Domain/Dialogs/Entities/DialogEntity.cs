@@ -32,15 +32,15 @@ public class DialogEntity : IEntity
     public Guid TitleId { get; set; }
     public LocalizationSet Title { get; set; } = null!;
 
-    public Guid? SenderNameId { get; set; }
-    public LocalizationSet? SenderName { get; set; }
+    public Guid SenderNameId { get; set; }
+    public LocalizationSet SenderName { get; set; } = null!;
 
-    public Guid? SearchTitleId { get; set; }
-    public LocalizationSet? SearchTitle { get; set; }
+    public Guid SearchTitleId { get; set; }
+    public LocalizationSet SearchTitle { get; set; } = null!;
 
     // === Principal relationships === 
     public List<DialogElement> Elements { get; set; } = new();
     public List<DialogGuiAction> GuiActions { get; set; } = new();
     public List<DialogApiAction> ApiActions { get; set; } = new();
-    public List<DialogActivity> Activity { get; set; } = new();
+    public List<DialogActivity> Activities { get; set; } = new();
 }

@@ -21,8 +21,10 @@ internal sealed class DialogDbContext : DbContext, IDialogDbContext
     public DbSet<DialogStatus> DialogStatuses => Set<DialogStatus>();
     public DbSet<DialogActivity> DialogActivities => Set<DialogActivity>();
     public DbSet<DialogApiAction> DialogApiActions => Set<DialogApiAction>();
+    public DbSet<DialogApiActionEndpoint> DialogApiActionEndpoints => Set<DialogApiActionEndpoint>();
     public DbSet<DialogGuiAction> DialogGuiActions => Set<DialogGuiAction>();
     public DbSet<DialogElement> DialogElements => Set<DialogElement>();
+    public DbSet<DialogElementUrl> DialogElementUrls => Set<DialogElementUrl>();
     public DbSet<DialogGuiActionPriority> DialogGuiActionTypes => Set<DialogGuiActionPriority>();
     public DbSet<DialogActivityType> DialogActivityTypes => Set<DialogActivityType>();
 
