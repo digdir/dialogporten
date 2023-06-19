@@ -1,6 +1,6 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Commands.Create;
-using Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Queries.Get;
-using Digdir.Domain.Dialogporten.Application.Tests.Integration.Common;
+using Digdir.Domain.Dialogporten.Application.Integration.Tests.Common;
+using Digdir.Domain.Dialogporten.Application.Integration.Tests.Features.V1.Dialogs;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
@@ -8,23 +8,22 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements;
 using FluentAssertions;
 using Xunit;
 
-namespace Digdir.Domain.Dialogporten.Application.Tests.Integration.Features.V1.Dialogs.Queries;
+namespace Digdir.Domain.Dialogporten.Application.Integration.Tests.Features.V1.Dialogs.Commands;
 
 [Collection(nameof(DialogCqrsCollectionFixture))]
-public class GetDialogTests : ApplicationCollectionFixture
+public class CreateDialogTests : ApplicationCollectionFixture
 {
-    public GetDialogTests(DialogApplication application) : base(application)
-    {
-    }
+    public CreateDialogTests(DialogApplication application) : base(application) { }
 
-    [Fact(Skip = "While preparing github actions")]
-    public async Task Get_ReturnsDialog_WhenDialogExists()
+    [Fact]
+    public async Task Create_CreateDialog_WhenDataIsValid()
     {
         // Arrange
-        var dialogElementGuid = Guid.NewGuid();
+        var expectedDialogId = Guid.NewGuid();
+        var expectedDialogElementId = Guid.NewGuid();
         var createCommand = new CreateDialogCommand
         {
-            Id = Guid.NewGuid(),
+            Id = expectedDialogId,
             ServiceResource = "example_dialog_service",
             Party = "org:991825827",
             StatusId = DialogStatus.Enum.InProgress,
@@ -33,12 +32,12 @@ public class GetDialogTests : ApplicationCollectionFixture
             //ExpiresAt = new(2023, 12, 01),
             Title = new() { new() { CultureCode = "nb_NO", Value = "Et eksempel på en tittel" } },
             SenderName = new() { new() { CultureCode = "nb_NO", Value = "Overstyrt avsendernavn (bruker default tjenesteeiers navn)" } },
-            Body =  { new() { CultureCode = "nb_NO", Value = "Innhold med <em>begrenset</em> HTML-støtte. Dette innholdet vises når dialogen ekspanderes." } },
+            Body = new() { new() { CultureCode = "nb_NO", Value = "Innhold med <em>begrenset</em> HTML-støtte. Dette innholdet vises når dialogen ekspanderes." } },
             Elements = new()
             {
                 new()
                 {
-                    Id = dialogElementGuid,
+                    Id = expectedDialogElementId,
                     DisplayName = new() { new() { CultureCode = "nb_NO", Value = "Dette er et vedlegg" } },
                     Type = new Uri("some:type"),
                     AuthorizationAttribute = "attachment1",
@@ -52,6 +51,22 @@ public class GetDialogTests : ApplicationCollectionFixture
                         }
                     }
                 },
+                new()
+                {
+                    RelatedDialogElementId = expectedDialogElementId,
+                    DisplayName = new() { new() { CultureCode = "nb_NO", Value = "Dette er et relatert element" } },
+                    Type = new Uri("some:type"),
+                    AuthorizationAttribute = "attachment1",
+                    Urls = new List<CreateDialogDialogElementUrlDto>
+                    {
+                        new ()
+                        {
+                            ConsumerTypeId = DialogElementUrlConsumerType.Enum.Api,
+                            MimeType = "application/xml",
+                            Url = new Uri("http://example.com/some/deep/link/to/attachment1.xml")
+                        }
+                    }
+                }
             },
             GuiActions = new()
             {
@@ -125,22 +140,20 @@ public class GetDialogTests : ApplicationCollectionFixture
                     Id = Guid.NewGuid(),
                     CreatedAt = DateTimeOffset.UtcNow,
                     TypeId = DialogActivityType.Enum.Submission,
-                    PerformedBy = new() { new() { CultureCode = "nb_NO", Value = "Et navn" } },
+                    PerformedBy = new() { new() { CultureCode = "nb_NO", Value = "person:12018212345" } },
                     ExtendedType = new Uri("SKE:1234-received-precheck-ok"),
                     Description = new() { new() { CultureCode = "nb_NO", Value = "Innsending er mottatt og sendt til behandling" } },
-                    DialogElementId = dialogElementGuid
+                    DialogElementId = expectedDialogElementId
                 }
             }
         };
-        var createCommandResponse = await Application.Send(createCommand);
 
         // Act
-        var response = await Application.Send(new GetDialogQuery { Id = createCommandResponse.AsT0 });
+        var result = await Application.Send(createCommand);
 
         // Assert
-        response.TryPickT0(out var result, out var _).Should().BeTrue();
-        result.Should().NotBeNull();
-        result.Should().BeEquivalentTo(createCommand);
+        result.AsT0.Should().Be(expectedDialogId);
     }
+
     // TODO: Add tests
 }

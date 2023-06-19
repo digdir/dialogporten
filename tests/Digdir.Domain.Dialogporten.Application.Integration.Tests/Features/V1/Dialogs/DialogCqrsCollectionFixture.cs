@@ -1,7 +1,7 @@
-﻿using Digdir.Domain.Dialogporten.Application.Tests.Integration.Common;
+﻿using Digdir.Domain.Dialogporten.Application.Integration.Tests.Common;
 using Xunit;
 
-namespace Digdir.Domain.Dialogporten.Application.Tests.Integration.Features.V1.Dialogs;
+namespace Digdir.Domain.Dialogporten.Application.Integration.Tests.Features.V1.Dialogs;
 
 [CollectionDefinition(nameof(DialogCqrsCollectionFixture))]
 public class DialogCqrsCollectionFixture : ICollectionFixture<DialogApplication>
