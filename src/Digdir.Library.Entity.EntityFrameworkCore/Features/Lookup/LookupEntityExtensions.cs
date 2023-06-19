@@ -25,6 +25,11 @@ internal static class LookupEntityExtensions
             lookupEntity.Property(nameof(MockLookupEntity.Id)).ValueGeneratedNever();
             lookupEntity.Property(nameof(MockLookupEntity.Name)).IsRequired();
             lookupEntity.HasData(values);
+            
+            foreach (var reference in lookupType.GetReferencingForeignKeys())
+            {
+                reference.DeleteBehavior = DeleteBehavior.Restrict;
+            }
         }
 
         return modelBuilder;

@@ -9,6 +9,8 @@ internal sealed class OutboxMessageConsumerConfiguration : IEntityTypeConfigurat
     public void Configure(EntityTypeBuilder<OutboxMessageConsumer> builder)
     {
         builder.HasKey(x => new { x.EventId, x.ConsumerName });
-        builder.HasOne(x => x.OutboxMessage).WithMany(x => x.OutboxMessageConsumers).HasForeignKey(x => x.EventId);
+        builder.HasOne(x => x.OutboxMessage)
+            .WithMany(x => x.OutboxMessageConsumers)
+            .HasForeignKey(x => x.EventId);
     }
 }

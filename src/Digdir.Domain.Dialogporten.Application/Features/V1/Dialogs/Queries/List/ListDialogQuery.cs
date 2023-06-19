@@ -26,7 +26,7 @@ internal sealed class ListDialogQueryHandler : IRequestHandler<ListDialogQuery, 
     {
         return await _db.Dialogs
             .AsNoTracking()
-            .OrderByDescending(x => x.InternalId)
+            .OrderByDescending(x => x.CreatedAt)
             .ProjectTo<ListDialogDto>(_mapper.ConfigurationProvider)
             .ToPaginatedListAsync(request, cancellationToken);
     }

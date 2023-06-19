@@ -5,9 +5,6 @@ using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
-using Digdir.Domain.Dialogporten.Application.Features.V1.Common;
-using Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Queries.Get;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 
 namespace Digdir.Domain.Dialogporten.Application;
 

@@ -3,7 +3,7 @@ using Digdir.Domain.Dialogporten.Application.Tests.Integration.Common;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements.DialogElementUrls;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements;
 using FluentAssertions;
 using Xunit;
 
@@ -27,8 +27,8 @@ public class CreateDialogTests : ApplicationCollectionFixture
             Party = "org:991825827",
             StatusId = DialogStatus.Enum.InProgress,
             ExtendedStatus = "SKE-ABC",
-            //DueAtUtc = new(2022, 12, 01),
-            //ExpiresAtUtc = new(2023, 12, 01),
+            //DueAt = new(2022, 12, 01),
+            //ExpiresAt = new(2023, 12, 01),
             Title = new() { new() { CultureCode = "nb_NO", Value = "Et eksempel på en tittel" } },
             SenderName = new() { new() { CultureCode = "nb_NO", Value = "Overstyrt avsendernavn (bruker default tjenesteeiers navn)" } },
             Body = new() { new() { CultureCode = "nb_NO", Value = "Innhold med <em>begrenset</em> HTML-støtte. Dette innholdet vises når dialogen ekspanderes." } },
@@ -45,7 +45,7 @@ public class CreateDialogTests : ApplicationCollectionFixture
                         new ()
                         {
                             ConsumerTypeId = DialogElementUrlConsumerType.Enum.Gui,
-                            ContentTypeHint = "application/pdf",
+                            MimeType = "application/pdf",
                             Url = new Uri("http://example.com/some/deep/link/to/attachment1.pdf")
                         }
                     }
@@ -61,7 +61,7 @@ public class CreateDialogTests : ApplicationCollectionFixture
                         new ()
                         {
                             ConsumerTypeId = DialogElementUrlConsumerType.Enum.Api,
-                            ContentTypeHint = "application/xml",
+                            MimeType = "application/xml",
                             Url = new Uri("http://example.com/some/deep/link/to/attachment1.xml")
                         }
                     }
@@ -71,19 +71,19 @@ public class CreateDialogTests : ApplicationCollectionFixture
             {
                 new() {
                     Action = "open",
-                    TypeId = DialogGuiActionType.Enum.Primary,
+                    PriorityId = DialogGuiActionPriority.Enum.Primary,
                     Title = new() { new() { CultureCode = "nb_NO", Value = "Åpne i dialogtjeneste" } },
                     Url = new("https://example.com/some/deep/link/to/dialogs/123456789")},
                 new() {
                     Action = "confirm",
-                    TypeId = DialogGuiActionType.Enum.Secondary,
+                    PriorityId = DialogGuiActionPriority.Enum.Secondary,
                     Title = new() { new() { CultureCode = "nb_NO", Value = "Bekreft mottatt" } },
                     Url = new("https://example.com/some/deep/link/to/dialogs/123456789/confirmReceived"),
                     AuthorizationAttribute = "somesubresource",
                     IsBackChannel = true},
                 new() {
                     Action = "delete",
-                    TypeId = DialogGuiActionType.Enum.Tertiary,
+                    PriorityId = DialogGuiActionPriority.Enum.Tertiary,
                     Title = new() { new() { CultureCode = "nb_NO", Value = "Avbryt" } },
                     Url = new("https://example.com/some/deep/link/to/dialogs/123456789/confirmReceived"),
                     IsDeleteAction = true}
@@ -92,34 +92,54 @@ public class CreateDialogTests : ApplicationCollectionFixture
             {
                 new() {
                     Action = "open",
-                    Url = new("https://example.com/api/dialogs/123456789"),
-                    HttpMethod = "GET",
-                    ResponseSchema = new("https://schemas.altinn.no/dialogs/v1/dialogs.json"),
-                    DocumentationUrl = new("https://api-docs.example.com/dialogservice/open-action")},
+                    Endpoints = new() {
+                        new() {
+                            Url = new("https://example.com/api/dialogs/123456789"),
+                            HttpMethod = "GET",
+                            ResponseSchema = new("https://schemas.altinn.no/dialogs/v1/dialogs.json"),
+                            DocumentationUrl = new("https://api-docs.example.com/dialogservice/open-action")
+                        },
+                    }
+                },
                 new() {
                     Action = "confirm",
-                    Url = new("https://example.com/api/dialogs/123456789/confirmReceived"),
-                    HttpMethod = "POST",
-                    DocumentationUrl = new("https://api-docs.example.com/dialogservice/confirm-action")},
+                    Endpoints = new() {
+                        new() {
+                            Url = new("https://example.com/api/dialogs/123456789/confirmReceived"),
+                            HttpMethod = "POST",
+                            DocumentationUrl = new("https://api-docs.example.com/dialogservice/confirm-action")
+                        },
+                    }
+                },
                 new() {
                     Action = "submit",
-                    Url = new("https://example.com/api/dialogs/123456789"),
-                    HttpMethod = "POST",
-                    RequestSchema = new("https://schemas.example.com/dialogservice/v1/dialogservice.json"),
-                    ResponseSchema = new("https://schemas.altinn.no/dialogs/v1/dialogs.json")},
+                    Endpoints = new() {
+                        new() {
+                            Url = new("https://example.com/api/dialogs/123456789"),
+                            HttpMethod = "POST",
+                            RequestSchema = new("https://schemas.example.com/dialogservice/v1/dialogservice.json"),
+                            ResponseSchema = new("https://schemas.altinn.no/dialogs/v1/dialogs.json")
+                        },
+                    }
+                },
                 new() {
                     Action = "delete",
-                    Url = new("https://example.com/api/dialogs/123456789"),
-                    HttpMethod = "DELETE"},
+                    Endpoints = new() {
+                        new() {
+                            Url = new("https://example.com/api/dialogs/123456789"),
+                            HttpMethod = "DELETE"
+                        },
+                    }
+                },
             },
-            History= new()
+            Activities = new()
             {
                 new()
                 {
                     Id = Guid.NewGuid(),
-                    CreatedAtUtc = DateTimeOffset.UtcNow,
+                    CreatedAt = DateTimeOffset.UtcNow,
                     TypeId = DialogActivityType.Enum.Submission,
-                    PerformedBy = "person:12018212345",
+                    PerformedBy = new() { new() { CultureCode = "nb_NO", Value = "person:12018212345" } },
                     ExtendedType = new Uri("SKE:1234-received-precheck-ok"),
                     Description = new() { new() { CultureCode = "nb_NO", Value = "Innsending er mottatt og sendt til behandling" } },
                     DialogElementId = expectedDialogElementId

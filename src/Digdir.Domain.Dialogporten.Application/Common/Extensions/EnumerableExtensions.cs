@@ -70,11 +70,50 @@ internal static class EnumerableExtensions
         return result.ToList();
     }
 
+    public static IEnumerable<(TInner Dependent, TOuter Principal)> JoinPairs<TInner, TOuter, TInnerKey, TOuterKey>(
+        this IEnumerable<KeyValuePair<TInnerKey, TOuterKey>> keyPairs,
+        IEnumerable<TInner> inner,
+        IEnumerable<TOuter> outer,
+        Func<TInner, TInnerKey> innerKeySelector,
+        Func<TOuter, TOuterKey> outerKeySelector)
+        where TInner : notnull
+        where TOuter : notnull
+        where TInnerKey : notnull
+        where TOuterKey : notnull
+    {
+        // Ensure concrete incoming enumerables
+        keyPairs = keyPairs 
+            is Dictionary<TInnerKey, TOuterKey> 
+            or List<KeyValuePair<TInnerKey, TOuterKey>> 
+            ? keyPairs 
+            : keyPairs.ToList();
+        inner = inner is List<TInner> ? inner : inner.ToList();
+        outer = outer is List<TOuter> ? outer : outer.ToList();
+
+        // TODO: keyPairs should be different
+        // TODO: keyPairs should match with inner and outer exacly once
+        // Assert no duplicate non default keys
+        inner.AssertNoDuplicateNonDefaultKeys(innerKeySelector);
+        outer.AssertNoDuplicateNonDefaultKeys(outerKeySelector);
+
+        return keyPairs
+            .Join(inner,
+                outerKeySelector: x => x.Key,
+                innerKeySelector: innerKeySelector,
+                resultSelector: (x, dependent) => (Dependent: dependent, PrincipalId: x.Value))
+            .Join(outer,
+                outerKeySelector: x => x.PrincipalId,
+                innerKeySelector: outerKeySelector,
+                resultSelector: (x, principal) => (Dependent: x.Dependent, Principal: principal));
+    }
+
     private static void AssertNoDuplicateNonDefaultKeys<T, TKey>(
         this IEnumerable<T> values,
         Func<T, TKey> keySelector,
-        IEqualityComparer<TKey> comparer)
+        IEqualityComparer<TKey>? comparer = null)
     {
+        comparer ??= EqualityComparer<TKey>.Default;
+
         var duplicateKeys = values
             .Select(keySelector)
             .GroupBy(x => x, comparer)

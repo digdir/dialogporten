@@ -8,6 +8,7 @@ internal static class MappingExpressionExtensions
     private static readonly List<Type> TypeOverrides = new()
     {
         typeof(string),
+        typeof(Uri)
     };
 
     public static IMappingExpression<TSource, TDest> IgnoreComplexDestinationProperties<TSource, TDest>(

@@ -59,10 +59,13 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
             .Include(x => x.SenderName.Localizations)
             .Include(x => x.SearchTitle.Localizations)
             .Include(x => x.Elements)
-                .ThenInclude(element => element.DisplayName.Localizations)
+                .ThenInclude(x => x.DisplayName.Localizations)
+            .Include(x => x.Elements)
+                .ThenInclude(x => x.Urls)
             .Include(x => x.GuiActions)
-                .ThenInclude(guiAction => guiAction.Title.Localizations)
+                .ThenInclude(x => x.Title.Localizations)
             .Include(x => x.ApiActions)
+                .ThenInclude(x => x.Endpoints)
             .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
 
         if (dialog is null)
@@ -78,10 +81,10 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
             return validationError;
         }
 
-        var existingHistoryIds = await GetExistingHistoryIds(dto.History, cancellationToken);
-        if (existingHistoryIds.Any())
+        var existingActivityIds = await GetExistingActivityIds(dto.Activities, cancellationToken);
+        if (existingActivityIds.Any())
         {
-            return new EntityExists<DialogActivity>(existingHistoryIds);
+            return new EntityExists<DialogActivity>(existingActivityIds);
         }
 
         // TODO! Handle/validate internal relations as in CreateDialog
@@ -89,8 +92,8 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         // Update primitive properties
         _mapper.Map(dto, dialog);
 
-        // Append history
-        AppendHistory(dialog, dto);
+        // Append activity
+        AppendActivity(dialog, dto);
 
         await _localizationService.Merge(dialog.Body, dto.Body, cancellationToken);
         await _localizationService.Merge(dialog.Title, dto.Title, cancellationToken);
@@ -129,14 +132,16 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         return new Success();
     }
 
-    private void AppendHistory(DialogEntity dialog, UpdateDialogDto dto)
+    private void AppendActivity(DialogEntity dialog, UpdateDialogDto dto)
     {
-        var newDialogActivities = dto.History
+        var newDialogActivities = dto.Activities
             .Select(_mapper.Map<DialogActivity>)
             .ToList();
-        dialog.History.AddRange(newDialogActivities);
         _eventPublisher.Publish(newDialogActivities.Select(x => new DialogActivityCreatedDomainEvent(dialog.Id, x.CreateId())));
+        dialog.Activities.AddRange(newDialogActivities);
 
+        // Tell ef explicitly to add the new activities to the database.
+        _db.DialogActivities.AddRange(newDialogActivities);
     }
 
     private OneOf<UpdateDialogDto, ValidationError> CreateDto(DialogEntity dialog, JsonPatch jsonPatch)
@@ -161,45 +166,79 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
             : modifiedAsDto;
     }
 
-    private async Task<IEnumerable<Guid>> GetExistingHistoryIds(
-        List<UpdateDialogDialogActivityDto> historyDtos,
+    private async Task<IEnumerable<Guid>> GetExistingActivityIds(
+        List<UpdateDialogDialogActivityDto> activityDtos,
         CancellationToken cancellationToken)
     {
-        var historyDtoIds = historyDtos
+        var activityDtoIds = activityDtos
             .Select(x => x.Id)
             .Where(x => x.HasValue)
             .ToList();
 
-        if (!historyDtoIds.Any())
+        if (!activityDtoIds.Any())
         {
             return Enumerable.Empty<Guid>();
         }
 
         return await _db.DialogActivities
             .Select(x => x.Id)
-            .Where(x => historyDtoIds.Contains(x))
+            .Where(x => activityDtoIds.Contains(x))
             .ToListAsync(cancellationToken);
     }
 
-    private Task<IEnumerable<DialogApiAction>> CreateApiActions(IEnumerable<UpdateDialogDialogApiActionDto> creatables, CancellationToken cancellationToken)
+    private async Task<IEnumerable<DialogApiAction>> CreateApiActions(IEnumerable<UpdateDialogDialogApiActionDto> creatables, CancellationToken cancellationToken)
     {
-        var result = _mapper.Map<List<DialogApiAction>>(creatables);
-        return Task.FromResult<IEnumerable<DialogApiAction>>(result);
+        var apiActions = new List<DialogApiAction>();
+        foreach (var apiActionDto in creatables)
+        {
+            var apiAction = _mapper.Map<DialogApiAction>(apiActionDto);
+            apiAction.Endpoints = (await CreateApiActionEndpoints(apiActionDto.Endpoints, cancellationToken)).ToList();
+            apiActions.Add(apiAction);
+        }
+
+        return apiActions;
     }
 
-    private Task UpdateApiActions(IEnumerable<IUpdateSet<DialogApiAction, UpdateDialogDialogApiActionDto>> updateSets, CancellationToken cancellationToken)
+    private async Task UpdateApiActions(IEnumerable<IUpdateSet<DialogApiAction, UpdateDialogDialogApiActionDto>> updateSets, CancellationToken cancellationToken)
     {
         foreach (var updateSet in updateSets)
         {
             _mapper.Map(updateSet.Source, updateSet.Destination);
-        }
 
-        return Task.CompletedTask;
+            updateSet.Destination.Endpoints = await updateSet.Destination.Endpoints
+                .MergeAsync(updateSet.Source.Endpoints,
+                    destinationKeySelector: x => x.Id,
+                    sourceKeySelector: x => x.Id,
+                    create: CreateApiActionEndpoints,
+                    update: UpdateApiActionEndpoints,
+                    delete: DeleteApiActionEndpoints,
+                    cancellationToken: cancellationToken);
+        }
     }
 
     private Task DeleteApiActions(IEnumerable<DialogApiAction> deletables, CancellationToken cancellationToken)
     {
         _db.DialogApiActions.RemoveRange(deletables);
+        return Task.CompletedTask;
+    }
+
+    private Task<IEnumerable<DialogApiActionEndpoint>> CreateApiActionEndpoints(IEnumerable<UpdateDialogDialogApiActionEndpointDto> creatables, CancellationToken cancellationToken)
+    {
+        return Task.FromResult(creatables.Select(_mapper.Map<DialogApiActionEndpoint>));
+    }
+
+    private Task UpdateApiActionEndpoints(IEnumerable<IUpdateSet<DialogApiActionEndpoint, UpdateDialogDialogApiActionEndpointDto>> updateSets, CancellationToken cancellationToken)
+    {
+        foreach (var updateSet in updateSets)
+        {
+            _mapper.Map(updateSet.Source, updateSet.Destination);
+        }
+        return Task.CompletedTask;
+    }
+
+    private Task DeleteApiActionEndpoints(IEnumerable<DialogApiActionEndpoint> deletables, CancellationToken cancellationToken)
+    {
+        _db.DialogApiActionEndpoints.RemoveRange(deletables);
         return Task.CompletedTask;
     }
 
@@ -225,19 +264,23 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
     private Task DeleteGuiActions(IEnumerable<DialogGuiAction> deletables, CancellationToken cancellationToken)
     {
         deletables = deletables is List<DialogGuiAction> ? deletables : deletables.ToList();
-        _db.LocalizationSets.RemoveRange(deletables.Select(x => x.Title));
         _db.DialogGuiActions.RemoveRange(deletables);
+        _db.LocalizationSets.RemoveRange(deletables.Select(x => x.Title));
         return Task.CompletedTask;
     }
 
-    private Task<IEnumerable<DialogElement>> CreateElements(IEnumerable<UpdateDialogDialogElementDto> creatables, CancellationToken cancellationToken)
+    private async Task<IEnumerable<DialogElement>> CreateElements(IEnumerable<UpdateDialogDialogElementDto> creatables, CancellationToken cancellationToken)
     {
-        return Task.FromResult(creatables.Select(dto =>
+        var elements = new List<DialogElement>();
+        foreach (var elementDto in creatables)
         {
-            var element = _mapper.Map<DialogElement>(dto);
-            element.DisplayName = _mapper.Map<LocalizationSet>(dto.DisplayName);
-            return element;
-        }));
+            var element = _mapper.Map<DialogElement>(elementDto);
+            element.DisplayName = _mapper.Map<LocalizationSet>(elementDto.DisplayName);
+            element.Urls = (await CreateElementUrls(elementDto.Urls, cancellationToken)).ToList();
+            elements.Add(element);
+        }
+
+        return elements;
     }
 
     private async Task UpdateElements(IEnumerable<IUpdateSet<DialogElement, UpdateDialogDialogElementDto>> updateSets, CancellationToken cancellationToken)
@@ -246,14 +289,44 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         {
             _mapper.Map(updateSet.Source, updateSet.Destination);
             await _localizationService.Merge(updateSet.Destination.DisplayName, updateSet.Source.DisplayName, cancellationToken);
+
+            updateSet.Destination.Urls = await updateSet.Destination.Urls
+                .MergeAsync(updateSet.Source.Urls,
+                    destinationKeySelector: x => x.Id,
+                    sourceKeySelector: x => x.Id,
+                    create: CreateElementUrls,
+                    update: UpdateElementUrls,
+                    delete: DeleteElementUrls,
+                    cancellationToken: cancellationToken);
         }
     }
 
-    private Task DeleteElements(IEnumerable<DialogElement> deletables, CancellationToken cancellationToken)
+    private async Task DeleteElements(IEnumerable<DialogElement> deletables, CancellationToken cancellationToken)
     {
         deletables = deletables is List<DialogGuiAction> ? deletables : deletables.ToList();
-        _db.LocalizationSets.RemoveRange(deletables.Select(x => x.DisplayName));
         _db.DialogElements.RemoveRange(deletables);
+        _db.LocalizationSets.RemoveRange(deletables.Select(x => x.DisplayName));
+        await DeleteElementUrls(deletables.SelectMany(x => x.Urls), cancellationToken);
+    }
+
+    private Task<IEnumerable<DialogElementUrl>> CreateElementUrls(IEnumerable<UpdateDialogDialogElementUrlDto> creatables, CancellationToken cancellationToken)
+    {
+        return Task.FromResult(creatables.Select(_mapper.Map<DialogElementUrl>));
+    }
+
+    private Task UpdateElementUrls(IEnumerable<IUpdateSet<DialogElementUrl, UpdateDialogDialogElementUrlDto>> updateSets, CancellationToken cancellationToken)
+    {
+        foreach (var updateSet in updateSets)
+        {
+            _mapper.Map(updateSet.Source, updateSet.Destination);
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private Task DeleteElementUrls(IEnumerable<DialogElementUrl> deletables, CancellationToken cancellationToken)
+    {
+        _db.DialogElementUrls.RemoveRange(deletables);
         return Task.CompletedTask;
     }
 }

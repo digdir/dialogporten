@@ -1,4 +1,6 @@
-﻿namespace Digdir.Library.Entity.Abstractions.Features.Identifiable;
+﻿using UUIDNext;
+
+namespace Digdir.Library.Entity.Abstractions.Features.Identifiable;
 
 /// <summary>
 /// Provides extension methods for <see cref="IIdentifiableEntity"/>.
@@ -12,7 +14,7 @@ public static class IdentifiableExtensions
     public static Guid CreateId(this IIdentifiableEntity identifiable)
     {
         return identifiable.Id = identifiable.Id == Guid.Empty
-            ? Guid.NewGuid()
+            ? Uuid.NewDatabaseFriendly(Database.PostgreSql)
             : identifiable.Id;
     }
 }

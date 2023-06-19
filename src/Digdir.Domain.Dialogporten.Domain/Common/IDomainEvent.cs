@@ -6,7 +6,7 @@ namespace Digdir.Domain.Dialogporten.Domain.Common;
 public interface IDomainEvent : INotification
 {
     Guid EventId { get; }
-    DateTimeOffset OccuredAtUtc { get; set; } 
+    DateTimeOffset OccuredAt { get; set; } 
 }
 
 public abstract record DomainEvent : IDomainEvent
@@ -15,5 +15,5 @@ public abstract record DomainEvent : IDomainEvent
     public Guid EventId { get; private set; } = Guid.NewGuid();
 
     [JsonInclude]
-    public DateTimeOffset OccuredAtUtc { get; set; }
+    public DateTimeOffset OccuredAt { get; set; }
 }

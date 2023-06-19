@@ -5,6 +5,7 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements;
 using Digdir.Domain.Dialogporten.Domain.Localizations;
 using Digdir.Domain.Dialogporten.Domain.Outboxes;
+using Digdir.Domain.Dialogporten.Infrastructure.Persistence.Configurations.Localizations;
 using Digdir.Library.Entity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,9 +21,11 @@ internal sealed class DialogDbContext : DbContext, IDialogDbContext
     public DbSet<DialogStatus> DialogStatuses => Set<DialogStatus>();
     public DbSet<DialogActivity> DialogActivities => Set<DialogActivity>();
     public DbSet<DialogApiAction> DialogApiActions => Set<DialogApiAction>();
+    public DbSet<DialogApiActionEndpoint> DialogApiActionEndpoints => Set<DialogApiActionEndpoint>();
     public DbSet<DialogGuiAction> DialogGuiActions => Set<DialogGuiAction>();
     public DbSet<DialogElement> DialogElements => Set<DialogElement>();
-    public DbSet<DialogGuiActionType> DialogGuiActionTypes => Set<DialogGuiActionType>();
+    public DbSet<DialogElementUrl> DialogElementUrls => Set<DialogElementUrl>();
+    public DbSet<DialogGuiActionPriority> DialogGuiActionTypes => Set<DialogGuiActionPriority>();
     public DbSet<DialogActivityType> DialogActivityTypes => Set<DialogActivityType>();
 
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
@@ -34,9 +37,12 @@ internal sealed class DialogDbContext : DbContext, IDialogDbContext
         configurationBuilder.Properties<Uri>(x => x.HaveMaxLength(1023));
     }
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder) =>
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
         modelBuilder.RemovePluralizingTableNameConvention()
             .SetCrossCuttingTimeSpanToStringConverter()
             .AddAuditableEntities()
+            .ApplyLocalizationSetRestrictDeleteBehaviour()
             .ApplyConfigurationsFromAssembly(typeof(DialogDbContext).Assembly);
+    }
 }

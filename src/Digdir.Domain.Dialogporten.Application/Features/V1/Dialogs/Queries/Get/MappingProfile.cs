@@ -1,10 +1,8 @@
 ﻿using AutoMapper;
-using Digdir.Domain.Dialogporten.Application.Features.V1.Common;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements.DialogElementUrls;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Queries.Get;
 
@@ -26,19 +24,10 @@ internal sealed class MappingProfile : Profile
             */
         CreateMap<DialogGuiAction, GetDialogDialogGuiActionDto>();
         CreateMap<DialogApiAction, GetDialogDialogApiActionDto>();
-        CreateMap<DialogElement, GetDialogDialogElementDto>()
-            .ForMember(
-                dest => dest.RelatedDialogElementId,
-                opt => opt.MapFrom(src => src.RelatedDialogElement == null ? (Guid?)null : src.RelatedDialogElement.Id)
-            );
+        CreateMap<DialogApiActionEndpoint, GetDialogDialogApiActionEndpointDto>();
+        CreateMap<DialogElement, GetDialogDialogElementDto>();
         CreateMap<DialogElementUrl, GetDialogDialogElementUrlDto>();
-        CreateMap<DialogActivity, GetDialogDialogActivityDto>()
-            .ForMember(
-                dest => dest.RelatedActivityId,
-                opt => opt.MapFrom(src => src.RelatedActivity == null ? (Guid?)null : src.RelatedActivity.Id))
-            .ForMember(
-                dest => dest.DialogElementId,
-                opt => opt.MapFrom(src => src.DialogElement == null ? (Guid?)null : src.DialogElement.Id));
+        CreateMap<DialogActivity, GetDialogDialogActivityDto>();
 
     }
 }
