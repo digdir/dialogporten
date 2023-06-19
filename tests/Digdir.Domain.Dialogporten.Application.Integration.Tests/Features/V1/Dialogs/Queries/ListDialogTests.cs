@@ -1,6 +1,4 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Integration.Tests.Common;
-using Digdir.Domain.Dialogporten.Application.Integration.Tests.Features.V1.Dialogs;
-using Xunit;
 
 namespace Digdir.Domain.Dialogporten.Application.Integration.Tests.Features.V1.Dialogs.Queries;
 

@@ -1,5 +1,4 @@
-﻿using Digdir.Domain.Dialogporten.Application;
-using Digdir.Domain.Dialogporten.Application.Externals;
+﻿using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Infrastructure;
 using Digdir.Domain.Dialogporten.Infrastructure.DomainEvents;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence;
@@ -12,7 +11,6 @@ using Npgsql;
 using NSubstitute;
 using Respawn;
 using Testcontainers.PostgreSql;
-using Xunit;
 
 namespace Digdir.Domain.Dialogporten.Application.Integration.Tests.Common;
 

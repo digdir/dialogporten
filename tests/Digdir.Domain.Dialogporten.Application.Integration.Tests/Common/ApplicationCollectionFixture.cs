@@ -1,6 +1,4 @@
-﻿using Xunit;
-
-namespace Digdir.Domain.Dialogporten.Application.Integration.Tests.Common;
+﻿namespace Digdir.Domain.Dialogporten.Application.Integration.Tests.Common;
 
 public abstract class ApplicationCollectionFixture : IAsyncLifetime
 {
