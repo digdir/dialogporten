@@ -460,6 +460,8 @@ Opprettelse/endring/sletting av dialog-entiteten genererer meldinger med følgen
 | `dialogporten.dialog.updated.v1` | Tilstand på dialogen er endret |
 | `dialogporten.dialog.deleted.v1` | Dialogen slettes               |
 
+I tillegg genereres det en event med type `dialogporten.dialog.read.v1` når dialogen lastes for første gang etter at den er oppdatert (altså readDateTime < max(updatedDateTime, createdDateTime).
+
 ### Eksempel
 
 ```jsonc
