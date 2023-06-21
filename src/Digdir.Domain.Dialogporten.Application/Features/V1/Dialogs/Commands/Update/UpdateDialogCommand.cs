@@ -280,6 +280,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
             elements.Add(element);
         }
 
+        _db.DialogElements.AddRange(elements);
         return elements;
     }
 
