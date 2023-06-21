@@ -50,7 +50,7 @@ static void BuildAndRun(string[] args)
     builder.Configuration.AddAzureConfiguration(builder.Environment.EnvironmentName);
     builder.Services
         // Temporary configuration for outbox through Web api
-        .AddHostedService<OutboxScheduler>()
+        //.AddHostedService<OutboxScheduler>()
 
         .AddAzureAppConfiguration()
         .AddApplicationInsightsTelemetry()

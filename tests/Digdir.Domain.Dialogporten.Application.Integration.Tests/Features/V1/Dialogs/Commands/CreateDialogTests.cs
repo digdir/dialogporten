@@ -14,6 +14,28 @@ public class CreateDialogTests : ApplicationCollectionFixture
     public CreateDialogTests(DialogApplication application) : base(application) { }
 
     [Fact]
+    public async Task Create_CreatesDialog_WhenDialoIsSimple()
+    {
+        // Arrange
+        var expectedDialogId = Guid.NewGuid();
+        var createCommand = new CreateDialogCommand
+        {
+            Id = expectedDialogId,
+            ServiceResource = "example_dialog_service",
+            Party = "org:991825827",
+            StatusId = DialogStatus.Enum.InProgress
+        };
+
+        // Act
+        var response = await Application.Send(createCommand);
+
+        // Assert
+        response.TryPickT0(out var result, out var _).Should().BeTrue();
+        result.Should().NotBeNull();
+        result.Should().BeEquivalentTo(createCommand);
+    }
+
+    [Fact]
     public async Task Create_CreateDialog_WhenDataIsValid()
     {
         // Arrange

@@ -8,12 +8,14 @@ using Digdir.Domain.Dialogporten.Domain.Outboxes;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence.Configurations.Localizations;
 using Digdir.Library.Entity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Runtime.Serialization;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence;
 
 internal sealed class DialogDbContext : DbContext, IDialogDbContext
 {
     public DialogDbContext(DbContextOptions<DialogDbContext> options) : base(options) { }
+    private DialogDbContext() { }
 
     public DbSet<DialogEntity> Dialogs => Set<DialogEntity>();
     public DbSet<Localization> Localizations => Set<Localization>();

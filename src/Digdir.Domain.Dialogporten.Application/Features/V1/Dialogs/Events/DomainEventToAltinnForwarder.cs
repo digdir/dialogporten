@@ -43,7 +43,7 @@ internal sealed class DomainEventToAltinnForwarder :
             Id = notification.EventId,
             Type = dialogCreated,
             Time = notification.OccuredAt,
-            Resource = dialog.ServiceResource,
+            Resource = dialog.ServiceResource.ToString(),
             ResourceInstance = dialog.Id.ToString(), 
             AlternativeSubject = dialog.Party, 
             Source = $"https://dialogporten.no/api/v1/dialogs/{notification.DialogId}"
@@ -70,7 +70,7 @@ internal sealed class DomainEventToAltinnForwarder :
             Id = notification.EventId,
             Type = dialogUpdated,
             Time = notification.OccuredAt,
-            Resource = dialog.ServiceResource,
+            Resource = dialog.ServiceResource.ToString(),
             ResourceInstance = dialog.Id.ToString(),
             AlternativeSubject = dialog.Party,
             Source = $"https://dialogporten.no/api/v1/dialogs/{notification.DialogId}"
@@ -98,7 +98,7 @@ internal sealed class DomainEventToAltinnForwarder :
             Id = notification.EventId,
             Type = dialogDeleted,
             Time = notification.OccuredAt,
-            Resource = dialog.ServiceResource,
+            Resource = dialog.ServiceResource.ToString(),
             ResourceInstance = dialog.Id.ToString(),
             AlternativeSubject = dialog.Party,
             Source = $"https://dialogporten.no/api/v1/dialogs/{notification.DialogId}"
@@ -140,7 +140,7 @@ internal sealed class DomainEventToAltinnForwarder :
             Id = notification.EventId,
             Type = cloudEventType,
             Time = notification.OccuredAt,
-            Resource = dialogActivity.Dialog.ServiceResource,
+            Resource = dialogActivity.Dialog.ServiceResource.ToString(),
             ResourceInstance = dialogActivity.Dialog.Id.ToString(),
             AlternativeSubject = dialogActivity.Dialog.Party,
             Source = $"https://dialogporten.no/api/v1/dialogs/{dialogActivity.Dialog.Id}/activityhistory/{dialogActivity.Id}",

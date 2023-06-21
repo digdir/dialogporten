@@ -14,7 +14,7 @@ public class DialogEntity : IEntity
 
     // TODO: Hent dette fra token?
     public string Org { get; set; } = "DummyOrg";
-    public string ServiceResource { get; set; } = null!;
+    public Uri ServiceResource { get; set; } = null!;
     public string Party { get; set; } = null!;
     public string? ExtendedStatus { get; set; }
     public DateTimeOffset? VisibleFrom { get; set; }

@@ -9,7 +9,7 @@ namespace Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Commands.Cr
 public class CreateDialogDto
 {
     public Guid? Id { get; set; }
-    public string ServiceResource { get; set; } = null!;
+    public Uri ServiceResource { get; set; } = null!;
     public string Party { get; set; } = null!;
     public string? ExtendedStatus { get; set; }
     public DateTimeOffset? VisibleFrom { get; set; }
@@ -40,7 +40,7 @@ public sealed class CreateDialogDialogActivityDto
     public Guid? RelatedActivityId { get; set; }
     public Guid? DialogElementId { get; set; }
 
-    public List<LocalizationDto>? PerformedBy { get; set; } = new();
+    public List<LocalizationDto> PerformedBy { get; set; } = new();
     public List<LocalizationDto> Description { get; set; } = new();
 }
 
