@@ -6,9 +6,9 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements;
 using Digdir.Domain.Dialogporten.Domain.Localizations;
 using Digdir.Domain.Dialogporten.Domain.Outboxes;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence.Configurations.Localizations;
+using Digdir.Domain.Dialogporten.Infrastructure.Persistence.ValueConverters;
 using Digdir.Library.Entity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System.Runtime.Serialization;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence;
 
@@ -37,6 +37,7 @@ internal sealed class DialogDbContext : DbContext, IDialogDbContext
     {
         configurationBuilder.Properties<string>(x => x.HaveMaxLength(255));
         configurationBuilder.Properties<Uri>(x => x.HaveMaxLength(1023));
+        configurationBuilder.Properties<DateTimeOffset>().HaveConversion<DateTimeOffsetConverter>();
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
