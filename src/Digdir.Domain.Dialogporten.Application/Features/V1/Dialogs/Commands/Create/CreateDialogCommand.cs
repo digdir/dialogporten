@@ -7,7 +7,6 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Events;
 using Digdir.Library.Entity.Abstractions.Features.Identifiable;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using OneOf;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Commands.Create;
@@ -33,19 +32,19 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
     {
         var dialog = _mapper.Map<DialogEntity>(request);
 
-        var existingDialogIds = await GetExistingIds(new[] { dialog }, cancellationToken);
+        var existingDialogIds = await _db.GetExistingIds(new[] { dialog }, cancellationToken);
         if (existingDialogIds.Any())
         {
             return new EntityExists<DialogEntity>(existingDialogIds);
         }
 
-        var existingActivityIds = await GetExistingIds(dialog.Activities, cancellationToken);
+        var existingActivityIds = await _db.GetExistingIds(dialog.Activities, cancellationToken);
         if (existingDialogIds.Any())
         {
             return new EntityExists<DialogActivity>(existingDialogIds);
         }
 
-        var existingElementIds = await GetExistingIds(dialog.Elements, cancellationToken);
+        var existingElementIds = await _db.GetExistingIds(dialog.Elements, cancellationToken);
         if (existingElementIds.Any())
         {
             return new EntityExists<DialogElement>(existingElementIds);
@@ -56,26 +55,5 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
         _eventPublisher.Publish(dialog.Activities.Select(x => new DialogActivityCreatedDomainEvent(dialog.Id, x.CreateId())));
         await _unitOfWork.SaveChangesAsync(cancellationToken);
         return dialog.Id;
-    }
-
-    private async Task<List<Guid>> GetExistingIds<TEntity>(
-        IEnumerable<TEntity> entities, 
-        CancellationToken cancellationToken)
-        where TEntity : class, IIdentifiableEntity
-    {
-        var ids = entities
-            .Select(x => x.Id)
-            .Where(x => x != default)
-            .ToArray();
-
-        if (!ids.Any())
-        {
-            return new();
-        }
-
-        return await _db.Set<TEntity>()
-            .Select(x => x.Id)
-            .Where(x => ids.Contains(x))
-            .ToListAsync(cancellationToken);
     }
 }
