@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using Digdir.Domain.Dialogporten.Application.Common.Numbers;
+using FluentValidation;
 using FluentValidation.Internal;
 using System.Linq.Expressions;
 
@@ -14,8 +15,8 @@ internal static class FluentValidationExtensions
             .WithMessage("'{PropertyName}' is not a well formated URI.");
     }
 
-    public static IRuleBuilderOptions<T, TUri> MaximumLength<T, TUri>(this IRuleBuilder<T, TUri> ruleBuilder, int maximumLength)
-        where TUri : Uri?
+    public static IRuleBuilderOptions<T, TGuid> MaximumLength<T, TGuid>(this IRuleBuilder<T, TGuid> ruleBuilder, int maximumLength)
+        where TGuid : Uri?
     {
         return ruleBuilder
             .Must((_, uri, context) =>
@@ -28,6 +29,38 @@ internal static class FluentValidationExtensions
             })
             .WithMessage("The length of '{PropertyName}' must be {MaxLength} characters or fewer. You entered {TotalLength} characters.");
     }
+
+    public static IRuleBuilderOptions<T, Guid?> IsValidUuidV7<T>(this IRuleBuilder<T, Guid?> ruleBuilder)
+    {
+        return ruleBuilder
+            .Must(x => !x.HasValue || UuidV7.IsValid(x.Value))
+            .WithMessage("'{PropertyName}' is not a valid v7 uuid.");
+    }
+
+    public static IRuleBuilderOptions<T, Guid> IsValidUuidV7<T>(this IRuleBuilder<T, Guid> ruleBuilder)    
+    {
+        return ruleBuilder
+            .Must(UuidV7.IsValid)
+            .WithMessage("'{PropertyName}' is not a valid v7 uuid.");
+    }
+
+    public static IRuleBuilderOptions<T, IEnumerable<TProperty>> UniqueBy<T, TProperty, TKey>(
+        this IRuleBuilder<T, IEnumerable<TProperty>> ruleBuilder,
+        Func<TProperty, TKey> keySelector)
+        where TProperty : class
+    {
+        return ruleBuilder.Must((parent, enumerable, ctx) =>
+        {
+            var duplicateKeys = enumerable
+                .GroupBy(keySelector)
+                .Where(x => x.Count() > 1)
+                .Select(x => x.Key)
+                .ToArray();
+            ctx.MessageFormatter.AppendArgument("DuplicateKeys", string.Join(",", duplicateKeys));
+            return !duplicateKeys.Any();
+        }).WithMessage("Can not contain duplicate items: [{DuplicateKeys}].");
+    }
+
 
     public static IRuleBuilderOptions<T, TDependent> IsIn<T, TDependent, TPrincipal, TKey>(
         this IRuleBuilder<T, TDependent> ruleBuilder,

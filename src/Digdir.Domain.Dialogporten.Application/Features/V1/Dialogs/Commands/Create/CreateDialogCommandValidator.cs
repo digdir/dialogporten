@@ -1,66 +1,23 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Common.Extensions;
+using Digdir.Domain.Dialogporten.Application.Common.Numbers;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using Digdir.Domain.Dialogporten.Domain.Common;
 using FluentValidation;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Commands.Create;
-
-internal static class NumberHelper
-{
-    private static readonly int[] _orgNumberFactors = new[] { 3, 2, 7, 6, 5, 4, 3, 2 };
-    private static readonly int[] _personNumberFactors1 = new[] { 3, 7, 6, 1, 8, 9, 4, 5, 2, 1 };
-    private static readonly int[] _personNumberFactors2 = new[] { 5, 4, 3, 2, 7, 6, 5, 4, 3, 2, 1 };
-    private const int Mod11 = 11;
-    
-    public static bool IsValidOrgNumber(string number)
-    {
-        return number.Length == 9
-            && TryCalculateControlDigitMod11(number[0..9], _orgNumberFactors, out var control)
-            && control == int.Parse(number[9..10]);
-    }
-
-    public static bool IsValidPersonNumber(string number)
-    {
-        return number.Length == 11
-            && TryCalculateControlDigitMod11(number[..9], _personNumberFactors1, out var control1)
-            && TryCalculateControlDigitMod11(number[..10], _personNumberFactors2, out var control2)
-            && control1 == int.Parse(number[9..10])
-            && control2 == int.Parse(number[10..11]);
-    }
-
-    private static bool TryCalculateControlDigitMod11(string nummer, int[] factors, [NotNullWhen(true)] out int? controlDigit)
-    {
-        controlDigit = null;
-        var numberConverts = nummer
-            .Select(x => (Success: int.TryParse(x.ToString(), out var n), Number: n))
-            .ToArray();
-
-        if (numberConverts.Any(x => !x.Success))
-        {
-            return false;
-        }
-
-        var sum = numberConverts
-            .Select(x => x.Number)
-            .Select((digit, index) => digit * factors[index])
-            .Sum();
-        controlDigit = Mod11 - (sum % Mod11);
-        return true;
-    }
-}
 
 internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDialogCommand>
 {
     public CreateDialogCommandValidator(
-        IValidator<LocalizationDto> localizationValidator,
+        IValidator<IEnumerable<LocalizationDto>> localizatiosnValidator,
         IValidator<CreateDialogDialogElementDto> elementValidator,
         IValidator<CreateDialogDialogGuiActionDto> guiActionValidator,
         IValidator<CreateDialogDialogApiActionDto> apiActionValidator,
         IValidator<CreateDialogDialogActivityDto> activityValidator)
     {
-        // TODO: Valider at ID er på uuid v7 format dersom det er satt
-        RuleFor(x => x.Id).NotEqual(default(Guid));
+        RuleFor(x => x.Id)
+            .NotEqual(default(Guid))
+            .IsValidUuidV7();
 
         RuleFor(x => x.ServiceResource)
             .NotNull()
@@ -69,43 +26,52 @@ internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDia
             .Must(x => x.ToString().StartsWith("urn:altinn:resource:"))
                 .WithMessage("'{PropertyName}' must start with 'urn:altinn:resource:'.");
 
-        // TODO: Party skal starte med enten /org/ eller /person/ og inneholde hhv et organisasjonsnummer eller
-        // et f-eller d-nummer. Kun sjekk well-formed-ness (mod 11-sjekk for orgnr og f/dnr)
-        // DU ER HER! Er D-nummer validering lik personnummer validering? Skriv en utfyldende beskjed dersom validering feiler. 
         RuleFor(x => x.Party)
             .Must(x => x.Split('/') switch
             {
-                ["", "org", var orgNumberAsString] => NumberHelper.IsValidOrgNumber(orgNumberAsString),
-                ["", "person", var personEllerDNummer] => NumberHelper.IsValidPersonNumber(personEllerDNummer),
+                ["", "org", var orgNumber] => OrganizationNumber.IsValid(orgNumber),
+                ["", "person", var socialSecurityNumber] => SocialSecurityNumber.IsValid(socialSecurityNumber),
                 _ => false
-            }).WithMessage("'{PropertyName}'")
+            }).WithMessage(
+                "'{PropertyName}' must be on format '/org/[orgNumber]' or " +
+                "'/person/[socialSecurityNumber]' with valid numbers respectivly.")
             .NotEmpty()
             .MaximumLength(Constants.DefaultMaxStringLength);
 
         RuleFor(x => x.ExtendedStatus)
             .MaximumLength(Constants.DefaultMaxStringLength);
 
+        // TODO: Sjekk at datoer er korrekt begge veier.
         RuleFor(x => x.ExpiresAt)
             .GreaterThanOrEqualTo(DateTimeOffset.UtcNow)
             .GreaterThanOrEqualTo(x => x.DueAt)
-            .GreaterThanOrEqualTo(x => x.VisibleFrom);
+                .When(x => x.DueAt.HasValue)
+            .GreaterThanOrEqualTo(x => x.VisibleFrom)
+                .When(x => x.VisibleFrom.HasValue);
         RuleFor(x => x.DueAt)
             .GreaterThanOrEqualTo(DateTimeOffset.UtcNow)
-            .GreaterThanOrEqualTo(x => x.VisibleFrom);
+            .GreaterThanOrEqualTo(x => x.VisibleFrom)
+                .When(x => x.VisibleFrom.HasValue);
         RuleFor(x => x.VisibleFrom)
             .GreaterThanOrEqualTo(DateTimeOffset.UtcNow);
 
-        RuleFor(x => x.StatusId).IsInEnum();
+        RuleFor(x => x.StatusId)
+            .IsInEnum();
 
         RuleFor(x => x.Title)
             .NotEmpty()
-            .ForEach(x => x.SetValidator(localizationValidator));
+            .SetValidator(localizatiosnValidator);
         // TODO: Valider iht https://github.com/orgs/digdir/projects/7/views/1?pane=issue&itemId=30057377
-        RuleForEach(x => x.Body).SetValidator(new LocalizationDtoValidator(maximumLength: 1023));
-        RuleForEach(x => x.SenderName).SetValidator(localizationValidator);
-        RuleForEach(x => x.SearchTitle).SetValidator(localizationValidator);
+        RuleFor(x => x.Body)
+            .SetValidator(new LocalizationDtosValidator(maximumLength: 1023));
+        RuleFor(x => x.SenderName)
+            .SetValidator(localizatiosnValidator);
+        RuleFor(x => x.SearchTitle)
+            .SetValidator(localizatiosnValidator);
 
-        RuleForEach(x => x.GuiActions).SetValidator(guiActionValidator);
+
+        RuleForEach(x => x.GuiActions)
+            .SetValidator(guiActionValidator);
 
         RuleForEach(x => x.ApiActions)
             .IsIn(x => x.Elements,
@@ -113,12 +79,16 @@ internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDia
                 principalKeySelector: element => element.Id)
             .SetValidator(apiActionValidator);
 
+        RuleFor(x => x.Elements)
+            .UniqueBy(x => x.Id);
         RuleForEach(x => x.Elements)
             .IsIn(x => x.Elements,
                 dependentKeySelector: element => element.RelatedDialogElementId,
                 principalKeySelector: element => element.Id)
             .SetValidator(elementValidator);
 
+        RuleFor(x => x.Activities)
+            .UniqueBy(x => x.Id);
         RuleForEach(x => x.Activities)
             .IsIn(x => x.Elements,
                 dependentKeySelector: activity => activity.DialogElementId,
@@ -133,21 +103,22 @@ internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDia
 internal sealed class CreateDialogDialogElementDtoValidator : AbstractValidator<CreateDialogDialogElementDto>
 {
     public CreateDialogDialogElementDtoValidator(
-        IValidator<LocalizationDto> localizationValidator,
+        IValidator<IEnumerable<LocalizationDto>> localizatiosnValidator,
         IValidator<CreateDialogDialogElementUrlDto> urlValidator)
     {
-        // TODO: Valider at ID er på uuid v7 format dersom det er satt
         RuleFor(x => x.Id)
             .NotEqual(default(Guid))
-            .NotEqual(x => x.RelatedDialogElementId);
-
+            .IsValidUuidV7();
         RuleFor(x => x.Type)
             .IsValidUri()
             .MaximumLength(Constants.DefaultMaxUriLength);
-
         RuleFor(x => x.AuthorizationAttribute)
             .MaximumLength(Constants.DefaultMaxStringLength);
-        RuleForEach(x => x.DisplayName).SetValidator(localizationValidator);
+        RuleFor(x => x.RelatedDialogElementId)
+            .NotEqual(x => x.Id)
+            .When(x => x.RelatedDialogElementId.HasValue);
+        RuleFor(x => x.DisplayName)
+            .SetValidator(localizatiosnValidator);
         RuleFor(x => x.Urls)
             .NotEmpty()
             .ForEach(x => x.SetValidator(urlValidator));
@@ -162,15 +133,17 @@ internal sealed class CreateDialogDialogElementUrlDtoValidator : AbstractValidat
             .NotNull()
             .IsValidUri()
             .MaximumLength(Constants.DefaultMaxUriLength);
-        RuleFor(x => x.MimeType).MaximumLength(Constants.DefaultMaxStringLength);
-        RuleFor(x => x.ConsumerTypeId).IsInEnum();
+        RuleFor(x => x.MimeType)
+            .MaximumLength(Constants.DefaultMaxStringLength);
+        RuleFor(x => x.ConsumerTypeId)
+            .IsInEnum();
     }
 }
 
 internal sealed class CreateDialogDialogGuiActionDtoValidator : AbstractValidator<CreateDialogDialogGuiActionDto>
 {
     public CreateDialogDialogGuiActionDtoValidator(
-        IValidator<LocalizationDto> localizationValidator)
+        IValidator<IEnumerable<LocalizationDto>> localizatiosnValidator)
     {
         RuleFor(x => x.Action)
             .NotEmpty()
@@ -181,10 +154,11 @@ internal sealed class CreateDialogDialogGuiActionDtoValidator : AbstractValidato
             .MaximumLength(Constants.DefaultMaxUriLength);
         RuleFor(x => x.AuthorizationAttribute)
             .MaximumLength(Constants.DefaultMaxStringLength);
-        RuleFor(x => x.PriorityId).IsInEnum();
+        RuleFor(x => x.PriorityId)
+            .IsInEnum();
         RuleFor(x => x.Title)
             .NotEmpty()
-            .ForEach(x => x.SetValidator(localizationValidator));
+            .SetValidator(localizatiosnValidator);
     }
 }
 
@@ -201,7 +175,6 @@ internal sealed class CreateDialogDialogApiActionDtoValidator : AbstractValidato
         RuleFor(x => x.Endpoints)
             .NotEmpty()
             .ForEach(x => x.SetValidator(apiActionEndpointValidator));
-
     }
 }
 
@@ -219,9 +192,15 @@ internal sealed class CreateDialogDialogApiActionEndpointDtoValidator : Abstract
         RuleFor(x => x.HttpMethod)
             .NotEmpty()
             .MaximumLength(Constants.DefaultMaxStringLength);
-        RuleFor(x => x.DocumentationUrl).IsValidUri().MaximumLength(Constants.DefaultMaxUriLength);
-        RuleFor(x => x.RequestSchema).IsValidUri().MaximumLength(Constants.DefaultMaxUriLength);
-        RuleFor(x => x.ResponseSchema).IsValidUri().MaximumLength(Constants.DefaultMaxUriLength);
+        RuleFor(x => x.DocumentationUrl)
+            .IsValidUri()
+            .MaximumLength(Constants.DefaultMaxUriLength);
+        RuleFor(x => x.RequestSchema)
+            .IsValidUri()
+            .MaximumLength(Constants.DefaultMaxUriLength);
+        RuleFor(x => x.ResponseSchema)
+            .IsValidUri()
+            .MaximumLength(Constants.DefaultMaxUriLength);
         RuleFor(x => x.Deprecated)
             .Equal(true)
             .When(x => x.SunsetAt.HasValue);
@@ -231,21 +210,26 @@ internal sealed class CreateDialogDialogApiActionEndpointDtoValidator : Abstract
 internal sealed class CreateDialogDialogActivityDtoValidator : AbstractValidator<CreateDialogDialogActivityDto>
 {
     public CreateDialogDialogActivityDtoValidator(
-        IValidator<LocalizationDto> localizationValidator)
+        IValidator<IEnumerable<LocalizationDto>> localizatiosnValidator)
     {
-        // TODO: Valider at ID er på uuid v7 format dersom det er satt
         RuleFor(x => x.Id)
             .NotEqual(default(Guid))
-            .NotEqual(x => x.RelatedActivityId);
-        RuleFor(x => x.CreatedAt).LessThanOrEqualTo(DateTimeOffset.UtcNow);
+            .IsValidUuidV7();
+        RuleFor(x => x.CreatedAt)
+            .LessThanOrEqualTo(DateTimeOffset.UtcNow)
+            .When(x => x.CreatedAt.HasValue);
         RuleFor(x => x.ExtendedType)
             .IsValidUri()
             .MaximumLength(Constants.DefaultMaxUriLength);
-        RuleFor(x => x.TypeId).IsInEnum();
-        RuleForEach(x => x.PerformedBy)
-            .SetValidator(localizationValidator);
+        RuleFor(x => x.TypeId)
+            .IsInEnum();
+        RuleFor(x => x.RelatedActivityId)
+            .NotEqual(x => x.Id)
+            .When(x => x.RelatedActivityId.HasValue);
+        RuleFor(x => x.PerformedBy)
+            .SetValidator(localizatiosnValidator);
         RuleFor(x => x.Description)
             .NotEmpty()
-            .ForEach(x => x.SetValidator(localizationValidator));
+            .SetValidator(localizatiosnValidator);
     }
 }
