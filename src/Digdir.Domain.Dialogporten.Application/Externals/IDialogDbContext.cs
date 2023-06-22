@@ -25,4 +25,6 @@ public interface IDialogDbContext
 
     DbSet<OutboxMessage> OutboxMessages { get; }
     DbSet<OutboxMessageConsumer> OutboxMessageConsumers { get; }
+
+    DbSet<TEntity> Set<TEntity>() where TEntity : class;
 }
