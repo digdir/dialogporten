@@ -41,7 +41,6 @@ internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDia
         RuleFor(x => x.ExtendedStatus)
             .MaximumLength(Constants.DefaultMaxStringLength);
 
-        // TODO: Sjekk at datoer er korrekt begge veier.
         RuleFor(x => x.ExpiresAt)
             .GreaterThanOrEqualTo(DateTimeOffset.UtcNow)
             .GreaterThanOrEqualTo(x => x.DueAt)
@@ -188,10 +187,8 @@ internal sealed class CreateDialogDialogApiActionEndpointDtoValidator : Abstract
             .NotNull()
             .IsValidUri()
             .MaximumLength(Constants.DefaultMaxUriLength);
-        // TODO: Should we validate valid HttpMethods?
         RuleFor(x => x.HttpMethod)
-            .NotEmpty()
-            .MaximumLength(Constants.DefaultMaxStringLength);
+            .IsInEnum();
         RuleFor(x => x.DocumentationUrl)
             .IsValidUri()
             .MaximumLength(Constants.DefaultMaxUriLength);

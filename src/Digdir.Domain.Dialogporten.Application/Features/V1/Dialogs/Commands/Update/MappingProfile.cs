@@ -21,7 +21,8 @@ internal sealed class MappingProfile : Profile
         CreateMap<UpdateDialogDialogGuiActionDto, DialogGuiAction>()
             .IgnoreComplexDestinationProperties();
         CreateMap<UpdateDialogDialogApiActionEndpointDto, DialogApiActionEndpoint>()
-            .IgnoreComplexDestinationProperties();
+            .IgnoreComplexDestinationProperties()
+            .ForMember(dest => dest.HttpMethodId, opt => opt.MapFrom(src => src.HttpMethod));
         CreateMap<UpdateDialogDialogElementDto, DialogElement>()
             .IgnoreComplexDestinationProperties();
         CreateMap<UpdateDialogDialogElementUrlDto, DialogElementUrl>()
@@ -35,7 +36,8 @@ internal sealed class MappingProfile : Profile
         CreateMap<DialogEntity, UpdateDialogDto>();
         CreateMap<DialogActivity, UpdateDialogDialogActivityDto>();
         CreateMap<DialogApiAction, UpdateDialogDialogApiActionDto>();
-        CreateMap<DialogApiActionEndpoint, UpdateDialogDialogApiActionEndpointDto>();
+        CreateMap<DialogApiActionEndpoint, UpdateDialogDialogApiActionEndpointDto>()
+            .ForMember(dest => dest.HttpMethod, opt => opt.MapFrom(src => src.HttpMethodId));
         CreateMap<DialogGuiAction, UpdateDialogDialogGuiActionDto>();
         CreateMap<DialogElement, UpdateDialogDialogElementDto>();
         CreateMap<DialogElementUrl, UpdateDialogDialogElementUrlDto>();

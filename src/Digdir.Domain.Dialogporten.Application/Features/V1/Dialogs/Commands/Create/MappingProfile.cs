@@ -15,7 +15,8 @@ internal sealed class MappingProfile : Profile
         CreateMap<CreateDialogDialogElementUrlDto, DialogElementUrl>();
 		CreateMap<CreateDialogDialogGuiActionDto, DialogGuiAction>();
 		CreateMap<CreateDialogDialogApiActionDto, DialogApiAction>();
-        CreateMap<CreateDialogDialogApiActionEndpointDto, DialogApiActionEndpoint>();
+        CreateMap<CreateDialogDialogApiActionEndpointDto, DialogApiActionEndpoint>()
+			.ForMember(dest => dest.HttpMethodId, opt => opt.MapFrom(src => src.HttpMethod));
 		CreateMap<CreateDialogDialogActivityDto, DialogActivity>();
 	}
 }

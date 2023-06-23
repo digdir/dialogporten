@@ -5,6 +5,7 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements;
+using Digdir.Domain.Dialogporten.Domain.Http;
 using FluentAssertions;
 
 namespace Digdir.Domain.Dialogporten.Application.Integration.Tests.Features.V1.Dialogs.Queries;
@@ -23,7 +24,7 @@ public class GetDialogTests : ApplicationCollectionFixture
         var createDialogCommand = new CreateDialogCommand
         {
             Id = Guid.NewGuid(),
-            ServiceResource = "example_dialog_service",
+            ServiceResource = new("urn:altinn:resource:example_dialog_service"),
             Party = "org:991825827",
             StatusId = DialogStatus.Enum.InProgress
         };
@@ -48,7 +49,7 @@ public class GetDialogTests : ApplicationCollectionFixture
         var createCommand = new CreateDialogCommand
         {
             Id = Guid.NewGuid(),
-            ServiceResource = "example_dialog_service",
+            ServiceResource = new("urn:altinn:resource:example_dialog_service"),
             Party = "org:991825827",
             StatusId = DialogStatus.Enum.InProgress,
             ExtendedStatus = "SKE-ABC",
@@ -105,7 +106,7 @@ public class GetDialogTests : ApplicationCollectionFixture
                     Endpoints = new() {
                         new() {
                             Url = new("https://example.com/api/dialogs/123456789"),
-                            HttpMethod = "GET",
+                            HttpMethod = HttpVerb.Enum.GET,
                             ResponseSchema = new("https://schemas.altinn.no/dialogs/v1/dialogs.json"),
                             DocumentationUrl = new("https://api-docs.example.com/dialogservice/open-action")
                         },
@@ -116,7 +117,7 @@ public class GetDialogTests : ApplicationCollectionFixture
                     Endpoints = new() {
                         new() {
                             Url = new("https://example.com/api/dialogs/123456789/confirmReceived"),
-                            HttpMethod = "POST",
+                            HttpMethod = HttpVerb.Enum.POST,
                             DocumentationUrl = new("https://api-docs.example.com/dialogservice/confirm-action")
                         },
                     }
@@ -126,7 +127,7 @@ public class GetDialogTests : ApplicationCollectionFixture
                     Endpoints = new() {
                         new() {
                             Url = new("https://example.com/api/dialogs/123456789"),
-                            HttpMethod = "POST",
+                            HttpMethod = HttpVerb.Enum.POST,
                             RequestSchema = new("https://schemas.example.com/dialogservice/v1/dialogservice.json"),
                             ResponseSchema = new("https://schemas.altinn.no/dialogs/v1/dialogs.json")
                         },
@@ -137,7 +138,7 @@ public class GetDialogTests : ApplicationCollectionFixture
                     Endpoints = new() {
                         new() {
                             Url = new("https://example.com/api/dialogs/123456789"),
-                            HttpMethod = "DELETE"
+                            HttpMethod = HttpVerb.Enum.DELETE
                         },
                     }
                 },

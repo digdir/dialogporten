@@ -3,13 +3,14 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements;
+using Digdir.Domain.Dialogporten.Domain.Http;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Commands.Update;
 
 public sealed class UpdateDialogDto
 {
-    public Uri ServiceResource { get; set; } = null!;
-    public string Party { get; set; } = null!;
+    //public Uri ServiceResource { get; set; } = null!;
+    //public string Party { get; set; } = null!;
     public string? ExtendedStatus { get; set; }
     public DateTimeOffset? VisibleFrom { get; set; }
     public DateTimeOffset? DueAt { get; set; }
@@ -39,7 +40,7 @@ public sealed class UpdateDialogDialogActivityDto
     public Guid? RelatedActivityId { get; set; }
     public Guid? DialogElementId { get; set; }
 
-    public List<LocalizationDto>? PerformedBy { get; set; } = new();
+    public List<LocalizationDto> PerformedBy { get; set; } = new();
     public List<LocalizationDto> Description { get; set; } = new();
 }
 
@@ -59,7 +60,7 @@ public sealed class UpdateDialogDialogApiActionEndpointDto
     public Guid? Id { get; set; }
     public string? Version { get; set; }
     public Uri Url { get; set; } = null!;
-    public string HttpMethod { get; set; } = null!;
+    public HttpVerb.Enum HttpMethod { get; set; }
     public Uri? DocumentationUrl { get; set; }
     public Uri? RequestSchema { get; set; }
     public Uri? ResponseSchema { get; set; }

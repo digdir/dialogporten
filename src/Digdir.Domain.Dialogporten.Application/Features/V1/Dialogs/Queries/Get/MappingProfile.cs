@@ -10,21 +10,11 @@ internal sealed class MappingProfile : Profile
 {
     public MappingProfile()
     {
-        // Since only one or the other of GUI or API actions are required, the DTOs are nullable
-        // so that the null value can be returned if the list is empty, causing the JSON serializer
-        // to ignore the property.
         CreateMap<DialogEntity, GetDialogDto>();
-            /* FIXME! This causes EF to complain for some reason.
-            .ForMember(
-                dest => dest.GuiActions,
-                opt => opt.MapFrom(src => src.GuiActions.Any() ? src.GuiActions : null))
-            .ForMember(
-                dest => dest.ApiActions,
-                opt => opt.MapFrom(src => src.ApiActions.Any() ? src.ApiActions : null));
-            */
         CreateMap<DialogGuiAction, GetDialogDialogGuiActionDto>();
         CreateMap<DialogApiAction, GetDialogDialogApiActionDto>();
-        CreateMap<DialogApiActionEndpoint, GetDialogDialogApiActionEndpointDto>();
+        CreateMap<DialogApiActionEndpoint, GetDialogDialogApiActionEndpointDto>()
+            .ForMember(dest => dest.HttpMethod, opt => opt.MapFrom(src => src.HttpMethodId));
         CreateMap<DialogElement, GetDialogDialogElementDto>();
         CreateMap<DialogElementUrl, GetDialogDialogElementUrlDto>();
         CreateMap<DialogActivity, GetDialogDialogActivityDto>();

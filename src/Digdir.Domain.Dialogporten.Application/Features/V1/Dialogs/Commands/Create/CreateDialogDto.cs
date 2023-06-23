@@ -3,6 +3,7 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements;
+using Digdir.Domain.Dialogporten.Domain.Http;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Commands.Create;
 
@@ -58,7 +59,7 @@ public sealed class CreateDialogDialogApiActionEndpointDto
 {
     public string? Version { get; set; }
     public Uri Url { get; set; } = null!;
-    public string HttpMethod { get; set; } = null!;
+    public HttpVerb.Enum HttpMethod { get; set; }
     public Uri? DocumentationUrl { get; set; }
     public Uri? RequestSchema { get; set; }
     public Uri? ResponseSchema { get; set; }

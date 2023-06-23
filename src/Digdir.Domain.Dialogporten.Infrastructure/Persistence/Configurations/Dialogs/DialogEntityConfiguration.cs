@@ -1,4 +1,5 @@
-﻿using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
+﻿using Digdir.Domain.Dialogporten.Domain.Common;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -9,5 +10,7 @@ internal sealed class DialogEntityConfiguration : IEntityTypeConfiguration<Dialo
     public void Configure(EntityTypeBuilder<DialogEntity> builder)
     {
         builder.ToTable("Dialog");
+        builder.Property(x => x.ServiceResource)
+            .HasMaxLength(Constants.DefaultMaxStringLength);
     }
 }

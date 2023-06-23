@@ -48,10 +48,14 @@ static void BuildAndRun(string[] args)
             TelemetryConverter.Traces));
 
     builder.Configuration.AddAzureConfiguration(builder.Environment.EnvironmentName);
-    builder.Services
-        // Temporary configuration for outbox through Web api
-        //.AddHostedService<OutboxScheduler>()
 
+    if (!builder.Environment.IsDevelopment())
+    {
+        // Temporary configuration for outbox through Web api
+        builder.Services.AddHostedService<OutboxScheduler>();
+    }
+
+    builder.Services
         .AddAzureAppConfiguration()
         .AddApplicationInsightsTelemetry()
         .AddEndpointsApiExplorer()
