@@ -87,8 +87,6 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
             return new EntityExists<DialogActivity>(existingActivityIds);
         }
 
-        // TODO! Handle/validate internal relations as in CreateDialog
-
         // Update primitive properties
         _mapper.Map(dto, dialog);
 
@@ -188,8 +186,19 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
 
     private async Task<IEnumerable<DialogApiAction>> CreateApiActions(IEnumerable<UpdateDialogDialogApiActionDto> creatables, CancellationToken cancellationToken)
     {
+        var dtos = creatables.ToList();
+        //var invalidIds = dtos
+        //    .Where(x => x.Id.HasValue)
+        //    .Select(x => x.Id!.Value)
+        //    .ToList();
+
+        //if (invalidIds.Any())
+        //{
+        //    // TODO: Create a domain error as user should not be able to set the id of a new item
+        //}
+
         var apiActions = new List<DialogApiAction>();
-        foreach (var apiActionDto in creatables)
+        foreach (var apiActionDto in dtos)
         {
             var apiAction = _mapper.Map<DialogApiAction>(apiActionDto);
             apiAction.Endpoints = (await CreateApiActionEndpoints(apiActionDto.Endpoints, cancellationToken)).ToList();
@@ -224,7 +233,18 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
 
     private Task<IEnumerable<DialogApiActionEndpoint>> CreateApiActionEndpoints(IEnumerable<UpdateDialogDialogApiActionEndpointDto> creatables, CancellationToken cancellationToken)
     {
-        return Task.FromResult(creatables.Select(_mapper.Map<DialogApiActionEndpoint>));
+        var dtos = creatables.ToList();
+        //var invalidIds = dtos
+        //    .Where(x => x.Id.HasValue)
+        //    .Select(x => x.Id!.Value)
+        //    .ToList();
+
+        //if (invalidIds.Any())
+        //{
+        //    // TODO: Create a domain error as user should not be able to set the id of a new item
+        //}
+
+        return Task.FromResult(dtos.Select(_mapper.Map<DialogApiActionEndpoint>));
     }
 
     private Task UpdateApiActionEndpoints(IEnumerable<IUpdateSet<DialogApiActionEndpoint, UpdateDialogDialogApiActionEndpointDto>> updateSets, CancellationToken cancellationToken)
@@ -242,9 +262,20 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         return Task.CompletedTask;
     }
 
-    private Task<IEnumerable<DialogGuiAction>> CreateGuiActions(IEnumerable<UpdateDialogDialogGuiActionDto> guiActionDtos, CancellationToken cancellationToken)
+    private Task<IEnumerable<DialogGuiAction>> CreateGuiActions(IEnumerable<UpdateDialogDialogGuiActionDto> creatables, CancellationToken cancellationToken)
     {
-        return Task.FromResult(guiActionDtos.Select(x =>
+        var dtos = creatables.ToList();
+        //var invalidIds = dtos
+        //    .Where(x => x.Id.HasValue)
+        //    .Select(x => x.Id!.Value)
+        //    .ToList();
+
+        //if (invalidIds.Any())
+        //{
+        //    // TODO: Create a domain error as user should not be able to set the id of a new item
+        //}
+
+        return Task.FromResult(dtos.Select(x =>
         {
             var guiAction = _mapper.Map<DialogGuiAction>(x);
             guiAction.Title = _mapper.Map<LocalizationSet>(x.Title);
@@ -312,7 +343,18 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
 
     private Task<IEnumerable<DialogElementUrl>> CreateElementUrls(IEnumerable<UpdateDialogDialogElementUrlDto> creatables, CancellationToken cancellationToken)
     {
-        return Task.FromResult(creatables.Select(_mapper.Map<DialogElementUrl>));
+        var dtos = creatables.ToList();
+        //var invalidIds = dtos
+        //    .Where(x => x.Id.HasValue)
+        //    .Select(x => x.Id!.Value)
+        //    .ToList();
+
+        //if (invalidIds.Any())
+        //{
+        //    // TODO: Create a domain error as user should not be able to set the id of a new item
+        //}
+
+        return Task.FromResult(dtos.Select(_mapper.Map<DialogElementUrl>));
     }
 
     private Task UpdateElementUrls(IEnumerable<IUpdateSet<DialogElementUrl, UpdateDialogDialogElementUrlDto>> updateSets, CancellationToken cancellationToken)

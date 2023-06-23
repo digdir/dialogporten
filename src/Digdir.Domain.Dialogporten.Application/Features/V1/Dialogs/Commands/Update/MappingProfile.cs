@@ -11,22 +11,29 @@ internal sealed class MappingProfile : Profile
 {
     public MappingProfile()
     {
+        // TODO: should we ignore id for entities where user cannot set id on create?
+
         // In
         CreateMap<UpdateDialogDto, DialogEntity>()
             .IgnoreComplexDestinationProperties();
+
         CreateMap<UpdateDialogDialogApiActionDto, DialogApiAction>()
-            .IgnoreComplexDestinationProperties();
-        CreateMap<UpdateDialogDialogApiActionDto, DialogApiAction>()
-            .IgnoreComplexDestinationProperties();
-        CreateMap<UpdateDialogDialogGuiActionDto, DialogGuiAction>()
-            .IgnoreComplexDestinationProperties();
+            .IgnoreComplexDestinationProperties()
+            .ForMember(x => x.Id, opt => opt.Ignore());
         CreateMap<UpdateDialogDialogApiActionEndpointDto, DialogApiActionEndpoint>()
             .IgnoreComplexDestinationProperties()
+            .ForMember(x => x.Id, opt => opt.Ignore())
             .ForMember(dest => dest.HttpMethodId, opt => opt.MapFrom(src => src.HttpMethod));
+
+        CreateMap<UpdateDialogDialogGuiActionDto, DialogGuiAction>()
+            .IgnoreComplexDestinationProperties()
+            .ForMember(x => x.Id, opt => opt.Ignore());
+
         CreateMap<UpdateDialogDialogElementDto, DialogElement>()
             .IgnoreComplexDestinationProperties();
         CreateMap<UpdateDialogDialogElementUrlDto, DialogElementUrl>()
-            .IgnoreComplexDestinationProperties();
+            .IgnoreComplexDestinationProperties()
+            .ForMember(x => x.Id, opt => opt.Ignore());
 
         // Since this is append only, we don't need to merge with existing
         // activity records and thus can map complex properties
