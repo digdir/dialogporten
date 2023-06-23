@@ -10,14 +10,18 @@ internal sealed class MappingProfile : Profile
 {
 	public MappingProfile()
 	{
-		CreateMap<CreateDialogDto, DialogEntity>();
-		CreateMap<CreateDialogDialogElementDto, DialogElement>();
-        CreateMap<CreateDialogDialogElementUrlDto, DialogElementUrl>();
-		CreateMap<CreateDialogDialogGuiActionDto, DialogGuiAction>();
+		CreateMap<CreateDialogDto, DialogEntity>()
+            .ForMember(dest => dest.StatusId, opt => opt.MapFrom(src => src.Status));
+        CreateMap<CreateDialogDialogElementDto, DialogElement>();
+        CreateMap<CreateDialogDialogElementUrlDto, DialogElementUrl>()
+			.ForMember(dest => dest.ConsumerTypeId, opt => opt.MapFrom(src => src.ConsumerType));
+		CreateMap<CreateDialogDialogGuiActionDto, DialogGuiAction>()
+            .ForMember(dest => dest.PriorityId, opt => opt.MapFrom(src => src.Priority));
 		CreateMap<CreateDialogDialogApiActionDto, DialogApiAction>();
         CreateMap<CreateDialogDialogApiActionEndpointDto, DialogApiActionEndpoint>()
 			.ForMember(dest => dest.HttpMethodId, opt => opt.MapFrom(src => src.HttpMethod));
-		CreateMap<CreateDialogDialogActivityDto, DialogActivity>();
-	}
+		CreateMap<CreateDialogDialogActivityDto, DialogActivity>()
+            .ForMember(dest => dest.TypeId, opt => opt.MapFrom(src => src.Type));
+    }
 }
 

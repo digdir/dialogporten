@@ -45,7 +45,7 @@ internal sealed class UpdateDialogDtoValidator : AbstractValidator<UpdateDialogD
         RuleFor(x => x.VisibleFrom)
             .GreaterThanOrEqualTo(DateTimeOffset.UtcNow);
 
-        RuleFor(x => x.StatusId)
+        RuleFor(x => x.Status)
             .IsInEnum();
 
         RuleFor(x => x.Title)
@@ -130,7 +130,7 @@ internal sealed class UpdateDialogDialogElementUrlDtoValidator : AbstractValidat
             .MaximumLength(Constants.DefaultMaxUriLength);
         RuleFor(x => x.MimeType)
             .MaximumLength(Constants.DefaultMaxStringLength);
-        RuleFor(x => x.ConsumerTypeId)
+        RuleFor(x => x.ConsumerType)
             .IsInEnum();
     }
 }
@@ -149,7 +149,7 @@ internal sealed class UpdateDialogDialogGuiActionDtoValidator : AbstractValidato
             .MaximumLength(Constants.DefaultMaxUriLength);
         RuleFor(x => x.AuthorizationAttribute)
             .MaximumLength(Constants.DefaultMaxStringLength);
-        RuleFor(x => x.PriorityId)
+        RuleFor(x => x.Priority)
             .IsInEnum();
         RuleFor(x => x.Title)
             .NotEmpty()
@@ -216,7 +216,7 @@ internal sealed class UpdateDialogDialogActivityDtoValidator : AbstractValidator
         RuleFor(x => x.ExtendedType)
             .IsValidUri()
             .MaximumLength(Constants.DefaultMaxUriLength);
-        RuleFor(x => x.TypeId)
+        RuleFor(x => x.Type)
             .IsInEnum();
         RuleFor(x => x.RelatedActivityId)
             .NotEqual(x => x.Id)

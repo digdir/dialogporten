@@ -17,7 +17,7 @@ public class CreateDialogDto
     public DateTimeOffset? DueAt { get; set; }
     public DateTimeOffset? ExpiresAt { get; set; }
 
-    public DialogStatus.Enum StatusId { get; set; }
+    public DialogStatus.Enum Status { get; set; }
 
     public List<LocalizationDto> Body { get; set; } = new();
     public List<LocalizationDto> Title { get; set; } = new();
@@ -36,7 +36,7 @@ public sealed class CreateDialogDialogActivityDto
     public DateTimeOffset? CreatedAt { get; set; }
     public Uri? ExtendedType { get; set; }
 
-    public DialogActivityType.Enum TypeId { get; set; }
+    public DialogActivityType.Enum Type { get; set; }
 
     public Guid? RelatedActivityId { get; set; }
     public Guid? DialogElementId { get; set; }
@@ -75,7 +75,7 @@ public sealed class CreateDialogDialogGuiActionDto
     public bool IsBackChannel { get; set; }
     public bool IsDeleteAction { get; set; }
 
-    public DialogGuiActionPriority.Enum PriorityId { get; set; }
+    public DialogGuiActionPriority.Enum Priority { get; set; }
 
     public List<LocalizationDto> Title { get; set; } = new();
 }
@@ -97,5 +97,5 @@ public sealed class CreateDialogDialogElementUrlDto
     public Uri Url { get; set; } = null!;
     public string? MimeType { get; set; }
 
-    public DialogElementUrlConsumerType.Enum ConsumerTypeId { get; set; }
+    public DialogElementUrlConsumerType.Enum ConsumerType { get; set; }
 }
