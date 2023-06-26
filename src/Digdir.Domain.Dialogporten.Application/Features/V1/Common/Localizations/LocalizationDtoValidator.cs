@@ -1,4 +1,4 @@
-﻿using Digdir.Domain.Dialogporten.Application.Common.Extensions;
+﻿using Digdir.Domain.Dialogporten.Application.Common.Extensions.FluentValidation;
 using FluentValidation;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;

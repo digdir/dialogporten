@@ -159,7 +159,7 @@ public class CreateDialogTests : ApplicationCollectionFixture
                 new()
                 {
                     Id = Guid.NewGuid(),
-                    CreatedAt = DateTimeOffset.UtcNow,
+                    //CreatedAt = DateTimeOffset.UtcNow,
                     Type = DialogActivityType.Enum.Submission,
                     PerformedBy = new() { new() { CultureCode = "nb_NO", Value = "person:12018212345" } },
                     ExtendedType = new Uri("SKE:1234-received-precheck-ok"),

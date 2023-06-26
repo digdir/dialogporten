@@ -13,9 +13,9 @@ public class CreateDialogDto
     public Uri ServiceResource { get; set; } = null!;
     public string Party { get; set; } = null!;
     public string? ExtendedStatus { get; set; }
-    public DateTimeOffset? VisibleFrom { get; set; }
-    public DateTimeOffset? DueAt { get; set; }
-    public DateTimeOffset? ExpiresAt { get; set; }
+    public DateTime? VisibleFrom { get; set; }
+    public DateTime? DueAt { get; set; }
+    public DateTime? ExpiresAt { get; set; }
 
     public DialogStatus.Enum Status { get; set; }
 
@@ -33,7 +33,7 @@ public class CreateDialogDto
 public sealed class CreateDialogDialogActivityDto
 {
     public Guid? Id { get; set; }
-    public DateTimeOffset? CreatedAt { get; set; }
+    public DateTime? CreatedAt { get; set; }
     public Uri? ExtendedType { get; set; }
 
     public DialogActivityType.Enum Type { get; set; }
@@ -64,7 +64,7 @@ public sealed class CreateDialogDialogApiActionEndpointDto
     public Uri? RequestSchema { get; set; }
     public Uri? ResponseSchema { get; set; }
     public bool Deprecated { get; set; }
-    public DateTimeOffset? SunsetAt { get; set; }
+    public DateTime? SunsetAt { get; set; }
 }
 
 public sealed class CreateDialogDialogGuiActionDto

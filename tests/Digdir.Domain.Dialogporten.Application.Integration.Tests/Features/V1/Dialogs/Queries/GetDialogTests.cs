@@ -52,8 +52,8 @@ public class GetDialogTests : ApplicationCollectionFixture
             Party = "org:991825827",
             Status = DialogStatus.Enum.InProgress,
             ExtendedStatus = "SKE-ABC",
-            DueAt = new(new DateTime(2022, 12, 01), TimeSpan.Zero),
-            ExpiresAt = new(new DateTime(2022, 12, 01), TimeSpan.Zero),
+            //DueAt = new(new DateTime(2022, 12, 01), TimeSpan.Zero),
+            //ExpiresAt = new(new DateTime(2022, 12, 01), TimeSpan.Zero),
             SearchTitle = new() { new() { CultureCode = "nb_NO", Value = "Et eksempel på en tittel" } },
             Title = new() { new() { CultureCode = "nb_NO", Value = "Et eksempel på en tittel" } },
             SenderName = new() { new() { CultureCode = "nb_NO", Value = "Overstyrt avsendernavn (bruker default tjenesteeiers navn)" } },
@@ -147,7 +147,7 @@ public class GetDialogTests : ApplicationCollectionFixture
                 new()
                 {
                     Id = Guid.NewGuid(),
-                    CreatedAt = DateTimeOffset.UtcNow,
+                    //CreatedAt = DateTimeOffset.UtcNow,
                     Type = DialogActivityType.Enum.Submission,
                     PerformedBy = new() { new() { CultureCode = "nb_NO", Value = "Et navn" } },
                     ExtendedType = new Uri("SKE:1234-received-precheck-ok"),

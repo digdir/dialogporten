@@ -1,4 +1,4 @@
-﻿using Digdir.Domain.Dialogporten.Application.Common.Extensions;
+﻿using Digdir.Domain.Dialogporten.Application.Common.Extensions.FluentValidation;
 using Digdir.Domain.Dialogporten.Application.Common.Numbers;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using Digdir.Domain.Dialogporten.Domain.Common;
@@ -23,11 +23,11 @@ internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDia
             .NotNull()
             .IsValidUri()
             .MaximumLength(Constants.DefaultMaxUriLength)
-            .Must(x => x.ToString().StartsWith("urn:altinn:resource:"))
+            .Must(x => x?.ToString().StartsWith("urn:altinn:resource:") ?? false)
                 .WithMessage("'{PropertyName}' must start with 'urn:altinn:resource:'.");
 
         RuleFor(x => x.Party)
-            .Must(x => x.Split('/') switch
+            .Must(x => x is null || x.Split('/') switch
             {
                 ["", "org", var orgNumber] => OrganizationNumber.IsValid(orgNumber),
                 ["", "person", var socialSecurityNumber] => SocialSecurityNumber.IsValid(socialSecurityNumber),
@@ -42,17 +42,23 @@ internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDia
             .MaximumLength(Constants.DefaultMaxStringLength);
 
         RuleFor(x => x.ExpiresAt)
-            .GreaterThanOrEqualTo(DateTimeOffset.UtcNow)
+            .IsUtcKind()
+            .IsInFuture()
             .GreaterThanOrEqualTo(x => x.DueAt)
-                .When(x => x.DueAt.HasValue)
+                .WithMessage(FluentValidation_DateTime_Extensions.InFutureOfMessage)
+                .When(x => x.DueAt.HasValue, ApplyConditionTo.CurrentValidator)
             .GreaterThanOrEqualTo(x => x.VisibleFrom)
-                .When(x => x.VisibleFrom.HasValue);
+                .WithMessage(FluentValidation_DateTime_Extensions.InFutureOfMessage)
+                .When(x => x.VisibleFrom.HasValue, ApplyConditionTo.CurrentValidator);
         RuleFor(x => x.DueAt)
-            .GreaterThanOrEqualTo(DateTimeOffset.UtcNow)
+            .IsUtcKind()
+            .IsInFuture()
             .GreaterThanOrEqualTo(x => x.VisibleFrom)
-                .When(x => x.VisibleFrom.HasValue);
+                .WithMessage(FluentValidation_DateTime_Extensions.InFutureOfMessage)
+                .When(x => x.VisibleFrom.HasValue, ApplyConditionTo.CurrentValidator);
         RuleFor(x => x.VisibleFrom)
-            .GreaterThanOrEqualTo(DateTimeOffset.UtcNow);
+            .IsUtcKind()
+            .IsInFuture();
 
         RuleFor(x => x.Status)
             .IsInEnum();
@@ -67,7 +73,6 @@ internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDia
             .SetValidator(localizatiosnValidator);
         RuleFor(x => x.SearchTitle)
             .SetValidator(localizatiosnValidator);
-
 
         RuleForEach(x => x.GuiActions)
             .SetValidator(guiActionValidator);
@@ -201,6 +206,8 @@ internal sealed class CreateDialogDialogApiActionEndpointDtoValidator : Abstract
         RuleFor(x => x.Deprecated)
             .Equal(true)
             .When(x => x.SunsetAt.HasValue);
+        RuleFor(x => x.SunsetAt)
+            .IsUtcKind();
     }
 }
 
@@ -213,8 +220,8 @@ internal sealed class CreateDialogDialogActivityDtoValidator : AbstractValidator
             .NotEqual(default(Guid))
             .IsValidUuidV7();
         RuleFor(x => x.CreatedAt)
-            .LessThanOrEqualTo(DateTimeOffset.UtcNow)
-            .When(x => x.CreatedAt.HasValue);
+            .IsUtcKind()
+            .IsInPast();
         RuleFor(x => x.ExtendedType)
             .IsValidUri()
             .MaximumLength(Constants.DefaultMaxUriLength);

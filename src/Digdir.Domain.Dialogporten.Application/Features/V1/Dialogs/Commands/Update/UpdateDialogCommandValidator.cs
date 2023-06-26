@@ -1,4 +1,4 @@
-﻿using Digdir.Domain.Dialogporten.Application.Common.Extensions;
+﻿using Digdir.Domain.Dialogporten.Application.Common.Extensions.FluentValidation;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using Digdir.Domain.Dialogporten.Domain.Common;
 using FluentValidation;
@@ -33,17 +33,23 @@ internal sealed class UpdateDialogDtoValidator : AbstractValidator<UpdateDialogD
             .MaximumLength(Constants.DefaultMaxStringLength);
 
         RuleFor(x => x.ExpiresAt)
-            .GreaterThanOrEqualTo(DateTimeOffset.UtcNow)
+            .IsUtcKind()
+            .IsInFuture()
             .GreaterThanOrEqualTo(x => x.DueAt)
-                .When(x => x.DueAt.HasValue)
+                .WithMessage(FluentValidation_DateTime_Extensions.InFutureOfMessage)
+                .When(x => x.DueAt.HasValue, ApplyConditionTo.CurrentValidator)
             .GreaterThanOrEqualTo(x => x.VisibleFrom)
-                .When(x => x.VisibleFrom.HasValue);
+                .WithMessage(FluentValidation_DateTime_Extensions.InFutureOfMessage)
+                .When(x => x.VisibleFrom.HasValue, ApplyConditionTo.CurrentValidator);
         RuleFor(x => x.DueAt)
-            .GreaterThanOrEqualTo(DateTimeOffset.UtcNow)
+            .IsUtcKind()
+            .IsInFuture()
             .GreaterThanOrEqualTo(x => x.VisibleFrom)
-                .When(x => x.VisibleFrom.HasValue);
+                .WithMessage(FluentValidation_DateTime_Extensions.InFutureOfMessage)
+                .When(x => x.VisibleFrom.HasValue, ApplyConditionTo.CurrentValidator);
         RuleFor(x => x.VisibleFrom)
-            .GreaterThanOrEqualTo(DateTimeOffset.UtcNow);
+            .IsUtcKind()
+            .IsInFuture();
 
         RuleFor(x => x.Status)
             .IsInEnum();
@@ -199,6 +205,8 @@ internal sealed class UpdateDialogDialogApiActionEndpointDtoValidator : Abstract
         RuleFor(x => x.Deprecated)
             .Equal(true)
             .When(x => x.SunsetAt.HasValue);
+        RuleFor(x => x.SunsetAt)
+            .IsUtcKind();
     }
 }
 
@@ -211,8 +219,8 @@ internal sealed class UpdateDialogDialogActivityDtoValidator : AbstractValidator
             .NotEqual(default(Guid))
             .IsValidUuidV7();
         RuleFor(x => x.CreatedAt)
-            .LessThanOrEqualTo(DateTimeOffset.UtcNow)
-            .When(x => x.CreatedAt.HasValue);
+            .IsUtcKind()
+            .IsInPast();
         RuleFor(x => x.ExtendedType)
             .IsValidUri()
             .MaximumLength(Constants.DefaultMaxUriLength);
