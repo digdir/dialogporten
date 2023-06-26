@@ -4,7 +4,6 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements;
-using Digdir.Domain.Dialogporten.Domain.Http;
 using Digdir.Domain.Dialogporten.Domain.Localizations;
 using Digdir.Domain.Dialogporten.Domain.Outboxes;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence.Configurations.Localizations;
@@ -18,7 +17,6 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence;
 internal sealed class DialogDbContext : DbContext, IDialogDbContext
 {
     public DialogDbContext(DbContextOptions<DialogDbContext> options) : base(options) { }
-    private DialogDbContext() { }
 
     public DbSet<DialogEntity> Dialogs => Set<DialogEntity>();
     public DbSet<Localization> Localizations => Set<Localization>();
