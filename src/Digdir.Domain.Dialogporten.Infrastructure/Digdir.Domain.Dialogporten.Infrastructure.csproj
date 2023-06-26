@@ -27,7 +27,7 @@
   </ItemGroup>
 
 	<ItemGroup>
-		<InternalsVisibleTo Include="Digdir.Domain.Dialogporten.Application.Tests.Integration" />
+		<InternalsVisibleTo Include="Digdir.Domain.Dialogporten.Application.Integration.Tests" />
 		<InternalsVisibleTo Include="Digdir.Domain.Dialogporten.Infrastructure.Unit.Tests" />
 	</ItemGroup>
 

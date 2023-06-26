@@ -4,6 +4,7 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements;
 using Digdir.Domain.Dialogporten.Domain.Localizations;
 using Digdir.Domain.Dialogporten.Domain.Outboxes;
+using Digdir.Library.Entity.Abstractions.Features.Identifiable;
 using Microsoft.EntityFrameworkCore;
 
 namespace Digdir.Domain.Dialogporten.Application.Externals;
@@ -25,4 +26,9 @@ public interface IDialogDbContext
 
     DbSet<OutboxMessage> OutboxMessages { get; }
     DbSet<OutboxMessageConsumer> OutboxMessageConsumers { get; }
+
+    Task<List<Guid>> GetExistingIds<TEntity>(
+        IEnumerable<TEntity> entities, 
+        CancellationToken cancellationToken) 
+        where TEntity : class, IIdentifiableEntity;
 }

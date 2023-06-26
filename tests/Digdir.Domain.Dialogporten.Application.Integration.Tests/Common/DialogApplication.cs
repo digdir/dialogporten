@@ -3,6 +3,7 @@ using Digdir.Domain.Dialogporten.Infrastructure;
 using Digdir.Domain.Dialogporten.Infrastructure.DomainEvents;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence;
 using Digdir.Library.Entity.Abstractions.Features.Lookup;
+using FluentAssertions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -11,9 +12,8 @@ using Npgsql;
 using NSubstitute;
 using Respawn;
 using Testcontainers.PostgreSql;
-using Xunit;
 
-namespace Digdir.Domain.Dialogporten.Application.Tests.Integration.Common;
+namespace Digdir.Domain.Dialogporten.Application.Integration.Tests.Common;
 
 public class DialogApplication : IAsyncLifetime
 {
@@ -25,6 +25,14 @@ public class DialogApplication : IAsyncLifetime
 
     public async Task InitializeAsync()
     {
+        AssertionOptions.AssertEquivalencyUsing(options =>
+        {
+            //options.ExcludingMissingMembers();
+            options.Using<DateTimeOffset>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Expectation, TimeSpan.FromMicroseconds(1)))
+                .WhenTypeIs<DateTimeOffset>();
+            return options;
+        });
+
         _rootProvider = new ServiceCollection()
             .AddApplication(Substitute.For<IConfiguration>())
             .AddDbContext<DialogDbContext>(x => x.UseNpgsql(_dbContainer.GetConnectionString()))

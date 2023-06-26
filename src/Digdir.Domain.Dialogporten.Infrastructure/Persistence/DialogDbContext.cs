@@ -1,4 +1,5 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Externals;
+using Digdir.Domain.Dialogporten.Domain.Common;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
@@ -6,6 +7,8 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements;
 using Digdir.Domain.Dialogporten.Domain.Localizations;
 using Digdir.Domain.Dialogporten.Domain.Outboxes;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence.Configurations.Localizations;
+using Digdir.Domain.Dialogporten.Infrastructure.Persistence.ValueConverters;
+using Digdir.Library.Entity.Abstractions.Features.Identifiable;
 using Digdir.Library.Entity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -30,11 +33,33 @@ internal sealed class DialogDbContext : DbContext, IDialogDbContext
 
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
     public DbSet<OutboxMessageConsumer> OutboxMessageConsumers => Set<OutboxMessageConsumer>();
+    
+    public async Task<List<Guid>> GetExistingIds<TEntity>(
+        IEnumerable<TEntity> entities,
+        CancellationToken cancellationToken)
+        where TEntity : class, IIdentifiableEntity
+    {
+        var ids = entities
+            .Select(x => x.Id)
+            .Where(x => x != default)
+            .ToArray();
+
+        if (!ids.Any())
+        {
+            return new();
+        }
+
+        return await Set<TEntity>()
+            .Select(x => x.Id)
+            .Where(x => ids.Contains(x))
+            .ToListAsync(cancellationToken);
+    }
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {
-        configurationBuilder.Properties<string>(x => x.HaveMaxLength(255));
-        configurationBuilder.Properties<Uri>(x => x.HaveMaxLength(1023));
+        configurationBuilder.Properties<string>(x => x.HaveMaxLength(Constants.DefaultMaxStringLength));
+        configurationBuilder.Properties<Uri>(x => x.HaveMaxLength(Constants.DefaultMaxUriLength));
+        configurationBuilder.Properties<DateTimeOffset>().HaveConversion<DateTimeOffsetConverter>();
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

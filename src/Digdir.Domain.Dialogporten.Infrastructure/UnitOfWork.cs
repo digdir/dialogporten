@@ -19,8 +19,6 @@ internal sealed class UnitOfWork : IUnitOfWork
     public Task SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         // TODO: Eject if domain errors
-        // TODO: Handle domain events
-        // TODO: Get the correct user id.
         var now = DateTimeOffset.UtcNow;
         _dialogDbContext.ChangeTracker.HandleAuditableEntities(now);
         foreach (var domainEvent in _domainEventPublisher.GetDomainEvents())

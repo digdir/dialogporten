@@ -1,7 +1,6 @@
-﻿using Digdir.Domain.Dialogporten.Application.Tests.Integration.Common;
-using Xunit;
+﻿using Digdir.Domain.Dialogporten.Application.Integration.Tests.Common;
 
-namespace Digdir.Domain.Dialogporten.Application.Tests.Integration.Features.V1.Dialogs.Commands;
+namespace Digdir.Domain.Dialogporten.Application.Integration.Tests.Features.V1.Dialogs.Commands;
 
 [Collection(nameof(DialogCqrsCollectionFixture))]
 public class DeleteDialogTests : ApplicationCollectionFixture

@@ -50,10 +50,13 @@ internal static class EnumerableExtensions
             var creates = sources
                 .Except(updates.Select(x => x.Source))
                 .ToList();
-            result = result.Concat(await create(creates, cancellationToken));
+            if (creates.Any())
+            {
+                result = result.Concat(await create(creates, cancellationToken));
+            }
         }
 
-        if (update is not null)
+        if (update is not null && updates.Any())
         {
             await update(updates, cancellationToken);
         }
@@ -63,8 +66,11 @@ internal static class EnumerableExtensions
             var deleates = destinations
                 .Except(updates.Select(x => x.Destination))
                 .ToList();
-            await delete(deleates, cancellationToken);
-            result = result.Except(deleates);
+            if (deleates.Any())
+            {
+                await delete(deleates, cancellationToken);
+                result = result.Except(deleates);
+            }
         }
 
         return result.ToList();

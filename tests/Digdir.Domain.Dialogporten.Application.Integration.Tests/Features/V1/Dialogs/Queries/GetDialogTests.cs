@@ -1,14 +1,14 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Commands.Create;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Queries.Get;
-using Digdir.Domain.Dialogporten.Application.Tests.Integration.Common;
+using Digdir.Domain.Dialogporten.Application.Integration.Tests.Common;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements;
+using Digdir.Domain.Dialogporten.Domain.Http;
 using FluentAssertions;
-using Xunit;
 
-namespace Digdir.Domain.Dialogporten.Application.Tests.Integration.Features.V1.Dialogs.Queries;
+namespace Digdir.Domain.Dialogporten.Application.Integration.Tests.Features.V1.Dialogs.Queries;
 
 [Collection(nameof(DialogCqrsCollectionFixture))]
 public class GetDialogTests : ApplicationCollectionFixture
@@ -17,7 +17,30 @@ public class GetDialogTests : ApplicationCollectionFixture
     {
     }
 
-    [Fact(Skip = "While preparing github actions")]
+    [Fact(Skip = "Must fix for validation rules.")]
+    public async Task Get_ReturnsSimpleDialog_WhenDialogExists()
+    {
+        // Arrange
+        var createDialogCommand = new CreateDialogCommand
+        {
+            Id = Guid.NewGuid(),
+            ServiceResource = new("urn:altinn:resource:example_dialog_service"),
+            Party = "org:991825827",
+            Status = DialogStatus.Enum.InProgress
+        };
+
+        var createCommandResponse = await Application.Send(createDialogCommand);
+
+        // Act
+        var response = await Application.Send(new GetDialogQuery { Id = createCommandResponse.AsT0 });
+
+        // Assert
+        response.TryPickT0(out var result, out var _).Should().BeTrue();
+        result.Should().NotBeNull();
+        result.Should().BeEquivalentTo(createDialogCommand);
+    }
+
+    [Fact(Skip = "Must fix for validation rules.")]
     public async Task Get_ReturnsDialog_WhenDialogExists()
     {
         // Arrange
@@ -25,15 +48,16 @@ public class GetDialogTests : ApplicationCollectionFixture
         var createCommand = new CreateDialogCommand
         {
             Id = Guid.NewGuid(),
-            ServiceResource = "example_dialog_service",
+            ServiceResource = new("urn:altinn:resource:example_dialog_service"),
             Party = "org:991825827",
-            StatusId = DialogStatus.Enum.InProgress,
+            Status = DialogStatus.Enum.InProgress,
             ExtendedStatus = "SKE-ABC",
-            //DueAt = new(2022, 12, 01),
-            //ExpiresAt = new(2023, 12, 01),
+            //DueAt = new(new DateTime(2022, 12, 01), TimeSpan.Zero),
+            //ExpiresAt = new(new DateTime(2022, 12, 01), TimeSpan.Zero),
+            SearchTitle = new() { new() { CultureCode = "nb_NO", Value = "Et eksempel på en tittel" } },
             Title = new() { new() { CultureCode = "nb_NO", Value = "Et eksempel på en tittel" } },
             SenderName = new() { new() { CultureCode = "nb_NO", Value = "Overstyrt avsendernavn (bruker default tjenesteeiers navn)" } },
-            Body =  { new() { CultureCode = "nb_NO", Value = "Innhold med <em>begrenset</em> HTML-støtte. Dette innholdet vises når dialogen ekspanderes." } },
+            Body = { new() { CultureCode = "nb_NO", Value = "Innhold med <em>begrenset</em> HTML-støtte. Dette innholdet vises når dialogen ekspanderes." } },
             Elements = new()
             {
                 new()
@@ -46,7 +70,7 @@ public class GetDialogTests : ApplicationCollectionFixture
                     {
                         new ()
                         {
-                            ConsumerTypeId = DialogElementUrlConsumerType.Enum.Gui,
+                            ConsumerType = DialogElementUrlConsumerType.Enum.Gui,
                             MimeType = "application/pdf",
                             Url = new Uri("http://example.com/some/deep/link/to/attachment1.pdf")
                         }
@@ -57,19 +81,19 @@ public class GetDialogTests : ApplicationCollectionFixture
             {
                 new() {
                     Action = "open",
-                    PriorityId = DialogGuiActionPriority.Enum.Primary,
+                    Priority = DialogGuiActionPriority.Enum.Primary,
                     Title = new() { new() { CultureCode = "nb_NO", Value = "Åpne i dialogtjeneste" } },
                     Url = new("https://example.com/some/deep/link/to/dialogs/123456789")},
                 new() {
                     Action = "confirm",
-                    PriorityId = DialogGuiActionPriority.Enum.Secondary,
+                    Priority = DialogGuiActionPriority.Enum.Secondary,
                     Title = new() { new() { CultureCode = "nb_NO", Value = "Bekreft mottatt" } },
                     Url = new("https://example.com/some/deep/link/to/dialogs/123456789/confirmReceived"),
                     AuthorizationAttribute = "somesubresource",
                     IsBackChannel = true},
                 new() {
                     Action = "delete",
-                    PriorityId = DialogGuiActionPriority.Enum.Tertiary,
+                    Priority = DialogGuiActionPriority.Enum.Tertiary,
                     Title = new() { new() { CultureCode = "nb_NO", Value = "Avbryt" } },
                     Url = new("https://example.com/some/deep/link/to/dialogs/123456789/confirmReceived"),
                     IsDeleteAction = true}
@@ -81,7 +105,7 @@ public class GetDialogTests : ApplicationCollectionFixture
                     Endpoints = new() {
                         new() {
                             Url = new("https://example.com/api/dialogs/123456789"),
-                            HttpMethod = "GET",
+                            HttpMethod = HttpVerb.Enum.GET,
                             ResponseSchema = new("https://schemas.altinn.no/dialogs/v1/dialogs.json"),
                             DocumentationUrl = new("https://api-docs.example.com/dialogservice/open-action")
                         },
@@ -92,7 +116,7 @@ public class GetDialogTests : ApplicationCollectionFixture
                     Endpoints = new() {
                         new() {
                             Url = new("https://example.com/api/dialogs/123456789/confirmReceived"),
-                            HttpMethod = "POST",
+                            HttpMethod = HttpVerb.Enum.POST,
                             DocumentationUrl = new("https://api-docs.example.com/dialogservice/confirm-action")
                         },
                     }
@@ -102,7 +126,7 @@ public class GetDialogTests : ApplicationCollectionFixture
                     Endpoints = new() {
                         new() {
                             Url = new("https://example.com/api/dialogs/123456789"),
-                            HttpMethod = "POST",
+                            HttpMethod = HttpVerb.Enum.POST,
                             RequestSchema = new("https://schemas.example.com/dialogservice/v1/dialogservice.json"),
                             ResponseSchema = new("https://schemas.altinn.no/dialogs/v1/dialogs.json")
                         },
@@ -113,7 +137,7 @@ public class GetDialogTests : ApplicationCollectionFixture
                     Endpoints = new() {
                         new() {
                             Url = new("https://example.com/api/dialogs/123456789"),
-                            HttpMethod = "DELETE"
+                            HttpMethod = HttpVerb.Enum.DELETE
                         },
                     }
                 },
@@ -123,8 +147,8 @@ public class GetDialogTests : ApplicationCollectionFixture
                 new()
                 {
                     Id = Guid.NewGuid(),
-                    CreatedAt = DateTimeOffset.UtcNow,
-                    TypeId = DialogActivityType.Enum.Submission,
+                    //CreatedAt = DateTimeOffset.UtcNow,
+                    Type = DialogActivityType.Enum.Submission,
                     PerformedBy = new() { new() { CultureCode = "nb_NO", Value = "Et navn" } },
                     ExtendedType = new Uri("SKE:1234-received-precheck-ok"),
                     Description = new() { new() { CultureCode = "nb_NO", Value = "Innsending er mottatt og sendt til behandling" } },
