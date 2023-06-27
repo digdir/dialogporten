@@ -32,7 +32,7 @@ internal sealed class LocalizationDtoValidator : AbstractValidator<LocalizationD
 
         RuleFor(x => x.CultureCode)
             .NotEmpty()
-            .Must(x => ValidCultureNames.Contains(x.Replace('_', '-'), StringComparer.InvariantCultureIgnoreCase))
+            .Must(x => ValidCultureNames.Contains(x.Trim().Replace('_', '-'), StringComparer.InvariantCultureIgnoreCase))
             .WithMessage("'{PropertyName}' must be a valid culture code.");
     }
 }
