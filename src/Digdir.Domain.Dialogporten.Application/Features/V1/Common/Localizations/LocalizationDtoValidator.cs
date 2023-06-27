@@ -1,5 +1,6 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Common.Extensions.FluentValidation;
 using FluentValidation;
+using System.Globalization;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 
@@ -15,6 +16,12 @@ internal sealed class LocalizationDtosValidator : AbstractValidator<IEnumerable<
 
 internal sealed class LocalizationDtoValidator : AbstractValidator<LocalizationDto>
 {
+    private static readonly HashSet<string> ValidCultureNames = CultureInfo
+        .GetCultures(CultureTypes.NeutralCultures | CultureTypes.SpecificCultures)
+        .Where(x => !string.IsNullOrWhiteSpace(x.Name))
+        .Select(x => x.Name)
+        .ToHashSet();
+
     public LocalizationDtoValidator(int maximumLength = 255)
     {
         RuleFor(x => x).NotNull();
@@ -23,8 +30,9 @@ internal sealed class LocalizationDtoValidator : AbstractValidator<LocalizationD
             .NotNull()
             .MaximumLength(maximumLength);
 
-        // TODO: Validate correct culture code?
         RuleFor(x => x.CultureCode)
-            .NotEmpty();
+            .NotEmpty()
+            .Must(x => ValidCultureNames.Contains(x.Replace('_', '-'), StringComparer.InvariantCultureIgnoreCase))
+            .WithMessage("'{PropertyName}' must be a valid culture code.");
     }
 }
