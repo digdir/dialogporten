@@ -2,6 +2,7 @@
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using Digdir.Domain.Dialogporten.Domain.Common;
 using FluentValidation;
+using System.Text.RegularExpressions;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Commands.Update;
 
@@ -57,9 +58,10 @@ internal sealed class UpdateDialogDtoValidator : AbstractValidator<UpdateDialogD
         RuleFor(x => x.Title)
             .NotEmpty()
             .SetValidator(localizatiosnValidator);
-        // TODO: Valider iht https://github.com/orgs/digdir/projects/7/views/1?pane=issue&itemId=30057377
         RuleFor(x => x.Body)
             .SetValidator(new LocalizationDtosValidator(maximumLength: 1023));
+        RuleForEach(x => x.Body)
+            .ContainsValidHttp();
         RuleFor(x => x.SenderName)
             .SetValidator(localizatiosnValidator);
         RuleFor(x => x.SearchTitle)

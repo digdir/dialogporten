@@ -3,6 +3,7 @@ using Digdir.Domain.Dialogporten.Application.Common.Numbers;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using Digdir.Domain.Dialogporten.Domain.Common;
 using FluentValidation;
+using System.Text.RegularExpressions;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Commands.Create;
 
@@ -66,9 +67,10 @@ internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDia
         RuleFor(x => x.Title)
             .NotEmpty()
             .SetValidator(localizatiosnValidator);
-        // TODO: Valider iht https://github.com/orgs/digdir/projects/7/views/1?pane=issue&itemId=30057377
         RuleFor(x => x.Body)
             .SetValidator(new LocalizationDtosValidator(maximumLength: 1023));
+        RuleForEach(x => x.Body)
+            .ContainsValidHttp();
         RuleFor(x => x.SenderName)
             .SetValidator(localizatiosnValidator);
         RuleFor(x => x.SearchTitle)
@@ -101,6 +103,18 @@ internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDia
                 dependentKeySelector: activity => activity.RelatedActivityId,
                 principalKeySelector: activity => activity.Id)
             .SetValidator(activityValidator);
+    }
+
+    private bool HasValidHtmlTags(string html)
+    {
+        var disallowedTagsRegex = new Regex("</?(?!p|a|br|em|strong|ul|ol|li)(\\b[^>]*)>", RegexOptions.IgnoreCase);
+        var invalidAttributesRegex = new Regex("<[^>]*\\s+\\w+=['\"][^>]*>", RegexOptions.IgnoreCase);
+        var invalidAHrefRegex = new Regex("<a\\s+(?!href=['\"]https://[^'\"]*['\"])[^>]*>", RegexOptions.IgnoreCase);
+        if (disallowedTagsRegex.IsMatch(html) || invalidAttributesRegex.IsMatch(html) || invalidAHrefRegex.IsMatch(html))
+        {
+            return false;
+        }
+        return true;
     }
 }
 
