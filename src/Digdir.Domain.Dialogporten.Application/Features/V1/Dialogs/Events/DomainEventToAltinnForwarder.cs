@@ -45,7 +45,7 @@ internal sealed class DomainEventToAltinnForwarder :
             Time = notification.OccuredAt,
             Resource = dialog.ServiceResource.ToString(),
             ResourceInstance = dialog.Id.ToString(), 
-            AlternativeSubject = dialog.Party, 
+            Subject = dialog.Party, 
             Source = $"https://dialogporten.no/api/v1/dialogs/{notification.DialogId}"
         };
         await _cloudEventBus.Publish(cloudEvent, cancellationToken);
@@ -72,7 +72,7 @@ internal sealed class DomainEventToAltinnForwarder :
             Time = notification.OccuredAt,
             Resource = dialog.ServiceResource.ToString(),
             ResourceInstance = dialog.Id.ToString(),
-            AlternativeSubject = dialog.Party,
+            Subject = dialog.Party,
             Source = $"https://dialogporten.no/api/v1/dialogs/{notification.DialogId}"
         };
         await _cloudEventBus.Publish(cloudEvent, cancellationToken);
@@ -100,7 +100,7 @@ internal sealed class DomainEventToAltinnForwarder :
             Time = notification.OccuredAt,
             Resource = dialog.ServiceResource.ToString(),
             ResourceInstance = dialog.Id.ToString(),
-            AlternativeSubject = dialog.Party,
+            Subject = dialog.Party,
             Source = $"https://dialogporten.no/api/v1/dialogs/{notification.DialogId}"
         };
         await _cloudEventBus.Publish(cloudEvent, cancellationToken);
@@ -142,7 +142,7 @@ internal sealed class DomainEventToAltinnForwarder :
             Time = notification.OccuredAt,
             Resource = dialogActivity.Dialog.ServiceResource.ToString(),
             ResourceInstance = dialogActivity.Dialog.Id.ToString(),
-            AlternativeSubject = dialogActivity.Dialog.Party,
+            Subject = dialogActivity.Dialog.Party,
             Source = $"https://dialogporten.no/api/v1/dialogs/{dialogActivity.Dialog.Id}/activityhistory/{dialogActivity.Id}",
             Data = GetCloudEventData(dialogActivity)
         };
