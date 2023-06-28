@@ -10,7 +10,8 @@ internal static class FluentValidation_LocalizationDto_Extensions
     private static readonly string ContainsValidHttpError = 
         $"{{PropertyName}} contains unsupported http. The following tags are supported: " +
         $"[{string.Join(",", AllowedTags.Select(x => '<' + x + '>'))}]. Tag atributes " +
-        $"are not supported except for on '<a>' which accepts 'href' starting with 'https://'.";
+        $"are not supported except for on '<a>' which must contain a 'href' starting " +
+        $"with 'https://'.";
 
     public static IRuleBuilderOptions<T, LocalizationDto> ContainsValidHttp<T>(this IRuleBuilder<T, LocalizationDto> ruleBuilder)
     {

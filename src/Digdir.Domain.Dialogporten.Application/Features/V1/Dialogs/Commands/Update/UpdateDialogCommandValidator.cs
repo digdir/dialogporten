@@ -2,7 +2,6 @@
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using Digdir.Domain.Dialogporten.Domain.Common;
 using FluentValidation;
-using System.Text.RegularExpressions;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Commands.Update;
 

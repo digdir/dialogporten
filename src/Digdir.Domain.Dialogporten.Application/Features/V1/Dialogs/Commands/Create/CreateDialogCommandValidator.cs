@@ -3,7 +3,6 @@ using Digdir.Domain.Dialogporten.Application.Common.Numbers;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using Digdir.Domain.Dialogporten.Domain.Common;
 using FluentValidation;
-using System.Text.RegularExpressions;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Commands.Create;
 
@@ -103,18 +102,6 @@ internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDia
                 dependentKeySelector: activity => activity.RelatedActivityId,
                 principalKeySelector: activity => activity.Id)
             .SetValidator(activityValidator);
-    }
-
-    private bool HasValidHtmlTags(string html)
-    {
-        var disallowedTagsRegex = new Regex("</?(?!p|a|br|em|strong|ul|ol|li)(\\b[^>]*)>", RegexOptions.IgnoreCase);
-        var invalidAttributesRegex = new Regex("<[^>]*\\s+\\w+=['\"][^>]*>", RegexOptions.IgnoreCase);
-        var invalidAHrefRegex = new Regex("<a\\s+(?!href=['\"]https://[^'\"]*['\"])[^>]*>", RegexOptions.IgnoreCase);
-        if (disallowedTagsRegex.IsMatch(html) || invalidAttributesRegex.IsMatch(html) || invalidAHrefRegex.IsMatch(html))
-        {
-            return false;
-        }
-        return true;
     }
 }
 
