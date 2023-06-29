@@ -11,12 +11,9 @@ internal sealed class UpdateDialogCommandValidator : AbstractValidator<UpdateDia
     {
         RuleFor(x => x.Id)
             .NotEmpty();
-        When(x => x.Dto.IsT0, () =>
-        {
-            RuleFor(x => x.Dto.AsT0)
-                .NotEmpty()
-                .SetValidator(updateDialogDtoValidator);
-        });
+        RuleFor(x => x.Dto)
+            .NotEmpty()
+            .SetValidator(updateDialogDtoValidator);
     }
 }
 

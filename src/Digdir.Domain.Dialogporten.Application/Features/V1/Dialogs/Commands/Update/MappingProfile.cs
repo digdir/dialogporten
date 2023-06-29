@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
+using Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Queries.Get;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
@@ -11,8 +12,6 @@ internal sealed class MappingProfile : Profile
 {
     public MappingProfile()
     {
-        // TODO: should we ignore id for entities where user cannot set id on create?
-
         // In
         CreateMap<UpdateDialogDto, DialogEntity>()
             .IgnoreComplexDestinationProperties()
@@ -49,17 +48,13 @@ internal sealed class MappingProfile : Profile
             .ForMember(dest => dest.TypeId, opt => opt.MapFrom(src => src.Type));
 
         // To support json patch
-        CreateMap<DialogEntity, UpdateDialogDto>()
-            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.StatusId));
-        CreateMap<DialogActivity, UpdateDialogDialogActivityDto>()
-            .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.TypeId));
-        CreateMap<DialogApiAction, UpdateDialogDialogApiActionDto>();
-        CreateMap<DialogApiActionEndpoint, UpdateDialogDialogApiActionEndpointDto>()
-            .ForMember(dest => dest.HttpMethod, opt => opt.MapFrom(src => src.HttpMethodId));
-        CreateMap<DialogGuiAction, UpdateDialogDialogGuiActionDto>()
-            .ForMember(dest => dest.Priority, opt => opt.MapFrom(src => src.PriorityId));
-        CreateMap<DialogElement, UpdateDialogDialogElementDto>();
-        CreateMap<DialogElementUrl, UpdateDialogDialogElementUrlDto>()
-            .ForMember(dest => dest.ConsumerType, opt => opt.MapFrom(src => src.ConsumerTypeId));
+        CreateMap<GetDialogDto, UpdateDialogDto>();
+        CreateMap<GetDialogDialogActivityDto, UpdateDialogDialogActivityDto>();
+        CreateMap<GetDialogDialogApiActionDto, UpdateDialogDialogApiActionDto>();
+        CreateMap<GetDialogDialogApiActionEndpointDto, UpdateDialogDialogApiActionEndpointDto>();
+        CreateMap<GetDialogDialogGuiActionDto, UpdateDialogDialogGuiActionDto>();
+        CreateMap<GetDialogDialogElementDto, UpdateDialogDialogElementDto>();
+        CreateMap<GetDialogDialogElementUrlDto, UpdateDialogDialogElementUrlDto>();
+        CreateMap<DateTimeOffset, DateTime>().ConstructUsing(dateTimeOffset => dateTimeOffset.UtcDateTime);
     }
 }

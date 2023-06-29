@@ -3,7 +3,7 @@ using Azure.Identity;
 using Microsoft.Extensions.Configuration.AzureAppConfiguration;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Digdir.Domain.Dialogporten.WebApi.Common;
+namespace Digdir.Domain.Dialogporten.ChangeDataCapture.Common;
 
 /// <summary>
 /// Wrapper around azure app configuration bootstraping such that azure app 
