@@ -8,7 +8,7 @@ internal static class FluentValidation_LocalizationDto_Extensions
 {
     private static readonly string[] AllowedTags = new[] { "p", "a", "br", "em", "strong", "ul", "ol", "li" };
     private static readonly string ContainsValidHttpError = 
-        $"{{PropertyName}} contains unsupported http. The following tags are supported: " +
+        $"{{PropertyName}} contains unsupported html. The following tags are supported: " +
         $"[{string.Join(",", AllowedTags.Select(x => '<' + x + '>'))}]. Tag atributes " +
         $"are not supported except for on '<a>' which must contain a 'href' starting " +
         $"with 'https://'.";
