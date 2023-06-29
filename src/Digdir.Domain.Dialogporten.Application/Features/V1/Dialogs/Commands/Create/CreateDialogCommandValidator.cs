@@ -66,9 +66,10 @@ internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDia
         RuleFor(x => x.Title)
             .NotEmpty()
             .SetValidator(localizatiosnValidator);
-        // TODO: Valider iht https://github.com/orgs/digdir/projects/7/views/1?pane=issue&itemId=30057377
         RuleFor(x => x.Body)
             .SetValidator(new LocalizationDtosValidator(maximumLength: 1023));
+        RuleForEach(x => x.Body)
+            .ContainsValidHttp();
         RuleFor(x => x.SenderName)
             .SetValidator(localizatiosnValidator);
         RuleFor(x => x.SearchTitle)
