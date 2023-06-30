@@ -9,7 +9,7 @@ namespace Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Commands.Cr
 internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDialogCommand>
 {
     public CreateDialogCommandValidator(
-        IValidator<IEnumerable<LocalizationDto>> localizatiosnValidator,
+        IValidator<IEnumerable<LocalizationDto>> localizationsValidator,
         IValidator<CreateDialogDialogElementDto> elementValidator,
         IValidator<CreateDialogDialogGuiActionDto> guiActionValidator,
         IValidator<CreateDialogDialogApiActionDto> apiActionValidator,
@@ -65,15 +65,15 @@ internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDia
 
         RuleFor(x => x.Title)
             .NotEmpty()
-            .SetValidator(localizatiosnValidator);
+            .SetValidator(localizationsValidator);
         RuleFor(x => x.Body)
             .SetValidator(new LocalizationDtosValidator(maximumLength: 1023));
         RuleForEach(x => x.Body)
             .ContainsValidHttp();
         RuleFor(x => x.SenderName)
-            .SetValidator(localizatiosnValidator);
+            .SetValidator(localizationsValidator);
         RuleFor(x => x.SearchTitle)
-            .SetValidator(localizatiosnValidator);
+            .SetValidator(localizationsValidator);
 
         RuleForEach(x => x.GuiActions)
             .SetValidator(guiActionValidator);
@@ -108,7 +108,7 @@ internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDia
 internal sealed class CreateDialogDialogElementDtoValidator : AbstractValidator<CreateDialogDialogElementDto>
 {
     public CreateDialogDialogElementDtoValidator(
-        IValidator<IEnumerable<LocalizationDto>> localizatiosnValidator,
+        IValidator<IEnumerable<LocalizationDto>> localizationsValidator,
         IValidator<CreateDialogDialogElementUrlDto> urlValidator)
     {
         RuleFor(x => x.Id)
@@ -123,7 +123,7 @@ internal sealed class CreateDialogDialogElementDtoValidator : AbstractValidator<
             .NotEqual(x => x.Id)
             .When(x => x.RelatedDialogElementId.HasValue);
         RuleFor(x => x.DisplayName)
-            .SetValidator(localizatiosnValidator);
+            .SetValidator(localizationsValidator);
         RuleFor(x => x.Urls)
             .NotEmpty()
             .ForEach(x => x.SetValidator(urlValidator));
@@ -148,7 +148,7 @@ internal sealed class CreateDialogDialogElementUrlDtoValidator : AbstractValidat
 internal sealed class CreateDialogDialogGuiActionDtoValidator : AbstractValidator<CreateDialogDialogGuiActionDto>
 {
     public CreateDialogDialogGuiActionDtoValidator(
-        IValidator<IEnumerable<LocalizationDto>> localizatiosnValidator)
+        IValidator<IEnumerable<LocalizationDto>> localizationsValidator)
     {
         RuleFor(x => x.Action)
             .NotEmpty()
@@ -163,7 +163,7 @@ internal sealed class CreateDialogDialogGuiActionDtoValidator : AbstractValidato
             .IsInEnum();
         RuleFor(x => x.Title)
             .NotEmpty()
-            .SetValidator(localizatiosnValidator);
+            .SetValidator(localizationsValidator);
     }
 }
 
@@ -215,7 +215,7 @@ internal sealed class CreateDialogDialogApiActionEndpointDtoValidator : Abstract
 internal sealed class CreateDialogDialogActivityDtoValidator : AbstractValidator<CreateDialogDialogActivityDto>
 {
     public CreateDialogDialogActivityDtoValidator(
-        IValidator<IEnumerable<LocalizationDto>> localizatiosnValidator)
+        IValidator<IEnumerable<LocalizationDto>> localizationsValidator)
     {
         RuleFor(x => x.Id)
             .NotEqual(default(Guid))
@@ -232,9 +232,9 @@ internal sealed class CreateDialogDialogActivityDtoValidator : AbstractValidator
             .NotEqual(x => x.Id)
             .When(x => x.RelatedActivityId.HasValue);
         RuleFor(x => x.PerformedBy)
-            .SetValidator(localizatiosnValidator);
+            .SetValidator(localizationsValidator);
         RuleFor(x => x.Description)
             .NotEmpty()
-            .SetValidator(localizatiosnValidator);
+            .SetValidator(localizationsValidator);
     }
 }

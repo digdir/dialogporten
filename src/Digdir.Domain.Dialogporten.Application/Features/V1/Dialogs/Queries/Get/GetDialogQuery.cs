@@ -27,7 +27,23 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, On
 
     public async Task<OneOf<GetDialogDto, EntityNotFound>> Handle(GetDialogQuery request, CancellationToken cancellationToken)
     {
+        // This query could be written without all the includes as ProjctTo will do the job for us.
+        // However, we need to guarantee an order for sub resources of the dialog aggragate.
+        // This is to ensure that the get is consistent, and that PATCH in the API presentation
+        // layer behavious in an expected manner. Therefore we need to be a bit more verbose about it.
         var dialog = await _db.Dialogs
+            .Include(x => x.Body.Localizations.OrderBy(x => x.CreatedAt).ThenBy(x => x.CultureCode))
+            .Include(x => x.Title.Localizations.OrderBy(x => x.CreatedAt).ThenBy(x => x.CultureCode))
+            .Include(x => x.SenderName.Localizations.OrderBy(x => x.CreatedAt).ThenBy(x => x.CultureCode))
+            .Include(x => x.SearchTitle.Localizations.OrderBy(x => x.CreatedAt).ThenBy(x => x.CultureCode))
+            .Include(x => x.Elements.OrderBy(x => x.CreatedAt).ThenBy(x => x.Id))
+                .ThenInclude(x => x.DisplayName.Localizations.OrderBy(x => x.CreatedAt))
+            .Include(x => x.Elements.OrderBy(x => x.CreatedAt).ThenBy(x => x.Id))
+                .ThenInclude(x => x.Urls.OrderBy(x => x.CreatedAt).ThenBy(x => x.Id))
+            .Include(x => x.GuiActions.OrderBy(x => x.CreatedAt).ThenBy(x => x.Id))
+                .ThenInclude(x => x.Title.Localizations.OrderBy(x => x.CreatedAt).ThenBy(x => x.CultureCode))
+            .Include(x => x.ApiActions.OrderBy(x => x.CreatedAt).ThenBy(x => x.Id))
+                .ThenInclude(x => x.Endpoints.OrderBy(x => x.CreatedAt).ThenBy(x => x.Id))
             .AsNoTracking()
             .ProjectTo<GetDialogDto>(_mapper.ConfigurationProvider)
             .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);

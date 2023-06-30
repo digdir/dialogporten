@@ -13,7 +13,7 @@ public static class EndpointExtensions
 
     public static Task NotFoundAsync(this IEndpoint ep, EntityNotFound notFound, CancellationToken cancellationToken = default) 
         => ep.HttpContext.Response.SendErrorsAsync(
-            new() { new ValidationFailure(notFound.Name, notFound.Message) }, 
+            notFound.ToValidationResults(), 
             StatusCodes.Status404NotFound, 
             cancellation: cancellationToken);
 
@@ -25,7 +25,7 @@ public static class EndpointExtensions
 
     public static Task ConflictAsync(this IEndpoint ep, EntityExists entityExists, CancellationToken cancellationToken = default)
         => ep.HttpContext.Response.SendErrorsAsync(
-            new() { new ValidationFailure(entityExists.Name, entityExists.Message) },
+            entityExists.ToValidationResults(),
             StatusCodes.Status409Conflict,
             cancellation: cancellationToken);
 }

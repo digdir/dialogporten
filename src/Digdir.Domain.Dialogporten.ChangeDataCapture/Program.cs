@@ -1,7 +1,7 @@
 ﻿using Digdir.Domain.Dialogporten.ChangeDataCapture;
 using Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture;
+using Digdir.Domain.Dialogporten.ChangeDataCapture.Common;
 using Digdir.Domain.Dialogporten.Domain.Outboxes;
-using Digdir.Domain.Dialogporten.WebApi.Common;
 using MassTransit;
 using Microsoft.ApplicationInsights.Extensibility;
 using Serilog;

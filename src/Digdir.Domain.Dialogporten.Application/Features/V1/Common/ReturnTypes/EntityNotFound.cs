@@ -1,4 +1,6 @@
-﻿namespace Digdir.Domain.Dialogporten.Application.Features.V1.Common.ReturnTypes;
+﻿using FluentValidation.Results;
+
+namespace Digdir.Domain.Dialogporten.Application.Features.V1.Common.ReturnTypes;
 
 public record EntityNotFound<T>(IEnumerable<object> Keys) : EntityNotFound(typeof(T).Name, Keys)
 {
@@ -19,4 +21,6 @@ public record EntityNotFound(string Name, IEnumerable<object> Keys)
     public EntityNotFound(string name, Guid key) : this(name, new object[] { key }) { }
     public EntityNotFound(string name, int key) : this(name, new object[] { key }) { }
     public EntityNotFound(string name, long key) : this(name, new object[] { key }) { }
+
+    public List<ValidationFailure> ToValidationResults() => new() { new ValidationFailure(Name, Message) };
 }

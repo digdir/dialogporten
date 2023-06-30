@@ -69,11 +69,17 @@ static void BuildAndRun(string[] args)
                 s.DocumentName = "V0.1";
                 s.Version = "v0.1";
             })
+        .AddControllers(options =>
+            {
+                options.InputFormatters.Insert(0, JsonPatchInputFormatter.Get());
+            })
+            .AddNewtonsoftJson()
+            .Services
         .AddApplication(builder.Configuration.GetSection(ApplicationSettings.ConfigurationSectionName))
         .AddInfrastructure(builder.Configuration.GetSection(InfrastructureSettings.ConfigurationSectionName));
 
     var app = builder.Build();
-
+    
     app.UseHttpsRedirection()
         .UseSerilogRequestLogging()
         .UseProblemDetailsExceptionHandler()
@@ -96,7 +102,7 @@ static void BuildAndRun(string[] args)
         })
         .UseOpenApi()
         .UseSwaggerUi3(x => x.ConfigureDefaults());
-
+    app.MapControllers();
     app.Run();
 }
 

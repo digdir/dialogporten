@@ -11,19 +11,17 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Events;
 using Digdir.Domain.Dialogporten.Domain.Localizations;
 using Digdir.Library.Entity.Abstractions.Features.Identifiable;
 using FluentValidation;
-using Json.Patch;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
 using OneOf.Types;
-using System.Text.Json;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Commands.Update;
 
 public sealed class UpdateDialogCommand : IRequest<OneOf<Success, EntityNotFound, EntityExists, ValidationError>>
 {
     public Guid Id { get; set; }
-    public OneOf<UpdateDialogDto, JsonPatch> Dto { get; set; }
+    public UpdateDialogDto Dto { get; set; } = null!;
 }
 
 internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogCommand, OneOf<Success, EntityNotFound, EntityExists, ValidationError>>
@@ -32,7 +30,6 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILocalizationService _localizationService;
-    private readonly IEnumerable<IValidator<UpdateDialogDto>> _validators;
     private readonly IDomainEventPublisher _eventPublisher;
 
     public UpdateDialogCommandHandler(
@@ -40,14 +37,12 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         IMapper mapper,
         IUnitOfWork unitOfWork,
         ILocalizationService localizationService,
-        IEnumerable<IValidator<UpdateDialogDto>> validators,
         IDomainEventPublisher eventPublisher)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _localizationService = localizationService ?? throw new ArgumentNullException(nameof(localizationService));
-        _validators = validators ?? throw new ArgumentNullException(nameof(validators));
         _eventPublisher = eventPublisher ?? throw new ArgumentNullException(nameof(eventPublisher));
     }
 
@@ -73,14 +68,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
             return new EntityNotFound<DialogEntity>(request.Id);
         }
 
-        var dtoOrValidationError = request.Dto.Match(
-            dto => dto,
-            jsonPatch => CreateDto(dialog, jsonPatch));
-        if (dtoOrValidationError.TryPickT1(out var validationError, out var dto))
-        {
-            return validationError;
-        }
-
+        var dto = request.Dto;
         var existingActivityIds = await GetExistingActivityIds(dto.Activities, cancellationToken);
         if (existingActivityIds.Any())
         {
@@ -140,28 +128,6 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
 
         // Tell ef explicitly to add the new activities to the database.
         _db.DialogActivities.AddRange(newDialogActivities);
-    }
-
-    private OneOf<UpdateDialogDto, ValidationError> CreateDto(DialogEntity dialog, JsonPatch jsonPatch)
-    {
-        var originalAsDto = _mapper.Map<UpdateDialogDto>(dialog);
-        var modifiedAsDto = jsonPatch.Apply(originalAsDto, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-        if (modifiedAsDto is null)
-        {
-            // TODO: Better exception.
-            throw new Exception();
-        }
-
-        var context = new ValidationContext<UpdateDialogDto>(modifiedAsDto);
-        var failures = _validators
-            .Select(x => x.Validate(context))
-            .SelectMany(x => x.Errors)
-            .Where(x => x is not null)
-            .ToList();
-
-        return failures.Any()
-            ? new ValidationError(failures)
-            : modifiedAsDto;
     }
 
     private async Task<IEnumerable<Guid>> GetExistingActivityIds(
