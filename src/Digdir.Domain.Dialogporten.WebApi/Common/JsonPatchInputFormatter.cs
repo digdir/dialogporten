@@ -4,7 +4,11 @@ using Microsoft.AspNetCore.Mvc.Formatters;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Common;
 
-public static class JsonPatchInputFormatter
+/// <summary>
+/// This is a workaround to support JSON patch through NewtonsoftJson while still using System.Text.Json for everything else.
+/// See https://learn.microsoft.com/en-us/aspnet/core/web-api/jsonpatch?view=aspnetcore-7.0
+/// </summary>
+internal static class JsonPatchInputFormatter
 {
     public static NewtonsoftJsonPatchInputFormatter Get()
     {

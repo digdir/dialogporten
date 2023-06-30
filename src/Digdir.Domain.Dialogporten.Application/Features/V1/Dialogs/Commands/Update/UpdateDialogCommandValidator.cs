@@ -20,7 +20,7 @@ internal sealed class UpdateDialogCommandValidator : AbstractValidator<UpdateDia
 internal sealed class UpdateDialogDtoValidator : AbstractValidator<UpdateDialogDto>
 {
     public UpdateDialogDtoValidator(
-        IValidator<IEnumerable<LocalizationDto>> localizatiosnValidator,
+        IValidator<IEnumerable<LocalizationDto>> localizationsValidator,
         IValidator<UpdateDialogDialogElementDto> elementValidator,
         IValidator<UpdateDialogDialogGuiActionDto> guiActionValidator,
         IValidator<UpdateDialogDialogApiActionDto> apiActionValidator,
@@ -53,15 +53,15 @@ internal sealed class UpdateDialogDtoValidator : AbstractValidator<UpdateDialogD
 
         RuleFor(x => x.Title)
             .NotEmpty()
-            .SetValidator(localizatiosnValidator);
+            .SetValidator(localizationsValidator);
         RuleFor(x => x.Body)
             .SetValidator(new LocalizationDtosValidator(maximumLength: 1023));
         RuleForEach(x => x.Body)
             .ContainsValidHttp();
         RuleFor(x => x.SenderName)
-            .SetValidator(localizatiosnValidator);
+            .SetValidator(localizationsValidator);
         RuleFor(x => x.SearchTitle)
-            .SetValidator(localizatiosnValidator);
+            .SetValidator(localizationsValidator);
 
         RuleFor(x => x.GuiActions)
             .UniqueBy(x => x.Id);
@@ -100,7 +100,7 @@ internal sealed class UpdateDialogDtoValidator : AbstractValidator<UpdateDialogD
 internal sealed class UpdateDialogDialogElementDtoValidator : AbstractValidator<UpdateDialogDialogElementDto>
 {
     public UpdateDialogDialogElementDtoValidator(
-        IValidator<IEnumerable<LocalizationDto>> localizatiosnValidator,
+        IValidator<IEnumerable<LocalizationDto>> localizationsValidator,
         IValidator<UpdateDialogDialogElementUrlDto> urlValidator)
     {
         RuleFor(x => x.Id)
@@ -115,7 +115,7 @@ internal sealed class UpdateDialogDialogElementDtoValidator : AbstractValidator<
             .NotEqual(x => x.Id)
             .When(x => x.RelatedDialogElementId.HasValue);
         RuleFor(x => x.DisplayName)
-            .SetValidator(localizatiosnValidator);
+            .SetValidator(localizationsValidator);
         RuleFor(x => x.Urls)
             .UniqueBy(x => x.Id);
         RuleFor(x => x.Urls)
@@ -142,7 +142,7 @@ internal sealed class UpdateDialogDialogElementUrlDtoValidator : AbstractValidat
 internal sealed class UpdateDialogDialogGuiActionDtoValidator : AbstractValidator<UpdateDialogDialogGuiActionDto>
 {
     public UpdateDialogDialogGuiActionDtoValidator(
-        IValidator<IEnumerable<LocalizationDto>> localizatiosnValidator)
+        IValidator<IEnumerable<LocalizationDto>> localizationsValidator)
     {
         RuleFor(x => x.Action)
             .NotEmpty()
@@ -157,7 +157,7 @@ internal sealed class UpdateDialogDialogGuiActionDtoValidator : AbstractValidato
             .IsInEnum();
         RuleFor(x => x.Title)
             .NotEmpty()
-            .SetValidator(localizatiosnValidator);
+            .SetValidator(localizationsValidator);
     }
 }
 
@@ -211,7 +211,7 @@ internal sealed class UpdateDialogDialogApiActionEndpointDtoValidator : Abstract
 internal sealed class UpdateDialogDialogActivityDtoValidator : AbstractValidator<UpdateDialogDialogActivityDto>
 {
     public UpdateDialogDialogActivityDtoValidator(
-        IValidator<IEnumerable<LocalizationDto>> localizatiosnValidator)
+        IValidator<IEnumerable<LocalizationDto>> localizationsValidator)
     {
         RuleFor(x => x.Id)
             .NotEqual(default(Guid))
@@ -228,9 +228,9 @@ internal sealed class UpdateDialogDialogActivityDtoValidator : AbstractValidator
             .NotEqual(x => x.Id)
             .When(x => x.RelatedActivityId.HasValue);
         RuleFor(x => x.PerformedBy)
-            .SetValidator(localizatiosnValidator);
+            .SetValidator(localizationsValidator);
         RuleFor(x => x.Description)
             .NotEmpty()
-            .SetValidator(localizatiosnValidator);
+            .SetValidator(localizationsValidator);
     }
 }

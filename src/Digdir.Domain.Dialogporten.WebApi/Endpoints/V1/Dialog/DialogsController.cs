@@ -1,4 +1,5 @@
-﻿using Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Commands.Update;
+﻿using AutoMapper;
+using Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Commands.Update;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Queries.Get;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -18,9 +19,9 @@ namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.Dialog;
 public sealed class DialogsController : ControllerBase
 {
     private readonly ISender _sender;
-    private readonly AutoMapper.IMapper _mapper;
+    private readonly IMapper _mapper;
 
-    public DialogsController(ISender sender, AutoMapper.IMapper mapper)
+    public DialogsController(ISender sender, IMapper mapper)
     {
         _sender = sender ?? throw new ArgumentNullException(nameof(sender));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
