@@ -14,7 +14,9 @@ internal static class FluentValidation_Enumerable_Extensions
         return ruleBuilder.Must((parent, enumerable, ctx) =>
         {
             var duplicateKeys = enumerable
-                .GroupBy(keySelector)
+                .Select(keySelector)
+                .Where(x => !Equals(x, default(TKey)))
+                .GroupBy(x => x)
                 .Where(x => x.Count() > 1)
                 .Select(x => x.Key)
                 .ToArray();

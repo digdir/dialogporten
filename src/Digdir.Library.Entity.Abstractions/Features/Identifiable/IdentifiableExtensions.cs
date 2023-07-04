@@ -1,4 +1,4 @@
-﻿using UUIDNext;
+﻿using Medo;
 
 namespace Digdir.Library.Entity.Abstractions.Features.Identifiable;
 
@@ -14,7 +14,7 @@ public static class IdentifiableExtensions
     public static Guid CreateId(this IIdentifiableEntity identifiable)
     {
         return identifiable.Id = identifiable.Id == Guid.Empty
-            ? Uuid.NewDatabaseFriendly(Database.PostgreSql)
+            ? Uuid7.NewUuid7().ToGuid()
             : identifiable.Id;
     }
 }
