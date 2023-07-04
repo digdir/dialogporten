@@ -60,15 +60,17 @@ static void BuildAndRun(string[] args)
         .AddApplicationInsightsTelemetry()
         .AddEndpointsApiExplorer()
         .AddFastEndpoints()
-        .AddSwaggerDoc(
-            maxEndpointVersion: 1,
-            shortSchemaNames: true,
-            settings: s =>
+        .SwaggerDocument(x =>
+        {
+            x.MaxEndpointVersion = 2;
+            x.ShortSchemaNames = true;
+            x.DocumentSettings = s =>
             {
                 s.Title = "Dialogporten";
                 s.DocumentName = "V0.1";
                 s.Version = "v0.1";
-            })
+            };
+        })
         .AddControllers(options =>
             {
                 options.InputFormatters.Insert(0, JsonPatchInputFormatter.Get());

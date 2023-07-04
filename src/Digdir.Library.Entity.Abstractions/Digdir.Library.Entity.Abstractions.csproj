@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="UUIDNext" Version="2.0.2" />
+    <PackageReference Include="Medo.Uuid7" Version="1.5.0" />
   </ItemGroup>
 
 </Project>
