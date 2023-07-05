@@ -68,7 +68,8 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, On
 
         if ((dialog.ReadAt ?? DateTimeOffset.MinValue) < dialog.UpdatedAt)
         {
-            var mutableDialog = await _db.Dialogs.FindAsync(request.Id, cancellationToken);
+            // TODO: 
+            var mutableDialog = await _db.Dialogs.FindAsync(new object[] { request.Id }, cancellationToken);
             _eventPublisher.Publish(new DialogReadDomainEvent(request.Id));
             mutableDialog!.ReadAt = _transactionTime.Value;
             await _unitOfWork.SaveChangesAsync(cancellationToken);
