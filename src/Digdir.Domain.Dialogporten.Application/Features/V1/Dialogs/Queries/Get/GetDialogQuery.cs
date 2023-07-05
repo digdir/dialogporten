@@ -68,7 +68,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, On
 
         if ((dialog.ReadAt ?? DateTimeOffset.MinValue) < dialog.UpdatedAt)
         {
-            // TODO: 
+            // TODO: Should we only do this if the user is an end user?
             var mutableDialog = await _db.Dialogs.FindAsync(new object[] { request.Id }, cancellationToken);
             _eventPublisher.Publish(new DialogReadDomainEvent(request.Id));
             mutableDialog!.ReadAt = _transactionTime.Value;
