@@ -35,7 +35,7 @@ internal sealed class DomainEventToAltinnForwarder :
         if (dialog is null)
         {
             // TODO: Improve exception or handle differently
-            throw new Exception("Dialog not found!");
+            throw new ApplicationException("Dialog not found!");
         }
 
         var cloudEvent = new CloudEvent
@@ -62,7 +62,7 @@ internal sealed class DomainEventToAltinnForwarder :
         if (dialog is null)
         {
             // TODO: Improve exception or handle differently
-            throw new Exception("Dialog not found!");
+            throw new ApplicationException("Dialog not found!");
         }
 
         var cloudEvent = new CloudEvent
@@ -78,30 +78,20 @@ internal sealed class DomainEventToAltinnForwarder :
         await _cloudEventBus.Publish(cloudEvent, cancellationToken);
     }
 
-    public async Task Handle(DialogDeletedDomainEvent notification, CancellationToken cancellationToken)
+    public async Task Handle(DialogDeletedDomainEvent @event, CancellationToken cancellationToken)
     {
         const string dialogDeleted = "dialogporten.dialog.deleted.v1";
-        Console.WriteLine($"Dialog {notification.DialogId} deleted.");
-        var dialog = await _db.Dialogs
-            .AsNoTracking()
-            .Include(x => x.Elements)
-            .FirstOrDefaultAsync(x => x.Id == notification.DialogId, cancellationToken);
-
-        if (dialog is null)
-        {
-            // TODO: Improve exception or handle differently
-            throw new Exception("Dialog not found!");
-        }
-
+        Console.WriteLine($"Dialog {@event.DialogId} deleted.");
+        // Cannot retrieve dialog from db since it is deleted
         var cloudEvent = new CloudEvent
         {
-            Id = notification.EventId,
+            Id = @event.EventId,
             Type = dialogDeleted,
-            Time = notification.OccuredAt,
-            Resource = dialog.ServiceResource.ToString(),
-            ResourceInstance = dialog.Id.ToString(),
-            Subject = dialog.Party,
-            Source = $"https://dialogporten.no/api/v1/dialogs/{notification.DialogId}"
+            Time = @event.OccuredAt,
+            Resource = @event.ServiceResource,
+            ResourceInstance = @event.DialogId.ToString(),
+            Subject = @event.Party,
+            Source = $"https://dialogporten.no/api/v1/dialogs/{@event.DialogId}"
         };
         await _cloudEventBus.Publish(cloudEvent, cancellationToken);
     }
@@ -120,7 +110,7 @@ internal sealed class DomainEventToAltinnForwarder :
         if (dialogActivity is null)
         {
             // TODO: Improve exception or handle differently
-            throw new Exception("DialogActivity not found!");
+            throw new ApplicationException("DialogActivity not found!");
         }
 
         var cloudEventType = dialogActivity.TypeId switch

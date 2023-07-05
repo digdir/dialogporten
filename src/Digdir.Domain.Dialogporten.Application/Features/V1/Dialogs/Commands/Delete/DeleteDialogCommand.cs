@@ -40,7 +40,11 @@ internal sealed class DeleteDialogCommandHandler : IRequestHandler<DeleteDialogC
         // TODO: Delete localization sets
 
         _db.Dialogs.Remove(dialog);
-        _eventPublisher.Publish(new DialogDeletedDomainEvent(dialog.Id));
+        _eventPublisher.Publish(
+            new DialogDeletedDomainEvent(
+                dialog.Id, 
+                dialog.ServiceResource.ToString(), 
+                dialog.Party));
         await _unitOfWork.SaveChangesAsync(cancellationToken);
         return new Success();
     }
