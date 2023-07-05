@@ -104,8 +104,7 @@ internal sealed class UpdateDialogDialogElementDtoValidator : AbstractValidator<
         IValidator<UpdateDialogDialogElementUrlDto> urlValidator)
     {
         RuleFor(x => x.Id)
-            .NotEqual(default(Guid))
-            .IsValidUuidV7();
+            .NotEqual(default(Guid));
         RuleFor(x => x.Type)
             .IsValidUri()
             .MaximumLength(Constants.DefaultMaxUriLength);
@@ -214,8 +213,7 @@ internal sealed class UpdateDialogDialogActivityDtoValidator : AbstractValidator
         IValidator<IEnumerable<LocalizationDto>> localizationsValidator)
     {
         RuleFor(x => x.Id)
-            .NotEqual(default(Guid))
-            .IsValidUuidV7();
+            .NotEqual(default(Guid));
         RuleFor(x => x.CreatedAt)
             .IsUtcKind()
             .IsInPast();

@@ -16,8 +16,7 @@ internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDia
         IValidator<CreateDialogDialogActivityDto> activityValidator)
     {
         RuleFor(x => x.Id)
-            .NotEqual(default(Guid))
-            .IsValidUuidV7();
+            .NotEqual(default(Guid));
 
         RuleFor(x => x.ServiceResource)
             .NotNull()
@@ -112,8 +111,7 @@ internal sealed class CreateDialogDialogElementDtoValidator : AbstractValidator<
         IValidator<CreateDialogDialogElementUrlDto> urlValidator)
     {
         RuleFor(x => x.Id)
-            .NotEqual(default(Guid))
-            .IsValidUuidV7();
+            .NotEqual(default(Guid));
         RuleFor(x => x.Type)
             .IsValidUri()
             .MaximumLength(Constants.DefaultMaxUriLength);
@@ -218,8 +216,7 @@ internal sealed class CreateDialogDialogActivityDtoValidator : AbstractValidator
         IValidator<IEnumerable<LocalizationDto>> localizationsValidator)
     {
         RuleFor(x => x.Id)
-            .NotEqual(default(Guid))
-            .IsValidUuidV7();
+            .NotEqual(default(Guid));
         RuleFor(x => x.CreatedAt)
             .IsUtcKind()
             .IsInPast();
