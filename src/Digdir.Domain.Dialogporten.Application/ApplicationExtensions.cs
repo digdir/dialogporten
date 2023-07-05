@@ -1,4 +1,5 @@
-﻿using Digdir.Domain.Dialogporten.Application.Common.Behaviours;
+﻿using Digdir.Domain.Dialogporten.Application.Common;
+using Digdir.Domain.Dialogporten.Application.Common.Behaviours;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using FluentValidation;
 using MediatR;
@@ -24,8 +25,12 @@ public static class ApplicationExtensions
             .AddMediatR(x => x.RegisterServicesFromAssembly(thisAssembly))
             .AddValidatorsFromAssembly(thisAssembly, includeInternalTypes: true)
 
+            // Scoped
+            .AddScoped<ITransactionTime, TransactionTime>()
+
             // Transient
             .AddTransient<ILocalizationService, LocalizationService>()
+            .AddTransient<IClock, Clock>()
             .AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
     }
 }

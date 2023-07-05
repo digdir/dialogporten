@@ -1,5 +1,5 @@
-﻿using Digdir.Domain.Dialogporten.Application.Externals;
-using Digdir.Domain.Dialogporten.Infrastructure.DomainEvents;
+﻿using Digdir.Domain.Dialogporten.Application.Common;
+using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence;
 using Digdir.Library.Entity.EntityFrameworkCore;
 
@@ -8,23 +8,18 @@ namespace Digdir.Domain.Dialogporten.Infrastructure;
 internal sealed class UnitOfWork : IUnitOfWork
 {
     private readonly DialogDbContext _dialogDbContext;
-    private readonly DomainEventPublisher _domainEventPublisher;
+    private readonly ITransactionTime _transactionTime;
 
-    public UnitOfWork(DialogDbContext dialogDbContext, DomainEventPublisher domainEventPublisher)
+    public UnitOfWork(DialogDbContext dialogDbContext, ITransactionTime transactionTime)
     {
         _dialogDbContext = dialogDbContext ?? throw new ArgumentNullException(nameof(dialogDbContext));
-        _domainEventPublisher = domainEventPublisher ?? throw new ArgumentNullException(nameof(domainEventPublisher));
+        _transactionTime = transactionTime ?? throw new ArgumentNullException(nameof(transactionTime));
     }
 
     public Task SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         // TODO: Eject if domain errors
-        var now = DateTimeOffset.UtcNow;
-        _dialogDbContext.ChangeTracker.HandleAuditableEntities(now);
-        foreach (var domainEvent in _domainEventPublisher.GetDomainEvents())
-        {
-            domainEvent.OccuredAt = now;
-        }
+        _dialogDbContext.ChangeTracker.HandleAuditableEntities(_transactionTime.Value);
         return _dialogDbContext.SaveChangesAsync(cancellationToken);
     }
 }

@@ -7,9 +7,12 @@ internal sealed class DomainEventPublisher : IDomainEventPublisher
 {
     private readonly HashSet<IDomainEvent> _domainEvents = new();
 
-    public IReadOnlyCollection<IDomainEvent> GetDomainEvents() => _domainEvents.ToList().AsReadOnly();
-
-    public void ClearDomainEvents() => _domainEvents.Clear();
+    public IReadOnlyCollection<IDomainEvent> PopDomainEvents()
+    {
+        var domainEvents = _domainEvents.ToList().AsReadOnly();
+        _domainEvents.Clear();
+        return domainEvents;
+    }
 
     public void Publish(IDomainEvent domainEvent)
     {

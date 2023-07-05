@@ -11,6 +11,7 @@ internal sealed class DomainEventToAltinnForwarder :
     INotificationHandler<DialogCreatedDomainEvent>,
     INotificationHandler<DialogUpdatedDomainEvent>,
     INotificationHandler<DialogDeletedDomainEvent>,
+    INotificationHandler<DialogReadDomainEvent>,
     INotificationHandler<DialogActivityCreatedDomainEvent>
 {
 
@@ -137,6 +138,33 @@ internal sealed class DomainEventToAltinnForwarder :
             Data = GetCloudEventData(dialogActivity)
         };
 
+        await _cloudEventBus.Publish(cloudEvent, cancellationToken);
+    }
+
+    public async Task Handle(DialogReadDomainEvent notification, CancellationToken cancellationToken)
+    {
+        const string dialogRead = "dialogporten.dialog.read.v1";
+        Console.WriteLine($"Dialog {notification.DialogId} read.");
+        var dialog = await _db.Dialogs
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Id == notification.DialogId, cancellationToken);
+
+        if (dialog is null)
+        {
+            // TODO: Improve exception or handle differently
+            throw new ApplicationException("Dialog not found!");
+        }
+
+        var cloudEvent = new CloudEvent
+        {
+            Id = notification.EventId,
+            Type = dialogRead,
+            Time = notification.OccuredAt,
+            Resource = dialog.ServiceResource.ToString(),
+            ResourceInstance = dialog.Id.ToString(),
+            Subject = dialog.Party,
+            Source = $"https://dialogporten.no/api/v1/dialogs/{notification.DialogId}"
+        };
         await _cloudEventBus.Publish(cloudEvent, cancellationToken);
     }
 
