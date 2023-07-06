@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Events;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
@@ -18,11 +20,22 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, On
 {
     private readonly IDialogDbContext _db;
     private readonly IMapper _mapper;
+    private readonly IDomainEventPublisher _eventPublisher;
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly ITransactionTime _transactionTime;
 
-    public GetDialogQueryHandler(IDialogDbContext db, IMapper mapper)
+    public GetDialogQueryHandler(
+        IDialogDbContext db,
+        IMapper mapper,
+        IDomainEventPublisher eventPublisher,
+        IUnitOfWork unitOfWork,
+        ITransactionTime transactionTime)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        _eventPublisher = eventPublisher ?? throw new ArgumentNullException(nameof(eventPublisher));
+        _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+        _transactionTime = transactionTime ?? throw new ArgumentNullException(nameof(transactionTime));
     }
 
     public async Task<OneOf<GetDialogDto, EntityNotFound>> Handle(GetDialogQuery request, CancellationToken cancellationToken)
@@ -51,6 +64,15 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, On
         if (dialog is null)
         {
             return new EntityNotFound<DialogEntity>(request.Id);
+        }
+
+        if ((dialog.ReadAt ?? DateTimeOffset.MinValue) < dialog.UpdatedAt)
+        {
+            // TODO: Should we only do this if the user is an end user?
+            var mutableDialog = await _db.Dialogs.FindAsync(new object[] { request.Id }, cancellationToken);
+            _eventPublisher.Publish(new DialogReadDomainEvent(request.Id));
+            mutableDialog!.ReadAt = _transactionTime.Value;
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
 
         return dialog;
