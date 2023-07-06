@@ -162,6 +162,12 @@ Under er et ER-diagram som viser de konkrete relasjonene mellom de ulike entitet
 
 <img src="{{ "/assets/dialogporten-er.svg" | relative_url }}">
 
+# Systemarkitektur
+
+Dette er den foreløpige systemarkitekturen som ligger til grunn for implementasjonen av Dialogporten.
+
+![](https://lucid.app/publicSegments/view/a6caac79-f481-4aa4-ad6b-af715b264ab9/image.png)
+
 # Autorisasjon
 
 ## Relasjon til XACML
