@@ -25,7 +25,8 @@ public static class SoftDeletableExtensions
     /// <param name="deletable">The <see cref="ISoftDeletableEntity"/> to permanently delete.</param>
     public static void HardDelete(this ISoftDeletableEntity deletable)
     {
-        deletable.HardDelete = true;
+        deletable.HardDelete = deletable.Deleted = true;
+        deletable.DeletedAt = DateTimeOffset.UtcNow;
     }
 
     /// <summary>
