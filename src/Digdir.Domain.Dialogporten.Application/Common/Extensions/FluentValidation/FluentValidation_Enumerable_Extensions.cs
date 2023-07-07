@@ -8,15 +8,17 @@ internal static class FluentValidation_Enumerable_Extensions
 {
     public static IRuleBuilderOptions<T, IEnumerable<TProperty>> UniqueBy<T, TProperty, TKey>(
         this IRuleBuilder<T, IEnumerable<TProperty>> ruleBuilder,
-        Func<TProperty, TKey> keySelector)
+        Func<TProperty, TKey> keySelector,
+        IEqualityComparer<TKey>? comparer = null)
         where TProperty : class
     {
         return ruleBuilder.Must((parent, enumerable, ctx) =>
         {
+            comparer ??= EqualityComparer<TKey>.Default;
             var duplicateKeys = enumerable
                 .Select(keySelector)
                 .Where(x => !Equals(x, default(TKey)))
-                .GroupBy(x => x)
+                .GroupBy(x => x, comparer)
                 .Where(x => x.Count() > 1)
                 .Select(x => x.Key)
                 .ToArray();
@@ -30,11 +32,11 @@ internal static class FluentValidation_Enumerable_Extensions
         Expression<Func<T, IEnumerable<TPrincipal>>> principalsSelector,
         Func<TDependent, TKey> dependentKeySelector,
         Func<TPrincipal, TKey> principalKeySelector,
-        EqualityComparer<TKey>? equalityComparer = null)
+        IEqualityComparer<TKey>? comparer = null)
     {
         return ruleBuilder.Must((parrent, dependent, ctx) =>
         {
-            equalityComparer ??= EqualityComparer<TKey>.Default;
+            comparer ??= EqualityComparer<TKey>.Default;
             var dependentKey = dependentKeySelector(dependent);
             var member = principalsSelector.GetMember();
             var func = AccessorCache<T>.GetCachedAccessor(member, principalsSelector);
@@ -44,7 +46,7 @@ internal static class FluentValidation_Enumerable_Extensions
                 .AppendArgument("PrincipalName", name);
             return dependentKey is null ||
                 func(parrent)
-                    .Any(principal => equalityComparer
+                    .Any(principal => comparer
                         .Equals(principalKeySelector(principal), dependentKey));
         })
         .WithMessage("Item '{DependentKey}' in '{PrincipalName}' does not exist.");
