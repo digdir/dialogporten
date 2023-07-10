@@ -2,7 +2,7 @@
 
 namespace Digdir.Domain.Dialogporten.Application.Common.Extensions;
 
-internal static class MappingExpressionExtensions
+internal static class AutoMapperExtensions
 {
     private static readonly Type GenericNullableType = typeof(Nullable<>);
     private static readonly List<Type> TypeOverrides = new()

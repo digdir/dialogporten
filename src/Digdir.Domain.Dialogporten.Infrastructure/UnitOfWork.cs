@@ -9,11 +9,13 @@ internal sealed class UnitOfWork : IUnitOfWork
 {
     private readonly DialogDbContext _dialogDbContext;
     private readonly ITransactionTime _transactionTime;
+    private readonly IDomainContext _domainContext;
 
-    public UnitOfWork(DialogDbContext dialogDbContext, ITransactionTime transactionTime)
+    public UnitOfWork(DialogDbContext dialogDbContext, ITransactionTime transactionTime, IDomainContext domainContext)
     {
         _dialogDbContext = dialogDbContext ?? throw new ArgumentNullException(nameof(dialogDbContext));
         _transactionTime = transactionTime ?? throw new ArgumentNullException(nameof(transactionTime));
+        _domainContext = domainContext ?? throw new ArgumentNullException(nameof(domainContext));
     }
 
     public Task SaveChangesAsync(CancellationToken cancellationToken = default)
@@ -23,7 +25,13 @@ internal sealed class UnitOfWork : IUnitOfWork
             return Task.CompletedTask;
         }
 
-        // TODO: Eject if domain errors
+        _domainContext.EnsureValidState();
+        // TODO: '_domainContext.EnsureValidState()' OR should we allow the application to proceed with invalid state?
+        //if (!_domainContext.IsValid)
+        //{
+        //    return Task.CompletedTask;
+        //}
+
         _dialogDbContext.ChangeTracker.HandleAuditableEntities(_transactionTime.Value);
         return _dialogDbContext.SaveChangesAsync(cancellationToken);
     }

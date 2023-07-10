@@ -1,8 +1,8 @@
-﻿using FluentValidation.Results;
+﻿using Digdir.Domain.Dialogporten.Domain.Common;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.Common.ReturnTypes;
 
-public record DomainError(IEnumerable<ValidationFailure> Errors)
+public record DomainError(IEnumerable<DomainFailure> Errors)
 {
-    public DomainError(ValidationFailure error) : this(new[] { error }) { }
+    public DomainError(DomainFailure error) : this(new[] { error }) { }
 }
