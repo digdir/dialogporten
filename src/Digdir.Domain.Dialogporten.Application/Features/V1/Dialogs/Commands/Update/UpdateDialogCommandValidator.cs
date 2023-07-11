@@ -31,7 +31,6 @@ internal sealed class UpdateDialogDtoValidator : AbstractValidator<UpdateDialogD
 
         RuleFor(x => x.ExpiresAt)
             .IsUtcKind()
-            .IsInFuture()
             .GreaterThanOrEqualTo(x => x.DueAt)
                 .WithMessage(FluentValidation_DateTime_Extensions.InFutureOfMessage)
                 .When(x => x.DueAt.HasValue, ApplyConditionTo.CurrentValidator)
@@ -40,13 +39,11 @@ internal sealed class UpdateDialogDtoValidator : AbstractValidator<UpdateDialogD
                 .When(x => x.VisibleFrom.HasValue, ApplyConditionTo.CurrentValidator);
         RuleFor(x => x.DueAt)
             .IsUtcKind()
-            .IsInFuture()
             .GreaterThanOrEqualTo(x => x.VisibleFrom)
                 .WithMessage(FluentValidation_DateTime_Extensions.InFutureOfMessage)
                 .When(x => x.VisibleFrom.HasValue, ApplyConditionTo.CurrentValidator);
         RuleFor(x => x.VisibleFrom)
-            .IsUtcKind()
-            .IsInFuture();
+            .IsUtcKind();
 
         RuleFor(x => x.Status)
             .IsInEnum();

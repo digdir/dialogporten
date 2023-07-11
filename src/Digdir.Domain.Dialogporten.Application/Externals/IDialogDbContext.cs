@@ -6,6 +6,7 @@ using Digdir.Domain.Dialogporten.Domain.Localizations;
 using Digdir.Domain.Dialogporten.Domain.Outboxes;
 using Digdir.Library.Entity.Abstractions.Features.Identifiable;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace Digdir.Domain.Dialogporten.Application.Externals;
 
@@ -27,6 +28,11 @@ public interface IDialogDbContext
     DbSet<OutboxMessage> OutboxMessages { get; }
     DbSet<OutboxMessageConsumer> OutboxMessageConsumers { get; }
 
+    bool ChangedToInvalid<TEntity, TProperty>(
+        TEntity entity, 
+        Expression<Func<TEntity, TProperty>> propertyExpression, 
+        Func<TProperty, bool> predicate) 
+        where TEntity : class;
     Task<List<Guid>> GetExistingIds<TEntity>(
         IEnumerable<TEntity> entities, 
         CancellationToken cancellationToken) 

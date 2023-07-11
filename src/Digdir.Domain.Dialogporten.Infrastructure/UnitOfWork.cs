@@ -20,17 +20,17 @@ internal sealed class UnitOfWork : IUnitOfWork
 
     public Task SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        if (!_dialogDbContext.ChangeTracker.HasChanges())
-        {
-            return Task.CompletedTask;
-        }
-
         _domainContext.EnsureValidState();
         // TODO: '_domainContext.EnsureValidState()' OR should we allow the application to proceed with invalid state?
         //if (!_domainContext.IsValid)
         //{
         //    return Task.CompletedTask;
         //}
+
+        if (!_dialogDbContext.ChangeTracker.HasChanges())
+        {
+            return Task.CompletedTask;
+        }
 
         _dialogDbContext.ChangeTracker.HandleAuditableEntities(_transactionTime.Value);
         return _dialogDbContext.SaveChangesAsync(cancellationToken);

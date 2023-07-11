@@ -11,6 +11,7 @@ using Digdir.Domain.Dialogporten.Infrastructure.Persistence.ValueConverters;
 using Digdir.Library.Entity.Abstractions.Features.Identifiable;
 using Digdir.Library.Entity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence;
 
@@ -33,7 +34,17 @@ internal sealed class DialogDbContext : DbContext, IDialogDbContext
 
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
     public DbSet<OutboxMessageConsumer> OutboxMessageConsumers => Set<OutboxMessageConsumer>();
-    
+
+    public bool ChangedToInvalid<TEntity, TProperty>(
+        TEntity entity, 
+        Expression<Func<TEntity, TProperty>> propertyExpression, 
+        Func<TProperty, bool> predicate)
+        where TEntity : class
+    {
+        var property = Entry(entity).Property(propertyExpression);
+        return property.IsModified && !predicate(property.CurrentValue);
+    }
+
     public async Task<List<Guid>> GetExistingIds<TEntity>(
         IEnumerable<TEntity> entities,
         CancellationToken cancellationToken)

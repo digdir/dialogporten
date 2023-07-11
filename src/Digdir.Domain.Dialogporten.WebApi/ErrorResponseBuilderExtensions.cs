@@ -40,8 +40,6 @@ internal static class ErrorResponseBuilderExtensions
                 Instance = ctx.Request.Path,
                 Extensions = { { "traceId", Activity.Current?.Id ?? ctx.TraceIdentifier } },
             },
-            // TODO: Skal vi ha denne? 
-            // Forespørselen er syntaktisk og semantisk korrekt, men tilstanden av systemet tillater ikke forespørselen.
             StatusCodes.Status422UnprocessableEntity => new ValidationProblemDetails(errors)
             {
                 Title = "Unprocessable request.",
