@@ -35,14 +35,15 @@ internal sealed class DialogDbContext : DbContext, IDialogDbContext
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
     public DbSet<OutboxMessageConsumer> OutboxMessageConsumers => Set<OutboxMessageConsumer>();
 
-    public bool ChangedToInvalid<TEntity, TProperty>(
+    /// <inheritdoc/>
+    public bool MustWhenModified<TEntity, TProperty>(
         TEntity entity, 
         Expression<Func<TEntity, TProperty>> propertyExpression, 
         Func<TProperty, bool> predicate)
         where TEntity : class
     {
         var property = Entry(entity).Property(propertyExpression);
-        return property.IsModified && !predicate(property.CurrentValue);
+        return !property.IsModified || predicate(property.CurrentValue);
     }
 
     public async Task<List<Guid>> GetExistingIds<TEntity>(

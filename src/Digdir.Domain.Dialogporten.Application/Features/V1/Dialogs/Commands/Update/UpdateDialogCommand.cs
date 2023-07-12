@@ -117,21 +117,21 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
     {
         const string errorMessage = "Must be in future or current value.";
 
-        if (_db.ChangedToInvalid(dialog,
+        if (!_db.MustWhenModified(dialog,
             propertyExpression: x => x.ExpiresAt,
             predicate: x => x > DateTimeOffset.UtcNow))
         {
             _domainContext.AddError(nameof(UpdateDialogCommand.Dto.ExpiresAt), errorMessage);
         }
 
-        if (_db.ChangedToInvalid(dialog,
+        if (!_db.MustWhenModified(dialog,
             propertyExpression: x => x.DueAt,
             predicate: x => x > DateTimeOffset.UtcNow))
         {
             _domainContext.AddError(nameof(UpdateDialogCommand.Dto.DueAt), errorMessage);
         }
 
-        if (_db.ChangedToInvalid(dialog,
+        if (!_db.MustWhenModified(dialog,
             propertyExpression: x => x.VisibleFrom,
             predicate: x => x > DateTimeOffset.UtcNow))
         {

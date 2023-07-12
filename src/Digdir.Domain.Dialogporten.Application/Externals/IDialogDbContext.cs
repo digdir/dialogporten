@@ -28,7 +28,20 @@ public interface IDialogDbContext
     DbSet<OutboxMessage> OutboxMessages { get; }
     DbSet<OutboxMessageConsumer> OutboxMessageConsumers { get; }
 
-    bool ChangedToInvalid<TEntity, TProperty>(
+    /// <summary>
+    /// Validate a property on the <typeparamref name="TEntity"/> using a lambda 
+    /// expression to specify the predicate only when the property is modified.
+    /// </summary>
+    /// <typeparam name="TEntity"></typeparam>
+    /// <typeparam name="TProperty"></typeparam>
+    /// <param name="entity"></param>
+    /// <param name="propertyExpression"></param>
+    /// <param name="predicate"></param>
+    /// <returns>
+    ///     <para>False if the property is modified and the predicate returns false.</para>
+    ///     <para>True if the property is unmodified or the predicate returns true.</para>
+    /// </returns>
+    bool MustWhenModified<TEntity, TProperty>(
         TEntity entity, 
         Expression<Func<TEntity, TProperty>> propertyExpression, 
         Func<TProperty, bool> predicate) 
