@@ -2,5 +2,6 @@
 
 public interface IUnitOfWork
 {
+    IUnitOfWork WithoutAuditableSideEffects();
     Task SaveChangesAsync(CancellationToken cancellationToken = default);
 }

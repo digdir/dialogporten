@@ -8,6 +8,7 @@ using Digdir.Domain.Dialogporten.Domain.Localizations;
 using Digdir.Domain.Dialogporten.Domain.Outboxes;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence.Configurations.Localizations;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence.ValueConverters;
+using Digdir.Library.Entity.Abstractions.Features.Concurrency;
 using Digdir.Library.Entity.Abstractions.Features.Identifiable;
 using Digdir.Library.Entity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -34,6 +35,18 @@ internal sealed class DialogDbContext : DbContext, IDialogDbContext
 
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
     public DbSet<OutboxMessageConsumer> OutboxMessageConsumers => Set<OutboxMessageConsumer>();
+
+    public bool TrySetOriginalETag<TEntity>(TEntity entity, Guid? etag)
+        where TEntity : class, IVersionableEntity
+    {
+        if (entity is null || !etag.HasValue)
+        {
+            return false;
+        }
+
+        Entry(entity).Property(x => x.ETag).OriginalValue = etag.Value;
+        return true;
+    }
 
     /// <inheritdoc/>
     public bool MustWhenModified<TEntity, TProperty>(

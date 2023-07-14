@@ -18,7 +18,7 @@ public sealed class UpdateDialogEndpoint : Endpoint<UpdateDialogRequest>
 
     public override async Task HandleAsync(UpdateDialogRequest req, CancellationToken ct)
     {
-        var command = new UpdateDialogCommand { Id = req.Id, Dto = req.Dto };
+        var command = new UpdateDialogCommand { Id = req.Id, ETag = req.ETag, Dto = req.Dto };
         var updateDialogResult = await _sender.Send(command, ct);
         await updateDialogResult.Match(
             success => SendNoContentAsync(ct),
@@ -29,10 +29,13 @@ public sealed class UpdateDialogEndpoint : Endpoint<UpdateDialogRequest>
     }
 }
 
-public class UpdateDialogRequest
+public sealed class UpdateDialogRequest
 {
     public Guid Id { get; set; }
 
     [FromBody]
     public UpdateDialogDto Dto { get; set; } = null!;
+
+    [FromHeader(headerName: "x-etag", isRequired: false)]
+    public Guid? ETag { get; set; }
 }

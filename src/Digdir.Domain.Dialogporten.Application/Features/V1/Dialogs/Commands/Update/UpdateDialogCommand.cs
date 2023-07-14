@@ -22,6 +22,7 @@ public sealed class UpdateDialogCommand : IRequest<OneOf<Success, EntityNotFound
 {
     public Guid Id { get; set; }
     public UpdateDialogDto Dto { get; set; } = null!;
+    public Guid? ETag { get; set; }
 }
 
 internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogCommand, OneOf<Success, EntityNotFound, EntityExists, ValidationError, DomainError>>
@@ -70,6 +71,8 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         {
             return new EntityNotFound<DialogEntity>(request.Id);
         }
+
+        _db.TrySetOriginalETag(dialog, request.ETag);
 
         // Update primitive properties
         _mapper.Map(request.Dto, dialog);

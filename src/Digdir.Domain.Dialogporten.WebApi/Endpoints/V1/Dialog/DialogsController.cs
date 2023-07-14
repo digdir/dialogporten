@@ -29,7 +29,11 @@ public sealed class DialogsController : ControllerBase
 
     [AllowAnonymous]
     [HttpPatch("{id}")]
-    public async Task<IActionResult> Patch(Guid id, [FromBody] JsonPatchDocument<UpdateDialogDto> patchDocument, CancellationToken ct)
+    public async Task<IActionResult> Patch(
+        [FromRoute] Guid id, 
+        [FromHeader(Name = "x-etag")] Guid? etag, 
+        [FromBody] JsonPatchDocument<UpdateDialogDto> patchDocument, 
+        CancellationToken ct)
     {
         var dialogQueryResult = await _sender.Send(new GetDialogQuery { Id = id }, ct);
         if (dialogQueryResult.TryPickT1(out var entityNotFound, out var dialog))
@@ -48,7 +52,7 @@ public sealed class DialogsController : ControllerBase
             return BadRequest(ModelState);
         }
 
-        var command = new UpdateDialogCommand { Id = id, Dto = updateDialogDto };
+        var command = new UpdateDialogCommand { Id = id, ETag = etag, Dto = updateDialogDto };
         var result = await _sender.Send(command, ct);
         return result.Match(
             success => (IActionResult)NoContent(),

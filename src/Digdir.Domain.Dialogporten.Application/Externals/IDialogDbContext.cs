@@ -4,6 +4,7 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements;
 using Digdir.Domain.Dialogporten.Domain.Localizations;
 using Digdir.Domain.Dialogporten.Domain.Outboxes;
+using Digdir.Library.Entity.Abstractions.Features.Concurrency;
 using Digdir.Library.Entity.Abstractions.Features.Identifiable;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
@@ -50,4 +51,5 @@ public interface IDialogDbContext
         IEnumerable<TEntity> entities, 
         CancellationToken cancellationToken) 
         where TEntity : class, IIdentifiableEntity;
+    bool TrySetOriginalETag<TEntity>(TEntity entity, Guid? etag) where TEntity : class, IVersionableEntity;
 }

@@ -7,7 +7,7 @@ namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.Dialog;
 
 [AllowAnonymous]
 [HttpDelete("dialogs/{id}")]
-public sealed class DeleteDialogEndpoint : Endpoint<DeleteDialogCommand>
+public sealed class DeleteDialogEndpoint : Endpoint<DeleteDialogRequest>
 {
     private readonly ISender _sender;
 
@@ -16,11 +16,20 @@ public sealed class DeleteDialogEndpoint : Endpoint<DeleteDialogCommand>
         _sender = sender ?? throw new ArgumentNullException(nameof(sender));
     }
 
-    public override async Task HandleAsync(DeleteDialogCommand req, CancellationToken ct)
+    public override async Task HandleAsync(DeleteDialogRequest req, CancellationToken ct)
     {
-        var result = await _sender.Send(req, ct);
+        var command = new DeleteDialogCommand { Id = req.Id, ETag = req.ETag };
+        var result = await _sender.Send(command, ct);
         await result.Match(
             success => SendNoContentAsync(ct),
             notFound => this.NotFoundAsync(notFound, ct));
     }
+}
+
+public sealed class DeleteDialogRequest
+{
+    public Guid Id { get; set; }
+
+    [FromHeader(headerName: "x-etag", isRequired: false)]
+    public Guid? ETag { get; set; }
 }

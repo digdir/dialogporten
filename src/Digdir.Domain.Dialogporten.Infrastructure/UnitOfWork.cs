@@ -11,11 +11,19 @@ internal sealed class UnitOfWork : IUnitOfWork
     private readonly ITransactionTime _transactionTime;
     private readonly IDomainContext _domainContext;
 
+    private bool _auditableSideEffects = true;
+
     public UnitOfWork(DialogDbContext dialogDbContext, ITransactionTime transactionTime, IDomainContext domainContext)
     {
         _dialogDbContext = dialogDbContext ?? throw new ArgumentNullException(nameof(dialogDbContext));
         _transactionTime = transactionTime ?? throw new ArgumentNullException(nameof(transactionTime));
         _domainContext = domainContext ?? throw new ArgumentNullException(nameof(domainContext));
+    }
+
+    public IUnitOfWork WithoutAuditableSideEffects()
+    {
+        _auditableSideEffects = false;
+        return this;
     }
 
     public Task SaveChangesAsync(CancellationToken cancellationToken = default)
@@ -32,7 +40,11 @@ internal sealed class UnitOfWork : IUnitOfWork
             return Task.CompletedTask;
         }
 
-        _dialogDbContext.ChangeTracker.HandleAuditableEntities(_transactionTime.Value);
+        if (_auditableSideEffects)
+        {
+            _dialogDbContext.ChangeTracker.HandleAuditableEntities(_transactionTime.Value);
+        }
+        
         return _dialogDbContext.SaveChangesAsync(cancellationToken);
     }
 }

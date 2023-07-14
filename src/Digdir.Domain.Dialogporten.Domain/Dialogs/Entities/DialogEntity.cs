@@ -3,13 +3,15 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements;
 using Digdir.Domain.Dialogporten.Domain.Localizations;
 using Digdir.Library.Entity.Abstractions;
+using Digdir.Library.Entity.Abstractions.Features.Concurrency;
 using Digdir.Library.Entity.Abstractions.Features.SoftDeletable;
 
 namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 
-public class DialogEntity : IEntity, ISoftDeletableEntity
+public class DialogEntity : IEntity, ISoftDeletableEntity, IVersionableEntity
 {
     public Guid Id { get; set; }
+    public Guid ETag { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
     public DateTimeOffset UpdatedAt { get; set; }
     public bool Deleted { get; set; }

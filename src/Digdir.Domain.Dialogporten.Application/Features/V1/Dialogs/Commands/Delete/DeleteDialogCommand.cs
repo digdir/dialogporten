@@ -12,6 +12,7 @@ namespace Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Commands.De
 public sealed class DeleteDialogCommand : IRequest<OneOf<Success, EntityNotFound>>
 {
     public Guid Id { get; set; }
+    public Guid? ETag { get; set; }
 }
 
 internal sealed class DeleteDialogCommandHandler : IRequestHandler<DeleteDialogCommand, OneOf<Success, EntityNotFound>>
@@ -36,6 +37,8 @@ internal sealed class DeleteDialogCommandHandler : IRequestHandler<DeleteDialogC
         {
             return new EntityNotFound<DialogEntity>(request.Id);
         }
+
+        _db.TrySetOriginalETag(dialog, request.ETag);
 
         // TODO: Delete localization sets
         _db.Dialogs.Remove(dialog);
