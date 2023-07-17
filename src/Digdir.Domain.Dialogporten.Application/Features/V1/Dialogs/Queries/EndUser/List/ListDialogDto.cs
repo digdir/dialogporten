@@ -1,7 +1,7 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 
-namespace Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Queries.List;
+namespace Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Queries.EndUser.List;
 
 public sealed class ListDialogDto
 {

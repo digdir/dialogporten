@@ -1,12 +1,9 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Commands.Create;
 using FastEndpoints;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 
-namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.Dialog;
+namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.Dialog;
 
-[AllowAnonymous]
-[HttpPost("dialogs")]
 public sealed class CreateDialogEndpoint : Endpoint<CreateDialogCommand>
 {
     private readonly ISender _sender;
@@ -14,6 +11,12 @@ public sealed class CreateDialogEndpoint : Endpoint<CreateDialogCommand>
     public CreateDialogEndpoint(ISender sender)
     {
         _sender = sender ?? throw new ArgumentNullException(nameof(sender));
+    }
+
+    public override void Configure()
+    {
+        Post("dialogs");
+        Group<ServiceOwnerGroup>();
     }
 
     public override async Task HandleAsync(CreateDialogCommand req, CancellationToken ct)

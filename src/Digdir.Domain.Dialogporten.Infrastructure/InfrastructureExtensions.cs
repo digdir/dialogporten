@@ -3,7 +3,6 @@ using Altinn.ApiClients.Maskinporten.Extensions;
 using Altinn.ApiClients.Maskinporten.Interfaces;
 using Altinn.ApiClients.Maskinporten.Services;
 using Digdir.Domain.Dialogporten.Application.Externals;
-using Digdir.Domain.Dialogporten.Application.Externals.CloudEvents;
 using Digdir.Domain.Dialogporten.Infrastructure.DomainEvents;
 using Digdir.Domain.Dialogporten.Infrastructure.DomainEvents.Outbox;
 using Digdir.Domain.Dialogporten.Infrastructure.DomainEvents.Outbox.Dispatcher;

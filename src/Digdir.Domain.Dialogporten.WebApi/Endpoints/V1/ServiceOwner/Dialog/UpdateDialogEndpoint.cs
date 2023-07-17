@@ -1,12 +1,9 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Commands.Update;
 using FastEndpoints;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 
-namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.Dialog;
+namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.Dialog;
 
-[AllowAnonymous]
-[HttpPut("dialogs/{id}")]
 public sealed class UpdateDialogEndpoint : Endpoint<UpdateDialogRequest>
 {
     private readonly ISender _sender;
@@ -14,6 +11,12 @@ public sealed class UpdateDialogEndpoint : Endpoint<UpdateDialogRequest>
     public UpdateDialogEndpoint(ISender sender)
     {
         _sender = sender ?? throw new ArgumentNullException(nameof(sender));
+    }
+
+    public override void Configure()
+    {
+        Put("dialogs/{id}");
+        Group<ServiceOwnerGroup>();
     }
 
     public override async Task HandleAsync(UpdateDialogRequest req, CancellationToken ct)

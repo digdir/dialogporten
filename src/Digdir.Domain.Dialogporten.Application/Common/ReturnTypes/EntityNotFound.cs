@@ -1,6 +1,6 @@
 ﻿using FluentValidation.Results;
 
-namespace Digdir.Domain.Dialogporten.Application.Features.V1.Common.ReturnTypes;
+namespace Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 
 public record EntityNotFound<T>(IEnumerable<object> Keys) : EntityNotFound(typeof(T).Name, Keys)
 {

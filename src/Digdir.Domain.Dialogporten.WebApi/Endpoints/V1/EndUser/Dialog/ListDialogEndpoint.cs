@@ -1,12 +1,9 @@
-﻿using Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Queries.List;
+﻿using Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Queries.EndUser.List;
 using FastEndpoints;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 
-namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.Dialog;
+namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.EndUser.Dialog;
 
-[AllowAnonymous]
-[HttpGet("dialogs")]
 public class ListDialogEndpoint : Endpoint<ListDialogQuery>
 {
     private readonly ISender _sender;
@@ -14,6 +11,12 @@ public class ListDialogEndpoint : Endpoint<ListDialogQuery>
     public ListDialogEndpoint(ISender sender)
     {
         _sender = sender ?? throw new ArgumentNullException(nameof(sender));
+    }
+
+    public override void Configure()
+    {
+        Get("dialogs");
+        Group<EndUserGroup>();
     }
 
     public override async Task HandleAsync(ListDialogQuery req, CancellationToken ct)

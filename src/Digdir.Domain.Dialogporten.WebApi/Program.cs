@@ -62,7 +62,7 @@ static void BuildAndRun(string[] args)
         .AddFastEndpoints()
         .SwaggerDocument(x =>
         {
-            x.MaxEndpointVersion = 2;
+            x.MaxEndpointVersion = 1;
             x.ShortSchemaNames = true;
             x.DocumentSettings = s =>
             {

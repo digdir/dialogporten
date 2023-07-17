@@ -1,5 +1,5 @@
-﻿using Digdir.Domain.Dialogporten.Application.Externals;
-using Digdir.Domain.Dialogporten.Application.Features.V1.Common.ReturnTypes;
+﻿using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
+using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Domain.Outboxes;
 using MediatR;
 using OneOf;

@@ -1,4 +1,9 @@
-﻿namespace Digdir.Domain.Dialogporten.Application.Externals.CloudEvents;
+﻿namespace Digdir.Domain.Dialogporten.Application.Externals;
+
+public interface ICloudEventBus
+{
+    Task Publish(CloudEvent cloudEvent, CancellationToken cancellationToken);
+}
 
 public class CloudEvent
 {

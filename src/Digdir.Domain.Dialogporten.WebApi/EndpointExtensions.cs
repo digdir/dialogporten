@@ -1,4 +1,4 @@
-﻿using Digdir.Domain.Dialogporten.Application.Features.V1.Common.ReturnTypes;
+﻿using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using FastEndpoints;
 using FluentValidation.Results;
 

@@ -4,7 +4,7 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements;
 
-namespace Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Queries.Get;
+namespace Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Queries.ServiceOwner.Get;
 
 internal sealed class MappingProfile : Profile
 {

@@ -1,7 +1,7 @@
-﻿using Digdir.Domain.Dialogporten.Application.Externals.CloudEvents;
-using System.Net.Http.Headers;
+﻿using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using Digdir.Domain.Dialogporten.Infrastructure.Common.Serialization;
+using Digdir.Domain.Dialogporten.Application.Externals;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure;
 

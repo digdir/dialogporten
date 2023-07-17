@@ -1,15 +1,15 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Digdir.Domain.Dialogporten.Application.Common;
+using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
-using Digdir.Domain.Dialogporten.Application.Features.V1.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Events;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
 
-namespace Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Queries.Get;
+namespace Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Queries.EndUser.Get;
 
 public sealed class GetDialogQuery : IRequest<OneOf<GetDialogDto, EntityNotFound>>
 {
@@ -23,19 +23,22 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, On
     private readonly IDomainEventPublisher _eventPublisher;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ITransactionTime _transactionTime;
+    private readonly IClock _clock;
 
     public GetDialogQueryHandler(
         IDialogDbContext db,
         IMapper mapper,
         IDomainEventPublisher eventPublisher,
         IUnitOfWork unitOfWork,
-        ITransactionTime transactionTime)
+        ITransactionTime transactionTime,
+        IClock clock)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _eventPublisher = eventPublisher ?? throw new ArgumentNullException(nameof(eventPublisher));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _transactionTime = transactionTime ?? throw new ArgumentNullException(nameof(transactionTime));
+        _clock = clock ?? throw new ArgumentNullException(nameof(clock));
     }
 
     public async Task<OneOf<GetDialogDto, EntityNotFound>> Handle(GetDialogQuery request, CancellationToken cancellationToken)
@@ -57,6 +60,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, On
                 .ThenInclude(x => x.Title.Localizations.OrderBy(x => x.CreatedAt).ThenBy(x => x.CultureCode))
             .Include(x => x.ApiActions.OrderBy(x => x.CreatedAt).ThenBy(x => x.Id))
                 .ThenInclude(x => x.Endpoints.OrderBy(x => x.CreatedAt).ThenBy(x => x.Id))
+            .Where(x => !x.VisibleFrom.HasValue || _clock.UtcNowOffset < x.VisibleFrom)
             .AsNoTracking()
             .ProjectTo<GetDialogDto>(_mapper.ConfigurationProvider)
             .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
@@ -69,7 +73,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, On
         if ((dialog.ReadAt ?? DateTimeOffset.MinValue) < dialog.UpdatedAt)
         {
             // TODO: Should we only do this if the user is an end user?
-            var modifiableDialog = await _db.Dialogs.FindAsync(new object[] { request.Id }, cancellationToken: cancellationToken );
+            var modifiableDialog = await _db.Dialogs.FindAsync(new object[] { request.Id }, cancellationToken: cancellationToken);
             _eventPublisher.Publish(new DialogReadDomainEvent(request.Id));
             modifiableDialog!.ReadAt = dialog.ReadAt = _transactionTime.Value;
             await _unitOfWork

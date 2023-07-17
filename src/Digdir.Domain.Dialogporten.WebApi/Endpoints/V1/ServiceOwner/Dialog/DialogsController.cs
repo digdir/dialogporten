@@ -1,12 +1,12 @@
 ﻿using AutoMapper;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Commands.Update;
-using Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Queries.Get;
+using Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Queries.ServiceOwner.Get;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.Dialog;
+namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.Dialog;
 
 /* Since minimal apis don't support json patch documents out of the box, 
  * and we've not been able to find a good alternative library for it yet, 
@@ -15,7 +15,8 @@ namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.Dialog;
  * else. */
 
 [ApiController]
-[Route("api/v1/dialogs")]
+[Route("api/v1/serviceowner/dialogs")]
+[Tags(ServiceOwnerGroup.RoutePrefix)]
 public sealed class DialogsController : ControllerBase
 {
     private readonly ISender _sender;
@@ -30,9 +31,9 @@ public sealed class DialogsController : ControllerBase
     [AllowAnonymous]
     [HttpPatch("{id}")]
     public async Task<IActionResult> Patch(
-        [FromRoute] Guid id, 
-        [FromHeader(Name = "x-etag")] Guid? etag, 
-        [FromBody] JsonPatchDocument<UpdateDialogDto> patchDocument, 
+        [FromRoute] Guid id,
+        [FromHeader(Name = "x-etag")] Guid? etag,
+        [FromBody] JsonPatchDocument<UpdateDialogDto> patchDocument,
         CancellationToken ct)
     {
         var dialogQueryResult = await _sender.Send(new GetDialogQuery { Id = id }, ct);

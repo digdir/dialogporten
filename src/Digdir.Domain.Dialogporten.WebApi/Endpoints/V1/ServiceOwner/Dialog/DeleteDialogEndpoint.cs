@@ -1,12 +1,9 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Commands.Delete;
 using FastEndpoints;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 
-namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.Dialog;
+namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.Dialog;
 
-[AllowAnonymous]
-[HttpDelete("dialogs/{id}")]
 public sealed class DeleteDialogEndpoint : Endpoint<DeleteDialogRequest>
 {
     private readonly ISender _sender;
@@ -14,6 +11,12 @@ public sealed class DeleteDialogEndpoint : Endpoint<DeleteDialogRequest>
     public DeleteDialogEndpoint(ISender sender)
     {
         _sender = sender ?? throw new ArgumentNullException(nameof(sender));
+    }
+
+    public override void Configure()
+    {
+        Delete("dialogs/{id}");
+        Group<ServiceOwnerGroup>();
     }
 
     public override async Task HandleAsync(DeleteDialogRequest req, CancellationToken ct)

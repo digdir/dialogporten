@@ -5,7 +5,7 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements;
 using Digdir.Domain.Dialogporten.Domain.Http;
 
-namespace Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Queries.Get;
+namespace Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Queries.EndUser.Get;
 
 public sealed class GetDialogDto
 {
