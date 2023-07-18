@@ -10,4 +10,13 @@ public class DomainFailure
         PropertyName = propertyName;
         ErrorMessage = error;
     }
+
+    public static DomainFailure EntiryExists(string propertyName, string entityName, IEnumerable<Guid> keys)
+        => new(propertyName, $"Entity '{entityName}' with the following key(s) allready exists: ({string.Join(", ", keys)}).");
+
+    public static DomainFailure EntiryExists<T>(IEnumerable<Guid> keys)
+    {
+        var entityName = typeof(T).Name;
+        return EntiryExists(entityName, entityName, keys);
+    }
 }

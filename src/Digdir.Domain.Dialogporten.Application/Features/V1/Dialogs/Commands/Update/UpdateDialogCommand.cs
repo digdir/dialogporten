@@ -18,14 +18,14 @@ using OneOf.Types;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Commands.Update;
 
-public sealed class UpdateDialogCommand : IRequest<OneOf<Success, EntityNotFound, EntityExists, ValidationError, DomainError>>
+public sealed class UpdateDialogCommand : IRequest<OneOf<Success, EntityNotFound, ValidationError, DomainError>>
 {
     public Guid Id { get; set; }
     public UpdateDialogDto Dto { get; set; } = null!;
     public Guid? ETag { get; set; }
 }
 
-internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogCommand, OneOf<Success, EntityNotFound, EntityExists, ValidationError, DomainError>>
+internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogCommand, OneOf<Success, EntityNotFound, ValidationError, DomainError>>
 {
     private readonly IDialogDbContext _db;
     private readonly IMapper _mapper;
@@ -50,7 +50,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         _domainContext = domainContext ?? throw new ArgumentNullException(nameof(domainContext));
     }
 
-    public async Task<OneOf<Success, EntityNotFound, EntityExists, ValidationError, DomainError>> Handle(UpdateDialogCommand request, CancellationToken cancellationToken)
+    public async Task<OneOf<Success, EntityNotFound, ValidationError, DomainError>> Handle(UpdateDialogCommand request, CancellationToken cancellationToken)
     {
         var dialog = await _db.Dialogs
             .Include(x => x.Body.Localizations)

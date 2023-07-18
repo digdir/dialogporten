@@ -24,7 +24,7 @@ public sealed class CreateDialogEndpoint : Endpoint<CreateDialogCommand>
         var result = await _sender.Send(req, ct);
         await result.Match(
             id => SendCreatedAtAsync<GetDialogEndpoint>(new { id }, id, cancellation: ct),
-            entityExists => this.ConflictAsync(entityExists, ct),
+            domainError => this.UnprocessableEntityAsync(domainError, ct),
             validationError => this.BadRequestAsync(validationError, ct));
     }
 }

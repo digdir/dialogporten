@@ -58,7 +58,6 @@ public sealed class DialogsController : ControllerBase
         return result.Match(
             success => (IActionResult)NoContent(),
             entityNotFound => NotFound(HttpContext.ResponseBuilder(StatusCodes.Status404NotFound, entityNotFound.ToValidationResults())),
-            entityExists => Conflict(HttpContext.ResponseBuilder(StatusCodes.Status409Conflict, entityExists.ToValidationResults())),
             validationFailed => BadRequest(HttpContext.ResponseBuilder(StatusCodes.Status400BadRequest, validationFailed.Errors.ToList())),
             domainError => UnprocessableEntity(HttpContext.ResponseBuilder(StatusCodes.Status422UnprocessableEntity, domainError.ToValidationResults()))
         );

@@ -26,7 +26,6 @@ public sealed class UpdateDialogEndpoint : Endpoint<UpdateDialogRequest>
         await updateDialogResult.Match(
             success => SendNoContentAsync(ct),
             entityNotFound => this.NotFoundAsync(entityNotFound, ct),
-            entityExists => this.ConflictAsync(entityExists, ct),
             validationFailed => this.BadRequestAsync(validationFailed, ct),
             domainError => this.UnprocessableEntityAsync(domainError, ct));
     }
