@@ -41,22 +41,19 @@ internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDia
             .MaximumLength(Constants.DefaultMaxStringLength);
 
         RuleFor(x => x.ExpiresAt)
-            .IsUtcKind()
             .IsInFuture()
             .GreaterThanOrEqualTo(x => x.DueAt)
-                .WithMessage(FluentValidation_DateTime_Extensions.InFutureOfMessage)
+                .WithMessage(FluentValidation_DateTimeOffset_Extensions.InFutureOfMessage)
                 .When(x => x.DueAt.HasValue, ApplyConditionTo.CurrentValidator)
             .GreaterThanOrEqualTo(x => x.VisibleFrom)
-                .WithMessage(FluentValidation_DateTime_Extensions.InFutureOfMessage)
+                .WithMessage(FluentValidation_DateTimeOffset_Extensions.InFutureOfMessage)
                 .When(x => x.VisibleFrom.HasValue, ApplyConditionTo.CurrentValidator);
         RuleFor(x => x.DueAt)
-            .IsUtcKind()
             .IsInFuture()
             .GreaterThanOrEqualTo(x => x.VisibleFrom)
-                .WithMessage(FluentValidation_DateTime_Extensions.InFutureOfMessage)
+                .WithMessage(FluentValidation_DateTimeOffset_Extensions.InFutureOfMessage)
                 .When(x => x.VisibleFrom.HasValue, ApplyConditionTo.CurrentValidator);
         RuleFor(x => x.VisibleFrom)
-            .IsUtcKind()
             .IsInFuture();
 
         RuleFor(x => x.Status)
@@ -205,8 +202,6 @@ internal sealed class CreateDialogDialogApiActionEndpointDtoValidator : Abstract
         RuleFor(x => x.Deprecated)
             .Equal(true)
             .When(x => x.SunsetAt.HasValue);
-        RuleFor(x => x.SunsetAt)
-            .IsUtcKind();
     }
 }
 
@@ -218,7 +213,6 @@ internal sealed class CreateDialogDialogActivityDtoValidator : AbstractValidator
         RuleFor(x => x.Id)
             .NotEqual(default(Guid));
         RuleFor(x => x.CreatedAt)
-            .IsUtcKind()
             .IsInPast();
         RuleFor(x => x.ExtendedType)
             .IsValidUri()

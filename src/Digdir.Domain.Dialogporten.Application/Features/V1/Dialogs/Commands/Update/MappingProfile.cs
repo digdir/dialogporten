@@ -55,6 +55,5 @@ internal sealed class MappingProfile : Profile
         CreateMap<GetDialogDialogGuiActionDto, UpdateDialogDialogGuiActionDto>();
         CreateMap<GetDialogDialogElementDto, UpdateDialogDialogElementDto>();
         CreateMap<GetDialogDialogElementUrlDto, UpdateDialogDialogElementUrlDto>();
-        CreateMap<DateTimeOffset, DateTime>().ConstructUsing(dateTimeOffset => dateTimeOffset.UtcDateTime);
     }
 }
