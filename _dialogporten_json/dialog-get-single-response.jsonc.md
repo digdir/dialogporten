@@ -106,9 +106,9 @@
             "displayName": [ { "code": "nb_NO", "value": "Vedtaksbrev" } ],            
             "dialogElementType": "skd:form-type-1",
             "authorizationAttribute": "urn:altinn:subresource:somesubresource",
-            // Indikerer om autentisert bruker er autorisert til å lese ("elementread") - finnes bare i response-modell for 
+            // Indikerer om autentisert bruker er autorisert til å lese (har action "read") - finnes bare i response-modell for 
             // sluttbrukere og populeres av Dialogporten utfra policy. Dette er et hint for GUI-implementasjoner som da kan 
-            // velge å skjule/gråe ut actions som ikke vil kunne gjennomføres.
+            // velge å skjule/gråe ut elementer som ikke er tilgjengelige.
             "isAuthorized": false,
             "urls": [
                 {
@@ -134,9 +134,9 @@
             {
                 "action": "confirm",
                 "authorizationAttribute": "urn:altinn:subresource:somesubresource",
-                // Dette flagget er bare synlig på response-modellen, og indikerer om konsumenten er autorisert til å 
-                // aksessere "url". Gjelder bare dialogelementer og actions for GUI. For dialogelementer og actions for 
-                // API utelates disse helt.
+                // Indikerer om autentisert bruker er autorisert å aksessere oppgitt url  - finnes bare i response-modell for 
+                // sluttbrukere og populeres av Dialogporten utfra policy. Dette er et hint for GUI-implementasjoner som da kan 
+                // velge å skjule/gråe ut elementer som ikke er tilgjengelige.
                 "isAuthorized": false,
                 "priority": "secondary",
                 "title": [ { "code": "nb_NO", "value": "Bekreft mottatt" } ],
@@ -179,6 +179,7 @@
                     {
                         "version": "v1",
                         "method": "POST",
+                        "isAuthorized": false,
                         "actionUrl": "https://example.com/api/dialogs/123456789/confirmReceived",
                         "documentationUrl": "https://api-docs.example.com/dialogservice/confirm-action"
                     }
