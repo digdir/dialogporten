@@ -1,6 +1,11 @@
 # Dialogporten
 
 ## Getting started with local development
+
+### Prerequisites
+- [.NET 7 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/7.0)
+- [Docker](https://www.docker.com/products/docker-desktop/)
+
 1. Create a postgres instance in your local docker
 2. Add the connection string to your local secrets
 3. Run the web api through your favorite IDE, or through the CLI
