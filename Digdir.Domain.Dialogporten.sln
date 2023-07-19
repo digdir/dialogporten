@@ -27,8 +27,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Digdir.Domain.Dialogporten.
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{33E486B1-3279-4645-B536-AB640D560C45}"
 	ProjectSection(SolutionItems) = preProject
+		dialogporten.ruleset = dialogporten.ruleset
 		docker-compose.yml = docker-compose.yml
 		README.md = README.md
+		stylecop.json = stylecop.json
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Digdir.Domain.Dialogporten.ChangeDataCapture", "src\Digdir.Domain.Dialogporten.ChangeDataCapture\Digdir.Domain.Dialogporten.ChangeDataCapture.csproj", "{9420D9DA-6C2F-4664-B361-FA5E2E1FB6EB}"

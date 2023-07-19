@@ -11,7 +11,21 @@
 	    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="7.0.8" />
     </ItemGroup>
 
-    <ItemGroup>
+  <ItemGroup Condition="'$(Configuration)'=='Debug'">
+    <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.507">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>build; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <AdditionalFiles Include="$(SolutionDir)stylecop.json">
+      <Link>stylecop.json</Link>
+    </AdditionalFiles>
+  </ItemGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+    <CodeAnalysisRuleSet>$(SolutionDir)dialogporten.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+
+  <ItemGroup>
       <ProjectReference Include="..\Digdir.Library.Entity.Abstractions\Digdir.Library.Entity.Abstractions.csproj" />
     </ItemGroup>
 
