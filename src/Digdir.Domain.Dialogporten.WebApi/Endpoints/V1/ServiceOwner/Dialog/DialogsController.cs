@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Commands.Update;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Queries.ServiceOwner.Get;
+using Digdir.Domain.Dialogporten.WebApi.Common;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
@@ -32,7 +33,7 @@ public sealed class DialogsController : ControllerBase
     [HttpPatch("{id}")]
     public async Task<IActionResult> Patch(
         [FromRoute] Guid id,
-        [FromHeader(Name = "x-etag")] Guid? etag,
+        [FromHeader(Name = Constants.IfMatch)] Guid? etag,
         [FromBody] JsonPatchDocument<UpdateDialogDto> patchDocument,
         CancellationToken ct)
     {

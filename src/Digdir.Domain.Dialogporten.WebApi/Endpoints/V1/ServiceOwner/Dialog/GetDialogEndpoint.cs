@@ -23,7 +23,11 @@ public class GetDialogEndpoint : Endpoint<GetDialogQuery>
     {
         var result = await _sender.Send(req, ct);
         await result.Match(
-            dto => SendOkAsync(dto, ct),
+            dto =>
+            {
+                HttpContext.Response.Headers.ETag = dto.ETag.ToString();
+                return SendOkAsync(dto, ct);
+            },
             notFound => this.NotFoundAsync(notFound, ct));
     }
 }

@@ -10,7 +10,6 @@ namespace Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Queries.End
 public sealed class GetDialogDto
 {
     public Guid Id { get; set; }
-    public Guid ETag { get; set; }
     public string Org { get; set; } = null!;
     public Uri ServiceResource { get; set; } = null!;
     public string Party { get; set; } = null!;

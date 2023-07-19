@@ -1,4 +1,5 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Commands.Delete;
+using Digdir.Domain.Dialogporten.WebApi.Common;
 using FastEndpoints;
 using MediatR;
 
@@ -33,6 +34,6 @@ public sealed class DeleteDialogRequest
 {
     public Guid Id { get; set; }
 
-    [FromHeader(headerName: "x-etag", isRequired: false)]
+    [FromHeader(headerName: Constants.IfMatch, isRequired: false)]
     public Guid? ETag { get; set; }
 }

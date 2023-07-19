@@ -1,4 +1,5 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Commands.Update;
+using Digdir.Domain.Dialogporten.WebApi.Common;
 using FastEndpoints;
 using MediatR;
 
@@ -38,6 +39,6 @@ public sealed class UpdateDialogRequest
     [FromBody]
     public UpdateDialogDto Dto { get; set; } = null!;
 
-    [FromHeader(headerName: "x-etag", isRequired: false)]
+    [FromHeader(headerName: Constants.IfMatch, isRequired: false)]
     public Guid? ETag { get; set; }
 }
