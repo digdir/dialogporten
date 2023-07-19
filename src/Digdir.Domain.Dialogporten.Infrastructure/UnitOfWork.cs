@@ -1,7 +1,11 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Common;
+using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence;
 using Digdir.Library.Entity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using OneOf;
+using OneOf.Types;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure;
 
@@ -26,25 +30,32 @@ internal sealed class UnitOfWork : IUnitOfWork
         return this;
     }
 
-    public Task SaveChangesAsync(CancellationToken cancellationToken = default)
+    public async Task<OneOf<Success, DomainError, UpdateConcurrencyError>> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        _domainContext.EnsureValidState();
-        // TODO: '_domainContext.EnsureValidState()' OR should we allow the application to proceed with invalid state?
-        //if (!_domainContext.IsValid)
-        //{
-        //    return Task.CompletedTask;
-        //}
+        if (!_domainContext.IsValid)
+        {
+            return new DomainError(_domainContext.Pop());
+        }
 
         if (!_dialogDbContext.ChangeTracker.HasChanges())
         {
-            return Task.CompletedTask;
+            return new Success();
         }
 
         if (_auditableSideEffects)
         {
             _dialogDbContext.ChangeTracker.HandleAuditableEntities(_transactionTime.Value);
         }
-        
-        return _dialogDbContext.SaveChangesAsync(cancellationToken);
+
+        try
+        {
+            await _dialogDbContext.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            return new UpdateConcurrencyError();
+        }
+
+        return new Success();
     }
 }

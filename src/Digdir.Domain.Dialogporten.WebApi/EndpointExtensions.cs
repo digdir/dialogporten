@@ -11,6 +11,9 @@ public static class EndpointExtensions
     public static Task BadRequestAsync(this IEndpoint ep, IEnumerable<ValidationFailure> failures, CancellationToken cancellationToken = default)
         => ep.HttpContext.Response.SendErrorsAsync(failures.ToList() ?? new(), StatusCodes.Status400BadRequest, cancellation: cancellationToken);
 
+    public static Task PreconditionFailed(this IEndpoint ep, CancellationToken cancellationToken = default)
+        => ep.HttpContext.Response.SendErrorsAsync(new List<ValidationFailure>(), StatusCodes.Status412PreconditionFailed, cancellation: cancellationToken);
+
     public static Task NotFoundAsync(this IEndpoint ep, EntityNotFound notFound, CancellationToken cancellationToken = default) 
         => ep.HttpContext.Response.SendErrorsAsync(
             notFound.ToValidationResults(), 

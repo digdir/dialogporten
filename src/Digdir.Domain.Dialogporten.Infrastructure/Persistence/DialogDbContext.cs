@@ -43,8 +43,9 @@ internal sealed class DialogDbContext : DbContext, IDialogDbContext
         {
             return false;
         }
-
-        Entry(entity).Property(x => x.ETag).OriginalValue = etag.Value;
+        var prop = Entry(entity).Property(x => x.ETag);
+        prop.OriginalValue = etag.Value;
+        prop.IsModified = false;
         return true;
     }
 

@@ -26,7 +26,8 @@ public sealed class DeleteDialogEndpoint : Endpoint<DeleteDialogRequest>
         var result = await _sender.Send(command, ct);
         await result.Match(
             success => SendNoContentAsync(ct),
-            notFound => this.NotFoundAsync(notFound, ct));
+            notFound => this.NotFoundAsync(notFound, ct),
+            concurrencyError => this.PreconditionFailed(ct));
     }
 }
 

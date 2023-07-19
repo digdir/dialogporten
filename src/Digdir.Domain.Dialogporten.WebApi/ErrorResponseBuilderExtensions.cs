@@ -32,6 +32,14 @@ internal static class ErrorResponseBuilderExtensions
                 Instance = ctx.Request.Path,
                 Extensions = { { "traceId", Activity.Current?.Id ?? ctx.TraceIdentifier } },
             },
+            StatusCodes.Status412PreconditionFailed => new ProblemDetails
+            {
+                Title = "Precondition failed.",
+                Type = "https://datatracker.ietf.org/doc/html/rfc7232#section-4.2",
+                Status = statusCode,
+                Instance = ctx.Request.Path,
+                Extensions = { { "traceId", Activity.Current?.Id ?? ctx.TraceIdentifier } },
+            },
             StatusCodes.Status422UnprocessableEntity => new ValidationProblemDetails(errors)
             {
                 Title = "Unprocessable request.",

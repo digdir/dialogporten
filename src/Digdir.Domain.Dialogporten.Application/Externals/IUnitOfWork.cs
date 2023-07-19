@@ -1,7 +1,11 @@
-﻿namespace Digdir.Domain.Dialogporten.Application.Externals;
+﻿using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
+using OneOf.Types;
+using OneOf;
+
+namespace Digdir.Domain.Dialogporten.Application.Externals;
 
 public interface IUnitOfWork
 {
     IUnitOfWork WithoutAuditableSideEffects();
-    Task SaveChangesAsync(CancellationToken cancellationToken = default);
+    Task<OneOf<Success, DomainError, UpdateConcurrencyError>> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

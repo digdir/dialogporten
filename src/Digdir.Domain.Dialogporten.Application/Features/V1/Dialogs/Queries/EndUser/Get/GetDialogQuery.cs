@@ -8,6 +8,7 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Events;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
+using OneOf.Types;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Queries.EndUser.Get;
 
@@ -72,15 +73,29 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, On
 
         if ((dialog.ReadAt ?? DateTimeOffset.MinValue) < dialog.UpdatedAt)
         {
-            // TODO: Should we only do this if the user is an end user?
-            var modifiableDialog = await _db.Dialogs.FindAsync(new object[] { request.Id }, cancellationToken: cancellationToken);
-            _eventPublisher.Publish(new DialogReadDomainEvent(request.Id));
-            modifiableDialog!.ReadAt = dialog.ReadAt = _transactionTime.Value;
-            await _unitOfWork
-                .WithoutAuditableSideEffects()
-                .SaveChangesAsync(cancellationToken);
+            dialog.ReadAt = await UpdateReadAt(request.Id, cancellationToken);
         }
 
         return dialog;
+    }
+
+    private async Task<DateTimeOffset?> UpdateReadAt(Guid dialogId, CancellationToken cancellationToken)
+    {
+        var modifiableDialog = await _db.Dialogs.FindAsync(new object[] { dialogId }, cancellationToken: cancellationToken);
+        _eventPublisher.Publish(new DialogReadDomainEvent(dialogId));
+        modifiableDialog!.ReadAt = _transactionTime.Value;
+        await _unitOfWork
+            .WithoutAuditableSideEffects()
+            .SaveChangesAsync(cancellationToken);
+
+        var saveResult = await _unitOfWork
+            .WithoutAuditableSideEffects()
+            .SaveChangesAsync(cancellationToken);
+        saveResult.Switch(
+            success => { },
+            domainError => throw new ApplicationException("Should not get domain error when updating ReadAt."),
+            concurrencyError => throw new ApplicationException("Should not get concurrencyError when updating ReadAt."));
+
+        return modifiableDialog.ReadAt;
     }
 }

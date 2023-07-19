@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Commands.Update;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Queries.ServiceOwner.Get;
 using Digdir.Domain.Dialogporten.WebApi.Common;
@@ -60,7 +61,8 @@ public sealed class DialogsController : ControllerBase
             success => (IActionResult)NoContent(),
             entityNotFound => NotFound(HttpContext.ResponseBuilder(StatusCodes.Status404NotFound, entityNotFound.ToValidationResults())),
             validationFailed => BadRequest(HttpContext.ResponseBuilder(StatusCodes.Status400BadRequest, validationFailed.Errors.ToList())),
-            domainError => UnprocessableEntity(HttpContext.ResponseBuilder(StatusCodes.Status422UnprocessableEntity, domainError.ToValidationResults()))
+            domainError => UnprocessableEntity(HttpContext.ResponseBuilder(StatusCodes.Status422UnprocessableEntity, domainError.ToValidationResults())),
+            concurrencyError => new ObjectResult(HttpContext.ResponseBuilder(StatusCodes.Status412PreconditionFailed)) { StatusCode = StatusCodes.Status412PreconditionFailed }
         );
     }
 }

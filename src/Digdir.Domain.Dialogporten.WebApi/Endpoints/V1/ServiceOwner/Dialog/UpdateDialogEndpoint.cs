@@ -28,7 +28,8 @@ public sealed class UpdateDialogEndpoint : Endpoint<UpdateDialogRequest>
             success => SendNoContentAsync(ct),
             entityNotFound => this.NotFoundAsync(entityNotFound, ct),
             validationFailed => this.BadRequestAsync(validationFailed, ct),
-            domainError => this.UnprocessableEntityAsync(domainError, ct));
+            domainError => this.UnprocessableEntityAsync(domainError, ct),
+            concurrencyError => this.PreconditionFailed(ct));
     }
 }
 

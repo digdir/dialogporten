@@ -62,7 +62,11 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
         await _db.Dialogs.AddAsync(dialog, cancellationToken);
         _eventPublisher.Publish(new DialogCreatedDomainEvent(dialog.CreateId()));
         _eventPublisher.Publish(dialog.Activities.Select(x => new DialogActivityCreatedDomainEvent(dialog.Id, x.CreateId())));
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
-        return dialog.Id;
+
+        var saveResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
+        return saveResult.Match<OneOf<Guid, DomainError, ValidationError>>(
+            success => dialog.Id,
+            domainError => domainError,
+            concurrencyError => throw new ApplicationException("Should never get a concurrency error when creating a new dialog"));
     }
 }
