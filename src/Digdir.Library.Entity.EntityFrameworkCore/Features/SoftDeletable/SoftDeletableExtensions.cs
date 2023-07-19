@@ -1,5 +1,4 @@
-﻿using Digdir.Library.Entity.Abstractions;
-using Digdir.Library.Entity.Abstractions.Features.SoftDeletable;
+﻿using Digdir.Library.Entity.Abstractions.Features.SoftDeletable;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System.Reflection;

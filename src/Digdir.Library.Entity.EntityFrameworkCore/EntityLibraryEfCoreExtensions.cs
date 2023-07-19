@@ -13,7 +13,8 @@ using Digdir.Library.Entity.Abstractions.Features.Lookup;
 using Digdir.Library.Entity.Abstractions.Features.SoftDeletable;
 using Digdir.Library.Entity.Abstractions.Features.Updatable;
 using Digdir.Library.Entity.EntityFrameworkCore.Features.Immutable;
-using Digdir.Library.Entity.Abstractions.Features.Concurrency;
+using Digdir.Library.Entity.EntityFrameworkCore.Features.Versionable;
+using Digdir.Library.Entity.Abstractions.Features.Versionable;
 
 namespace Digdir.Library.Entity.EntityFrameworkCore;
 

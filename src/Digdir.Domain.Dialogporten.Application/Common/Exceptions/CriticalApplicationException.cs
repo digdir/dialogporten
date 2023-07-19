@@ -1,6 +1,4 @@
-﻿using System.Runtime.Serialization;
-
-namespace Digdir.Domain.Dialogporten.Application.Common.Exceptions;
+﻿namespace Digdir.Domain.Dialogporten.Application.Common.Exceptions;
 
 public sealed class CriticalApplicationException : ApplicationException
 {

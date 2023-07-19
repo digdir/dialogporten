@@ -1,4 +1,4 @@
-﻿namespace Digdir.Library.Entity.Abstractions.Features.Concurrency;
+﻿namespace Digdir.Library.Entity.Abstractions.Features.Versionable;
 
 /// <summary>
 /// Provides extension methods for <see cref="IVersionableEntity"/>.

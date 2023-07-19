@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Commands.Update;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Queries.ServiceOwner.Get;
 using Digdir.Domain.Dialogporten.WebApi.Common;

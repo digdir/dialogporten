@@ -18,7 +18,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Digdir.Domain.Dialogporten.Domain\Digdir.Domain.Dialogporten.Domain.csproj" />
-    <ProjectReference Include="..\Digdir.Library.Entity.EntityFrameworkCore\Digdir.Library.Entity.EntityFrameworkCore.csproj" />
   </ItemGroup>
 
 	<ItemGroup>

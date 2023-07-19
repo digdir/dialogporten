@@ -1,8 +1,8 @@
-﻿using Digdir.Library.Entity.EntityFrameworkCore;
+﻿using Digdir.Library.Entity.Abstractions.Features.Versionable;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
-namespace Digdir.Library.Entity.Abstractions.Features.Concurrency;
+namespace Digdir.Library.Entity.EntityFrameworkCore.Features.Versionable;
 
 internal static class VersionableExtensions
 {
@@ -19,11 +19,11 @@ internal static class VersionableExtensions
         var hasChanges = changeTracker.HasChanges();
         foreach (var entry in changeTracker
             .Entries<IVersionableEntity>()
-            .Where(x => 
+            .Where(x =>
                 x.State is EntityState.Added or EntityState.Modified ||
                 // Assume that sub entities of the unchanged aggregates/versinable
                 // entities are modified when the database has changes.
-                (x.State is EntityState.Unchanged && hasChanges)
+                x.State is EntityState.Unchanged && hasChanges
             ))
         {
             var etagProp = entry.Property(x => x.ETag);

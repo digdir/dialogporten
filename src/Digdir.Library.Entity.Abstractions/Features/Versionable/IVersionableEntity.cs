@@ -1,4 +1,4 @@
-﻿namespace Digdir.Library.Entity.Abstractions.Features.Concurrency;
+﻿namespace Digdir.Library.Entity.Abstractions.Features.Versionable;
 
 /// <summary>
 /// Abstraction implemented by entities to keep track of their version.

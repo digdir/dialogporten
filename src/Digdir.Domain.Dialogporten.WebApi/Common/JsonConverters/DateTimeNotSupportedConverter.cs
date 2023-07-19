@@ -5,7 +5,11 @@ namespace Digdir.Domain.Dialogporten.WebApi.Common.JsonConverters;
 
 internal sealed class DateTimeNotSupportedConverter : JsonConverter<DateTime>
 {
-    private const string ErrorMessage = "DateTime is not supported. Use DateTimeOffset instead.";
+    private const string ErrorMessage = 
+        "DateTime is not supported, use DateTimeOffset instead. " +
+        "This is a service error, not a consumer error. Please " +
+        "contact the support team if you're experiencing this " +
+        "error as a consumer.";
 
     public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
