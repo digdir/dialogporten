@@ -52,7 +52,7 @@ internal sealed class UnitOfWork : IUnitOfWork
         }
         catch (DbUpdateConcurrencyException)
         {
-            return new UpdateConcurrencyError();
+            return new ConcurrencyError();
         }
 
         return new Success();

@@ -11,4 +11,4 @@ public interface IUnitOfWork
 }
 
 [GenerateOneOf]
-public partial class SaveChangesResult : OneOfBase<Success, DomainError, UpdateConcurrencyError> { }
+public partial class SaveChangesResult : OneOfBase<Success, DomainError, ConcurrencyError> { }
