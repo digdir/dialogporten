@@ -1,6 +1,4 @@
-﻿using Digdir.Domain.Dialogporten.Application.Common.Exceptions;
-using OneOf;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
@@ -24,23 +22,11 @@ internal static class OneOfExtensions
     {
         const string ImplicitOperatorName = "op_Implicit";
         const BindingFlags ImplicitOperatorFlags = BindingFlags.Static | BindingFlags.Public;
-        var (duType, type) = arg;
-        if (!duType.IsAssignableTo(typeof(IOneOf)) ||
-            !duType.IsGenericType ||
-            !duType.GetGenericArguments().Any(x => x == type))
-        {
-            return null;
-        }
-
-        var oneOfImplicitOperator = duType.GetMethod(
+        var (oneOf, type) = arg;
+        var oneOfImplicitOperator = oneOf.GetMethod(
             name: ImplicitOperatorName,
             bindingAttr: ImplicitOperatorFlags,
             types: new[] { type });
-
-        return oneOfImplicitOperator is not null
-            ? oneOfImplicitOperator
-            : throw new CriticalApplicationException(
-                $"Could not find expected implicit operator on {duType} that accepts {type}. " +
-                $"This may be due to a change in OneOf and must be fixed.");
+        return oneOfImplicitOperator;
     }
 }

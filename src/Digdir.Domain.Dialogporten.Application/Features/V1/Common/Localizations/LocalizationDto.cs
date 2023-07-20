@@ -1,6 +1,4 @@
-﻿using Digdir.Domain.Dialogporten.Domain.Localizations;
-
-namespace Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
+﻿namespace Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 
 public sealed class LocalizationDto
 {

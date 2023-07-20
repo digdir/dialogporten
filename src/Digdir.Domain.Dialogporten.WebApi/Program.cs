@@ -10,6 +10,7 @@ using Serilog;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
 using System.Collections;
+using Digdir.Domain.Dialogporten.WebApi.Common.JsonConverters;
 
 // Using two-stage initialization to catch startup errors.
 Log.Logger = new LoggerConfiguration()
@@ -62,7 +63,7 @@ static void BuildAndRun(string[] args)
         .AddFastEndpoints()
         .SwaggerDocument(x =>
         {
-            x.MaxEndpointVersion = 2;
+            x.MaxEndpointVersion = 1;
             x.ShortSchemaNames = true;
             x.DocumentSettings = s =>
             {
@@ -81,7 +82,7 @@ static void BuildAndRun(string[] args)
         .AddInfrastructure(builder.Configuration.GetSection(InfrastructureSettings.ConfigurationSectionName));
 
     var app = builder.Build();
-    
+
     app.UseHttpsRedirection()
         .UseSerilogRequestLogging()
         .UseProblemDetailsExceptionHandler()
@@ -100,6 +101,8 @@ static void BuildAndRun(string[] args)
                 Modifiers = { IgnoreEmptyCollections }
             };
             x.Serializer.Options.Converters.Add(new JsonStringEnumConverter());
+            x.Serializer.Options.Converters.Add(new UtcDateTimeOffsetConverter());
+            x.Serializer.Options.Converters.Add(new DateTimeNotSupportedConverter());
             x.Errors.ResponseBuilder = ErrorResponseBuilderExtensions.ResponseBuilder;
         })
         .UseOpenApi()

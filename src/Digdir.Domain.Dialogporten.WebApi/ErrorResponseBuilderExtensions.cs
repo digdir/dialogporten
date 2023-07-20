@@ -32,16 +32,14 @@ internal static class ErrorResponseBuilderExtensions
                 Instance = ctx.Request.Path,
                 Extensions = { { "traceId", Activity.Current?.Id ?? ctx.TraceIdentifier } },
             },
-            StatusCodes.Status409Conflict => new ValidationProblemDetails(errors)
+            StatusCodes.Status412PreconditionFailed => new ProblemDetails
             {
-                Title = "Conflict.",
-                Type = "https://www.rfc-editor.org/rfc/rfc7231#section-6.5.8",
+                Title = "Precondition failed.",
+                Type = "https://datatracker.ietf.org/doc/html/rfc7232#section-4.2",
                 Status = statusCode,
                 Instance = ctx.Request.Path,
                 Extensions = { { "traceId", Activity.Current?.Id ?? ctx.TraceIdentifier } },
             },
-            // TODO: Skal vi ha denne? 
-            // Forespørselen er syntaktisk og semantisk korrekt, men tilstanden av systemet tillater ikke forespørselen.
             StatusCodes.Status422UnprocessableEntity => new ValidationProblemDetails(errors)
             {
                 Title = "Unprocessable request.",

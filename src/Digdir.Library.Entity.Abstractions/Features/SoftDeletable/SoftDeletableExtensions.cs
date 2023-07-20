@@ -6,14 +6,27 @@
 public static class SoftDeletableExtensions
 {
     /// <summary>
-    /// Marks a <see cref="ISoftDeletableEntity"/> as deleted.
+    /// Marks a <see cref="ISoftDeletableEntity"/> as soft deleted.
     /// </summary>
-    /// <param name="deletable">The <see cref="ISoftDeletableEntity"/> to delete.</param>
+    /// <param name="deletable">The <see cref="ISoftDeletableEntity"/> to soft delete.</param>
     /// <param name="now">The deletion time in UTC.</param>
-    public static void Delete(this ISoftDeletableEntity deletable, DateTimeOffset now)
+    public static void SoftDelete(this ISoftDeletableEntity deletable, DateTimeOffset now)
     {
         deletable.DeletedAt = now;
         deletable.Deleted = true;
+    }
+
+    /// <summary>
+    /// Marks a <see cref="ISoftDeletableEntity"/> as hard deleted.
+    /// </summary>
+    /// <remarks>
+    /// This will permanently delete the entity from the database.
+    /// </remarks>
+    /// <param name="deletable">The <see cref="ISoftDeletableEntity"/> to permanently delete.</param>
+    public static void HardDelete(this ISoftDeletableEntity deletable)
+    {
+        deletable.HardDelete = deletable.Deleted = true;
+        deletable.DeletedAt = DateTimeOffset.UtcNow;
     }
 
     /// <summary>

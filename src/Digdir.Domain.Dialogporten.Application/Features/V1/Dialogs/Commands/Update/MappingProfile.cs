@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
-using Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Queries.Get;
+using Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Queries.EndUser.Get;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
@@ -55,6 +55,5 @@ internal sealed class MappingProfile : Profile
         CreateMap<GetDialogDialogGuiActionDto, UpdateDialogDialogGuiActionDto>();
         CreateMap<GetDialogDialogElementDto, UpdateDialogDialogElementDto>();
         CreateMap<GetDialogDialogElementUrlDto, UpdateDialogDialogElementUrlDto>();
-        CreateMap<DateTimeOffset, DateTime>().ConstructUsing(dateTimeOffset => dateTimeOffset.UtcDateTime);
     }
 }

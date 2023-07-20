@@ -1,5 +1,5 @@
-﻿using Digdir.Domain.Dialogporten.Application.Externals;
-using Digdir.Domain.Dialogporten.Application.Features.V1.Common.ReturnTypes;
+﻿using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
+using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Events;
 using MediatR;
@@ -9,12 +9,16 @@ using OneOf.Types;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Commands.Delete;
 
-public sealed class DeleteDialogCommand : IRequest<OneOf<Success, EntityNotFound>>
+public sealed class DeleteDialogCommand : IRequest<DeleteDialogResult>
 {
     public Guid Id { get; set; }
+    public Guid? ETag { get; set; }
 }
 
-internal sealed class DeleteDialogCommandHandler : IRequestHandler<DeleteDialogCommand, OneOf<Success, EntityNotFound>>
+[GenerateOneOf]
+public partial class DeleteDialogResult : OneOfBase<Success, EntityNotFound, ConcurrencyError> { }
+
+internal sealed class DeleteDialogCommandHandler : IRequestHandler<DeleteDialogCommand, DeleteDialogResult>
 {
     private readonly IDialogDbContext _db;
     private readonly IUnitOfWork _unitOfWork;
@@ -27,7 +31,7 @@ internal sealed class DeleteDialogCommandHandler : IRequestHandler<DeleteDialogC
         _eventPublisher = eventPublisher ?? throw new ArgumentNullException(nameof(eventPublisher));
     }
 
-    public async Task<OneOf<Success, EntityNotFound>> Handle(DeleteDialogCommand request, CancellationToken cancellationToken)
+    public async Task<DeleteDialogResult> Handle(DeleteDialogCommand request, CancellationToken cancellationToken)
     {
         var dialog = await _db.Dialogs
             .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
@@ -37,15 +41,20 @@ internal sealed class DeleteDialogCommandHandler : IRequestHandler<DeleteDialogC
             return new EntityNotFound<DialogEntity>(request.Id);
         }
 
-        // TODO: Delete localization sets
+        _db.TrySetOriginalETag(dialog, request.ETag);
 
+        // TODO: Delete localization sets
         _db.Dialogs.Remove(dialog);
         _eventPublisher.Publish(
             new DialogDeletedDomainEvent(
                 dialog.Id, 
                 dialog.ServiceResource.ToString(), 
                 dialog.Party));
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
-        return new Success();
+
+        var saveResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
+        return saveResult.Match<DeleteDialogResult>(
+            success => success,
+            domainError => throw new ApplicationException("Should never get a domain error when creating a new dialog"),
+            concurrencyError => concurrencyError);
     }
 }

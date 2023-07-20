@@ -5,7 +5,9 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements;
 using Digdir.Domain.Dialogporten.Domain.Localizations;
 using Digdir.Domain.Dialogporten.Domain.Outboxes;
 using Digdir.Library.Entity.Abstractions.Features.Identifiable;
+using Digdir.Library.Entity.Abstractions.Features.Versionable;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace Digdir.Domain.Dialogporten.Application.Externals;
 
@@ -27,8 +29,27 @@ public interface IDialogDbContext
     DbSet<OutboxMessage> OutboxMessages { get; }
     DbSet<OutboxMessageConsumer> OutboxMessageConsumers { get; }
 
+    /// <summary>
+    /// Validate a property on the <typeparamref name="TEntity"/> using a lambda 
+    /// expression to specify the predicate only when the property is modified.
+    /// </summary>
+    /// <typeparam name="TEntity"></typeparam>
+    /// <typeparam name="TProperty"></typeparam>
+    /// <param name="entity"></param>
+    /// <param name="propertyExpression"></param>
+    /// <param name="predicate"></param>
+    /// <returns>
+    ///     <para>False if the property is modified and the predicate returns false.</para>
+    ///     <para>True if the property is unmodified or the predicate returns true.</para>
+    /// </returns>
+    bool MustWhenModified<TEntity, TProperty>(
+        TEntity entity, 
+        Expression<Func<TEntity, TProperty>> propertyExpression, 
+        Func<TProperty, bool> predicate) 
+        where TEntity : class;
     Task<List<Guid>> GetExistingIds<TEntity>(
         IEnumerable<TEntity> entities, 
         CancellationToken cancellationToken) 
         where TEntity : class, IIdentifiableEntity;
+    bool TrySetOriginalETag<TEntity>(TEntity entity, Guid? etag) where TEntity : class, IVersionableEntity;
 }

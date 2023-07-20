@@ -7,12 +7,12 @@ internal static class PaginationExtensions
     public static Task<PaginatedList<TDestination>> ToPaginatedListAsync<TDestination>(this IQueryable<TDestination> queryable, int pageIndex, int pageSize, CancellationToken cancellationToken = default)
         => CreateAsync(queryable, pageIndex, pageSize, cancellationToken);
     public static Task<PaginatedList<TDestination>> ToPaginatedListAsync<TDestination>(this IQueryable<TDestination> queryable, IPaginationParameter parameter, CancellationToken cancellationToken = default)
-        => CreateAsync(queryable, parameter.PageIndex, parameter.PageSize, cancellationToken);
+        => CreateAsync(queryable, parameter.PageIndex!.Value, parameter.PageSize!.Value, cancellationToken);
 
     public static PaginatedList<TDestination> ToPaginatedList<TDestination>(this IEnumerable<TDestination> enumerable, int pageIndex, int pageSize)
         => Create(enumerable, pageIndex, pageSize);
     public static PaginatedList<TDestination> ToPaginatedList<TDestination>(this IEnumerable<TDestination> enumerable, IPaginationParameter parameter)
-        => Create(enumerable, parameter.PageIndex, parameter.PageSize);
+        => Create(enumerable, parameter.PageIndex!.Value, parameter.PageSize!.Value);
 
     private static async Task<PaginatedList<T>> CreateAsync<T>(IQueryable<T> source, int pageIndex, int pageSize, CancellationToken cancellationToken = default)
     {

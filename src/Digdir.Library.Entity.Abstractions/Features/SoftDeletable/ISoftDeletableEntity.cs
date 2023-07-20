@@ -6,6 +6,12 @@
 public interface ISoftDeletableEntity
 {
     /// <summary>
+    /// Indicating wether or not the entity is to be permanently deleted. 
+    /// True if the entity is to be permanently deleted, otherwise false.
+    /// </summary>
+    bool HardDelete { get; set; }
+
+    /// <summary>
     /// Indicating wether or not the entity is soft deleted. 
     /// True if the entity is soft deleted, otherwise false.
     /// </summary>

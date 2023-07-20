@@ -13,6 +13,8 @@ using Digdir.Library.Entity.Abstractions.Features.Lookup;
 using Digdir.Library.Entity.Abstractions.Features.SoftDeletable;
 using Digdir.Library.Entity.Abstractions.Features.Updatable;
 using Digdir.Library.Entity.EntityFrameworkCore.Features.Immutable;
+using Digdir.Library.Entity.EntityFrameworkCore.Features.Versionable;
+using Digdir.Library.Entity.Abstractions.Features.Versionable;
 
 namespace Digdir.Library.Entity.EntityFrameworkCore;
 
@@ -29,6 +31,8 @@ public static class EntityLibraryEfCoreExtensions
     ///     <item><see cref="ICreatableEntity"/></item>
     ///     <item><see cref="IUpdateableEntity"/></item>
     ///     <item><see cref="ISoftDeletableEntity"/></item>
+    ///     <item><see cref="IIdentifiableEntity"/></item>
+    ///     <item><see cref="IVersionableEntity"/></item>
     /// </list>
     /// </summary>
     /// <remarks>
@@ -37,12 +41,13 @@ public static class EntityLibraryEfCoreExtensions
     /// <param name="changeTracker">The change tracker.</param>
     /// <param name="utcNow">The time in UTC in which the changes tok place.</param>
     /// <returns>The same <see cref="ChangeTracker"/> instance so that multiple calls can be chained.</returns>
-    public static ChangeTracker HandleAuditableEntities(this ChangeTracker changeTracker,DateTimeOffset utcNow)
+    public static ChangeTracker HandleAuditableEntities(this ChangeTracker changeTracker, DateTimeOffset utcNow)
     {
         return changeTracker
             .HandleLookupEntities()
             .HandleIdentifiableEntities()
             .HandleImmutableEntities()
+            .HandleVersionableEntities()
             .HandleCreatableEntities(utcNow)
             .HandleUpdatableEntities(utcNow)
             .HandleSoftDeletableEntities(utcNow);
@@ -56,6 +61,8 @@ public static class EntityLibraryEfCoreExtensions
     ///     <item><see cref="ICreatableEntity"/></item>
     ///     <item><see cref="IUpdateableEntity"/></item>
     ///     <item><see cref="ISoftDeletableEntity"/></item>
+    ///     <item><see cref="IIdentifiableEntity"/></item>
+    ///     <item><see cref="IVersionableEntity"/></item>
     /// </list>
     /// </summary>
     /// <param name="modelBuilder">The model builder.</param>
@@ -66,6 +73,7 @@ public static class EntityLibraryEfCoreExtensions
             .EnableSoftDeletableQueryFilter()
             .AddIdentifiableEntities()
             .AddImmutableEntities()
+            .AddVersionableEntities()
             .AddUpdatableEntities()
             .AddCreatableEntities()
             .AddLookupEntities();

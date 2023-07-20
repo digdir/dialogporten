@@ -26,11 +26,13 @@ public static class ApplicationExtensions
             .AddValidatorsFromAssembly(thisAssembly, includeInternalTypes: true)
 
             // Scoped
+            .AddScoped<IDomainContext, DomainContext>()
             .AddScoped<ITransactionTime, TransactionTime>()
 
             // Transient
             .AddTransient<ILocalizationService, LocalizationService>()
             .AddTransient<IClock, Clock>()
-            .AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
+            .AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>))
+            .AddTransient(typeof(IPipelineBehavior<,>), typeof(DomainContextBehaviour<,>));
     }
 }
