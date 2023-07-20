@@ -4,7 +4,6 @@ using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence;
 using Digdir.Library.Entity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using OneOf;
 using OneOf.Types;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure;
@@ -30,7 +29,7 @@ internal sealed class UnitOfWork : IUnitOfWork
         return this;
     }
 
-    public async Task<OneOf<Success, DomainError, UpdateConcurrencyError>> SaveChangesAsync(CancellationToken cancellationToken = default)
+    public async Task<SaveChangesResult> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         if (!_domainContext.IsValid)
         {

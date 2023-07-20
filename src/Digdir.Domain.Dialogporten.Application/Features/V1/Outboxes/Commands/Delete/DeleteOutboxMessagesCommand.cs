@@ -7,12 +7,15 @@ using OneOf.Types;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.Outboxes.Commands.Delete;
 
-public class DeleteOutboxMessagesCommand : IRequest<OneOf<Success, EntityNotFound>>
+public class DeleteOutboxMessagesCommand : IRequest<DeleteOutboxMessagesResult>
 {
     public required Guid EventId { get; init; }
 }
 
-internal sealed class DeleteOutboxMessagesCommandHandler : IRequestHandler<DeleteOutboxMessagesCommand, OneOf<Success, EntityNotFound>>
+[GenerateOneOf]
+public partial class DeleteOutboxMessagesResult : OneOfBase<Success, EntityNotFound> { }
+
+internal sealed class DeleteOutboxMessagesCommandHandler : IRequestHandler<DeleteOutboxMessagesCommand, DeleteOutboxMessagesResult>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IDialogDbContext _db;
@@ -23,7 +26,7 @@ internal sealed class DeleteOutboxMessagesCommandHandler : IRequestHandler<Delet
         _db = db ?? throw new ArgumentNullException(nameof(db));
     }
 
-    public async Task<OneOf<Success, EntityNotFound>> Handle(DeleteOutboxMessagesCommand request, CancellationToken cancellationToken)
+    public async Task<DeleteOutboxMessagesResult> Handle(DeleteOutboxMessagesCommand request, CancellationToken cancellationToken)
     {
         var outboxMessage = await _db.OutboxMessages.FindAsync(request.EventId, cancellationToken);
 

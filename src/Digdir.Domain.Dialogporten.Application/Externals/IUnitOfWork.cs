@@ -7,5 +7,8 @@ namespace Digdir.Domain.Dialogporten.Application.Externals;
 public interface IUnitOfWork
 {
     IUnitOfWork WithoutAuditableSideEffects();
-    Task<OneOf<Success, DomainError, UpdateConcurrencyError>> SaveChangesAsync(CancellationToken cancellationToken = default);
+    Task<SaveChangesResult> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
+
+[GenerateOneOf]
+public partial class SaveChangesResult : OneOfBase<Success, DomainError, UpdateConcurrencyError> { }

@@ -10,9 +10,12 @@ using OneOf;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Queries.EndUser.List;
 
-public sealed class ListDialogQuery : DefaultPaginationParameter, IRequest<OneOf<PaginatedList<ListDialogDto>, ValidationError>> { }
+public sealed class ListDialogQuery : DefaultPaginationParameter, IRequest<ListDialogResult> { }
 
-internal sealed class ListDialogQueryHandler : IRequestHandler<ListDialogQuery, OneOf<PaginatedList<ListDialogDto>, ValidationError>>
+[GenerateOneOf]
+public partial class ListDialogResult : OneOfBase<PaginatedList<ListDialogDto>, ValidationError> { }
+
+internal sealed class ListDialogQueryHandler : IRequestHandler<ListDialogQuery, ListDialogResult>
 {
     private readonly IDialogDbContext _db;
     private readonly IMapper _mapper;
@@ -25,7 +28,7 @@ internal sealed class ListDialogQueryHandler : IRequestHandler<ListDialogQuery, 
         _clock = clock ?? throw new ArgumentNullException(nameof(clock));
     }
 
-    public async Task<OneOf<PaginatedList<ListDialogDto>, ValidationError>> Handle(ListDialogQuery request, CancellationToken cancellationToken)
+    public async Task<ListDialogResult> Handle(ListDialogQuery request, CancellationToken cancellationToken)
     {
         return await _db.Dialogs
             .Where(x => !x.VisibleFrom.HasValue || _clock.UtcNowOffset < x.VisibleFrom)

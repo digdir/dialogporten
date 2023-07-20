@@ -9,13 +9,16 @@ using OneOf.Types;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Commands.Delete;
 
-public sealed class DeleteDialogCommand : IRequest<OneOf<Success, EntityNotFound, UpdateConcurrencyError>>
+public sealed class DeleteDialogCommand : IRequest<DeleteDialogResult>
 {
     public Guid Id { get; set; }
     public Guid? ETag { get; set; }
 }
 
-internal sealed class DeleteDialogCommandHandler : IRequestHandler<DeleteDialogCommand, OneOf<Success, EntityNotFound, UpdateConcurrencyError>>
+[GenerateOneOf]
+public partial class DeleteDialogResult : OneOfBase<Success, EntityNotFound, UpdateConcurrencyError> { }
+
+internal sealed class DeleteDialogCommandHandler : IRequestHandler<DeleteDialogCommand, DeleteDialogResult>
 {
     private readonly IDialogDbContext _db;
     private readonly IUnitOfWork _unitOfWork;
@@ -28,7 +31,7 @@ internal sealed class DeleteDialogCommandHandler : IRequestHandler<DeleteDialogC
         _eventPublisher = eventPublisher ?? throw new ArgumentNullException(nameof(eventPublisher));
     }
 
-    public async Task<OneOf<Success, EntityNotFound, UpdateConcurrencyError>> Handle(DeleteDialogCommand request, CancellationToken cancellationToken)
+    public async Task<DeleteDialogResult> Handle(DeleteDialogCommand request, CancellationToken cancellationToken)
     {
         var dialog = await _db.Dialogs
             .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
@@ -49,7 +52,7 @@ internal sealed class DeleteDialogCommandHandler : IRequestHandler<DeleteDialogC
                 dialog.Party));
 
         var saveResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
-        return saveResult.Match<OneOf<Success, EntityNotFound, UpdateConcurrencyError>>(
+        return saveResult.Match<DeleteDialogResult>(
             success => success,
             domainError => throw new ApplicationException("Should never get a domain error when creating a new dialog"),
             concurrencyError => concurrencyError);

@@ -13,9 +13,12 @@ using OneOf;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Commands.Create;
 
-public sealed class CreateDialogCommand : CreateDialogDto, IRequest<OneOf<Guid, DomainError, ValidationError>> { }
+public sealed class CreateDialogCommand : CreateDialogDto, IRequest<CreateDialogResult> { }
 
-internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogCommand, OneOf<Guid, DomainError, ValidationError>>
+[GenerateOneOf]
+public partial class CreateDialogResult : OneOfBase<Guid, DomainError, ValidationError> { }
+
+internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogCommand, CreateDialogResult>
 {
     private readonly IDialogDbContext _db;
     private readonly IMapper _mapper;
@@ -37,7 +40,7 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
         _domainContext = domainContext ?? throw new ArgumentNullException(nameof(domainContext));
     }
 
-    public async Task<OneOf<Guid, DomainError, ValidationError>> Handle(CreateDialogCommand request, CancellationToken cancellationToken)
+    public async Task<CreateDialogResult> Handle(CreateDialogCommand request, CancellationToken cancellationToken)
     {
         var dialog = _mapper.Map<DialogEntity>(request);
 
@@ -64,7 +67,7 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
         _eventPublisher.Publish(dialog.Activities.Select(x => new DialogActivityCreatedDomainEvent(dialog.Id, x.CreateId())));
 
         var saveResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
-        return saveResult.Match<OneOf<Guid, DomainError, ValidationError>>(
+        return saveResult.Match<CreateDialogResult>(
             success => dialog.Id,
             domainError => domainError,
             concurrencyError => throw new ApplicationException("Should never get a concurrency error when creating a new dialog"));

@@ -18,14 +18,17 @@ using OneOf.Types;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Commands.Update;
 
-public sealed class UpdateDialogCommand : IRequest<OneOf<Success, EntityNotFound, ValidationError, DomainError, UpdateConcurrencyError>>
+public sealed class UpdateDialogCommand : IRequest<UpdateDialogResult>
 {
     public Guid Id { get; set; }
     public UpdateDialogDto Dto { get; set; } = null!;
     public Guid? ETag { get; set; }
 }
 
-internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogCommand, OneOf<Success, EntityNotFound, ValidationError, DomainError, UpdateConcurrencyError>>
+[GenerateOneOf]
+public partial class UpdateDialogResult : OneOfBase<Success, EntityNotFound, ValidationError, DomainError, UpdateConcurrencyError> { }
+
+internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogCommand, UpdateDialogResult>
 {
     private readonly IDialogDbContext _db;
     private readonly IMapper _mapper;
@@ -50,7 +53,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         _domainContext = domainContext ?? throw new ArgumentNullException(nameof(domainContext));
     }
 
-    public async Task<OneOf<Success, EntityNotFound, ValidationError, DomainError, UpdateConcurrencyError>> Handle(UpdateDialogCommand request, CancellationToken cancellationToken)
+    public async Task<UpdateDialogResult> Handle(UpdateDialogCommand request, CancellationToken cancellationToken)
     {
         var dialog = await _db.Dialogs
             .Include(x => x.Body.Localizations)
@@ -114,7 +117,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         _eventPublisher.Publish(new DialogUpdatedDomainEvent(dialog.Id));
 
         var saveResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
-        return saveResult.Match<OneOf<Success, EntityNotFound, ValidationError, DomainError, UpdateConcurrencyError>>(
+        return saveResult.Match<UpdateDialogResult>(
             success => success,
             domainError => domainError,
             concurrencyError => concurrencyError);

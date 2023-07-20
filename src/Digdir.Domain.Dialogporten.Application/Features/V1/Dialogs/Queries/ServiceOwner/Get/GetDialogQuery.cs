@@ -9,12 +9,15 @@ using OneOf;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Queries.ServiceOwner.Get;
 
-public sealed class GetDialogQuery : IRequest<OneOf<GetDialogDto, EntityNotFound>>
+public sealed class GetDialogQuery : IRequest<GetDialogResult>
 {
     public Guid Id { get; set; }
 }
 
-internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, OneOf<GetDialogDto, EntityNotFound>>
+[GenerateOneOf]
+public partial class GetDialogResult : OneOfBase<GetDialogDto, EntityNotFound> { }
+
+internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, GetDialogResult>
 {
     private readonly IDialogDbContext _db;
     private readonly IMapper _mapper;
@@ -25,7 +28,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, On
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
-    public async Task<OneOf<GetDialogDto, EntityNotFound>> Handle(GetDialogQuery request, CancellationToken cancellationToken)
+    public async Task<GetDialogResult> Handle(GetDialogQuery request, CancellationToken cancellationToken)
     {
         // This query could be written without all the includes as ProjctTo will do the job for us.
         // However, we need to guarantee an order for sub resources of the dialog aggragate.
