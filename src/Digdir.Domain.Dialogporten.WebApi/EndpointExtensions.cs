@@ -20,6 +20,12 @@ public static class EndpointExtensions
             StatusCodes.Status404NotFound, 
             cancellation: cancellationToken);
 
+    public static Task GoneAsync(this IEndpoint ep, EntityDeleted deleted, CancellationToken cancellationToken = default)
+        => ep.HttpContext.Response.SendErrorsAsync(
+            deleted.ToValidationResults(),
+            StatusCodes.Status410Gone,
+            cancellation: cancellationToken);
+
     public static Task UnprocessableEntityAsync(this IEndpoint ep, DomainError domainError, CancellationToken cancellationToken = default)
         => ep.HttpContext.Response.SendErrorsAsync(
             domainError.ToValidationResults(),

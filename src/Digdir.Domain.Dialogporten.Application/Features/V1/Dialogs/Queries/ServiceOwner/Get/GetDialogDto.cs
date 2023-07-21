@@ -15,6 +15,8 @@ public sealed class GetDialogDto
     public Uri ServiceResource { get; set; } = null!;
     public string Party { get; set; } = null!;
     public string? ExtendedStatus { get; set; }
+    public bool Deleted { get; set; }
+    public DateTimeOffset? DeletedAt { get; set; }
     public DateTimeOffset? VisibleFrom { get; set; }
     public DateTimeOffset? DueAt { get; set; }
     public DateTimeOffset? ExpiresAt { get; set; }

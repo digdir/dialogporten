@@ -19,7 +19,7 @@ internal static class ErrorResponseBuilderExtensions
             StatusCodes.Status400BadRequest => new ValidationProblemDetails(errors)
             {
                 Title = "One or more validation errors occurred.",
-                Type = "https://tools.ietf.org/html/rfc7231#section-6.5.1",
+                Type = "https://datatracker.ietf.org/doc/html/rfc7231#section-6.5.1",
                 Status = statusCode,
                 Instance = ctx.Request.Path,
                 Extensions = { { "traceId", Activity.Current?.Id ?? ctx.TraceIdentifier } },
@@ -27,7 +27,15 @@ internal static class ErrorResponseBuilderExtensions
             StatusCodes.Status404NotFound => new ValidationProblemDetails(errors)
             {
                 Title = "Reource not found.",
-                Type = "https://tools.ietf.org/html/rfc7231#section-6.5.4",
+                Type = "https://datatracker.ietf.org/doc/html/rfc7231#section-6.5.4",
+                Status = statusCode,
+                Instance = ctx.Request.Path,
+                Extensions = { { "traceId", Activity.Current?.Id ?? ctx.TraceIdentifier } },
+            },
+            StatusCodes.Status410Gone => new ValidationProblemDetails(errors)
+            {
+                Title = "Reource no longer available.",
+                Type = "https://datatracker.ietf.org/doc/html/rfc7231#section-6.5.9",
                 Status = statusCode,
                 Instance = ctx.Request.Path,
                 Extensions = { { "traceId", Activity.Current?.Id ?? ctx.TraceIdentifier } },
@@ -52,7 +60,7 @@ internal static class ErrorResponseBuilderExtensions
             {
                 Title = "An error occurred while processing the request.",
                 Detail = "Something went wrong during the request.",
-                Type = "https://tools.ietf.org/html/rfc7231#section-6.6.1",
+                Type = "https://datatracker.ietf.org/doc/html/rfc7231#section-6.6.1",
                 Status = ctx.Response.StatusCode,
                 Instance = ctx.Request.Path,
                 Extensions = { { "traceId", Activity.Current?.Id ?? ctx.TraceIdentifier } }
