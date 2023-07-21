@@ -93,10 +93,6 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
         var modifiableDialog = await _db.Dialogs.FindAsync(new object[] { dialogId }, cancellationToken: cancellationToken);
         _eventPublisher.Publish(new DialogReadDomainEvent(dialogId));
         modifiableDialog!.ReadAt = _transactionTime.Value;
-        await _unitOfWork
-            .WithoutAuditableSideEffects()
-            .SaveChangesAsync(cancellationToken);
-
         var saveResult = await _unitOfWork
             .WithoutAuditableSideEffects()
             .SaveChangesAsync(cancellationToken);
@@ -104,7 +100,6 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
             success => { },
             domainError => throw new ApplicationException("Should not get domain error when updating ReadAt."),
             concurrencyError => throw new ApplicationException("Should not get concurrencyError when updating ReadAt."));
-
         return modifiableDialog.ReadAt;
     }
 }
