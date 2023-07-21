@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using AutoMapper.QueryableExtensions;
 using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
@@ -17,7 +16,7 @@ public sealed class GetDialogQuery : IRequest<GetDialogResult>
 }
 
 [GenerateOneOf]
-public partial class GetDialogResult : OneOfBase<GetDialogDto, EntityNotFound> { }
+public partial class GetDialogResult : OneOfBase<GetDialogDto, EntityNotFound, EntityDeleted> { }
 
 internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, GetDialogResult>
 {
@@ -63,9 +62,10 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
                 .ThenInclude(x => x.Title.Localizations.OrderBy(x => x.CreatedAt).ThenBy(x => x.CultureCode))
             .Include(x => x.ApiActions.OrderBy(x => x.CreatedAt).ThenBy(x => x.Id))
                 .ThenInclude(x => x.Endpoints.OrderBy(x => x.CreatedAt).ThenBy(x => x.Id))
-            .Where(x => !x.VisibleFrom.HasValue || _clock.UtcNowOffset < x.VisibleFrom)
+            .Where(x => !x.VisibleFrom.HasValue || x.VisibleFrom < _clock.UtcNowOffset)
+            .IgnoreQueryFilters()
             .AsNoTracking()
-            .ProjectTo<GetDialogDto>(_mapper.ConfigurationProvider)
+            //.ProjectTo<GetDialogDto>(_mapper.ConfigurationProvider)
             .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
 
         if (dialog is null)
@@ -73,12 +73,19 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
             return new EntityNotFound<DialogEntity>(request.Id);
         }
 
+        if (dialog.Deleted)
+        {
+            return new EntityDeleted<DialogEntity>(request.Id);
+        }
+
         if ((dialog.ReadAt ?? DateTimeOffset.MinValue) < dialog.UpdatedAt)
         {
             dialog.ReadAt = await UpdateReadAt(request.Id, cancellationToken);
         }
 
-        return dialog;
+        var dto = _mapper.Map<GetDialogDto>(dialog);
+
+        return dto;
     }
 
     private async Task<DateTimeOffset?> UpdateReadAt(Guid dialogId, CancellationToken cancellationToken)
