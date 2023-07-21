@@ -15,6 +15,7 @@ using Digdir.Library.Entity.Abstractions.Features.Updatable;
 using Digdir.Library.Entity.EntityFrameworkCore.Features.Immutable;
 using Digdir.Library.Entity.EntityFrameworkCore.Features.Versionable;
 using Digdir.Library.Entity.Abstractions.Features.Versionable;
+using Digdir.Library.Entity.Abstractions.Features.Hierarchy;
 
 namespace Digdir.Library.Entity.EntityFrameworkCore;
 
@@ -33,6 +34,7 @@ public static class EntityLibraryEfCoreExtensions
     ///     <item><see cref="ISoftDeletableEntity"/></item>
     ///     <item><see cref="IIdentifiableEntity"/></item>
     ///     <item><see cref="IVersionableEntity"/></item>
+    ///     <item><see cref="ISubEntity"/></item>
     /// </list>
     /// </summary>
     /// <remarks>
@@ -48,6 +50,7 @@ public static class EntityLibraryEfCoreExtensions
             .HandleIdentifiableEntities()
             .HandleImmutableEntities()
             .HandleVersionableEntities()
+            .HandleSubEntities(utcNow)
             .HandleCreatableEntities(utcNow)
             .HandleUpdatableEntities(utcNow)
             .HandleSoftDeletableEntities(utcNow);
@@ -63,6 +66,7 @@ public static class EntityLibraryEfCoreExtensions
     ///     <item><see cref="ISoftDeletableEntity"/></item>
     ///     <item><see cref="IIdentifiableEntity"/></item>
     ///     <item><see cref="IVersionableEntity"/></item>
+    ///     <item><see cref="ISubEntity"/></item>
     /// </list>
     /// </summary>
     /// <param name="modelBuilder">The model builder.</param>
@@ -74,6 +78,7 @@ public static class EntityLibraryEfCoreExtensions
             .AddIdentifiableEntities()
             .AddImmutableEntities()
             .AddVersionableEntities()
+            .AddSubEntities()
             .AddUpdatableEntities()
             .AddCreatableEntities()
             .AddLookupEntities();

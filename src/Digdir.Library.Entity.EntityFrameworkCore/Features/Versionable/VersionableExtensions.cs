@@ -19,13 +19,7 @@ internal static class VersionableExtensions
         var hasChanges = changeTracker.HasChanges();
         foreach (var entry in changeTracker
             .Entries<IVersionableEntity>()
-            .Where(x =>
-                x.State is EntityState.Added or EntityState.Modified ||
-                // TODO: This is a dangrous assumption - should maybe be handled in a different way.
-                // Assume that sub entities of the unchanged aggregates/versinable
-                // entities are modified when the database has changes.
-                x.State is EntityState.Unchanged && hasChanges
-            ))
+            .Where(x => x.State is EntityState.Added or EntityState.Modified))
         {
             var etagProp = entry.Property(x => x.ETag);
             if (etagProp.OriginalValue == etagProp.CurrentValue)

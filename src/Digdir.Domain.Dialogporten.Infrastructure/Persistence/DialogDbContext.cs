@@ -36,7 +36,9 @@ internal sealed class DialogDbContext : DbContext, IDialogDbContext
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
     public DbSet<OutboxMessageConsumer> OutboxMessageConsumers => Set<OutboxMessageConsumer>();
 
-    public bool TrySetOriginalETag<TEntity>(TEntity entity, Guid? etag)
+    public bool TrySetOriginalETag<TEntity>(
+        TEntity entity, 
+        Guid? etag)
         where TEntity : class, IVersionableEntity
     {
         if (entity is null || !etag.HasValue)

@@ -3,7 +3,7 @@
 /// <summary>
 /// Abstraction implemented by entities that can be soft deleted during the application lifetime.
 /// </summary>
-public interface ISoftDeletableEntity
+public interface ISoftDeletableEntity : IEntityBase
 {
     /// <summary>
     /// Indicating wether or not the entity is to be permanently deleted. 

@@ -1,9 +1,11 @@
 ﻿using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements;
 using Digdir.Library.Entity.Abstractions;
+using Digdir.Library.Entity.Abstractions.Features;
+using Digdir.Library.Entity.Abstractions.Features.Hierarchy;
 
 namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 
-public class DialogApiAction : IEntity
+public class DialogApiAction : IEntity, ISubEntity
 {
     public Guid Id { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
@@ -11,6 +13,8 @@ public class DialogApiAction : IEntity
 
     public string Action { get; set; } = null!;
     public string? AuthorizationAttribute { get; set; }
+
+    public IEntityBase Parent => Dialog;
 
     // === Dependent relationships ===
     public Guid DialogId { get; set; }

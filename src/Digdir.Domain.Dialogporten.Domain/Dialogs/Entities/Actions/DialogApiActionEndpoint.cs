@@ -1,9 +1,11 @@
 ﻿using Digdir.Domain.Dialogporten.Domain.Http;
 using Digdir.Library.Entity.Abstractions;
+using Digdir.Library.Entity.Abstractions.Features;
+using Digdir.Library.Entity.Abstractions.Features.Hierarchy;
 
 namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 
-public class DialogApiActionEndpoint : IEntity
+public class DialogApiActionEndpoint : IEntity, ISubEntity
 {
     public Guid Id { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
@@ -17,11 +19,12 @@ public class DialogApiActionEndpoint : IEntity
     public bool Deprecated { get; set; }
     public DateTimeOffset? SunsetAt { get; set; }
 
+    public IEntityBase Parent => Action;
+
     // === Dependent relationships ===
     public HttpVerb.Enum HttpMethodId { get; set; }
     public HttpVerb HttpMethod { get; set; } = null!;
 
     public Guid ActionId { get; set; }
     public DialogApiAction Action { get; set; } = null!;
-
 }

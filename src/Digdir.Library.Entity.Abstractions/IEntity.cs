@@ -1,4 +1,5 @@
-﻿using Digdir.Library.Entity.Abstractions.Features.Creatable;
+﻿using Digdir.Library.Entity.Abstractions.Features;
+using Digdir.Library.Entity.Abstractions.Features.Creatable;
 using Digdir.Library.Entity.Abstractions.Features.Identifiable;
 using Digdir.Library.Entity.Abstractions.Features.Updatable;
 
@@ -13,5 +14,6 @@ namespace Digdir.Library.Entity.Abstractions;
 public interface IEntity :
     IIdentifiableEntity,
     ICreatableEntity,
-    IUpdateableEntity
+    IUpdateableEntity,
+    IEntityBase
 { }

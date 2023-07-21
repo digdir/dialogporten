@@ -1,9 +1,11 @@
 ﻿using Digdir.Domain.Dialogporten.Domain.Localizations;
 using Digdir.Library.Entity.Abstractions;
+using Digdir.Library.Entity.Abstractions.Features;
+using Digdir.Library.Entity.Abstractions.Features.Hierarchy;
 
 namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 
-public class DialogGuiAction : IEntity
+public class DialogGuiAction : IEntity, ISubEntity
 {
     public Guid Id { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
@@ -14,6 +16,8 @@ public class DialogGuiAction : IEntity
     public string? AuthorizationAttribute { get; set; }
     public bool IsBackChannel { get; set; }
     public bool IsDeleteAction { get; set; }
+
+    public IEntityBase Parent => Dialog;
 
     // === Dependent relationships ===
     public DialogGuiActionPriority.Enum PriorityId { get; set; }
