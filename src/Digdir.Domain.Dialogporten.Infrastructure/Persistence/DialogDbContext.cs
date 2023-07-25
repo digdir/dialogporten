@@ -4,9 +4,7 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements;
-using Digdir.Domain.Dialogporten.Domain.Localizations;
 using Digdir.Domain.Dialogporten.Domain.Outboxes;
-using Digdir.Domain.Dialogporten.Infrastructure.Persistence.Configurations.Localizations;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence.ValueConverters;
 using Digdir.Library.Entity.Abstractions.Features.Identifiable;
 using Digdir.Library.Entity.Abstractions.Features.Versionable;
@@ -21,8 +19,6 @@ internal sealed class DialogDbContext : DbContext, IDialogDbContext
     public DialogDbContext(DbContextOptions<DialogDbContext> options) : base(options) { }
 
     public DbSet<DialogEntity> Dialogs => Set<DialogEntity>();
-    public DbSet<Localization> Localizations => Set<Localization>();
-    public DbSet<LocalizationSet> LocalizationSets => Set<LocalizationSet>();
     public DbSet<DialogStatus> DialogStatuses => Set<DialogStatus>();
     public DbSet<DialogActivity> DialogActivities => Set<DialogActivity>();
     public DbSet<DialogApiAction> DialogApiActions => Set<DialogApiAction>();
@@ -95,7 +91,6 @@ internal sealed class DialogDbContext : DbContext, IDialogDbContext
         modelBuilder.RemovePluralizingTableNameConvention()
             .SetCrossCuttingTimeSpanToStringConverter()
             .AddAuditableEntities()
-            .ApplyLocalizationSetRestrictDeleteBehaviour()
             .ApplyConfigurationsFromAssembly(typeof(DialogDbContext).Assembly);
     }
 }

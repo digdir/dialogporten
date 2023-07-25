@@ -19,11 +19,9 @@ public class DialogActivity : IImmutableEntity, ISubEntity
     public DialogActivityType.Enum TypeId { get; set; }
     public DialogActivityType Type { get; set; } = null!;
 
-    public Guid DescriptionId { get; set; }
-    public LocalizationSet Description { get; set; } = null!;
+    public DialogActivityDescription? Description { get; set; }
 
-    public Guid PerformedById { get; set; }
-    public LocalizationSet PerformedBy { get; set; } = null!;
+    public DialogActivityPerformedBy? PerformedBy { get; set; }
 
     public Guid DialogId { get; set; }
     public DialogEntity Dialog { get; set; } = null!;
@@ -36,4 +34,16 @@ public class DialogActivity : IImmutableEntity, ISubEntity
 
     // === Principal relationships ===
     public List<DialogActivity> RelatedActivities { get; set; } = new();
+}
+
+public class DialogActivityDescription : LocalizationSet
+{
+    public Guid ActivityId { get; set; }
+    public DialogActivity Activity { get; set; } = null!;
+}
+
+public class DialogActivityPerformedBy : LocalizationSet
+{
+    public Guid ActivityId { get; set; }
+    public DialogActivity Activity { get; set; } = null!;
 }

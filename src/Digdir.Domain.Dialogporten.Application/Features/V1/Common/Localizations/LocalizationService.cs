@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
-using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Domain.Localizations;
 using System.Globalization;
 
@@ -9,17 +8,17 @@ namespace Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localization
 internal sealed class LocalizationService : ILocalizationService
 {
     private readonly IMapper _mapper;
-    private readonly IDialogDbContext _db;
 
-    public LocalizationService(IMapper mapper, IDialogDbContext db)
+    public LocalizationService(IMapper mapper)
     {
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-        _db = db ?? throw new ArgumentNullException(nameof(db));
     }
 
-    public async Task Merge(LocalizationSet set, List<LocalizationDto> dtos, CancellationToken cancellationToken = default)
+    public async Task<TLocalizationSet?> Merge<TLocalizationSet>(TLocalizationSet? set, List<LocalizationDto> dtos, CancellationToken cancellationToken = default)
+        where TLocalizationSet : LocalizationSet, new()
     {
-        set.Localizations = await set.Localizations.MergeAsync(
+        set ??= new TLocalizationSet();
+        await set.Localizations.MergeAsync(
             sources: dtos,
             destinationKeySelector: x => x.CultureCode.ToLower(CultureInfo.InvariantCulture),
             sourceKeySelector: x => x.CultureCode.ToLower(CultureInfo.InvariantCulture),
@@ -27,6 +26,13 @@ internal sealed class LocalizationService : ILocalizationService
             update: UpdateLocalization,
             delete: DeleteLocalization,
             cancellationToken: cancellationToken);
+
+        if (set.Localizations.Count == 0)
+        {
+            return null;
+        }
+
+        return set;
     }
 
     private Task<IEnumerable<Localization>> CreateLocalization(IEnumerable<LocalizationDto> creatables, CancellationToken cancellationToken)
@@ -37,9 +43,9 @@ internal sealed class LocalizationService : ILocalizationService
 
     private Task UpdateLocalization(IEnumerable<IUpdateSet<Localization, LocalizationDto>> updateSets, CancellationToken cancellationToken)
     {
-        foreach (var updateSet in updateSets)
+        foreach (var (source, destination) in updateSets)
         {
-            _mapper.Map(updateSet.Source, updateSet.Destination);
+            _mapper.Map(source, destination);
         }
 
         return Task.CompletedTask;
@@ -47,7 +53,6 @@ internal sealed class LocalizationService : ILocalizationService
 
     private Task DeleteLocalization(IEnumerable<Localization> deletables, CancellationToken cancellationToken)
     {
-        _db.Localizations.RemoveRange(deletables);
         return Task.CompletedTask;
     }
 }

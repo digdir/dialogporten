@@ -91,7 +91,11 @@ public static class EntityLibraryEfCoreExtensions
     /// <returns>The same builder instance so that multiple calls can be chained.</returns>
     public static ModelBuilder RemovePluralizingTableNameConvention(this ModelBuilder modelBuilder)
     {
-        foreach (var entity in modelBuilder.Model.GetEntityTypes())
+        var entities = modelBuilder.Model
+            .GetEntityTypes()
+            .Where(x => x.BaseType is null);
+
+        foreach (var entity in entities)
         {
             entity.SetTableName(entity.DisplayName());
         }
@@ -142,7 +146,7 @@ public static class EntityLibraryEfCoreExtensions
     {
         var entities = modelBuilder.Model
             .GetEntityTypes()
-            .Where(x => type.IsAssignableFrom(x.ClrType));
+            .Where(x => x.BaseType is null && type.IsAssignableFrom(x.ClrType));
 
         foreach (var entity in entities)
         {

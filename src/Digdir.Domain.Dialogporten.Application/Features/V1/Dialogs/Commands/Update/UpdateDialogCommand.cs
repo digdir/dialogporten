@@ -9,7 +9,6 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Events;
-using Digdir.Domain.Dialogporten.Domain.Localizations;
 using Digdir.Library.Entity.Abstractions.Features.Identifiable;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -56,16 +55,16 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
     public async Task<UpdateDialogResult> Handle(UpdateDialogCommand request, CancellationToken cancellationToken)
     {
         var dialog = await _db.Dialogs
-            .Include(x => x.Body.Localizations)
-            .Include(x => x.Title.Localizations)
-            .Include(x => x.SenderName.Localizations)
-            .Include(x => x.SearchTitle.Localizations)
+            .Include(x => x.Body!.Localizations)
+            .Include(x => x.Title!.Localizations)
+            .Include(x => x.SenderName!.Localizations)
+            .Include(x => x.SearchTitle!.Localizations)
             .Include(x => x.Elements)
-                .ThenInclude(x => x.DisplayName.Localizations)
+                .ThenInclude(x => x.DisplayName!.Localizations)
             .Include(x => x.Elements)
                 .ThenInclude(x => x.Urls)
             .Include(x => x.GuiActions)
-                .ThenInclude(x => x.Title.Localizations)
+                .ThenInclude(x => x.Title!.Localizations)
             .Include(x => x.ApiActions)
                 .ThenInclude(x => x.Endpoints)
             .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
@@ -82,36 +81,36 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         ValidateTimeFields(dialog);
         await AppendActivity(dialog, request.Dto, cancellationToken);
 
-        await _localizationService.Merge(dialog.Body, request.Dto.Body, cancellationToken);
-        await _localizationService.Merge(dialog.Title, request.Dto.Title, cancellationToken);
-        await _localizationService.Merge(dialog.SenderName, request.Dto.SenderName, cancellationToken);
-        await _localizationService.Merge(dialog.SearchTitle, request.Dto.SearchTitle, cancellationToken);
+        dialog.Body = await _localizationService.Merge(dialog.Body, request.Dto.Body, cancellationToken);
+        dialog.Title = await _localizationService.Merge(dialog.Title, request.Dto.Title, cancellationToken);
+        dialog.SenderName = await _localizationService.Merge(dialog.SenderName, request.Dto.SenderName, cancellationToken);
+        dialog.SearchTitle = await _localizationService.Merge(dialog.SearchTitle, request.Dto.SearchTitle, cancellationToken);
 
-        dialog.Elements = await dialog.Elements
+        await dialog.Elements
             .MergeAsync(request.Dto.Elements,
                 destinationKeySelector: x => x.Id,
                 sourceKeySelector: x => x.Id,
                 create: CreateElements,
                 update: UpdateElements,
-                delete: DeleteElements,
+                delete: DeletesDelegade.NoOp,
                 cancellationToken: cancellationToken);
 
-        dialog.GuiActions = await dialog.GuiActions
+        await dialog.GuiActions
             .MergeAsync(request.Dto.GuiActions,
                 destinationKeySelector: x => x.Id,
                 sourceKeySelector: x => x.Id,
                 create: CreateGuiActions,
                 update: UpdateGuiActions,
-                delete: DeleteGuiActions,
+                delete: DeletesDelegade.NoOp,
                 cancellationToken: cancellationToken);
 
-        dialog.ApiActions = await dialog.ApiActions
+        await dialog.ApiActions
             .MergeAsync(request.Dto.ApiActions,
                 destinationKeySelector: x => x.Id,
                 sourceKeySelector: x => x.Id,
                 create: CreateApiActions,
                 update: UpdateApiActions,
-                delete: DeleteApiActions,
+                delete: DeletesDelegade.NoOp,
                 cancellationToken: cancellationToken);
 
         _eventPublisher.Publish(new DialogUpdatedDomainEvent(dialog.Id));
@@ -151,14 +150,11 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
 
     private async Task AppendActivity(DialogEntity dialog, UpdateDialogDto dto, CancellationToken cancellationToken)
     {
-        var newDialogActivities = dto.Activities
-            .Select(_mapper.Map<DialogActivity>)
-            .ToList();
+        var newDialogActivities = _mapper.Map<List<DialogActivity>>(dto.Activities);
 
         var existingIds = await _db.GetExistingIds(newDialogActivities, cancellationToken);
         if (existingIds.Any())
         {
-            // TODO: Should this be a EntityExists?
             _domainContext.AddError(nameof(UpdateDialogDto.Activities), $"Entity '{nameof(DialogActivity)}' with the following key(s) allready exists: ({string.Join(", ", existingIds)}).");
         }
 
@@ -184,30 +180,25 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
 
     private async Task UpdateApiActions(IEnumerable<IUpdateSet<DialogApiAction, UpdateDialogDialogApiActionDto>> updateSets, CancellationToken cancellationToken)
     {
-        foreach (var updateSet in updateSets)
+        foreach (var (source, destination) in updateSets)
         {
-            _mapper.Map(updateSet.Source, updateSet.Destination);
+            _mapper.Map(source, destination);
 
-            updateSet.Destination.Endpoints = await updateSet.Destination.Endpoints
-                .MergeAsync(updateSet.Source.Endpoints,
+            await destination.Endpoints
+                .MergeAsync(source.Endpoints,
                     destinationKeySelector: x => x.Id,
                     sourceKeySelector: x => x.Id,
                     create: CreateApiActionEndpoints,
                     update: UpdateApiActionEndpoints,
-                    delete: DeleteApiActionEndpoints,
+                    delete: DeletesDelegade.NoOp,
                     cancellationToken: cancellationToken);
         }
     }
 
-    private Task DeleteApiActions(IEnumerable<DialogApiAction> deletables, CancellationToken cancellationToken)
-    {
-        _db.DialogApiActions.RemoveRange(deletables);
-        return Task.CompletedTask;
-    }
-
     private Task<IEnumerable<DialogApiActionEndpoint>> CreateApiActionEndpoints(IEnumerable<UpdateDialogDialogApiActionEndpointDto> creatables, CancellationToken cancellationToken)
     {
-        return Task.FromResult(creatables.Select(_mapper.Map<DialogApiActionEndpoint>));
+        var endpoints = _mapper.Map<List<DialogApiActionEndpoint>>(creatables);
+        return Task.FromResult<IEnumerable<DialogApiActionEndpoint>>(endpoints);
     }
 
     private Task UpdateApiActionEndpoints(IEnumerable<IUpdateSet<DialogApiActionEndpoint, UpdateDialogDialogApiActionEndpointDto>> updateSets, CancellationToken cancellationToken)
@@ -219,37 +210,23 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         return Task.CompletedTask;
     }
 
-    private Task DeleteApiActionEndpoints(IEnumerable<DialogApiActionEndpoint> deletables, CancellationToken cancellationToken)
-    {
-        _db.DialogApiActionEndpoints.RemoveRange(deletables);
-        return Task.CompletedTask;
-    }
-
     private Task<IEnumerable<DialogGuiAction>> CreateGuiActions(IEnumerable<UpdateDialogDialogGuiActionDto> creatables, CancellationToken cancellationToken)
     {
         return Task.FromResult(creatables.Select(x =>
         {
             var guiAction = _mapper.Map<DialogGuiAction>(x);
-            guiAction.Title = _mapper.Map<LocalizationSet>(x.Title);
+            guiAction.Title = _mapper.Map<DialogGuiActionTitle>(x.Title);
             return guiAction;
         }));
     }
 
     private async Task UpdateGuiActions(IEnumerable<IUpdateSet<DialogGuiAction, UpdateDialogDialogGuiActionDto>> updateSets, CancellationToken cancellationToken)
     {
-        foreach (var updateSet in updateSets)
+        foreach (var (source, destination) in updateSets)
         {
-            _mapper.Map(updateSet.Source, updateSet.Destination);
-            await _localizationService.Merge(updateSet.Destination.Title, updateSet.Source.Title, cancellationToken);
+            _mapper.Map(source, destination);
+            destination.Title = await _localizationService.Merge(destination.Title, source.Title, cancellationToken);
         }
-    }
-
-    private Task DeleteGuiActions(IEnumerable<DialogGuiAction> deletables, CancellationToken cancellationToken)
-    {
-        deletables = deletables is List<DialogGuiAction> ? deletables : deletables.ToList();
-        _db.DialogGuiActions.RemoveRange(deletables);
-        _db.LocalizationSets.RemoveRange(deletables.Select(x => x.Title));
-        return Task.CompletedTask;
     }
 
     private async Task<IEnumerable<DialogElement>> CreateElements(IEnumerable<UpdateDialogDialogElementDto> creatables, CancellationToken cancellationToken)
@@ -258,7 +235,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         foreach (var elementDto in creatables)
         {
             var element = _mapper.Map<DialogElement>(elementDto);
-            element.DisplayName = _mapper.Map<LocalizationSet>(elementDto.DisplayName);
+            element.DisplayName = _mapper.Map<DialogElementDisplayName>(elementDto.DisplayName);
             element.Urls = (await CreateElementUrls(elementDto.Urls, cancellationToken)).ToList();
             elements.Add(element);
         }
@@ -266,7 +243,6 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         var existingIds = await _db.GetExistingIds(elements, cancellationToken);
         if (existingIds.Any())
         {
-            // TODO: Should this be a EntityExists?
             _domainContext.AddError(nameof(UpdateDialogDto.Elements), $"Entity '{nameof(DialogElement)}' with the following key(s) allready exists: ({string.Join(", ", existingIds)}).");
         }
 
@@ -279,45 +255,32 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         foreach (var updateSet in updateSets)
         {
             _mapper.Map(updateSet.Source, updateSet.Destination);
-            await _localizationService.Merge(updateSet.Destination.DisplayName, updateSet.Source.DisplayName, cancellationToken);
+            updateSet.Destination.DisplayName = await _localizationService.Merge(updateSet.Destination.DisplayName, updateSet.Source.DisplayName, cancellationToken);
 
-            updateSet.Destination.Urls = await updateSet.Destination.Urls
+            await updateSet.Destination.Urls
                 .MergeAsync(updateSet.Source.Urls,
                     destinationKeySelector: x => x.Id,
                     sourceKeySelector: x => x.Id,
                     create: CreateElementUrls,
                     update: UpdateElementUrls,
-                    delete: DeleteElementUrls,
+                    delete: DeletesDelegade.NoOp,
                     cancellationToken: cancellationToken);
         }
     }
 
-    private async Task DeleteElements(IEnumerable<DialogElement> deletables, CancellationToken cancellationToken)
-    {
-        deletables = deletables is List<DialogGuiAction> ? deletables : deletables.ToList();
-        _db.DialogElements.RemoveRange(deletables);
-        _db.LocalizationSets.RemoveRange(deletables.Select(x => x.DisplayName));
-        await DeleteElementUrls(deletables.SelectMany(x => x.Urls), cancellationToken);
-    }
-
     private Task<IEnumerable<DialogElementUrl>> CreateElementUrls(IEnumerable<UpdateDialogDialogElementUrlDto> creatables, CancellationToken cancellationToken)
     {
-        return Task.FromResult(creatables.Select(_mapper.Map<DialogElementUrl>));
+        var urls = _mapper.Map<List<DialogElementUrl>>(creatables);
+        return Task.FromResult<IEnumerable<DialogElementUrl>>(urls);
     }
 
     private Task UpdateElementUrls(IEnumerable<IUpdateSet<DialogElementUrl, UpdateDialogDialogElementUrlDto>> updateSets, CancellationToken cancellationToken)
     {
-        foreach (var updateSet in updateSets)
+        foreach (var (source, destination) in updateSets)
         {
-            _mapper.Map(updateSet.Source, updateSet.Destination);
+            _mapper.Map(source, destination);
         }
 
-        return Task.CompletedTask;
-    }
-
-    private Task DeleteElementUrls(IEnumerable<DialogElementUrl> deletables, CancellationToken cancellationToken)
-    {
-        _db.DialogElementUrls.RemoveRange(deletables);
         return Task.CompletedTask;
     }
 }

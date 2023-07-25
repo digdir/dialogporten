@@ -12,8 +12,5 @@ internal sealed class LocalizationConfiguration : IEntityTypeConfiguration<Local
         builder.Property(x => x.CultureCode).HasMaxLength(15);
         // TODO: Can value have smaller max length?
         builder.Property(x => x.Value).HasMaxLength(4095);
-        builder.HasOne(x => x.LocalizationSet)
-            .WithMany(x => x.Localizations)
-            .OnDelete(DeleteBehavior.Cascade);
     }
 }
