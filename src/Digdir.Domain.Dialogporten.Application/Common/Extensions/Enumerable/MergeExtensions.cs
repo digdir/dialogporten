@@ -33,20 +33,17 @@ internal static class MergeExtensions
         ArgumentNullException.ThrowIfNull(sourceKeySelector);
         ArgumentNullException.ThrowIfNull(destinationKeySelector);
         comparer ??= EqualityComparer<TKey>.Default;
+        var concreteSources = sources is List<TSource> lSource ? lSource : sources.ToList();
+        var updateSets = UpdateSet<TDestination, TSource>.Create(
+            destinations,
+            concreteSources,
+            destinationKeySelector,
+            sourceKeySelector,
+            comparer);
 
-        // Ensure concrete incoming enumerables
-        sources = sources is List<TSource> ? sources : sources.ToList();
-
-        // Assert no duplicate non default keys
-        sources.AssertNoDuplicateNonDefaultKeys(sourceKeySelector, comparer);
-        destinations.AssertNoDuplicateNonDefaultKeys(destinationKeySelector, comparer);
-
-        // Calculate merge lists
-        var updates = GetUpdateSets(destinations, sources, destinationKeySelector, sourceKeySelector, comparer);
-
-        Delete(destinations, delete, updates);
-        Update(update, updates);
-        Create(destinations, sources, create, updates);
+        Delete(destinations, delete, updateSets);
+        Update(update, updateSets);
+        Create(destinations, concreteSources, create, updateSets);
     }
 
     public static async Task MergeAsync<TDestination, TSource, TKey>(
@@ -65,27 +62,24 @@ internal static class MergeExtensions
         ArgumentNullException.ThrowIfNull(sourceKeySelector);
         ArgumentNullException.ThrowIfNull(destinationKeySelector);
         comparer ??= EqualityComparer<TKey>.Default;
+        var concreteSources = sources is List<TSource> lSource ? lSource : sources.ToList();
+        var updateSets = UpdateSet<TDestination, TSource>.Create(
+            destinations,
+            concreteSources,
+            destinationKeySelector,
+            sourceKeySelector,
+            comparer);
 
-        // Ensure concrete incoming enumerables
-        sources = sources is List<TSource> ? sources : sources.ToList();
-
-        // Assert no duplicate non default keys
-        sources.AssertNoDuplicateNonDefaultKeys(sourceKeySelector, comparer);
-        destinations.AssertNoDuplicateNonDefaultKeys(destinationKeySelector, comparer);
-
-        // Calculate merge lists
-        var updates = GetUpdateSets(destinations, sources, destinationKeySelector, sourceKeySelector, comparer);
-
-        await DeleteAsync(destinations, delete, updates, cancellationToken);
-        await UpdateAsync(update, updates, cancellationToken);
-        await CreateAsync(destinations, sources, create, updates, cancellationToken);
+        await DeleteAsync(destinations, delete, updateSets, cancellationToken);
+        await UpdateAsync(update, updateSets, cancellationToken);
+        await CreateAsync(destinations, concreteSources, create, updateSets, cancellationToken);
     }
 
     private static async Task CreateAsync<TDestination, TSource>(
         ICollection<TDestination> destinations,
         IEnumerable<TSource> sources,
         CreateAsyncDelegade<TDestination, TSource>? create,
-        List<UpdateSet<TDestination, TSource>> updates,
+        List<UpdateSet<TDestination, TSource>> updateSets,
         CancellationToken cancellationToken)
     {
         if (create is null)
@@ -94,7 +88,7 @@ internal static class MergeExtensions
         }
 
         var creates = sources
-            .Except(updates.Select(x => x.Source))
+            .Except(updateSets.Select(x => x.Source))
             .ToList();
 
         if (creates.Count == 0)
@@ -107,20 +101,20 @@ internal static class MergeExtensions
 
     private static async Task UpdateAsync<TDestination, TSource>(
         UpdateAsyncDelegade<TDestination, TSource>? update,
-        List<UpdateSet<TDestination, TSource>> updates,
+        List<UpdateSet<TDestination, TSource>> updateSets,
         CancellationToken cancellationToken)
     {
-        if (update is null || updates.Count == 0)
+        if (update is null || updateSets.Count == 0)
         {
             return;
         }
-        await update(updates, cancellationToken);
+        await update(updateSets, cancellationToken);
     }
 
     private static async Task DeleteAsync<TDestination, TSource>(
         ICollection<TDestination> destinations,
         DeleteAsyncDelegade<TDestination>? delete,
-        List<UpdateSet<TDestination, TSource>> updates,
+        List<UpdateSet<TDestination, TSource>> updateSets,
         CancellationToken cancellationToken)
     {
         if (delete is null)
@@ -129,7 +123,7 @@ internal static class MergeExtensions
         }
 
         var deleates = destinations
-            .Except(updates.Select(x => x.Destination))
+            .Except(updateSets.Select(x => x.Destination))
             .ToList();
 
         if (deleates.Count == 0)
@@ -148,7 +142,7 @@ internal static class MergeExtensions
         ICollection<TDestination> destinations,
         IEnumerable<TSource> sources,
         CreateDelegade<TDestination, TSource>? create,
-        List<UpdateSet<TDestination, TSource>> updates)
+        List<UpdateSet<TDestination, TSource>> updateSets)
     {
         if (create is null)
         {
@@ -156,7 +150,7 @@ internal static class MergeExtensions
         }
 
         var creates = sources
-            .Except(updates.Select(x => x.Source))
+            .Except(updateSets.Select(x => x.Source))
             .ToList();
 
         if (creates.Count == 0)
@@ -169,19 +163,19 @@ internal static class MergeExtensions
 
     private static void Update<TDestination, TSource>(
         UpdateDelegade<TDestination, TSource>? update,
-        List<UpdateSet<TDestination, TSource>> updates)
+        List<UpdateSet<TDestination, TSource>> updateSets)
     {
-        if (update is null || updates.Count == 0)
+        if (update is null || updateSets.Count == 0)
         {
             return;
         }
-        update(updates);
+        update(updateSets);
     }
 
     private static void Delete<TDestination, TSource>(
         ICollection<TDestination> destinations,
         DeleteDelegade<TDestination>? delete,
-        List<UpdateSet<TDestination, TSource>> updates)
+        List<UpdateSet<TDestination, TSource>> updateSets)
     {
         if (delete is null)
         {
@@ -189,7 +183,7 @@ internal static class MergeExtensions
         }
 
         var deleates = destinations
-            .Except(updates.Select(x => x.Destination))
+            .Except(updateSets.Select(x => x.Destination))
             .ToList();
 
         if (deleates.Count == 0)
@@ -217,44 +211,6 @@ internal static class MergeExtensions
         foreach (var item in source)
         {
             destination.Add(item);
-        }
-    }
-
-    private static List<UpdateSet<TDestination, TSource>> GetUpdateSets<TDestination, TSource, TKey>(
-        ICollection<TDestination> destinations,
-        IEnumerable<TSource> sources,
-        Func<TDestination, TKey> destinationKeySelector,
-        Func<TSource, TKey> sourceKeySelector,
-        IEqualityComparer<TKey>? comparer)
-    {
-        return destinations.Join(sources,
-                destinationKeySelector,
-                sourceKeySelector,
-                (destination, source) => new UpdateSet<TDestination, TSource>(destination, source),
-                comparer)
-            .ToList();
-    }
-
-    private static void AssertNoDuplicateNonDefaultKeys<T, TKey>(
-        this IEnumerable<T> values,
-        Func<T, TKey> keySelector,
-        IEqualityComparer<TKey>? comparer = null)
-    {
-        comparer ??= EqualityComparer<TKey>.Default;
-
-        var duplicateKeys = values
-            .Select(keySelector)
-            .GroupBy(x => x, comparer)
-            .Where(x => !comparer.Equals(x.Key, default) && x.Count() > 1)
-            .Select(x => x.Key)
-            .ToList();
-
-        if (duplicateKeys.Any())
-        {
-            var typename = typeof(T).Name;
-            throw new InvalidOperationException(
-                $"Expected elements with unique non default keys. The following duplicate/default " +
-                $"keys were detected for {typename}: [{string.Join(",", duplicateKeys)}].");
         }
     }
 
