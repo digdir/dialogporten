@@ -10,13 +10,14 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Events;
 using Digdir.Library.Entity.Abstractions.Features.Identifiable;
 using MediatR;
 using OneOf;
+using OneOf.Types;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Commands.Create;
 
 public sealed class CreateDialogCommand : CreateDialogDto, IRequest<CreateDialogResult> { }
 
 [GenerateOneOf]
-public partial class CreateDialogResult : OneOfBase<Guid, DomainError, ValidationError> { }
+public partial class CreateDialogResult : OneOfBase<Success<Guid>, DomainError, ValidationError> { }
 
 internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogCommand, CreateDialogResult>
 {
@@ -68,7 +69,7 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
 
         var saveResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
         return saveResult.Match<CreateDialogResult>(
-            success => dialog.Id,
+            success => new Success<Guid>(dialog.Id),
             domainError => domainError,
             concurrencyError => throw new ApplicationException("Should never get a concurrency error when creating a new dialog"));
     }
