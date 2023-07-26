@@ -4,6 +4,6 @@ namespace Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localization
 
 internal interface ILocalizationService
 {
-    Task<TLocalizationSet?> Merge<TLocalizationSet>(TLocalizationSet? set, List<LocalizationDto> dtos, CancellationToken cancellationToken = default)
+    TLocalizationSet? Merge<TLocalizationSet>(TLocalizationSet? set, List<LocalizationDto> dtos)
         where TLocalizationSet : LocalizationSet, new();
 }

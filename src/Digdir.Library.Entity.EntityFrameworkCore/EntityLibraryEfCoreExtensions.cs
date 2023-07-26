@@ -6,7 +6,6 @@ using Digdir.Library.Entity.EntityFrameworkCore.Features.Updatable;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Digdir.Library.Entity.Abstractions.Features.Creatable;
 using Digdir.Library.Entity.Abstractions.Features.Identifiable;
 using Digdir.Library.Entity.Abstractions.Features.Lookup;
@@ -98,28 +97,6 @@ public static class EntityLibraryEfCoreExtensions
         foreach (var entity in entities)
         {
             entity.SetTableName(entity.DisplayName());
-        }
-
-        return modelBuilder;
-    }
-
-    /// <summary>
-    /// Sets the <see cref="TimeSpanToStringConverter"/> for all <see cref="TimeSpan"/> properties of all the entities in the <see cref="DbContext"/>.
-    /// </summary>
-    /// <param name="modelBuilder">The model builder.</param>
-    /// <returns>The same builder instance so that multiple calls can be chained.</returns>
-    public static ModelBuilder SetCrossCuttingTimeSpanToStringConverter(this ModelBuilder modelBuilder)
-    {
-        var timeSpanTypes = new[] { typeof(TimeSpan), typeof(TimeSpan?) };
-
-        var stringProperties = modelBuilder.Model
-            .GetEntityTypes()
-            .SelectMany(x => x.GetProperties())
-            .Where(x => timeSpanTypes.Contains(x.ClrType));
-
-        foreach (var stringProperty in stringProperties)
-        {
-            stringProperty.SetValueConverter(new TimeSpanToStringConverter());
         }
 
         return modelBuilder;

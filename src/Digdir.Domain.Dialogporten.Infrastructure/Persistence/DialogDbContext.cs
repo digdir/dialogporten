@@ -10,6 +10,7 @@ using Digdir.Library.Entity.Abstractions.Features.Identifiable;
 using Digdir.Library.Entity.Abstractions.Features.Versionable;
 using Digdir.Library.Entity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System.Linq.Expressions;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence;
@@ -66,9 +67,9 @@ internal sealed class DialogDbContext : DbContext, IDialogDbContext
         var ids = entities
             .Select(x => x.Id)
             .Where(x => x != default)
-            .ToArray();
+            .ToList();
 
-        if (!ids.Any())
+        if (ids.Count == 0)
         {
             return new();
         }
@@ -84,12 +85,13 @@ internal sealed class DialogDbContext : DbContext, IDialogDbContext
         configurationBuilder.Properties<string>(x => x.HaveMaxLength(Constants.DefaultMaxStringLength));
         configurationBuilder.Properties<Uri>(x => x.HaveMaxLength(Constants.DefaultMaxUriLength));
         configurationBuilder.Properties<DateTimeOffset>().HaveConversion<DateTimeOffsetConverter>();
+        configurationBuilder.Properties<TimeSpan>().HaveConversion<TimeSpanToStringConverter>();
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.RemovePluralizingTableNameConvention()
-            .SetCrossCuttingTimeSpanToStringConverter()
+        modelBuilder
+            .RemovePluralizingTableNameConvention()
             .AddAuditableEntities()
             .ApplyConfigurationsFromAssembly(typeof(DialogDbContext).Assembly);
     }
