@@ -13,7 +13,7 @@ internal delegate void DeleteDelegade<in TDestination>(IEnumerable<TDestination>
 internal static class DeleteDelegade
 {
     public static Task NoOp<TDestination>(IEnumerable<TDestination> deletables, CancellationToken cancellationToken = default) => Task.CompletedTask;
-    public static void NoOp<TDestination>(IEnumerable<TDestination> deletables) { }
+    public static void NoOp<TDestination>(IEnumerable<TDestination> deletables) { /* No operation by design */ }
 }
 
 internal static class MergeExtensions
@@ -73,6 +73,14 @@ internal static class MergeExtensions
         await DeleteAsync(destinations, delete, updateSets, cancellationToken);
         await UpdateAsync(update, updateSets, cancellationToken);
         await CreateAsync(destinations, concreteSources, create, updateSets, cancellationToken);
+    }
+
+    internal static void Update<TDestination, TSource>(this IMapper mapper, IEnumerable<UpdateSet<TDestination, TSource>> updateSets)
+    {
+        foreach (var (source, destination) in updateSets)
+        {
+            mapper.Map(source, destination);
+        }
     }
 
     private static async Task CreateAsync<TDestination, TSource>(
@@ -211,14 +219,6 @@ internal static class MergeExtensions
         foreach (var item in source)
         {
             destination.Add(item);
-        }
-    }
-
-    internal static void Update<TDestination, TSource>(this IMapper mapper, IEnumerable<UpdateSet<TDestination, TSource>> updateSets)
-    {
-        foreach (var (source, destination) in updateSets)
-        {
-            mapper.Map(source, destination);
         }
     }
 }

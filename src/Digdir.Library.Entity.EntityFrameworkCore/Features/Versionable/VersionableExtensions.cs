@@ -16,7 +16,6 @@ internal static class VersionableExtensions
 
     internal static ChangeTracker HandleVersionableEntities(this ChangeTracker changeTracker)
     {
-        var hasChanges = changeTracker.HasChanges();
         foreach (var entry in changeTracker
             .Entries<IVersionableEntity>()
             .Where(x => x.State is EntityState.Added or EntityState.Modified))

@@ -231,7 +231,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         return elements;
     }
 
-    private Task UpdateElements(IEnumerable<UpdateSet<DialogElement, UpdateDialogDialogElementDto>> updateSets, CancellationToken cancellationToken)
+    private Task UpdateElements(IEnumerable<UpdateSet<DialogElement, UpdateDialogDialogElementDto>> updateSets, CancellationToken _)
     {
         foreach (var updateSet in updateSets)
         {
