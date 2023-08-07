@@ -3,7 +3,7 @@
 /// <summary>
 /// Abstraction implemented by entities that can be updated during the application lifetime.
 /// </summary>
-public interface IUpdateableEntity : IEntityBase
+public interface IUpdateableEntity
 {
     /// <summary>
     /// Time at which the entity was last updated in UTC.

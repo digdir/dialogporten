@@ -3,7 +3,7 @@
 /// <summary>
 /// Abstraction implemented by entities that can be created during the application lifetime.
 /// </summary>
-public interface ICreatableEntity : IEntityBase
+public interface ICreatableEntity
 {
     /// <summary>
     /// Time at which the entity was first created in UTC.

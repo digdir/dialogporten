@@ -1,19 +1,16 @@
 ﻿using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements;
 using Digdir.Domain.Dialogporten.Domain.Localizations;
 using Digdir.Library.Entity.Abstractions.Features;
-using Digdir.Library.Entity.Abstractions.Features.Hierarchy;
 using Digdir.Library.Entity.Abstractions.Features.Immutable;
 
 namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 
-public class DialogActivity : IImmutableEntity, ISubEntity
+public class DialogActivity : IImmutableEntity
 {
     public Guid Id { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
 
     public Uri? ExtendedType { get; set; }
-    
-    public IEntityBase Parent => Dialog;
 
     // === Dependent relationships ===
     public DialogActivityType.Enum TypeId { get; set; }

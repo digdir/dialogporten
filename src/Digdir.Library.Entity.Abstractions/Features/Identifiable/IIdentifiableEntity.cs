@@ -3,7 +3,7 @@
 /// <summary>
 /// Abstraction implemented by entities that can be identified.
 /// </summary>
-public interface IIdentifiableEntity : IEntityBase
+public interface IIdentifiableEntity
 {
     /// <summary>
     /// The entity identification.
