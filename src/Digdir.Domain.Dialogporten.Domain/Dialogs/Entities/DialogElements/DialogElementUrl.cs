@@ -1,5 +1,4 @@
 ﻿using Digdir.Library.Entity.Abstractions;
-using Digdir.Library.Entity.Abstractions.Features;
 
 namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements;
 
