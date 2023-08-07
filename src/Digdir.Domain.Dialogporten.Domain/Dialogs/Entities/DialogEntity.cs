@@ -32,21 +32,38 @@ public class DialogEntity : IEntity, ISoftDeletableEntity, IVersionableEntity
     public DialogStatus.Enum StatusId { get; set; }
     public DialogStatus Status { get; set; } = null!;
 
-    public Guid BodyId { get; set; }
-    public LocalizationSet Body { get; set; } = null!;
-
-    public Guid TitleId { get; set; }
-    public LocalizationSet Title { get; set; } = null!;
-
-    public Guid SenderNameId { get; set; }
-    public LocalizationSet SenderName { get; set; } = null!;
-
-    public Guid SearchTitleId { get; set; }
-    public LocalizationSet SearchTitle { get; set; } = null!;
+    public DialogBody? Body { get; set; }
+    public DialogTitle? Title { get; set; } 
+    public DialogSenderName? SenderName { get; set; } 
+    public DialogSearchTitle? SearchTitle { get; set; } 
 
     // === Principal relationships === 
     public List<DialogElement> Elements { get; set; } = new();
     public List<DialogGuiAction> GuiActions { get; set; } = new();
     public List<DialogApiAction> ApiActions { get; set; } = new();
     public List<DialogActivity> Activities { get; set; } = new();
+}
+
+public class DialogBody : LocalizationSet
+{
+    public Guid DialogId { get; set; }
+    public DialogEntity Dialog { get; set; } = null!;
+}
+
+public class DialogTitle : LocalizationSet
+{
+    public Guid DialogId { get; set; }
+    public DialogEntity Dialog { get; set; } = null!;
+}
+
+public class DialogSenderName : LocalizationSet
+{
+    public Guid DialogId { get; set; }
+    public DialogEntity Dialog { get; set; } = null!;
+}
+
+public class DialogSearchTitle : LocalizationSet
+{
+    public Guid DialogId { get; set; }
+    public DialogEntity Dialog { get; set; } = null!;
 }

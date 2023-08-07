@@ -24,7 +24,7 @@ public interface ILookupEntity<TSelf, TEnum> : ILookupEntity
 /// Abstraction implemented by entities that is static during the application 
 /// lifetime. For example type information, or states in a finate state machine.
 /// </summary>
-public interface ILookupEntity 
+public interface ILookupEntity
 {
     /// <summary>
     /// A human readable name to identify the lookup type.

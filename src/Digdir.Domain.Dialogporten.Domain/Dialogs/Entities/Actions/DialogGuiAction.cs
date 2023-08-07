@@ -19,9 +19,14 @@ public class DialogGuiAction : IEntity
     public DialogGuiActionPriority.Enum PriorityId { get; set; }
     public DialogGuiActionPriority Priority { get; set; } = null!;
 
-    public Guid TitleId { get; set; }
-    public LocalizationSet Title { get; set; } = null!;
+    public DialogGuiActionTitle? Title { get; set; }
 
     public Guid DialogId { get; set; }
     public DialogEntity Dialog { get; set; } = null!;
+}
+
+public class DialogGuiActionTitle : LocalizationSet
+{
+    public Guid GuiActionId { get; set; }
+    public DialogGuiAction GuiAction { get; set; } = null!;
 }

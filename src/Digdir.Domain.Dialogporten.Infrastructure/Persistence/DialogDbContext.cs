@@ -4,14 +4,13 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements;
-using Digdir.Domain.Dialogporten.Domain.Localizations;
 using Digdir.Domain.Dialogporten.Domain.Outboxes;
-using Digdir.Domain.Dialogporten.Infrastructure.Persistence.Configurations.Localizations;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence.ValueConverters;
 using Digdir.Library.Entity.Abstractions.Features.Identifiable;
 using Digdir.Library.Entity.Abstractions.Features.Versionable;
 using Digdir.Library.Entity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System.Linq.Expressions;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence;
@@ -21,8 +20,6 @@ internal sealed class DialogDbContext : DbContext, IDialogDbContext
     public DialogDbContext(DbContextOptions<DialogDbContext> options) : base(options) { }
 
     public DbSet<DialogEntity> Dialogs => Set<DialogEntity>();
-    public DbSet<Localization> Localizations => Set<Localization>();
-    public DbSet<LocalizationSet> LocalizationSets => Set<LocalizationSet>();
     public DbSet<DialogStatus> DialogStatuses => Set<DialogStatus>();
     public DbSet<DialogActivity> DialogActivities => Set<DialogActivity>();
     public DbSet<DialogApiAction> DialogApiActions => Set<DialogApiAction>();
@@ -36,7 +33,9 @@ internal sealed class DialogDbContext : DbContext, IDialogDbContext
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
     public DbSet<OutboxMessageConsumer> OutboxMessageConsumers => Set<OutboxMessageConsumer>();
 
-    public bool TrySetOriginalETag<TEntity>(TEntity entity, Guid? etag)
+    public bool TrySetOriginalETag<TEntity>(
+        TEntity entity, 
+        Guid? etag)
         where TEntity : class, IVersionableEntity
     {
         if (entity is null || !etag.HasValue)
@@ -68,9 +67,9 @@ internal sealed class DialogDbContext : DbContext, IDialogDbContext
         var ids = entities
             .Select(x => x.Id)
             .Where(x => x != default)
-            .ToArray();
+            .ToList();
 
-        if (!ids.Any())
+        if (ids.Count == 0)
         {
             return new();
         }
@@ -86,14 +85,14 @@ internal sealed class DialogDbContext : DbContext, IDialogDbContext
         configurationBuilder.Properties<string>(x => x.HaveMaxLength(Constants.DefaultMaxStringLength));
         configurationBuilder.Properties<Uri>(x => x.HaveMaxLength(Constants.DefaultMaxUriLength));
         configurationBuilder.Properties<DateTimeOffset>().HaveConversion<DateTimeOffsetConverter>();
+        configurationBuilder.Properties<TimeSpan>().HaveConversion<TimeSpanToStringConverter>();
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.RemovePluralizingTableNameConvention()
-            .SetCrossCuttingTimeSpanToStringConverter()
+        modelBuilder
+            .RemovePluralizingTableNameConvention()
             .AddAuditableEntities()
-            .ApplyLocalizationSetRestrictDeleteBehaviour()
             .ApplyConfigurationsFromAssembly(typeof(DialogDbContext).Assembly);
     }
 }

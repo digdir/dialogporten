@@ -18,8 +18,7 @@ public class DialogElement : IEntity
     public Guid DialogId { get; set; }
     public DialogEntity Dialog { get; set; } = null!;
 
-    public Guid DisplayNameId { get; set; }
-    public LocalizationSet DisplayName { get; set; } = null!;
+    public DialogElementDisplayName? DisplayName { get; set; }
 
     public Guid? RelatedDialogElementId { get; set; }
     public DialogElement? RelatedDialogElement { get; set; }
@@ -29,4 +28,10 @@ public class DialogElement : IEntity
     public List<DialogApiAction> ApiActions { get; set; } = new();
     public List<DialogActivity> Activities { get; set; } = new();
     public List<DialogElement> RelatedDialogElements { get; set; } = new();
+}
+
+public class DialogElementDisplayName : LocalizationSet
+{
+    public Guid ElementId { get; set; }
+    public DialogElement Element { get; set; } = null!;
 }

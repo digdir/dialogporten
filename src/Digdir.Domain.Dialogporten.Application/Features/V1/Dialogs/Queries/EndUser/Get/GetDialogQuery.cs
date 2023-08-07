@@ -50,16 +50,16 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
         // This is to ensure that the get is consistent, and that PATCH in the API presentation
         // layer behavious in an expected manner. Therefore we need to be a bit more verbose about it.
         var dialog = await _db.Dialogs
-            .Include(x => x.Body.Localizations.OrderBy(x => x.CreatedAt).ThenBy(x => x.CultureCode))
-            .Include(x => x.Title.Localizations.OrderBy(x => x.CreatedAt).ThenBy(x => x.CultureCode))
-            .Include(x => x.SenderName.Localizations.OrderBy(x => x.CreatedAt).ThenBy(x => x.CultureCode))
-            .Include(x => x.SearchTitle.Localizations.OrderBy(x => x.CreatedAt).ThenBy(x => x.CultureCode))
+            .Include(x => x.Body!.Localizations.OrderBy(x => x.CreatedAt).ThenBy(x => x.CultureCode))
+            .Include(x => x.Title!.Localizations.OrderBy(x => x.CreatedAt).ThenBy(x => x.CultureCode))
+            .Include(x => x.SenderName!.Localizations.OrderBy(x => x.CreatedAt).ThenBy(x => x.CultureCode))
+            .Include(x => x.SearchTitle!.Localizations.OrderBy(x => x.CreatedAt).ThenBy(x => x.CultureCode))
             .Include(x => x.Elements.OrderBy(x => x.CreatedAt).ThenBy(x => x.Id))
-                .ThenInclude(x => x.DisplayName.Localizations.OrderBy(x => x.CreatedAt))
+                .ThenInclude(x => x.DisplayName!.Localizations.OrderBy(x => x.CreatedAt))
             .Include(x => x.Elements.OrderBy(x => x.CreatedAt).ThenBy(x => x.Id))
                 .ThenInclude(x => x.Urls.OrderBy(x => x.CreatedAt).ThenBy(x => x.Id))
             .Include(x => x.GuiActions.OrderBy(x => x.CreatedAt).ThenBy(x => x.Id))
-                .ThenInclude(x => x.Title.Localizations.OrderBy(x => x.CreatedAt).ThenBy(x => x.CultureCode))
+                .ThenInclude(x => x.Title!.Localizations.OrderBy(x => x.CreatedAt).ThenBy(x => x.CultureCode))
             .Include(x => x.ApiActions.OrderBy(x => x.CreatedAt).ThenBy(x => x.Id))
                 .ThenInclude(x => x.Endpoints.OrderBy(x => x.CreatedAt).ThenBy(x => x.Id))
             .Where(x => !x.VisibleFrom.HasValue || x.VisibleFrom < _clock.UtcNowOffset)
@@ -93,10 +93,6 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
         var modifiableDialog = await _db.Dialogs.FindAsync(new object[] { dialogId }, cancellationToken: cancellationToken);
         _eventPublisher.Publish(new DialogReadDomainEvent(dialogId));
         modifiableDialog!.ReadAt = _transactionTime.Value;
-        await _unitOfWork
-            .WithoutAuditableSideEffects()
-            .SaveChangesAsync(cancellationToken);
-
         var saveResult = await _unitOfWork
             .WithoutAuditableSideEffects()
             .SaveChangesAsync(cancellationToken);
@@ -104,7 +100,6 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
             success => { },
             domainError => throw new ApplicationException("Should not get domain error when updating ReadAt."),
             concurrencyError => throw new ApplicationException("Should not get concurrencyError when updating ReadAt."));
-
         return modifiableDialog.ReadAt;
     }
 }

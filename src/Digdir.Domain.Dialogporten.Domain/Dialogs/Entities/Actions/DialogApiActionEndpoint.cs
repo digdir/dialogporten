@@ -23,5 +23,4 @@ public class DialogApiActionEndpoint : IEntity
 
     public Guid ActionId { get; set; }
     public DialogApiAction Action { get; set; } = null!;
-
 }

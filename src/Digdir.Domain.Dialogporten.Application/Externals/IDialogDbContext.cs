@@ -2,7 +2,6 @@
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements;
-using Digdir.Domain.Dialogporten.Domain.Localizations;
 using Digdir.Domain.Dialogporten.Domain.Outboxes;
 using Digdir.Library.Entity.Abstractions.Features.Identifiable;
 using Digdir.Library.Entity.Abstractions.Features.Versionable;
@@ -14,8 +13,6 @@ namespace Digdir.Domain.Dialogporten.Application.Externals;
 public interface IDialogDbContext
 {
     DbSet<DialogEntity> Dialogs { get; }
-    DbSet<Localization> Localizations { get; }
-    DbSet<LocalizationSet> LocalizationSets { get; }
     DbSet<DialogStatus> DialogStatuses { get; }
     DbSet<DialogActivity> DialogActivities { get; }
     DbSet<DialogApiAction> DialogApiActions { get; }

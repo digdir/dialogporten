@@ -2,7 +2,7 @@
 
 namespace Digdir.Domain.Dialogporten.Domain.Localizations;
 
-public class LocalizationSet : IImmutableEntity
+public abstract class LocalizationSet : IImmutableEntity
 {
     public Guid Id { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
