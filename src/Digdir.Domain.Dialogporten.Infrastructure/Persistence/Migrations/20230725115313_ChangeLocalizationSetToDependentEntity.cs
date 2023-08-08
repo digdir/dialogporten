@@ -10,7 +10,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.Sql(@$"DELETE FROM ""LocalizationSet""");
+            migrationBuilder.Sql(@$"DELETE FROM ""LocalizationSet"";");
 
             migrationBuilder.DropForeignKey(
                 name: "FK_Dialog_LocalizationSet_BodyId",
