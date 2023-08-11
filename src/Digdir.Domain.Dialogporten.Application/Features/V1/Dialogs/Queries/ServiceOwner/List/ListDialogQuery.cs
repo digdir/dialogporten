@@ -31,6 +31,6 @@ internal sealed class ListDialogQueryHandler : IRequestHandler<ListDialogQuery, 
             .AsNoTracking()
             .OrderByDescending(x => x.CreatedAt)
             .ProjectTo<ListDialogDto>(_mapper.ConfigurationProvider)
-            .ToPaginatedListAsync(request, cancellationToken);
+            .ToPaginatedListAsync(x => x.CreatedAt, request, cancellationToken);
     }
 }

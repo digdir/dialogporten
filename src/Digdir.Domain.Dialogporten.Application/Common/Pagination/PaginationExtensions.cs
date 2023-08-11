@@ -1,48 +1,62 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace Digdir.Domain.Dialogporten.Application.Common.Pagination;
 
 internal static class PaginationExtensions
 {
-    public static Task<PaginatedList<TDestination>> ToPaginatedListAsync<TDestination>(this IQueryable<TDestination> queryable, int pageIndex, int pageSize, CancellationToken cancellationToken = default)
-        => CreateAsync(queryable, pageIndex, pageSize, cancellationToken);
-    public static Task<PaginatedList<TDestination>> ToPaginatedListAsync<TDestination>(this IQueryable<TDestination> queryable, IPaginationParameter parameter, CancellationToken cancellationToken = default)
-        => CreateAsync(queryable, parameter.PageIndex!.Value, parameter.PageSize!.Value, cancellationToken);
+    public static Task<PaginatedList<TDestination>> ToPaginatedListAsync<TDestination>(
+        this IQueryable<TDestination> queryable,
+        Expression<Func<TDestination, DateTimeOffset>> timeSelector,
+        DateTimeOffset after,
+        int pageSize,
+        CancellationToken cancellationToken = default)
+        => CreateAsync(queryable, timeSelector, after, pageSize, cancellationToken);
 
-    public static PaginatedList<TDestination> ToPaginatedList<TDestination>(this IEnumerable<TDestination> enumerable, int pageIndex, int pageSize)
-        => Create(enumerable, pageIndex, pageSize);
-    public static PaginatedList<TDestination> ToPaginatedList<TDestination>(this IEnumerable<TDestination> enumerable, IPaginationParameter parameter)
-        => Create(enumerable, parameter.PageIndex!.Value, parameter.PageSize!.Value);
+    public static Task<PaginatedList<TDestination>> ToPaginatedListAsync<TDestination>(
+        this IQueryable<TDestination> queryable,
+        Expression<Func<TDestination, DateTimeOffset>> timeSelector,
+        IPaginationParameter parameter,
+        CancellationToken cancellationToken = default)
+        => CreateAsync(queryable, timeSelector, parameter.After!.Value, parameter.PageSize!.Value, cancellationToken);
 
-    private static async Task<PaginatedList<T>> CreateAsync<T>(IQueryable<T> source, int pageIndex, int pageSize, CancellationToken cancellationToken = default)
+    private static async Task<PaginatedList<T>> CreateAsync<T>(
+        IQueryable<T> source,
+        Expression<Func<T, DateTimeOffset>> timeSelector,
+        DateTimeOffset after,
+        int pageSize,
+        CancellationToken cancellationToken = default)
     {
         if (source == null)
         {
             throw new ArgumentNullException(nameof(source));
         }
 
-        var count = await source
-            .CountAsync(cancellationToken);
+        const int NextOffset = 1;
+        
+        var greaterThanAfterPredicate = Expression.Lambda<Func<T, bool>>(
+            Expression.GreaterThan(
+                timeSelector.Body, 
+                Expression.Constant(after)), 
+            timeSelector.Parameters);
+        
         var items = await source
-            .Skip(pageIndex * pageSize)
-            .Take(pageSize)
-            .ToListAsync(cancellationToken);
-        return new PaginatedList<T>(items, count, pageIndex, pageSize);
-    }
+            .OrderBy(timeSelector)
+            .Where(greaterThanAfterPredicate)
+            .Take(pageSize + NextOffset)
+            .ToArrayAsync(cancellationToken);
 
-    private static PaginatedList<T> Create<T>(IEnumerable<T> source, int pageIndex, int pageSize)
-    {
-        if (source == null)
+        // Fetch one more item than requested to determine if there is a next page
+        var hasNextPage = items.Length > pageSize;
+        if (hasNextPage)
         {
-            throw new ArgumentNullException(nameof(source));
+            Array.Resize(ref items, pageSize);
         }
 
-        var sourceList = source.ToList();
-        var count = sourceList.Count;
-        var items = sourceList
-            .Skip((pageIndex - 1) * pageSize)
-            .Take(pageSize)
-            .ToList();
-        return new PaginatedList<T>(items, count, pageIndex, pageSize);
+        var continuationToken = items.Length > 0 
+            ? timeSelector.Compile().Invoke(items[^1])
+            : (DateTimeOffset?) null;
+
+        return new PaginatedList<T>(items, pageSize, hasNextPage, continuationToken);
     }
 }
