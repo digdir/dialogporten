@@ -17,5 +17,5 @@ public sealed class ListDialogDto
     public DialogStatus.Enum Status { get; set; }
 
     public List<LocalizationDto> Title { get; set; } = new();
-    public List<LocalizationDto> SenderName { get; set; } = new();
+    public List<LocalizationDto>? SenderName { get; set; } 
 }

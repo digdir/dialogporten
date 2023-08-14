@@ -4,8 +4,8 @@ namespace Digdir.Domain.Dialogporten.Application.Common.Pagination;
 
 public interface IPaginationParameter
 {
-    int? PageIndex { get; set; }
-    int? PageSize { get; set; }
+    DateTimeOffset? After { get; }
+    int? PageSize { get; }
 }
 
 public class DefaultPaginationParameter : IPaginationParameter
@@ -14,11 +14,11 @@ public class DefaultPaginationParameter : IPaginationParameter
     private const int DefaultPageSize = 100;
     private int _pageSize = DefaultPageSize;
 
-    public int? PageIndex { get; set; } = 0;
+    public DateTimeOffset? After { get; init; } = DateTimeOffset.MinValue;
     public int? PageSize
     {
         get => _pageSize;
-        set => _pageSize = !value.HasValue 
+        init => _pageSize = !value.HasValue 
             ? DefaultPageSize 
             : value.Value > MaxPageSize 
                 ? MaxPageSize 
@@ -30,7 +30,6 @@ internal sealed class PaginationParameterValidator : AbstractValidator<IPaginati
 {
     public PaginationParameterValidator()
     {
-        RuleFor(x => x.PageIndex).GreaterThanOrEqualTo(0);
         RuleFor(x => x.PageSize).GreaterThanOrEqualTo(1);
     }
 }
