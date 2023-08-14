@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Collections.Concurrent;
 using System.Linq.Expressions;
 
 namespace Digdir.Domain.Dialogporten.Application.Common.Pagination;
@@ -53,63 +54,23 @@ internal static class PaginationExtensions
             Array.Resize(ref items, pageSize);
         }
 
-        // TODO: Compiling the timeSelector expression is a performance bottleneck.
-        // Consider restricting creating PaginatedList only on ICreatableEntity
-        // or find a way to compile the expression only once using a cache
-        // or simply don't return the continuation token.
+        // Compiling the timeSelector expression is a performance bottleneck.
+        // We're currently caching the compiled expression giving an estimated
+        // 40x performance boost over just calling Compile() directly. However
+        // it's still a performance hit due to the ExpressionEqualityComparer.
+        // If we need to squeeze out more performance we could restrict T to
+        // be a ICreatableEntity and directly access the Timestamp property
+        // eliminating the need for the timeSelector expression. This whould
+        // increase the timestamp access by a factor of 800x at the cost of
+        // cleaner code from the calling side. Pick your poison.
         var continuationToken = items.Length > 0
-            ? timeSelector.Compile().Invoke(items[^1])
+            ? timeSelector.CompileOrGetCached().Invoke(items[^1])
             : (DateTimeOffset?)null;
 
         return new PaginatedList<T>(items, pageSize, hasNextPage, continuationToken);
     }
 
-    //public static Task<PaginatedList<TDestination>> ToPaginatedListAsync<TDestination>(
-    //    this IQueryable<TDestination> queryable,
-    //    DateTimeOffset after,
-    //    int pageSize,
-    //    CancellationToken cancellationToken = default)
-    //    where TDestination : ICreatableEntity
-    //    => CreateAsync(queryable, after, pageSize, cancellationToken);
-
-    //public static Task<PaginatedList<TDestination>> ToPaginatedListAsync<TDestination>(
-    //    this IQueryable<TDestination> queryable,
-    //    IPaginationParameter parameter,
-    //    CancellationToken cancellationToken = default)
-    //    where TDestination : ICreatableEntity
-    //    => CreateAsync(queryable, parameter.After!.Value, parameter.PageSize!.Value, cancellationToken);
-
-    //private static async Task<PaginatedList<T>> CreateAsync<T>(
-    //    IQueryable<T> source,
-    //    DateTimeOffset after,
-    //    int pageSize,
-    //    CancellationToken cancellationToken = default)
-    //    where T : ICreatableEntity
-    //{
-    //    if (source == null)
-    //    {
-    //        throw new ArgumentNullException(nameof(source));
-    //    }
-
-    //    const int NextOffset = 1;
-
-    //    var items = await source
-    //        .OrderBy(x => x.CreatedAt)
-    //        .Where(x => x.CreatedAt > after)
-    //        .Take(pageSize + NextOffset)
-    //        .ToArrayAsync(cancellationToken);
-
-    //    // Fetch one more item than requested to determine if there is a next page
-    //    var hasNextPage = items.Length > pageSize;
-    //    if (hasNextPage)
-    //    {
-    //        Array.Resize(ref items, pageSize);
-    //    }
-
-    //    var continuationToken = items.Length > 0
-    //        ? items[^1].CreatedAt
-    //        : (DateTimeOffset?)null;
-
-    //    return new PaginatedList<T>(items, pageSize, hasNextPage, continuationToken);
-    //}
+    private static readonly ConcurrentDictionary<object, object> _compiledByExpression = new(comparer: new ExpressionEqualityComparer());
+    private static TFunc CompileOrGetCached<TFunc>(this Expression<TFunc> selectorExpression) where TFunc : Delegate => 
+        (TFunc)_compiledByExpression.GetOrAdd(selectorExpression, x => ((Expression<TFunc>)x).Compile());
 }
