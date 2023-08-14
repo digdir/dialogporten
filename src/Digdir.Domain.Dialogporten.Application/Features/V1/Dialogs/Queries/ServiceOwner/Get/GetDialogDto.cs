@@ -25,10 +25,10 @@ public sealed class GetDialogDto
 
     public DialogStatus.Enum Status { get; set; }
 
-    public List<LocalizationDto> Body { get; set; } = new();
-    public List<LocalizationDto> Title { get; set; } = new();
-    public List<LocalizationDto> SenderName { get; set; } = new();
-    public List<LocalizationDto> SearchTitle { get; set; } = new();
+    public List<LocalizationDto>? Body { get; set; } 
+    public List<LocalizationDto>? Title { get; set; }
+    public List<LocalizationDto>? SenderName { get; set; } 
+    public List<LocalizationDto>? SearchTitle { get; set; }
 
     public List<GetDialogDialogElementDto> Elements { get; set; } = new();
     public List<GetDialogDialogGuiActionDto> GuiActions { get; set; } = new();

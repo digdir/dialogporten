@@ -5,7 +5,6 @@ using Digdir.Domain.Dialogporten.Application.Common.Pagination;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using OneOf;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Queries.EndUser.List;
@@ -32,8 +31,6 @@ internal sealed class ListDialogQueryHandler : IRequestHandler<ListDialogQuery, 
     {
         return await _db.Dialogs
             .Where(x => !x.VisibleFrom.HasValue || _clock.UtcNowOffset < x.VisibleFrom)
-            .AsNoTracking()
-            .OrderByDescending(x => x.CreatedAt)
             .ProjectTo<ListDialogDto>(_mapper.ConfigurationProvider)
             .ToPaginatedListAsync(x => x.CreatedAt, request, cancellationToken);
     }

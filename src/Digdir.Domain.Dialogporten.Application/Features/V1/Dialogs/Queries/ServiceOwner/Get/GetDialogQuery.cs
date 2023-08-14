@@ -40,7 +40,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
             .Include(x => x.SenderName!.Localizations.OrderBy(x => x.CreatedAt).ThenBy(x => x.CultureCode))
             .Include(x => x.SearchTitle!.Localizations.OrderBy(x => x.CreatedAt).ThenBy(x => x.CultureCode))
             .Include(x => x.Elements.OrderBy(x => x.CreatedAt).ThenBy(x => x.Id))
-                .ThenInclude(x => x.DisplayName!.Localizations.OrderBy(x => x.CreatedAt))
+                .ThenInclude(x => x.DisplayName!.Localizations.OrderBy(x => x.CreatedAt).ThenBy(x => x.CultureCode))
             .Include(x => x.Elements.OrderBy(x => x.CreatedAt).ThenBy(x => x.Id))
                 .ThenInclude(x => x.Urls.OrderBy(x => x.CreatedAt).ThenBy(x => x.Id))
             .Include(x => x.GuiActions.OrderBy(x => x.CreatedAt).ThenBy(x => x.Id))

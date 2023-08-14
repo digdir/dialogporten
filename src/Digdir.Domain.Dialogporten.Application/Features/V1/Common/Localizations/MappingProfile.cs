@@ -8,10 +8,11 @@ internal sealed class MappingProfile : Profile
     public MappingProfile()
     {
         // Out
-        CreateMap<LocalizationSet, List<LocalizationDto>>()
-            .ConvertUsing(src => src.Localizations
-                .Select(x => new LocalizationDto { CultureCode = x.CultureCode, Value = x.Value })
-                .ToList());
+        CreateMap<LocalizationSet?, List<LocalizationDto>?>()
+            .ConvertUsing(src => src == null ? null :
+                src.Localizations
+                    .Select(x => new LocalizationDto { CultureCode = x.CultureCode, Value = x.Value })
+                    .ToList());
 
         // In
         CreateMap<LocalizationDto, Localization>();
