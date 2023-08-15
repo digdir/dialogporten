@@ -12,7 +12,8 @@
 	<PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="7.0.0" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.6.0" />
     <PackageReference Include="MediatR" Version="12.1.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.9" />
+	<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.4" />
+    <!--<PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.9" />-->
     <PackageReference Include="OneOf" Version="3.0.255" />
     <PackageReference Include="OneOf.SourceGenerator" Version="3.0.255" />
   </ItemGroup>

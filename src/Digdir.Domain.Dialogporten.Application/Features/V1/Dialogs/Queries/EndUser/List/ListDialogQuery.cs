@@ -1,15 +1,55 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Digdir.Domain.Dialogporten.Application.Common;
+using Digdir.Domain.Dialogporten.Application.Common.Extensions;
+using Digdir.Domain.Dialogporten.Application.Common.Extensions.Enumerable;
 using Digdir.Domain.Dialogporten.Application.Common.Pagination;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
+using Digdir.Domain.Dialogporten.Domain.Localizations;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using OneOf;
+using System.Linq.Expressions;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Queries.EndUser.List;
 
-public sealed class ListDialogQuery : DefaultPaginationParameter, IRequest<ListDialogResult> { }
+public sealed class ListDialogQuery : DefaultPaginationParameter, IRequest<ListDialogResult>
+{
+    private string? _searchCultureCode;
+
+    public List<string>? Org { get; init; }
+    public List<Uri>? ServiceResource { get; init; }
+    public List<string>? Party { get; init; }
+    public List<string>? ExtendedStatus { get; init; }
+    public List<DialogStatus.Enum>? Status { get; init; }
+
+    public DateTimeOffset? CreatedAfter { get; init; }
+    public DateTimeOffset? CreatedBefore { get; init; }
+
+    public DateTimeOffset? UpdatedAfter { get; init; }
+    public DateTimeOffset? UpdatedBefore { get; init; }
+
+    public DateTimeOffset? DueAfter { get; init; }
+    public DateTimeOffset? DueBefore { get; init; }
+
+    public string? Search { get; init; }
+    public string? SearchCultureCode 
+    { 
+        get => _searchCultureCode; 
+        init => _searchCultureCode = Localization.NormalizeCultureCode(value); 
+    }
+
+    public ListDialogQueryOrder? OrderBy { get; init; }
+}
+
+public enum ListDialogQueryOrder
+{
+    CreatedAt,
+    UpdatedAt,
+    DueAt
+}
 
 [GenerateOneOf]
 public partial class ListDialogResult : OneOfBase<PaginatedList<ListDialogDto>, ValidationError> { }
@@ -29,9 +69,41 @@ internal sealed class ListDialogQueryHandler : IRequestHandler<ListDialogQuery, 
 
     public async Task<ListDialogResult> Handle(ListDialogQuery request, CancellationToken cancellationToken)
     {
+        Expression<Func<ListDialogDto, DateTimeOffset?>> paginationToken = request.OrderBy switch
+        {
+            ListDialogQueryOrder.CreatedAt => static x => x.CreatedAt,
+            ListDialogQueryOrder.UpdatedAt => static x => x.UpdatedAt,
+            ListDialogQueryOrder.DueAt => x => x.DueAt,
+            _ => x => x.CreatedAt
+        };
+
         return await _db.Dialogs
+            .WhereIf(!request.Org.IsNullOrEmpty(), x => request.Org!.Contains(x.Org))
+            .WhereIf(!request.ServiceResource.IsNullOrEmpty(), x => request.ServiceResource!.Contains(x.ServiceResource))
+            .WhereIf(!request.Party.IsNullOrEmpty(), x => request.Party!.Contains(x.Party))
+            .WhereIf(!request.ExtendedStatus.IsNullOrEmpty(), x => x.ExtendedStatus != null && request.ExtendedStatus!.Contains(x.ExtendedStatus))
+            .WhereIf(!request.Status.IsNullOrEmpty(), x => request.Status!.Contains(x.StatusId))
+            .WhereIf(request.CreatedAfter.HasValue, x => request.CreatedAfter <= x.CreatedAt)
+            .WhereIf(request.CreatedBefore.HasValue, x => x.CreatedAt <= request.CreatedBefore)
+            .WhereIf(request.UpdatedAfter.HasValue, x => request.UpdatedAfter <= x.CreatedAt)
+            .WhereIf(request.UpdatedBefore.HasValue, x => x.CreatedAt <= request.UpdatedBefore)
+            .WhereIf(request.DueAfter.HasValue, x => request.DueAfter <= x.CreatedAt)
+            .WhereIf(request.DueBefore.HasValue, x => x.CreatedAt <= request.DueBefore)
+            .WhereIf(request.Search is not null, x =>
+                x.Title!.Localizations
+                    .Where(x => request.SearchCultureCode == null || x.CultureCode == request.SearchCultureCode)
+                    // TODO: Improve search with fuzzyness
+                    .Any(x => EF.Functions.ILike(x.Value, $"%{request.Search!}%"))
+                || x.SearchTitle!.Localizations
+                    .Where(x => request.SearchCultureCode == null || x.CultureCode == request.SearchCultureCode)
+                    .Any(x => EF.Functions.ILike(x.Value, $"%{request.Search!}%"))
+                || x.SenderName!.Localizations
+                    .Where(x => request.SearchCultureCode == null || x.CultureCode == request.SearchCultureCode)
+                    .Any(x => EF.Functions.ILike(x.Value, $"%{request.Search!}%"))
+            )
             .Where(x => !x.VisibleFrom.HasValue || _clock.UtcNowOffset < x.VisibleFrom)
+            .Where(x => !x.ExpiresAt.HasValue || _clock.UtcNowOffset > x.ExpiresAt)
             .ProjectTo<ListDialogDto>(_mapper.ConfigurationProvider)
-            .ToPaginatedListAsync(x => x.CreatedAt, request, cancellationToken);
+            .ToPaginatedListAsync(paginationToken, request, cancellationToken: cancellationToken);
     }
 }

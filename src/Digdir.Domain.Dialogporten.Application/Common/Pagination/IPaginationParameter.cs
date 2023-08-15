@@ -4,25 +4,56 @@ namespace Digdir.Domain.Dialogporten.Application.Common.Pagination;
 
 public interface IPaginationParameter
 {
-    DateTimeOffset? After { get; }
-    int? PageSize { get; }
+    DateTimeOffset? Continue { get; }
+    int? Limit { get; }
+    OrderDirection? Direction { get; }
 }
 
 public class DefaultPaginationParameter : IPaginationParameter
 {
-    private const int MaxPageSize = 1000;
-    private const int DefaultPageSize = 100;
-    private int _pageSize = DefaultPageSize;
+    private const int MaxLimit = 1000;
+    private const int DefaultLimit = 100;
+    private const OrderDirection DefaultOrderDirection = OrderDirection.Desc;
 
-    public DateTimeOffset? After { get; init; } = DateTimeOffset.MinValue;
-    public int? PageSize
+    private int _limit = DefaultLimit;
+    private DateTimeOffset _continue = DateTimeOffset.MaxValue;
+    private OrderDirection _direction = DefaultOrderDirection;
+
+    public DefaultPaginationParameter()
     {
-        get => _pageSize;
-        init => _pageSize = !value.HasValue 
-            ? DefaultPageSize 
-            : value.Value > MaxPageSize 
-                ? MaxPageSize 
-                : value.Value;
+        _limit= DefaultLimit;
+        _direction = DefaultOrderDirection;
+        _continue = DateTimeOffset.MinValue;
+    }
+
+    public OrderDirection? Direction 
+    { 
+        get => _direction; 
+        init 
+        {
+            _direction = value ?? DefaultOrderDirection;
+            if (value == OrderDirection.Asc && _continue == DateTimeOffset.MaxValue)
+            {
+                _continue = DateTimeOffset.MinValue;
+            }
+        } 
+    }
+
+    public DateTimeOffset? Continue
+    {
+        get => _continue;
+        init => _continue = value ?? _direction switch
+        {
+            OrderDirection.Asc => DateTimeOffset.MinValue,
+            OrderDirection.Desc => DateTimeOffset.MaxValue,
+            _ => throw new InvalidOperationException($"{nameof(Direction)} is not a valid {nameof(OrderDirection)}. Got {_direction}."),
+        };
+    }
+
+    public int? Limit
+    {
+        get => _limit;
+        init => _limit = value ?? DefaultLimit;
     }
 }
 
@@ -30,6 +61,7 @@ internal sealed class PaginationParameterValidator : AbstractValidator<IPaginati
 {
     public PaginationParameterValidator()
     {
-        RuleFor(x => x.PageSize).GreaterThanOrEqualTo(1);
+        RuleFor(x => x.Limit).InclusiveBetween(1, 1000);
+        RuleFor(x => x.Direction).IsInEnum();
     }
 }
