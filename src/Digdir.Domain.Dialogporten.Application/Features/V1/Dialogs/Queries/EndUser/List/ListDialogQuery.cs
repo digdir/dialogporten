@@ -71,11 +71,13 @@ internal sealed class ListDialogQueryHandler : IRequestHandler<ListDialogQuery, 
     {
         Expression<Func<ListDialogDto, DateTimeOffset?>> paginationToken = request.OrderBy switch
         {
-            ListDialogQueryOrder.CreatedAt => static x => x.CreatedAt,
-            ListDialogQueryOrder.UpdatedAt => static x => x.UpdatedAt,
+            ListDialogQueryOrder.CreatedAt => x => x.CreatedAt,
+            ListDialogQueryOrder.UpdatedAt => x => x.UpdatedAt,
             ListDialogQueryOrder.DueAt => x => x.DueAt,
             _ => x => x.CreatedAt
         };
+
+        var searchExpression = LocalizedSearchExpression(request.Search, request.SearchCultureCode);
 
         return await _db.Dialogs
             .WhereIf(!request.Org.IsNullOrEmpty(), x => request.Org!.Contains(x.Org))
@@ -90,20 +92,20 @@ internal sealed class ListDialogQueryHandler : IRequestHandler<ListDialogQuery, 
             .WhereIf(request.DueAfter.HasValue, x => request.DueAfter <= x.CreatedAt)
             .WhereIf(request.DueBefore.HasValue, x => x.CreatedAt <= request.DueBefore)
             .WhereIf(request.Search is not null, x =>
-                x.Title!.Localizations
-                    .Where(x => request.SearchCultureCode == null || x.CultureCode == request.SearchCultureCode)
-                    // TODO: Improve search with fuzzyness
-                    .Any(x => EF.Functions.ILike(x.Value, $"%{request.Search!}%"))
-                || x.SearchTitle!.Localizations
-                    .Where(x => request.SearchCultureCode == null || x.CultureCode == request.SearchCultureCode)
-                    .Any(x => EF.Functions.ILike(x.Value, $"%{request.Search!}%"))
-                || x.SenderName!.Localizations
-                    .Where(x => request.SearchCultureCode == null || x.CultureCode == request.SearchCultureCode)
-                    .Any(x => EF.Functions.ILike(x.Value, $"%{request.Search!}%"))
+                x.Title!.Localizations.AsQueryable().Any(searchExpression) ||
+                x.SearchTitle!.Localizations.AsQueryable().Any(searchExpression) ||
+                x.SenderName!.Localizations.AsQueryable().Any(searchExpression)
             )
             .Where(x => !x.VisibleFrom.HasValue || _clock.UtcNowOffset < x.VisibleFrom)
-            .Where(x => !x.ExpiresAt.HasValue || _clock.UtcNowOffset > x.ExpiresAt)
+            .Where(x => !x.ExpiresAt.HasValue || x.ExpiresAt < _clock.UtcNowOffset)
             .ProjectTo<ListDialogDto>(_mapper.ConfigurationProvider)
             .ToPaginatedListAsync(paginationToken, request, cancellationToken: cancellationToken);
+    }
+
+    private static Expression<Func<Localization, bool>> LocalizedSearchExpression(string? search, string? cultureCode)
+    {
+        return localization => 
+            (cultureCode == null || localization.CultureCode == cultureCode) && 
+            EF.Functions.ILike(localization.Value, $"%{search}%");
     }
 }

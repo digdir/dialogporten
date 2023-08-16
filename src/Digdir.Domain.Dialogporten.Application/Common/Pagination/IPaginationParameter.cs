@@ -19,13 +19,6 @@ public class DefaultPaginationParameter : IPaginationParameter
     private DateTimeOffset _continue = DateTimeOffset.MaxValue;
     private OrderDirection _direction = DefaultOrderDirection;
 
-    public DefaultPaginationParameter()
-    {
-        _limit= DefaultLimit;
-        _direction = DefaultOrderDirection;
-        _continue = DateTimeOffset.MinValue;
-    }
-
     public OrderDirection? Direction 
     { 
         get => _direction; 
