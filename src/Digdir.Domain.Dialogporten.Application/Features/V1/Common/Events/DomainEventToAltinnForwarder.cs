@@ -4,7 +4,7 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Events;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Events;
+namespace Digdir.Domain.Dialogporten.Application.Features.V1.Common.Events;
 
 internal sealed class DomainEventToAltinnForwarder :
     INotificationHandler<DialogCreatedDomainEvent>,
