@@ -1,4 +1,3 @@
-using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogActivities.Queries.List;
@@ -13,7 +12,4 @@ public sealed class ListDialogActivityDto
 
     public Guid? RelatedActivityId { get; set; }
     public Guid? DialogElementId { get; set; }
-
-    public List<LocalizationDto>? PerformedBy { get; set; } = new();
-    public List<LocalizationDto> Description { get; set; } = new();
 }
