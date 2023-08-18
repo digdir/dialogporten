@@ -37,7 +37,7 @@ internal sealed class GetDialogActivityQueryHandler : IRequestHandler<GetDialogA
             .Include(x => x.Description!.Localizations.OrderBy(x => x.CreatedAt).ThenBy(x => x.CultureCode))
             .Include(x => x.PerformedBy!.Localizations.OrderBy(x => x.CreatedAt).ThenBy(x => x.CultureCode))
             .AsNoTracking()
-            .FirstOrDefaultAsync(x => x.DialogId.Equals(request.DialogId) && x.Id.Equals(request.ActivityId),
+            .FirstOrDefaultAsync(x => x.DialogId == request.DialogId && x.Id == request.ActivityId,
                 cancellationToken: cancellationToken);
 
         if (dialogActivity is null)
