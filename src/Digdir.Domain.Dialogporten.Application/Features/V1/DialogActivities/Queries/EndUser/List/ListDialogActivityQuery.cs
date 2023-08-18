@@ -1,13 +1,12 @@
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Digdir.Domain.Dialogporten.Application.Common.Pagination;
-using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
-using Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Queries.ServiceOwner.Get;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using OneOf;
 
-namespace Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Queries.EndUser.List;
+namespace Digdir.Domain.Dialogporten.Application.Features.V1.DialogActivities.Queries.EndUser.List;
 
 public sealed class ListDialogActivityQuery : DefaultPaginationParameter, IRequest<ListDialogActivityResult>
 {
@@ -15,7 +14,7 @@ public sealed class ListDialogActivityQuery : DefaultPaginationParameter, IReque
 }
 
 [GenerateOneOf]
-public partial class ListDialogActivityResult : OneOfBase<PaginatedList<ListDialogDialogActivityDto>, ValidationError> { }
+public partial class ListDialogActivityResult : OneOfBase<List<ListDialogActivityDto>> { }
 
 internal sealed class ListDialogActivityQueryHandler : IRequestHandler<ListDialogActivityQuery, ListDialogActivityResult>
 {
@@ -32,7 +31,7 @@ internal sealed class ListDialogActivityQueryHandler : IRequestHandler<ListDialo
     {
         return await _db.DialogActivities
             .Where(x => x.DialogId.Equals(request.DialogId))
-            .ProjectTo<ListDialogDialogActivityDto>(_mapper.ConfigurationProvider)
-            .ToPaginatedListAsync(x => x.CreatedAt, request, cancellationToken);
+            .ProjectTo<ListDialogActivityDto>(_mapper.ConfigurationProvider)
+            .ToListAsync(cancellationToken: cancellationToken);
     }
 }

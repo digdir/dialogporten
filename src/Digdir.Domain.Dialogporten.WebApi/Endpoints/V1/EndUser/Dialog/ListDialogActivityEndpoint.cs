@@ -1,4 +1,4 @@
-using Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Queries.EndUser.List;
+using Digdir.Domain.Dialogporten.Application.Features.V1.DialogActivities.Queries.EndUser.List;
 using FastEndpoints;
 using MediatR;
 
@@ -23,7 +23,6 @@ public class ListDialogActivityEndpoint : Endpoint<ListDialogActivityQuery>
     {
         var result = await _sender.Send(req, ct);
         await result.Match(
-            paginatedDto => SendOkAsync(paginatedDto, ct),
-            validationError => this.BadRequestAsync(validationError, ct));
+            dto => SendOkAsync(dto, ct));
     }
 }

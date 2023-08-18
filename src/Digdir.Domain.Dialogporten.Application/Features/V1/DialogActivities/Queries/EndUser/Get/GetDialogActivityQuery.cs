@@ -6,7 +6,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
 
-namespace Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Queries.EndUser.Get;
+namespace Digdir.Domain.Dialogporten.Application.Features.V1.DialogActivities.Queries.EndUser.Get;
 
 public sealed class GetDialogActivityQuery : IRequest<GetDialogActivityResult>
 {
@@ -15,7 +15,7 @@ public sealed class GetDialogActivityQuery : IRequest<GetDialogActivityResult>
 }
 
 [GenerateOneOf]
-public partial class GetDialogActivityResult : OneOfBase<GetDialogDialogActivityDto, EntityNotFound>
+public partial class GetDialogActivityResult : OneOfBase<GetDialogActivityDto, EntityNotFound>
 {
 }
 
@@ -43,7 +43,7 @@ internal sealed class GetDialogActivityQueryHandler : IRequestHandler<GetDialogA
             return new EntityNotFound<DialogActivity>(request.ActivityId);
         }
 
-        var dto = _mapper.Map<GetDialogDialogActivityDto>(dialogActivity);
+        var dto = _mapper.Map<GetDialogActivityDto>(dialogActivity);
 
         return dto;
     }
