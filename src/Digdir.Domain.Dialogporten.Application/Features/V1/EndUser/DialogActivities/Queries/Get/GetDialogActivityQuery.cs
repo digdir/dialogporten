@@ -34,6 +34,8 @@ internal sealed class GetDialogActivityQueryHandler : IRequestHandler<GetDialogA
         CancellationToken cancellationToken)
     {
         var dialogActivity = await _dbContext.DialogActivities
+            .Include(x => x.Description!.Localizations.OrderBy(x => x.CreatedAt).ThenBy(x => x.CultureCode))
+            .Include(x => x.PerformedBy!.Localizations.OrderBy(x => x.CreatedAt).ThenBy(x => x.CultureCode))
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.DialogId.Equals(request.DialogId) && x.Id.Equals(request.ActivityId),
                 cancellationToken: cancellationToken);
