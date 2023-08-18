@@ -1,4 +1,5 @@
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
@@ -33,19 +34,15 @@ internal sealed class GetDialogActivityQueryHandler : IRequestHandler<GetDialogA
     public async Task<GetDialogActivityResult> Handle(GetDialogActivityQuery request,
         CancellationToken cancellationToken)
     {
-        var dialogActivity = await _dbContext.DialogActivities
-            .Include(x => x.Description!.Localizations.OrderBy(x => x.CreatedAt).ThenBy(x => x.CultureCode))
-            .Include(x => x.PerformedBy!.Localizations.OrderBy(x => x.CreatedAt).ThenBy(x => x.CultureCode))
-            .AsNoTracking()
+        var dto = await _dbContext.DialogActivities
+            .ProjectTo<GetDialogActivityDto>(_mapper.ConfigurationProvider)
             .FirstOrDefaultAsync(x => x.DialogId == request.DialogId && x.Id == request.ActivityId,
                 cancellationToken: cancellationToken);
 
-        if (dialogActivity is null)
+        if (dto is null)
         {
             return new EntityNotFound<DialogActivity>(request.ActivityId);
         }
-
-        var dto = _mapper.Map<GetDialogActivityDto>(dialogActivity);
 
         return dto;
     }
