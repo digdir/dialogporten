@@ -2,7 +2,7 @@ using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogActivitie
 using FastEndpoints;
 using MediatR;
 
-namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.EndUser.Dialog;
+namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.EndUser.DialogActivity;
 
 public class GetDialogActivityEndpoint : Endpoint<GetDialogActivityQuery>
 {
