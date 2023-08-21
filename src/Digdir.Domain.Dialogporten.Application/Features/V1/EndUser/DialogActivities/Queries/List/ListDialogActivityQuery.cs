@@ -1,7 +1,8 @@
 using AutoMapper;
-using AutoMapper.QueryableExtensions;
 using Digdir.Domain.Dialogporten.Application.Common.Pagination;
+using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
@@ -14,7 +15,7 @@ public sealed class ListDialogActivityQuery : DefaultPaginationParameter, IReque
 }
 
 [GenerateOneOf]
-public partial class ListDialogActivityResult : OneOfBase<List<ListDialogActivityDto>> { }
+public partial class ListDialogActivityResult : OneOfBase<List<ListDialogActivityDto>, EntityNotFound, EntityDeleted> { }
 
 internal sealed class ListDialogActivityQueryHandler : IRequestHandler<ListDialogActivityQuery, ListDialogActivityResult>
 {
@@ -29,10 +30,18 @@ internal sealed class ListDialogActivityQueryHandler : IRequestHandler<ListDialo
 
     public async Task<ListDialogActivityResult> Handle(ListDialogActivityQuery request, CancellationToken cancellationToken)
     {
-        return await _db.Dialogs
-            .Where(x => x.Id == request.DialogId)
-            .SelectMany(x => x.Activities)
-            .ProjectTo<ListDialogActivityDto>(_mapper.ConfigurationProvider)
-            .ToListAsync(cancellationToken: cancellationToken);
+        var dialog = await _db.Dialogs
+            .Include(x => x.Activities)
+            .IgnoreQueryFilters()
+            .FirstOrDefaultAsync(x => x.Id == request.DialogId, 
+                cancellationToken: cancellationToken);
+
+        if (dialog is null)
+            return new EntityNotFound<DialogEntity>(request.DialogId);
+
+        if (dialog.Deleted)
+            return new EntityDeleted<DialogEntity>(request.DialogId);
+        
+        return _mapper.Map<List<ListDialogActivityDto>>(dialog.Activities);
     }
 }
