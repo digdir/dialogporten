@@ -29,8 +29,9 @@ internal sealed class ListDialogActivityQueryHandler : IRequestHandler<ListDialo
 
     public async Task<ListDialogActivityResult> Handle(ListDialogActivityQuery request, CancellationToken cancellationToken)
     {
-        return await _db.DialogActivities
-            .Where(x => x.DialogId == request.DialogId)
+        return await _db.Dialogs
+            .Where(x => x.Id == request.DialogId)
+            .SelectMany(x => x.Activities)
             .ProjectTo<ListDialogActivityDto>(_mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken: cancellationToken);
     }

@@ -11,7 +11,6 @@ public sealed class GetDialogActivityDto
 
     public DialogActivityType.Enum Type { get; set; }
 
-    public Guid DialogId { get; set; }
     public Guid? RelatedActivityId { get; set; }
     public Guid? DialogElementId { get; set; }
 

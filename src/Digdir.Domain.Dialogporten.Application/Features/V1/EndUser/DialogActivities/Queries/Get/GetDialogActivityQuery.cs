@@ -34,11 +34,11 @@ internal sealed class GetDialogActivityQueryHandler : IRequestHandler<GetDialogA
     public async Task<GetDialogActivityResult> Handle(GetDialogActivityQuery request,
         CancellationToken cancellationToken)
     {
-        var dto = await _dbContext.DialogActivities
+        var dto = await _dbContext.Dialogs.Where(x => x.Id == request.DialogId)
+            .SelectMany(x => x.Activities)
             .ProjectTo<GetDialogActivityDto>(_mapper.ConfigurationProvider)
-            .FirstOrDefaultAsync(x => x.DialogId == request.DialogId && x.Id == request.ActivityId,
-                cancellationToken: cancellationToken);
-
+            .FirstOrDefaultAsync(x => x.Id == request.ActivityId, cancellationToken: cancellationToken);
+        
         if (dto is null)
         {
             return new EntityNotFound<DialogActivity>(request.ActivityId);
