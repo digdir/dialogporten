@@ -1,25 +1,25 @@
-﻿using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Queries.Get;
+using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogActivities.Queries.Get;
 using FastEndpoints;
 using MediatR;
 
-namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.EndUser.Dialog;
+namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.EndUser.DialogActivity;
 
-public class GetDialogEndpoint : Endpoint<GetDialogQuery>
+public class GetDialogActivityEndpoint : Endpoint<GetDialogActivityQuery>
 {
     private readonly ISender _sender;
 
-    public GetDialogEndpoint(ISender sender)
+    public GetDialogActivityEndpoint(ISender sender)
     {
         _sender = sender ?? throw new ArgumentNullException(nameof(sender));
     }
 
     public override void Configure()
     {
-        Get("dialogs/{id}");
+        Get("dialogs/{dialogId}/activities/{activityId}");
         Group<EndUserGroup>();
     }
 
-    public override async Task HandleAsync(GetDialogQuery req, CancellationToken ct)
+    public override async Task HandleAsync(GetDialogActivityQuery req, CancellationToken ct)
     {
         var result = await _sender.Send(req, ct);
         await result.Match(

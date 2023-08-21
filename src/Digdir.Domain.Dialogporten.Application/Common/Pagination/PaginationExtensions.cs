@@ -60,7 +60,7 @@ internal static class PaginationExtensions
         // it's still a performance hit due to the ExpressionEqualityComparer.
         // If we need to squeeze out more performance we could restrict T to
         // be a ICreatableEntity and directly access the Timestamp property
-        // eliminating the need for the timeSelector expression. This whould
+        // eliminating the need for the timeSelector expression. This would
         // increase the timestamp access by a factor of 800x at the cost of
         // cleaner code from the calling side. Pick your poison.
         var continuationToken = items.Length > 0
