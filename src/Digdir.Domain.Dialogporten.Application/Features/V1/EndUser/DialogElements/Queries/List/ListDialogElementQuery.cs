@@ -9,7 +9,7 @@ using OneOf;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogElements.Queries.List;
 
-public sealed class ListDialogElementQuery : DefaultPaginationParameter, IRequest<ListDialogElementResult>
+public sealed class ListDialogElementQuery : IRequest<ListDialogElementResult>
 {
     public Guid DialogId { get; set; }
 }
