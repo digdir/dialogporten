@@ -4,7 +4,7 @@ using MassTransit;
 using System.Reflection;
 
 // TODO: Add application insights and serilog logging with two stage initialization
-// TODO: Add AppConfiguration and keyvault
+// TODO: Add AppConfiguration and key vault
 // TODO: Configure RabbitMQ connection settings 
 // TODO: Configure Postgres connection settings
 // TODO: Improve exceptions thrown in this assembly

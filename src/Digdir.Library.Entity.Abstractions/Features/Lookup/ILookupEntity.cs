@@ -22,7 +22,7 @@ public interface ILookupEntity<TSelf, TEnum> : ILookupEntity
 
 /// <summary>
 /// Abstraction implemented by entities that is static during the application 
-/// lifetime. For example type information, or states in a finate state machine.
+/// lifetime. For example type information, or states in a finite state machine.
 /// </summary>
 public interface ILookupEntity
 {

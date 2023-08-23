@@ -8,7 +8,7 @@ namespace Digdir.Domain.Dialogporten.Application.Common.Behaviours;
 /// <summary>
 /// This behaviour is used to ensure that the domain context is valid and return the correct response to the presentation layer if it is not.
 /// <para>
-/// The behavoiour will return <see cref="DomainError"/> if <typeparamref name="TResponse"/> implements 
+/// The behaviour will return <see cref="DomainError"/> if <typeparamref name="TResponse"/> implements 
 /// <see cref="OneOf.IOneOf"/> containing <see cref="DomainError"/> on invalid domain state.
 /// </para>
 /// <para>
