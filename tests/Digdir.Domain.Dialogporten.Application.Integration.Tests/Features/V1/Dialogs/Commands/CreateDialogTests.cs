@@ -15,7 +15,7 @@ public class CreateDialogTests : ApplicationCollectionFixture
     public CreateDialogTests(DialogApplication application) : base(application) { }
 
     //[Fact]
-    //public async Task Create_CreatesDialog_WhenDialoIsSimple()
+    //public async Task Create_CreatesDialog_WhenDialogIsSimple()
     //{
     //    // Arrange
     //    var expectedDialogId = Guid.NewGuid();

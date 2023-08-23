@@ -5,7 +5,7 @@ using System.Reflection;
 namespace Digdir.Domain.Dialogporten.Application.Common.Pagination;
 
 /// <summary>
-/// This is used internaly to be able to compare expressions for caching.
+/// This is used internally to be able to compare expressions for caching.
 /// See https://stackoverflow.com/a/19817323 for more information.
 /// </summary>
 internal sealed class ExpressionEqualityComparer : IEqualityComparer<Expression>, IEqualityComparer<object>

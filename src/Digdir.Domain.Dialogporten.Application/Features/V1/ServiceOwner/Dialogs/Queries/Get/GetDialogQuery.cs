@@ -30,10 +30,10 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
 
     public async Task<GetDialogResult> Handle(GetDialogQuery request, CancellationToken cancellationToken)
     {
-        // This query could be written without all the includes as ProjctTo will do the job for us.
-        // However, we need to guarantee an order for sub resources of the dialog aggragate.
+        // This query could be written without all the includes as ProjectTo will do the job for us.
+        // However, we need to guarantee an order for sub resources of the dialog aggregate.
         // This is to ensure that the get is consistent, and that PATCH in the API presentation
-        // layer behavious in an expected manner. Therefore we need to be a bit more verbose about it.
+        // layer behaviours in an expected manner. Therefore we need to be a bit more verbose about it.
         var dialog = await _db.Dialogs
             .Include(x => x.Body!.Localizations.OrderBy(x => x.CreatedAt).ThenBy(x => x.CultureCode))
             .Include(x => x.Title!.Localizations.OrderBy(x => x.CreatedAt).ThenBy(x => x.CultureCode))

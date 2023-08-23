@@ -26,7 +26,7 @@ public sealed class OutboxScheduler : BackgroundService
         // implement a lock so that there is a 1:1 relationship between an OutboxMessage and a OutboxDispatcher at
         // any given time.
         // 
-        // Regardless, this code is sutable for local development without docker. 
+        // Regardless, this code is suitable for local development without docker. 
 
         try
         {

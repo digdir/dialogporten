@@ -53,7 +53,7 @@ public static class EntityLibraryEfCoreExtensions
     }
 
     /// <summary>
-    /// Configures the shape of, and how the entities implementing the following abstractions are maped to the database.
+    /// Configures the shape of, and how the entities implementing the following abstractions are mapped to the database.
     /// <list type="bullet">
     ///     <item><see cref="ILookupEntity"/></item>
     ///     <item><see cref="IIdentifiableEntity"/></item>
