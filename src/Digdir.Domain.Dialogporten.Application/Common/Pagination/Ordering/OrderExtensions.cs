@@ -62,44 +62,42 @@ internal static class OrderExtensions
         var orderParts = parts
             .Zip(orderSet.Orders, (part, order) => (value: part, orderDirection: order.Direction, orderBody: order.OrderBy.Body.CleanBody(parameterReplacer)))
             .ToArray();
-        var idPart = orderParts[^1];
-        orderParts = orderParts[..^1];
 
-        var firstPart = orderParts
+        // ltGtParts =      [ a < an, b < bn, c < cn, id < idn ]
+        // equalParst =     [ a = an, b = bn, c = cn, id = idn ]
+        // intermediate =   [ a < an, a = an AND b < bn, a = an AND b = bn AND c < cn ]
+        // condition =      a < an OR (a = an AND b < bn) OR (a = an AND b = bn AND c < cn) OR ...
+        var ltGtParts = orderParts
             .Select(x => x.orderDirection switch
             {
                 OrderDirection.Asc => Expression.GreaterThan(x.orderBody, Expression.Constant(x.value, x.orderBody.Type)),
                 OrderDirection.Desc => Expression.LessThan(x.orderBody, Expression.Constant(x.value, x.orderBody.Type)),
             })
-            //.Aggregate(Expression.AndAlso);
+            .ToArray();
+
+        var eqParts = orderParts
+            .Select(x => Expression.Equal(x.orderBody, Expression.Constant(x.value, x.orderBody.Type)))
+            .ToArray();
+
+        var condition = ltGtParts
+            .Select((ltGtPart, index) => eqParts[..index]
+                .Concat(new[] { ltGtPart })
+                .Aggregate(Expression.AndAlso))
             .Aggregate(Expression.OrElse);
 
-        var secondPart = orderParts
-            .Select(x => Expression.Equal(x.orderBody, Expression.Constant(x.value, x.orderBody.Type)))
-            .Aggregate(Expression.AndAlso);
-        var idCondition = idPart.orderDirection switch
-        {
-            OrderDirection.Asc => Expression.GreaterThan(idPart.orderBody, Expression.Constant(idPart.value, idPart.orderBody.Type)),
-            OrderDirection.Desc => Expression.LessThan(idPart.orderBody, Expression.Constant(idPart.value, idPart.orderBody.Type)),
-        };
-        secondPart = Expression.AndAlso(secondPart, idCondition);
-
-        var condition = Expression.OrElse(firstPart, secondPart);
         var queryPredicate = Expression.Lambda<Func<T, bool>>(condition, parameter);
         query = query.Where(queryPredicate);
         return query;
     }
 
-    private static Expression CleanBody(this Expression body, ParameterReplacer? parameterReplacer)
+    private static Expression CleanBody(this Expression body, ParameterReplacer parameterReplacer)
     {
         if (body.NodeType == ExpressionType.Convert && body is UnaryExpression unaryExpression)
         {
             body = unaryExpression.Operand;
         }
 
-        return parameterReplacer is not null 
-            ? parameterReplacer.Visit(body)
-            : body;
+        return parameterReplacer.Visit(body);
     }
 
     private class ParameterReplacer : ExpressionVisitor

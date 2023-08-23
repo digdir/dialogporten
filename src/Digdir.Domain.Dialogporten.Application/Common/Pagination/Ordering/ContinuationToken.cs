@@ -43,6 +43,7 @@ public class ContinuationToken
         }
         if (orders.Count != _parts.Count)
         {
+            // TODO: Throw exception? 
             throw new ArgumentException(
                 $"The number of orders must match the number of parts in the continuation " +
                 $"token. Got {orders.Count}, expected {_parts.Count}.", nameof(orders));
@@ -52,11 +53,6 @@ public class ContinuationToken
         var typedParts = new List<object?>();
         foreach (var (part, order) in _parts.Zip(orders))
         {
-            if (string.IsNullOrWhiteSpace(part))
-            {
-
-            }
-
             var type = order.OrderBy.Body.Type;
             if (order.OrderBy.Body.NodeType == ExpressionType.Convert 
                 && order.OrderBy.Body is UnaryExpression unaryExpression)
