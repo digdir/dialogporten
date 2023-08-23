@@ -452,7 +452,7 @@ TT->>SBS: Returner respons på handling
 ```
 # Integrasjon med event-komponent
 
-Dialogporten vil generere events automatisk basert på endringer som gjøres på dialog-entiteten. Det vil også gjøres genereres events for hvert separate innslag i aktivitetshistorikken. Se 
+Dialogporten vil generere events automatisk basert på endringer som gjøres på dialog-entiteten. Det vil også gjøres genereres events for hvert separate innslag i aktivitetshistorikken og dialoglementer. Se 
 
 Se [case-01]({% link _dialogporten_case/example-case-01.md %}) for eksempler på hvordan events genereres.
 
@@ -497,6 +497,58 @@ I tillegg genereres det en event med type `dialogporten.dialog.read.v1` når dia
 }
 ```
 
+## Knyttet til listen av dialogelementer
+
+Hvis det gjøres endringer i listen av dialogelementer, skal dette føre til at det produseres egne events for dette som indikerer hva som har skjedd. 
+`source` vil referere selve dialogelementet (ikke dialogen).
+
+Eventer har type som er prefikset/navnerommet `dialogporten.dialog.element`. Under er en tabell som spesifiserer typene:
+
+| Type                                     | Når                                              |
+| ---------------------------------------- | ------------------------------------------------ |
+| `dialogporten.dialog.element.created.v1` | Tjenestetilbyer har til et dialogelement         |
+| `dialogporten.dialog.element.updated.v1` | Tjenestetilbyder har modifisert et dialogelement |
+| `dialogporten.dialog.deleted.v1`         | Tjenestetilybder har slettet et dialogelement    |
+
+### Eksempel
+
+```jsonc
+{
+    "specversion": "1.0",
+
+    // Unik event-id
+    "id": "7b358c4f-4073-41f0-a39d-a1fac90b630b",
+    
+    // Se "Type" i tabell over for liste over mulige hendelser
+    "type": "dialogporten.dialog.activity.created.v1",
+    
+    // Timestamp for når hendelsen inntraff i Dialogporten
+    "time": "2023-02-20T08:00:06.4014168Z",
+    
+    // urn:altinn:resource:{serviceResource}
+    "resource": "urn:altinn:resource:super-simple-service", 
+    
+    // Dialog-ID
+    "resourceinstance": "b8643c00-c826-41c7-8758-bfc0ca5c19fa",
+    
+    // Party
+    "subject": "org/91234578",
+
+    // URL til dialogelementet i Dialogporten
+    "source": "https://dialogporten.no/api/v1/dialogs/b8643c00-c826-41c7-8758-bfc0ca5c19fa/dialogelements/da506c38-b19f-45d4-963e-927df959a5f8",
+    
+    // Disse hentes verbatim fra dialogelementet. Kun "dialogElementId" er alltid oppgitt, alle andre felter
+    // vil kunne være utelatt siden de er valgfrie
+    "data": { 
+        "dialogElementId": "da506c38-b19f-45d4-963e-927df959a5f8",
+        "relatedDialogElementId": "cfdd19a4-8cf9-4138-9930-36478fdce398",
+        "dialogElementType": "skd:form-type-1"
+    }
+} 
+
+```
+
+
 ## Knyttet til aktivitetshistorikken 
 
 Det vil alltid bli generert egne events for hvert nye innslag i aktivitetshistorikken. `source` vil referere selve innslaget (ikke dialogen). Det vil også inkluderes en `data` som inneholder ytterligere informasjon som i mange tilfeller lar systemer kunne agere direkte mot tjenesteeiers API-er uten å måtte hente dialog/aktivitet først.
@@ -538,7 +590,7 @@ Eventer har type som er prefikset/navnerommet `dialogporten.dialog.activity`. Su
     "subject": "org/91234578",
 
     // URL til aktivitetshistorikk-innslag i Dialogporten
-    "source": "https://dialogporten.no/api/v1/dialogs/f4e6df3c-7434-44c3-875e-8dca1cdf0b20/activityhistory/21241c7e-819f-462b-b8a4-d5d32352311a",
+    "source": "https://dialogporten.no/api/v1/enduser/dialogs/f4e6df3c-7434-44c3-875e-8dca1cdf0b20/activityhistory/21241c7e-819f-462b-b8a4-d5d32352311a",
     
     // Disse hentes verbatim fra aktivitetshistorikk-innslaget. Kun "activityId" er alltid oppgitt, alle andre felter
     // vil kunne være utelatt siden de er valgfrie i activityHistory
