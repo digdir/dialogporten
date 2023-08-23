@@ -37,20 +37,26 @@ internal sealed class GetDialogActivityQueryHandler : IRequestHandler<GetDialogA
         var dialog = await _dbContext.Dialogs
             .Include(x => x.Activities.Where(x => x.Id == request.ActivityId))
             .IgnoreQueryFilters()
-            .FirstOrDefaultAsync(x => x.Id == request.DialogId, 
+            .FirstOrDefaultAsync(x => x.Id == request.DialogId,
                 cancellationToken: cancellationToken);
 
         if (dialog is null)
+        {
             return new EntityNotFound<DialogEntity>(request.DialogId);
+        }
 
         if (dialog.Deleted)
+        {
             return new EntityDeleted<DialogEntity>(request.DialogId);
-        
+        }
+
         var activity = dialog.Activities.FirstOrDefault();
 
-        if(activity is null)
+        if (activity is null)
+        {
             return new EntityNotFound<DialogActivity>(request.ActivityId);
-        
+        }
+
         return _mapper.Map<GetDialogActivityDto>(activity);
     }
 }

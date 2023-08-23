@@ -52,15 +52,21 @@ internal sealed class GetDialogElementQueryHandler : IRequestHandler<GetDialogEl
                 cancellationToken: cancellationToken);
 
         if (dialog is null)
+        {
             return new EntityNotFound<DialogEntity>(request.DialogId);
+        }
 
         if (dialog.Deleted)
+        {
             return new EntityDeleted<DialogEntity>(request.DialogId);
+        }
         
         var element = dialog.Elements.FirstOrDefault();
 
-        if(element is null)
+        if (element is null)
+        {
             return new EntityNotFound<DialogElement>(request.DialogElementId);
+        }
         
         var dto = _mapper.Map<GetDialogElementDto>(element);
         return dto;

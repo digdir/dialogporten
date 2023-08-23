@@ -38,10 +38,14 @@ internal sealed class ListDialogElementQueryHandler : IRequestHandler<ListDialog
                 cancellationToken: cancellationToken);
 
         if (dialog is null)
+        {
             return new EntityNotFound<DialogEntity>(request.DialogId);
+        }
 
         if (dialog.Deleted)
+        {
             return new EntityDeleted<DialogEntity>(request.DialogId);
+        }
         
         return _mapper.Map<List<ListDialogElementDto>>(dialog.Elements);
     }
