@@ -36,6 +36,6 @@ internal sealed class ListDialogQueryValidator : AbstractValidator<ListDialogQue
             .When(x => x.ExtendedStatus is not null);
 
         RuleFor(x => x.Status).IsInEnum();
-        RuleFor(x => x.OrderBy).IsInEnum();
+        //RuleFor(x => x.OrderBy).IsInEnum();
     }
 }

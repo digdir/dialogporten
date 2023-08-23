@@ -4,6 +4,7 @@ using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.Enumerable;
 using Digdir.Domain.Dialogporten.Application.Common.Pagination;
+using Digdir.Domain.Dialogporten.Application.Common.Pagination.Ordering;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
@@ -11,6 +12,7 @@ using Digdir.Domain.Dialogporten.Domain.Localizations;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Queries.EndUser.List;
@@ -41,14 +43,29 @@ public sealed class ListDialogQuery : DefaultPaginationParameter, IRequest<ListD
         init => _searchCultureCode = Localization.NormalizeCultureCode(value); 
     }
 
-    public ListDialogQueryOrder? OrderBy { get; init; }
+    public OrderSet<ListDialogQueryOrder, ListDialogDto>? OrderBy { get; init; }
 }
 
-public enum ListDialogQueryOrder
+public class ListDialogQueryOrder : IParsableOrder<ListDialogQueryOrder, ListDialogDto>
 {
-    CreatedAt,
-    UpdatedAt,
-    DueAt
+    public string OrderByAsString { get; init; } = null!;
+    public Expression<Func<ListDialogDto, object?>> OrderBy { get; init; } = null!;
+    public OrderDirection Direction { get; init; }
+
+    public static Expression<Func<ListDialogDto, object?>> GetIdExpression() => x => x.Id;
+    public static Expression<Func<ListDialogDto, object?>> GetDefaultOrderExpression() => x => x.CreatedAt;
+    public static bool TryParseOrderExpression(string? value, [NotNullWhen(true)] out Expression<Func<ListDialogDto, object?>>? result)
+    {
+        result = value?.ToLower() switch
+        {
+            "createdat" => x => x.CreatedAt,
+            "updatedat" => x => x.UpdatedAt,
+            "dueat" => x => x.DueAt,
+            _ => null
+        };
+
+        return result is not null;
+    }
 }
 
 [GenerateOneOf]
@@ -69,14 +86,6 @@ internal sealed class ListDialogQueryHandler : IRequestHandler<ListDialogQuery, 
 
     public async Task<ListDialogResult> Handle(ListDialogQuery request, CancellationToken cancellationToken)
     {
-        Expression<Func<ListDialogDto, DateTimeOffset?>> paginationToken = request.OrderBy switch
-        {
-            ListDialogQueryOrder.CreatedAt => x => x.CreatedAt,
-            ListDialogQueryOrder.UpdatedAt => x => x.UpdatedAt,
-            ListDialogQueryOrder.DueAt => x => x.DueAt,
-            _ => x => x.CreatedAt
-        };
-
         var searchExpression = LocalizedSearchExpression(request.Search, request.SearchCultureCode);
 
         return await _db.Dialogs
@@ -87,10 +96,10 @@ internal sealed class ListDialogQueryHandler : IRequestHandler<ListDialogQuery, 
             .WhereIf(!request.Status.IsNullOrEmpty(), x => request.Status!.Contains(x.StatusId))
             .WhereIf(request.CreatedAfter.HasValue, x => request.CreatedAfter <= x.CreatedAt)
             .WhereIf(request.CreatedBefore.HasValue, x => x.CreatedAt <= request.CreatedBefore)
-            .WhereIf(request.UpdatedAfter.HasValue, x => request.UpdatedAfter <= x.CreatedAt)
-            .WhereIf(request.UpdatedBefore.HasValue, x => x.CreatedAt <= request.UpdatedBefore)
-            .WhereIf(request.DueAfter.HasValue, x => request.DueAfter <= x.CreatedAt)
-            .WhereIf(request.DueBefore.HasValue, x => x.CreatedAt <= request.DueBefore)
+            .WhereIf(request.UpdatedAfter.HasValue, x => request.UpdatedAfter <= x.UpdatedAt)
+            .WhereIf(request.UpdatedBefore.HasValue, x => x.UpdatedAt <= request.UpdatedBefore)
+            .WhereIf(request.DueAfter.HasValue, x => request.DueAfter <= x.DueAt)
+            .WhereIf(request.DueBefore.HasValue, x => x.DueAt <= request.DueBefore)
             .WhereIf(request.Search is not null, x =>
                 x.Title!.Localizations.AsQueryable().Any(searchExpression) ||
                 x.SearchTitle!.Localizations.AsQueryable().Any(searchExpression) ||
@@ -99,7 +108,7 @@ internal sealed class ListDialogQueryHandler : IRequestHandler<ListDialogQuery, 
             .Where(x => !x.VisibleFrom.HasValue || _clock.UtcNowOffset < x.VisibleFrom)
             .Where(x => !x.ExpiresAt.HasValue || x.ExpiresAt < _clock.UtcNowOffset)
             .ProjectTo<ListDialogDto>(_mapper.ConfigurationProvider)
-            .ToPaginatedListAsync(paginationToken, request, cancellationToken: cancellationToken);
+            .ToPaginatedListAsync(request.OrderBy.DefaultIfNull(), request, cancellationToken: cancellationToken);
     }
 
     private static Expression<Func<Localization, bool>> LocalizedSearchExpression(string? search, string? cultureCode)

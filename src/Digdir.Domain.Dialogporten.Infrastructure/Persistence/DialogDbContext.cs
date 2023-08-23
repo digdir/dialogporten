@@ -11,6 +11,7 @@ using Digdir.Library.Entity.Abstractions.Features.Versionable;
 using Digdir.Library.Entity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Microsoft.Extensions.Logging;
 using System.Linq.Expressions;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence;
@@ -94,5 +95,10 @@ internal sealed class DialogDbContext : DbContext, IDialogDbContext
             .RemovePluralizingTableNameConvention()
             .AddAuditableEntities()
             .ApplyConfigurationsFromAssembly(typeof(DialogDbContext).Assembly);
+    }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.LogTo(Console.WriteLine, LogLevel.Information);
     }
 }

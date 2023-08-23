@@ -1,6 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.Collections.Concurrent;
-using System.Linq.Expressions;
+﻿using Digdir.Domain.Dialogporten.Application.Common.Pagination.Ordering;
+using Microsoft.EntityFrameworkCore;
 
 namespace Digdir.Domain.Dialogporten.Application.Common.Pagination;
 
@@ -8,38 +7,34 @@ internal static class PaginationExtensions
 {
     public static Task<PaginatedList<TDestination>> ToPaginatedListAsync<TDestination>(
         this IQueryable<TDestination> queryable,
-        Expression<Func<TDestination, DateTimeOffset?>> paginationToken,
-        DateTimeOffset continuationToken,
+        IOrderSet<TDestination> orderSet,
+        ContinuationToken? continuationToken,
         int limit,
-        OrderDirection orderDirection = OrderDirection.Asc,
         CancellationToken cancellationToken = default)
         => CreateAsync(
             queryable,
-            paginationToken,
+            orderSet,
             continuationToken,
             limit,
-            orderDirection,
             cancellationToken);
 
     public static Task<PaginatedList<TDestination>> ToPaginatedListAsync<TDestination>(
         this IQueryable<TDestination> queryable,
-        Expression<Func<TDestination, DateTimeOffset?>> paginationToken,
+        IOrderSet<TDestination> orderSet,
         IPaginationParameter parameter,
         CancellationToken cancellationToken = default)
         => CreateAsync(
-            queryable, 
-            paginationToken, 
-            parameter.Continue!.Value, 
-            parameter.Limit!.Value, 
-            parameter.Direction!.Value, 
+            queryable,
+            orderSet,
+            parameter.Continue,
+            parameter.Limit!.Value,
             cancellationToken);
 
     private static async Task<PaginatedList<T>> CreateAsync<T>(
         IQueryable<T> source,
-        Expression<Func<T, DateTimeOffset?>> paginationToken,
-        DateTimeOffset continuationToken,
+        IOrderSet<T> orderSet,
+        ContinuationToken? continuationToken,
         int limit,
-        OrderDirection orderDirection = OrderDirection.Asc,
         CancellationToken cancellationToken = default)
     {
         if (source == null)
@@ -48,16 +43,10 @@ internal static class PaginationExtensions
         }
 
         const int OneMore = 1;
-        var queryPredicte = BuildQueryPredicate(paginationToken, continuationToken, orderDirection);
-        var orderedQuery = orderDirection switch
-        {
-            OrderDirection.Asc => source.OrderBy(paginationToken),
-            OrderDirection.Desc => source.OrderByDescending(paginationToken),
-            _ => throw new ArgumentOutOfRangeException(nameof(orderDirection), orderDirection, null)
-        };
-        
-        var items = await orderedQuery
-            .Where(queryPredicte)
+
+        var items = await source
+            .ApplyOrder(orderSet)
+            .ApplyCondition(orderSet, continuationToken)
             .Take(limit + OneMore)
             .ToArrayAsync(cancellationToken);
 
@@ -67,6 +56,14 @@ internal static class PaginationExtensions
         {
             Array.Resize(ref items, limit);
         }
+
+        // TODO: Get continuation token from last item in the list
+        var nextContinuationToken = items.Length > 0
+            ? orderSet.GetContinuationToken(items[^1])
+            : null;
+
+        // TODO: Get order by from order set
+        var orderBy = orderSet.GetOrderByAsString();
 
         // Compiling the timeSelector expression is a performance bottleneck.
         // We're currently caching the compiled expression giving an estimated
@@ -78,32 +75,14 @@ internal static class PaginationExtensions
         // increase the timestamp access by a factor of 800x at the cost of
         // cleaner code from the calling side. It would also restrict which
         // timestamp we can use as a pagination token. Pick your poison.
-        var nextContinuationToken = items.Length > 0
-            ? paginationToken.CompileOrGetCached().Invoke(items[^1])
-            : null;
+        //var nextContinuationToken = items.Length > 0
+        //    ? orderSet.CompileOrGetCached().Invoke(items[^1])
+        //    : null;
 
-        return new PaginatedList<T>(items, hasNextPage, nextContinuationToken);
+        return new PaginatedList<T>(items, hasNextPage, nextContinuationToken, orderBy);
     }
 
-    private static Expression<Func<T, bool>> BuildQueryPredicate<T>(
-        Expression<Func<T, DateTimeOffset?>> paginationToken,
-        DateTimeOffset continuationToken,
-        OrderDirection orderDirection)
-    {
-        var continuationConstant = Expression.Constant(continuationToken, typeof(DateTimeOffset?));
-        var orderCondition = orderDirection switch
-        {
-            OrderDirection.Asc => Expression.GreaterThan(paginationToken.Body, continuationConstant),
-            OrderDirection.Desc => Expression.LessThan(paginationToken.Body, continuationConstant),
-            _ => throw new ArgumentOutOfRangeException(nameof(orderDirection), orderDirection, null)
-        };
-        var notNullCondition = Expression.NotEqual(paginationToken.Body, Expression.Constant(null));
-        var notNullAndOrderCondition = Expression.AndAlso(notNullCondition, orderCondition);
-        var queryPredicte = Expression.Lambda<Func<T, bool>>(notNullAndOrderCondition, paginationToken.Parameters);
-        return queryPredicte;
-    }
-
-    private static readonly ConcurrentDictionary<object, object> _compiledByExpression = new(comparer: new ExpressionEqualityComparer());
-    private static TFunc CompileOrGetCached<TFunc>(this Expression<TFunc> selectorExpression) where TFunc : Delegate => 
-        (TFunc)_compiledByExpression.GetOrAdd(selectorExpression, x => ((Expression<TFunc>)x).Compile());
+    //private static readonly ConcurrentDictionary<object, object> _compiledByExpression = new(comparer: new ExpressionEqualityComparer());
+    //private static TFunc CompileOrGetCached<TFunc>(this Expression<TFunc> selectorExpression) where TFunc : Delegate => 
+    //    (TFunc)_compiledByExpression.GetOrAdd(selectorExpression, x => ((Expression<TFunc>)x).Compile());
 }
