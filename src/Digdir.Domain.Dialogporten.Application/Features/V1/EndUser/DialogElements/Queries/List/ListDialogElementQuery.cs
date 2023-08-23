@@ -32,7 +32,7 @@ internal sealed class ListDialogElementQueryHandler : IRequestHandler<ListDialog
     {
         var dialog = await _db.Dialogs
             .Include(x => x.Elements)
-                .ThenInclude(x => x.DisplayName!.Localizations.OrderBy(x => x.CreatedAt).ThenBy(x => x.CultureCode))
+                .ThenInclude(x => x.DisplayName!.Localizations)
             .IgnoreQueryFilters()
             .FirstOrDefaultAsync(x => x.Id == request.DialogId, 
                 cancellationToken: cancellationToken);
