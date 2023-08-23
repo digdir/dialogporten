@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using AutoMapper;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
@@ -34,23 +35,18 @@ internal sealed class GetDialogElementQueryHandler : IRequestHandler<GetDialogEl
     public async Task<GetDialogElementResult> Handle(GetDialogElementQuery request,
         CancellationToken cancellationToken)
     {
+        Expression<Func<DialogEntity, IEnumerable<DialogElement>>> elementFilter = dialog =>
+            dialog.Elements.Where(x => x.Id == request.DialogElementId);
+        
         var dialog = await _dbContext.Dialogs
-            .Include(x => x.Elements.Where(x => x.Id == request.DialogElementId))
-                .ThenInclude(x => x.DisplayName!.Localizations.OrderBy(x => x.CreatedAt).ThenBy(x => x.CultureCode))
-            .Include(x => x.Elements.Where(x => x.Id == request.DialogElementId))
-                .ThenInclude(x => x.Urls.OrderBy(x => x.CreatedAt).ThenBy(x => x.Id))
-            .Include(x => x.Elements.Where(x => x.Id == request.DialogElementId))
-                .ThenInclude(x => x.RelatedDialogElements.OrderBy(x => x.CreatedAt).ThenBy(x => x.Id))
-            .Include(x => x.Activities.Where(x => x.DialogElementId == request.DialogElementId))
-                .ThenInclude(x => x.Description!.Localizations.OrderBy(x => x.CreatedAt).ThenBy(x => x.CultureCode))
-            .Include(x => x.Activities.Where(x => x.DialogElementId == request.DialogElementId))
-                .ThenInclude(x => x.PerformedBy!.Localizations.OrderBy(x => x.CreatedAt).ThenBy(x => x.CultureCode))
-            .Include(x => x.ApiActions.OrderBy(x => x.CreatedAt).ThenBy(x => x.Id))
-                .ThenInclude(x => x.Endpoints.OrderBy(x => x.CreatedAt).ThenBy(x => x.Id))
+            .Include(elementFilter)
+                .ThenInclude(x => x.DisplayName!.Localizations)
+            .Include(elementFilter)
+                .ThenInclude(x => x.Urls)
             .IgnoreQueryFilters()
             .FirstOrDefaultAsync(x => x.Id == request.DialogId, 
                 cancellationToken: cancellationToken);
-
+        
         if (dialog is null)
         {
             return new EntityNotFound<DialogEntity>(request.DialogId);
