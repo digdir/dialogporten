@@ -1,5 +1,4 @@
 using AutoMapper;
-using Digdir.Domain.Dialogporten.Application.Common.Pagination;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
@@ -9,7 +8,7 @@ using OneOf;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogActivities.Queries.List;
 
-public sealed class ListDialogActivityQuery : DefaultPaginationParameter, IRequest<ListDialogActivityResult>
+public sealed class ListDialogActivityQuery : IRequest<ListDialogActivityResult>
 {
     public Guid DialogId { get; set; }
 }
