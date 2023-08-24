@@ -36,7 +36,6 @@ Det er typisk tre scenarioer som innebærer behov for interaksjon med Dialogport
     * Kan være utgangspunkt for sluttbruker-initiert dialog, med lenker til «neste trinn» 
     * Teknisk/funksjonelt subset av tjenestetilbyder-initiert dialog, men kan også være del av en sluttbruker-initiert dialog (f.eks. et vedtaksbrev)
 
-Det finnes andre scenarioer rundt oppslag/innsynstjenester og filoverføringer som trolig ikke vil behøve en representasjon i en Dialogporten, og er følgelig out-of-scope for dette arbeidet.
 
 # Viktige begreper
 
@@ -82,11 +81,11 @@ Som det pekes på i avsnittet [Scenarioer som påvirker Dialogporten](#scenarioe
 
 ## Dialog
 
-Dialogen er en abstrakt og felles modell for alle pågående eller avsluttede [spesialiserte dialoger](#spesialisert-dialog) hos en tjenestetilbyder, og inneholder beskrivende metadata, f.eks. hvem som er mottakende part, adresse (URL), overskrift, dato, status samt en liste over aktuelle _handlinger_ som kan utføres av brukeren. Dialogporten knytter semantikk kun til slette-handlinger, hvis dette gjøres tilgjengelig av tjenestetilbyder. Andre handlinger kan vilkårlig defineres av tjenestetilbyder, og all interaksjon med den dialogen foregår i tjenestetilbyders brukerflater (unntaket er GUI-handlinger som går gjennom bakkanal, se mer om dette i avsnittet [Hendelser](#hendelser)).
+Dialogen er en abstrakt og felles modell for alle pågående eller avsluttede [spesialiserte dialoger](#spesialisert-dialog) hos en tjenestetilbyder, og inneholder beskrivende metadata, f.eks. hvem som er mottakende part, adresse (URL), overskrift, dato, status, en liste over aktuelle _handlinger_ som kan utføres av brukeren samt en valgfri liste over [dialogelementer](#dialogelement). Dialogporten knytter semantikk kun til slette-handlinger, hvis dette gjøres tilgjengelig av tjenestetilbyder. Andre handlinger kan vilkårlig defineres av tjenestetilbyder, og all interaksjon med den dialogen foregår i tjenestetilbyders brukerflater (unntaket er GUI-handlinger som går gjennom bakkanal, se mer om dette i avsnittet [Hendelser](#hendelser)).
 
 En viktig forskjell mot dagens «correspondence» i Altinn, er at dialogene i Dialogporten er _mutérbare_. Tjenestetilbyder kan når som helst oppdatere metadata og tilgjengelige handlinger på dialogen. Enhver endring fører til at det genereres _hendelser_, som autoriserte parter kan agere på, f.eks. at det sendes et varsel eller at et SBS foretar seg noe.
 
-Dialoger har en UUID som identifikator. Tjenesteeier kan selv oppgi ønsket UUID ved opprettelse for å gjøre det mulig å bruke samme identifikator på tvers av systemer.
+Dialoger har en UUID som identifikator. Tjenesteeier kan selv oppgi ønsket UUID ved opprettelse for å gjøre det mulig å bruke samme identifikator på tvers av systemer og for å sikre idempotens.
 
 ## Spesialisert dialog
 
@@ -335,6 +334,8 @@ Dette kan uttrykkes i [forenklet JSON](https://github.com/Altinn/altinn-studio/i
 ```
 
 {% include note.html type="info" content="Merk at XACML gjør matching på attributter. Så en regel som gir f.eks. `sign` uten å oppgi et ekstra autorisasjonsattributt, vil da gi tilgang til alle `sign`-actions uavhengig av hvilket autorisasjonsattributt som er definert på action-en." %}
+
+Se [issue på Github](https://github.com/digdir/dialogporten/issues/43) for eksempler på requests som genereres av Dialogporten.
 
 ## Bruk av Dialogportens API-er
 
