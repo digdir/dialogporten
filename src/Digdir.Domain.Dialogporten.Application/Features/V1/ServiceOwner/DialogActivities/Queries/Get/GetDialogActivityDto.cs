@@ -11,7 +11,7 @@ public sealed class GetDialogActivityDto
     
     public DialogActivityType.Enum Type { get; set; }
     
-    public DateTimeOffset? DialogDeletedAt { get; set; }
+    public DateTimeOffset? DeletedAt { get; set; }
     
     public Guid? RelatedActivityId { get; set; }
     public Guid? DialogElementId { get; set; }
