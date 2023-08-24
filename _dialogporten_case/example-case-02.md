@@ -29,7 +29,7 @@ Partene er Nortura og Skatteetaten.
 ## 1. Nortura instansierer en dialog
 
 ```jsonc
-// POST /dialogporten/api/v1/instantiate
+// POST /dialogporten/api/v1/serviceowner/instantiate
 {
     "serviceResource": "rf1305_purchases_from_primary_industry_eggs",
     "party": "org/938752648",
@@ -42,7 +42,7 @@ Partene er Nortura og Skatteetaten.
 ## 2. EggAPI oppretter en dialog
 
 ```jsonc
-// POST /dialogporten/api/v1/dialogs
+// POST /dialogporten/api/v1/serviceowner/dialogs
 {
     "id": "e0300961-85fb-4ef2-abff-681d77f9960e",
     "serviceResource": "rf1305_purchases_from_primary_industry_eggs",     
@@ -116,7 +116,7 @@ Partene er Nortura og Skatteetaten.
 ## 4. Det gis beskjed i Dialogporten på mottatte oppgaver
 
 ```jsonc
-// PATCH /dialogporten/api/v1/dialogs/e0300961-85fb-4ef2-abff-681d77f9960e
+// PATCH /dialogporten/api/v1/serviceowner/dialogs/e0300961-85fb-4ef2-abff-681d77f9960e
 {
     "status": "waiting", 
     "content": {
@@ -174,7 +174,7 @@ Partene er Nortura og Skatteetaten.
 ## 6. EggAPI sender kvittering på at korrigering er mottatt
 
 ```jsonc
-// PATCH /dialogporten/api/v1/dialogs/e0300961-85fb-4ef2-abff-681d77f9960e
+// PATCH /dialogporten/api/v1/serviceowner/dialogs/e0300961-85fb-4ef2-abff-681d77f9960e
 {
     "activityHistory": [
         { 
@@ -197,7 +197,7 @@ Partene er Nortura og Skatteetaten.
 ## 7. Fagsystemet oppdager feil, og sender feilmelding
 
 ```jsonc
-// PATCH /dialogporten/api/v1/dialogs/e0300961-85fb-4ef2-abff-681d77f9960e
+// PATCH /dialogporten/api/v1/serviceowner/dialogs/e0300961-85fb-4ef2-abff-681d77f9960e
 {
     "activityHistory": [
         { 
@@ -225,7 +225,7 @@ Partene er Nortura og Skatteetaten.
 ## 9. EggAPI sender kvittering på at korrigering er mottatt
 
 ```jsonc
-// PATCH /dialogporten/api/v1/dialogs/e0300961-85fb-4ef2-abff-681d77f9960e
+// PATCH /dialogporten/api/v1/serviceowner/dialogs/e0300961-85fb-4ef2-abff-681d77f9960e
 {
     "activityHistory": [
         { 
@@ -248,7 +248,7 @@ Partene er Nortura og Skatteetaten.
 ## 10. EggAPI lukker dialogen
 
 ```jsonc
-// PATCH /dialogporten/api/v1/dialogs/e0300961-85fb-4ef2-abff-681d77f9960e
+// PATCH /dialogporten/api/v1/serviceowner/dialogs/e0300961-85fb-4ef2-abff-681d77f9960e
 {
     "status": "completed",
     "actions": {

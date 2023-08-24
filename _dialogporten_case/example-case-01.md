@@ -40,7 +40,7 @@ Dialogen opprettes i DP, og settes i en tilstand som indikerer at den er under b
 
 ```jsonc 
 // Merk! Forenklet modell
-//POST dialogporten.no/api/v1/dialogs/ 
+//POST dialogporten.no/api/v1/serviceowner/dialogs/ 
 {
     "id": "f4e6df3c-7434-44c3-875e-8dca1cdf0b20",
     "party": "org/91234578",
@@ -73,7 +73,7 @@ Opprettelsen av dialogen medfører at det genereres en eller flere events. Denne
     "resource": "urn:altinn:resource:super-simple-service", // serviceResource
     "resourceinstance": "f4e6df3c-7434-44c3-875e-8dca1cdf0b20", // dialog-id
     "subject": "org/91234578",
-    "source": "https://dialogporten.no/api/v1/dialogs/f4e6df3c-7434-44c3-875e-8dca1cdf0b20"
+    "source": "https://dialogporten.no/api/v1/enduser/dialogs/f4e6df3c-7434-44c3-875e-8dca1cdf0b20"
 }
 
 ```
@@ -89,7 +89,7 @@ Ethvert nytt innslag i activityHistory genererer også events. Siden dette ble o
     "resource": "urn:altinn:resource:super-simple-service",
     "resourceinstance": "f4e6df3c-7434-44c3-875e-8dca1cdf0b20",
     "subject": "org/91234578",
-    "source": "https://dialogporten.no/api/v1/dialogs/f4e6df3c-7434-44c3-875e-8dca1cdf0b20/activityhistory/1470986f-6d48-4caa-916e-0dc77e08bc8b",    
+    "source": "https://dialogporten.no/api/v1/enduser/dialogs/f4e6df3c-7434-44c3-875e-8dca1cdf0b20/activityhistory/1470986f-6d48-4caa-916e-0dc77e08bc8b",    
     // Under er felter hentet fra activityHistory-innslag som mulliggjør at et SBS kan agere uten å måtte slå opp dialogen eller aktivitetslogg-innslaget
     "data": { 
         "activityId": "1470986f-6d48-4caa-916e-0dc77e08bc8b",
@@ -124,7 +124,7 @@ Mens Skatteetaten behandler oppgaven går en eller annen ansatt for VIRKSOMHET A
     "resource": "urn:altinn:resource:super-simple-service",
     "resourceinstance": "f4e6df3c-7434-44c3-875e-8dca1cdf0b20",
     "subject": "org/91234578",
-    "source": "https://dialogporten.no/api/v1/dialogs/f4e6df3c-7434-44c3-875e-8dca1cdf0b20/activityhistory/387cfaa8-8113-43c1-a457-603be651ecb9",    
+    "source": "https://dialogporten.no/api/v1/enduser/dialogs/f4e6df3c-7434-44c3-875e-8dca1cdf0b20/activityhistory/387cfaa8-8113-43c1-a457-603be651ecb9",    
     "data": { 
         "activityId": "387cfaa8-8113-43c1-a457-603be651ecb9"
     }
@@ -139,7 +139,7 @@ Saksbehandlingen har avdekket at det er behov for å innhente ytterligere opplys
 
 ```jsonc    
 // Merk! Forenklet modell
-// PATCH dialogporten.no/api/v1/dialogs/f4e6df3c-7434-44c3-875e-8dca1cdf0b20
+// PATCH dialogporten.no/api/v1/serviceowner/dialogs/f4e6df3c-7434-44c3-875e-8dca1cdf0b20
 {
     "status": "in-progress",
     "content": "Vi har behandlet søknaden din, og ser vi trenger mer opplysninger.",
@@ -171,7 +171,7 @@ Saksbehandlingen har avdekket at det er behov for å innhente ytterligere opplys
     "resource": "urn:altinn:resource:super-simple-service",
     "resourceinstance": "f4e6df3c-7434-44c3-875e-8dca1cdf0b20",
     "subject": "org/91234578",
-    "source": "https://dialogporten.no/api/v1/dialogs/f4e6df3c-7434-44c3-875e-8dca1cdf0b20/activityhistory/a4df1787-a6d1-453e-8ab1-47c06e7d90bd",    
+    "source": "https://dialogporten.no/api/v1/enduser/dialogs/f4e6df3c-7434-44c3-875e-8dca1cdf0b20/activityhistory/a4df1787-a6d1-453e-8ab1-47c06e7d90bd",    
     "data": { 
         "activityId": "a4df1787-a6d1-453e-8ab1-47c06e7d90bd",
         "extendedActivityType": "form-rf1234-required",
@@ -188,7 +188,7 @@ Saksbehandlingen har avdekket at det er behov for å innhente ytterligere opplys
     "resource": "urn:altinn:resource:super-simple-service",
     "resourceinstance": "f4e6df3c-7434-44c3-875e-8dca1cdf0b20",
     "subject": "org/91234578",
-    "source": "https://dialogporten.no/api/v1/dialogs/f4e6df3c-7434-44c3-875e-8dca1cdf0b20"
+    "source": "https://dialogporten.no/api/v1/enduser/dialogs/f4e6df3c-7434-44c3-875e-8dca1cdf0b20"
 }
 
 ```
@@ -198,7 +198,7 @@ Saksbehandlingen har avdekket at det er behov for å innhente ytterligere opplys
 SBS-et har et abonnement som plukker opp at det har kommet en tilbakemelding i dialogen. SBS-et ser utfra `externalType` i evetnet at det er behov for å sende inn et ytterligere skjema (tjenestespesifikk logikk).  En medarbeider varsles, som laster/åpner dialogen gjennom SBS-et, 
 
 ```
-GET https://dialogporten.no/api/v1/dialogs/f4e6df3c-7434-44c3-875e-8dca1cdf0b20/
+GET https://dialogporten.no/api/v1/enduser/dialogs/f4e6df3c-7434-44c3-875e-8dca1cdf0b20/
 ```
 
 og ser at det er kommet et svar med forespørsel om mer informasjon. Siden det er mottatt en feedback siden forrige gang dialogen ble åpnet, vil lastingen av dialogen (forrige request) igjen føre til at det genereres en hendelse som i trinn 4.
@@ -220,7 +220,7 @@ POST skatt.api.no/skattemeldingsdialog/f4e6df3c-7434-44c3-875e-8dca1cdf0b20/ytte
 Skatteetaten mottar innsendingen, som valideres maskinelt. Dialogen kan nå avsluttes. To innslag i aktivitetsloggen legges inn samtidig. 
 
 ```jsonc
-//PATCH dialogporten.no/api/v1/dialogs/f4e6df3c-7434-44c3-875e-8dca1cdf0b20
+//PATCH dialogporten.no/api/v1/serviceowner/dialogs/f4e6df3c-7434-44c3-875e-8dca1cdf0b20
 {
     "status": "completed",
     "content": "Søknaden er behandlet og vedtaksbrev er vedlagt.",
@@ -265,7 +265,7 @@ Skatteetaten mottar innsendingen, som valideres maskinelt. Dialogen kan nå avsl
     "resource": "urn:altinn:resource:super-simple-service",
     "resourceinstance": "f4e6df3c-7434-44c3-875e-8dca1cdf0b20",
     "subject": "org/91234578",
-    "source": "https://dialogporten.no/api/v1/dialogs/f4e6df3c-7434-44c3-875e-8dca1cdf0b20/activityhistory/21241c7e-819f-462b-b8a4-d5d32352311a",    
+    "source": "https://dialogporten.no/api/v1/enduser/dialogs/f4e6df3c-7434-44c3-875e-8dca1cdf0b20/activityhistory/21241c7e-819f-462b-b8a4-d5d32352311a",    
     "data": { 
         "activityId": "21241c7e-819f-462b-b8a4-d5d32352311a", // peker til vår 
         "extendedActivityType": "additional-info-received",
@@ -282,7 +282,7 @@ Skatteetaten mottar innsendingen, som valideres maskinelt. Dialogen kan nå avsl
     "resource": "urn:altinn:resource:super-simple-service",
     "resourceinstance": "f4e6df3c-7434-44c3-875e-8dca1cdf0b20",
     "subject": "org/91234578",
-    "source": "https://dialogporten.no/api/v1/dialogs/f4e6df3c-7434-44c3-875e-8dca1cdf0b20/activityhistory/5d70003d-3018-4c15-a49c-4fa3d51da1fa",    
+    "source": "https://dialogporten.no/api/v1/enduser/dialogs/f4e6df3c-7434-44c3-875e-8dca1cdf0b20/activityhistory/5d70003d-3018-4c15-a49c-4fa3d51da1fa",    
     "data": { 
         "activityId": "5d70003d-3018-4c15-a49c-4fa3d51da1fa"
     }
@@ -297,7 +297,7 @@ Skatteetaten mottar innsendingen, som valideres maskinelt. Dialogen kan nå avsl
     "resource": "urn:altinn:resource:super-simple-service",
     "resourceinstance": "f4e6df3c-7434-44c3-875e-8dca1cdf0b20",
     "subject": "org/91234578",
-    "source": "https://dialogporten.no/api/v1/dialogs/f4e6df3c-7434-44c3-875e-8dca1cdf0b20"
+    "source": "https://dialogporten.no/api/v1/enduser/dialogs/f4e6df3c-7434-44c3-875e-8dca1cdf0b20"
 }
 
 

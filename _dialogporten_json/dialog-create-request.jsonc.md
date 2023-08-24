@@ -5,7 +5,7 @@
 // Modellen kan også oppdateres/muteres med PATCH-kall (se https://jsonpatch.com/)
 //Ikke-komplekse felter som ligger på rotnivå kan ikke endres (med unntak av "status").
 
-// POST /dialogporten/api/v1/dialogs
+// POST /dialogporten/api/v1/servicowner/dialogs
 {
     // Tjenestetilbyder kan valgfritt oppgi en egen-generert UUID her. Hvis det ikke oppgis vil Dialogporten generere
     // en unik identifikator som blir returnert ved opprettelse

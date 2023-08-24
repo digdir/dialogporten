@@ -3,7 +3,7 @@
 ```jsonc
 // Logg-modell som brukes for å hente liste over sendte varslinger
 
-// GET /dialogporten/api/v1/dialogs/{dialogId}/notifications
+// GET /dialogporten/api/v1/enduser/dialogs/{dialogId}/notifications
 {
     "sms": [
         { 

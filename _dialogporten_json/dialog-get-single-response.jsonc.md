@@ -1,11 +1,10 @@
 ---
 ---
 ```jsonc
-// Modellene er hovedsaklig like for SBS og tjenesteier, med unntak:
-// - "configuration" vises kun til tjenesteeier
+// Modellene er hovedsaklig like for SBS og tjenesteier, men er på ulike endepunkter (pga. autorisasjon)
 
 
-// GET /dialogporten/api/v1/dialogs/e0300961-85fb-4ef2-abff-681d77f9960e
+// GET /dialogporten/api/v1/enduser/dialogs/e0300961-85fb-4ef2-abff-681d77f9960e
 {
     "id": "e0300961-85fb-4ef2-abff-681d77f9960e",
     "org": "digdir", // Identifikator for tjenestetilbyder
@@ -306,15 +305,14 @@
     ],
     // Dette er ulike innstillinger som kun kan oppgis og er synlig for tjenesteeier. Se de-create-request for informasjon om feltene.
     "configuration": {        
-        "serviceProviderScopesRequired": [ "serviceprovider:myservice" ],
         "visibleDateTime": "2022-12-01T12:00:00.000Z"
     },
     // HAL til relatert informasjon
     "_links": {
-        "self": { "href": "/dialogporten/api/v1/dialogs/e0300961-85fb-4ef2-abff-681d77f9960e" },        
+        "self": { "href": "/dialogporten/api/v1/enduser/dialogs/e0300961-85fb-4ef2-abff-681d77f9960e" },        
         
         // eget endepunkt for varslingslogg for dialogen
-        "notificationlog": { "href": "/dialogporten/api/v1/dialogs/e0300961-85fb-4ef2-abff-681d77f9960e/notificationlog" }, 
+        "notificationlog": { "href": "/dialogporten/api/v1/enduser/dialogs/e0300961-85fb-4ef2-abff-681d77f9960e/notificationlog" }, 
 
         // Dyplenke til portalvisning for dialogen i Dialogporten
         "serviceresource": { "href": "/resourceregistry/api/v1/resource/super-simple-service/" }, 

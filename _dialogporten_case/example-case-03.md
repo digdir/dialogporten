@@ -27,7 +27,7 @@ Partene er Rørlegger AS, Regnskapsfører AS og Etaten, som tilbyr denne innsend
 ## 1. Rørlegger AS instansierer en dialog
 
 ```jsonc
-// POST /dialogporten/api/v1/instantiate
+// POST /dialogporten/api/v1/serviceowner/instantiate
 {
     "serviceResource": "omsetningsrapportering",
     "party": "org/912345678" // Rørlegger AS
@@ -37,7 +37,7 @@ Partene er Rørlegger AS, Regnskapsfører AS og Etaten, som tilbyr denne innsend
 ## 2. Etaten oppretter en dialog
 
 ```jsonc
-// POST /dialogporten/api/v1/dialogs
+// POST /dialogporten/api/v1/serviceowner/dialogs
 {
     "id": "b13bb496-e6ab-4444-8442-e15be9f96e9c",
     "serviceResource": "omsetningsrapportering",     
@@ -98,7 +98,7 @@ Partene er Rørlegger AS, Regnskapsfører AS og Etaten, som tilbyr denne innsend
 ## 4. Skjema settes til signering i Dialogporten
 
 ```jsonc
-// PATCH /dialogporten/api/v1/dialogs/b13bb496-e6ab-4444-8442-e15be9f96e9c
+// PATCH /dialogporten/api/v1/serviceowner/dialogs/b13bb496-e6ab-4444-8442-e15be9f96e9c
 {
     "status": "signing", 
     "content": {
@@ -145,7 +145,7 @@ Partene er Rørlegger AS, Regnskapsfører AS og Etaten, som tilbyr denne innsend
 // Etaten sender også et eksplisitt varsel. 
 // Dialogporten vil også alltid generere events for muteringer i Dialogporten, som også potensielt vil kunne generere varslinger.
 
-// POST /dialogporten/api/v1/dialogs/b13bb496-e6ab-4444-8442-e15be9f96e9c/notifications
+// POST /dialogporten/api/v1/serviceowner/dialogs/b13bb496-e6ab-4444-8442-e15be9f96e9c/notifications
 {
     // Valgfri identifikator som tjenestetilbyder kan oppgi. Kan brukes for å unngå duplikatutsending.
     "notificationId": "79921fae-631a-4f8b-8db5-e359f2336658",
@@ -186,7 +186,7 @@ Partene er Rørlegger AS, Regnskapsfører AS og Etaten, som tilbyr denne innsend
 ## 6. Etaten mottar signeringen, og sender skjemaet til signering for regnskapsfører
 
 ```jsonc
-// PATCH /dialogporten/api/v1/dialogs/b13bb496-e6ab-4444-8442-e15be9f96e9c
+// PATCH /dialogporten/api/v1/serviceowner/dialogs/b13bb496-e6ab-4444-8442-e15be9f96e9c
 {
     "status": "signing", 
     "content": {
@@ -227,7 +227,7 @@ Partene er Rørlegger AS, Regnskapsfører AS og Etaten, som tilbyr denne innsend
     ]
 }
 
-// POST /dialogporten/api/v1/dialogs/b13bb496-e6ab-4444-8442-e15be9f96e9c/notifications
+// POST /dialogporten/api/v1/serviceowner/dialogs/b13bb496-e6ab-4444-8442-e15be9f96e9c/notifications
 {
     // Valgfri identifikator som tjenestetilbyder kan oppgi. Kan brukes for å unngå duplikatutsending.
     "notificationId": "a61c66f5-1dcf-4a27-8c17-633cd2eb8b8d",
@@ -268,7 +268,7 @@ Partene er Rørlegger AS, Regnskapsfører AS og Etaten, som tilbyr denne innsend
 ## 8. Etaten mottar siste signering, og lukker dialogen
 
 ```jsonc
-// PATCH /dialogporten/api/v1/dialogs/b13bb496-e6ab-4444-8442-e15be9f96e9c
+// PATCH /dialogporten/api/v1/serviceowner/dialogs/b13bb496-e6ab-4444-8442-e15be9f96e9c
 {
     "status": "completed",
     "actions": {

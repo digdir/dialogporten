@@ -9,7 +9,7 @@
 // tilstandsendring.  Bruker blir da sendt til en eller annen kvitteringsside hos tjenesteeier, som da også har satt 
 // dialogen som "completed" via et bakkanal-kall
 
-// PATCH /dialogporten/api/v1/dialogs/e0300961-85fb-4ef2-abff-681d77f9960e
+// PATCH /dialogporten/api/v1/serviceowner/dialogs/e0300961-85fb-4ef2-abff-681d77f9960e
 {
     "actions": {
         "gui": [            

@@ -493,7 +493,7 @@ I tillegg genereres det en event med type `dialogporten.dialog.read.v1` når dia
     "subject": "org/91234578", 
     
     // URL til dialog i Dialogporten. Merk denne vil gi 410 Gone hvis type er `dialogporten.dialog.deleted.v1`
-    "source": "https://dialogporten.no/api/v1/dialogs/f4e6df3c-7434-44c3-875e-8dca1cdf0b20" 
+    "source": "https://dialogporten.no/api/v1/enduser/dialogs/f4e6df3c-7434-44c3-875e-8dca1cdf0b20" 
 }
 ```
 
@@ -535,7 +535,7 @@ Eventer har type som er prefikset/navnerommet `dialogporten.dialog.element`. Und
     "subject": "org/91234578",
 
     // URL til dialogelementet i Dialogporten
-    "source": "https://dialogporten.no/api/v1/dialogs/b8643c00-c826-41c7-8758-bfc0ca5c19fa/dialogelements/da506c38-b19f-45d4-963e-927df959a5f8",
+    "source": "https://dialogporten.no/api/v1/enduser/dialogs/b8643c00-c826-41c7-8758-bfc0ca5c19fa/dialogelements/da506c38-b19f-45d4-963e-927df959a5f8",
     
     // Disse hentes verbatim fra dialogelementet. Kun "dialogElementId" er alltid oppgitt, alle andre felter
     // vil kunne være utelatt siden de er valgfrie

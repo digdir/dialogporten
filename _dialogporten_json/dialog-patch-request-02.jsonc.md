@@ -1,7 +1,7 @@
 ---
 ---
 ```jsonc
-// PATCH /dialogporten/api/v1/dialogs/e0300961-85fb-4ef2-abff-681d77f9960e
+// PATCH /dialogporten/api/v1/serviceowner/dialogs/e0300961-85fb-4ef2-abff-681d77f9960e
 {
     "status": "completed",
     "activityHistory": [

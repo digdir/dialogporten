@@ -6,7 +6,7 @@
 // Man oppgir minst én av sms, email og push. Ytterligere varslinger kan sendes når som helst.
 // Kun konsumenter som er autorisert for den aktuelle dialogen vil motta varsel.
 
-// POST /dialogporten/api/v1/dialogs/{dialogId}/notifications
+// POST /dialogporten/api/v1/serviceowner/dialogs/{dialogId}/notifications
 {
     // Valgfri identifikator som tjenestetilbyder kan oppgi. Kan brukes for å unngå duplikatutsending.
     "notificationId": "79921fae-631a-4f8b-8db5-e359f2336658",

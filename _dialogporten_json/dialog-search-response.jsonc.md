@@ -4,7 +4,7 @@
 // Listemodell som brukes i dialogboks-søk. Presis paginering er antagelig ikke mulig pga. behov for individuell 
 // autorisasjon per dialog, men det burde være en eller annen "next"-mekanisme som lar et SBS iterere gjennom en liste.
 
-// GET /dialogporten/api/v1/dialogs/?search=....
+// GET /dialogporten/api/v1/enduser/dialogs/?search=....
 [
     {
         "id": "e0300961-85fb-4ef2-abff-681d77f9960e",
@@ -25,7 +25,7 @@
             "title": [ { "code": "nb_NO", "value": "En eksempel på en tittel" } ],
             "senderName": [ { "code": "nb_NO", "value": "Overstyrt avsendernavn (bruker default tjenesteeiers navn)" } ]            
         },  
-        "detailsUrl": "/dialogporten/api/v1/e0300961-85fb-4ef2-abff-681d77f9960e"
+        "detailsUrl": "/dialogporten/api/v1/enduser/dialogs/e0300961-85fb-4ef2-abff-681d77f9960e"
     }
 ]
 ```
