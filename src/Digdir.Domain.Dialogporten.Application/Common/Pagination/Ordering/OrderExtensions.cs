@@ -60,31 +60,50 @@ internal static class OrderExtensions
         var parameterReplacer = new ParameterReplacer(parameter);
 
         var orderParts = parts
-            .Zip(orderSet.Orders, (part, order) => (value: part, orderDirection: order.Direction, orderBody: order.OrderBy.Body.CleanBody(parameterReplacer)))
-            .ToArray();
-
-        // ltGtParts =      [ a < an, b < bn, c < cn, id < idn ]
-        // equalParst =     [ a = an, b = bn, c = cn, id = idn ]
-        // intermediate =   [ a < an, a = an AND b < bn, a = an AND b = bn AND c < cn ]
-        // condition =      a < an OR (a = an AND b < bn) OR (a = an AND b = bn AND c < cn) OR ...
-        var ltGtParts = orderParts
-            .Select(x => x.orderDirection switch
+            .Zip(orderSet.Orders, (part, order) =>
             {
-                OrderDirection.Asc => Expression.GreaterThan(x.orderBody, Expression.Constant(x.value, x.orderBody.Type)),
-                OrderDirection.Desc => Expression.LessThan(x.orderBody, Expression.Constant(x.value, x.orderBody.Type)),
+                var orderBody = order.OrderBy.Body.CleanBody(parameterReplacer);
+                var orderDirection = order.Direction;
+                var valueExpression = Expression.Constant(part, orderBody.Type);
+                return (orderBody, orderDirection, valueExpression);
             })
             .ToArray();
 
+        // The following is the algorithm for creating the condition expression.
+        // The idea is to create a condition expression that looks like this:
+        // x => x.a < an OR (x.a = an AND x.b < bn) OR (x.a = an AND x.b = bn AND x.c < cn) OR ...
+        // where a, b, c, ... are the order by expressions and an, bn, cn, ...
+        // are the values from the continuation token. It's a repeating pattern
+        // where the previous properties are equal and the next property is less than
+        // or greater than the next value, depending on the sort order. 
+        // See https://phauer.com/2018/web-api-pagination-timestamp-id-continuation-token/ for more info.
+        // The algorithm is as follows: 
+        // equalParst =         [ a = an, b = bn, c = cn, ... ]
+        // ltGtParts =          [ a < an, b < bn, c < cn, ... ]
+        // lgGtEqualParst =     [ a < an, a = an AND b < bn, a = an AND b = bn AND c < cn, ... ]
+        // condition =          a < an OR (a = an AND b < bn) OR (a = an AND b = bn AND c < cn) OR ...
+        // qeryPredicate =      x => x.a < an OR (x.a = an AND x.b < bn) OR (x.a = an AND x.b = bn AND x.c < cn) OR ...
+
+        // [ a = an, b = bn, c = cn, ... ]
         var eqParts = orderParts
-            .Select(x => Expression.Equal(x.orderBody, Expression.Constant(x.value, x.orderBody.Type)))
+            .Select(x => Expression.Equal(x.orderBody, x.valueExpression))
             .ToArray();
 
-        var condition = ltGtParts
+        var condition = orderParts
+            // [ a < an, b < bn, c < cn, ... ]
+            .Select(x => x.orderDirection switch
+            {
+                OrderDirection.Asc => Expression.GreaterThan(x.orderBody, x.valueExpression),
+                OrderDirection.Desc => Expression.LessThan(x.orderBody, x.valueExpression),
+            })
+            // [ a < an, a = an AND b < bn, a = an AND b = bn AND c < cn, ... ]
             .Select((ltGtPart, index) => eqParts[..index]
-                .Concat(new[] { ltGtPart })
+                .Append(ltGtPart)
                 .Aggregate(Expression.AndAlso))
+            // a < an OR (a = an AND b < bn) OR (a = an AND b = bn AND c < cn) OR ...
             .Aggregate(Expression.OrElse);
 
+        // x => x.a < an OR (x.a = an AND x.b < bn) OR (x.a = an AND x.b = bn AND x.c < cn) OR ...
         var queryPredicate = Expression.Lambda<Func<T, bool>>(condition, parameter);
         query = query.Where(queryPredicate);
         return query;

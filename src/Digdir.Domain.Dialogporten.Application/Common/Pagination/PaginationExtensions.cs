@@ -65,8 +65,4 @@ internal static class PaginationExtensions
 
         return new PaginatedList<T>(items, hasNextPage, nextContinuationToken, orderBy);
     }
-
-    //private static readonly ConcurrentDictionary<object, object> _compiledByExpression = new(comparer: new ExpressionEqualityComparer());
-    //private static TFunc CompileOrGetCached<TFunc>(this Expression<TFunc> selectorExpression) where TFunc : Delegate => 
-    //    (TFunc)_compiledByExpression.GetOrAdd(selectorExpression, x => ((Expression<TFunc>)x).Compile());
 }

@@ -60,6 +60,7 @@ public class ContinuationToken
                 type = unaryExpression.Operand.Type;
             }
 
+            // TODO: Check string :P
             if (!Parsing.TryParse(type, part, out var parseResult))
             {
                 return false;
