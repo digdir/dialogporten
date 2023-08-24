@@ -7,7 +7,7 @@ public class ServiceOwnerGroup : Group
     public const string RoutePrefix = "Serviceowner";
     public ServiceOwnerGroup()
     {
-        Configure(RoutePrefix, ep =>
+        Configure(RoutePrefix.ToLower(), ep =>
         {
             ep.AllowAnonymous();
             ep.EndpointVersion(1);
