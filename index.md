@@ -498,7 +498,7 @@ I tillegg genereres det en event med type `dialogporten.dialog.read.v1` når dia
 }
 ```
 
-## Knyttet til listen av dialogelementer
+## Knyttet til dialogelementer
 
 Hvis det gjøres endringer i listen av dialogelementer, skal dette føre til at det produseres egne events for dette som indikerer hva som har skjedd. 
 `source` vil referere selve dialogelementet (ikke dialogen).
