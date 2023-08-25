@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using Digdir.Domain.Dialogporten.Application.Common.Extensions;
+using System.Linq.Expressions;
 
 namespace Digdir.Domain.Dialogporten.Application.Common.Pagination.Ordering;
 
@@ -93,8 +94,24 @@ internal static class OrderExtensions
             // [ a < an, b < bn, c < cn, ... ]
             .Select(x => x.orderDirection switch
             {
+                // Null values are excluded in greater/less than comparison in
+                // postgres since both 'null==null' and 'null!=null' returns
+                // false. Threfore we need to take null values into account
+                // when creating the pagination condition. Null values are
+                // default last in ascending order and first in descending
+                // order in postgres. 
+                OrderDirection.Asc 
+                    when x.orderBody.Type.IsNullableType() 
+                    && x.valueExpression.Value is not null 
+                    => IncludeNullsBlock(x.orderBody, x.valueExpression),
+                OrderDirection.Desc 
+                    when x.orderBody.Type.IsNullableType() 
+                    && x.valueExpression.Value is null 
+                    => IncludeNotNullsBlock(x.orderBody),
+
                 OrderDirection.Asc => Expression.GreaterThan(x.orderBody, x.valueExpression),
                 OrderDirection.Desc => Expression.LessThan(x.orderBody, x.valueExpression),
+                _ => throw new InvalidOperationException(),
             })
             // [ a < an, a = an AND b < bn, a = an AND b = bn AND c < cn, ... ]
             .Select((ltGtPart, index) => eqParts[..index]
@@ -107,6 +124,30 @@ internal static class OrderExtensions
         var queryPredicate = Expression.Lambda<Func<T, bool>>(condition, parameter);
         query = query.Where(queryPredicate);
         return query;
+    }
+
+    /// <summary>
+    /// The not null "block" is added when the continuation token is null in descending 
+    /// order, meaning we are still in the beginning where the null values are and 
+    /// have not reached the set where the not null values start.
+    /// </summary>
+    private static BinaryExpression IncludeNotNullsBlock(Expression orderBody)
+    {
+        var nullConstant = Expression.Constant(null, orderBody.Type);
+        return Expression.NotEqual(orderBody, nullConstant);
+    }
+
+    /// <summary>
+    /// The null "block" is added when a nullable continuation token is not null in 
+    /// ascending order, meaning we have not reached the end of the pagination 
+    /// where the null values are.
+    /// </summary>
+    private static BinaryExpression IncludeNullsBlock(Expression orderBody, ConstantExpression valueExpression)
+    {
+        var nullConstant = Expression.Constant(null, orderBody.Type);
+        var isNull = Expression.Equal(orderBody, nullConstant);
+        var greaterThanValue = Expression.GreaterThan(orderBody, valueExpression);
+        return Expression.OrElse(isNull, greaterThanValue);
     }
 
     private static Expression CleanBody(this Expression body, ParameterReplacer parameterReplacer)

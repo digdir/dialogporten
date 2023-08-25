@@ -9,6 +9,41 @@ public interface IOrderSet<TTarget>
     string? GetOrderByAsString();
 }
 
+//public sealed class DefaultOrderSet<TOrder, TTarget> : IOrderSet<TTarget>
+//    where TOrder : class, IDefaultOrder<TOrder, TTarget>, new()
+//{
+//    public const char Delimiter = ',';
+//    public IReadOnlyCollection<IOrder<TTarget>> Orders { get; }
+
+
+
+//    public string GetContinuationToken(TTarget t)
+//    {
+//        var values = Orders
+//            // TODO: cache?
+//            .Select(x => x.OrderBy.Compile().Invoke(t))
+//            .Select(x => x switch
+//            {
+//                null => string.Empty,
+//                string s => s,
+//                DateTimeOffset d => d.UtcDateTime.ToString("o"),
+//                DateTime d => d.ToString("o"),
+//                _ => x.ToString()
+//            })
+//            .ToArray();
+//        return string.Join(ContinuationToken.Delimiter, values);
+//    }
+
+//    public string? GetOrderByAsString()
+//    {
+//        var orderByString = string.Join(Delimiter, Orders
+//            .Take(..^1)
+//            .Where(x => !string.IsNullOrWhiteSpace(x.OrderByAsString))
+//            .Select(x => $"{x.OrderByAsString.ToLower()}{IParsableOrder<TOrder, TTarget>.Delimiter}{x.Direction.ToString().ToLower()}"));
+//        return string.IsNullOrWhiteSpace(orderByString) ? null : orderByString;
+//    }
+//}
+
 public sealed class OrderSet<TOrder, TTarget> : IOrderSet<TTarget>
     where TOrder : class, IParsableOrder<TOrder, TTarget>, new()
 {

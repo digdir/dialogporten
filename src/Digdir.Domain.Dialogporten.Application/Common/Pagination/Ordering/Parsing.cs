@@ -1,4 +1,4 @@
-﻿using AutoMapper.Internal;
+﻿using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
@@ -12,7 +12,7 @@ public static class Parsing
     public static bool TryParse(Type type, string? value, out object? result)
     {
         result = null;
-        if (type.IsGenericType(typeof(Nullable<>)))
+        if (type.IsNullableType())
         {
             if (string.IsNullOrWhiteSpace(value))
             {

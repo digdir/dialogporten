@@ -17,6 +17,7 @@ public interface IDefaultOrder<TSelf, TTarget> : IOrder<TTarget>
     private static readonly TSelf _id = new() { OrderBy = TSelf.GetIdExpression(), Direction = DefaultDirection };
     public static TSelf Default => _default;
     public static TSelf Id => _id;
+    string OrderByAsString { get; init; }
     public abstract static Expression<Func<TTarget, object?>> GetIdExpression();
     public abstract static Expression<Func<TTarget, object?>> GetDefaultOrderExpression();
 }
@@ -25,7 +26,6 @@ public interface IParsableOrder<TSelf, TTarget> : IDefaultOrder<TSelf, TTarget>
     where TSelf : class, IParsableOrder<TSelf, TTarget>, new()
 {
     public const char Delimiter = '_';
-    string OrderByAsString { get; init; }
 
     public static bool TryParse(string? value, [NotNullWhen(true)] out TSelf? result)
     {

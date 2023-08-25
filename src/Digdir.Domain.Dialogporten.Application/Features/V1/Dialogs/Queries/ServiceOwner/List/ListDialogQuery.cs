@@ -15,6 +15,7 @@ public sealed class ListDialogQueryOrder : IDefaultOrder<ListDialogQueryOrder, L
 {
     public Expression<Func<ListDialogDto, object?>> OrderBy { get; init; } = null!;
     public OrderDirection Direction { get; init; }
+    public string OrderByAsString { get; init; } = null!;
 
     public static Expression<Func<ListDialogDto, object?>> GetIdExpression() => x => x.Id;
     public static Expression<Func<ListDialogDto, object?>> GetDefaultOrderExpression() => x => x.CreatedAt;
@@ -39,6 +40,6 @@ internal sealed class ListDialogQueryHandler : IRequestHandler<ListDialogQuery, 
         throw new NotImplementedException();
         //return await _db.Dialogs
         //    .ProjectTo<ListDialogDto>(_mapper.ConfigurationProvider)
-        //    .ToPaginatedListAsync(IDefaultOrder<ListDialogQueryOrder, ListDialogDto>.Default, request, cancellationToken);
+        //    .ToPaginatedListAsync(OrderSet<ListDialogQueryOrder, ListDialogDto>.Default, request, cancellationToken);
     }
 }
