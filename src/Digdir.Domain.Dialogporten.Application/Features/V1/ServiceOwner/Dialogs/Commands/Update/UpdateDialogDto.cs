@@ -27,7 +27,7 @@ public sealed class UpdateDialogDto
     public List<UpdateDialogDialogActivityDto> Activities { get; set; } = new();
 }
 
-public sealed class UpdateDialogDialogActivityDto
+public class UpdateDialogDialogActivityDto
 {
     public Guid? Id { get; set; }
     public DateTimeOffset? CreatedAt { get; set; }
