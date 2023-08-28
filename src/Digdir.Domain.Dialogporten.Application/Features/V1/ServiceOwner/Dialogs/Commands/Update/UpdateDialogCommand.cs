@@ -155,7 +155,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         {
             _domainContext.AddError(
                 nameof(UpdateDialogDto.Activities), 
-                $"Entity '{nameof(DialogActivity)}' with the following key(s) allready exists: ({string.Join(", ", existingIds)}).");
+                $"Entity '{nameof(DialogActivity)}' with the following key(s) already exists: ({string.Join(", ", existingIds)}).");
         }
 
         _eventPublisher.Publish(newDialogActivities.Select(x => new DialogActivityCreatedDomainEvent(dialog.Id, x.CreateId())));
@@ -224,7 +224,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         var existingIds = await _db.GetExistingIds(elements, cancellationToken);
         if (existingIds.Any())
         {
-            _domainContext.AddError(nameof(UpdateDialogDto.Elements), $"Entity '{nameof(DialogElement)}' with the following key(s) allready exists: ({string.Join(", ", existingIds)}).");
+            _domainContext.AddError(nameof(UpdateDialogDto.Elements), $"Entity '{nameof(DialogElement)}' with the following key(s) already exists: ({string.Join(", ", existingIds)}).");
         }
 
         _db.DialogElements.AddRange(elements);
