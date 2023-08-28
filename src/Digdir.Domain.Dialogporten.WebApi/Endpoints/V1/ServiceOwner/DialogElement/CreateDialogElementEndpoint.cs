@@ -27,27 +27,28 @@ public sealed class CreateDialogActivityEndpoint : Endpoint<CreateDialogElementR
 
     public override async Task HandleAsync(CreateDialogElementRequest request, CancellationToken ct)
     {
-        var dialogQueryResult = await _sender.Send(new GetDialogQuery {Id = request.DialogId}, ct);
+        var dialogQueryResult = await _sender.Send(new GetDialogQuery {DialogId = request.DialogId}, ct);
         if (dialogQueryResult.TryPickT1(out var entityNotFound, out var dialog))
         {
-           await this.NotFoundAsync(entityNotFound, cancellationToken: ct);
-           return;
+            await this.NotFoundAsync(entityNotFound, cancellationToken: ct);
+            return;
         }
 
         // Remove all existing activities, since this list is append only and
         // existing activities should not be considered in the new update request.
         dialog.Activities.Clear();
-        
+
         var updateDialogDto = _mapper.Map<UpdateDialogDto>(dialog);
 
         request.Id = !request.Id.HasValue || request.Id.Value == default
             ? Uuid7.NewUuid7().ToGuid()
-            : request.Id; 
-        
+            : request.Id;
+
         updateDialogDto.Elements.Add(request);
 
-        var updateDialogCommand = new UpdateDialogCommand {Id = request.DialogId, ETag = request.ETag, Dto = updateDialogDto};
-        
+        var updateDialogCommand = new UpdateDialogCommand
+            {Id = request.DialogId, ETag = request.ETag, Dto = updateDialogDto};
+
         var result = await _sender.Send(updateDialogCommand, ct);
         await result.Match(
             success => SendCreatedAtAsync<GetDialogElementEndpoint>(new {request.Id}, request.Id, cancellation: ct),
@@ -61,7 +62,7 @@ public sealed class CreateDialogActivityEndpoint : Endpoint<CreateDialogElementR
 public sealed class CreateDialogElementRequest : UpdateDialogDialogElementDto
 {
     public Guid DialogId { get; set; }
-    
+
     [FromHeader(headerName: Constants.IfMatch, isRequired: false)]
     public Guid? ETag { get; set; }
 }

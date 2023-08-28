@@ -11,7 +11,7 @@ namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialog
 
 public sealed class GetDialogQuery : IRequest<GetDialogResult>
 {
-    public Guid Id { get; set; }
+    public Guid DialogId { get; set; }
 }
 
 [GenerateOneOf]
@@ -50,11 +50,11 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
             .IgnoreQueryFilters()
             .AsNoTracking()
             .ProjectTo<GetDialogDto>(_mapper.ConfigurationProvider)
-            .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
+            .FirstOrDefaultAsync(x => x.Id == request.DialogId, cancellationToken);
 
         if (dialog is null)
         {
-            return new EntityNotFound<DialogEntity>(request.Id);
+            return new EntityNotFound<DialogEntity>(request.DialogId);
         }
 
         return dialog;

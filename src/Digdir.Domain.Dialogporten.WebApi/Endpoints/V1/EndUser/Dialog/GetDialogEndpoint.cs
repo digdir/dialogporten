@@ -15,7 +15,7 @@ public class GetDialogEndpoint : Endpoint<GetDialogQuery>
 
     public override void Configure()
     {
-        Get("dialogs/{id}");
+        Get("dialogs/{dialogId}");
         Group<EndUserGroup>();
     }
 

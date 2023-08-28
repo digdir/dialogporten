@@ -27,7 +27,7 @@ public sealed class CreateDialogActivityEndpoint : Endpoint<CreateDialogActivity
 
     public override async Task HandleAsync(CreateDialogActivityRequest request, CancellationToken ct)
     {
-        var dialogQueryResult = await _sender.Send(new GetDialogQuery {Id = request.DialogId}, ct);
+        var dialogQueryResult = await _sender.Send(new GetDialogQuery {DialogId = request.DialogId}, ct);
         if (dialogQueryResult.TryPickT1(out var entityNotFound, out var dialog))
         {
            await this.NotFoundAsync(entityNotFound, cancellationToken: ct);

@@ -12,7 +12,7 @@ namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Que
 
 public sealed class GetDialogQuery : IRequest<GetDialogResult>
 {
-    public Guid Id { get; set; }
+    public Guid DialogId { get; set; }
 }
 
 [GenerateOneOf]
@@ -65,21 +65,21 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
             .Where(x => !x.VisibleFrom.HasValue || x.VisibleFrom < _clock.UtcNowOffset)
             .IgnoreQueryFilters()
             .AsNoTracking()
-            .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
+            .FirstOrDefaultAsync(x => x.Id == request.DialogId, cancellationToken);
 
         if (dialog is null)
         {
-            return new EntityNotFound<DialogEntity>(request.Id);
+            return new EntityNotFound<DialogEntity>(request.DialogId);
         }
 
         if (dialog.Deleted)
         {
-            return new EntityDeleted<DialogEntity>(request.Id);
+            return new EntityDeleted<DialogEntity>(request.DialogId);
         }
 
         if ((dialog.ReadAt ?? DateTimeOffset.MinValue) < dialog.UpdatedAt)
         {
-            dialog.ReadAt = await UpdateReadAt(request.Id, cancellationToken);
+            dialog.ReadAt = await UpdateReadAt(request.DialogId, cancellationToken);
         }
 
         var dto = _mapper.Map<GetDialogDto>(dialog);

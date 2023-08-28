@@ -15,7 +15,7 @@ public class GetDialogElementEndpoint : Endpoint<GetDialogElementQuery>
 
     public override void Configure()
     {
-        Get("dialogs/{dialogId}/dialogelements/{dialogElementId}");
+        Get("dialogs/{dialogId}/elements/{elementId}");
         Group<ServiceOwnerGroup>();
     }
 

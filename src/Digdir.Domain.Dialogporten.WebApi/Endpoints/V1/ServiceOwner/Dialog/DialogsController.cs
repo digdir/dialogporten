@@ -30,14 +30,14 @@ public sealed class DialogsController : ControllerBase
     }
 
     [AllowAnonymous]
-    [HttpPatch("{id}")]
+    [HttpPatch("{dialogId}")]
     public async Task<IActionResult> Patch(
-        [FromRoute] Guid id,
+        [FromRoute] Guid dialogId,
         [FromHeader(Name = Constants.IfMatch)] Guid? etag,
         [FromBody] JsonPatchDocument<UpdateDialogDto> patchDocument,
         CancellationToken ct)
     {
-        var dialogQueryResult = await _sender.Send(new GetDialogQuery { Id = id }, ct);
+        var dialogQueryResult = await _sender.Send(new GetDialogQuery { DialogId = dialogId }, ct);
         if (dialogQueryResult.TryPickT1(out var entityNotFound, out var dialog))
         {
             return NotFound(HttpContext.ResponseBuilder(StatusCodes.Status404NotFound, entityNotFound.ToValidationResults()));
@@ -54,7 +54,7 @@ public sealed class DialogsController : ControllerBase
             return BadRequest(ModelState);
         }
 
-        var command = new UpdateDialogCommand { Id = id, ETag = etag, Dto = updateDialogDto };
+        var command = new UpdateDialogCommand { Id = dialogId, ETag = etag, Dto = updateDialogDto };
         var result = await _sender.Send(command, ct);
         return result.Match(
             success => (IActionResult)NoContent(),
