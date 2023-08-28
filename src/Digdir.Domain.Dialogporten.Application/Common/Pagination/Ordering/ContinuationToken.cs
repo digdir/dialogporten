@@ -61,7 +61,7 @@ public class ContinuationToken
             }
 
             // TODO: Check string :P
-            if (!Parsing.TryParse(type, part, out var parseResult))
+            if (!TryParseExtensions.TryParse(type, part, out var parseResult))
             {
                 return false;
             }

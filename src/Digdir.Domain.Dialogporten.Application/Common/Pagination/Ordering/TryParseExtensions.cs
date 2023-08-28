@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace Digdir.Domain.Dialogporten.Application.Common.Pagination.Ordering;
 
-public static class Parsing
+public static class TryParseExtensions
 {
     private static readonly ConcurrentDictionary<Type, MethodInfo?> _tryParseByType = new();
 
@@ -18,8 +18,15 @@ public static class Parsing
             {
                 return true;
             }
-            type = type.GetGenericArguments().Single();
+            type = type.GetGenericArguments()[0];
         }
+
+        if (type == typeof(string))
+        {
+            result = value;
+            return true;
+        }
+
         var method = _tryParseByType.GetOrAdd(type, t => TryFindTryParseMethod(t, out var m) ? m : null);
         if (method is null)
         {

@@ -51,7 +51,7 @@ internal static class OrderExtensions
             return query;
         }
 
-        if (!continuationToken.TryGetParts(orderSet, out var parts))
+        if (!continuationToken.TryGetParts(orderSet, out var continuationTokenParts))
         {
             // TODO: Handle invalid continuation token
             throw new Exception("Invalid continuation token.");
@@ -60,12 +60,12 @@ internal static class OrderExtensions
         var parameter = Expression.Parameter(typeof(T));
         var parameterReplacer = new ParameterReplacer(parameter);
 
-        var orderParts = parts
-            .Zip(orderSet.Orders, (part, order) =>
+        var orderParts = continuationTokenParts
+            .Zip(orderSet.Orders, (continuationTokenPart, order) =>
             {
                 var orderBody = order.OrderBy.Body.CleanBody(parameterReplacer);
                 var orderDirection = order.Direction;
-                var valueExpression = Expression.Constant(part, orderBody.Type);
+                var valueExpression = Expression.Constant(continuationTokenPart, orderBody.Type);
                 return (orderBody, orderDirection, valueExpression);
             })
             .ToArray();
@@ -99,7 +99,14 @@ internal static class OrderExtensions
                 // false. Threfore we need to take null values into account
                 // when creating the pagination condition. Null values are
                 // default last in ascending order and first in descending
-                // order in postgres. 
+                // order in postgres. At the time of this writing it is not
+                // posible to change where the nulls apair in the query result
+                // through the npgsql ef core provider as one can through a
+                // direct sql query (e.g. desc nulls last). The issue is
+                // tracked here https://github.com/npgsql/efcore.pg/issues/627.
+                // Both non default cases (asc nulls first / desc nulls last)
+                // must be taken onto account should the issue be resolved and
+                // the functionallity used in the future.
                 OrderDirection.Asc 
                     when x.orderBody.Type.IsNullableType() 
                     && x.valueExpression.Value is not null 
@@ -160,7 +167,7 @@ internal static class OrderExtensions
         return parameterReplacer.Visit(body);
     }
 
-    private class ParameterReplacer : ExpressionVisitor
+    private sealed class ParameterReplacer : ExpressionVisitor
     {
         private readonly ParameterExpression _newParameter;
 
