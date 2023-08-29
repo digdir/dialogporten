@@ -44,14 +44,16 @@ public sealed class UpdateDialogActivityEndpoint : Endpoint<UpdateDialogElementR
         var dialogElement = updateDialogDto.Elements.SingleOrDefault(x => x.Id == request.ElementId);
         if (dialogElement is null)
         {
-            await this.NotFoundAsync(new EntityNotFound<Domain.Dialogs.Entities.DialogElements.DialogElement>(request.ElementId), cancellationToken: ct);
+            await this.NotFoundAsync(
+                new EntityNotFound<Domain.Dialogs.Entities.DialogElements.DialogElement>(request.ElementId),
+                cancellationToken: ct);
             return;
         }
 
         updateDialogDto.Elements.Remove(dialogElement);
-        
-        var updateDialogDialogActivityDto = MapToUpdateDto(request);
-        updateDialogDto.Elements.Add(updateDialogDialogActivityDto);
+
+        var updateDialogElementDto = MapToUpdateDto(request);
+        updateDialogDto.Elements.Add(updateDialogElementDto);
 
         var updateDialogCommand = new UpdateDialogCommand
             {Id = request.DialogId, ETag = request.ETag, Dto = updateDialogDto};
@@ -65,31 +67,26 @@ public sealed class UpdateDialogActivityEndpoint : Endpoint<UpdateDialogElementR
             concurrencyError => this.PreconditionFailed(cancellationToken: ct));
     }
 
-    private static UpdateDialogDialogElementDto MapToUpdateDto(UpdateDialogElementRequest request)
+    private static UpdateDialogDialogElementDto MapToUpdateDto(UpdateDialogElementRequest request) => new()
     {
-        var updateDialogDialogElementDto = new UpdateDialogDialogElementDto
-        {
-            Id = request.ElementId,
-            Type = request.Type,
-            AuthorizationAttribute = request.AuthorizationAttribute,
-            RelatedDialogElementId = request.RelatedDialogElementId,
-            DisplayName = request.DisplayName,
-            Urls = request.Urls
-        };
-        
-        return updateDialogDialogElementDto;
-    }
+        Id = request.ElementId,
+        Type = request.Type,
+        AuthorizationAttribute = request.AuthorizationAttribute,
+        RelatedDialogElementId = request.RelatedDialogElementId,
+        DisplayName = request.DisplayName,
+        Urls = request.Urls
+    };
 }
 
 public sealed class UpdateDialogElementRequest
 {
     public Guid DialogId { get; set; }
-    
+
     public Guid ElementId { get; set; }
-    
+
     [FromHeader(headerName: Constants.IfMatch, isRequired: false)]
     public Guid? ETag { get; set; }
-    
+
     public Uri? Type { get; set; }
     public string? AuthorizationAttribute { get; set; }
 
