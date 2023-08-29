@@ -40,7 +40,7 @@ public sealed class DeleteDialogActivityEndpoint : Endpoint<DeleteDialogElementR
 
         var updateDialogDto = _mapper.Map<UpdateDialogDto>(dialog);
 
-        var dialogElement = updateDialogDto.Elements.SingleOrDefault(x => x.Id == request.ElementId);
+        var dialogElement = updateDialogDto.Elements.FirstOrDefault(x => x.Id == request.ElementId);
         if (dialogElement is null)
         {
             await this.NotFoundAsync(new EntityNotFound<Domain.Dialogs.Entities.DialogElements.DialogElement>(request.ElementId), cancellationToken: ct);
