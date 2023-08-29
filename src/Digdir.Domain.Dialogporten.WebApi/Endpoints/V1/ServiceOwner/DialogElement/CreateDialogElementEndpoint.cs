@@ -16,7 +16,7 @@ public sealed class CreateDialogActivityEndpoint : Endpoint<CreateDialogElementR
     public CreateDialogActivityEndpoint(ISender sender, IMapper mapper)
     {
         _sender = sender ?? throw new ArgumentNullException(nameof(sender));
-        _mapper = mapper;
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
     public override void Configure()

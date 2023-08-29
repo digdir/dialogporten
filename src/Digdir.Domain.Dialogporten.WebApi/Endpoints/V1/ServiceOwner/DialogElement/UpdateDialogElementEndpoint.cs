@@ -17,7 +17,7 @@ public sealed class UpdateDialogActivityEndpoint : Endpoint<UpdateDialogElementR
     public UpdateDialogActivityEndpoint(ISender sender, IMapper mapper)
     {
         _sender = sender ?? throw new ArgumentNullException(nameof(sender));
-        _mapper = mapper;
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
     public override void Configure()
@@ -37,7 +37,7 @@ public sealed class UpdateDialogActivityEndpoint : Endpoint<UpdateDialogElementR
 
         var updateDialogDto = _mapper.Map<UpdateDialogDto>(dialog);
 
-        var dialogElement = updateDialogDto.Elements.SingleOrDefault(x => x.Id == request.ElementId);
+        var dialogElement = updateDialogDto.Elements.FirstOrDefault(x => x.Id == request.ElementId);
         if (dialogElement is null)
         {
             await this.NotFoundAsync(
