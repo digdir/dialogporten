@@ -35,10 +35,6 @@ public sealed class UpdateDialogActivityEndpoint : Endpoint<UpdateDialogElementR
             return;
         }
 
-        // Remove all existing activities, since this list is append only and
-        // existing activities should not be considered in the new update request.
-        dialog.Activities.Clear();
-
         var updateDialogDto = _mapper.Map<UpdateDialogDto>(dialog);
 
         var dialogElement = updateDialogDto.Elements.SingleOrDefault(x => x.Id == request.ElementId);

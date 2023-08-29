@@ -43,10 +43,6 @@ public sealed class DialogsController : ControllerBase
             return NotFound(HttpContext.ResponseBuilder(StatusCodes.Status404NotFound, entityNotFound.ToValidationResults()));
         }
 
-        // Remove all existing activities, since this list is append only and
-        // existing activities should not be considered in the patch request.
-        dialog.Activities.Clear();
-
         var updateDialogDto = _mapper.Map<UpdateDialogDto>(dialog);
         patchDocument.ApplyTo(updateDialogDto, ModelState);
         if (!ModelState.IsValid)

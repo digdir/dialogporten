@@ -48,7 +48,10 @@ internal sealed class MappingProfile : Profile
             .ForMember(dest => dest.TypeId, opt => opt.MapFrom(src => src.Type));
 
         // To support json patch
-        CreateMap<GetDialogDto, UpdateDialogDto>();
+        CreateMap<GetDialogDto, UpdateDialogDto>()
+            // Remove all existing activities, since this list is append only and
+            // existing activities should not be considered in the update request.
+            .ForMember(dest => dest.Activities, opt => opt.Ignore());
         CreateMap<GetDialogDialogActivityDto, UpdateDialogDialogActivityDto>();
         CreateMap<GetDialogDialogApiActionDto, UpdateDialogDialogApiActionDto>();
         CreateMap<GetDialogDialogApiActionEndpointDto, UpdateDialogDialogApiActionEndpointDto>();
