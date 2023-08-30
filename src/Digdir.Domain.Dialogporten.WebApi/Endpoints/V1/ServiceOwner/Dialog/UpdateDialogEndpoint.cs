@@ -16,13 +16,13 @@ public sealed class UpdateDialogEndpoint : Endpoint<UpdateDialogRequest>
 
     public override void Configure()
     {
-        Put("dialogs/{id}");
+        Put("dialogs/{dialogId}");
         Group<ServiceOwnerGroup>();
     }
 
     public override async Task HandleAsync(UpdateDialogRequest req, CancellationToken ct)
     {
-        var command = new UpdateDialogCommand { Id = req.Id, ETag = req.ETag, Dto = req.Dto };
+        var command = new UpdateDialogCommand { Id = req.DialogId, ETag = req.ETag, Dto = req.Dto };
         var updateDialogResult = await _sender.Send(command, ct);
         await updateDialogResult.Match(
             success => SendNoContentAsync(ct),
@@ -35,7 +35,7 @@ public sealed class UpdateDialogEndpoint : Endpoint<UpdateDialogRequest>
 
 public sealed class UpdateDialogRequest
 {
-    public Guid Id { get; set; }
+    public Guid DialogId { get; set; }
 
     [FromBody]
     public UpdateDialogDto Dto { get; set; } = null!;

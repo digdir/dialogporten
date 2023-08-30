@@ -1,37 +1,37 @@
+using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Update;
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Queries.Get;
 using Digdir.Domain.Dialogporten.WebApi.Common;
 using FastEndpoints;
 using MediatR;
-using Medo;
 using IMapper = AutoMapper.IMapper;
 
-namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.DialogActivity;
+namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.DialogElement;
 
-public sealed class CreateDialogActivityEndpoint : Endpoint<CreateDialogActivityRequest>
+public sealed class DeleteDialogActivityEndpoint : Endpoint<DeleteDialogElementRequest>
 {
     private readonly IMapper _mapper;
     private readonly ISender _sender;
 
-    public CreateDialogActivityEndpoint(ISender sender, IMapper mapper)
+    public DeleteDialogActivityEndpoint(ISender sender, IMapper mapper)
     {
         _sender = sender ?? throw new ArgumentNullException(nameof(sender));
-        _mapper = mapper;
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
     public override void Configure()
     {
-        Post("dialogs/{dialogId}/activities");
+        Delete("dialogs/{dialogId}/elements/{elementId}");
         Group<ServiceOwnerGroup>();
     }
 
-    public override async Task HandleAsync(CreateDialogActivityRequest request, CancellationToken ct)
+    public override async Task HandleAsync(DeleteDialogElementRequest request, CancellationToken ct)
     {
         var dialogQueryResult = await _sender.Send(new GetDialogQuery {DialogId = request.DialogId}, ct);
         if (dialogQueryResult.TryPickT1(out var entityNotFound, out var dialog))
         {
-           await this.NotFoundAsync(entityNotFound, cancellationToken: ct);
-           return;
+            await this.NotFoundAsync(entityNotFound, cancellationToken: ct);
+            return;
         }
 
         // Remove all existing activities, since this list is append only and
@@ -40,17 +40,21 @@ public sealed class CreateDialogActivityEndpoint : Endpoint<CreateDialogActivity
 
         var updateDialogDto = _mapper.Map<UpdateDialogDto>(dialog);
 
-        request.Id = !request.Id.HasValue || request.Id.Value == default
-            ? Uuid7.NewUuid7().ToGuid()
-            : request.Id; 
+        var dialogElement = updateDialogDto.Elements.FirstOrDefault(x => x.Id == request.ElementId);
+        if (dialogElement is null)
+        {
+            await this.NotFoundAsync(new EntityNotFound<Domain.Dialogs.Entities.DialogElements.DialogElement>(request.ElementId), cancellationToken: ct);
+            return;
+        }
         
-        updateDialogDto.Activities.Add(request);
+        updateDialogDto.Elements.Remove(dialogElement);
 
-        var updateDialogCommand = new UpdateDialogCommand {Id = request.DialogId, ETag = request.ETag, Dto = updateDialogDto};
-        
+        var updateDialogCommand = new UpdateDialogCommand
+            {Id = request.DialogId, ETag = request.ETag, Dto = updateDialogDto};
+
         var result = await _sender.Send(updateDialogCommand, ct);
         await result.Match(
-            success => SendCreatedAtAsync<GetDialogActivityEndpoint>(new {request.Id}, request.Id, cancellation: ct),
+            success => SendNoContentAsync(ct),
             notFound => this.NotFoundAsync(notFound, ct),
             validationError => this.BadRequestAsync(validationError, ct),
             domainError => this.UnprocessableEntityAsync(domainError, ct),
@@ -58,10 +62,11 @@ public sealed class CreateDialogActivityEndpoint : Endpoint<CreateDialogActivity
     }
 }
 
-public sealed class CreateDialogActivityRequest : UpdateDialogDialogActivityDto
+public sealed class DeleteDialogElementRequest 
 {
     public Guid DialogId { get; set; }
-    
+    public Guid ElementId { get; set; }
+
     [FromHeader(headerName: Constants.IfMatch, isRequired: false)]
     public Guid? ETag { get; set; }
 }

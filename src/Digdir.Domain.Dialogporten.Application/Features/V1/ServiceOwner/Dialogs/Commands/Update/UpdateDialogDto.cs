@@ -80,7 +80,7 @@ public sealed class UpdateDialogDialogGuiActionDto
     public List<LocalizationDto> Title { get; set; } = new();
 }
 
-public sealed class UpdateDialogDialogElementDto
+public class UpdateDialogDialogElementDto
 {
     public Guid? Id { get; set; }
     public Uri? Type { get; set; }

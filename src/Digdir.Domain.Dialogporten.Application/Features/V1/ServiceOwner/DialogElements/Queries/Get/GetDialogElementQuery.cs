@@ -13,7 +13,7 @@ namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialog
 public sealed class GetDialogElementQuery : IRequest<GetDialogElementResult>
 {
     public Guid DialogId { get; set; }
-    public Guid DialogElementId { get; set; }
+    public Guid ElementId { get; set; }
 }
 
 [GenerateOneOf]
@@ -36,7 +36,7 @@ internal sealed class GetDialogElementQueryHandler : IRequestHandler<GetDialogEl
         CancellationToken cancellationToken)
     {
         Expression<Func<DialogEntity, IEnumerable<DialogElement>>> elementFilter = dialog =>
-            dialog.Elements.Where(x => x.Id == request.DialogElementId);
+            dialog.Elements.Where(x => x.Id == request.ElementId);
         
         var dialog = await _dbContext.Dialogs
             .Include(elementFilter)
@@ -56,7 +56,7 @@ internal sealed class GetDialogElementQueryHandler : IRequestHandler<GetDialogEl
 
         if (element is null)
         {
-            return new EntityNotFound<DialogElement>(request.DialogElementId);
+            return new EntityNotFound<DialogElement>(request.ElementId);
         }
         
         return _mapper.Map<GetDialogElementDto>(element);
