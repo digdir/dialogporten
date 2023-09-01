@@ -13,9 +13,10 @@ public sealed class ListDialogQuery : PaginationParameter<ListDialogQueryOrderDe
 
 public sealed class ListDialogQueryOrderDefinition : IOrderDefinition<ListDialogDto>
 {
-    public static void Configure(IOrderBuilder<ListDialogDto> options) => options
+    static IOrderOptions<ListDialogDto> IOrderDefinition<ListDialogDto>.Configure(IOrderOptionsBuilder<ListDialogDto> options) => options
         .AddId(x => x.Id)
-        .AddDefault("createdAt", x => x.CreatedAt);
+        .AddDefault("createdAt", x => x.CreatedAt)
+        .Build();
 }
 
 [GenerateOneOf]

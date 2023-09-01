@@ -14,7 +14,7 @@ public sealed class OrderSet<TOrderDefinition, TTarget> : IOrderSet<TTarget>
 {
     private static readonly OrderComparer _orderComparer = new();
 
-    public static OrderOptions<TTarget> OrderOptions { get; }  = new OrderOptionsBuilder<TTarget>()
+    public static IOrderOptions<TTarget> OrderOptions { get; } = new OrderOptionsBuilder<TTarget>()
         .Configure<TOrderDefinition>()
         .Build();
 
@@ -39,7 +39,7 @@ public sealed class OrderSet<TOrderDefinition, TTarget> : IOrderSet<TTarget>
         var orders = new HashSet<Order<TTarget>>(_orderComparer);
         foreach (var orderAsString in value.Split(PaginationConstants.OrderSetDelimiter, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
         {
-            if (!OrderOptions.TryParse(orderAsString, out var order) ||
+            if (!OrderOptions.TryParseOrder(orderAsString, out var order) ||
                 !orders.Add(order))
             {
                 return false;

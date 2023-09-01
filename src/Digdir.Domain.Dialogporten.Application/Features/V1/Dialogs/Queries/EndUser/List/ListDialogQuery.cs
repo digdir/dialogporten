@@ -45,11 +45,12 @@ public sealed class ListDialogQuery : SortablePaginationParameter<ListDialogQuer
 
 public sealed class ListDialogQueryOrderDefinition : IOrderDefinition<ListDialogDto>
 {
-    public static void Configure(IOrderBuilder<ListDialogDto> options) =>
+    public static IOrderOptions<ListDialogDto> Configure(IOrderOptionsBuilder<ListDialogDto> options) =>
         options.AddId(x => x.Id)
             .AddDefault("createdAt", x => x.CreatedAt)
             .AddOption("updatedAt", x => x.UpdatedAt)
-            .AddOption("dueAt", x => x.DueAt);
+            .AddOption("dueAt", x => x.DueAt)
+            .Build();
 }
 
 [GenerateOneOf]

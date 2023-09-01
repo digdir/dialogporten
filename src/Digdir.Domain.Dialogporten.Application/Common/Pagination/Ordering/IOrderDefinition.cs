@@ -5,30 +5,34 @@ namespace Digdir.Domain.Dialogporten.Application.Common.Pagination.Ordering;
 
 public interface IOrderDefinition<TTarget>
 {
-    public static abstract void Configure(IOrderBuilder<TTarget> options);
+    public static abstract IOrderOptions<TTarget> Configure(IOrderOptionsBuilder<TTarget> options);
 }
-public interface IOrderBuilder<TTarget>
-{
-    IOrderDefaultBuilder<TTarget> AddId(Expression<Func<TTarget, object?>> expression);
-}
-
-public interface IOrderDefaultBuilder<TTarget>
-{
-    IOrderOptionsBuilder<TTarget> AddDefault(string key, Expression<Func<TTarget, object?>> expression);
-}
-
-
 public interface IOrderOptionsBuilder<TTarget>
 {
-    IOrderOptionsBuilder<TTarget> AddOption(string key, Expression<Func<TTarget, object?>> expression);
+    IOrderDefaultOptionsBuilder<TTarget> AddId(Expression<Func<TTarget, object?>> expression);
 }
 
-internal class OrderOptionsBuilder<TTarget> : IOrderBuilder<TTarget>, IOrderDefaultBuilder<TTarget>, IOrderOptionsBuilder<TTarget>
+public interface IOrderDefaultOptionsBuilder<TTarget>
+{
+    IOrderOptionsOptionsBuilder<TTarget> AddDefault(string key, Expression<Func<TTarget, object?>> expression);
+}
+
+
+public interface IOrderOptionsOptionsBuilder<TTarget>
+{
+    IOrderOptionsOptionsBuilder<TTarget> AddOption(string key, Expression<Func<TTarget, object?>> expression);
+    IOrderOptions<TTarget> Build();
+}
+
+internal class OrderOptionsBuilder<TTarget> : 
+    IOrderOptionsBuilder<TTarget>, 
+    IOrderDefaultOptionsBuilder<TTarget>, 
+    IOrderOptionsOptionsBuilder<TTarget>
 {
     private readonly Dictionary<string, OrderSelector<TTarget>> _optionByKey = new(StringComparer.InvariantCultureIgnoreCase);
     private string? _defaultKey;
 
-    public IOrderDefaultBuilder<TTarget> AddId(Expression<Func<TTarget, object?>> expression)
+    public IOrderDefaultOptionsBuilder<TTarget> AddId(Expression<Func<TTarget, object?>> expression)
     {
         _defaultKey = null;
         _optionByKey.Clear();
@@ -36,14 +40,14 @@ internal class OrderOptionsBuilder<TTarget> : IOrderBuilder<TTarget>, IOrderDefa
         return this;
     }
 
-    public IOrderOptionsBuilder<TTarget> AddDefault([NotNull] string key, Expression<Func<TTarget, object?>> expression)
+    public IOrderOptionsOptionsBuilder<TTarget> AddDefault([NotNull] string key, Expression<Func<TTarget, object?>> expression)
     {
         _defaultKey = key;
         _optionByKey[_defaultKey] = new(expression);
         return this;
     }
 
-    public IOrderOptionsBuilder<TTarget> AddOption([NotNull] string key, Expression<Func<TTarget, object?>> expression)
+    public IOrderOptionsOptionsBuilder<TTarget> AddOption([NotNull] string key, Expression<Func<TTarget, object?>> expression)
     {
         _optionByKey[key] = new(expression);
         return this;
@@ -56,7 +60,7 @@ internal class OrderOptionsBuilder<TTarget> : IOrderBuilder<TTarget>, IOrderDefa
         return this;
     }
 
-    internal OrderOptions<TTarget> Build()
+    public IOrderOptions<TTarget> Build()
     {
         if (_defaultKey is null)
         {
@@ -67,7 +71,15 @@ internal class OrderOptionsBuilder<TTarget> : IOrderBuilder<TTarget>, IOrderDefa
     }
 }
 
-public class OrderOptions<TTarget>
+public interface IOrderOptions<TTarget>
+{
+    Order<TTarget> GetDefault();
+    Order<TTarget> GetId();
+    bool TryGetOption(string? key, [NotNullWhen(true)] out OrderSelector<TTarget>? option);
+    bool TryParseOrder(string value, [NotNullWhen(true)] out Order<TTarget>? result);
+}
+
+public class OrderOptions<TTarget> : IOrderOptions<TTarget>
 {
     private readonly string _defaultKey;
     private readonly Dictionary<string, OrderSelector<TTarget>> _optionByKey;
@@ -78,7 +90,7 @@ public class OrderOptions<TTarget>
         _optionByKey = optionByKey;
     }
 
-    internal bool TryParse(string value, [NotNullWhen(true)] out Order<TTarget>? result)
+    public bool TryParseOrder(string value, [NotNullWhen(true)] out Order<TTarget>? result)
     {
         result = default;
         if (string.IsNullOrWhiteSpace(value))
@@ -112,9 +124,9 @@ public class OrderOptions<TTarget>
         return result is not null;
     }
 
-    internal Order<TTarget> GetId() => new(PaginationConstants.OrderIdKey, _optionByKey[PaginationConstants.OrderIdKey]);
-    internal Order<TTarget> GetDefault() => new(_defaultKey, _optionByKey[_defaultKey]);
-    internal bool TryGetOption(string? key, [NotNullWhen(true)] out OrderSelector<TTarget>? option)
+    public Order<TTarget> GetId() => new(PaginationConstants.OrderIdKey, _optionByKey[PaginationConstants.OrderIdKey]);
+    public Order<TTarget> GetDefault() => new(_defaultKey, _optionByKey[_defaultKey]);
+    public bool TryGetOption(string? key, [NotNullWhen(true)] out OrderSelector<TTarget>? option)
     {
         option = default;
         return key is not null && _optionByKey.TryGetValue(key, out option);
