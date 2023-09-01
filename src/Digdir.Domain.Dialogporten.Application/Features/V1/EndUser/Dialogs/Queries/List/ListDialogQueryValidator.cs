@@ -35,6 +35,6 @@ internal sealed class ListDialogQueryValidator : AbstractValidator<ListDialogQue
             .LessThanOrEqualTo(20)
             .When(x => x.ExtendedStatus is not null);
 
-        RuleFor(x => x.Status).IsInEnum();
+        RuleForEach(x => x.Status).IsInEnum();
     }
 }

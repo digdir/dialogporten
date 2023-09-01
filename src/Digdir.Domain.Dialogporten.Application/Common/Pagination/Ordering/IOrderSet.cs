@@ -12,7 +12,7 @@ public interface IOrderSet<TTarget>
 public sealed class OrderSet<TOrderDefinition, TTarget> : IOrderSet<TTarget>
     where TOrderDefinition : IOrderDefinition<TTarget>
 {
-    private static readonly OrderComparer<TTarget> _orderComparer = new();
+    private static readonly OrderComparer _orderComparer = new();
     public static readonly IOrderOptions<TTarget> OrderOptions = new OrderOptionsBuilder<TTarget>()
         .Configure<TOrderDefinition>()
         .Build();
@@ -96,29 +96,27 @@ public sealed class OrderSet<TOrderDefinition, TTarget> : IOrderSet<TTarget>
         var orderParts = Orders.Select(x => $"{x.Key.ToLowerInvariant()}{PaginationConstants.OrderDelimiter}{x.Direction.ToString().ToLowerInvariant()}");
         return string.Join(PaginationConstants.OrderSetDelimiter, orderParts);
     }
-
     
-}
-
-public class OrderComparer<TTarget> : IEqualityComparer<Order<TTarget>>
-{
-    public bool Equals(Order<TTarget>? x, Order<TTarget>? y)
+    private class OrderComparer : IEqualityComparer<Order<TTarget>>
     {
-        if (ReferenceEquals(x, y))
+        public bool Equals(Order<TTarget>? x, Order<TTarget>? y)
         {
-            return true;
+            if (ReferenceEquals(x, y))
+            {
+                return true;
+            }
+
+            if (x is null || y is null)
+            {
+                return false;
+            }
+
+            return x.Key == y.Key;
         }
 
-        if (x is null || y is null)
+        public int GetHashCode([DisallowNull] Order<TTarget> obj)
         {
-            return false;
+            return obj.Key.GetHashCode();
         }
-
-        return x.Key == y.Key;
-    }
-
-    public int GetHashCode([DisallowNull] Order<TTarget> obj)
-    {
-        return obj.Key.GetHashCode();
     }
 }
