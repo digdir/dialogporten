@@ -145,18 +145,17 @@ public record OrderSelector<TTarget>(Expression<Func<TTarget, object?>> Expressi
 
 public class Order<TTarget>
 {
-    private readonly OrderSelector<TTarget> _expressionCache;
+    private readonly OrderSelector<TTarget> _selector;
 
     public string Key { get; }
     public OrderDirection Direction { get; }
-    public Expression<Func<TTarget, object?>> SelectorExpression => _expressionCache.Expression;
-    public Expression SelectorBody => _expressionCache.Body;
-    public Func<TTarget, object?> CompiledSelector => _expressionCache.Compiled.Value;
 
-    public Order(string key, OrderSelector<TTarget> expressionCache, OrderDirection direction = PaginationConstants.DefaultOrderDirection)
+    public Order(string key, OrderSelector<TTarget> selector, OrderDirection direction = PaginationConstants.DefaultOrderDirection)
     {
-        _expressionCache = expressionCache;
+        _selector = selector;
         Key = key;
         Direction = direction;
     }
+
+    public OrderSelector<TTarget> GetSelector() => _selector;
 }

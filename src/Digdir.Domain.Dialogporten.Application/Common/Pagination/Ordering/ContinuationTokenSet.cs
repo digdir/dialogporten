@@ -5,16 +5,19 @@ namespace Digdir.Domain.Dialogporten.Application.Common.Pagination.Ordering;
 
 public class ContinuationToken
 {
+    private readonly Type _type;
+
     public string Key { get; }
     public object? Value { get; }
-    public ConstantExpression ValueExpression { get; }
 
     public ContinuationToken(string key, object? value, Type type)
     {
         Key = key;
         Value = value;
-        ValueExpression = Expression.Constant(value, type);
+        _type = type;
     }
+
+    public ConstantExpression GetValueExpression() => Expression.Constant(Value, _type);
 }
 
 public interface IContinuationTokenSet

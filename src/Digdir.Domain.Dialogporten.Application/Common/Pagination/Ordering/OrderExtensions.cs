@@ -30,15 +30,15 @@ internal static class OrderExtensions
         {
             return order.Direction switch
             {
-                OrderDirection.Asc => query.OrderBy(order.SelectorExpression),
-                OrderDirection.Desc => query.OrderByDescending(order.SelectorExpression),
+                OrderDirection.Asc => query.OrderBy(order.GetSelector().Expression),
+                OrderDirection.Desc => query.OrderByDescending(order.GetSelector().Expression),
                 _ => throw new ArgumentOutOfRangeException(nameof(order.Direction), order.Direction, null)
             };
         }
         return order.Direction switch
         {
-            OrderDirection.Asc => ((IOrderedQueryable<T>)query).ThenBy(order.SelectorExpression),
-            OrderDirection.Desc => ((IOrderedQueryable<T>)query).ThenByDescending(order.SelectorExpression),
+            OrderDirection.Asc => ((IOrderedQueryable<T>)query).ThenBy(order.GetSelector().Expression),
+            OrderDirection.Desc => ((IOrderedQueryable<T>)query).ThenByDescending(order.GetSelector().Expression),
             _ => throw new ArgumentOutOfRangeException(nameof(order.Direction), order.Direction, null)
         };
     }
@@ -59,9 +59,9 @@ internal static class OrderExtensions
                 x => x.Key,
                 (order, token) => 
                     (
-                        orderBody: parameterReplacer.Visit(order.SelectorBody), 
+                        orderBody: parameterReplacer.Visit(order.GetSelector().Body), 
                         orderDirection: order.Direction, 
-                        tokenExpression: token.ValueExpression
+                        tokenExpression: token.GetValueExpression()
                     ),
                 StringComparer.InvariantCultureIgnoreCase)
             .ToList();
