@@ -50,7 +50,7 @@ public class ContinuationTokenSet<TOrderDefinition, TTarget> : IContinuationToke
 
         var continuationTokens = value
             .Split(PaginationConstants.ContinuationTokenSetDelimiter, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
-            .Select(x => x.Split(PaginationConstants.ContinuationTokenDelimiter, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries) switch
+            .Select(x => x.Split(PaginationConstants.ContinuationTokenDelimiter, StringSplitOptions.TrimEntries) switch
                 {
                     [var key, var ctAsString]
                         when orderOptions.TryGetOption(key, out var option)

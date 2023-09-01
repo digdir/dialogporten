@@ -1,7 +1,5 @@
-﻿using Digdir.Domain.Dialogporten.Application.Common.Extensions.FluentValidation;
-using Digdir.Domain.Dialogporten.Application.Common.Pagination.Ordering;
+﻿using Digdir.Domain.Dialogporten.Application.Common.Pagination.Ordering;
 using FluentValidation;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.Mapping;
 
 namespace Digdir.Domain.Dialogporten.Application.Common.Pagination;
 
@@ -50,7 +48,7 @@ internal sealed class SortablePaginationParameterValidator<TOrderDefinition, TTa
 
                 var orders = paginationParameter.OrderBy?.Orders ?? OrderSet<TOrderDefinition, TTarget>.Default.Orders;
                 var missingTokenKeys = orders.Select(x => x.Key)
-                    .Except(continuationTokenSet.Tokens.Select(x => x.Key))
+                    .Except(continuationTokenSet.Tokens.Select(x => x.Key), StringComparer.InvariantCultureIgnoreCase)
                     .ToList();
                 ctx.MessageFormatter.AppendArgument("MissingTokenKeys", string.Join(',', missingTokenKeys));
                 return missingTokenKeys.Count == 0;
