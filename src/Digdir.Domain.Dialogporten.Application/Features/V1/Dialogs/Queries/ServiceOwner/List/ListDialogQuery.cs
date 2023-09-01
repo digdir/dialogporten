@@ -1,24 +1,21 @@
 ﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Digdir.Domain.Dialogporten.Application.Common.Pagination;
 using Digdir.Domain.Dialogporten.Application.Common.Pagination.Ordering;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using MediatR;
 using OneOf;
-using System.Linq.Expressions;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Queries.ServiceOwner.List;
 
-public sealed class ListDialogQuery : DefaultPaginationParameter, IRequest<ListDialogResult> { }
+public sealed class ListDialogQuery : PaginationParameter<ListDialogQueryOrderDefinition, ListDialogDto>, IRequest<ListDialogResult> { }
 
-public sealed class ListDialogQueryOrder : IDefaultOrder<ListDialogQueryOrder, ListDialogDto>
+public sealed class ListDialogQueryOrderDefinition : IOrderDefinition<ListDialogDto>
 {
-    public Expression<Func<ListDialogDto, object?>> OrderBy { get; init; } = null!;
-    public OrderDirection Direction { get; init; }
-    public string OrderByAsString { get; init; } = null!;
-
-    public static Expression<Func<ListDialogDto, object?>> GetIdExpression() => x => x.Id;
-    public static Expression<Func<ListDialogDto, object?>> GetDefaultOrderExpression() => x => x.CreatedAt;
+    public static void Configure(IOrderBuilder<ListDialogDto> options) => options
+        .AddId(x => x.Id)
+        .AddDefault("createdAt", x => x.CreatedAt);
 }
 
 [GenerateOneOf]
@@ -37,9 +34,8 @@ internal sealed class ListDialogQueryHandler : IRequestHandler<ListDialogQuery, 
 
     public async Task<ListDialogResult> Handle(ListDialogQuery request, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
-        //return await _db.Dialogs
-        //    .ProjectTo<ListDialogDto>(_mapper.ConfigurationProvider)
-        //    .ToPaginatedListAsync(OrderSet<ListDialogQueryOrder, ListDialogDto>.Default, request, cancellationToken);
+        return await _db.Dialogs
+            .ProjectTo<ListDialogDto>(_mapper.ConfigurationProvider)
+            .ToPaginatedListAsync(request, cancellationToken);
     }
 }

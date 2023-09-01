@@ -4,60 +4,30 @@ namespace Digdir.Domain.Dialogporten.Application.Common.Pagination.Ordering;
 
 public interface IOrderSet<TTarget>
 {
-    IReadOnlyCollection<IOrder<TTarget>> Orders { get; }
-    string GetContinuationToken(TTarget t);
-    string? GetOrderByAsString();
+    IReadOnlyCollection<Order<TTarget>> Orders { get; }
+    string? GetContinuationTokenFrom(TTarget? t);
+    string GetOrderString();
 }
 
-//public sealed class DefaultOrderSet<TOrder, TTarget> : IOrderSet<TTarget>
-//    where TOrder : class, IDefaultOrder<TOrder, TTarget>, new()
-//{
-//    public const char Delimiter = ',';
-//    public IReadOnlyCollection<IOrder<TTarget>> Orders { get; }
-
-
-
-//    public string GetContinuationToken(TTarget t)
-//    {
-//        var values = Orders
-//            // TODO: cache?
-//            .Select(x => x.OrderBy.Compile().Invoke(t))
-//            .Select(x => x switch
-//            {
-//                null => string.Empty,
-//                string s => s,
-//                DateTimeOffset d => d.UtcDateTime.ToString("o"),
-//                DateTime d => d.ToString("o"),
-//                _ => x.ToString()
-//            })
-//            .ToArray();
-//        return string.Join(ContinuationToken.Delimiter, values);
-//    }
-
-//    public string? GetOrderByAsString()
-//    {
-//        var orderByString = string.Join(Delimiter, Orders
-//            .Take(..^1)
-//            .Where(x => !string.IsNullOrWhiteSpace(x.OrderByAsString))
-//            .Select(x => $"{x.OrderByAsString.ToLower()}{IParsableOrder<TOrder, TTarget>.Delimiter}{x.Direction.ToString().ToLower()}"));
-//        return string.IsNullOrWhiteSpace(orderByString) ? null : orderByString;
-//    }
-//}
-
-public sealed class OrderSet<TOrder, TTarget> : IOrderSet<TTarget>
-    where TOrder : class, IParsableOrder<TOrder, TTarget>, new()
+public sealed class OrderSet<TOrderDefinition, TTarget> : IOrderSet<TTarget>
+    where TOrderDefinition : IOrderDefinition<TTarget>
 {
-    public const char Delimiter = ',';
+    private static readonly OrderComparer _orderComparer = new();
 
-    private static readonly OrderSet<TOrder, TTarget> _default = 
-        new() { Orders = new List<TOrder> { IParsableOrder<TOrder, TTarget>.Default, IParsableOrder<TOrder, TTarget>.Id } };
-    public static OrderSet<TOrder, TTarget> Default => _default;
+    public static OrderOptions<TTarget> OrderOptions { get; }  = new OrderOptionsBuilder<TTarget>()
+        .Configure<TOrderDefinition>()
+        .Build();
 
-    public IReadOnlyCollection<TOrder> Orders { get; private set; } = null!;
+    public static OrderSet<TOrderDefinition, TTarget> Default { get; } = new OrderSet<TOrderDefinition, TTarget>(new[] { OrderOptions.GetDefault(), OrderOptions.GetId() });
 
-    IReadOnlyCollection<IOrder<TTarget>> IOrderSet<TTarget>.Orders => Orders;
+    public IReadOnlyCollection<Order<TTarget>> Orders { get; }
 
-    public static bool TryParse(string? value, [NotNullWhen(true)] out OrderSet<TOrder, TTarget>? result)
+    public OrderSet(IReadOnlyCollection<Order<TTarget>> orders)
+    {
+        Orders = orders;
+    }
+
+    public static bool TryParse(string? value, [NotNullWhen(true)] out OrderSet<TOrderDefinition, TTarget>? result)
     {
         result = default;
         if (string.IsNullOrWhiteSpace(value))
@@ -66,46 +36,89 @@ public sealed class OrderSet<TOrder, TTarget> : IOrderSet<TTarget>
         }
 
         // eks: orderBy=createdAt_asc,updatedAt_desc
-        var orders = new List<TOrder>();
-        foreach (var orderAsString in value.Split(Delimiter, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+        var orders = new HashSet<Order<TTarget>>(_orderComparer);
+        foreach (var orderAsString in value.Split(PaginationConstants.OrderSetDelimiter, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
         {
-            if (!IParsableOrder<TOrder, TTarget>.TryParse(orderAsString, out var order))
+            if (!OrderOptions.TryParse(orderAsString, out var order) ||
+                !orders.Add(order))
+            {
+                return false;
+            }
+        }
+
+        var orderList = orders.ToList();
+
+        // Ensure ID order is last
+        var idOrder = orderList
+            .FirstOrDefault(x => x.Key == PaginationConstants.OrderIdKey) 
+            ?? OrderOptions.GetId();
+
+        if (orderList.Contains(idOrder))
+        {
+            orderList.Remove(idOrder);
+        }
+
+        orderList.Add(idOrder);
+
+        // Ensure at least two sorting parameters
+        if (orderList.Count == 1)
+        {
+            orderList.Insert(0, OrderOptions.GetDefault());
+        }
+
+        result = new OrderSet<TOrderDefinition, TTarget>(orderList);
+        return true;
+    }
+
+    public string? GetContinuationTokenFrom(TTarget? t)
+    {
+        if (t is null)
+        {
+            return null;
+        }
+
+        var continuationTokenParts = Orders
+            .Select(x =>
+            {
+                var value = x.CompiledSelector.Invoke(t) switch
+                {
+                    null => string.Empty,
+                    string s => s,
+                    DateTimeOffset d => d.UtcDateTime.ToString("o"),
+                    DateTime d => d.ToString("o"),
+                    object o => o.ToString(),
+                };
+                return $"{x.Key.ToLowerInvariant()}{PaginationConstants.ContinuationTokenDelimiter}{value}";
+            });
+        return string.Join(PaginationConstants.ContinuationTokenSetDelimiter, continuationTokenParts);
+    }
+
+    public string GetOrderString()
+    {
+        var orderParts = Orders.Select(x => $"{x.Key.ToLowerInvariant()}{PaginationConstants.OrderDelimiter}{x.Direction.ToString().ToLowerInvariant()}");
+        return string.Join(PaginationConstants.OrderSetDelimiter, orderParts);
+    }
+
+    private class OrderComparer : IEqualityComparer<Order<TTarget>>
+    {
+        public bool Equals(Order<TTarget>? x, Order<TTarget>? y)
+        {
+            if (ReferenceEquals(x, y))
+            {
+                return true;
+            }
+
+            if (x is null || y is null)
             {
                 return false;
             }
 
-            orders.Add(order);
+            return x.Key == y.Key;
         }
 
-        orders.Add(IDefaultOrder<TOrder, TTarget>.Id);
-
-        result = new OrderSet<TOrder, TTarget> { Orders = orders };
-        return true;
-    }
-
-    public string GetContinuationToken(TTarget t)
-    {
-        var values = Orders
-            // TODO: cache?
-            .Select(x => x.OrderBy.Compile().Invoke(t))
-            .Select(x => x switch
-            {
-                null => string.Empty, 
-                string s => s, 
-                DateTimeOffset d => d.UtcDateTime.ToString("o"),
-                DateTime d => d.ToString("o"),
-                _ => x.ToString()
-            })
-            .ToArray();
-        return string.Join(ContinuationToken.Delimiter, values);
-    }
-
-    public string? GetOrderByAsString()
-    {
-        var orderByString = string.Join(Delimiter, Orders
-            .Take(..^1)
-            .Where(x => !string.IsNullOrWhiteSpace(x.OrderByAsString))
-            .Select(x => $"{x.OrderByAsString.ToLower()}{IParsableOrder<TOrder, TTarget>.Delimiter}{x.Direction.ToString().ToLower()}"));
-        return string.IsNullOrWhiteSpace(orderByString) ? null : orderByString;
+        public int GetHashCode([DisallowNull] Order<TTarget> obj)
+        {
+            return obj.Key.GetHashCode();
+        }
     }
 }

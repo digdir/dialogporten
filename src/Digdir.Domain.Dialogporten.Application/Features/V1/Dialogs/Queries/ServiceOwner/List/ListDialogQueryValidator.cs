@@ -7,6 +7,6 @@ internal sealed class ListDialogQueryValidator : AbstractValidator<ListDialogQue
 {
     public ListDialogQueryValidator()
     {
-        Include(new PaginationParameterValidator());
+        Include(new PaginationParameterValidator<ListDialogQueryOrderDefinition, ListDialogDto>());
     }
 }

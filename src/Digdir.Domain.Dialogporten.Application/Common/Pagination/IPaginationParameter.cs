@@ -1,41 +1,60 @@
-﻿using Digdir.Domain.Dialogporten.Application.Common.Pagination.Ordering;
+﻿using Digdir.Domain.Dialogporten.Application.Common.Extensions.FluentValidation;
+using Digdir.Domain.Dialogporten.Application.Common.Pagination.Ordering;
 using FluentValidation;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.Mapping;
 
 namespace Digdir.Domain.Dialogporten.Application.Common.Pagination;
 
-//public interface IPaginationParameter<TTarget>
-public interface IPaginationParameter
+public class PaginationParameter<TOrderDefinition, TTarget> 
+    where TOrderDefinition : IOrderDefinition<TTarget>
 {
-    int? Limit { get; }
-    ContinuationToken? Continue { get; }
-    //IOrderSet<TTarget>? OrderBy { get; }
-}
+    private int _limit = PaginationConstants.DefaultLimit;
 
-//public class DefaultPaginationParameter<TOrder, TTarget> : IPaginationParameter<TTarget>
-//    where TOrder : class, IDefaultOrder<TOrder, TTarget>, new()
-public class DefaultPaginationParameter : IPaginationParameter
-{
-    public const int MinLimit = 1;
-    public const int MaxLimit = 1000;
-    private const int DefaultLimit = 100;
-
-    private int _limit = DefaultLimit;
-    
-    public ContinuationToken? Continue { get; init; }
+    public ContinuationTokenSet<TOrderDefinition, TTarget>? Continue { get; init; }
 
     public int? Limit
     {
         get => _limit;
-        init => _limit = value ?? DefaultLimit;
+        init => _limit = value ?? PaginationConstants.DefaultLimit;
     }
-
-    //IOrderSet<TTarget>? IPaginationParameter<TTarget>.OrderBy => OrderBy;
 }
 
-internal sealed class PaginationParameterValidator : AbstractValidator<IPaginationParameter>
+public class SortablePaginationParameter<TOrderDefinition, TTarget> : PaginationParameter<TOrderDefinition, TTarget>
+    where TOrderDefinition : IOrderDefinition<TTarget>
+{
+    public OrderSet<TOrderDefinition, TTarget>? OrderBy { get; init; } = OrderSet<TOrderDefinition, TTarget>.Default;
+}
+
+internal sealed class PaginationParameterValidator<TOrderDefinition, TTarget> : AbstractValidator<PaginationParameter<TOrderDefinition, TTarget>>
+    where TOrderDefinition : IOrderDefinition<TTarget>
 {
     public PaginationParameterValidator()
     {
-        RuleFor(x => x.Limit).InclusiveBetween(DefaultPaginationParameter.MinLimit, DefaultPaginationParameter.MaxLimit);
+        RuleFor(x => x.Limit).InclusiveBetween(PaginationConstants.MinLimit,PaginationConstants.MaxLimit);
+    }
+}
+
+internal sealed class SortablePaginationParameterValidator<TOrderDefinition, TTarget> : AbstractValidator<SortablePaginationParameter<TOrderDefinition, TTarget>>
+    where TOrderDefinition : IOrderDefinition<TTarget>
+{
+    public SortablePaginationParameterValidator()
+    {
+        RuleFor(x => x.Limit).InclusiveBetween(PaginationConstants.MinLimit, PaginationConstants.MaxLimit);
+        RuleFor(x => x.Continue)
+            .Must((paginationParameter, continuationTokenSet, ctx) =>
+            {
+                if (continuationTokenSet is null)
+                {
+                    return true;
+                }
+
+                var orders = paginationParameter.OrderBy?.Orders ?? OrderSet<TOrderDefinition, TTarget>.Default.Orders;
+                var missingTokenKeys = orders.Select(x => x.Key)
+                    .Except(continuationTokenSet.Tokens.Select(x => x.Key))
+                    .ToList();
+                ctx.MessageFormatter.AppendArgument("MissingTokenKeys", string.Join(',', missingTokenKeys));
+                return missingTokenKeys.Count == 0;
+            })
+            .WithMessage("{PropertyName} does not match OrderBy. Missing token keys: [{MissingTokenKeys}].");
     }
 }

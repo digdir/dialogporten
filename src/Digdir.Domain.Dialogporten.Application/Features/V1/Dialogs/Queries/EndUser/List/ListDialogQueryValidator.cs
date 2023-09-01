@@ -9,7 +9,7 @@ internal sealed class ListDialogQueryValidator : AbstractValidator<ListDialogQue
 {
     public ListDialogQueryValidator()
     {
-        Include(new PaginationParameterValidator());
+        Include(new SortablePaginationParameterValidator<ListDialogQueryOrderDefinition, ListDialogDto>());
         RuleFor(x => x.Search)
             .MinimumLength(3)
             .When(x => x.Search is not null);

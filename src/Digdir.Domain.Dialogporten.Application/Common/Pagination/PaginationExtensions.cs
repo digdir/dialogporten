@@ -5,27 +5,26 @@ namespace Digdir.Domain.Dialogporten.Application.Common.Pagination;
 
 internal static class PaginationExtensions
 {
-    public static Task<PaginatedList<TDestination>> ToPaginatedListAsync<TDestination>(
-        this IQueryable<TDestination> queryable,
-        IOrderSet<TDestination> orderSet,
-        ContinuationToken? continuationToken,
-        int limit,
+    public static Task<PaginatedList<TTarget>> ToPaginatedListAsync<TOrderDefinition, TTarget>
+        (this IQueryable<TTarget> queryable,
+        SortablePaginationParameter<TOrderDefinition, TTarget> parameter,
         CancellationToken cancellationToken = default)
+        where TOrderDefinition : IOrderDefinition<TTarget>
         => CreateAsync(
             queryable,
-            orderSet,
-            continuationToken,
-            limit,
+            parameter.OrderBy.DefaultIfNull(),
+            parameter.Continue,
+            parameter.Limit!.Value,
             cancellationToken);
 
-    public static Task<PaginatedList<TDestination>> ToPaginatedListAsync<TDestination>(
-        this IQueryable<TDestination> queryable,
-        IOrderSet<TDestination> orderSet,
-        IPaginationParameter parameter,
+    public static Task<PaginatedList<TTarget>> ToPaginatedListAsync<TOrderDefinition, TTarget>
+        (this IQueryable<TTarget> queryable,
+        PaginationParameter<TOrderDefinition, TTarget> parameter,
         CancellationToken cancellationToken = default)
+        where TOrderDefinition : IOrderDefinition<TTarget>
         => CreateAsync(
             queryable,
-            orderSet,
+            OrderSet<TOrderDefinition, TTarget>.Default,
             parameter.Continue,
             parameter.Limit!.Value,
             cancellationToken);
@@ -33,7 +32,7 @@ internal static class PaginationExtensions
     private static async Task<PaginatedList<T>> CreateAsync<T>(
         IQueryable<T> source,
         IOrderSet<T> orderSet,
-        ContinuationToken? continuationToken,
+        IContinuationTokenSet? continuationTokenSet,
         int limit,
         CancellationToken cancellationToken = default)
     {
@@ -46,7 +45,7 @@ internal static class PaginationExtensions
 
         var items = await source
             .ApplyOrder(orderSet)
-            .ApplyCondition(orderSet, continuationToken)
+            .ApplyCondition(orderSet, continuationTokenSet)
             .Take(limit + OneMore)
             .ToArrayAsync(cancellationToken);
 
@@ -57,12 +56,14 @@ internal static class PaginationExtensions
             Array.Resize(ref items, limit);
         }
 
-        var nextContinuationToken = items.Length > 0
-            ? orderSet.GetContinuationToken(items[^1])
-            : null;
+        var nextContinuationToken = 
+            orderSet.GetContinuationTokenFrom(items.LastOrDefault()) 
+            ?? continuationTokenSet?.Raw;
 
-        var orderBy = orderSet.GetOrderByAsString();
-
-        return new PaginatedList<T>(items, hasNextPage, nextContinuationToken, orderBy);
+        return new PaginatedList<T>(
+            items, 
+            hasNextPage, 
+            @continue: nextContinuationToken, 
+            orderBy: orderSet.GetOrderString());
     }
 }

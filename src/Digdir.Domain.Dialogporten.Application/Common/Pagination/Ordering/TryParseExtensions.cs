@@ -42,6 +42,7 @@ public static class TryParseExtensions
     private static bool TryFindTryParseMethod(Type type, [NotNullWhen(true)] out MethodInfo? method)
     {
         const BindingFlags access = BindingFlags.Static | BindingFlags.Public;
+        const string tryParseMethodName = "TryParse";
 
         method = null;
 
@@ -50,7 +51,7 @@ public static class TryParseExtensions
             (m, _) => 
             {
                 var method = (MethodInfo)m;
-                if (method.Name != "TryParse") return false;
+                if (method.Name != tryParseMethodName) return false;
                 if (method.ReturnParameter.ParameterType != typeof(bool)) return false;
                 var parms = method.GetParameters();
                 if (parms.Length != 2) return false;

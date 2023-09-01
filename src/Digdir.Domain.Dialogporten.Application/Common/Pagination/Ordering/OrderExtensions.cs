@@ -5,11 +5,10 @@ namespace Digdir.Domain.Dialogporten.Application.Common.Pagination.Ordering;
 
 internal static class OrderExtensions
 {
-    public static OrderSet<TOrder, TTarget> DefaultIfNull<TOrder, TTarget>(this OrderSet<TOrder, TTarget>? orderSet)
-        where TOrder : class, IParsableOrder<TOrder, TTarget>, new()
-        where TTarget : class
+    public static OrderSet<TOrderDefinition, TTarget> DefaultIfNull<TOrderDefinition, TTarget>(this OrderSet<TOrderDefinition, TTarget>? orderSet)
+        where TOrderDefinition : IOrderDefinition<TTarget>
     {
-        return orderSet ?? OrderSet<TOrder, TTarget>.Default;
+        return orderSet ?? OrderSet<TOrderDefinition, TTarget>.Default;
     }
 
     public static IQueryable<T> ApplyOrder<T>(this IQueryable<T> query, IOrderSet<T> orderSet)
@@ -25,50 +24,52 @@ internal static class OrderExtensions
         return query;
     }
 
-    private static IQueryable<T> ApplyOrder<T>(this IQueryable<T> query, IOrder<T> order, bool first)
+    private static IQueryable<T> ApplyOrder<T>(this IQueryable<T> query, Order<T> order, bool first)
     {
         if (first)
         {
             return order.Direction switch
             {
-                OrderDirection.Asc => query.OrderBy(order.OrderBy),
-                OrderDirection.Desc => query.OrderByDescending(order.OrderBy),
+                OrderDirection.Asc => query.OrderBy(order.SelectorExpression),
+                OrderDirection.Desc => query.OrderByDescending(order.SelectorExpression),
                 _ => throw new ArgumentOutOfRangeException(nameof(order.Direction), order.Direction, null)
             };
         }
         return order.Direction switch
         {
-            OrderDirection.Asc => ((IOrderedQueryable<T>)query).ThenBy(order.OrderBy),
-            OrderDirection.Desc => ((IOrderedQueryable<T>)query).ThenByDescending(order.OrderBy),
+            OrderDirection.Asc => ((IOrderedQueryable<T>)query).ThenBy(order.SelectorExpression),
+            OrderDirection.Desc => ((IOrderedQueryable<T>)query).ThenByDescending(order.SelectorExpression),
             _ => throw new ArgumentOutOfRangeException(nameof(order.Direction), order.Direction, null)
         };
     }
 
-    public static IQueryable<T> ApplyCondition<T>(this IQueryable<T> query, IOrderSet<T> orderSet, ContinuationToken? continuationToken)
+    public static IQueryable<T> ApplyCondition<T>(this IQueryable<T> query, IOrderSet<T> orderSet, IContinuationTokenSet? continuationTokenSet)
     {
-        if (continuationToken is null)
+        if (continuationTokenSet is null)
         {
             return query;
-        }
-
-        if (!continuationToken.TryGetParts(orderSet, out var continuationTokenParts))
-        {
-            // TODO: Handle invalid continuation token
-            throw new Exception("Invalid continuation token.");
         }
 
         var parameter = Expression.Parameter(typeof(T));
         var parameterReplacer = new ParameterReplacer(parameter);
 
-        var orderParts = continuationTokenParts
-            .Zip(orderSet.Orders, (continuationTokenPart, order) =>
-            {
-                var orderBody = order.OrderBy.Body.CleanBody(parameterReplacer);
-                var orderDirection = order.Direction;
-                var valueExpression = Expression.Constant(continuationTokenPart, orderBody.Type);
-                return (orderBody, orderDirection, valueExpression);
-            })
-            .ToArray();
+        var orderParts = orderSet.Orders
+            .Join(continuationTokenSet.Tokens,
+                x => x.Key,
+                x => x.Key,
+                (order, token) => 
+                    (
+                        orderBody: parameterReplacer.Visit(order.SelectorBody), 
+                        orderDirection: order.Direction, 
+                        tokenExpression: token.ValueExpression
+                    ),
+                StringComparer.InvariantCultureIgnoreCase)
+            .ToList();
+
+        if (orderParts.Count != orderSet.Orders.Count)
+        {
+            throw new InvalidOperationException("Missing token keys.");
+        }
 
         // The following is the algorithm for creating the condition expression.
         // The idea is to create a condition expression that looks like this:
@@ -87,7 +88,7 @@ internal static class OrderExtensions
 
         // [ a = an, b = bn, c = cn, ... ]
         var eqParts = orderParts
-            .Select(x => Expression.Equal(x.orderBody, x.valueExpression))
+            .Select(x => Expression.Equal(x.orderBody, x.tokenExpression))
             .ToArray();
 
         var condition = orderParts
@@ -109,15 +110,15 @@ internal static class OrderExtensions
                 // the functionallity used in the future.
                 OrderDirection.Asc 
                     when x.orderBody.Type.IsNullableType() 
-                    && x.valueExpression.Value is not null 
-                    => IncludeNullsBlock(x.orderBody, x.valueExpression),
+                    && x.tokenExpression.Value is not null 
+                    => IncludeNullsBlock(x.orderBody, x.tokenExpression),
                 OrderDirection.Desc 
-                    when x.orderBody.Type.IsNullableType() 
-                    && x.valueExpression.Value is null 
+                    when x.orderBody.Type.IsNullableType()
+                    && x.tokenExpression.Value is null 
                     => IncludeNotNullsBlock(x.orderBody),
 
-                OrderDirection.Asc => Expression.GreaterThan(x.orderBody, x.valueExpression),
-                OrderDirection.Desc => Expression.LessThan(x.orderBody, x.valueExpression),
+                OrderDirection.Asc => Expression.GreaterThan(x.orderBody, x.tokenExpression),
+                OrderDirection.Desc => Expression.LessThan(x.orderBody, x.tokenExpression),
                 _ => throw new InvalidOperationException(),
             })
             // [ a < an, a = an AND b < bn, a = an AND b = bn AND c < cn, ... ]
@@ -155,16 +156,6 @@ internal static class OrderExtensions
         var isNull = Expression.Equal(orderBody, nullConstant);
         var greaterThanValue = Expression.GreaterThan(orderBody, valueExpression);
         return Expression.OrElse(isNull, greaterThanValue);
-    }
-
-    private static Expression CleanBody(this Expression body, ParameterReplacer parameterReplacer)
-    {
-        if (body.NodeType == ExpressionType.Convert && body is UnaryExpression unaryExpression)
-        {
-            body = unaryExpression.Operand;
-        }
-
-        return parameterReplacer.Visit(body);
     }
 
     private sealed class ParameterReplacer : ExpressionVisitor
