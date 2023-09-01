@@ -34,7 +34,7 @@ internal sealed class ConvertDomainEventsToOutboxMessagesInterceptor : SaveChang
         }
 
         var outboxMessages = domainEvents
-            .Select(domainEvent => OutboxMessage.Create(domainEvent))
+            .Select(OutboxMessage.Create)
             .ToList();
 
         dbContext.Set<OutboxMessage>().AddRange(outboxMessages);

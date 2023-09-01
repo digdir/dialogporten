@@ -1,4 +1,4 @@
-﻿using Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Commands.Delete;
+﻿using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Delete;
 using Digdir.Domain.Dialogporten.WebApi.Common;
 using FastEndpoints;
 using MediatR;
@@ -16,13 +16,13 @@ public sealed class DeleteDialogEndpoint : Endpoint<DeleteDialogRequest>
 
     public override void Configure()
     {
-        Delete("dialogs/{id}");
+        Delete("dialogs/{dialogId}");
         Group<ServiceOwnerGroup>();
     }
 
     public override async Task HandleAsync(DeleteDialogRequest req, CancellationToken ct)
     {
-        var command = new DeleteDialogCommand { Id = req.Id, ETag = req.ETag };
+        var command = new DeleteDialogCommand { Id = req.DialogId, ETag = req.ETag };
         var result = await _sender.Send(command, ct);
         await result.Match(
             success => SendNoContentAsync(ct),
@@ -33,7 +33,7 @@ public sealed class DeleteDialogEndpoint : Endpoint<DeleteDialogRequest>
 
 public sealed class DeleteDialogRequest
 {
-    public Guid Id { get; set; }
+    public Guid DialogId { get; set; }
 
     [FromHeader(headerName: Constants.IfMatch, isRequired: false)]
     public Guid? ETag { get; set; }

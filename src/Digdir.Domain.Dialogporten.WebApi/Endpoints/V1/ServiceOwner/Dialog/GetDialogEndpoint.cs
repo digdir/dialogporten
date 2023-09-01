@@ -1,4 +1,4 @@
-﻿using Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Queries.ServiceOwner.Get;
+﻿using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Queries.Get;
 using FastEndpoints;
 using MediatR;
 
@@ -15,7 +15,7 @@ public class GetDialogEndpoint : Endpoint<GetDialogQuery>
 
     public override void Configure()
     {
-        Get("dialogs/{id}");
+        Get("dialogs/{dialogId}");
         Group<ServiceOwnerGroup>();
     }
 

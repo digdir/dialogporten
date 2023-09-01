@@ -1,5 +1,5 @@
-﻿using Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Commands.Create;
-using Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Queries.ServiceOwner.Get;
+﻿using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Create;
+using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Queries.Get;
 using Digdir.Domain.Dialogporten.Application.Integration.Tests.Common;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
@@ -32,7 +32,7 @@ public class GetDialogTests : ApplicationCollectionFixture
         var createCommandResponse = await Application.Send(createDialogCommand);
 
         // Act
-        var response = await Application.Send(new GetDialogQuery { Id = createCommandResponse.AsT0.Value });
+        var response = await Application.Send(new GetDialogQuery { DialogId = createCommandResponse.AsT0.Value });
 
         // Assert
         response.TryPickT0(out var result, out var _).Should().BeTrue();
@@ -159,7 +159,7 @@ public class GetDialogTests : ApplicationCollectionFixture
         var createCommandResponse = await Application.Send(createCommand);
 
         // Act
-        var response = await Application.Send(new GetDialogQuery { Id = createCommandResponse.AsT0.Value });
+        var response = await Application.Send(new GetDialogQuery { DialogId = createCommandResponse.AsT0.Value });
 
         // Assert
         response.TryPickT0(out var result, out var _).Should().BeTrue();

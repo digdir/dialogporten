@@ -1,4 +1,4 @@
-﻿using Digdir.Domain.Dialogporten.Application.Features.V1.Dialogs.Queries.EndUser.List;
+﻿using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Queries.List;
 using FastEndpoints;
 using MediatR;
 

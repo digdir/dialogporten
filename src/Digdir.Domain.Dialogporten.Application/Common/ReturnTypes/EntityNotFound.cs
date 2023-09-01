@@ -5,7 +5,7 @@ namespace Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 public record EntityNotFound<T>(IEnumerable<object> Keys) : EntityNotFound(typeof(T).Name, Keys)
 {
     public EntityNotFound(IEnumerable<Guid> keys) : this(keys.Cast<object>()) { }
-    public EntityNotFound(Guid keys) : this(new object[] { keys }) { }
+    public EntityNotFound(Guid key) : this(new object[] { key }) { }
 }
 
 public record EntityNotFound(string Name, IEnumerable<object> Keys)
