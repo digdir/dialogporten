@@ -44,7 +44,6 @@ static void BuildAndRun(string[] args)
         .ReadFrom.Configuration(context.Configuration)
         .ReadFrom.Services(services)
         .Enrich.FromLogContext()
-        .WriteTo.Console()
         .WriteTo.ApplicationInsights(
             services.GetRequiredService<TelemetryConfiguration>(),
             TelemetryConverter.Traces));
