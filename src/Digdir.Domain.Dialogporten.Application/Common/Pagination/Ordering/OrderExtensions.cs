@@ -61,7 +61,8 @@ internal static class OrderExtensions
                     (
                         orderBody: parameterReplacer.Visit(order.GetSelector().Body), 
                         orderDirection: order.Direction, 
-                        tokenExpression: token.GetValueExpression()
+                        tokenExpression: token.GetValueExpression(),
+                        tokenValue: token.Value
                     ),
                 StringComparer.InvariantCultureIgnoreCase)
             .ToList();
@@ -110,11 +111,11 @@ internal static class OrderExtensions
                 // the functionallity used in the future.
                 OrderDirection.Asc 
                     when x.orderBody.Type.IsNullableType() 
-                    && x.tokenExpression.Value is not null 
+                    && x.tokenValue is not null 
                     => IncludeNullsBlock(x.orderBody, x.tokenExpression),
                 OrderDirection.Desc 
                     when x.orderBody.Type.IsNullableType()
-                    && x.tokenExpression.Value is null 
+                    && x.tokenValue is null 
                     => IncludeNotNullsBlock(x.orderBody),
 
                 OrderDirection.Asc => Expression.GreaterThan(x.orderBody, x.tokenExpression),
@@ -150,7 +151,7 @@ internal static class OrderExtensions
     /// ascending order, meaning we have not reached the end of the pagination 
     /// where the null values are.
     /// </summary>
-    private static BinaryExpression IncludeNullsBlock(Expression orderBody, ConstantExpression valueExpression)
+    private static BinaryExpression IncludeNullsBlock(Expression orderBody, Expression valueExpression)
     {
         var nullConstant = Expression.Constant(null, orderBody.Type);
         var isNull = Expression.Equal(orderBody, nullConstant);

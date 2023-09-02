@@ -1,12 +1,13 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace Digdir.Domain.Dialogporten.Application.Common.Pagination.Ordering;
 
 public class ContinuationToken
 {
+    private static readonly MemberInfo ValueMemberInfo = typeof(ContinuationToken).GetProperty(nameof(Value))!;
     private readonly Type _type;
-
     public string Key { get; }
     public object? Value { get; }
 
@@ -17,7 +18,7 @@ public class ContinuationToken
         _type = type;
     }
 
-    public ConstantExpression GetValueExpression() => Expression.Constant(Value, _type);
+    public Expression GetValueExpression() => Expression.Convert(Expression.MakeMemberAccess(Expression.Constant(this), ValueMemberInfo), _type);
 }
 
 public interface IContinuationTokenSet
@@ -48,15 +49,13 @@ public class ContinuationTokenSet<TOrderDefinition, TTarget> : IContinuationToke
             return false;
         }
 
-        var orderOptions = OrderSet<TOrderDefinition, TTarget>.OrderOptions;
         var tokens = new HashSet<ContinuationToken>(_tokenComparer);
-
         var continuationTokens = value
             .Split(PaginationConstants.ContinuationTokenSetDelimiter, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
             .Select(x => x.Split(PaginationConstants.ContinuationTokenDelimiter, StringSplitOptions.TrimEntries) switch
                 {
                     [var key, var ctAsString]
-                        when orderOptions.TryGetOption(key, out var option)
+                        when OrderOptions<TOrderDefinition, TTarget>.Value.TryGetSelector(key, out var option)
                         && TryParseExtensions.TryParse(option.Body.Type, ctAsString, out var ct)
                         => new ContinuationToken(key, ct, option.Body.Type),
                     _ => null

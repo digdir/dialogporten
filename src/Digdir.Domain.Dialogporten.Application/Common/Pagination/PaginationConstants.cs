@@ -1,4 +1,6 @@
-﻿namespace Digdir.Domain.Dialogporten.Application.Common.Pagination.Ordering;
+﻿using Digdir.Domain.Dialogporten.Application.Common.Pagination.Ordering;
+
+namespace Digdir.Domain.Dialogporten.Application.Common.Pagination;
 
 internal static class PaginationConstants
 {

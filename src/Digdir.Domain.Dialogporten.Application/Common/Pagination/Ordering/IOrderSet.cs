@@ -13,10 +13,12 @@ public sealed class OrderSet<TOrderDefinition, TTarget> : IOrderSet<TTarget>
     where TOrderDefinition : IOrderDefinition<TTarget>
 {
     private static readonly OrderComparer _orderComparer = new();
-    public static readonly IOrderOptions<TTarget> OrderOptions = new OrderOptionsBuilder<TTarget>()
-        .Configure<TOrderDefinition>()
-        .Build();
-    public static readonly OrderSet<TOrderDefinition, TTarget> Default = new(new[] { OrderOptions.GetDefault(), OrderOptions.GetId() });
+    
+    public static readonly OrderSet<TOrderDefinition, TTarget> Default = new(new[] 
+    {
+        OrderOptions<TOrderDefinition, TTarget>.Value.DefaultOrder, 
+        OrderOptions<TOrderDefinition, TTarget>.Value.IdOrder 
+    });
 
     public IReadOnlyCollection<Order<TTarget>> Orders { get; }
 
@@ -37,7 +39,7 @@ public sealed class OrderSet<TOrderDefinition, TTarget> : IOrderSet<TTarget>
         var orders = new HashSet<Order<TTarget>>(_orderComparer);
         foreach (var orderAsString in value.Split(PaginationConstants.OrderSetDelimiter, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
         {
-            if (!OrderOptions.TryParseOrder(orderAsString, out var order) ||
+            if (!OrderOptions<TOrderDefinition, TTarget>.Value.TryParseOrder(orderAsString, out var order) ||
                 !orders.Add(order))
             {
                 return false;
@@ -49,7 +51,7 @@ public sealed class OrderSet<TOrderDefinition, TTarget> : IOrderSet<TTarget>
         // Ensure ID order is last
         var idOrder = orderList
             .FirstOrDefault(x => x.Key == PaginationConstants.OrderIdKey) 
-            ?? OrderOptions.GetId();
+            ?? OrderOptions<TOrderDefinition, TTarget>.Value.IdOrder;
 
         if (orderList.Contains(idOrder))
         {
@@ -61,7 +63,7 @@ public sealed class OrderSet<TOrderDefinition, TTarget> : IOrderSet<TTarget>
         // Ensure at least two sorting parameters
         if (orderList.Count == 1)
         {
-            orderList.Insert(0, OrderOptions.GetDefault());
+            orderList.Insert(0, OrderOptions<TOrderDefinition, TTarget>.Value.DefaultOrder);
         }
 
         result = new OrderSet<TOrderDefinition, TTarget>(orderList);
@@ -119,4 +121,20 @@ public sealed class OrderSet<TOrderDefinition, TTarget> : IOrderSet<TTarget>
             return obj.Key.GetHashCode();
         }
     }
+}
+
+public class Order<TTarget>
+{
+    private readonly OrderSelector<TTarget> _selector;
+    public string Key { get; }
+    public OrderDirection Direction { get; }
+
+    public Order(string key, OrderSelector<TTarget> selector, OrderDirection direction = PaginationConstants.DefaultOrderDirection)
+    {
+        _selector = selector;
+        Key = key;
+        Direction = direction;
+    }
+
+    public OrderSelector<TTarget> GetSelector() => _selector;
 }
