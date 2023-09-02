@@ -29,15 +29,6 @@ internal sealed class PaginationParameterValidator<TOrderDefinition, TTarget> : 
     public PaginationParameterValidator()
     {
         RuleFor(x => x.Limit).InclusiveBetween(PaginationConstants.MinLimit,PaginationConstants.MaxLimit);
-    }
-}
-
-internal sealed class SortablePaginationParameterValidator<TOrderDefinition, TTarget> : AbstractValidator<SortablePaginationParameter<TOrderDefinition, TTarget>>
-    where TOrderDefinition : IOrderDefinition<TTarget>
-{
-    public SortablePaginationParameterValidator()
-    {
-        RuleFor(x => x.Limit).InclusiveBetween(PaginationConstants.MinLimit, PaginationConstants.MaxLimit);
         RuleFor(x => x.Continue)
             .Must((paginationParameter, continuationTokenSet, ctx) =>
             {
@@ -46,7 +37,13 @@ internal sealed class SortablePaginationParameterValidator<TOrderDefinition, TTa
                     return true;
                 }
 
-                var orders = paginationParameter.OrderBy?.Orders ?? OrderSet<TOrderDefinition, TTarget>.Default.Orders;
+                var orders = OrderSet<TOrderDefinition, TTarget>.Default.Orders;
+                if (paginationParameter is SortablePaginationParameter<TOrderDefinition, TTarget> sortable
+                    && sortable.OrderBy?.Orders is not null)
+                {
+                    orders = sortable.OrderBy.Orders;
+                }
+
                 var missingTokenKeys = orders.Select(x => x.Key)
                     .Except(continuationTokenSet.Tokens.Select(x => x.Key), StringComparer.InvariantCultureIgnoreCase)
                     .ToList();
