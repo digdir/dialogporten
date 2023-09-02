@@ -20,7 +20,7 @@ internal sealed class ListDialogQueryValidator : AbstractValidator<ListDialogQue
 
         RuleFor(x => x)
             .Must(x => !x.ServiceResource.IsNullOrEmpty() || !x.Party.IsNullOrEmpty())
-            .WithMessage($"Ether {nameof(ListDialogQuery.ServiceResource)} or {nameof(ListDialogQuery.Party)} must be specified.");
+            .WithMessage($"Either {nameof(ListDialogQuery.ServiceResource)} or {nameof(ListDialogQuery.Party)} must be specified.");
 
         RuleFor(x => x.Org!.Count)
             .LessThanOrEqualTo(20)
