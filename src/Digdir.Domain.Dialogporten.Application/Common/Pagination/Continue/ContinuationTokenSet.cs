@@ -1,25 +1,8 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using System.Linq.Expressions;
-using System.Reflection;
+using Digdir.Domain.Dialogporten.Application.Common.Pagination.Extensions;
+using Digdir.Domain.Dialogporten.Application.Common.Pagination.OrderOption;
 
-namespace Digdir.Domain.Dialogporten.Application.Common.Pagination.Ordering;
-
-public class ContinuationToken
-{
-    private static readonly MemberInfo ValueMemberInfo = typeof(ContinuationToken).GetProperty(nameof(Value))!;
-    private readonly Type _type;
-    public string Key { get; }
-    public object? Value { get; }
-
-    public ContinuationToken(string key, object? value, Type type)
-    {
-        Key = key;
-        Value = value;
-        _type = type;
-    }
-
-    public Expression GetValueExpression() => Expression.Convert(Expression.MakeMemberAccess(Expression.Constant(this), ValueMemberInfo), _type);
-}
+namespace Digdir.Domain.Dialogporten.Application.Common.Pagination.Continue;
 
 public interface IContinuationTokenSet
 {
@@ -77,7 +60,7 @@ public class ContinuationTokenSet<TOrderDefinition, TTarget> : IContinuationToke
     {
         public bool Equals(ContinuationToken? x, ContinuationToken? y)
         {
-            if (ReferenceEquals(x,y))
+            if (ReferenceEquals(x, y))
             {
                 return true;
             }

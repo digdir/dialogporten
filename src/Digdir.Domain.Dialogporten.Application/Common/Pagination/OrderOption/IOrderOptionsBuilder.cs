@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 
-namespace Digdir.Domain.Dialogporten.Application.Common.Pagination.Ordering;
+namespace Digdir.Domain.Dialogporten.Application.Common.Pagination.OrderOption;
 
 public interface IOrderOptionsBuilder<TTarget>
 {

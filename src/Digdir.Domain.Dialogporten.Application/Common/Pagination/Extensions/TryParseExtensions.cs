@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
-namespace Digdir.Domain.Dialogporten.Application.Common.Pagination.Ordering;
+namespace Digdir.Domain.Dialogporten.Application.Common.Pagination.Extensions;
 
 public static class TryParseExtensions
 {
@@ -47,8 +47,8 @@ public static class TryParseExtensions
         method = null;
 
         //find member of type with signature 'static public bool TryParse(string, out T)'
-        var candidates = type.FindMembers(MemberTypes.Method,access,
-            (m, _) => 
+        var candidates = type.FindMembers(MemberTypes.Method, access,
+            (m, _) =>
             {
                 var method = (MethodInfo)m;
                 if (method.Name != tryParseMethodName) return false;

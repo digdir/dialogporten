@@ -1,6 +1,7 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using Digdir.Domain.Dialogporten.Application.Common.Pagination.OrderOption;
+using System.Diagnostics.CodeAnalysis;
 
-namespace Digdir.Domain.Dialogporten.Application.Common.Pagination.Ordering;
+namespace Digdir.Domain.Dialogporten.Application.Common.Pagination.Order;
 
 public interface IOrderSet<TTarget>
 {
@@ -13,11 +14,11 @@ public sealed class OrderSet<TOrderDefinition, TTarget> : IOrderSet<TTarget>
     where TOrderDefinition : IOrderDefinition<TTarget>
 {
     private static readonly OrderComparer _orderComparer = new();
-    
-    public static readonly OrderSet<TOrderDefinition, TTarget> Default = new(new[] 
+
+    public static readonly OrderSet<TOrderDefinition, TTarget> Default = new(new[]
     {
-        OrderOptions<TOrderDefinition, TTarget>.Value.DefaultOrder, 
-        OrderOptions<TOrderDefinition, TTarget>.Value.IdOrder 
+        OrderOptions<TOrderDefinition, TTarget>.Value.DefaultOrder,
+        OrderOptions<TOrderDefinition, TTarget>.Value.IdOrder
     });
 
     public IReadOnlyCollection<Order<TTarget>> Orders { get; }
@@ -50,7 +51,7 @@ public sealed class OrderSet<TOrderDefinition, TTarget> : IOrderSet<TTarget>
 
         // Ensure ID order is last
         var idOrder = orderList
-            .FirstOrDefault(x => x.Key == PaginationConstants.OrderIdKey) 
+            .FirstOrDefault(x => x.Key == PaginationConstants.OrderIdKey)
             ?? OrderOptions<TOrderDefinition, TTarget>.Value.IdOrder;
 
         if (orderList.Contains(idOrder))
@@ -98,7 +99,7 @@ public sealed class OrderSet<TOrderDefinition, TTarget> : IOrderSet<TTarget>
         var orderParts = Orders.Select(x => $"{x.Key.ToLowerInvariant()}{PaginationConstants.OrderDelimiter}{x.Direction.ToString().ToLowerInvariant()}");
         return string.Join(PaginationConstants.OrderSetDelimiter, orderParts);
     }
-    
+
     private class OrderComparer : IEqualityComparer<Order<TTarget>>
     {
         public bool Equals(Order<TTarget>? x, Order<TTarget>? y)
@@ -121,20 +122,4 @@ public sealed class OrderSet<TOrderDefinition, TTarget> : IOrderSet<TTarget>
             return obj.Key.GetHashCode();
         }
     }
-}
-
-public class Order<TTarget>
-{
-    private readonly OrderSelector<TTarget> _selector;
-    public string Key { get; }
-    public OrderDirection Direction { get; }
-
-    public Order(string key, OrderSelector<TTarget> selector, OrderDirection direction = PaginationConstants.DefaultOrderDirection)
-    {
-        _selector = selector;
-        Key = key;
-        Direction = direction;
-    }
-
-    public OrderSelector<TTarget> GetSelector() => _selector;
 }

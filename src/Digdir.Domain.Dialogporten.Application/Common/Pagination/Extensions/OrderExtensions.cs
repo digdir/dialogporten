@@ -1,7 +1,10 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Common.Extensions;
+using Digdir.Domain.Dialogporten.Application.Common.Pagination.Continue;
+using Digdir.Domain.Dialogporten.Application.Common.Pagination.Order;
+using Digdir.Domain.Dialogporten.Application.Common.Pagination.OrderOption;
 using System.Linq.Expressions;
 
-namespace Digdir.Domain.Dialogporten.Application.Common.Pagination.Ordering;
+namespace Digdir.Domain.Dialogporten.Application.Common.Pagination.Extensions;
 
 internal static class OrderExtensions
 {
@@ -57,10 +60,10 @@ internal static class OrderExtensions
             .Join(continuationTokenSet.Tokens,
                 x => x.Key,
                 x => x.Key,
-                (order, token) => 
+                (order, token) =>
                     (
-                        orderBody: parameterReplacer.Visit(order.GetSelector().Body), 
-                        orderDirection: order.Direction, 
+                        orderBody: parameterReplacer.Visit(order.GetSelector().Body),
+                        orderDirection: order.Direction,
                         tokenExpression: token.GetValueExpression(),
                         tokenValue: token.Value
                     ),
@@ -109,13 +112,13 @@ internal static class OrderExtensions
                 // Both non default cases (asc nulls first / desc nulls last)
                 // must be taken onto account should the issue be resolved and
                 // the functionallity used in the future.
-                OrderDirection.Asc 
-                    when x.orderBody.Type.IsNullableType() 
-                    && x.tokenValue is not null 
-                    => IncludeNullsBlock(x.orderBody, x.tokenExpression),
-                OrderDirection.Desc 
+                OrderDirection.Asc
                     when x.orderBody.Type.IsNullableType()
-                    && x.tokenValue is null 
+                    && x.tokenValue is not null
+                    => IncludeNullsBlock(x.orderBody, x.tokenExpression),
+                OrderDirection.Desc
+                    when x.orderBody.Type.IsNullableType()
+                    && x.tokenValue is null
                     => IncludeNotNullsBlock(x.orderBody),
 
                 OrderDirection.Asc => Expression.GreaterThan(x.orderBody, x.tokenExpression),

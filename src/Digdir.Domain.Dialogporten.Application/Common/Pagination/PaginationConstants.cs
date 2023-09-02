@@ -1,4 +1,4 @@
-﻿using Digdir.Domain.Dialogporten.Application.Common.Pagination.Ordering;
+﻿using Digdir.Domain.Dialogporten.Application.Common.Pagination.Order;
 
 namespace Digdir.Domain.Dialogporten.Application.Common.Pagination;
 

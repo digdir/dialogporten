@@ -1,4 +1,7 @@
-﻿using Digdir.Domain.Dialogporten.Application.Common.Pagination.Ordering;
+﻿using Digdir.Domain.Dialogporten.Application.Common.Pagination.Continue;
+using Digdir.Domain.Dialogporten.Application.Common.Pagination.Extensions;
+using Digdir.Domain.Dialogporten.Application.Common.Pagination.Order;
+using Digdir.Domain.Dialogporten.Application.Common.Pagination.OrderOption;
 using Microsoft.EntityFrameworkCore;
 
 namespace Digdir.Domain.Dialogporten.Application.Common.Pagination;
@@ -56,14 +59,14 @@ internal static class PaginationExtensions
             Array.Resize(ref items, limit);
         }
 
-        var nextContinuationToken = 
-            orderSet.GetContinuationTokenFrom(items.LastOrDefault()) 
+        var nextContinuationToken =
+            orderSet.GetContinuationTokenFrom(items.LastOrDefault())
             ?? continuationTokenSet?.Raw;
 
         return new PaginatedList<T>(
-            items, 
-            hasNextPage, 
-            @continue: nextContinuationToken, 
+            items,
+            hasNextPage,
+            @continue: nextContinuationToken,
             orderBy: orderSet.GetOrderString());
     }
 }
