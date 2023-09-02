@@ -18,12 +18,12 @@ namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.Dialog;
 [ApiController]
 [Route("api/v1/serviceowner/dialogs")]
 [Tags(ServiceOwnerGroup.RoutePrefix)]
-public sealed class DialogsController : ControllerBase
+public sealed class PatchDialogsController : ControllerBase
 {
     private readonly ISender _sender;
     private readonly IMapper _mapper;
 
-    public DialogsController(ISender sender, IMapper mapper)
+    public PatchDialogsController(ISender sender, IMapper mapper)
     {
         _sender = sender ?? throw new ArgumentNullException(nameof(sender));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));

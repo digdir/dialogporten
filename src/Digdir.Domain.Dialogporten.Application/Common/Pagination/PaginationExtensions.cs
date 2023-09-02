@@ -1,31 +1,42 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.Collections.Concurrent;
-using System.Linq.Expressions;
+﻿using Digdir.Domain.Dialogporten.Application.Common.Pagination.Continue;
+using Digdir.Domain.Dialogporten.Application.Common.Pagination.Extensions;
+using Digdir.Domain.Dialogporten.Application.Common.Pagination.Order;
+using Digdir.Domain.Dialogporten.Application.Common.Pagination.OrderOption;
+using Microsoft.EntityFrameworkCore;
 
 namespace Digdir.Domain.Dialogporten.Application.Common.Pagination;
 
 internal static class PaginationExtensions
 {
-    public static Task<PaginatedList<TDestination>> ToPaginatedListAsync<TDestination>(
-        this IQueryable<TDestination> queryable,
-        Expression<Func<TDestination, DateTimeOffset>> timeSelector,
-        DateTimeOffset after,
-        int pageSize,
+    public static Task<PaginatedList<TTarget>> ToPaginatedListAsync<TOrderDefinition, TTarget>
+        (this IQueryable<TTarget> queryable,
+        SortablePaginationParameter<TOrderDefinition, TTarget> parameter,
         CancellationToken cancellationToken = default)
-        => CreateAsync(queryable, timeSelector, after, pageSize, cancellationToken);
+        where TOrderDefinition : IOrderDefinition<TTarget>
+        => CreateAsync(
+            queryable,
+            parameter.OrderBy.DefaultIfNull(),
+            parameter.Continue,
+            parameter.Limit!.Value,
+            cancellationToken);
 
-    public static Task<PaginatedList<TDestination>> ToPaginatedListAsync<TDestination>(
-        this IQueryable<TDestination> queryable,
-        Expression<Func<TDestination, DateTimeOffset>> timeSelector,
-        IPaginationParameter parameter,
+    public static Task<PaginatedList<TTarget>> ToPaginatedListAsync<TOrderDefinition, TTarget>
+        (this IQueryable<TTarget> queryable,
+        PaginationParameter<TOrderDefinition, TTarget> parameter,
         CancellationToken cancellationToken = default)
-        => CreateAsync(queryable, timeSelector, parameter.After!.Value, parameter.PageSize!.Value, cancellationToken);
+        where TOrderDefinition : IOrderDefinition<TTarget>
+        => CreateAsync(
+            queryable,
+            OrderSet<TOrderDefinition, TTarget>.Default,
+            parameter.Continue,
+            parameter.Limit!.Value,
+            cancellationToken);
 
     private static async Task<PaginatedList<T>> CreateAsync<T>(
         IQueryable<T> source,
-        Expression<Func<T, DateTimeOffset>> timeSelector,
-        DateTimeOffset after,
-        int pageSize,
+        IOrderSet<T> orderSet,
+        IContinuationTokenSet? continuationTokenSet,
+        int limit,
         CancellationToken cancellationToken = default)
     {
         if (source == null)
@@ -33,44 +44,29 @@ internal static class PaginationExtensions
             throw new ArgumentNullException(nameof(source));
         }
 
-        const int NextOffset = 1;
-
-        var greaterThanAfterPredicate = Expression.Lambda<Func<T, bool>>(
-            Expression.GreaterThan(
-                timeSelector.Body,
-                Expression.Constant(after)),
-            timeSelector.Parameters);
+        const int OneMore = 1;
 
         var items = await source
-            .OrderBy(timeSelector)
-            .Where(greaterThanAfterPredicate)
-            .Take(pageSize + NextOffset)
+            .ApplyOrder(orderSet)
+            .ApplyCondition(orderSet, continuationTokenSet)
+            .Take(limit + OneMore)
             .ToArrayAsync(cancellationToken);
 
         // Fetch one more item than requested to determine if there is a next page
-        var hasNextPage = items.Length > pageSize;
+        var hasNextPage = items.Length > limit;
         if (hasNextPage)
         {
-            Array.Resize(ref items, pageSize);
+            Array.Resize(ref items, limit);
         }
 
-        // Compiling the timeSelector expression is a performance bottleneck.
-        // We're currently caching the compiled expression giving an estimated
-        // 40x performance boost over just calling Compile() directly. However
-        // it's still a performance hit due to the ExpressionEqualityComparer.
-        // If we need to squeeze out more performance we could restrict T to
-        // be a ICreatableEntity and directly access the Timestamp property
-        // eliminating the need for the timeSelector expression. This would
-        // increase the timestamp access by a factor of 800x at the cost of
-        // cleaner code from the calling side. Pick your poison.
-        var continuationToken = items.Length > 0
-            ? timeSelector.CompileOrGetCached().Invoke(items[^1])
-            : (DateTimeOffset?)null;
+        var nextContinuationToken =
+            orderSet.GetContinuationTokenFrom(items.LastOrDefault())
+            ?? continuationTokenSet?.Raw;
 
-        return new PaginatedList<T>(items, pageSize, hasNextPage, continuationToken);
+        return new PaginatedList<T>(
+            items,
+            hasNextPage,
+            @continue: nextContinuationToken,
+            orderBy: orderSet.GetOrderString());
     }
-
-    private static readonly ConcurrentDictionary<object, object> _compiledByExpression = new(comparer: new ExpressionEqualityComparer());
-    private static TFunc CompileOrGetCached<TFunc>(this Expression<TFunc> selectorExpression) where TFunc : Delegate => 
-        (TFunc)_compiledByExpression.GetOrAdd(selectorExpression, x => ((Expression<TFunc>)x).Compile());
 }
