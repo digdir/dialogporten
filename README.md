@@ -41,7 +41,7 @@ You are now ready to use [EF core tools through CLI](https://learn.microsoft.com
 dotnet ef --help
 ```
 
-Remember to target `Digdir.Domain.Dialogporten.Infrastructure` project when running the CLI commands. Ether target it throguh the command using the `-p` option, i.e.
+Remember to target `Digdir.Domain.Dialogporten.Infrastructure` project when running the CLI commands. Either target it throguh the command using the `-p` option, i.e.
 ```powershell
 dotnet ef migrations add -p .\src\Digdir.Domain.Dialogporten.Infrastructure\ TestMigration
 ```
