@@ -18,7 +18,7 @@ builder.Services
         x.AddConsumers(thisAssembly);
         x.UsingRabbitMq((context, cfg) =>
         {
-            cfg.Host("localhost", "/", h => {
+            cfg.Host("dialogporten-rabbitmq", "/", h => {
                 h.Username("guest");
                 h.Password("guest");
             });

@@ -14,7 +14,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.DomainEvents.Outbox.Dispatch
 internal sealed class OutboxDispatcher
 {
     private static readonly Assembly EventAssembly = typeof(OutboxMessage).Assembly;
-    private static readonly AsyncRetryPolicy _retryPolicy = Policy
+    private static readonly AsyncRetryPolicy RetryPolicy = Policy
         .Handle<Exception>()
         .WaitAndRetryAsync(3, attempt => TimeSpan.FromMilliseconds(50 * attempt));
 
@@ -51,7 +51,7 @@ internal sealed class OutboxDispatcher
                 continue;
             }
 
-            var result = await _retryPolicy.ExecuteAndCaptureAsync(
+            var result = await RetryPolicy.ExecuteAndCaptureAsync(
                     ct => _mediatr.Publish(domainEvent, ct),
                     cancellationToken);
 

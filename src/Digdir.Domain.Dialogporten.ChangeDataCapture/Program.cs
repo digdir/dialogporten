@@ -59,7 +59,7 @@ static void BuildAndRun(string[] args)
         {
             x.UsingRabbitMq((context, cfg) =>
             {
-                cfg.Host("localhost", "/", h =>
+                cfg.Host("dialogporten-rabbitmq", "/", h =>
                 {
                     h.Username("guest");
                     h.Password("guest");
