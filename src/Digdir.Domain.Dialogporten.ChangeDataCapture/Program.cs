@@ -59,10 +59,11 @@ static void BuildAndRun(string[] args)
         {
             x.UsingRabbitMq((context, cfg) =>
             {
-                cfg.Host("dialogporten-rabbitmq", "/", h =>
+                const string rabbitMqSection = "RabbitMq";
+                cfg.Host(builder.Configuration[$"{rabbitMqSection}:Host"], "/", h =>
                 {
-                    h.Username("guest");
-                    h.Password("guest");
+                    h.Username(builder.Configuration[$"{rabbitMqSection}:Username"]);
+                    h.Password(builder.Configuration[$"{rabbitMqSection}:Password"]);
                 });
             });
         })

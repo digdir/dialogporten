@@ -18,9 +18,10 @@ builder.Services
         x.AddConsumers(thisAssembly);
         x.UsingRabbitMq((context, cfg) =>
         {
-            cfg.Host("dialogporten-rabbitmq", "/", h => {
-                h.Username("guest");
-                h.Password("guest");
+            const string rabbitMqSection = "RabbitMq";
+            cfg.Host(builder.Configuration[$"{rabbitMqSection}:Host"], "/", h => {
+                h.Username(builder.Configuration[$"{rabbitMqSection}:Username"]);
+                h.Password(builder.Configuration[$"{rabbitMqSection}:Password"]);
             });
             cfg.ReceiveEndpoint(thisAssembly.GetName().Name!, x => 
             {

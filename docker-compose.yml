@@ -30,7 +30,7 @@ services:
       interval: 5s
       timeout: 20s
       retries: 5
-      
+  
   dialogporten-service:
     build:
       context: .
@@ -44,7 +44,10 @@ services:
     environment:
       - Infrastructure:DialogDbConnectionString=${DB_CONNECTION_STRING}
       - ASPNETCORE_ENVIRONMENT=Development
-        
+      - RabbitMq:Host=${RABBITMQ_HOST}
+      - RabbitMq:Username=${RABBITMQ_USERNAME}
+      - RabbitMq:Password=${RABBITMQ_PASSWORD}
+  
   dialogporten-cdc:
     build:
       context: .
@@ -61,3 +64,6 @@ services:
       - ReplicationSlotName=outboxmessage_replication_slot
       - PublicationName=outboxmessage_publication
       - TableName=OutboxMessage
+      - RabbitMq:Host=${RABBITMQ_HOST}
+      - RabbitMq:Username=${RABBITMQ_USERNAME}
+      - RabbitMq:Password=${RABBITMQ_PASSWORD}
