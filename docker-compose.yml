@@ -1,7 +1,7 @@
 version: '3'
 services:
   postgres:
-    image: postgres:14.7
+    image: postgres:14.9
     restart: always
     command: postgres -c wal_level=logical
     environment:
