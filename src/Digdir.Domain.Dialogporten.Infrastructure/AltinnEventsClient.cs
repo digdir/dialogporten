@@ -2,6 +2,7 @@
 using System.Net.Http.Json;
 using Digdir.Domain.Dialogporten.Infrastructure.Common.Serialization;
 using Digdir.Domain.Dialogporten.Application.Externals;
+using Microsoft.Extensions.Logging;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure;
 
@@ -24,5 +25,21 @@ internal class AltinnEventsClient : ICloudEventBus
         msg.Content.Headers.ContentType = new MediaTypeHeaderValue("application/cloudevents+json");
         var response = await _client.SendAsync(msg, cancellationToken);
         response.EnsureSuccessStatusCode();
+    }
+}
+
+internal class ConsoleLogEventBus : ICloudEventBus
+{
+    private readonly ILogger<ConsoleLogEventBus> _logger;
+
+    public ConsoleLogEventBus(ILogger<ConsoleLogEventBus> logger)
+    {
+        _logger = logger;
+    }
+    
+    public Task Publish(CloudEvent cloudEvent, CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("Event published! Time: {CloudEventTime:O}, Type: {CloudEventType}", cloudEvent.Time, cloudEvent.Type);
+        return Task.CompletedTask;
     }
 }

@@ -40,7 +40,7 @@ builder.Services
         });
     })
     .AddApplication(builder.Configuration.GetSection(ApplicationSettings.ConfigurationSectionName))
-    .AddInfrastructure(builder.Configuration.GetSection(InfrastructureSettings.ConfigurationSectionName));
+    .AddInfrastructure(builder.Configuration.GetSection(InfrastructureSettings.ConfigurationSectionName), builder.Environment);
 
 var app = builder.Build();
 app.UseHttpsRedirection();
