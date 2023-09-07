@@ -2,6 +2,7 @@
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Update;
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Queries.Get;
 using Digdir.Domain.Dialogporten.WebApi.Common;
+using Digdir.Domain.Dialogporten.WebApi.OptionsSetup;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
@@ -18,6 +19,7 @@ namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.Dialog;
 [ApiController]
 [Route("api/v1/serviceowner/dialogs")]
 [Tags(ServiceOwnerGroup.RoutePrefix)]
+[Authorize(Policy = Policy.Serviceprovider)]
 public sealed class PatchDialogsController : ControllerBase
 {
     private readonly ISender _sender;
@@ -29,7 +31,6 @@ public sealed class PatchDialogsController : ControllerBase
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
-    [AllowAnonymous]
     [HttpPatch("{dialogId}")]
     public async Task<IActionResult> Patch(
         [FromRoute] Guid dialogId,

@@ -1,11 +1,11 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Digdir.Domain.Dialogporten.WebApi.Common.JsonConverters;
+namespace Digdir.Domain.Dialogporten.WebApi.Common.Json;
 
 internal sealed class DateTimeNotSupportedConverter : JsonConverter<DateTime>
 {
-    private const string ErrorMessage = 
+    private const string ErrorMessage =
         "DateTime is not supported, use DateTimeOffset instead. " +
         "This is a service error, not a consumer error. Please " +
         "contact the support team if you're experiencing this " +

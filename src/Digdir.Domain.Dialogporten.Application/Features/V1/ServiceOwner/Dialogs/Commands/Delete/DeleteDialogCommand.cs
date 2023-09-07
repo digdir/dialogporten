@@ -43,7 +43,6 @@ internal sealed class DeleteDialogCommandHandler : IRequestHandler<DeleteDialogC
 
         _db.TrySetOriginalETag(dialog, request.ETag);
 
-        // TODO: Delete localization sets
         _db.Dialogs.Remove(dialog);
         _eventPublisher.Publish(
             new DialogDeletedDomainEvent(

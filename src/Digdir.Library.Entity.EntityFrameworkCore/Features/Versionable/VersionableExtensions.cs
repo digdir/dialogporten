@@ -18,7 +18,7 @@ internal static class VersionableExtensions
     {
         foreach (var entry in changeTracker
             .Entries<IVersionableEntity>()
-            .Where(x => x.State is EntityState.Added or EntityState.Modified))
+            .Where(x => x.State is EntityState.Added or EntityState.Modified or EntityState.Deleted))
         {
             var etagProp = entry.Property(x => x.ETag);
             if (etagProp.OriginalValue == etagProp.CurrentValue)

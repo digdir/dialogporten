@@ -2,7 +2,6 @@ using Digdir.Domain.Dialogporten.Application;
 using Digdir.Domain.Dialogporten.Infrastructure;
 using Digdir.Domain.Dialogporten.Infrastructure.DomainEvents.Outbox.Dispatcher;
 using Digdir.Domain.Dialogporten.WebApi;
-using Digdir.Domain.Dialogporten.WebApi.Common;
 using FastEndpoints;
 using FastEndpoints.Swagger;
 using Microsoft.ApplicationInsights.Extensibility;
@@ -10,7 +9,9 @@ using Serilog;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
 using System.Collections;
-using Digdir.Domain.Dialogporten.WebApi.Common.JsonConverters;
+using Digdir.Domain.Dialogporten.WebApi.OptionsSetup;
+using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
+using Digdir.Domain.Dialogporten.WebApi.Common.Json;
 
 // Using two-stage initialization to catch startup errors.
 Log.Logger = new LoggerConfiguration()
@@ -57,6 +58,17 @@ static void BuildAndRun(string[] args)
     }
 
     builder.Services
+        // Configuration
+        .Configure<AuthenticationOptions>(builder.Configuration.GetSection(AuthenticationOptions.SectionName))
+
+        // Options
+        .ConfigureOptions<AuthorizationOptionsSetup>()
+
+        // Clean architecture projects
+        .AddApplication(builder.Configuration.GetSection(ApplicationSettings.ConfigurationSectionName))
+        .AddInfrastructure(builder.Configuration.GetSection(InfrastructureSettings.ConfigurationSectionName))
+
+        // Asp infrastructure
         .AddAzureAppConfiguration()
         .AddApplicationInsightsTelemetry()
         .AddEndpointsApiExplorer()
@@ -72,20 +84,20 @@ static void BuildAndRun(string[] args)
                 s.Version = "v0.1";
             };
         })
-        .AddControllers(options =>
-            {
-                options.InputFormatters.Insert(0, JsonPatchInputFormatter.Get());
-            })
+        .AddControllers(options => options.InputFormatters.Insert(0, JsonPatchInputFormatter.Get()))
             .AddNewtonsoftJson()
             .Services
-        .AddApplication(builder.Configuration.GetSection(ApplicationSettings.ConfigurationSectionName))
-        .AddInfrastructure(builder.Configuration.GetSection(InfrastructureSettings.ConfigurationSectionName));
+
+        // Auth
+        .AddDialogportenAuthentication(builder.Configuration)
+        .AddAuthorization();
 
     var app = builder.Build();
 
     app.UseHttpsRedirection()
         .UseSerilogRequestLogging()
         .UseProblemDetailsExceptionHandler()
+        .UseAuthentication()
         .UseAuthorization()
         .UseAzureConfiguration()
         .UseFastEndpoints(x =>

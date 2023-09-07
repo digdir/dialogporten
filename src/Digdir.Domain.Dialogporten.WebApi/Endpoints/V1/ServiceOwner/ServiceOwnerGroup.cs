@@ -1,4 +1,5 @@
-﻿using FastEndpoints;
+﻿using Digdir.Domain.Dialogporten.WebApi.OptionsSetup;
+using FastEndpoints;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner;
 
@@ -9,7 +10,7 @@ public class ServiceOwnerGroup : Group
     {
         Configure(RoutePrefix.ToLower(), ep =>
         {
-            ep.AllowAnonymous();
+            ep.Policies(Policy.Serviceprovider);
             ep.EndpointVersion(1);
         });
     }
