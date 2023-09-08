@@ -37,7 +37,7 @@ public sealed class OutboxScheduler : BackgroundService
         }
         catch (OperationCanceledException) { }
 
-        _logger.LogInformation($"Outbox processing is shuting down due to cancel request.");
+        _logger.LogInformation("Outbox processing is shutting down due to cancel request.");
     }
 
     private async Task DoWorkAsync(CancellationToken stoppingToken)

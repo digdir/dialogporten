@@ -18,9 +18,10 @@ builder.Services
         x.AddConsumers(thisAssembly);
         x.UsingRabbitMq((context, cfg) =>
         {
-            cfg.Host("localhost", "/", h => {
-                h.Username("guest");
-                h.Password("guest");
+            const string rabbitMqSection = "RabbitMq";
+            cfg.Host(builder.Configuration[$"{rabbitMqSection}:Host"], "/", h => {
+                h.Username(builder.Configuration[$"{rabbitMqSection}:Username"]);
+                h.Password(builder.Configuration[$"{rabbitMqSection}:Password"]);
             });
             cfg.ReceiveEndpoint(thisAssembly.GetName().Name!, x => 
             {
@@ -39,7 +40,7 @@ builder.Services
         });
     })
     .AddApplication(builder.Configuration.GetSection(ApplicationSettings.ConfigurationSectionName))
-    .AddInfrastructure(builder.Configuration.GetSection(InfrastructureSettings.ConfigurationSectionName));
+    .AddInfrastructure(builder.Configuration.GetSection(InfrastructureSettings.ConfigurationSectionName), builder.Environment);
 
 var app = builder.Build();
 app.UseHttpsRedirection();

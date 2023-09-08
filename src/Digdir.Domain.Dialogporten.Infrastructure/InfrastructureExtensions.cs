@@ -11,17 +11,19 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure;
 
 public static class InfrastructureExtensions
 {
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configurationSection)
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services,
+        IConfiguration configurationSection, IHostEnvironment environment)
     {
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(configurationSection);
-        return services
+        services
             // Settings
             .Configure<InfrastructureSettings>(configurationSection)
 
@@ -35,7 +37,6 @@ public static class InfrastructureExtensions
                     .AddInterceptors(services.GetRequiredService<ConvertDomainEventsToOutboxMessagesInterceptor>());
             })
             .AddHostedService<DevelopmentMigratorHostedService>()
-            //.AddHostedService<OutboxScheduler>()
 
             // Singleton
 
@@ -48,29 +49,33 @@ public static class InfrastructureExtensions
             // Transient
             .AddTransient<OutboxDispatcher>()
             .AddTransient<ConvertDomainEventsToOutboxMessagesInterceptor>()
-            .AddTransient<ICloudEventBus, AltinnEventsClient>()
 
             // Decorate
             .Decorate(typeof(INotificationHandler<>), typeof(IdempotentDomainEventHandler<>))
 
             // Maskinporten 
-            //.AddHttpClient< ICloudEventBus, AltinnEventsClient>()
-            //    .Services
-            .AddMaskinportenHttpClient<ICloudEventBus, AltinnEventsClient, SettingsJwkClientDefinition>(configurationSection, x => x.ClientSettings.ExhangeToAltinnToken = true)
-                .Services
-            ;
+            .AddMaskinportenHttpClient<ICloudEventBus, AltinnEventsClient, SettingsJwkClientDefinition>(
+                configurationSection, x => x.ClientSettings.ExhangeToAltinnToken = true);
+
+        if (environment.IsDevelopment())
+        {
+            services.AddTransient<ICloudEventBus, ConsoleLogEventBus>();
+        }
+
+        return services;
     }
 
     private static IHttpClientBuilder AddMaskinportenHttpClient<TClient, TImplementation, TClientDefinition>(
-        this IServiceCollection services, 
-        IConfiguration configuration, 
-        Action<TClientDefinition>? configureClientDefinition = null) 
+        this IServiceCollection services,
+        IConfiguration configuration,
+        Action<TClientDefinition>? configureClientDefinition = null)
         where TClient : class
         where TImplementation : class, TClient
         where TClientDefinition : class, IClientDefinition
     {
         var settings = configuration.GetSection("MaskinportenSettings").Get<MaskinportenSettings>();
         services.RegisterMaskinportenClientDefinition<TClientDefinition>(typeof(TClient)!.FullName, settings);
-        return services.AddHttpClient<TClient, TImplementation>().AddMaskinportenHttpMessageHandler<TClientDefinition, TClient>(configureClientDefinition);
+        return services.AddHttpClient<TClient, TImplementation>()
+            .AddMaskinportenHttpMessageHandler<TClientDefinition, TClient>(configureClientDefinition);
     }
 }
