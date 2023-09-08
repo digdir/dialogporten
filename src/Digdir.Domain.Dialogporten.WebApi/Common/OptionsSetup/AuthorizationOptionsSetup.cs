@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
+using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
+using Digdir.Domain.Dialogporten.WebApi.Common.Options;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
 
-namespace Digdir.Domain.Dialogporten.WebApi.OptionsSetup;
+namespace Digdir.Domain.Dialogporten.WebApi.Common.OptionsSetup;
 
 internal sealed class AuthorizationOptionsSetup : IConfigureOptions<AuthorizationOptions>
 {
@@ -25,10 +28,6 @@ internal sealed class AuthorizationOptionsSetup : IConfigureOptions<Authorizatio
 
         options.AddPolicy(Policy.Serviceprovider, builder => builder
             .Combine(options.DefaultPolicy)
-            .RequireAssertion(ctx => ctx.User.Identities
-                .SelectMany(x => x.Claims)
-                .Where(x => x.Type == "scope")
-                .SelectMany(x => x.Value.Split(' ', StringSplitOptions.RemoveEmptyEntries))
-                .Any(x => x == "digdir:dialogporten.serviceprovider")));
+            .RequireScope("digdir:dialogporten.serviceprovider"));
     }
 }

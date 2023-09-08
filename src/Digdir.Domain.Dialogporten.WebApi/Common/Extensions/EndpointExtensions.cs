@@ -2,7 +2,7 @@
 using FastEndpoints;
 using FluentValidation.Results;
 
-namespace Digdir.Domain.Dialogporten.WebApi;
+namespace Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
 
 public static class EndpointExtensions
 {
@@ -14,10 +14,10 @@ public static class EndpointExtensions
     public static Task PreconditionFailed(this IEndpoint ep, CancellationToken cancellationToken = default)
         => ep.HttpContext.Response.SendErrorsAsync(new List<ValidationFailure>(), StatusCodes.Status412PreconditionFailed, cancellation: cancellationToken);
 
-    public static Task NotFoundAsync(this IEndpoint ep, EntityNotFound notFound, CancellationToken cancellationToken = default) 
+    public static Task NotFoundAsync(this IEndpoint ep, EntityNotFound notFound, CancellationToken cancellationToken = default)
         => ep.HttpContext.Response.SendErrorsAsync(
-            notFound.ToValidationResults(), 
-            StatusCodes.Status404NotFound, 
+            notFound.ToValidationResults(),
+            StatusCodes.Status404NotFound,
             cancellation: cancellationToken);
 
     public static Task GoneAsync(this IEndpoint ep, EntityDeleted deleted, CancellationToken cancellationToken = default)

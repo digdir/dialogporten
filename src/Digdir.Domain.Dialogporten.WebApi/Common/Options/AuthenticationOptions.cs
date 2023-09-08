@@ -1,4 +1,4 @@
-﻿namespace Digdir.Domain.Dialogporten.WebApi.OptionsSetup;
+﻿namespace Digdir.Domain.Dialogporten.WebApi.Common.Options;
 
 public sealed class AuthenticationOptions
 {

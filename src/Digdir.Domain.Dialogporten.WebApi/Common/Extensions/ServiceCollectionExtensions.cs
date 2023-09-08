@@ -1,4 +1,4 @@
-﻿using Digdir.Domain.Dialogporten.WebApi.OptionsSetup;
+﻿using Digdir.Domain.Dialogporten.WebApi.Common.Options;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Common.Extensions;

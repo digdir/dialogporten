@@ -1,4 +1,4 @@
-﻿using Digdir.Domain.Dialogporten.WebApi.OptionsSetup;
+﻿using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 using FastEndpoints;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner;
