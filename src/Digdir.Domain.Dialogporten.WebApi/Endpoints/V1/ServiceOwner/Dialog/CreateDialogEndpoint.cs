@@ -1,4 +1,5 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Create;
+using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Queries.Get;
 using FastEndpoints;
 using MediatR;
 
@@ -23,7 +24,7 @@ public sealed class CreateDialogEndpoint : Endpoint<CreateDialogCommand>
     {
         var result = await _sender.Send(req, ct);
         await result.Match(
-            success => SendCreatedAtAsync<GetDialogEndpoint>(new { success.Value }, success.Value, cancellation: ct),
+            success => SendCreatedAtAsync<GetDialogEndpoint>(new GetDialogQuery { DialogId = success.Value }, success.Value, cancellation: ct),
             domainError => this.UnprocessableEntityAsync(domainError, ct),
             validationError => this.BadRequestAsync(validationError, ct));
     }
