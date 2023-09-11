@@ -1,3 +1,4 @@
+using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.DialogElements.Queries.Get;
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Queries.Get;
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Update;
 using Digdir.Domain.Dialogporten.WebApi.Common;
@@ -42,12 +43,11 @@ public sealed class CreateDialogActivityEndpoint : Endpoint<CreateDialogElementR
 
         updateDialogDto.Elements.Add(request);
 
-        var updateDialogCommand = new UpdateDialogCommand
-            {Id = request.DialogId, ETag = request.ETag, Dto = updateDialogDto};
+        var updateDialogCommand = new UpdateDialogCommand {Id = request.DialogId, ETag = request.ETag, Dto = updateDialogDto};
 
         var result = await _sender.Send(updateDialogCommand, ct);
         await result.Match(
-            success => SendCreatedAtAsync<GetDialogElementEndpoint>(new {request.Id}, request.Id, cancellation: ct),
+            success => SendCreatedAtAsync<GetDialogElementEndpoint>(new GetDialogElementQuery {DialogId = dialog.Id, ElementId = request.Id.Value}, request.Id, cancellation: ct),
             notFound => this.NotFoundAsync(notFound, ct),
             validationError => this.BadRequestAsync(validationError, ct),
             domainError => this.UnprocessableEntityAsync(domainError, ct),

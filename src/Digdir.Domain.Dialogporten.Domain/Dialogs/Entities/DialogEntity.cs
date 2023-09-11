@@ -32,12 +32,13 @@ public class DialogEntity : IEntity, ISoftDeletableEntity, IVersionableEntity
     public DialogStatus.Enum StatusId { get; set; }
     public DialogStatus Status { get; set; } = null!;
 
+    
+    // === Principal relationships === 
     public DialogBody? Body { get; set; }
     public DialogTitle? Title { get; set; } 
     public DialogSenderName? SenderName { get; set; } 
     public DialogSearchTitle? SearchTitle { get; set; } 
-
-    // === Principal relationships === 
+    
     public List<DialogElement> Elements { get; set; } = new();
     public List<DialogGuiAction> GuiActions { get; set; } = new();
     public List<DialogApiAction> ApiActions { get; set; } = new();
