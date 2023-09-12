@@ -27,7 +27,7 @@ internal static class AutoMapperExtensions
         return expression;
     }
 
-    internal static bool IsSimple(this Type type)
+    private static bool IsSimple(this Type type)
     {
         if (type is null)
         {

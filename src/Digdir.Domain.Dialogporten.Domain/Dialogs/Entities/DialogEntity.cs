@@ -36,8 +36,9 @@ public class DialogEntity : IEntity, ISoftDeletableEntity, IVersionableEntity
     // === Principal relationships === 
     public DialogBody? Body { get; set; }
     public DialogTitle? Title { get; set; } 
-    public DialogSenderName? SenderName { get; set; } 
-    public DialogSearchTitle? SearchTitle { get; set; } 
+    public DialogSenderName? SenderName { get; set; }
+
+    public List<DialogSearchTag> SearchTags { get; set; } = new();
     
     public List<DialogElement> Elements { get; set; } = new();
     public List<DialogGuiAction> GuiActions { get; set; } = new();
@@ -58,12 +59,6 @@ public class DialogTitle : LocalizationSet
 }
 
 public class DialogSenderName : LocalizationSet
-{
-    public Guid DialogId { get; set; }
-    public DialogEntity Dialog { get; set; } = null!;
-}
-
-public class DialogSearchTitle : LocalizationSet
 {
     public Guid DialogId { get; set; }
     public DialogEntity Dialog { get; set; } = null!;

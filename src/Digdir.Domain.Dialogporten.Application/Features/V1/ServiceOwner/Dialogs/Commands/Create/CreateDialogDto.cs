@@ -22,12 +22,17 @@ public class CreateDialogDto
     public List<LocalizationDto> Body { get; set; } = new();
     public List<LocalizationDto> Title { get; set; } = new();
     public List<LocalizationDto> SenderName { get; set; } = new();
-    public List<LocalizationDto> SearchTitle { get; set; } = new();
+    public List<CreateDialogSearchTagDto> SearchTags { get; set; } = new();
 
     public List<CreateDialogDialogElementDto> Elements { get; set; } = new();
     public List<CreateDialogDialogGuiActionDto> GuiActions { get; set; } = new();
     public List<CreateDialogDialogApiActionDto> ApiActions { get; set; } = new();
     public List<CreateDialogDialogActivityDto> Activities { get; set; } = new();
+}
+
+public sealed class CreateDialogSearchTagDto
+{
+    public string Value { get; set; } = null!;
 }
 
 public sealed class CreateDialogDialogActivityDto

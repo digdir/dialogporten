@@ -18,9 +18,14 @@ internal sealed class MappingProfile : Profile
 			.ForMember(dest => dest.Status, opt => opt.Ignore())
             .ForMember(dest => dest.StatusId, opt => opt.MapFrom(src => src.Status));
 
+        CreateMap<UpdateDialogSearchTagDto, DialogSearchTag>()
+            .IgnoreComplexDestinationProperties()
+            .ForMember(x => x.Id, opt => opt.Ignore());
+        
         CreateMap<UpdateDialogDialogApiActionDto, DialogApiAction>()
             .IgnoreComplexDestinationProperties()
             .ForMember(x => x.Id, opt => opt.Ignore());
+        
         CreateMap<UpdateDialogDialogApiActionEndpointDto, DialogApiActionEndpoint>()
             .IgnoreComplexDestinationProperties()
             .ForMember(x => x.Id, opt => opt.Ignore())
@@ -35,6 +40,7 @@ internal sealed class MappingProfile : Profile
 
         CreateMap<UpdateDialogDialogElementDto, DialogElement>()
             .IgnoreComplexDestinationProperties();
+        
         CreateMap<UpdateDialogDialogElementUrlDto, DialogElementUrl>()
             .IgnoreComplexDestinationProperties()
             .ForMember(x => x.Id, opt => opt.Ignore())

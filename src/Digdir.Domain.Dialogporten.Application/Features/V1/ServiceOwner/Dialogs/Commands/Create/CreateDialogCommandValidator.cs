@@ -13,7 +13,8 @@ internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDia
         IValidator<CreateDialogDialogElementDto> elementValidator,
         IValidator<CreateDialogDialogGuiActionDto> guiActionValidator,
         IValidator<CreateDialogDialogApiActionDto> apiActionValidator,
-        IValidator<CreateDialogDialogActivityDto> activityValidator)
+        IValidator<CreateDialogDialogActivityDto> activityValidator,
+        IValidator<CreateDialogSearchTagDto> searchTagValidator)
     {
         RuleFor(x => x.Id)
             .NotEqual(default(Guid));
@@ -68,8 +69,10 @@ internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDia
             .ContainsValidHttp();
         RuleFor(x => x.SenderName)
             .SetValidator(localizationsValidator);
-        RuleFor(x => x.SearchTitle)
-            .SetValidator(localizationsValidator);
+        RuleForEach(x => x.SearchTags)
+            .SetValidator(searchTagValidator);
+        RuleFor(x => x.SearchTags)
+            .UniqueBy(x => x.Value);
 
         RuleForEach(x => x.GuiActions)
             .SetValidator(guiActionValidator);
@@ -137,6 +140,16 @@ internal sealed class CreateDialogDialogElementUrlDtoValidator : AbstractValidat
             .MaximumLength(Constants.DefaultMaxStringLength);
         RuleFor(x => x.ConsumerType)
             .IsInEnum();
+    }
+}
+
+internal sealed class CreateDialogSearchTagDtoValidator : AbstractValidator<CreateDialogSearchTagDto>
+{
+    public CreateDialogSearchTagDtoValidator()
+    {
+        RuleFor(x => x.Value)
+            .MinimumLength(3)
+            .MaximumLength(Constants.MaxSearchTagLength);
     }
 }
 
