@@ -58,6 +58,7 @@ internal sealed class MappingProfile : Profile
             // Remove all existing activities, since this list is append only and
             // existing activities should not be considered in the update request.
             .ForMember(dest => dest.Activities, opt => opt.Ignore());
+        CreateMap<GetDialogSearchTagDto, UpdateDialogSearchTagDto>();
         CreateMap<GetDialogDialogActivityDto, UpdateDialogDialogActivityDto>();
         CreateMap<GetDialogDialogApiActionDto, UpdateDialogDialogApiActionDto>();
         CreateMap<GetDialogDialogApiActionEndpointDto, UpdateDialogDialogApiActionEndpointDto>();
