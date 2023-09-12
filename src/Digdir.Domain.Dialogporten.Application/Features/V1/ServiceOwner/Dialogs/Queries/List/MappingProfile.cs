@@ -10,6 +10,6 @@ internal sealed class MappingProfile : Profile
         CreateMap<DialogEntity, ListDialogDto>()
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.StatusId));
 
-        CreateMap<DialogSearchTag, DialogSearchTagDto>();
+        CreateMap<DialogSearchTag, ListDialogSearchTagDto>();
     }
 }

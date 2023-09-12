@@ -19,10 +19,10 @@ public sealed class ListDialogDto
     
     public List<LocalizationDto> Title { get; set; } = new();
     public List<LocalizationDto>? SenderName { get; set; }
-    public List<DialogSearchTagDto> SearchTags { get; set; } = new();
+    public List<ListDialogSearchTagDto> SearchTags { get; set; } = new();
 }
 
-public sealed class DialogSearchTagDto
+public sealed class ListDialogSearchTagDto
 {
     public string Value { get; set; } = null!;
 }

@@ -28,12 +28,17 @@ public sealed class GetDialogDto
     public List<LocalizationDto>? Body { get; set; } 
     public List<LocalizationDto> Title { get; set; } = new();
     public List<LocalizationDto>? SenderName { get; set; } 
-    public List<LocalizationDto>? SearchTitle { get; set; }
+    public List<GetDialogSearchTagDto>? SearchTags { get; set; }
 
     public List<GetDialogDialogElementDto> Elements { get; set; } = new();
     public List<GetDialogDialogGuiActionDto> GuiActions { get; set; } = new();
     public List<GetDialogDialogApiActionDto> ApiActions { get; set; } = new();
     public List<GetDialogDialogActivityDto> Activities { get; set; } = new();
+}
+
+public sealed class GetDialogSearchTagDto
+{
+    public string Value { get; set; } = null!;
 }
 
 public sealed class GetDialogDialogActivityDto
