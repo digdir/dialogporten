@@ -21,7 +21,7 @@ dotnet user-secrets set -p .\src\Digdir.Domain.Dialogporten.WebApi\ "Infrastruct
 
 Then run docker compose without the WebAPI project.
 ```powershell
-docker compose up -f docker-compose-no-webapi.yaml
+docker compose -f docker-compose-no-webapi.yaml up 
 ```
 
 
