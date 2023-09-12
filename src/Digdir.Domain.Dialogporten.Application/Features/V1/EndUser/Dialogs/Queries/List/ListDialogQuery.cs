@@ -10,9 +10,8 @@ using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Localizations;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using OneOf;
-using System.Linq.Expressions;
+using static Digdir.Domain.Dialogporten.Application.Common.Expressions;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Queries.List;
 
@@ -94,12 +93,5 @@ internal sealed class ListDialogQueryHandler : IRequestHandler<ListDialogQuery, 
             .Where(x => !x.ExpiresAt.HasValue || x.ExpiresAt < _clock.UtcNowOffset)
             .ProjectTo<ListDialogDto>(_mapper.ConfigurationProvider)
             .ToPaginatedListAsync(request, cancellationToken: cancellationToken);
-    }
-
-    private static Expression<Func<Localization, bool>> LocalizedSearchExpression(string? search, string? cultureCode)
-    {
-        return localization => 
-            (cultureCode == null || localization.CultureCode == cultureCode) && 
-            EF.Functions.ILike(localization.Value, $"%{search}%");
     }
 }
