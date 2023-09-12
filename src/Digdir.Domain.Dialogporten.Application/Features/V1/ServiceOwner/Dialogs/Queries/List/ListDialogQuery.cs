@@ -35,6 +35,9 @@ public sealed class ListDialogQuery : SortablePaginationParameter<ListDialogQuer
     public DateTimeOffset? DueAfter { get; init; }
     public DateTimeOffset? DueBefore { get; init; }
 
+    public DateTimeOffset? VisibleAfter { get; init; }
+    public DateTimeOffset? VisibleBefore { get; init; }
+    
     public string? Search { get; init; }
     public string? SearchCultureCode 
     { 
@@ -85,6 +88,8 @@ internal sealed class ListDialogQueryHandler : IRequestHandler<ListDialogQuery, 
             .WhereIf(request.UpdatedBefore.HasValue, x => x.UpdatedAt <= request.UpdatedBefore)
             .WhereIf(request.DueAfter.HasValue, x => request.DueAfter <= x.DueAt)
             .WhereIf(request.DueBefore.HasValue, x => x.DueAt <= request.DueBefore)
+            .WhereIf(request.VisibleAfter.HasValue, x => request.VisibleAfter <= x.VisibleFrom)
+            .WhereIf(request.VisibleBefore.HasValue, x => x.VisibleFrom <= request.VisibleBefore)
             .WhereIf(request.Search is not null, x =>
                 x.Title!.Localizations.AsQueryable().Any(searchExpression) ||
                 x.SearchTags.Any(x => x.Value == request.Search!.ToLower()) ||

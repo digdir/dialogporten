@@ -13,9 +13,16 @@ public sealed class ListDialogDto
     public DateTimeOffset CreatedAt { get; set; }
     public DateTimeOffset UpdatedAt { get; set; }
     public DateTimeOffset? DueAt { get; set; }
+    public DateTimeOffset? VisibleFrom { get; set; }
 
     public DialogStatus.Enum Status { get; set; }
-
+    
     public List<LocalizationDto> Title { get; set; } = new();
     public List<LocalizationDto>? SenderName { get; set; }
+    public List<DialogSearchTagDto> SearchTags { get; set; } = new();
+}
+
+public sealed class DialogSearchTagDto
+{
+    public string Value { get; set; } = null!;
 }
