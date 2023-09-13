@@ -57,7 +57,7 @@ internal sealed class UpdateDialogDtoValidator : AbstractValidator<UpdateDialogD
         RuleForEach(x => x.SearchTags)
             .SetValidator(searchTagValidator);
         RuleFor(x => x.SearchTags)
-            .UniqueBy(x => x.Value);
+            .UniqueBy(x => x.Value, StringComparer.InvariantCultureIgnoreCase);
 
         RuleFor(x => x.GuiActions)
             .UniqueBy(x => x.Id);

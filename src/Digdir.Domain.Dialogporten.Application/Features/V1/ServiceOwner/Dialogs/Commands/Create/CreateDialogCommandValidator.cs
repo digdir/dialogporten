@@ -72,7 +72,7 @@ internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDia
         RuleForEach(x => x.SearchTags)
             .SetValidator(searchTagValidator);
         RuleFor(x => x.SearchTags)
-            .UniqueBy(x => x.Value);
+            .UniqueBy(x => x.Value, StringComparer.InvariantCultureIgnoreCase);
 
         RuleForEach(x => x.GuiActions)
             .SetValidator(guiActionValidator);
