@@ -10,9 +10,8 @@ using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Localizations;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using OneOf;
-using System.Linq.Expressions;
+using static Digdir.Domain.Dialogporten.Application.Common.Expressions;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Queries.List;
 
@@ -87,19 +86,12 @@ internal sealed class ListDialogQueryHandler : IRequestHandler<ListDialogQuery, 
             .WhereIf(request.DueBefore.HasValue, x => x.DueAt <= request.DueBefore)
             .WhereIf(request.Search is not null, x =>
                 x.Title!.Localizations.AsQueryable().Any(searchExpression) ||
-                x.SearchTitle!.Localizations.AsQueryable().Any(searchExpression) ||
+                x.SearchTags.Any(x => x.Value == request.Search!.ToLower()) ||
                 x.SenderName!.Localizations.AsQueryable().Any(searchExpression)
             )
             .Where(x => !x.VisibleFrom.HasValue || _clock.UtcNowOffset < x.VisibleFrom)
             .Where(x => !x.ExpiresAt.HasValue || x.ExpiresAt < _clock.UtcNowOffset)
             .ProjectTo<ListDialogDto>(_mapper.ConfigurationProvider)
             .ToPaginatedListAsync(request, cancellationToken: cancellationToken);
-    }
-
-    private static Expression<Func<Localization, bool>> LocalizedSearchExpression(string? search, string? cultureCode)
-    {
-        return localization => 
-            (cultureCode == null || localization.CultureCode == cultureCode) && 
-            EF.Functions.ILike(localization.Value, $"%{search}%");
     }
 }

@@ -26,7 +26,6 @@ public sealed class GetDialogDto
     public List<LocalizationDto>? Body { get; set; }
     public List<LocalizationDto> Title { get; set; } = new();
     public List<LocalizationDto>? SenderName { get; set; }
-    public List<LocalizationDto>? SearchTitle { get; set; }
 
     public List<GetDialogDialogElementDto> Elements { get; set; } = new();
     public List<GetDialogDialogGuiActionDto> GuiActions { get; set; } = new();

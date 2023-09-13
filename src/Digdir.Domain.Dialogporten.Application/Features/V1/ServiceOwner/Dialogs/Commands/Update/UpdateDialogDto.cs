@@ -19,12 +19,17 @@ public sealed class UpdateDialogDto
     public List<LocalizationDto> Body { get; set; } = new();
     public List<LocalizationDto> Title { get; set; } = new();
     public List<LocalizationDto> SenderName { get; set; } = new();
-    public List<LocalizationDto> SearchTitle { get; set; } = new();
+    public List<UpdateDialogSearchTagDto> SearchTags { get; set; } = new();
 
     public List<UpdateDialogDialogElementDto> Elements { get; set; } = new();
     public List<UpdateDialogDialogGuiActionDto> GuiActions { get; set; } = new();
     public List<UpdateDialogDialogApiActionDto> ApiActions { get; set; } = new();
     public List<UpdateDialogDialogActivityDto> Activities { get; set; } = new();
+}
+
+public sealed class UpdateDialogSearchTagDto
+{
+    public string Value { get; set; } = null!;
 }
 
 public class UpdateDialogDialogActivityDto

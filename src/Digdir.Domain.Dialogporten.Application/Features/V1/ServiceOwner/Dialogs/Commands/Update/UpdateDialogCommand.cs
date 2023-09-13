@@ -58,7 +58,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
             .Include(x => x.Body!.Localizations)
             .Include(x => x.Title!.Localizations)
             .Include(x => x.SenderName!.Localizations)
-            .Include(x => x.SearchTitle!.Localizations)
+            .Include(x => x.SearchTags)
             .Include(x => x.Elements)
                 .ThenInclude(x => x.DisplayName!.Localizations)
             .Include(x => x.Elements)
@@ -84,8 +84,15 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         dialog.Body = _localizationService.Merge(dialog.Body, request.Dto.Body);
         dialog.Title = _localizationService.Merge(dialog.Title, request.Dto.Title);
         dialog.SenderName = _localizationService.Merge(dialog.SenderName, request.Dto.SenderName);
-        dialog.SearchTitle = _localizationService.Merge(dialog.SearchTitle, request.Dto.SearchTitle);
-
+        
+        dialog.SearchTags
+            .Merge(request.Dto.SearchTags,
+                destinationKeySelector: x => x.Value,
+                sourceKeySelector: x => x.Value,
+                create: _mapper.Map<List<DialogSearchTag>>,
+                delete: DeleteDelegade.NoOp,
+                comparer: StringComparer.InvariantCultureIgnoreCase);
+        
         await dialog.Elements
             .MergeAsync(request.Dto.Elements,
                 destinationKeySelector: x => x.Id,

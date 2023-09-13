@@ -54,7 +54,7 @@ public class GetDialogTests : ApplicationCollectionFixture
             ExtendedStatus = "SKE-ABC",
             //DueAt = new(new DateTime(2022, 12, 01), TimeSpan.Zero),
             //ExpiresAt = new(new DateTime(2022, 12, 01), TimeSpan.Zero),
-            SearchTitle = new() { new() { CultureCode = "nb_NO", Value = "Et eksempel på en tittel" } },
+            // SearchTags = new() { new() { CultureCode = "nb_NO", Value = "Et eksempel på en tittel" } },
             Title = new() { new() { CultureCode = "nb_NO", Value = "Et eksempel på en tittel" } },
             SenderName = new() { new() { CultureCode = "nb_NO", Value = "Overstyrt avsendernavn (bruker default tjenesteeiers navn)" } },
             Body = { new() { CultureCode = "nb_NO", Value = "Innhold med <em>begrenset</em> HTML-støtte. Dette innholdet vises når dialogen ekspanderes." } },
