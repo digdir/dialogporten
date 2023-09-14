@@ -90,7 +90,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
                 destinationKeySelector: x => x.Value,
                 sourceKeySelector: x => x.Value,
                 create: _mapper.Map<List<DialogSearchTag>>,
-                delete: DeleteDelegade.NoOp,
+                delete: DeleteDelegate.NoOp,
                 comparer: StringComparer.InvariantCultureIgnoreCase);
         
         await dialog.Elements
@@ -99,7 +99,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
                 sourceKeySelector: x => x.Id,
                 create: CreateElements,
                 update: UpdateElements,
-                delete: DeleteDelegade.NoOp,
+                delete: DeleteDelegate.NoOp,
                 cancellationToken: cancellationToken);
 
         dialog.GuiActions
@@ -108,7 +108,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
                 sourceKeySelector: x => x.Id,
                 create: CreateGuiActions,
                 update: UpdateGuiActions,
-                delete: DeleteDelegade.NoOp);
+                delete: DeleteDelegate.NoOp);
 
         dialog.ApiActions
             .Merge(request.Dto.ApiActions,
@@ -116,7 +116,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
                 sourceKeySelector: x => x.Id,
                 create: CreateApiActions,
                 update: UpdateApiActions,
-                delete: DeleteDelegade.NoOp);
+                delete: DeleteDelegate.NoOp);
 
         _eventPublisher.Publish(new DialogUpdatedDomainEvent(dialog.Id));
 
@@ -194,7 +194,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
                     sourceKeySelector: x => x.Id,
                     create: _mapper.Map<List<DialogApiActionEndpoint>>,
                     update: _mapper.Update,
-                    delete: DeleteDelegade.NoOp);
+                    delete: DeleteDelegate.NoOp);
         }
     }
 
@@ -251,7 +251,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
                     sourceKeySelector: x => x.Id,
                     create: _mapper.Map<List<DialogElementUrl>>,
                     update: _mapper.Update,
-                    delete: DeleteDelegade.NoOp);
+                    delete: DeleteDelegate.NoOp);
         }
 
         return Task.CompletedTask;
