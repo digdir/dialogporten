@@ -1,4 +1,5 @@
-﻿using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
+﻿using System.Diagnostics;
+using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Domain.Outboxes;
 using MediatR;
@@ -39,8 +40,8 @@ internal sealed class DeleteOutboxMessagesCommandHandler : IRequestHandler<Delet
         var saveResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
         saveResult.Switch(
             success => { },
-            domainError => throw new ApplicationException("Should never get a domain error when deleting an outbox message"),
-            concurrencyError => throw new ApplicationException("Should never get a concurrency error when deleting an outbox message"));
+            domainError => throw new UnreachableException("Should never get a domain error when deleting an outbox message"),
+            concurrencyError => throw new UnreachableException("Should never get a concurrency error when deleting an outbox message"));
 
         return new Success();
     }

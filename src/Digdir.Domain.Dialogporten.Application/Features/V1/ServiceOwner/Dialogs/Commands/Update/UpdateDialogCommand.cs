@@ -223,7 +223,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         foreach (var elementDto in creatables)
         {
             var element = _mapper.Map<DialogElement>(elementDto);
-            element.DisplayName = _mapper.Map<DialogElementDisplayName>(elementDto.DisplayName);
+            element.DisplayName = _localizationService.Merge(element.DisplayName, elementDto.DisplayName);
             element.Urls = _mapper.Map<List<DialogElementUrl>>(elementDto.Urls);
             elements.Add(element);
         }
