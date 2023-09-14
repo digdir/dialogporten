@@ -1,4 +1,5 @@
-﻿using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
+﻿using System.Diagnostics;
+using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Events;
@@ -54,7 +55,7 @@ internal sealed class DeleteDialogCommandHandler : IRequestHandler<DeleteDialogC
         var saveResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
         return saveResult.Match<DeleteDialogResult>(
             success => success,
-            domainError => throw new ApplicationException("Should never get a domain error when creating a new dialog"),
+            domainError => throw new UnreachableException("Should never get a domain error when creating a new dialog"),
             concurrencyError => concurrencyError);
     }
 }
