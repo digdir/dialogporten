@@ -43,6 +43,7 @@ public static class ChangeTrackerExtensions
             .ToList();
         
         // this will return tree
+        // var tree =
         await modifiedEntries.GetOwnershipChainInclusive();
         
         // traverse the tree and call nodes that implement the INotifyChange interface
@@ -57,26 +58,55 @@ public static class ChangeTrackerExtensions
         
         foreach (var entry in entries) 
             await entry.GetOwnershipChainInclusive(treeDict);
-        
+
+        // TreeNode? root = null;
+        //
+        // foreach (var (parent, children) in treeDict)
+        // {
+        //     if (root is null)
+        //     {
+        //         root = new TreeNode(parent);
+        //         root.Children.AddRange(children.Select(x => new TreeNode(x)));
+        //         foreach (var child in children)
+        //         {
+        //             var  = treeDict[child];
+        //             child
+        //         }
+        //     }
+        //     
+        //     
+        // }
         // convert to tree 
         // return tree;
+    }
+    
+    private static List<TreeNode> GetChildren(this IDictionary<EntityEntry, HashSet<EntityEntry>> treeDict)
+    {
+        if (!treeDict.TryGetValue(entry, out var children))
+        {
+            return
+        }
+        
+        foreach (var child in children)
+        {
+           var childrenInChild = child.GetChildren(treeDict);
+           
+        }
+        
+        return children;
+
     }
 
     private static async Task GetOwnershipChainInclusive(
         this EntityEntry entry,
         IDictionary<EntityEntry, HashSet<EntityEntry>> treeDict)
     {
-        var parentForeignKeys = entry.Metadata
-            .FindAggregateParents()
-            .ToList();
-        
-        if (!parentForeignKeys.Any() && !treeDict.ContainsKey(entry))
+        if (!treeDict.ContainsKey(entry))
         {
             treeDict[entry] = new HashSet<EntityEntry>(comparer: new EntityEntryComparer());
-            return;
         }
         
-        foreach (var parentForeignKey in parentForeignKeys)
+        foreach (var parentForeignKey in entry.Metadata.FindAggregateParents())
         {
             var parentType = parentForeignKey.PrincipalEntityType.ClrType;
             
