@@ -80,21 +80,61 @@ public static class ChangeTrackerExtensions
         // return tree;
     }
     
-    private static List<TreeNode> GetChildren(this IDictionary<EntityEntry, HashSet<EntityEntry>> treeDict)
+    private static List<TreeNode> GetAggregateRoots(this IDictionary<EntityEntry, HashSet<EntityEntry>> treeDict, HashSet<EntityEntry>? potentialRoots = null)
     {
-        if (!treeDict.TryGetValue(entry, out var children))
-        {
-            return
-        }
-        
-        foreach (var child in children)
-        {
-           var childrenInChild = child.GetChildren(treeDict);
-           
-        }
-        
-        return children;
+        potentialRoots ??= new HashSet<EntityEntry>(comparer: new EntityEntryComparer());
 
+        foreach (var (entry, children) in treeDict)
+        {
+            // Hvis vi finner en potential root som er en child
+            // Så er den ikke en root
+            // Hiv den ut og sett inn den bedre potensielle roten med den forige "roten" som child.
+            // Trenger ikke traversere child rooten for den er alt traversert.
+            // HashSet<TreeNode> må vite hvordan de er like
+            if (!potentialRoots.Add(entry))
+            {
+                continue;
+            }
+
+            var node = new TreeNode 
+            { 
+                Data = entry, 
+                Children = GetAggregateChildren(children, treeDict, potentialRoots)
+            };
+
+            // TODO: Legg til noder? 
+        }
+    }
+
+    private static List<TreeNode> GetAggregateChildren(
+        HashSet<EntityEntry> entityEntries, 
+        IDictionary<EntityEntry, HashSet<EntityEntry>> treeDict, 
+        HashSet<EntityEntry> visited)
+    {
+        var result = new List<TreeNode>();
+
+        foreach (var entityEntry in entityEntries)
+        {
+            if (!visited.Add(entityEntry))
+            {
+                continue;
+            }
+
+            if (!treeDict.TryGetValue(entityEntry, out var children))
+            {
+                throw new Exception();
+            }
+
+            var node = new TreeNode
+            {
+                Data = entityEntry,
+                Children = GetAggregateChildren(children, treeDict, visited)
+            };
+
+            result.Add(node);
+        }
+
+        return result;
     }
 
     private static async Task GetOwnershipChainInclusive(
@@ -156,18 +196,12 @@ internal class EntityEntryComparer : IEqualityComparer<EntityEntry>
 
 internal class TreeNode
 {
-    public object Data { get; set; }
-    public List<TreeNode> Children { get; set; }
-    
-    public TreeNode(object data)
+    public required object Data { get; init; }
+    public List<TreeNode> Children { get; init; } = new();
+
+    internal void AddChild(TreeNode treeNode)
     {
-        Data = data;
-        Children = new List<TreeNode>();
-    }
-    
-    public void AddChild(TreeNode child)
-    {
-        Children.Add(child);
+        Children.Add(treeNode);
     }
 }
 
