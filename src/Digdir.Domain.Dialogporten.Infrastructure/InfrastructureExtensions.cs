@@ -10,6 +10,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Polly.Extensions.Http;
 using Polly;
@@ -29,7 +30,8 @@ internal sealed class SystemJsonSerializer<TResult> : ICacheItemSerializer<TResu
 
 public static class InfrastructureExtensions
 {
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configurationSection)
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services,
+        IConfiguration configurationSection, IHostEnvironment environment)
     {
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(configurationSection);
@@ -47,7 +49,7 @@ public static class InfrastructureExtensions
                 TimeSpan.FromMinutes(5)));
         });
 
-        return services
+        services
             // Settings
             .Configure<InfrastructureSettings>(configurationSection)
 
@@ -62,7 +64,6 @@ public static class InfrastructureExtensions
                     .AddInterceptors(services.GetRequiredService<ConvertDomainEventsToOutboxMessagesInterceptor>());
             })
             .AddHostedService<DevelopmentMigratorHostedService>()
-            //.AddHostedService<OutboxScheduler>()
 
             // Singleton
 
@@ -75,31 +76,36 @@ public static class InfrastructureExtensions
             // Transient
             .AddTransient<OutboxDispatcher>()
             .AddTransient<ConvertDomainEventsToOutboxMessagesInterceptor>()
-            .AddTransient<ICloudEventBus, AltinnEventsClient>()
             .AddTransient<IResourceRegistry, ResourceRegistery>()
 
             // Decorate
-            .Decorate(typeof(INotificationHandler<>), typeof(IdempotentDomainEventHandler<>))
+            .Decorate(typeof(INotificationHandler<>), typeof(IdempotentDomainEventHandler<>));
 
-            // HttpClient
-            .AddMaskinportenHttpClient<ICloudEventBus, AltinnEventsClient, SettingsJwkClientDefinition>(configurationSection, x => x.ClientSettings.ExhangeToAltinnToken = true)
-                .Services
-            .AddHttpClient<ResourceRegistryClient>((services, client) => client.BaseAddress = services.GetRequiredService<InfrastructureSettings>().Altinn.BaseUri)
-                .AddPolicyHandlerFromRegistry("DefaultHttpRetryPolicy")
-                .Services
-            ;
+        // HttpClient 
+        services.AddMaskinportenHttpClient<ICloudEventBus, AltinnEventsClient, SettingsJwkClientDefinition>(
+                configurationSection, x => x.ClientSettings.ExhangeToAltinnToken = true);
+        services.AddHttpClient<ResourceRegistryClient>((services, client) => 
+                client.BaseAddress = services.GetRequiredService<InfrastructureSettings>().Altinn.BaseUri)
+            .AddPolicyHandlerFromRegistry("DefaultHttpRetryPolicy");
+
+        if (environment.IsDevelopment())
+        {
+            services.AddTransient<ICloudEventBus, ConsoleLogEventBus>();
+        }
+
+        return services;
     }
 
     private static IHttpClientBuilder AddMaskinportenHttpClient<TClient, TImplementation, TClientDefinition>(
-        this IServiceCollection services, 
-        IConfiguration configuration, 
-        Action<TClientDefinition>? configureClientDefinition = null) 
+        this IServiceCollection services,
+        IConfiguration configuration,
+        Action<TClientDefinition>? configureClientDefinition = null)
         where TClient : class
         where TImplementation : class, TClient
         where TClientDefinition : class, IClientDefinition
     {
         var settings = configuration.Get<InfrastructureSettings>();
-        services.RegisterMaskinportenClientDefinition<TClientDefinition>(typeof(TClient)!.FullName, settings.MaskinportenSettings);
+        services.RegisterMaskinportenClientDefinition<TClientDefinition>(typeof(TClient)!.FullName, settings!.MaskinportenSettings);
         return services.AddHttpClient<TClient, TImplementation>().AddMaskinportenHttpMessageHandler<TClientDefinition, TClient>(configureClientDefinition);
     }
 }

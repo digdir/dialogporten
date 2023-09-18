@@ -2,15 +2,15 @@
 
 namespace Digdir.Domain.Dialogporten.Application.Common.Extensions.Enumerable;
 
-internal delegate Task<IEnumerable<TDestination>> CreateAsyncDelegade<TDestination, in TSource>(IEnumerable<TSource> creatables, CancellationToken cancellationToken = default);
-internal delegate Task UpdateAsyncDelegade<TDestination, TSource>(IEnumerable<UpdateSet<TDestination, TSource>> updateSets, CancellationToken cancellationToken = default);
-internal delegate Task DeleteAsyncDelegade<in TDestination>(IEnumerable<TDestination> deletables, CancellationToken cancellationToken = default);
+internal delegate Task<IEnumerable<TDestination>> CreateAsyncDelegate<TDestination, in TSource>(IEnumerable<TSource> creatables, CancellationToken cancellationToken = default);
+internal delegate Task UpdateAsyncDelegate<TDestination, TSource>(IEnumerable<UpdateSet<TDestination, TSource>> updateSets, CancellationToken cancellationToken = default);
+internal delegate Task DeleteAsyncDelegate<in TDestination>(IEnumerable<TDestination> deletables, CancellationToken cancellationToken = default);
 
-internal delegate IEnumerable<TDestination> CreateDelegade<TDestination, in TSource>(IEnumerable<TSource> creatables);
-internal delegate void UpdateDelegade<TDestination, TSource>(IEnumerable<UpdateSet<TDestination, TSource>> updateSets);
-internal delegate void DeleteDelegade<in TDestination>(IEnumerable<TDestination> deletables);
+internal delegate IEnumerable<TDestination> CreateDelegate<out TDestination, in TSource>(IEnumerable<TSource> creatables);
+internal delegate void UpdateDelegate<TDestination, TSource>(IEnumerable<UpdateSet<TDestination, TSource>> updateSets);
+internal delegate void DeleteDelegate<in TDestination>(IEnumerable<TDestination> deletables);
 
-internal static class DeleteDelegade
+internal static class DeleteDelegate
 {
     public static Task NoOp<TDestination>(IEnumerable<TDestination> deletables, CancellationToken cancellationToken = default) => Task.CompletedTask;
     public static void NoOp<TDestination>(IEnumerable<TDestination> deletables) { /* No operation by design */ }
@@ -23,9 +23,9 @@ internal static class MergeExtensions
         IEnumerable<TSource> sources,
         Func<TDestination, TKey> destinationKeySelector,
         Func<TSource, TKey> sourceKeySelector,
-        CreateDelegade<TDestination, TSource>? create = null,
-        UpdateDelegade<TDestination, TSource>? update = null,
-        DeleteDelegade<TDestination>? delete = null,
+        CreateDelegate<TDestination, TSource>? create = null,
+        UpdateDelegate<TDestination, TSource>? update = null,
+        DeleteDelegate<TDestination>? delete = null,
         IEqualityComparer<TKey>? comparer = null)
     {
         ArgumentNullException.ThrowIfNull(sources);
@@ -51,9 +51,9 @@ internal static class MergeExtensions
         IEnumerable<TSource> sources,
         Func<TDestination, TKey> destinationKeySelector,
         Func<TSource, TKey> sourceKeySelector,
-        CreateAsyncDelegade<TDestination, TSource>? create = null,
-        UpdateAsyncDelegade<TDestination, TSource>? update = null,
-        DeleteAsyncDelegade<TDestination>? delete = null,
+        CreateAsyncDelegate<TDestination, TSource>? create = null,
+        UpdateAsyncDelegate<TDestination, TSource>? update = null,
+        DeleteAsyncDelegate<TDestination>? delete = null,
         IEqualityComparer<TKey>? comparer = null,
         CancellationToken cancellationToken = default)
     {
@@ -86,7 +86,7 @@ internal static class MergeExtensions
     private static async Task CreateAsync<TDestination, TSource>(
         ICollection<TDestination> destinations,
         IEnumerable<TSource> sources,
-        CreateAsyncDelegade<TDestination, TSource>? create,
+        CreateAsyncDelegate<TDestination, TSource>? create,
         List<UpdateSet<TDestination, TSource>> updateSets,
         CancellationToken cancellationToken)
     {
@@ -108,7 +108,7 @@ internal static class MergeExtensions
     }
 
     private static async Task UpdateAsync<TDestination, TSource>(
-        UpdateAsyncDelegade<TDestination, TSource>? update,
+        UpdateAsyncDelegate<TDestination, TSource>? update,
         List<UpdateSet<TDestination, TSource>> updateSets,
         CancellationToken cancellationToken)
     {
@@ -121,7 +121,7 @@ internal static class MergeExtensions
 
     private static async Task DeleteAsync<TDestination, TSource>(
         ICollection<TDestination> destinations,
-        DeleteAsyncDelegade<TDestination>? delete,
+        DeleteAsyncDelegate<TDestination>? delete,
         List<UpdateSet<TDestination, TSource>> updateSets,
         CancellationToken cancellationToken)
     {
@@ -149,7 +149,7 @@ internal static class MergeExtensions
     private static void Create<TDestination, TSource>(
         ICollection<TDestination> destinations,
         IEnumerable<TSource> sources,
-        CreateDelegade<TDestination, TSource>? create,
+        CreateDelegate<TDestination, TSource>? create,
         List<UpdateSet<TDestination, TSource>> updateSets)
     {
         if (create is null)
@@ -170,7 +170,7 @@ internal static class MergeExtensions
     }
 
     private static void Update<TDestination, TSource>(
-        UpdateDelegade<TDestination, TSource>? update,
+        UpdateDelegate<TDestination, TSource>? update,
         List<UpdateSet<TDestination, TSource>> updateSets)
     {
         if (update is null || updateSets.Count == 0)
@@ -182,7 +182,7 @@ internal static class MergeExtensions
 
     private static void Delete<TDestination, TSource>(
         ICollection<TDestination> destinations,
-        DeleteDelegade<TDestination>? delete,
+        DeleteDelegate<TDestination>? delete,
         List<UpdateSet<TDestination, TSource>> updateSets)
     {
         if (delete is null)

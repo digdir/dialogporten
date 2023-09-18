@@ -1,3 +1,4 @@
+using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.DialogActivities.Queries.Get;
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Update;
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Queries.Get;
 using Digdir.Domain.Dialogporten.WebApi.Common;
@@ -31,8 +32,8 @@ public sealed class CreateDialogActivityEndpoint : Endpoint<CreateDialogActivity
         var dialogQueryResult = await _sender.Send(new GetDialogQuery {DialogId = request.DialogId}, ct);
         if (dialogQueryResult.TryPickT1(out var entityNotFound, out var dialog))
         {
-           await this.NotFoundAsync(entityNotFound, cancellationToken: ct);
-           return;
+            await this.NotFoundAsync(entityNotFound, cancellationToken: ct);
+            return;
         }
 
         // Remove all existing activities, since this list is append only and
@@ -43,15 +44,15 @@ public sealed class CreateDialogActivityEndpoint : Endpoint<CreateDialogActivity
 
         request.Id = !request.Id.HasValue || request.Id.Value == default
             ? Uuid7.NewUuid7().ToGuid()
-            : request.Id; 
-        
+            : request.Id;
+
         updateDialogDto.Activities.Add(request);
 
         var updateDialogCommand = new UpdateDialogCommand {Id = request.DialogId, ETag = request.ETag, Dto = updateDialogDto};
-        
+
         var result = await _sender.Send(updateDialogCommand, ct);
         await result.Match(
-            success => SendCreatedAtAsync<GetDialogActivityEndpoint>(new {request.Id}, request.Id, cancellation: ct),
+            success => SendCreatedAtAsync<GetDialogActivityEndpoint>(new GetDialogActivityQuery {DialogId = dialog.Id, ActivityId = request.Id.Value}, request.Id, cancellation: ct),
             notFound => this.NotFoundAsync(notFound, ct),
             validationError => this.BadRequestAsync(validationError, ct),
             domainError => this.UnprocessableEntityAsync(domainError, ct),
@@ -62,7 +63,7 @@ public sealed class CreateDialogActivityEndpoint : Endpoint<CreateDialogActivity
 public sealed class CreateDialogActivityRequest : UpdateDialogDialogActivityDto
 {
     public Guid DialogId { get; set; }
-    
+
     [FromHeader(headerName: Constants.IfMatch, isRequired: false)]
     public Guid? ETag { get; set; }
 }

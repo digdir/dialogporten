@@ -66,7 +66,7 @@ static void BuildAndRun(string[] args)
 
         // Clean architecture projects
         .AddApplication(builder.Configuration.GetSection(ApplicationSettings.ConfigurationSectionName))
-        .AddInfrastructure(builder.Configuration.GetSection(InfrastructureSettings.ConfigurationSectionName))
+        .AddInfrastructure(builder.Configuration.GetSection(InfrastructureSettings.ConfigurationSectionName), builder.Environment)
 
         // Asp infrastructure
         .AddAzureAppConfiguration()

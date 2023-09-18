@@ -44,8 +44,3 @@ public class ListDialogEndpoint : Endpoint<ListDialogQuery>
             validationError => this.BadRequestAsync(validationError, ct));
     }
 }
-
-public class ConsumerClaim
-{
-    public string Id { get; set; }
-}

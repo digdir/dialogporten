@@ -32,12 +32,14 @@ public class DialogEntity : IEntity, ISoftDeletableEntity, IVersionableEntity
     public DialogStatus.Enum StatusId { get; set; }
     public DialogStatus Status { get; set; } = null!;
 
+    
+    // === Principal relationships === 
     public DialogBody? Body { get; set; }
     public DialogTitle? Title { get; set; } 
-    public DialogSenderName? SenderName { get; set; } 
-    public DialogSearchTitle? SearchTitle { get; set; } 
+    public DialogSenderName? SenderName { get; set; }
 
-    // === Principal relationships === 
+    public List<DialogSearchTag> SearchTags { get; set; } = new();
+    
     public List<DialogElement> Elements { get; set; } = new();
     public List<DialogGuiAction> GuiActions { get; set; } = new();
     public List<DialogApiAction> ApiActions { get; set; } = new();
@@ -57,12 +59,6 @@ public class DialogTitle : LocalizationSet
 }
 
 public class DialogSenderName : LocalizationSet
-{
-    public Guid DialogId { get; set; }
-    public DialogEntity Dialog { get; set; } = null!;
-}
-
-public class DialogSearchTitle : LocalizationSet
 {
     public Guid DialogId { get; set; }
     public DialogEntity Dialog { get; set; } = null!;

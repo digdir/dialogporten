@@ -1,20 +1,25 @@
-version: '3'
+include:
+  - docker-compose-no-webapi.yaml
+
 services:
-  postgres:
-    image: postgres:14.7
+  dialogporten-webapi:
+    build:
+      context: .
+      dockerfile: src/Digdir.Domain.Dialogporten.WebApi/Dockerfile
     restart: always
-    command: postgres -c wal_level=logical
+    depends_on:
+      dialogporten-postgres:
+        condition: service_healthy
+        
     environment:
-    - POSTGRES_USER=postgres
-    - POSTGRES_PASSWORD=postgres
-    - POSTGRES_DB=Dialogporten
+      - Infrastructure:DialogDbConnectionString=${DB_CONNECTION_STRING}
+      - Serilog__WriteTo__0__Name=Console
+      - Serilog__MinimumLevel__Default=Debug
+      - ASPNETCORE_URLS=https://+
+      - ASPNETCORE_Environment=Development
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/webapi.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=supersecret
     ports:
-    - "5432:5432"
-  rabbitmq:
-    image: rabbitmq:3-management
-    restart: always
+      - "7214:443"
     volumes:
-    - ./enabled_plugins:/etc/rabbitmq/enabled_plugins
-    ports:
-    - "5672:5672"
-    - "15672:15672"
+      - ./.aspnet/https:/https

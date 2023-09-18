@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Diagnostics;
+using AutoMapper;
 using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
@@ -71,6 +72,6 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
         return saveResult.Match<CreateDialogResult>(
             success => new Success<Guid>(dialog.Id),
             domainError => domainError,
-            concurrencyError => throw new ApplicationException("Should never get a concurrency error when creating a new dialog"));
+            concurrencyError => throw new UnreachableException("Should never get a concurrency error when creating a new dialog"));
     }
 }

@@ -6,20 +6,24 @@
 - [.NET 7 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/7.0)
 - [Docker](https://www.docker.com/products/docker-desktop/)
 
-1. Create a postgres instance in your local docker
-2. Add the connection string to your local secrets
-3. Run the web api through your favorite IDE, or through the CLI
 
+You can run the entire project locally using docker compose.
 ```powershell
-# 1. Create a postgres instance in your local docker
-docker run --name DialogportenLocalPostgreSql -p 5432:5432 -e POSTGRES_PASSWORD=supersecret -e POSTGRES_USER=postgres -d postgres:14.7 -c wal_level=logical
-
-# 2. Add the connection string to your local secrets
-dotnet user-secrets set -p .\src\Digdir.Domain.Dialogporten.WebApi\ "Infrastructure:DialogDbConnectionString" "Server=localhost;Port=5432;Database=Dialogporten;User ID=postgres;Password=supersecret;"
-
-# 3. Run the web api through your favorite IDE, or through the CLI
-dotnet run --project .\src\Digdir.Domain.Dialogporten.WebApi\
+docker compose up
 ```
+
+If you need do debug the WebApi project in an IDE, you can alternatively run docker compose without the WebAPI.  
+First create a dotnet user secret for the DB connection string.
+
+```powerhell
+dotnet user-secrets set -p .\src\Digdir.Domain.Dialogporten.WebApi\ "Infrastructure:DialogDbConnectionString" "Server=localhost;Port=5432;Database=Dialogporten;User ID=postgres;Password=supersecret;"
+```
+
+Then run docker compose without the WebAPI project.
+```powershell
+docker compose -f docker-compose-no-webapi.yaml up 
+```
+
 
 ## DB development
 This project uses Entity Framework core to manage DB migrations. DB development can ether be done through Visual Studios Package Manager Console (PMC), or through the CLI. 

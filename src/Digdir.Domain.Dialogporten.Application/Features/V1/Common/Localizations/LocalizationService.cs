@@ -23,7 +23,7 @@ internal sealed class LocalizationService : ILocalizationService
             sourceKeySelector: x => x.CultureCode,
             create: _mapper.Map<List<Localization>>,
             update: UpdateLocalization,
-            delete: DeleteDelegade.NoOp,
+            delete: DeleteDelegate.NoOp,
             comparer: StringComparer.InvariantCultureIgnoreCase);
 
         if (set.Localizations.Count == 0)

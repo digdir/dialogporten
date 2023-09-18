@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Diagnostics;
+using AutoMapper;
 using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
@@ -53,7 +54,6 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
             .Include(x => x.Body!.Localizations.OrderBy(x => x.CreatedAt).ThenBy(x => x.CultureCode))
             .Include(x => x.Title!.Localizations.OrderBy(x => x.CreatedAt).ThenBy(x => x.CultureCode))
             .Include(x => x.SenderName!.Localizations.OrderBy(x => x.CreatedAt).ThenBy(x => x.CultureCode))
-            .Include(x => x.SearchTitle!.Localizations.OrderBy(x => x.CreatedAt).ThenBy(x => x.CultureCode))
             .Include(x => x.Elements.OrderBy(x => x.CreatedAt).ThenBy(x => x.Id))
                 .ThenInclude(x => x.DisplayName!.Localizations.OrderBy(x => x.CreatedAt).ThenBy(x => x.CultureCode))
             .Include(x => x.Elements.OrderBy(x => x.CreatedAt).ThenBy(x => x.Id))
@@ -97,8 +97,8 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
             .SaveChangesAsync(cancellationToken);
         saveResult.Switch(
             success => { },
-            domainError => throw new ApplicationException("Should not get domain error when updating ReadAt."),
-            concurrencyError => throw new ApplicationException("Should not get concurrencyError when updating ReadAt."));
+            domainError => throw new UnreachableException("Should not get domain error when updating ReadAt."),
+            concurrencyError => throw new UnreachableException("Should not get concurrencyError when updating ReadAt."));
         return modifiableDialog.ReadAt;
     }
 }

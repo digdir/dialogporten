@@ -13,5 +13,7 @@ internal sealed class DialogEntityConfiguration : IEntityTypeConfiguration<Dialo
         builder.Property(x => x.ServiceResource)
             .HasMaxLength(Constants.DefaultMaxStringLength);
         builder.HasIndex(x => x.CreatedAt);
+        builder.HasIndex(x => x.DueAt);
+        builder.HasIndex(x => x.UpdatedAt);
     }
 }

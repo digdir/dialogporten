@@ -24,7 +24,8 @@ internal sealed class UpdateDialogDtoValidator : AbstractValidator<UpdateDialogD
         IValidator<UpdateDialogDialogElementDto> elementValidator,
         IValidator<UpdateDialogDialogGuiActionDto> guiActionValidator,
         IValidator<UpdateDialogDialogApiActionDto> apiActionValidator,
-        IValidator<UpdateDialogDialogActivityDto> activityValidator)
+        IValidator<UpdateDialogDialogActivityDto> activityValidator,
+        IValidator<UpdateDialogSearchTagDto> searchTagValidator)
     {
         RuleFor(x => x.ExtendedStatus)
             .MaximumLength(Constants.DefaultMaxStringLength);
@@ -53,8 +54,10 @@ internal sealed class UpdateDialogDtoValidator : AbstractValidator<UpdateDialogD
             .ContainsValidHttp();
         RuleFor(x => x.SenderName)
             .SetValidator(localizationsValidator);
-        RuleFor(x => x.SearchTitle)
-            .SetValidator(localizationsValidator);
+        RuleForEach(x => x.SearchTags)
+            .SetValidator(searchTagValidator);
+        RuleFor(x => x.SearchTags)
+            .UniqueBy(x => x.Value, StringComparer.InvariantCultureIgnoreCase);
 
         RuleFor(x => x.GuiActions)
             .UniqueBy(x => x.Id);
@@ -128,6 +131,16 @@ internal sealed class UpdateDialogDialogElementUrlDtoValidator : AbstractValidat
             .MaximumLength(Constants.DefaultMaxStringLength);
         RuleFor(x => x.ConsumerType)
             .IsInEnum();
+    }
+}
+
+internal sealed class UpdateDialogSearchTagDtoValidator : AbstractValidator<UpdateDialogSearchTagDto>
+{
+    public UpdateDialogSearchTagDtoValidator()
+    {
+        RuleFor(x => x.Value)
+            .MinimumLength(3)
+            .MaximumLength(Constants.MaxSearchTagLength);
     }
 }
 
