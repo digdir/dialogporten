@@ -23,3 +23,11 @@ internal sealed class DialogElementUrlConfiguration : IEntityTypeConfiguration<D
         builder.HasAggregateParent(x => x.DialogElement);
     }
 }
+
+internal sealed class DialogElementDisplayNameConfiguration : IEntityTypeConfiguration<DialogElementDisplayName>
+{
+    public void Configure(EntityTypeBuilder<DialogElementDisplayName> builder)
+    {
+        builder.HasAggregateParent(x => x.Element);
+    }
+}
