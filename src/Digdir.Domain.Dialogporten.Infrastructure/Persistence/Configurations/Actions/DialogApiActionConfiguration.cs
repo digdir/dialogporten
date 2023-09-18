@@ -1,4 +1,5 @@
 ﻿using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
+using Digdir.Domain.Dialogporten.Infrastructure.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -8,7 +9,9 @@ internal sealed class DialogApiActionConfiguration : IEntityTypeConfiguration<Di
 {
     public void Configure(EntityTypeBuilder<DialogApiAction> builder)
     {
-        builder.HasOne(x => x.DialogElement)
+        builder
+            .HasAggregateParent(x => x.Dialog)
+            .HasOne(x => x.DialogElement)
             .WithMany(x => x.ApiActions)
             .OnDelete(DeleteBehavior.Restrict);
     }

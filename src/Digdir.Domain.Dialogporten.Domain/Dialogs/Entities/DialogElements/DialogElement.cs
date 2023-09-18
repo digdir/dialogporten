@@ -5,7 +5,7 @@ using Digdir.Library.Entity.Abstractions;
 
 namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements;
 
-public class DialogElement : IEntity
+public class DialogElement : IEntity, INotifyChange
 {
     public Guid Id { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
@@ -28,6 +28,27 @@ public class DialogElement : IEntity
     public List<DialogApiAction> ApiActions { get; set; } = new();
     public List<DialogActivity> Activities { get; set; } = new();
     public List<DialogElement> RelatedDialogElements { get; set; } = new();
+    public void Created(object? child, DateTimeOffset utcNow)
+    {
+        // dialog element created domain event
+        // id,
+        // dialogId,
+        // data:
+        //    something: [
+        //      url/123,
+        //      url/456,
+        //    ]
+    }
+
+    public void Updated(object? child, DateTimeOffset utcNow)
+    {
+        // element updated domain event
+    }
+
+    public void Deleted(object? child, DateTimeOffset utcNow)
+    {
+        // dialog element deleted domain event
+    }
 }
 
 public class DialogElementDisplayName : LocalizationSet

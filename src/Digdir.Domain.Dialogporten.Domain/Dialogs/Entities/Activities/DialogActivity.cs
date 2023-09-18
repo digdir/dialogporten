@@ -4,7 +4,7 @@ using Digdir.Library.Entity.Abstractions.Features.Immutable;
 
 namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 
-public class DialogActivity : IImmutableEntity
+public class DialogActivity : IImmutableEntity, INotifyChange
 {
     public Guid Id { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
@@ -30,6 +30,21 @@ public class DialogActivity : IImmutableEntity
 
     // === Principal relationships ===
     public List<DialogActivity> RelatedActivities { get; set; } = new();
+    
+    public void Created(object? child, DateTimeOffset utcNow)
+    {
+        // dialog activity created domain event
+    }
+
+    public void Updated(object? child, DateTimeOffset utcNow)
+    {
+        // can't happen
+    }
+
+    public void Deleted(object? child, DateTimeOffset utcNow)
+    {
+        // can't happen
+    }
 }
 
 public class DialogActivityDescription : LocalizationSet

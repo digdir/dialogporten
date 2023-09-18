@@ -1,4 +1,5 @@
 ﻿using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements;
+using Digdir.Domain.Dialogporten.Infrastructure.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -8,8 +9,17 @@ internal sealed class DialogElementConfiguration : IEntityTypeConfiguration<Dial
 {
     public void Configure(EntityTypeBuilder<DialogElement> builder)
     {
-        builder.HasOne(x => x.RelatedDialogElement)
+        builder.HasAggregateParent(x => x.Dialog)
+            .HasOne(x => x.RelatedDialogElement)
             .WithMany(x => x.RelatedDialogElements)
             .OnDelete(DeleteBehavior.SetNull);
+    }
+}
+
+internal sealed class DialogElementUrlConfiguration : IEntityTypeConfiguration<DialogElementUrl>
+{
+    public void Configure(EntityTypeBuilder<DialogElementUrl> builder)
+    {
+        builder.HasAggregateParent(x => x.DialogElement);
     }
 }

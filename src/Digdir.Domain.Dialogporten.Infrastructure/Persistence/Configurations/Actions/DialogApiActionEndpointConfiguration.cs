@@ -1,4 +1,5 @@
 ﻿using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
+using Digdir.Domain.Dialogporten.Infrastructure.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -8,6 +9,6 @@ internal sealed class DialogApiActionEndpointConfiguration : IEntityTypeConfigur
 {
     public void Configure(EntityTypeBuilder<DialogApiActionEndpoint> builder)
     {
-
+        builder.HasAggregateParent(x => x.Action);
     }
 }

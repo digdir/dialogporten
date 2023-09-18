@@ -1,6 +1,7 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
+using Digdir.Domain.Dialogporten.Infrastructure.Common;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence;
 using Digdir.Library.Entity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -44,6 +45,7 @@ internal sealed class UnitOfWork : IUnitOfWork
         if (_auditableSideEffects)
         {
             _dialogDbContext.ChangeTracker.HandleAuditableEntities(_transactionTime.Value);
+            await _dialogDbContext.ChangeTracker.Something(_transactionTime.Value);
         }
 
         try

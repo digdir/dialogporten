@@ -1,4 +1,5 @@
 ﻿using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
+using Digdir.Domain.Dialogporten.Infrastructure.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -8,6 +9,8 @@ internal sealed class DialogActivityConfiguration : IEntityTypeConfiguration<Dia
 {
     public void Configure(EntityTypeBuilder<DialogActivity> builder)
     {
+        builder.HasAggregateParent(x => x.Dialog);
+            
         builder.HasOne(x => x.RelatedActivity)
             .WithMany(x => x.RelatedActivities)
             .OnDelete(DeleteBehavior.SetNull);
