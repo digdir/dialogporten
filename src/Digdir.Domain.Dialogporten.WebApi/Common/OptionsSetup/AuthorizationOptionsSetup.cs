@@ -21,6 +21,10 @@ internal sealed class AuthorizationOptionsSetup : IConfigureOptions<Authorizatio
             .Select(x => x.Name)
             .ToArray();
 
+        // TODO: Legg på sjekk på consumer claim
+        // Require "authority": "iso6523-actorid-upis",
+        // Require "ID": "0192:*"
+        // Require norsk org nr (mod 11, ligger i app)
         options.DefaultPolicy = new AuthorizationPolicyBuilder()
             .RequireAuthenticatedUser()
             .AddAuthenticationSchemes(authenticatonSchemas)
@@ -29,5 +33,9 @@ internal sealed class AuthorizationOptionsSetup : IConfigureOptions<Authorizatio
         options.AddPolicy(Policy.Serviceprovider, builder => builder
             .Combine(options.DefaultPolicy)
             .RequireScope("digdir:dialogporten.serviceprovider"));
+
+        options.AddPolicy(Policy.ServiceproviderSearch, builder => builder
+            .Combine(options.DefaultPolicy)
+            .RequireScope("digdir:dialogporten.serviceprovider.search"));
     }
 }

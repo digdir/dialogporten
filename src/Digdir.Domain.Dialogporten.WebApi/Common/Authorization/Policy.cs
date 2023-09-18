@@ -3,5 +3,7 @@
 internal static class Policy
 {
     internal const string Serviceprovider = "serviceprovider";
+    internal const string ServiceproviderSearch = "serviceproviderSearch";
+
     internal const string Enduser = "enduser";
 }
