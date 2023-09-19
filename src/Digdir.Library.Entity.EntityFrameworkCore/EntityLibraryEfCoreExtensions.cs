@@ -45,9 +45,9 @@ public static class EntityLibraryEfCoreExtensions
     {
         changeTracker.HandleLookupEntities()
             .HandleIdentifiableEntities()
-            .HandleImmutableEntities();
+            .HandleImmutableEntities()
             //.HandleVersionableEntities()
-            //.HandleCreatableEntities(utcNow)
+            .HandleCreatableEntities(utcNow);
             //.HandleUpdatableEntities(utcNow);
         await changeTracker.HandleAggregateEntities(utcNow, cancellationToken);
         return changeTracker.HandleSoftDeletableEntities(utcNow);

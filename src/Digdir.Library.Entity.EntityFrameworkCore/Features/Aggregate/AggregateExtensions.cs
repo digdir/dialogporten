@@ -81,14 +81,14 @@ public static class AggregateExtensions
         this IEnumerable<EntityEntry> entries,
         CancellationToken cancellationToken)
     {
-        var childrenByParent = new Dictionary<EntityEntry, AggregateNode>(comparer: _entityEntryComparer);
+        var nodeByEntry = new Dictionary<EntityEntry, AggregateNode>(comparer: _entityEntryComparer);
 
         foreach (var entry in entries)
         {
-            await childrenByParent.AddAggregateParentChain(entry, cancellationToken);
+            await nodeByEntry.AddAggregateParentChain(entry, cancellationToken);
         }
 
-        return childrenByParent;
+        return nodeByEntry;
     }
 
     private static async Task AddAggregateParentChain(
