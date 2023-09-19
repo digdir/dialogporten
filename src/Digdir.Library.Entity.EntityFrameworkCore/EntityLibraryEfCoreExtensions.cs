@@ -14,7 +14,7 @@ using Digdir.Library.Entity.Abstractions.Features.Updatable;
 using Digdir.Library.Entity.EntityFrameworkCore.Features.Immutable;
 using Digdir.Library.Entity.EntityFrameworkCore.Features.Versionable;
 using Digdir.Library.Entity.Abstractions.Features.Versionable;
-using Digdir.Domain.Dialogporten.Infrastructure.Common;
+using Digdir.Library.Entity.EntityFrameworkCore.Features.Aggregate;
 
 namespace Digdir.Library.Entity.EntityFrameworkCore;
 

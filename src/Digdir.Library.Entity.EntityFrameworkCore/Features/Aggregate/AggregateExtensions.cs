@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Digdir.Domain.Dialogporten.Infrastructure.Common;
+namespace Digdir.Library.Entity.EntityFrameworkCore.Features.Aggregate;
 
 public static class AggregateExtensions
 {
@@ -17,13 +17,16 @@ public static class AggregateExtensions
 
     public static EntityTypeBuilder<TEntity> HasAggregateParent<TEntity, TProperty>(
         this EntityTypeBuilder<TEntity> entityTypeBuilder,
-        Expression<Func<TEntity, TProperty>> navigationProperty)
+        Expression<Func<TEntity, TProperty>> navigationExpression)
         where TEntity : class
     {
+        var navigationProperty = navigationExpression.GetMemberAccess();
+
         var foreignKey = entityTypeBuilder
             .Metadata
-            .FindNavigation(navigationProperty.GetMemberAccess())
+            .FindNavigation(navigationProperty)
             .ForeignKey;
+
         foreignKey.AddAnnotation(AggregateAnnotationName, null);
 
         return entityTypeBuilder;
@@ -36,7 +39,8 @@ public static class AggregateExtensions
             .Where(x => x.FindAnnotation(AggregateAnnotationName) is not null);
     }
 
-    internal static async Task HandleAggregateEntities(this ChangeTracker changeTracker, DateTimeOffset utcNow, CancellationToken cancellationToken)
+    internal static async Task HandleAggregateEntities(this ChangeTracker changeTracker,
+        DateTimeOffset utcNow, CancellationToken cancellationToken)
     {
         var aggregateNodeByEntry = await changeTracker
             .Entries()
@@ -50,7 +54,7 @@ public static class AggregateExtensions
                 created.Created(aggregateNode, utcNow);
             }
 
-            if (entry.Entity is INotifyAggregateUpdated updated && 
+            if (entry.Entity is INotifyAggregateUpdated updated &&
                 entry.State is EntityState.Modified or EntityState.Unchanged)
             {
                 updated.Updated(aggregateNode, utcNow);
@@ -72,13 +76,13 @@ public static class AggregateExtensions
             }
         }
     }
-    
+
     private static async Task<IReadOnlyDictionary<EntityEntry, AggregateNode>> GetAggregateNodeByEntry(
-        this IEnumerable<EntityEntry> entries, 
+        this IEnumerable<EntityEntry> entries,
         CancellationToken cancellationToken)
     {
-        var childrenByParent = new Dictionary<EntityEntry, HashSet<EntityEntry>> (comparer: _entityEntryComparer);
-        
+        var childrenByParent = new Dictionary<EntityEntry, HashSet<EntityEntry>>(comparer: _entityEntryComparer);
+
         foreach (var entry in entries)
         {
             await childrenByParent.AddAggregateParentChain(entry, cancellationToken);
@@ -100,7 +104,7 @@ public static class AggregateExtensions
         foreach (var parentForeignKey in entry.Metadata.FindAggregateParents())
         {
             // Supports only dependent to principal. That is - one-to-one and one-to-many
-            // relationships. Many-to-many relationships is not supportet.
+            // relationships. Many-to-many relationships is not supported.
             var parentType = parentForeignKey.PrincipalEntityType.ClrType;
 
             var parentPrimaryKey = parentForeignKey
@@ -113,7 +117,8 @@ public static class AggregateExtensions
                 continue;
             }
 
-            var parentEntity = await entry.Context.FindAsync(parentType, parentPrimaryKey, cancellationToken: cancellationToken);
+            var parentEntity =
+                await entry.Context.FindAsync(parentType, parentPrimaryKey, cancellationToken: cancellationToken);
 
             if (parentEntity is null)
             {
@@ -149,13 +154,13 @@ public static class AggregateExtensions
         {
             childrenByParent[entry] = new HashSet<EntityEntry>(comparer: _entityEntryComparer);
         }
-        
+
         foreach (var parentForeignKey in entry.Metadata.FindAggregateParents())
         {
             // Supports only dependent to principal. That is - one-to-one and one-to-many
-            // relationships. Many-to-many relationships is not supportet.
+            // relationships. Many-to-many relationships is not supported.
             var parentType = parentForeignKey.PrincipalEntityType.ClrType;
-            
+
             var parentPrimaryKey = parentForeignKey
                 .Properties
                 .Select(key => entry.OriginalValues[key.Name])
@@ -166,7 +171,8 @@ public static class AggregateExtensions
                 continue;
             }
 
-            var parentEntity = await entry.Context.FindAsync(parentType, parentPrimaryKey, cancellationToken: cancellationToken);
+            var parentEntity =
+                await entry.Context.FindAsync(parentType, parentPrimaryKey, cancellationToken: cancellationToken);
 
             if (parentEntity is null)
             {
@@ -184,11 +190,11 @@ public static class AggregateExtensions
                 children.Add(entry);
                 continue;
             }
-            
+
             // The parent is unknown to the dictionary, so we add it
             // with the current entry as a child and traverse its
             // parent chain.
-            childrenByParent[parentEntry] = new HashSet<EntityEntry>(new[]{ entry }, comparer: _entityEntryComparer);
+            childrenByParent[parentEntry] = new HashSet<EntityEntry>(new[] {entry}, comparer: _entityEntryComparer);
             await childrenByParent.AddAggregateParentChain(parentEntry, cancellationToken);
         }
     }
