@@ -1,14 +1,16 @@
 ﻿using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Events;
 using Digdir.Domain.Dialogporten.Domain.Localizations;
 using Digdir.Library.Entity.Abstractions;
+using Digdir.Library.Entity.Abstractions.Features.EventPublisher;
 using Digdir.Library.Entity.Abstractions.Features.SoftDeletable;
 using Digdir.Library.Entity.Abstractions.Features.Versionable;
 
 namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 
-public class DialogEntity : IEntity, ISoftDeletableEntity, IVersionableEntity
+public class DialogEntity : IEntity, ISoftDeletableEntity, IVersionableEntity, INotifyAggregateChange, IEventPublisher
 {
     public Guid Id { get; set; }
     public Guid ETag { get; set; }
@@ -44,6 +46,37 @@ public class DialogEntity : IEntity, ISoftDeletableEntity, IVersionableEntity
     public List<DialogGuiAction> GuiActions { get; set; } = new();
     public List<DialogApiAction> ApiActions { get; set; } = new();
     public List<DialogActivity> Activities { get; set; } = new();
+    
+    public void OnCreate(AggregateNode self, DateTimeOffset utcNow)
+    {
+        _domainEvents.Add(new DialogCreatedDomainEvent(Id));
+        // TODO: Ignore Elements etc.
+    }
+
+    public void OnUpdate(AggregateNode self, DateTimeOffset utcNow)
+    {
+        _domainEvents.Add(new DialogUpdatedDomainEvent(Id));
+        // TODO: Ignore Elements etc.
+    }
+
+    public void OnDelete(AggregateNode self, DateTimeOffset utcNow)
+    {
+        _domainEvents.Add(new DialogDeletedDomainEvent(Id, ServiceResource.ToString(), Party));
+    }
+    
+    public void UpdateReadAt(DateTimeOffset timestamp)
+    {
+        if ((ReadAt ?? DateTimeOffset.MinValue) >= UpdatedAt)
+        {
+            return;
+        }
+        
+        ReadAt = timestamp;
+        _domainEvents.Add(new DialogReadDomainEvent(Id));
+    }
+
+    private readonly List<IDomainEvent> _domainEvents = new();
+    public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents;
 }
 
 public class DialogBody : LocalizationSet

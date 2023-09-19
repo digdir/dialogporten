@@ -18,7 +18,8 @@ public static class AggregateExtensions
     public static EntityTypeBuilder<TEntity> HasAggregateParent<TEntity, TProperty>(
         this EntityTypeBuilder<TEntity> entityTypeBuilder,
         Expression<Func<TEntity, TProperty>> navigationExpression)
-        where TEntity : class
+        where TEntity : class 
+        where TProperty : class
     {
         var navigationProperty = navigationExpression.GetMemberAccess();
 
@@ -51,18 +52,18 @@ public static class AggregateExtensions
         {
             if (entry.Entity is INotifyAggregateCreated created && entry.State is EntityState.Added)
             {
-                created.Created(aggregateNode, utcNow);
+                created.OnCreate(aggregateNode, utcNow);
             }
 
             if (entry.Entity is INotifyAggregateUpdated updated &&
                 entry.State is EntityState.Modified or EntityState.Unchanged)
             {
-                updated.Updated(aggregateNode, utcNow);
+                updated.OnUpdate(aggregateNode, utcNow);
             }
 
             if (entry.Entity is INotifyAggregateDeleted deleted && entry.State is EntityState.Deleted)
             {
-                deleted.Deleted(aggregateNode, utcNow);
+                deleted.OnDelete(aggregateNode, utcNow);
             }
 
             if (entry.Entity is IUpdateableEntity updatable)

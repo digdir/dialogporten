@@ -8,15 +8,15 @@ public interface INotifyAggregateChange :
 
 public interface INotifyAggregateCreated
 {
-    void Created(AggregateNode self, DateTimeOffset utcNow);
+    void OnCreate(AggregateNode self, DateTimeOffset utcNow);
 }
 
 public interface INotifyAggregateUpdated
 {
-    void Updated(AggregateNode self, DateTimeOffset utcNow);
+    void OnUpdate(AggregateNode self, DateTimeOffset utcNow);
 }
 
 public interface INotifyAggregateDeleted
 {
-    void Deleted(AggregateNode self, DateTimeOffset utcNow);
+    void OnDelete(AggregateNode self, DateTimeOffset utcNow);
 }

@@ -1,6 +1,6 @@
 namespace Digdir.Library.Entity.Abstractions.Features.EventPublisher;
 
-public class IEventPublisher
+public interface IEventPublisher
 {
     public IReadOnlyCollection<IDomainEvent> DomainEvents { get; }
 }
