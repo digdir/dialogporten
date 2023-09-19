@@ -8,7 +8,7 @@ using Digdir.Library.Entity.Abstractions.Features.Versionable;
 
 namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 
-public class DialogEntity : IEntity, ISoftDeletableEntity, IVersionableEntity, INotifyChange
+public class DialogEntity : IEntity, ISoftDeletableEntity, IVersionableEntity
 {
     public Guid Id { get; set; }
     public Guid ETag { get; set; }
@@ -44,26 +44,6 @@ public class DialogEntity : IEntity, ISoftDeletableEntity, IVersionableEntity, I
     public List<DialogGuiAction> GuiActions { get; set; } = new();
     public List<DialogApiAction> ApiActions { get; set; } = new();
     public List<DialogActivity> Activities { get; set; } = new();
-    
-    public void Created(object? child, DateTimeOffset utcNow)
-    {
-        // dialog created domain event
-    }
-
-    public void Updated(object? child, DateTimeOffset utcNow)
-    {
-        // if child is dialogelement or dialogactivity
-        // return 
-
-        if (child is DialogElement or DialogActivity) return;
-        // dialog updated domain event
-        // several apiactions and guiactions
-    }
-
-    void INotifyChange.Deleted(object? child, DateTimeOffset utcNow)
-    {
-        // dialog deleted domain event
-    }
 }
 
 public class DialogBody : LocalizationSet
