@@ -126,23 +126,14 @@ public static class AggregateExtensions
             }
 
             var parentEntry = entry.Context.Entry(parentEntity);
-
-            // If the parent is known to the dictionary, then we have
-            // already traversed its parent chain from a previous
-            // child. We need not traverse it again. Add the current
-            // entry as a child and continue.
-            if (nodeByEntry.TryGetValue(parentEntry, out var parentNode))
+        
+            if (!nodeByEntry.TryGetValue(parentEntry, out var parentNode))
             {
-                parentNode.AddChild(nodeByEntry[entry]);
-                continue;
+                nodeByEntry[parentEntry] = parentNode = new AggregateNode(parentEntry.Entity);
+                await nodeByEntry.AddAggregateParentChain(parentEntry, cancellationToken);
             }
 
-            // The parent is unknown to the dictionary, so we add it
-            // with the current entry as a child and traverse its
-            // parent chain.
-            nodeByEntry[parentEntry] = new AggregateNode(parentEntry.Entity);
-            nodeByEntry[parentEntry].AddChild(nodeByEntry[entry]);
-            await nodeByEntry.AddAggregateParentChain(parentEntry, cancellationToken);
+            parentNode.AddChild(nodeByEntry[entry]);
         }
     }
 
