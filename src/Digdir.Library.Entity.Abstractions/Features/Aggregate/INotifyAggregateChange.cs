@@ -1,4 +1,4 @@
-namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
+namespace Digdir.Library.Entity.Abstractions.Features.Aggregate;
 
 public interface INotifyAggregateChange :
     INotifyAggregateCreated,

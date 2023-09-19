@@ -1,5 +1,5 @@
 ﻿using System.Linq.Expressions;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
+using Digdir.Library.Entity.Abstractions.Features.Aggregate;
 using Digdir.Library.Entity.Abstractions.Features.Updatable;
 using Digdir.Library.Entity.Abstractions.Features.Versionable;
 using Microsoft.EntityFrameworkCore;
