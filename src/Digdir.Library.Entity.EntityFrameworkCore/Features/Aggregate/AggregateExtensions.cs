@@ -87,6 +87,59 @@ public static class AggregateExtensions
         return childrenByParent.ToAggregateNodeByEntry();
     }
 
+    private static async Task AddAggregateParentChain2(
+        this Dictionary<EntityEntry, AggregateNode> childrenByParent,
+        EntityEntry entry,
+        CancellationToken cancellationToken)
+    {
+        if (!childrenByParent.ContainsKey(entry))
+        {
+            childrenByParent[entry] = new AggregateNode(entry.Entity);
+        }
+
+        foreach (var parentForeignKey in entry.Metadata.FindAggregateParents())
+        {
+            // Supports only dependent to principal. That is - one-to-one and one-to-many
+            // relationships. Many-to-many relationships is not supportet.
+            var parentType = parentForeignKey.PrincipalEntityType.ClrType;
+
+            var parentPrimaryKey = parentForeignKey
+                .Properties
+                .Select(key => entry.OriginalValues[key.Name])
+                .ToArray();
+
+            if (parentPrimaryKey.All(x => x is null))
+            {
+                continue;
+            }
+
+            var parentEntity = await entry.Context.FindAsync(parentType, parentPrimaryKey, cancellationToken: cancellationToken);
+
+            if (parentEntity is null)
+            {
+                continue;
+            }
+
+            var parentEntry = entry.Context.Entry(parentEntity);
+
+            // If the parent is known to the dictionary, then we have
+            // already traversed its parent chain from a previous
+            // child. We need not traverse it again. Add the current
+            // entry as a child and continue.
+            if (childrenByParent.TryGetValue(parentEntry, out var children))
+            {
+                children.AddChild(new AggregateNode(entry.Entity));
+                continue;
+            }
+
+            // The parent is unknown to the dictionary, so we add it
+            // with the current entry as a child and traverse its
+            // parent chain.
+            childrenByParent[parentEntry] = new AggregateNode(parentEntry.Entity);
+            await childrenByParent.AddAggregateParentChain2(parentEntry, cancellationToken);
+        }
+    }
+
     private static async Task AddAggregateParentChain(
         this Dictionary<EntityEntry, HashSet<EntityEntry>> childrenByParent,
         EntityEntry entry,
