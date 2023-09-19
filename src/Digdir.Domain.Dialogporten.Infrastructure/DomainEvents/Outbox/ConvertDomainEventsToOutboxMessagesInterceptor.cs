@@ -28,6 +28,8 @@ internal sealed class ConvertDomainEventsToOutboxMessagesInterceptor : SaveChang
         }
 
         var domainEvents = _eventPublisher.PopDomainEvents();
+        // hent alle de andre eventsa 
+        
         foreach (var domainEvent in domainEvents)
         {
             domainEvent.OccuredAt = _transactionTime.Value;

@@ -1,4 +1,4 @@
-﻿using Digdir.Domain.Dialogporten.Domain.Common;
+﻿using Digdir.Library.Entity.Abstractions.Features.EventPublisher;
 
 namespace Digdir.Domain.Dialogporten.Application.Externals;
 

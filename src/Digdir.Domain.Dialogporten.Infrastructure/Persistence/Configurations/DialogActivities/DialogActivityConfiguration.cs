@@ -1,5 +1,4 @@
 ﻿using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
-using Digdir.Domain.Dialogporten.Infrastructure.Common;
 using Digdir.Library.Entity.EntityFrameworkCore.Features.Aggregate;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;

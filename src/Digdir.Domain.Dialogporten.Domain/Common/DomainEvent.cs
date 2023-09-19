@@ -1,13 +1,9 @@
-﻿using MediatR;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
+using Digdir.Library.Entity.Abstractions.Features.EventPublisher;
 
 namespace Digdir.Domain.Dialogporten.Domain.Common;
 
-public interface IDomainEvent : INotification
-{
-    Guid EventId { get; }
-    DateTimeOffset OccuredAt { get; set; } 
-}
+
 
 public abstract record DomainEvent : IDomainEvent
 {

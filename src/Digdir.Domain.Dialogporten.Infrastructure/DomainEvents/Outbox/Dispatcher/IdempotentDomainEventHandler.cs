@@ -1,6 +1,6 @@
-﻿using Digdir.Domain.Dialogporten.Domain.Common;
-using Digdir.Domain.Dialogporten.Domain.Outboxes;
+﻿using Digdir.Domain.Dialogporten.Domain.Outboxes;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence;
+using Digdir.Library.Entity.Abstractions.Features.EventPublisher;
 using MediatR;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.DomainEvents.Outbox.Dispatcher;
