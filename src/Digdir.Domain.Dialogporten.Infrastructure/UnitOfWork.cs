@@ -44,7 +44,7 @@ internal sealed class UnitOfWork : IUnitOfWork
 
         if (_auditableSideEffects)
         {
-            await _dialogDbContext.ChangeTracker.HandleAuditableEntities(_transactionTime.Value);
+            await _dialogDbContext.ChangeTracker.HandleAuditableEntities(_transactionTime.Value, cancellationToken);
         }
 
         try

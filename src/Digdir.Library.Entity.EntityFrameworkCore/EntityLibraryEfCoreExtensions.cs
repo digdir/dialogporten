@@ -41,7 +41,7 @@ public static class EntityLibraryEfCoreExtensions
     /// <param name="changeTracker">The change tracker.</param>
     /// <param name="utcNow">The time in UTC in which the changes tok place.</param>
     /// <returns>The same <see cref="ChangeTracker"/> instance so that multiple calls can be chained.</returns>
-    public static async Task<ChangeTracker> HandleAuditableEntities(this ChangeTracker changeTracker, DateTimeOffset utcNow)
+    public static async Task<ChangeTracker> HandleAuditableEntities(this ChangeTracker changeTracker, DateTimeOffset utcNow, CancellationToken cancellationToken = default)
     {
         changeTracker.HandleLookupEntities()
             .HandleIdentifiableEntities()
@@ -49,7 +49,7 @@ public static class EntityLibraryEfCoreExtensions
             //.HandleVersionableEntities()
             //.HandleCreatableEntities(utcNow)
             //.HandleUpdatableEntities(utcNow);
-        await changeTracker.HandleAggregateEntities(utcNow);
+        await changeTracker.HandleAggregateEntities(utcNow, cancellationToken);
         return changeTracker.HandleSoftDeletableEntities(utcNow);
     }
 
