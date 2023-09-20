@@ -72,7 +72,7 @@ public static class AggregateExtensions
     {
         if (!nodeByEntry.ContainsKey(entry))
         {
-            nodeByEntry[entry] = new AggregateNode(entry.Entity);
+            nodeByEntry[entry] = AggregateNode.Create(entry.Entity);
         }
 
         foreach (var parentForeignKey in entry.Metadata.FindAggregateParents())
@@ -107,7 +107,7 @@ public static class AggregateExtensions
 
             if (!nodeByEntry.TryGetValue(parentEntry, out var parentNode))
             {
-                nodeByEntry[parentEntry] = parentNode = new AggregateNode(parentEntry.Entity);
+                nodeByEntry[parentEntry] = parentNode = AggregateNode.Create(parentEntry.Entity);
                 await nodeByEntry.AddAggregateParentChain(parentEntry, cancellationToken);
             }
 
