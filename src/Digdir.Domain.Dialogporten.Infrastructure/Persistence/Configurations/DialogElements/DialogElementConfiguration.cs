@@ -9,7 +9,8 @@ internal sealed class DialogElementConfiguration : IEntityTypeConfiguration<Dial
 {
     public void Configure(EntityTypeBuilder<DialogElement> builder)
     {
-        builder.HasAggregateParent(x => x.Dialog)
+        builder
+            // .HasAggregateParent(x => x.Dialog)
             .HasOne(x => x.RelatedDialogElement)
             .WithMany(x => x.RelatedDialogElements)
             .OnDelete(DeleteBehavior.SetNull);

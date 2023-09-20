@@ -15,6 +15,8 @@ public static class AggregateExtensions
     private static readonly EntityEntryComparer _entityEntryComparer = new();
     private const string AggregateAnnotationName = "DddAggregateParent";
 
+    
+    
     public static EntityTypeBuilder<TEntity> HasAggregateParent<TEntity, TProperty>(
         this EntityTypeBuilder<TEntity> entityTypeBuilder,
         Expression<Func<TEntity, TProperty>> navigationExpression)
@@ -35,9 +37,10 @@ public static class AggregateExtensions
 
     private static IEnumerable<IForeignKey> FindAggregateParents(this IEntityType entityType)
     {
-        return entityType
-            .GetForeignKeys()
-            .Where(x => x.FindAnnotation(AggregateAnnotationName) is not null);
+        var fks = entityType
+            .GetForeignKeys();
+            
+            return fks.Where(x => x.FindAnnotation(AggregateAnnotationName) is not null);
     }
 
     internal static async Task HandleAggregateEntities(this ChangeTracker changeTracker,

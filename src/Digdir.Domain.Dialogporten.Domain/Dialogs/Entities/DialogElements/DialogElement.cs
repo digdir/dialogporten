@@ -2,6 +2,7 @@
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Localizations;
 using Digdir.Library.Entity.Abstractions;
+using Digdir.Library.Entity.Abstractions.Features.Aggregate;
 
 namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements;
 
@@ -16,6 +17,8 @@ public class DialogElement : IEntity
 
     // === Dependent relationships ===
     public Guid DialogId { get; set; }
+    
+    [AggregateParent]
     public DialogEntity Dialog { get; set; } = null!;
 
     public DialogElementDisplayName? DisplayName { get; set; }
