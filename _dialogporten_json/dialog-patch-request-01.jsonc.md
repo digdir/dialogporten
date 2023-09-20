@@ -4,10 +4,11 @@
 // Input modell som tjenesteeiere oppgir for å endre/oppdatere en dialog.
 
 // I dette eksemplet er det en dialogtjeneste hvor det å "sende inn" er en egen handling, som typisk ikke er 
-// tilgjengelig før alt er fylt ut, validert og signert. "Send inn" blir satt til primærhandlingen i GUI. Her oppgis det 
-// til å skal være en POST i frontchannel (default for frontchannel er GET) siden det å klikke på knappen medfører 
-// tilstandsendring.  Bruker blir da sendt til en eller annen kvitteringsside hos tjenesteeier, som da også har satt 
-// dialogen som "completed" via et bakkanal-kall
+// tilgjengelig før alt er fylt ut, validert og signert. "Send inn" blir satt til primærhandlingen i GUI. 
+// POST vil ikke kunne realiseres i framkanal (pga SSO og samesite-problematikk for cookies), så 
+// tjenesteeieren må vurdere om man ønsker at dette GET-kallet skal medføre en tilstandsendring direkte, 
+// eller om brukeren må bekrefte dette etter omdiriggering. Til slutt blir da brukeren sendt til en eller 
+// annen kvitteringsside hos tjenesteeier, som da også har satt dialogen som "completed" via et bakkanal-kall
 
 // PATCH /dialogporten/api/v1/serviceowner/dialogs/e0300961-85fb-4ef2-abff-681d77f9960e
 {
@@ -17,8 +18,7 @@
                 "action": "send",
                 "priority": "primary",
                 "title": [ { "code": "nb_NO", "value": "Send inn" } ],
-                "url": "https://example.com/some/deep/link/to/dialogs/123456789/send",
-                "httpMethod": "POST"
+                "url": "https://example.com/some/deep/link/to/dialogs/123456789/send"
             },
             { 
                 "action": "open", 

@@ -136,8 +136,9 @@
                 "priority": "tertiary",
                 "title": [ { "code": "nb_NO", "value": "Avbryt" } ],
 
-                "isBackChannel": true, 
-                "yesNoPrompt": [ { "code": "nb_NO", "value": "Bekreft mottatt" } ],
+                // Impliserer IsBackChannel: true. Vil gjøre det mulig for arbeidsflate å umiddelbart fjerne dialogen fra visning
+                "isDeleteAction": true, 
+                "yesNoPrompt": [ { "code": "nb_NO", "value": "Vil du avbryte? Dette innebærer blablabla" } ],
 
                 // Blir kalt med DELETE i bakkanal. Må returnere 204 eller en RFC7807-kompatibel feilmelding.
                 "url": "https://example.com/some/deep/link/to/dialogs/123456789" 

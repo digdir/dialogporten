@@ -6,11 +6,9 @@ layout: page
 topmenu: false
 ---
 
-Versjon 0.9 - Bjørn Dybvik Langfors, sist endret: {{ page.last_modified_at  | date: '%d. %b %Y, kl. %H:%M:%S' }} [(se git-historikk)](https://github.com/digdir/dialogporten/commits/docs/index.md)
+Versjon 0.91 - Bjørn Dybvik Langfors, sist endret: {{ page.last_modified_at  | date: '%d. %b %Y, kl. %H:%M:%S' }} [(se git-historikk)](https://github.com/digdir/dialogporten/commits/docs/index.md)
 
 # Introduksjon
-
-{% include note.html type="warning" content="Dette er under arbeid, og alt som står i dette dokumentet må anses som foreløpig og gjenstand for endring. Formålet med dokumentet er primært å skissere et konsept, ikke nødvendigvis detaljere en løsning (selv om teksten til tider er forholdsvis detaljert)." %}
 
 I dette dokumentet beskrives et konsept for hvordan tjenester, som i denne konteksten er begrenset til dialog- og meldingstjenester, kan nyttiggjøre seg av fellesfunksjonalitet i økosystemet av Altinn-produkter, herunder dagens "innboks", sluttbrukers arkiv, autorisasjon, varsling og hendelser uten at det innebærer behov for å benytte seg av Altinns utviklingsmiljøer eller applikasjonskjøretidsmiljø. Alle interaksjoner mellom tjenestetilbydere og denne løsningen foregår via API-er, og det legges opp til stor fleksibilitet i hvorvidt løsningen involveres og det legges ingen begrensninger på hvordan forretningslogikken eller ulike brukerflater hos tjenestetilbyder realiseres.
 
@@ -93,7 +91,7 @@ Med _spesialisert dialog_, refereres det til en konkret dialog (f.eks. innsendin
 
 ## Dialogelement
 
-Dialogelementer utgjør distinkte bestanddeler av en dialog og kan brukes i komplekse dialoger hvor det kan være hensiktsmessig for sluttbrukere og systemer å forholde seg til enkelte deler av dialogen i tillegg til dialogen som helhet. Dette kan være meldinger og pre-utfylte skjemaer fra tjenestetilbyder, innsendte skjemaer fra parten, kvitteringer, strukturerte feilmeldinger, rapporter, ustrukturerte vedlegg til meldinger etc. som utgjør en del av den totale dialogen. Dialogelementer blir typisk referert av innslag i activityHistory. Handlinger kan også referere et enkelt dialogelement. 
+Dialogelementer utgjør distinkte bestanddeler av en dialog og kan brukes i komplekse dialoger hvor det kan være hensiktsmessig for sluttbrukere og systemer å forholde seg til enkelte deler av dialogen i tillegg til dialogen som helhet. Dette kan være meldinger og pre-utfylte skjemaer fra tjenestetilbyder, innsendte skjemaer fra parten, kvitteringer, strukturerte feilmeldinger, rapporter, ustrukturerte vedlegg til meldinger etc. som utgjør en del av den totale dialogen. Dialogelementer blir typisk referert av innslag i activityHistory. API-handlinger kan også referere et enkelt dialogelement. 
 
 ## Dialoggruppe (DG)
 
@@ -115,15 +113,19 @@ En handling er enten en _«GUI»-handling_ eller en _«API»-handling_. Alle han
 
 ### GUI-handlinger
 
-GUI-handlinger gjøres synlige for brukeren i form av knapper, lenker eller lignende. Tjenestetilbyderen oppgir selv om en gitt handling er å regne som en primær-, sekundær eller tertiær-handling, noe som påvirker hvordan dette presenteres til brukeren. En primærhandling vil typisk presenteres som en fremhevet knapp («call to action»), og benyttes for det som er det logiske neste steget. En sekundærhandling (f.eks. «Avbryt») kan være en mer nedtonet knapp, eller tekstlenker, mens en tertiærhandling (f.eks. «Les mer om denne tjenesten») kan gjemmes bak en nedtrekksmeny eller lignende. Alt dette vil være opp til det aktuelle GUI-et som benyttes å vurdere, og ulike vurderinger vil kunne gjøres avhengig av "view" - altså kontekst, tenkt brukergruppe m.m.
+GUI-handlinger gjøres synlige for brukeren i form av knapper, lenker eller lignende. Tjenestetilbyderen oppgir selv om en gitt handling er å regne som en primær-, sekundær eller tertiær-handling, noe som påvirker hvordan dette presenteres til brukeren. En primærhandling vil typisk presenteres som en fremhevet knapp («call to action»), og benyttes for det som er det logiske neste steget. En sekundærhandling (f.eks. «Avbryt») kan være en mer nedtonet knapp, eller tekstlenker, mens en tertiærhandling (f.eks. «Les mer om denne tjenesten») kan gjemmes bak en nedtrekksmeny eller lignende. Alt dette vil være opp til det aktuelle GUI-et som benyttes å vurdere, og ulike vurderinger vil kunne gjøres avhengig av "view" - altså kontekst, tenkt brukergruppe m.m. Det vil være begrensninger på hvor mange GUI-handlinger som kan defineres av de ulike typene.
 
-Alle GUI-handlinger har en URL. Disse URLene blir kalt i det brukeren aktiverer den aktuelle handlingen. Typisk innebærer dette at brukeren blir omdirigert til etatens egen brukerflate hvor den aktuelle handlingen da utføres, enten automatisk eller gjennom videre brukerinteraksjon. Andre handlinger kan markeres at de skal utføres gjennom bakkanal-kall. Brukeren blir da ikke omdirigert, men Dialogporten vil da foreta en forespørsel på vegne av brukeren til den oppgitte URL-en. Tjenestetilbyderen returnerer da den oppdaterte dialogen, som umiddelbart blir vist brukeren igjen. Ved feil (enten av tekniske eller forretningslogiske årsaker) kan en feilmelding vises.
+Alle GUI-handlinger har en URL. Disse URLene brukes i framkanal når brukeren aktiverer den aktuelle handlingen, og innebærer at brukeren blir omdirigert til etatens egen brukerflate hvor den aktuelle handlingen da utføres, enten automatisk eller gjennom videre brukerinteraksjon. Denne omdirigeringen skjer alltid med en GET, som sikrer at eventuelle sesjoner som allerede eksisterer hos tjenestetilbyder blir benyttet (altså at nettlesere vil sende sesjonscookies), eller at omdirigering via SSO-innlogging i ID-porten fungerer. Disse URL-ene må altså returnere enten omdirigeringer eller HTML, og siden det er GET anbefales det ikke at disse handlingene direkte medfører tilstandsendringer.
+
+{% include note.html type="warning" content="GUI-handlinger i bakkanal er ikke ferdig utarbeidet." %}
+
+GUI-handlinger kan imidlertid markeres at de skal utføres gjennom bakkanal-kall, og kan da også brukes for å gjennomføre tilstandsendringer. Brukeren blir da ikke omdirigert, men Dialogporten vil da foreta en (tom) forespørsel på vegne av brukeren til den oppgitte URL-en. Tjenestetilbyderen returnerer da den oppdaterte dialogen, som umiddelbart blir vist brukeren igjen. Ved feil (enten av tekniske eller forretningslogiske årsaker) kan en feilmelding vises.
 
 Det er kun én GUI-handling som Dialogporten knytter semantikk til; slett. Denne fungerer som andre handlinger, men vil alltid innebære et bakkanal-kall, som hvis vellykket, fører til at dialogen blir markert som slettet i Dialogporten, og da typisk flyttes til en "papirkurv" eller lignende. Felles Arbeidsflate vil også kunne knytte ekstra UI-logikk til disse handlingene (f.eks. vise en «Er du sikker?» dialog i forkant).
 
 ### API-handling
 
-En API-handling er tiltenkt SBS-er og portaler som benytter Dialogporten gjennom en egen integrasjon. API-handlinger er versjonerte, og inneholder en liste med endepunkter som kan benyttes, evt. med informasjon om et endepunkt er under utfasing og når dette vil skje. Hver handling inneholder også en identifikator som indikerer hva slags type handling det er snakk om, og hvert endepunkt indikerer hvilken URL som må kalles for å utføre handlingen. Endepunktet inneholder også informasjon om hvilken HTTP-operasjon som skal benyttes (typisk GET eller POST), og valgfritt en lenke til en strukturert beskrivelse (JSON Schema) av datamodellen som enten returneres eller forventes som input, som kan brukes for dokumentasjonsformål.
+En API-handling er tiltenkt SBS-er og portaler som benytter Dialogporten gjennom en egen integrasjon, og gjør det mulig å definere handlinger som medfører tilstandsendringer og som tar kompleks input som ikke direkte kan gjennomføres med en nettleser pga. sikkerhetsmekanismer i disse. API-handlinger er versjonerte, og inneholder en liste med endepunkter som kan kalles, evt. med informasjon om et endepunkt er under utfasing og når dette vil skje. Hver handling inneholder også en identifikator som indikerer hva slags type handling det er snakk om, og hvert endepunkt indikerer hvilken URL som må kalles for å utføre handlingen. Endepunktet inneholder også informasjon om hvilken HTTP-operasjon som skal benyttes (typisk GET eller POST), og valgfritt en lenke til en strukturert beskrivelse (JSON Schema) av datamodellen som enten returneres eller forventes som input, som kan brukes for dokumentasjonsformål.
 
 {% include note.html type="info" content="Dialogporten foretar ikke validering av noe data, og ser ikke hvilke data som flyter mellom SBS-et og tjenestetilbyderens API." %}
 
