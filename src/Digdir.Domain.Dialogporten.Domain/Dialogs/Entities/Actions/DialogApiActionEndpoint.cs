@@ -1,6 +1,5 @@
 ﻿using Digdir.Domain.Dialogporten.Domain.Http;
 using Digdir.Library.Entity.Abstractions;
-using Digdir.Library.Entity.Abstractions.Features.Aggregate;
 
 namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 
@@ -22,7 +21,6 @@ public class DialogApiActionEndpoint : IEntity
     public HttpVerb.Enum HttpMethodId { get; set; }
     public HttpVerb HttpMethod { get; set; } = null!;
 
-    [AggregateParent]
-    public DialogApiAction Action { get; set; } = null!;
     public Guid ActionId { get; set; }
+    public DialogApiAction Action { get; set; } = null!;
 }

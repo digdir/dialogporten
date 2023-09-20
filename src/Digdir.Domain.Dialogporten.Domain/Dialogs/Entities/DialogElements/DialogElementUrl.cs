@@ -1,5 +1,4 @@
 ﻿using Digdir.Library.Entity.Abstractions;
-using Digdir.Library.Entity.Abstractions.Features.Aggregate;
 
 namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements;
 
@@ -16,7 +15,6 @@ public class DialogElementUrl : IEntity
     public DialogElementUrlConsumerType.Enum ConsumerTypeId { get; set; }
     public DialogElementUrlConsumerType ConsumerType { get; set; } = null!;
 
-    [AggregateParent]
-    public DialogElement DialogElement { get; set; } = null!;
     public Guid DialogElementId { get; set; }
+    public DialogElement DialogElement { get; set; } = null!;
 }

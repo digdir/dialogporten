@@ -14,13 +14,13 @@ public class DialogApiAction : IEntity
     public string? AuthorizationAttribute { get; set; }
 
     // === Dependent relationships ===
-    [AggregateParent]
-    public DialogEntity Dialog { get; set; } = null!;
     public Guid DialogId { get; set; }
+    public DialogEntity Dialog { get; set; } = null!;
 
-    public DialogElement? DialogElement { get; set; }
     public Guid? DialogElementId { get; set; }
+    public DialogElement? DialogElement { get; set; }
 
     // === Principal relationships ===
+    [AggregateChild]
     public List<DialogApiActionEndpoint> Endpoints { get; set; } = new();
 }

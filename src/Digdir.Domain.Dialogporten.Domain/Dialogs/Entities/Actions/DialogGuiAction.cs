@@ -20,16 +20,16 @@ public class DialogGuiAction : IEntity
     public DialogGuiActionPriority.Enum PriorityId { get; set; }
     public DialogGuiActionPriority Priority { get; set; } = null!;
 
-    public DialogGuiActionTitle? Title { get; set; }
-
-    [AggregateParent]
-    public DialogEntity Dialog { get; set; } = null!;
     public Guid DialogId { get; set; }
+    public DialogEntity Dialog { get; set; } = null!;
+
+    // === Principal relationships ===
+    [AggregateChild]
+    public DialogGuiActionTitle? Title { get; set; }
 }
 
 public class DialogGuiActionTitle : LocalizationSet
 {
-    [AggregateParent]
-    public DialogGuiAction GuiAction { get; set; } = null!;
     public Guid GuiActionId { get; set; }
+    public DialogGuiAction GuiAction { get; set; } = null!;
 }

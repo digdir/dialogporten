@@ -18,13 +18,8 @@ public class DialogActivity : IImmutableEntity, INotifyAggregateCreated, IEventP
     public DialogActivityType.Enum TypeId { get; set; }
     public DialogActivityType Type { get; set; } = null!;
 
-    public DialogActivityDescription? Description { get; set; }
-
-    public DialogActivityPerformedBy? PerformedBy { get; set; }
-
-    [AggregateParent]
-    public DialogEntity Dialog { get; set; } = null!;
     public Guid DialogId { get; set; }
+    public DialogEntity Dialog { get; set; } = null!;
 
     public Guid? RelatedActivityId { get; set; }
     public DialogActivity? RelatedActivity { get; set; }
@@ -33,6 +28,12 @@ public class DialogActivity : IImmutableEntity, INotifyAggregateCreated, IEventP
     public DialogElement? DialogElement { get; set; }
 
     // === Principal relationships ===
+    [AggregateChild]
+    public DialogActivityDescription? Description { get; set; }
+
+    [AggregateChild]
+    public DialogActivityPerformedBy? PerformedBy { get; set; }
+
     public List<DialogActivity> RelatedActivities { get; set; } = new();
     
     public void OnCreate(AggregateNode self, DateTimeOffset utcNow)
@@ -46,14 +47,12 @@ public class DialogActivity : IImmutableEntity, INotifyAggregateCreated, IEventP
 
 public class DialogActivityDescription : LocalizationSet
 {
-    [AggregateParent]
     public DialogActivity Activity { get; set; } = null!;
     public Guid ActivityId { get; set; }
 }
 
 public class DialogActivityPerformedBy : LocalizationSet
 {
-    [AggregateParent]
     public DialogActivity Activity { get; set; } = null!;
     public Guid ActivityId { get; set; }
 }

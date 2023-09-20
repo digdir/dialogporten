@@ -23,10 +23,8 @@ public abstract class AggregateNode
         }
 
         var genericType = _openGenericAggregateNodeType.MakeGenericType(type);
-        
         var node = (AggregateNode) Activator.CreateInstance(genericType, nonPublic: true)!;
         node.Entity = entity;
-        
         return node;
     }
 

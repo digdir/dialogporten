@@ -120,9 +120,10 @@ public static class AggregateExtensions
         return entityType
             .GetForeignKeys()
             .Where(x => x
-                .DependentToPrincipal?
+                .PrincipalToDependent?
                 .PropertyInfo?
-                .GetCustomAttribute(typeof(AggregateParentAttribute)) is not null);
+                .GetCustomAttribute<AggregateChildAttribute>() 
+                is not null);
     }
 
     private sealed class EntityEntryComparer : IEqualityComparer<EntityEntry>

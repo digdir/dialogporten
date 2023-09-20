@@ -17,16 +17,16 @@ public class DialogElement : IEntity
 
     // === Dependent relationships ===
     public Guid DialogId { get; set; }
-    
-    [AggregateParent]
     public DialogEntity Dialog { get; set; } = null!;
 
-    public DialogElementDisplayName? DisplayName { get; set; }
 
     public Guid? RelatedDialogElementId { get; set; }
     public DialogElement? RelatedDialogElement { get; set; }
 
     // === Principal relationships ===
+    [AggregateChild]
+    public DialogElementDisplayName? DisplayName { get; set; }
+    [AggregateChild]
     public List<DialogElementUrl> Urls { get; set; } = new();
     public List<DialogApiAction> ApiActions { get; set; } = new();
     public List<DialogActivity> Activities { get; set; } = new();
@@ -35,7 +35,6 @@ public class DialogElement : IEntity
 
 public class DialogElementDisplayName : LocalizationSet
 {
-    [AggregateParent]
-    public DialogElement Element { get; set; } = null!;
     public Guid ElementId { get; set; }
+    public DialogElement Element { get; set; } = null!;
 }

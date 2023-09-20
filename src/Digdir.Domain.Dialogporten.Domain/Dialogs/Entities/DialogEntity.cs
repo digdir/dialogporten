@@ -35,17 +35,30 @@ public class DialogEntity : IEntity, ISoftDeletableEntity, IVersionableEntity, I
     public DialogStatus.Enum StatusId { get; set; }
     public DialogStatus Status { get; set; } = null!;
 
-    
+
     // === Principal relationships === 
+    [AggregateChild]
     public DialogBody? Body { get; set; }
+
+    [AggregateChild]
     public DialogTitle? Title { get; set; } 
+
+    [AggregateChild]
     public DialogSenderName? SenderName { get; set; }
 
+    [AggregateChild]
     public List<DialogSearchTag> SearchTags { get; set; } = new();
     
+    [AggregateChild]
     public List<DialogElement> Elements { get; set; } = new();
+
+    [AggregateChild]
     public List<DialogGuiAction> GuiActions { get; set; } = new();
+
+    [AggregateChild]
     public List<DialogApiAction> ApiActions { get; set; } = new();
+
+    [AggregateChild]
     public List<DialogActivity> Activities { get; set; } = new();
     
     public void OnCreate(AggregateNode self, DateTimeOffset utcNow)
@@ -82,21 +95,18 @@ public class DialogEntity : IEntity, ISoftDeletableEntity, IVersionableEntity, I
 
 public class DialogBody : LocalizationSet
 {
-    [AggregateParent]
-    public DialogEntity Dialog { get; set; } = null!;
     public Guid DialogId { get; set; }
+    public DialogEntity Dialog { get; set; } = null!;
 }
 
 public class DialogTitle : LocalizationSet
 {
-    [AggregateParent]
-    public DialogEntity Dialog { get; set; } = null!;
     public Guid DialogId { get; set; }
+    public DialogEntity Dialog { get; set; } = null!;
 }
 
 public class DialogSenderName : LocalizationSet
 {
-    [AggregateParent]
-    public DialogEntity Dialog { get; set; } = null!;
     public Guid DialogId { get; set; }
+    public DialogEntity Dialog { get; set; } = null!;
 }
