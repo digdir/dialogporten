@@ -22,8 +22,9 @@ public class DialogActivity : IImmutableEntity, INotifyAggregateCreated, IEventP
 
     public DialogActivityPerformedBy? PerformedBy { get; set; }
 
-    public Guid DialogId { get; set; }
+    [AggregateParent]
     public DialogEntity Dialog { get; set; } = null!;
+    public Guid DialogId { get; set; }
 
     public Guid? RelatedActivityId { get; set; }
     public DialogActivity? RelatedActivity { get; set; }
@@ -45,12 +46,14 @@ public class DialogActivity : IImmutableEntity, INotifyAggregateCreated, IEventP
 
 public class DialogActivityDescription : LocalizationSet
 {
-    public Guid ActivityId { get; set; }
+    [AggregateParent]
     public DialogActivity Activity { get; set; } = null!;
+    public Guid ActivityId { get; set; }
 }
 
 public class DialogActivityPerformedBy : LocalizationSet
 {
-    public Guid ActivityId { get; set; }
+    [AggregateParent]
     public DialogActivity Activity { get; set; } = null!;
+    public Guid ActivityId { get; set; }
 }

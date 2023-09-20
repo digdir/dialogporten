@@ -1,6 +1,5 @@
 using Digdir.Domain.Dialogporten.Domain.Common;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
-using Digdir.Library.Entity.EntityFrameworkCore.Features.Aggregate;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -10,7 +9,6 @@ internal sealed class DialogSearchTagConfiguration : IEntityTypeConfiguration<Di
 {
     public void Configure(EntityTypeBuilder<DialogSearchTag> builder)
     {
-        builder.HasAggregateParent(x => x.Dialog);
         builder.HasIndex(x => new {x.DialogId, x.Value})
             .IsUnique();
         builder.Property(x => x.Value)

@@ -35,6 +35,7 @@ public class DialogElement : IEntity
 
 public class DialogElementDisplayName : LocalizationSet
 {
-    public Guid ElementId { get; set; }
+    [AggregateParent]
     public DialogElement Element { get; set; } = null!;
+    public Guid ElementId { get; set; }
 }

@@ -1,5 +1,6 @@
 ﻿using Digdir.Domain.Dialogporten.Domain.Localizations;
 using Digdir.Library.Entity.Abstractions;
+using Digdir.Library.Entity.Abstractions.Features.Aggregate;
 
 namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 
@@ -21,12 +22,14 @@ public class DialogGuiAction : IEntity
 
     public DialogGuiActionTitle? Title { get; set; }
 
-    public Guid DialogId { get; set; }
+    [AggregateParent]
     public DialogEntity Dialog { get; set; } = null!;
+    public Guid DialogId { get; set; }
 }
 
 public class DialogGuiActionTitle : LocalizationSet
 {
-    public Guid GuiActionId { get; set; }
+    [AggregateParent]
     public DialogGuiAction GuiAction { get; set; } = null!;
+    public Guid GuiActionId { get; set; }
 }

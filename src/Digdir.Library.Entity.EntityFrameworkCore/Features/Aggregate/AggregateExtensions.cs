@@ -1,48 +1,17 @@
-﻿using System.Linq.Expressions;
+﻿using System.Reflection;
 using Digdir.Library.Entity.Abstractions.Features.Aggregate;
 using Digdir.Library.Entity.Abstractions.Features.Updatable;
 using Digdir.Library.Entity.Abstractions.Features.Versionable;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Digdir.Library.Entity.EntityFrameworkCore.Features.Aggregate;
 
 public static class AggregateExtensions
 {
     private static readonly EntityEntryComparer _entityEntryComparer = new();
-    private const string AggregateAnnotationName = "DddAggregateParent";
-
     
-    
-    public static EntityTypeBuilder<TEntity> HasAggregateParent<TEntity, TProperty>(
-        this EntityTypeBuilder<TEntity> entityTypeBuilder,
-        Expression<Func<TEntity, TProperty>> navigationExpression)
-        where TEntity : class 
-        where TProperty : class
-    {
-        var navigationProperty = navigationExpression.GetMemberAccess();
-
-        var foreignKey = entityTypeBuilder
-            .Metadata
-            .FindNavigation(navigationProperty)
-            .ForeignKey;
-
-        foreignKey.AddAnnotation(AggregateAnnotationName, null);
-
-        return entityTypeBuilder;
-    }
-
-    private static IEnumerable<IForeignKey> FindAggregateParents(this IEntityType entityType)
-    {
-        var fks = entityType
-            .GetForeignKeys();
-            
-            return fks.Where(x => x.FindAnnotation(AggregateAnnotationName) is not null);
-    }
-
     internal static async Task HandleAggregateEntities(this ChangeTracker changeTracker,
         DateTimeOffset utcNow, CancellationToken cancellationToken)
     {
@@ -141,6 +110,16 @@ public static class AggregateExtensions
         }
     }
 
+    private static IEnumerable<IForeignKey> FindAggregateParents(this IEntityType entityType)
+    {
+        return entityType
+            .GetForeignKeys()
+            .Where(x => x
+                .DependentToPrincipal?
+                .PropertyInfo?
+                .GetCustomAttribute(typeof(AggregateParentAttribute)) is not null);
+    }
+    
     private sealed class EntityEntryComparer : IEqualityComparer<EntityEntry>
     {
         public bool Equals(EntityEntry? x, EntityEntry? y) => ReferenceEquals(x?.Entity, y?.Entity);

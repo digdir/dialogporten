@@ -82,18 +82,21 @@ public class DialogEntity : IEntity, ISoftDeletableEntity, IVersionableEntity, I
 
 public class DialogBody : LocalizationSet
 {
-    public Guid DialogId { get; set; }
+    [AggregateParent]
     public DialogEntity Dialog { get; set; } = null!;
+    public Guid DialogId { get; set; }
 }
 
 public class DialogTitle : LocalizationSet
 {
-    public Guid DialogId { get; set; }
+    [AggregateParent]
     public DialogEntity Dialog { get; set; } = null!;
+    public Guid DialogId { get; set; }
 }
 
 public class DialogSenderName : LocalizationSet
 {
-    public Guid DialogId { get; set; }
+    [AggregateParent]
     public DialogEntity Dialog { get; set; } = null!;
+    public Guid DialogId { get; set; }
 }

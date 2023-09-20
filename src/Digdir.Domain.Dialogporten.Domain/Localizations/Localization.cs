@@ -1,5 +1,6 @@
 ﻿using Digdir.Library.Entity.Abstractions;
 using System.Globalization;
+using Digdir.Library.Entity.Abstractions.Features.Aggregate;
 
 namespace Digdir.Domain.Dialogporten.Domain.Localizations;
 
@@ -24,8 +25,9 @@ public class Localization : IJoinEntity
     }
 
     // === Dependent relationships ===
-    public Guid LocalizationSetId { get; set; }
+    [AggregateParent]
     public LocalizationSet LocalizationSet { get; set; } = null!;
+    public Guid LocalizationSetId { get; set; }
 
     public static string? NormalizeCultureCode(string? cultureCode) =>
         cultureCode?.Trim().Replace('_', '-').ToLower();
