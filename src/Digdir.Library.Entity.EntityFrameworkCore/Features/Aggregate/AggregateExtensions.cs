@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Diagnostics;
+using System.Reflection;
 using Digdir.Library.Entity.Abstractions.Features.Aggregate;
 using Digdir.Library.Entity.Abstractions.Features.Updatable;
 using Digdir.Library.Entity.Abstractions.Features.Versionable;
@@ -11,7 +12,7 @@ namespace Digdir.Library.Entity.EntityFrameworkCore.Features.Aggregate;
 public static class AggregateExtensions
 {
     private static readonly EntityEntryComparer _entityEntryComparer = new();
-    
+
     internal static async Task HandleAggregateEntities(this ChangeTracker changeTracker,
         DateTimeOffset utcNow, CancellationToken cancellationToken)
     {
@@ -85,21 +86,25 @@ public static class AggregateExtensions
                 .Select(key => entry.OriginalValues[key.Name])
                 .ToArray();
 
-            if (parentPrimaryKey.All(x => x is null))
+            if (parentPrimaryKey.Length == 0 || parentPrimaryKey.Any(x => x is null))
             {
-                continue;
+                throw new UnreachableException(
+                    $"Foreign key to {parentType.Name} from {entry.Metadata.ClrType.Name} " +
+                    $"is empty or contains null values.");
             }
 
-            var parentEntity =
-                await entry.Context.FindAsync(parentType, parentPrimaryKey, cancellationToken: cancellationToken);
+            var parentEntity = await entry.Context
+                .FindAsync(parentType, parentPrimaryKey, cancellationToken: cancellationToken);
 
             if (parentEntity is null)
             {
-                continue;
+                throw new InvalidOperationException(
+                    $"Could not find parent {parentType.Name} on {entry.Metadata.ClrType.Name} " +
+                    $"with key [{string.Join(",", parentPrimaryKey)}].");
             }
 
             var parentEntry = entry.Context.Entry(parentEntity);
-        
+
             if (!nodeByEntry.TryGetValue(parentEntry, out var parentNode))
             {
                 nodeByEntry[parentEntry] = parentNode = new AggregateNode(parentEntry.Entity);
@@ -119,7 +124,7 @@ public static class AggregateExtensions
                 .PropertyInfo?
                 .GetCustomAttribute(typeof(AggregateParentAttribute)) is not null);
     }
-    
+
     private sealed class EntityEntryComparer : IEqualityComparer<EntityEntry>
     {
         public bool Equals(EntityEntry? x, EntityEntry? y) => ReferenceEquals(x?.Entity, y?.Entity);
