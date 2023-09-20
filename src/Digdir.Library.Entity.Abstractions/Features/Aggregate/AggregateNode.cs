@@ -22,9 +22,11 @@ public abstract class AggregateNode
                 $"Parameter {nameof(entity)} ({entity.GetType()}) must be assignable to {type}.");
         }
 
-        var node = (AggregateNode) Activator
-            .CreateInstance(_openGenericAggregateNodeType.MakeGenericType(type), nonPublic: true)!;
+        var genericType = _openGenericAggregateNodeType.MakeGenericType(type);
+        
+        var node = (AggregateNode) Activator.CreateInstance(genericType, nonPublic: true)!;
         node.Entity = entity;
+        
         return node;
     }
 
