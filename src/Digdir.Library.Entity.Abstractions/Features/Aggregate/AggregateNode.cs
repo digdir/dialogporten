@@ -22,7 +22,8 @@ public abstract class AggregateNode
                 $"Parameter {nameof(entity)} ({entity.GetType()}) must be assignable to {type}.");
         }
 
-        var node = (AggregateNode)Activator.CreateInstance(_openGenericAggregateNodeType.MakeGenericType(type))!;
+        var node = (AggregateNode) Activator
+            .CreateInstance(_openGenericAggregateNodeType.MakeGenericType(type), nonPublic: true)!;
         node.Entity = entity;
         return node;
     }
@@ -37,7 +38,9 @@ public abstract class AggregateNode
 
 public sealed class AggregateNode<T> : AggregateNode
 {
-    public new T Entity => (T)base.Entity;
-    public AggregateNode() : base() { }
-    internal static AggregateNode<T> Create(T entity) => (AggregateNode<T>)AggregateNode.Create(entity);
+    public new T Entity => (T) base.Entity;
+
+    private AggregateNode() : base() { }
+
+    internal static AggregateNode<T> Create(T entity) => (AggregateNode<T>) AggregateNode.Create(entity);
 }
