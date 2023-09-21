@@ -70,16 +70,6 @@ public static class AggregateExtensions
         EntityEntry entry,
         CancellationToken cancellationToken)
     {
-        var aggregateState = entry.State switch
-        {
-            EntityState.Detached => AggregateNodeState.Unchanged,
-            EntityState.Unchanged => AggregateNodeState.Unchanged,
-            EntityState.Deleted => AggregateNodeState.Deleted,
-            EntityState.Modified => AggregateNodeState.Modified,
-            EntityState.Added => AggregateNodeState.Added,
-            _ => throw new UnreachableException(),
-        };
-
         if (!nodeByEntry.ContainsKey(entry))
         {
             nodeByEntry[entry] = entry.ToAggregateNode();
