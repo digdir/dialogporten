@@ -70,9 +70,19 @@ public static class AggregateExtensions
         EntityEntry entry,
         CancellationToken cancellationToken)
     {
+        var aggregateState = entry.State switch
+        {
+            EntityState.Detached => AggregateNodeState.Unchanged,
+            EntityState.Unchanged => AggregateNodeState.Unchanged,
+            EntityState.Deleted => AggregateNodeState.Deleted,
+            EntityState.Modified => AggregateNodeState.Modified,
+            EntityState.Added => AggregateNodeState.Added,
+            _ => throw new UnreachableException(),
+        };
+
         if (!nodeByEntry.ContainsKey(entry))
         {
-            nodeByEntry[entry] = AggregateNode.Create(entry.Entity);
+            nodeByEntry[entry] = entry.ToAggregateNode();
         }
 
         foreach (var parentForeignKey in entry.Metadata.FindAggregateParents())
@@ -107,12 +117,26 @@ public static class AggregateExtensions
 
             if (!nodeByEntry.TryGetValue(parentEntry, out var parentNode))
             {
-                nodeByEntry[parentEntry] = parentNode = AggregateNode.Create(parentEntry.Entity);
+                nodeByEntry[parentEntry] = parentNode = parentEntry.ToAggregateNode();
                 await nodeByEntry.AddAggregateParentChain(parentEntry, cancellationToken);
             }
 
             parentNode.AddChild(nodeByEntry[entry]);
         }
+    }
+
+    private static AggregateNode ToAggregateNode(this EntityEntry entry)
+    {
+        var aggregateState = entry.State switch
+        {
+            EntityState.Detached => AggregateNodeState.Unchanged,
+            EntityState.Unchanged => AggregateNodeState.Unchanged,
+            EntityState.Deleted => AggregateNodeState.Deleted,
+            EntityState.Modified => AggregateNodeState.Modified,
+            EntityState.Added => AggregateNodeState.Added,
+            _ => throw new UnreachableException(),
+        };
+        return AggregateNode.Create(entry.Entity, aggregateState);
     }
 
     private static IEnumerable<IForeignKey> FindAggregateParents(this IEntityType entityType)

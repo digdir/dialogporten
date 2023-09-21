@@ -7,16 +7,17 @@ public abstract class AggregateNode
     private readonly List<AggregateNode> _children = new();
     public object Entity { get; private set; }
     public IReadOnlyCollection<AggregateNode> Children => _children;
+    public AggregateNodeState State { get; private set; }
 
     protected AggregateNode() { }
 
     internal void AddChild(AggregateNode node) => _children.Add(node);
 
-    internal static AggregateNode<T> Create<T>(T entity) => 
-        (AggregateNode<T>)Create(typeof(T), entity ?? throw new ArgumentNullException(nameof(entity)));
-    internal static AggregateNode Create(object entity) => 
-        Create(entity.GetType(), entity);
-    internal static AggregateNode Create(Type type, object entity)
+    internal static AggregateNode<T> Create<T>(T entity, AggregateNodeState state) => 
+        (AggregateNode<T>)Create(typeof(T), entity ?? throw new ArgumentNullException(nameof(entity)), state);
+    internal static AggregateNode Create(object entity, AggregateNodeState state) => 
+        Create(entity.GetType(), entity, state);
+    internal static AggregateNode Create(Type type, object entity, AggregateNodeState state)
     {
         if (!entity.GetType().IsAssignableTo(type))
         {
@@ -27,6 +28,7 @@ public abstract class AggregateNode
         var genericType = _openGenericAggregateNodeType.MakeGenericType(type);
         var node = (AggregateNode) Activator.CreateInstance(genericType, nonPublic: true)!;
         node.Entity = entity;
+        node.State = state;
         return node;
     }
 
@@ -42,4 +44,12 @@ public sealed class AggregateNode<T> : AggregateNode
 {
     public new T Entity => (T) base.Entity;
     private AggregateNode() : base() { }
+}
+
+public enum AggregateNodeState
+{
+    Added = 1,
+    Modified = 2,
+    Deleted = 3,
+    Unchanged = 4
 }

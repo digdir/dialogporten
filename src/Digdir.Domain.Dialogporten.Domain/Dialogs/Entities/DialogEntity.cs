@@ -1,4 +1,5 @@
-﻿using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
+﻿using Digdir.Domain.Dialogporten.Domain.Common.Extensions;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Events;
@@ -11,7 +12,12 @@ using Digdir.Library.Entity.Abstractions.Features.Versionable;
 
 namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 
-public class DialogEntity : IEntity, ISoftDeletableEntity, IVersionableEntity, INotifyAggregateChange, IEventPublisher
+public class DialogEntity : 
+    IEntity, 
+    ISoftDeletableEntity, 
+    IVersionableEntity, 
+    INotifyAggregateChange, 
+    IEventPublisher
 {
     public Guid Id { get; set; }
     public Guid ETag { get; set; }
@@ -64,13 +70,19 @@ public class DialogEntity : IEntity, ISoftDeletableEntity, IVersionableEntity, I
     public void OnCreate(AggregateNode self, DateTimeOffset utcNow)
     {
         _domainEvents.Add(new DialogCreatedDomainEvent(Id));
-        // TODO: Ignore Elements etc.
     }
 
     public void OnUpdate(AggregateNode self, DateTimeOffset utcNow)
     {
-        _domainEvents.Add(new DialogUpdatedDomainEvent(Id));
-        // TODO: Ignore Elements etc.
+        var modifiedPaths = self.Children
+           .Where(x => x is not AggregateNode<DialogElement> and not AggregateNode<DialogActivity>)
+           .ToPaths();
+
+        if (modifiedPaths.Count > 0 || self.State is AggregateNodeState.Modified)
+        {
+            // TODO: Add paths to event.
+            _domainEvents.Add(new DialogUpdatedDomainEvent(Id));
+        }
     }
 
     public void OnDelete(AggregateNode self, DateTimeOffset utcNow)
