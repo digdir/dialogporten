@@ -42,6 +42,7 @@ public static class EntityLibraryEfCoreExtensions
     /// </remarks>
     /// <param name="changeTracker">The change tracker.</param>
     /// <param name="utcNow">The time in UTC in which the changes tok place.</param>
+    /// <param name="cancellationToken">A token for requesting cancellation of the operation.</param>
     /// <returns>The same <see cref="ChangeTracker"/> instance so that multiple calls can be chained.</returns>
     public static async Task<ChangeTracker> HandleAuditableEntities(this ChangeTracker changeTracker, DateTimeOffset utcNow, CancellationToken cancellationToken = default)
     {

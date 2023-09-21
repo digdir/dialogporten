@@ -16,7 +16,7 @@ public class DialogEntity :
     IEntity, 
     ISoftDeletableEntity, 
     IVersionableEntity, 
-    INotifyAggregateChange, 
+    IAggregateChangedHandler, 
     IEventPublisher
 {
     public Guid Id { get; set; }

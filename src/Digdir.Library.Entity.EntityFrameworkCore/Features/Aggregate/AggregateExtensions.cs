@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Digdir.Library.Entity.EntityFrameworkCore.Features.Aggregate;
 
-public static class AggregateExtensions
+internal static class AggregateExtensions
 {
     private static readonly EntityEntryComparer _entityEntryComparer = new();
 
@@ -23,18 +23,18 @@ public static class AggregateExtensions
 
         foreach (var (entry, aggregateNode) in aggregateNodeByEntry)
         {
-            if (entry.Entity is INotifyAggregateCreated created && entry.State is EntityState.Added)
+            if (entry.Entity is IAggregateCreatedHandler created && entry.State is EntityState.Added)
             {
                 created.OnCreate(aggregateNode, utcNow);
             }
 
-            if (entry.Entity is INotifyAggregateUpdated updated &&
+            if (entry.Entity is IAggregateUpdatedHandler updated &&
                 entry.State is EntityState.Modified or EntityState.Unchanged)
             {
                 updated.OnUpdate(aggregateNode, utcNow);
             }
 
-            if (entry.Entity is INotifyAggregateDeleted deleted && entry.State is EntityState.Deleted)
+            if (entry.Entity is IAggregateDeletedHandler deleted && entry.State is EntityState.Deleted)
             {
                 deleted.OnDelete(aggregateNode, utcNow);
             }
