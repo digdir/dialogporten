@@ -12,9 +12,11 @@ public abstract class AggregateNode
 
     internal void AddChild(AggregateNode node) => _children.Add(node);
 
-    internal static AggregateNode Create(object entity) => Create(entity.GetType(), entity);
-
-    private static AggregateNode Create(Type type, object entity)
+    internal static AggregateNode<T> Create<T>(T entity) => 
+        (AggregateNode<T>)Create(typeof(T), entity ?? throw new ArgumentNullException(nameof(entity)));
+    internal static AggregateNode Create(object entity) => 
+        Create(entity.GetType(), entity);
+    internal static AggregateNode Create(Type type, object entity)
     {
         if (!entity.GetType().IsAssignableTo(type))
         {
@@ -39,8 +41,5 @@ public abstract class AggregateNode
 public sealed class AggregateNode<T> : AggregateNode
 {
     public new T Entity => (T) base.Entity;
-
     private AggregateNode() : base() { }
-
-    internal static AggregateNode<T> Create(T entity) => (AggregateNode<T>) AggregateNode.Create(entity);
 }
