@@ -38,6 +38,7 @@ internal sealed class IdempotentDomainEventHandler<TDomainEvent> : INotification
             EventId = notification.EventId,
             ConsumerName = consumer
         });
+        
         await _db.SaveChangesAsync(cancellationToken);
     }
 }
