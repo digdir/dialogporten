@@ -1,6 +1,6 @@
 ﻿namespace Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 
-internal static class Policy
+internal static class AuthorizationPolicy
 {
     internal const string Serviceprovider = "serviceprovider";
     internal const string ServiceproviderSearch = "serviceproviderSearch";

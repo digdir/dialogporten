@@ -3,5 +3,5 @@
 public interface IResourceRegistry
 {
     Task<string?> GetOrgOwner(string resourceId, CancellationToken cancellationToken);
-    Task<List<string>> GetResourceIds(string orgNumber, CancellationToken cancellationToken);
+    Task<string[]> GetResourceIds(string orgNumber, CancellationToken cancellationToken);
 }

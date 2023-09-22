@@ -15,18 +15,10 @@ using Microsoft.Extensions.Options;
 using Polly.Extensions.Http;
 using Polly;
 using Polly.Contrib.WaitAndRetry;
-using Microsoft.Extensions.Caching.Distributed;
-using Polly.Caching.Distributed;
-using Polly.Caching;
-using System.Text.Json;
+using Digdir.Domain.Dialogporten.Infrastructure.Common;
+using Digdir.Domain.Dialogporten.Infrastructure.Altinn.Registry;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure;
-
-internal sealed class SystemJsonSerializer<TResult> : ICacheItemSerializer<TResult, string>
-{
-    public TResult Deserialize(string objectToDeserialize) => JsonSerializer.Deserialize<TResult>(objectToDeserialize)!;
-    public string Serialize(TResult objectToSerialize) => JsonSerializer.Serialize(objectToSerialize);
-}
 
 public static class InfrastructureExtensions
 {
@@ -38,15 +30,9 @@ public static class InfrastructureExtensions
 
         services.AddPolicyRegistry((services, registry) =>
         {
-            registry.Add("DefaultHttpRetryPolicy", HttpPolicyExtensions
+            registry.Add(PollyPolicy.DefaultHttpRetryPolicy, HttpPolicyExtensions
                 .HandleTransientHttpError()
                 .WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(medianFirstRetryDelay: TimeSpan.FromSeconds(1), retryCount: 3)));
-
-            registry.Add("OrgResourceReferenceCache", Policy.CacheAsync<string>((IAsyncCacheProvider)services
-                .GetRequiredService<IDistributedCache>()
-                .AsAsyncCacheProvider<string>()
-                .WithSerializer(new SystemJsonSerializer<OrgResourceReference>()), 
-                TimeSpan.FromMinutes(5)));
         });
 
         services
@@ -76,7 +62,6 @@ public static class InfrastructureExtensions
             // Transient
             .AddTransient<OutboxDispatcher>()
             .AddTransient<ConvertDomainEventsToOutboxMessagesInterceptor>()
-            .AddTransient<IResourceRegistry, ResourceRegistery>()
 
             // Decorate
             .Decorate(typeof(INotificationHandler<>), typeof(IdempotentDomainEventHandler<>));
@@ -84,9 +69,9 @@ public static class InfrastructureExtensions
         // HttpClient 
         services.AddMaskinportenHttpClient<ICloudEventBus, AltinnEventsClient, SettingsJwkClientDefinition>(
                 configurationSection, x => x.ClientSettings.ExhangeToAltinnToken = true);
-        services.AddHttpClient<ResourceRegistryClient>((services, client) => 
+        services.AddHttpClient<IResourceRegistry, ResourceRegistryClient>((services, client) => 
                 client.BaseAddress = services.GetRequiredService<InfrastructureSettings>().Altinn.BaseUri)
-            .AddPolicyHandlerFromRegistry("DefaultHttpRetryPolicy");
+            .AddPolicyHandlerFromRegistry(PollyPolicy.DefaultHttpRetryPolicy);
 
         if (environment.IsDevelopment())
         {

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 
-namespace Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
+namespace Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 
 internal static class AuthorizationPolicyBuilderExtensions
 {

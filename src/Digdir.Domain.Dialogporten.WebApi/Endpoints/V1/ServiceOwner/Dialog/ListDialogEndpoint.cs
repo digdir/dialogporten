@@ -1,5 +1,6 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Queries.List;
+using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
 using FastEndpoints;
 using MediatR;
@@ -21,7 +22,7 @@ public class ListDialogEndpoint : Endpoint<ListDialogQuery>
     {
         Get("dialogs");
         // TODO: Sjekk om policies har `OR` eller `AND` relasjon
-        Policies(Common.Authorization.Policy.ServiceproviderSearch);
+        Policies(AuthorizationPolicy.ServiceproviderSearch);
         Group<ServiceOwnerGroup>();
     }
 

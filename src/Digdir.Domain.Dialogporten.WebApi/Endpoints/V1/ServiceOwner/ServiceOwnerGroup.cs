@@ -10,7 +10,7 @@ public class ServiceOwnerGroup : Group
     {
         Configure(RoutePrefix.ToLower(), ep =>
         {
-            ep.Policies(Policy.Serviceprovider);
+            ep.Policies(AuthorizationPolicy.Serviceprovider);
             ep.EndpointVersion(1);
         });
     }

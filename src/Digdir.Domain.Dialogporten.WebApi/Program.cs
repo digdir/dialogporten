@@ -10,8 +10,8 @@ using System.Text.Json.Serialization.Metadata;
 using System.Collections;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
 using Digdir.Domain.Dialogporten.WebApi.Common.Json;
-using Digdir.Domain.Dialogporten.WebApi.Common.OptionsSetup;
 using Digdir.Domain.Dialogporten.WebApi.Common.Options;
+using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 
 // Using two-stage initialization to catch startup errors.
 Log.Logger = new LoggerConfiguration()
