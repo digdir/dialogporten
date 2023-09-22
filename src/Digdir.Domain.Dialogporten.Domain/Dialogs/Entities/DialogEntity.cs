@@ -80,8 +80,7 @@ public class DialogEntity :
 
         if (modifiedPaths.Count > 0 || self.State is AggregateNodeState.Modified)
         {
-            // TODO: Add paths to event.
-            _domainEvents.Add(new DialogUpdatedDomainEvent(Id));
+            _domainEvents.Add(new DialogUpdatedDomainEvent(Id, modifiedPaths));
         }
     }
 

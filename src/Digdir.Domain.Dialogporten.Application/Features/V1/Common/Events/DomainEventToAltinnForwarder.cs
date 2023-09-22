@@ -1,6 +1,8 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Events;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Events.Activities;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Events.DialogElements;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,7 +13,10 @@ internal sealed class DomainEventToAltinnForwarder :
     INotificationHandler<DialogUpdatedDomainEvent>,
     INotificationHandler<DialogDeletedDomainEvent>,
     INotificationHandler<DialogReadDomainEvent>,
-    INotificationHandler<DialogActivityCreatedDomainEvent>
+    INotificationHandler<DialogActivityCreatedDomainEvent>,
+    INotificationHandler<DialogElementUpdatedDomainEvent>,
+    INotificationHandler<DialogElementCreatedDomainEvent>,
+    INotificationHandler<DialogElementDeletedDomainEvent>
 {
 
     private readonly ICloudEventBus _cloudEventBus;
@@ -73,7 +78,11 @@ internal sealed class DomainEventToAltinnForwarder :
             Resource = dialog.ServiceResource.ToString(),
             ResourceInstance = dialog.Id.ToString(),
             Subject = dialog.Party,
-            Source = $"https://dialogporten.no/api/v1/dialogs/{notification.DialogId}"
+            Source = $"https://dialogporten.no/api/v1/dialogs/{notification.DialogId}",
+            Data = notification.ModifiedPaths.Count == 0 ? null : new()
+            {
+                ["modifiedPaths"] = notification.ModifiedPaths
+            }
         };
         await _cloudEventBus.Publish(cloudEvent, cancellationToken);
     }
@@ -133,7 +142,7 @@ internal sealed class DomainEventToAltinnForwarder :
             Resource = dialogActivity.Dialog.ServiceResource.ToString(),
             ResourceInstance = dialogActivity.Dialog.Id.ToString(),
             Subject = dialogActivity.Dialog.Party,
-            Source = $"https://dialogporten.no/api/v1/dialogs/{dialogActivity.Dialog.Id}/activityhistory/{dialogActivity.Id}",
+            Source = $"https://dialogporten.no/api/v1/dialogs/{dialogActivity.Dialog.Id}/activities/{dialogActivity.Id}",
             Data = GetCloudEventData(dialogActivity)
         };
 
@@ -162,12 +171,13 @@ internal sealed class DomainEventToAltinnForwarder :
             Resource = dialog.ServiceResource.ToString(),
             ResourceInstance = dialog.Id.ToString(),
             Subject = dialog.Party,
-            Source = $"https://dialogporten.no/api/v1/dialogs/{notification.DialogId}"
+            Source = $"https://dialogporten.no/api/v1/dialogs/{notification.DialogId}",
+
         };
         await _cloudEventBus.Publish(cloudEvent, cancellationToken);
     }
 
-    private IDictionary<string, object> GetCloudEventData(DialogActivity dialogActivity)
+    private Dictionary<string, object> GetCloudEventData(DialogActivity dialogActivity)
     {
         var data = new Dictionary<string, object>
         {
@@ -198,5 +208,142 @@ internal sealed class DomainEventToAltinnForwarder :
         }
 
         return data;
+    }
+
+    public async Task Handle(DialogElementUpdatedDomainEvent notification, CancellationToken cancellationToken)
+    {
+        const string dialogElementUpdated = "dialogporten.dialog.element.updated.v1";
+        
+        var dialogElement = await _db.DialogElements
+            .Include(e => e.Dialog)
+            .Include(e => e.RelatedDialogElement)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Id == notification.DialogElementId, cancellationToken);
+
+        if (dialogElement is null)
+        {
+            // TODO: Improve exception or handle differently
+            throw new ApplicationException("DialogElement not found!");
+        }
+
+        var data = new Dictionary<string, object>
+        {
+            ["dialogElementId"] = dialogElement.Id.ToString()
+        };
+        
+        if (dialogElement.RelatedDialogElement is not null)
+        {
+            data["relatedDialogElementId"] = dialogElement.RelatedDialogElement.Id.ToString();
+        }
+        
+        if(dialogElement.Type is not null)
+        {
+            data["dialogElementType"] = dialogElement.Type.ToString();
+        }
+        
+        var cloudEvent = new CloudEvent
+        {
+            Id = notification.EventId,
+            Type = dialogElementUpdated,
+            Time = notification.OccuredAt,
+            Resource = dialogElement.Dialog.ServiceResource.ToString(),
+            ResourceInstance = dialogElement.Dialog.Id.ToString(),
+            Subject = dialogElement.Dialog.Party,
+            Source = $"https://dialogporten.no/api/v1/dialogs/{dialogElement.Dialog.Id}/elements/{dialogElement.Id}",
+            Data = data
+        };
+        
+        await _cloudEventBus.Publish(cloudEvent, cancellationToken);
+    }
+
+    public async Task Handle(DialogElementCreatedDomainEvent notification, CancellationToken cancellationToken)
+    {
+        const string dialogElementCreated = "dialogporten.dialog.element.created.v1";
+        
+        var dialogElement = await _db.DialogElements
+            .Include(e => e.Dialog)
+            .Include(e => e.RelatedDialogElement)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Id == notification.DialogElementId, cancellationToken);
+
+        if (dialogElement is null)
+        {
+            // TODO: Improve exception or handle differently
+            throw new ApplicationException("DialogElement not found!");
+        }
+        
+        var data = new Dictionary<string, object>
+        {
+            ["dialogElementId"] = dialogElement.Id.ToString()
+        };
+        
+        if (dialogElement.RelatedDialogElement is not null)
+        {
+            data["relatedDialogElementId"] = dialogElement.RelatedDialogElement.Id.ToString();
+        }
+        
+        if(dialogElement.Type is not null)
+        {
+            data["dialogElementType"] = dialogElement.Type.ToString();
+        }
+        
+        var cloudEvent = new CloudEvent
+        {
+            Id = notification.EventId,
+            Type = dialogElementCreated,
+            Time = notification.OccuredAt,
+            Resource = dialogElement.Dialog.ServiceResource.ToString(),
+            ResourceInstance = dialogElement.Dialog.Id.ToString(),
+            Subject = dialogElement.Dialog.Party,
+            Source = $"https://dialogporten.no/api/v1/dialogs/{dialogElement.Dialog.Id}/elements/{dialogElement.Id}",
+            Data = data
+        };
+        
+        await _cloudEventBus.Publish(cloudEvent, cancellationToken);
+    }
+
+    public async Task Handle(DialogElementDeletedDomainEvent notification, CancellationToken cancellationToken)
+    {
+        const string dialogElementDeleted = "dialogporten.dialog.element.deleted.v1";
+        var dialogElement = await _db.DialogElements
+            .Include(e => e.Dialog)
+            .Include(e => e.RelatedDialogElement)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Id == notification.DialogElementId, cancellationToken);
+
+        if (dialogElement is null)
+        {
+            // TODO: Improve exception or handle differently
+            throw new ApplicationException("DialogElement not found!");
+        }
+        
+        var data = new Dictionary<string, object>
+        {
+            ["dialogElementId"] = dialogElement.Id.ToString()
+        };
+        
+        if (dialogElement.RelatedDialogElement is not null)
+        {
+            data["relatedDialogElementId"] = dialogElement.RelatedDialogElement.Id.ToString();
+        }
+        
+        if(dialogElement.Type is not null)
+        {
+            data["dialogElementType"] = dialogElement.Type.ToString();
+        }
+        
+        var cloudEvent = new CloudEvent
+        {
+            Id = notification.EventId,
+            Type = dialogElementDeleted,
+            Time = notification.OccuredAt,
+            Resource = dialogElement.Dialog.ServiceResource.ToString(),
+            ResourceInstance = dialogElement.Dialog.Id.ToString(),
+            Subject = dialogElement.Dialog.Party,
+            Source = $"https://dialogporten.no/api/v1/dialogs/{dialogElement.Dialog.Id}/elements/{dialogElement.Id}",
+            Data = data
+        };
+        
+        await _cloudEventBus.Publish(cloudEvent, cancellationToken);
     }
 }

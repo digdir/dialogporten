@@ -3,8 +3,6 @@ using Digdir.Library.Entity.Abstractions.Features.EventPublisher;
 
 namespace Digdir.Domain.Dialogporten.Domain.Common;
 
-
-
 public abstract record DomainEvent : IDomainEvent
 {
     [JsonInclude]
