@@ -4,6 +4,7 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Events.DialogElements;
 using Digdir.Library.Entity.Abstractions.Features.EventPublisher;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.Common.Events;
 
@@ -12,8 +13,8 @@ internal sealed class DialogElementEventToAltinnForwarder : DomainEventToAltinnF
     INotificationHandler<DialogElementCreatedDomainEvent>,
     INotificationHandler<DialogElementDeletedDomainEvent>
 {
-    public DialogElementEventToAltinnForwarder(ICloudEventBus cloudEventBus, IDialogDbContext db)
-        : base(cloudEventBus, db)
+    public DialogElementEventToAltinnForwarder(ICloudEventBus cloudEventBus, IDialogDbContext db, IOptions<ApplicationSettings> settings)
+        : base(cloudEventBus, db, settings)
     {
     }
 
@@ -48,14 +49,14 @@ internal sealed class DialogElementEventToAltinnForwarder : DomainEventToAltinnF
             Resource = dialog.ServiceResource.ToString(),
             ResourceInstance = dialog.Id.ToString(),
             Subject = dialog.Party,
-            Source = $"https://dialogporten.no/api/v1/dialogs/{dialog.Id}/elements/{domainEvent.DialogElementId}",
+            Source = $"{BaseUrl()}/api/v1/dialogs/{dialog.Id}/elements/{domainEvent.DialogElementId}",
             Data = data
         };
 
         await CloudEventBus.Publish(cloudEvent, cancellationToken);
     }
 
-    private static CloudEvent CreateCloudEvent(DialogElement dialogElement, IDomainEvent domainEvent) => new()
+    private CloudEvent CreateCloudEvent(DialogElement dialogElement, IDomainEvent domainEvent) => new()
     {
         Id = domainEvent.EventId,
         Type = CloudEventTypes.Get(domainEvent),
@@ -63,7 +64,7 @@ internal sealed class DialogElementEventToAltinnForwarder : DomainEventToAltinnF
         Resource = dialogElement.Dialog.ServiceResource.ToString(),
         ResourceInstance = dialogElement.Dialog.Id.ToString(),
         Subject = dialogElement.Dialog.Party,
-        Source = $"https://dialogporten.no/api/v1/dialogs/{dialogElement.Dialog.Id}/elements/{dialogElement.Id}",
+        Source = $"{BaseUrl()}/api/v1/dialogs/{dialogElement.Dialog.Id}/elements/{dialogElement.Id}",
         Data = GetCloudEventData(dialogElement)
     };
 

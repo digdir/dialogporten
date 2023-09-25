@@ -3,14 +3,15 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Events.Activities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.Common.Events;
 
 internal sealed class DialogActivityEventToAltinnForwarder : DomainEventToAltinnForwarderBase,
     INotificationHandler<DialogActivityCreatedDomainEvent>
 {
-    public DialogActivityEventToAltinnForwarder(ICloudEventBus cloudEventBus, IDialogDbContext db) 
-        : base(cloudEventBus, db) { }
+    public DialogActivityEventToAltinnForwarder(ICloudEventBus cloudEventBus, IDialogDbContext db, IOptions<ApplicationSettings> settings) 
+        : base(cloudEventBus, db, settings) { }
 
     public async Task Handle(DialogActivityCreatedDomainEvent domainEvent, CancellationToken cancellationToken)
     {
@@ -34,7 +35,7 @@ internal sealed class DialogActivityEventToAltinnForwarder : DomainEventToAltinn
             Resource = dialogActivity.Dialog.ServiceResource.ToString(),
             ResourceInstance = dialogActivity.Dialog.Id.ToString(),
             Subject = dialogActivity.Dialog.Party,
-            Source = $"https://dialogporten.no/api/v1/dialogs/{dialogActivity.Dialog.Id}/activities/{dialogActivity.Id}",
+            Source = $"{BaseUrl()}/api/v1/dialogs/{dialogActivity.Dialog.Id}/activities/{dialogActivity.Id}",
             Data = GetCloudEventData(dialogActivity)
         };
 
