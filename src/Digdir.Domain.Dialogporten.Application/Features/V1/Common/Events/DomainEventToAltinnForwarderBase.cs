@@ -23,8 +23,7 @@ internal class DomainEventToAltinnForwarderBase
 
         if (dialog is null)
         {
-            // TODO: Improve exception or handle differently
-            throw new ApplicationException("Dialog not found!");
+            throw new ApplicationException($"Dialog with id {dialogId} not found");
         }
 
         return dialog;

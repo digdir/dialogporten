@@ -23,8 +23,7 @@ internal sealed class DialogActivityEventToAltinnForwarder : DomainEventToAltinn
 
         if (dialogActivity is null)
         {
-            // TODO: Improve exception or handle differently
-            throw new ApplicationException("DialogActivity not found!");
+            throw new ApplicationException($"DialogActivity with id {domainEvent.DialogActivityId} not found");
         }
 
         var cloudEvent = new CloudEvent

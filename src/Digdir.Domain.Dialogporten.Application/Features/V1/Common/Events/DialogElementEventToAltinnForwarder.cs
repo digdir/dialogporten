@@ -97,8 +97,7 @@ internal sealed class DialogElementEventToAltinnForwarder : DomainEventToAltinnF
 
         if (dialogElement is null)
         {
-            // TODO: Improve exception or handle differently
-            throw new ApplicationException("DialogElement not found!");
+            throw new ApplicationException($"DialogElement with id {dialogElementId} not found");
         }
 
         return dialogElement;
