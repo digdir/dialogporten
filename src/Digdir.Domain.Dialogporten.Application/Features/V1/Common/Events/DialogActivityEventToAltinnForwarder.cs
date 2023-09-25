@@ -9,7 +9,7 @@ namespace Digdir.Domain.Dialogporten.Application.Features.V1.Common.Events;
 internal sealed class DialogActivityEventToAltinnForwarder : DomainEventToAltinnForwarderBase,
     INotificationHandler<DialogActivityCreatedDomainEvent>
 {
-    internal DialogActivityEventToAltinnForwarder(ICloudEventBus cloudEventBus, IDialogDbContext db) 
+    public DialogActivityEventToAltinnForwarder(ICloudEventBus cloudEventBus, IDialogDbContext db) 
         : base(cloudEventBus, db) { }
 
     public async Task Handle(DialogActivityCreatedDomainEvent domainEvent, CancellationToken cancellationToken)

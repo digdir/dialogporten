@@ -12,7 +12,7 @@ internal sealed class DialogElementEventToAltinnForwarder : DomainEventToAltinnF
     INotificationHandler<DialogElementCreatedDomainEvent>,
     INotificationHandler<DialogElementDeletedDomainEvent>
 {
-    internal DialogElementEventToAltinnForwarder(ICloudEventBus cloudEventBus, IDialogDbContext db)
+    public DialogElementEventToAltinnForwarder(ICloudEventBus cloudEventBus, IDialogDbContext db)
         : base(cloudEventBus, db)
     {
     }

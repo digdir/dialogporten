@@ -9,7 +9,7 @@ internal class DomainEventToAltinnForwarderBase
     protected readonly ICloudEventBus CloudEventBus;
     protected readonly IDialogDbContext Db;
 
-    internal DomainEventToAltinnForwarderBase(ICloudEventBus cloudEventBus, IDialogDbContext db)
+    protected DomainEventToAltinnForwarderBase(ICloudEventBus cloudEventBus, IDialogDbContext db)
     {
         CloudEventBus = cloudEventBus ?? throw new ArgumentNullException(nameof(cloudEventBus));
         Db = db ?? throw new ArgumentNullException(nameof(db));
