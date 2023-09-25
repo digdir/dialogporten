@@ -19,14 +19,14 @@ internal sealed class DialogElementEventToAltinnForwarder : DomainEventToAltinnF
 
     public async Task Handle(DialogElementUpdatedDomainEvent domainEvent, CancellationToken cancellationToken)
     {
-        var dialogElement = await GetDialogElement(domainEvent.DialogId, cancellationToken);
+        var dialogElement = await GetDialogElement(domainEvent.DialogElementId, cancellationToken);
         var cloudEvent = CreateCloudEvent(dialogElement, domainEvent);
         await CloudEventBus.Publish(cloudEvent, cancellationToken);
     }
 
     public async Task Handle(DialogElementCreatedDomainEvent domainEvent, CancellationToken cancellationToken)
     {
-        var dialogElement = await GetDialogElement(domainEvent.DialogId, cancellationToken);
+        var dialogElement = await GetDialogElement(domainEvent.DialogElementId, cancellationToken);
         var cloudEvent = CreateCloudEvent(dialogElement, domainEvent);
         await CloudEventBus.Publish(cloudEvent, cancellationToken);
     }
