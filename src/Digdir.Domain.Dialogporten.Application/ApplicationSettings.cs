@@ -4,10 +4,10 @@ public sealed class ApplicationSettings
 {
     public const string ConfigurationSectionName = "Application";
     
-    public DialogportenSettings Dialogporten { get; set; } = new();
+    public required DialogportenSettings Dialogporten { get; init; }
 }
 
 public sealed class DialogportenSettings
 {
-    public string BaseUrl { get; set; } = string.Empty;
+    public required string BaseUrl { get; init; }
 }
