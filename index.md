@@ -43,7 +43,7 @@ _"Graphical User Interface"_, som på norsk kan oversettes til grafisk brukergre
 
 ## API 
 
-_"Application Programming Interface"_, maskinelt grensesnitt som gjør det mulig for ulike systemer å kommunisere på hverandre.
+_"Application Programming Interface"_, maskinelt grensesnitt som gjør det mulig for ulike systemer å kommunisere med hverandre.
 
 ## Dialogporten
 
@@ -509,9 +509,9 @@ Eventer har type som er prefikset/navnerommet `dialogporten.dialog.element`. Und
 
 | Type                                     | Når                                              |
 | ---------------------------------------- | ------------------------------------------------ |
-| `dialogporten.dialog.element.created.v1` | Tjenestetilbyer har til et dialogelement         |
+| `dialogporten.dialog.element.created.v1` | Tjenestetilbyder har lagt til et dialogelement   |
 | `dialogporten.dialog.element.updated.v1` | Tjenestetilbyder har modifisert et dialogelement |
-| `dialogporten.dialog.deleted.v1`         | Tjenestetilybder har slettet et dialogelement    |
+| `dialogporten.dialog.element.deleted.v1` | Tjenestetilybder har slettet et dialogelement    |
 
 ### Eksempel
 
