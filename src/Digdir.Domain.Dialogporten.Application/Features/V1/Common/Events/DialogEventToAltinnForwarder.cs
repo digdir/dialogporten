@@ -22,7 +22,6 @@ internal sealed class DialogEventToAltinnForwarder : DomainEventToAltinnForwarde
         var dialog = await GetDialog(domainEvent.DialogId, cancellationToken);
         var cloudEvent = CreateCloudEvent(domainEvent, dialog);
         await CloudEventBus.Publish(cloudEvent, cancellationToken);
-        // Console.WriteLine($"Dialog {notification.DialogId} created.");
     }
 
     public async Task Handle(DialogUpdatedDomainEvent domainEvent, CancellationToken cancellationToken)
