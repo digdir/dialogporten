@@ -6,7 +6,9 @@ namespace Digdir.Domain.Dialogporten.Domain.Common.Extensions;
 
 public static class AggregateNodeExtensions
 {
-    public static IReadOnlyCollection<string> ToPaths(this IEnumerable<AggregateNode> aggregateNodes, string parentPath = "")
+    public static IReadOnlyCollection<string> ToPaths(this IEnumerable<AggregateNode> aggregateNodes) =>
+        ToPaths(aggregateNodes, string.Empty);
+    private static IReadOnlyCollection<string> ToPaths(IEnumerable<AggregateNode> aggregateNodes, string parentPath)
     {
         var paths = new List<string>();
 
@@ -19,7 +21,6 @@ public static class AggregateNodeExtensions
                 continue;
             }
 
-            // TODO: En annen måte å hente ut id? 
             if (node.Entity is not IIdentifiableEntity identifiable)
             {
                 continue;

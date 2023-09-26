@@ -37,7 +37,6 @@ internal sealed class DialogEventToAltinnForwarder : DomainEventToAltinnForwarde
         
         var cloudEvent = CreateCloudEvent(domainEvent, dialog, data);
         await CloudEventBus.Publish(cloudEvent, cancellationToken);
-        // Console.WriteLine($"Dialog {notification.DialogId} updated.");
     }
 
     public async Task Handle(DialogReadDomainEvent domainEvent, CancellationToken cancellationToken)
@@ -45,7 +44,6 @@ internal sealed class DialogEventToAltinnForwarder : DomainEventToAltinnForwarde
         var dialog = await GetDialog(domainEvent.DialogId, cancellationToken);
         var cloudEvent = CreateCloudEvent(domainEvent, dialog);
         await CloudEventBus.Publish(cloudEvent, cancellationToken);
-        // Console.WriteLine($"Dialog {notification.DialogId} deleted.");
     }
 
     public async Task Handle(DialogDeletedDomainEvent domainEvent, CancellationToken cancellationToken)
@@ -62,7 +60,6 @@ internal sealed class DialogEventToAltinnForwarder : DomainEventToAltinnForwarde
         };
 
         await CloudEventBus.Publish(cloudEvent, cancellationToken);
-        // Console.WriteLine($"Dialog {@event.DialogId} deleted.");
     }
     
     private CloudEvent CreateCloudEvent(IDomainEvent domainEvent, DialogEntity dialog,
