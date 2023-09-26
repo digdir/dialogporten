@@ -40,7 +40,17 @@ internal sealed class DialogElementEventToAltinnForwarder : DomainEventToAltinnF
         {
             ["dialogElementId"] = domainEvent.DialogElementId.ToString()
         };
-
+        
+        if (domainEvent.RelatedDialogElementId is not null)
+        {
+            data["relatedDialogElementId"] = domainEvent.RelatedDialogElementId.ToString()!;
+        }
+        
+        if (domainEvent.Type is not null)
+        {
+            data["dialogElementType"] = domainEvent.Type.ToString();
+        }
+        
         var cloudEvent = new CloudEvent
         {
             Id = domainEvent.EventId,

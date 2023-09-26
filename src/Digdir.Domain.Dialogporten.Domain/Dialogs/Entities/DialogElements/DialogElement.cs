@@ -46,7 +46,7 @@ public class DialogElement : IEntity, IAggregateChangedHandler, IEventPublisher
 
     public void OnDelete(AggregateNode self, DateTimeOffset utcNow)
     {
-        _domainEvents.Add(new DialogElementDeletedDomainEvent(DialogId, Id));
+        _domainEvents.Add(new DialogElementDeletedDomainEvent(DialogId, Id, RelatedDialogElementId, Type));
     }
 
     public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents;
