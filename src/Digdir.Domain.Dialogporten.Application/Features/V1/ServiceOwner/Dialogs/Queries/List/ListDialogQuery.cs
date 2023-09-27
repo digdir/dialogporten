@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.Enumerable;
 using Digdir.Domain.Dialogporten.Application.Common.Pagination;
@@ -62,7 +61,6 @@ internal sealed class ListDialogQueryHandler : IRequestHandler<ListDialogQuery, 
 {
     private readonly IDialogDbContext _db;
     private readonly IMapper _mapper;
-    private readonly IClock _clock;
     private readonly IResourceRegistry _resourceRegistry;
     private readonly IUser _user;
 
@@ -70,12 +68,10 @@ internal sealed class ListDialogQueryHandler : IRequestHandler<ListDialogQuery, 
         IDialogDbContext db,
         IMapper mapper,
         IResourceRegistry resourceRegistry,
-        IUser user,
-        IClock clock)
+        IUser user)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-        _clock = clock ?? throw new ArgumentNullException(nameof(clock));
         _resourceRegistry = resourceRegistry ?? throw new ArgumentNullException(nameof(resourceRegistry));
         _user = user ?? throw new ArgumentNullException(nameof(user));
     }
@@ -84,13 +80,18 @@ internal sealed class ListDialogQueryHandler : IRequestHandler<ListDialogQuery, 
     {
         var searchExpression = LocalizedSearchExpression(request.Search, request.SearchCultureCode);
 
-        var currentUser = _user.GetPrincipal();
-        var orgNumber = currentUser.Claims
-            .First(x => x.Type == "consumer")
-            .Properties
-            .TryGetValue("ID", out var iso6523OrgNumber);
+        if (!_user.TryGetOrgNumber(out var orgNumber))
+        {
+            // TODO: return Unauthorized
+            throw new Exception();
+        }
 
-        //var resourceIds = await _resourceRegistry.GetResourceIds();
+        var resourceIds = await _resourceRegistry.GetResourceIds(orgNumber, cancellationToken);
+
+        if (resourceIds.Length == 0)
+        {
+            return PaginatedList<ListDialogDto>.Empty(request);
+        }
 
         return await _db.Dialogs
             .WhereIf(!request.Org.IsNullOrEmpty(), x => request.Org!.Contains(x.Org))
@@ -111,6 +112,7 @@ internal sealed class ListDialogQueryHandler : IRequestHandler<ListDialogQuery, 
                 x.SearchTags.Any(x => x.Value == request.Search!.ToLower()) ||
                 x.SenderName!.Localizations.AsQueryable().Any(searchExpression)
             )
+            .Where(x => resourceIds.Contains(x.ServiceResource.ToString()))
             .ProjectTo<ListDialogDto>(_mapper.ConfigurationProvider)
             .ToPaginatedListAsync(request, cancellationToken: cancellationToken);
     }

@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
+using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -21,15 +23,37 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
 {
     private readonly IDialogDbContext _db;
     private readonly IMapper _mapper;
+    private readonly IResourceRegistry _resourceRegistry;
+    private readonly IUser _user;
 
-    public GetDialogQueryHandler(IDialogDbContext db, IMapper mapper)
+    public GetDialogQueryHandler(
+        IDialogDbContext db, 
+        IMapper mapper,
+        IResourceRegistry resourceRegistry,
+        IUser user)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        _resourceRegistry = resourceRegistry ?? throw new ArgumentNullException(nameof(resourceRegistry));
+        _user = user ?? throw new ArgumentNullException(nameof(user));
     }
 
     public async Task<GetDialogResult> Handle(GetDialogQuery request, CancellationToken cancellationToken)
     {
+        if (!_user.TryGetOrgNumber(out var orgNumber))
+        {
+            // TODO: return Unauthorized
+            throw new Exception();
+        }
+
+        var resourceIds = await _resourceRegistry.GetResourceIds(orgNumber, cancellationToken);
+
+        if (resourceIds.Length == 0)
+        {
+            // TODO: Unauthorized eller not found? 
+            return new EntityNotFound<DialogEntity>(request.DialogId);
+        }
+
         // This query could be written without all the includes as ProjectTo will do the job for us.
         // However, we need to guarantee an order for sub resources of the dialog aggregate.
         // This is to ensure that the get is consistent, and that PATCH in the API presentation
@@ -49,6 +73,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
                 .ThenInclude(x => x.Endpoints.OrderBy(x => x.CreatedAt).ThenBy(x => x.Id))
             .IgnoreQueryFilters()
             .AsNoTracking()
+            .Where(x => resourceIds.Contains(x.ServiceResource.ToString()))
             .ProjectTo<GetDialogDto>(_mapper.ConfigurationProvider)
             .FirstOrDefaultAsync(x => x.Id == request.DialogId, cancellationToken);
 

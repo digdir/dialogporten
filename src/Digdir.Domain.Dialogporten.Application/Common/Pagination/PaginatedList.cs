@@ -1,4 +1,7 @@
-﻿namespace Digdir.Domain.Dialogporten.Application.Common.Pagination;
+﻿using Digdir.Domain.Dialogporten.Application.Common.Pagination.Order;
+using Digdir.Domain.Dialogporten.Application.Common.Pagination.OrderOption;
+
+namespace Digdir.Domain.Dialogporten.Application.Common.Pagination;
 
 public sealed class PaginatedList<T>
 {
@@ -14,4 +17,12 @@ public sealed class PaginatedList<T>
         OrderBy = orderBy;
         Items = items?.ToList() ?? throw new ArgumentNullException(nameof(items));
     }
+
+    public static PaginatedList<T> Empty<TOrderDefinition>(PaginationParameter<TOrderDefinition, T> paginationParameter) 
+        where TOrderDefinition : IOrderDefinition<T> 
+        => new(
+            Enumerable.Empty<T>(), 
+            false, 
+            paginationParameter.Continue?.Raw, 
+            OrderSet<TOrderDefinition, T>.Default.GetOrderString());
 }

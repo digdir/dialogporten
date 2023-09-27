@@ -1,8 +1,10 @@
 ﻿using System.Diagnostics;
 using AutoMapper;
 using Digdir.Domain.Dialogporten.Application.Common;
+using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
+using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
 using Digdir.Domain.Dialogporten.Domain.Common;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
@@ -27,23 +29,43 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
     private readonly IUnitOfWork _unitOfWork;
     private readonly IDomainEventPublisher _eventPublisher;
     private readonly IDomainContext _domainContext;
+    private readonly IResourceRegistry _resourceRegistry;
+    private readonly IUser _user;
 
     public CreateDialogCommandHandler(
         IDialogDbContext db,
         IMapper mapper,
         IUnitOfWork unitOfWork,
         IDomainEventPublisher eventPublisher,
-        IDomainContext domainContext)
+        IDomainContext domainContext,
+        IUser user,
+        IResourceRegistry resourceRegistry)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _eventPublisher = eventPublisher ?? throw new ArgumentNullException(nameof(eventPublisher));
         _domainContext = domainContext ?? throw new ArgumentNullException(nameof(domainContext));
+        _user = user ?? throw new ArgumentNullException(nameof(user));
+        _resourceRegistry = resourceRegistry ?? throw new ArgumentNullException(nameof(resourceRegistry));
     }
 
     public async Task<CreateDialogResult> Handle(CreateDialogCommand request, CancellationToken cancellationToken)
     {
+        var ownerOrgNumber = await _resourceRegistry
+            .GetOrgOwner(request.ServiceResource.ToString(), cancellationToken);
+
+        if (!_user.TryGetOrgNumber(out var orgNumber))
+        {
+            throw new UnreachableException();
+        }
+
+        if (ownerOrgNumber != orgNumber)
+        {
+            // TODO: Return Unauthorized
+            throw new Exception();
+        }
+
         var dialog = _mapper.Map<DialogEntity>(request);
 
         var existingDialogIds = await _db.GetExistingIds(new[] { dialog }, cancellationToken);

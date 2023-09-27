@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using Digdir.Domain.Dialogporten.Application.Common;
+using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.Enumerable;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
+using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
@@ -14,6 +16,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
 using OneOf.Types;
+using System.Diagnostics;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Update;
 
@@ -35,6 +38,8 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
     private readonly ILocalizationService _localizationService;
     private readonly IDomainEventPublisher _eventPublisher;
     private readonly IDomainContext _domainContext;
+    private readonly IResourceRegistry _resourceRegistry;
+    private readonly IUser _user;
 
     public UpdateDialogCommandHandler(
         IDialogDbContext db,
@@ -42,7 +47,9 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         IUnitOfWork unitOfWork,
         ILocalizationService localizationService,
         IDomainEventPublisher eventPublisher,
-        IDomainContext domainContext)
+        IDomainContext domainContext,
+        IResourceRegistry resourceRegistry,
+        IUser user)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
@@ -50,10 +57,20 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         _localizationService = localizationService ?? throw new ArgumentNullException(nameof(localizationService));
         _eventPublisher = eventPublisher ?? throw new ArgumentNullException(nameof(eventPublisher));
         _domainContext = domainContext ?? throw new ArgumentNullException(nameof(domainContext));
+        _resourceRegistry = resourceRegistry ?? throw new ArgumentNullException(nameof(resourceRegistry));
+        _user = user ?? throw new ArgumentNullException(nameof(user));
     }
 
     public async Task<UpdateDialogResult> Handle(UpdateDialogCommand request, CancellationToken cancellationToken)
     {
+        if (!_user.TryGetOrgNumber(out var orgNumber))
+        {
+            throw new UnreachableException();
+        }
+
+        var resourceIds = await _resourceRegistry
+            .GetResourceIds(orgNumber, cancellationToken);
+
         var dialog = await _db.Dialogs
             .Include(x => x.Body!.Localizations)
             .Include(x => x.Title!.Localizations)
@@ -67,7 +84,10 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
                 .ThenInclude(x => x.Title!.Localizations)
             .Include(x => x.ApiActions)
                 .ThenInclude(x => x.Endpoints)
-            .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
+            .FirstOrDefaultAsync(x => 
+                x.Id == request.Id &&
+                resourceIds.Contains(x.ServiceResource.ToString()), 
+                cancellationToken);
 
         if (dialog is null)
         {
