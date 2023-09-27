@@ -51,6 +51,11 @@ public class DialogElement : IEntity, IAggregateChangedHandler, IEventPublisher
 
     public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents;
     private readonly List<IDomainEvent> _domainEvents = new();
+
+    public void SoftDelete()
+    {
+        _domainEvents.Add(new DialogElementDeletedDomainEvent(DialogId, Id, RelatedDialogElementId, Type));
+    }
 }
 
 public class DialogElementDisplayName : LocalizationSet

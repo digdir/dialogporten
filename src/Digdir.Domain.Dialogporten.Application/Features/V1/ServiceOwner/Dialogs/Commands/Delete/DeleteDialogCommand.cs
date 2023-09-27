@@ -32,6 +32,8 @@ internal sealed class DeleteDialogCommandHandler : IRequestHandler<DeleteDialogC
     public async Task<DeleteDialogResult> Handle(DeleteDialogCommand request, CancellationToken cancellationToken)
     {
         var dialog = await _db.Dialogs
+            .Include(x => x.Elements)
+            .Include(x => x.ApiActions)
             .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
 
         if (dialog is null)
@@ -41,6 +43,8 @@ internal sealed class DeleteDialogCommandHandler : IRequestHandler<DeleteDialogC
 
         _db.TrySetOriginalETag(dialog, request.ETag);
 
+        dialog.SoftDelete();
+        
         _db.Dialogs.Remove(dialog);
 
         var saveResult = await _unitOfWork.SaveChangesAsync(cancellationToken);

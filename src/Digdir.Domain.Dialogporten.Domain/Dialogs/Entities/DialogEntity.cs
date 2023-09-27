@@ -66,7 +66,14 @@ public class DialogEntity :
 
     [AggregateChild]
     public List<DialogActivity> Activities { get; set; } = new();
-    
+
+    public void SoftDelete()
+    {
+        foreach (var dialogElement in Elements)
+        {
+            dialogElement.SoftDelete();
+        }
+    }
     public void OnCreate(AggregateNode self, DateTimeOffset utcNow)
     {
         _domainEvents.Add(new DialogCreatedDomainEvent(Id));
