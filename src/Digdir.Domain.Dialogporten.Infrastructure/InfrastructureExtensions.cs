@@ -17,6 +17,8 @@ using Polly;
 using Polly.Contrib.WaitAndRetry;
 using Digdir.Domain.Dialogporten.Infrastructure.Common;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.Registry;
+using FluentValidation;
+using System.Reflection;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure;
 
@@ -35,11 +37,14 @@ public static class InfrastructureExtensions
                 .WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(medianFirstRetryDelay: TimeSpan.FromSeconds(1), retryCount: 3)));
         });
 
+        var thisAssembly = Assembly.GetExecutingAssembly();
+
         services
             // Settings
             .Configure<InfrastructureSettings>(configurationSection)
 
             // Framework
+            .AddValidatorsFromAssembly(thisAssembly, includeInternalTypes: true)
             .AddDistributedMemoryCache()
             .AddDbContext<DialogDbContext>((services, options) =>
             {

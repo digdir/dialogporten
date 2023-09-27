@@ -1,5 +1,6 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Update;
 using Digdir.Domain.Dialogporten.WebApi.Common;
+using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
 using FastEndpoints;
 using MediatR;
@@ -18,6 +19,7 @@ public sealed class UpdateDialogEndpoint : Endpoint<UpdateDialogRequest>
     public override void Configure()
     {
         Put("dialogs/{dialogId}");
+        Policies(AuthorizationPolicy.Serviceprovider);
         Group<ServiceOwnerGroup>();
     }
 

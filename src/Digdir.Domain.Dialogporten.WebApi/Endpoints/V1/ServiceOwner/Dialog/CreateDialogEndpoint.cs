@@ -1,5 +1,6 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Create;
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Queries.Get;
+using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
 using FastEndpoints;
 using MediatR;
@@ -18,6 +19,7 @@ public sealed class CreateDialogEndpoint : Endpoint<CreateDialogCommand>
     public override void Configure()
     {
         Post("dialogs");
+        Policies(AuthorizationPolicy.Serviceprovider);
         Group<ServiceOwnerGroup>();
     }
 

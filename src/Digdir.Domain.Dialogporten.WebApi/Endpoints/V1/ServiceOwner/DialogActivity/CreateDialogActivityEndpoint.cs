@@ -2,6 +2,7 @@ using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.DialogActi
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Update;
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Queries.Get;
 using Digdir.Domain.Dialogporten.WebApi.Common;
+using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
 using FastEndpoints;
 using MediatR;
@@ -24,6 +25,7 @@ public sealed class CreateDialogActivityEndpoint : Endpoint<CreateDialogActivity
     public override void Configure()
     {
         Post("dialogs/{dialogId}/activities");
+        Policies(AuthorizationPolicy.Serviceprovider);
         Group<ServiceOwnerGroup>();
     }
 

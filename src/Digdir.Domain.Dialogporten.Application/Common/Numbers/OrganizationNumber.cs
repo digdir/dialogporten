@@ -1,6 +1,6 @@
 ﻿namespace Digdir.Domain.Dialogporten.Application.Common.Numbers;
 
-internal static class OrganizationNumber
+public static class OrganizationNumber
 {
     private static readonly int[] OrgNumberWeights = new[] { 3, 2, 7, 6, 5, 4, 3, 2 };
 

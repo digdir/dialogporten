@@ -3,6 +3,7 @@ using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Update;
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Queries.Get;
 using Digdir.Domain.Dialogporten.WebApi.Common;
+using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
 using FastEndpoints;
 using MediatR;
@@ -24,6 +25,7 @@ public sealed class UpdateDialogActivityEndpoint : Endpoint<UpdateDialogElementR
     public override void Configure()
     {
         Put("dialogs/{dialogId}/elements/{elementId}");
+        Policies(AuthorizationPolicy.Serviceprovider);
         Group<ServiceOwnerGroup>();
     }
 

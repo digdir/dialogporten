@@ -1,4 +1,5 @@
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.DialogActivities.Queries.List;
+using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
 using FastEndpoints;
 using MediatR;
@@ -17,6 +18,7 @@ public class ListDialogActivityEndpoint : Endpoint<ListDialogActivityQuery>
     public override void Configure()
     {
         Get("dialogs/{dialogId}/activities");
+        Policies(AuthorizationPolicy.Serviceprovider);
         Group<ServiceOwnerGroup>();
     }
 

@@ -21,7 +21,6 @@ public class ListDialogEndpoint : Endpoint<ListDialogQuery>
     public override void Configure()
     {
         Get("dialogs");
-        // TODO: Sjekk om policies har `OR` eller `AND` relasjon
         Policies(AuthorizationPolicy.ServiceproviderSearch);
         Group<ServiceOwnerGroup>();
     }

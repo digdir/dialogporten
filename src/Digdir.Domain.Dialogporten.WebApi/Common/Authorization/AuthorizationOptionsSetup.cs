@@ -1,5 +1,7 @@
-﻿using Digdir.Domain.Dialogporten.WebApi.Common.Options;
+﻿using Digdir.Domain.Dialogporten.Application.Common.Numbers;
+using Digdir.Domain.Dialogporten.WebApi.Common.Options;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
@@ -19,13 +21,10 @@ internal sealed class AuthorizationOptionsSetup : IConfigureOptions<Authorizatio
             .Select(x => x.Name)
             .ToArray();
 
-        // TODO: Legg på sjekk på consumer claim
-        // Require "authority": "iso6523-actorid-upis",
-        // Require "ID": "0192:*"
-        // Require norsk org nr (mod 11, ligger i app)
         options.DefaultPolicy = new AuthorizationPolicyBuilder()
             .RequireAuthenticatedUser()
             .AddAuthenticationSchemes(authenticatonSchemas)
+            .RequireValidConsumerClaim()
             .Build();
 
         options.AddPolicy(AuthorizationPolicy.Serviceprovider, builder => builder
