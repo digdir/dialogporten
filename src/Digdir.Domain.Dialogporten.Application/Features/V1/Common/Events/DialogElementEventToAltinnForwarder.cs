@@ -59,7 +59,7 @@ internal sealed class DialogElementEventToAltinnForwarder : DomainEventToAltinnF
             Resource = dialog.ServiceResource.ToString(),
             ResourceInstance = dialog.Id.ToString(),
             Subject = dialog.Party,
-            Source = $"{DialogportenBaseUrl()}/api/v1/serviceowner/dialogs/{dialog.Id}/elements/{domainEvent.DialogElementId}",
+            Source = $"{DialogportenBaseUrl()}/api/v1/enduser/dialogs/{dialog.Id}/elements/{domainEvent.DialogElementId}",
             Data = data
         };
 
@@ -74,7 +74,7 @@ internal sealed class DialogElementEventToAltinnForwarder : DomainEventToAltinnF
         Resource = dialogElement.Dialog.ServiceResource.ToString(),
         ResourceInstance = dialogElement.Dialog.Id.ToString(),
         Subject = dialogElement.Dialog.Party,
-        Source = $"{DialogportenBaseUrl()}/api/v1/serviceowner/dialogs/{dialogElement.Dialog.Id}/elements/{dialogElement.Id}",
+        Source = $"{DialogportenBaseUrl()}/api/v1/enduser/dialogs/{dialogElement.Dialog.Id}/elements/{dialogElement.Id}",
         Data = GetCloudEventData(dialogElement)
     };
 

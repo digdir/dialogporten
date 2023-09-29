@@ -35,7 +35,7 @@ internal sealed class DialogActivityEventToAltinnForwarder : DomainEventToAltinn
             Resource = dialogActivity.Dialog.ServiceResource.ToString(),
             ResourceInstance = dialogActivity.Dialog.Id.ToString(),
             Subject = dialogActivity.Dialog.Party,
-            Source = $"{DialogportenBaseUrl()}/api/v1/serviceowner/dialogs/{dialogActivity.Dialog.Id}/activities/{dialogActivity.Id}",
+            Source = $"{DialogportenBaseUrl()}/api/v1/enduser/dialogs/{dialogActivity.Dialog.Id}/activities/{dialogActivity.Id}",
             Data = GetCloudEventData(dialogActivity)
         };
 
