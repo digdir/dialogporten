@@ -70,7 +70,6 @@ public static class AggregateNodeExtensions
 
     private static string OverrideName(this string propertyName) => propertyName switch
     {
-        nameof(DialogEntity.StatusId) => "status",
         string name when name.EndsWith("Id", StringComparison.InvariantCultureIgnoreCase) => name[..^2],
         _ => propertyName
     };
