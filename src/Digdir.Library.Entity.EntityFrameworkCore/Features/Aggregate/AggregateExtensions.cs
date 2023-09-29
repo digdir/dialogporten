@@ -126,7 +126,20 @@ internal static class AggregateExtensions
             EntityState.Added => AggregateNodeState.Added,
             _ => throw new UnreachableException(),
         };
-        return AggregateNode.Create(entry.Entity, aggregateState);
+
+        var modifiedProperties = entry.Properties
+            .Where(x => x.IsModified && !x.IsTemporary)
+            .Select(x => AggregateNodeProperty.Create(
+                x.Metadata.ClrType,
+                x.Metadata.Name,
+                x.OriginalValue,
+                x.CurrentValue));
+
+        return AggregateNode.Create(
+            entry.Entity.GetType(), 
+            entry.Entity, 
+            aggregateState, 
+            modifiedProperties);
     }
 
     private static IEnumerable<IForeignKey> FindAggregateParents(this IEntityType entityType)

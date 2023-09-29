@@ -1,4 +1,6 @@
-﻿namespace Digdir.Library.Entity.Abstractions.Features.Aggregate;
+﻿using System.Reflection;
+
+namespace Digdir.Library.Entity.Abstractions.Features.Aggregate;
 
 /// <summary>
 /// Represents a node in an aggregate tree. 
@@ -7,11 +9,17 @@ public abstract class AggregateNode
 {
     private static readonly Type _openGenericAggregateNodeType = typeof(AggregateNode<>);
     private readonly List<AggregateNode> _children = new();
+    private readonly List<AggregateNodeProperty> _modifiedProperties;
 
     /// <summary>
     /// The actual entity in the aggregate tree this node represents.
     /// </summary>
-    public object Entity { get; private set; } = null!;
+    public object Entity { get; }
+
+    /// <summary>
+    /// A collection of modified properties on this aggregate node.
+    /// </summary>
+    public IReadOnlyCollection<AggregateNodeProperty> ModifiedProperties => _modifiedProperties;
 
     /// <summary>
     /// A collection of modified children. A child node is modified if it itself 
@@ -23,22 +31,21 @@ public abstract class AggregateNode
     /// <summary>
     /// The state of the <see cref="Entity"/> this node represents.
     /// </summary>
-    public AggregateNodeState State { get; private set; }
+    public AggregateNodeState State { get; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AggregateNode"/> class.
     /// </summary>
-    protected AggregateNode() { }
+    protected AggregateNode(object entity, AggregateNodeState state, IEnumerable<AggregateNodeProperty> modifiedProperties) 
+    {
+        Entity = entity;
+        State = state;
+        _modifiedProperties = modifiedProperties.ToList();
+    }
 
     internal void AddChild(AggregateNode node) => _children.Add(node);
 
-    internal static AggregateNode<T> Create<T>(T entity, AggregateNodeState state) => 
-        (AggregateNode<T>)Create(typeof(T), entity ?? throw new ArgumentNullException(nameof(entity)), state);
-
-    internal static AggregateNode Create(object entity, AggregateNodeState state) => 
-        Create(entity.GetType(), entity, state);
-
-    internal static AggregateNode Create(Type type, object entity, AggregateNodeState state)
+    internal static AggregateNode Create(Type type, object entity, AggregateNodeState state, IEnumerable<AggregateNodeProperty> modifiedProperties)
     {
         if (!entity.GetType().IsAssignableTo(type))
         {
@@ -46,10 +53,9 @@ public abstract class AggregateNode
                 $"Parameter {nameof(entity)} ({entity.GetType()}) must be assignable to {type}.");
         }
 
+        var nodeArguments = new[] { entity, state, modifiedProperties };
         var genericType = _openGenericAggregateNodeType.MakeGenericType(type);
-        var node = (AggregateNode) Activator.CreateInstance(genericType, nonPublic: true)!;
-        node.Entity = entity;
-        node.State = state;
+        var node = (AggregateNode) Activator.CreateInstance(genericType, BindingFlags.NonPublic | BindingFlags.Instance, null, nodeArguments, null)!;
         return node;
     }
 }
@@ -59,12 +65,14 @@ public abstract class AggregateNode
 /// </summary>
 /// <typeparam name="T">The type this node represents.</typeparam>
 public sealed class AggregateNode<T> : AggregateNode
+    where T : notnull
 {
     /// <summary>
     /// The actual entity in the aggregate tree this node represents.
     /// </summary>
     public new T Entity => (T) base.Entity;
-    private AggregateNode() : base() { }
+    private AggregateNode(T entity, AggregateNodeState state, IEnumerable<AggregateNodeProperty> modifiedProperties) 
+        : base(entity, state, modifiedProperties) { }
 }
 
 /// <summary>
@@ -91,4 +99,77 @@ public enum AggregateNodeState
     /// The entitys property values have not been changed from the values in the database.
     /// </summary>
     Unchanged = 4
+}
+
+/// <summary>
+/// Represents a property of an <see cref="AggregateNode"/> that has been modified.
+/// </summary>
+public abstract class AggregateNodeProperty
+{
+    private static readonly Type _openGenericAggregateNodePropertyType = typeof(AggregateNodeProperty<>);
+
+    /// <summary>
+    /// Gets the name of the name of the property that has been modified.
+    /// </summary>
+    public string PropertyName { get; }
+
+    /// <summary>
+    /// Gets the original value of the property before it was modified.
+    /// </summary>
+    public object? OriginalValue { get; }
+
+    /// <summary>
+    /// Gets the current value of the property after it was modified.
+    /// </summary>
+    public object? CurrentValue { get; }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AggregateNodeProperty"/> class.
+    /// </summary>
+    /// <param name="property">The name of the property that has been modified.</param>
+    /// <param name="originalValue">The original value of the property before modification.</param>
+    /// <param name="currentValue">The current value of the property after modification.</param>
+    protected AggregateNodeProperty(string property, object? originalValue, object? currentValue)
+    {
+        PropertyName = property;
+        OriginalValue = originalValue;
+        CurrentValue = currentValue;
+    }
+
+    internal static AggregateNodeProperty Create(
+        Type propertyType,
+        string propertyName,
+        object? originalValue,
+        object? currentValue)
+    {
+        var nodeArguments = new[] { propertyName, originalValue, currentValue };
+        var genericType = _openGenericAggregateNodePropertyType.MakeGenericType(propertyType);
+        var property = (AggregateNodeProperty)Activator.CreateInstance(genericType, BindingFlags.NonPublic | BindingFlags.Instance, null, nodeArguments, null)!;
+        return property;
+    }
+}
+
+/// <summary>
+/// Represents a strongly-typed property of an <see cref="AggregateNode{T}"/> that has been modified.
+/// </summary>
+/// <typeparam name="T">The type of the property.</typeparam>
+public sealed class AggregateNodeProperty<T> : AggregateNodeProperty
+{
+    /// <summary>
+    /// Gets the original value of the property before it was modified.
+    /// </summary>
+    public new T? OriginalValue => (T?)base.OriginalValue;
+
+    /// <summary>
+    /// Gets the original value of the property before it was modified.
+    /// </summary>
+    public new T? CurrentValue => (T?)base.CurrentValue;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AggregateNodeProperty{T}"/> class.
+    /// </summary>
+    /// <param name="propertyName">The name of the property that has been modified.</param>
+    /// <param name="originalValue">The original value of the property before modification.</param>
+    /// <param name="currentValue">The current value of the property after modification.</param>
+    private AggregateNodeProperty(string propertyName, T originalValue, T currentValue) : base(propertyName, originalValue, currentValue) { }
 }

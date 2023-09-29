@@ -1,4 +1,8 @@
-﻿using Digdir.Domain.Dialogporten.Domain.Localizations;
+﻿using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements;
+using Digdir.Domain.Dialogporten.Domain.Localizations;
 using Digdir.Library.Entity.Abstractions.Features.Aggregate;
 using Digdir.Library.Entity.Abstractions.Features.Identifiable;
 
@@ -17,7 +21,7 @@ public static class AggregateNodeExtensions
             if (node.Entity is LocalizationSet localizationSet)
             {
                 paths.AddRange(localizationSet.ToLocalizationPathStrings(
-                    $"{parentPath}/{node.Entity.GetType().Name}"));
+                    $"{parentPath}/{node.Entity.ToName()}"));
                 continue;
             }
 
@@ -26,8 +30,15 @@ public static class AggregateNodeExtensions
                 continue;
             }
 
-            var currentPath = $"{parentPath}/{node.Entity.GetType().Name}/{identifiable.Id}";
-            paths.AddRange(node.Children.ToPaths(currentPath).DefaultIfEmpty(currentPath));
+            var currentPath = $"{parentPath}/{node.Entity.ToName()}/{identifiable.Id}";
+
+            // Generate modified properties and children paths
+            var currentPaths = node.ModifiedProperties
+                .Select(x => $"{currentPath}/{x.PropertyName.OverrideName()}")
+                .Concat(node.Children.ToPaths(currentPath))
+                .DefaultIfEmpty(currentPath);
+
+            paths.AddRange(currentPaths);
         }
 
         return paths;
@@ -35,4 +46,32 @@ public static class AggregateNodeExtensions
 
     private static IEnumerable<string> ToLocalizationPathStrings(this LocalizationSet localizationSet, string parentPath) =>
         localizationSet.Localizations.Select(x => $"{parentPath}/{x.CultureCode}");
+
+    private static string ToName(this object obj) => obj switch
+    {
+        DialogEntity => "dialog",
+        DialogElement => "element",
+        DialogElementUrl => "url",
+        DialogApiAction => "apiAction",
+        DialogApiActionEndpoint => "endpoint",
+        DialogGuiAction => "guiAction",
+        DialogActivity => "activity",
+
+        DialogBody => "body",
+        DialogTitle => "title",
+        DialogSenderName => "senderName",
+        DialogActivityDescription => "description",
+        DialogActivityPerformedBy => "performedBy",
+        DialogElementDisplayName => "displayName",
+        DialogGuiActionTitle => "title",
+
+        _ => obj.GetType().Name
+    };
+
+    private static string OverrideName(this string propertyName) => propertyName switch
+    {
+        nameof(DialogEntity.StatusId) => "status",
+        string name when name.EndsWith("Id", StringComparison.InvariantCultureIgnoreCase) => name[..^2],
+        _ => propertyName
+    };
 }
