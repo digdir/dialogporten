@@ -12,6 +12,7 @@ public static class AggregateNodeExtensions
 {
     public static IReadOnlyCollection<string> ToPaths(this IEnumerable<AggregateNode> aggregateNodes) =>
         ToPaths(aggregateNodes, string.Empty);
+
     private static IReadOnlyCollection<string> ToPaths(this IEnumerable<AggregateNode> aggregateNodes, string parentPath)
     {
         var paths = new List<string>();

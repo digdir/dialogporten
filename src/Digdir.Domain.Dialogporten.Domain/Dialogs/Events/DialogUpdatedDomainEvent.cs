@@ -2,4 +2,4 @@
 
 namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Events;
 
-public sealed record DialogUpdatedDomainEvent(Guid DialogId, IReadOnlyCollection<string> ModifiedPaths) : DomainEvent;
+public sealed record DialogUpdatedDomainEvent(Guid DialogId) : DomainEvent;

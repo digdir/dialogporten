@@ -81,15 +81,15 @@ public class DialogEntity :
 
     public void OnUpdate(AggregateNode self, DateTimeOffset utcNow)
     {
-        var modifiedPaths = self.Children
-           .Where(x => x is not AggregateNode<DialogElement> 
-                and not AggregateNode<DialogActivity>
-                and not AggregateNode<DialogSearchTag>)
-           .ToPaths();
+        var shouldProduceEvent = self.State is AggregateNodeState.Modified ||
+            self.Children
+                .Any(x => x is not AggregateNode<DialogElement>
+                    and not AggregateNode<DialogActivity>
+                    and not AggregateNode<DialogSearchTag>);
 
-        if (modifiedPaths.Count > 0 || self.State is AggregateNodeState.Modified)
+        if (shouldProduceEvent)
         {
-            _domainEvents.Add(new DialogUpdatedDomainEvent(Id, modifiedPaths));
+            _domainEvents.Add(new DialogUpdatedDomainEvent(Id));
         }
     }
 

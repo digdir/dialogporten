@@ -27,15 +27,7 @@ internal sealed class DialogEventToAltinnForwarder : DomainEventToAltinnForwarde
     public async Task Handle(DialogUpdatedDomainEvent domainEvent, CancellationToken cancellationToken)
     {
         var dialog = await GetDialog(domainEvent.DialogId, cancellationToken);
-
-        var data = domainEvent.ModifiedPaths.Count == 0
-            ? null
-            : new Dictionary<string, object>
-            {
-                ["modifiedPaths"] = domainEvent.ModifiedPaths
-            };
-        
-        var cloudEvent = CreateCloudEvent(domainEvent, dialog, data);
+        var cloudEvent = CreateCloudEvent(domainEvent, dialog);
         await CloudEventBus.Publish(cloudEvent, cancellationToken);
     }
 
