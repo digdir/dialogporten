@@ -167,7 +167,7 @@ Under er et ER-diagram som viser de konkrete relasjonene mellom de ulike entitet
 
 Dette er den foreløpige systemarkitekturen som ligger til grunn for implementasjonen av Dialogporten.
 
-![](https://lucid.app/publicSegments/view/a6caac79-f481-4aa4-ad6b-af715b264ab9/image.png)
+![](https://lucid.app/publicSegments/view/4e93a11f-0c18-41db-9aaf-3fac6f67234f/image.png)
 
 # Autorisasjon
 
