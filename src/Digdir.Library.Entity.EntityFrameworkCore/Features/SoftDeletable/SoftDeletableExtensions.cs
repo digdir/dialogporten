@@ -28,7 +28,6 @@ public static class SoftDeletableExtensions
     public static EntityEntry<TSoftDeletableEntity> HardRemove<TSoftDeletableEntity>(this DbSet<TSoftDeletableEntity> set, TSoftDeletableEntity entity)
         where TSoftDeletableEntity : class, ISoftDeletableEntity
     {
-        entity.HardDelete();
         return set.Remove(entity);
     }
 
@@ -49,11 +48,48 @@ public static class SoftDeletableExtensions
         }
     }
 
+    /// <summary>
+    /// Marks a <typeparamref name="TSoftDeletableEntity"/> as soft deleted.
+    /// </summary>
+    /// <remarks>
+    /// This will mark the entity as deleted in the database.
+    /// </remarks>
+    /// <param name="set">The <see cref="DbSet{TEntity}"/> where <paramref name="entity"/> resides.</param>
+    /// <param name="entity">The entity to soft delete.</param>
+    /// <returns>
+    /// The <see cref="EntityEntry{TEntity}" /> for the entity. The entry provides
+    /// access to change tracking information and operations for the entity.
+    /// </returns>
+    public static EntityEntry<TSoftDeletableEntity> SoftRemove<TSoftDeletableEntity>(this DbSet<TSoftDeletableEntity> set, TSoftDeletableEntity entity)
+        where TSoftDeletableEntity : class, ISoftDeletableEntity
+    {
+        entity.SoftDelete();
+        // In case the entity implements SoftDelete, but forgot to set Deleted to true.
+        entity.Deleted = true;
+        return set.Entry(entity);
+    }
+
+    /// <summary>
+    /// Marks a <typeparamref name="TSoftDeletableEntity"/> as soft deleted.
+    /// </summary>
+    /// <remarks>
+    /// This will mark the entity as deleted in the database.
+    /// </remarks>
+    /// <param name="set">The <see cref="DbSet{TEntity}"/> where <paramref name="entities"/> resides.</param>
+    /// <param name="entities">The entities to soft delete.</param>
+    public static void SoftRemoveRange<TSoftDeletableEntity>(this DbSet<TSoftDeletableEntity> set, IEnumerable<TSoftDeletableEntity> entities)
+        where TSoftDeletableEntity : class, ISoftDeletableEntity
+    {
+        foreach (var entity in entities)
+        {
+            set.SoftRemove(entity);
+        }
+    }
+
     internal static ModelBuilder EnableSoftDeletableQueryFilter(this ModelBuilder modelBuilder)
     {
         return modelBuilder.EntitiesOfType<ISoftDeletableEntity>(builder =>
         {
-            builder.Ignore(nameof(ISoftDeletableEntity.HardDelete));
             var method = _openGenericInternalMethodInfo.MakeGenericMethod(builder.Metadata.ClrType);
             method.Invoke(null, new object[] { modelBuilder });
         });
@@ -63,23 +99,11 @@ public static class SoftDeletableExtensions
     {
         var softDeletedEntities = changeTracker
             .Entries<ISoftDeletableEntity>()
-            .Where(x => x.State == EntityState.Deleted && !x.Entity.HardDelete);
-
-        var hardDeletedEntities = changeTracker
-            .Entries<ISoftDeletableEntity>()
-            .Where(x => x.State == EntityState.Modified && x.Entity.HardDelete);
+            .Where(x => x.State is EntityState.Modified or EntityState.Added && x.Entity.Deleted);
 
         foreach (var entity in softDeletedEntities)
         {
-            // Change to modified so EF will update the soft deleted 
-            // entity, instead of hard deleting it.
-            entity.State = EntityState.Modified;
             entity.Entity.SoftDelete(utcNow);
-        }
-
-        foreach (var entity in hardDeletedEntities)
-        {
-            entity.State = EntityState.Deleted;
         }
 
         return changeTracker;

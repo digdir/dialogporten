@@ -1,5 +1,5 @@
-﻿using Digdir.Domain.Dialogporten.Domain.Common;
-using System.Text.Json;
+﻿using System.Text.Json;
+using Digdir.Library.Entity.Abstractions.Features.EventPublisher;
 
 namespace Digdir.Domain.Dialogporten.Domain.Outboxes;
 

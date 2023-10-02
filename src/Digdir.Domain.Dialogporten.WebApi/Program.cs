@@ -1,6 +1,5 @@
 using Digdir.Domain.Dialogporten.Application;
 using Digdir.Domain.Dialogporten.Infrastructure;
-using Digdir.Domain.Dialogporten.Infrastructure.DomainEvents.Outbox.Dispatcher;
 using Digdir.Domain.Dialogporten.WebApi;
 using Digdir.Domain.Dialogporten.WebApi.Common;
 using FastEndpoints;
@@ -10,6 +9,7 @@ using Serilog;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
 using System.Collections;
+using Digdir.Domain.Dialogporten.Infrastructure.DomainEvents.Outbox.Dispatcher;
 using Digdir.Domain.Dialogporten.WebApi.Common.JsonConverters;
 
 // Using two-stage initialization to catch startup errors.

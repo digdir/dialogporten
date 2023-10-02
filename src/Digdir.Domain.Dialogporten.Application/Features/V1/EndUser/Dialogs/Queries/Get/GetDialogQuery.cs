@@ -4,7 +4,6 @@ using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Events;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
@@ -23,7 +22,6 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
 {
     private readonly IDialogDbContext _db;
     private readonly IMapper _mapper;
-    private readonly IDomainEventPublisher _eventPublisher;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ITransactionTime _transactionTime;
     private readonly IClock _clock;
@@ -31,14 +29,12 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
     public GetDialogQueryHandler(
         IDialogDbContext db,
         IMapper mapper,
-        IDomainEventPublisher eventPublisher,
         IUnitOfWork unitOfWork,
         ITransactionTime transactionTime,
         IClock clock)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-        _eventPublisher = eventPublisher ?? throw new ArgumentNullException(nameof(eventPublisher));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _transactionTime = transactionTime ?? throw new ArgumentNullException(nameof(transactionTime));
         _clock = clock ?? throw new ArgumentNullException(nameof(clock));
@@ -64,7 +60,6 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
                 .ThenInclude(x => x.Endpoints.OrderBy(x => x.CreatedAt).ThenBy(x => x.Id))
             .Where(x => !x.VisibleFrom.HasValue || x.VisibleFrom < _clock.UtcNowOffset)
             .IgnoreQueryFilters()
-            .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == request.DialogId, cancellationToken);
 
         if (dialog is null)
@@ -77,28 +72,18 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
             return new EntityDeleted<DialogEntity>(request.DialogId);
         }
 
-        if ((dialog.ReadAt ?? DateTimeOffset.MinValue) < dialog.UpdatedAt)
-        {
-            dialog.ReadAt = await UpdateReadAt(request.DialogId, cancellationToken);
-        }
-
-        var dto = _mapper.Map<GetDialogDto>(dialog);
-
-        return dto;
-    }
-
-    private async Task<DateTimeOffset?> UpdateReadAt(Guid dialogId, CancellationToken cancellationToken)
-    {
-        var modifiableDialog = await _db.Dialogs.FindAsync(new object[] { dialogId }, cancellationToken: cancellationToken);
-        _eventPublisher.Publish(new DialogReadDomainEvent(dialogId));
-        modifiableDialog!.ReadAt = _transactionTime.Value;
+        dialog.UpdateReadAt(_transactionTime.Value);
+        
         var saveResult = await _unitOfWork
             .WithoutAuditableSideEffects()
             .SaveChangesAsync(cancellationToken);
+        
         saveResult.Switch(
             success => { },
             domainError => throw new UnreachableException("Should not get domain error when updating ReadAt."),
             concurrencyError => throw new UnreachableException("Should not get concurrencyError when updating ReadAt."));
-        return modifiableDialog.ReadAt;
+        
+        var dto = _mapper.Map<GetDialogDto>(dialog);
+        return dto;
     }
 }

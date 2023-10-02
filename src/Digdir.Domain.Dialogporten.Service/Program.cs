@@ -84,4 +84,3 @@ static void BuildAndRun(string[] args)
     app.UseHttpsRedirection();
     app.Run(); 
 }
-
