@@ -23,7 +23,6 @@ public class DialogEntity :
     public DateTimeOffset CreatedAt { get; set; }
     public DateTimeOffset UpdatedAt { get; set; }
     public bool Deleted { get; set; }
-    public bool HardDelete { get; set; }
     public DateTimeOffset? DeletedAt { get; set; }
 
     // TODO: Hent dette fra token?
@@ -73,6 +72,7 @@ public class DialogEntity :
             dialogElement.SoftDelete();
         }
     }
+
     public void OnCreate(AggregateNode self, DateTimeOffset utcNow)
     {
         _domainEvents.Add(new DialogCreatedDomainEvent(Id));

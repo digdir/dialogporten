@@ -2,6 +2,7 @@
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
+using Digdir.Library.Entity.EntityFrameworkCore.Features.SoftDeletable;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
@@ -42,11 +43,7 @@ internal sealed class DeleteDialogCommandHandler : IRequestHandler<DeleteDialogC
         }
 
         _db.TrySetOriginalETag(dialog, request.ETag);
-
-        dialog.SoftDelete();
-        
-        _db.Dialogs.Remove(dialog);
-
+        _db.Dialogs.SoftRemove(dialog);
         var saveResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
         return saveResult.Match<DeleteDialogResult>(
             success => success,

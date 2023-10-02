@@ -1,4 +1,5 @@
-﻿using Digdir.Library.Entity.Abstractions.Features.Updatable;
+﻿using Digdir.Library.Entity.Abstractions.Features.SoftDeletable;
+using Digdir.Library.Entity.Abstractions.Features.Updatable;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
@@ -16,7 +17,7 @@ internal static class UpdatableExtensions
     {
         var updatableEntities = changeTracker
             .Entries<IUpdateableEntity>()
-            .Where(x => x.State is EntityState.Added or EntityState.Modified);
+            .Where(x => x.State is EntityState.Added or EntityState.Modified && (x.Entity is not ISoftDeletableEntity deletable || !deletable.Deleted));
 
         foreach (var entity in updatableEntities)
         {
