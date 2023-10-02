@@ -43,7 +43,7 @@ internal sealed class DialogElementEventToAltinnForwarder : DomainEventToAltinnF
         
         if (domainEvent.RelatedDialogElementId is not null)
         {
-            data["relatedDialogElementId"] = domainEvent.RelatedDialogElementId.ToString()!;
+            data["relatedDialogElementId"] = domainEvent.RelatedDialogElementId.Value.ToString();
         }
         
         if (domainEvent.Type is not null)
