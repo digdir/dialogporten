@@ -23,6 +23,7 @@ internal class DomainEventToAltinnForwarderBase
     protected async Task<DialogEntity> GetDialog(Guid dialogId, CancellationToken cancellationToken)
     {
         var dialog = await Db.Dialogs
+            .IgnoreQueryFilters()
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == dialogId, cancellationToken);
 
