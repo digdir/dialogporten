@@ -1,6 +1,5 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Infrastructure;
-using Digdir.Domain.Dialogporten.Infrastructure.DomainEvents;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence;
 using Digdir.Library.Entity.Abstractions.Features.Lookup;
 using FluentAssertions;
@@ -36,8 +35,6 @@ public class DialogApplication : IAsyncLifetime
         _rootProvider = new ServiceCollection()
             .AddApplication(Substitute.For<IConfiguration>())
             .AddDbContext<DialogDbContext>(x => x.UseNpgsql(_dbContainer.GetConnectionString()))
-            .AddScoped<DomainEventPublisher>()
-            .AddScoped<IDomainEventPublisher>(x => x.GetRequiredService<DomainEventPublisher>())
             .AddScoped<IDialogDbContext>(x => x.GetRequiredService<DialogDbContext>())
             .AddScoped<IUnitOfWork, UnitOfWork>()
             .BuildServiceProvider();

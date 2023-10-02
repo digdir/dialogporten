@@ -15,4 +15,5 @@
       <ProjectReference Include="..\Digdir.Library.Entity.Abstractions\Digdir.Library.Entity.Abstractions.csproj" />
     </ItemGroup>
 
+
 </Project>

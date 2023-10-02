@@ -19,7 +19,6 @@ public sealed class ListDialogQuery : SortablePaginationParameter<ListDialogQuer
 {
     private string? _searchCultureCode;
 
-    public List<string>? Org { get; init; }
     public List<Uri>? ServiceResource { get; init; }
     public List<string>? Party { get; init; }
     public List<string>? ExtendedStatus { get; init; }
@@ -78,7 +77,6 @@ internal sealed class ListDialogQueryHandler : IRequestHandler<ListDialogQuery, 
         var resourceIds = await _userService.GetCurrentUserResourceIds(cancellationToken);
         var searchExpression = LocalizedSearchExpression(request.Search, request.SearchCultureCode);
         return await _db.Dialogs
-            .WhereIf(!request.Org.IsNullOrEmpty(), x => request.Org!.Contains(x.Org))
             .WhereIf(!request.ServiceResource.IsNullOrEmpty(), x => request.ServiceResource!.Contains(x.ServiceResource))
             .WhereIf(!request.Party.IsNullOrEmpty(), x => request.Party!.Contains(x.Party))
             .WhereIf(!request.ExtendedStatus.IsNullOrEmpty(), x => x.ExtendedStatus != null && request.ExtendedStatus!.Contains(x.ExtendedStatus))

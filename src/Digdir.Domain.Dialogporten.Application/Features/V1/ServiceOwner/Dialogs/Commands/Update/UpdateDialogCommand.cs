@@ -8,8 +8,6 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Events;
-using Digdir.Library.Entity.Abstractions.Features.Identifiable;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
@@ -33,7 +31,6 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILocalizationService _localizationService;
-    private readonly IDomainEventPublisher _eventPublisher;
     private readonly IDomainContext _domainContext;
     private readonly UserService _userService;
 
@@ -42,7 +39,6 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         IMapper mapper,
         IUnitOfWork unitOfWork,
         ILocalizationService localizationService,
-        IDomainEventPublisher eventPublisher,
         IDomainContext domainContext,
         UserService userService)
     {
@@ -50,7 +46,6 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _localizationService = localizationService ?? throw new ArgumentNullException(nameof(localizationService));
-        _eventPublisher = eventPublisher ?? throw new ArgumentNullException(nameof(eventPublisher));
         _domainContext = domainContext ?? throw new ArgumentNullException(nameof(domainContext));
         _userService = userService ?? throw new ArgumentNullException(nameof(userService));
     }
@@ -124,7 +119,6 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
                 update: UpdateApiActions,
                 delete: DeleteDelegate.NoOp);
 
-        _eventPublisher.Publish(new DialogUpdatedDomainEvent(dialog.Id));
 
         var saveResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
         return saveResult.Match<UpdateDialogResult>(
@@ -171,7 +165,6 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
                 $"Entity '{nameof(DialogActivity)}' with the following key(s) already exists: ({string.Join(", ", existingIds)}).");
         }
 
-        _eventPublisher.Publish(newDialogActivities.Select(x => new DialogActivityCreatedDomainEvent(dialog.Id, x.CreateId())));
         dialog.Activities.AddRange(newDialogActivities);
 
         // Tell ef explicitly to add activities as new to the database.

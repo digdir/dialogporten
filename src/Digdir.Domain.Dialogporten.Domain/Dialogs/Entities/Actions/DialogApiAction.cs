@@ -1,5 +1,6 @@
 ﻿using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements;
 using Digdir.Library.Entity.Abstractions;
+using Digdir.Library.Entity.Abstractions.Features.Aggregate;
 
 namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 
@@ -20,5 +21,6 @@ public class DialogApiAction : IEntity
     public DialogElement? DialogElement { get; set; }
 
     // === Principal relationships ===
+    [AggregateChild]
     public List<DialogApiActionEndpoint> Endpoints { get; set; } = new();
 }

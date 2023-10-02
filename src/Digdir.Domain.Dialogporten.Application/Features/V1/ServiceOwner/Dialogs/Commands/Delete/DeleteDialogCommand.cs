@@ -3,7 +3,7 @@ using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Events;
+using Digdir.Library.Entity.EntityFrameworkCore.Features.SoftDeletable;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
@@ -24,19 +24,16 @@ internal sealed class DeleteDialogCommandHandler : IRequestHandler<DeleteDialogC
 {
     private readonly IDialogDbContext _db;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IDomainEventPublisher _eventPublisher;
     private readonly UserService _userService;
 
     public DeleteDialogCommandHandler(
         IDialogDbContext db,
         IUnitOfWork unitOfWork,
-        IDomainEventPublisher eventPublisher,
         UserService userService)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
-        _eventPublisher = eventPublisher ?? throw new ArgumentNullException(nameof(eventPublisher));
-        _userService = userService;
+        _userService = userService ?? throw new ArgumentNullException(nameof(userService));
     }
 
     public async Task<DeleteDialogResult> Handle(DeleteDialogCommand request, CancellationToken cancellationToken)
@@ -44,6 +41,7 @@ internal sealed class DeleteDialogCommandHandler : IRequestHandler<DeleteDialogC
         var resourceIds = await _userService.GetCurrentUserResourceIds(cancellationToken);
 
         var dialog = await _db.Dialogs
+            .Include(x => x.Elements)
             .Where(x => resourceIds.Contains(x.ServiceResource.ToString()))
             .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
 
@@ -53,14 +51,7 @@ internal sealed class DeleteDialogCommandHandler : IRequestHandler<DeleteDialogC
         }
 
         _db.TrySetOriginalETag(dialog, request.ETag);
-
-        _db.Dialogs.Remove(dialog);
-        _eventPublisher.Publish(
-            new DialogDeletedDomainEvent(
-                dialog.Id, 
-                dialog.ServiceResource.ToString(), 
-                dialog.Party));
-
+        _db.Dialogs.SoftRemove(dialog);
         var saveResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
         return saveResult.Match<DeleteDialogResult>(
             success => success,

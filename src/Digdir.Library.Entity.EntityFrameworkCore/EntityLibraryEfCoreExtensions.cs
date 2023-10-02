@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Digdir.Library.Entity.Abstractions.Features.Creatable;
+using Digdir.Library.Entity.Abstractions.Features.EventPublisher;
 using Digdir.Library.Entity.Abstractions.Features.Identifiable;
 using Digdir.Library.Entity.Abstractions.Features.Lookup;
 using Digdir.Library.Entity.Abstractions.Features.SoftDeletable;
@@ -14,6 +15,8 @@ using Digdir.Library.Entity.Abstractions.Features.Updatable;
 using Digdir.Library.Entity.EntityFrameworkCore.Features.Immutable;
 using Digdir.Library.Entity.EntityFrameworkCore.Features.Versionable;
 using Digdir.Library.Entity.Abstractions.Features.Versionable;
+using Digdir.Library.Entity.EntityFrameworkCore.Features.Aggregate;
+using Digdir.Library.Entity.EntityFrameworkCore.Features.EventPublisher;
 
 namespace Digdir.Library.Entity.EntityFrameworkCore;
 
@@ -39,17 +42,18 @@ public static class EntityLibraryEfCoreExtensions
     /// </remarks>
     /// <param name="changeTracker">The change tracker.</param>
     /// <param name="utcNow">The time in UTC in which the changes tok place.</param>
+    /// <param name="cancellationToken">A token for requesting cancellation of the operation.</param>
     /// <returns>The same <see cref="ChangeTracker"/> instance so that multiple calls can be chained.</returns>
-    public static ChangeTracker HandleAuditableEntities(this ChangeTracker changeTracker, DateTimeOffset utcNow)
+    public static async Task<ChangeTracker> HandleAuditableEntities(this ChangeTracker changeTracker, DateTimeOffset utcNow, CancellationToken cancellationToken = default)
     {
-        return changeTracker
-            .HandleLookupEntities()
+        changeTracker.HandleLookupEntities()
             .HandleIdentifiableEntities()
             .HandleImmutableEntities()
-            .HandleVersionableEntities()
-            .HandleCreatableEntities(utcNow)
-            .HandleUpdatableEntities(utcNow)
-            .HandleSoftDeletableEntities(utcNow);
+            //.HandleVersionableEntities()
+            .HandleCreatableEntities(utcNow);
+            //.HandleUpdatableEntities(utcNow);
+        await changeTracker.HandleAggregateEntities(utcNow, cancellationToken);
+        return changeTracker.HandleSoftDeletableEntities(utcNow);
     }
 
     /// <summary>
@@ -62,6 +66,7 @@ public static class EntityLibraryEfCoreExtensions
     ///     <item><see cref="ISoftDeletableEntity"/></item>
     ///     <item><see cref="IIdentifiableEntity"/></item>
     ///     <item><see cref="IVersionableEntity"/></item>
+    ///     <item><see cref="IEventPublisher"/></item>
     /// </list>
     /// </summary>
     /// <param name="modelBuilder">The model builder.</param>
@@ -75,7 +80,8 @@ public static class EntityLibraryEfCoreExtensions
             .AddVersionableEntities()
             .AddUpdatableEntities()
             .AddCreatableEntities()
-            .AddLookupEntities();
+            .AddLookupEntities()
+            .AddEventPublisher();
     }
 
     /// <summary>

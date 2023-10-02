@@ -6,12 +6,6 @@
 public interface ISoftDeletableEntity
 {
     /// <summary>
-    /// Indicating whether or not the entity is to be permanently deleted. 
-    /// True if the entity is to be permanently deleted, otherwise false.
-    /// </summary>
-    bool HardDelete { get; set; }
-
-    /// <summary>
     /// Indicating whether or not the entity is soft deleted. 
     /// True if the entity is soft deleted, otherwise false.
     /// </summary>
@@ -24,4 +18,9 @@ public interface ISoftDeletableEntity
     /// Value will be null if the entity never has been soft deleted, or it is restored.
     /// </remarks>
     DateTimeOffset? DeletedAt { get; set; }
+
+    /// <summary>
+    /// Marks a entity as soft deleted.
+    /// </summary>
+    void SoftDelete() => Deleted = true;
 }

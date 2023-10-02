@@ -1,17 +1,16 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Domain.Outboxes;
+using Digdir.Library.Entity.Abstractions.Features.EventPublisher;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.DomainEvents.Outbox;
 
 internal sealed class ConvertDomainEventsToOutboxMessagesInterceptor : SaveChangesInterceptor
 {
-    private readonly DomainEventPublisher _eventPublisher;
     private readonly ITransactionTime _transactionTime;
 
-    public ConvertDomainEventsToOutboxMessagesInterceptor(DomainEventPublisher eventPublisher, ITransactionTime transactionTime)
+    public ConvertDomainEventsToOutboxMessagesInterceptor(ITransactionTime transactionTime)
     {
-        _eventPublisher = eventPublisher ?? throw new ArgumentNullException(nameof(eventPublisher));
         _transactionTime = transactionTime ?? throw new ArgumentNullException(nameof(transactionTime));
     }
 
@@ -27,7 +26,13 @@ internal sealed class ConvertDomainEventsToOutboxMessagesInterceptor : SaveChang
             return base.SavingChangesAsync(eventData, result, cancellationToken);
         }
 
-        var domainEvents = _eventPublisher.PopDomainEvents();
+        var domainEvents = dbContext.ChangeTracker.Entries()
+            .SelectMany(x =>
+                x.Entity is IEventPublisher publisher 
+                    ? publisher.DomainEvents 
+                    : Enumerable.Empty<IDomainEvent>())
+            .ToList();
+        
         foreach (var domainEvent in domainEvents)
         {
             domainEvent.OccuredAt = _transactionTime.Value;

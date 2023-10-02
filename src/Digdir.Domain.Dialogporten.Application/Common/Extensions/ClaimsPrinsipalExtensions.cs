@@ -33,7 +33,7 @@ public static class ClaimsPrinsipalExtensions
         }
 
         if (!consumerClaimJson.TryGetValue(AuthorityClaim, out var authority) ||
-            string.Equals(authority, AuthorityValue, StringComparison.InvariantCultureIgnoreCase))
+            !string.Equals(authority, AuthorityValue, StringComparison.InvariantCultureIgnoreCase))
         {
             return false;
         }

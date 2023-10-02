@@ -1,6 +1,7 @@
 using Digdir.Domain.Dialogporten.Application;
 using Digdir.Domain.Dialogporten.Infrastructure;
 using Digdir.Domain.Dialogporten.Infrastructure.DomainEvents.Outbox.Dispatcher;
+using Digdir.Domain.Dialogporten.WebApi.Common;
 using FastEndpoints;
 using FastEndpoints.Swagger;
 using Microsoft.ApplicationInsights.Extensibility;
@@ -16,7 +17,6 @@ using FluentValidation;
 using System.Reflection;
 using Digdir.Domain.Dialogporten.WebApi.Common.OptionExtensions;
 using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
-using Digdir.Domain.Dialogporten.WebApi.Common;
 
 // Using two-stage initialization to catch startup errors.
 Log.Logger = new LoggerConfiguration()

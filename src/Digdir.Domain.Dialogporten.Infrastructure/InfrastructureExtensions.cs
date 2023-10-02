@@ -2,7 +2,6 @@
 using Altinn.ApiClients.Maskinporten.Interfaces;
 using Altinn.ApiClients.Maskinporten.Services;
 using Digdir.Domain.Dialogporten.Application.Externals;
-using Digdir.Domain.Dialogporten.Infrastructure.DomainEvents;
 using Digdir.Domain.Dialogporten.Infrastructure.DomainEvents.Outbox;
 using Digdir.Domain.Dialogporten.Infrastructure.DomainEvents.Outbox.Dispatcher;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence;
@@ -59,8 +58,6 @@ public static class InfrastructureExtensions
             // Singleton
 
             // Scoped
-            .AddScoped<DomainEventPublisher>()
-            .AddScoped<IDomainEventPublisher>(x => x.GetRequiredService<DomainEventPublisher>())
             .AddScoped<IDialogDbContext>(x => x.GetRequiredService<DialogDbContext>())
             .AddScoped<IUnitOfWork, UnitOfWork>()
 
