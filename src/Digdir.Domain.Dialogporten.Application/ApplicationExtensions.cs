@@ -30,6 +30,7 @@ public static class ApplicationExtensions
             .AddScoped<ITransactionTime, TransactionTime>()
 
             // Transient
+            .AddTransient<UserService>()
             .AddTransient<ILocalizationService, LocalizationService>()
             .AddTransient<IClock, Clock>()
             .AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>))

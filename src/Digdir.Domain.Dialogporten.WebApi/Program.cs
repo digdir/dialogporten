@@ -14,6 +14,9 @@ using Digdir.Domain.Dialogporten.WebApi.Common.Options;
 using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 using FluentValidation;
 using System.Reflection;
+using Digdir.Domain.Dialogporten.WebApi.Common.OptionExtensions;
+using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
+using Digdir.Domain.Dialogporten.WebApi.Common;
 
 // Using two-stage initialization to catch startup errors.
 Log.Logger = new LoggerConfiguration()
@@ -53,11 +56,11 @@ static void BuildAndRun(string[] args)
 
     builder.Configuration.AddAzureConfiguration(builder.Environment.EnvironmentName);
 
-    //builder.Services
-    //    .AddOptions<AuthenticationOptions>()
-    //    .Bind(builder.Configuration.GetSection(AuthenticationOptions.SectionName))
-    //    .ValidateFluently()
-    //    .ValidateOnStart();
+    builder.Services
+        .AddOptions<AuthenticationOptions>()
+        .Bind(builder.Configuration.GetSection(AuthenticationOptions.SectionName))
+        .ValidateFluently()
+        .ValidateOnStart();
 
     if (!builder.Environment.IsDevelopment())
     {
@@ -78,6 +81,8 @@ static void BuildAndRun(string[] args)
         .AddInfrastructure(builder.Configuration.GetSection(InfrastructureSettings.ConfigurationSectionName), builder.Environment)
 
         // Asp infrastructure
+        .AddScoped<IUser, ApplicationUser>()
+        .AddHttpContextAccessor()
         .AddValidatorsFromAssembly(thisAssembly, includeInternalTypes: true)
         .AddAzureAppConfiguration()
         .AddApplicationInsightsTelemetry()

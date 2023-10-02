@@ -75,7 +75,7 @@ public static class InfrastructureExtensions
         services.AddMaskinportenHttpClient<ICloudEventBus, AltinnEventsClient, SettingsJwkClientDefinition>(
                 configurationSection, x => x.ClientSettings.ExhangeToAltinnToken = true);
         services.AddHttpClient<IResourceRegistry, ResourceRegistryClient>((services, client) => 
-                client.BaseAddress = services.GetRequiredService<InfrastructureSettings>().Altinn.BaseUri)
+                client.BaseAddress = services.GetRequiredService<IOptions<InfrastructureSettings>>().Value.Altinn.BaseUri)
             .AddPolicyHandlerFromRegistry(PollyPolicy.DefaultHttpRetryPolicy);
 
         if (environment.IsDevelopment())
