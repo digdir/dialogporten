@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using System.Diagnostics.CodeAnalysis;
 using Digdir.Domain.Dialogporten.Application.Common.Numbers;
+using System.Text.Json;
 
 namespace Digdir.Domain.Dialogporten.Application.Common.Extensions;
 
@@ -24,13 +25,20 @@ public static class ClaimsPrinsipalExtensions
             return false;
         }
 
-        if (!consumerClaim.Properties.TryGetValue(AuthorityClaim, out var authority) ||
-                 authority != AuthorityValue)
+        var consumerClaimJson = JsonSerializer.Deserialize<Dictionary<string, string>>(consumerClaim.Value);
+
+        if (consumerClaimJson is null)
         {
             return false;
         }
 
-        if (!consumerClaim.Properties.TryGetValue(IdClaim, out var id))
+        if (!consumerClaimJson.TryGetValue(AuthorityClaim, out var authority) ||
+            string.Equals(authority, AuthorityValue, StringComparison.InvariantCultureIgnoreCase))
+        {
+            return false;
+        }
+
+        if (!consumerClaimJson.TryGetValue(IdClaim, out var id))
         {
             return false;
         }
