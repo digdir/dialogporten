@@ -15,6 +15,11 @@ RUN dotnet build "Digdir.Domain.Dialogporten.Service.csproj" -c Release -o /app/
 RUN dotnet publish "Digdir.Domain.Dialogporten.Service.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
+
+RUN adduser appuser && chown -R appuser /app
+
+USER appuser
+
 WORKDIR /app
 COPY --from=build /app/publish .
 ENTRYPOINT ["dotnet", "Digdir.Domain.Dialogporten.Service.dll"]
