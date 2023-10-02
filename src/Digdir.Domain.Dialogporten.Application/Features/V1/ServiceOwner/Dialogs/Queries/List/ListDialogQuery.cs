@@ -8,10 +8,10 @@ using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Localizations;
-using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
 using MediatR;
 using OneOf;
 using static Digdir.Domain.Dialogporten.Application.Common.Expressions;
+using Digdir.Domain.Dialogporten.Application.Common;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Queries.List;
 
@@ -61,38 +61,22 @@ internal sealed class ListDialogQueryHandler : IRequestHandler<ListDialogQuery, 
 {
     private readonly IDialogDbContext _db;
     private readonly IMapper _mapper;
-    private readonly IResourceRegistry _resourceRegistry;
-    private readonly IUser _user;
+    private readonly UserService _userService;
 
     public ListDialogQueryHandler(
         IDialogDbContext db,
         IMapper mapper,
-        IResourceRegistry resourceRegistry,
-        IUser user)
+        UserService userService)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-        _resourceRegistry = resourceRegistry ?? throw new ArgumentNullException(nameof(resourceRegistry));
-        _user = user ?? throw new ArgumentNullException(nameof(user));
+        _userService = userService ?? throw new ArgumentNullException(nameof(userService));
     }
 
     public async Task<ListDialogResult> Handle(ListDialogQuery request, CancellationToken cancellationToken)
     {
+        var resourceIds = await _userService.GetCurrentUserResourceIds(cancellationToken);
         var searchExpression = LocalizedSearchExpression(request.Search, request.SearchCultureCode);
-
-        if (!_user.TryGetOrgNumber(out var orgNumber))
-        {
-            // TODO: return Unauthorized
-            throw new Exception();
-        }
-
-        var resourceIds = await _resourceRegistry.GetResourceIds(orgNumber, cancellationToken);
-
-        if (resourceIds.Length == 0)
-        {
-            return PaginatedList<ListDialogDto>.Empty(request);
-        }
-
         return await _db.Dialogs
             .WhereIf(!request.Org.IsNullOrEmpty(), x => request.Org!.Contains(x.Org))
             .WhereIf(!request.ServiceResource.IsNullOrEmpty(), x => request.ServiceResource!.Contains(x.ServiceResource))

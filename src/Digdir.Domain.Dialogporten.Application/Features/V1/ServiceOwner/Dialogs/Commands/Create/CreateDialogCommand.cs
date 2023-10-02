@@ -1,10 +1,8 @@
 ﻿using System.Diagnostics;
 using AutoMapper;
 using Digdir.Domain.Dialogporten.Application.Common;
-using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
-using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
 using Digdir.Domain.Dialogporten.Domain.Common;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
@@ -20,7 +18,7 @@ namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialog
 public sealed class CreateDialogCommand : CreateDialogDto, IRequest<CreateDialogResult> { }
 
 [GenerateOneOf]
-public partial class CreateDialogResult : OneOfBase<Success<Guid>, DomainError, ValidationError> { }
+public partial class CreateDialogResult : OneOfBase<Success<Guid>, DomainError, ValidationError, Unauthorized> { }
 
 internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogCommand, CreateDialogResult>
 {
@@ -29,8 +27,7 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
     private readonly IUnitOfWork _unitOfWork;
     private readonly IDomainEventPublisher _eventPublisher;
     private readonly IDomainContext _domainContext;
-    private readonly IResourceRegistry _resourceRegistry;
-    private readonly IUser _user;
+    private readonly UserService _userService;
 
     public CreateDialogCommandHandler(
         IDialogDbContext db,
@@ -38,32 +35,21 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
         IUnitOfWork unitOfWork,
         IDomainEventPublisher eventPublisher,
         IDomainContext domainContext,
-        IUser user,
-        IResourceRegistry resourceRegistry)
+        UserService userService)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _eventPublisher = eventPublisher ?? throw new ArgumentNullException(nameof(eventPublisher));
         _domainContext = domainContext ?? throw new ArgumentNullException(nameof(domainContext));
-        _user = user ?? throw new ArgumentNullException(nameof(user));
-        _resourceRegistry = resourceRegistry ?? throw new ArgumentNullException(nameof(resourceRegistry));
+        _userService = userService ?? throw new ArgumentNullException(nameof(userService));
     }
 
     public async Task<CreateDialogResult> Handle(CreateDialogCommand request, CancellationToken cancellationToken)
     {
-        var ownerOrgNumber = await _resourceRegistry
-            .GetOrgOwner(request.ServiceResource.ToString(), cancellationToken);
-
-        if (!_user.TryGetOrgNumber(out var orgNumber))
+        if (!await _userService.CurrentUserIsOwner(request.ServiceResource, cancellationToken))
         {
-            throw new UnreachableException();
-        }
-
-        if (ownerOrgNumber != orgNumber)
-        {
-            // TODO: Return Unauthorized
-            throw new Exception();
+            return new Unauthorized();
         }
 
         var dialog = _mapper.Map<DialogEntity>(request);

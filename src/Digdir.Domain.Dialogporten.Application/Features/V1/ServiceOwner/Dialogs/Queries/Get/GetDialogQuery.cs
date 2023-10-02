@@ -1,9 +1,8 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using Digdir.Domain.Dialogporten.Application.Common.Extensions;
+using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
-using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -23,36 +22,21 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
 {
     private readonly IDialogDbContext _db;
     private readonly IMapper _mapper;
-    private readonly IResourceRegistry _resourceRegistry;
-    private readonly IUser _user;
+    private readonly UserService _userService;
 
     public GetDialogQueryHandler(
-        IDialogDbContext db, 
+        IDialogDbContext db,
         IMapper mapper,
-        IResourceRegistry resourceRegistry,
-        IUser user)
+        UserService userService)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-        _resourceRegistry = resourceRegistry ?? throw new ArgumentNullException(nameof(resourceRegistry));
-        _user = user ?? throw new ArgumentNullException(nameof(user));
+        _userService = userService ?? throw new ArgumentNullException(nameof(userService));
     }
 
     public async Task<GetDialogResult> Handle(GetDialogQuery request, CancellationToken cancellationToken)
     {
-        if (!_user.TryGetOrgNumber(out var orgNumber))
-        {
-            // TODO: return Unauthorized
-            throw new Exception();
-        }
-
-        var resourceIds = await _resourceRegistry.GetResourceIds(orgNumber, cancellationToken);
-
-        if (resourceIds.Length == 0)
-        {
-            // TODO: Unauthorized eller not found? 
-            return new EntityNotFound<DialogEntity>(request.DialogId);
-        }
+        var resourceIds = await _userService.GetCurrentUserResourceIds(cancellationToken);
 
         // This query could be written without all the includes as ProjectTo will do the job for us.
         // However, we need to guarantee an order for sub resources of the dialog aggregate.

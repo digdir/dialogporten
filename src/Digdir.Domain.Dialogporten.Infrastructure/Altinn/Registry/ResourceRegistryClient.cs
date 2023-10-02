@@ -21,32 +21,21 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
         _cache = cache ?? throw new ArgumentNullException(nameof(cache));
     }
 
-    public async Task<string?> GetOrgOwner(string resourceId, CancellationToken cancellationToken)
-    {
-        var reference = await _cache.GetOrAddAsync(
-            OrgResourceReferenceCacheKey,
-            GetOrgResourceReference,
-            CacheOptionsFactory,
-            cancellationToken: cancellationToken);
-        reference.OrgByResourceId.TryGetValue(resourceId, out var owner);
-        return owner;
-    }
-
     public async Task<string[]> GetResourceIds(string org, CancellationToken cancellationToken)
     {
-        var reference = await _cache.GetOrAddAsync(
+        var resourceIdsByOrg = await _cache.GetOrAddAsync(
             OrgResourceReferenceCacheKey,
-            GetOrgResourceReference,
+            GetResourceIdsByOrg,
             CacheOptionsFactory,
             cancellationToken: cancellationToken);
-        reference.ResourceIdsByOrg.TryGetValue(org, out var resourceIds);
+        resourceIdsByOrg.TryGetValue(org, out var resourceIds);
         return resourceIds ?? Array.Empty<string>();
     }
 
-    private static DistributedCacheEntryOptions? CacheOptionsFactory(OrgResourceReference reference) => 
-        reference is not null ? _oneDayCacheDuration : _zeroCacheDuration;
+    private static DistributedCacheEntryOptions? CacheOptionsFactory(Dictionary<string, string[]>? resourceIdsByOrg) => 
+        resourceIdsByOrg is not null ? _oneDayCacheDuration : _zeroCacheDuration;
 
-    private async Task<OrgResourceReference> GetOrgResourceReference(CancellationToken cancellationToken)
+    private async Task<Dictionary<string, string[]>> GetResourceIdsByOrg(CancellationToken cancellationToken)
     {
         const string SearchEndpoint = "resourceregistry/api/v1/resource/search";
         var response = await _client.GetFromJsonAsync<List<ResourceRegistryResponse>>(SearchEndpoint, cancellationToken);
@@ -56,13 +45,11 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
             throw new UnreachableException();
         }
 
-        var orgByResourceId = response
-            .ToDictionary(x => x.Identifier, x => x.HasCompetentAuthority.Organization);
         var resourceIdsByOrg = response
             .GroupBy(x => x.HasCompetentAuthority.Organization)
             .ToDictionary(x => x.Key, x => x.Select(x => x.Identifier).ToArray());
 
-        return new(orgByResourceId, resourceIdsByOrg);
+        return resourceIdsByOrg;
     }
 
     private sealed class ResourceRegistryResponse
@@ -75,8 +62,4 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
     {
         public required string Organization { get; init; }
     }
-
-    private sealed record OrgResourceReference(
-        Dictionary<string, string> OrgByResourceId,
-        Dictionary<string, string[]> ResourceIdsByOrg);
 }
