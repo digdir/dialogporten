@@ -12,7 +12,7 @@ public class DomainFailure
     }
 
     private static DomainFailure EntityExists(string propertyName, string entityName, IEnumerable<Guid> keys)
-        => new(propertyName, $"Entity '{entityName}' with the following key(s) allready exists: ({string.Join(", ", keys)}).");
+        => new(propertyName, $"Entity '{entityName}' with the following key(s) already exists: ({string.Join(", ", keys)}).");
 
     public static DomainFailure EntityExists<T>(IEnumerable<Guid> keys)
     {
