@@ -39,7 +39,7 @@ static void BuildAndRun(string[] args)
     var builder = WebApplication.CreateBuilder(args);
 
     builder.Host.UseSerilog((context, services, configuration) => configuration
-        .MinimumLevel.Warning()
+        .MinimumLevel.Information()
         .MinimumLevel.Override("Microsoft.EntityFrameworkCore", Serilog.Events.LogEventLevel.Fatal)
         .ReadFrom.Configuration(context.Configuration)
         .ReadFrom.Services(services)
