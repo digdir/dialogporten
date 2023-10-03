@@ -101,7 +101,7 @@ public static class InfrastructureExtensions
         where TClientDefinition : class, IClientDefinition
     {
         var settings = configuration.Get<InfrastructureSettings>();
-        services.RegisterMaskinportenClientDefinition<TClientDefinition>(typeof(TClient)!.FullName, settings!.MaskinportenSettings);
+        services.RegisterMaskinportenClientDefinition<TClientDefinition>(typeof(TClient)!.FullName, settings!.Maskinporten);
         return services
             .AddHttpClient<TClient, TImplementation>()
             .AddMaskinportenHttpMessageHandler<TClientDefinition, TClient>(configureClientDefinition);

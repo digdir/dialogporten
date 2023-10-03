@@ -8,7 +8,7 @@ public sealed class InfrastructureSettings
 
     public required string DialogDbConnectionString { get; init; }
     public required AltinnPlatformSettings Altinn { get; init; }
-    public required MaskinportenSettings MaskinportenSettings { get; init; }
+    public required MaskinportenSettings Maskinporten { get; init; }
 }
 
 public sealed class AltinnPlatformSettings
