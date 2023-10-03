@@ -17,8 +17,8 @@ internal class AltinnEventsClient : ICloudEventBus
 
     public async Task Publish(CloudEvent cloudEvent, CancellationToken cancellationToken)
     {
-        // TODO: Config Altinn endpoint
-        var msg = new HttpRequestMessage(HttpMethod.Post, "https://platform.tt02.altinn.no/events/api/v1/events")
+        var uriBuilder = new UriBuilder(_client.BaseAddress!) { Path = "/events/api/v1/events" };
+        var msg = new HttpRequestMessage(HttpMethod.Post, uriBuilder.Uri)
         {
             Content = JsonContent.Create(cloudEvent, options: SerializerOptions.CloudEventSerializerOptions)
         };

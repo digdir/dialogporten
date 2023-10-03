@@ -1,21 +1,22 @@
-﻿using Digdir.Domain.Dialogporten.WebApi.Common.Options;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 
 internal sealed class AuthorizationOptionsSetup : IConfigureOptions<AuthorizationOptions>
 {
-    private readonly AuthenticationOptions _options;
+    private readonly WebApiOptions _options;
 
-    public AuthorizationOptionsSetup(IOptions<AuthenticationOptions> options)
+    public AuthorizationOptionsSetup(IOptions<WebApiOptions> options)
     {
         _options = options.Value;
     }
 
     public void Configure(AuthorizationOptions options)
     {
-        var authenticatonSchemas = _options.JwtBearerTokenSchemas
+        var authenticatonSchemas = _options
+            .Authentication
+            .JwtBearerTokenSchemas
             .Select(x => x.Name)
             .ToArray();
 

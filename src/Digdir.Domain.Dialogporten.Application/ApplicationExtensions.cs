@@ -1,5 +1,6 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Common.Behaviours;
+using Digdir.Domain.Dialogporten.Application.Common.Extensions.OptionExtensions;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using FluentValidation;
 using MediatR;
@@ -16,6 +17,12 @@ public static class ApplicationExtensions
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(configurationSection);
         var thisAssembly = Assembly.GetExecutingAssembly();
+
+        services.AddOptions<ApplicationSettings>()
+            .Bind(configurationSection)
+            .ValidateFluently()
+            .ValidateOnStart();
+
         return services
             // Settings
             .Configure<ApplicationSettings>(configurationSection)
@@ -23,7 +30,7 @@ public static class ApplicationExtensions
             // Framework
             .AddAutoMapper(thisAssembly)
             .AddMediatR(x => x.RegisterServicesFromAssembly(thisAssembly))
-            .AddValidatorsFromAssembly(thisAssembly, includeInternalTypes: true)
+            .AddValidatorsFromAssembly(thisAssembly, ServiceLifetime.Transient, includeInternalTypes: true)
 
             // Scoped
             .AddScoped<IDomainContext, DomainContext>()

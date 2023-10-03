@@ -1,5 +1,5 @@
-﻿using Digdir.Domain.Dialogporten.WebApi.Common.Options;
-using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.IdentityModel.Tokens;
+using System.Diagnostics;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
 
@@ -9,24 +9,21 @@ internal static class ServiceCollectionExtensions
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        var authOptions = configuration
-            .GetSection(AuthenticationOptions.SectionName)
-            .Get<AuthenticationOptions>();
+        var jwtTokenSchemas = configuration
+            .GetSection(WebApiOptions.SectionName)
+            .Get<WebApiOptions>()
+            ?.Authentication
+            ?.JwtBearerTokenSchemas;
 
-        // TODO: Validate configuration? 
-        if (authOptions is null)
+        if (jwtTokenSchemas is null || jwtTokenSchemas.Count == 0)
         {
-            throw new Exception();
-        }
-
-        if (authOptions.JwtBearerTokenSchemas.Count == 0)
-        {
-            throw new Exception();
+            // Validation should have caught this.
+            throw new UnreachableException();
         }
 
         var authenticationBuilder = services.AddAuthentication();
 
-        foreach (var schema in authOptions.JwtBearerTokenSchemas)
+        foreach (var schema in jwtTokenSchemas)
         {
             authenticationBuilder.AddJwtBearer(schema.Name, options =>
             {

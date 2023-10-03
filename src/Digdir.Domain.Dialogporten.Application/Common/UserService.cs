@@ -18,9 +18,6 @@ internal sealed class UserService
         _resourceRegistry = resourceRegistry ?? throw new ArgumentNullException(nameof(resourceRegistry));
     }
 
-    public Task<bool> CurrentUserIsOwner(Uri serviceResource, CancellationToken cancellationToken)
-        => CurrentUserIsOwner(serviceResource.ToString(), cancellationToken);
-
     public async Task<bool> CurrentUserIsOwner(string serviceResource, CancellationToken cancellationToken)
     {
         var resourceIds = await GetCurrentUserResourceIds(cancellationToken);

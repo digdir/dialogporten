@@ -57,7 +57,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
                 .ThenInclude(x => x.Endpoints.OrderBy(x => x.CreatedAt).ThenBy(x => x.Id))
             .IgnoreQueryFilters()
             .AsNoTracking()
-            .Where(x => resourceIds.Contains(x.ServiceResource.ToString()))
+            .Where(x => resourceIds.Contains(x.ServiceResource))
             .ProjectTo<GetDialogDto>(_mapper.ConfigurationProvider)
             .FirstOrDefaultAsync(x => x.Id == request.DialogId, cancellationToken);
 

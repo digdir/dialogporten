@@ -18,6 +18,7 @@ using Digdir.Domain.Dialogporten.Infrastructure.Common;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.Registry;
 using FluentValidation;
 using System.Reflection;
+using Digdir.Domain.Dialogporten.Application.Common.Extensions.OptionExtensions;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure;
 
@@ -36,14 +37,16 @@ public static class InfrastructureExtensions
                 .WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(medianFirstRetryDelay: TimeSpan.FromSeconds(1), retryCount: 3)));
         });
 
+
+        services.AddOptions<InfrastructureSettings>()
+            .Bind(configurationSection)
+            .ValidateFluently()
+            .ValidateOnStart();
+
         var thisAssembly = Assembly.GetExecutingAssembly();
-
         services
-            // Settings
-            .Configure<InfrastructureSettings>(configurationSection)
-
             // Framework
-            .AddValidatorsFromAssembly(thisAssembly, includeInternalTypes: true)
+            .AddValidatorsFromAssembly(thisAssembly, ServiceLifetime.Transient, includeInternalTypes: true)
             .AddDistributedMemoryCache()
             .AddDbContext<DialogDbContext>((services, options) =>
             {
@@ -69,8 +72,14 @@ public static class InfrastructureExtensions
             .Decorate(typeof(INotificationHandler<>), typeof(IdempotentDomainEventHandler<>));
 
         // HttpClient 
-        services.AddMaskinportenHttpClient<ICloudEventBus, AltinnEventsClient, SettingsJwkClientDefinition>(
-                configurationSection, x => x.ClientSettings.ExhangeToAltinnToken = true);
+        services.
+            AddMaskinportenHttpClient<ICloudEventBus, AltinnEventsClient, SettingsJwkClientDefinition>(
+                configurationSection, 
+                x => x.ClientSettings.ExhangeToAltinnToken = true)
+            .ConfigureHttpClient((services, client) =>
+            {
+                client.BaseAddress = services.GetRequiredService<IOptions<InfrastructureSettings>>().Value.Altinn.BaseUri;
+            });
         services.AddHttpClient<IResourceRegistry, ResourceRegistryClient>((services, client) => 
                 client.BaseAddress = services.GetRequiredService<IOptions<InfrastructureSettings>>().Value.Altinn.BaseUri)
             .AddPolicyHandlerFromRegistry(PollyPolicy.DefaultHttpRetryPolicy);
@@ -93,6 +102,8 @@ public static class InfrastructureExtensions
     {
         var settings = configuration.Get<InfrastructureSettings>();
         services.RegisterMaskinportenClientDefinition<TClientDefinition>(typeof(TClient)!.FullName, settings!.MaskinportenSettings);
-        return services.AddHttpClient<TClient, TImplementation>().AddMaskinportenHttpMessageHandler<TClientDefinition, TClient>(configureClientDefinition);
+        return services
+            .AddHttpClient<TClient, TImplementation>()
+            .AddMaskinportenHttpMessageHandler<TClientDefinition, TClient>(configureClientDefinition);
     }
 }

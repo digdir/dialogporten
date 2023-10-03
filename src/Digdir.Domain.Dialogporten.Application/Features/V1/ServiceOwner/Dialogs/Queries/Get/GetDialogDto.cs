@@ -12,7 +12,7 @@ public sealed class GetDialogDto
     public Guid Id { get; set; }
     public Guid ETag { get; set; }
     public string Org { get; set; } = null!;
-    public Uri ServiceResource { get; set; } = null!;
+    public string ServiceResource { get; set; } = null!;
     public string Party { get; set; } = null!;
     public string? ExtendedStatus { get; set; }
     public DateTimeOffset? DeletedAt { get; set; }

@@ -67,7 +67,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
                 .ThenInclude(x => x.Title!.Localizations)
             .Include(x => x.ApiActions)
                 .ThenInclude(x => x.Endpoints)
-            .Where(x => resourceIds.Contains(x.ServiceResource.ToString()))
+            .Where(x => resourceIds.Contains(x.ServiceResource))
             .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
 
         if (dialog is null)

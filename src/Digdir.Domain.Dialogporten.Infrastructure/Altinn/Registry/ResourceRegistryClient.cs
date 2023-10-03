@@ -1,4 +1,5 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Externals;
+using Digdir.Domain.Dialogporten.Domain.Common;
 using Digdir.Domain.Dialogporten.Infrastructure.Common.Extensions;
 using Microsoft.Extensions.Caching.Distributed;
 using System.Diagnostics;
@@ -47,7 +48,11 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
 
         var resourceIdsByOrg = response
             .GroupBy(x => x.HasCompetentAuthority.Organization)
-            .ToDictionary(x => x.Key, x => x.Select(x => x.Identifier).ToArray());
+            .ToDictionary(
+                x => x.Key, 
+                x => x.Select(x => $"{Constants.ServiceResourcePrefix}{x.Identifier}")
+                    .ToArray()
+            );
 
         return resourceIdsByOrg;
     }

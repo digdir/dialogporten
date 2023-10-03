@@ -11,12 +11,11 @@ using System.Text.Json.Serialization.Metadata;
 using System.Collections;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
 using Digdir.Domain.Dialogporten.WebApi.Common.Json;
-using Digdir.Domain.Dialogporten.WebApi.Common.Options;
 using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 using FluentValidation;
 using System.Reflection;
-using Digdir.Domain.Dialogporten.WebApi.Common.OptionExtensions;
 using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
+using Digdir.Domain.Dialogporten.Application.Common.Extensions.OptionExtensions;
 
 // Using two-stage initialization to catch startup errors.
 Log.Logger = new LoggerConfiguration()
@@ -57,8 +56,8 @@ static void BuildAndRun(string[] args)
     builder.Configuration.AddAzureConfiguration(builder.Environment.EnvironmentName);
 
     builder.Services
-        .AddOptions<AuthenticationOptions>()
-        .Bind(builder.Configuration.GetSection(AuthenticationOptions.SectionName))
+        .AddOptions<WebApiOptions>()
+        .Bind(builder.Configuration.GetSection(WebApiOptions.SectionName))
         .ValidateFluently()
         .ValidateOnStart();
 
@@ -70,10 +69,7 @@ static void BuildAndRun(string[] args)
 
     var thisAssembly = Assembly.GetExecutingAssembly();
     builder.Services
-        // Configuration
-        .Configure<AuthenticationOptions>(builder.Configuration.GetSection(AuthenticationOptions.SectionName))
-
-        // Options
+        // Options setup
         .ConfigureOptions<AuthorizationOptionsSetup>()
 
         // Clean architecture projects
@@ -83,7 +79,7 @@ static void BuildAndRun(string[] args)
         // Asp infrastructure
         .AddScoped<IUser, ApplicationUser>()
         .AddHttpContextAccessor()
-        .AddValidatorsFromAssembly(thisAssembly, includeInternalTypes: true)
+        .AddValidatorsFromAssembly(thisAssembly, ServiceLifetime.Transient, includeInternalTypes: true)
         .AddAzureAppConfiguration()
         .AddApplicationInsightsTelemetry()
         .AddEndpointsApiExplorer()

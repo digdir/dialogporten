@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using Microsoft.Extensions.Options;
 
-namespace Digdir.Domain.Dialogporten.WebApi.Common.OptionExtensions;
+namespace Digdir.Domain.Dialogporten.Application.Common.Extensions.OptionExtensions;
 
 public class FluentValidationOptions<TOptions> : IValidateOptions<TOptions>
     where TOptions : class

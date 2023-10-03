@@ -42,7 +42,7 @@ internal sealed class DeleteDialogCommandHandler : IRequestHandler<DeleteDialogC
 
         var dialog = await _db.Dialogs
             .Include(x => x.Elements)
-            .Where(x => resourceIds.Contains(x.ServiceResource.ToString()))
+            .Where(x => resourceIds.Contains(x.ServiceResource))
             .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
 
         if (dialog is null)

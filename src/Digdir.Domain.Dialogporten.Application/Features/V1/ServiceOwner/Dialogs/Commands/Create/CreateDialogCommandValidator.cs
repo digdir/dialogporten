@@ -23,8 +23,8 @@ internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDia
             .NotNull()
             .IsValidUri()
             .MaximumLength(Constants.DefaultMaxUriLength)
-            .Must(x => x?.ToString().StartsWith("urn:altinn:resource:") ?? false)
-                .WithMessage("'{PropertyName}' must start with 'urn:altinn:resource:'.");
+            .Must(x => x?.StartsWith(Constants.ServiceResourcePrefix) ?? false)
+                .WithMessage($"'{{PropertyName}}' must start with '{Constants.ServiceResourcePrefix}'.");
 
         RuleFor(x => x.Party)
             .Must(x => x is null || x.Split('/') switch

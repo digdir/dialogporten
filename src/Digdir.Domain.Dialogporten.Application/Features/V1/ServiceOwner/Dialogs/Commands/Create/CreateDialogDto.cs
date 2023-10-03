@@ -10,7 +10,7 @@ namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialog
 public class CreateDialogDto
 {
     public Guid? Id { get; set; }
-    public Uri ServiceResource { get; set; } = null!;
+    public string ServiceResource { get; set; } = null!;
     public string Party { get; set; } = null!;
     public string? ExtendedStatus { get; set; }
     public DateTimeOffset? VisibleFrom { get; set; }

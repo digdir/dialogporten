@@ -19,7 +19,7 @@ public sealed class ListDialogQuery : SortablePaginationParameter<ListDialogQuer
 {
     private string? _searchCultureCode;
 
-    public List<Uri>? ServiceResource { get; init; }
+    public List<string>? ServiceResource { get; init; }
     public List<string>? Party { get; init; }
     public List<string>? ExtendedStatus { get; init; }
     public List<DialogStatus.Enum>? Status { get; init; }
@@ -94,7 +94,7 @@ internal sealed class ListDialogQueryHandler : IRequestHandler<ListDialogQuery, 
                 x.SearchTags.Any(x => x.Value == request.Search!.ToLower()) ||
                 x.SenderName!.Localizations.AsQueryable().Any(searchExpression)
             )
-            .Where(x => resourceIds.Contains(x.ServiceResource.ToString()))
+            .Where(x => resourceIds.Contains(x.ServiceResource))
             .ProjectTo<ListDialogDto>(_mapper.ConfigurationProvider)
             .ToPaginatedListAsync(request, cancellationToken: cancellationToken);
     }

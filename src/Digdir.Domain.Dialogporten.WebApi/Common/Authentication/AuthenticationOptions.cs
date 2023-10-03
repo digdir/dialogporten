@@ -1,9 +1,9 @@
-﻿namespace Digdir.Domain.Dialogporten.WebApi.Common.Options;
+﻿using FluentValidation;
+
+namespace Digdir.Domain.Dialogporten.WebApi.Common.Options;
 
 public sealed class AuthenticationOptions
 {
-    public const string SectionName = "Authentication";
-
     public required List<JwtBearerTokenSchemasOptions> JwtBearerTokenSchemas { get; init; }
 }
 
