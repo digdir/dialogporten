@@ -2,5 +2,5 @@
 
 public interface IResourceRegistry
 {
-    Task<string[]> GetResourceIds(string orgNumber, CancellationToken cancellationToken);
+    Task<IReadOnlyCollection<string>> GetResourceIds(string orgNumber, CancellationToken cancellationToken);
 }

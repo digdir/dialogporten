@@ -22,7 +22,7 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
         _cache = cache ?? throw new ArgumentNullException(nameof(cache));
     }
 
-    public async Task<string[]> GetResourceIds(string org, CancellationToken cancellationToken)
+    public async Task<IReadOnlyCollection<string>> GetResourceIds(string org, CancellationToken cancellationToken)
     {
         var resourceIdsByOrg = await _cache.GetOrAddAsync(
             OrgResourceReferenceCacheKey,

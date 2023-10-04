@@ -24,7 +24,7 @@ internal sealed class UserService
         return resourceIds.Contains(serviceResource);
     }
 
-    public Task<string[]> GetCurrentUserResourceIds(CancellationToken cancellationToken)
+    public Task<IReadOnlyCollection<string>> GetCurrentUserResourceIds(CancellationToken cancellationToken)
     {
         if (!_user.TryGetOrgNumber(out var orgNumber))
         {
