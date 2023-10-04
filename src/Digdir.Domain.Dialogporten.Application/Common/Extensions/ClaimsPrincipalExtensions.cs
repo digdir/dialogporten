@@ -6,7 +6,7 @@ using System.Text.Json;
 
 namespace Digdir.Domain.Dialogporten.Application.Common.Extensions;
 
-public static class ClaimsPrinsipalExtensions
+public static class ClaimsPrincipalExtensions
 {
     private const string ConsumerClaim = "consumer";
     private const string AuthorityClaim = "authority";
