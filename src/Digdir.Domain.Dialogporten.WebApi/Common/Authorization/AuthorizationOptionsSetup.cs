@@ -28,10 +28,10 @@ internal sealed class AuthorizationOptionsSetup : IConfigureOptions<Authorizatio
 
         options.AddPolicy(AuthorizationPolicy.Serviceprovider, builder => builder
             .Combine(options.DefaultPolicy)
-            .RequireScope("digdir:dialogporten.serviceprovider"));
+            .RequireScope(AuthorizationScope.Serviceprovider));
 
         options.AddPolicy(AuthorizationPolicy.ServiceproviderSearch, builder => builder
             .Combine(options.DefaultPolicy)
-            .RequireScope("digdir:dialogporten.serviceprovider.search"));
+            .RequireScope(AuthorizationScope.ServiceproviderSearch));
     }
 }

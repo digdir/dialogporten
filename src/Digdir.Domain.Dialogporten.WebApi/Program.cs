@@ -16,6 +16,9 @@ using FluentValidation;
 using System.Reflection;
 using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.OptionExtensions;
+using Digdir.Domain.Dialogporten.WebApi.Common.Authentication;
+using Digdir.Domain.Dialogporten.Application.Common.Extensions;
+using Microsoft.AspNetCore.Authorization;
 
 // Using two-stage initialization to catch startup errors.
 Log.Logger = new LoggerConfiguration()
@@ -73,8 +76,8 @@ static void BuildAndRun(string[] args)
         .ConfigureOptions<AuthorizationOptionsSetup>()
 
         // Clean architecture projects
-        .AddApplication(builder.Configuration.GetSection(ApplicationSettings.ConfigurationSectionName))
-        .AddInfrastructure(builder.Configuration.GetSection(InfrastructureSettings.ConfigurationSectionName), builder.Environment)
+        .AddApplication(builder.Configuration)
+        .AddInfrastructure(builder.Configuration, builder.Environment)
 
         // Asp infrastructure
         .AddScoped<IUser, ApplicationUser>()
@@ -102,6 +105,14 @@ static void BuildAndRun(string[] args)
         // Auth
         .AddDialogportenAuthentication(builder.Configuration)
         .AddAuthorization();
+
+    if (builder.Environment.IsDevelopment())
+    {
+        var localDevelopmentSettings = builder.Configuration.GetLocalDevelopmentSettings();
+        builder.Services
+            .ReplaceSingleton<IUser, LocalDevelopmentUser>(predicate: localDevelopmentSettings.UseLocalDevelopmentUser)
+            .ReplaceSingleton<IAuthorizationHandler, AllowAnonymousHandler>(predicate: localDevelopmentSettings.DisableAuth);
+    }
 
     var app = builder.Build();
 

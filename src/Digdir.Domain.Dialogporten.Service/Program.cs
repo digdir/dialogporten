@@ -77,8 +77,8 @@ static void BuildAndRun(string[] args)
                 });
             });
         })
-        .AddApplication(builder.Configuration.GetSection(ApplicationSettings.ConfigurationSectionName))
-        .AddInfrastructure(builder.Configuration.GetSection(InfrastructureSettings.ConfigurationSectionName), builder.Environment);
+        .AddApplication(builder.Configuration)
+        .AddInfrastructure(builder.Configuration, builder.Environment);
 
     var app = builder.Build();
     app.UseHttpsRedirection();

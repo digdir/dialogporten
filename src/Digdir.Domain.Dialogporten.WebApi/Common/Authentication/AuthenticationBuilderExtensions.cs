@@ -1,9 +1,9 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using System.Diagnostics;
 
-namespace Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
+namespace Digdir.Domain.Dialogporten.WebApi.Common.Authentication;
 
-internal static class ServiceCollectionExtensions
+internal static class AuthenticationBuilderExtensions
 {
     public static IServiceCollection AddDialogportenAuthentication(
         this IServiceCollection services,

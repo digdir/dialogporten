@@ -12,21 +12,18 @@ namespace Digdir.Domain.Dialogporten.Application;
 
 public static class ApplicationExtensions
 {
-    public static IServiceCollection AddApplication(this IServiceCollection services, IConfiguration configurationSection)
+    public static IServiceCollection AddApplication(this IServiceCollection services, IConfiguration configuration)
     {
         ArgumentNullException.ThrowIfNull(services);
-        ArgumentNullException.ThrowIfNull(configurationSection);
+        ArgumentNullException.ThrowIfNull(configuration);
         var thisAssembly = Assembly.GetExecutingAssembly();
 
         services.AddOptions<ApplicationSettings>()
-            .Bind(configurationSection)
+            .Bind(configuration.GetSection(ApplicationSettings.ConfigurationSectionName))
             .ValidateFluently()
             .ValidateOnStart();
 
         return services
-            // Settings
-            .Configure<ApplicationSettings>(configurationSection)
-
             // Framework
             .AddAutoMapper(thisAssembly)
             .AddMediatR(x => x.RegisterServicesFromAssembly(thisAssembly))

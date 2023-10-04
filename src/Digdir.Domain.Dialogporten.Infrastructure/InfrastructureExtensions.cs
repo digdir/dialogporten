@@ -19,16 +19,18 @@ using Digdir.Domain.Dialogporten.Infrastructure.Altinn.Registry;
 using FluentValidation;
 using System.Reflection;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.OptionExtensions;
+using Digdir.Domain.Dialogporten.Application;
+using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure;
 
 public static class InfrastructureExtensions
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services,
-        IConfiguration configurationSection, IHostEnvironment environment)
+        IConfiguration configuration, IHostEnvironment environment)
     {
         ArgumentNullException.ThrowIfNull(services);
-        ArgumentNullException.ThrowIfNull(configurationSection);
+        ArgumentNullException.ThrowIfNull(configuration);
 
         services.AddPolicyRegistry((services, registry) =>
         {
@@ -37,9 +39,9 @@ public static class InfrastructureExtensions
                 .WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(medianFirstRetryDelay: TimeSpan.FromSeconds(1), retryCount: 3)));
         });
 
-
+        var infrastructureConfigurationSection = configuration.GetSection(InfrastructureSettings.ConfigurationSectionName);
         services.AddOptions<InfrastructureSettings>()
-            .Bind(configurationSection)
+            .Bind(infrastructureConfigurationSection)
             .ValidateFluently()
             .ValidateOnStart();
 
@@ -74,7 +76,7 @@ public static class InfrastructureExtensions
         // HttpClient 
         services.
             AddMaskinportenHttpClient<ICloudEventBus, AltinnEventsClient, SettingsJwkClientDefinition>(
-                configurationSection, 
+                infrastructureConfigurationSection, 
                 x => x.ClientSettings.ExhangeToAltinnToken = true)
             .ConfigureHttpClient((services, client) =>
             {
@@ -86,7 +88,10 @@ public static class InfrastructureExtensions
 
         if (environment.IsDevelopment())
         {
-            services.AddTransient<ICloudEventBus, ConsoleLogEventBus>();
+            var localDeveloperSettings = configuration.GetLocalDevelopmentSettings();
+            services
+                .ReplaceTransient<ICloudEventBus, ConsoleLogEventBus>(predicate: localDeveloperSettings.UseLocalDevelopmentCloudEventBus)
+                .ReplaceTransient<IResourceRegistry, LocalDevelopmentResourceRegistry>(predicate: localDeveloperSettings.UseLocalDevelopmentResourceRegister);
         }
 
         return services;
