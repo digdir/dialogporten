@@ -59,8 +59,8 @@ static void BuildAndRun(string[] args)
     builder.Configuration.AddAzureConfiguration(builder.Environment.EnvironmentName);
 
     builder.Services
-        .AddOptions<WebApiOptions>()
-        .Bind(builder.Configuration.GetSection(WebApiOptions.SectionName))
+        .AddOptions<WebApiSettings>()
+        .Bind(builder.Configuration.GetSection(WebApiSettings.SectionName))
         .ValidateFluently()
         .ValidateOnStart();
 

@@ -10,8 +10,8 @@ internal static class AuthenticationBuilderExtensions
         IConfiguration configuration)
     {
         var jwtTokenSchemas = configuration
-            .GetSection(WebApiOptions.SectionName)
-            .Get<WebApiOptions>()
+            .GetSection(WebApiSettings.SectionName)
+            .Get<WebApiSettings>()
             ?.Authentication
             ?.JwtBearerTokenSchemas;
 

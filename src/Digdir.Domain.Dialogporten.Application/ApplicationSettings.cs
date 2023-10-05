@@ -9,5 +9,5 @@ public sealed class ApplicationSettings
 
 public sealed class DialogportenSettings
 {
-    public required string BaseUrl { get; init; }
+    public required string BaseUri { get; init; }
 }

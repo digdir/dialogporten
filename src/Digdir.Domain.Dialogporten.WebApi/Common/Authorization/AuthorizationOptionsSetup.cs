@@ -5,9 +5,9 @@ namespace Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 
 internal sealed class AuthorizationOptionsSetup : IConfigureOptions<AuthorizationOptions>
 {
-    private readonly WebApiOptions _options;
+    private readonly WebApiSettings _options;
 
-    public AuthorizationOptionsSetup(IOptions<WebApiOptions> options)
+    public AuthorizationOptionsSetup(IOptions<WebApiSettings> options)
     {
         _options = options.Value;
     }

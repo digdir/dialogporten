@@ -45,7 +45,10 @@ public static class ApplicationExtensions
         if (environment.IsDevelopment())
         {
             var localDeveloperSettings = configuration.GetLocalDevelopmentSettings();
-            services.Decorate<IUserService, LocalDevelopmentUserServiceDecorator>(predicate: localDeveloperSettings.UseLocalDevelopmentUser);
+            services.Decorate<IUserService, LocalDevelopmentUserServiceDecorator>(
+                predicate: 
+                localDeveloperSettings.UseLocalDevelopmentUser ||
+                localDeveloperSettings.UseLocalDevelopmentResourceRegister);
         }
 
         return services;

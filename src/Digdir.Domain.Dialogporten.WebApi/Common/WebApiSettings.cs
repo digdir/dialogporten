@@ -3,14 +3,14 @@ using FluentValidation;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Common;
 
-public sealed class WebApiOptions
+public sealed class WebApiSettings
 {
     public const string SectionName = "WebApi";
 
     public required AuthenticationOptions Authentication { get; init; }
 }
 
-internal sealed class WebApiOptionsValidator : AbstractValidator<WebApiOptions>
+internal sealed class WebApiOptionsValidator : AbstractValidator<WebApiSettings>
 {
     public WebApiOptionsValidator(
                IValidator<AuthenticationOptions> authenticationOptionsValidator)
