@@ -8,6 +8,7 @@ public sealed class LocalDevelopmentSettings
     public bool UseLocalDevelopmentUser { get; init; } = true;
     public bool UseLocalDevelopmentResourceRegister { get; init; } = true;
     public bool UseLocalDevelopmentCloudEventBus { get; init; } = true;
+    public bool DisableShortCircuitOutboxDispatcher { get; init; } = true;
     public bool DisableAuth { get; init; } = true;
 }
 
