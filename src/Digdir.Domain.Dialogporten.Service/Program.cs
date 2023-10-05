@@ -4,6 +4,8 @@ using MassTransit;
 using System.Reflection;
 using Microsoft.ApplicationInsights.Extensibility;
 using Serilog;
+using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
+using Digdir.Domain.Dialogporten.Service;
 
 // TODO: Add AppConfiguration and key vault
 // TODO: Configure RabbitMQ connection settings 
@@ -78,7 +80,8 @@ static void BuildAndRun(string[] args)
             });
         })
         .AddApplication(builder.Configuration, builder.Environment)
-        .AddInfrastructure(builder.Configuration, builder.Environment);
+        .AddInfrastructure(builder.Configuration, builder.Environment)
+        .AddTransient<IUser, ServiceUser>();
 
     var app = builder.Build();
     app.UseHttpsRedirection();
