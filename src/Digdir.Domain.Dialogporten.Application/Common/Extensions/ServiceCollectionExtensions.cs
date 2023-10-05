@@ -53,4 +53,10 @@ public static class ServiceCollectionExtensions
 
         return services;
     }
+
+    public static IServiceCollection Decorate<TService, TDecorator>(this IServiceCollection services, bool predicate)
+        where TDecorator : TService => 
+        predicate 
+            ? services.Decorate<TService, TDecorator>() 
+            : services;
 }

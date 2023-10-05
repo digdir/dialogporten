@@ -24,12 +24,12 @@ internal sealed class DeleteDialogCommandHandler : IRequestHandler<DeleteDialogC
 {
     private readonly IDialogDbContext _db;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly UserService _userService;
+    private readonly IUserService _userService;
 
     public DeleteDialogCommandHandler(
         IDialogDbContext db,
         IUnitOfWork unitOfWork,
-        UserService userService)
+        IUserService userService)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));

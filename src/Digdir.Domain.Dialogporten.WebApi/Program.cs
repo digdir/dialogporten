@@ -76,7 +76,7 @@ static void BuildAndRun(string[] args)
         .ConfigureOptions<AuthorizationOptionsSetup>()
 
         // Clean architecture projects
-        .AddApplication(builder.Configuration)
+        .AddApplication(builder.Configuration, builder.Environment)
         .AddInfrastructure(builder.Configuration, builder.Environment)
 
         // Asp infrastructure

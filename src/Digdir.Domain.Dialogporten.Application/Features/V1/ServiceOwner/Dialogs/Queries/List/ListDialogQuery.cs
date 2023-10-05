@@ -60,12 +60,12 @@ internal sealed class ListDialogQueryHandler : IRequestHandler<ListDialogQuery, 
 {
     private readonly IDialogDbContext _db;
     private readonly IMapper _mapper;
-    private readonly UserService _userService;
+    private readonly IUserService _userService;
 
     public ListDialogQueryHandler(
         IDialogDbContext db,
         IMapper mapper,
-        UserService userService)
+        IUserService userService)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));

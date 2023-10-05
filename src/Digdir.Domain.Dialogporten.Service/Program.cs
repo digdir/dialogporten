@@ -77,7 +77,7 @@ static void BuildAndRun(string[] args)
                 });
             });
         })
-        .AddApplication(builder.Configuration)
+        .AddApplication(builder.Configuration, builder.Environment)
         .AddInfrastructure(builder.Configuration, builder.Environment);
 
     var app = builder.Build();

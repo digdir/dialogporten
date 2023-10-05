@@ -32,7 +32,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILocalizationService _localizationService;
     private readonly IDomainContext _domainContext;
-    private readonly UserService _userService;
+    private readonly IUserService _userService;
 
     public UpdateDialogCommandHandler(
         IDialogDbContext db,
@@ -40,7 +40,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         IUnitOfWork unitOfWork,
         ILocalizationService localizationService,
         IDomainContext domainContext,
-        UserService userService)
+        IUserService userService)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
