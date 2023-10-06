@@ -2,7 +2,7 @@
 
 namespace Digdir.Domain.Dialogporten.Application.Common.Extensions.FluentValidation;
 
-internal static class FluentValidation_Uri_Extensions
+public static class FluentValidation_Uri_Extensions
 {
     public static IRuleBuilderOptions<T, TUri> IsValidUri<T, TUri>(this IRuleBuilder<T, TUri> ruleBuilder)
         where TUri : Uri?
