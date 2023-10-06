@@ -1,6 +1,7 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Common.Extensions.FluentValidation;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using Digdir.Domain.Dialogporten.Domain.Common;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using FluentValidation;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Update;
@@ -60,9 +61,17 @@ internal sealed class UpdateDialogDtoValidator : AbstractValidator<UpdateDialogD
             .UniqueBy(x => x.Value, StringComparer.InvariantCultureIgnoreCase);
 
         RuleFor(x => x.GuiActions)
-            .UniqueBy(x => x.Id);
-        RuleForEach(x => x.GuiActions)
-            .SetValidator(guiActionValidator);
+            .Must(x => x
+                .Where(x => x.Priority == DialogGuiActionPriority.Enum.Primary)
+                .Count() <= 1).WithMessage("Only one primary GUI action is allowed.")
+            .Must(x => x
+                .Where(x => x.Priority == DialogGuiActionPriority.Enum.Secondary)
+                .Count() <= 1).WithMessage("Only one secondary GUI action is allowed.")
+            .Must(x => x
+                .Where(x => x.Priority == DialogGuiActionPriority.Enum.Tertiary)
+                .Count() <= 5).WithMessage("Only five tertiary GUI actions are allowed.")
+            .UniqueBy(x => x.Id)
+            .ForEach(x => x.SetValidator(guiActionValidator));
 
         RuleFor(x => x.ApiActions)
             .UniqueBy(x => x.Id);

@@ -2,6 +2,7 @@
 using Digdir.Domain.Dialogporten.Application.Common.Numbers;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using Digdir.Domain.Dialogporten.Domain.Common;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using FluentValidation;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Create;
@@ -74,8 +75,17 @@ internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDia
         RuleFor(x => x.SearchTags)
             .UniqueBy(x => x.Value, StringComparer.InvariantCultureIgnoreCase);
 
-        RuleForEach(x => x.GuiActions)
-            .SetValidator(guiActionValidator);
+        RuleFor(x => x.GuiActions)
+            .Must(x => x
+                .Where(x => x.Priority == DialogGuiActionPriority.Enum.Primary)
+                .Count() <= 1).WithMessage("Only one primary GUI action is allowed.")
+            .Must(x => x
+                .Where(x => x.Priority == DialogGuiActionPriority.Enum.Secondary)
+                .Count() <= 1).WithMessage("Only one secondary GUI action is allowed.")
+            .Must(x => x
+                .Where(x => x.Priority == DialogGuiActionPriority.Enum.Tertiary)
+                .Count() <= 5).WithMessage("Only five tertiary GUI actions are allowed.")
+            .ForEach(x => x.SetValidator(guiActionValidator));
 
         RuleForEach(x => x.ApiActions)
             .IsIn(x => x.Elements,
