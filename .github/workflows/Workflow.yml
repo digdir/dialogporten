@@ -18,11 +18,4 @@ jobs:
     secrets: inherit
     with:
       environment: poc
-
-  deployTest:
-    needs: [ publish ]
-    uses: ./.github/workflows/Deploy.yml
-    secrets: inherit
-    with:
-      environment: test
     
