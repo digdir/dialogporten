@@ -20,7 +20,7 @@ public sealed class ListDialogQuery : SortablePaginationParameter<ListDialogQuer
     private string? _searchCultureCode;
 
     public List<string>? Org { get; init; }
-    public List<Uri>? ServiceResource { get; init; }
+    public List<string>? ServiceResource { get; init; }
     public List<string>? Party { get; init; }
     public List<string>? ExtendedStatus { get; init; }
     public List<DialogStatus.Enum>? Status { get; init; }

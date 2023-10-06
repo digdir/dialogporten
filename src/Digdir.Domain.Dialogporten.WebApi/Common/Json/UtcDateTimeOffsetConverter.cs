@@ -3,7 +3,7 @@ using System.Buffers.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Digdir.Domain.Dialogporten.WebApi.Common.JsonConverters;
+namespace Digdir.Domain.Dialogporten.WebApi.Common.Json;
 
 internal sealed class UtcDateTimeOffsetConverter : JsonConverter<DateTimeOffset>
 {

@@ -9,7 +9,6 @@ public class ServiceOwnerGroup : Group
     {
         Configure(RoutePrefix.ToLower(), ep =>
         {
-            ep.AllowAnonymous();
             ep.EndpointVersion(1);
         });
     }

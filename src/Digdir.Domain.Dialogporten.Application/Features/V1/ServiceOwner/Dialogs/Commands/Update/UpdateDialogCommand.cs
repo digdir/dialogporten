@@ -32,23 +32,28 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILocalizationService _localizationService;
     private readonly IDomainContext _domainContext;
+    private readonly IUserService _userService;
 
     public UpdateDialogCommandHandler(
         IDialogDbContext db,
         IMapper mapper,
         IUnitOfWork unitOfWork,
         ILocalizationService localizationService,
-        IDomainContext domainContext)
+        IDomainContext domainContext,
+        IUserService userService)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _localizationService = localizationService ?? throw new ArgumentNullException(nameof(localizationService));
         _domainContext = domainContext ?? throw new ArgumentNullException(nameof(domainContext));
+        _userService = userService ?? throw new ArgumentNullException(nameof(userService));
     }
 
     public async Task<UpdateDialogResult> Handle(UpdateDialogCommand request, CancellationToken cancellationToken)
     {
+        var resourceIds = await _userService.GetCurrentUserResourceIds(cancellationToken);
+        
         var dialog = await _db.Dialogs
             .Include(x => x.Body!.Localizations)
             .Include(x => x.Title!.Localizations)
@@ -62,6 +67,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
                 .ThenInclude(x => x.Title!.Localizations)
             .Include(x => x.ApiActions)
                 .ThenInclude(x => x.Endpoints)
+            .Where(x => resourceIds.Contains(x.ServiceResource))
             .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
 
         if (dialog is null)

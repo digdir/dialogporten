@@ -7,6 +7,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Npgsql;
 using NSubstitute;
 using Respawn;
@@ -33,7 +34,7 @@ public class DialogApplication : IAsyncLifetime
         });
 
         _rootProvider = new ServiceCollection()
-            .AddApplication(Substitute.For<IConfiguration>())
+            .AddApplication(Substitute.For<IConfiguration>(), Substitute.For<IHostEnvironment>())
             .AddDbContext<DialogDbContext>(x => x.UseNpgsql(_dbContainer.GetConnectionString()))
             .AddScoped<IDialogDbContext>(x => x.GetRequiredService<DialogDbContext>())
             .AddScoped<IUnitOfWork, UnitOfWork>()

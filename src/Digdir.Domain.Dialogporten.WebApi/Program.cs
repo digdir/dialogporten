@@ -1,6 +1,6 @@
 using Digdir.Domain.Dialogporten.Application;
 using Digdir.Domain.Dialogporten.Infrastructure;
-using Digdir.Domain.Dialogporten.WebApi;
+using Digdir.Domain.Dialogporten.Infrastructure.DomainEvents.Outbox.Dispatcher;
 using Digdir.Domain.Dialogporten.WebApi.Common;
 using FastEndpoints;
 using FastEndpoints.Swagger;
@@ -9,8 +9,16 @@ using Serilog;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
 using System.Collections;
-using Digdir.Domain.Dialogporten.Infrastructure.DomainEvents.Outbox.Dispatcher;
-using Digdir.Domain.Dialogporten.WebApi.Common.JsonConverters;
+using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
+using Digdir.Domain.Dialogporten.WebApi.Common.Json;
+using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
+using FluentValidation;
+using System.Reflection;
+using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
+using Digdir.Domain.Dialogporten.Application.Common.Extensions.OptionExtensions;
+using Digdir.Domain.Dialogporten.WebApi.Common.Authentication;
+using Digdir.Domain.Dialogporten.Application.Common.Extensions;
+using Microsoft.AspNetCore.Authorization;
 
 // Using two-stage initialization to catch startup errors.
 Log.Logger = new LoggerConfiguration()
@@ -50,13 +58,31 @@ static void BuildAndRun(string[] args)
 
     builder.Configuration.AddAzureConfiguration(builder.Environment.EnvironmentName);
 
+    builder.Services
+        .AddOptions<WebApiSettings>()
+        .Bind(builder.Configuration.GetSection(WebApiSettings.SectionName))
+        .ValidateFluently()
+        .ValidateOnStart();
+
     if (!builder.Environment.IsDevelopment())
     {
         // Temporary configuration for outbox through Web api
         builder.Services.AddHostedService<OutboxScheduler>();
     }
 
+    var thisAssembly = Assembly.GetExecutingAssembly();
     builder.Services
+        // Options setup
+        .ConfigureOptions<AuthorizationOptionsSetup>()
+
+        // Clean architecture projects
+        .AddApplication(builder.Configuration, builder.Environment)
+        .AddInfrastructure(builder.Configuration, builder.Environment)
+
+        // Asp infrastructure
+        .AddScoped<IUser, ApplicationUser>()
+        .AddHttpContextAccessor()
+        .AddValidatorsFromAssembly(thisAssembly, ServiceLifetime.Transient, includeInternalTypes: true)
         .AddAzureAppConfiguration()
         .AddApplicationInsightsTelemetry()
         .AddEndpointsApiExplorer()
@@ -72,20 +98,29 @@ static void BuildAndRun(string[] args)
                 s.Version = "v0.1";
             };
         })
-        .AddControllers(options =>
-            {
-                options.InputFormatters.Insert(0, JsonPatchInputFormatter.Get());
-            })
+        .AddControllers(options => options.InputFormatters.Insert(0, JsonPatchInputFormatter.Get()))
             .AddNewtonsoftJson()
             .Services
-        .AddApplication(builder.Configuration.GetSection(ApplicationSettings.ConfigurationSectionName))
-        .AddInfrastructure(builder.Configuration.GetSection(InfrastructureSettings.ConfigurationSectionName), builder.Environment);
+
+        // Auth
+        .AddDialogportenAuthentication(builder.Configuration)
+        .AddAuthorization();
+
+    if (builder.Environment.IsDevelopment())
+    {
+        var localDevelopmentSettings = builder.Configuration.GetLocalDevelopmentSettings();
+        builder.Services
+            .ReplaceSingleton<IUser, LocalDevelopmentUser>(predicate: localDevelopmentSettings.UseLocalDevelopmentUser)
+            .ReplaceSingleton<IAuthorizationHandler, AllowAnonymousHandler>(predicate: localDevelopmentSettings.DisableAuth)
+            .AddHostedService<OutboxScheduler>(predicate: !localDevelopmentSettings.DisableShortCircuitOutboxDispatcher);
+    }
 
     var app = builder.Build();
 
     app.UseHttpsRedirection()
         .UseSerilogRequestLogging()
         .UseProblemDetailsExceptionHandler()
+        .UseAuthentication()
         .UseAuthorization()
         .UseAzureConfiguration()
         .UseFastEndpoints(x =>

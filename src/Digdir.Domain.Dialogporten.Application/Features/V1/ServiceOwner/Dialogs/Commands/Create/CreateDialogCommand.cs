@@ -16,7 +16,7 @@ namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialog
 public sealed class CreateDialogCommand : CreateDialogDto, IRequest<CreateDialogResult> { }
 
 [GenerateOneOf]
-public partial class CreateDialogResult : OneOfBase<Success<Guid>, DomainError, ValidationError> { }
+public partial class CreateDialogResult : OneOfBase<Success<Guid>, DomainError, ValidationError, Unauthorized> { }
 
 internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogCommand, CreateDialogResult>
 {
@@ -24,21 +24,29 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IDomainContext _domainContext;
+    private readonly IUserService _userService;
 
     public CreateDialogCommandHandler(
         IDialogDbContext db,
         IMapper mapper,
         IUnitOfWork unitOfWork,
-        IDomainContext domainContext)
+        IDomainContext domainContext,
+        IUserService userService)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _domainContext = domainContext ?? throw new ArgumentNullException(nameof(domainContext));
+        _userService = userService ?? throw new ArgumentNullException(nameof(userService));
     }
 
     public async Task<CreateDialogResult> Handle(CreateDialogCommand request, CancellationToken cancellationToken)
     {
+        if (!await _userService.CurrentUserIsOwner(request.ServiceResource, cancellationToken))
+        {
+            return new Unauthorized();
+        }
+
         var dialog = _mapper.Map<DialogEntity>(request);
 
         var existingDialogIds = await _db.GetExistingIds(new[] { dialog }, cancellationToken);

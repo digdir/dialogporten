@@ -1,5 +1,7 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Delete;
 using Digdir.Domain.Dialogporten.WebApi.Common;
+using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
+using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
 using FastEndpoints;
 using MediatR;
 
@@ -17,6 +19,7 @@ public sealed class DeleteDialogEndpoint : Endpoint<DeleteDialogRequest>
     public override void Configure()
     {
         Delete("dialogs/{dialogId}");
+        Policies(AuthorizationPolicy.Serviceprovider);
         Group<ServiceOwnerGroup>();
     }
 

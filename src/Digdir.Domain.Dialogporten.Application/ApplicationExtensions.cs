@@ -1,38 +1,56 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Common.Behaviours;
+using Digdir.Domain.Dialogporten.Application.Common.Extensions;
+using Digdir.Domain.Dialogporten.Application.Common.Extensions.OptionExtensions;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using System.Reflection;
 
 namespace Digdir.Domain.Dialogporten.Application;
 
 public static class ApplicationExtensions
 {
-    public static IServiceCollection AddApplication(this IServiceCollection services, IConfiguration configurationSection)
+    public static IServiceCollection AddApplication(this IServiceCollection services, IConfiguration configuration, IHostEnvironment environment)
     {
         ArgumentNullException.ThrowIfNull(services);
-        ArgumentNullException.ThrowIfNull(configurationSection);
+        ArgumentNullException.ThrowIfNull(configuration);
         var thisAssembly = Assembly.GetExecutingAssembly();
-        return services
-            // Settings
-            .Configure<ApplicationSettings>(configurationSection)
 
+        services.AddOptions<ApplicationSettings>()
+            .Bind(configuration.GetSection(ApplicationSettings.ConfigurationSectionName))
+            .ValidateFluently()
+            .ValidateOnStart();
+
+        services
             // Framework
             .AddAutoMapper(thisAssembly)
             .AddMediatR(x => x.RegisterServicesFromAssembly(thisAssembly))
-            .AddValidatorsFromAssembly(thisAssembly, includeInternalTypes: true)
+            .AddValidatorsFromAssembly(thisAssembly, ServiceLifetime.Transient, includeInternalTypes: true)
 
             // Scoped
             .AddScoped<IDomainContext, DomainContext>()
             .AddScoped<ITransactionTime, TransactionTime>()
 
             // Transient
+            .AddTransient<IUserService, UserService>()
             .AddTransient<ILocalizationService, LocalizationService>()
             .AddTransient<IClock, Clock>()
             .AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>))
             .AddTransient(typeof(IPipelineBehavior<,>), typeof(DomainContextBehaviour<,>));
+
+        if (environment.IsDevelopment())
+        {
+            var localDeveloperSettings = configuration.GetLocalDevelopmentSettings();
+            services.Decorate<IUserService, LocalDevelopmentUserServiceDecorator>(
+                predicate: 
+                localDeveloperSettings.UseLocalDevelopmentUser ||
+                localDeveloperSettings.UseLocalDevelopmentResourceRegister);
+        }
+
+        return services;
     }
 }

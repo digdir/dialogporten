@@ -6,6 +6,8 @@ using FastEndpoints;
 using MediatR;
 using Medo;
 using IMapper = AutoMapper.IMapper;
+using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
+using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.DialogElement;
 
@@ -23,6 +25,7 @@ public sealed class CreateDialogActivityEndpoint : Endpoint<CreateDialogElementR
     public override void Configure()
     {
         Post("dialogs/{dialogId}/elements");
+        Policies(AuthorizationPolicy.Serviceprovider);
         Group<ServiceOwnerGroup>();
     }
 

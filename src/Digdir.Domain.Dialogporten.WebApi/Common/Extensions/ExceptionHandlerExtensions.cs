@@ -1,7 +1,7 @@
 ﻿using FastEndpoints;
 using Microsoft.AspNetCore.Diagnostics;
 
-namespace Digdir.Domain.Dialogporten.WebApi;
+namespace Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
 
 internal static class ExceptionHandlerExtensions
 {

@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Mvc.Formatters;
 
-namespace Digdir.Domain.Dialogporten.WebApi.Common;
+namespace Digdir.Domain.Dialogporten.WebApi.Common.Json;
 
 /// <summary>
 /// This is a workaround to support JSON patch through NewtonsoftJson while still using System.Text.Json for everything else.

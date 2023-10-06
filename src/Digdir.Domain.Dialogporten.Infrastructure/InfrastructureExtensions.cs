@@ -1,5 +1,4 @@
-﻿using Altinn.ApiClients.Maskinporten.Config;
-using Altinn.ApiClients.Maskinporten.Extensions;
+﻿using Altinn.ApiClients.Maskinporten.Extensions;
 using Altinn.ApiClients.Maskinporten.Interfaces;
 using Altinn.ApiClients.Maskinporten.Services;
 using Digdir.Domain.Dialogporten.Application.Externals;
@@ -12,21 +11,45 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using Polly.Extensions.Http;
+using Polly;
+using Polly.Contrib.WaitAndRetry;
+using Digdir.Domain.Dialogporten.Infrastructure.Common;
+using Digdir.Domain.Dialogporten.Infrastructure.Altinn.Registry;
+using FluentValidation;
+using System.Reflection;
+using Digdir.Domain.Dialogporten.Application.Common.Extensions.OptionExtensions;
+using Digdir.Domain.Dialogporten.Application;
+using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure;
 
 public static class InfrastructureExtensions
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services,
-        IConfiguration configurationSection, IHostEnvironment environment)
+        IConfiguration configuration, IHostEnvironment environment)
     {
         ArgumentNullException.ThrowIfNull(services);
-        ArgumentNullException.ThrowIfNull(configurationSection);
-        services
-            // Settings
-            .Configure<InfrastructureSettings>(configurationSection)
+        ArgumentNullException.ThrowIfNull(configuration);
 
+        services.AddPolicyRegistry((services, registry) =>
+        {
+            registry.Add(PollyPolicy.DefaultHttpRetryPolicy, HttpPolicyExtensions
+                .HandleTransientHttpError()
+                .WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(medianFirstRetryDelay: TimeSpan.FromSeconds(1), retryCount: 3)));
+        });
+
+        var infrastructureConfigurationSection = configuration.GetSection(InfrastructureSettings.ConfigurationSectionName);
+        services.AddOptions<InfrastructureSettings>()
+            .Bind(infrastructureConfigurationSection)
+            .ValidateFluently()
+            .ValidateOnStart();
+
+        var thisAssembly = Assembly.GetExecutingAssembly();
+        services
             // Framework
+            .AddValidatorsFromAssembly(thisAssembly, ServiceLifetime.Transient, includeInternalTypes: true)
+            .AddDistributedMemoryCache()
             .AddDbContext<DialogDbContext>((services, options) =>
             {
                 var connectionString = services
@@ -48,15 +71,27 @@ public static class InfrastructureExtensions
             .AddTransient<ConvertDomainEventsToOutboxMessagesInterceptor>()
 
             // Decorate
-            .Decorate(typeof(INotificationHandler<>), typeof(IdempotentDomainEventHandler<>))
+            .Decorate(typeof(INotificationHandler<>), typeof(IdempotentDomainEventHandler<>));
 
-            // Maskinporten 
-            .AddMaskinportenHttpClient<ICloudEventBus, AltinnEventsClient, SettingsJwkClientDefinition>(
-                configurationSection, x => x.ClientSettings.ExhangeToAltinnToken = true);
+        // HttpClient 
+        services.
+            AddMaskinportenHttpClient<ICloudEventBus, AltinnEventsClient, SettingsJwkClientDefinition>(
+                infrastructureConfigurationSection, 
+                x => x.ClientSettings.ExhangeToAltinnToken = true)
+            .ConfigureHttpClient((services, client) =>
+            {
+                client.BaseAddress = services.GetRequiredService<IOptions<InfrastructureSettings>>().Value.Altinn.BaseUri;
+            });
+        services.AddHttpClient<IResourceRegistry, ResourceRegistryClient>((services, client) => 
+                client.BaseAddress = services.GetRequiredService<IOptions<InfrastructureSettings>>().Value.Altinn.BaseUri)
+            .AddPolicyHandlerFromRegistry(PollyPolicy.DefaultHttpRetryPolicy);
 
         if (environment.IsDevelopment())
         {
-            services.AddTransient<ICloudEventBus, ConsoleLogEventBus>();
+            var localDeveloperSettings = configuration.GetLocalDevelopmentSettings();
+            services
+                .ReplaceTransient<ICloudEventBus, ConsoleLogEventBus>(predicate: localDeveloperSettings.UseLocalDevelopmentCloudEventBus)
+                .ReplaceTransient<IResourceRegistry, LocalDevelopmentResourceRegistry>(predicate: localDeveloperSettings.UseLocalDevelopmentResourceRegister);
         }
 
         return services;
@@ -70,9 +105,10 @@ public static class InfrastructureExtensions
         where TImplementation : class, TClient
         where TClientDefinition : class, IClientDefinition
     {
-        var settings = configuration.GetSection("MaskinportenSettings").Get<MaskinportenSettings>();
-        services.RegisterMaskinportenClientDefinition<TClientDefinition>(typeof(TClient)!.FullName, settings);
-        return services.AddHttpClient<TClient, TImplementation>()
+        var settings = configuration.Get<InfrastructureSettings>();
+        services.RegisterMaskinportenClientDefinition<TClientDefinition>(typeof(TClient)!.FullName, settings!.Maskinporten);
+        return services
+            .AddHttpClient<TClient, TImplementation>()
             .AddMaskinportenHttpMessageHandler<TClientDefinition, TClient>(configureClientDefinition);
     }
 }

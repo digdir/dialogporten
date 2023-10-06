@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
@@ -23,17 +24,25 @@ internal sealed class DeleteDialogCommandHandler : IRequestHandler<DeleteDialogC
 {
     private readonly IDialogDbContext _db;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IUserService _userService;
 
-    public DeleteDialogCommandHandler(IDialogDbContext db, IUnitOfWork unitOfWork)
+    public DeleteDialogCommandHandler(
+        IDialogDbContext db,
+        IUnitOfWork unitOfWork,
+        IUserService userService)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+        _userService = userService ?? throw new ArgumentNullException(nameof(userService));
     }
 
     public async Task<DeleteDialogResult> Handle(DeleteDialogCommand request, CancellationToken cancellationToken)
     {
+        var resourceIds = await _userService.GetCurrentUserResourceIds(cancellationToken);
+
         var dialog = await _db.Dialogs
             .Include(x => x.Elements)
+            .Where(x => resourceIds.Contains(x.ServiceResource))
             .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
 
         if (dialog is null)

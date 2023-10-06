@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.Enumerable;
 using Digdir.Domain.Dialogporten.Application.Common.Pagination;
@@ -12,6 +11,7 @@ using Digdir.Domain.Dialogporten.Domain.Localizations;
 using MediatR;
 using OneOf;
 using static Digdir.Domain.Dialogporten.Application.Common.Expressions;
+using Digdir.Domain.Dialogporten.Application.Common;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Queries.List;
 
@@ -19,7 +19,7 @@ public sealed class ListDialogQuery : SortablePaginationParameter<ListDialogQuer
 {
     private string? _searchCultureCode;
 
-    public List<Uri>? ServiceResource { get; init; }
+    public List<string>? ServiceResource { get; init; }
     public List<string>? Party { get; init; }
     public List<string>? ExtendedStatus { get; init; }
     public List<DialogStatus.Enum>? Status { get; init; }
@@ -60,20 +60,22 @@ internal sealed class ListDialogQueryHandler : IRequestHandler<ListDialogQuery, 
 {
     private readonly IDialogDbContext _db;
     private readonly IMapper _mapper;
-    private readonly IClock _clock;
+    private readonly IUserService _userService;
 
-    public ListDialogQueryHandler(IDialogDbContext db, IMapper mapper, IClock clock)
+    public ListDialogQueryHandler(
+        IDialogDbContext db,
+        IMapper mapper,
+        IUserService userService)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-        _clock = clock ?? throw new ArgumentNullException(nameof(clock));
-
+        _userService = userService ?? throw new ArgumentNullException(nameof(userService));
     }
 
     public async Task<ListDialogResult> Handle(ListDialogQuery request, CancellationToken cancellationToken)
     {
+        var resourceIds = await _userService.GetCurrentUserResourceIds(cancellationToken);
         var searchExpression = LocalizedSearchExpression(request.Search, request.SearchCultureCode);
-
         return await _db.Dialogs
             .WhereIf(!request.ServiceResource.IsNullOrEmpty(), x => request.ServiceResource!.Contains(x.ServiceResource))
             .WhereIf(!request.Party.IsNullOrEmpty(), x => request.Party!.Contains(x.Party))
@@ -92,6 +94,7 @@ internal sealed class ListDialogQueryHandler : IRequestHandler<ListDialogQuery, 
                 x.SearchTags.Any(x => x.Value == request.Search!.ToLower()) ||
                 x.SenderName!.Localizations.AsQueryable().Any(searchExpression)
             )
+            .Where(x => resourceIds.Contains(x.ServiceResource))
             .ProjectTo<ListDialogDto>(_mapper.ConfigurationProvider)
             .ToPaginatedListAsync(request, cancellationToken: cancellationToken);
     }

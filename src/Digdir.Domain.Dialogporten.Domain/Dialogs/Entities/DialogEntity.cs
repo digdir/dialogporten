@@ -27,7 +27,7 @@ public class DialogEntity :
 
     // TODO: Hent dette fra token?
     public string Org { get; set; } = "DummyOrg";
-    public Uri ServiceResource { get; set; } = null!;
+    public string ServiceResource { get; set; } = null!;
     public string Party { get; set; } = null!;
     public string? ExtendedStatus { get; set; }
     public DateTimeOffset? VisibleFrom { get; set; }
@@ -94,7 +94,7 @@ public class DialogEntity :
 
     public void OnDelete(AggregateNode self, DateTimeOffset utcNow)
     {
-        _domainEvents.Add(new DialogDeletedDomainEvent(Id, ServiceResource.ToString(), Party));
+        _domainEvents.Add(new DialogDeletedDomainEvent(Id, ServiceResource, Party));
     }
     
     public void UpdateReadAt(DateTimeOffset timestamp)

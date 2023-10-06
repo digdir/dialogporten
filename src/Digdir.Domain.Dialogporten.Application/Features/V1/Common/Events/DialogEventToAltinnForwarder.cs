@@ -60,7 +60,7 @@ internal sealed class DialogEventToAltinnForwarder : DomainEventToAltinnForwarde
         Id = domainEvent.EventId,
         Type = CloudEventTypes.Get(domainEvent),
         Time = domainEvent.OccuredAt,
-        Resource = dialog.ServiceResource.ToString(),
+        Resource = dialog.ServiceResource,
         ResourceInstance = dialog.Id.ToString(),
         Subject = dialog.Party,
         Source = $"{DialogportenBaseUrl()}/api/v1/enduser/dialogs/{dialog.Id}",

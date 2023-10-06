@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
-namespace Digdir.Domain.Dialogporten.WebApi;
+namespace Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
 
 internal static class ErrorResponseBuilderExtensions
 {

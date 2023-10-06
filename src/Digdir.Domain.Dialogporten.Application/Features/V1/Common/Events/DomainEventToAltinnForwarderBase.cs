@@ -18,7 +18,7 @@ internal class DomainEventToAltinnForwarderBase
         _dialogportenSettings = settings.Value.Dialogporten ?? throw new ArgumentNullException(nameof(settings));
     }
 
-    protected string DialogportenBaseUrl() => _dialogportenSettings.BaseUrl;
+    protected string DialogportenBaseUrl() => _dialogportenSettings.BaseUri.ToString();
     
     protected async Task<DialogEntity> GetDialog(Guid dialogId, CancellationToken cancellationToken)
     {
