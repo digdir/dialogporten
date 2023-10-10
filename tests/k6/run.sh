@@ -72,6 +72,12 @@ if [[ ! -f "$FILEPATH" ]]; then
     exit 1
 fi
 
+# Check if k6 is installed
+if ! which k6 > /dev/null 2>&1; then
+    echo "Error: k6 is not installed or not available in the system PATH. Please install it before proceeding, see https://k6.io/docs/get-started/installation/"
+    exit 1
+fi
+
 # Execute k6 with options as environment variables
 API_ENVIRONMENT=$API_ENVIRONMENT \
 API_VERSION=$API_VERSION \

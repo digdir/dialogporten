@@ -42,6 +42,14 @@ param (
     [string]$FilePath
 )
 
+try {
+    Get-Command k6 -ErrorAction Stop > $null
+} catch {
+    Write-Error "Error: k6 is not installed or not available in the system PATH. Please install it before proceeding, see https://k6.io/docs/get-started/installation/"
+    exit 1
+}
+
+
 if (-not (Test-Path $FilePath)) {
     Write-Error "Error: File '$FilePath' does not exist."
     exit 1
@@ -53,3 +61,5 @@ $env:TOKEN_GENERATOR_USERNAME = $TokenGeneratorUsername
 $env:TOKEN_GENERATOR_PASSWORD = $TokenGeneratorPassword
 
 k6 run $FilePath
+
+
