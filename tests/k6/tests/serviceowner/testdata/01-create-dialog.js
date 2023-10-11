@@ -44,7 +44,7 @@ export default function () {
                 "urls": [
                     {
                         "consumerType": "gui",
-                        "url": "http://foo.com/foo.pdf",
+                        "url": "https://foo.com/foo.pdf",
                         "mimeType": "application/pdf"
                     }
                 ]
@@ -61,7 +61,7 @@ export default function () {
                 "urls": [
                     {
                         "consumerType": "gui",
-                        "url": "http://foo.com/foo.pdf",
+                        "url": "https://foo.com/foo.pdf",
                         "mimeType": "application/pdf"
                     }
                 ]
