@@ -55,6 +55,9 @@ if (-not (Test-Path $FilePath)) {
     exit 1
 }
 
+& "$PSScriptRoot\scripts\generate_alltests.ps1" "$PSScriptRoot\tests\serviceowner\" > $null
+& "$PSScriptRoot\scripts\generate_alltests.ps1" "$PSScriptRoot\tests\enduser\" > $null
+
 $env:API_ENVIRONMENT = $ApiEnvironment
 $env:API_VERSION = $ApiVersion
 $env:TOKEN_GENERATOR_USERNAME = $TokenGeneratorUsername

@@ -1,7 +1,10 @@
-import { default as dialogSearch } from './dialogSearch.js';
+// This file is generated, see "scripts" directory
 import { default as dialogCreate } from './dialogCreate.js';
+import { default as dialogCreateInvalidActionCount } from './dialogCreateInvalidActionCount.js';
+import { default as dialogSearch } from './dialogSearch.js';
 
 export default function() {
-    dialogSearch();
-    dialogCreate();
+  dialogCreate();
+  dialogCreateInvalidActionCount();
+  dialogSearch();
 }

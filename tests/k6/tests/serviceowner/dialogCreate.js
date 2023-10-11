@@ -1,20 +1,6 @@
 import { describe, expect, getSO, postSO, deleteSO, patchSO, uuidv4 } from '../../common/testimports.js'
 import { default as dialogToInsert } from './testdata/01-create-dialog.js';
 
-/*
-let state = {};
-
-function get(key) {
-    return state[__VU] ? state[__VU][key] : null;
-}
-
-function set(key, val) {
-    if (!state[__VU]) state[__VU] = {};
-    state[__VU][key] = val;
-}
-*/
-
-
 export default function () {
 
     let dialogId = null;

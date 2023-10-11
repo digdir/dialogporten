@@ -78,6 +78,11 @@ if ! which k6 > /dev/null 2>&1; then
     exit 1
 fi
 
+DIR="$(dirname "$0")"
+
+"$DIR/scripts/generate_alltests.sh" "$DIR/tests/serviceowner/" >/dev/null
+"$DIR/scripts/generate_alltests.sh" "$DIR/tests/enduser/" >/dev/null
+
 # Execute k6 with options as environment variables
 API_ENVIRONMENT=$API_ENVIRONMENT \
 API_VERSION=$API_VERSION \

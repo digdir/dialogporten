@@ -1,5 +1,4 @@
 import { group } from 'k6';
-import { handleUnexpectedException } from './k6chai.js';
 
 export function describe(name, fn) {
     let success = true;
@@ -11,7 +10,7 @@ export function describe(name, fn) {
       } 
       catch (error) {
         if (error.name !== 'AssertionError') {
-          handleUnexpectedException(error, name);
+          throw error;
         }
         let errmsg = `${name} failed, ${error.message}`;
         if (error.expected) {
