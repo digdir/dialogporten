@@ -1,5 +1,6 @@
-export { describe, expect } from 'https://jslib.k6.io/k6chaijs/4.3.4.3/index.js';
-export { uuidv4 } from './uuid.js'
+export { expect } from './k6chai.js';
+export { uuidv4 } from './uuid.js';
+export { describe } from './describe.js';
 export { 
     getEU,
     getSO,
