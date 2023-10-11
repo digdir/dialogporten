@@ -1,7 +1,7 @@
-import { generateUUID } from '../../../common/testimports.js'
+import { uuidv4 } from '../../../common/testimports.js'
 
-let dialogElementId = generateUUID();
-let activityId = generateUUID();
+let dialogElementId = uuidv4();
+let activityId = uuidv4();
 
 export const dialogToInsert = {
     "serviceResource": "urn:altinn:resource:super-simple-service",
