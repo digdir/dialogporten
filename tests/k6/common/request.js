@@ -33,10 +33,6 @@ export function getSO(url, params = null) {
     return http.get(baseUrlServiceOwner + url, getServiceOwnerRequestParams(params))
 }
 
-export function getEU(url, params = null) {
-    return http.get(baseUrlEndUser + url, getEnduserRequestParams(params))
-}
-
 export function postSO(url, body, params = null) {
     params = extend(true, {}, params, { headers: { 'Content-Type': 'application/json' }});
     return http.post(baseUrlServiceOwner + url, body, getServiceOwnerRequestParams(params));
@@ -54,4 +50,27 @@ export function patchSO(url, body, params = null) {
 
 export function deleteSO(url, params = null) {
     return http.request('DELETE', baseUrlServiceOwner + url, getServiceOwnerRequestParams(params));
+}
+
+export function getEU(url, params = null) {
+    return http.get(baseUrlEndUser + url, getEnduserRequestParams(params))
+}
+
+export function postEU(url, body, params = null) {
+    params = extend(true, {}, params, { headers: { 'Content-Type': 'application/json' }});
+    return http.post(baseUrlEndUser + url, body, getEnduserRequestParams(params));
+}
+
+export function putEU(url, body, params = null) {
+    params = extend(true, {}, params, { headers: { 'Content-Type': 'application/json' }});
+    return http.put(baseUrlEndUser + url, body, getEnduserRequestParams(params));
+}
+
+export function patchEU(url, body, params = null) {
+    params = extend(true, {}, params, { headers: { 'Content-Type': 'application/json' }});
+    return http.patch(baseUrlEndUser + url, body, getEnduserRequestParams(params));
+}
+
+export function deleteEU(url, params = null) {
+    return http.request('DELETE', baseUrlEndUser + url, getEnduserRequestParams(params));
 }

@@ -1,12 +1,16 @@
 <#
 .SYNOPSIS
-This script runs a test suite with provided parameters.
+This script runs a test suite or individual tests with provided parameters.
 
 .DESCRIPTION
-A detailed description of the function or script. This can be used to provide more detailed help.
+This script invokes the 'k6' binary setting various environment variables used within
+the K6 scripts required to get an authorization token, select environment and perform
+the tests specified. This script also invokes script\generate_alltests.ps1 which 
+generates tests\enduser\all-tests.js and tests\serviceowner\all-tests.js, which is used
+to group all defined tests together.
 
 .PARAMETER ApiEnvironment
-Either 'localdev', 'dev', or 'staging'. This parameter is required.
+Either 'localdev', 'test', or 'staging'. This parameter is required.
 
 .PARAMETER ApiVersion
 Defaults to 'v1' if not supplied.
@@ -21,12 +25,13 @@ Password to Altinn Token Generator. This parameter is required.
 Path to the test suite file. This parameter is required.
 
 .EXAMPLE
-PS> .\run.ps1 -TokenGeneratorUsername "supersecret" -TokenGeneratorPassword "supersecret" -ApiEnvironment "dev" -FilePath "all.js"
+PS> .\run.ps1 -TokenGeneratorUsername "supersecret" -TokenGeneratorPassword "supersecret" -ApiEnvironment "test" -FilePath "suites/all-single-pass.js"
+PS> .\run.ps1 -TokenGeneratorUsername "supersecret" -TokenGeneratorPassword "supersecret" -ApiEnvironment "test" -FilePath "tests/serviceowner/dialogCreate.js"
 #>
 
 param (
     [Parameter(Mandatory=$true)]
-    [ValidateSet('localdev','dev','staging')]
+    [ValidateSet('localdev','test','staging')]
     [string]$ApiEnvironment,
 
     [string]$ApiVersion = 'v1',
@@ -49,7 +54,6 @@ try {
     exit 1
 }
 
-
 if (-not (Test-Path $FilePath)) {
     Write-Error "Error: File '$FilePath' does not exist."
     exit 1
@@ -64,5 +68,3 @@ $env:TOKEN_GENERATOR_USERNAME = $TokenGeneratorUsername
 $env:TOKEN_GENERATOR_PASSWORD = $TokenGeneratorPassword
 
 k6 run $FilePath
-
-

@@ -5,14 +5,14 @@ display_usage() {
     echo "Usage: $0 [OPTIONS] FILEPATH"
     echo
     echo "Options:"
-    echo "-e|--environment               Either 'localdev', 'dev', or 'staging' (required)"
+    echo "-e|--environment               Either 'localdev', 'test', or 'staging' (required)"
     echo "-a|--api-version               Defaults to 'v1' if not supplied (optional)"
     echo "-u|--token-generator-username  Username to Altinn Token Generator (required)"
     echo "-p|--token-generator-password  Password to Altinn Token Generator (required)"
     echo "-h|--help                      Displays this help"
     echo
     echo "Example:"
-    echo "./run.sh --token-generator-username=supersecret --token-generator-password=supersecret -e localdev testsuite.js"
+    echo "./run.sh --token-generator-username=supersecret --token-generator-password=supersecret -e localdev suites/all-single-pass.js"
 }
 
 # Default value for API version
@@ -61,8 +61,8 @@ if [[ -z $API_ENVIRONMENT || -z $TOKEN_GENERATOR_USERNAME || -z $TOKEN_GENERATOR
 fi
 
 # Check if valid environment
-if [[ "$API_ENVIRONMENT" != "localdev" && "$API_ENVIRONMENT" != "dev" && "$API_ENVIRONMENT" != "staging" ]]; then
-    echo "Error: Invalid environment value. Must be 'localdev', 'dev', or 'staging'."
+if [[ "$API_ENVIRONMENT" != "localdev" && "$API_ENVIRONMENT" != "test" && "$API_ENVIRONMENT" != "staging" ]]; then
+    echo "Error: Invalid environment value. Must be 'localdev', 'test', or 'staging'."
     exit 1
 fi
 
