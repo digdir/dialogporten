@@ -2,13 +2,15 @@ export const baseUrls = {
     v1: {
         enduser: {
             localdev: "https://localhost:7214/api/v1/enduser/",
-            dev: "https://dev.eu.api.dialogporten.no/v1/",    
-            staging: "https://staging.eu.api.dialogporten.no/v1/"
+            test: "https://test.eu.api.dialogporten.no/v1/",    
+            staging: "https://staging.eu.api.dialogporten.no/v1/",
+            prod: "https://prod.eu.api.dialogporten.no/v1/"
         },
         serviceowner: {
             localdev: "https://localhost:7214/api/v1/serviceowner/",
-            dev: "https://dev.so.api.dialogporten.no/v1/",    
-            staging: "https://staging.so.api.dialogporten.no/v1/"
+            test: "https://test.so.api.dialogporten.no/v1/",    
+            staging: "https://staging.so.api.dialogporten.no/v1/",
+            prod: "https://prod.eu.api.dialogporten.no/v1/"
         }    
     }    
 };
