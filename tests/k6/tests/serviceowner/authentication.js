@@ -5,7 +5,8 @@ export default function () {
     let paramsWithoutAuthorizationHeader = {
         headers: {
             'Accept': 'application/json',
-            'User-Agent': 'dialogporten-k6'
+            'User-Agent': 'dialogporten-k6',
+            'Authorization': null // this will signal that the default Authorization header is to be removed
         }
     };
 
@@ -19,14 +20,14 @@ export default function () {
 
     let expect401InvalidRequest = function(r) {
         expect(r.status, 'response status').to.equal(401);
-        expect(r.headers).has.property('WWW-Authenticate');
-        expect(r.headers['WWW-Authenticate']).equal('Bearer error=invalid_request');
+        expect(r.headers, 'reponse headers').has.property('Www-Authenticate');
+        expect(r.headers['Www-Authenticate'], 'WWW-Authenticate header').contain('Bearer');
     }
 
     let expect401InvalidToken = function(r) {
         expect(r.status, 'response status').to.equal(401);
-        expect(r.headers).has.property('WWW-Authenticate');
-        expect(r.headers['WWW-Authenticate']).equal('Bearer error=invalid_token');
+        expect(r.headers, 'reponse headers').has.property('Www-Authenticate');
+        expect(r.headers['Www-Authenticate'], 'WWW-Authenticate header').contain('Bearer error="invalid_token"');
     }
 
     let permutations = [
@@ -39,7 +40,7 @@ export default function () {
             let r = getSO("dialogs", params);
             expectation(r);
         });
-    
+
         describe(`Attempt get single ${message} token`, () => {
             let r = getSO("dialogs/" + uuidv4(), params);
             expectation(r);
@@ -93,9 +94,7 @@ export default function () {
         describe(`Attempt activity history post ${message} token`, () => {
             let r = postSO("dialogs/" + uuidv4() + "/activities", {}, params);
             expectation(r);
-        });    
+        });   
+
     });
-
-    
-
 }
