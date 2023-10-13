@@ -2,7 +2,7 @@
 
 # Usage help
 display_usage() {
-    echo "Usage: $0 [OPTIONS] FILEPATH"
+    echo "Usage: $0 [OPTIONS] FILEPATH [K6OPTIONS]"
     echo
     echo "Options:"
     echo "-e|--environment               Either 'localdev', 'test', or 'staging' (required)"
@@ -12,11 +12,13 @@ display_usage() {
     echo "-h|--help                      Displays this help"
     echo
     echo "Example:"
-    echo "./run.sh --token-generator-username=supersecret --token-generator-password=supersecret -e localdev suites/all-single-pass.js"
+    echo "./run.sh --token-generator-username=supersecret --token-generator-password=supersecret -e localdev suites/all-single-pass.js --http-debug"
 }
 
 # Default value for API version
 API_VERSION="v1"
+
+declare -a K6_ARGS
 
 # Parse arguments
 while [[ $# -gt 0 ]]; do
@@ -46,12 +48,15 @@ while [[ $# -gt 0 ]]; do
             exit 0
             ;;
         *)
-            # Assume the file path is the last argument
-            FILEPATH="$1"
+             # Capture all remaining arguments into the K6_ARGS array
+            K6_ARGS+=("$1")
             shift
             ;;
     esac
 done
+
+FILEPATH=${K6_ARGS[0]}
+unset K6_ARGS[0] # Remove FILEPATH from the array
 
 # Check required options
 if [[ -z $API_ENVIRONMENT || -z $TOKEN_GENERATOR_USERNAME || -z $TOKEN_GENERATOR_PASSWORD ]]; then
@@ -88,5 +93,5 @@ API_ENVIRONMENT=$API_ENVIRONMENT \
 API_VERSION=$API_VERSION \
 TOKEN_GENERATOR_USERNAME=$TOKEN_GENERATOR_USERNAME \
 TOKEN_GENERATOR_PASSWORD=$TOKEN_GENERATOR_PASSWORD \
-k6 run "$FILEPATH"
+k6 run "${K6_ARGS[@]}" "$FILEPATH" 
 

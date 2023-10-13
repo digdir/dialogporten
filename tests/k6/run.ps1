@@ -9,6 +9,8 @@ the tests specified. This script also invokes script\generate_alltests.ps1 which
 generates tests\enduser\all-tests.js and tests\serviceowner\all-tests.js, which is used
 to group all defined tests together.
 
+Any additional parameters passed will be passed verbatim to K6
+
 .PARAMETER ApiEnvironment
 Either 'localdev', 'test', or 'staging'. This parameter is required.
 
@@ -26,7 +28,7 @@ Path to the test suite file. This parameter is required.
 
 .EXAMPLE
 PS> .\run.ps1 -TokenGeneratorUsername "supersecret" -TokenGeneratorPassword "supersecret" -ApiEnvironment "test" -FilePath "suites/all-single-pass.js"
-PS> .\run.ps1 -TokenGeneratorUsername "supersecret" -TokenGeneratorPassword "supersecret" -ApiEnvironment "test" -FilePath "tests/serviceowner/dialogCreate.js"
+PS> .\run.ps1 -TokenGeneratorUsername "supersecret" -TokenGeneratorPassword "supersecret" -ApiEnvironment "test" -FilePath "tests/serviceowner/dialogCreate.js" --http-debug
 #>
 
 param (
@@ -44,7 +46,10 @@ param (
     #[SecureString]$TokenGeneratorPassword,
 
     [Parameter(Mandatory=$true)]
-    [string]$FilePath
+    [string]$FilePath,
+
+    [Parameter(ValueFromRemainingArguments=$true)]
+    [string[]]$K6Args
 )
 
 try {
@@ -67,4 +72,4 @@ $env:API_VERSION = $ApiVersion
 $env:TOKEN_GENERATOR_USERNAME = $TokenGeneratorUsername
 $env:TOKEN_GENERATOR_PASSWORD = $TokenGeneratorPassword
 
-k6 run $FilePath
+k6 run @K6Args $FilePath 
