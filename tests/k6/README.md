@@ -85,7 +85,8 @@ export default function () {
 ```
 
 ### Notes
-- The request scripts uses the token generator from [Altinn Test Tools](https://github.com/Altinn/AltinnTestTools). The tokens produced contain all scopes required for all endpoints of Dialogporten, and is generated once per run, then re-used. The token TTL is one hour, so runs exceeding this amount of time will fail.
+- The request scripts uses the token generator from [Altinn Test Tools](https://github.com/Altinn/AltinnTestTools). The tokens produced contain all scopes required for all endpoints of Dialogporten, and is generated once per run, then re-used and refreshed as needed.
+- 
 
 ## TODO
 * Add support for getting real Maskinporten tokens, see https://github.com/mulesoft-labs/js-client-oauth2

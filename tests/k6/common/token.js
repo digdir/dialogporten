@@ -9,6 +9,9 @@ const orgNo = "991825827";
 const tokenUsername = __ENV.TOKEN_GENERATOR_USERNAME;
 const tokenPassword = __ENV.TOKEN_GENERATOR_PASSWORD;
 
+const tokenTtl = 3600;
+const tokenMargin = 10;  // token expires 10 seconds before its TTL
+
 const credentials = `${tokenUsername}:${tokenPassword}`;
 const encodedCredentials = encoding.b64encode(credentials);
 const tokenRequestOptions = {
@@ -18,12 +21,23 @@ const tokenRequestOptions = {
 };
 
 let cachedServiceOwnerToken = null;
+let cachedServiceOwnerTokenIssuedAt = null;
 
-// TODO! Handle expiration of tokens (for soak testing)
 export function getServiceOwnerTokenFromGenerator() {
-  if (cachedServiceOwnerToken == null) {
-    let response = http.get(`http://altinn-testtools-token-generator.azurewebsites.net/api/GetEnterpriseToken?env=tt02&scopes=${scopes}&org=${orgName}&orgNo=${orgNo}&ttl=3600`, tokenRequestOptions);
+  const currentTime = Math.floor(Date.now() / 1000); 
+
+  if (cachedServiceOwnerToken == null || (currentTime - cachedServiceOwnerTokenIssuedAt >= tokenTtl - tokenMargin)) {
+
+    console.warn("Fetching token from token generator");
+
+    let response = http.get("http://altinn-testtools-token-generator.azurewebsites.net/api/GetEnterpriseToken?env=tt02&scopes=" + encodeURIComponent(scopes) + "&org=" + orgName + "&orgNo=" + orgNo + "&ttl=" + tokenTtl, tokenRequestOptions);
     cachedServiceOwnerToken = response.body;
+
+    if (response.status != 200) {
+      throw new Error(`Failed getting service owner token: ${response.status_text}`);
+    }
+
+    cachedServiceOwnerTokenIssuedAt = currentTime;
   }
 
   return cachedServiceOwnerToken;

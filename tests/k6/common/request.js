@@ -3,17 +3,28 @@ import { baseUrlEndUser, baseUrlServiceOwner } from './config.js'
 import { getServiceOwnerTokenFromGenerator, getEnduserTokenFromGenerator } from './token.js'
 import { extend } from './extend.js'
 
+function resolveParams(defaultParams, params) {
+    if (params == null) return defaultParams;
+    var fullParams = extend(true, {}, defaultParams, params);
+    // Header values set to null in params indicate that they should be removed
+    for (var header in fullParams.headers) {
+        if (fullParams.headers[header] === null) {
+            delete fullParams.headers[header];
+        }
+    }
+    return fullParams;
+}
+
 function getServiceOwnerRequestParams(params = null) {
     let defaultParams = {
         headers: {
             'Accept': 'application/json',
             'User-Agent': 'dialogporten-k6',
             'Authorization': 'Bearer ' + getServiceOwnerTokenFromGenerator()
-        },
-        httpDebug: 'full'
+        }
     }
 
-    return extend(true, {}, defaultParams, params);
+    return resolveParams(defaultParams, params);
 }
 
 function getEnduserRequestParams(params = null) {
@@ -22,11 +33,10 @@ function getEnduserRequestParams(params = null) {
             'Accept': 'application/json',
             'User-Agent': 'dialogporten-k6',
             'Authorization': 'Bearer ' + getEnduserTokenFromGenerator()
-        },
-        httpDebug: 'full'
+        }
     }
 
-    return extend(true, {}, defaultParams, params);
+    return resolveParams(defaultParams, params);
 }
 
 export function getSO(url, params = null) {
@@ -49,7 +59,7 @@ export function patchSO(url, body, params = null) {
 }
 
 export function deleteSO(url, params = null) {
-    return http.request('DELETE', baseUrlServiceOwner + url, getServiceOwnerRequestParams(params));
+    return http.request('DELETE', baseUrlServiceOwner + url, {}, getServiceOwnerRequestParams(params));
 }
 
 export function getEU(url, params = null) {
