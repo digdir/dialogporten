@@ -28,7 +28,7 @@ export function getServiceOwnerTokenFromGenerator() {
 
   if (cachedServiceOwnerToken == null || (currentTime - cachedServiceOwnerTokenIssuedAt >= tokenTtl - tokenMargin)) {
 
-    console.warn("Fetching token from token generator");
+    console.warn("Fetching token from token generator for VU #" + __VU);
 
     let response = http.get("http://altinn-testtools-token-generator.azurewebsites.net/api/GetEnterpriseToken?env=tt02&scopes=" + encodeURIComponent(scopes) + "&org=" + orgName + "&orgNo=" + orgNo + "&ttl=" + tokenTtl, tokenRequestOptions);
     cachedServiceOwnerToken = response.body;
