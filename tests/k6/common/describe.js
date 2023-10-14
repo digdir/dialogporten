@@ -8,8 +8,10 @@ export function describe(name, fn) {
         fn();
         success = true;
       } 
-      catch (error) {
+      catch (error) {        
         if (error.name !== 'AssertionError') {
+          // Goja (the JS engine used by K6) seems to clobber the stack when rethrowing exceptions
+          console.error(error.stack);
           throw error;
         }
         let errmsg = `${name} failed, ${error.message}`;
