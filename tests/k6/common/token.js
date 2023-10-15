@@ -35,7 +35,7 @@ function fetchToken(url, tokenOptions, type) {
   const cacheKey = getCacheKey(type, tokenOptions);
 
   if (!cachedTokens[cacheKey] || (currentTime - cachedTokensIssuedAt[cacheKey] >= tokenTtl - tokenMargin)) {
-    console.warn(`Fetching ${type} token from token generator for VU #${__VU}`);
+    console.info(`Fetching ${type} token from token generator for VU #${__VU}`);
     let response = http.get(url, tokenRequestOptions);
 
     if (response.status != 200) {
