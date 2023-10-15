@@ -85,19 +85,6 @@ export default function () {
                 ]
             }
         ],
-        "history": [
-            {
-                "id": activityId,
-                "typeId": "submission",
-                "extendedType": "some:extended:type"
-            },
-            {
-                "relatedActivityId": activityId,
-                "type": "submission",
-                "extendedType": "some:extended:type",
-                "dialogElementId": dialogElementId
-            }
-        ],
         "activities": [
             {
                 "type": "Error",

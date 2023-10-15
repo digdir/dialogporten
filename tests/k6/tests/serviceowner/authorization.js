@@ -11,8 +11,10 @@ export default function () {
     let dialogElement = dialog.elements[2]; // Use the one without a predefined ID or related ID
     let dialogId = null; // known after successful insert
     let activity = dialog.activities[0];
+    let activityId = null; // known after successful insert
    
     let expectEither = function (statusCodeSuccess, statusCodeFailure, r, shouldSucceed) {
+        if (r.status == 400) console.warn(r.body);
         expect(r.status, 'response status').to.equal(shouldSucceed ? statusCodeSuccess : statusCodeFailure);
     }
 
@@ -29,13 +31,16 @@ export default function () {
             let r = postSO('dialogs', JSON.stringify(dialog), null, tokenOptions);
             expectEither(201, 403, r, shouldSucceed);
             if (r.status == 201) {
-                dialogId = r.json();                
+                dialogId = r.json();
             }
         });
     
         describe(`${logPrefix} getting dialog as ${logSuffix}`, () => {
             let r = getSO('dialogs/' + dialogId, null, tokenOptions);
             expectEither(200, 404, r, shouldSucceed);
+            if (r.status == 200) {
+                activityId = r.json().activities[0].id;
+            }
         });
 
         describe(`${logPrefix} patching dialog as ${logSuffix}`, () => {
@@ -92,8 +97,18 @@ export default function () {
             let r = deleteSO('dialogs/' + dialogId + "/elements" + dialogElementId, null, tokenOptions);
             expectEither(200, 404, r, shouldSucceed);
         });
-    
-        describe(`${logPrefix} posting activity history as ${logSuffix}`, () => {
+
+        describe(`${logPrefix} getting activities as ${logSuffix}`, () => {
+            let r = getSO('dialogs/' + dialogId + "/activities", null, tokenOptions);
+            expectEither(200, 404, r, shouldSucceed);
+        });
+
+        describe(`${logPrefix} getting activity entry as ${logSuffix}`, () => {
+            let r = getSO('dialogs/' + dialogId + "/activities/" + activityId, null, tokenOptions);
+            expectEither(200, 404, r, shouldSucceed);
+        });
+
+        describe(`${logPrefix} posting activity as ${logSuffix}`, () => {
             let r = postSO('dialogs/' + dialogId + "/activities", JSON.stringify(activity), null, tokenOptions);
             expectEither(201, 404, r, shouldSucceed);
         });
