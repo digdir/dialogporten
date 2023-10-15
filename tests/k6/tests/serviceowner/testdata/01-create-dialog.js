@@ -67,6 +67,22 @@ export default function () {
                         "mimeType": "application/pdf"
                     }
                 ]
+            },
+            {
+                "type": "some:type",
+                "displayName": [
+                    {
+                        "cultureCode": "nb_NO",
+                        "value": "Nok et vedlegg"
+                    }
+                ],
+                "urls": [
+                    {
+                        "consumerType": "gui",
+                        "url": "https://foo.com/foo.pdf",
+                        "mimeType": "application/pdf"
+                    }
+                ]
             }
         ],
         "history": [

@@ -2,96 +2,114 @@ import { describe, expect, getSO, postSO, putSO, patchSO, deleteSO, uuidv4 } fro
 import { default as dialogToInsert } from './testdata/01-create-dialog.js';
 
 export default function () {
-    let tokenOptionsForDifferentServiceOwner = {
-        orgName: "other",
-        orgNo: "310778737"
-    };
 
-    let dialogId = null;
-    let dialogElementId = null;
+    let validSo = null;
+    let invalidSo = { orgName: "other", orgNo: "310778737" };
 
-    describe('Allow dialog create with correct SO', () => {
-        var dialog = dialogToInsert();
-        dialogElementId = dialog.elements[0].id;
-        let r = postSO('dialogs', JSON.stringify(dialog));
-        expect(r.status, 'response status').to.equal(201);
-        expect(r, 'response').to.have.validJsonBody();
-        expect(r.json(), 'response json').to.match(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/)
-        
-        dialogId = r.json();
-    });
+    let dialog = dialogToInsert();
+    let dialogElementId = dialog.elements[0].id;
+    let dialogElement = dialog.elements[2]; // Use the one without a predefined ID or related ID
+    let dialogId = null; // known after successful insert
+    let activity = dialog.activities[0];
+   
+    let expectEither = function (statusCodeSuccess, statusCodeFailure, r, shouldSucceed) {
+        expect(r.status, 'response status').to.equal(shouldSucceed ? statusCodeSuccess : statusCodeFailure);
+    }
 
-    describe('Deny dialog create with wrong SO', () => {
-        let r = postSO('dialogs', JSON.stringify(dialogToInsert()), null, tokenOptionsForDifferentServiceOwner);
-        expect(r.status, 'response status').to.equal(403);
-    });
+    let permutations = [
+        [ true, validSo ],
+        [ false, invalidSo ]
+    ];
 
-    describe('Allow getting dialog as correct SO', () => {
-        let r = getSO('dialogs/' + dialogId);
-        expect(r.status, 'response status').to.equal(200);
-    });
+    permutations.forEach(([shouldSucceed, tokenOptions]) => {
+        let logPrefix = shouldSucceed ? "Allow" : "Deny";
+        let logSuffix = shouldSucceed ? "valid serviceowner" : "invalid serviceowner"
 
-    describe('Deny getting dialog as wrong SO', () => {
-        let r = getSO('dialogs/' + dialogId, null, tokenOptionsForDifferentServiceOwner);
-        expect(r.status, 'response status').to.equal(404);
-    });
-
-    describe('Deny patching dialog as wrong SO', () => {
-        let patchDocument = [
-            {
-                "op": "replace",
-                "path": "/apiActions/0/endpoints/1/url",
-                "value": "http://vg.no"
+        describe(`${logPrefix} dialog create as ${logSuffix}`, () => {
+            let r = postSO('dialogs', JSON.stringify(dialog), null, tokenOptions);
+            expectEither(201, 403, r, shouldSucceed);
+            if (r.status == 201) {
+                dialogId = r.json();                
             }
-        ];
-        let r = patchSO('dialogs/' + dialogId, JSON.stringify(patchDocument), null, tokenOptionsForDifferentServiceOwner);
-        expect(r.status, 'response status').to.equal(404);
+        });
+    
+        describe(`${logPrefix} getting dialog as ${logSuffix}`, () => {
+            let r = getSO('dialogs/' + dialogId, null, tokenOptions);
+            expectEither(200, 404, r, shouldSucceed);
+        });
+
+        describe(`${logPrefix} patching dialog as ${logSuffix}`, () => {
+            let patchDocument = [
+                {
+                    "op": "replace",
+                    "path": "/apiActions/0/endpoints/1/url",
+                    "value": "http://vg.no"
+                }
+            ];
+            let r = patchSO('dialogs/' + dialogId, JSON.stringify(patchDocument), null, tokenOptions);
+            expectEither(204, 404, r, shouldSucceed);
+        });
+    
+        describe(`${logPrefix} updating dialog as ${logSuffix}`, () => {
+            let r = putSO('dialogs/' + dialogId, JSON.stringify(dialog), null, tokenOptions);
+            expectEither(204, 404, r, shouldSucceed);
+        });
+    
+        
+        describe(`${logPrefix} deleting dialog as ${logSuffix}`, () => {
+            // Only check that we cannot delete is as invalid SO so
+            // that the dialog still exists for subsequent tests
+            if (shouldSucceed) return;
+            let r = deleteSO('dialogs/' + dialogId, null, tokenOptions);
+            expectEither(204, 404, r, shouldSucceed);
+        });
+        
+    
+        describe(`${logPrefix} getting dialog element list as ${logSuffix}`, () => {
+            let r = getSO('dialogs/' + dialogId + "/elements/", null, tokenOptions);
+            expectEither(200, 404, r, shouldSucceed);
+        });
+    
+        describe(`${logPrefix} getting dialog element as ${logSuffix}`, () => {
+            let r = getSO('dialogs/' + dialogId + "/elements/" + dialogElementId, null, tokenOptions);
+            expectEither(200, 404, r, shouldSucceed);
+        });
+    
+        describe(`${logPrefix} posting dialog element as ${logSuffix}`, () => {            
+            let r = postSO('dialogs/' + dialogId + "/elements", JSON.stringify(dialogElement), null, tokenOptions);
+            expectEither(201, 404, r, shouldSucceed); 
+        });
+    
+        describe(`${logPrefix} putting dialog element as ${logSuffix}`, () => {
+            let r = putSO('dialogs/' + dialogId + "/elements/" + dialogElementId, JSON.stringify(dialogElement), null, tokenOptions);
+            expectEither(204, 404, r, shouldSucceed);
+        });
+    
+        describe(`${logPrefix} deleting dialog element as ${logSuffix}`, () => {
+            // Only check that we cannot delete is as invalid SO so
+            // that the dialog still exists for subsequent tests
+            if (shouldSucceed) return;
+            let r = deleteSO('dialogs/' + dialogId + "/elements" + dialogElementId, null, tokenOptions);
+            expectEither(200, 404, r, shouldSucceed);
+        });
+    
+        describe(`${logPrefix} posting activity history as ${logSuffix}`, () => {
+            let r = postSO('dialogs/' + dialogId + "/activities", JSON.stringify(activity), null, tokenOptions);
+            expectEither(201, 404, r, shouldSucceed);
+        });
+    
     });
 
-    describe('Deny updating dialog as wrong SO', () => {
-        let r = putSO('dialogs/' + dialogId, JSON.stringify(dialogToInsert()), null, tokenOptionsForDifferentServiceOwner);
-        expect(r.status, 'response status').to.equal(404);
-    });
-
-    describe('Deny deleting dialog as wrong SO', () => {
-        let r = deleteSO('dialogs/' + dialogId, null, tokenOptionsForDifferentServiceOwner);
-        expect(r.status, 'response status').to.equal(404);
-    });
-
-    describe('Deny getting dialog element list as wrong SO', () => {
-        let r = getSO('dialogs/' + dialogId + "/elements/", null, tokenOptionsForDifferentServiceOwner);
-        expect(r.status, 'response status').to.equal(404);
-    });
-
-    describe('Deny getting dialog element as wrong SO', () => {
-        let r = getSO('dialogs/' + dialogId + "/elements/" + dialogElementId, null, tokenOptionsForDifferentServiceOwner);
-        expect(r.status, 'response status').to.equal(404);
-    });
-
-    describe('Deny posting dialog element as wrong SO', () => {
-        let r = postSO('dialogs/' + dialogId + "/elements", "{}", null, tokenOptionsForDifferentServiceOwner);
-        expect(r.status, 'response status').to.equal(404);
-    });
-
-    describe('Deny putting dialog element as wrong SO', () => {
-        let r = putSO('dialogs/' + dialogId + "/elements" + dialogElementId, "{}", null, tokenOptionsForDifferentServiceOwner);
-        expect(r.status, 'response status').to.equal(404);
-    });
-
-    describe('Deny deleting dialog element as wrong SO', () => {
-        let r = deleteSO('dialogs/' + dialogId + "/elements" + dialogElementId, null, tokenOptionsForDifferentServiceOwner);
-        expect(r.status, 'response status').to.equal(404);
-    });
-
-    describe('Deny posting activity history as wrong SO', () => {
-        let r = postSO('dialogs/' + dialogId + "/activities", "{}", null, tokenOptionsForDifferentServiceOwner);
-        expect(r.status, 'response status').to.equal(404);
-    });
-
-    // Cleanup
-    describe('Allow deleting dialog as correct SO', () => {
+    // Finally, cleanup by deleting the dialog
+    describe('Allow deleting dialog as valid serviceowner', () => {
         let r = deleteSO('dialogs/' + dialogId);
         expect(r.status, 'response status').to.equal(204);
+    });
+
+    // Check that searching cannot be done without search scope
+    describe('Deny searching dialogs without search-scope', () => {
+        let r = getSO('dialogs', null, { "scopes": "digdir:dialogporten.serviceprovider" } );
+        expect(r.status, 'response status').to.equal(403);
     });
 
 }
