@@ -2,12 +2,14 @@ export const baseUrls = {
     v1: {
         enduser: {
             localdev: "https://localhost:7214/api/v1/enduser/",
+            poc: "https://dppoc-webapi.azurewebsites.net/api/v1/enduser/",
             test: "https://test.eu.api.dialogporten.no/v1/",    
             staging: "https://staging.eu.api.dialogporten.no/v1/",
             prod: "https://prod.eu.api.dialogporten.no/v1/"
         },
         serviceowner: {
             localdev: "https://localhost:7214/api/v1/serviceowner/",
+            poc: "https://dppoc-webapi.azurewebsites.net/api/v1/serviceowner/",
             test: "https://test.so.api.dialogporten.no/v1/",    
             staging: "https://staging.so.api.dialogporten.no/v1/",
             prod: "https://prod.eu.api.dialogporten.no/v1/"

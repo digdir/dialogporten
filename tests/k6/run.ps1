@@ -33,7 +33,7 @@ PS> .\run.ps1 -TokenGeneratorUsername "supersecret" -TokenGeneratorPassword "sup
 
 param (
     [Parameter(Mandatory=$true)]
-    [ValidateSet('localdev','test','staging')]
+    [ValidateSet('localdev','poc','test','staging')]
     [string]$ApiEnvironment,
 
     [string]$ApiVersion = 'v1',

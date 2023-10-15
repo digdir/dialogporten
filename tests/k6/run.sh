@@ -66,8 +66,8 @@ if [[ -z $API_ENVIRONMENT || -z $TOKEN_GENERATOR_USERNAME || -z $TOKEN_GENERATOR
 fi
 
 # Check if valid environment
-if [[ "$API_ENVIRONMENT" != "localdev" && "$API_ENVIRONMENT" != "test" && "$API_ENVIRONMENT" != "staging" ]]; then
-    echo "Error: Invalid environment value. Must be 'localdev', 'test', or 'staging'."
+if [[ "$API_ENVIRONMENT" != "localdev" && "$API_ENVIRONMENT" != "poc" && "$API_ENVIRONMENT" != "test" && "$API_ENVIRONMENT" != "staging" ]]; then
+    echo "Error: Invalid environment value. Must be 'localdev', 'poc', 'test', or 'staging'."
     exit 1
 fi
 
