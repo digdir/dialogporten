@@ -1,0 +1,32 @@
+name: End-to-end tests
+
+on:
+  workflow_dispatch:
+    inputs:
+      apiVersion:
+        description: 'API Version'
+        required: true
+        default: 'v1'
+      environment:
+        description: 'Environment (poc, test, staging)'
+        required: true
+        default: 'poc'
+
+jobs:
+  k6-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Run K6 tests
+      uses: grafana/k6-action@v0.3.0
+      with:
+        filename: tests/k6/suites/all-single-pass.js
+      env:
+        API_ENVIRONMENT: ${{ github.event.inputs.environment }}
+        API_VERSION: ${{ github.event.inputs.apiVersion }}
+        TOKEN_GENERATOR_USERNAME: ${{ secrets.TOKEN_GENERATOR_USERNAME }}
+        TOKEN_GENERATOR_PASSWORD: ${{ secrets.TOKEN_GENERATOR_PASSWORD }}  
+
