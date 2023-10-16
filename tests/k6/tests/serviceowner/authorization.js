@@ -48,7 +48,7 @@ export default function () {
                 {
                     "op": "replace",
                     "path": "/apiActions/0/endpoints/1/url",
-                    "value": "http://vg.no"
+                    "value": "https://vg.no"
                 }
             ];
             let r = patchSO('dialogs/' + dialogId, JSON.stringify(patchDocument), null, tokenOptions);
