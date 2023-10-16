@@ -24,9 +24,20 @@ jobs:
       uses: grafana/k6-action@v0.3.0
       with:
         filename: tests/k6/suites/all-single-pass.js
+        #flags: --quiet --log-output=stdout --include-system-env-vars
       env:
         API_ENVIRONMENT: ${{ github.event.inputs.environment }}
         API_VERSION: ${{ github.event.inputs.apiVersion }}
         TOKEN_GENERATOR_USERNAME: ${{ secrets.TOKEN_GENERATOR_USERNAME }}
         TOKEN_GENERATOR_PASSWORD: ${{ secrets.TOKEN_GENERATOR_PASSWORD }}  
+    
+    - name: Store test summary
+        uses: actions/upload-artifact@v3
+        with:
+          name: k6-summary-report
+          path: summary.json
 
+    - name: 'Publish test results'
+      uses: EnricoMi/publish-unit-test-result-action@v2
+      with:
+        junit_files: 'junit.xml'
