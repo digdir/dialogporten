@@ -67,6 +67,11 @@ if (-not (Test-Path $FilePath)) {
 & "$PSScriptRoot\scripts\generate_alltests.ps1" "$PSScriptRoot\tests\serviceowner\" > $null
 & "$PSScriptRoot\scripts\generate_alltests.ps1" "$PSScriptRoot\tests\enduser\" > $null
 
+if ($ApiEnvironment -eq "localdev") {
+    # Handle self-signed certs when using docker compose
+    $env:K6_INSECURE_SKIP_TLS_VERIFY = "true"
+}
+
 $env:API_ENVIRONMENT = $ApiEnvironment
 $env:API_VERSION = $ApiVersion
 $env:TOKEN_GENERATOR_USERNAME = $TokenGeneratorUsername

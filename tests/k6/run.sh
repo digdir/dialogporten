@@ -88,6 +88,11 @@ DIR="$(dirname "$0")"
 "$DIR/scripts/generate_alltests.sh" "$DIR/tests/serviceowner/" >/dev/null
 "$DIR/scripts/generate_alltests.sh" "$DIR/tests/enduser/" >/dev/null
 
+if [[ "$API_ENVIRONMENT" == "localdev" ]]; then
+    # Handle self-signed certs when using docker compose
+    K6_INSECURE_SKIP_TLS_VERIFY=true
+fi
+
 # Execute k6 with options as environment variables
 API_ENVIRONMENT=$API_ENVIRONMENT \
 API_VERSION=$API_VERSION \
