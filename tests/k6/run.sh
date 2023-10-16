@@ -5,10 +5,11 @@ display_usage() {
     echo "Usage: $0 [OPTIONS] FILEPATH [K6OPTIONS]"
     echo
     echo "Options:"
-    echo "-e|--environment               Either 'localdev', 'test', or 'staging' (required)"
+    echo "-e|--environment               Either 'localdev', 'test', 'staging' or 'poc' (required)"
     echo "-a|--api-version               Defaults to 'v1' if not supplied (optional)"
     echo "-u|--token-generator-username  Username to Altinn Token Generator (required)"
     echo "-p|--token-generator-password  Password to Altinn Token Generator (required)"
+    echo "-f|--force-docker              Use Docker even if k6 is available"
     echo "-h|--help                      Displays this help"
     echo
     echo "Example:"
@@ -17,12 +18,17 @@ display_usage() {
 
 # Default value for API version
 API_VERSION="v1"
+FORCE_DOCKER=false
 
 declare -a K6_ARGS
 
 # Parse arguments
 while [[ $# -gt 0 ]]; do
     case "$1" in
+        -f|--force-docker)
+            FORCE_DOCKER=true
+            shift
+            ;;
         -e|--environment)
             API_ENVIRONMENT="$2"
             shift
@@ -77,9 +83,18 @@ if [[ ! -f "$FILEPATH" ]]; then
     exit 1
 fi
 
-# Check if k6 is installed
+K6_AVAILABLE=true
 if ! which k6 > /dev/null 2>&1; then
-    echo "Error: k6 is not installed or not available in the system PATH. Please install it before proceeding, see https://k6.io/docs/get-started/installation/"
+    K6_AVAILABLE=false
+fi
+
+DOCKER_AVAILABLE=true
+if ! which docker > /dev/null 2>&1; then
+    DOCKER_AVAILABLE=false
+fi
+
+if [ "$K6_AVAILABLE" = false ] && [ "$DOCKER_AVAILABLE" = false ]; then
+    echo "Error: Both k6 and docker are not available. Please install one of them before proceeding."
     exit 1
 fi
 
@@ -93,10 +108,35 @@ if [[ "$API_ENVIRONMENT" == "localdev" ]]; then
     K6_INSECURE_SKIP_TLS_VERIFY=true
 fi
 
-# Execute k6 with options as environment variables
-API_ENVIRONMENT=$API_ENVIRONMENT \
-API_VERSION=$API_VERSION \
-TOKEN_GENERATOR_USERNAME=$TOKEN_GENERATOR_USERNAME \
-TOKEN_GENERATOR_PASSWORD=$TOKEN_GENERATOR_PASSWORD \
-k6 run "${K6_ARGS[@]}" "$FILEPATH" 
-
+if { [ "$K6_AVAILABLE" = true ] && [ "$FORCE_DOCKER" = false ] ; } || [ "$DOCKER_AVAILABLE" = false ]; then
+    echo "Using local k6 installation"
+    # Execute k6 with options as environment variables
+    API_ENVIRONMENT=$API_ENVIRONMENT \
+    API_VERSION=$API_VERSION \
+    TOKEN_GENERATOR_USERNAME=$TOKEN_GENERATOR_USERNAME \
+    TOKEN_GENERATOR_PASSWORD=$TOKEN_GENERATOR_PASSWORD \
+    k6 run "${K6_ARGS[@]}" "$FILEPATH" 
+else
+    echo "Using dockerized k6"
+    FILEPATH=$(echo "$FILEPATH" | sed 's:\\:/:g') # Replace \ with /
+    EXTERNAL_PATH="$DIR/"
+    INTERNAL_PATH="/k6-scripts/"
+    
+    DOCKER_ARGS=(
+        "run" "--rm" "-i"
+        "-v" "${EXTERNAL_PATH}:${INTERNAL_PATH}"
+        "-e" "API_ENVIRONMENT=$API_ENVIRONMENT"
+        "-e" "API_VERSION=$API_VERSION"
+        "-e" "TOKEN_GENERATOR_USERNAME=$TOKEN_GENERATOR_USERNAME"
+        "-e" "TOKEN_GENERATOR_PASSWORD=$TOKEN_GENERATOR_PASSWORD"
+        "-e" "IS_DOCKER=true"
+    )
+    
+    if [ "$API_ENVIRONMENT" == "localdev" ]; then
+        DOCKER_ARGS+=("-e" "K6_INSECURE_SKIP_TLS_VERIFY=true")
+    fi
+    
+    DOCKER_ARGS+=("grafana/k6" "run" "${K6_ARGS[@]}" "$INTERNAL_PATH$FILEPATH")
+    
+    docker "${DOCKER_ARGS[@]}"
+fi

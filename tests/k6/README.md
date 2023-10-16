@@ -8,7 +8,9 @@ The various testsuites defined within are used in GitHub workflows, but can also
 
 ## Prerequisites
 
-* [Grafana K6](https://k6.io/) must be installed and `k6` available in `PATH`
+* Either
+  * [Grafana K6](https://k6.io/) must be installed and `k6` available in `PATH` 
+  * or Docker (available av `docker` in `PATH`)
 * Powershell or Bash (should work on any platform supported by K6)
 
 The test project is self-contained and has no dependency to any other Dialogporten-component.
@@ -18,6 +20,8 @@ The test project is self-contained and has no dependency to any other Dialogport
 There is a central script for running test suites or individual tests, avaiable as both Powershell and Bash. This script handles credentials, selecting environment to run the tests in and what API version to use (default `v1`).
 
 Run `Get-Help .\run.ps1` or `./run.sh --help` for usage information.
+
+The scripts will use locally installed `k6` if available. Failing that, it will attempt to use Docker with [grafana/k6](https://hub.docker.com/r/grafana/k6)
 
 ## Test suites
 

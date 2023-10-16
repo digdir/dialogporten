@@ -1,36 +1,3 @@
-<#
-.SYNOPSIS
-This script runs a test suite or individual tests with provided parameters.
-
-.DESCRIPTION
-This script invokes the 'k6' binary setting various environment variables used within
-the K6 scripts required to get an authorization token, select environment and perform
-the tests specified. This script also invokes script\generate_alltests.ps1 which 
-generates tests\enduser\all-tests.js and tests\serviceowner\all-tests.js, which is used
-to group all defined tests together.
-
-Any additional parameters passed will be passed verbatim to K6
-
-.PARAMETER ApiEnvironment
-Either 'localdev', 'test', or 'staging'. This parameter is required.
-
-.PARAMETER ApiVersion
-Defaults to 'v1' if not supplied.
-
-.PARAMETER TokenGeneratorUsername
-Username to Altinn Token Generator. This parameter is required.
-
-.PARAMETER TokenGeneratorPassword
-Password to Altinn Token Generator. This parameter is required.
-
-.PARAMETER FilePath
-Path to the test suite file. This parameter is required.
-
-.EXAMPLE
-PS> .\run.ps1 -TokenGeneratorUsername "supersecret" -TokenGeneratorPassword "supersecret" -ApiEnvironment "test" -FilePath "suites/all-single-pass.js"
-PS> .\run.ps1 -TokenGeneratorUsername "supersecret" -TokenGeneratorPassword "supersecret" -ApiEnvironment "test" -FilePath "tests/serviceowner/dialogCreate.js" --http-debug
-#>
-
 param (
     [Parameter(Mandatory=$true)]
     [ValidateSet('localdev','poc','test','staging')]
@@ -43,33 +10,54 @@ param (
 
     [Parameter(Mandatory=$true)]
     [String]$TokenGeneratorPassword,
-    #[SecureString]$TokenGeneratorPassword,
-
+    
     [Parameter(Mandatory=$true)]
     [string]$FilePath,
 
     [Parameter(ValueFromRemainingArguments=$true)]
-    [string[]]$K6Args
+    [string[]]$K6Args,
+
+    [switch]$ForceDocker
 )
 
+# Check if k6 is available
+$k6Available = $true
 try {
     Get-Command k6 -ErrorAction Stop > $null
 } catch {
-    Write-Error "Error: k6 is not installed or not available in the system PATH. Please install it before proceeding, see https://k6.io/docs/get-started/installation/"
+    $k6Available = $false
+}
+
+# Check if docker is available
+$dockerAvailable = $true
+try {
+    Get-Command docker -ErrorAction Stop > $null
+} catch {
+    $dockerAvailable = $false
+}
+
+# Decide execution strategy
+if (-not $k6Available -and -not $dockerAvailable) {
+    Write-Error "Error: Both k6 and docker are not available. Please install one of them before proceeding."
     exit 1
 }
 
+# Check for file existence
 if (-not (Test-Path $FilePath)) {
     Write-Error "Error: File '$FilePath' does not exist."
     exit 1
 }
 
+# Generate tests
 & "$PSScriptRoot\scripts\generate_alltests.ps1" "$PSScriptRoot\tests\serviceowner\" > $null
 & "$PSScriptRoot\scripts\generate_alltests.ps1" "$PSScriptRoot\tests\enduser\" > $null
 
+# Handle environment settings
+$insecureSkipTLS = $null
 if ($ApiEnvironment -eq "localdev") {
     # Handle self-signed certs when using docker compose
     $env:K6_INSECURE_SKIP_TLS_VERIFY = "true"
+    $insecureSkipTLS = "K6_INSECURE_SKIP_TLS_VERIFY=true"
 }
 
 $env:API_ENVIRONMENT = $ApiEnvironment
@@ -77,4 +65,35 @@ $env:API_VERSION = $ApiVersion
 $env:TOKEN_GENERATOR_USERNAME = $TokenGeneratorUsername
 $env:TOKEN_GENERATOR_PASSWORD = $TokenGeneratorPassword
 
-k6 run @K6Args $FilePath 
+# Run k6 or docker
+if (($k6Available -and -not $ForceDocker) -or (-not $dockerAvailable)) {
+    Write-Host "Using local k6 installation"
+    k6 run @K6Args $FilePath
+} else {   
+    Write-Host "Using dockerized k6"
+
+    $FilePath = $FilePath.Replace('\', '/')
+
+    $ExternalPath = $PSScriptRoot + "\"
+    $InternalPath = "/k6-scripts/"
+
+    $dockerArgs = @(
+        "run", "--rm", "-i",
+        "-v", "${ExternalPath}:${InternalPath}",
+        "-e", "API_ENVIRONMENT=$ApiEnvironment",
+        "-e", "API_VERSION=$ApiVersion",
+        "-e", "TOKEN_GENERATOR_USERNAME=$TokenGeneratorUsername",
+        "-e", "TOKEN_GENERATOR_PASSWORD=$TokenGeneratorPassword",
+        "-e", "IS_DOCKER=true" # Required to in order to replace "localhost" with "host.docker.internal" when testing locally
+    )
+
+    if ($insecureSkipTLS) {
+        $dockerArgs += "-e", $insecureSkipTLS
+    }
+
+    $dockerArgs += "grafana/k6", "run"
+    $dockerArgs += $K6Args + $InternalPath + $FilePath
+
+    #Write-Host docker $dockerArgs
+    docker $dockerArgs
+}
