@@ -1,4 +1,5 @@
 export { textSummary } from 'https://jslib.k6.io/k6-summary/0.0.1/index.js';
+import { getError, getAllErrors, __ERRORS_BY_TAG } from './logging.js';
 
 let replacements = {
     '&': '&amp;',
@@ -21,10 +22,11 @@ function escapeHTML(str) {
  * @returns junit xml string
  */
 export function generateJUnitXML(data, suiteName) {
-    var failures = 0;
-    var cases = [];
-    var time = (data.state.testRunDurationMs) / 1000;
-    var checks = [];
+
+    let failures = 0;
+    let cases = [];
+    let time = (data.state.testRunDurationMs) / 1000;
+    let checks = [];
     if (data.root_group.checks.length > 0) {
         checks = data.root_group.checks;
     } else if (data.root_group.hasOwnProperty('groups') && data.root_group.groups.length > 0) {
@@ -34,11 +36,13 @@ export function generateJUnitXML(data, suiteName) {
                 var subGroups = group.groups;
                 subGroups.forEach((subGroup) => {
                     subGroup.checks.forEach((check) => {
+                        check
                         checks.push(check);
                     });
                 });
             } else {
                 group.checks.forEach((check) => {
+                    check["groupName"] = group.name;
                     checks.push(check);
                 });
             }
@@ -46,16 +50,23 @@ export function generateJUnitXML(data, suiteName) {
     }
     checks.forEach((check) => {
         if (check.passes >= 1 && check.fails === 0) {
-            cases.push(`<testcase name="${escapeHTML(check.name)}"/>`);
+            cases.push(`<testcase classname="${escapeHTML(check.name)}" name="${escapeHTML(check.name)}" time="0"/>`);
         } else {
             failures++;
-            cases.push(`<testcase name="${escapeHTML(check.name)}" time="${time / checks.length}"><failure message="failed"/></testcase>`);
+            console.warn(check.groupName);
+            
+            let errmsg = getError(check.groupName);
+            cases.push(`<testcase classname="${escapeHTML(check.name)}" name="${escapeHTML(check.name)}" time="0"><failure message="${errmsg}"/></testcase>`);
         }
     });
+
+console.warn(getAllErrors());
+console.warn(__ERRORS_BY_TAG);
+
     return (
         `<?xml version="1.0" encoding="UTF-8" ?>\n` +
         `<testsuites>\n` +
-        `<testsuite name="${escapeHTML(suiteName)}" tests="${cases.length}" failures="${failures}">\n` +
+        `<testsuite package="${escapeHTML(suiteName)}" name="${escapeHTML(suiteName)}" id="0" tests="${cases.length}" failures="${failures}" time="${time}">\n` +
         `${cases.join('\n')}\n</testsuite>\n</testsuites>`
     );
 }
