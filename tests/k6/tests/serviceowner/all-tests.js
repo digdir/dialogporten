@@ -1,4 +1,4 @@
-// This file is generated, see "scripts" directory
+﻿// This file is generated, see "scripts" directory
 import { default as authentication } from './authentication.js';
 import { default as authorization } from './authorization.js';
 import { default as dialogCreateInvalidActionCount } from './dialogCreateInvalidActionCount.js';

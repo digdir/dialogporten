@@ -33,6 +33,6 @@ export default function() {
 "@
 
 # Output the script content to "all-tests.js"
-$scriptContent -replace "`r`n","`n" | Out-File -Path (Join-Path $DirectoryPath "all-tests.js") -Encoding utf8 -NoNewline
+$scriptContent -replace "`r`n","`n" | Out-File -FilePath (Join-Path $DirectoryPath "all-tests.js") -Encoding utf8 -NoNewline
 
 Write-Output "all-tests.js has been generated successfully."
