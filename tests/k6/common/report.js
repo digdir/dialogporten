@@ -1,5 +1,4 @@
 export { textSummary } from 'https://jslib.k6.io/k6-summary/0.0.1/index.js';
-import { getError, getAllErrors, __ERRORS_BY_TAG } from './logging.js';
 
 let replacements = {
     '&': '&amp;',
@@ -36,13 +35,11 @@ export function generateJUnitXML(data, suiteName) {
                 var subGroups = group.groups;
                 subGroups.forEach((subGroup) => {
                     subGroup.checks.forEach((check) => {
-                        check
                         checks.push(check);
                     });
                 });
             } else {
                 group.checks.forEach((check) => {
-                    check["groupName"] = group.name;
                     checks.push(check);
                 });
             }
@@ -53,15 +50,10 @@ export function generateJUnitXML(data, suiteName) {
             cases.push(`<testcase classname="${escapeHTML(check.name)}" name="${escapeHTML(check.name)}" time="0"/>`);
         } else {
             failures++;
-            console.warn(check.groupName);
-            
-            let errmsg = getError(check.groupName);
+            let errmsg = "See the output of the &quot;Run K6&quot; step to see more details";
             cases.push(`<testcase classname="${escapeHTML(check.name)}" name="${escapeHTML(check.name)}" time="0"><failure message="${errmsg}"/></testcase>`);
         }
     });
-
-console.warn(getAllErrors());
-console.warn(__ERRORS_BY_TAG);
 
     return (
         `<?xml version="1.0" encoding="UTF-8" ?>\n` +

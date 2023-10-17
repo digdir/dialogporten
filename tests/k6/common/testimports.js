@@ -9,4 +9,3 @@ export {
     patchSO,
     deleteSO
 } from './request.js';
-

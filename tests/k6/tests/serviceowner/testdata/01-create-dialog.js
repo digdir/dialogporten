@@ -2,9 +2,8 @@ import { uuidv4 } from '../../../common/testimports.js'
 
 export default function () {
     let dialogElementId = uuidv4();
-    let activityId = uuidv4();
 
-    // TODO! We assume that "super-simple-service" exists and is owned by 991825827
+    // Note! We assume that "super-simple-service" exists and is owned by 991825827
     return {
         "serviceResource": "urn:altinn:resource:super-simple-service",
         "party": "/org/991825827",
