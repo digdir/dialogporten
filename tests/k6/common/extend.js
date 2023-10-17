@@ -28,12 +28,12 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 'use strict';
 
-var hasOwn = Object.prototype.hasOwnProperty;
-var toStr = Object.prototype.toString;
-var defineProperty = Object.defineProperty;
-var gOPD = Object.getOwnPropertyDescriptor;
+let hasOwn = Object.prototype.hasOwnProperty;
+let toStr = Object.prototype.toString;
+let defineProperty = Object.defineProperty;
+let gOPD = Object.getOwnPropertyDescriptor;
 
-var isArray = function isArray(arr) {
+let isArray = function isArray(arr) {
 	if (typeof Array.isArray === 'function') {
 		return Array.isArray(arr);
 	}
@@ -41,27 +41,27 @@ var isArray = function isArray(arr) {
 	return toStr.call(arr) === '[object Array]';
 };
 
-var isPlainObject = function isPlainObject(obj) {
+let isPlainObject = function isPlainObject(obj) {
 	if (!obj || toStr.call(obj) !== '[object Object]') {
 		return false;
 	}
 
-	var hasOwnConstructor = hasOwn.call(obj, 'constructor');
-	var hasIsPrototypeOf = obj.constructor && obj.constructor.prototype && hasOwn.call(obj.constructor.prototype, 'isPrototypeOf');
+	let hasOwnConstructor = hasOwn.call(obj, 'constructor');
+	let hasIsPrototypeOf = obj.constructor && obj.constructor.prototype && hasOwn.call(obj.constructor.prototype, 'isPrototypeOf');
 	// Not own constructor property must be Object
 	if (obj.constructor && !hasOwnConstructor && !hasIsPrototypeOf) {
 		return false;
 	}
 
 	// Own properties are enumerated firstly, so to speed up, if last one is own, then all properties are own.
-	var key;
+	let key;
 	for (key in obj) { /**/ }
 
 	return typeof key === 'undefined' || hasOwn.call(obj, key);
 };
 
 // If name is '__proto__', and Object.defineProperty is available, define __proto__ as an own property on target
-var setProperty = function setProperty(target, options) {
+let setProperty = function setProperty(target, options) {
 	if (defineProperty && options.name === '__proto__') {
 		defineProperty(target, options.name, {
 			enumerable: true,
@@ -76,7 +76,7 @@ var setProperty = function setProperty(target, options) {
 };
 
 // Return undefined instead of __proto__ if '__proto__' is not an own property
-var getProperty = function getProperty(obj, name) {
+let getProperty = function getProperty(obj, name) {
 	if (name === '__proto__') {
 		if (!hasOwn.call(obj, name)) {
 			return void 0;
@@ -90,11 +90,11 @@ var getProperty = function getProperty(obj, name) {
 };
 
 export function extend() {
-	var options, name, src, copy, copyIsArray, clone;
-	var target = arguments[0];
-	var i = 1;
-	var length = arguments.length;
-	var deep = false;
+	let options, name, src, copy, copyIsArray, clone;
+	let target = arguments[0];
+	let i = 1;
+	let length = arguments.length;
+	let deep = false;
 
 	// Handle a deep copy situation
 	if (typeof target === 'boolean') {

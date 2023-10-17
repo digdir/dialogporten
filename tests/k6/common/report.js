@@ -29,10 +29,10 @@ export function generateJUnitXML(data, suiteName) {
     if (data.root_group.checks.length > 0) {
         checks = data.root_group.checks;
     } else if (data.root_group.hasOwnProperty('groups') && data.root_group.groups.length > 0) {
-        var groups = data.root_group.groups;
+        let groups = data.root_group.groups;
         groups.forEach((group) => {
             if (group.groups.length > 0) {
-                var subGroups = group.groups;
+                let subGroups = group.groups;
                 subGroups.forEach((subGroup) => {
                     subGroup.checks.forEach((check) => {
                         checks.push(check);

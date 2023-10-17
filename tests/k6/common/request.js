@@ -5,9 +5,9 @@ import { extend } from './extend.js'
 
 function resolveParams(defaultParams, params) {
     if (params == null) return defaultParams;
-    var fullParams = extend(true, {}, defaultParams, params);
+    let fullParams = extend(true, {}, defaultParams, params);
     // Header values set to null in params indicate that they should be removed
-    for (var header in fullParams.headers) {
+    for (let header in fullParams.headers) {
         if (fullParams.headers[header] === null) {
             delete fullParams.headers[header];
         }
