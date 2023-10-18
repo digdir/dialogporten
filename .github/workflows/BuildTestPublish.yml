@@ -10,6 +10,8 @@ on:
         default: false
   pull_request:
     branches: [ main ]
+    paths-ignore:
+      - 'tests/k6/**'
     #paths: [ src/**, tests/**, .github/workflows/** ]
 
 jobs:

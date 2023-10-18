@@ -55,6 +55,11 @@ or change your directory to the infrastructure project, and then run the command
 cd .\src\Digdir.Domain.Dialogporten.Infrastructure\
 dotnet ef migrations add TestMigration
 ```
+## Testing
+
+Besides ordinary unit- and integration tests, there are test suites for both functional end-to-end testing implemented with [K6](https://k6.io/).
+
+See `tests/k6/README.md` for more information.
 
 ## Development in local and test environments
 To generate test tokens see https://github.com/Altinn/AltinnTestTools. There is a request in the Postman collection for this.
