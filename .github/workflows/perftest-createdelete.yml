@@ -1,4 +1,4 @@
-name: End-to-end tests
+name: Create/delete performance test
 
 on:
   workflow_dispatch:
@@ -23,8 +23,7 @@ jobs:
     - name: Run K6 tests
       uses: grafana/k6-action@v0.3.0
       with:
-        filename: tests/k6/suites/all-single-pass.js
-        #flags: --quiet --log-output=stdout --include-system-env-vars
+        filename: tests/k6/suites/createremove-perf-10-vus-1-min.js
       env:
         API_ENVIRONMENT: ${{ github.event.inputs.environment }}
         API_VERSION: ${{ github.event.inputs.apiVersion }}
