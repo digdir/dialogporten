@@ -10,7 +10,7 @@ public class PaginationParameter<TOrderDefinition, TTarget>
 {
     private readonly int _limit = PaginationConstants.DefaultLimit;
 
-    public ContinuationTokenSet<TOrderDefinition, TTarget>? Continue { get; init; }
+    public ContinuationTokenSet<TOrderDefinition, TTarget>? ContinuationToken { get; init; }
 
     public int? Limit
     {
@@ -31,7 +31,7 @@ internal sealed class PaginationParameterValidator<TOrderDefinition, TTarget> : 
     public PaginationParameterValidator()
     {
         RuleFor(x => x.Limit).InclusiveBetween(PaginationConstants.MinLimit,PaginationConstants.MaxLimit);
-        RuleFor(x => x.Continue)
+        RuleFor(x => x.ContinuationToken)
             .Must((paginationParameter, continuationTokenSet, ctx) =>
             {
                 if (continuationTokenSet is null)
