@@ -4,6 +4,7 @@ about: Ny eller endret funksjonalitet
 title: ''
 labels: ''
 assignees: ''
+projects: ['digdir/7']
 
 ---
 
