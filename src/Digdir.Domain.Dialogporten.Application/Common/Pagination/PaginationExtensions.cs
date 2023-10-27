@@ -16,7 +16,7 @@ internal static class PaginationExtensions
         => CreateAsync(
             queryable,
             parameter.OrderBy.DefaultIfNull(),
-            parameter.Continue,
+            parameter.ContinuationToken,
             parameter.Limit!.Value,
             cancellationToken);
 
@@ -28,7 +28,7 @@ internal static class PaginationExtensions
         => CreateAsync(
             queryable,
             OrderSet<TOrderDefinition, TTarget>.Default,
-            parameter.Continue,
+            parameter.ContinuationToken,
             parameter.Limit!.Value,
             cancellationToken);
 
