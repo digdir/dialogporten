@@ -14,7 +14,7 @@ var adminAccessPolicies = [for admin in adminObjectIds: {
 
 var keyvaultName = take('${namePrefix}-kv-${uniqueString(resourceGroup().id)}', 24)
 
-resource keyvault 'Microsoft.KeyVault/vaults@2022-11-01' = {
+resource keyvault 'Microsoft.KeyVault/vaults@2023-02-01' = {
 	name: keyvaultName
 	location: location
 	properties: {

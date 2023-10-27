@@ -52,7 +52,7 @@ module appInsights 'applicationInsights/create.bicep' = {
 }
 
 // Create references to existing resources
-resource srcKeyVaultResource 'Microsoft.KeyVault/vaults@2022-11-01' existing = {
+resource srcKeyVaultResource 'Microsoft.KeyVault/vaults@2023-02-01' existing = {
 	name: keyVault.source.name
     scope: az.resourceGroup(keyVault.source.subscriptionId, keyVault.source.resourceGroupName)
 }
