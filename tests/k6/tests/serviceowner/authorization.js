@@ -1,4 +1,4 @@
-import { describe, expect, getSO, postSO, putSO, patchSO, deleteSO, uuidv4 } from '../../common/testimports.js'
+import { describe, expect, expectStatusFor, getSO, postSO, putSO, patchSO, deleteSO } from '../../common/testimports.js'
 import { default as dialogToInsert } from './testdata/01-create-dialog.js';
 
 export default function () {
@@ -14,8 +14,7 @@ export default function () {
     let activityId = null; // known after successful insert
    
     let expectEither = function (statusCodeSuccess, statusCodeFailure, r, shouldSucceed) {
-        if (r.status == 400) console.warn(r.body);
-        expect(r.status, 'response status').to.equal(shouldSucceed ? statusCodeSuccess : statusCodeFailure);
+        expectStatusFor(r).to.equal(shouldSucceed ? statusCodeSuccess : statusCodeFailure);
     }
 
     let permutations = [
@@ -28,7 +27,7 @@ export default function () {
         let logSuffix = shouldSucceed ? "valid serviceowner" : "invalid serviceowner"
 
         describe(`${logPrefix} dialog create as ${logSuffix}`, () => {
-            let r = postSO('dialogs', JSON.stringify(dialog), null, tokenOptions);
+            let r = postSO('dialogs', dialog, null, tokenOptions);
             expectEither(201, 403, r, shouldSucceed);
             if (r.status == 201) {
                 dialogId = r.json();
@@ -51,12 +50,12 @@ export default function () {
                     "value": "https://vg.no"
                 }
             ];
-            let r = patchSO('dialogs/' + dialogId, JSON.stringify(patchDocument), null, tokenOptions);
+            let r = patchSO('dialogs/' + dialogId, patchDocument, null, tokenOptions);
             expectEither(204, 404, r, shouldSucceed);
         });
     
         describe(`${logPrefix} updating dialog as ${logSuffix}`, () => {
-            let r = putSO('dialogs/' + dialogId, JSON.stringify(dialog), null, tokenOptions);
+            let r = putSO('dialogs/' + dialogId, dialog, null, tokenOptions);
             expectEither(204, 404, r, shouldSucceed);
         });
     
@@ -81,12 +80,12 @@ export default function () {
         });
     
         describe(`${logPrefix} posting dialog element as ${logSuffix}`, () => {            
-            let r = postSO('dialogs/' + dialogId + "/elements", JSON.stringify(dialogElement), null, tokenOptions);
+            let r = postSO('dialogs/' + dialogId + "/elements", dialogElement, null, tokenOptions);
             expectEither(201, 404, r, shouldSucceed); 
         });
     
         describe(`${logPrefix} putting dialog element as ${logSuffix}`, () => {
-            let r = putSO('dialogs/' + dialogId + "/elements/" + dialogElementId, JSON.stringify(dialogElement), null, tokenOptions);
+            let r = putSO('dialogs/' + dialogId + "/elements/" + dialogElementId, dialogElement, null, tokenOptions);
             expectEither(204, 404, r, shouldSucceed);
         });
     
@@ -109,7 +108,7 @@ export default function () {
         });
 
         describe(`${logPrefix} posting activity as ${logSuffix}`, () => {
-            let r = postSO('dialogs/' + dialogId + "/activities", JSON.stringify(activity), null, tokenOptions);
+            let r = postSO('dialogs/' + dialogId + "/activities", activity, null, tokenOptions);
             expectEither(201, 404, r, shouldSucceed);
         });
     

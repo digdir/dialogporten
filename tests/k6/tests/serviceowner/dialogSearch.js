@@ -1,5 +1,4 @@
 import { 
-    customConsole as console,
     describe, expect, expectStatusFor,
     getSO,
     uuidv4,
@@ -31,11 +30,14 @@ export default function () {
     let extendedStatusToSearchFor = "status:" + uuidv4();
     let secondExtendedStatusToSearchFor = "status:" + uuidv4();
     let senderNameToSearchFor = uuidv4()
+    let auxParty = "/person/07874299582";
+    let auxResource = "urn:altinn:resource:ttd-altinn-events-automated-tests"; // Note! We assume that this exists!
     let titleForDueAtItem = uuidv4();
     let titleForExpiresAtItem = uuidv4();
     let titleForVisibleFromItem = uuidv4();
     let titleForUpdatedItem = uuidv4();
     let titleForLastItem = uuidv4();
+    let createdAfter = (new Date()).toISOString(); // We use this on all tests to hopefully avoid clashing with unrelated dialogs
 
     describe('Arrange: Create some dialogs to test against', () => {
 
@@ -55,8 +57,8 @@ export default function () {
         setSenderName(dialogs[++d], senderNameToSearchFor);
         setExtendedStatus(dialogs[d], secondExtendedStatusToSearchFor);
 
-        setServiceResource(dialogs[++d], "urn:altinn:resource:ttd-altinn-events-automated-tests"); // Note! We assume that this exists!
-        setParty(dialogs[++d], "/person/07874299582");
+        setServiceResource(dialogs[++d], auxResource);
+        setParty(dialogs[++d], auxParty);
         
         setTitle(dialogs[++d], titleForDueAtItem);
         setDueAt(dialogs[d], new Date("2033-12-07T10:13:00Z"));
@@ -90,43 +92,43 @@ export default function () {
         expect(r.json(), 'response json').to.have.property("items").with.lengthOf.at.least(10);
     });
 
-    describe('Perform search for title', () => {
-        let r = getSO('dialogs/?Search=' + titleToSearchFor);
+    describe('Search for title', () => {
+        let r = getSO('dialogs/?CreatedAfter=' + createdAfter + '&Search=' + titleToSearchFor);
         expectStatusFor(r).to.equal(200);
         expect(r, 'response').to.have.validJsonBody();
         expect(r.json(), 'response json').to.have.property("items").with.lengthOf(1);
     });
 
-    describe('Perform search for body', () => {
-        let r = getSO('dialogs/?Search=' + bodyToSearchFor);
+    describe('Search for body', () => {
+        let r = getSO('dialogs/?CreatedAfter=' + createdAfter + '&Search=' + bodyToSearchFor);
         expectStatusFor(r).to.equal(200);
         expect(r, 'response').to.have.validJsonBody();
         expect(r.json(), 'response json').to.have.property("items").with.lengthOf(1);
     });
 
-    describe('Perform search for sender name', () => {
-        let r = getSO('dialogs/?Search=' + senderNameToSearchFor);
+    describe('Search for sender name', () => {
+        let r = getSO('dialogs/?CreatedAfter=' + createdAfter + '&Search=' + senderNameToSearchFor);
         expectStatusFor(r).to.equal(200);
         expect(r, 'response').to.have.validJsonBody();
         expect(r.json(), 'response json').to.have.property("items").with.lengthOf(1);
     });
 
-    describe('Perform search for extended status', () => {
-        let r = getSO('dialogs/?ExtendedStatus=' + extendedStatusToSearchFor + "&ExtendedStatus=" + secondExtendedStatusToSearchFor);
+    describe('Filter by extended status', () => {
+        let r = getSO('dialogs/?CreatedAfter=' + createdAfter + '&ExtendedStatus=' + extendedStatusToSearchFor + "&ExtendedStatus=" + secondExtendedStatusToSearchFor);
         expectStatusFor(r).to.equal(200);
         expect(r, 'response').to.have.validJsonBody();
         expect(r.json(), 'response json').to.have.property("items").with.lengthOf(2);
     });
 
-    describe('Perform with limit', () => {
-        let r = getSO('dialogs/?Limit=3');
+    describe('List with limit', () => {
+        let r = getSO('dialogs/?CreatedAfter=' + createdAfter + '&Limit=3');
         expectStatusFor(r).to.equal(200);
         expect(r, 'response').to.have.validJsonBody();
         expect(r.json(), 'response json').to.have.property("items").with.lengthOf(3);
         expect(r.json(), 'response json').to.have.property("hasNextPage").to.be.true;
         expect(r.json(), 'response json').to.have.property("continuationToken");
 
-        let r2 = getSO('dialogs/?Limit=3&ContinuationToken=' + r.json().continuationToken);
+        let r2 = getSO('dialogs/?CreatedAfter=' + createdAfter + '&Limit=3&ContinuationToken=' + r.json().continuationToken);
         expectStatusFor(r2).to.equal(200);
         expect(r2, 'response').to.have.validJsonBody();
         expect(r2.json(), 'response json').to.have.property("items").with.lengthOf(3);
@@ -136,38 +138,38 @@ export default function () {
         expect(allIds.some((id, i) => allIds.indexOf(id) !== i)).to.be.false;
     });
 
-    describe('Perform with custom orderBy', () => {
-        let r = getSO('dialogs/?Limit=3&OrderBy=dueAt,updatedAt,createdAt');
+    describe('List with custom orderBy', () => {
+        let r = getSO('dialogs/?CreatedAfter=' + createdAfter + '&Limit=3&OrderBy=dueAt_desc,updatedAt_desc');
         expectStatusFor(r).to.equal(200);
         expect(r, 'response').to.have.validJsonBody();
         expect(r.json(), 'response json').to.have.property("items").with.lengthOf(3);
-        console.dir({
-            titleForDueAtItem: titleForDueAtItem,
-            titleForUpdatedItem: titleForUpdatedItem,
-            titleForLastItem: titleForLastItem
-        });
-        let ids = [];
-        r.json().items.forEach((i) => ids.push([i.title, i.dueAt, i.updatedAt, i.createdAt]));
-        console.dir(ids);
-        console.dir(r.json().items);
-
         expect(r.json().items[0], 'first dialog').to.have.property("title").that.hasLocalizedText(titleForDueAtItem);
         expect(r.json().items[1], 'second dialog').to.have.property("title").that.hasLocalizedText(titleForUpdatedItem);
         expect(r.json().items[2], 'third dialog').to.have.property("title").that.hasLocalizedText(titleForLastItem);
+
+        r = getSO('dialogs/?CreatedAfter=' + createdAfter + '&Limit=3&OrderBy=dueAt_asc,updatedAt_desc');
+        expectStatusFor(r).to.equal(200);
+        expect(r, 'response').to.have.validJsonBody();
+        expect(r.json(), 'response json').to.have.property("items").with.lengthOf(3);
+        expect(r.json().items[0], 'first dialog reversed').to.have.property("title").that.hasLocalizedText(titleForUpdatedItem);
+        expect(r.json().items[1], 'second dialog reversed').to.have.property("title").that.hasLocalizedText(titleForLastItem);
     });
 
+    describe('List with party filter', () => {
+        let r = getSO('dialogs/?CreatedAfter=' + createdAfter + '&Party=' + auxParty);
+        expectStatusFor(r).to.equal(200);
+        expect(r, 'response').to.have.validJsonBody();
+        expect(r.json(), 'response json').to.have.property("items").with.lengthOf(1);
+        expect(r.json().items[0], 'party').to.have.property("party").that.equals(auxParty);
+    });
 
-    // TODO: check
-        // - limit
-    // - order (multiple fields)
-    // - pagination
-    // - filter by party
-    // - filter by service resource
-    // - filter by status
-    // - filter by extended status
-    // - filter by after
-
-
+    describe('List with resource filter', () => {
+        let r = getSO('dialogs/?CreatedAfter=' + createdAfter + '&ServiceResource=' + auxResource);
+        expectStatusFor(r).to.equal(200);
+        expect(r, 'response').to.have.validJsonBody();
+        expect(r.json(), 'response json').to.have.property("items").with.lengthOf(1);
+        expect(r.json().items[0], 'party').to.have.property("serviceResource").that.equals(auxResource);
+    });
 
     describe("Cleanup", () => {
         dialogIds.forEach((d) => {

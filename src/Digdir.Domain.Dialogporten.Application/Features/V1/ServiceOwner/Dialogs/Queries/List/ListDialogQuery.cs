@@ -91,6 +91,7 @@ internal sealed class ListDialogQueryHandler : IRequestHandler<ListDialogQuery, 
             .WhereIf(request.VisibleBefore.HasValue, x => x.VisibleFrom <= request.VisibleBefore)
             .WhereIf(request.Search is not null, x =>
                 x.Title!.Localizations.AsQueryable().Any(searchExpression) ||
+                x.Body!.Localizations.AsQueryable().Any(searchExpression) ||
                 x.SearchTags.Any(x => x.Value == request.Search!.ToLower()) ||
                 x.SenderName!.Localizations.AsQueryable().Any(searchExpression)
             )
