@@ -3,7 +3,7 @@ param secretName string
 @secure()
 param secretValue string
 
-resource secret 'Microsoft.KeyVault/vaults/secrets@2022-11-01' = {
+resource secret 'Microsoft.KeyVault/vaults/secrets@2023-02-01' = {
   name: '${destKeyVaultName}/${secretName}'
   properties: {
     value: secretValue
