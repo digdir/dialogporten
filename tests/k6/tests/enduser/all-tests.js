@@ -1,4 +1,4 @@
-﻿// This file is generated, see "scripts" directory
+// This file is generated, see "scripts" directory
 
 
 export default function() {
