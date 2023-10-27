@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "Digdir.Tool.Dialogporten.SlackNotifier": {
+      "commandName": "Project",
+      "commandLineArgs": "--port 7024",
+      "launchBrowser": false
+    }
+  }
+}
