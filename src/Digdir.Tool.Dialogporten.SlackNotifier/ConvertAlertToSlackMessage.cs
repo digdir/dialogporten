@@ -76,7 +76,7 @@ public static class ConvertAlertToSlackMessage
 
         if (index >= 0)
         {
-            return inputUrl.Substring(0, index + 2); // Include "q/"
+            return inputUrl[..(index + 2)]; // Include "q/"
         }
 
         return inputUrl; // "q/" not found, return the original URL
