@@ -31,11 +31,13 @@ public static class ConvertAlertToSlackMessage
     {
         log.LogInformation("C# HTTP trigger function processed a request.");
         using var streamReader = new StreamReader(req.Body);
-        var azureAlertRequest = JsonConvert.DeserializeObject<AzureAlert>(await streamReader.ReadToEndAsync());
+        var requestBody = await streamReader.ReadToEndAsync();
+        log.LogInformation(requestBody);
+        var azureAlertRequest = JsonConvert.DeserializeObject<AzureAlert>(requestBody);
         var responses = await QueryAppInsights(azureAlertRequest);
 
         var link = azureAlertRequest.Data.AlertContext.Condition.AllOf
-            .Select(x => x.LinkToSearchResultsUI)
+            .Select(x => x.LinkToFilteredSearchResultsUI)
             .FirstOrDefault(x => !string.IsNullOrWhiteSpace(x));
         link = RemoveQuery(link) + encodedKqlQuery;
 

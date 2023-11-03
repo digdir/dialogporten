@@ -9,7 +9,6 @@ public class AppInsightsQueryResponse
 
 public class Table
 {
-    public string Name { get; set; }
     public Column[] Columns { get; set; }
     public List<List<object>> Rows { get; set; }
 }
@@ -17,5 +16,4 @@ public class Table
 public class Column
 {
     public string Name { get; set; }
-    public string Type { get; set; }
 }
