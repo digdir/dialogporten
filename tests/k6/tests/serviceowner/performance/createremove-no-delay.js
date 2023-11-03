@@ -14,7 +14,7 @@ export function setup() {
 export default function(paramsWithToken) {
     let dialogId = null;
     describe('create dialog', () => {
-        let r = postSO('dialogs', JSON.stringify(dialogToInsert()), paramsWithToken);   
+        let r = postSO('dialogs', dialogToInsert(), paramsWithToken);   
         expect(r.status, 'response status').to.equal(201);
         dialogId = r.json();
     });

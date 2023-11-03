@@ -44,21 +44,32 @@ function getEnduserRequestParams(params = null, tokenOptions = null) {
     return resolveParams(defaultParams, params);
 }
 
+function maybeStringifyBody(maybeObject) {
+    if (typeof maybeObject !== "string") {
+        return JSON.stringify(maybeObject);
+    }
+
+    return maybeObject;
+}
+
 export function getSO(url, params = null, tokenOptions = null) {
     return http.get(baseUrlServiceOwner + url, getServiceOwnerRequestParams(params, tokenOptions))
 }
 
 export function postSO(url, body, params = null, tokenOptions = null) {
+    body = maybeStringifyBody(body);
     params = extend(true, {}, params, { headers: { 'Content-Type': 'application/json' }});
     return http.post(baseUrlServiceOwner + url, body, getServiceOwnerRequestParams(params, tokenOptions));
 }
 
 export function putSO(url, body, params = null, tokenOptions = null) {
+    body = maybeStringifyBody(body);
     params = extend(true, {}, params, { headers: { 'Content-Type': 'application/json' }});
     return http.put(baseUrlServiceOwner + url, body, getServiceOwnerRequestParams(params, tokenOptions));
 }
 
 export function patchSO(url, body, params = null, tokenOptions = null) {
+    body = maybeStringifyBody(body);
     params = extend(true, {}, params, { headers: { 'Content-Type': 'application/json' }});
     return http.patch(baseUrlServiceOwner + url, body, getServiceOwnerRequestParams(params, tokenOptions));
 }
@@ -72,16 +83,19 @@ export function getEU(url, params = null, tokenOptions = null) {
 }
 
 export function postEU(url, body, params = null, tokenOptions = null) {
+    body = maybeStringifyBody(body);
     params = extend(true, {}, params, { headers: { 'Content-Type': 'application/json' }});
     return http.post(baseUrlEndUser + url, body, getEnduserRequestParams(params, tokenOptions));
 }
 
 export function putEU(url, body, params = null, tokenOptions = null) {
+    body = maybeStringifyBody(body);
     params = extend(true, {}, params, { headers: { 'Content-Type': 'application/json' }});
     return http.put(baseUrlEndUser + url, body, getEnduserRequestParams(params, tokenOptions));
 }
 
 export function patchEU(url, body, params = null, tokenOptions = null) {
+    body = maybeStringifyBody(body);
     params = extend(true, {}, params, { headers: { 'Content-Type': 'application/json' }});
     return http.patch(baseUrlEndUser + url, body, getEnduserRequestParams(params, tokenOptions));
 }

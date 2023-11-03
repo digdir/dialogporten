@@ -18,8 +18,7 @@ export function describe(name, fn) {
         if (error.expected) {
             errmsg += ` expected:${error.expected} actual:${error.actual}`;
         }
-        
-        console.error(errmsg);
+        console.warn(errmsg);
       }
     });
   

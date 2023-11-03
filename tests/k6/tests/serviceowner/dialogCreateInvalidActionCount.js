@@ -4,7 +4,7 @@ import { default as dialogToInsert } from './testdata/01-create-dialog.js';
 export default function () {
 
     let expectGuiActionErrorResponseForDialog = function(dialog) {
-        let r = postSO('dialogs', JSON.stringify(dialog));
+        let r = postSO('dialogs', dialog);
         expect(r.status, 'response status').to.equal(400);
         expect(r, 'response').to.have.validJsonBody();
         expect(r.json(), 'reponse').to.have.property('errors');

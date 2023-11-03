@@ -8,7 +8,7 @@ export default function () {
     let newApiActionEndpointUrl = null;
 
     describe('Perform dialog create', () => {
-        let r = postSO('dialogs', JSON.stringify(dialogToInsert()));
+        let r = postSO('dialogs', dialogToInsert());
         expect(r.status, 'response status').to.equal(201);
         expect(r, 'response').to.have.validJsonBody();
         expect(r.json(), 'response json').to.match(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/)
@@ -39,7 +39,7 @@ export default function () {
                 "value": newApiActionEndpointUrl
             }
         ];
-        let r = patchSO('dialogs/' + dialogId, JSON.stringify(patchDocument));
+        let r = patchSO('dialogs/' + dialogId, patchDocument);
         expect(r.status, 'response status').to.equal(204);
     });
 

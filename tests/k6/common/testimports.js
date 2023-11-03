@@ -1,6 +1,7 @@
-export { chai, expect } from './k6chai.js';
+export { chai, expect, expectStatusFor } from './k6chai.js';
 export { uuidv4 } from './uuid.js';
 export { describe } from './describe.js';
+export { customConsole  } from './console.js';
 export { getServiceOwnerTokenFromGenerator, getEnduserTokenFromGenerator } from './token.js';
 export { 
     getEU,
@@ -10,3 +11,16 @@ export {
     patchSO,
     deleteSO
 } from './request.js';
+export {
+    setTitle,
+    setBody,
+    setSearchTags,
+    setSenderName,
+    setStatus,
+    setExtendedStatus,
+    setServiceResource,
+    setParty,
+    setDueAt,
+    setExpiresAt,
+    setVisibleFrom
+} from './dialog.js';

@@ -5,14 +5,27 @@ export default function () {
 
     // Note! We assume that "super-simple-service" exists and is owned by 991825827
     return {
-        "serviceResource": "urn:altinn:resource:super-simple-service",
-        "party": "/org/991825827",
-        "status": "waiting",
-        "dueAt": "2023-11-25T06:37:54.2920190Z",
+        "serviceResource": "urn:altinn:resource:super-simple-service", // urn starting with urn:altinn:resource:
+        "party": "/org/991825827", // or /person/<11 digits>
+        "status": "unspecified", // valid values: unspecified, inprogress, waiting, signing, cancelled, completed
+        "extendedStatus": "urn:any/valid/uri",
+        "dueAt": "2033-11-25T06:37:54.2920190Z", // must be UTC
+        "expiresAt": "2053-11-25T06:37:54.2920190Z", // must be UTC
+        "visibleFrom": "2032-11-25T06:37:54.2920190Z", // must be UTC
+        "searchTags": [ 
+            { "value": "something searchable" },
+            { "value": "something else searchable" }
+        ],
         "title": [
             {
                 "cultureCode": "nb_NO",
-                "value": "Et eksempel på en tittel - due at 3"
+                "value": "Et eksempel på en tittel"
+            }   
+        ],
+        "body": [
+            {
+                "cultureCode": "nb_NO",
+                "value": "Et eksempel på en body"
             }
         ],
         "apiActions": [
