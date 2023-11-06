@@ -88,16 +88,16 @@ When the IaC runs, it copies specific secrets from the source to the deployments
 
 | **Convention type** | **Source key vault**                     | **Environment key vault** |
 |---------------------|------------------------------------------|---------------------------|
-| **Wildcard**        | dialogporten--*--[SecretKey]             | [SecretKey]               |
+| **Wildcard**        | dialogporten--any--[SecretKey]             | [SecretKey]               |
 | **Environment**     | dialogporten--[Environment]--[SecretKey] | [SecretKey]               |
 
-There are two conventions, one that targets a specific environment, and one wildcard that targets all environments that the source is connected to through IaC. The environment specific convention takes precedence over the wildcard convention. For example, say we are running an IaC that targets the `Stage` environment with the following keys in the source key vault:
+There are two conventions, one that targets a specific environment, and one "any" that targets all environments that the source is connected to through IaC. The environment specific convention takes precedence over the "any" convention. For example, say we are running an IaC that targets the `Stage` environment with the following keys in the source key vault:
 
 | **Source key vault**          | **Stage key vault** | **IsCopied** | **Description**                                         |
 |-------------------------------|---------------------|--------------|---------------------------------------------------------|
-| dialogporten--*--foo          |                     | false        | Environment specific "foo" convention takes precedence. |
-| dialogporten--*--bar          | bar                 | true         | No environment specific "bar" exists.                   |
-| dialogporten--Stage--foo      | foo                 | true         | Overrides the wildcard convention for "foo".            |
+| dialogporten--any--foo          |                     | false        | Environment specific "foo" convention takes precedence. |
+| dialogporten--any--bar          | bar                 | true         | No environment specific "bar" exists.                   |
+| dialogporten--Stage--foo      | foo                 | true         | Overrides the "any" convention for "foo".            |
 | dialogporten--Test--bar       |                     | false        | Targets another environment.                            |
 | dialogporten--Stage--foo--bar | foo--bar            | true         | Supports hierarchical values with `--` as separator.    |
 | iDoNotFollowTheConvention     |                     | false        | Is ignored as it does not follow any convention.        |
