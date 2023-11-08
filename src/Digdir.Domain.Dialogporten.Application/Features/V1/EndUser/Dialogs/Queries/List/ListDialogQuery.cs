@@ -89,8 +89,8 @@ internal sealed class ListDialogQueryHandler : IRequestHandler<ListDialogQuery, 
                 x.SearchTags.Any(x => x.Value == request.Search!.ToLower()) ||
                 x.SenderName!.Localizations.AsQueryable().Any(searchExpression)
             )
-            .Where(x => !x.VisibleFrom.HasValue || _clock.UtcNowOffset < x.VisibleFrom)
-            .Where(x => !x.ExpiresAt.HasValue || x.ExpiresAt < _clock.UtcNowOffset)
+            .Where(x => !x.VisibleFrom.HasValue || _clock.UtcNowOffset > x.VisibleFrom)
+            .Where(x => !x.ExpiresAt.HasValue || x.ExpiresAt > _clock.UtcNowOffset)
             .ProjectTo<ListDialogDto>(_mapper.ConfigurationProvider)
             .ToPaginatedListAsync(request, cancellationToken: cancellationToken);
     }
