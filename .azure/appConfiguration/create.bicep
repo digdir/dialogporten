@@ -1,7 +1,7 @@
 param namePrefix string
 param location string
 
-resource appConfig 'Microsoft.AppConfiguration/configurationStores@2022-05-01' = {
+resource appConfig 'Microsoft.AppConfiguration/configurationStores@2023-03-01' = {
 	name: '${namePrefix}-appConfiguration'
 	location: location
 	sku: {
