@@ -94,6 +94,11 @@ export function setParty(dialog, party) {
 }
 
 export function setDueAt(dialog, dueAt) {
+    if (dueAt == null) {
+        delete dialog.dueAt;
+        return;
+    }
+
     if (dueAt instanceof Date) {
         dueAt = dateToUTCString(dueAt);
     }
@@ -106,6 +111,11 @@ export function setDueAt(dialog, dueAt) {
 }
 
 export function setExpiresAt(dialog, expiresAt) {
+    if (expiresAt == null) {
+        delete dialog.expiresAt;
+        return;
+    }
+
     if (expiresAt instanceof Date) {
         expiresAt = dateToUTCString(expiresAt);
     }
@@ -118,6 +128,11 @@ export function setExpiresAt(dialog, expiresAt) {
 }
 
 export function setVisibleFrom(dialog, visibleFrom) {
+    if (visibleFrom == null) {
+        delete dialog.visibleFrom;
+        return;
+    }
+    
     if (visibleFrom instanceof Date) {
         visibleFrom = dateToUTCString(visibleFrom);
     }

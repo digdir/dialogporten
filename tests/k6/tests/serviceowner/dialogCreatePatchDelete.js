@@ -1,4 +1,4 @@
-import { describe, expect, getSO, postSO, deleteSO, patchSO, uuidv4 } from '../../common/testimports.js'
+import { describe, expect, expectStatusFor, getSO, postSO, deleteSO, patchSO, uuidv4 } from '../../common/testimports.js'
 import { default as dialogToInsert } from './testdata/01-create-dialog.js';
 
 export default function () {
@@ -9,7 +9,7 @@ export default function () {
 
     describe('Perform dialog create', () => {
         let r = postSO('dialogs', dialogToInsert());
-        expect(r.status, 'response status').to.equal(201);
+        expectStatusFor(r).to.equal(201);
         expect(r, 'response').to.have.validJsonBody();
         expect(r.json(), 'response json').to.match(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/)
         
@@ -18,7 +18,7 @@ export default function () {
 
     describe('Perform dialog get', () => {
         let r = getSO('dialogs/' + dialogId);
-        expect(r.status, 'response status').to.equal(200);
+        expectStatusFor(r).to.equal(200);
         expect(r, 'response').to.have.validJsonBody();
         expect(r.json(), 'dialog').to.have.property("id").to.equal(dialogId);
         expect(r.json(), 'dialog').to.have.property("createdAt");        
@@ -30,7 +30,7 @@ export default function () {
         eTag = r.json()["eTag"];        
     });
 
-    describe('Perform patch', () => {
+    describe('Deny attempt to patch with invalid If-Match', () => {
         newApiActionEndpointUrl = "https://digdir.no/" + uuidv4();
         let patchDocument = [
             {
@@ -39,13 +39,26 @@ export default function () {
                 "value": newApiActionEndpointUrl
             }
         ];
-        let r = patchSO('dialogs/' + dialogId, patchDocument);
-        expect(r.status, 'response status').to.equal(204);
+        let r = patchSO('dialogs/' + dialogId, patchDocument, { "headers": { "If-Match": uuidv4() } });
+        expectStatusFor(r).to.equal(412); // Precondition failed
+    });
+
+    describe('Allow patch with valid If-Match', () => {
+        newApiActionEndpointUrl = "https://digdir.no/" + uuidv4();
+        let patchDocument = [
+            {
+                "op": "replace",
+                "path": "/apiActions/0/endpoints/1/url",
+                "value": newApiActionEndpointUrl
+            }
+        ];
+        let r = patchSO('dialogs/' + dialogId, patchDocument, { "headers": { "If-Match": eTag } });
+        expectStatusFor(r).to.equal(204);
     });
 
     describe('Perform dialog get after patch', () => {
         let r = getSO('dialogs/' + dialogId);
-        expect(r.status, 'response status').to.equal(200);
+        expectStatusFor(r).to.equal(200);
         expect(r, 'response').to.have.validJsonBody();
         expect(r.json(), 'dialog').to.have.property("updatedAt");        
         expect(r.json().updatedAt, 'updatedAt').to.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{7}Z$/);
@@ -58,6 +71,6 @@ export default function () {
 
     describe('Perform dialog delete', () => {
         let r = deleteSO('dialogs/' + dialogId);
-        expect(r.status, 'response status').to.equal(204);
+        expectStatusFor(r).to.equal(204);
     });
 }
