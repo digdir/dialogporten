@@ -1,4 +1,4 @@
-import { describe, expect, getSO, postSO, putSO, patchSO, deleteSO, uuidv4 } from '../../common/testimports.js'
+import { describe, expect, expectStatusFor, getSO, postSO, putSO, patchSO, deleteSO, uuidv4 } from '../../common/testimports.js'
 
 export default function () {
 
@@ -19,13 +19,13 @@ export default function () {
     };
 
     let expect401InvalidRequest = function(r) {
-        expect(r.status, 'response status').to.equal(401);
+        expectStatusFor(r).to.equal(401);
         expect(r.headers, 'reponse headers').has.property('Www-Authenticate');
         expect(r.headers['Www-Authenticate'], 'WWW-Authenticate header').contain('Bearer');
     }
 
     let expect401InvalidToken = function(r) {
-        expect(r.status, 'response status').to.equal(401);
+        expectStatusFor(r).to.equal(401);
         expect(r.headers, 'reponse headers').has.property('Www-Authenticate');
         expect(r.headers['Www-Authenticate'], 'WWW-Authenticate header').contain('Bearer error="invalid_token"');
     }

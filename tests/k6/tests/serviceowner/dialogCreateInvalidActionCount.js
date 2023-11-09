@@ -1,11 +1,11 @@
-import { describe, expect, postSO } from '../../common/testimports.js'
+import { describe, expect, expectStatusFor, postSO } from '../../common/testimports.js'
 import { default as dialogToInsert } from './testdata/01-create-dialog.js';
 
 export default function () {
 
     let expectGuiActionErrorResponseForDialog = function(dialog) {
         let r = postSO('dialogs', dialog);
-        expect(r.status, 'response status').to.equal(400);
+        expectStatusFor(r).to.equal(400);
         expect(r, 'response').to.have.validJsonBody();
         expect(r.json(), 'reponse').to.have.property('errors');
         expect(r.json().errors, 'error').to.have.property('GuiActions');

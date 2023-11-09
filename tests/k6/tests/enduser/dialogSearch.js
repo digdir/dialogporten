@@ -1,6 +1,6 @@
 import { 
     describe, expect, expectStatusFor,
-    getSO,
+    getEU,
     uuidv4,
     setTitle,
     setBody,
@@ -17,7 +17,7 @@ import {
     putSO,
     deleteSO } from '../../common/testimports.js'
 
-import { default as dialogToInsert } from './testdata/01-create-dialog.js';
+import { default as dialogToInsert } from '../serviceowner/testdata/01-create-dialog.js';
 
 export default function () {
 
@@ -30,20 +30,22 @@ export default function () {
     let extendedStatusToSearchFor = "status:" + uuidv4();
     let secondExtendedStatusToSearchFor = "status:" + uuidv4();
     let senderNameToSearchFor = uuidv4()
-    let auxParty = "/person/07874299582";
+    let enduserParty = "/person/07874299582";
     let auxResource = "urn:altinn:resource:ttd-altinn-events-automated-tests"; // Note! We assume that this exists!
-    let titleForDueAtItem = uuidv4();
-    let titleForExpiresAtItem = uuidv4();
-    let titleForVisibleFromItem = uuidv4();
-    let titleForUpdatedItem = uuidv4();
-    let titleForLastItem = uuidv4();
+    let titleForDueAtItem = "due_" + uuidv4();
+    let titleForExpiresAtItem = "expires_" + uuidv4();
+    let titleForUpdatedItem = "updated_" + uuidv4();
+    let titleForLastItem = "last_" + uuidv4();
     let createdAfter = (new Date()).toISOString(); // We use this on all tests to hopefully avoid clashing with unrelated dialogs
+    let defaultFilter = "?CreatedAfter=" + createdAfter + "&Party=" + enduserParty;
 
     describe('Arrange: Create some dialogs to test against', () => {
 
-        for (let i = 0; i < 20; i++) {
+        for (let i = 0; i < 11; i++) {
             let d = dialogToInsert();
-            setTitle(d, "e2e-test-dialog #" + (i+1), "nn_NO");
+            setTitle(d, "e2e-test-dialog eu #" + (i+1), "nn_NO");
+            setParty(d, enduserParty);
+            setVisibleFrom(d, null);
             dialogs.push(d);
         }
 
@@ -58,16 +60,13 @@ export default function () {
         setExtendedStatus(dialogs[d], secondExtendedStatusToSearchFor);
 
         setServiceResource(dialogs[++d], auxResource);
-        setParty(dialogs[++d], auxParty);
+        setParty(dialogs[++d], enduserParty);
         
         setTitle(dialogs[++d], titleForDueAtItem);
         setDueAt(dialogs[d], new Date("2033-12-07T10:13:00Z"));
         
         setTitle(dialogs[++d], titleForExpiresAtItem);
         setExpiresAt(dialogs[d], new Date("2034-03-07T10:13:00Z"));
-
-        setTitle(dialogs[++d], titleForVisibleFromItem);
-        setVisibleFrom(dialogs[d], new Date("2031-03-07T10:13:00Z"));
 
         setTitle(dialogs[dialogs.length-1], titleForLastItem);
 
@@ -86,49 +85,49 @@ export default function () {
     });
 
     describe('Perform simple dialog list', () => {
-        let r = getSO('dialogs');
+        let r = getEU('dialogs' + defaultFilter);
         expectStatusFor(r).to.equal(200);
         expect(r, 'response').to.have.validJsonBody();
         expect(r.json(), 'response json').to.have.property("items").with.lengthOf.at.least(10);
     });
 
     describe('Search for title', () => {
-        let r = getSO('dialogs/?CreatedAfter=' + createdAfter + '&Search=' + titleToSearchFor);
+        let r = getEU('dialogs/' + defaultFilter + '&Search=' + titleToSearchFor);
         expectStatusFor(r).to.equal(200);
         expect(r, 'response').to.have.validJsonBody();
         expect(r.json(), 'response json').to.have.property("items").with.lengthOf(1);
     });
 
     describe('Search for body', () => {
-        let r = getSO('dialogs/?CreatedAfter=' + createdAfter + '&Search=' + bodyToSearchFor);
+        let r = getEU('dialogs/' + defaultFilter + '&Search=' + bodyToSearchFor);
         expectStatusFor(r).to.equal(200);
         expect(r, 'response').to.have.validJsonBody();
         expect(r.json(), 'response json').to.have.property("items").with.lengthOf(1);
     });
 
     describe('Search for sender name', () => {
-        let r = getSO('dialogs/?CreatedAfter=' + createdAfter + '&Search=' + senderNameToSearchFor);
+        let r = getEU('dialogs/' + defaultFilter + '&Search=' + senderNameToSearchFor);
         expectStatusFor(r).to.equal(200);
         expect(r, 'response').to.have.validJsonBody();
         expect(r.json(), 'response json').to.have.property("items").with.lengthOf(1);
     });
 
     describe('Filter by extended status', () => {
-        let r = getSO('dialogs/?CreatedAfter=' + createdAfter + '&ExtendedStatus=' + extendedStatusToSearchFor + "&ExtendedStatus=" + secondExtendedStatusToSearchFor);
+        let r = getEU('dialogs/' + defaultFilter + '&ExtendedStatus=' + extendedStatusToSearchFor + "&ExtendedStatus=" + secondExtendedStatusToSearchFor);
         expectStatusFor(r).to.equal(200);
         expect(r, 'response').to.have.validJsonBody();
         expect(r.json(), 'response json').to.have.property("items").with.lengthOf(2);
     });
 
     describe('List with limit', () => {
-        let r = getSO('dialogs/?CreatedAfter=' + createdAfter + '&Limit=3');
+        let r = getEU('dialogs/' + defaultFilter + '&Limit=3');
         expectStatusFor(r).to.equal(200);
         expect(r, 'response').to.have.validJsonBody();
         expect(r.json(), 'response json').to.have.property("items").with.lengthOf(3);
         expect(r.json(), 'response json').to.have.property("hasNextPage").to.be.true;
         expect(r.json(), 'response json').to.have.property("continuationToken");
 
-        let r2 = getSO('dialogs/?CreatedAfter=' + createdAfter + '&Limit=3&ContinuationToken=' + r.json().continuationToken);
+        let r2 = getEU('dialogs/' + defaultFilter + '&Limit=3&ContinuationToken=' + r.json().continuationToken);
         expectStatusFor(r2).to.equal(200);
         expect(r2, 'response').to.have.validJsonBody();
         expect(r2.json(), 'response json').to.have.property("items").with.lengthOf(3);
@@ -139,7 +138,7 @@ export default function () {
     });
 
     describe('List with custom orderBy', () => {
-        let r = getSO('dialogs/?CreatedAfter=' + createdAfter + '&Limit=3&OrderBy=dueAt_desc,updatedAt_desc');
+        let r = getEU('dialogs/' + defaultFilter + '&Limit=3&OrderBy=dueAt_desc,updatedAt_desc');
         expectStatusFor(r).to.equal(200);
         expect(r, 'response').to.have.validJsonBody();
         expect(r.json(), 'response json').to.have.property("items").with.lengthOf(3);
@@ -147,7 +146,7 @@ export default function () {
         expect(r.json().items[1], 'second dialog').to.have.property("title").that.hasLocalizedText(titleForUpdatedItem);
         expect(r.json().items[2], 'third dialog').to.have.property("title").that.hasLocalizedText(titleForLastItem);
 
-        r = getSO('dialogs/?CreatedAfter=' + createdAfter + '&Limit=3&OrderBy=dueAt_asc,updatedAt_desc');
+        r = getEU('dialogs/' + defaultFilter + '&Limit=3&OrderBy=dueAt_asc,updatedAt_desc');
         expectStatusFor(r).to.equal(200);
         expect(r, 'response').to.have.validJsonBody();
         expect(r.json(), 'response json').to.have.property("items").with.lengthOf(3);
@@ -155,16 +154,8 @@ export default function () {
         expect(r.json().items[1], 'second dialog reversed').to.have.property("title").that.hasLocalizedText(titleForLastItem);
     });
 
-    describe('List with party filter', () => {
-        let r = getSO('dialogs/?CreatedAfter=' + createdAfter + '&Party=' + auxParty);
-        expectStatusFor(r).to.equal(200);
-        expect(r, 'response').to.have.validJsonBody();
-        expect(r.json(), 'response json').to.have.property("items").with.lengthOf(1);
-        expect(r.json().items[0], 'party').to.have.property("party").that.equals(auxParty);
-    });
-
     describe('List with resource filter', () => {
-        let r = getSO('dialogs/?CreatedAfter=' + createdAfter + '&ServiceResource=' + auxResource);
+        let r = getEU('dialogs/' + defaultFilter + '&ServiceResource=' + auxResource);
         expectStatusFor(r).to.equal(200);
         expect(r, 'response').to.have.validJsonBody();
         expect(r.json(), 'response json').to.have.property("items").with.lengthOf(1);
@@ -176,5 +167,10 @@ export default function () {
             let r = deleteSO("dialogs/" + d);
             expect(r.status, 'response status').to.equal(204);
         });
+    });
+    
+    describe("Check if we get 410 Gone", () => {
+        let r = getEU('dialogs/' + dialogIds[0]);
+        expectStatusFor(r).to.equal(410);
     });
 }
