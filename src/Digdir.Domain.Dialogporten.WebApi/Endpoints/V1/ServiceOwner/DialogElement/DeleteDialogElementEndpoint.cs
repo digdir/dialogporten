@@ -26,6 +26,12 @@ public sealed class DeleteDialogActivityEndpoint : Endpoint<DeleteDialogElementR
         Delete("dialogs/{dialogId}/elements/{elementId}");
         Policies(AuthorizationPolicy.Serviceprovider);
         Group<ServiceOwnerGroup>();
+
+        Description(b =>
+            b.ClearDefaultProduces(200)
+                .Produces(204)
+                .Produces(412)
+        );
     }
 
     public override async Task HandleAsync(DeleteDialogElementRequest request, CancellationToken ct)
@@ -70,6 +76,6 @@ public sealed class DeleteDialogElementRequest
     public Guid DialogId { get; set; }
     public Guid ElementId { get; set; }
 
-    [FromHeader(headerName: Constants.IfMatch, isRequired: false)]
+    [FromHeader(headerName: Constants.IfMatch, isRequired: false, removeFromSchema: true)]
     public Guid? ETag { get; set; }
 }

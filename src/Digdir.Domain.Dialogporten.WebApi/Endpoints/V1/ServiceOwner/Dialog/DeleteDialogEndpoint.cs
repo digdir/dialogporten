@@ -5,6 +5,7 @@ using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
 using FastEndpoints;
 using MediatR;
 
+
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.Dialog;
 
 public sealed class DeleteDialogEndpoint : Endpoint<DeleteDialogRequest>
@@ -21,6 +22,13 @@ public sealed class DeleteDialogEndpoint : Endpoint<DeleteDialogRequest>
         Delete("dialogs/{dialogId}");
         Policies(AuthorizationPolicy.Serviceprovider);
         Group<ServiceOwnerGroup>();
+
+        Description(b => b
+            .OperationId("DeleteDialog")
+            .ClearDefaultProduces(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status204NoContent)
+            .Produces(StatusCodes.Status412PreconditionFailed)
+        );
     }
 
     public override async Task HandleAsync(DeleteDialogRequest req, CancellationToken ct)
@@ -38,6 +46,27 @@ public sealed class DeleteDialogRequest
 {
     public Guid DialogId { get; set; }
 
-    [FromHeader(headerName: Constants.IfMatch, isRequired: false)]
+    [FromHeader(headerName: Constants.IfMatch, isRequired: false, removeFromSchema: true)]
     public Guid? ETag { get; set; }
+}
+
+public sealed class DeleteDialogEndpointSummary : Summary<DeleteDialogEndpoint>
+{
+    public DeleteDialogEndpointSummary()
+    {
+        Summary = "Deletes a dialog";
+        Description = """
+                Deletes a given dialog (soft delete). For more information see the documentation (link TBD).
+
+                Note that the dialog will still be available on the single details endpoint, but will have a deleted status. It will not appear on the list endpoint for either service owners or end users.
+                If end users attempt to access the dialog via the details endpoint, they will get a 410 Gone response.
+
+                Optimistic concurrency control is implemented using the If-Match header. Supply the ETag value from the GetDialog endpoint to ensure that the dialog is not deleted by another request in the meantime.
+                """;
+        Responses[StatusCodes.Status204NoContent] = "The dialog was deleted successfully";
+        Responses[StatusCodes.Status401Unauthorized] = Constants.SummaryErrorServiceOwner401;
+        Responses[StatusCodes.Status403Forbidden] = "Unauthorized to delete the supplied dialog (not owned by authenticated organization or has additional scope requirements defined in policy)";
+        Responses[StatusCodes.Status404NotFound] = "The given dialog ID was not found or is already deleted";
+        Responses[StatusCodes.Status412PreconditionFailed] = "The supplied If-Match header did not match the current ETag value for the dialog. The dialog was not deleted.";
+    }
 }

@@ -2,7 +2,7 @@
 
 namespace Digdir.Domain.Dialogporten.Application.Common.Pagination;
 
-internal static class PaginationConstants
+public static class PaginationConstants
 {
     public const int MinLimit = 1;
     public const int MaxLimit = 1000;

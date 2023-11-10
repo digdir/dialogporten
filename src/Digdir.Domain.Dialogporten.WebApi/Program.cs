@@ -91,6 +91,7 @@ static void BuildAndRun(string[] args)
         {
             x.MaxEndpointVersion = 1;
             x.ShortSchemaNames = true;
+            x.RemoveEmptyRequestSchema = true;
             x.DocumentSettings = s =>
             {
                 s.Title = "Dialogporten";
@@ -140,8 +141,7 @@ static void BuildAndRun(string[] args)
             x.Serializer.Options.Converters.Add(new DateTimeNotSupportedConverter());
             x.Errors.ResponseBuilder = ErrorResponseBuilderExtensions.ResponseBuilder;
         })
-        .UseOpenApi()
-        .UseSwaggerUi3(x => x.ConfigureDefaults());
+        .UseSwaggerGen();
     app.MapControllers();
     app.Run();
 }
