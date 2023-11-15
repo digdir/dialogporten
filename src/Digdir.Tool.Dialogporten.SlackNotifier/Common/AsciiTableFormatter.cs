@@ -1,14 +1,11 @@
-﻿using System.Linq;
-using System.Collections.Generic;
-using System.Data;
+﻿using System.Data;
 using System.Text;
-using System;
 
-namespace Digdir.Tool.Dialogporten.SlackNotifier;
+namespace Digdir.Tool.Dialogporten.SlackNotifier.Common;
 
-public static class Formatter
+public static class AsciiTableFormatter
 {
-    public static string ToAsciiTable(this IEnumerable<IEnumerable<object>> rows) => 
+    public static string ToAsciiTable(this IEnumerable<IEnumerable<object>> rows) =>
         rows.Select(x => x.ToList())
             .ToList()
             .ToAsciiTable();
@@ -138,16 +135,16 @@ public static class Formatter
             case TypeCode.Object:
                 if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
                 {
-                    return IsNumericType(Nullable.GetUnderlyingType(type));
+                    return Nullable.GetUnderlyingType(type).IsNumericType();
                 }
                 return false;
         }
         return false;
     }
-}
 
-internal enum ColumnType
-{
-    Numeric,
-    Text
+    private enum ColumnType
+    {
+        Numeric,
+        Text
+    }
 }

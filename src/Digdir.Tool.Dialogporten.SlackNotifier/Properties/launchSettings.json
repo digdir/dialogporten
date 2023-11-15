@@ -2,7 +2,7 @@
   "profiles": {
     "Digdir.Tool.Dialogporten.SlackNotifier": {
       "commandName": "Project",
-      "commandLineArgs": "--port 7024",
+      "commandLineArgs": "--port 7137",
       "launchBrowser": false
     }
   }
