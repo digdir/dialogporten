@@ -32,7 +32,7 @@ public static class AsciiTableFormatter
             var row = rows[rowNum];
             for (int i = 0; i < row.Count; i++)
             {
-                var item = row[i];
+                var item = row[i]!;
                 var size = sizes[i];
                 bldr.Append("| ");
                 if (item == null)
@@ -41,11 +41,11 @@ public static class AsciiTableFormatter
                 }
                 else if (types[i] == ColumnType.Numeric)
                 {
-                    bldr.Append(item.ToString().PadLeft(size));
+                    bldr.Append(item.ToString()!.PadLeft(size));
                 }
                 else if (types[i] == ColumnType.Text)
                 {
-                    bldr.Append(item.ToString().PadRight(size));
+                    bldr.Append(item.ToString()!.PadRight(size));
                 }
                 else
                 {
@@ -135,7 +135,7 @@ public static class AsciiTableFormatter
             case TypeCode.Object:
                 if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
                 {
-                    return Nullable.GetUnderlyingType(type).IsNumericType();
+                    return Nullable.GetUnderlyingType(type)!.IsNumericType();
                 }
                 return false;
         }
