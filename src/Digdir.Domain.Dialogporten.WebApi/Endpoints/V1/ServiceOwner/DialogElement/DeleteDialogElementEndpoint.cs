@@ -89,10 +89,10 @@ public sealed class DeleteDialogElementEndpointSummary : Summary<DeleteDialogEle
     public DeleteDialogElementEndpointSummary()
     {
         Summary = "Deletes a dialog element";
-        Description = """
+        Description = $"""
                 Deletes a given dialog element (hard delete). For more information see the documentation (link TBD).
 
-                Optimistic concurrency control is implemented using the If-Match header. Supply the ETag value from the GetDialog endpoint to ensure that the dialog is not deleted by another request in the meantime.
+                {Constants.SwaggerSummary.OptimisticConcurrencyNote}
                 """;
         Responses[StatusCodes.Status204NoContent] = string.Format(Constants.SwaggerSummary.Deleted, "element");
         Responses[StatusCodes.Status401Unauthorized] = Constants.SwaggerSummary.ServiceOwnerAuthenticationFailure;

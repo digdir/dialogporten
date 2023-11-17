@@ -81,8 +81,10 @@ public sealed class CreateDialogElementEndpointSummary : Summary<CreateDialogEle
     public CreateDialogElementEndpointSummary()
     {
         Summary = "Creates a new dialog element";
-        Description = """
+        Description = $"""
                 The dialog element is created with the given configuration. For more information see the documentation (link TBD).
+
+                {Constants.SwaggerSummary.OptimisticConcurrencyNote}
                 """;
 
         ResponseExamples[StatusCodes.Status201Created] = "b6dc8b01-1cd8-2777-b759-d84b0e384f47";

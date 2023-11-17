@@ -43,7 +43,7 @@ public sealed class ListDialogEndpointSummary : Summary<ListDialogEndpoint, List
         Description = """
                 Performs a search for dialogs, returning a paginated list of dialogs. For more information see the documentation (link TBD).
 
-                * All date parameters must be parseable as UTC dates. Example: 2023-10-27T10:00:00Z
+                * All date parameters must contain explicit time zone. Example: 2023-10-27T10:00:00Z or 2023-10-27T10:00:00+01:00
                 * See "continuationToken" in the response for how to get the next page of results.
                 * hasNextPage will be set to true if there are more items to get.
                 """;

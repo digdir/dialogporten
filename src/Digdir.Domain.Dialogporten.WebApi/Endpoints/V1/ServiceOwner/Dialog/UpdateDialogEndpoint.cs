@@ -63,10 +63,10 @@ public sealed class UpdateDialogEndpointSummary : Summary<UpdateDialogEndpoint>
     public UpdateDialogEndpointSummary()
     {
         Summary = "Replaces a dialog";
-        Description = """
+        Description = $"""
                 Replaces a given dialog with the supplied model. For more information see the documentation (link TBD).
 
-                Optimistic concurrency control is implemented using the If-Match header. Supply the ETag value from the GetDialog endpoint to ensure that the dialog is not deleted by another request in the meantime.
+                {Constants.SwaggerSummary.OptimisticConcurrencyNote}
                 """;
         Responses[StatusCodes.Status204NoContent] = string.Format(Constants.SwaggerSummary.Updated, "aggregate");;
         Responses[StatusCodes.Status400BadRequest] = Constants.SwaggerSummary.ValidationError;

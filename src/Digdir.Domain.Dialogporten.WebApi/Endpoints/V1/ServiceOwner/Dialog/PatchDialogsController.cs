@@ -40,7 +40,7 @@ public sealed class PatchDialogsController : ControllerBase
     /// Patches a dialog aggregate with a RFC6902 JSON Patch document. The patch document must be a JSON array of RFC6902 operations.
     /// See [https://tools.ietf.org/html/rfc6902](https://tools.ietf.org/html/rfc6902) for more information.
     ///
-    /// Optimistic concurrency control is implemented using the If-Match header. Supply the ETag value from the GetDialog endpoint to ensure that the dialog is not deleted by another request in the meantime.
+    /// Optimistic concurrency control is implemented using the If-Match header. Supply the ETag value from the GetDialog endpoint to ensure that the dialog is not modified/deleted by another request in the meantime.
     /// </remarks>
     /// <response code="204">Patch was successfully applied.</response>
     /// <response code="400">Validation error occured. See problem details for a list of errors.</response>
