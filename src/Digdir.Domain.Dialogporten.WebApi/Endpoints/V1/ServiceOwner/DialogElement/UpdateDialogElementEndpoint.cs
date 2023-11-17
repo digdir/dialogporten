@@ -11,12 +11,12 @@ using IMapper = AutoMapper.IMapper;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.DialogElement;
 
-public sealed class UpdateDialogActivityEndpoint : Endpoint<UpdateDialogElementRequest>
+public sealed class UpdateDialogElementEndpoint : Endpoint<UpdateDialogElementRequest>
 {
     private readonly IMapper _mapper;
     private readonly ISender _sender;
 
-    public UpdateDialogActivityEndpoint(ISender sender, IMapper mapper)
+    public UpdateDialogElementEndpoint(ISender sender, IMapper mapper)
     {
         _sender = sender ?? throw new ArgumentNullException(nameof(sender));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
@@ -27,6 +27,16 @@ public sealed class UpdateDialogActivityEndpoint : Endpoint<UpdateDialogElementR
         Put("dialogs/{dialogId}/elements/{elementId}");
         Policies(AuthorizationPolicy.Serviceprovider);
         Group<ServiceOwnerGroup>();
+
+        Description(b => b
+            .OperationId("ReplaceDialogElement")
+            .ProducesOneOf(
+                StatusCodes.Status204NoContent,
+                StatusCodes.Status400BadRequest,
+                StatusCodes.Status404NotFound,
+                StatusCodes.Status412PreconditionFailed,
+                StatusCodes.Status422UnprocessableEntity)
+        );
     }
 
     public override async Task HandleAsync(UpdateDialogElementRequest request, CancellationToken ct)
@@ -93,4 +103,24 @@ public sealed class UpdateDialogElementRequest
 
     public List<LocalizationDto> DisplayName { get; set; } = new();
     public List<UpdateDialogDialogElementUrlDto> Urls { get; set; } = new();
+}
+
+public sealed class UpdateDialogElementEndpointSummary : Summary<UpdateDialogElementEndpoint>
+{
+    public UpdateDialogElementEndpointSummary()
+    {
+        Summary = "Replaces a dialog element";
+        Description = """
+                Replaces a given dialog element with the supplied model. For more information see the documentation (link TBD).
+
+                Optimistic concurrency control is implemented using the If-Match header. Supply the ETag value from the GetDialog endpoint to ensure that the dialog is not deleted by another request in the meantime.
+                """;
+        Responses[StatusCodes.Status204NoContent] = string.Format(Constants.SwaggerSummary.Updated, "element");
+        Responses[StatusCodes.Status400BadRequest] = Constants.SwaggerSummary.ValidationError;
+        Responses[StatusCodes.Status401Unauthorized] = Constants.SwaggerSummary.ServiceOwnerAuthenticationFailure;
+        Responses[StatusCodes.Status403Forbidden] = string.Format(Constants.SwaggerSummary.AccessDeniedToDialogForChildEntity, "update");
+        Responses[StatusCodes.Status404NotFound] = Constants.SwaggerSummary.DialogElementNotFound;
+        Responses[StatusCodes.Status412PreconditionFailed] = Constants.SwaggerSummary.EtagMismatch;
+        Responses[StatusCodes.Status422UnprocessableEntity] = Constants.SwaggerSummary.DomainError;
+    }
 }

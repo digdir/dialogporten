@@ -25,9 +25,10 @@ public sealed class DeleteDialogEndpoint : Endpoint<DeleteDialogRequest>
 
         Description(b => b
             .OperationId("DeleteDialog")
-            .ClearDefaultProduces(StatusCodes.Status200OK)
-            .Produces(StatusCodes.Status204NoContent)
-            .Produces(StatusCodes.Status412PreconditionFailed)
+            .ProducesOneOf(
+                StatusCodes.Status204NoContent,
+                StatusCodes.Status404NotFound,
+                StatusCodes.Status412PreconditionFailed)
         );
     }
 
@@ -63,10 +64,10 @@ public sealed class DeleteDialogEndpointSummary : Summary<DeleteDialogEndpoint>
 
                 Optimistic concurrency control is implemented using the If-Match header. Supply the ETag value from the GetDialog endpoint to ensure that the dialog is not deleted by another request in the meantime.
                 """;
-        Responses[StatusCodes.Status204NoContent] = "The dialog was deleted successfully";
-        Responses[StatusCodes.Status401Unauthorized] = Constants.SummaryErrorServiceOwner401;
-        Responses[StatusCodes.Status403Forbidden] = "Unauthorized to delete the supplied dialog (not owned by authenticated organization or has additional scope requirements defined in policy)";
-        Responses[StatusCodes.Status404NotFound] = "The given dialog ID was not found or is already deleted";
-        Responses[StatusCodes.Status412PreconditionFailed] = "The supplied If-Match header did not match the current ETag value for the dialog. The dialog was not deleted.";
+        Responses[StatusCodes.Status204NoContent] = string.Format(Constants.SwaggerSummary.Deleted, "aggregate");
+        Responses[StatusCodes.Status401Unauthorized] = Constants.SwaggerSummary.ServiceOwnerAuthenticationFailure;
+        Responses[StatusCodes.Status403Forbidden] = string.Format(Constants.SwaggerSummary.AccessDeniedToDialog, "delete");
+        Responses[StatusCodes.Status404NotFound] = Constants.SwaggerSummary.DialogNotFound;
+        Responses[StatusCodes.Status412PreconditionFailed] = Constants.SwaggerSummary.EtagMismatch;
     }
 }

@@ -1,4 +1,5 @@
 using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogElements.Queries.Get;
+using Digdir.Domain.Dialogporten.WebApi.Common;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
 using FastEndpoints;
 using MediatR;
@@ -18,6 +19,13 @@ public class GetDialogElementEndpoint : Endpoint<GetDialogElementQuery>
     {
         Get("dialogs/{dialogId}/elements/{elementId}");
         Group<EndUserGroup>();
+
+        Description(b => b
+            .OperationId("GetDialogElement")
+            .ProducesOneOf(
+                StatusCodes.Status200OK,
+                StatusCodes.Status404NotFound)
+        );
     }
 
     public override async Task HandleAsync(GetDialogElementQuery req, CancellationToken ct)
@@ -27,5 +35,20 @@ public class GetDialogElementEndpoint : Endpoint<GetDialogElementQuery>
             dto => SendOkAsync(dto, ct),
             notFound => this.NotFoundAsync(notFound, ct),
             deleted => this.GoneAsync(deleted, ct));
+    }
+}
+
+public sealed class GetDialogElementEndpointSummary : Summary<GetDialogElementEndpoint>
+{
+    public GetDialogElementEndpointSummary()
+    {
+        Summary = "Gets a single dialog element";
+        Description = """
+                Gets a single element belonging to a dialog. For more information see the documentation (link TBD).
+                """;
+        Responses[StatusCodes.Status200OK] = string.Format(Constants.SwaggerSummary.ReturnedResult, "element");
+        Responses[StatusCodes.Status401Unauthorized] = Constants.SwaggerSummary.EndUserAuthenticationFailure;
+        Responses[StatusCodes.Status403Forbidden] = string.Format(Constants.SwaggerSummary.AccessDeniedToDialogForChildEntity, "get");
+        Responses[StatusCodes.Status404NotFound] = Constants.SwaggerSummary.DialogElementNotFound;
     }
 }

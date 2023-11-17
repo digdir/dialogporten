@@ -1,4 +1,6 @@
-﻿using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Update;
+﻿using System.Reflection.Metadata;
+using System.Text;
+using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Update;
 using Digdir.Domain.Dialogporten.WebApi.Common;
 using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
@@ -24,10 +26,11 @@ public sealed class UpdateDialogEndpoint : Endpoint<UpdateDialogRequest>
 
         Description(b => b
             .OperationId("ReplaceDialog")
-            .ClearDefaultProduces(StatusCodes.Status200OK)
-            .Produces(StatusCodes.Status204NoContent)
-            .Produces(StatusCodes.Status412PreconditionFailed)
-            .Produces(StatusCodes.Status422UnprocessableEntity)
+            .ProducesOneOf(
+                StatusCodes.Status204NoContent,
+                StatusCodes.Status400BadRequest,
+                StatusCodes.Status412PreconditionFailed,
+                StatusCodes.Status422UnprocessableEntity)
         );
     }
 
@@ -65,12 +68,12 @@ public sealed class UpdateDialogEndpointSummary : Summary<UpdateDialogEndpoint>
 
                 Optimistic concurrency control is implemented using the If-Match header. Supply the ETag value from the GetDialog endpoint to ensure that the dialog is not deleted by another request in the meantime.
                 """;
-        Responses[StatusCodes.Status204NoContent] = "The dialog was updated successfully";
-        Responses[StatusCodes.Status400BadRequest] = Constants.SummaryError400;
-        Responses[StatusCodes.Status401Unauthorized] = Constants.SummaryErrorServiceOwner401;
-        Responses[StatusCodes.Status403Forbidden] = "Unauthorized to update the supplied dialog (not owned by authenticated organization or has additional scope requirements defined in policy)";
-        Responses[StatusCodes.Status404NotFound] = "The given dialog ID was not found or is already deleted";
-        Responses[StatusCodes.Status412PreconditionFailed] = "The supplied If-Match header did not match the current ETag value for the dialog. The dialog was not updated.";
-        Responses[StatusCodes.Status422UnprocessableEntity] = Constants.SummaryError422;
+        Responses[StatusCodes.Status204NoContent] = string.Format(Constants.SwaggerSummary.Updated, "aggregate");;
+        Responses[StatusCodes.Status400BadRequest] = Constants.SwaggerSummary.ValidationError;
+        Responses[StatusCodes.Status401Unauthorized] = Constants.SwaggerSummary.ServiceOwnerAuthenticationFailure;
+        Responses[StatusCodes.Status403Forbidden] = string.Format(Constants.SwaggerSummary.AccessDeniedToDialog, "update");
+        Responses[StatusCodes.Status404NotFound] = Constants.SwaggerSummary.DialogNotFound;
+        Responses[StatusCodes.Status412PreconditionFailed] = Constants.SwaggerSummary.EtagMismatch;
+        Responses[StatusCodes.Status422UnprocessableEntity] = Constants.SwaggerSummary.DomainError;
     }
 }

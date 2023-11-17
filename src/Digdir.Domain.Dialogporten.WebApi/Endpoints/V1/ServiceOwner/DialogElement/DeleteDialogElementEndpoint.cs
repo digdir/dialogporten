@@ -10,12 +10,12 @@ using IMapper = AutoMapper.IMapper;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.DialogElement;
 
-public sealed class DeleteDialogActivityEndpoint : Endpoint<DeleteDialogElementRequest>
+public sealed class DeleteDialogElementEndpoint : Endpoint<DeleteDialogElementRequest>
 {
     private readonly IMapper _mapper;
     private readonly ISender _sender;
 
-    public DeleteDialogActivityEndpoint(ISender sender, IMapper mapper)
+    public DeleteDialogElementEndpoint(ISender sender, IMapper mapper)
     {
         _sender = sender ?? throw new ArgumentNullException(nameof(sender));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
@@ -27,10 +27,14 @@ public sealed class DeleteDialogActivityEndpoint : Endpoint<DeleteDialogElementR
         Policies(AuthorizationPolicy.Serviceprovider);
         Group<ServiceOwnerGroup>();
 
-        Description(b =>
-            b.ClearDefaultProduces(200)
-                .Produces(204)
-                .Produces(412)
+        Description(b => b
+            .OperationId("DeleteDialogElement")
+            .ProducesOneOf(
+                StatusCodes.Status204NoContent,
+                StatusCodes.Status400BadRequest,
+                StatusCodes.Status404NotFound,
+                StatusCodes.Status412PreconditionFailed,
+                StatusCodes.Status422UnprocessableEntity)
         );
     }
 
@@ -78,4 +82,22 @@ public sealed class DeleteDialogElementRequest
 
     [FromHeader(headerName: Constants.IfMatch, isRequired: false, removeFromSchema: true)]
     public Guid? ETag { get; set; }
+}
+
+public sealed class DeleteDialogElementEndpointSummary : Summary<DeleteDialogElementEndpoint>
+{
+    public DeleteDialogElementEndpointSummary()
+    {
+        Summary = "Deletes a dialog element";
+        Description = """
+                Deletes a given dialog element (hard delete). For more information see the documentation (link TBD).
+
+                Optimistic concurrency control is implemented using the If-Match header. Supply the ETag value from the GetDialog endpoint to ensure that the dialog is not deleted by another request in the meantime.
+                """;
+        Responses[StatusCodes.Status204NoContent] = string.Format(Constants.SwaggerSummary.Deleted, "element");
+        Responses[StatusCodes.Status401Unauthorized] = Constants.SwaggerSummary.ServiceOwnerAuthenticationFailure;
+        Responses[StatusCodes.Status403Forbidden] = string.Format(Constants.SwaggerSummary.AccessDeniedToDialogForChildEntity, "delete");
+        Responses[StatusCodes.Status404NotFound] = Constants.SwaggerSummary.DialogElementNotFound;
+        Responses[StatusCodes.Status412PreconditionFailed] = Constants.SwaggerSummary.EtagMismatch;
+    }
 }

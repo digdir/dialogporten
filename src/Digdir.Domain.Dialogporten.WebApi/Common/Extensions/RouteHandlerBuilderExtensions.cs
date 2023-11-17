@@ -1,10 +1,41 @@
-﻿namespace Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
+﻿using FastEndpoints;
+
+namespace Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
 
 internal static class RouteHandlerBuilderExtensions
 {
     public static RouteHandlerBuilder OperationId(this RouteHandlerBuilder builder, string operationId)
     {
         builder.Add(b => b.Metadata.Add(new EndpointNameMetadata(operationId)));
+        return builder;
+    }
+
+    public static RouteHandlerBuilder ProducesOneOf(this RouteHandlerBuilder builder, params int[] statusCodes)
+    {
+        builder.ClearDefaultProduces(StatusCodes.Status200OK);
+        foreach (var statusCode in statusCodes)
+        {
+            switch (statusCode)
+            {
+                case StatusCodes.Status201Created:
+                    builder.Produces<string>(statusCode, "application/json");
+                    break;
+                case StatusCodes.Status400BadRequest:
+                    builder.ProducesValidationProblem();
+                    break;
+                case StatusCodes.Status412PreconditionFailed:
+                    builder.ProducesProblem(statusCode);
+                    break;
+                case StatusCodes.Status404NotFound:
+                case StatusCodes.Status422UnprocessableEntity:
+                    builder.ProducesProblemDetails(statusCode);
+                    break;
+                default:
+                    builder.Produces(statusCode);
+                    break;
+            }
+        }
+
         return builder;
     }
 }

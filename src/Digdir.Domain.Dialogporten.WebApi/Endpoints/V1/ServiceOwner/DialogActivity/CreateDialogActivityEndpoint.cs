@@ -27,6 +27,16 @@ public sealed class CreateDialogActivityEndpoint : Endpoint<CreateDialogActivity
         Post("dialogs/{dialogId}/activities");
         Policies(AuthorizationPolicy.Serviceprovider);
         Group<ServiceOwnerGroup>();
+
+        Description(b => b
+            .OperationId("CreateDialogActivity")
+            .ProducesOneOf(
+                StatusCodes.Status201Created,
+                StatusCodes.Status400BadRequest,
+                StatusCodes.Status404NotFound,
+                StatusCodes.Status412PreconditionFailed,
+                StatusCodes.Status422UnprocessableEntity)
+        );
     }
 
     public override async Task HandleAsync(CreateDialogActivityRequest request, CancellationToken ct)
@@ -68,4 +78,26 @@ public sealed class CreateDialogActivityRequest : UpdateDialogDialogActivityDto
 
     [FromHeader(headerName: Constants.IfMatch, isRequired: false)]
     public Guid? ETag { get; set; }
+}
+
+public sealed class CreateDialogActivityEndpointSummary : Summary<CreateDialogActivityEndpoint>
+{
+    public CreateDialogActivityEndpointSummary()
+    {
+        Summary = "Adds a activity to a dialogs activity history";
+        Description = """
+                The activity is created with the given configuration. For more information see the documentation (link TBD).
+
+                """;
+
+        ResponseExamples[StatusCodes.Status201Created] = "018bb8e5-d9d0-7434-8ec5-569a6c8e01fc";
+
+        Responses[StatusCodes.Status201Created] = string.Format(Constants.SwaggerSummary.Created, "activity");
+        Responses[StatusCodes.Status400BadRequest] = Constants.SwaggerSummary.ValidationError;
+        Responses[StatusCodes.Status401Unauthorized] = Constants.SwaggerSummary.ServiceOwnerAuthenticationFailure;
+        Responses[StatusCodes.Status403Forbidden] = string.Format(Constants.SwaggerSummary.AccessDeniedToDialogForChildEntity, "create");
+        Responses[StatusCodes.Status404NotFound] = Constants.SwaggerSummary.DialogNotFound;
+        Responses[StatusCodes.Status412PreconditionFailed] = Constants.SwaggerSummary.EtagMismatch;
+        Responses[StatusCodes.Status422UnprocessableEntity] = Constants.SwaggerSummary.DomainError;
+    }
 }

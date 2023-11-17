@@ -25,10 +25,10 @@ public sealed class CreateDialogEndpoint : Endpoint<CreateDialogCommand>
 
         Description(b => b
             .OperationId("CreateDialog")
-            .ProducesProblemDetails()
-            .ProducesProblemDetails(statusCode: StatusCodes.Status422UnprocessableEntity)
-            .ClearDefaultProduces(StatusCodes.Status200OK)
-            .Produces<string>(StatusCodes.Status201Created, "application/json")
+            .ProducesOneOf(
+                StatusCodes.Status201Created,
+                StatusCodes.Status400BadRequest,
+                StatusCodes.Status422UnprocessableEntity)
         );
     }
 
@@ -56,10 +56,10 @@ public sealed class CreateDialogEndpointSummary : Summary<CreateDialogEndpoint>
 
         ResponseExamples[StatusCodes.Status201Created] = "018bb8e5-d9d0-7434-8ec5-569a6c8e01fc";
 
-        Responses[StatusCodes.Status201Created] = "The UUID of the created dialog. A relative URL to the newly created dialog is set in the \"Location\" header";
-        Responses[StatusCodes.Status400BadRequest] = Constants.SummaryError400;
-        Responses[StatusCodes.Status401Unauthorized] = Constants.SummaryErrorServiceOwner401;
-        Responses[StatusCodes.Status403Forbidden] = "Unauthorized to create a dialog for the given serviceResource (not owned by authenticated organization or has additional scope requirements defined in policy)";
-        Responses[StatusCodes.Status422UnprocessableEntity] = Constants.SummaryError422;
+        Responses[StatusCodes.Status201Created] = string.Format(Constants.SwaggerSummary.Created, "aggregate");
+        Responses[StatusCodes.Status400BadRequest] = Constants.SwaggerSummary.ValidationError;
+        Responses[StatusCodes.Status401Unauthorized] = Constants.SwaggerSummary.ServiceOwnerAuthenticationFailure;
+        Responses[StatusCodes.Status403Forbidden] = Constants.SwaggerSummary.DialogCreationNotAllowed;
+        Responses[StatusCodes.Status422UnprocessableEntity] = Constants.SwaggerSummary.DomainError;
     }
 }

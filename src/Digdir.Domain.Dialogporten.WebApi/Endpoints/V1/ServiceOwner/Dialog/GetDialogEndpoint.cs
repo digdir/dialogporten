@@ -21,7 +21,13 @@ public class GetDialogEndpoint : Endpoint<GetDialogQuery, GetDialogDto>
         Get("dialogs/{dialogId}");
         Policies(AuthorizationPolicy.Serviceprovider);
         Group<ServiceOwnerGroup>();
-        Description(b => b.OperationId("GetDialog"));
+
+        Description(b => b
+            .OperationId("GetDialogSO")
+            .ProducesOneOf(
+                StatusCodes.Status200OK,
+                StatusCodes.Status404NotFound)
+            );
     }
 
     public override async Task HandleAsync(GetDialogQuery req, CancellationToken ct)
@@ -45,9 +51,9 @@ public sealed class GetDialogEndpointSummary : Summary<GetDialogEndpoint>
         Description = """
                 Gets a single dialog aggregate. For more information see the documentation (link TBD).
                 """;
-        Responses[StatusCodes.Status200OK] = "Successfully returned the dialog aggregate";
-        Responses[StatusCodes.Status401Unauthorized] = Constants.SummaryErrorServiceOwner401;
-        Responses[StatusCodes.Status403Forbidden] = "Unauthorized to get the supplied dialog (not owned by authenticated organization or has additional scope requirements defined in policy)";
-        Responses[StatusCodes.Status404NotFound] = "The given dialog ID was not found or is deleted";
+        Responses[StatusCodes.Status200OK] = string.Format(Constants.SwaggerSummary.ReturnedResult, "aggregate");
+        Responses[StatusCodes.Status401Unauthorized] = Constants.SwaggerSummary.ServiceOwnerAuthenticationFailure;
+        Responses[StatusCodes.Status403Forbidden] = string.Format(Constants.SwaggerSummary.AccessDeniedToDialog, "get");
+        Responses[StatusCodes.Status404NotFound] = Constants.SwaggerSummary.DialogNotFound;
     }
 }

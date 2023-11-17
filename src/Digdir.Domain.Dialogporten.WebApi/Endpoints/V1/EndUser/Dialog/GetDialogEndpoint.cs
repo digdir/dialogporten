@@ -1,4 +1,5 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Queries.Get;
+using Digdir.Domain.Dialogporten.WebApi.Common;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
 using FastEndpoints;
 using MediatR;
@@ -18,6 +19,13 @@ public class GetDialogEndpoint : Endpoint<GetDialogQuery>
     {
         Get("dialogs/{dialogId}");
         Group<EndUserGroup>();
+
+        Description(b => b
+            .OperationId("GetDialog")
+            .ProducesOneOf(
+                StatusCodes.Status200OK,
+                StatusCodes.Status404NotFound)
+        );
     }
 
     public override async Task HandleAsync(GetDialogQuery req, CancellationToken ct)
@@ -27,5 +35,19 @@ public class GetDialogEndpoint : Endpoint<GetDialogQuery>
             dto => SendOkAsync(dto, ct),
             notFound => this.NotFoundAsync(notFound, ct),
             deleted => this.GoneAsync(deleted, ct));
+    }
+}
+public sealed class GetDialogEndpointSummary : Summary<GetDialogEndpoint>
+{
+    public GetDialogEndpointSummary()
+    {
+        Summary = "Gets a single dialog";
+        Description = """
+                Gets a single dialog aggregate. For more information see the documentation (link TBD).
+                """;
+        Responses[StatusCodes.Status200OK] = string.Format(Constants.SwaggerSummary.ReturnedResult, "aggregate");
+        Responses[StatusCodes.Status401Unauthorized] = Constants.SwaggerSummary.EndUserAuthenticationFailure;
+        Responses[StatusCodes.Status403Forbidden] = string.Format(Constants.SwaggerSummary.AccessDeniedToDialog, "get");
+        Responses[StatusCodes.Status404NotFound] = Constants.SwaggerSummary.DialogNotFound;
     }
 }

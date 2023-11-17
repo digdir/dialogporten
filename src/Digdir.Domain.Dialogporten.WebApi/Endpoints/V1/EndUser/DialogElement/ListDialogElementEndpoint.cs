@@ -1,4 +1,5 @@
 using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogElements.Queries.List;
+using Digdir.Domain.Dialogporten.WebApi.Common;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
 using FastEndpoints;
 using MediatR;
@@ -27,5 +28,20 @@ public class ListDialogElementEndpoint : Endpoint<ListDialogElementQuery>
             dto => SendOkAsync(dto, ct),
             notFound => this.NotFoundAsync(notFound, ct),
             deleted => this.GoneAsync(deleted, ct));
+    }
+}
+
+public sealed class ListDialogElementEndpointSummary : Summary<ListDialogElementEndpoint, ListDialogElementQuery>
+{
+    public ListDialogElementEndpointSummary()
+    {
+        Summary = "Gets a list of dialog elements";
+        Description = """
+                Gets the list of elements belonging to a dialog
+                """;
+        Responses[StatusCodes.Status200OK] = string.Format(Constants.SwaggerSummary.ReturnedResult, "element list");
+        Responses[StatusCodes.Status401Unauthorized] = Constants.SwaggerSummary.EndUserAuthenticationFailure;
+        Responses[StatusCodes.Status404NotFound] = Constants.SwaggerSummary.DialogNotFound;
+        Responses[StatusCodes.Status403Forbidden] = string.Format(Constants.SwaggerSummary.AccessDeniedToDialog, "get");
     }
 }

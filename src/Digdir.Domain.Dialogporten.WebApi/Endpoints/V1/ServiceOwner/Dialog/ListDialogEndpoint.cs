@@ -22,9 +22,10 @@ public class ListDialogEndpoint : Endpoint<ListDialogQuery, PaginatedList<ListDi
         Get("dialogs");
         Policies(AuthorizationPolicy.ServiceproviderSearch);
         Group<ServiceOwnerGroup>();
+
         Description(b => b
-            .OperationId("GetDialogList")
-            .ClearDefaultProduces(403)
+            .OperationId("GetDialogListSO")
+            .ClearDefaultProduces(StatusCodes.Status403Forbidden)
         );
     }
 
@@ -49,8 +50,8 @@ public sealed class ListDialogEndpointSummary : Summary<ListDialogEndpoint, List
                 * See "continuationToken" in the response for how to get the next page of results.
                 * hasNextPage will be set to true if there are more items to get.
                 """;
-        Responses[200] = "Successfully returned the dialog list";
-        Responses[401] = Constants.SummaryErrorServiceOwner401;
+        Responses[StatusCodes.Status200OK] = string.Format(Constants.SwaggerSummary.ReturnedResult, "list");
+        Responses[StatusCodes.Status401Unauthorized] = Constants.SwaggerSummary.ServiceOwnerAuthenticationFailure;
 
         RequestParam(p => p.ServiceResource, "Filter by one or more service resources");
         RequestParam(p => p.Party, "Filter by one or more owning parties");
