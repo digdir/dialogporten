@@ -21,11 +21,7 @@ internal static class RouteHandlerBuilderExtensions
                     builder.Produces<string>(statusCode, "application/json");
                     break;
                 case StatusCodes.Status400BadRequest:
-                    builder.ProducesValidationProblem();
-                    break;
                 case StatusCodes.Status412PreconditionFailed:
-                    builder.ProducesProblem(statusCode);
-                    break;
                 case StatusCodes.Status404NotFound:
                 case StatusCodes.Status422UnprocessableEntity:
                     builder.ProducesProblemDetails(statusCode);
