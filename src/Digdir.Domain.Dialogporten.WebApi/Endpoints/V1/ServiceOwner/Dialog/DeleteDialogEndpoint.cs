@@ -59,7 +59,7 @@ public sealed class DeleteDialogEndpointSummary : Summary<DeleteDialogEndpoint>
         Description = """
                 Deletes a given dialog (soft delete). For more information see the documentation (link TBD).
 
-                Note that the dialog will still be available on the single details endpoint, but will have a deleted status. It will not appear on the list endpoint for either service owners or end users.
+                Note that the dialog will still be available on the single details endpoint, but will have a deleted status. It will not appear on the list endpoint for either service owners nor end users.
                 If end users attempt to access the dialog via the details endpoint, they will get a 410 Gone response.
 
                 Optimistic concurrency control is implemented using the If-Match header. Supply the ETag value from the GetDialog endpoint to ensure that the dialog is not deleted by another request in the meantime.
