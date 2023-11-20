@@ -50,6 +50,8 @@ public sealed class GetDialogEndpointSummary : Summary<GetDialogEndpoint>
         Summary = "Gets a single dialog";
         Description = """
                 Gets a single dialog aggregate. For more information see the documentation (link TBD).
+
+                Note that this operation may return deleted dialogs (see the field `DeletedAt`).
                 """;
         Responses[StatusCodes.Status200OK] = string.Format(Constants.SwaggerSummary.ReturnedResult, "aggregate");
         Responses[StatusCodes.Status401Unauthorized] = Constants.SwaggerSummary.ServiceOwnerAuthenticationFailure;
