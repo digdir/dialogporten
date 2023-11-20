@@ -29,6 +29,7 @@ public sealed class UpdateDialogEndpoint : Endpoint<UpdateDialogRequest>
             .ProducesOneOf(
                 StatusCodes.Status204NoContent,
                 StatusCodes.Status400BadRequest,
+                StatusCodes.Status404NotFound,
                 StatusCodes.Status412PreconditionFailed,
                 StatusCodes.Status422UnprocessableEntity)
         );
