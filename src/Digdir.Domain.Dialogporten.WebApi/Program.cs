@@ -97,6 +97,16 @@ static void BuildAndRun(string[] args)
                 s.Title = "Dialogporten";
                 s.DocumentName = "V0.1";
                 s.Version = "v0.1";
+
+                // We need to help out the Swagger generation a bit to avoid invalid types for the ContinuationToken
+                // and OrderBy parameters, as well as avoid generating schemas for internal types.
+                s.CleanupPaginatedLists();
+
+                // We get duplicate names for some schemas that have the same name but live within enduser or serviceowner
+                // namespaces. We do not want to use the full namespace path in swagger, but also do not want the
+                // generic "2" suffix duplicate names get, so we add a "SO" suffix to the serviceowner specific schemas.
+                // This should match the operationIds used for service owners.
+                s.AddServiceOwnerSuffixToSchemas();
             };
         })
         .AddControllers(options => options.InputFormatters.Insert(0, JsonPatchInputFormatter.Get()))

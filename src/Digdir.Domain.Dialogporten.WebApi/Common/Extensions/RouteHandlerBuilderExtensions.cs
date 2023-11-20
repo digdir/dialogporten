@@ -34,4 +34,12 @@ internal static class RouteHandlerBuilderExtensions
 
         return builder;
     }
+
+    public static RouteHandlerBuilder ProducesOneOf<T>(this RouteHandlerBuilder builder, params int[] statusCodes)
+        where T : class
+    {
+        builder.ProducesOneOf(statusCodes);
+        builder.Produces<T>(statusCodes.First());
+        return builder;
+    }
 }

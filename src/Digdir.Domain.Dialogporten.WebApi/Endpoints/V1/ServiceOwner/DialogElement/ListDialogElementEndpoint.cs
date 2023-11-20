@@ -24,9 +24,6 @@ public class ListDialogElementEndpoint : Endpoint<ListDialogElementQuery, List<L
 
         Description(b => b.
             OperationId("GetDialogElementListSO")
-            .ProducesOneOf(
-                StatusCodes.Status200OK,
-                StatusCodes.Status404NotFound)
         );
     }
 

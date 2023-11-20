@@ -22,9 +22,6 @@ public class ListDialogActivityEndpoint : Endpoint<ListDialogActivityQuery>
 
         Description(b => b
             .OperationId("GetDialogActivityList")
-            .ProducesOneOf(
-                StatusCodes.Status200OK,
-                StatusCodes.Status404NotFound)
         );
     }
 

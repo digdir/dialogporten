@@ -19,6 +19,11 @@ public class ListDialogElementEndpoint : Endpoint<ListDialogElementQuery>
     {
         Get("dialogs/{dialogId}/elements");
         Group<EndUserGroup>();
+
+        Description(b => b
+            .OperationId("GetDialogElementList")
+        );
+
     }
 
     public override async Task HandleAsync(ListDialogElementQuery req, CancellationToken ct)

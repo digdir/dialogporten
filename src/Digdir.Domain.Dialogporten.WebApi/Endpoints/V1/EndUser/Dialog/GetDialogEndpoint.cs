@@ -6,7 +6,7 @@ using MediatR;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.EndUser.Dialog;
 
-public class GetDialogEndpoint : Endpoint<GetDialogQuery>
+public class GetDialogEndpoint : Endpoint<GetDialogQuery, GetDialogDto>
 {
     private readonly ISender _sender;
 
@@ -22,7 +22,7 @@ public class GetDialogEndpoint : Endpoint<GetDialogQuery>
 
         Description(b => b
             .OperationId("GetDialog")
-            .ProducesOneOf(
+            .ProducesOneOf<GetDialogDto>(
                 StatusCodes.Status200OK,
                 StatusCodes.Status404NotFound)
         );

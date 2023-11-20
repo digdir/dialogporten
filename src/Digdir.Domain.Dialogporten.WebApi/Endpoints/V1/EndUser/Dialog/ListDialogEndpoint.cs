@@ -7,7 +7,7 @@ using MediatR;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.EndUser.Dialog;
 
-public class ListDialogEndpoint : Endpoint<ListDialogQuery>
+public class ListDialogEndpoint : Endpoint<ListDialogQuery, PaginatedList<ListDialogDto>>
 {
     private readonly ISender _sender;
 
@@ -64,6 +64,7 @@ public sealed class ListDialogEndpointSummary : Summary<ListDialogEndpoint, List
         RequestParam(p => p.SearchCultureCode, "Limit free text search to texts with this culture code, e.g. \"nb-NO\". Default: search all culture codes");
         RequestParam(p => p.OrderBy, "Order by one or more fields with ascending or descending direction. Example: dueAt_asc,updatedAt_desc");
         RequestParam(p => p.ContinuationToken, "Supply \"continuationToken\" for the response to get the next page of results, if hasNextPage is true");
+
         RequestParam(p => p.Limit, $"Limit the number of results per page ({PaginationConstants.MinLimit}-{PaginationConstants.MaxLimit}, default: {PaginationConstants.DefaultLimit})");
     }
 }

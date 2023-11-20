@@ -24,7 +24,7 @@ public class GetDialogEndpoint : Endpoint<GetDialogQuery, GetDialogDto>
 
         Description(b => b
             .OperationId("GetDialogSO")
-            .ProducesOneOf(
+            .ProducesOneOf<GetDialogDto>(
                 StatusCodes.Status200OK,
                 StatusCodes.Status404NotFound)
             );
