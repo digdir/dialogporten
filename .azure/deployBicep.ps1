@@ -1,9 +1,21 @@
 param(
 	[Parameter(Mandatory)]
+	[string]$gitSha,
+
+	[Parameter(Mandatory)]
 	[string]$environment,
 
 	[Parameter(Mandatory)]
-	[string]$subscriptionId
+	[string]$subscriptionId,
+
+	[Parameter(Mandatory)]
+	[string]$sourceKeyVaultSubscriptionId,
+	
+	[Parameter(Mandatory)]
+    [string]$sourceKeyVaultName,
+    	
+	[Parameter(Mandatory)]
+	[string]$apiManagementDigDirEmail
 )
 Import-module "$PSScriptRoot/powershell/jsonMerge.ps1" -Force
 Import-module "$PSScriptRoot/powershell/pwdGenerator.ps1" -Force
@@ -20,18 +32,22 @@ AddMemberPath $paramsJson "parameters.keyVault.value.source.keys" @( `
 		--output tsv `
 )
 
-# Add auto generated secrets to parameters
+# Add secrets to parameters
 AddMemberPath $paramsJson "parameters.secrets.value" @{
 	dialogportenPgAdminPassword = (GeneratePassword -length 30).Password
+	apiManagementDigDirEmail = $apiManagementDigDirEmail
+    sourceKeyVaultSubscriptionId = $sourceKeyVaultSubscriptionId
+    sourceKeyVaultName = $sourceKeyVaultName	
 }
+
+# Add gitSha to parameters
+AddMemberPath $paramsJson "parameters.gitSha.value" $gitSha
 
 # Add environment to parameters
 AddMemberPath $paramsJson "parameters.environment.value" $environment
 
-#Write-Host (ConvertTo-Json -Depth 100 $paramsJson)
-
 # Format parameters to be used in az deployment sub create
-$formatedParamsJson = $paramsJson `
+$formattedParamsJson = $paramsJson `
 	| ConvertTo-Json -Compress -Depth 100 `
 	| % {$_ -replace "`"", "\`""} `
 	| % {$_ -replace "`n", ""} `
@@ -42,15 +58,25 @@ $deploymentOutputs = @( `
 	az deployment sub create `
 		--subscription $subscriptionId `
 		--location $paramsJson.parameters.location.value `
-		--name "GithubActionsDeploy-$environment" `
+		--name "GithubActionsDeploy-be-$environment" `
 		--template-file "$($PSScriptRoot)/main.bicep" `
-		--parameters $formatedParamsJson `
+		--parameters $formattedParamsJson `
 		--query properties.outputs `
 		#--confirm-with-what-if
 	| ConvertFrom-Json `
 )
 
-# Write outputs to GITHUB_OUTPUT so that they can be used in other steps
-foreach($Property in $deploymentOutputs | Get-Member -type NoteProperty, Property){
-    "$($Property.Name)=$($deploymentOutputs.$($Property.Name).value)" >> $env:GITHUB_OUTPUT
+# Start migration job
+$resourceGroup = $deploymentOutputs.resourceGroupName.value
+$migrationJobName = $deploymentOutputs.migrationJobName.value
+
+if ([string]::IsNullOrEmpty($resourceGroup)) {
+    Write-Host "ResourceGroup output is missing"
+	exit 1
 }
+if ([string]::IsNullOrEmpty($migrationJobName)) {
+    Write-Host "MigrationJobName output is missing"
+	exit 1
+}
+
+az containerapp job start -n $migrationJobName -g $resourceGroup

@@ -1,5 +1,5 @@
 include:
-  - docker-compose-no-webapi.yaml
+  - docker-compose-no-webapi.yml
 
 services:
   dialogporten-webapi:
@@ -16,7 +16,7 @@ services:
       - Serilog__WriteTo__0__Name=Console
       - Serilog__MinimumLevel__Default=Debug
       - ASPNETCORE_URLS=https://+
-      - ASPNETCORE_Environment=Development
+      - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/webapi.pfx
       - ASPNETCORE_Kestrel__Certificates__Default__Password=supersecret
     ports:
