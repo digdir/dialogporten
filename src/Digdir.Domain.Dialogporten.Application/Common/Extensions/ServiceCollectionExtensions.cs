@@ -1,7 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using FluentValidation;
 using Microsoft.Extensions.Hosting;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Digdir.Domain.Dialogporten.Application.Common.Extensions;
 
