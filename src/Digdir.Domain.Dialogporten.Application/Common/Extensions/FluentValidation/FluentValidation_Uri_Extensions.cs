@@ -2,14 +2,14 @@
 
 namespace Digdir.Domain.Dialogporten.Application.Common.Extensions.FluentValidation;
 
-public static class FluentValidation_Uri_Extensions
+public static class FluentValidationUriExtensions
 {
     public static IRuleBuilderOptions<T, TUri> IsValidUri<T, TUri>(this IRuleBuilder<T, TUri> ruleBuilder)
         where TUri : Uri?
     {
         return ruleBuilder
             .Must(uri => uri is null || uri.IsWellFormedOriginalString())
-            .WithMessage("'{PropertyName}' is not a well formated URI.");
+            .WithMessage("'{PropertyName}' is not a well formatted URI.");
     }
 
     public static IRuleBuilderOptions<T, TUri> MaximumLength<T, TUri>(this IRuleBuilder<T, TUri> ruleBuilder, int maximumLength)

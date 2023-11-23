@@ -1,4 +1,5 @@
 ﻿using Digdir.Library.Entity.Abstractions.Features.Lookup;
+// ReSharper disable InconsistentNaming
 
 namespace Digdir.Domain.Dialogporten.Domain.Http;
 

@@ -50,7 +50,7 @@ static void BuildAndRun(string[] args)
         .WriteTo.ApplicationInsights(
             services.GetRequiredService<TelemetryConfiguration>(),
             TelemetryConverter.Traces));
-    
+
     builder.Services
         .AddApplicationInsightsTelemetry()
         .AddMassTransit(x =>
@@ -59,11 +59,12 @@ static void BuildAndRun(string[] args)
             x.UsingRabbitMq((context, cfg) =>
             {
                 const string rabbitMqSection = "RabbitMq";
-                cfg.Host(builder.Configuration[$"{rabbitMqSection}:Host"], "/", h => {
+                cfg.Host(builder.Configuration[$"{rabbitMqSection}:Host"], "/", h =>
+                {
                     h.Username(builder.Configuration[$"{rabbitMqSection}:Username"]);
                     h.Password(builder.Configuration[$"{rabbitMqSection}:Password"]);
                 });
-                cfg.ReceiveEndpoint(thisAssembly.GetName().Name!, x => 
+                cfg.ReceiveEndpoint(thisAssembly.GetName().Name!, x =>
                 {
                     x.UseMessageRetry(r => r.Intervals(
                         TimeSpan.FromSeconds(1),
@@ -85,5 +86,5 @@ static void BuildAndRun(string[] args)
 
     var app = builder.Build();
     app.UseHttpsRedirection();
-    app.Run(); 
+    app.Run();
 }

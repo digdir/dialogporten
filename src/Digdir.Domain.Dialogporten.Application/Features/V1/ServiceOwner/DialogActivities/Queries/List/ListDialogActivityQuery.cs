@@ -32,7 +32,7 @@ internal sealed class ListDialogActivityQueryHandler : IRequestHandler<ListDialo
         var dialog = await _db.Dialogs
             .Include(x => x.Activities)
             .IgnoreQueryFilters()
-            .FirstOrDefaultAsync(x => x.Id == request.DialogId, 
+            .FirstOrDefaultAsync(x => x.Id == request.DialogId,
                 cancellationToken: cancellationToken);
 
         if (dialog is null)

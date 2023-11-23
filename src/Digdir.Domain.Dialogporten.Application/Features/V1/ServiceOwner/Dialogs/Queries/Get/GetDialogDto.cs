@@ -25,9 +25,9 @@ public sealed class GetDialogDto
 
     public DialogStatus.Enum Status { get; set; }
 
-    public List<LocalizationDto>? Body { get; set; } 
+    public List<LocalizationDto>? Body { get; set; }
     public List<LocalizationDto> Title { get; set; } = new();
-    public List<LocalizationDto>? SenderName { get; set; } 
+    public List<LocalizationDto>? SenderName { get; set; }
     public List<GetDialogSearchTagDto>? SearchTags { get; set; }
 
     public List<GetDialogDialogElementDto> Elements { get; set; } = new();

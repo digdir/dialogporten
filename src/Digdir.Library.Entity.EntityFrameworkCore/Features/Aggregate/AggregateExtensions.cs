@@ -94,14 +94,10 @@ internal static class AggregateExtensions
             }
 
             var parentEntity = await entry.Context
-                .FindAsync(parentType, parentPrimaryKey, cancellationToken: cancellationToken);
-
-            if (parentEntity is null)
-            {
-                throw new InvalidOperationException(
+                .FindAsync(parentType, parentPrimaryKey, cancellationToken: cancellationToken)
+                ?? throw new InvalidOperationException(
                     $"Could not find parent {parentType.Name} on {entry.Metadata.ClrType.Name} " +
                     $"with key [{string.Join(",", parentPrimaryKey)}].");
-            }
 
             var parentEntry = entry.Context.Entry(parentEntity);
 
@@ -137,8 +133,8 @@ internal static class AggregateExtensions
         //    x.CurrentValue));
 
         return AggregateNode.Create(
-            entry.Entity.GetType(), 
-            entry.Entity, 
+            entry.Entity.GetType(),
+            entry.Entity,
             aggregateState,
             Enumerable.Empty<AggregateNodeProperty>());
     }
@@ -150,7 +146,7 @@ internal static class AggregateExtensions
             .Where(x => x
                 .PrincipalToDependent?
                 .PropertyInfo?
-                .GetCustomAttribute<AggregateChildAttribute>() 
+                .GetCustomAttribute<AggregateChildAttribute>()
                 is not null);
     }
 

@@ -25,13 +25,13 @@ public sealed class CreateDialogActivityEndpoint : Endpoint<CreateDialogElementR
     public override void Configure()
     {
         Post("dialogs/{dialogId}/elements");
-        Policies(AuthorizationPolicy.Serviceprovider);
+        Policies(AuthorizationPolicy.ServiceProvider);
         Group<ServiceOwnerGroup>();
     }
 
-    public override async Task HandleAsync(CreateDialogElementRequest request, CancellationToken ct)
+    public override async Task HandleAsync(CreateDialogElementRequest req, CancellationToken ct)
     {
-        var dialogQueryResult = await _sender.Send(new GetDialogQuery {DialogId = request.DialogId}, ct);
+        var dialogQueryResult = await _sender.Send(new GetDialogQuery { DialogId = req.DialogId }, ct);
         if (dialogQueryResult.TryPickT1(out var entityNotFound, out var dialog))
         {
             await this.NotFoundAsync(entityNotFound, cancellationToken: ct);
@@ -40,17 +40,17 @@ public sealed class CreateDialogActivityEndpoint : Endpoint<CreateDialogElementR
 
         var updateDialogDto = _mapper.Map<UpdateDialogDto>(dialog);
 
-        request.Id = !request.Id.HasValue || request.Id.Value == default
+        req.Id = !req.Id.HasValue || req.Id.Value == default
             ? Uuid7.NewUuid7().ToGuid()
-            : request.Id;
+            : req.Id;
 
-        updateDialogDto.Elements.Add(request);
+        updateDialogDto.Elements.Add(req);
 
-        var updateDialogCommand = new UpdateDialogCommand {Id = request.DialogId, ETag = request.ETag, Dto = updateDialogDto};
+        var updateDialogCommand = new UpdateDialogCommand { Id = req.DialogId, ETag = req.ETag, Dto = updateDialogDto };
 
         var result = await _sender.Send(updateDialogCommand, ct);
         await result.Match(
-            success => SendCreatedAtAsync<GetDialogElementEndpoint>(new GetDialogElementQuery {DialogId = dialog.Id, ElementId = request.Id.Value}, request.Id, cancellation: ct),
+            success => SendCreatedAtAsync<GetDialogElementEndpoint>(new GetDialogElementQuery { DialogId = dialog.Id, ElementId = req.Id.Value }, req.Id, cancellation: ct),
             notFound => this.NotFoundAsync(notFound, ct),
             validationError => this.BadRequestAsync(validationError, ct),
             domainError => this.UnprocessableEntityAsync(domainError, ct),

@@ -51,7 +51,7 @@ public static class EntityLibraryEfCoreExtensions
             .HandleImmutableEntities()
             //.HandleVersionableEntities()
             .HandleCreatableEntities(utcNow);
-            //.HandleUpdatableEntities(utcNow);
+        //.HandleUpdatableEntities(utcNow);
         await changeTracker.HandleAggregateEntities(utcNow, cancellationToken);
         return changeTracker.HandleSoftDeletableEntities(utcNow);
     }

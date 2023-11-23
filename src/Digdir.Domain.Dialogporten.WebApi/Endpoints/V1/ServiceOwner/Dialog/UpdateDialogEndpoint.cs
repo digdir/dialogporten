@@ -19,7 +19,7 @@ public sealed class UpdateDialogEndpoint : Endpoint<UpdateDialogRequest>
     public override void Configure()
     {
         Put("dialogs/{dialogId}");
-        Policies(AuthorizationPolicy.Serviceprovider);
+        Policies(AuthorizationPolicy.ServiceProvider);
         Group<ServiceOwnerGroup>();
     }
 

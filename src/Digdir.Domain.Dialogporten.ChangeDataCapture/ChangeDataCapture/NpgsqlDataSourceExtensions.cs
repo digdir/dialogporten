@@ -28,7 +28,7 @@ internal static class NpgsqlDataSourceExtensions
             command.Parameters.AddWithValue(parameter);
         }
 
-        return await command.ExecuteScalarAsync(ct) as bool? == true;
+        return (await command.ExecuteScalarAsync(ct) as bool?) == true;
     }
 
     public static async IAsyncEnumerable<NpgsqlDataReader> ReadExistingRowsFromSnapshot(

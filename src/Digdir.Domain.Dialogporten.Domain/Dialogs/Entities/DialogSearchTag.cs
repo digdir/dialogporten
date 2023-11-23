@@ -10,11 +10,11 @@ public class DialogSearchTag : IImmutableEntity
     public string Value
     {
         get => _value;
-        set => _value = value.Trim().ToLower();
+        set => _value = value.Trim().ToLowerInvariant();
     }
 
     public DateTimeOffset CreatedAt { get; set; }
-    
+
     public Guid DialogId { get; set; }
     public DialogEntity Dialog { get; set; } = null!;
 }

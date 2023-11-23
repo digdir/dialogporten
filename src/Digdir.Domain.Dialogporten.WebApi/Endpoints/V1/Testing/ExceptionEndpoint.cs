@@ -12,16 +12,16 @@ public sealed class ExceptionEndpoint : Endpoint<ExceptionEndpointRequest>
         Description(x => x.ExcludeFromDescription());
     }
 
-    public override Task HandleAsync(ExceptionEndpointRequest request, CancellationToken ct)
+    public override Task HandleAsync(ExceptionEndpointRequest req, CancellationToken ct)
     {
-        var exceptionType = Type.GetType(request.ExceptionType);
+        var exceptionType = Type.GetType(req.ExceptionType);
 
         if (exceptionType is null || !exceptionType.IsAssignableTo(typeof(Exception)))
         {
-            throw new Exception(request.ExceptionMessage);
+            throw new Exception(req.ExceptionMessage);
         }
 
-        throw (Exception)Activator.CreateInstance(exceptionType, request.ExceptionMessage)!;
+        throw (Exception)Activator.CreateInstance(exceptionType, req.ExceptionMessage)!;
     }
 }
 

@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Globalization;
+using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.Enumerable;
@@ -35,12 +36,12 @@ public sealed class ListDialogQuery : SortablePaginationParameter<ListDialogQuer
 
     public DateTimeOffset? VisibleAfter { get; init; }
     public DateTimeOffset? VisibleBefore { get; init; }
-    
+
     public string? Search { get; init; }
-    public string? SearchCultureCode 
-    { 
-        get => _searchCultureCode; 
-        init => _searchCultureCode = Localization.NormalizeCultureCode(value); 
+    public string? SearchCultureCode
+    {
+        get => _searchCultureCode;
+        init => _searchCultureCode = Localization.NormalizeCultureCode(value);
     }
 }
 public sealed class ListDialogQueryOrderDefinition : IOrderDefinition<ListDialogDto>
@@ -92,7 +93,7 @@ internal sealed class ListDialogQueryHandler : IRequestHandler<ListDialogQuery, 
             .WhereIf(request.Search is not null, x =>
                 x.Title!.Localizations.AsQueryable().Any(searchExpression) ||
                 x.Body!.Localizations.AsQueryable().Any(searchExpression) ||
-                x.SearchTags.Any(x => x.Value == request.Search!.ToLower()) ||
+                x.SearchTags.Any(x => x.Value == request.Search!.ToLower(CultureInfo.InvariantCulture)) ||
                 x.SenderName!.Localizations.AsQueryable().Any(searchExpression)
             )
             .Where(x => resourceIds.Contains(x.ServiceResource))

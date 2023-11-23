@@ -18,7 +18,7 @@ public class ListDialogEndpoint : Endpoint<ListDialogQuery>
     public override void Configure()
     {
         Get("dialogs");
-        Policies(AuthorizationPolicy.ServiceproviderSearch);
+        Policies(AuthorizationPolicy.ServiceProviderSearch);
         Group<ServiceOwnerGroup>();
     }
 

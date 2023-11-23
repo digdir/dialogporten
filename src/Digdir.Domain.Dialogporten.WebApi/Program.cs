@@ -25,7 +25,7 @@ Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Warning()
     .Enrich.FromLogContext()
     .WriteTo.ApplicationInsights(
-        TelemetryConfiguration.CreateDefault(), 
+        TelemetryConfiguration.CreateDefault(),
         TelemetryConverter.Traces)
     .CreateBootstrapLogger();
 
@@ -146,9 +146,9 @@ static void BuildAndRun(string[] args)
     app.Run();
 }
 
-static void IgnoreEmptyCollections(JsonTypeInfo type_info)
+static void IgnoreEmptyCollections(JsonTypeInfo typeInfo)
 {
-    foreach (var property in type_info.Properties)
+    foreach (var property in typeInfo.Properties)
     {
         if (property.PropertyType.IsAssignableTo(typeof(ICollection)))
         {

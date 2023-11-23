@@ -3,7 +3,7 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.DialogActivities.Queries.Get;
 
-public class MappingProfile : Profile 
+public class MappingProfile : Profile
 {
     public MappingProfile()
     {

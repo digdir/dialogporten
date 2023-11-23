@@ -26,13 +26,13 @@ internal sealed class AuthorizationOptionsSetup : IConfigureOptions<Authorizatio
             .RequireValidConsumerClaim()
             .Build();
 
-        options.AddPolicy(AuthorizationPolicy.Serviceprovider, builder => builder
+        options.AddPolicy(AuthorizationPolicy.ServiceProvider, builder => builder
             .Combine(options.DefaultPolicy)
-            .RequireScope(AuthorizationScope.Serviceprovider));
+            .RequireScope(AuthorizationScope.ServiceProvider));
 
-        options.AddPolicy(AuthorizationPolicy.ServiceproviderSearch, builder => builder
+        options.AddPolicy(AuthorizationPolicy.ServiceProviderSearch, builder => builder
             .Combine(options.DefaultPolicy)
-            .RequireScope(AuthorizationScope.ServiceproviderSearch));
+            .RequireScope(AuthorizationScope.ServiceProviderSearch));
 
         options.AddPolicy(AuthorizationPolicy.Testing, builder => builder
             .Combine(options.DefaultPolicy)

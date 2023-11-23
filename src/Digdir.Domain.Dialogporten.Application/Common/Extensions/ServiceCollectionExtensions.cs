@@ -57,9 +57,9 @@ public static class ServiceCollectionExtensions
     }
 
     public static IServiceCollection Decorate<TService, TDecorator>(this IServiceCollection services, bool predicate)
-        where TDecorator : TService => 
-        predicate 
-            ? services.Decorate<TService, TDecorator>() 
+        where TDecorator : TService =>
+        predicate
+            ? services.Decorate<TService, TDecorator>()
             : services;
 
     public static IServiceCollection AddHostedService<THostedService>(this IServiceCollection services, bool predicate)

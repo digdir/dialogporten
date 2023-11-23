@@ -33,7 +33,7 @@ internal sealed class ListDialogElementQueryHandler : IRequestHandler<ListDialog
             .Include(x => x.Elements)
                 .ThenInclude(x => x.DisplayName!.Localizations)
             .IgnoreQueryFilters()
-            .FirstOrDefaultAsync(x => x.Id == request.DialogId, 
+            .FirstOrDefaultAsync(x => x.Id == request.DialogId,
                 cancellationToken: cancellationToken);
 
         if (dialog is null)
@@ -45,7 +45,7 @@ internal sealed class ListDialogElementQueryHandler : IRequestHandler<ListDialog
         {
             return new EntityDeleted<DialogEntity>(request.DialogId);
         }
-        
+
         return _mapper.Map<List<ListDialogElementDto>>(dialog.Elements);
     }
 }

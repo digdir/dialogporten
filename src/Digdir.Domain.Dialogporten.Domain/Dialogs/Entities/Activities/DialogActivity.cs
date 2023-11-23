@@ -35,10 +35,10 @@ public class DialogActivity : IImmutableEntity, IAggregateCreatedHandler, IEvent
     public DialogActivityPerformedBy? PerformedBy { get; set; }
 
     public List<DialogActivity> RelatedActivities { get; set; } = new();
-    
+
     public void OnCreate(AggregateNode self, DateTimeOffset utcNow)
     {
-       _domainEvents.Add(new DialogActivityCreatedDomainEvent(DialogId, Id));
+        _domainEvents.Add(new DialogActivityCreatedDomainEvent(DialogId, Id));
     }
 
     private readonly List<IDomainEvent> _domainEvents = new();

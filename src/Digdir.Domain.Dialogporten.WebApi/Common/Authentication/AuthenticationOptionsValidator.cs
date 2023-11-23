@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace Digdir.Domain.Dialogporten.WebApi.Common.Options;
+namespace Digdir.Domain.Dialogporten.WebApi.Common.Authentication;
 
 internal sealed class AuthenticationOptionsValidator : AbstractValidator<AuthenticationOptions>
 {

@@ -18,7 +18,7 @@ public class ListDialogElementEndpoint : Endpoint<ListDialogElementQuery>
     public override void Configure()
     {
         Get("dialogs/{dialogId}/elements");
-        Policies(AuthorizationPolicy.Serviceprovider);
+        Policies(AuthorizationPolicy.ServiceProvider);
         Group<ServiceOwnerGroup>();
     }
 

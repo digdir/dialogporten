@@ -53,7 +53,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
     public async Task<UpdateDialogResult> Handle(UpdateDialogCommand request, CancellationToken cancellationToken)
     {
         var resourceIds = await _userService.GetCurrentUserResourceIds(cancellationToken);
-        
+
         var dialog = await _db.Dialogs
             .Include(x => x.Body!.Localizations)
             .Include(x => x.Title!.Localizations)
@@ -85,7 +85,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         dialog.Body = _localizationService.Merge(dialog.Body, request.Dto.Body);
         dialog.Title = _localizationService.Merge(dialog.Title, request.Dto.Title);
         dialog.SenderName = _localizationService.Merge(dialog.SenderName, request.Dto.SenderName);
-        
+
         dialog.SearchTags
             .Merge(request.Dto.SearchTags,
                 destinationKeySelector: x => x.Value,
@@ -93,7 +93,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
                 create: _mapper.Map<List<DialogSearchTag>>,
                 delete: DeleteDelegate.NoOp,
                 comparer: StringComparer.InvariantCultureIgnoreCase);
-        
+
         await dialog.Elements
             .MergeAsync(request.Dto.Elements,
                 destinationKeySelector: x => x.Id,
@@ -161,7 +161,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         if (existingIds.Any())
         {
             _domainContext.AddError(
-                nameof(UpdateDialogDto.Activities), 
+                nameof(UpdateDialogDto.Activities),
                 $"Entity '{nameof(DialogActivity)}' with the following key(s) already exists: ({string.Join(", ", existingIds)}).");
         }
 

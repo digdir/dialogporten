@@ -24,7 +24,7 @@ internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDia
             .NotNull()
             .IsValidUri()
             .MaximumLength(Constants.DefaultMaxUriLength)
-            .Must(x => x?.StartsWith(Constants.ServiceResourcePrefix) ?? false)
+            .Must(x => x?.StartsWith(Constants.ServiceResourcePrefix, StringComparison.InvariantCulture) ?? false)
                 .WithMessage($"'{{PropertyName}}' must start with '{Constants.ServiceResourcePrefix}'.");
 
         RuleFor(x => x.Party)
@@ -35,7 +35,7 @@ internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDia
                 _ => false
             }).WithMessage(
                 "'{PropertyName}' must be on format '/org/[orgNumber]' or " +
-                "'/person/[socialSecurityNumber]' with valid numbers respectivly.")
+                "'/person/[socialSecurityNumber]' with valid numbers respectively.")
             .NotEmpty()
             .MaximumLength(Constants.DefaultMaxStringLength);
 

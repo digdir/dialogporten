@@ -18,7 +18,7 @@ public class ListDialogActivityEndpoint : Endpoint<ListDialogActivityQuery>
     public override void Configure()
     {
         Get("dialogs/{dialogId}/activities");
-        Policies(AuthorizationPolicy.Serviceprovider);
+        Policies(AuthorizationPolicy.ServiceProvider);
         Group<ServiceOwnerGroup>();
     }
 

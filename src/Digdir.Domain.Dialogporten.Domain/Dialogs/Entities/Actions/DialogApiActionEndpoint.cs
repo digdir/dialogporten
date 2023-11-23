@@ -12,8 +12,8 @@ public class DialogApiActionEndpoint : IEntity
     public string? Version { get; set; }
     public Uri Url { get; set; } = null!;
     public Uri? DocumentationUrl { get; set; }
-    public Uri? RequestSchema { get; set;}
-    public Uri? ResponseSchema { get; set;}
+    public Uri? RequestSchema { get; set; }
+    public Uri? ResponseSchema { get; set; }
     public bool Deprecated { get; set; }
     public DateTimeOffset? SunsetAt { get; set; }
 

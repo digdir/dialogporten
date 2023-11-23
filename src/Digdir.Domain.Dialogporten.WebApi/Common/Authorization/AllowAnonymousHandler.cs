@@ -12,7 +12,7 @@ public class AllowAnonymousHandler : IAuthorizationHandler
         foreach (var requirement in context.PendingRequirements)
         {
             //Simply pass all requirements
-            context.Succeed(requirement); 
+            context.Succeed(requirement);
         }
 
         return Task.CompletedTask;

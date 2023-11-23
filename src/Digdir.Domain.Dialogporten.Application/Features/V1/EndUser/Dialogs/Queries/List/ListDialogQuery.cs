@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Globalization;
+using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
@@ -17,7 +18,7 @@ namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Que
 
 public sealed class ListDialogQuery : SortablePaginationParameter<ListDialogQueryOrderDefinition, ListDialogDto>, IRequest<ListDialogResult>
 {
-    private string? _searchCultureCode;
+    private readonly string? _searchCultureCode;
 
     public List<string>? Org { get; init; }
     public List<string>? ServiceResource { get; init; }
@@ -35,10 +36,10 @@ public sealed class ListDialogQuery : SortablePaginationParameter<ListDialogQuer
     public DateTimeOffset? DueBefore { get; init; }
 
     public string? Search { get; init; }
-    public string? SearchCultureCode 
-    { 
-        get => _searchCultureCode; 
-        init => _searchCultureCode = Localization.NormalizeCultureCode(value); 
+    public string? SearchCultureCode
+    {
+        get => _searchCultureCode;
+        init => _searchCultureCode = Localization.NormalizeCultureCode(value);
     }
 }
 
@@ -86,7 +87,7 @@ internal sealed class ListDialogQueryHandler : IRequestHandler<ListDialogQuery, 
             .WhereIf(request.DueBefore.HasValue, x => x.DueAt <= request.DueBefore)
             .WhereIf(request.Search is not null, x =>
                 x.Title!.Localizations.AsQueryable().Any(searchExpression) ||
-                x.SearchTags.Any(x => x.Value == request.Search!.ToLower()) ||
+                x.SearchTags.Any(x => x.Value == request.Search!.ToLower(CultureInfo.InvariantCulture)) ||
                 x.SenderName!.Localizations.AsQueryable().Any(searchExpression)
             )
             .Where(x => !x.VisibleFrom.HasValue || _clock.UtcNowOffset > x.VisibleFrom)

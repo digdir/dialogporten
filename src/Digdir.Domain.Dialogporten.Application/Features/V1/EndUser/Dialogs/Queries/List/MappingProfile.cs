@@ -8,6 +8,6 @@ internal sealed class MappingProfile : Profile
     public MappingProfile()
     {
         CreateMap<DialogEntity, ListDialogDto>()
-            .ForMember(dest => dest.Status,opt => opt.MapFrom(src => src.StatusId));
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.StatusId));
     }
 }

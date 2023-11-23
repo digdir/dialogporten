@@ -53,9 +53,8 @@ internal sealed class DialogEventToAltinnForwarder : DomainEventToAltinnForwarde
 
         await CloudEventBus.Publish(cloudEvent, cancellationToken);
     }
-    
-    private CloudEvent CreateCloudEvent(IDomainEvent domainEvent, DialogEntity dialog,
-        Dictionary<string, object>? data = null) => new()
+
+    private CloudEvent CreateCloudEvent(IDomainEvent domainEvent, DialogEntity dialog, Dictionary<string, object>? data = null) => new()
     {
         Id = domainEvent.EventId,
         Type = CloudEventTypes.Get(domainEvent),

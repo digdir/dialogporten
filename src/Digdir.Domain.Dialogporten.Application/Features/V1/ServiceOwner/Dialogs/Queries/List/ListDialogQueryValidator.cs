@@ -16,15 +16,15 @@ internal sealed class ListDialogQueryValidator : AbstractValidator<ListDialogQue
         RuleFor(x => x.SearchCultureCode)
             .Must(x => x is null || Localization.IsValidCultureCode(x))
             .WithMessage("'{PropertyName}' must be a valid culture code.");
-        
+
         RuleFor(x => x.ServiceResource!.Count)
             .LessThanOrEqualTo(20)
             .When(x => x.ServiceResource is not null);
-        
+
         RuleFor(x => x.Party!.Count)
             .LessThanOrEqualTo(20)
             .When(x => x.Party is not null);
-        
+
         RuleFor(x => x.ExtendedStatus!.Count)
             .LessThanOrEqualTo(20)
             .When(x => x.ExtendedStatus is not null);

@@ -41,7 +41,7 @@ internal sealed class OutboxReplicationDataMapper : IReplicationDataMapper<Outbo
     private static IDictionary<string, string> ToDictionary(NpgsqlDataReader reader)
     {
         var result = new Dictionary<string, string>();
-        for (int i = 0; i < reader.FieldCount; i++)
+        for (var i = 0; i < reader.FieldCount; i++)
         {
             var columnName = reader.GetName(i);
             result[columnName] = reader.GetValue(i).ToString()!;
