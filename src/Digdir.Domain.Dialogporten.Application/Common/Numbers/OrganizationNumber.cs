@@ -2,7 +2,7 @@
 
 internal static class OrganizationNumber
 {
-    private static readonly int[] OrgNumberWeights = new[] { 3, 2, 7, 6, 5, 4, 3, 2 };
+    private static readonly int[] OrgNumberWeights = { 3, 2, 7, 6, 5, 4, 3, 2 };
 
     public static bool IsValid(ReadOnlySpan<char> orgNumber)
     {
