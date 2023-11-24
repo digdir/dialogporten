@@ -2,7 +2,7 @@
 using Digdir.Domain.Dialogporten.Application.Common.Pagination.Extensions;
 using Digdir.Domain.Dialogporten.Application.Common.Pagination.OrderOption;
 
-namespace Digdir.Domain.Dialogporten.Application.Common.Pagination.Continue;
+namespace Digdir.Domain.Dialogporten.Application.Common.Pagination.Continuation;
 
 public interface IContinuationTokenSet
 {

@@ -1,4 +1,4 @@
-﻿using Digdir.Domain.Dialogporten.Application.Common.Pagination.Continue;
+﻿using Digdir.Domain.Dialogporten.Application.Common.Pagination.Continuation;
 using Digdir.Domain.Dialogporten.Application.Common.Pagination.Order;
 using Digdir.Domain.Dialogporten.Application.Common.Pagination.OrderOption;
 using FluentValidation;

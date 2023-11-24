@@ -1,7 +1,7 @@
 ﻿using System.Linq.Expressions;
 using System.Reflection;
 
-namespace Digdir.Domain.Dialogporten.Application.Common.Pagination.Continue;
+namespace Digdir.Domain.Dialogporten.Application.Common.Pagination.Continuation;
 
 public class ContinuationToken
 {
