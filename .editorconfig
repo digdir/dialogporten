@@ -15,21 +15,6 @@ insert_final_newline = true
 
 [*.cs]
 
-# Identifiers should not contain underscores
-dotnet_diagnostic.CA1707.severity = none
-
-# Identifiers should not contain type names
-dotnet_diagnostic.CA1720.severity = none
-
-# Specify IFormatProvider
-dotnet_diagnostic.CA1305.severity = none
-
-# Identifiers should not match keywords
-dotnet_diagnostic.CA1716.severity = none
-
-# Identifiers should not have incorrect suffix
-dotnet_diagnostic.CA1711.severity = none
-
 # Style faults should be warnings
 dotnet_analyzer_diagnostic.category-Style.severity = warning
 

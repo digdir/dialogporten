@@ -8,7 +8,7 @@ public sealed class ListDialogActivityDto
     public DateTimeOffset CreatedAt { get; set; }
     public Uri? ExtendedType { get; set; }
 
-    public DialogActivityType.Enum Type { get; set; }
+    public DialogActivityType.Values Type { get; set; }
 
     public DateTimeOffset? DeletedAt { get; set; }
 

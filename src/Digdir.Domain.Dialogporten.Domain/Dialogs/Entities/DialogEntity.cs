@@ -36,7 +36,7 @@ public class DialogEntity :
     public DateTimeOffset? ReadAt { get; set; }
 
     // === Dependent relationships ===
-    public DialogStatus.Enum StatusId { get; set; }
+    public DialogStatus.Values StatusId { get; set; }
     public DialogStatus Status { get; set; } = null!;
 
 

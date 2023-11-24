@@ -15,7 +15,7 @@ public class DialogActivity : IImmutableEntity, IAggregateCreatedHandler, IEvent
     public Uri? ExtendedType { get; set; }
 
     // === Dependent relationships ===
-    public DialogActivityType.Enum TypeId { get; set; }
+    public DialogActivityType.Values TypeId { get; set; }
     public DialogActivityType Type { get; set; } = null!;
 
     public Guid DialogId { get; set; }

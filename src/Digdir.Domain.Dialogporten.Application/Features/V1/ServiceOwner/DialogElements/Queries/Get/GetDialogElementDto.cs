@@ -23,5 +23,5 @@ public sealed class GetDialogElementUrlDto
     public Uri Url { get; set; } = null!;
     public string? MimeType { get; set; }
 
-    public DialogElementUrlConsumerType.Enum ConsumerType { get; set; }
+    public DialogElementUrlConsumerType.Values ConsumerType { get; set; }
 }

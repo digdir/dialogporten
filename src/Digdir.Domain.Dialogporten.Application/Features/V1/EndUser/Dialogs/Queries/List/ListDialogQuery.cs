@@ -24,7 +24,7 @@ public sealed class ListDialogQuery : SortablePaginationParameter<ListDialogQuer
     public List<string>? ServiceResource { get; init; }
     public List<string>? Party { get; init; }
     public List<string>? ExtendedStatus { get; init; }
-    public List<DialogStatus.Enum>? Status { get; init; }
+    public List<DialogStatus.Values>? Status { get; init; }
 
     public DateTimeOffset? CreatedAfter { get; init; }
     public DateTimeOffset? CreatedBefore { get; init; }

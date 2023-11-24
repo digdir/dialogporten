@@ -9,7 +9,7 @@ public sealed class GetDialogActivityDto
     public DateTimeOffset? CreatedAt { get; set; }
     public Uri? ExtendedType { get; set; }
 
-    public DialogActivityType.Enum Type { get; set; }
+    public DialogActivityType.Values Type { get; set; }
 
     public Guid? RelatedActivityId { get; set; }
     public Guid? DialogElementId { get; set; }

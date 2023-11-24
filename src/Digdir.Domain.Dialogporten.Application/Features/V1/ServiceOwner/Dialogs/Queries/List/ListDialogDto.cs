@@ -15,7 +15,7 @@ public sealed class ListDialogDto
     public DateTimeOffset? DueAt { get; set; }
     public DateTimeOffset? VisibleFrom { get; set; }
 
-    public DialogStatus.Enum Status { get; set; }
+    public DialogStatus.Values Status { get; set; }
 
     public List<LocalizationDto> Title { get; set; } = new();
     public List<LocalizationDto>? SenderName { get; set; }
