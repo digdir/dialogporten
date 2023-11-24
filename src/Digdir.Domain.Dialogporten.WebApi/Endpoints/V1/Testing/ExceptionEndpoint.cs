@@ -18,7 +18,7 @@ public sealed class ExceptionEndpoint : Endpoint<ExceptionEndpointRequest>
 
         if (exceptionType is null || !exceptionType.IsAssignableTo(typeof(Exception)))
         {
-            throw new Exception(req.ExceptionMessage);
+            throw new ArgumentException(req.ExceptionMessage);
         }
 
         throw (Exception)Activator.CreateInstance(exceptionType, req.ExceptionMessage)!;

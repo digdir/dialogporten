@@ -15,6 +15,10 @@ insert_final_newline = true
 
 [*.cs]
 
+# CA1848: Use the LoggerMessage delegates
+# TODO: Possible performance improvement 
+dotnet_diagnostic.CA1848.severity = none
+
 # Identifiers should not match keywords
 dotnet_diagnostic.CA1716.severity = none
 

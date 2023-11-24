@@ -1,4 +1,5 @@
-﻿using Digdir.Domain.Dialogporten.Application;
+﻿using System.Globalization;
+using Digdir.Domain.Dialogporten.Application;
 using Digdir.Domain.Dialogporten.Infrastructure;
 using MassTransit;
 using System.Reflection;
@@ -15,7 +16,7 @@ using Digdir.Domain.Dialogporten.Service;
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Warning()
     .Enrich.FromLogContext()
-    .WriteTo.Console()
+    .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture)
     .WriteTo.ApplicationInsights(
         TelemetryConfiguration.CreateDefault(),
         TelemetryConverter.Traces)
@@ -46,7 +47,9 @@ static void BuildAndRun(string[] args)
         .ReadFrom.Configuration(context.Configuration)
         .ReadFrom.Services(services)
         .Enrich.FromLogContext()
-        .WriteTo.Console()
+        .WriteTo.Conditional(
+            condition: x => builder.Environment.IsDevelopment(),
+            configureSink: x => x.Console(formatProvider: CultureInfo.InvariantCulture))
         .WriteTo.ApplicationInsights(
             services.GetRequiredService<TelemetryConfiguration>(),
             TelemetryConverter.Traces));

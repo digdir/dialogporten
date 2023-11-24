@@ -1,10 +1,6 @@
 <Project>
-  
-  <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="7.0.4" PrivateAssets="all" />
-  </ItemGroup>
-  
-  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    
+  <PropertyGroup>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 

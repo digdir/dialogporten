@@ -1,4 +1,5 @@
-﻿using Digdir.Domain.Dialogporten.ChangeDataCapture;
+﻿using System.Globalization;
+using Digdir.Domain.Dialogporten.ChangeDataCapture;
 using Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture;
 using Digdir.Domain.Dialogporten.ChangeDataCapture.Common;
 using Digdir.Domain.Dialogporten.Domain.Outboxes;
@@ -14,7 +15,7 @@ using Serilog;
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Warning()
     .Enrich.FromLogContext()
-    .WriteTo.Console()
+    .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture)
     .WriteTo.ApplicationInsights(
         TelemetryConfiguration.CreateDefault(),
         TelemetryConverter.Traces)
@@ -44,7 +45,7 @@ static void BuildAndRun(string[] args)
         .Enrich.FromLogContext()
         .WriteTo.Conditional(
             condition: x => builder.Environment.IsDevelopment(),
-            configureSink: x => x.Console())
+            configureSink: x => x.Console(formatProvider: CultureInfo.InvariantCulture))
         .WriteTo.ApplicationInsights(
             services.GetRequiredService<TelemetryConfiguration>(),
             TelemetryConverter.Traces));

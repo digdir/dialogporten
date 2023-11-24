@@ -1,4 +1,6 @@
-﻿namespace Digdir.Domain.Dialogporten.Application.Common.Numbers;
+﻿using System.Globalization;
+
+namespace Digdir.Domain.Dialogporten.Application.Common.Numbers;
 
 internal static class OrganizationNumber
 {
@@ -8,6 +10,6 @@ internal static class OrganizationNumber
     {
         return orgNumber.Length == 9
             && Mod11.TryCalculateControlDigit(orgNumber[..8], OrgNumberWeights, out var control)
-            && control == int.Parse(orgNumber[8..9]);
+            && control == int.Parse(orgNumber[8..9], CultureInfo.InvariantCulture);
     }
 }

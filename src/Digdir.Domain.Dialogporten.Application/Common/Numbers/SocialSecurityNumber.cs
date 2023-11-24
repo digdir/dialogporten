@@ -1,4 +1,6 @@
-﻿namespace Digdir.Domain.Dialogporten.Application.Common.Numbers;
+﻿using System.Globalization;
+
+namespace Digdir.Domain.Dialogporten.Application.Common.Numbers;
 
 internal static class SocialSecurityNumber
 {
@@ -10,7 +12,7 @@ internal static class SocialSecurityNumber
         return socialSecurityNumber.Length == 11
             && Mod11.TryCalculateControlDigit(socialSecurityNumber[..9], SocialSecurityNumberWeights1, out var control1)
             && Mod11.TryCalculateControlDigit(socialSecurityNumber[..10], SocialSecurityNumberWeights2, out var control2)
-            && control1 == int.Parse(socialSecurityNumber[9..10])
-            && control2 == int.Parse(socialSecurityNumber[10..11]);
+            && control1 == int.Parse(socialSecurityNumber[9..10], CultureInfo.InvariantCulture)
+            && control2 == int.Parse(socialSecurityNumber[10..11], CultureInfo.InvariantCulture);
     }
 }
