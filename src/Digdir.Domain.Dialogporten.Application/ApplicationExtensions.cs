@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Reflection;
+using Digdir.Domain.Dialogporten.Application.Common.Authorization;
 
 namespace Digdir.Domain.Dialogporten.Application;
 
@@ -30,6 +31,10 @@ public static class ApplicationExtensions
             .AddAutoMapper(thisAssembly)
             .AddMediatR(x => x.RegisterServicesFromAssembly(thisAssembly))
             .AddValidatorsFromAssembly(thisAssembly, ServiceLifetime.Transient, includeInternalTypes: true)
+
+            // Singletons
+            .AddSingleton<IDialogDetailsAuthorizationService, MockDialogDetailsAuthorizationService>()
+            .AddSingleton<IDialogSearchAuthorizationService, MockDialogSearchAuthorizationService>()
 
             // Scoped
             .AddScoped<IDomainContext, DomainContext>()

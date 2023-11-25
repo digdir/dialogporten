@@ -1,6 +1,8 @@
-﻿using AutoMapper;
+﻿using System.Linq.Expressions;
+using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Digdir.Domain.Dialogporten.Application.Common;
+using Digdir.Domain.Dialogporten.Application.Common.Authorization;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.Enumerable;
 using Digdir.Domain.Dialogporten.Application.Common.Pagination;
@@ -60,19 +62,25 @@ internal sealed class ListDialogQueryHandler : IRequestHandler<ListDialogQuery, 
     private readonly IDialogDbContext _db;
     private readonly IMapper _mapper;
     private readonly IClock _clock;
+    private readonly IUserService _userService;
+    private readonly IDialogSearchAuthorizationService _dialogSearchAuthorizationService;
 
-    public ListDialogQueryHandler(IDialogDbContext db, IMapper mapper, IClock clock)
+    public ListDialogQueryHandler(IDialogDbContext db, IMapper mapper, IClock clock, IUserService userService, IDialogSearchAuthorizationService dialogSearchAuthorizationService)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _clock = clock ?? throw new ArgumentNullException(nameof(clock));
+        _userService = userService;
+        _dialogSearchAuthorizationService = dialogSearchAuthorizationService;
     }
 
     public async Task<ListDialogResult> Handle(ListDialogQuery request, CancellationToken cancellationToken)
     {
         var searchExpression = LocalizedSearchExpression(request.Search, request.SearchCultureCode);
+        var authorizedResources = await _dialogSearchAuthorizationService.GetAuthorizedResources(request, _userService, cancellationToken);
 
         return await _db.Dialogs
+            .WhereUserIsAuthorizedFor(authorizedResources)
             .WhereIf(!request.Org.IsNullOrEmpty(), x => request.Org!.Contains(x.Org))
             .WhereIf(!request.ServiceResource.IsNullOrEmpty(), x => request.ServiceResource!.Contains(x.ServiceResource))
             .WhereIf(!request.Party.IsNullOrEmpty(), x => request.Party!.Contains(x.Party))

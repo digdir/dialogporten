@@ -25,7 +25,7 @@ public sealed class CreateDialogActivityEndpoint : Endpoint<CreateDialogElementR
     public override void Configure()
     {
         Post("dialogs/{dialogId}/elements");
-        Policies(AuthorizationPolicy.Serviceprovider);
+        Policies(AuthorizationPolicy.ServiceProvider);
         Group<ServiceOwnerGroup>();
     }
 

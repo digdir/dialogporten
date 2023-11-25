@@ -25,7 +25,7 @@ public sealed class UpdateDialogActivityEndpoint : Endpoint<UpdateDialogElementR
     public override void Configure()
     {
         Put("dialogs/{dialogId}/elements/{elementId}");
-        Policies(AuthorizationPolicy.Serviceprovider);
+        Policies(AuthorizationPolicy.ServiceProvider);
         Group<ServiceOwnerGroup>();
     }
 

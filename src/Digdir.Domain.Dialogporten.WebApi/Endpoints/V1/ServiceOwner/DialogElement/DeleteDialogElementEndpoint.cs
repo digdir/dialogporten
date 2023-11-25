@@ -24,7 +24,7 @@ public sealed class DeleteDialogActivityEndpoint : Endpoint<DeleteDialogElementR
     public override void Configure()
     {
         Delete("dialogs/{dialogId}/elements/{elementId}");
-        Policies(AuthorizationPolicy.Serviceprovider);
+        Policies(AuthorizationPolicy.ServiceProvider);
         Group<ServiceOwnerGroup>();
     }
 

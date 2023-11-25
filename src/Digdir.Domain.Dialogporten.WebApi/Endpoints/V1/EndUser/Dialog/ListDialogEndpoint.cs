@@ -1,4 +1,5 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Queries.List;
+using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
 using FastEndpoints;
 using MediatR;
@@ -17,6 +18,7 @@ public class ListDialogEndpoint : Endpoint<ListDialogQuery>
     public override void Configure()
     {
         Get("dialogs");
+        Policies(AuthorizationPolicy.EndUser);
         Group<EndUserGroup>();
     }
 

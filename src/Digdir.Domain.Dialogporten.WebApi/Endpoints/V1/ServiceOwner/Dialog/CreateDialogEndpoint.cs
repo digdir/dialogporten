@@ -19,7 +19,7 @@ public sealed class CreateDialogEndpoint : Endpoint<CreateDialogCommand>
     public override void Configure()
     {
         Post("dialogs");
-        Policies(AuthorizationPolicy.Serviceprovider);
+        Policies(AuthorizationPolicy.ServiceProvider);
         Group<ServiceOwnerGroup>();
     }
 
