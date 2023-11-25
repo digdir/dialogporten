@@ -18,6 +18,6 @@ internal class MockDialogDetailsAuthorizationService : IDialogDetailsAuthorizati
         // - Send the request to Altinn
         // - Parse the response
         // - Populate the dialogEntity with the authorization flags based on the response
-        return true;
+        return await Task.FromResult(true);
     }
 }

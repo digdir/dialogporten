@@ -11,51 +11,35 @@ internal static class QueryableExtensions
         return predicate ? source.Where(queryPredicate) : source;
     }
 
-    // TODO! This is mostly courtesy of ChatGPT as of now. We might want to look into Linqkit or something similar to make this more readable.
-    // Performance might also not be stellar.
-    public static IQueryable<TSource> WhereUserIsAuthorizedFor<TSource>(this IQueryable<TSource> source, AuthorizedResources authorizedResources)
-        where TSource : DialogEntity
+    public static IQueryable<DialogEntity> WhereUserIsAuthorizedFor(this IQueryable<DialogEntity> source, AuthorizedResources authorizedResources)
     {
-        // Start with an initial predicate that includes the dialog IDs.
-        Expression<Func<TSource, bool>> predicate = x => authorizedResources.DialogIds.Contains(x.Id);
+        var predicate = Expressions.Boolean<DialogEntity>.True;
 
-        // Adding conditions for ResourcesForParties
-        if (authorizedResources.ResourcesForParties.Any())
+        if (authorizedResources.DialogIds.Any())
         {
-            var partyPredicate = PredicateFalse<TSource>();
-            foreach (var kvp in authorizedResources.ResourcesForParties)
-            {
-                var party = kvp.Key;
-                var resources = kvp.Value;
-                partyPredicate = Or(partyPredicate, x => x.Party == party && resources.Contains(x.ServiceResource));
-            }
-            predicate = Or(predicate, partyPredicate);
+            predicate = x => authorizedResources.DialogIds.Contains(x.Id);
         }
 
-        // Adding conditions for PartiesForResources
+        if (authorizedResources.ResourcesForParties.Any())
+        {
+            var partyPredicate = Expressions.Boolean<DialogEntity>.False;
+            foreach (var (party, resources) in authorizedResources.ResourcesForParties)
+            {
+                partyPredicate = Expressions.Or(partyPredicate, x => x.Party == party && resources.Contains(x.ServiceResource));
+            }
+            predicate = Expressions.Or(predicate, partyPredicate);
+        }
+
         if (authorizedResources.PartiesForResources.Any())
         {
-            var resourcePredicate = PredicateFalse<TSource>();
-            foreach (var kvp in authorizedResources.PartiesForResources)
+            var resourcePredicate = Expressions.Boolean<DialogEntity>.False;
+            foreach (var (resource, parties) in authorizedResources.PartiesForResources)
             {
-                var resource = kvp.Key;
-                var parties = kvp.Value;
-                resourcePredicate = Or(resourcePredicate, x => x.ServiceResource == resource && parties.Contains(x.Party));
+                resourcePredicate = Expressions.Or(resourcePredicate, x => x.ServiceResource == resource && parties.Contains(x.Party));
             }
-            predicate = Or(predicate, resourcePredicate);
+            predicate = Expressions.Or(predicate, resourcePredicate);
         }
 
         return source.Where(predicate);
-    }
-
-    private static Expression<Func<T, bool>> PredicateFalse<T>()
-    {
-        return x => false;
-    }
-
-    private static Expression<Func<T, bool>> Or<T>(Expression<Func<T, bool>> expr1, Expression<Func<T, bool>> expr2)
-    {
-        var invokedExpr = Expression.Invoke(expr2, expr1.Parameters);
-        return Expression.Lambda<Func<T, bool>>(Expression.OrElse(expr1.Body, invokedExpr), expr1.Parameters);
     }
 }

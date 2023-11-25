@@ -17,8 +17,8 @@ internal class MockDialogSearchAuthorizationService : IDialogSearchAuthorization
         // TODO
         // - Implement as per https://github.com/digdir/dialogporten/issues/249
         // - Note that either ServiceResource or Party is always supplied in the request.
+        // - Whether or not to populate ResourcesForParties or PartiesForResources depends on which one is supplied in the request.
         // - The user is also always authorized for its own dialogs, which might be an optimization
-
 
         var authorizedResources = new AuthorizedResources
         {
@@ -31,7 +31,7 @@ internal class MockDialogSearchAuthorizationService : IDialogSearchAuthorization
 
         };
 
-        return authorizedResources;
+        return await Task.FromResult(authorizedResources);
 
     }
 }
