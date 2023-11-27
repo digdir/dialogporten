@@ -62,22 +62,20 @@ internal sealed class ListDialogQueryHandler : IRequestHandler<ListDialogQuery, 
     private readonly IDialogDbContext _db;
     private readonly IMapper _mapper;
     private readonly IClock _clock;
-    private readonly IUserService _userService;
     private readonly IDialogSearchAuthorizationService _dialogSearchAuthorizationService;
 
-    public ListDialogQueryHandler(IDialogDbContext db, IMapper mapper, IClock clock, IUserService userService, IDialogSearchAuthorizationService dialogSearchAuthorizationService)
+    public ListDialogQueryHandler(IDialogDbContext db, IMapper mapper, IClock clock, IDialogSearchAuthorizationService dialogSearchAuthorizationService)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _clock = clock ?? throw new ArgumentNullException(nameof(clock));
-        _userService = userService;
         _dialogSearchAuthorizationService = dialogSearchAuthorizationService;
     }
 
     public async Task<ListDialogResult> Handle(ListDialogQuery request, CancellationToken cancellationToken)
     {
         var searchExpression = LocalizedSearchExpression(request.Search, request.SearchCultureCode);
-        var authorizedResources = await _dialogSearchAuthorizationService.GetAuthorizedResources(request, _userService, cancellationToken);
+        var authorizedResources = await _dialogSearchAuthorizationService.GetAuthorizedResourcesForSearch(request, cancellationToken);
 
         return await _db.Dialogs
             .WhereUserIsAuthorizedFor(authorizedResources)

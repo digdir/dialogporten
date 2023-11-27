@@ -7,6 +7,7 @@ namespace Digdir.Domain.Dialogporten.Application.Common;
 
 internal interface IUserService
 {
+    IUser GetCurrentUser();
     Task<bool> CurrentUserIsOwner(string serviceResource, CancellationToken cancellationToken);
     Task<IReadOnlyCollection<string>> GetCurrentUserResourceIds(CancellationToken cancellationToken);
 }
@@ -22,6 +23,11 @@ internal sealed class UserService : IUserService
     {
         _user = user ?? throw new ArgumentNullException(nameof(user));
         _resourceRegistry = resourceRegistry ?? throw new ArgumentNullException(nameof(resourceRegistry));
+    }
+
+    public IUser GetCurrentUser()
+    {
+        return _user;
     }
 
     public async Task<bool> CurrentUserIsOwner(string serviceResource, CancellationToken cancellationToken)
@@ -50,7 +56,12 @@ internal sealed class LocalDevelopmentUserServiceDecorator : IUserService
         _userService = userService ?? throw new ArgumentNullException(nameof(userService));
     }
 
-    public Task<bool> CurrentUserIsOwner(string serviceResource, CancellationToken cancellationToken) => 
+    public IUser GetCurrentUser()
+    {
+        return _userService.GetCurrentUser();
+    }
+
+    public Task<bool> CurrentUserIsOwner(string serviceResource, CancellationToken cancellationToken) =>
         Task.FromResult(true);
 
     public Task<IReadOnlyCollection<string>> GetCurrentUserResourceIds(CancellationToken cancellationToken) => 

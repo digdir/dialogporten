@@ -33,12 +33,12 @@ public static class ApplicationExtensions
             .AddValidatorsFromAssembly(thisAssembly, ServiceLifetime.Transient, includeInternalTypes: true)
 
             // Singletons
-            .AddSingleton<IDialogDetailsAuthorizationService, MockDialogDetailsAuthorizationService>()
-            .AddSingleton<IDialogSearchAuthorizationService, MockDialogSearchAuthorizationService>()
 
             // Scoped
             .AddScoped<IDomainContext, DomainContext>()
             .AddScoped<ITransactionTime, TransactionTime>()
+            .AddScoped<IDialogDetailsAuthorizationService, DialogDetailsAuthorizationService>()
+            .AddScoped<IDialogSearchAuthorizationService, DialogSearchAuthorizationService>()
 
             // Transient
             .AddTransient<IUserService, UserService>()
@@ -54,6 +54,7 @@ public static class ApplicationExtensions
                 predicate: 
                 localDeveloperSettings.UseLocalDevelopmentUser ||
                 localDeveloperSettings.UseLocalDevelopmentResourceRegister);
+
         }
 
         return services;

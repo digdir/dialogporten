@@ -1,5 +1,5 @@
 ﻿using System.Linq.Expressions;
-using Digdir.Domain.Dialogporten.Application.Common.Authorization;
+using Digdir.Domain.Dialogporten.Domain.Authorization;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 
 namespace Digdir.Domain.Dialogporten.Application.Common.Extensions;
@@ -11,7 +11,7 @@ internal static class QueryableExtensions
         return predicate ? source.Where(queryPredicate) : source;
     }
 
-    public static IQueryable<DialogEntity> WhereUserIsAuthorizedFor(this IQueryable<DialogEntity> source, AuthorizedResources authorizedResources)
+    public static IQueryable<DialogEntity> WhereUserIsAuthorizedFor(this IQueryable<DialogEntity> source, DialogSearchAuthorizationResponse authorizedResources)
     {
         var predicate = Expressions.Boolean<DialogEntity>.True;
 

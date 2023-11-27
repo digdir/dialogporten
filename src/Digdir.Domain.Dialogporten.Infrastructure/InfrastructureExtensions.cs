@@ -21,6 +21,8 @@ using System.Reflection;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.OptionExtensions;
 using Digdir.Domain.Dialogporten.Application;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
+using Digdir.Domain.Dialogporten.Infrastructure.Altinn.Authorization;
+using Digdir.Domain.Dialogporten.Infrastructure.Altinn.Events;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure;
 
@@ -60,8 +62,6 @@ public static class InfrastructureExtensions
             })
             .AddHostedService<DevelopmentMigratorHostedService>()
 
-            // Singleton
-
             // Scoped
             .AddScoped<IDialogDbContext>(x => x.GetRequiredService<DialogDbContext>())
             .AddScoped<IUnitOfWork, UnitOfWork>()
@@ -86,12 +86,17 @@ public static class InfrastructureExtensions
                 client.BaseAddress = services.GetRequiredService<IOptions<InfrastructureSettings>>().Value.Altinn.BaseUri)
             .AddPolicyHandlerFromRegistry(PollyPolicy.DefaultHttpRetryPolicy);
 
+        services.AddHttpClient<IAltinnAuthorization, AltinnAuthorizationClient>((services, client) =>
+                client.BaseAddress = services.GetRequiredService<IOptions<InfrastructureSettings>>().Value.Altinn.BaseUri)
+            .AddPolicyHandlerFromRegistry(PollyPolicy.DefaultHttpRetryPolicy);
+
         if (environment.IsDevelopment())
         {
             var localDeveloperSettings = configuration.GetLocalDevelopmentSettings();
             services
                 .ReplaceTransient<ICloudEventBus, ConsoleLogEventBus>(predicate: localDeveloperSettings.UseLocalDevelopmentCloudEventBus)
-                .ReplaceTransient<IResourceRegistry, LocalDevelopmentResourceRegistry>(predicate: localDeveloperSettings.UseLocalDevelopmentResourceRegister);
+                .ReplaceTransient<IResourceRegistry, LocalDevelopmentResourceRegistry>(predicate: localDeveloperSettings.UseLocalDevelopmentResourceRegister)
+                .ReplaceTransient<IAltinnAuthorization, LocalDevelopmentAltinnAuthorization>(predicate: localDeveloperSettings.UseLocalDevelopmentAltinnAuthorization);
         }
 
         return services;

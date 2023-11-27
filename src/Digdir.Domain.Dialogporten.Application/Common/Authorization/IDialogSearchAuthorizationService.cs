@@ -1,44 +1,35 @@
-﻿using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
+﻿using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Queries.List;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
+using Digdir.Domain.Dialogporten.Domain.Authorization;
 
 namespace Digdir.Domain.Dialogporten.Application.Common.Authorization;
 
 internal interface IDialogSearchAuthorizationService
 {
-    public Task<AuthorizedResources> GetAuthorizedResources(ListDialogQuery request, IUserService userService, CancellationToken cancellationToken = default);
+    public Task<DialogSearchAuthorizationResponse> GetAuthorizedResourcesForSearch(ListDialogQuery request, CancellationToken cancellationToken = default);
 }
 
-internal class MockDialogSearchAuthorizationService : IDialogSearchAuthorizationService
+internal sealed class DialogSearchAuthorizationService : IDialogSearchAuthorizationService
 {
+    private readonly IUserService _userService;
+    private readonly IAltinnAuthorization _altinnAuthorization;
 
-    public async Task<AuthorizedResources> GetAuthorizedResources(ListDialogQuery request, IUserService userService, CancellationToken cancellationToken = default)
+    public DialogSearchAuthorizationService(IUserService userService, IAltinnAuthorization altinnAuthorization)
     {
-        // TODO
-        // - Implement as per https://github.com/digdir/dialogporten/issues/249
-        // - Note that either ServiceResource or Party is always supplied in the request.
-        // - Whether or not to populate ResourcesForParties or PartiesForResources depends on which one is supplied in the request.
-        // - The user is also always authorized for its own dialogs, which might be an optimization
+        _userService = userService;
+        _altinnAuthorization = altinnAuthorization;
+    }
 
-        var authorizedResources = new AuthorizedResources
+    public async Task<DialogSearchAuthorizationResponse> GetAuthorizedResourcesForSearch(ListDialogQuery request, CancellationToken cancellationToken = default)
+    {
+        var authRequest = new DialogSearchAuthorizationRequest
         {
-            ResourcesForParties = new Dictionary<string, List<string>>
-            {
-                ["/org/991825827"] = new List<string> { "urn:altinn:resource:super-simple-service" },
-                ["/person/07874299582"] = new List<string> { "urn:altinn:resource:super-simple-service2", "urn:altinn:resource:ttd-altinn-events-automated-tests" },
-            },
-            DialogIds = new List<Guid>() { Guid.Parse("0ab48b01-74d4-3770-b91d-79f99fb16a5a"), Guid.Parse("0ab48b01-bbca-8873-a3fe-518ce47532ce") }
-
+            ClaimsPrincipal = _userService.GetCurrentUser().GetPrincipal(),
+            ConstraintParties = request.Party,
+            ConstraintServiceResources = request.ServiceResource
         };
 
-        return await Task.FromResult(authorizedResources);
-
+        return await _altinnAuthorization.PerformDialogSearchAuthorization(authRequest, cancellationToken);
     }
 }
 
-internal sealed class AuthorizedResources
-{
-    public Dictionary<string, List<string>> ResourcesForParties { get; set; } = new();
-    public Dictionary<string, List<string>> PartiesForResources { get; set; } = new();
-    public List<Guid> DialogIds { get; set; } = new();
-}

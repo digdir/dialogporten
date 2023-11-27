@@ -1,23 +1,81 @@
-﻿using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
+﻿using Digdir.Domain.Dialogporten.Application.Externals;
+using Digdir.Domain.Dialogporten.Domain.Authorization;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 
 namespace Digdir.Domain.Dialogporten.Application.Common.Authorization;
 
 internal interface IDialogDetailsAuthorizationService
 {
-    public Task<bool> PopulateAuthorizationFlags(DialogEntity dialogEntity, IUser user, CancellationToken cancellationToken = default);
+    public Task<DialogDetailsAuthorizationResponse> GetDialogDetailsAuthorization(DialogEntity dialogEntity, CancellationToken cancellationToken = default);
 }
 
-internal class MockDialogDetailsAuthorizationService : IDialogDetailsAuthorizationService
+internal sealed class DialogDetailsAuthorizationService : IDialogDetailsAuthorizationService
 {
-    public async Task<bool> PopulateAuthorizationFlags(DialogEntity dialogEntity, IUser user, CancellationToken cancellationToken = default)
+    private readonly IAltinnAuthorization _altinnAuthorization;
+    private readonly IUserService _userService;
+
+    private const string ElementReadAction = "elementread";
+
+    public DialogDetailsAuthorizationService(
+        IAltinnAuthorization altinnAuthorization,
+        IUserService userService)
     {
-        // TODO!
-        // - Get all actions and elements for the dialog, with authorization resources (if supplied)
-        // - Build a multi XACML request as per https://github.com/digdir/dialogporten/issues/43
-        // - Send the request to Altinn
-        // - Parse the response
-        // - Populate the dialogEntity with the authorization flags based on the response
-        return await Task.FromResult(true);
+        _altinnAuthorization = altinnAuthorization ?? throw new ArgumentNullException(nameof(altinnAuthorization));
+        _userService = userService ?? throw new ArgumentNullException(nameof(userService));
+    }
+
+    public async Task<DialogDetailsAuthorizationResponse> GetDialogDetailsAuthorization(DialogEntity dialogEntity, CancellationToken cancellationToken = default)
+    {
+
+        var dialogDetailsAuthorizationRequest = new DialogDetailsAuthorizationRequest
+        {
+            ClaimsPrincipal = _userService.GetCurrentUser().GetPrincipal(),
+            ServiceResource = dialogEntity.ServiceResource,
+            Party = dialogEntity.Party
+        };
+
+        PopulateRequestedActions(dialogEntity, dialogDetailsAuthorizationRequest);
+        PopulateRequestsDialogElements(dialogEntity, dialogDetailsAuthorizationRequest);
+
+        return await _altinnAuthorization.PerformDialogDetailsAuthorization(dialogDetailsAuthorizationRequest, cancellationToken);
+    }
+
+    private static void PopulateRequestsDialogElements(DialogEntity dialogEntity,
+        DialogDetailsAuthorizationRequest dialogDetailsAuthorizationRequest)
+    {
+        foreach (var dialogElement in dialogEntity.Elements.Where(dialogElement =>
+                     dialogElement.AuthorizationAttribute != null))
+        {
+            dialogDetailsAuthorizationRequest.AuthorizationAttributes.Add(dialogElement.AuthorizationAttribute!,
+                ElementReadAction);
+        }
+    }
+
+    private static void PopulateRequestedActions(DialogEntity dialogEntity,
+        DialogDetailsAuthorizationRequest dialogDetailsAuthorizationRequest)
+    {
+        foreach (var action in dialogEntity.ApiActions)
+        {
+            if (action.AuthorizationAttribute != null)
+            {
+                dialogDetailsAuthorizationRequest.AuthorizationAttributes.Add(action.AuthorizationAttribute, action.Action);
+            }
+            else
+            {
+                dialogDetailsAuthorizationRequest.Actions.Add(action.Action);
+            }
+        }
+
+        foreach (var action in dialogEntity.GuiActions)
+        {
+            if (action.AuthorizationAttribute != null)
+            {
+                dialogDetailsAuthorizationRequest.AuthorizationAttributes.Add(action.AuthorizationAttribute, action.Action);
+            }
+            else
+            {
+                dialogDetailsAuthorizationRequest.Actions.Add(action.Action);
+            }
+        }
     }
 }
