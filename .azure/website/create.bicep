@@ -1,7 +1,7 @@
 param location string 
 param namePrefix string
 
-resource servicePlan 'Microsoft.Web/serverfarms@2022-03-01' = {
+resource servicePlan 'Microsoft.Web/serverfarms@2022-09-01' = {
 	name: '${namePrefix}-serviceplan'
 	location: location
 	kind: 'app'
