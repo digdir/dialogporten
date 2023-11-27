@@ -28,7 +28,7 @@ internal static class Extensions
 
     private static string RemoveQuery(string inputUrl)
     {
-        int index = inputUrl.IndexOf("q/");
+        var index = inputUrl.IndexOf("q/", StringComparison.Ordinal);
 
         if (index >= 0)
         {

@@ -1,13 +1,14 @@
 ﻿using Digdir.Library.Entity.Abstractions.Features.Lookup;
+// ReSharper disable InconsistentNaming
 
 namespace Digdir.Domain.Dialogporten.Domain.Http;
 
-public class HttpVerb : AbstractLookupEntity<HttpVerb, HttpVerb.Enum>
+public class HttpVerb : AbstractLookupEntity<HttpVerb, HttpVerb.Values>
 {
-    public HttpVerb(Enum id) : base(id) { }
-    public override HttpVerb MapValue(Enum id) => new(id);
+    public HttpVerb(Values id) : base(id) { }
+    public override HttpVerb MapValue(Values id) => new(id);
 
-    public enum Enum
+    public enum Values
     {
         GET = 1,
         POST = 2,

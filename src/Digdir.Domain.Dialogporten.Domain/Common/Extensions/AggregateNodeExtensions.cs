@@ -1,4 +1,5 @@
-﻿using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
+﻿using System.Collections.ObjectModel;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements;
@@ -13,7 +14,7 @@ public static class AggregateNodeExtensions
     public static IReadOnlyCollection<string> ToPaths(this IEnumerable<AggregateNode> aggregateNodes) =>
         ToPaths(aggregateNodes, string.Empty);
 
-    private static IReadOnlyCollection<string> ToPaths(this IEnumerable<AggregateNode> aggregateNodes, string parentPath)
+    private static ReadOnlyCollection<string> ToPaths(this IEnumerable<AggregateNode> aggregateNodes, string parentPath)
     {
         var paths = new List<string>();
 
@@ -42,7 +43,7 @@ public static class AggregateNodeExtensions
             paths.AddRange(currentPaths);
         }
 
-        return paths;
+        return paths.AsReadOnly();
     }
 
     private static IEnumerable<string> ToLocalizationPathStrings(this LocalizationSet localizationSet, string parentPath) =>

@@ -1,11 +1,11 @@
-﻿using Digdir.Domain.Dialogporten.Application.Common.Pagination.Continue;
+﻿using Digdir.Domain.Dialogporten.Application.Common.Pagination.Continuation;
 using Digdir.Domain.Dialogporten.Application.Common.Pagination.Order;
 using Digdir.Domain.Dialogporten.Application.Common.Pagination.OrderOption;
 using FluentValidation;
 
 namespace Digdir.Domain.Dialogporten.Application.Common.Pagination;
 
-public class PaginationParameter<TOrderDefinition, TTarget> 
+public class PaginationParameter<TOrderDefinition, TTarget>
     where TOrderDefinition : IOrderDefinition<TTarget>
 {
     private readonly int _limit = PaginationConstants.DefaultLimit;
@@ -30,7 +30,7 @@ internal sealed class PaginationParameterValidator<TOrderDefinition, TTarget> : 
 {
     public PaginationParameterValidator()
     {
-        RuleFor(x => x.Limit).InclusiveBetween(PaginationConstants.MinLimit,PaginationConstants.MaxLimit);
+        RuleFor(x => x.Limit).InclusiveBetween(PaginationConstants.MinLimit, PaginationConstants.MaxLimit);
         RuleFor(x => x.ContinuationToken)
             .Must((paginationParameter, continuationTokenSet, ctx) =>
             {

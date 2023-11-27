@@ -17,7 +17,7 @@ public class DialogGuiAction : IEntity
     public bool IsDeleteAction { get; set; }
 
     // === Dependent relationships ===
-    public DialogGuiActionPriority.Enum PriorityId { get; set; }
+    public DialogGuiActionPriority.Values PriorityId { get; set; }
     public DialogGuiActionPriority Priority { get; set; } = null!;
 
     public Guid DialogId { get; set; }

@@ -24,7 +24,7 @@ internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDia
             .NotNull()
             .IsValidUri()
             .MaximumLength(Constants.DefaultMaxUriLength)
-            .Must(x => x?.StartsWith(Constants.ServiceResourcePrefix) ?? false)
+            .Must(x => x?.StartsWith(Constants.ServiceResourcePrefix, StringComparison.InvariantCulture) ?? false)
                 .WithMessage($"'{{PropertyName}}' must start with '{Constants.ServiceResourcePrefix}'.");
 
         RuleFor(x => x.Party)
@@ -35,7 +35,7 @@ internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDia
                 _ => false
             }).WithMessage(
                 "'{PropertyName}' must be on format '/org/[orgNumber]' or " +
-                "'/person/[socialSecurityNumber]' with valid numbers respectivly.")
+                "'/person/[socialSecurityNumber]' with valid numbers respectively.")
             .NotEmpty()
             .MaximumLength(Constants.DefaultMaxStringLength);
 
@@ -77,13 +77,13 @@ internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDia
 
         RuleFor(x => x.GuiActions)
             .Must(x => x
-                .Where(x => x.Priority == DialogGuiActionPriority.Enum.Primary)
+                .Where(x => x.Priority == DialogGuiActionPriority.Values.Primary)
                 .Count() <= 1).WithMessage("Only one primary GUI action is allowed.")
             .Must(x => x
-                .Where(x => x.Priority == DialogGuiActionPriority.Enum.Secondary)
+                .Where(x => x.Priority == DialogGuiActionPriority.Values.Secondary)
                 .Count() <= 1).WithMessage("Only one secondary GUI action is allowed.")
             .Must(x => x
-                .Where(x => x.Priority == DialogGuiActionPriority.Enum.Tertiary)
+                .Where(x => x.Priority == DialogGuiActionPriority.Values.Tertiary)
                 .Count() <= 5).WithMessage("Only five tertiary GUI actions are allowed.")
             .ForEach(x => x.SetValidator(guiActionValidator));
 

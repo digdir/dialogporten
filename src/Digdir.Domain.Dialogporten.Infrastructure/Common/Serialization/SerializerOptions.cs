@@ -52,6 +52,6 @@ internal static class SerializerOptions
 internal class LowerCaseNamingPolicy : JsonNamingPolicy
 {
     public override string ConvertName(string name) =>
-        name.ToLower();
+        name.ToLowerInvariant();
 }
 

@@ -11,16 +11,16 @@ public class Localization : IJoinEntity
         .Select(x => x.Name)
         .ToHashSet();
 
-    private string cultureCode = null!;
+    private string _cultureCode = null!;
 
     public DateTimeOffset CreatedAt { get; set; }
     public DateTimeOffset UpdatedAt { get; set; }
 
     public string Value { get; set; } = null!;
-    public string CultureCode 
-    { 
-        get => cultureCode;
-        set => cultureCode = NormalizeCultureCode(value)!;
+    public string CultureCode
+    {
+        get => _cultureCode;
+        set => _cultureCode = NormalizeCultureCode(value)!;
     }
 
     // === Dependent relationships ===
@@ -28,9 +28,9 @@ public class Localization : IJoinEntity
     public LocalizationSet LocalizationSet { get; set; } = null!;
 
     public static string? NormalizeCultureCode(string? cultureCode) =>
-        cultureCode?.Trim().Replace('_', '-').ToLower();
+        cultureCode?.Trim().Replace('_', '-').ToLowerInvariant();
 
     public static bool IsValidCultureCode(string? cultureCode) =>
-        !string.IsNullOrWhiteSpace(cultureCode) && 
+        !string.IsNullOrWhiteSpace(cultureCode) &&
         ValidCultureNames.Contains(cultureCode, StringComparer.InvariantCultureIgnoreCase);
 }

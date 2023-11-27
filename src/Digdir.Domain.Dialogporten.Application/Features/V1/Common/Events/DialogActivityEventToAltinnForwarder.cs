@@ -10,7 +10,7 @@ namespace Digdir.Domain.Dialogporten.Application.Features.V1.Common.Events;
 internal sealed class DialogActivityEventToAltinnForwarder : DomainEventToAltinnForwarderBase,
     INotificationHandler<DialogActivityCreatedDomainEvent>
 {
-    public DialogActivityEventToAltinnForwarder(ICloudEventBus cloudEventBus, IDialogDbContext db, IOptions<ApplicationSettings> settings) 
+    public DialogActivityEventToAltinnForwarder(ICloudEventBus cloudEventBus, IDialogDbContext db, IOptions<ApplicationSettings> settings)
         : base(cloudEventBus, db, settings) { }
 
     public async Task Handle(DialogActivityCreatedDomainEvent domainEvent, CancellationToken cancellationToken)
@@ -20,12 +20,8 @@ internal sealed class DialogActivityEventToAltinnForwarder : DomainEventToAltinn
             .Include(e => e.DialogElement)
             .Include(e => e.RelatedActivity)
             .AsNoTracking()
-            .FirstOrDefaultAsync(x => x.Id == domainEvent.DialogActivityId, cancellationToken);
-
-        if (dialogActivity is null)
-        {
-            throw new ApplicationException($"DialogActivity with id {domainEvent.DialogActivityId} not found");
-        }
+            .FirstOrDefaultAsync(x => x.Id == domainEvent.DialogActivityId, cancellationToken)
+            ?? throw new KeyNotFoundException($"DialogActivity with id {domainEvent.DialogActivityId} not found");
 
         var cloudEvent = new CloudEvent
         {
@@ -39,9 +35,9 @@ internal sealed class DialogActivityEventToAltinnForwarder : DomainEventToAltinn
             Data = GetCloudEventData(dialogActivity)
         };
 
-        await CloudEventBus.Publish(cloudEvent, cancellationToken); 
+        await CloudEventBus.Publish(cloudEvent, cancellationToken);
     }
-    
+
     private static Dictionary<string, object> GetCloudEventData(DialogActivity dialogActivity)
     {
         var data = new Dictionary<string, object>

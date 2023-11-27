@@ -12,7 +12,7 @@ public sealed class GetDialogElementDto
     public Guid? RelatedDialogElementId { get; set; }
 
     public DateTimeOffset? DeletedAt { get; set; }
-    
+
     public List<LocalizationDto> DisplayName { get; set; } = new();
     public List<GetDialogElementUrlDto> Urls { get; set; } = new();
 }
@@ -23,5 +23,5 @@ public sealed class GetDialogElementUrlDto
     public Uri Url { get; set; } = null!;
     public string? MimeType { get; set; }
 
-    public DialogElementUrlConsumerType.Enum ConsumerType { get; set; }
+    public DialogElementUrlConsumerType.Values ConsumerType { get; set; }
 }

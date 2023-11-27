@@ -9,6 +9,6 @@ internal sealed class ServiceUser : IUser
     {
         throw new NotSupportedException(
             "At the time of this writing, Digdir.Domain.Dialogporten.Service should not " +
-            "be using application commands or queries requiering the need for a user.");
+            "be using application commands or queries requiring the need for a user.");
     }
 }

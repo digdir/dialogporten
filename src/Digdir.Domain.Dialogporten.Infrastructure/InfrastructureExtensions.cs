@@ -76,13 +76,13 @@ public static class InfrastructureExtensions
         // HttpClient 
         services.
             AddMaskinportenHttpClient<ICloudEventBus, AltinnEventsClient, SettingsJwkClientDefinition>(
-                infrastructureConfigurationSection, 
+                infrastructureConfigurationSection,
                 x => x.ClientSettings.ExhangeToAltinnToken = true)
             .ConfigureHttpClient((services, client) =>
             {
                 client.BaseAddress = services.GetRequiredService<IOptions<InfrastructureSettings>>().Value.Altinn.BaseUri;
             });
-        services.AddHttpClient<IResourceRegistry, ResourceRegistryClient>((services, client) => 
+        services.AddHttpClient<IResourceRegistry, ResourceRegistryClient>((services, client) =>
                 client.BaseAddress = services.GetRequiredService<IOptions<InfrastructureSettings>>().Value.Altinn.BaseUri)
             .AddPolicyHandlerFromRegistry(PollyPolicy.DefaultHttpRetryPolicy);
 

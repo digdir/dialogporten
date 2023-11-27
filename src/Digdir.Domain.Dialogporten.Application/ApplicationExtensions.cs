@@ -32,8 +32,6 @@ public static class ApplicationExtensions
             .AddMediatR(x => x.RegisterServicesFromAssembly(thisAssembly))
             .AddValidatorsFromAssembly(thisAssembly, ServiceLifetime.Transient, includeInternalTypes: true)
 
-            // Singletons
-
             // Scoped
             .AddScoped<IDomainContext, DomainContext>()
             .AddScoped<ITransactionTime, TransactionTime>()
@@ -47,15 +45,13 @@ public static class ApplicationExtensions
             .AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>))
             .AddTransient(typeof(IPipelineBehavior<,>), typeof(DomainContextBehaviour<,>));
 
-        if (environment.IsDevelopment())
-        {
-            var localDeveloperSettings = configuration.GetLocalDevelopmentSettings();
-            services.Decorate<IUserService, LocalDevelopmentUserServiceDecorator>(
-                predicate: 
-                localDeveloperSettings.UseLocalDevelopmentUser ||
-                localDeveloperSettings.UseLocalDevelopmentResourceRegister);
+        if (!environment.IsDevelopment()) return services;
 
-        }
+        var localDeveloperSettings = configuration.GetLocalDevelopmentSettings();
+        services.Decorate<IUserService, LocalDevelopmentUserServiceDecorator>(
+            predicate:
+            localDeveloperSettings.UseLocalDevelopmentUser ||
+            localDeveloperSettings.UseLocalDevelopmentResourceRegister);
 
         return services;
     }

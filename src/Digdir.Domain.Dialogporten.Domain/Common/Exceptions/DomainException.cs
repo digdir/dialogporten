@@ -4,7 +4,7 @@ public class DomainException : ApplicationException
 {
     private readonly IEnumerable<DomainFailure> _errors;
 
-	public IReadOnlyCollection<DomainFailure> Errors => _errors.ToList().AsReadOnly();
+    public IReadOnlyCollection<DomainFailure> Errors => _errors.ToList().AsReadOnly();
 
     public DomainException(string message) : this(message, Enumerable.Empty<DomainFailure>())
     {

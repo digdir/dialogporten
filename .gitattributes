@@ -1,9 +1,7 @@
 ###############################################################################
 # Set default behavior to automatically normalize line endings.
 ###############################################################################
-* text=auto
-*.sh text eol=lf
-**/all-tests.js eol=lf
+* text eol=lf
 
 ###############################################################################
 # Set default behavior for command prompt diff.

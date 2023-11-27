@@ -29,7 +29,7 @@ internal sealed class DeleteOutboxMessagesCommandHandler : IRequestHandler<Delet
 
     public async Task<DeleteOutboxMessagesResult> Handle(DeleteOutboxMessagesCommand request, CancellationToken cancellationToken)
     {
-        var outboxMessage = await _db.OutboxMessages.FindAsync(request.EventId, cancellationToken);
+        var outboxMessage = await _db.OutboxMessages.FindAsync(new object?[] { request.EventId }, cancellationToken: cancellationToken);
 
         if (outboxMessage is null)
         {

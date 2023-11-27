@@ -50,19 +50,19 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
         var dialog = _mapper.Map<DialogEntity>(request);
 
         var existingDialogIds = await _db.GetExistingIds(new[] { dialog }, cancellationToken);
-        if (existingDialogIds.Any())
+        if (existingDialogIds.Count != 0)
         {
             _domainContext.AddError(DomainFailure.EntityExists<DialogEntity>(existingDialogIds));
         }
 
         var existingActivityIds = await _db.GetExistingIds(dialog.Activities, cancellationToken);
-        if (existingActivityIds.Any())
+        if (existingActivityIds.Count != 0)
         {
             _domainContext.AddError(DomainFailure.EntityExists<DialogActivity>(existingActivityIds));
         }
 
         var existingElementIds = await _db.GetExistingIds(dialog.Elements, cancellationToken);
-        if (existingElementIds.Any())
+        if (existingElementIds.Count != 0)
         {
             _domainContext.AddError(DomainFailure.EntityExists<DialogElement>(existingElementIds));
         }

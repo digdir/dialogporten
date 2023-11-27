@@ -23,11 +23,11 @@ public sealed class GetDialogDto
     public DateTimeOffset UpdatedAt { get; set; }
     public DateTimeOffset? ReadAt { get; set; }
 
-    public DialogStatus.Enum Status { get; set; }
+    public DialogStatus.Values Status { get; set; }
 
-    public List<LocalizationDto>? Body { get; set; } 
+    public List<LocalizationDto>? Body { get; set; }
     public List<LocalizationDto> Title { get; set; } = new();
-    public List<LocalizationDto>? SenderName { get; set; } 
+    public List<LocalizationDto>? SenderName { get; set; }
     public List<GetDialogSearchTagDto>? SearchTags { get; set; }
 
     public List<GetDialogDialogElementDto> Elements { get; set; } = new();
@@ -47,7 +47,7 @@ public sealed class GetDialogDialogActivityDto
     public DateTimeOffset? CreatedAt { get; set; }
     public Uri? ExtendedType { get; set; }
 
-    public DialogActivityType.Enum Type { get; set; }
+    public DialogActivityType.Values Type { get; set; }
 
     public Guid? RelatedActivityId { get; set; }
     public Guid? DialogElementId { get; set; }
@@ -72,7 +72,7 @@ public sealed class GetDialogDialogApiActionEndpointDto
     public Guid Id { get; set; }
     public string? Version { get; set; }
     public Uri Url { get; set; } = null!;
-    public HttpVerb.Enum HttpMethod { get; set; }
+    public HttpVerb.Values HttpMethod { get; set; }
     public Uri? DocumentationUrl { get; set; }
     public Uri? RequestSchema { get; set; }
     public Uri? ResponseSchema { get; set; }
@@ -89,7 +89,7 @@ public sealed class GetDialogDialogGuiActionDto
     public bool IsBackChannel { get; set; }
     public bool IsDeleteAction { get; set; }
 
-    public DialogGuiActionPriority.Enum Priority { get; set; }
+    public DialogGuiActionPriority.Values Priority { get; set; }
 
     public List<LocalizationDto> Title { get; set; } = new();
 }
@@ -112,5 +112,5 @@ public sealed class GetDialogDialogElementUrlDto
     public Uri Url { get; set; } = null!;
     public string? MimeType { get; set; }
 
-    public DialogElementUrlConsumerType.Enum ConsumerType { get; set; }
+    public DialogElementUrlConsumerType.Values ConsumerType { get; set; }
 }

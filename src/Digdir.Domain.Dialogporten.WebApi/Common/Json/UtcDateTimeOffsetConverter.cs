@@ -47,18 +47,18 @@ internal sealed class UtcDateTimeOffsetConverter : JsonConverter<DateTimeOffset>
             return true;
         }
 
-        for (int i = 0; i < offsetSpan.Length; i++)
+        for (var i = 0; i < offsetSpan.Length; i++)
         {
             var value = offsetSpan[i];
             var isValid = i switch
             {
-                0 => IsPlussOrMinus(value),
+                0 => IsPlusOrMinus(value),
                 1 => IsNumber(value),
                 2 => IsNumber(value),
                 3 => IsSemicolon(value),
                 4 => IsNumber(value),
                 5 => IsNumber(value),
-                _ => throw new IndexOutOfRangeException()
+                _ => throw new ArgumentOutOfRangeException()
             };
 
             if (!isValid)
@@ -70,8 +70,8 @@ internal sealed class UtcDateTimeOffsetConverter : JsonConverter<DateTimeOffset>
         return true;
     }
 
-    private static bool IsNumber(byte value) => 48 <= value && value <= 57;
+    private static bool IsNumber(byte value) => value is >= 48 and <= 57;
     private static bool IsZ(byte value) => value == 90;
-    private static bool IsPlussOrMinus(byte value) => value == 43 || value == 45;
+    private static bool IsPlusOrMinus(byte value) => value is 43 or 45;
     private static bool IsSemicolon(byte value) => value == 58;
 }

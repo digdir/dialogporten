@@ -29,9 +29,9 @@ public sealed class UpdateDialogActivityEndpoint : Endpoint<UpdateDialogElementR
         Group<ServiceOwnerGroup>();
     }
 
-    public override async Task HandleAsync(UpdateDialogElementRequest request, CancellationToken ct)
+    public override async Task HandleAsync(UpdateDialogElementRequest req, CancellationToken ct)
     {
-        var dialogQueryResult = await _sender.Send(new GetDialogQuery {DialogId = request.DialogId}, ct);
+        var dialogQueryResult = await _sender.Send(new GetDialogQuery { DialogId = req.DialogId }, ct);
         if (dialogQueryResult.TryPickT1(out var entityNotFound, out var dialog))
         {
             await this.NotFoundAsync(entityNotFound, cancellationToken: ct);
@@ -40,22 +40,22 @@ public sealed class UpdateDialogActivityEndpoint : Endpoint<UpdateDialogElementR
 
         var updateDialogDto = _mapper.Map<UpdateDialogDto>(dialog);
 
-        var dialogElement = updateDialogDto.Elements.FirstOrDefault(x => x.Id == request.ElementId);
+        var dialogElement = updateDialogDto.Elements.FirstOrDefault(x => x.Id == req.ElementId);
         if (dialogElement is null)
         {
             await this.NotFoundAsync(
-                new EntityNotFound<Domain.Dialogs.Entities.DialogElements.DialogElement>(request.ElementId),
+                new EntityNotFound<Domain.Dialogs.Entities.DialogElements.DialogElement>(req.ElementId),
                 cancellationToken: ct);
             return;
         }
 
         updateDialogDto.Elements.Remove(dialogElement);
 
-        var updateDialogElementDto = MapToUpdateDto(request);
+        var updateDialogElementDto = MapToUpdateDto(req);
         updateDialogDto.Elements.Add(updateDialogElementDto);
 
         var updateDialogCommand = new UpdateDialogCommand
-            {Id = request.DialogId, ETag = request.ETag, Dto = updateDialogDto};
+        { Id = req.DialogId, ETag = req.ETag, Dto = updateDialogDto };
 
         var result = await _sender.Send(updateDialogCommand, ct);
         await result.Match(
