@@ -36,7 +36,7 @@ internal class ConsoleLogEventBus : ICloudEventBus
     {
         _logger = logger;
     }
-    
+
     public Task Publish(CloudEvent cloudEvent, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Event published! Time: {CloudEventTime:O}, Type: {CloudEventType}", cloudEvent.Time, cloudEvent.Type);

@@ -40,17 +40,17 @@ internal sealed class DialogElementEventToAltinnForwarder : DomainEventToAltinnF
         {
             ["dialogElementId"] = domainEvent.DialogElementId.ToString()
         };
-        
+
         if (domainEvent.RelatedDialogElementId is not null)
         {
             data["relatedDialogElementId"] = domainEvent.RelatedDialogElementId.Value.ToString();
         }
-        
+
         if (domainEvent.Type is not null)
         {
             data["dialogElementType"] = domainEvent.Type.ToString();
         }
-        
+
         var cloudEvent = new CloudEvent
         {
             Id = domainEvent.EventId,
@@ -104,12 +104,8 @@ internal sealed class DialogElementEventToAltinnForwarder : DomainEventToAltinnF
             .Include(e => e.Dialog)
             .Include(e => e.RelatedDialogElement)
             .AsNoTracking()
-            .FirstOrDefaultAsync(x => x.Id == dialogElementId, cancellationToken);
-
-        if (dialogElement is null)
-        {
-            throw new ApplicationException($"DialogElement with id {dialogElementId} not found");
-        }
+            .FirstOrDefaultAsync(x => x.Id == dialogElementId, cancellationToken)
+            ?? throw new KeyNotFoundException($"DialogElement with id {dialogElementId} not found");
 
         return dialogElement;
     }

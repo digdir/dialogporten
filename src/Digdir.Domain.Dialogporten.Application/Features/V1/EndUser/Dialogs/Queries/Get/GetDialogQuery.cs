@@ -73,16 +73,16 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
         }
 
         dialog.UpdateReadAt(_transactionTime.Value);
-        
+
         var saveResult = await _unitOfWork
             .WithoutAuditableSideEffects()
             .SaveChangesAsync(cancellationToken);
-        
+
         saveResult.Switch(
             success => { },
             domainError => throw new UnreachableException("Should not get domain error when updating ReadAt."),
             concurrencyError => throw new UnreachableException("Should not get concurrencyError when updating ReadAt."));
-        
+
         var dto = _mapper.Map<GetDialogDto>(dialog);
         return dto;
     }

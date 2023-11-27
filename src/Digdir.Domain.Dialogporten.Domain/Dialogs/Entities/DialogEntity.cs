@@ -11,11 +11,11 @@ using Digdir.Library.Entity.Abstractions.Features.Versionable;
 
 namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 
-public class DialogEntity : 
-    IEntity, 
-    ISoftDeletableEntity, 
-    IVersionableEntity, 
-    IAggregateChangedHandler, 
+public class DialogEntity :
+    IEntity,
+    ISoftDeletableEntity,
+    IVersionableEntity,
+    IAggregateChangedHandler,
     IEventPublisher
 {
     public Guid Id { get; set; }
@@ -36,7 +36,7 @@ public class DialogEntity :
     public DateTimeOffset? ReadAt { get; set; }
 
     // === Dependent relationships ===
-    public DialogStatus.Enum StatusId { get; set; }
+    public DialogStatus.Values StatusId { get; set; }
     public DialogStatus Status { get; set; } = null!;
 
 
@@ -45,14 +45,14 @@ public class DialogEntity :
     public DialogBody? Body { get; set; }
 
     [AggregateChild]
-    public DialogTitle? Title { get; set; } 
+    public DialogTitle? Title { get; set; }
 
     [AggregateChild]
     public DialogSenderName? SenderName { get; set; }
 
     [AggregateChild]
     public List<DialogSearchTag> SearchTags { get; set; } = new();
-    
+
     [AggregateChild]
     public List<DialogElement> Elements { get; set; } = new();
 
@@ -96,14 +96,14 @@ public class DialogEntity :
     {
         _domainEvents.Add(new DialogDeletedDomainEvent(Id, ServiceResource, Party));
     }
-    
+
     public void UpdateReadAt(DateTimeOffset timestamp)
     {
         if ((ReadAt ?? DateTimeOffset.MinValue) >= UpdatedAt)
         {
             return;
         }
-        
+
         ReadAt = timestamp;
         _domainEvents.Add(new DialogReadDomainEvent(Id));
     }

@@ -15,7 +15,7 @@ public class DialogActivity : IImmutableEntity, IAggregateCreatedHandler, IEvent
     public Uri? ExtendedType { get; set; }
 
     // === Dependent relationships ===
-    public DialogActivityType.Enum TypeId { get; set; }
+    public DialogActivityType.Values TypeId { get; set; }
     public DialogActivityType Type { get; set; } = null!;
 
     public Guid DialogId { get; set; }
@@ -35,10 +35,10 @@ public class DialogActivity : IImmutableEntity, IAggregateCreatedHandler, IEvent
     public DialogActivityPerformedBy? PerformedBy { get; set; }
 
     public List<DialogActivity> RelatedActivities { get; set; } = new();
-    
+
     public void OnCreate(AggregateNode self, DateTimeOffset utcNow)
     {
-       _domainEvents.Add(new DialogActivityCreatedDomainEvent(DialogId, Id));
+        _domainEvents.Add(new DialogActivityCreatedDomainEvent(DialogId, Id));
     }
 
     private readonly List<IDomainEvent> _domainEvents = new();

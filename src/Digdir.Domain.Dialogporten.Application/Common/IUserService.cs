@@ -30,15 +30,10 @@ internal sealed class UserService : IUserService
         return resourceIds.Contains(serviceResource);
     }
 
-    public Task<IReadOnlyCollection<string>> GetCurrentUserResourceIds(CancellationToken cancellationToken)
-    {
-        if (!_user.TryGetOrgNumber(out var orgNumber))
-        {
-            throw new UnreachableException();
-        }
-
-        return _resourceRegistry.GetResourceIds(orgNumber, cancellationToken);
-    }
+    public Task<IReadOnlyCollection<string>> GetCurrentUserResourceIds(CancellationToken cancellationToken) =>
+         !_user.TryGetOrgNumber(out var orgNumber)
+            ? throw new UnreachableException()
+            : _resourceRegistry.GetResourceIds(orgNumber, cancellationToken);
 }
 
 internal sealed class LocalDevelopmentUserServiceDecorator : IUserService
@@ -50,9 +45,9 @@ internal sealed class LocalDevelopmentUserServiceDecorator : IUserService
         _userService = userService ?? throw new ArgumentNullException(nameof(userService));
     }
 
-    public Task<bool> CurrentUserIsOwner(string serviceResource, CancellationToken cancellationToken) => 
+    public Task<bool> CurrentUserIsOwner(string serviceResource, CancellationToken cancellationToken) =>
         Task.FromResult(true);
 
-    public Task<IReadOnlyCollection<string>> GetCurrentUserResourceIds(CancellationToken cancellationToken) => 
+    public Task<IReadOnlyCollection<string>> GetCurrentUserResourceIds(CancellationToken cancellationToken) =>
         _userService.GetCurrentUserResourceIds(cancellationToken);
 }

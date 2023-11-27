@@ -20,7 +20,7 @@ namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.Dialog;
 [ApiController]
 [Route("api/v1/serviceowner/dialogs")]
 [Tags(ServiceOwnerGroup.RoutePrefix)]
-[Authorize(Policy = DialogportenAuthorizationPolizy.Serviceprovider)]
+[Authorize(Policy = DialogportenAuthorizationPolizy.ServiceProvider)]
 public sealed class PatchDialogsController : ControllerBase
 {
     private readonly ISender _sender;

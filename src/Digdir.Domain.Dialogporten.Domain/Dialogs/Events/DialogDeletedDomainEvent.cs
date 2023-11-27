@@ -3,7 +3,7 @@
 namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Events;
 
 public sealed record DialogDeletedDomainEvent(
-    Guid DialogId, 
-    string ServiceResource, 
-    string Party) : 
+    Guid DialogId,
+    string ServiceResource,
+    string Party) :
     DomainEvent;

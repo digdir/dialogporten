@@ -26,7 +26,7 @@ internal sealed class DomainContextBehaviour<TRequest, TResponse> : IPipelineBeh
 
     public DomainContextBehaviour(IDomainContext domainContext)
     {
-        
+
         _domainContext = domainContext ?? throw new ArgumentNullException(nameof(domainContext));
     }
 
@@ -38,7 +38,7 @@ internal sealed class DomainContextBehaviour<TRequest, TResponse> : IPipelineBeh
         {
             response = await next();
         }
-        catch (DomainException ex) 
+        catch (DomainException ex)
         {
             if (OneOfExtensions.TryConvertToOneOf(new DomainError(ex.Errors), out response))
             {
@@ -55,11 +55,8 @@ internal sealed class DomainContextBehaviour<TRequest, TResponse> : IPipelineBeh
 
         var domainFailures = _domainContext.Pop();
 
-        if (OneOfExtensions.TryConvertToOneOf(new DomainError(domainFailures), out response))
-        {
-            return response;
-        }
-
-        throw new DomainException(domainFailures);
+        return OneOfExtensions.TryConvertToOneOf(new DomainError(domainFailures), out response)
+            ? response
+            : throw new DomainException(domainFailures);
     }
 }

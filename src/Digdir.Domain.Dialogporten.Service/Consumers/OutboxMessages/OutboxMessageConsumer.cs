@@ -19,8 +19,8 @@ public sealed class OutboxMessageConsumer : IConsumer<OutboxMessage>
     {
         var eventAssembly = typeof(OutboxMessage).Assembly;
         var eventType = eventAssembly.GetType(context.Message.EventType);
-        var @event = JsonSerializer.Deserialize(context.Message.EventPayload, eventType);
-        await _mediatr.Publish(@event);
+        var @event = JsonSerializer.Deserialize(context.Message.EventPayload, eventType!); // TODO: Better null handling
+        await _mediatr.Publish(@event!); // TODO: Better null handling
         await _mediatr.Send(new DeleteOutboxMessagesCommand { EventId = context.Message.EventId });
     }
 }

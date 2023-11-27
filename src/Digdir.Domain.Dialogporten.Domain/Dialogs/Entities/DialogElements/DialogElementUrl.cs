@@ -12,7 +12,7 @@ public class DialogElementUrl : IEntity
     public string? MimeType { get; set; }
 
     // === Dependent relationships ===
-    public DialogElementUrlConsumerType.Enum ConsumerTypeId { get; set; }
+    public DialogElementUrlConsumerType.Values ConsumerTypeId { get; set; }
     public DialogElementUrlConsumerType ConsumerType { get; set; } = null!;
 
     public Guid DialogElementId { get; set; }

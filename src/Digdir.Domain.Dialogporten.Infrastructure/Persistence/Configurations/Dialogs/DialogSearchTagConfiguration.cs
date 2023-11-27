@@ -9,7 +9,7 @@ internal sealed class DialogSearchTagConfiguration : IEntityTypeConfiguration<Di
 {
     public void Configure(EntityTypeBuilder<DialogSearchTag> builder)
     {
-        builder.HasIndex(x => new {x.DialogId, x.Value})
+        builder.HasIndex(x => new { x.DialogId, x.Value })
             .IsUnique();
         builder.Property(x => x.Value)
             .HasMaxLength(Constants.MaxSearchTagLength);

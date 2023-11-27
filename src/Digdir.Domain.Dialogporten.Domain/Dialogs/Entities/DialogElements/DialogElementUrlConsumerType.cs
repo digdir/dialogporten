@@ -2,12 +2,12 @@
 
 namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements;
 
-public class DialogElementUrlConsumerType : AbstractLookupEntity<DialogElementUrlConsumerType, DialogElementUrlConsumerType.Enum>
+public class DialogElementUrlConsumerType : AbstractLookupEntity<DialogElementUrlConsumerType, DialogElementUrlConsumerType.Values>
 {
-    public DialogElementUrlConsumerType(Enum id) : base(id) { }
-    public override DialogElementUrlConsumerType MapValue(Enum id) => new(id);
+    public DialogElementUrlConsumerType(Values id) : base(id) { }
+    public override DialogElementUrlConsumerType MapValue(Values id) => new(id);
 
-    public enum Enum
+    public enum Values
     {
         Gui = 1,
         Api = 2,

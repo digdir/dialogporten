@@ -13,7 +13,7 @@ public class DialogElement : IEntity, IAggregateChangedHandler, IEventPublisher
     public Guid Id { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
     public DateTimeOffset UpdatedAt { get; set; }
-    
+
     public string? AuthorizationAttribute { get; set; }
     public Uri? Type { get; set; }
 
@@ -33,7 +33,7 @@ public class DialogElement : IEntity, IAggregateChangedHandler, IEventPublisher
     public List<DialogApiAction> ApiActions { get; set; } = new();
     public List<DialogActivity> Activities { get; set; } = new();
     public List<DialogElement> RelatedDialogElements { get; set; } = new();
-    
+
     public void OnCreate(AggregateNode self, DateTimeOffset utcNow)
     {
         _domainEvents.Add(new DialogElementCreatedDomainEvent(DialogId, Id));

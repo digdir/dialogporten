@@ -18,7 +18,7 @@ public class GetDialogEndpoint : Endpoint<GetDialogQuery>
     public override void Configure()
     {
         Get("dialogs/{dialogId}");
-        Policies(AuthorizationPolicy.Serviceprovider);
+        Policies(AuthorizationPolicy.ServiceProvider);
         Group<ServiceOwnerGroup>();
     }
 

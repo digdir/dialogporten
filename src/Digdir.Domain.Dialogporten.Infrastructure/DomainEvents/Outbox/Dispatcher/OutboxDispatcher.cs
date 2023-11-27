@@ -72,7 +72,7 @@ internal sealed class OutboxDispatcher
         var eventType = EventAssembly.GetType(outboxMessage.EventType);
         if (eventType is null)
         {
-            domainEvent= null;
+            domainEvent = null;
             return false;
         }
 

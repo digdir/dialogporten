@@ -4,12 +4,12 @@ using HtmlAgilityPack;
 
 namespace Digdir.Domain.Dialogporten.Application.Common.Extensions.FluentValidation;
 
-internal static class FluentValidation_LocalizationDto_Extensions
+internal static class FluentValidationLocalizationDtoExtensions
 {
-    private static readonly string[] AllowedTags = new[] { "p", "a", "br", "em", "strong", "ul", "ol", "li" };
-    private static readonly string ContainsValidHttpError = 
+    private static readonly string[] AllowedTags = { "p", "a", "br", "em", "strong", "ul", "ol", "li" };
+    private static readonly string ContainsValidHttpError =
         $"{{PropertyName}} contains unsupported html. The following tags are supported: " +
-        $"[{string.Join(",", AllowedTags.Select(x => '<' + x + '>'))}]. Tag atributes " +
+        $"[{string.Join(",", AllowedTags.Select(x => '<' + x + '>'))}]. Tag attributes " +
         $"are not supported except for on '<a>' which must contain a 'href' starting " +
         $"with 'https://'.";
 
@@ -55,16 +55,16 @@ internal static class FluentValidation_LocalizationDto_Extensions
 
     private static bool IsAnchorTag(this HtmlNode node)
     {
-        const string AnchorTag = "a";
-        return node.Name == AnchorTag;
+        const string anchorTag = "a";
+        return node.Name == anchorTag;
     }
 
     private static bool IsValidAnchorTag(this HtmlNode node)
     {
-        const string Https = "https://";
-        const string Href = "href";
+        const string https = "https://";
+        const string href = "href";
         return node.Attributes.Count == 1 &&
-            node.Attributes[Href] is not null &&
-            node.Attributes[Href].Value.StartsWith(Https);
+            node.Attributes[href] is not null &&
+            node.Attributes[href].Value.StartsWith(https, StringComparison.InvariantCultureIgnoreCase);
     }
 }

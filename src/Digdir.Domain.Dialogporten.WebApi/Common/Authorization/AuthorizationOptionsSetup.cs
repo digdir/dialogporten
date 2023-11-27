@@ -14,7 +14,7 @@ internal sealed class AuthorizationOptionsSetup : IConfigureOptions<Authorizatio
 
     public void Configure(AuthorizationOptions options)
     {
-        var authenticatonSchemas = _options
+        var authenticationSchemas = _options
             .Authentication
             .JwtBearerTokenSchemas
             .Select(x => x.Name)
@@ -22,17 +22,17 @@ internal sealed class AuthorizationOptionsSetup : IConfigureOptions<Authorizatio
 
         options.DefaultPolicy = new AuthorizationPolicyBuilder()
             .RequireAuthenticatedUser()
-            .AddAuthenticationSchemes(authenticatonSchemas)
+            .AddAuthenticationSchemes(authenticationSchemas)
             .RequireValidConsumerClaim()
             .Build();
 
-        options.AddPolicy(AuthorizationPolicy.Serviceprovider, builder => builder
+        options.AddPolicy(AuthorizationPolicy.ServiceProvider, builder => builder
             .Combine(options.DefaultPolicy)
-            .RequireScope(AuthorizationScope.Serviceprovider));
+            .RequireScope(AuthorizationScope.ServiceProvider));
 
-        options.AddPolicy(AuthorizationPolicy.ServiceproviderSearch, builder => builder
+        options.AddPolicy(AuthorizationPolicy.ServiceProviderSearch, builder => builder
             .Combine(options.DefaultPolicy)
-            .RequireScope(AuthorizationScope.ServiceproviderSearch));
+            .RequireScope(AuthorizationScope.ServiceProviderSearch));
 
         options.AddPolicy(AuthorizationPolicy.Testing, builder => builder
             .Combine(options.DefaultPolicy)

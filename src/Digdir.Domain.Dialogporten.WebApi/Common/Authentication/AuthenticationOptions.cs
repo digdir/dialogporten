@@ -1,6 +1,4 @@
-﻿using FluentValidation;
-
-namespace Digdir.Domain.Dialogporten.WebApi.Common.Options;
+﻿namespace Digdir.Domain.Dialogporten.WebApi.Common.Authentication;
 
 public sealed class AuthenticationOptions
 {
