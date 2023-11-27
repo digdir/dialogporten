@@ -1,4 +1,5 @@
-﻿using Digdir.Domain.Dialogporten.Domain.Outboxes;
+﻿using System.Collections.ObjectModel;
+using Digdir.Domain.Dialogporten.Domain.Outboxes;
 using Npgsql;
 using Npgsql.Replication.PgOutput.Messages;
 
@@ -38,7 +39,7 @@ internal sealed class OutboxReplicationDataMapper : IReplicationDataMapper<Outbo
         return result;
     }
 
-    private static IDictionary<string, string> ToDictionary(NpgsqlDataReader reader)
+    private static ReadOnlyDictionary<string, string> ToDictionary(NpgsqlDataReader reader)
     {
         var result = new Dictionary<string, string>();
         for (var i = 0; i < reader.FieldCount; i++)
@@ -46,7 +47,7 @@ internal sealed class OutboxReplicationDataMapper : IReplicationDataMapper<Outbo
             var columnName = reader.GetName(i);
             result[columnName] = reader.GetValue(i).ToString()!;
         }
-        return result;
+        return result.AsReadOnly();
     }
 
     private static OutboxMessage ToOutboxMessage(IDictionary<string, string> dic)

@@ -158,7 +158,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         var newDialogActivities = _mapper.Map<List<DialogActivity>>(dto.Activities);
 
         var existingIds = await _db.GetExistingIds(newDialogActivities, cancellationToken);
-        if (existingIds.Any())
+        if (existingIds.Count != 0)
         {
             _domainContext.AddError(
                 nameof(UpdateDialogDto.Activities),
@@ -228,7 +228,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         }
 
         var existingIds = await _db.GetExistingIds(elements, cancellationToken);
-        if (existingIds.Any())
+        if (existingIds.Count != 0)
         {
             _domainContext.AddError(nameof(UpdateDialogDto.Elements), $"Entity '{nameof(DialogElement)}' with the following key(s) already exists: ({string.Join(", ", existingIds)}).");
         }

@@ -54,10 +54,7 @@ public sealed class OrderSet<TOrderDefinition, TTarget> : IOrderSet<TTarget>
             .FirstOrDefault(x => x.Key == PaginationConstants.OrderIdKey)
             ?? OrderOptions<TOrderDefinition, TTarget>.Value.IdOrder;
 
-        if (orderList.Contains(idOrder))
-        {
-            orderList.Remove(idOrder);
-        }
+        orderList.Remove(idOrder);
 
         orderList.Add(idOrder);
 

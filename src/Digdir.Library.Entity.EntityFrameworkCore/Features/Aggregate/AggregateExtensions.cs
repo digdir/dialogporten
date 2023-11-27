@@ -70,9 +70,10 @@ internal static class AggregateExtensions
         EntityEntry entry,
         CancellationToken cancellationToken)
     {
-        if (!nodeByEntry.ContainsKey(entry))
+        if (!nodeByEntry.TryGetValue(entry, out var value))
         {
-            nodeByEntry[entry] = entry.ToAggregateNode();
+            value = entry.ToAggregateNode();
+            nodeByEntry[entry] = value;
         }
 
         foreach (var parentForeignKey in entry.Metadata.FindAggregateParents())
@@ -107,7 +108,7 @@ internal static class AggregateExtensions
                 await nodeByEntry.AddAggregateParentChain(parentEntry, cancellationToken);
             }
 
-            parentNode.AddChild(nodeByEntry[entry]);
+            parentNode.AddChild(value);
         }
     }
 

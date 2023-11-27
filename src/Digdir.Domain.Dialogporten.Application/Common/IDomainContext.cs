@@ -20,7 +20,7 @@ internal class DomainContext : IDomainContext
 
     public IReadOnlyCollection<DomainFailure> Errors => _errors.ToList();
 
-    public bool IsValid => !_errors.Any();
+    public bool IsValid => _errors.Count == 0;
 
     public void AddError(string propertyName, string error)
         => AddError(new DomainFailure(propertyName, error));

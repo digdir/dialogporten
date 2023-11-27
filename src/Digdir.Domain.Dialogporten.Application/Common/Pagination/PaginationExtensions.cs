@@ -39,10 +39,7 @@ internal static class PaginationExtensions
         int limit,
         CancellationToken cancellationToken = default)
     {
-        if (source == null)
-        {
-            throw new ArgumentNullException(nameof(source));
-        }
+        ArgumentNullException.ThrowIfNull(source);
 
         const int OneMore = 1;
 

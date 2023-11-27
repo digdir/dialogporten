@@ -32,6 +32,16 @@ dotnet_style_parentheses_in_arithmetic_binary_operators = always_for_clarity
 csharp_style_namespace_declarations = file_scoped:suggestion
 # Place 'using' directives outside of namespaces
 csharp_using_directive_placement = outside_namespace:true
+
+# Disabling this because of https://github.com/dotnet/roslyn/issues/41640
+dotnet_diagnostic.IDE0005.severity = none
+# 
+# # Disabling this because of https://github.com/dotnet/roslyn/issues/70826
+# dotnet_diagnostic.IDE0028.severity = none
+# 
+# # Primary constructors 
+# dotnet_diagnostic.IDE0290.severity = none
+
 # Order 'using' directives with System.* appearing first
 dotnet_sort_system_directives_first = true
 # Suggest the use of var when the type is apparent

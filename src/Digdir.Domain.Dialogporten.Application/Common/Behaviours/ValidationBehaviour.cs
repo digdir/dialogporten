@@ -29,7 +29,7 @@ internal sealed class ValidationBehaviour<TRequest, TResponse> : IPipelineBehavi
             .Where(x => x is not null)
             .ToList();
 
-        if (!failures.Any())
+        if (failures.Count == 0)
         {
             return await next();
         }

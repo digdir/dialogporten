@@ -92,7 +92,7 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
             .WhereIf(request.Search is not null, x =>
                 x.Title!.Localizations.AsQueryable().Any(searchExpression) ||
                 x.Body!.Localizations.AsQueryable().Any(searchExpression) ||
-                x.SearchTags.Any(x => x.Value == request.Search!.ToLower(CultureInfo.InvariantCulture)) ||
+                x.SearchTags.Any(x => x.Value.Equals(request.Search, StringComparison.OrdinalIgnoreCase)) ||
                 x.SenderName!.Localizations.AsQueryable().Any(searchExpression)
             )
             .Where(x => resourceIds.Contains(x.ServiceResource))

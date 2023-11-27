@@ -29,10 +29,7 @@ internal static class AutoMapperExtensions
 
     private static bool IsSimple(this Type type)
     {
-        if (type is null)
-        {
-            throw new ArgumentNullException(nameof(type));
-        }
+        ArgumentNullException.ThrowIfNull(type);
 
         if (type.IsGenericType && type.GetGenericTypeDefinition() == GenericNullableType)
         {
