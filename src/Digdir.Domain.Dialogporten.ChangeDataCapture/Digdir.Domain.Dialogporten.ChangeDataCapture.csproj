@@ -9,7 +9,7 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="Azure.Identity" Version="1.10.3" />
+    <PackageReference Include="Azure.Identity" Version="1.10.4" />
     <PackageReference Include="MassTransit.RabbitMQ" Version="8.1.1" />
     <PackageReference Include="Npgsql" Version="7.0.6" />
     <PackageReference Include="RabbitMQ.Client" Version="6.5.0" />
