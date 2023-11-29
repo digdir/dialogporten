@@ -1,4 +1,3 @@
-using Azure;
 using Azure.Identity;
 using Azure.ResourceManager;
 using Azure.ResourceManager.AppContainers;
