@@ -1,10 +1,33 @@
-﻿using Digdir.Domain.Dialogporten.Application.Externals;
+﻿using System.Diagnostics;
+using System.Net;
+using System.Text;
+using System.Text.Json;
+using Altinn.Authorization.ABAC.Xacml.JsonProfile;
+using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Domain.Authorization;
+using Microsoft.Extensions.Logging;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.Authorization;
 
 internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
 {
+
+    private const string SubscriptionKeyHeaderName = "Ocp-Apim-Subscription-Key";
+    private readonly HttpClient _httpClient;
+    private readonly ILogger _logger;
+
+    /// <summary>
+    /// Initialize a new instance of the <see cref="AuthorizationApiClient"/> class.
+    /// </summary>
+    /// <param name="client">A HttpClient provided by the built in HttpClientFactory.</param>
+    /// <param name="platformSettings">The current platform settings</param>
+    /// <param name="logger">A logger provided by the built in LoggerFactory.</param>
+    public AltinnAuthorizationClient(HttpClient client, ILogger<AltinnAuthorizationClient> logger)
+    {
+        _httpClient = client;
+        _logger = logger;
+    }
+
     public Task<DialogSearchAuthorizationResponse> PerformDialogSearchAuthorization(DialogSearchAuthorizationRequest request, CancellationToken cancellationToken)
     {
         // TODO
@@ -16,15 +39,44 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
         throw new NotImplementedException();
     }
 
-    public Task<DialogDetailsAuthorizationResponse> PerformDialogDetailsAuthorization(DialogDetailsAuthorizationRequest request, CancellationToken cancellationToken)
+    public async Task<DialogDetailsAuthorizationResponse> PerformDialogDetailsAuthorization(DialogDetailsAuthorizationRequest request, CancellationToken cancellationToken)
     {
-        // TODO!
-        // - Get all actions and elements for the dialog, with authorization resources (if supplied)
-        // - Build a multi XACML request as per https://github.com/digdir/dialogporten/issues/43
-        // - Send the request to Altinn
-        // - Parse the response
-        // - Build and return a DialogDetailsAuthorizationResponse
+        var xamlJsonResponse = await SendRequest(DecisionRequestHelper.CreateDialogDetailsRequest(request));
+        return DecisionRequestHelper.CreateDialogDetailsResponse(xamlJsonResponse);
+    }
 
-        throw new NotImplementedException();
+    /// <summary>
+    /// Method for performing authorization.
+    /// </summary>
+    /// <param name="xacmlJsonRequest">An authorization request.</param>
+    /// <returns>The result of the authorization request.</returns>
+    public async Task<XacmlJsonResponse?> SendRequest(XacmlJsonRequestRoot xacmlJsonRequest)
+    {
+        XacmlJsonResponse? xacmlJsonResponse = null;
+        var apiUrl = "authorization/api/v1/Decision";
+        var requestJson = JsonSerializer.Serialize(xacmlJsonRequest);
+        _logger.LogDebug("Generated XACML request: {RequestJson}", requestJson);
+        var httpContent = new StringContent(requestJson, Encoding.UTF8, "application/json");
+
+        var stopWatch = new Stopwatch();
+        stopWatch.Start();
+        var response = await _httpClient.PostAsync(apiUrl, httpContent);
+        stopWatch.Stop();
+        var ts = stopWatch.Elapsed;
+        _logger.LogInformation("Authorization PDP time elapsed: {ElapsedMs}ms", ts.TotalMilliseconds);
+
+        if (response.StatusCode == HttpStatusCode.OK)
+        {
+            var responseData = await response.Content.ReadAsStringAsync();
+            xacmlJsonResponse = JsonSerializer.Deserialize<XacmlJsonResponse>(responseData);
+        }
+        else
+        {
+            _logger.LogInformation(
+                "AltinnAuthorizationClient.SendRequest failed with non-successful status code: {StatusCode} {Response}",
+                response.StatusCode, await response.Content.ReadAsStringAsync());
+        }
+
+        return xacmlJsonResponse;
     }
 }

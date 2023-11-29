@@ -7,25 +7,25 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1"/>
-        <PackageReference Include="HtmlAgilityPack" Version="1.11.54"/>
-        <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1"/>
-        <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="7.0.0"/>
-        <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.8.0"/>
-        <PackageReference Include="MediatR" Version="12.1.1"/>
-        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.11"/>
-        <PackageReference Include="OneOf" Version="3.0.263"/>
-        <PackageReference Include="OneOf.SourceGenerator" Version="3.0.263"/>
-        <PackageReference Include="Scrutor" Version="4.2.2"/>
+        <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
+        <PackageReference Include="HtmlAgilityPack" Version="1.11.54" />
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
+        <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="7.0.0" />
+        <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.8.0" />
+        <PackageReference Include="MediatR" Version="12.1.1" />
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.11" />
+        <PackageReference Include="OneOf" Version="3.0.263" />
+        <PackageReference Include="OneOf.SourceGenerator" Version="3.0.263" />
+        <PackageReference Include="Scrutor" Version="4.2.2" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Digdir.Domain.Dialogporten.Domain\Digdir.Domain.Dialogporten.Domain.csproj"/>
-        <ProjectReference Include="..\Digdir.Library.Entity.EntityFrameworkCore\Digdir.Library.Entity.EntityFrameworkCore.csproj"/>
+        <ProjectReference Include="..\Digdir.Domain.Dialogporten.Domain\Digdir.Domain.Dialogporten.Domain.csproj" />
+        <ProjectReference Include="..\Digdir.Library.Entity.EntityFrameworkCore\Digdir.Library.Entity.EntityFrameworkCore.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-        <InternalsVisibleTo Include="Digdir.Domain.Dialogporten.Application.Tests.Integration"/>
+        <InternalsVisibleTo Include="Digdir.Domain.Dialogporten.Application.Tests.Integration" />
     </ItemGroup>
 
 </Project>

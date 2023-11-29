@@ -28,8 +28,7 @@ internal sealed class LocalDevelopmentAltinnAuthorization : IAltinnAuthorization
         // Just allow everything that was requested
         var response = new DialogDetailsAuthorizationResponse()
         {
-            AuthorizedActions = request.Actions,
-            AuthorizedAuthorizationAttributes = request.AuthorizationAttributes
+            AuthorizedActions = request.Actions
         };
 
         return Task.FromResult(response);

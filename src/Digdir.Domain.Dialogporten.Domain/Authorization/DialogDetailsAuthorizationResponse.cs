@@ -2,6 +2,8 @@
 
 public sealed class DialogDetailsAuthorizationResponse
 {
-    public List<string> AuthorizedActions { get; set; } = new();
-    public Dictionary<string, string> AuthorizedAuthorizationAttributes { get; set; } = new();
+    public const string MainResource = "main";
+
+    // Each action applies to a resource. This is the main resource and/or one or more dialog elements.
+    public Dictionary<string, List<string>> AuthorizedActions { get; set; } = new();
 }

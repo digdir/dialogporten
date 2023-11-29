@@ -1,4 +1,5 @@
-﻿using Altinn.ApiClients.Maskinporten.Extensions;
+﻿using System.Net.Http.Headers;
+using Altinn.ApiClients.Maskinporten.Extensions;
 using Altinn.ApiClients.Maskinporten.Interfaces;
 using Altinn.ApiClients.Maskinporten.Services;
 using Digdir.Domain.Dialogporten.Application.Externals;
@@ -87,7 +88,13 @@ public static class InfrastructureExtensions
             .AddPolicyHandlerFromRegistry(PollyPolicy.DefaultHttpRetryPolicy);
 
         services.AddHttpClient<IAltinnAuthorization, AltinnAuthorizationClient>((services, client) =>
-                client.BaseAddress = services.GetRequiredService<IOptions<InfrastructureSettings>>().Value.Altinn.BaseUri)
+            {
+                var altinnSettings = services.GetRequiredService<IOptions<InfrastructureSettings>>().Value.Altinn;
+                client.BaseAddress = altinnSettings.BaseUri;
+                client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", altinnSettings.SubscriptionKey);
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            })
+            // TODO! Add cache policy based on request body
             .AddPolicyHandlerFromRegistry(PollyPolicy.DefaultHttpRetryPolicy);
 
         if (environment.IsDevelopment())

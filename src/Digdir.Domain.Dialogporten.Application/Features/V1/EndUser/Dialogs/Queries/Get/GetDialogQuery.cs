@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using AutoMapper;
 using Digdir.Domain.Dialogporten.Application.Common;
+using Digdir.Domain.Dialogporten.Application.Common.Authorization;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
@@ -25,19 +26,22 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
     private readonly IUnitOfWork _unitOfWork;
     private readonly ITransactionTime _transactionTime;
     private readonly IClock _clock;
+    private readonly IDialogDetailsAuthorizationService _dialogDetailsAuthorizationService;
 
     public GetDialogQueryHandler(
         IDialogDbContext db,
         IMapper mapper,
         IUnitOfWork unitOfWork,
         ITransactionTime transactionTime,
-        IClock clock)
+        IClock clock,
+        IDialogDetailsAuthorizationService dialogDetailsAuthorizationService)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _transactionTime = transactionTime ?? throw new ArgumentNullException(nameof(transactionTime));
         _clock = clock ?? throw new ArgumentNullException(nameof(clock));
+        _dialogDetailsAuthorizationService = dialogDetailsAuthorizationService ?? throw new ArgumentNullException(nameof(dialogDetailsAuthorizationService));
     }
 
     public async Task<GetDialogResult> Handle(GetDialogQuery request, CancellationToken cancellationToken)
@@ -63,6 +67,12 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
             .FirstOrDefaultAsync(x => x.Id == request.DialogId, cancellationToken);
 
         if (dialog is null)
+        {
+            return new EntityNotFound<DialogEntity>(request.DialogId);
+        }
+
+        var authorizationResult = await _dialogDetailsAuthorizationService.GetDialogDetailsAuthorization(dialog, cancellationToken);
+        if (authorizationResult.AuthorizedActions.Count == 0)
         {
             return new EntityNotFound<DialogEntity>(request.DialogId);
         }

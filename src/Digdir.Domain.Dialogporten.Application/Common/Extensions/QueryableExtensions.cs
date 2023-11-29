@@ -15,12 +15,12 @@ internal static class QueryableExtensions
     {
         var predicate = Expressions.Boolean<DialogEntity>.True;
 
-        if (authorizedResources.DialogIds.Any())
+        if (authorizedResources.DialogIds.Count > 0)
         {
             predicate = x => authorizedResources.DialogIds.Contains(x.Id);
         }
 
-        if (authorizedResources.ResourcesForParties.Any())
+        if (authorizedResources.ResourcesForParties.Count > 0)
         {
             var partyPredicate = Expressions.Boolean<DialogEntity>.False;
             foreach (var (party, resources) in authorizedResources.ResourcesForParties)
@@ -30,7 +30,7 @@ internal static class QueryableExtensions
             predicate = Expressions.Or(predicate, partyPredicate);
         }
 
-        if (authorizedResources.PartiesForResources.Any())
+        if (authorizedResources.PartiesForResources.Count > 0)
         {
             var resourcePredicate = Expressions.Boolean<DialogEntity>.False;
             foreach (var (resource, parties) in authorizedResources.PartiesForResources)
