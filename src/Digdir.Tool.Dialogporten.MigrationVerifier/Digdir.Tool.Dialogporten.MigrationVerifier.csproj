@@ -9,9 +9,20 @@
     <ItemGroup>
         <PackageReference Include="Azure.Identity" Version="1.10.4" />
         <PackageReference Include="Azure.ResourceManager" Version="1.9.0" />
-        <PackageReference Include="Azure.ResourceManager.AppContainers" Version="1.1.1" />
         <PackageReference Include="Serilog.AspNetCore" Version="7.0.0" />
         <PackageReference Include="Serilog.Sinks.ApplicationInsights" Version="4.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="Azure.ResourceManager.AppContainers">
+        <HintPath>Azure.ResourceManager.AppContainers.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="Azure.ResourceManager.AppContainers.dll">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
     
 </Project>
