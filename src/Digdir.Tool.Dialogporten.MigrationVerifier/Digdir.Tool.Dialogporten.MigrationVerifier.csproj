@@ -13,11 +13,6 @@
         <PackageReference Include="Serilog.Sinks.ApplicationInsights" Version="4.0.0" />
     </ItemGroup>
 
-    <!-- Temp fix for https://github.com/Azure/azure-sdk-for-net/issues/38385 -->
-    <PropertyGroup>
-        <NoWarn>$(NoWarn);MSB3246</NoWarn>
-    </PropertyGroup>
-    
     <ItemGroup>
       <Reference Include="Azure.ResourceManager.AppContainers">
         <HintPath>Azure.ResourceManager.AppContainers.dll</HintPath>

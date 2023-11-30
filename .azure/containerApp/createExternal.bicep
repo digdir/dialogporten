@@ -75,7 +75,9 @@ resource migrationJob 'Microsoft.App/jobs@2023-05-01' = {
 var initContainers = [
   {
     name: 'migration-verifier-init'
-    image:'${baseImageUrl}migration-verifier:${gitSha}'
+    // Temp. hardcoded tag, waiting for fix on
+    // https://github.com/Azure/azure-sdk-for-net/issues/38385
+    image:'${baseImageUrl}migration-verifier:4f16460'
     env: concat(envVariables,
     [
       {

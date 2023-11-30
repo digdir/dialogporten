@@ -61,10 +61,13 @@ jobs:
             imageName: cdc
           - dockerfile: ./src/Digdir.Domain.Dialogporten.Infrastructure/MigrationBundle.dockerfile
             imageName: migration-bundle
-          - dockerfile: ./src/Digdir.Tool.Dialogporten.MigrationVerifier/Dockerfile
-            imageName: migration-verifier
           - dockerfile: ./RabbitMq/Dockerfile
             imageName: rabbitmq
+      # Temp disabled, waiting for fix on https://github.com/Azure/azure-sdk-for-net/issues/38385
+      # Init-container image manually built and locked in bicep deploy to tag
+      # ghcr.io/digdir/dialogporten-migration-verifier:4f16460
+      # - dockerfile: ./src/Digdir.Tool.Dialogporten.MigrationVerifier/Dockerfile
+      #   imageName: migration-verifier
 
     permissions:
       contents: read
