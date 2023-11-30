@@ -12,7 +12,7 @@ param(
 	[string]$sourceKeyVaultSubscriptionId,
 	
 	[Parameter(Mandatory)]
-    [string]$sourceKeyVaultName,
+	[string]$sourceKeyVaultName,
     	
 	[Parameter(Mandatory)]
 	[string]$apiManagementDigDirEmail
