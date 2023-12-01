@@ -4,12 +4,12 @@ namespace Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localization
 
 public sealed class LocalizationDto
 {
-    private string _cultureCode = null!;
+    private readonly string _cultureCode = null!;
 
     public required string Value { get; init; }
-    public required string CultureCode 
-    { 
-        get => _cultureCode; 
-        init => _cultureCode = Localization.NormalizeCultureCode(value)!; 
+    public required string CultureCode
+    {
+        get => _cultureCode;
+        init => _cultureCode = Localization.NormalizeCultureCode(value)!;
     }
 }

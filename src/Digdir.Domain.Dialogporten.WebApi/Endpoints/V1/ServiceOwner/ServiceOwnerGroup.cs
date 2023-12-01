@@ -2,12 +2,12 @@
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner;
 
-public class ServiceOwnerGroup : Group
+public sealed class ServiceOwnerGroup : Group
 {
     public const string RoutePrefix = "Serviceowner";
     public ServiceOwnerGroup()
     {
-        Configure(RoutePrefix.ToLower(), ep =>
+        Configure(RoutePrefix.ToLowerInvariant(), ep =>
         {
             ep.EndpointVersion(1);
         });

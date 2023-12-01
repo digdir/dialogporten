@@ -17,9 +17,7 @@ public sealed class GetDialogElementQuery : IRequest<GetDialogElementResult>
 }
 
 [GenerateOneOf]
-public partial class GetDialogElementResult : OneOfBase<GetDialogElementDto, EntityNotFound>
-{
-}
+public partial class GetDialogElementResult : OneOfBase<GetDialogElementDto, EntityNotFound> { }
 
 internal sealed class GetDialogElementQueryHandler : IRequestHandler<GetDialogElementQuery, GetDialogElementResult>
 {
@@ -37,16 +35,16 @@ internal sealed class GetDialogElementQueryHandler : IRequestHandler<GetDialogEl
     {
         Expression<Func<DialogEntity, IEnumerable<DialogElement>>> elementFilter = dialog =>
             dialog.Elements.Where(x => x.Id == request.ElementId);
-        
+
         var dialog = await _dbContext.Dialogs
             .Include(elementFilter)
             .ThenInclude(x => x.DisplayName!.Localizations)
             .Include(elementFilter)
             .ThenInclude(x => x.Urls)
             .IgnoreQueryFilters()
-            .FirstOrDefaultAsync(x => x.Id == request.DialogId, 
+            .FirstOrDefaultAsync(x => x.Id == request.DialogId,
                 cancellationToken: cancellationToken);
-        
+
         if (dialog is null)
         {
             return new EntityNotFound<DialogEntity>(request.DialogId);
@@ -58,7 +56,7 @@ internal sealed class GetDialogElementQueryHandler : IRequestHandler<GetDialogEl
         {
             return new EntityNotFound<DialogElement>(request.ElementId);
         }
-        
+
         return _mapper.Map<GetDialogElementDto>(element);
     }
 }

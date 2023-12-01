@@ -18,11 +18,11 @@ internal static class Mod11
         }
 
         var sum = 0;
-        for (int i = 0; i < digits.Length; i++)
+        for (var i = 0; i < digits.Length; i++)
         {
             sum += digits[i] * weights[i];
         }
-        controlDigit = Mod11Number - sum % Mod11Number;
+        controlDigit = Mod11Number - (sum % Mod11Number);
         return true;
     }
 
@@ -31,11 +31,11 @@ internal static class Mod11
         var result = new int[number.Length];
         var index = 0;
 
-        for (int i = 0; i < number.Length; i++)
+        foreach (var character in number)
         {
-            if (char.IsDigit(number[i]))
+            if (char.IsDigit(character))
             {
-                result[index++] = number[i] - '0';
+                result[index++] = character - '0';
             }
         }
 

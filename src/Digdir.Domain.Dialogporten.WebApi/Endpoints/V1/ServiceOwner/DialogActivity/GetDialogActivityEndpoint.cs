@@ -19,7 +19,7 @@ public class GetDialogActivityEndpoint : Endpoint<GetDialogActivityQuery, GetDia
     public override void Configure()
     {
         Get("dialogs/{dialogId}/activities/{activityId}");
-        Policies(AuthorizationPolicy.Serviceprovider);
+        Policies(AuthorizationPolicy.ServiceProvider);
         Group<ServiceOwnerGroup>();
 
         Description(b => b

@@ -2,12 +2,12 @@
 
 namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 
-public class DialogActivityType : AbstractLookupEntity<DialogActivityType, DialogActivityType.Enum>
+public class DialogActivityType : AbstractLookupEntity<DialogActivityType, DialogActivityType.Values>
 {
-    public DialogActivityType(Enum id) : base(id) { }
-    public override DialogActivityType MapValue(Enum id) => new(id);
+    public DialogActivityType(Values id) : base(id) { }
+    public override DialogActivityType MapValue(Values id) => new(id);
 
-    public enum Enum
+    public enum Values
     {
         /// <summary>
         /// Refererer en innsending utført av party som er mottatt hos tjenestetilbyder.

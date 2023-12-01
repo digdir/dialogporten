@@ -16,6 +16,6 @@ internal static class AuthorizationPolicyBuilderExtensions
                 .Split(ScopeClaimSeparator, StringSplitOptions.RemoveEmptyEntries)
                 .Contains(scope)));
 
-    public static AuthorizationPolicyBuilder RequireValidConsumerClaim(this AuthorizationPolicyBuilder builder) => 
+    public static AuthorizationPolicyBuilder RequireValidConsumerClaim(this AuthorizationPolicyBuilder builder) =>
         builder.RequireAssertion(ctx => ctx.User.TryGetOrgNumber(out _));
 }

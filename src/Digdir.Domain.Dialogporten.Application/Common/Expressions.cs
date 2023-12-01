@@ -8,8 +8,8 @@ internal static class Expressions
 {
     internal static Expression<Func<Localization, bool>> LocalizedSearchExpression(string? search, string? cultureCode)
     {
-        return localization => 
-            (cultureCode == null || localization.CultureCode == cultureCode) && 
+        return localization =>
+            (cultureCode == null || localization.CultureCode == cultureCode) &&
             EF.Functions.ILike(localization.Value, $"%{search}%");
-    } 
+    }
 }

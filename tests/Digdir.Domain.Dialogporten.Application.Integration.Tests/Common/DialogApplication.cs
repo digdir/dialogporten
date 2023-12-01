@@ -1,4 +1,5 @@
-﻿using Digdir.Domain.Dialogporten.Application.Externals;
+﻿using System.Collections.ObjectModel;
+using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Infrastructure;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence;
 using Digdir.Library.Entity.Abstractions.Features.Lookup;
@@ -11,6 +12,7 @@ using Microsoft.Extensions.Hosting;
 using Npgsql;
 using NSubstitute;
 using Respawn;
+using Respawn.Graph;
 using Testcontainers.PostgreSql;
 
 namespace Digdir.Domain.Dialogporten.Application.Integration.Tests.Common;
@@ -84,13 +86,14 @@ public class DialogApplication : IAsyncLifetime
         });
     }
 
-    private IEnumerable<Respawn.Graph.Table> GetLookupTables()
+    private ReadOnlyCollection<Table> GetLookupTables()
     {
         using var scope = _rootProvider.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<DialogDbContext>();
         return db.Model.GetEntityTypes()
             .Where(x => typeof(ILookupEntity).IsAssignableFrom(x.ClrType))
             .Select(x => new Respawn.Graph.Table(x.GetTableName()!))
-            .ToList();
+            .ToList()
+            .AsReadOnly();
     }
 }

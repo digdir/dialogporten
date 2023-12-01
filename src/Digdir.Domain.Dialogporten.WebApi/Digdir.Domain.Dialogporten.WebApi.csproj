@@ -26,8 +26,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Digdir.Domain.Dialogporten.Application\Digdir.Domain.Dialogporten.Application.csproj" />
-    <ProjectReference Include="..\Digdir.Domain.Dialogporten.Infrastructure\Digdir.Domain.Dialogporten.Infrastructure.csproj" />
+    <ProjectReference Include="..\Digdir.Domain.Dialogporten.Application\Digdir.Domain.Dialogporten.Application.csproj"/>
+    <ProjectReference Include="..\Digdir.Domain.Dialogporten.Infrastructure\Digdir.Domain.Dialogporten.Infrastructure.csproj"/>
   </ItemGroup>
 
 </Project>

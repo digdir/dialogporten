@@ -19,7 +19,7 @@ public class GetDialogElementEndpoint : Endpoint<GetDialogElementQuery>
     public override void Configure()
     {
         Get("dialogs/{dialogId}/elements/{elementId}");
-        Policies(AuthorizationPolicy.Serviceprovider);
+        Policies(AuthorizationPolicy.ServiceProvider);
         Group<ServiceOwnerGroup>();
 
         Description(b => b

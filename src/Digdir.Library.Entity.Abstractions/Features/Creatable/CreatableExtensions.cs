@@ -12,8 +12,8 @@ public static class CreatableExtensions
     /// <param name="utcNow">The creation time in UTC.</param>
     public static void Create(this ICreatableEntity creatable, DateTimeOffset utcNow)
     {
-        creatable.CreatedAt = creatable.CreatedAt == default 
-            ? utcNow 
+        creatable.CreatedAt = creatable.CreatedAt == default
+            ? utcNow
             : creatable.CreatedAt;
     }
 }

@@ -20,7 +20,7 @@ public sealed class DeleteDialogEndpoint : Endpoint<DeleteDialogRequest>
     public override void Configure()
     {
         Delete("dialogs/{dialogId}");
-        Policies(AuthorizationPolicy.Serviceprovider);
+        Policies(AuthorizationPolicy.ServiceProvider);
         Group<ServiceOwnerGroup>();
 
         Description(b => b

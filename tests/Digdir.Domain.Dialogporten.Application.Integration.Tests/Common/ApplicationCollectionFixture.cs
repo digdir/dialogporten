@@ -2,7 +2,7 @@
 
 public abstract class ApplicationCollectionFixture : IAsyncLifetime
 {
-    protected readonly DialogApplication Application;
+    protected DialogApplication Application { get; }
 
     protected ApplicationCollectionFixture(DialogApplication application)
     {

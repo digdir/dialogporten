@@ -12,9 +12,9 @@ public static class UuidV7
         return IsValid(guid);
     }
 
-    public static bool IsValid(Guid guid)
+    public static bool IsValid(Guid value)
     {
-        var bytes = guid.ToByteArray();
+        var bytes = value.ToByteArray();
         // Version is stored in the 7th byte, but the nibbles are reversed so version is actually in the higher 4 bits
         var version = bytes[7] >> 4;
         if (version != 7) // Ensure version is 7

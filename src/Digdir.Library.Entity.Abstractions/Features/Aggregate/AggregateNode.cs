@@ -36,7 +36,8 @@ public abstract class AggregateNode
     /// <summary>
     /// Initializes a new instance of the <see cref="AggregateNode"/> class.
     /// </summary>
-    protected AggregateNode(object entity, AggregateNodeState state, IEnumerable<AggregateNodeProperty> modifiedProperties) 
+    protected AggregateNode(object entity, AggregateNodeState state,
+        IEnumerable<AggregateNodeProperty> modifiedProperties)
     {
         Entity = entity;
         State = state;
@@ -45,7 +46,8 @@ public abstract class AggregateNode
 
     internal void AddChild(AggregateNode node) => _children.Add(node);
 
-    internal static AggregateNode Create(Type type, object entity, AggregateNodeState state, IEnumerable<AggregateNodeProperty> modifiedProperties)
+    internal static AggregateNode Create(Type type, object entity, AggregateNodeState state,
+        IEnumerable<AggregateNodeProperty> modifiedProperties)
     {
         if (!entity.GetType().IsAssignableTo(type))
         {
@@ -55,7 +57,8 @@ public abstract class AggregateNode
 
         var nodeArguments = new[] { entity, state, modifiedProperties };
         var genericType = _openGenericAggregateNodeType.MakeGenericType(type);
-        var node = (AggregateNode) Activator.CreateInstance(genericType, BindingFlags.NonPublic | BindingFlags.Instance, null, nodeArguments, null)!;
+        var node = (AggregateNode)Activator.CreateInstance(genericType, BindingFlags.NonPublic | BindingFlags.Instance,
+            null, nodeArguments, null)!;
         return node;
     }
 }
@@ -70,9 +73,12 @@ public sealed class AggregateNode<T> : AggregateNode
     /// <summary>
     /// The actual entity in the aggregate tree this node represents.
     /// </summary>
-    public new T Entity => (T) base.Entity;
-    private AggregateNode(T entity, AggregateNodeState state, IEnumerable<AggregateNodeProperty> modifiedProperties) 
-        : base(entity, state, modifiedProperties) { }
+    public new T Entity => (T)base.Entity;
+
+    private AggregateNode(T entity, AggregateNodeState state, IEnumerable<AggregateNodeProperty> modifiedProperties)
+        : base(entity, state, modifiedProperties)
+    {
+    }
 }
 
 /// <summary>
@@ -96,7 +102,7 @@ public enum AggregateNodeState
     Deleted = 3,
 
     /// <summary>
-    /// The entitys property values have not been changed from the values in the database.
+    /// The entities property values have not been changed from the values in the database.
     /// </summary>
     Unchanged = 4
 }
@@ -144,7 +150,8 @@ public abstract class AggregateNodeProperty
     {
         var nodeArguments = new[] { propertyName, originalValue, currentValue };
         var genericType = _openGenericAggregateNodePropertyType.MakeGenericType(propertyType);
-        var property = (AggregateNodeProperty)Activator.CreateInstance(genericType, BindingFlags.NonPublic | BindingFlags.Instance, null, nodeArguments, null)!;
+        var property = (AggregateNodeProperty)Activator.CreateInstance(genericType,
+            BindingFlags.NonPublic | BindingFlags.Instance, null, nodeArguments, null)!;
         return property;
     }
 }
@@ -171,5 +178,8 @@ public sealed class AggregateNodeProperty<T> : AggregateNodeProperty
     /// <param name="propertyName">The name of the property that has been modified.</param>
     /// <param name="originalValue">The original value of the property before modification.</param>
     /// <param name="currentValue">The current value of the property after modification.</param>
-    private AggregateNodeProperty(string propertyName, T originalValue, T currentValue) : base(propertyName, originalValue, currentValue) { }
+    private AggregateNodeProperty(string propertyName, T originalValue, T currentValue) : base(propertyName,
+        originalValue, currentValue)
+    {
+    }
 }

@@ -2,12 +2,12 @@
 
 namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 
-public class DialogStatus : AbstractLookupEntity<DialogStatus, DialogStatus.Enum>
+public class DialogStatus : AbstractLookupEntity<DialogStatus, DialogStatus.Values>
 {
-    public DialogStatus(Enum id) : base(id) { }
-    public override DialogStatus MapValue(Enum id) => new(id);
+    public DialogStatus(Values id) : base(id) { }
+    public override DialogStatus MapValue(Values id) => new(id);
 
-    public enum Enum
+    public enum Values
     {
         /// <summary>
         /// Dialogen har ingen spesiell status. Brukes typisk for enkle meldinger som ikke krever noe 

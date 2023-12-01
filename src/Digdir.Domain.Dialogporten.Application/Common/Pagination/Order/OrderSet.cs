@@ -54,10 +54,7 @@ public sealed class OrderSet<TOrderDefinition, TTarget> : IOrderSet<TTarget>
             .FirstOrDefault(x => x.Key == PaginationConstants.OrderIdKey)
             ?? OrderOptions<TOrderDefinition, TTarget>.Value.IdOrder;
 
-        if (orderList.Contains(idOrder))
-        {
-            orderList.Remove(idOrder);
-        }
+        orderList.Remove(idOrder);
 
         orderList.Add(idOrder);
 
@@ -87,7 +84,7 @@ public sealed class OrderSet<TOrderDefinition, TTarget> : IOrderSet<TTarget>
                     string s => s,
                     DateTimeOffset d => d.UtcDateTime.ToString("o"),
                     DateTime d => d.ToString("o"),
-                    object o => o.ToString(),
+                    var o => o.ToString(),
                 };
                 return $"{x.Key.ToLowerInvariant()}{PaginationConstants.ContinuationTokenDelimiter}{value}";
             });
@@ -117,9 +114,6 @@ public sealed class OrderSet<TOrderDefinition, TTarget> : IOrderSet<TTarget>
             return x.Key == y.Key;
         }
 
-        public int GetHashCode([DisallowNull] Order<TTarget> obj)
-        {
-            return obj.Key.GetHashCode();
-        }
+        public int GetHashCode([DisallowNull] Order<TTarget> obj) => obj.Key.GetHashCode();
     }
 }

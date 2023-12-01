@@ -28,11 +28,11 @@ internal sealed class ConvertDomainEventsToOutboxMessagesInterceptor : SaveChang
 
         var domainEvents = dbContext.ChangeTracker.Entries()
             .SelectMany(x =>
-                x.Entity is IEventPublisher publisher 
-                    ? publisher.DomainEvents 
+                x.Entity is IEventPublisher publisher
+                    ? publisher.DomainEvents
                     : Enumerable.Empty<IDomainEvent>())
             .ToList();
-        
+
         foreach (var domainEvent in domainEvents)
         {
             domainEvent.OccuredAt = _transactionTime.Value;

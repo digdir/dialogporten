@@ -20,8 +20,8 @@ public record PostgresCdcSSubscriptionOptions(
     IReplicationDataMapper<OutboxMessage> DataMapper
 )
 {
-    internal string ReplicationSlotName { get; init; } = ReplicationSlotName.ToLower();
-    internal string PublicationName { get; init; } = PublicationName.ToLower();
+    internal string ReplicationSlotName { get; init; } = ReplicationSlotName.ToLowerInvariant();
+    internal string PublicationName { get; init; } = PublicationName.ToLowerInvariant();
 }
 
 internal sealed class PostgresCdcSubscription : ICdcSubscription<OutboxMessage>

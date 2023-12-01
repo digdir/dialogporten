@@ -24,7 +24,7 @@ public sealed class DeleteDialogElementEndpoint : Endpoint<DeleteDialogElementRe
     public override void Configure()
     {
         Delete("dialogs/{dialogId}/elements/{elementId}");
-        Policies(AuthorizationPolicy.Serviceprovider);
+        Policies(AuthorizationPolicy.ServiceProvider);
         Group<ServiceOwnerGroup>();
 
         Description(b => b
@@ -38,9 +38,9 @@ public sealed class DeleteDialogElementEndpoint : Endpoint<DeleteDialogElementRe
         );
     }
 
-    public override async Task HandleAsync(DeleteDialogElementRequest request, CancellationToken ct)
+    public override async Task HandleAsync(DeleteDialogElementRequest req, CancellationToken ct)
     {
-        var dialogQueryResult = await _sender.Send(new GetDialogQuery {DialogId = request.DialogId}, ct);
+        var dialogQueryResult = await _sender.Send(new GetDialogQuery { DialogId = req.DialogId }, ct);
         if (dialogQueryResult.TryPickT1(out var entityNotFound, out var dialog))
         {
             await this.NotFoundAsync(entityNotFound, cancellationToken: ct);
@@ -53,17 +53,17 @@ public sealed class DeleteDialogElementEndpoint : Endpoint<DeleteDialogElementRe
 
         var updateDialogDto = _mapper.Map<UpdateDialogDto>(dialog);
 
-        var dialogElement = updateDialogDto.Elements.FirstOrDefault(x => x.Id == request.ElementId);
+        var dialogElement = updateDialogDto.Elements.FirstOrDefault(x => x.Id == req.ElementId);
         if (dialogElement is null)
         {
-            await this.NotFoundAsync(new EntityNotFound<Domain.Dialogs.Entities.DialogElements.DialogElement>(request.ElementId), cancellationToken: ct);
+            await this.NotFoundAsync(new EntityNotFound<Domain.Dialogs.Entities.DialogElements.DialogElement>(req.ElementId), cancellationToken: ct);
             return;
         }
-        
+
         updateDialogDto.Elements.Remove(dialogElement);
 
         var updateDialogCommand = new UpdateDialogCommand
-            {Id = request.DialogId, ETag = request.ETag, Dto = updateDialogDto};
+        { Id = req.DialogId, ETag = req.ETag, Dto = updateDialogDto };
 
         var result = await _sender.Send(updateDialogCommand, ct);
         await result.Match(
@@ -75,7 +75,7 @@ public sealed class DeleteDialogElementEndpoint : Endpoint<DeleteDialogElementRe
     }
 }
 
-public sealed class DeleteDialogElementRequest 
+public sealed class DeleteDialogElementRequest
 {
     public Guid DialogId { get; set; }
     public Guid ElementId { get; set; }
@@ -101,3 +101,4 @@ public sealed class DeleteDialogElementEndpointSummary : Summary<DeleteDialogEle
         Responses[StatusCodes.Status412PreconditionFailed] = Constants.SwaggerSummary.EtagMismatch;
     }
 }
+

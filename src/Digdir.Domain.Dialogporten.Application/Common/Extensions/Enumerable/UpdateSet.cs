@@ -1,6 +1,6 @@
 ﻿namespace Digdir.Domain.Dialogporten.Application.Common.Extensions.Enumerable;
 
-internal readonly struct UpdateSet<TDestination, TSource> 
+internal readonly struct UpdateSet<TDestination, TSource>
 {
     public TDestination Destination { get; init; }
     public TSource Source { get; init; }

@@ -40,13 +40,13 @@ public interface IDialogDbContext
     ///     <para>True if the property is unmodified or the predicate returns true.</para>
     /// </returns>
     bool MustWhenModified<TEntity, TProperty>(
-        TEntity entity, 
-        Expression<Func<TEntity, TProperty>> propertyExpression, 
-        Func<TProperty, bool> predicate) 
+        TEntity entity,
+        Expression<Func<TEntity, TProperty>> propertyExpression,
+        Func<TProperty, bool> predicate)
         where TEntity : class;
     Task<List<Guid>> GetExistingIds<TEntity>(
-        IEnumerable<TEntity> entities, 
-        CancellationToken cancellationToken) 
+        IEnumerable<TEntity> entities,
+        CancellationToken cancellationToken)
         where TEntity : class, IIdentifiableEntity;
     bool TrySetOriginalETag<TEntity>(TEntity entity, Guid? etag) where TEntity : class, IVersionableEntity;
 }

@@ -62,13 +62,13 @@ internal sealed class UpdateDialogDtoValidator : AbstractValidator<UpdateDialogD
 
         RuleFor(x => x.GuiActions)
             .Must(x => x
-                .Where(x => x.Priority == DialogGuiActionPriority.Enum.Primary)
+                .Where(x => x.Priority == DialogGuiActionPriority.Values.Primary)
                 .Count() <= 1).WithMessage("Only one primary GUI action is allowed.")
             .Must(x => x
-                .Where(x => x.Priority == DialogGuiActionPriority.Enum.Secondary)
+                .Where(x => x.Priority == DialogGuiActionPriority.Values.Secondary)
                 .Count() <= 1).WithMessage("Only one secondary GUI action is allowed.")
             .Must(x => x
-                .Where(x => x.Priority == DialogGuiActionPriority.Enum.Tertiary)
+                .Where(x => x.Priority == DialogGuiActionPriority.Values.Tertiary)
                 .Count() <= 5).WithMessage("Only five tertiary GUI actions are allowed.")
             .UniqueBy(x => x.Id)
             .ForEach(x => x.SetValidator(guiActionValidator));

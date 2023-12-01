@@ -1,5 +1,4 @@
-﻿using System.Data;
-using System.Text;
+﻿using System.Text;
 
 namespace Digdir.Tool.Dialogporten.SlackNotifier.Common;
 
@@ -10,19 +9,19 @@ public static class AsciiTableFormatter
             .ToList()
             .ToAsciiTable();
 
-    public static string ToAsciiTable(this List<List<object>> rows)
+    private static string ToAsciiTable(this List<List<object>> rows)
     {
-        var bldr = new StringBuilder();
+        var builder = new StringBuilder();
 
         var sizes = MaxLengthInEachColumn(rows);
         var types = GetColumnTypes(rows);
 
-        for (int rowNum = 0; rowNum < rows.Count; rowNum++)
+        for (var rowNum = 0; rowNum < rows.Count; rowNum++)
         {
             if (rowNum == 0)
             {
                 // Top border
-                AppendLine(bldr, sizes);
+                AppendLine(builder, sizes);
                 if (rows[0][0] == null)
                 {
                     continue;
@@ -30,65 +29,65 @@ public static class AsciiTableFormatter
             }
 
             var row = rows[rowNum];
-            for (int i = 0; i < row.Count; i++)
+            for (var i = 0; i < row.Count; i++)
             {
                 var item = row[i]!;
                 var size = sizes[i];
-                bldr.Append("| ");
+                builder.Append("| ");
                 if (item == null)
                 {
-                    bldr.Append("".PadLeft(size));
+                    builder.Append("".PadLeft(size));
                 }
                 else if (types[i] == ColumnType.Numeric)
                 {
-                    bldr.Append(item.ToString()!.PadLeft(size));
+                    builder.Append(item.ToString()!.PadLeft(size));
                 }
                 else if (types[i] == ColumnType.Text)
                 {
-                    bldr.Append(item.ToString()!.PadRight(size));
+                    builder.Append(item.ToString()!.PadRight(size));
                 }
                 else
                 {
                     throw new InvalidOperationException("Unexpected state");
                 }
 
-                bldr.Append(" ");
+                builder.Append(' ');
 
                 if (i == row.Count - 1)
                 {
                     // Add right border for last column
-                    bldr.Append("|");
+                    builder.Append('|');
                 }
             }
-            bldr.Append('\n');
+            builder.Append('\n');
             if (rowNum == 0)
             {
-                AppendLine(bldr, sizes);
+                AppendLine(builder, sizes);
             }
         }
 
-        AppendLine(bldr, sizes);
+        AppendLine(builder, sizes);
 
-        return bldr.ToString();
+        return builder.ToString();
     }
 
-    private static void AppendLine(StringBuilder bldr, List<int> sizes)
+    private static void AppendLine(StringBuilder builder, IReadOnlyList<int> sizes)
     {
-        bldr.Append('o');
+        builder.Append('o');
 
-        for (int i = 0; i < sizes.Count; i++)
+        foreach (var i in sizes)
         {
-            bldr.Append(new string('-', sizes[i] + 2));
-            bldr.Append('o');
+            builder.Append(new string('-', i + 2));
+            builder.Append('o');
         }
-        bldr.Append('\n');
+        builder.Append('\n');
     }
 
-    private static List<int> MaxLengthInEachColumn(List<List<object>> rows)
+    private static List<int> MaxLengthInEachColumn(IReadOnlyList<List<object>> rows)
     {
         var sizes = new List<int>();
         //Start from second row to skip the header
-        for (int i = 0; i < rows[1].Count; i++)
+        for (var i = 0; i < rows[1].Count; i++)
         {
             var max = rows.Max(row => row[i]?.ToString()?.Length ?? 0);
             sizes.Insert(i, max);
@@ -99,11 +98,11 @@ public static class AsciiTableFormatter
     private static List<ColumnType> GetColumnTypes(List<List<object>> rows)
     {
         var types = new List<ColumnType>();
-        for (int i = 0; i < rows[1].Count; i++)
+        for (var i = 0; i < rows[1].Count; i++)
         {
             var isNumeric = rows.Skip(1).All(row => row[i]?.GetType()?.IsNumericType() ?? false);
-            var coltype = isNumeric ? ColumnType.Numeric : ColumnType.Text;
-            types.Insert(i, coltype);
+            var columnType = isNumeric ? ColumnType.Numeric : ColumnType.Text;
+            types.Insert(i, columnType);
         }
         return types;
     }
@@ -138,7 +137,17 @@ public static class AsciiTableFormatter
                     return Nullable.GetUnderlyingType(type)!.IsNumericType();
                 }
                 return false;
+            case TypeCode.Empty:
+            case TypeCode.DBNull:
+            case TypeCode.Boolean:
+            case TypeCode.Char:
+            case TypeCode.DateTime:
+            case TypeCode.String:
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
         }
+
         return false;
     }
 

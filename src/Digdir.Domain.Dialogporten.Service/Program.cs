@@ -1,4 +1,5 @@
-﻿using Digdir.Domain.Dialogporten.Application;
+﻿using System.Globalization;
+using Digdir.Domain.Dialogporten.Application;
 using Digdir.Domain.Dialogporten.Infrastructure;
 using MassTransit;
 using System.Reflection;
@@ -15,7 +16,7 @@ using Digdir.Domain.Dialogporten.Service;
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Warning()
     .Enrich.FromLogContext()
-    .WriteTo.Console()
+    .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture)
     .WriteTo.ApplicationInsights(
         TelemetryConfiguration.CreateDefault(),
         TelemetryConverter.Traces)
@@ -46,11 +47,13 @@ static void BuildAndRun(string[] args)
         .ReadFrom.Configuration(context.Configuration)
         .ReadFrom.Services(services)
         .Enrich.FromLogContext()
-        .WriteTo.Console()
+        .WriteTo.Conditional(
+            condition: x => builder.Environment.IsDevelopment(),
+            configureSink: x => x.Console(formatProvider: CultureInfo.InvariantCulture))
         .WriteTo.ApplicationInsights(
             services.GetRequiredService<TelemetryConfiguration>(),
             TelemetryConverter.Traces));
-    
+
     builder.Services
         .AddApplicationInsightsTelemetry()
         .AddMassTransit(x =>
@@ -59,11 +62,12 @@ static void BuildAndRun(string[] args)
             x.UsingRabbitMq((context, cfg) =>
             {
                 const string rabbitMqSection = "RabbitMq";
-                cfg.Host(builder.Configuration[$"{rabbitMqSection}:Host"], "/", h => {
+                cfg.Host(builder.Configuration[$"{rabbitMqSection}:Host"], "/", h =>
+                {
                     h.Username(builder.Configuration[$"{rabbitMqSection}:Username"]);
                     h.Password(builder.Configuration[$"{rabbitMqSection}:Password"]);
                 });
-                cfg.ReceiveEndpoint(thisAssembly.GetName().Name!, x => 
+                cfg.ReceiveEndpoint(thisAssembly.GetName().Name!, x =>
                 {
                     x.UseMessageRetry(r => r.Intervals(
                         TimeSpan.FromSeconds(1),
@@ -85,5 +89,5 @@ static void BuildAndRun(string[] args)
 
     var app = builder.Build();
     app.UseHttpsRedirection();
-    app.Run(); 
+    app.Run();
 }

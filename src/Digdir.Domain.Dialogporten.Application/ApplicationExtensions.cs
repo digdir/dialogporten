@@ -42,14 +42,13 @@ public static class ApplicationExtensions
             .AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>))
             .AddTransient(typeof(IPipelineBehavior<,>), typeof(DomainContextBehaviour<,>));
 
-        if (environment.IsDevelopment())
-        {
-            var localDeveloperSettings = configuration.GetLocalDevelopmentSettings();
-            services.Decorate<IUserService, LocalDevelopmentUserServiceDecorator>(
-                predicate: 
-                localDeveloperSettings.UseLocalDevelopmentUser ||
-                localDeveloperSettings.UseLocalDevelopmentResourceRegister);
-        }
+        if (!environment.IsDevelopment()) return services;
+
+        var localDeveloperSettings = configuration.GetLocalDevelopmentSettings();
+        services.Decorate<IUserService, LocalDevelopmentUserServiceDecorator>(
+            predicate:
+            localDeveloperSettings.UseLocalDevelopmentUser ||
+            localDeveloperSettings.UseLocalDevelopmentResourceRegister);
 
         return services;
     }

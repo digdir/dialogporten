@@ -12,8 +12,12 @@ internal delegate void DeleteDelegate<in TDestination>(IEnumerable<TDestination>
 
 internal static class DeleteDelegate
 {
+#pragma warning disable IDE0060
+    // ReSharper disable once MethodOverloadWithOptionalParameter
     public static Task NoOp<TDestination>(IEnumerable<TDestination> deletables, CancellationToken cancellationToken = default) => Task.CompletedTask;
     public static void NoOp<TDestination>(IEnumerable<TDestination> deletables) { /* No operation by design */ }
+#pragma warning restore IDE0060
+
 }
 
 internal static class MergeExtensions
@@ -130,17 +134,17 @@ internal static class MergeExtensions
             return;
         }
 
-        var deleates = destinations
+        var delegates = destinations
             .Except(updateSets.Select(x => x.Destination))
             .ToList();
 
-        if (deleates.Count == 0)
+        if (delegates.Count == 0)
         {
             return;
         }
 
-        await delete(deleates, cancellationToken);
-        foreach (var item in deleates)
+        await delete(delegates, cancellationToken);
+        foreach (var item in delegates)
         {
             destinations.Remove(item);
         }
@@ -190,17 +194,17 @@ internal static class MergeExtensions
             return;
         }
 
-        var deleates = destinations
+        var delegates = destinations
             .Except(updateSets.Select(x => x.Destination))
             .ToList();
 
-        if (deleates.Count == 0)
+        if (delegates.Count == 0)
         {
             return;
         }
 
-        delete(deleates);
-        foreach (var item in deleates)
+        delete(delegates);
+        foreach (var item in delegates)
         {
             destinations.Remove(item);
         }

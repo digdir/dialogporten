@@ -1,7 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using FluentValidation;
 using Microsoft.Extensions.Hosting;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Digdir.Domain.Dialogporten.Application.Common.Extensions;
 
@@ -57,9 +55,9 @@ public static class ServiceCollectionExtensions
     }
 
     public static IServiceCollection Decorate<TService, TDecorator>(this IServiceCollection services, bool predicate)
-        where TDecorator : TService => 
-        predicate 
-            ? services.Decorate<TService, TDecorator>() 
+        where TDecorator : TService =>
+        predicate
+            ? services.Decorate<TService, TDecorator>()
             : services;
 
     public static IServiceCollection AddHostedService<THostedService>(this IServiceCollection services, bool predicate)

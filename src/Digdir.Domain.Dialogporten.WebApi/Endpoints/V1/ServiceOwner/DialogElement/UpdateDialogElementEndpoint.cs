@@ -1,3 +1,4 @@
+using System.Globalization;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Update;
@@ -25,7 +26,7 @@ public sealed class UpdateDialogElementEndpoint : Endpoint<UpdateDialogElementRe
     public override void Configure()
     {
         Put("dialogs/{dialogId}/elements/{elementId}");
-        Policies(AuthorizationPolicy.Serviceprovider);
+        Policies(AuthorizationPolicy.ServiceProvider);
         Group<ServiceOwnerGroup>();
 
         Description(b => b
@@ -39,9 +40,9 @@ public sealed class UpdateDialogElementEndpoint : Endpoint<UpdateDialogElementRe
         );
     }
 
-    public override async Task HandleAsync(UpdateDialogElementRequest request, CancellationToken ct)
+    public override async Task HandleAsync(UpdateDialogElementRequest req, CancellationToken ct)
     {
-        var dialogQueryResult = await _sender.Send(new GetDialogQuery {DialogId = request.DialogId}, ct);
+        var dialogQueryResult = await _sender.Send(new GetDialogQuery { DialogId = req.DialogId }, ct);
         if (dialogQueryResult.TryPickT1(out var entityNotFound, out var dialog))
         {
             await this.NotFoundAsync(entityNotFound, cancellationToken: ct);
@@ -50,22 +51,22 @@ public sealed class UpdateDialogElementEndpoint : Endpoint<UpdateDialogElementRe
 
         var updateDialogDto = _mapper.Map<UpdateDialogDto>(dialog);
 
-        var dialogElement = updateDialogDto.Elements.FirstOrDefault(x => x.Id == request.ElementId);
+        var dialogElement = updateDialogDto.Elements.FirstOrDefault(x => x.Id == req.ElementId);
         if (dialogElement is null)
         {
             await this.NotFoundAsync(
-                new EntityNotFound<Domain.Dialogs.Entities.DialogElements.DialogElement>(request.ElementId),
+                new EntityNotFound<Domain.Dialogs.Entities.DialogElements.DialogElement>(req.ElementId),
                 cancellationToken: ct);
             return;
         }
 
         updateDialogDto.Elements.Remove(dialogElement);
 
-        var updateDialogElementDto = MapToUpdateDto(request);
+        var updateDialogElementDto = MapToUpdateDto(req);
         updateDialogDto.Elements.Add(updateDialogElementDto);
 
         var updateDialogCommand = new UpdateDialogCommand
-            {Id = request.DialogId, ETag = request.ETag, Dto = updateDialogDto};
+        { Id = req.DialogId, ETag = req.ETag, Dto = updateDialogDto };
 
         var result = await _sender.Send(updateDialogCommand, ct);
         await result.Match(
@@ -115,10 +116,10 @@ public sealed class UpdateDialogElementEndpointSummary : Summary<UpdateDialogEle
 
                 Optimistic concurrency control is implemented using the If-Match header. Supply the ETag value from the GetDialog endpoint to ensure that the dialog is not deleted by another request in the meantime.
                 """;
-        Responses[StatusCodes.Status204NoContent] = string.Format(Constants.SwaggerSummary.Updated, "element");
+        Responses[StatusCodes.Status204NoContent] = string.Format(CultureInfo.InvariantCulture, Constants.SwaggerSummary.Updated, "element");
         Responses[StatusCodes.Status400BadRequest] = Constants.SwaggerSummary.ValidationError;
         Responses[StatusCodes.Status401Unauthorized] = Constants.SwaggerSummary.ServiceOwnerAuthenticationFailure;
-        Responses[StatusCodes.Status403Forbidden] = string.Format(Constants.SwaggerSummary.AccessDeniedToDialogForChildEntity, "update");
+        Responses[StatusCodes.Status403Forbidden] = string.Format(CultureInfo.InvariantCulture, Constants.SwaggerSummary.AccessDeniedToDialogForChildEntity, "update");
         Responses[StatusCodes.Status404NotFound] = Constants.SwaggerSummary.DialogElementNotFound;
         Responses[StatusCodes.Status412PreconditionFailed] = Constants.SwaggerSummary.EtagMismatch;
         Responses[StatusCodes.Status422UnprocessableEntity] = Constants.SwaggerSummary.DomainError;

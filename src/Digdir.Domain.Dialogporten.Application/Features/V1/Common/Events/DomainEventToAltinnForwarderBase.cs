@@ -19,18 +19,14 @@ internal class DomainEventToAltinnForwarderBase
     }
 
     protected string DialogportenBaseUrl() => _dialogportenSettings.BaseUri.ToString();
-    
+
     protected async Task<DialogEntity> GetDialog(Guid dialogId, CancellationToken cancellationToken)
     {
         var dialog = await Db.Dialogs
             .IgnoreQueryFilters()
             .AsNoTracking()
-            .FirstOrDefaultAsync(x => x.Id == dialogId, cancellationToken);
-
-        if (dialog is null)
-        {
-            throw new ApplicationException($"Dialog with id {dialogId} not found");
-        }
+            .FirstOrDefaultAsync(x => x.Id == dialogId, cancellationToken)
+            ?? throw new KeyNotFoundException($"Dialog with id {dialogId} not found");
 
         return dialog;
     }

@@ -23,7 +23,7 @@ internal static class FluentValidation_Enumerable_Extensions
                 .Select(x => x.Key)
                 .ToArray();
             ctx.MessageFormatter.AppendArgument("DuplicateKeys", string.Join(",", duplicateKeys));
-            return !duplicateKeys.Any();
+            return duplicateKeys.Length == 0;
         }).WithMessage("Can not contain duplicate items: [{DuplicateKeys}].");
     }
 

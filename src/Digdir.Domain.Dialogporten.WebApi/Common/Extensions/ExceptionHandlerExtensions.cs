@@ -21,7 +21,7 @@ internal static class ExceptionHandlerExtensions
                 var type = exHandlerFeature.Error.GetType().Name;
                 var error = exHandlerFeature.Error.Message;
                 var logger = ctx.Resolve<ILogger<ExceptionHandler>>();
-                logger.LogError(exHandlerFeature.Error, "{@http}{@type}{@reason}", http, type, error);
+                logger.LogError(exHandlerFeature.Error, "{@Http}{@Type}{@Reason}", http, type, error);
                 ctx.Response.StatusCode = StatusCodes.Status500InternalServerError;
                 ctx.Response.ContentType = "application/problem+json";
                 await ctx.Response.WriteAsJsonAsync(ctx.ResponseBuilder(ctx.Response.StatusCode));
@@ -31,5 +31,5 @@ internal static class ExceptionHandlerExtensions
         return app;
     }
 
-    private class ExceptionHandler { }
+    private sealed class ExceptionHandler { }
 }
