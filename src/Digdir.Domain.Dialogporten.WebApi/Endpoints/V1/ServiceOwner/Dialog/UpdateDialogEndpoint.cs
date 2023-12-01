@@ -69,10 +69,10 @@ public sealed class UpdateDialogEndpointSummary : Summary<UpdateDialogEndpoint>
 
                 {Constants.SwaggerSummary.OptimisticConcurrencyNote}
                 """;
-        Responses[StatusCodes.Status204NoContent] = string.Format(Constants.SwaggerSummary.Updated, "aggregate");;
+        Responses[StatusCodes.Status204NoContent] = Constants.SwaggerSummary.Updated.Format("aggregate");
         Responses[StatusCodes.Status400BadRequest] = Constants.SwaggerSummary.ValidationError;
         Responses[StatusCodes.Status401Unauthorized] = Constants.SwaggerSummary.ServiceOwnerAuthenticationFailure;
-        Responses[StatusCodes.Status403Forbidden] = string.Format(Constants.SwaggerSummary.AccessDeniedToDialog, "update");
+        Responses[StatusCodes.Status403Forbidden] = Constants.SwaggerSummary.AccessDeniedToDialog.Format("update");
         Responses[StatusCodes.Status404NotFound] = Constants.SwaggerSummary.DialogNotFound;
         Responses[StatusCodes.Status412PreconditionFailed] = Constants.SwaggerSummary.EtagMismatch;
         Responses[StatusCodes.Status422UnprocessableEntity] = Constants.SwaggerSummary.DomainError;

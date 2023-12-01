@@ -53,9 +53,9 @@ public sealed class GetDialogEndpointSummary : Summary<GetDialogEndpoint>
 
                 Note that this operation may return deleted dialogs (see the field `DeletedAt`).
                 """;
-        Responses[StatusCodes.Status200OK] = string.Format(Constants.SwaggerSummary.ReturnedResult, "aggregate");
+        Responses[StatusCodes.Status200OK] = Constants.SwaggerSummary.ReturnedResult.Format("aggregate");
         Responses[StatusCodes.Status401Unauthorized] = Constants.SwaggerSummary.ServiceOwnerAuthenticationFailure;
-        Responses[StatusCodes.Status403Forbidden] = string.Format(Constants.SwaggerSummary.AccessDeniedToDialog, "get");
+        Responses[StatusCodes.Status403Forbidden] = Constants.SwaggerSummary.AccessDeniedToDialog.Format("get");
         Responses[StatusCodes.Status404NotFound] = Constants.SwaggerSummary.DialogNotFound;
     }
 }

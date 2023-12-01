@@ -48,7 +48,7 @@ public sealed class SearchDialogEndpointSummary : Summary<SearchDialogEndpoint, 
                 * See "continuationToken" in the response for how to get the next page of results.
                 * hasNextPage will be set to true if there are more items to get.
                 """;
-        Responses[StatusCodes.Status200OK] = string.Format(CultureInfo.InvariantCulture, Constants.SwaggerSummary.ReturnedResult, "list");
+        Responses[StatusCodes.Status200OK] = Constants.SwaggerSummary.ReturnedResult.Format("list");
         Responses[StatusCodes.Status401Unauthorized] = Constants.SwaggerSummary.EndUserAuthenticationFailure;
 
         RequestParam(p => p.ServiceResource, "Filter by one or more service resources");

@@ -64,9 +64,9 @@ public sealed class DeleteDialogEndpointSummary : Summary<DeleteDialogEndpoint>
 
                 Optimistic concurrency control is implemented using the If-Match header. Supply the ETag value from the GetDialog endpoint to ensure that the dialog is not deleted by another request in the meantime.
                 """;
-        Responses[StatusCodes.Status204NoContent] = string.Format(Constants.SwaggerSummary.Deleted, "aggregate");
+        Responses[StatusCodes.Status204NoContent] = Constants.SwaggerSummary.Deleted.Format("aggregate");
         Responses[StatusCodes.Status401Unauthorized] = Constants.SwaggerSummary.ServiceOwnerAuthenticationFailure;
-        Responses[StatusCodes.Status403Forbidden] = string.Format(Constants.SwaggerSummary.AccessDeniedToDialog, "delete");
+        Responses[StatusCodes.Status403Forbidden] = Constants.SwaggerSummary.AccessDeniedToDialog.Format("delete");
         Responses[StatusCodes.Status404NotFound] = Constants.SwaggerSummary.DialogNotFound;
         Responses[StatusCodes.Status412PreconditionFailed] = Constants.SwaggerSummary.EtagMismatch;
     }

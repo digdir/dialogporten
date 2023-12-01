@@ -116,10 +116,10 @@ public sealed class UpdateDialogElementEndpointSummary : Summary<UpdateDialogEle
 
                 Optimistic concurrency control is implemented using the If-Match header. Supply the ETag value from the GetDialog endpoint to ensure that the dialog is not deleted by another request in the meantime.
                 """;
-        Responses[StatusCodes.Status204NoContent] = string.Format(CultureInfo.InvariantCulture, Constants.SwaggerSummary.Updated, "element");
+        Responses[StatusCodes.Status204NoContent] = Constants.SwaggerSummary.Updated.Format("element");
         Responses[StatusCodes.Status400BadRequest] = Constants.SwaggerSummary.ValidationError;
         Responses[StatusCodes.Status401Unauthorized] = Constants.SwaggerSummary.ServiceOwnerAuthenticationFailure;
-        Responses[StatusCodes.Status403Forbidden] = string.Format(CultureInfo.InvariantCulture, Constants.SwaggerSummary.AccessDeniedToDialogForChildEntity, "update");
+        Responses[StatusCodes.Status403Forbidden] = Constants.SwaggerSummary.AccessDeniedToDialogForChildEntity.Format("update");
         Responses[StatusCodes.Status404NotFound] = Constants.SwaggerSummary.DialogElementNotFound;
         Responses[StatusCodes.Status412PreconditionFailed] = Constants.SwaggerSummary.EtagMismatch;
         Responses[StatusCodes.Status422UnprocessableEntity] = Constants.SwaggerSummary.DomainError;

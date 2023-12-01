@@ -45,9 +45,9 @@ public sealed class SearchDialogElementEndpointSummary : Summary<SearchDialogEle
         Description = """
                 Gets the list of elements belonging to a dialog
                 """;
-        Responses[StatusCodes.Status200OK] = string.Format(CultureInfo.InvariantCulture, Constants.SwaggerSummary.ReturnedResult, "element list");
+        Responses[StatusCodes.Status200OK] = Constants.SwaggerSummary.ReturnedResult.Format("element list");
         Responses[StatusCodes.Status401Unauthorized] = Constants.SwaggerSummary.ServiceOwnerAuthenticationFailure;
         Responses[StatusCodes.Status404NotFound] = Constants.SwaggerSummary.DialogNotFound;
-        Responses[StatusCodes.Status403Forbidden] = string.Format(CultureInfo.InvariantCulture, Constants.SwaggerSummary.AccessDeniedToDialog, "get");
+        Responses[StatusCodes.Status403Forbidden] = Constants.SwaggerSummary.AccessDeniedToDialog.Format("get");
     }
 }

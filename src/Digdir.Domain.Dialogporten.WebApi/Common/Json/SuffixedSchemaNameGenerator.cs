@@ -11,20 +11,23 @@ namespace Digdir.Domain.Dialogporten.WebApi.Common.Json;
 /// matches the "SO" suffix used on the operationIds for service owners.
 ///
 /// </summary>
-internal class SuffixedSchemaNameGenerator : ISchemaNameGenerator
+internal sealed class SuffixedSchemaNameGenerator : ISchemaNameGenerator
 {
     public string Generate(Type type)
     {
         var baseName = BaseGenerate(type);
         // TODO! Find a more typed approach
-        if (type.FullName != null && (baseName.StartsWith("GetDialog") || baseName.StartsWith("ListDialog") || baseName.StartsWith("PaginatedList")) && type.FullName.Contains(".ServiceOwner"))
+        if (type.FullName != null &&
+            (baseName.StartsWith("GetDialog", StringComparison.Ordinal) ||
+             baseName.StartsWith("SearchDialog", StringComparison.Ordinal) ||
+             baseName.StartsWith("PaginatedList", StringComparison.Ordinal)) && type.FullName.Contains(".ServiceOwner"))
         {
             baseName += "SO";
         }
         return baseName;
     }
 
-    private string BaseGenerate(Type type)
+    private static string BaseGenerate(Type type)
     {
         var isGeneric = type.IsGenericType;
         var fullNameWithoutGenericArgs =

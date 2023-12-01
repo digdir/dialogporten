@@ -12,14 +12,15 @@ namespace Digdir.Domain.Dialogporten.WebApi.Common.Json;
 /// This does not however, remove the complex types from the generated documentation, these are handlied by the
 /// schema processor in PaginationAndOrderingsSchemaProcessor.cs
 /// </summary>
-public class PaginatedListParametersProcessor: IOperationProcessor
+public class PaginatedListParametersProcessor : IOperationProcessor
 {
     public bool Process(OperationProcessorContext context)
     {
         foreach (var parameter in context.OperationDescription.Operation.Parameters)
         {
             if (parameter.Kind != OpenApiParameterKind.Query) continue;
-            if (parameter.Name is nameof(PaginatedList<string>.ContinuationToken) or nameof(PaginatedList<string>.OrderBy)) {
+            if (parameter.Name is nameof(PaginatedList<string>.ContinuationToken) or nameof(PaginatedList<string>.OrderBy))
+            {
                 parameter.Schema = new JsonSchema { Type = JsonObjectType.String, IsNullableRaw = true };
             }
         }

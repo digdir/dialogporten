@@ -21,7 +21,7 @@ namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.Dialog;
 [ApiController]
 [Route("api/v1/serviceowner/dialogs")]
 [Tags(ServiceOwnerGroup.RoutePrefix)]
-[Authorize(Policy = DialogportenAuthorizationPolicy.Serviceprovider)]
+[Authorize(Policy = DialogportenAuthorizationPolicy.ServiceProvider)]
 public sealed class PatchDialogsController : ControllerBase
 {
     private readonly ISender _sender;
@@ -51,7 +51,7 @@ public sealed class PatchDialogsController : ControllerBase
     /// <response code="422">Domain error occured. See problem details for a list of errors.</response>
     [HttpPatch("{dialogId}")]
 
-    [ProducesResponseType(typeof(void),StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
