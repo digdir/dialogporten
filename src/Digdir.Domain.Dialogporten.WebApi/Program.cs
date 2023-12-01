@@ -67,8 +67,8 @@ static void BuildAndRun(string[] args)
     if (!builder.Environment.IsDevelopment())
     {
         // Temporary configuration for outbox through Web api
-        var shouldUseOutbox = Environment.GetEnvironmentVariable("RUN_OUTBOX_SCHEDULER");
-        if (shouldUseOutbox is not null)
+        var shouldUseOutbox = builder.Configuration.GetValue("RUN_OUTBOX_SCHEDULER", false);
+        if (shouldUseOutbox)
         {
             builder.Services.AddHostedService<OutboxScheduler>();
         }
