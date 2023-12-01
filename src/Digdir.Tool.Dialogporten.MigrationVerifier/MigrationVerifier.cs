@@ -22,10 +22,9 @@ public static class MigrationVerifier
 
         var jobName = GetMigrationJobName();
 
-        var jobCompleted = false;
         var retries = 0;
 
-        while (!jobCompleted && retries++ < maxRetries)
+        while (retries++ < maxRetries)
         {
             try
             {
@@ -54,20 +53,21 @@ public static class MigrationVerifier
                     logger.Information(
                         "### Migration job executions for git sha {GitSha} not found, retrying in {SecondsBetweenRetries} seconds",
                         gitSha[..8], secondsBetweenRetries);
+                    continue;
                 }
 
                 logger.Information("### Found {NumberOfExecutions} job executions for git sha {GitSha}",
                     executionsForGitSha.Count, gitSha[..8]);
+
                 if (executionsForGitSha.Exists(x => x.Data.Status == "Succeeded"))
                 {
-                    jobCompleted = true;
+                    logger.Information("### Migration job completed successfully, git sha {GitSha} ###", gitSha[..8]);
+                    return;
                 }
-                else
-                {
-                    logger.Information(
-                        "### No executions with status Succeeded for git sha {GitSha}, retrying in {SecondsBetweenRetries} seconds",
-                        gitSha[..8], secondsBetweenRetries);
-                }
+
+                logger.Information(
+                    "### No executions with status Succeeded for git sha {GitSha}, retrying in {SecondsBetweenRetries} seconds",
+                    gitSha[..8], secondsBetweenRetries);
             }
             catch (Exception e)
             {
