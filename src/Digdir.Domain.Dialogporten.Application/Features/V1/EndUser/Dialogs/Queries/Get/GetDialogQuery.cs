@@ -4,6 +4,7 @@ using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Common.Authorization;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
+using Digdir.Domain.Dialogporten.Domain.Authorization;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -94,6 +95,8 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
             concurrencyError => throw new UnreachableException("Should not get concurrencyError when updating ReadAt."));
 
         var dto = _mapper.Map<GetDialogDto>(dialog);
+        _dialogDetailsAuthorizationService.DecorateWithAuthorization(dto, authorizationResult);
+
         return dto;
     }
 }

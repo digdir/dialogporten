@@ -28,7 +28,7 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
         _logger = logger;
     }
 
-    public Task<DialogSearchAuthorizationResponse> PerformDialogSearchAuthorization(DialogSearchAuthorizationRequest request, CancellationToken cancellationToken)
+    public Task<DialogSearchAuthorizationResult> PerformDialogSearchAuthorization(DialogSearchAuthorizationRequest request, CancellationToken cancellationToken)
     {
         // TODO
         // - Implement as per https://github.com/digdir/dialogporten/issues/249
@@ -39,10 +39,11 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
         throw new NotImplementedException();
     }
 
-    public async Task<DialogDetailsAuthorizationResponse> PerformDialogDetailsAuthorization(DialogDetailsAuthorizationRequest request, CancellationToken cancellationToken)
+    public async Task<DialogDetailsAuthorizationResult> PerformDialogDetailsAuthorization(DialogDetailsAuthorizationRequest request, CancellationToken cancellationToken)
     {
-        var xamlJsonResponse = await SendRequest(DecisionRequestHelper.CreateDialogDetailsRequest(request));
-        return DecisionRequestHelper.CreateDialogDetailsResponse(xamlJsonResponse);
+        var xacmlJsonRequest = DecisionRequestHelper.CreateDialogDetailsRequest(request);
+        var xamlJsonResponse = await SendRequest(xacmlJsonRequest);
+        return DecisionRequestHelper.CreateDialogDetailsResponse(xacmlJsonRequest, xamlJsonResponse);
     }
 
     /// <summary>

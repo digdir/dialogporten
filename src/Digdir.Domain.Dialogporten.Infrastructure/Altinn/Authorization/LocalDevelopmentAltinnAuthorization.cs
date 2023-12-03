@@ -5,11 +5,11 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.Authorization;
 
 internal sealed class LocalDevelopmentAltinnAuthorization : IAltinnAuthorization
 {
-    public async Task<DialogSearchAuthorizationResponse> PerformDialogSearchAuthorization(DialogSearchAuthorizationRequest request, CancellationToken cancellationToken)
+    public async Task<DialogSearchAuthorizationResult> PerformDialogSearchAuthorization(DialogSearchAuthorizationRequest request, CancellationToken cancellationToken)
     {
         // TODO! Perhaps just get all parties and resources from the database and return those?
 
-        var authorizedResources = new DialogSearchAuthorizationResponse
+        var authorizedResources = new DialogSearchAuthorizationResult
         {
             ResourcesForParties = new Dictionary<string, List<string>>
             {
@@ -23,14 +23,13 @@ internal sealed class LocalDevelopmentAltinnAuthorization : IAltinnAuthorization
         return await Task.FromResult(authorizedResources);
     }
 
-    public Task<DialogDetailsAuthorizationResponse> PerformDialogDetailsAuthorization(DialogDetailsAuthorizationRequest request, CancellationToken cancellationToken)
+    public Task<DialogDetailsAuthorizationResult> PerformDialogDetailsAuthorization(DialogDetailsAuthorizationRequest request, CancellationToken cancellationToken)
     {
-        // Just allow everything that was requested
-        var response = new DialogDetailsAuthorizationResponse()
+        // Just allow everything that was requested except "sign"
+        return Task.FromResult(new DialogDetailsAuthorizationResult
         {
-            AuthorizedActions = request.Actions
-        };
-
-        return Task.FromResult(response);
+            AuthorizedActions = request.Actions.Where(x => x.Key != "sign")
+                .ToDictionary(x => x.Key, x => x.Value)
+        });
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using Altinn.Authorization.ABAC.Xacml.JsonProfile;
 using Digdir.Domain.Dialogporten.Domain.Authorization;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.Authorization;
 using Xunit;
@@ -96,6 +97,37 @@ public class DecisionRequestHelperTests
         Assert.Contains(resource1.Attribute, a => a.AttributeId == "urn:altinn:ssn" && a.Value == "12345678901");
     }
 
+    [Fact]
+    public void CreateDialogDetailsResponseShouldReturnCorrectResponse()
+    {
+        // Arrange
+        var request = CreateDialogDetailsAuthorizationRequest(
+            GetAsClaims(
+                // Should be copied as subject claim since there's not a "pid"-claim
+                ("consumer", ConsumerClaimValue)
+            ),
+            "/person/12345678901");
+
+        // Add an additional action to the request that the mocked response should give a non-permit response for
+        request.Actions.Add("failaction", new List<string> { DialogDetailsAuthorizationRequest.MainResource });
+
+        var jsonRequestRoot = DecisionRequestHelper.CreateDialogDetailsRequest(request);
+        var jsonResponse = CreateMockedXamlJsonResponse(jsonRequestRoot);
+
+        // Act
+        var response = DecisionRequestHelper.CreateDialogDetailsResponse(jsonRequestRoot, jsonResponse);
+
+        // Assert
+        Assert.NotNull(response);
+        Assert.Equal(request.Actions.Count - 1, response.AuthorizedActions.Count);
+        Assert.Equal(DialogDetailsAuthorizationRequest.MainResource, response.AuthorizedActions["read"].First());
+        Assert.Equal(DialogDetailsAuthorizationRequest.MainResource, response.AuthorizedActions["write"].First());
+        Assert.Equal("element1", response.AuthorizedActions["sign"].First());
+        Assert.Equal("element2", response.AuthorizedActions["elementread"].First());
+        Assert.Equal("element3", response.AuthorizedActions["elementread"].Last());
+        Assert.DoesNotContain(response.AuthorizedActions.Keys, k => k == "failaction");
+    }
+
     private static DialogDetailsAuthorizationRequest CreateDialogDetailsAuthorizationRequest(List<Claim> principalClaims, string party)
     {
         var allClaims = new List<Claim>
@@ -120,6 +152,31 @@ public class DecisionRequestHelperTests
                 { "elementread", new List<string> { "element2", "element3" } }
             }
         };
+    }
+
+    private static XacmlJsonResponse CreateMockedXamlJsonResponse(XacmlJsonRequestRoot request)
+    {
+        var response = new XacmlJsonResponse
+        {
+            Response = new List<XacmlJsonResult>()
+        };
+
+        foreach (var requestReference in request.Request.MultiRequests.RequestReference)
+        {
+            // Check if this request reference refers to the action with name "failaction", in which case we should return a non-permit response
+            // We need to use the actionId since the action name is not included in the request reference
+            var actionId = requestReference.ReferenceId.First(x => x.StartsWith("a", StringComparison.Ordinal));
+            var actionName = request.Request.Action.First(a => a.Id == actionId).Attribute.First().Value;
+
+            var decision = actionName == "failaction" ? "Deny" : "Permit";
+
+            response.Response.Add(new XacmlJsonResult
+            {
+                Decision = decision
+            });
+        }
+
+        return response;
     }
 
     private static List<Claim> GetAsClaims(params (string, string)[] claims)

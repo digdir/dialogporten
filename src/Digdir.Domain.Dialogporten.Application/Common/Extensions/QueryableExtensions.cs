@@ -11,7 +11,7 @@ internal static class QueryableExtensions
         return predicate ? source.Where(queryPredicate) : source;
     }
 
-    public static IQueryable<DialogEntity> WhereUserIsAuthorizedFor(this IQueryable<DialogEntity> source, DialogSearchAuthorizationResponse authorizedResources)
+    public static IQueryable<DialogEntity> WhereUserIsAuthorizedFor(this IQueryable<DialogEntity> source, DialogSearchAuthorizationResult authorizedResources)
     {
         var predicate = Expressions.Boolean<DialogEntity>.True;
 

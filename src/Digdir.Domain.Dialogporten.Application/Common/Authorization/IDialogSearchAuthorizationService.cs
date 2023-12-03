@@ -6,7 +6,7 @@ namespace Digdir.Domain.Dialogporten.Application.Common.Authorization;
 
 internal interface IDialogSearchAuthorizationService
 {
-    public Task<DialogSearchAuthorizationResponse> GetAuthorizedResourcesForSearch(SearchDialogQuery request, CancellationToken cancellationToken = default);
+    public Task<DialogSearchAuthorizationResult> GetAuthorizedResourcesForSearch(SearchDialogQuery request, CancellationToken cancellationToken = default);
 }
 
 internal sealed class DialogSearchAuthorizationService : IDialogSearchAuthorizationService
@@ -20,7 +20,7 @@ internal sealed class DialogSearchAuthorizationService : IDialogSearchAuthorizat
         _altinnAuthorization = altinnAuthorization;
     }
 
-    public async Task<DialogSearchAuthorizationResponse> GetAuthorizedResourcesForSearch(SearchDialogQuery request, CancellationToken cancellationToken = default)
+    public async Task<DialogSearchAuthorizationResult> GetAuthorizedResourcesForSearch(SearchDialogQuery request, CancellationToken cancellationToken = default)
     {
         var authRequest = new DialogSearchAuthorizationRequest
         {

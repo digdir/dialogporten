@@ -17,6 +17,7 @@ internal static class DecisionRequestHelper
     private const string AttributeIdSsn = "urn:altinn:ssn";
     private const string AttributeIdOrganizationNumber = "urn:altinn:organizationnumber";
     private const string AttributeIdAction = "urn:oasis:names:tc:xacml:1.0:action:action-id";
+    private const string AttributeIdResource = "urn:altinn:resource";
     private const string AttributeIdResourceInstance = "urn:altinn:resourceinstance";
     private const string AttributeIdSubResource = "urn:altinn:subresource";
 
@@ -254,9 +255,9 @@ internal static class DecisionRequestHelper
         return null;
     }
 
-    public static DialogDetailsAuthorizationResponse CreateDialogDetailsResponse(XacmlJsonResponse? xamlJsonResponse)
+    public static DialogDetailsAuthorizationResult CreateDialogDetailsResponse(XacmlJsonRequestRoot xamlJsonRequestRoot, XacmlJsonResponse? xamlJsonResponse)
     {
-        var response = new DialogDetailsAuthorizationResponse
+        var response = new DialogDetailsAuthorizationResult
         {
             AuthorizedActions = new Dictionary<string, List<string>>()
         };
@@ -266,7 +267,48 @@ internal static class DecisionRequestHelper
             return response;
         }
 
-        // TODO! Parse the response
+        try
+        {
+            // Iterate over the RequestReference to get the action and resource names asked
+            // The responses match the indices of the request
+            var index = 0;
+            foreach (var requestReference in xamlJsonRequestRoot.Request.MultiRequests.RequestReference)
+            {
+                if (xamlJsonResponse.Response[index].Decision != "Permit")
+                {
+                    index++;
+                    continue;
+                }
+
+                // We have a permitted action, now find the action and resource names from the referenceId
+                var actionId = requestReference.ReferenceId.First(x => x.StartsWith("a", StringComparison.Ordinal));
+                var actionName = xamlJsonRequestRoot.Request.Action.First(a => a.Id == actionId).Attribute
+                    .First(a => a.AttributeId == AttributeIdAction).Value;
+
+                // Get the name of the resource. If the id is not the main resource, get the subresource name
+                var resourceId = requestReference.ReferenceId.First(x => x.StartsWith("r", StringComparison.Ordinal));
+
+                var resourceName = resourceId == MainResourceId
+                    ? DialogDetailsAuthorizationRequest.MainResource
+                    : xamlJsonRequestRoot.Request.Resource.First(r => r.Id == resourceId).Attribute
+                        .First(a => a.AttributeId == AttributeIdSubResource).Value;
+
+                if (!response.AuthorizedActions.ContainsKey(actionName))
+                {
+                    response.AuthorizedActions.Add(actionName, new List<string>());
+                }
+
+                response.AuthorizedActions[actionName].Add(resourceName);
+                index++;
+
+            }
+        }
+        // If for some reason the response is broken, we will probably get null reference exceptions from the First()
+        // calls above. In that case, we just return the empty response. Application Insights will log the exception.
+        catch (Exception)
+        {
+            // ignored
+        }
 
         return response;
     }

@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using AutoMapper;
+using Digdir.Domain.Dialogporten.Application.Common.Authorization;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
@@ -23,11 +24,16 @@ internal sealed class GetDialogElementQueryHandler : IRequestHandler<GetDialogEl
 {
     private readonly IMapper _mapper;
     private readonly IDialogDbContext _dbContext;
+    private readonly IDialogDetailsAuthorizationService _dialogDetailsAuthorizationService;
 
-    public GetDialogElementQueryHandler(IMapper mapper, IDialogDbContext dbContext)
+    public GetDialogElementQueryHandler(
+        IMapper mapper,
+        IDialogDbContext dbContext,
+        IDialogDetailsAuthorizationService dialogDetailsAuthorizationService)
     {
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+        _dialogDetailsAuthorizationService = dialogDetailsAuthorizationService ?? throw new ArgumentNullException(nameof(dialogDetailsAuthorizationService));
     }
 
     public async Task<GetDialogElementResult> Handle(GetDialogElementQuery request,
@@ -50,6 +56,12 @@ internal sealed class GetDialogElementQueryHandler : IRequestHandler<GetDialogEl
             return new EntityNotFound<DialogEntity>(request.DialogId);
         }
 
+        var authorizationResult = await _dialogDetailsAuthorizationService.GetDialogDetailsAuthorization(dialog, cancellationToken);
+        if (authorizationResult.AuthorizedActions.Count == 0)
+        {
+            return new EntityNotFound<DialogEntity>(request.DialogId);
+        }
+
         if (dialog.Deleted)
         {
             return new EntityDeleted<DialogEntity>(request.DialogId);
@@ -63,6 +75,8 @@ internal sealed class GetDialogElementQueryHandler : IRequestHandler<GetDialogEl
         }
 
         var dto = _mapper.Map<GetDialogElementDto>(element);
+        _dialogDetailsAuthorizationService.DecorateWithAuthorization(dto, authorizationResult);
+
         return dto;
     }
 }

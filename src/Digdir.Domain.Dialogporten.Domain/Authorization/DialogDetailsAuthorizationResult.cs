@@ -1,6 +1,6 @@
 ﻿namespace Digdir.Domain.Dialogporten.Domain.Authorization;
 
-public sealed class DialogDetailsAuthorizationResponse
+public sealed class DialogDetailsAuthorizationResult
 {
     public const string MainResource = "main";
 
