@@ -18,10 +18,10 @@ services:
       retries: 5
 
   dialogporten-rabbitmq:
-    image: rabbitmq:3-management
+    build:
+      context: .
+      dockerfile: RabbitMq/Dockerfile
     restart: always
-    volumes:
-      - ./enabled_plugins:/etc/rabbitmq/enabled_plugins
     ports:
       - "5672:5672"
       - "15672:15672"
@@ -30,7 +30,7 @@ services:
       interval: 5s
       timeout: 20s
       retries: 5
-  
+      
   dialogporten-service:
     build:
       context: .

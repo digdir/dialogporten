@@ -11,12 +11,11 @@ RUN dotnet restore "src/Digdir.Domain.Dialogporten.Service/Digdir.Domain.Dialogp
 COPY . .
 
 WORKDIR "/src/src/Digdir.Domain.Dialogporten.Service"
-RUN dotnet build "Digdir.Domain.Dialogporten.Service.csproj" -c Release -o /app/build
 RUN dotnet publish "Digdir.Domain.Dialogporten.Service.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 
-RUN adduser appuser && chown -R appuser /app
+RUN useradd appuser && chown -R appuser /app
 
 USER appuser
 

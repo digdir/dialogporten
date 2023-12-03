@@ -85,9 +85,11 @@ static void BuildAndRun(string[] args)
         })
         .AddApplication(builder.Configuration, builder.Environment)
         .AddInfrastructure(builder.Configuration, builder.Environment)
-        .AddTransient<IUser, ServiceUser>();
+        .AddTransient<IUser, ServiceUser>()
+        .AddHealthChecks();
 
     var app = builder.Build();
     app.UseHttpsRedirection();
+    app.MapHealthChecks("/healthz");
     app.Run();
 }

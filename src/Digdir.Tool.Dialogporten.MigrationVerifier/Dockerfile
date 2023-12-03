@@ -6,12 +6,12 @@ WORKDIR /src
 
 COPY ["src/**/*.csproj", "./"]
 RUN for file in $(ls *.csproj); do mkdir -p src/${file%.*}/ && mv $file src/${file%.*}/; done
-RUN dotnet restore "src/Digdir.Domain.Dialogporten.ChangeDataCapture/Digdir.Domain.Dialogporten.ChangeDataCapture.csproj"
+RUN dotnet restore "src/Digdir.Tool.Dialogporten.MigrationVerifier/Digdir.Tool.Dialogporten.MigrationVerifier.csproj"
 
 COPY . .
 
-WORKDIR "/src/src/Digdir.Domain.Dialogporten.ChangeDataCapture"
-RUN dotnet publish "Digdir.Domain.Dialogporten.ChangeDataCapture.csproj" -c Release -o /app/publish /p:UseAppHost=false
+WORKDIR "/src/src/Digdir.Tool.Dialogporten.MigrationVerifier"
+RUN dotnet publish "Digdir.Tool.Dialogporten.MigrationVerifier.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 
@@ -21,4 +21,4 @@ USER appuser
 
 WORKDIR /app
 COPY --from=build /app/publish .
-ENTRYPOINT ["dotnet", "Digdir.Domain.Dialogporten.ChangeDataCapture.dll"]
+ENTRYPOINT ["dotnet", "Digdir.Tool.Dialogporten.MigrationVerifier.dll"]
