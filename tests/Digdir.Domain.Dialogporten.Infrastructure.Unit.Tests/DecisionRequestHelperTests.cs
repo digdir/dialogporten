@@ -165,7 +165,7 @@ public class DecisionRequestHelperTests
         {
             // Check if this request reference refers to the action with name "failaction", in which case we should return a non-permit response
             // We need to use the actionId since the action name is not included in the request reference
-            var actionId = requestReference.ReferenceId.First(x => x.StartsWith("a", StringComparison.Ordinal));
+            var actionId = requestReference.ReferenceId.First(x => x.StartsWith('a'));
             var actionName = request.Request.Action.First(a => a.Id == actionId).Attribute.First().Value;
 
             var decision = actionName == "failaction" ? "Deny" : "Permit";

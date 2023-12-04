@@ -281,24 +281,25 @@ internal static class DecisionRequestHelper
                 }
 
                 // We have a permitted action, now find the action and resource names from the referenceId
-                var actionId = requestReference.ReferenceId.First(x => x.StartsWith("a", StringComparison.Ordinal));
+                var actionId = requestReference.ReferenceId.First(x => x.StartsWith('a'));
                 var actionName = xamlJsonRequestRoot.Request.Action.First(a => a.Id == actionId).Attribute
                     .First(a => a.AttributeId == AttributeIdAction).Value;
 
                 // Get the name of the resource. If the id is not the main resource, get the subresource name
-                var resourceId = requestReference.ReferenceId.First(x => x.StartsWith("r", StringComparison.Ordinal));
+                var resourceId = requestReference.ReferenceId.First(x => x.StartsWith('r'));
 
                 var resourceName = resourceId == MainResourceId
                     ? DialogDetailsAuthorizationRequest.MainResource
                     : xamlJsonRequestRoot.Request.Resource.First(r => r.Id == resourceId).Attribute
                         .First(a => a.AttributeId == AttributeIdSubResource).Value;
 
-                if (!response.AuthorizedActions.ContainsKey(actionName))
+                if (!response.AuthorizedActions.TryGetValue(actionName, out var authorizationAttributes))
                 {
-                    response.AuthorizedActions.Add(actionName, new List<string>());
+                    authorizationAttributes = new List<string>();
+                    response.AuthorizedActions.Add(actionName, authorizationAttributes);
                 }
 
-                response.AuthorizedActions[actionName].Add(resourceName);
+                authorizationAttributes.Add(resourceName);
 
             }
         }

@@ -100,14 +100,15 @@ internal sealed class DialogDetailsAuthorizationService : IDialogDetailsAuthoriz
         foreach (var dialogElement in dialogEntity.Elements.Where(dialogElement =>
                      dialogElement.AuthorizationAttribute != null))
         {
-            if (!dialogDetailsAuthorizationRequest.Actions.ContainsKey(ElementReadAction))
+            if (!dialogDetailsAuthorizationRequest.Actions.TryGetValue(ElementReadAction, out var authorizationAttributes))
             {
-                dialogDetailsAuthorizationRequest.Actions.Add(ElementReadAction, new List<string>());
+                authorizationAttributes = new List<string>();
+                dialogDetailsAuthorizationRequest.Actions.Add(ElementReadAction, authorizationAttributes);
             }
 
-            if (!dialogDetailsAuthorizationRequest.Actions[ElementReadAction].Contains(dialogElement.AuthorizationAttribute!))
+            if (!authorizationAttributes.Contains(dialogElement.AuthorizationAttribute!))
             {
-                dialogDetailsAuthorizationRequest.Actions[ElementReadAction].Add(dialogElement.AuthorizationAttribute!);
+                authorizationAttributes.Add(dialogElement.AuthorizationAttribute!);
             }
 
         }
@@ -118,29 +119,31 @@ internal sealed class DialogDetailsAuthorizationService : IDialogDetailsAuthoriz
     {
         foreach (var action in dialogEntity.ApiActions)
         {
-            if (!dialogDetailsAuthorizationRequest.Actions.ContainsKey(action.Action))
+            if (!dialogDetailsAuthorizationRequest.Actions.TryGetValue(action.Action, out var authorizationAttributes))
             {
-                dialogDetailsAuthorizationRequest.Actions.Add(action.Action, new List<string>());
+                authorizationAttributes = new List<string>();
+                dialogDetailsAuthorizationRequest.Actions.Add(action.Action, authorizationAttributes);
             }
 
             var resource = action.AuthorizationAttribute ?? DialogDetailsAuthorizationRequest.MainResource;
-            if (!dialogDetailsAuthorizationRequest.Actions[action.Action].Contains(resource))
+            if (!authorizationAttributes.Contains(resource))
             {
-                dialogDetailsAuthorizationRequest.Actions[action.Action].Add(resource);
+                authorizationAttributes.Add(resource);
             }
         }
 
         foreach (var action in dialogEntity.GuiActions)
         {
-            if (!dialogDetailsAuthorizationRequest.Actions.ContainsKey(action.Action))
+            if (!dialogDetailsAuthorizationRequest.Actions.TryGetValue(action.Action, out var authorizationAttributes))
             {
-                dialogDetailsAuthorizationRequest.Actions.Add(action.Action, new List<string>());
+                authorizationAttributes = new List<string>();
+                dialogDetailsAuthorizationRequest.Actions.Add(action.Action, authorizationAttributes);
             }
 
             var resource = action.AuthorizationAttribute ?? DialogDetailsAuthorizationRequest.MainResource;
-            if (!dialogDetailsAuthorizationRequest.Actions[action.Action].Contains(resource))
+            if (!authorizationAttributes.Contains(resource))
             {
-                dialogDetailsAuthorizationRequest.Actions[action.Action].Add(resource);
+                authorizationAttributes.Add(resource);
             }
         }
     }
