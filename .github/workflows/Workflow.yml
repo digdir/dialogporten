@@ -14,10 +14,16 @@ jobs:
     with:
       publishArtifacts: true
 
-  deployPoc:
+  deployTest:
     needs: [ publish ]
     uses: ./.github/workflows/Deploy.yml
     secrets: inherit
     with:
-      environment: poc
-    
+      environment: test
+#
+#  deployTest:
+#    needs: [ publish ]
+#    uses: ./.github/workflows/Deploy.yml
+#    secrets: inherit
+#    with:
+#      environment: test

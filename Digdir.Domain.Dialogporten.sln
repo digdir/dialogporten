@@ -43,6 +43,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Digdir.Tool.Dialogporten.Sl
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{3C2C775D-F2D1-42A2-B53F-CC6D5FF59633}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Digdir.Tool.Dialogporten.MigrationVerifier", "src\Digdir.Tool.Dialogporten.MigrationVerifier\Digdir.Tool.Dialogporten.MigrationVerifier.csproj", "{19947332-D905-4861-91A5-FFDD35459112}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -93,6 +95,9 @@ Global
 		{4CB06F0D-598E-4D2E-B26F-ECC488F64A04}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4CB06F0D-598E-4D2E-B26F-ECC488F64A04}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4CB06F0D-598E-4D2E-B26F-ECC488F64A04}.Release|Any CPU.Build.0 = Release|Any CPU
+		{19947332-D905-4861-91A5-FFDD35459112}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{19947332-D905-4861-91A5-FFDD35459112}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{19947332-D905-4861-91A5-FFDD35459112}.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -111,6 +116,7 @@ Global
 		{45A63837-99BC-469C-A2DE-FEE6975516C3} = {320B47A0-5EB8-4B6E-8C84-90633A1849CA}
 		{A1CC5E4E-020C-4ABA-BD66-48819259BDB3} = {CADB8189-4AA1-4732-844A-C41DBF3EC8B7}
 		{4CB06F0D-598E-4D2E-B26F-ECC488F64A04} = {3C2C775D-F2D1-42A2-B53F-CC6D5FF59633}
+		{19947332-D905-4861-91A5-FFDD35459112} = {3C2C775D-F2D1-42A2-B53F-CC6D5FF59633}
 		{3C2C775D-F2D1-42A2-B53F-CC6D5FF59633} = {320B47A0-5EB8-4B6E-8C84-90633A1849CA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution

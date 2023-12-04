@@ -15,7 +15,7 @@ param secretPrefix string
 param removeSecretPrefix bool = true
 
 var environmentKeys = [for key in srcKeyVaultKeys: {
-    isEnvironemntKey: startsWith(key, secretPrefix)
+    isEnvironmentKey: startsWith(key, secretPrefix)
     value: removeSecretPrefix ? replace(key, secretPrefix, '') : key
     fullName: key
 }]
@@ -25,7 +25,7 @@ resource srcKeyVaultResource 'Microsoft.KeyVault/vaults@2022-11-01' existing = {
     scope: resourceGroup(srcKeyVaultSubId, srcKeyVaultRGNName)
 }
 
-module secrets 'upsertSecret.bicep' = [for key in environmentKeys: if (key.isEnvironemntKey) {
+module secrets 'upsertSecret.bicep' = [for key in environmentKeys: if (key.isEnvironmentKey) {
 	name: key.value
     scope: resourceGroup(destKeyVaultSubId, destKeyVaultRGName)
     params: {

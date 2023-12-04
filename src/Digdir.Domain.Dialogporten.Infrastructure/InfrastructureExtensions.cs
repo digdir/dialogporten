@@ -55,8 +55,7 @@ public static class InfrastructureExtensions
             .AddDistributedMemoryCache()
             .AddDbContext<DialogDbContext>((services, options) =>
             {
-                var connectionString = services
-                    .GetRequiredService<IOptions<InfrastructureSettings>>()
+                var connectionString = services.GetRequiredService<IOptions<InfrastructureSettings>>()
                     .Value.DialogDbConnectionString;
                 options.UseNpgsql(connectionString)
                     .AddInterceptors(services.GetRequiredService<ConvertDomainEventsToOutboxMessagesInterceptor>());
