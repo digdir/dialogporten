@@ -57,6 +57,9 @@ internal sealed class GetDialogElementQueryHandler : IRequestHandler<GetDialogEl
         }
 
         var authorizationResult = await _dialogDetailsAuthorizationService.GetDialogDetailsAuthorization(dialog, cancellationToken);
+
+        // If we have no authorized actions, we return a 404 to prevent leaking information about the existence of a dialog.
+        // Any authorized action will allow us to return the dialog, decorated with the authorization result (see below)
         if (authorizationResult.AuthorizedActions.Count == 0)
         {
             return new EntityNotFound<DialogEntity>(request.DialogId);

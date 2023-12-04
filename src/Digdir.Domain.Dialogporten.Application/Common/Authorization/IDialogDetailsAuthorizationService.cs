@@ -21,7 +21,6 @@ internal sealed class DialogDetailsAuthorizationService : IDialogDetailsAuthoriz
 
     private const string ElementReadAction = "elementread";
 
-
     public DialogDetailsAuthorizationService(
         IAltinnAuthorization altinnAuthorization,
         IUserService userService)

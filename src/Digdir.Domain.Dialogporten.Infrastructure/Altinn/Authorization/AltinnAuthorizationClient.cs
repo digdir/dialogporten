@@ -11,17 +11,9 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.Authorization;
 
 internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
 {
-
-    private const string SubscriptionKeyHeaderName = "Ocp-Apim-Subscription-Key";
     private readonly HttpClient _httpClient;
     private readonly ILogger _logger;
 
-    /// <summary>
-    /// Initialize a new instance of the <see cref="AuthorizationApiClient"/> class.
-    /// </summary>
-    /// <param name="client">A HttpClient provided by the built in HttpClientFactory.</param>
-    /// <param name="platformSettings">The current platform settings</param>
-    /// <param name="logger">A logger provided by the built in LoggerFactory.</param>
     public AltinnAuthorizationClient(HttpClient client, ILogger<AltinnAuthorizationClient> logger)
     {
         _httpClient = client;
@@ -46,12 +38,7 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
         return DecisionRequestHelper.CreateDialogDetailsResponse(xacmlJsonRequest, xamlJsonResponse);
     }
 
-    /// <summary>
-    /// Method for performing authorization.
-    /// </summary>
-    /// <param name="xacmlJsonRequest">An authorization request.</param>
-    /// <returns>The result of the authorization request.</returns>
-    public async Task<XacmlJsonResponse?> SendRequest(XacmlJsonRequestRoot xacmlJsonRequest)
+    private async Task<XacmlJsonResponse?> SendRequest(XacmlJsonRequestRoot xacmlJsonRequest)
     {
         XacmlJsonResponse? xacmlJsonResponse = null;
         var apiUrl = "authorization/api/v1/Decision";

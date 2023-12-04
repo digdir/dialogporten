@@ -17,9 +17,9 @@ internal static class DecisionRequestHelper
     private const string AttributeIdSsn = "urn:altinn:ssn";
     private const string AttributeIdOrganizationNumber = "urn:altinn:organizationnumber";
     private const string AttributeIdAction = "urn:oasis:names:tc:xacml:1.0:action:action-id";
-    private const string AttributeIdResource = "urn:altinn:resource";
     private const string AttributeIdResourceInstance = "urn:altinn:resourceinstance";
     private const string AttributeIdSubResource = "urn:altinn:subresource";
+    private const string PermitResponse = "Permit";
 
     public static XacmlJsonRequestRoot CreateDialogDetailsRequest(DialogDetailsAuthorizationRequest request)
     {
@@ -67,7 +67,7 @@ internal static class DecisionRequestHelper
             }
             else if (claim.Type == ConsumerClaimType)
             {
-                // If we have a pid claim type (ie. ID-porten), the consumer claim is not relevant or authorization
+                // If we have a pid claim type (ie. ID-porten), the consumer claim is not relevant for authorization
                 if (hasPidClaimType) continue;
 
                 var organizationNumber = GetOrgNumberFromConsumerClaim(claim.Value);
@@ -158,7 +158,7 @@ internal static class DecisionRequestHelper
 
     private static XacmlJsonCategory CreateResourceCategory(string id, string serviceResource, Guid dialogId, XacmlJsonAttribute partyAttribute, string subResource)
     {
-        var (ns, value) = SpltNsAndValue(serviceResource);
+        var (ns, value) = SplitNsAndValue(serviceResource);
         var attributes = new List<XacmlJsonAttribute>
         {
             new() { AttributeId = ns, Value = value },
@@ -178,7 +178,7 @@ internal static class DecisionRequestHelper
         };
     }
 
-    private static (string, string) SpltNsAndValue(string serviceResource)
+    private static (string, string) SplitNsAndValue(string serviceResource)
     {
         var lastColonIndex = serviceResource.LastIndexOf(':');
 
@@ -271,12 +271,12 @@ internal static class DecisionRequestHelper
         {
             // Iterate over the RequestReference to get the action and resource names asked
             // The responses match the indices of the request
-            var index = 0;
+            var index = -1;
             foreach (var requestReference in xamlJsonRequestRoot.Request.MultiRequests.RequestReference)
             {
-                if (xamlJsonResponse.Response[index].Decision != "Permit")
+                index++;
+                if (xamlJsonResponse.Response[index].Decision != PermitResponse)
                 {
-                    index++;
                     continue;
                 }
 
@@ -299,12 +299,11 @@ internal static class DecisionRequestHelper
                 }
 
                 response.AuthorizedActions[actionName].Add(resourceName);
-                index++;
 
             }
         }
         // If for some reason the response is broken, we will probably get null reference exceptions from the First()
-        // calls above. In that case, we just return the empty response. Application Insights will log the exception.
+        // calls above. In that case, we just return the empty response to deny access. Application Insights will log the exception.
         catch (Exception)
         {
             // ignored
