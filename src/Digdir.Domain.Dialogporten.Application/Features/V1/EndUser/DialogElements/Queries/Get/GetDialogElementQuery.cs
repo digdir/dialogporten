@@ -1,9 +1,10 @@
 using System.Linq.Expressions;
 using AutoMapper;
 using Digdir.Domain.Dialogporten.Application.Common;
+using Digdir.Domain.Dialogporten.Application.Common.Authorization;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
-using Digdir.Domain.Dialogporten.Domain.Authorization;
+using Digdir.Domain.Dialogporten.Application.Features.V1.Authorization;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements;
 using MediatR;
@@ -100,7 +101,7 @@ internal sealed class GetDialogElementQueryHandler : IRequestHandler<GetDialogEl
         // Any action will give access to a diaog element, unless a authorization attribute is set, in which case
         // an "elementread" action is required
         if (dto.AuthorizationAttribute == null ||
-            (authorizationResult.AuthorizedActions.TryGetValue(DialogDetailsAuthorizationResult.ElementReadAction,
+            (authorizationResult.AuthorizedActions.TryGetValue(Constants.ElementReadAction,
                 out var authorizedAttributesForElementRead)
              && authorizedAttributesForElementRead.Contains(dto.AuthorizationAttribute)))
         {

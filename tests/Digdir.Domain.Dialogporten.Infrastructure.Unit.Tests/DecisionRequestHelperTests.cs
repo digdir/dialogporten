@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using Altinn.Authorization.ABAC.Xacml.JsonProfile;
-using Digdir.Domain.Dialogporten.Domain.Authorization;
+using Digdir.Domain.Dialogporten.Application.Common.Authorization;
+using Digdir.Domain.Dialogporten.Application.Features.V1.Authorization;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.Authorization;
 using Xunit;
 
@@ -109,7 +110,7 @@ public class DecisionRequestHelperTests
             "/person/12345678901");
 
         // Add an additional action to the request that the mocked response should give a non-permit response for
-        request.Actions.Add("failaction", new List<string> { DialogDetailsAuthorizationRequest.MainResource });
+        request.Actions.Add("failaction", new List<string> { Constants.MainResource });
 
         var jsonRequestRoot = DecisionRequestHelper.CreateDialogDetailsRequest(request);
         var jsonResponse = CreateMockedXamlJsonResponse(jsonRequestRoot);
@@ -120,8 +121,8 @@ public class DecisionRequestHelperTests
         // Assert
         Assert.NotNull(response);
         Assert.Equal(request.Actions.Count - 1, response.AuthorizedActions.Count);
-        Assert.Equal(DialogDetailsAuthorizationRequest.MainResource, response.AuthorizedActions["read"].First());
-        Assert.Equal(DialogDetailsAuthorizationRequest.MainResource, response.AuthorizedActions["write"].First());
+        Assert.Equal(Constants.MainResource, response.AuthorizedActions["read"].First());
+        Assert.Equal(Constants.MainResource, response.AuthorizedActions["write"].First());
         Assert.Equal("element1", response.AuthorizedActions["sign"].First());
         Assert.Equal("element2", response.AuthorizedActions["elementread"].First());
         Assert.Equal("element3", response.AuthorizedActions["elementread"].Last());
@@ -146,8 +147,8 @@ public class DecisionRequestHelperTests
             Party = party,
             Actions = new Dictionary<string, List<string>>
             {
-                { "read", new List<string> { DialogDetailsAuthorizationRequest.MainResource } },
-                { "write", new List<string> { DialogDetailsAuthorizationRequest.MainResource } },
+                { "read", new List<string> { Constants.MainResource } },
+                { "write", new List<string> { Constants.MainResource } },
                 { "sign", new List<string> { "element1" } },
                 { "elementread", new List<string> { "element2", "element3" } }
             }

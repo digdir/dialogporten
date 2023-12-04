@@ -1,4 +1,4 @@
-﻿namespace Digdir.Domain.Dialogporten.Domain.Authorization;
+﻿namespace Digdir.Domain.Dialogporten.Application.Features.V1.Authorization;
 
 public sealed class DialogSearchAuthorizationResult
 {

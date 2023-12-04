@@ -20,6 +20,7 @@
         </PackageReference>
         <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0" />
         <PackageReference Include="Polly.Contrib.WaitAndRetry" Version="1.1.1" />
+        <PackageReference Include="SerilogTimings" Version="3.0.1" />
     </ItemGroup>
 
     <ItemGroup>

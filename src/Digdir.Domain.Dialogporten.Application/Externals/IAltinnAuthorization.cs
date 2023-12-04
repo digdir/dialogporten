@@ -1,5 +1,5 @@
 ﻿using System.Security.Claims;
-using Digdir.Domain.Dialogporten.Domain.Authorization;
+using Digdir.Domain.Dialogporten.Application.Features.V1.Authorization;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 
 namespace Digdir.Domain.Dialogporten.Application.Externals;
@@ -22,6 +22,6 @@ public interface IAltinnAuthorization
         CancellationToken cancellationToken = default);
 
     public Task<DialogDetailsAuthorizationResult> PerformDialogDetailsAuthorization(
-            DialogDetailsAuthorizationRequest request,
-            CancellationToken cancellationToken = default);
+        DialogDetailsAuthorizationRequest request,
+        CancellationToken cancellationToken = default);
 }

@@ -1,13 +1,14 @@
-﻿using System.Diagnostics;
-using System.Net;
+﻿using System.Net;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
 using Altinn.Authorization.ABAC.Xacml.JsonProfile;
+using Digdir.Domain.Dialogporten.Application.Common.Authorization;
 using Digdir.Domain.Dialogporten.Application.Externals;
-using Digdir.Domain.Dialogporten.Domain.Authorization;
+using Digdir.Domain.Dialogporten.Application.Features.V1.Authorization;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Microsoft.Extensions.Logging;
+using SerilogTimings;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.Authorization;
 
@@ -71,43 +72,40 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
                 .Select(x => new { x.Action, x.AuthorizationAttribute }))
             .Concat(dialogEntity.Elements
                 .Where(x => x.AuthorizationAttribute is not null)
-                .Select(x => new { Action = DialogDetailsAuthorizationRequest.ElementReadAction, x.AuthorizationAttribute }))
+                .Select(x => new { Action = Constants.ElementReadAction, x.AuthorizationAttribute }))
             .GroupBy(x => x.Action)
             .ToDictionary(
                 keySelector: x => x.Key,
                 elementSelector: x => x
-                    .Select(x => x.AuthorizationAttribute ?? DialogDetailsAuthorizationRequest.MainResource)
+                    .Select(x => x.AuthorizationAttribute ?? Constants.MainResource)
                     .Distinct()
                     .ToList()
             );
 
     private async Task<XacmlJsonResponse?> SendRequest(XacmlJsonRequestRoot xacmlJsonRequest)
     {
-        XacmlJsonResponse? xacmlJsonResponse = null;
-        var apiUrl = "authorization/api/v1/Decision";
+        const string apiUrl = "authorization/api/v1/Decision";
         var requestJson = JsonSerializer.Serialize(xacmlJsonRequest);
         _logger.LogDebug("Generated XACML request: {RequestJson}", requestJson);
         var httpContent = new StringContent(requestJson, Encoding.UTF8, "application/json");
 
-        var stopWatch = new Stopwatch();
-        stopWatch.Start();
-        var response = await _httpClient.PostAsync(apiUrl, httpContent);
-        stopWatch.Stop();
-        var ts = stopWatch.Elapsed;
-        _logger.LogInformation("Authorization PDP time elapsed: {ElapsedMs}ms", ts.TotalMilliseconds);
-
-        if (response.StatusCode == HttpStatusCode.OK)
+        using (Operation.Time("Authorization PDP request to {ApiUrl}", apiUrl))
         {
+            var response = await _httpClient.PostAsync(apiUrl, httpContent);
+
+            if (response.StatusCode != HttpStatusCode.OK)
+            {
+                var errorResponse = await response.Content.ReadAsStringAsync();
+                _logger.LogInformation(
+                    "AltinnAuthorizationClient.SendRequest failed with non-successful status code: {StatusCode} {Response}",
+                    response.StatusCode, errorResponse);
+
+                return null;
+            }
+
             var responseData = await response.Content.ReadAsStringAsync();
-            xacmlJsonResponse = JsonSerializer.Deserialize<XacmlJsonResponse>(responseData);
-        }
-        else
-        {
-            _logger.LogInformation(
-                "AltinnAuthorizationClient.SendRequest failed with non-successful status code: {StatusCode} {Response}",
-                response.StatusCode, await response.Content.ReadAsStringAsync());
-        }
+            return JsonSerializer.Deserialize<XacmlJsonResponse>(responseData);
 
-        return xacmlJsonResponse;
+        }
     }
 }

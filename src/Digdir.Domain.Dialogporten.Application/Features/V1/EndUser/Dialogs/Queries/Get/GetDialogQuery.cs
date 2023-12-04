@@ -1,9 +1,10 @@
 ﻿using System.Diagnostics;
 using AutoMapper;
 using Digdir.Domain.Dialogporten.Application.Common;
+using Digdir.Domain.Dialogporten.Application.Common.Authorization;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
-using Digdir.Domain.Dialogporten.Domain.Authorization;
+using Digdir.Domain.Dialogporten.Application.Features.V1.Authorization;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -115,7 +116,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
         {
             foreach (var apiAction in dto.ApiActions.Where(a => a.Action == action))
             {
-                if ((apiAction.AuthorizationAttribute is null && resources.Contains(DialogDetailsAuthorizationResult.MainResource))
+                if ((apiAction.AuthorizationAttribute is null && resources.Contains(Constants.MainResource))
                     || (apiAction.AuthorizationAttribute is not null && resources.Contains(apiAction.AuthorizationAttribute)))
                 {
                     apiAction.IsAuthorized = true;
@@ -124,7 +125,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
 
             foreach (var guiAction in dto.GuiActions.Where(a => a.Action == action))
             {
-                if ((guiAction.AuthorizationAttribute is null && resources.Contains(DialogDetailsAuthorizationResult.MainResource))
+                if ((guiAction.AuthorizationAttribute is null && resources.Contains(Constants.MainResource))
                     || (guiAction.AuthorizationAttribute is not null && resources.Contains(guiAction.AuthorizationAttribute)))
                 {
                     guiAction.IsAuthorized = true;
@@ -136,7 +137,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
             foreach (var dialogElement in dto.Elements.Where(
                          dialogElement => (dialogElement.AuthorizationAttribute is null)
                                           || (dialogElement.AuthorizationAttribute is not null
-                                              && action == DialogDetailsAuthorizationResult.ElementReadAction)))
+                                              && action == Constants.ElementReadAction)))
             {
                 dialogElement.IsAuthorized = true;
             }

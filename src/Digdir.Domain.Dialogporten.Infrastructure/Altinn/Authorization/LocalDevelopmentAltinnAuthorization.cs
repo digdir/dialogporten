@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
 using Digdir.Domain.Dialogporten.Application.Externals;
-using Digdir.Domain.Dialogporten.Domain.Authorization;
+using Digdir.Domain.Dialogporten.Application.Features.V1.Authorization;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -34,7 +34,7 @@ internal sealed class LocalDevelopmentAltinnAuthorization : IAltinnAuthorization
     public async Task<DialogSearchAuthorizationResult> PerformDialogSearchAuthorization(DialogSearchAuthorizationRequest request,
         CancellationToken cancellationToken = default)
     {
-        // Just allow all resources for all parties
+        // Allow all resources for all parties
         var allParties = await _db.Dialogs
             .Select(dialog => dialog.Party)
             .Distinct()

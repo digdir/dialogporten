@@ -1,7 +1,8 @@
 ﻿using Altinn.Authorization.ABAC.Xacml.JsonProfile;
-using Digdir.Domain.Dialogporten.Domain.Authorization;
 using System.Security.Claims;
+using Digdir.Domain.Dialogporten.Application.Common.Authorization;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
+using Digdir.Domain.Dialogporten.Application.Features.V1.Authorization;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.Authorization;
 
@@ -132,18 +133,18 @@ internal static class DecisionRequestHelper
         var partyAttribute = ExtractPartyAttribute(party);
         var resources = new List<XacmlJsonCategory>
         {
-            CreateResourceCategory(MainResourceId, serviceResource, dialogId, partyAttribute, DialogDetailsAuthorizationRequest.MainResource)
+            CreateResourceCategory(MainResourceId, serviceResource, dialogId, partyAttribute, Constants.MainResource)
         };
 
         resourceNameIdMap = new Dictionary<string, string>
         {
-            { DialogDetailsAuthorizationRequest.MainResource, MainResourceId }
+            { Constants.MainResource, MainResourceId }
         };
 
         var resourceCounter = 2;
         var subResources = actions.SelectMany(a => a.Value)
                                    .Distinct()
-                                   .Where(r => r != DialogDetailsAuthorizationRequest.MainResource);
+                                   .Where(r => r != Constants.MainResource);
 
         foreach (var subResource in subResources)
         {
@@ -165,7 +166,7 @@ internal static class DecisionRequestHelper
             partyAttribute
         };
 
-        if (subResource != DialogDetailsAuthorizationRequest.MainResource)
+        if (subResource != Constants.MainResource)
         {
             attributes.Add(new XacmlJsonAttribute { AttributeId = AttributeIdSubResource, Value = subResource });
         }
@@ -266,7 +267,7 @@ internal static class DecisionRequestHelper
                 var resourceId = requestReference.ReferenceId.First(x => x.StartsWith('r'));
 
                 var resourceName = resourceId == MainResourceId
-                    ? DialogDetailsAuthorizationRequest.MainResource
+                    ? Constants.MainResource
                     : xamlJsonRequestRoot.Request.Resource.First(r => r.Id == resourceId).Attribute
                         .First(a => a.AttributeId == AttributeIdSubResource).Value;
 
