@@ -13,7 +13,7 @@ internal static class QueryableExtensions
 
     public static IQueryable<DialogEntity> WhereUserIsAuthorizedFor(this IQueryable<DialogEntity> source, DialogSearchAuthorizationResult authorizedResources)
     {
-        var predicate = Expressions.Boolean<DialogEntity>.True;
+        var predicate = Expressions.Boolean<DialogEntity>.False;
 
         if (authorizedResources.DialogIds.Count > 0)
         {

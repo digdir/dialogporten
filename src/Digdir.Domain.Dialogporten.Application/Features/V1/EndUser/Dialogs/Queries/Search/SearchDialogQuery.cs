@@ -1,7 +1,6 @@
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Digdir.Domain.Dialogporten.Application.Common;
-using Digdir.Domain.Dialogporten.Application.Common.Authorization;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.Enumerable;
 using Digdir.Domain.Dialogporten.Application.Common.Pagination;
@@ -60,20 +59,31 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
     private readonly IDialogDbContext _db;
     private readonly IMapper _mapper;
     private readonly IClock _clock;
-    private readonly IDialogSearchAuthorizationService _dialogSearchAuthorizationService;
+    private readonly IAltinnAuthorization _altinnAuthorization;
+    private readonly IUserService _userService;
 
-    public SearchDialogQueryHandler(IDialogDbContext db, IMapper mapper, IClock clock, IDialogSearchAuthorizationService dialogSearchAuthorizationService)
+    public SearchDialogQueryHandler(
+        IDialogDbContext db,
+        IMapper mapper,
+        IClock clock,
+        IAltinnAuthorization altinnAuthorization,
+        IUserService userService)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _clock = clock ?? throw new ArgumentNullException(nameof(clock));
-        _dialogSearchAuthorizationService = dialogSearchAuthorizationService;
+        _altinnAuthorization = altinnAuthorization ?? throw new ArgumentNullException(nameof(altinnAuthorization));
+        _userService = userService ?? throw new ArgumentNullException(nameof(userService));
     }
 
     public async Task<SearchDialogResult> Handle(SearchDialogQuery request, CancellationToken cancellationToken)
     {
         var searchExpression = Expressions.LocalizedSearchExpression(request.Search, request.SearchCultureCode);
-        var authorizedResources = await _dialogSearchAuthorizationService.GetAuthorizedResourcesForSearch(request, cancellationToken);
+        var authorizedResources = await _altinnAuthorization.GetAuthorizedResourcesForSearch(
+            request.Party ?? new List<string>(),
+            request.ServiceResource ?? new List<string>(),
+            _userService.CurrentUser.GetPrincipal(),
+            cancellationToken);
 
         return await _db.Dialogs
             .WhereUserIsAuthorizedFor(authorizedResources)

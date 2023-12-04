@@ -5,6 +5,7 @@ namespace Digdir.Domain.Dialogporten.Domain.Authorization;
 public sealed class DialogDetailsAuthorizationRequest
 {
     public const string MainResource = "main";
+    public const string ElementReadAction = "read";
 
     public ClaimsPrincipal ClaimsPrincipal { get; set; } = null!;
     public string ServiceResource { get; set; } = null!;

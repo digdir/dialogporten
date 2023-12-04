@@ -1,8 +1,9 @@
 using System.Linq.Expressions;
 using AutoMapper;
-using Digdir.Domain.Dialogporten.Application.Common.Authorization;
+using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
+using Digdir.Domain.Dialogporten.Domain.Authorization;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements;
 using MediatR;
@@ -24,16 +25,19 @@ internal sealed class GetDialogElementQueryHandler : IRequestHandler<GetDialogEl
 {
     private readonly IMapper _mapper;
     private readonly IDialogDbContext _dbContext;
-    private readonly IDialogDetailsAuthorizationService _dialogDetailsAuthorizationService;
+    private readonly IAltinnAuthorization _altinnAuthorization;
+    private readonly IUserService _userService;
 
     public GetDialogElementQueryHandler(
         IMapper mapper,
         IDialogDbContext dbContext,
-        IDialogDetailsAuthorizationService dialogDetailsAuthorizationService)
+        IAltinnAuthorization altinnAuthorization,
+        IUserService userService)
     {
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
-        _dialogDetailsAuthorizationService = dialogDetailsAuthorizationService ?? throw new ArgumentNullException(nameof(dialogDetailsAuthorizationService));
+        _altinnAuthorization = altinnAuthorization ?? throw new ArgumentNullException(nameof(altinnAuthorization));
+        _userService = userService ?? throw new ArgumentNullException(nameof(userService));
     }
 
     public async Task<GetDialogElementResult> Handle(GetDialogElementQuery request,
@@ -56,7 +60,10 @@ internal sealed class GetDialogElementQueryHandler : IRequestHandler<GetDialogEl
             return new EntityNotFound<DialogEntity>(request.DialogId);
         }
 
-        var authorizationResult = await _dialogDetailsAuthorizationService.GetDialogDetailsAuthorization(dialog, cancellationToken);
+        var authorizationResult = await _altinnAuthorization.GetDialogDetailsAuthorization(
+            dialog,
+            _userService.CurrentUser.GetPrincipal(),
+            cancellationToken);
 
         // If we have no authorized actions, we return a 404 to prevent leaking information about the existence of a dialog.
         // Any authorized action will allow us to return the dialog, decorated with the authorization result (see below)
@@ -78,8 +85,27 @@ internal sealed class GetDialogElementQueryHandler : IRequestHandler<GetDialogEl
         }
 
         var dto = _mapper.Map<GetDialogElementDto>(element);
-        _dialogDetailsAuthorizationService.DecorateWithAuthorization(dto, authorizationResult);
+        DecorateWithAuthorization(dto, authorizationResult);
 
         return dto;
     }
+
+    private static void DecorateWithAuthorization(GetDialogElementDto dto, DialogDetailsAuthorizationResult authorizationResult)
+    {
+        if (authorizationResult.AuthorizedActions.Count == 0)
+        {
+            return;
+        }
+
+        // Any action will give access to a diaog element, unless a authorization attribute is set, in which case
+        // an "elementread" action is required
+        if (dto.AuthorizationAttribute == null ||
+            (authorizationResult.AuthorizedActions.TryGetValue(DialogDetailsAuthorizationResult.ElementReadAction,
+                out var authorizedAttributesForElementRead)
+             && authorizedAttributesForElementRead.Contains(dto.AuthorizationAttribute)))
+        {
+            dto.IsAuthorized = true;
+        }
+    }
+
 }

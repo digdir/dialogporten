@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics;
 using AutoMapper;
 using Digdir.Domain.Dialogporten.Application.Common;
-using Digdir.Domain.Dialogporten.Application.Common.Authorization;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Domain.Authorization;
@@ -27,7 +26,8 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
     private readonly IUnitOfWork _unitOfWork;
     private readonly ITransactionTime _transactionTime;
     private readonly IClock _clock;
-    private readonly IDialogDetailsAuthorizationService _dialogDetailsAuthorizationService;
+    private readonly IAltinnAuthorization _altinnAuthorization;
+    private readonly IUserService _userService;
 
     public GetDialogQueryHandler(
         IDialogDbContext db,
@@ -35,14 +35,16 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
         IUnitOfWork unitOfWork,
         ITransactionTime transactionTime,
         IClock clock,
-        IDialogDetailsAuthorizationService dialogDetailsAuthorizationService)
+        IAltinnAuthorization altinnAuthorization,
+        IUserService userService)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _transactionTime = transactionTime ?? throw new ArgumentNullException(nameof(transactionTime));
         _clock = clock ?? throw new ArgumentNullException(nameof(clock));
-        _dialogDetailsAuthorizationService = dialogDetailsAuthorizationService ?? throw new ArgumentNullException(nameof(dialogDetailsAuthorizationService));
+        _altinnAuthorization = altinnAuthorization ?? throw new ArgumentNullException(nameof(altinnAuthorization));
+        _userService = userService ?? throw new ArgumentNullException(nameof(userService));
     }
 
     public async Task<GetDialogResult> Handle(GetDialogQuery request, CancellationToken cancellationToken)
@@ -72,7 +74,10 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
             return new EntityNotFound<DialogEntity>(request.DialogId);
         }
 
-        var authorizationResult = await _dialogDetailsAuthorizationService.GetDialogDetailsAuthorization(dialog, cancellationToken);
+        var authorizationResult = await _altinnAuthorization.GetDialogDetailsAuthorization(
+            dialog,
+            _userService.CurrentUser.GetPrincipal(),
+            cancellationToken);
 
         // If we have no authorized actions, we return a 404 to prevent leaking information about the existence of a dialog.
         // Any authorized action will allow us to return the dialog, decorated with the authorization result (see below)
@@ -99,8 +104,42 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
 
         var dto = _mapper.Map<GetDialogDto>(dialog);
 
-        _dialogDetailsAuthorizationService.DecorateWithAuthorization(dto, authorizationResult);
+        DecorateWithAuthorization(dto, authorizationResult);
 
         return dto;
+    }
+
+    private static void DecorateWithAuthorization(GetDialogDto dto, DialogDetailsAuthorizationResult authorizationResult)
+    {
+        foreach (var (action, resources) in authorizationResult.AuthorizedActions)
+        {
+            foreach (var apiAction in dto.ApiActions.Where(a => a.Action == action))
+            {
+                if ((apiAction.AuthorizationAttribute is null && resources.Contains(DialogDetailsAuthorizationResult.MainResource))
+                    || (apiAction.AuthorizationAttribute is not null && resources.Contains(apiAction.AuthorizationAttribute)))
+                {
+                    apiAction.IsAuthorized = true;
+                }
+            }
+
+            foreach (var guiAction in dto.GuiActions.Where(a => a.Action == action))
+            {
+                if ((guiAction.AuthorizationAttribute is null && resources.Contains(DialogDetailsAuthorizationResult.MainResource))
+                    || (guiAction.AuthorizationAttribute is not null && resources.Contains(guiAction.AuthorizationAttribute)))
+                {
+                    guiAction.IsAuthorized = true;
+                }
+            }
+
+            // Any action will give access to a dialog element, unless a authorization attribute is set, in which case
+            // an "elementread" action is required
+            foreach (var dialogElement in dto.Elements.Where(
+                         dialogElement => (dialogElement.AuthorizationAttribute is null)
+                                          || (dialogElement.AuthorizationAttribute is not null
+                                              && action == DialogDetailsAuthorizationResult.ElementReadAction)))
+            {
+                dialogElement.IsAuthorized = true;
+            }
+        }
     }
 }

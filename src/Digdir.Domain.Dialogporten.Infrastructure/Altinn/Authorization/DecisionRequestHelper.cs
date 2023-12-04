@@ -1,7 +1,7 @@
 ﻿using Altinn.Authorization.ABAC.Xacml.JsonProfile;
 using Digdir.Domain.Dialogporten.Domain.Authorization;
 using System.Security.Claims;
-using System.Text.Json;
+using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.Authorization;
 
@@ -70,8 +70,7 @@ internal static class DecisionRequestHelper
                 // If we have a pid claim type (ie. ID-porten), the consumer claim is not relevant for authorization
                 if (hasPidClaimType) continue;
 
-                var organizationNumber = GetOrgNumberFromConsumerClaim(claim.Value);
-                if (organizationNumber != null)
+                if (claim.TryGetOrgNumber(out var organizationNumber))
                 {
                     attributes.Add(new XacmlJsonAttribute
                     {
@@ -231,28 +230,6 @@ internal static class DecisionRequestHelper
         }
 
         return multiRequests;
-    }
-
-    private static string? GetOrgNumberFromConsumerClaim(string consumerClaim)
-    {
-        try
-        {
-            var consumerOrgData = JsonDocument.Parse(consumerClaim);
-            var authority = consumerOrgData.RootElement.GetProperty("authority").GetString();
-            var id = consumerOrgData.RootElement.GetProperty("ID").GetString();
-
-            if (authority == "iso6523-actorid-upis" && id != null &&
-                id.StartsWith("0192:", StringComparison.Ordinal))
-            {
-                return id[5..];
-            }
-        }
-        catch
-        {
-            // ignored
-        }
-
-        return null;
     }
 
     public static DialogDetailsAuthorizationResult CreateDialogDetailsResponse(XacmlJsonRequestRoot xamlJsonRequestRoot, XacmlJsonResponse? xamlJsonResponse)

@@ -9,7 +9,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Reflection;
-using Digdir.Domain.Dialogporten.Application.Common.Authorization;
 
 namespace Digdir.Domain.Dialogporten.Application;
 
@@ -35,8 +34,6 @@ public static class ApplicationExtensions
             // Scoped
             .AddScoped<IDomainContext, DomainContext>()
             .AddScoped<ITransactionTime, TransactionTime>()
-            .AddScoped<IDialogDetailsAuthorizationService, DialogDetailsAuthorizationService>()
-            .AddScoped<IDialogSearchAuthorizationService, DialogSearchAuthorizationService>()
 
             // Transient
             .AddTransient<IUserService, UserService>()

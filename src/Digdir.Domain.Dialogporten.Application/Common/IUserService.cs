@@ -7,29 +7,23 @@ namespace Digdir.Domain.Dialogporten.Application.Common;
 
 internal interface IUserService
 {
-    IUser GetCurrentUser();
+    IUser CurrentUser { get; }
     Task<bool> CurrentUserIsOwner(string serviceResource, CancellationToken cancellationToken);
     Task<IReadOnlyCollection<string>> GetCurrentUserResourceIds(CancellationToken cancellationToken);
 }
 
 internal sealed class UserService : IUserService
 {
-    private readonly IUser _user;
+    public IUser CurrentUser { get; init; }
     private readonly IResourceRegistry _resourceRegistry;
 
     public UserService(
         IUser user,
         IResourceRegistry resourceRegistry)
     {
-        _user = user ?? throw new ArgumentNullException(nameof(user));
+        CurrentUser = user ?? throw new ArgumentNullException(nameof(user));
         _resourceRegistry = resourceRegistry ?? throw new ArgumentNullException(nameof(resourceRegistry));
     }
-
-    public IUser GetCurrentUser()
-    {
-        return _user;
-    }
-
     public async Task<bool> CurrentUserIsOwner(string serviceResource, CancellationToken cancellationToken)
     {
         var resourceIds = await GetCurrentUserResourceIds(cancellationToken);
@@ -37,7 +31,7 @@ internal sealed class UserService : IUserService
     }
 
     public Task<IReadOnlyCollection<string>> GetCurrentUserResourceIds(CancellationToken cancellationToken) =>
-         !_user.TryGetOrgNumber(out var orgNumber)
+         !CurrentUser.TryGetOrgNumber(out var orgNumber)
             ? throw new UnreachableException()
             : _resourceRegistry.GetResourceIds(orgNumber, cancellationToken);
 }
@@ -51,10 +45,7 @@ internal sealed class LocalDevelopmentUserServiceDecorator : IUserService
         _userService = userService ?? throw new ArgumentNullException(nameof(userService));
     }
 
-    public IUser GetCurrentUser()
-    {
-        return _userService.GetCurrentUser();
-    }
+    public IUser CurrentUser => _userService.CurrentUser;
 
     public Task<bool> CurrentUserIsOwner(string serviceResource, CancellationToken cancellationToken) =>
         Task.FromResult(true);

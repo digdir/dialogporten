@@ -1,35 +1,60 @@
-﻿using Digdir.Domain.Dialogporten.Application.Externals;
+﻿using System.Security.Claims;
+using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Domain.Authorization;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.Authorization;
 
 internal sealed class LocalDevelopmentAltinnAuthorization : IAltinnAuthorization
 {
-    public async Task<DialogSearchAuthorizationResult> PerformDialogSearchAuthorization(DialogSearchAuthorizationRequest request, CancellationToken cancellationToken)
+    private readonly IDialogDbContext _db;
+
+    public LocalDevelopmentAltinnAuthorization(IDialogDbContext db)
     {
-        // TODO! Perhaps just get all parties and resources from the database and return those?
-
-        var authorizedResources = new DialogSearchAuthorizationResult
-        {
-            ResourcesForParties = new Dictionary<string, List<string>>
-            {
-                ["/org/991825827"] = new() { "urn:altinn:resource:super-simple-service" },
-                ["/person/07874299582"] = new() { "urn:altinn:resource:super-simple-service2", "urn:altinn:resource:ttd-altinn-events-automated-tests" },
-            },
-            DialogIds = new List<Guid> { Guid.Parse("0ab48b01-74d4-3770-b91d-79f99fb16a5a"), Guid.Parse("0ab48b01-bbca-8873-a3fe-518ce47532ce") }
-
-        };
-
-        return await Task.FromResult(authorizedResources);
+        _db = db;
     }
 
-    public Task<DialogDetailsAuthorizationResult> PerformDialogDetailsAuthorization(DialogDetailsAuthorizationRequest request, CancellationToken cancellationToken)
-    {
-        // Just allow everything that was requested except "sign"
-        return Task.FromResult(new DialogDetailsAuthorizationResult
+    public Task<DialogDetailsAuthorizationResult> GetDialogDetailsAuthorization(DialogEntity dialogEntity, ClaimsPrincipal claimsPrincipal,
+        CancellationToken cancellationToken = default) =>
+        PerformDialogDetailsAuthorization(new DialogDetailsAuthorizationRequest(), cancellationToken);
+
+    public async Task<DialogSearchAuthorizationResult> GetAuthorizedResourcesForSearch(List<string> constraintParties, List<string> serviceResources, ClaimsPrincipal claimsPrincipal,
+        CancellationToken cancellationToken = default) =>
+        await PerformDialogSearchAuthorization(new DialogSearchAuthorizationRequest(), cancellationToken);
+
+    public Task<DialogDetailsAuthorizationResult> PerformDialogDetailsAuthorization(DialogDetailsAuthorizationRequest request,
+        CancellationToken cancellationToken = default) =>
+        // Just allow everything
+        Task.FromResult(new DialogDetailsAuthorizationResult
         {
-            AuthorizedActions = request.Actions.Where(x => x.Key != "sign")
-                .ToDictionary(x => x.Key, x => x.Value)
+            AuthorizedActions = request.Actions
         });
+
+    public async Task<DialogSearchAuthorizationResult> PerformDialogSearchAuthorization(DialogSearchAuthorizationRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        // Just allow all resources for all parties
+        var allParties = await _db.Dialogs
+            .Select(dialog => dialog.Party)
+            .Distinct()
+            .ToListAsync(cancellationToken: cancellationToken);
+
+        var allResources = await _db.Dialogs
+            .Select(x => x.ServiceResource)
+            .Distinct().ToListAsync(cancellationToken: cancellationToken);
+
+        var authorizedResources = new DialogSearchAuthorizationResult();
+
+        if (allParties.Count <= allResources.Count)
+        {
+            authorizedResources.PartiesForResources = allResources.ToDictionary(resource => resource, resource => allParties);
+        }
+        else
+        {
+            authorizedResources.ResourcesForParties = allParties.ToDictionary(party => party, party => allResources);
+        }
+
+        return authorizedResources;
     }
 }
