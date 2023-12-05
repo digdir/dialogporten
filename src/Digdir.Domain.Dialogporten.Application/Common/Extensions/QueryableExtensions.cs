@@ -20,20 +20,20 @@ public static class QueryableExtensions
             predicate = x => authorizedResources.DialogIds.Contains(x.Id);
         }
 
-        if (authorizedResources.ResourcesForParties.Count > 0)
+        if (authorizedResources.ResourcesByParties.Count > 0)
         {
             var partyPredicate = Expressions.Boolean<DialogEntity>.False;
-            foreach (var (party, resources) in authorizedResources.ResourcesForParties)
+            foreach (var (party, resources) in authorizedResources.ResourcesByParties)
             {
                 partyPredicate = Expressions.Or(partyPredicate, x => x.Party == party && resources.Contains(x.ServiceResource));
             }
             predicate = Expressions.Or(predicate, partyPredicate);
         }
 
-        if (authorizedResources.PartiesForResources.Count > 0)
+        if (authorizedResources.PartiesByResources.Count > 0)
         {
             var resourcePredicate = Expressions.Boolean<DialogEntity>.False;
-            foreach (var (resource, parties) in authorizedResources.PartiesForResources)
+            foreach (var (resource, parties) in authorizedResources.PartiesByResources)
             {
                 resourcePredicate = Expressions.Or(resourcePredicate, x => x.ServiceResource == resource && parties.Contains(x.Party));
             }

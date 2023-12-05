@@ -3,5 +3,5 @@
 public sealed class DialogDetailsAuthorizationResult
 {
     // Each action applies to a resource. This is the main resource and/or one or more dialog elements.
-    public Dictionary<string, List<string>> AuthorizedActions { get; set; } = new();
+    public Dictionary<string, List<string>> AuthorizationAttributesByAuthorizedActions { get; set; } = new();
 }

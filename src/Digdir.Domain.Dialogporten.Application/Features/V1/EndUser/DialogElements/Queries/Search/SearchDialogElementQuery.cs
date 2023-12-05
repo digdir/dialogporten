@@ -54,7 +54,7 @@ internal sealed class SearchDialogElementQueryHandler : IRequestHandler<SearchDi
 
         // If we have no authorized actions, we return a 404 to prevent leaking information about the existence of a dialog.
         // Any authorized action will allow us to return the dialog, decorated with the authorization result (see below)
-        if (authorizationResult.AuthorizedActions.Count == 0)
+        if (authorizationResult.AuthorizationAttributesByAuthorizedActions.Count == 0)
         {
             return new EntityNotFound<DialogEntity>(request.DialogId);
         }

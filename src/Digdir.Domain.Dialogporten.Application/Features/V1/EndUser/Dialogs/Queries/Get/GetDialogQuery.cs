@@ -78,7 +78,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
 
         // If we have no authorized actions, we return a 404 to prevent leaking information about the existence of a dialog.
         // Any authorized action will allow us to return the dialog, decorated with the authorization result (see below)
-        if (authorizationResult.AuthorizedActions.Count == 0)
+        if (authorizationResult.AuthorizationAttributesByAuthorizedActions.Count == 0)
         {
             return new EntityNotFound<DialogEntity>(request.DialogId);
         }
@@ -108,7 +108,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
 
     private static void DecorateWithAuthorization(GetDialogDto dto, DialogDetailsAuthorizationResult authorizationResult)
     {
-        foreach (var (action, resources) in authorizationResult.AuthorizedActions)
+        foreach (var (action, resources) in authorizationResult.AuthorizationAttributesByAuthorizedActions)
         {
             foreach (var apiAction in dto.ApiActions.Where(a => a.Action == action))
             {

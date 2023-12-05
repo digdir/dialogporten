@@ -31,11 +31,11 @@ public class QueryableExtensionsTests
         var authorizedResources = new DialogSearchAuthorizationResult
         {
             DialogIds = new List<Guid> { dialogEntities.First().Id },
-            ResourcesForParties = new Dictionary<string, List<string>>
+            ResourcesByParties = new Dictionary<string, List<string>>
             {
                 { party2, new List<string> { resource2, resource3 } }
             },
-            PartiesForResources = new Dictionary<string, List<string>>
+            PartiesByResources = new Dictionary<string, List<string>>
             {
                 { resource2, new List<string> { party1 } }
             }

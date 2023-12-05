@@ -110,7 +110,7 @@ public class DecisionRequestHelperTests
             "/person/12345678901");
 
         // Add an additional action to the request that the mocked response should give a non-permit response for
-        request.Actions.Add("failaction", new List<string> { Constants.MainResource });
+        request.AuthorizationAttributesByActions.Add("failaction", new List<string> { Constants.MainResource });
 
         var jsonRequestRoot = DecisionRequestHelper.CreateDialogDetailsRequest(request);
         var jsonResponse = CreateMockedXamlJsonResponse(jsonRequestRoot);
@@ -120,13 +120,13 @@ public class DecisionRequestHelperTests
 
         // Assert
         Assert.NotNull(response);
-        Assert.Equal(request.Actions.Count - 1, response.AuthorizedActions.Count);
-        Assert.Equal(Constants.MainResource, response.AuthorizedActions["read"].First());
-        Assert.Equal(Constants.MainResource, response.AuthorizedActions["write"].First());
-        Assert.Equal("element1", response.AuthorizedActions["sign"].First());
-        Assert.Equal("element2", response.AuthorizedActions["elementread"].First());
-        Assert.Equal("element3", response.AuthorizedActions["elementread"].Last());
-        Assert.DoesNotContain(response.AuthorizedActions.Keys, k => k == "failaction");
+        Assert.Equal(request.AuthorizationAttributesByActions.Count - 1, response.AuthorizationAttributesByAuthorizedActions.Count);
+        Assert.Equal(Constants.MainResource, response.AuthorizationAttributesByAuthorizedActions["read"].First());
+        Assert.Equal(Constants.MainResource, response.AuthorizationAttributesByAuthorizedActions["write"].First());
+        Assert.Equal("element1", response.AuthorizationAttributesByAuthorizedActions["sign"].First());
+        Assert.Equal("element2", response.AuthorizationAttributesByAuthorizedActions["elementread"].First());
+        Assert.Equal("element3", response.AuthorizationAttributesByAuthorizedActions["elementread"].Last());
+        Assert.DoesNotContain(response.AuthorizationAttributesByAuthorizedActions.Keys, k => k == "failaction");
     }
 
     private static DialogDetailsAuthorizationRequest CreateDialogDetailsAuthorizationRequest(List<Claim> principalClaims, string party)
@@ -145,7 +145,7 @@ public class DecisionRequestHelperTests
             // This should be copied resources with attributes "urn:altinn:organizationnumber" if starting with "/org/"
             // and "urn:altinn:ssn" if starting with "/person/"
             Party = party,
-            Actions = new Dictionary<string, List<string>>
+            AuthorizationAttributesByActions = new Dictionary<string, List<string>>
             {
                 { "read", new List<string> { Constants.MainResource } },
                 { "write", new List<string> { Constants.MainResource } },

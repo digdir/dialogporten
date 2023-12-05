@@ -10,5 +10,5 @@ public sealed class DialogDetailsAuthorizationRequest
     public string Party { get; set; } = null!;
 
     // Each action applies to a resource. This is the main resource and/or one or more dialog elements.
-    public Dictionary<string, List<string>> Actions { get; set; } = new();
+    public Dictionary<string, List<string>> AuthorizationAttributesByActions { get; set; } = new();
 }

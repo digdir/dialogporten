@@ -12,61 +12,33 @@ internal sealed class LocalDevelopmentAltinnAuthorization : IAltinnAuthorization
 
     public LocalDevelopmentAltinnAuthorization(IDialogDbContext db)
     {
-        _db = db;
+        _db = db ?? throw new ArgumentNullException(nameof(db));
     }
 
     [SuppressMessage("Performance", "CA1822:Mark members as static")]
     public Task<DialogDetailsAuthorizationResult> GetDialogDetailsAuthorization(DialogEntity dialogEntity,
         CancellationToken cancellationToken = default) =>
-        PerformDialogDetailsAuthorization(new DialogDetailsAuthorizationRequest(), cancellationToken);
+        // Just allow everything
+        Task.FromResult(new DialogDetailsAuthorizationResult { AuthorizationAttributesByAuthorizedActions = new() });
 
     public async Task<DialogSearchAuthorizationResult> GetAuthorizedResourcesForSearch(List<string> constraintParties, List<string> serviceResources,
-        CancellationToken cancellationToken = default) =>
-        await PerformDialogSearchAuthorization(new DialogSearchAuthorizationRequest(), cancellationToken);
-
-    private static Task<DialogDetailsAuthorizationResult> PerformDialogDetailsAuthorization(DialogDetailsAuthorizationRequest request,
-        CancellationToken _ = default) =>
-        // Just allow everything
-        Task.FromResult(new DialogDetailsAuthorizationResult
-        {
-            AuthorizedActions = request.Actions
-        });
-
-    private async Task<DialogSearchAuthorizationResult> PerformDialogSearchAuthorization(DialogSearchAuthorizationRequest _,
         CancellationToken cancellationToken = default)
     {
         // Allow all resources for all parties
-        var allParties = await _db.Dialogs
-            .Select(dialog => dialog.Party)
+        var dialogData = await _db.Dialogs
+            .Select(dialog => new { dialog.Party, dialog.ServiceResource })
             .Distinct()
-            .ToListAsync(cancellationToken: cancellationToken);
+            .ToListAsync(cancellationToken);
 
-        var allResources = await _db.Dialogs
-            .Select(x => x.ServiceResource)
-            .Distinct().ToListAsync(cancellationToken: cancellationToken);
+        var allParties = dialogData.Select(x => x.Party).Distinct().ToList();
+        var allResources = dialogData.Select(x => x.ServiceResource).Distinct().ToList();
 
-        var authorizedResources = new DialogSearchAuthorizationResult();
-
-        if (allParties.Count <= allResources.Count)
+        var authorizedResources = new DialogSearchAuthorizationResult
         {
-            authorizedResources.PartiesForResources = allResources.ToDictionary(resource => resource, resource => allParties);
-        }
-        else
-        {
-            authorizedResources.ResourcesForParties = allParties.ToDictionary(party => party, party => allResources);
-        }
+            PartiesByResources = allResources.ToDictionary(resource => resource, resource => allParties),
+            ResourcesByParties = allParties.ToDictionary(party => party, party => allResources)
+        };
 
         return authorizedResources;
     }
 }
-
-/*
-
- AND (
-   (d."Party" = @__party_0 AND d."ServiceResource" = ANY (@__resources_1))
-OR (d."Party" = @__party_2 AND d."ServiceResource" = ANY (@__resources_3))
-OR (d."Party" = @__party_4 AND d."ServiceResource" = ANY (@__resources_5))
-)
- *
- *
- */
