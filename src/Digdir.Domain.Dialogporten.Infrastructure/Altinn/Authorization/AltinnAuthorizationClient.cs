@@ -96,8 +96,11 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
         return DecisionRequestHelper.CreateDialogDetailsResponse(xacmlJsonRequest, xamlJsonResponse);
     }
 
-    private static Dictionary<string, List<string>> ToAuthorizationActions(DialogEntity dialogEntity) =>
-        dialogEntity.ApiActions
+    private static Dictionary<string, List<string>> ToAuthorizationActions(DialogEntity dialogEntity)
+    {
+        // Get all resources grouped by action defined on the dialogEntity, including both
+        // apiActions and guiActions, as well as dialog elements with an authorization attribute.
+        var actions = dialogEntity.ApiActions
             .Select(x => new { x.Action, x.AuthorizationAttribute })
             .Concat(dialogEntity.GuiActions
                 .Select(x => new { x.Action, x.AuthorizationAttribute }))
@@ -112,6 +115,16 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
                     .Distinct()
                     .ToList()
             );
+
+        // We always need to check if the user can read the main resource
+        if (!actions.ContainsKey(Constants.ReadAction))
+        {
+            actions.Add(Constants.ReadAction, new List<string>());
+        }
+
+        actions[Constants.ReadAction].Add(Constants.MainResource);
+        return actions;
+    }
 
     private static readonly JsonSerializerOptions _serializerOptions = new()
     {

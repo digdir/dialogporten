@@ -3,5 +3,6 @@
 public static class Constants
 {
     public const string MainResource = "main";
+    public const string ReadAction = "read";
     public const string ElementReadAction = "elementread";
 }

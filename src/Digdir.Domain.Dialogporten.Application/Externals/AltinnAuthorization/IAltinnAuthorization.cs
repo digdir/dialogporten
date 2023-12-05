@@ -1,5 +1,4 @@
-﻿using System.Security.Claims;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
+﻿using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 
 namespace Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 

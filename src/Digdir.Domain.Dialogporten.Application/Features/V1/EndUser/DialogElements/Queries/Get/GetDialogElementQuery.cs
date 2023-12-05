@@ -62,9 +62,8 @@ internal sealed class GetDialogElementQueryHandler : IRequestHandler<GetDialogEl
             dialog,
             cancellationToken);
 
-        // If we have no authorized actions, we return a 404 to prevent leaking information about the existence of a dialog.
-        // Any authorized action will allow us to return the dialog, decorated with the authorization result (see below)
-        if (authorizationResult.AuthorizationAttributesByAuthorizedActions.Count == 0)
+        // If we cannot read the dialog at all, we don't allow access to any of the dialog elements
+        if (!authorizationResult.HasReadAccessToMainResource())
         {
             return new EntityNotFound<DialogEntity>(request.DialogId);
         }
@@ -75,34 +74,14 @@ internal sealed class GetDialogElementQueryHandler : IRequestHandler<GetDialogEl
         }
 
         var element = dialog.Elements.FirstOrDefault();
-
         if (element is null)
         {
             return new EntityNotFound<DialogElement>(request.ElementId);
         }
 
         var dto = _mapper.Map<GetDialogElementDto>(element);
-        DecorateWithAuthorization(dto, authorizationResult);
+        dto.IsAuthorized = authorizationResult.HasReadAccessToDialogElement(element);
 
         return dto;
     }
-
-    private static void DecorateWithAuthorization(GetDialogElementDto dto, DialogDetailsAuthorizationResult authorizationResult)
-    {
-        if (authorizationResult.AuthorizationAttributesByAuthorizedActions.Count == 0)
-        {
-            return;
-        }
-
-        // Any action will give access to a diaog element, unless a authorization attribute is set, in which case
-        // an "elementread" action is required
-        if (dto.AuthorizationAttribute == null ||
-            (authorizationResult.AuthorizationAttributesByAuthorizedActions.TryGetValue(Constants.ElementReadAction,
-                out var authorizedAttributesForElementRead)
-             && authorizedAttributesForElementRead.Contains(dto.AuthorizationAttribute)))
-        {
-            dto.IsAuthorized = true;
-        }
-    }
-
 }

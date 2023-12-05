@@ -76,9 +76,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
             dialog,
             cancellationToken);
 
-        // If we have no authorized actions, we return a 404 to prevent leaking information about the existence of a dialog.
-        // Any authorized action will allow us to return the dialog, decorated with the authorization result (see below)
-        if (authorizationResult.AuthorizationAttributesByAuthorizedActions.Count == 0)
+        if (!authorizationResult.HasReadAccessToMainResource())
         {
             return new EntityNotFound<DialogEntity>(request.DialogId);
         }
@@ -128,8 +126,8 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
                 }
             }
 
-            // Any action will give access to a dialog element, unless a authorization attribute is set, in which case
-            // an "elementread" action is required
+            // Simple "read" on the main resource will give access to a dialog element, unless a authorization attribute is set,
+            // in which case an "elementread" action is required
             foreach (var dialogElement in dto.Elements.Where(
                          dialogElement => (dialogElement.AuthorizationAttribute is null)
                                           || (dialogElement.AuthorizationAttribute is not null
