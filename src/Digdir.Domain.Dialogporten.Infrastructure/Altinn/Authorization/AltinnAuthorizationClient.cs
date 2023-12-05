@@ -7,7 +7,6 @@ using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Microsoft.Extensions.Logging;
-using SerilogTimings;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.Authorization;
 
@@ -91,22 +90,19 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
         _logger.LogDebug("Generated XACML request: {RequestJson}", requestJson);
         var httpContent = new StringContent(requestJson, Encoding.UTF8, "application/json");
 
-        using (Operation.Time("Authorization PDP request to {ApiUrl}", apiUrl))
+        var response = await _httpClient.PostAsync(apiUrl, httpContent);
+
+        if (response.StatusCode != HttpStatusCode.OK)
         {
-            var response = await _httpClient.PostAsync(apiUrl, httpContent);
+            var errorResponse = await response.Content.ReadAsStringAsync();
+            _logger.LogInformation(
+                "AltinnAuthorizationClient.SendRequest failed with non-successful status code: {StatusCode} {Response}",
+                response.StatusCode, errorResponse);
 
-            if (response.StatusCode != HttpStatusCode.OK)
-            {
-                var errorResponse = await response.Content.ReadAsStringAsync();
-                _logger.LogInformation(
-                    "AltinnAuthorizationClient.SendRequest failed with non-successful status code: {StatusCode} {Response}",
-                    response.StatusCode, errorResponse);
-
-                return null;
-            }
-
-            var responseData = await response.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<XacmlJsonResponse>(responseData);
+            return null;
         }
+
+        var responseData = await response.Content.ReadAsStringAsync();
+        return JsonSerializer.Deserialize<XacmlJsonResponse>(responseData);
     }
 }
