@@ -7,21 +7,20 @@ namespace Digdir.Domain.Dialogporten.Application.Common;
 
 internal interface IUserService
 {
-    IUser CurrentUser { get; }
     Task<bool> CurrentUserIsOwner(string serviceResource, CancellationToken cancellationToken);
     Task<IReadOnlyCollection<string>> GetCurrentUserResourceIds(CancellationToken cancellationToken);
 }
 
 internal sealed class UserService : IUserService
 {
-    public IUser CurrentUser { get; init; }
+    private readonly IUser _user;
     private readonly IResourceRegistry _resourceRegistry;
 
     public UserService(
         IUser user,
         IResourceRegistry resourceRegistry)
     {
-        CurrentUser = user ?? throw new ArgumentNullException(nameof(user));
+        _user = user ?? throw new ArgumentNullException(nameof(user));
         _resourceRegistry = resourceRegistry ?? throw new ArgumentNullException(nameof(resourceRegistry));
     }
     public async Task<bool> CurrentUserIsOwner(string serviceResource, CancellationToken cancellationToken)
@@ -31,7 +30,7 @@ internal sealed class UserService : IUserService
     }
 
     public Task<IReadOnlyCollection<string>> GetCurrentUserResourceIds(CancellationToken cancellationToken) =>
-         !CurrentUser.TryGetOrgNumber(out var orgNumber)
+         !_user.TryGetOrgNumber(out var orgNumber)
             ? throw new UnreachableException()
             : _resourceRegistry.GetResourceIds(orgNumber, cancellationToken);
 }
@@ -44,8 +43,6 @@ internal sealed class LocalDevelopmentUserServiceDecorator : IUserService
     {
         _userService = userService ?? throw new ArgumentNullException(nameof(userService));
     }
-
-    public IUser CurrentUser => _userService.CurrentUser;
 
     public Task<bool> CurrentUserIsOwner(string serviceResource, CancellationToken cancellationToken) =>
         Task.FromResult(true);

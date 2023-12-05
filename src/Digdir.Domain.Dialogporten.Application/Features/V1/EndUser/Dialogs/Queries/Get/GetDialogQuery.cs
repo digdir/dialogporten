@@ -4,7 +4,7 @@ using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Common.Authorization;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
-using Digdir.Domain.Dialogporten.Application.Features.V1.Authorization;
+using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -28,7 +28,6 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
     private readonly ITransactionTime _transactionTime;
     private readonly IClock _clock;
     private readonly IAltinnAuthorization _altinnAuthorization;
-    private readonly IUserService _userService;
 
     public GetDialogQueryHandler(
         IDialogDbContext db,
@@ -36,8 +35,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
         IUnitOfWork unitOfWork,
         ITransactionTime transactionTime,
         IClock clock,
-        IAltinnAuthorization altinnAuthorization,
-        IUserService userService)
+        IAltinnAuthorization altinnAuthorization)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
@@ -45,7 +43,6 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
         _transactionTime = transactionTime ?? throw new ArgumentNullException(nameof(transactionTime));
         _clock = clock ?? throw new ArgumentNullException(nameof(clock));
         _altinnAuthorization = altinnAuthorization ?? throw new ArgumentNullException(nameof(altinnAuthorization));
-        _userService = userService ?? throw new ArgumentNullException(nameof(userService));
     }
 
     public async Task<GetDialogResult> Handle(GetDialogQuery request, CancellationToken cancellationToken)
@@ -77,7 +74,6 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
 
         var authorizationResult = await _altinnAuthorization.GetDialogDetailsAuthorization(
             dialog,
-            _userService.CurrentUser.GetPrincipal(),
             cancellationToken);
 
         // If we have no authorized actions, we return a 404 to prevent leaking information about the existence of a dialog.

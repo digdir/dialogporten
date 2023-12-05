@@ -1,10 +1,10 @@
 ﻿using System.Linq.Expressions;
-using Digdir.Domain.Dialogporten.Application.Features.V1.Authorization;
+using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 
 namespace Digdir.Domain.Dialogporten.Application.Common.Extensions;
 
-internal static class QueryableExtensions
+public static class QueryableExtensions
 {
     public static IQueryable<TSource> WhereIf<TSource>(this IQueryable<TSource> source, bool predicate, Expression<Func<TSource, bool>> queryPredicate)
     {

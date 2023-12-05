@@ -7,6 +7,7 @@ using Digdir.Domain.Dialogporten.Application.Common.Pagination;
 using Digdir.Domain.Dialogporten.Application.Common.Pagination.OrderOption;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
+using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Localizations;
 using MediatR;
@@ -60,20 +61,17 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
     private readonly IMapper _mapper;
     private readonly IClock _clock;
     private readonly IAltinnAuthorization _altinnAuthorization;
-    private readonly IUserService _userService;
 
     public SearchDialogQueryHandler(
         IDialogDbContext db,
         IMapper mapper,
         IClock clock,
-        IAltinnAuthorization altinnAuthorization,
-        IUserService userService)
+        IAltinnAuthorization altinnAuthorization)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _clock = clock ?? throw new ArgumentNullException(nameof(clock));
         _altinnAuthorization = altinnAuthorization ?? throw new ArgumentNullException(nameof(altinnAuthorization));
-        _userService = userService ?? throw new ArgumentNullException(nameof(userService));
     }
 
     public async Task<SearchDialogResult> Handle(SearchDialogQuery request, CancellationToken cancellationToken)
@@ -82,7 +80,6 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
         var authorizedResources = await _altinnAuthorization.GetAuthorizedResourcesForSearch(
             request.Party ?? new List<string>(),
             request.ServiceResource ?? new List<string>(),
-            _userService.CurrentUser.GetPrincipal(),
             cancellationToken);
 
         return await _db.Dialogs
@@ -101,7 +98,8 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
             .WhereIf(request.Search is not null, x =>
                 x.Title!.Localizations.AsQueryable().Any(searchExpression) ||
                 x.SearchTags.Any(x => x.Value.Equals(request.Search, StringComparison.OrdinalIgnoreCase)) ||
-                x.SenderName!.Localizations.AsQueryable().Any(searchExpression)
+                x.SenderName!.Localizations.AsQueryable().Any(searchExpression) ||
+                x.Body!.Localizations.AsQueryable().Any(searchExpression)
             )
             .Where(x => !x.VisibleFrom.HasValue || _clock.UtcNowOffset > x.VisibleFrom)
             .Where(x => !x.ExpiresAt.HasValue || x.ExpiresAt > _clock.UtcNowOffset)

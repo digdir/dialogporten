@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
 
-namespace Digdir.Domain.Dialogporten.Application.Features.V1.Authorization;
+namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.Authorization;
 
 public sealed class DialogSearchAuthorizationRequest
 {

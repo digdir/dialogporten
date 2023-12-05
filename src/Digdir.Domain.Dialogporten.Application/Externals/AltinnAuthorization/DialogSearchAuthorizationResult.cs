@@ -1,4 +1,4 @@
-﻿namespace Digdir.Domain.Dialogporten.Application.Features.V1.Authorization;
+﻿namespace Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 
 public sealed class DialogSearchAuthorizationResult
 {

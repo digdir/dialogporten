@@ -2,7 +2,7 @@
 using System.Security.Claims;
 using Digdir.Domain.Dialogporten.Application.Common.Authorization;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
-using Digdir.Domain.Dialogporten.Application.Features.V1.Authorization;
+using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.Authorization;
 

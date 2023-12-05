@@ -4,7 +4,7 @@ using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Common.Authorization;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
-using Digdir.Domain.Dialogporten.Application.Features.V1.Authorization;
+using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements;
 using MediatR;
@@ -27,18 +27,15 @@ internal sealed class GetDialogElementQueryHandler : IRequestHandler<GetDialogEl
     private readonly IMapper _mapper;
     private readonly IDialogDbContext _dbContext;
     private readonly IAltinnAuthorization _altinnAuthorization;
-    private readonly IUserService _userService;
 
     public GetDialogElementQueryHandler(
         IMapper mapper,
         IDialogDbContext dbContext,
-        IAltinnAuthorization altinnAuthorization,
-        IUserService userService)
+        IAltinnAuthorization altinnAuthorization)
     {
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         _altinnAuthorization = altinnAuthorization ?? throw new ArgumentNullException(nameof(altinnAuthorization));
-        _userService = userService ?? throw new ArgumentNullException(nameof(userService));
     }
 
     public async Task<GetDialogElementResult> Handle(GetDialogElementQuery request,
@@ -63,7 +60,6 @@ internal sealed class GetDialogElementQueryHandler : IRequestHandler<GetDialogEl
 
         var authorizationResult = await _altinnAuthorization.GetDialogDetailsAuthorization(
             dialog,
-            _userService.CurrentUser.GetPrincipal(),
             cancellationToken);
 
         // If we have no authorized actions, we return a 404 to prevent leaking information about the existence of a dialog.

@@ -1,11 +1,9 @@
 ﻿using System.Security.Claims;
 
-namespace Digdir.Domain.Dialogporten.Application.Features.V1.Authorization;
+namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.Authorization;
 
 public sealed class DialogDetailsAuthorizationRequest
 {
-
-
     public ClaimsPrincipal ClaimsPrincipal { get; set; } = null!;
     public string ServiceResource { get; set; } = null!;
     public Guid DialogId { get; set; } = Guid.Empty;

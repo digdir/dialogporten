@@ -1,11 +1,10 @@
 ﻿using System.Net;
-using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
 using Altinn.Authorization.ABAC.Xacml.JsonProfile;
 using Digdir.Domain.Dialogporten.Application.Common.Authorization;
-using Digdir.Domain.Dialogporten.Application.Externals;
-using Digdir.Domain.Dialogporten.Application.Features.V1.Authorization;
+using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
+using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Microsoft.Extensions.Logging;
 using SerilogTimings;
@@ -15,20 +14,24 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.Authorization;
 internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
 {
     private readonly HttpClient _httpClient;
+    private readonly IUser _user;
     private readonly ILogger _logger;
 
-    public AltinnAuthorizationClient(HttpClient client, ILogger<AltinnAuthorizationClient> logger)
+    public AltinnAuthorizationClient(
+        HttpClient client,
+        IUser user,
+        ILogger<AltinnAuthorizationClient> logger)
     {
         _httpClient = client;
+        _user = user;
         _logger = logger;
     }
 
     public async Task<DialogDetailsAuthorizationResult> GetDialogDetailsAuthorization(DialogEntity dialogEntity,
-        ClaimsPrincipal claimsPrincipal,
         CancellationToken cancellationToken = default) =>
         await PerformDialogDetailsAuthorization(new DialogDetailsAuthorizationRequest
         {
-            ClaimsPrincipal = claimsPrincipal,
+            ClaimsPrincipal = _user.GetPrincipal(),
             ServiceResource = dialogEntity.ServiceResource,
             DialogId = dialogEntity.Id,
             Party = dialogEntity.Party,
@@ -38,16 +41,15 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
     public async Task<DialogSearchAuthorizationResult> GetAuthorizedResourcesForSearch(
         List<string> constraintParties,
         List<string> serviceResources,
-        ClaimsPrincipal claimsPrincipal,
         CancellationToken cancellationToken = default) =>
         await PerformDialogSearchAuthorization(new DialogSearchAuthorizationRequest
         {
-            ClaimsPrincipal = claimsPrincipal,
+            ClaimsPrincipal = _user.GetPrincipal(),
             ConstraintParties = constraintParties,
             ConstraintServiceResources = serviceResources
         }, cancellationToken);
 
-    public Task<DialogSearchAuthorizationResult> PerformDialogSearchAuthorization(DialogSearchAuthorizationRequest request, CancellationToken cancellationToken)
+    private Task<DialogSearchAuthorizationResult> PerformDialogSearchAuthorization(DialogSearchAuthorizationRequest request, CancellationToken cancellationToken)
     {
         // TODO
         // - Implement as per https://github.com/digdir/dialogporten/issues/249
@@ -58,7 +60,7 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
         throw new NotImplementedException();
     }
 
-    public async Task<DialogDetailsAuthorizationResult> PerformDialogDetailsAuthorization(DialogDetailsAuthorizationRequest request, CancellationToken cancellationToken)
+    private async Task<DialogDetailsAuthorizationResult> PerformDialogDetailsAuthorization(DialogDetailsAuthorizationRequest request, CancellationToken _)
     {
         var xacmlJsonRequest = DecisionRequestHelper.CreateDialogDetailsRequest(request);
         var xamlJsonResponse = await SendRequest(xacmlJsonRequest);
@@ -105,7 +107,6 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
 
             var responseData = await response.Content.ReadAsStringAsync();
             return JsonSerializer.Deserialize<XacmlJsonResponse>(responseData);
-
         }
     }
 }

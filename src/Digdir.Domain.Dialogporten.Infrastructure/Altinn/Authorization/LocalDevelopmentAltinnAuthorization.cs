@@ -1,6 +1,6 @@
-﻿using System.Security.Claims;
+﻿using System.Diagnostics.CodeAnalysis;
 using Digdir.Domain.Dialogporten.Application.Externals;
-using Digdir.Domain.Dialogporten.Application.Features.V1.Authorization;
+using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,23 +15,24 @@ internal sealed class LocalDevelopmentAltinnAuthorization : IAltinnAuthorization
         _db = db;
     }
 
-    public Task<DialogDetailsAuthorizationResult> GetDialogDetailsAuthorization(DialogEntity dialogEntity, ClaimsPrincipal claimsPrincipal,
+    [SuppressMessage("Performance", "CA1822:Mark members as static")]
+    public Task<DialogDetailsAuthorizationResult> GetDialogDetailsAuthorization(DialogEntity dialogEntity,
         CancellationToken cancellationToken = default) =>
         PerformDialogDetailsAuthorization(new DialogDetailsAuthorizationRequest(), cancellationToken);
 
-    public async Task<DialogSearchAuthorizationResult> GetAuthorizedResourcesForSearch(List<string> constraintParties, List<string> serviceResources, ClaimsPrincipal claimsPrincipal,
+    public async Task<DialogSearchAuthorizationResult> GetAuthorizedResourcesForSearch(List<string> constraintParties, List<string> serviceResources,
         CancellationToken cancellationToken = default) =>
         await PerformDialogSearchAuthorization(new DialogSearchAuthorizationRequest(), cancellationToken);
 
-    public Task<DialogDetailsAuthorizationResult> PerformDialogDetailsAuthorization(DialogDetailsAuthorizationRequest request,
-        CancellationToken cancellationToken = default) =>
+    private static Task<DialogDetailsAuthorizationResult> PerformDialogDetailsAuthorization(DialogDetailsAuthorizationRequest request,
+        CancellationToken _ = default) =>
         // Just allow everything
         Task.FromResult(new DialogDetailsAuthorizationResult
         {
             AuthorizedActions = request.Actions
         });
 
-    public async Task<DialogSearchAuthorizationResult> PerformDialogSearchAuthorization(DialogSearchAuthorizationRequest request,
+    private async Task<DialogSearchAuthorizationResult> PerformDialogSearchAuthorization(DialogSearchAuthorizationRequest _,
         CancellationToken cancellationToken = default)
     {
         // Allow all resources for all parties
@@ -58,3 +59,14 @@ internal sealed class LocalDevelopmentAltinnAuthorization : IAltinnAuthorization
         return authorizedResources;
     }
 }
+
+/*
+
+ AND (
+   (d."Party" = @__party_0 AND d."ServiceResource" = ANY (@__resources_1))
+OR (d."Party" = @__party_2 AND d."ServiceResource" = ANY (@__resources_3))
+OR (d."Party" = @__party_4 AND d."ServiceResource" = ANY (@__resources_5))
+)
+ *
+ *
+ */

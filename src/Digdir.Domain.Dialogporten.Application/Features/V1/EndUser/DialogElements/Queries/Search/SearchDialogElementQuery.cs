@@ -2,6 +2,7 @@ using AutoMapper;
 using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
+using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -22,18 +23,15 @@ internal sealed class SearchDialogElementQueryHandler : IRequestHandler<SearchDi
     private readonly IDialogDbContext _db;
     private readonly IMapper _mapper;
     private readonly IAltinnAuthorization _altinnAuthorization;
-    private readonly IUserService _userService;
 
     public SearchDialogElementQueryHandler(
         IDialogDbContext db,
         IMapper mapper,
-        IAltinnAuthorization altinnAuthorization,
-        IUserService userService)
+        IAltinnAuthorization altinnAuthorization)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _altinnAuthorization = altinnAuthorization ?? throw new ArgumentNullException(nameof(altinnAuthorization));
-        _userService = userService ?? throw new ArgumentNullException(nameof(userService));
     }
 
     public async Task<SearchDialogElementResult> Handle(SearchDialogElementQuery request, CancellationToken cancellationToken)
@@ -52,7 +50,6 @@ internal sealed class SearchDialogElementQueryHandler : IRequestHandler<SearchDi
 
         var authorizationResult = await _altinnAuthorization.GetDialogDetailsAuthorization(
             dialog,
-            _userService.CurrentUser.GetPrincipal(),
             cancellationToken);
 
         // If we have no authorized actions, we return a 404 to prevent leaking information about the existence of a dialog.
