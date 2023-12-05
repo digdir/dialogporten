@@ -18,6 +18,7 @@ internal static class DecisionRequestHelper
     private const string AttributeIdSsn = "urn:altinn:ssn";
     private const string AttributeIdOrganizationNumber = "urn:altinn:organizationnumber";
     private const string AttributeIdAction = "urn:oasis:names:tc:xacml:1.0:action:action-id";
+    private const string AttributeIdResource = "urn:altinn:resource";
     private const string AttributeIdResourceInstance = "urn:altinn:resourceinstance";
     private const string AttributeIdSubResource = "urn:altinn:subresource";
     private const string PermitResponse = "Permit";
@@ -207,6 +208,12 @@ internal static class DecisionRequestHelper
     private static (string, string) SplitNsAndValue(string serviceResource)
     {
         var lastColonIndex = serviceResource.LastIndexOf(':');
+        if (lastColonIndex == -1 || lastColonIndex == serviceResource.Length - 1)
+        {
+            // If we don't recognize the format, we just return the whole string as the value and assume
+            // that the caller wants to refer a resource in the Resource Registry namespace.
+            return (AttributeIdResource, serviceResource);
+        }
 
         var ns = serviceResource[..lastColonIndex];
         var value = serviceResource[(lastColonIndex + 1)..];
