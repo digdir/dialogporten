@@ -16,7 +16,7 @@ namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialog
 public sealed class CreateDialogCommand : CreateDialogDto, IRequest<CreateDialogResult> { }
 
 [GenerateOneOf]
-public partial class CreateDialogResult : OneOfBase<Success<Guid>, DomainError, ValidationError, Unauthorized> { }
+public partial class CreateDialogResult : OneOfBase<Success<Guid>, DomainError, ValidationError, Forbidden> { }
 
 internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogCommand, CreateDialogResult>
 {
@@ -44,7 +44,7 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
     {
         if (!await _userService.CurrentUserIsOwner(request.ServiceResource, cancellationToken))
         {
-            return new Unauthorized();
+            return new Forbidden();
         }
 
         var dialog = _mapper.Map<DialogEntity>(request);
