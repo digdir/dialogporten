@@ -44,7 +44,7 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
     {
         if (!await _userService.CurrentUserIsOwner(request.ServiceResource, cancellationToken))
         {
-            return new Forbidden();
+            return new Forbidden(new[] { $"??????Not owner of {request.ServiceResource}??????" });
         }
 
         var dialog = _mapper.Map<DialogEntity>(request);
