@@ -3,7 +3,6 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Altinn.Authorization.ABAC.Xacml.JsonProfile;
-using Digdir.Domain.Dialogporten.Application.Common.Authorization;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
@@ -40,7 +39,7 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
             ServiceResource = dialogEntity.ServiceResource,
             DialogId = dialogEntity.Id,
             Party = dialogEntity.Party,
-            AuthorizationAttributesByActions = ToAuthorizationActions(dialogEntity)
+            AuthorizationAttributesByActions = dialogEntity.GetAuthorizationAttributesByAction()
         }, cancellationToken);
 
     public async Task<DialogSearchAuthorizationResult> GetAuthorizedResourcesForSearch(
@@ -94,36 +93,6 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
         var xacmlJsonRequest = DecisionRequestHelper.CreateDialogDetailsRequest(request);
         var xamlJsonResponse = await SendRequest(xacmlJsonRequest);
         return DecisionRequestHelper.CreateDialogDetailsResponse(xacmlJsonRequest, xamlJsonResponse);
-    }
-
-    private static Dictionary<string, List<string>> ToAuthorizationActions(DialogEntity dialogEntity)
-    {
-        // Get all resources grouped by action defined on the dialogEntity, including both
-        // apiActions and guiActions, as well as dialog elements with an authorization attribute.
-        var actions = dialogEntity.ApiActions
-            .Select(x => new { x.Action, x.AuthorizationAttribute })
-            .Concat(dialogEntity.GuiActions
-                .Select(x => new { x.Action, x.AuthorizationAttribute }))
-            .Concat(dialogEntity.Elements
-                .Where(x => x.AuthorizationAttribute is not null)
-                .Select(x => new { Action = Constants.ElementReadAction, x.AuthorizationAttribute }))
-            .GroupBy(x => x.Action)
-            .ToDictionary(
-                keySelector: x => x.Key,
-                elementSelector: x => x
-                    .Select(x => x.AuthorizationAttribute ?? Constants.MainResource)
-                    .Distinct()
-                    .ToList()
-            );
-
-        // We always need to check if the user can read the main resource
-        if (!actions.ContainsKey(Constants.ReadAction))
-        {
-            actions.Add(Constants.ReadAction, new List<string>());
-        }
-
-        actions[Constants.ReadAction].Add(Constants.MainResource);
-        return actions;
     }
 
     private static readonly JsonSerializerOptions _serializerOptions = new()

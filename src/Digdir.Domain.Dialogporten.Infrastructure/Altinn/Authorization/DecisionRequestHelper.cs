@@ -282,7 +282,7 @@ internal static class DecisionRequestHelper
         {
             var requestActions = new Dictionary<string, List<string>>
             {
-                { "read", new List<string> { Constants.MainResource } }
+                { Constants.ReadAction, new List<string> { Constants.MainResource } }
             };
 
             var accessSubject = CreateAccessSubjectCategory(request.ClaimsPrincipal.Claims);
