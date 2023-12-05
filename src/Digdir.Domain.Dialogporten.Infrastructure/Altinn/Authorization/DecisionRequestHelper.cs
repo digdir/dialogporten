@@ -91,10 +91,10 @@ internal static class DecisionRequestHelper
             }
         }
         // If for some reason the response is broken, we will probably get null reference exceptions from the First()
-        // calls above. In that case, we just return the empty response to deny access. Application Insights will log the exception.
-        catch (Exception)
+        // calls above. In that case, we re-throw as our own exception.
+        catch (Exception e)
         {
-            // ignored
+            throw new XacmlMappingException("Error while mapping XACML response to DialogDetailsAuthorizationResult", e);
         }
 
         return response;
@@ -323,21 +323,21 @@ internal static class DecisionRequestHelper
 
                     // Get the name of the resource.
                     var resourceId = $"r{i + 1}";
-                    var serviceResource = "urn:altinn:resource:" + xamlJsonRequestRoot.Request.Resource.First(r => r.Id == resourceId).Attribute
-                            .First(a => a.AttributeId == "urn:altinn:resource").Value;
+                    var serviceResource = $"{AttributeIdResource}:" + xamlJsonRequestRoot.Request.Resource.First(r => r.Id == resourceId).Attribute
+                            .First(a => a.AttributeId == AttributeIdResource).Value;
 
                     string party;
                     var partyOrgNr = xamlJsonRequestRoot.Request.Resource.First(r => r.Id == resourceId).Attribute
-                            .FirstOrDefault(a => a.AttributeId == "urn:altinn:organizationnumber");
+                            .FirstOrDefault(a => a.AttributeId == AttributeIdOrganizationNumber);
                     if (partyOrgNr != null)
                     {
-                        party = "/org/" + partyOrgNr.Value;
+                        party = PartyPrefixOrg + partyOrgNr.Value;
                     }
                     else
                     {
                         var partySsn = xamlJsonRequestRoot.Request.Resource.First(r => r.Id == resourceId).Attribute
-                            .First(a => a.AttributeId == "urn:altinn:ssn");
-                        party = "/person/" + partySsn.Value;
+                            .First(a => a.AttributeId == AttributeIdSsn);
+                        party = PartyPrefixPerson + partySsn.Value;
                     }
 
                     if (!response.PartiesByResources.TryGetValue(serviceResource, out var parties))
@@ -351,10 +351,10 @@ internal static class DecisionRequestHelper
                 }
             }
             // If for some reason the response is broken, we will probably get null reference exceptions from the First()
-            // calls above. In that case, we just return the empty response to deny access. Application Insights will log the exception.
-            catch (Exception)
+            // calls above. In that case, we re-throw as our own exception.
+            catch (Exception e)
             {
-                // ignored
+                throw new XacmlMappingException("Error while mapping XACML response to DialogDetailsAuthorizationResult", e);
             }
 
             return response;
