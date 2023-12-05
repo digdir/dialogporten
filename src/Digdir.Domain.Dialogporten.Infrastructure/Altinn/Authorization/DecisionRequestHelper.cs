@@ -162,26 +162,30 @@ internal static class DecisionRequestHelper
         return resources;
     }
 
-    private static XacmlJsonCategory CreateResourceCategory(string id, string serviceResource, Guid? dialogId, XacmlJsonAttribute partyAttribute, string? subResource = null)
+    private static XacmlJsonCategory CreateResourceCategory(string id, string serviceResource, Guid? dialogId, XacmlJsonAttribute? partyAttribute, string? subResource = null)
     {
         var (ns, value) = SplitNsAndValue(serviceResource);
         var attributes = new List<XacmlJsonAttribute>
         {
-            new() { AttributeId = ns, Value = value },
-            partyAttribute
+            new() { AttributeId = ns, Value = value }
         };
 
-        //// TEMPORARY HACK TO ADD PARTY ID DUE TO https://github.com/Altinn/altinn-authorization/issues/600
-        const string partyAttributeId = "urn:altinn:partyid";
-        if (partyAttribute.Value == "310029246")
+        if (partyAttribute is not null)
         {
-            attributes.Add(new() { AttributeId = partyAttributeId, Value = "51526960" });
+            attributes.Add(partyAttribute);
+
+            //// TEMPORARY HACK TO ADD PARTY ID DUE TO https://github.com/Altinn/altinn-authorization/issues/600
+            const string partyAttributeId = "urn:altinn:partyid";
+            if (partyAttribute.Value == "310029246")
+            {
+                attributes.Add(new() { AttributeId = partyAttributeId, Value = "51526960" });
+            }
+            else if (partyAttribute.Value == "15876497724")
+            {
+                attributes.Add(new() { AttributeId = partyAttributeId, Value = "50888718" });
+            }
+            //// END TEMPORARY HACK TO ADD PARTY ID
         }
-        else if (partyAttribute.Value == "15876497724")
-        {
-            attributes.Add(new() { AttributeId = partyAttributeId, Value = "50888718" });
-        }
-        //// END TEMPORARY HACK TO ADD PARTY ID
 
         if (dialogId is not null)
         {
@@ -210,7 +214,7 @@ internal static class DecisionRequestHelper
         return (ns, value);
     }
 
-    private static XacmlJsonAttribute ExtractPartyAttribute(string party)
+    private static XacmlJsonAttribute? ExtractPartyAttribute(string party)
     {
         var partyAttribute = new XacmlJsonAttribute();
 
@@ -224,6 +228,10 @@ internal static class DecisionRequestHelper
         {
             partyAttribute.AttributeId = AttributeIdSsn;
             partyAttribute.Value = party[PartyPrefixPerson.Length..];
+        }
+        else
+        {
+            return null;
         }
 
         return partyAttribute;

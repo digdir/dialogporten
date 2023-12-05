@@ -23,6 +23,7 @@ internal sealed class UserService : IUserService
         _user = user ?? throw new ArgumentNullException(nameof(user));
         _resourceRegistry = resourceRegistry ?? throw new ArgumentNullException(nameof(resourceRegistry));
     }
+
     public async Task<bool> CurrentUserIsOwner(string serviceResource, CancellationToken cancellationToken)
     {
         var resourceIds = await GetCurrentUserResourceIds(cancellationToken);
