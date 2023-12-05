@@ -27,7 +27,6 @@ public class QueryableExtensionsTests
             new() { Id = Guid.NewGuid(), Party = party1, ServiceResource = resource3 },
             new() { Id = Guid.NewGuid(), Party = party3, ServiceResource = resource3 },
         };
-        var queryableEntities = dialogEntities.AsQueryable();
 
         var authorizedResources = new DialogSearchAuthorizationResult
         {
@@ -43,7 +42,7 @@ public class QueryableExtensionsTests
         };
 
         // Act
-        var result = queryableEntities.WhereUserIsAuthorizedFor(authorizedResources).ToList();
+        var result = dialogEntities.AsQueryable().WhereUserIsAuthorizedFor(authorizedResources).ToList();
 
         // Assert
         Assert.NotEmpty(result);
