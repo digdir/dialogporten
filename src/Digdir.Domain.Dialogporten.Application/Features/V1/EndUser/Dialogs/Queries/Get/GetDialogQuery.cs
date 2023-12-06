@@ -1,8 +1,10 @@
 ﻿using System.Diagnostics;
 using AutoMapper;
 using Digdir.Domain.Dialogporten.Application.Common;
+using Digdir.Domain.Dialogporten.Application.Common.Authorization;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
+using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -25,19 +27,22 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
     private readonly IUnitOfWork _unitOfWork;
     private readonly ITransactionTime _transactionTime;
     private readonly IClock _clock;
+    private readonly IAltinnAuthorization _altinnAuthorization;
 
     public GetDialogQueryHandler(
         IDialogDbContext db,
         IMapper mapper,
         IUnitOfWork unitOfWork,
         ITransactionTime transactionTime,
-        IClock clock)
+        IClock clock,
+        IAltinnAuthorization altinnAuthorization)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _transactionTime = transactionTime ?? throw new ArgumentNullException(nameof(transactionTime));
         _clock = clock ?? throw new ArgumentNullException(nameof(clock));
+        _altinnAuthorization = altinnAuthorization ?? throw new ArgumentNullException(nameof(altinnAuthorization));
     }
 
     public async Task<GetDialogResult> Handle(GetDialogQuery request, CancellationToken cancellationToken)
@@ -67,6 +72,15 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
             return new EntityNotFound<DialogEntity>(request.DialogId);
         }
 
+        var authorizationResult = await _altinnAuthorization.GetDialogDetailsAuthorization(
+            dialog,
+            cancellationToken);
+
+        if (!authorizationResult.HasReadAccessToMainResource())
+        {
+            return new EntityNotFound<DialogEntity>(request.DialogId);
+        }
+
         if (dialog.Deleted)
         {
             return new EntityDeleted<DialogEntity>(request.DialogId);
@@ -84,6 +98,43 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
             concurrencyError => throw new UnreachableException("Should not get concurrencyError when updating ReadAt."));
 
         var dto = _mapper.Map<GetDialogDto>(dialog);
+
+        DecorateWithAuthorization(dto, authorizationResult);
+
         return dto;
+    }
+
+    private static void DecorateWithAuthorization(GetDialogDto dto, DialogDetailsAuthorizationResult authorizationResult)
+    {
+        foreach (var (action, resources) in authorizationResult.AuthorizedAltinnActions)
+        {
+            foreach (var apiAction in dto.ApiActions.Where(a => a.Action == action))
+            {
+                if ((apiAction.AuthorizationAttribute is null && resources.Contains(Constants.MainResource))
+                    || (apiAction.AuthorizationAttribute is not null && resources.Contains(apiAction.AuthorizationAttribute)))
+                {
+                    apiAction.IsAuthorized = true;
+                }
+            }
+
+            foreach (var guiAction in dto.GuiActions.Where(a => a.Action == action))
+            {
+                if ((guiAction.AuthorizationAttribute is null && resources.Contains(Constants.MainResource))
+                    || (guiAction.AuthorizationAttribute is not null && resources.Contains(guiAction.AuthorizationAttribute)))
+                {
+                    guiAction.IsAuthorized = true;
+                }
+            }
+
+            // Simple "read" on the main resource will give access to a dialog element, unless a authorization attribute is set,
+            // in which case an "elementread" action is required
+            foreach (var dialogElement in dto.Elements.Where(
+                         dialogElement => (dialogElement.AuthorizationAttribute is null)
+                                          || (dialogElement.AuthorizationAttribute is not null
+                                              && action == Constants.ElementReadAction)))
+            {
+                dialogElement.IsAuthorized = true;
+            }
+        }
     }
 }

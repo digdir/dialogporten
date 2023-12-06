@@ -16,11 +16,12 @@ public static class ClaimsPrincipalExtensions
     private const string IdPrefix = "0192";
 
     public static bool TryGetOrgNumber(this ClaimsPrincipal claimsPrincipal, [NotNullWhen(true)] out string? orgNumber)
+        => claimsPrincipal.FindFirst(ConsumerClaim).TryGetOrgNumber(out orgNumber);
+
+    public static bool TryGetOrgNumber(this Claim? consumerClaim, [NotNullWhen(true)] out string? orgNumber)
     {
         orgNumber = null;
-        var consumerClaim = claimsPrincipal.FindFirst(ConsumerClaim);
-
-        if (consumerClaim is null)
+        if (consumerClaim is null || consumerClaim.Type != ConsumerClaim)
         {
             return false;
         }

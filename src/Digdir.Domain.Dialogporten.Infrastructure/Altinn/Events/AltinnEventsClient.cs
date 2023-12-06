@@ -1,10 +1,10 @@
 ﻿using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using Digdir.Domain.Dialogporten.Infrastructure.Common.Serialization;
 using Digdir.Domain.Dialogporten.Application.Externals;
+using Digdir.Domain.Dialogporten.Infrastructure.Common.Serialization;
 using Microsoft.Extensions.Logging;
 
-namespace Digdir.Domain.Dialogporten.Infrastructure;
+namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.Events;
 
 internal class AltinnEventsClient : ICloudEventBus
 {

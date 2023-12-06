@@ -53,6 +53,7 @@ public sealed class GetDialogDialogApiActionDto
     public Guid Id { get; set; }
     public string Action { get; set; } = null!;
     public string? AuthorizationAttribute { get; set; }
+    public bool IsAuthorized { get; set; }
 
     public Guid? DialogElementId { get; set; }
 
@@ -78,6 +79,7 @@ public sealed class GetDialogDialogGuiActionDto
     public string Action { get; set; } = null!;
     public Uri Url { get; set; } = null!;
     public string? AuthorizationAttribute { get; set; }
+    public bool IsAuthorized { get; set; }
     public bool IsBackChannel { get; set; }
     public bool IsDeleteAction { get; set; }
 
@@ -91,6 +93,7 @@ public sealed class GetDialogDialogElementDto
     public Guid Id { get; set; }
     public Uri? Type { get; set; }
     public string? AuthorizationAttribute { get; set; }
+    public bool IsAuthorized { get; set; }
 
     public Guid? RelatedDialogElementId { get; set; }
 
