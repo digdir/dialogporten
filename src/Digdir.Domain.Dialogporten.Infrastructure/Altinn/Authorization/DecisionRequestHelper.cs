@@ -9,7 +9,6 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.Authorization;
 internal static class DecisionRequestHelper
 {
     private const string SubjectId = "s1";
-    private const string MainResourceId = "r1";
     private const string AltinnUrnNsPrefix = "urn:altinn:";
     private const string PidClaimType = "pid";
     private const string ConsumerClaimType = "consumer";
@@ -26,10 +25,10 @@ internal static class DecisionRequestHelper
     public static XacmlJsonRequestRoot CreateDialogDetailsRequest(DialogDetailsAuthorizationRequest request)
     {
         var accessSubject = CreateAccessSubjectCategory(request.ClaimsPrincipal.Claims);
-        var actions = CreateActionCategories(request.AuthorizationAttributesByActions, out var actionNameIdMap);
-        var resources = CreateResourceCategories(request.ServiceResource, request.DialogId, request.Party, request.AuthorizationAttributesByActions, out var resourceNameIdMap);
+        var actions = CreateActionCategories(request.AltinnActions, out var actionIdByName);
+        var resources = CreateResourceCategories(request.ServiceResource, request.DialogId, request.Party, request.AltinnActions, out var resourceIdByName);
 
-        var multiRequests = CreateMultiRequests(actionNameIdMap, resourceNameIdMap, request.AuthorizationAttributesByActions);
+        var multiRequests = CreateMultiRequests(request.AltinnActions, actionIdByName, resourceIdByName);
 
         var xacmlJsonRequest = new XacmlJsonRequest()
         {
@@ -42,63 +41,15 @@ internal static class DecisionRequestHelper
         return new XacmlJsonRequestRoot { Request = xacmlJsonRequest };
     }
 
-    public static DialogDetailsAuthorizationResult CreateDialogDetailsResponse(XacmlJsonRequestRoot xamlJsonRequestRoot, XacmlJsonResponse? xamlJsonResponse)
-    {
-        var response = new DialogDetailsAuthorizationResult
+    public static DialogDetailsAuthorizationResult CreateDialogDetailsResponse(HashSet<AltinnAction> altinnActions, XacmlJsonResponse? xamlJsonResponse) =>
+        new()
         {
-            AuthorizationAttributesByAuthorizedActions = new Dictionary<string, List<string>>()
+            AuthorizedAltinnActions = altinnActions
+                .Zip(xamlJsonResponse?.Response ?? Enumerable.Empty<XacmlJsonResult>(), (action, response) => (action, response))
+                .Where(x => x.response.Decision == PermitResponse)
+                .Select(x => x.action)
+                .ToHashSet()
         };
-
-        if (xamlJsonResponse?.Response == null)
-        {
-            return response;
-        }
-
-        try
-        {
-            // Iterate over the RequestReference to get the action and resource names asked
-            // The responses match the indices of the request
-            var index = -1;
-            foreach (var requestReference in xamlJsonRequestRoot.Request.MultiRequests.RequestReference)
-            {
-                index++;
-                if (xamlJsonResponse.Response[index].Decision != PermitResponse)
-                {
-                    continue;
-                }
-
-                // We have a permitted action, now find the action and resource names from the referenceId
-                var actionId = requestReference.ReferenceId.First(x => x.StartsWith('a'));
-                var actionName = xamlJsonRequestRoot.Request.Action.First(a => a.Id == actionId).Attribute
-                    .First(a => a.AttributeId == AttributeIdAction).Value;
-
-                // Get the name of the resource. If the id is not the main resource, get the subresource name
-                var resourceId = requestReference.ReferenceId.First(x => x.StartsWith('r'));
-
-                var resourceName = resourceId == MainResourceId
-                    ? Constants.MainResource
-                    : xamlJsonRequestRoot.Request.Resource.First(r => r.Id == resourceId).Attribute
-                        .First(a => a.AttributeId == AttributeIdSubResource).Value;
-
-                if (!response.AuthorizationAttributesByAuthorizedActions.TryGetValue(actionName, out var authorizationAttributes))
-                {
-                    authorizationAttributes = new List<string>();
-                    response.AuthorizationAttributesByAuthorizedActions.Add(actionName, authorizationAttributes);
-                }
-
-                authorizationAttributes.Add(resourceName);
-
-            }
-        }
-        // If for some reason the response is broken, we will probably get null reference exceptions from the First()
-        // calls above. In that case, we re-throw as our own exception.
-        catch (Exception e)
-        {
-            throw new XacmlMappingException("Error while mapping XACML response to DialogDetailsAuthorizationResult", e);
-        }
-
-        return response;
-    }
 
     private static List<XacmlJsonCategory> CreateAccessSubjectCategory(IEnumerable<Claim> claims)
     {
@@ -123,44 +74,45 @@ internal static class DecisionRequestHelper
     }
 
     private static List<XacmlJsonCategory> CreateActionCategories(
-        Dictionary<string, List<string>> actions,
-        out Dictionary<string, string> actionIdByName)
+        HashSet<AltinnAction> altinnActions, out Dictionary<string, string> actionIdByName)
     {
-        var actionCategories = actions
-            .Select(x => x.Key)
-            .Select((action, index) => new XacmlJsonCategory
+        actionIdByName = altinnActions
+            .Select(x => x.Name)
+            .Distinct()
+            .Select((action, index) => (action, id: $"a{index + 1}"))
+            .ToDictionary(x =>
+                x.action,
+                x => x.id);
+
+        return actionIdByName
+            .Select(x => new XacmlJsonCategory
             {
-                Id = $"a{index + 1}",
-                Attribute = new() { new() { AttributeId = AttributeIdAction, Value = action } }
+                Id = x.Value,
+                Attribute = new() { new() { AttributeId = AttributeIdAction, Value = x.Key } }
             })
             .ToList();
-        actionIdByName = actionCategories.ToDictionary(x => x.Attribute.First().Value, x => x.Id);
-        return actionCategories;
     }
 
     private static List<XacmlJsonCategory> CreateResourceCategories(
         string serviceResource,
         Guid dialogId,
         string party,
-        Dictionary<string, List<string>> actions,
-        out Dictionary<string, string> resourceNameIdMap)
+        HashSet<AltinnAction> altinnActions, out Dictionary<string, string> resourceIdByName)
     {
+        resourceIdByName = altinnActions
+            .Select(x => x.AuthorizationAttribute)
+            .Distinct()
+            .Select((authorizationAttribute, index) => (authorizationAttribute, id: $"r{index + 1}"))
+            .ToDictionary(x =>
+                x.authorizationAttribute,
+                x => x.id);
+
+
         var partyAttribute = ExtractPartyAttribute(party);
-        resourceNameIdMap = Enumerable.Empty<string>()
-            .Append(Constants.MainResource)
-            .Concat(actions
-                .SelectMany(x => x.Value)
-                .Distinct()
-                .Where(x => x != Constants.MainResource)
-            )
-            .Select((resource, index) => (resource, index))
-            .ToDictionary(x => x.resource, x => $"r{x.index + 1}");
-
-        var resources = resourceNameIdMap
-            .Select(x => CreateResourceCategory(x.Value, serviceResource, dialogId, partyAttribute, x.Key))
+        return resourceIdByName
+            .Select(x =>
+                CreateResourceCategory(x.Value, serviceResource, dialogId, partyAttribute, x.Key))
             .ToList();
-
-        return resources;
     }
 
     private static XacmlJsonCategory CreateResourceCategory(string id, string serviceResource, Guid? dialogId, XacmlJsonAttribute? partyAttribute, string? subResource = null)
@@ -174,18 +126,6 @@ internal static class DecisionRequestHelper
         if (partyAttribute is not null)
         {
             attributes.Add(partyAttribute);
-
-            //// TEMPORARY HACK TO ADD PARTY ID DUE TO https://github.com/Altinn/altinn-authorization/issues/600
-            const string partyAttributeId = "urn:altinn:partyid";
-            if (partyAttribute.Value == "310029246")
-            {
-                attributes.Add(new() { AttributeId = partyAttributeId, Value = "51526960" });
-            }
-            else if (partyAttribute.Value == "15876497724")
-            {
-                attributes.Add(new() { AttributeId = partyAttributeId, Value = "50888718" });
-            }
-            //// END TEMPORARY HACK TO ADD PARTY ID
         }
 
         if (dialogId is not null)
@@ -245,24 +185,23 @@ internal static class DecisionRequestHelper
     }
 
     private static XacmlJsonMultiRequests CreateMultiRequests(
-        Dictionary<string, string> actionNameIdMap,
-        Dictionary<string, string> resourceNameIdMap,
-        Dictionary<string, List<string>> requestActions)
+        HashSet<AltinnAction> altinnActions,
+        Dictionary<string, string> actionIdByName,
+        Dictionary<string, string> resourceIdByName)
     {
         var multiRequests = new XacmlJsonMultiRequests
         {
             RequestReference = new List<XacmlJsonRequestReference>()
         };
 
-        foreach (var (actionName, actionId) in actionNameIdMap)
-        {
-            var relevantResources = requestActions[actionName];
 
-            foreach (var resourceName in relevantResources)
+        foreach (var (actionName, actionId) in actionIdByName)
+        {
+            foreach (var resourceName in altinnActions.Where(x => x.Name == actionName).Select(x => x.AuthorizationAttribute))
             {
                 multiRequests.RequestReference.Add(new XacmlJsonRequestReference
                 {
-                    ReferenceId = new List<string> { SubjectId, resourceNameIdMap[resourceName], actionId }
+                    ReferenceId = new List<string> { SubjectId, resourceIdByName[resourceName], actionId }
                 });
             }
         }
@@ -272,7 +211,6 @@ internal static class DecisionRequestHelper
 
     public static class NonScalable
     {
-        // TODO!
         // This contains the helpers for the preliminary implementation which doesn't scale, and should only be used in very low volume situations
         // (such as the PoC). It is not intended for production use.
         //
@@ -280,9 +218,9 @@ internal static class DecisionRequestHelper
 
         public static XacmlJsonRequestRoot CreateDialogSearchRequest(DialogSearchAuthorizationRequest request)
         {
-            var requestActions = new Dictionary<string, List<string>>
+            var requestActions = new HashSet<AltinnAction>
             {
-                { Constants.ReadAction, new List<string> { Constants.MainResource } }
+                new (Constants.ReadAction, Constants.MainResource)
             };
 
             var accessSubject = CreateAccessSubjectCategory(request.ClaimsPrincipal.Claims);

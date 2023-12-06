@@ -39,7 +39,7 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
             ServiceResource = dialogEntity.ServiceResource,
             DialogId = dialogEntity.Id,
             Party = dialogEntity.Party,
-            AuthorizationAttributesByActions = dialogEntity.GetAuthorizationAttributesByAction()
+            AltinnActions = dialogEntity.GetAltinnActions()
         }, cancellationToken);
 
     public async Task<DialogSearchAuthorizationResult> GetAuthorizedResourcesForSearch(
@@ -58,11 +58,11 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
         /*
          * This is a preliminary implementation as per https://github.com/digdir/dialogporten/issues/249
          *
-         * This scales horribly, as it will depend on building a MultiDecisionRequest with all possible combinations of parties and resources, but given
+         * This scales pretty horribly, O(n*m), as it will depend on building a MultiDecisionRequest with all possible combinations of parties and resources, but given
          * the small number of parties and resources during the PoC period, this is hopefully not a huge problem.
          *
          * The algorithm is as follows:
-         * - Get all distinct parties and resources from the database, if not already constrained by the request
+         * - Get all distinct parties and resources from the database, except for the one of which that's constrained by the request
          * - Build a MultiDecisionRequest with all resources, all parties and the action "read"
          * - Send the request to the Altinn Decision API
          * - Build a DialogSearchAuthorizationResult from the response
@@ -71,6 +71,7 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
         if (request.ConstraintParties.Count == 0)
         {
             request.ConstraintParties = await _db.Dialogs
+                .Where(dialog => request.ConstraintServiceResources.Contains(dialog.ServiceResource))
                 .Select(dialog => dialog.Party)
                 .Distinct()
                 .ToListAsync(cancellationToken: cancellationToken);
@@ -79,20 +80,21 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
         if (request.ConstraintServiceResources.Count == 0)
         {
             request.ConstraintServiceResources = await _db.Dialogs
+                .Where(dialog => request.ConstraintParties.Contains(dialog.Party))
                 .Select(x => x.ServiceResource)
                 .Distinct().ToListAsync(cancellationToken: cancellationToken);
         }
 
         var xacmlJsonRequest = DecisionRequestHelper.NonScalable.CreateDialogSearchRequest(request);
-        var xamlJsonResponse = await SendRequest(xacmlJsonRequest);
+        var xamlJsonResponse = await SendRequest(xacmlJsonRequest, cancellationToken);
         return DecisionRequestHelper.NonScalable.CreateDialogSearchResponse(xacmlJsonRequest, xamlJsonResponse);
     }
 
-    private async Task<DialogDetailsAuthorizationResult> PerformDialogDetailsAuthorization(DialogDetailsAuthorizationRequest request, CancellationToken _)
+    private async Task<DialogDetailsAuthorizationResult> PerformDialogDetailsAuthorization(DialogDetailsAuthorizationRequest request, CancellationToken cancellationToken)
     {
         var xacmlJsonRequest = DecisionRequestHelper.CreateDialogDetailsRequest(request);
-        var xamlJsonResponse = await SendRequest(xacmlJsonRequest);
-        return DecisionRequestHelper.CreateDialogDetailsResponse(xacmlJsonRequest, xamlJsonResponse);
+        var xamlJsonResponse = await SendRequest(xacmlJsonRequest, cancellationToken);
+        return DecisionRequestHelper.CreateDialogDetailsResponse(request.AltinnActions, xamlJsonResponse);
     }
 
     private static readonly JsonSerializerOptions _serializerOptions = new()
@@ -101,18 +103,18 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault
     };
 
-    private async Task<XacmlJsonResponse?> SendRequest(XacmlJsonRequestRoot xacmlJsonRequest)
+    private async Task<XacmlJsonResponse?> SendRequest(XacmlJsonRequestRoot xacmlJsonRequest, CancellationToken cancellationToken)
     {
         const string apiUrl = "authorization/api/v1/Decision";
         var requestJson = JsonSerializer.Serialize(xacmlJsonRequest, _serializerOptions);
         _logger.LogDebug("Generated XACML request: {RequestJson}", requestJson);
         var httpContent = new StringContent(requestJson, Encoding.UTF8, "application/json");
 
-        var response = await _httpClient.PostAsync(apiUrl, httpContent);
+        var response = await _httpClient.PostAsync(apiUrl, httpContent, cancellationToken);
 
         if (response.StatusCode != HttpStatusCode.OK)
         {
-            var errorResponse = await response.Content.ReadAsStringAsync();
+            var errorResponse = await response.Content.ReadAsStringAsync(cancellationToken);
             _logger.LogInformation(
                 "AltinnAuthorizationClient.SendRequest failed with non-successful status code: {StatusCode} {Response}",
                 response.StatusCode, errorResponse);
@@ -120,7 +122,7 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
             return null;
         }
 
-        var responseData = await response.Content.ReadAsStringAsync();
+        var responseData = await response.Content.ReadAsStringAsync(cancellationToken);
         return JsonSerializer.Deserialize<XacmlJsonResponse>(responseData, _serializerOptions);
     }
 }

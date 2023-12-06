@@ -110,23 +110,23 @@ public class DecisionRequestHelperTests
             "/person/12345678901");
 
         // Add an additional action to the request that the mocked response should give a non-permit response for
-        request.AuthorizationAttributesByActions.Add("failaction", new List<string> { Constants.MainResource });
+        request.AltinnActions.Add(new AltinnAction("failaction", Constants.MainResource));
 
         var jsonRequestRoot = DecisionRequestHelper.CreateDialogDetailsRequest(request);
         var jsonResponse = CreateMockedXamlJsonResponse(jsonRequestRoot);
 
         // Act
-        var response = DecisionRequestHelper.CreateDialogDetailsResponse(jsonRequestRoot, jsonResponse);
+        var response = DecisionRequestHelper.CreateDialogDetailsResponse(request.AltinnActions, jsonResponse);
 
         // Assert
         Assert.NotNull(response);
-        Assert.Equal(request.AuthorizationAttributesByActions.Count - 1, response.AuthorizationAttributesByAuthorizedActions.Count);
-        Assert.Equal(Constants.MainResource, response.AuthorizationAttributesByAuthorizedActions["read"].First());
-        Assert.Equal(Constants.MainResource, response.AuthorizationAttributesByAuthorizedActions["write"].First());
-        Assert.Equal("element1", response.AuthorizationAttributesByAuthorizedActions["sign"].First());
-        Assert.Equal("element2", response.AuthorizationAttributesByAuthorizedActions["elementread"].First());
-        Assert.Equal("element3", response.AuthorizationAttributesByAuthorizedActions["elementread"].Last());
-        Assert.DoesNotContain(response.AuthorizationAttributesByAuthorizedActions.Keys, k => k == "failaction");
+        Assert.Equal(request.AltinnActions.Count - 1, response.AuthorizedAltinnActions.Count);
+        Assert.Contains(new AltinnAction("read", Constants.MainResource), response.AuthorizedAltinnActions);
+        Assert.Contains(new AltinnAction("write", Constants.MainResource), response.AuthorizedAltinnActions);
+        Assert.Contains(new AltinnAction("sign", "element1"), response.AuthorizedAltinnActions);
+        Assert.Contains(new AltinnAction("elementread", "element2"), response.AuthorizedAltinnActions);
+        Assert.Contains(new AltinnAction("elementread", "element3"), response.AuthorizedAltinnActions);
+        Assert.DoesNotContain(new AltinnAction("failaction", Constants.MainResource), response.AuthorizedAltinnActions);
     }
 
     private static DialogDetailsAuthorizationRequest CreateDialogDetailsAuthorizationRequest(List<Claim> principalClaims, string party)
@@ -145,12 +145,13 @@ public class DecisionRequestHelperTests
             // This should be copied resources with attributes "urn:altinn:organizationnumber" if starting with "/org/"
             // and "urn:altinn:ssn" if starting with "/person/"
             Party = party,
-            AuthorizationAttributesByActions = new Dictionary<string, List<string>>
+            AltinnActions = new HashSet<AltinnAction>
             {
-                { "read", new List<string> { Constants.MainResource } },
-                { "write", new List<string> { Constants.MainResource } },
-                { "sign", new List<string> { "element1" } },
-                { "elementread", new List<string> { "element2", "element3" } }
+                new ("read",  Constants.MainResource),
+                new ("write",  Constants.MainResource),
+                new ("sign",  "element1"),
+                new ("elementread",  "element2"),
+                new ("elementread",  "element3")
             }
         };
     }

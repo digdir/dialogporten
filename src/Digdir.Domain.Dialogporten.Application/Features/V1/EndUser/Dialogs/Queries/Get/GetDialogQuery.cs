@@ -106,7 +106,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
 
     private static void DecorateWithAuthorization(GetDialogDto dto, DialogDetailsAuthorizationResult authorizationResult)
     {
-        foreach (var (action, resources) in authorizationResult.AuthorizationAttributesByAuthorizedActions)
+        foreach (var (action, resources) in authorizationResult.AuthorizedAltinnActions)
         {
             foreach (var apiAction in dto.ApiActions.Where(a => a.Action == action))
             {

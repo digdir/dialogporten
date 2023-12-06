@@ -19,7 +19,7 @@ internal sealed class LocalDevelopmentAltinnAuthorization : IAltinnAuthorization
     public Task<DialogDetailsAuthorizationResult> GetDialogDetailsAuthorization(DialogEntity dialogEntity,
         CancellationToken cancellationToken = default) =>
         // Just allow everything
-        Task.FromResult(new DialogDetailsAuthorizationResult { AuthorizationAttributesByAuthorizedActions = dialogEntity.GetAuthorizationAttributesByAction() });
+        Task.FromResult(new DialogDetailsAuthorizationResult { AuthorizedAltinnActions = dialogEntity.GetAltinnActions() });
 
     public async Task<DialogSearchAuthorizationResult> GetAuthorizedResourcesForSearch(List<string> constraintParties, List<string> serviceResources,
         CancellationToken cancellationToken = default)
