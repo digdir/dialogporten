@@ -2,6 +2,7 @@
 # Set default behavior to automatically normalize line endings.
 ###############################################################################
 * text eol=lf
+*.dll binary
 
 ###############################################################################
 # Set default behavior for command prompt diff.
