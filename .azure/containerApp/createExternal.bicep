@@ -85,6 +85,10 @@ var initContainers = [
         value: subscription().tenantId
       }
       {
+        name: 'SUBSCRIPTION_ID'
+        value: subscription().subscriptionId
+      }
+      {
         name: 'AZURE_CLIENT_ID'
         value: migrationVerifierPrincipalAppId
       }

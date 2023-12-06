@@ -1,73 +1,69 @@
+using System.Text.Json;
+using Azure.Core;
 using Azure.Identity;
-using Azure.ResourceManager;
-using Azure.ResourceManager.AppContainers;
-using Azure.ResourceManager.Resources;
 using ILogger = Serilog.ILogger;
 
 namespace Digdir.Tool.Dialogporten.MigrationVerifier;
 
 public static class MigrationVerifier
 {
-    private static readonly ArmClient _client = new(new DefaultAzureCredential());
-
+    private static readonly string[] Scopes = { "https://management.azure.com/.default" };
     public static async Task Verify(ILogger logger)
     {
         const int secondsBetweenRetries = 2;
         const int maxRetries = 30;
 
-        var subscription = await GetSubscription();
+        var subscriptionId = GetSubscriptionId();
         var resourceGroupName = GetResourceGroupName();
-        var resourceGroup = GetResourceGroup(subscription, resourceGroupName);
         var gitSha = GetGitSha();
-
         var jobName = GetMigrationJobName();
 
-        var retries = 0;
+        var credentials = new DefaultAzureCredential();
+        var tokenRequestContext = new TokenRequestContext(Scopes);
+        var tokenResult = await credentials.GetTokenAsync(tokenRequestContext);
 
+        var executionsUrl =
+            $"https://management.azure.com/subscriptions/" +
+            $"{subscriptionId}/resourceGroups/{resourceGroupName}/" +
+            $"providers/Microsoft.App/jobs/{jobName}/executions?api-version=2023-05-01";
+
+        using var httpClient = new HttpClient();
+        httpClient.DefaultRequestHeaders.Remove("Authorization");
+        httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {tokenResult.Token}");
+
+        var retries = 0;
         while (retries++ < maxRetries)
         {
             try
             {
-                retries++;
-                logger.Information("### Sleeping {SecondsBetweenRetries} seconds before checking for job executions",
-                    secondsBetweenRetries);
-                Thread.Sleep(TimeSpan.FromSeconds(secondsBetweenRetries));
+                var executionsResponse = await httpClient.GetAsync(executionsUrl);
+                var executionsResponseContent = await executionsResponse.Content.ReadAsStringAsync();
+                var containerAppJobExecutions = JsonSerializer.Deserialize<ContainerAppJobExecutions>(executionsResponseContent);
 
-                var migrationJob = await resourceGroup.GetContainerAppJobAsync(jobName);
-                if (migrationJob is null)
+                if (containerAppJobExecutions is null)
                 {
-                    // The container app job might not exist yet because of timing in the IaC pipeline
-                    logger.Information("### Migration job not found, retrying in {SecondsBetweenRetries} seconds",
-                        secondsBetweenRetries);
+                    // log/sleep
                     continue;
                 }
 
-                var executions = migrationJob.Value.GetContainerAppJobExecutions();
-                var executionsForGitSha = executions
-                    .Where(x => x.Data.Template.Containers[0].Image.Contains(gitSha))
+                var executionsForGitSha = containerAppJobExecutions.Executions
+                    .Where(x => x.Properties.Template.Containers.Any(y => y.Image.Contains(gitSha)))
                     .ToList();
 
                 if (executionsForGitSha.Count == 0)
                 {
-                    // The specific execution might not exist yet because of timing in the IaC pipeline
-                    logger.Information(
-                        "### Migration job executions for git sha {GitSha} not found, retrying in {SecondsBetweenRetries} seconds",
-                        gitSha[..8], secondsBetweenRetries);
+                    // log/sleep
                     continue;
                 }
 
-                logger.Information("### Found {NumberOfExecutions} job executions for git sha {GitSha}",
-                    executionsForGitSha.Count, gitSha[..8]);
-
-                if (executionsForGitSha.Exists(x => x.Data.Status == "Succeeded"))
+                if (executionsForGitSha.Any(x => x.Properties.Status == "Succeeded"))
                 {
-                    logger.Information("### Migration job completed successfully, git sha {GitSha} ###", gitSha[..8]);
+                    // log
                     return;
                 }
 
-                logger.Information(
-                    "### No executions with status Succeeded for git sha {GitSha}, retrying in {SecondsBetweenRetries} seconds",
-                    gitSha[..8], secondsBetweenRetries);
+                logger.Information("### Sleeping {SecondsBetweenRetries} seconds before checking for job executions",
+                    secondsBetweenRetries);
             }
             catch (Exception e)
             {
@@ -94,16 +90,6 @@ public static class MigrationVerifier
         return gitSha;
     }
 
-    private static ResourceGroupResource GetResourceGroup(ArmResource subscription, string resourceGroupName)
-    {
-        var resourceGroupId = ResourceGroupResource
-            .CreateResourceIdentifier(subscription.Id.SubscriptionId, resourceGroupName);
-        var resourceGroup = _client.GetResourceGroupResource(resourceGroupId);
-
-        ArgumentNullException.ThrowIfNull(resourceGroup);
-        return resourceGroup;
-    }
-
     private static string GetResourceGroupName()
     {
         var resourceGroupName = Environment.GetEnvironmentVariable("RESOURCE_GROUP_NAME");
@@ -111,10 +97,10 @@ public static class MigrationVerifier
         return resourceGroupName;
     }
 
-    private static async Task<SubscriptionResource> GetSubscription()
+    private static string GetSubscriptionId()
     {
-        var subscription = await _client.GetDefaultSubscriptionAsync();
-        ArgumentNullException.ThrowIfNull(subscription);
-        return subscription;
+        var subscriptionId = Environment.GetEnvironmentVariable("SUBSCRIPTION_ID");
+        ArgumentException.ThrowIfNullOrEmpty(subscriptionId);
+        return subscriptionId;
     }
 }
