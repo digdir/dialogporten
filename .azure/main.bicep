@@ -92,7 +92,7 @@ module copySecrets 'keyvault/copySecrets.bicep' = {
 	params: {
 		srcKeyVaultKeys: keyVault.source.keys
 		srcKeyVaultName: secrets.sourceKeyVaultName
-		srcKeyVaultRGNName: keyVault.source.resourceGroupName
+		srcKeyVaultRGNName: secrets.sourceKeyVaultResourceGroup
 		srcKeyVaultSubId: secrets.sourceKeyVaultSubscriptionId
 		destKeyVaultName: keyVaultModule.outputs.name
 		secretPrefix: 'dialogporten--${environment}--'
