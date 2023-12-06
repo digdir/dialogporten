@@ -250,49 +250,40 @@ internal static class DecisionRequestHelper
                 return response;
             }
 
-            try
+            for (var i = 0; i < xamlJsonRequestRoot.Request.MultiRequests.RequestReference.Count; i++)
             {
-                for (var i = 0; i < xamlJsonRequestRoot.Request.MultiRequests.RequestReference.Count; i++)
+                if (xamlJsonResponse.Response[i].Decision != PermitResponse)
                 {
-                    if (xamlJsonResponse.Response[i].Decision != PermitResponse)
-                    {
-                        continue;
-                    }
-
-                    // Get the name of the resource.
-                    var resourceId = $"r{i + 1}";
-                    var serviceResource = $"{AttributeIdResource}:" + xamlJsonRequestRoot.Request.Resource.First(r => r.Id == resourceId).Attribute
-                            .First(a => a.AttributeId == AttributeIdResource).Value;
-
-                    string party;
-                    var partyOrgNr = xamlJsonRequestRoot.Request.Resource.First(r => r.Id == resourceId).Attribute
-                            .FirstOrDefault(a => a.AttributeId == AttributeIdOrganizationNumber);
-                    if (partyOrgNr != null)
-                    {
-                        party = PartyPrefixOrg + partyOrgNr.Value;
-                    }
-                    else
-                    {
-                        var partySsn = xamlJsonRequestRoot.Request.Resource.First(r => r.Id == resourceId).Attribute
-                            .First(a => a.AttributeId == AttributeIdSsn);
-                        party = PartyPrefixPerson + partySsn.Value;
-                    }
-
-                    if (!response.PartiesByResources.TryGetValue(serviceResource, out var parties))
-                    {
-                        parties = new List<string>();
-                        response.PartiesByResources.Add(serviceResource, parties);
-                    }
-
-                    parties.Add(party);
-
+                    continue;
                 }
-            }
-            // If for some reason the response is broken, we will probably get null reference exceptions from the First()
-            // calls above. In that case, we re-throw as our own exception.
-            catch (Exception e)
-            {
-                throw new XacmlMappingException("Error while mapping XACML response to DialogDetailsAuthorizationResult", e);
+
+                // Get the name of the resource.
+                var resourceId = $"r{i + 1}";
+                var serviceResource = $"{AttributeIdResource}:" + xamlJsonRequestRoot.Request.Resource.First(r => r.Id == resourceId).Attribute
+                        .First(a => a.AttributeId == AttributeIdResource).Value;
+
+                string party;
+                var partyOrgNr = xamlJsonRequestRoot.Request.Resource.First(r => r.Id == resourceId).Attribute
+                        .FirstOrDefault(a => a.AttributeId == AttributeIdOrganizationNumber);
+                if (partyOrgNr != null)
+                {
+                    party = PartyPrefixOrg + partyOrgNr.Value;
+                }
+                else
+                {
+                    var partySsn = xamlJsonRequestRoot.Request.Resource.First(r => r.Id == resourceId).Attribute
+                        .First(a => a.AttributeId == AttributeIdSsn);
+                    party = PartyPrefixPerson + partySsn.Value;
+                }
+
+                if (!response.PartiesByResources.TryGetValue(serviceResource, out var parties))
+                {
+                    parties = new List<string>();
+                    response.PartiesByResources.Add(serviceResource, parties);
+                }
+
+                parties.Add(party);
+
             }
 
             return response;
