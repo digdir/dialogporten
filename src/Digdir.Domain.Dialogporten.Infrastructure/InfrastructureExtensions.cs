@@ -1,4 +1,5 @@
-﻿using Altinn.ApiClients.Maskinporten.Extensions;
+﻿using System.Net.Http.Headers;
+using Altinn.ApiClients.Maskinporten.Extensions;
 using Altinn.ApiClients.Maskinporten.Interfaces;
 using Altinn.ApiClients.Maskinporten.Services;
 using Digdir.Domain.Dialogporten.Application.Externals;
@@ -21,6 +22,9 @@ using System.Reflection;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.OptionExtensions;
 using Digdir.Domain.Dialogporten.Application;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
+using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
+using Digdir.Domain.Dialogporten.Infrastructure.Altinn.Authorization;
+using Digdir.Domain.Dialogporten.Infrastructure.Altinn.Events;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure;
 
@@ -52,15 +56,12 @@ public static class InfrastructureExtensions
             .AddDistributedMemoryCache()
             .AddDbContext<DialogDbContext>((services, options) =>
             {
-                var connectionString = services
-                    .GetRequiredService<IOptions<InfrastructureSettings>>()
+                var connectionString = services.GetRequiredService<IOptions<InfrastructureSettings>>()
                     .Value.DialogDbConnectionString;
                 options.UseNpgsql(connectionString)
                     .AddInterceptors(services.GetRequiredService<ConvertDomainEventsToOutboxMessagesInterceptor>());
             })
             .AddHostedService<DevelopmentMigratorHostedService>()
-
-            // Singleton
 
             // Scoped
             .AddScoped<IDialogDbContext>(x => x.GetRequiredService<DialogDbContext>())
@@ -86,12 +87,23 @@ public static class InfrastructureExtensions
                 client.BaseAddress = services.GetRequiredService<IOptions<InfrastructureSettings>>().Value.Altinn.BaseUri)
             .AddPolicyHandlerFromRegistry(PollyPolicy.DefaultHttpRetryPolicy);
 
+        services.AddHttpClient<IAltinnAuthorization, AltinnAuthorizationClient>((services, client) =>
+            {
+                var altinnSettings = services.GetRequiredService<IOptions<InfrastructureSettings>>().Value.Altinn;
+                client.BaseAddress = altinnSettings.BaseUri;
+                client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", altinnSettings.SubscriptionKey);
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            })
+            // TODO! Add cache policy based on request body
+            .AddPolicyHandlerFromRegistry(PollyPolicy.DefaultHttpRetryPolicy);
+
         if (environment.IsDevelopment())
         {
             var localDeveloperSettings = configuration.GetLocalDevelopmentSettings();
             services
                 .ReplaceTransient<ICloudEventBus, ConsoleLogEventBus>(predicate: localDeveloperSettings.UseLocalDevelopmentCloudEventBus)
-                .ReplaceTransient<IResourceRegistry, LocalDevelopmentResourceRegistry>(predicate: localDeveloperSettings.UseLocalDevelopmentResourceRegister);
+                .ReplaceTransient<IResourceRegistry, LocalDevelopmentResourceRegistry>(predicate: localDeveloperSettings.UseLocalDevelopmentResourceRegister)
+                .ReplaceTransient<IAltinnAuthorization, LocalDevelopmentAltinnAuthorization>(predicate: localDeveloperSettings.UseLocalDevelopmentAltinnAuthorization);
         }
 
         return services;

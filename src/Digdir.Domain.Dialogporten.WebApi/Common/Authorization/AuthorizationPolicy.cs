@@ -4,6 +4,7 @@ namespace Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 
 internal static class AuthorizationPolicy
 {
+    public const string EndUser = "enduser";
     public const string ServiceProvider = "serviceprovider";
     public const string ServiceProviderSearch = "serviceproviderSearch";
     public const string Testing = "testing";
@@ -11,6 +12,7 @@ internal static class AuthorizationPolicy
 
 internal static class AuthorizationScope
 {
+    public const string EndUser = "digdir:dialogporten";
     public const string ServiceProvider = "digdir:dialogporten.serviceprovider";
     public const string ServiceProviderSearch = "digdir:dialogporten.serviceprovider.search";
     public const string Testing = "digdir:dialogporten.developer.test";

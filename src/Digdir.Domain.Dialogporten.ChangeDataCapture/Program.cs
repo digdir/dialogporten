@@ -69,20 +69,22 @@ static void BuildAndRun(string[] args)
             });
         })
         .AddSingleton(x => new PostgresCdcSSubscriptionOptions
-            (
-                ConnectionString: builder.Configuration["Infrastructure:DialogDbConnectionString"]!,
-                ReplicationSlotName: builder.Configuration["ReplicationSlotName"]!,
-                PublicationName: builder.Configuration["PublicationName"]!,
-                TableName: builder.Configuration["TableName"]!,
-                DataMapper: new OutboxReplicationDataMapper()
-            ))
+        (
+            ConnectionString: builder.Configuration["Infrastructure:DialogDbConnectionString"]!,
+            ReplicationSlotName: builder.Configuration["ReplicationSlotName"]!,
+            PublicationName: builder.Configuration["PublicationName"]!,
+            TableName: builder.Configuration["TableName"]!,
+            DataMapper: new OutboxReplicationDataMapper()
+        ))
         .AddTransient<ICdcSubscription<OutboxMessage>, PostgresCdcSubscription>()
-        .AddTransient<ICdcSink<OutboxMessage>, MassTransitSink>();
+        .AddTransient<ICdcSink<OutboxMessage>, MassTransitSink>()
+        .AddHealthChecks();
 
     var app = builder.Build();
 
     app.UseHttpsRedirection()
         .UseSerilogRequestLogging();
 
+    app.UseHealthChecks("/healthz");
     app.Run();
 }

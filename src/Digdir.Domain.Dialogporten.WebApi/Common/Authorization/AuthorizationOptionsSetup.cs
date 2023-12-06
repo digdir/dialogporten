@@ -26,6 +26,10 @@ internal sealed class AuthorizationOptionsSetup : IConfigureOptions<Authorizatio
             .RequireValidConsumerClaim()
             .Build();
 
+        options.AddPolicy(AuthorizationPolicy.EndUser, builder => builder
+            .Combine(options.DefaultPolicy)
+            .RequireScope(AuthorizationScope.EndUser));
+
         options.AddPolicy(AuthorizationPolicy.ServiceProvider, builder => builder
             .Combine(options.DefaultPolicy)
             .RequireScope(AuthorizationScope.ServiceProvider));

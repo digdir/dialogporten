@@ -16,6 +16,7 @@ public sealed class InfrastructureSettings
 public sealed class AltinnPlatformSettings
 {
     public required Uri BaseUri { get; init; }
+    public required string SubscriptionKey { get; init; }
 }
 
 internal sealed class InfrastructureSettingsValidator : AbstractValidator<InfrastructureSettings>

@@ -1,7 +1,10 @@
 using System.Linq.Expressions;
 using AutoMapper;
+using Digdir.Domain.Dialogporten.Application.Common;
+using Digdir.Domain.Dialogporten.Application.Common.Authorization;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
+using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements;
 using MediatR;
@@ -23,11 +26,16 @@ internal sealed class GetDialogElementQueryHandler : IRequestHandler<GetDialogEl
 {
     private readonly IMapper _mapper;
     private readonly IDialogDbContext _dbContext;
+    private readonly IAltinnAuthorization _altinnAuthorization;
 
-    public GetDialogElementQueryHandler(IMapper mapper, IDialogDbContext dbContext)
+    public GetDialogElementQueryHandler(
+        IMapper mapper,
+        IDialogDbContext dbContext,
+        IAltinnAuthorization altinnAuthorization)
     {
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+        _altinnAuthorization = altinnAuthorization ?? throw new ArgumentNullException(nameof(altinnAuthorization));
     }
 
     public async Task<GetDialogElementResult> Handle(GetDialogElementQuery request,
@@ -50,19 +58,30 @@ internal sealed class GetDialogElementQueryHandler : IRequestHandler<GetDialogEl
             return new EntityNotFound<DialogEntity>(request.DialogId);
         }
 
+        var authorizationResult = await _altinnAuthorization.GetDialogDetailsAuthorization(
+            dialog,
+            cancellationToken);
+
+        // If we cannot read the dialog at all, we don't allow access to any of the dialog elements
+        if (!authorizationResult.HasReadAccessToMainResource())
+        {
+            return new EntityNotFound<DialogEntity>(request.DialogId);
+        }
+
         if (dialog.Deleted)
         {
             return new EntityDeleted<DialogEntity>(request.DialogId);
         }
 
         var element = dialog.Elements.FirstOrDefault();
-
         if (element is null)
         {
             return new EntityNotFound<DialogElement>(request.ElementId);
         }
 
         var dto = _mapper.Map<GetDialogElementDto>(element);
+        dto.IsAuthorized = authorizationResult.HasReadAccessToDialogElement(element);
+
         return dto;
     }
 }

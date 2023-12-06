@@ -9,7 +9,6 @@ public class EndUserGroup : Group
     {
         Configure(RoutePrefix, ep =>
         {
-            ep.AllowAnonymous();
             ep.EndpointVersion(1);
         });
     }

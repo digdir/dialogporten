@@ -1,5 +1,6 @@
 using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogActivities.Queries.Get;
 using Digdir.Domain.Dialogporten.WebApi.Common;
+using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
 using FastEndpoints;
 using MediatR;
@@ -18,6 +19,7 @@ public class GetDialogActivityEndpoint : Endpoint<GetDialogActivityQuery>
     public override void Configure()
     {
         Get("dialogs/{dialogId}/activities/{activityId}");
+        Policies(AuthorizationPolicy.EndUser);
         Group<EndUserGroup>();
 
         Description(b => b

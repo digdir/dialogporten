@@ -1,24 +1,13 @@
 param namePrefix string
 param location string
-param adminObjectIds array = []
 
-var adminAccessPolicies = [for admin in adminObjectIds: {
-    objectId: admin
-    tenantId: subscription().tenantId
-    permissions: {
-        keys: [ 'all' ]
-        secrets: [ 'all' ]
-        certificates: [ 'all' ]
-    }
-}]
+var keyVaultName = take('${namePrefix}-kv-${uniqueString(resourceGroup().id)}', 24)
 
-var keyvaultName = take('${namePrefix}-kv-${uniqueString(resourceGroup().id)}', 24)
-
-resource keyvault 'Microsoft.KeyVault/vaults@2022-11-01' = {
-	name: keyvaultName
+resource keyVault 'Microsoft.KeyVault/vaults@2022-11-01' = {
+	name: keyVaultName
 	location: location
 	properties: {
-		// TODO: Remove
+		// TODO: Remove, https://github.com/digdir/dialogporten/issues/229
 		enablePurgeProtection: null // Null is the same as false and false is invalid for some reason
 		enabledForTemplateDeployment: false
 		sku: {
@@ -26,8 +15,8 @@ resource keyvault 'Microsoft.KeyVault/vaults@2022-11-01' = {
 			name: 'standard'
 		}
 		tenantId: subscription().tenantId
-		accessPolicies: adminAccessPolicies
+		accessPolicies: []
 	}
 }
 
-output name string = keyvault.name
+output name string = keyVault.name

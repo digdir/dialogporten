@@ -25,7 +25,7 @@ dotnet_diagnostic.CA1716.severity = none
 # Style faults should be warnings
 dotnet_analyzer_diagnostic.category-Style.severity = warning
 
-# 
+#  
 dotnet_style_parentheses_in_arithmetic_binary_operators = always_for_clarity
 
 # Enforce file scoped namespaces

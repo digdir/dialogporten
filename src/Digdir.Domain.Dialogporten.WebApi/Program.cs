@@ -67,10 +67,15 @@ static void BuildAndRun(string[] args)
     if (!builder.Environment.IsDevelopment())
     {
         // Temporary configuration for outbox through Web api
-        builder.Services.AddHostedService<OutboxScheduler>();
+        var shouldUseOutbox = builder.Configuration.GetValue("RUN_OUTBOX_SCHEDULER", false);
+        if (shouldUseOutbox)
+        {
+            builder.Services.AddHostedService<OutboxScheduler>();
+        }
     }
 
     var thisAssembly = Assembly.GetExecutingAssembly();
+
     builder.Services
         // Options setup
         .ConfigureOptions<AuthorizationOptionsSetup>()
@@ -118,15 +123,18 @@ static void BuildAndRun(string[] args)
 
         // Auth
         .AddDialogportenAuthentication(builder.Configuration)
-        .AddAuthorization();
+        .AddAuthorization()
+        .AddHealthChecks();
 
     if (builder.Environment.IsDevelopment())
     {
         var localDevelopmentSettings = builder.Configuration.GetLocalDevelopmentSettings();
         builder.Services
             .ReplaceSingleton<IUser, LocalDevelopmentUser>(predicate: localDevelopmentSettings.UseLocalDevelopmentUser)
-            .ReplaceSingleton<IAuthorizationHandler, AllowAnonymousHandler>(predicate: localDevelopmentSettings.DisableAuth)
-            .AddHostedService<OutboxScheduler>(predicate: !localDevelopmentSettings.DisableShortCircuitOutboxDispatcher);
+            .ReplaceSingleton<IAuthorizationHandler, AllowAnonymousHandler>(
+                predicate: localDevelopmentSettings.DisableAuth)
+            .AddHostedService<
+                OutboxScheduler>(predicate: !localDevelopmentSettings.DisableShortCircuitOutboxDispatcher);
     }
 
     var app = builder.Build();
@@ -156,6 +164,7 @@ static void BuildAndRun(string[] args)
         })
         .UseSwaggerGen();
     app.MapControllers();
+    app.MapHealthChecks("/healthz");
     app.Run();
 }
 
