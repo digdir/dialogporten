@@ -60,12 +60,18 @@ module appInsights 'applicationInsights/create.bicep' = {
 
 resource srcKeyVaultResource 'Microsoft.KeyVault/vaults@2022-11-01' existing = {
 	name: secrets.sourceKeyVaultName
-    scope: az.resourceGroup(secrets.sourceKeyVaultSubscriptionId, keyVault.source.resourceGroupName)
+    scope: az.resourceGroup(secrets.sourceKeyVaultSubscriptionId, secrets.sourceKeyVaultResourceGroup)
 }
 
 // #####################################################
 // Create resources with dependencies to other resources
 // #####################################################
+
+var srcKeyVault = {
+    name: secrets.sourceKeyVaultName
+    subscriptionId: secrets.sourceKeyVaultSubscriptionId
+    resourceGroupName: secrets.sourceKeyVaultResourceGroup
+}
 
 module postgresql 'postgreSql/create.bicep' = {
     scope: resourceGroup
@@ -74,7 +80,7 @@ module postgresql 'postgreSql/create.bicep' = {
         namePrefix: namePrefix
         location: location
 		keyVaultName: keyVaultModule.outputs.name
-        srcKeyVault: keyVault.source
+        srcKeyVault: srcKeyVault
         srcSecretName: 'dialogportenPgAdminPassword${environment}'
 		administratorLoginPassword: contains(keyVault.source.keys, 'dialogportenPgAdminPassword${environment}') ? srcKeyVaultResource.getSecret('dialogportenPgAdminPassword${environment}') : secrets.dialogportenPgAdminPassword
     }
@@ -86,7 +92,7 @@ module copySecrets 'keyvault/copySecrets.bicep' = {
 	params: {
 		srcKeyVaultKeys: keyVault.source.keys
 		srcKeyVaultName: secrets.sourceKeyVaultName
-		srcKeyVaultRGNName: keyVault.source.resourceGroupName
+		srcKeyVaultRGNName: secrets.sourceKeyVaultResourceGroup
 		srcKeyVaultSubId: secrets.sourceKeyVaultSubscriptionId
 		destKeyVaultName: keyVaultModule.outputs.name
 		secretPrefix: 'dialogporten--${environment}--'

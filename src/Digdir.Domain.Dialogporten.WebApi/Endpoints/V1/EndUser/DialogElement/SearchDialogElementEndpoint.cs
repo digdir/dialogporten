@@ -1,4 +1,5 @@
 using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogElements.Queries.Search;
+using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
 using FastEndpoints;
 using MediatR;
@@ -17,6 +18,7 @@ public class SearchDialogElementEndpoint : Endpoint<SearchDialogElementQuery>
     public override void Configure()
     {
         Get("dialogs/{dialogId}/elements");
+        Policies(AuthorizationPolicy.EndUser);
         Group<EndUserGroup>();
     }
 

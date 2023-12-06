@@ -1,8 +1,10 @@
 param namePrefix string
 param location string
 param keyVaultName string
-param srcKeyVault object
 param srcSecretName string
+
+@secure()
+param srcKeyVault object
 
 @secure()
 param administratorLoginPassword string

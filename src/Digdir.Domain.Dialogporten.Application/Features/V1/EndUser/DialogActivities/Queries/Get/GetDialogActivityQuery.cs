@@ -1,6 +1,7 @@
 using AutoMapper;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
+using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using MediatR;
@@ -23,12 +24,17 @@ public partial class GetDialogActivityResult : OneOfBase<GetDialogActivityDto, E
 internal sealed class GetDialogActivityQueryHandler : IRequestHandler<GetDialogActivityQuery, GetDialogActivityResult>
 {
     private readonly IMapper _mapper;
+    private readonly IAltinnAuthorization _altinnAuthorization;
     private readonly IDialogDbContext _dbContext;
 
-    public GetDialogActivityQueryHandler(IMapper mapper, IDialogDbContext dbContext)
+    public GetDialogActivityQueryHandler(
+        IDialogDbContext dbContext,
+        IMapper mapper,
+        IAltinnAuthorization altinnAuthorization)
     {
-        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        _altinnAuthorization = altinnAuthorization ?? throw new ArgumentNullException(nameof(altinnAuthorization));
     }
 
     public async Task<GetDialogActivityResult> Handle(GetDialogActivityQuery request,
@@ -41,6 +47,16 @@ internal sealed class GetDialogActivityQueryHandler : IRequestHandler<GetDialogA
                 cancellationToken: cancellationToken);
 
         if (dialog is null)
+        {
+            return new EntityNotFound<DialogEntity>(request.DialogId);
+        }
+
+        var authorizationResult = await _altinnAuthorization.GetDialogDetailsAuthorization(
+            dialog,
+            cancellationToken);
+
+        // If we cannot read the dialog at all, we don't allow access to any of the activity history
+        if (!authorizationResult.HasReadAccessToMainResource())
         {
             return new EntityNotFound<DialogEntity>(request.DialogId);
         }

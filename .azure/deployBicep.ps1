@@ -10,7 +10,10 @@ param(
 
 	[Parameter(Mandatory)]
 	[string]$sourceKeyVaultSubscriptionId,
-	
+
+	[Parameter(Mandatory)]
+	[string]$sourceKeyVaultResourceGroup,
+
 	[Parameter(Mandatory)]
 	[string]$sourceKeyVaultName,
     	
@@ -26,8 +29,8 @@ $paramsJson = JsonMergeFromPath "$PSScriptRoot/main.parameters.json" "$PSScriptR
 # Add keyvault keys to parameters.keyVault.value.source.keys
 AddMemberPath $paramsJson "parameters.keyVault.value.source.keys" @( `
 	az keyvault secret list `
-		--vault-name $paramsJson.parameters.keyVault.value.source.name `
-		--subscription $paramsJson.parameters.keyVault.value.source.subscriptionId `
+		--vault-name $sourceKeyVaultName `
+		--subscription $sourceKeyVaultSubscriptionId `
 		--query "[].name" `
 		--output tsv `
 )
@@ -37,6 +40,7 @@ AddMemberPath $paramsJson "parameters.secrets.value" @{
 	dialogportenPgAdminPassword = (GeneratePassword -length 30).Password
 	apiManagementDigDirEmail = $apiManagementDigDirEmail
     sourceKeyVaultSubscriptionId = $sourceKeyVaultSubscriptionId
+    sourceKeyVaultResourceGroup = $sourceKeyVaultResourceGroup
     sourceKeyVaultName = $sourceKeyVaultName	
 }
 

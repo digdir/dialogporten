@@ -1,4 +1,5 @@
 using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogElements.Queries.Get;
+using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
 using FastEndpoints;
 using MediatR;
@@ -17,6 +18,7 @@ public class GetDialogElementEndpoint : Endpoint<GetDialogElementQuery>
     public override void Configure()
     {
         Get("dialogs/{dialogId}/elements/{elementId}");
+        Policies(AuthorizationPolicy.EndUser);
         Group<EndUserGroup>();
     }
 

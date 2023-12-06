@@ -11,6 +11,10 @@ on:
         required: true
       AZURE_SOURCE_KEY_VAULT_NAME:
         required: true
+      AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID:
+          required: true
+      AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP:
+          required: true
       APIM_DIGDIR_EMAIL:
         required: true
 
@@ -49,8 +53,9 @@ jobs:
           -gitSha ${{github.sha}} 
           -environment ${{ inputs.environment }}
           -subscriptionId ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          -sourceKeyVaultSubscriptionId ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           -sourceKeyVaultName ${{ secrets.AZURE_SOURCE_KEY_VAULT_NAME }}
+          -sourceKeyVaultSubscriptionId ${{ secrets.AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID }}
+          -sourceKeyVaultResourceGroup ${{ secrets.AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP }}
           -apiManagementDigDirEmail ${{ secrets.APIM_DIGDIR_EMAIL}}
 
       - name: Logout from azure

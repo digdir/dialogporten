@@ -1,6 +1,7 @@
 using AutoMapper;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
+using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -20,11 +21,16 @@ internal sealed class SearchDialogActivityQueryHandler : IRequestHandler<SearchD
 {
     private readonly IDialogDbContext _db;
     private readonly IMapper _mapper;
+    private readonly IAltinnAuthorization _altinnAuthorization;
 
-    public SearchDialogActivityQueryHandler(IDialogDbContext db, IMapper mapper)
+    public SearchDialogActivityQueryHandler(
+        IDialogDbContext db,
+        IMapper mapper,
+        IAltinnAuthorization altinnAuthorization)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        _altinnAuthorization = altinnAuthorization ?? throw new ArgumentNullException(nameof(altinnAuthorization));
     }
 
     public async Task<SearchDialogActivityResult> Handle(SearchDialogActivityQuery request, CancellationToken cancellationToken)
@@ -36,6 +42,16 @@ internal sealed class SearchDialogActivityQueryHandler : IRequestHandler<SearchD
                 cancellationToken: cancellationToken);
 
         if (dialog is null)
+        {
+            return new EntityNotFound<DialogEntity>(request.DialogId);
+        }
+
+        var authorizationResult = await _altinnAuthorization.GetDialogDetailsAuthorization(
+            dialog,
+            cancellationToken);
+
+        // If we cannot read the dialog at all, we don't allow access to any of the activity history
+        if (!authorizationResult.HasReadAccessToMainResource())
         {
             return new EntityNotFound<DialogEntity>(request.DialogId);
         }
