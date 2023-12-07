@@ -40,6 +40,7 @@ public static class MigrationVerifier
 
                 if (containerAppJobExecutions is null)
                 {
+                    // The container app job might not exist yet because of timing in the IaC pipeline
                     logger.Information("### MigrationJob/Executions not found, retrying in {SecondsBetweenRetries} seconds",
                         SecondsBetweenRetries);
                     Sleep();
@@ -52,6 +53,7 @@ public static class MigrationVerifier
 
                 if (executionsForGitSha.Count == 0)
                 {
+                    // The specific execution might not exist yet because of timing in the IaC pipeline
                     logger.Information("### No job executions found for gitSha {GitSha}, retrying in {SecondsBetweenRetries} seconds",
                         gitSha, SecondsBetweenRetries);
                     Sleep();
