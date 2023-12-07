@@ -26,6 +26,12 @@ public static class EndpointExtensions
             StatusCodes.Status410Gone,
             cancellation: cancellationToken);
 
+    public static Task ForbiddenAsync(this IEndpoint ep, Forbidden forbidden, CancellationToken cancellationToken = default)
+        => ep.HttpContext.Response.SendErrorsAsync(
+            forbidden.ToValidationResults(),
+            StatusCodes.Status403Forbidden,
+            cancellation: cancellationToken);
+
     public static Task UnprocessableEntityAsync(this IEndpoint ep, DomainError domainError, CancellationToken cancellationToken = default)
         => ep.HttpContext.Response.SendErrorsAsync(
             domainError.ToValidationResults(),

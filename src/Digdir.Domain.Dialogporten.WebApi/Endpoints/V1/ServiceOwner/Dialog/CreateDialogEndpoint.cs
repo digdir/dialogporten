@@ -30,6 +30,6 @@ public sealed class CreateDialogEndpoint : Endpoint<CreateDialogCommand>
             success => SendCreatedAtAsync<GetDialogEndpoint>(new GetDialogQuery { DialogId = success.Value }, success.Value, cancellation: ct),
             domainError => this.UnprocessableEntityAsync(domainError, ct),
             validationError => this.BadRequestAsync(validationError, ct),
-            unauthorized => SendUnauthorizedAsync(ct));
+            forbidden => this.ForbiddenAsync(forbidden, ct));
     }
 }
