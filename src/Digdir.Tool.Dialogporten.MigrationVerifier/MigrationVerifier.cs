@@ -1,4 +1,3 @@
-using System.Text.Json;
 using Azure.Core;
 using Azure.Identity;
 using ILogger = Serilog.ILogger;
@@ -7,12 +6,14 @@ namespace Digdir.Tool.Dialogporten.MigrationVerifier;
 
 public static class MigrationVerifier
 {
+    private const int SecondsBetweenRetries = 2;
+    private const int MaxRetries = 30;
     private static readonly string[] Scopes = { "https://management.azure.com/.default" };
+    private static readonly HttpClient _httpClient = new();
+    private static void Sleep() => Thread.Sleep(TimeSpan.FromSeconds(SecondsBetweenRetries));
+
     public static async Task Verify(ILogger logger)
     {
-        const int secondsBetweenRetries = 2;
-        const int maxRetries = 30;
-
         var subscriptionId = GetSubscriptionId();
         var resourceGroupName = GetResourceGroupName();
         var gitSha = GetGitSha();
@@ -27,20 +28,21 @@ public static class MigrationVerifier
             $"{subscriptionId}/resourceGroups/{resourceGroupName}/" +
             $"providers/Microsoft.App/jobs/{jobName}/executions?api-version=2023-05-01";
 
-        using var httpClient = new HttpClient();
-        httpClient.DefaultRequestHeaders.Remove("Authorization");
-        httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {tokenResult.Token}");
+        _httpClient.DefaultRequestHeaders.Remove("Authorization");
+        _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {tokenResult.Token}");
 
         var retries = 0;
-        while (retries++ < maxRetries)
+        while (retries++ < MaxRetries)
         {
             try
             {
-                var containerAppJobExecutions = await httpClient.GetFromJsonAsync<ContainerAppJobExecutions>(executionsUrl);
+                var containerAppJobExecutions = await _httpClient.GetFromJsonAsync<ContainerAppJobExecutions>(executionsUrl);
 
                 if (containerAppJobExecutions is null)
                 {
-                    // log/sleep
+                    logger.Information("### MigrationJob/Executions not found, retrying in {SecondsBetweenRetries} seconds",
+                        SecondsBetweenRetries);
+                    Sleep();
                     continue;
                 }
 
@@ -50,18 +52,20 @@ public static class MigrationVerifier
 
                 if (executionsForGitSha.Count == 0)
                 {
-                    // log/sleep
+                    logger.Information("### No job executions found for gitSha {GitSha}, retrying in {SecondsBetweenRetries} seconds",
+                        gitSha, SecondsBetweenRetries);
+                    Sleep();
                     continue;
                 }
 
                 if (executionsForGitSha.Any(x => x.Properties.Status == "Succeeded"))
                 {
-                    // log
+                    logger.Information("### Migration execution for gitSha {GitSha} successful ###", gitSha);
                     return;
                 }
 
-                logger.Information("### Sleeping {SecondsBetweenRetries} seconds before checking for job executions",
-                    secondsBetweenRetries);
+                logger.Information("### No successful job executions found for gitSha {GitSha}, retrying in {SecondsBetweenRetries} seconds",
+                    gitSha, SecondsBetweenRetries);
             }
             catch (Exception e)
             {
