@@ -36,9 +36,7 @@ public static class MigrationVerifier
         {
             try
             {
-                var executionsResponse = await httpClient.GetAsync(executionsUrl);
-                var executionsResponseContent = await executionsResponse.Content.ReadAsStringAsync();
-                var containerAppJobExecutions = JsonSerializer.Deserialize<ContainerAppJobExecutions>(executionsResponseContent);
+                var containerAppJobExecutions = await httpClient.GetFromJsonAsync<ContainerAppJobExecutions>(executionsUrl);
 
                 if (containerAppJobExecutions is null)
                 {
