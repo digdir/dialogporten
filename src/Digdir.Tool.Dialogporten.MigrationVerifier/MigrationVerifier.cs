@@ -10,7 +10,7 @@ public static class MigrationVerifier
     private const int MaxRetries = 30;
     private static readonly string[] Scopes = { "https://management.azure.com/.default" };
     private static readonly HttpClient _httpClient = new();
-    private static void Sleep() => Thread.Sleep(TimeSpan.FromSeconds(SecondsBetweenRetries));
+    private static async Task Sleep() => await Task.Delay(TimeSpan.FromSeconds(SecondsBetweenRetries));
 
     public static async Task Verify(ILogger logger)
     {
@@ -43,7 +43,7 @@ public static class MigrationVerifier
                     // The container app job might not exist yet because of timing in the IaC pipeline
                     logger.Information("### MigrationJob/Executions not found, retrying in {SecondsBetweenRetries} seconds",
                         SecondsBetweenRetries);
-                    Sleep();
+                    await Sleep();
                     continue;
                 }
 
@@ -56,7 +56,7 @@ public static class MigrationVerifier
                     // The specific execution might not exist yet because of timing in the IaC pipeline
                     logger.Information("### No job executions found for gitSha {GitSha}, retrying in {SecondsBetweenRetries} seconds",
                         gitSha, SecondsBetweenRetries);
-                    Sleep();
+                    await Sleep();
                     continue;
                 }
 
