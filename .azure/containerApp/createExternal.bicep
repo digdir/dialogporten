@@ -77,7 +77,7 @@ var initContainers = [
     name: 'migration-verifier-init'
     // Temp. hardcoded tag, waiting for fix on
     // https://github.com/Azure/azure-sdk-for-net/issues/38385
-    image:'${baseImageUrl}migration-verifier:b64532af'
+    image:'${baseImageUrl}migration-verifier:${gitSha}'
     env: concat(envVariables,
     [
       {
