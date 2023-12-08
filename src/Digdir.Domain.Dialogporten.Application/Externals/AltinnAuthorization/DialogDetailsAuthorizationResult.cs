@@ -1,5 +1,5 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Common.Authorization;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements;
 
 namespace Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 
