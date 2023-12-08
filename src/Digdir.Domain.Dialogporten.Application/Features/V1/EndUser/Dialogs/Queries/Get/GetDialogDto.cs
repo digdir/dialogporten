@@ -34,7 +34,6 @@ public sealed class GetDialogDto
 
 public sealed class GetDialogContentDto
 {
-    public Guid Id { get; set; }
     public DialogContentType.Values Type { get; set; }
     public List<LocalizationDto> Value { get; set; } = new();
 }
