@@ -41,6 +41,8 @@ internal sealed class DeleteDialogCommandHandler : IRequestHandler<DeleteDialogC
         var resourceIds = await _userService.GetCurrentUserResourceIds(cancellationToken);
 
         var dialog = await _db.Dialogs
+            // Load the elements so that we dont have to load them during cascading events update
+            // TODO: Test this
             .Include(x => x.Elements)
             .Where(x => resourceIds.Contains(x.ServiceResource))
             .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);

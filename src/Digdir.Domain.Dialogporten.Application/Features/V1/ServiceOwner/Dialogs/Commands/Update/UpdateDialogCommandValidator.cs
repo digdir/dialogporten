@@ -52,7 +52,7 @@ internal sealed class UpdateDialogDtoValidator : AbstractValidator<UpdateDialogD
         RuleFor(x => x.Body)
             .SetValidator(new LocalizationDtosValidator(maximumLength: 1023));
         RuleForEach(x => x.Body)
-            .ContainsValidHttp();
+            .ContainsValidHtml();
         RuleFor(x => x.SenderName)
             .SetValidator(localizationsValidator);
         RuleForEach(x => x.SearchTags)

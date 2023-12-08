@@ -3,19 +3,26 @@ using Digdir.Domain.Dialogporten.Application.Common.Numbers;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using Digdir.Domain.Dialogporten.Domain.Common;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
 using FluentValidation;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Create;
 
 internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDialogCommand>
 {
+    private static readonly DialogContentType.Values[] RequiredDialogContentTypes = DialogContentType
+        .GetValues()
+        .Where(x => x.Required)
+        .Select(x => x.Id)
+        .ToArray();
+
     public CreateDialogCommandValidator(
-        IValidator<IEnumerable<LocalizationDto>> localizationsValidator,
         IValidator<CreateDialogDialogElementDto> elementValidator,
         IValidator<CreateDialogDialogGuiActionDto> guiActionValidator,
         IValidator<CreateDialogDialogApiActionDto> apiActionValidator,
         IValidator<CreateDialogDialogActivityDto> activityValidator,
-        IValidator<CreateDialogSearchTagDto> searchTagValidator)
+        IValidator<CreateDialogSearchTagDto> searchTagValidator,
+        IValidator<CreateDialogContentDto> contentValidator)
     {
         RuleFor(x => x.Id)
             .NotEqual(default(Guid));
@@ -61,15 +68,15 @@ internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDia
         RuleFor(x => x.Status)
             .IsInEnum();
 
-        RuleFor(x => x.Title)
-            .NotEmpty()
-            .SetValidator(localizationsValidator);
-        RuleFor(x => x.Body)
-            .SetValidator(new LocalizationDtosValidator(maximumLength: 1023));
-        RuleForEach(x => x.Body)
-            .ContainsValidHttp();
-        RuleFor(x => x.SenderName)
-            .SetValidator(localizationsValidator);
+        RuleFor(x => x.Content)
+            .UniqueBy(x => x.Type)
+            .Must(content => RequiredDialogContentTypes
+                .All(requiredContent => content
+                    .Select(x => x.Type)
+                    .Contains(requiredContent)))
+            .WithMessage($"Dialog must contain the following content: [{string.Join(", ", RequiredDialogContentTypes)}].")
+            .ForEach(x => x.SetValidator(contentValidator));
+
         RuleForEach(x => x.SearchTags)
             .SetValidator(searchTagValidator);
         RuleFor(x => x.SearchTags)
@@ -113,6 +120,22 @@ internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDia
             .SetValidator(activityValidator);
     }
 }
+
+internal sealed class CreateDialogContentDtoValidator : AbstractValidator<CreateDialogContentDto>
+{
+    public CreateDialogContentDtoValidator()
+    {
+        RuleFor(x => x.Type)
+            .IsInEnum();
+        RuleForEach(x => x.Value)
+            .ContainsValidHtml()
+            .When(x => DialogContentType.GetValue(x.Type).RenderAsHtml);
+        RuleFor(x => x.Value)
+            .NotEmpty()
+            .SetValidator(x => new LocalizationDtosValidator(DialogContentType.GetValue(x.Type).MaxLength));
+    }
+}
+
 
 internal sealed class CreateDialogDialogElementDtoValidator : AbstractValidator<CreateDialogDialogElementDto>
 {
