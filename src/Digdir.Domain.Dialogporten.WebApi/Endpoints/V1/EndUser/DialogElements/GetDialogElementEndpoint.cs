@@ -4,7 +4,7 @@ using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
 using FastEndpoints;
 using MediatR;
 
-namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.EndUser.DialogElement;
+namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.EndUser.DialogElements;
 
 public class GetDialogElementEndpoint : Endpoint<GetDialogElementQuery>
 {

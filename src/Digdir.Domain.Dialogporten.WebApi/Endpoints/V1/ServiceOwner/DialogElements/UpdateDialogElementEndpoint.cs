@@ -2,6 +2,7 @@ using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Update;
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Queries.Get;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements;
 using Digdir.Domain.Dialogporten.WebApi.Common;
 using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
@@ -9,7 +10,7 @@ using FastEndpoints;
 using MediatR;
 using IMapper = AutoMapper.IMapper;
 
-namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.DialogElement;
+namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.DialogElements;
 
 public sealed class UpdateDialogActivityEndpoint : Endpoint<UpdateDialogElementRequest>
 {
@@ -44,7 +45,7 @@ public sealed class UpdateDialogActivityEndpoint : Endpoint<UpdateDialogElementR
         if (dialogElement is null)
         {
             await this.NotFoundAsync(
-                new EntityNotFound<Domain.Dialogs.Entities.Elements.DialogElement>(req.ElementId),
+                new EntityNotFound<DialogElement>(req.ElementId),
                 cancellationToken: ct);
             return;
         }

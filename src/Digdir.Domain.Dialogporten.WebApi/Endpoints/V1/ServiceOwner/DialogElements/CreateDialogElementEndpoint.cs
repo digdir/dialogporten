@@ -1,21 +1,22 @@
-using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
-using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Update;
+using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.DialogElements.Queries.Get;
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Queries.Get;
+using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Update;
 using Digdir.Domain.Dialogporten.WebApi.Common;
-using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
-using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
 using FastEndpoints;
 using MediatR;
+using Medo;
 using IMapper = AutoMapper.IMapper;
+using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
+using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 
-namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.DialogElement;
+namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.DialogElements;
 
-public sealed class DeleteDialogActivityEndpoint : Endpoint<DeleteDialogElementRequest>
+public sealed class CreateDialogActivityEndpoint : Endpoint<CreateDialogElementRequest>
 {
     private readonly IMapper _mapper;
     private readonly ISender _sender;
 
-    public DeleteDialogActivityEndpoint(ISender sender, IMapper mapper)
+    public CreateDialogActivityEndpoint(ISender sender, IMapper mapper)
     {
         _sender = sender ?? throw new ArgumentNullException(nameof(sender));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
@@ -23,12 +24,12 @@ public sealed class DeleteDialogActivityEndpoint : Endpoint<DeleteDialogElementR
 
     public override void Configure()
     {
-        Delete("dialogs/{dialogId}/elements/{elementId}");
+        Post("dialogs/{dialogId}/elements");
         Policies(AuthorizationPolicy.ServiceProvider);
         Group<ServiceOwnerGroup>();
     }
 
-    public override async Task HandleAsync(DeleteDialogElementRequest req, CancellationToken ct)
+    public override async Task HandleAsync(CreateDialogElementRequest req, CancellationToken ct)
     {
         var dialogQueryResult = await _sender.Send(new GetDialogQuery { DialogId = req.DialogId }, ct);
         if (dialogQueryResult.TryPickT1(out var entityNotFound, out var dialog))
@@ -37,27 +38,19 @@ public sealed class DeleteDialogActivityEndpoint : Endpoint<DeleteDialogElementR
             return;
         }
 
-        // Remove all existing activities, since this list is append only and
-        // existing activities should not be considered in the new update request.
-        dialog.Activities.Clear();
-
         var updateDialogDto = _mapper.Map<UpdateDialogDto>(dialog);
 
-        var dialogElement = updateDialogDto.Elements.FirstOrDefault(x => x.Id == req.ElementId);
-        if (dialogElement is null)
-        {
-            await this.NotFoundAsync(new EntityNotFound<Domain.Dialogs.Entities.Elements.DialogElement>(req.ElementId), cancellationToken: ct);
-            return;
-        }
+        req.Id = !req.Id.HasValue || req.Id.Value == default
+            ? Uuid7.NewUuid7().ToGuid()
+            : req.Id;
 
-        updateDialogDto.Elements.Remove(dialogElement);
+        updateDialogDto.Elements.Add(req);
 
-        var updateDialogCommand = new UpdateDialogCommand
-        { Id = req.DialogId, ETag = req.ETag, Dto = updateDialogDto };
+        var updateDialogCommand = new UpdateDialogCommand { Id = req.DialogId, ETag = req.ETag, Dto = updateDialogDto };
 
         var result = await _sender.Send(updateDialogCommand, ct);
         await result.Match(
-            success => SendNoContentAsync(ct),
+            success => SendCreatedAtAsync<GetDialogElementEndpoint>(new GetDialogElementQuery { DialogId = dialog.Id, ElementId = req.Id.Value }, req.Id, cancellation: ct),
             notFound => this.NotFoundAsync(notFound, ct),
             validationError => this.BadRequestAsync(validationError, ct),
             domainError => this.UnprocessableEntityAsync(domainError, ct),
@@ -65,10 +58,9 @@ public sealed class DeleteDialogActivityEndpoint : Endpoint<DeleteDialogElementR
     }
 }
 
-public sealed class DeleteDialogElementRequest
+public sealed class CreateDialogElementRequest : UpdateDialogDialogElementDto
 {
     public Guid DialogId { get; set; }
-    public Guid ElementId { get; set; }
 
     [FromHeader(headerName: Constants.IfMatch, isRequired: false)]
     public Guid? ETag { get; set; }

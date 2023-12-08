@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using DialogportenAuthorizationPolizy = Digdir.Domain.Dialogporten.WebApi.Common.Authorization.AuthorizationPolicy;
 
-namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.Dialog;
+namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.Dialogs;
 
 /* Since minimal apis don't support json patch documents out of the box, 
  * and we've not been able to find a good alternative library for it yet, 
@@ -41,16 +41,12 @@ public sealed class PatchDialogsController : ControllerBase
     {
         var dialogQueryResult = await _sender.Send(new GetDialogQuery { DialogId = dialogId }, ct);
         if (dialogQueryResult.TryPickT1(out var entityNotFound, out var dialog))
-        {
             return NotFound(HttpContext.ResponseBuilder(StatusCodes.Status404NotFound, entityNotFound.ToValidationResults()));
-        }
 
         var updateDialogDto = _mapper.Map<UpdateDialogDto>(dialog);
         patchDocument.ApplyTo(updateDialogDto, ModelState);
         if (!ModelState.IsValid)
-        {
             return BadRequest(ModelState);
-        }
 
         var command = new UpdateDialogCommand { Id = dialogId, ETag = etag, Dto = updateDialogDto };
         var result = await _sender.Send(command, ct);

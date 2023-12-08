@@ -1,10 +1,10 @@
-using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.DialogElements.Queries.Search;
+using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogElements.Queries.Search;
 using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
 using FastEndpoints;
 using MediatR;
 
-namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.DialogElement;
+namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.EndUser.DialogElements;
 
 public class SearchDialogElementEndpoint : Endpoint<SearchDialogElementQuery>
 {
@@ -18,8 +18,8 @@ public class SearchDialogElementEndpoint : Endpoint<SearchDialogElementQuery>
     public override void Configure()
     {
         Get("dialogs/{dialogId}/elements");
-        Policies(AuthorizationPolicy.ServiceProvider);
-        Group<ServiceOwnerGroup>();
+        Policies(AuthorizationPolicy.EndUser);
+        Group<EndUserGroup>();
     }
 
     public override async Task HandleAsync(SearchDialogElementQuery req, CancellationToken ct)
@@ -27,6 +27,7 @@ public class SearchDialogElementEndpoint : Endpoint<SearchDialogElementQuery>
         var result = await _sender.Send(req, ct);
         await result.Match(
             dto => SendOkAsync(dto, ct),
-            notFound => this.NotFoundAsync(notFound, ct));
+            notFound => this.NotFoundAsync(notFound, ct),
+            deleted => this.GoneAsync(deleted, ct));
     }
 }
