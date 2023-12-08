@@ -41,12 +41,16 @@ public sealed class PatchDialogsController : ControllerBase
     {
         var dialogQueryResult = await _sender.Send(new GetDialogQuery { DialogId = dialogId }, ct);
         if (dialogQueryResult.TryPickT1(out var entityNotFound, out var dialog))
+        {
             return NotFound(HttpContext.ResponseBuilder(StatusCodes.Status404NotFound, entityNotFound.ToValidationResults()));
+        }
 
         var updateDialogDto = _mapper.Map<UpdateDialogDto>(dialog);
         patchDocument.ApplyTo(updateDialogDto, ModelState);
         if (!ModelState.IsValid)
+        {
             return BadRequest(ModelState);
+        }
 
         var command = new UpdateDialogCommand { Id = dialogId, ETag = etag, Dto = updateDialogDto };
         var result = await _sender.Send(command, ct);
