@@ -1,4 +1,4 @@
-﻿using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements;
+﻿using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements;
 using Digdir.Library.Entity.Abstractions;
 using Digdir.Library.Entity.Abstractions.Features.Aggregate;
 

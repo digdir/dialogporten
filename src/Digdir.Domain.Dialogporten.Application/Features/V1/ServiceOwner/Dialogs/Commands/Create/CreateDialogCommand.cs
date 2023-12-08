@@ -6,7 +6,7 @@ using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Domain.Common;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements;
 using MediatR;
 using OneOf;
 using OneOf.Types;
