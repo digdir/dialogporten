@@ -10,6 +10,7 @@ using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Localizations;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using OneOf;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Queries.Search;
@@ -89,12 +90,13 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
             .WhereIf(request.VisibleAfter.HasValue, x => request.VisibleAfter <= x.VisibleFrom)
             .WhereIf(request.VisibleBefore.HasValue, x => x.VisibleFrom <= request.VisibleBefore)
             .WhereIf(request.Search is not null, x =>
-                x.Title!.Localizations.AsQueryable().Any(searchExpression) ||
-                x.Body!.Localizations.AsQueryable().Any(searchExpression) ||
-                x.SearchTags.Any(x => x.Value.Equals(request.Search, StringComparison.OrdinalIgnoreCase)) ||
-                x.SenderName!.Localizations.AsQueryable().Any(searchExpression)
+                x.Content.Any(x => x.Value.Localizations.AsQueryable().Any(searchExpression)) ||
+                x.SearchTags.Any(x => x.Value.Equals(request.Search, StringComparison.OrdinalIgnoreCase))
             )
             .Where(x => resourceIds.Contains(x.ServiceResource))
+            // TODO: Test this.
+            .Include(x => x.Content.Where(x => x.Type.OutputInList))
+                .ThenInclude(x => x.Value.Localizations)
             .ProjectTo<SearchDialogDto>(_mapper.ConfigurationProvider)
             .ToPaginatedListAsync(request, cancellationToken: cancellationToken);
     }
