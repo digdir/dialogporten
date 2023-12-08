@@ -65,6 +65,9 @@ public class DialogEntity :
     [AggregateChild]
     public List<DialogActivity> Activities { get; set; } = new();
 
+    [AggregateChild]
+    public List<DialogContent> Content { get; set; } = new();
+
     public void SoftDelete()
     {
         foreach (var dialogElement in Elements)

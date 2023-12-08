@@ -29,6 +29,7 @@ internal sealed class DialogDbContext : DbContext, IDialogDbContext
     public DbSet<DialogElementUrl> DialogElementUrls => Set<DialogElementUrl>();
     public DbSet<DialogGuiActionPriority> DialogGuiActionTypes => Set<DialogGuiActionPriority>();
     public DbSet<DialogActivityType> DialogActivityTypes => Set<DialogActivityType>();
+    public DbSet<DialogContentType> DialogContentTypes => Set<DialogContentType>();
 
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
     public DbSet<OutboxMessageConsumer> OutboxMessageConsumers => Set<OutboxMessageConsumer>();
