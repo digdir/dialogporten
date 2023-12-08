@@ -89,10 +89,10 @@ public sealed class CreateDialogElementEndpointSummary : Summary<CreateDialogEle
 
         ResponseExamples[StatusCodes.Status201Created] = "b6dc8b01-1cd8-2777-b759-d84b0e384f47";
 
-        Responses[StatusCodes.Status201Created] = Constants.SwaggerSummary.Created.Format("element");
+        Responses[StatusCodes.Status201Created] = Constants.SwaggerSummary.Created.FormatInvariant("element");
         Responses[StatusCodes.Status400BadRequest] = Constants.SwaggerSummary.ValidationError;
-        Responses[StatusCodes.Status401Unauthorized] = Constants.SwaggerSummary.ServiceOwnerAuthenticationFailure;
-        Responses[StatusCodes.Status403Forbidden] = Constants.SwaggerSummary.AccessDeniedToDialogForChildEntity.Format("create");
+        Responses[StatusCodes.Status401Unauthorized] = Constants.SwaggerSummary.ServiceOwnerAuthenticationFailure.FormatInvariant(AuthorizationScope.ServiceProvider);
+        Responses[StatusCodes.Status403Forbidden] = Constants.SwaggerSummary.AccessDeniedToDialogForChildEntity.FormatInvariant("create");
         Responses[StatusCodes.Status404NotFound] = Constants.SwaggerSummary.DialogNotFound;
         Responses[StatusCodes.Status412PreconditionFailed] = Constants.SwaggerSummary.EtagMismatch;
         Responses[StatusCodes.Status422UnprocessableEntity] = Constants.SwaggerSummary.DomainError;

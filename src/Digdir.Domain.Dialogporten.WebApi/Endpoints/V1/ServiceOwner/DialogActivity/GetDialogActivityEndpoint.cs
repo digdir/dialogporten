@@ -47,9 +47,9 @@ public sealed class GetDialogActivityEndpointSummary : Summary<GetDialogActivity
         Description = """
                 Gets a single activity belonging to a dialog. For more information see the documentation (link TBD).
                 """;
-        Responses[StatusCodes.Status200OK] = Constants.SwaggerSummary.ReturnedResult.Format("activity");
-        Responses[StatusCodes.Status401Unauthorized] = Constants.SwaggerSummary.ServiceOwnerAuthenticationFailure;
-        Responses[StatusCodes.Status403Forbidden] = Constants.SwaggerSummary.AccessDeniedToDialogForChildEntity.Format("get");
+        Responses[StatusCodes.Status200OK] = Constants.SwaggerSummary.ReturnedResult.FormatInvariant("activity");
+        Responses[StatusCodes.Status401Unauthorized] = Constants.SwaggerSummary.ServiceOwnerAuthenticationFailure.FormatInvariant(AuthorizationScope.ServiceProvider);
+        Responses[StatusCodes.Status403Forbidden] = Constants.SwaggerSummary.AccessDeniedToDialogForChildEntity.FormatInvariant("get");
         Responses[StatusCodes.Status404NotFound] = Constants.SwaggerSummary.DialogActivityNotFound;
     }
 }

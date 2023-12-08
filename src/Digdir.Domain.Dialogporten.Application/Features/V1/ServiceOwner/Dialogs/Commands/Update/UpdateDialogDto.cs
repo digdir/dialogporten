@@ -9,6 +9,9 @@ namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialog
 
 public sealed class UpdateDialogDto
 {
+    /// <summary>
+    /// ExtendedStatus er en fin ting
+    /// </summary>
     public string? ExtendedStatus { get; set; }
     public DateTimeOffset? VisibleFrom { get; set; }
     public DateTimeOffset? DueAt { get; set; }

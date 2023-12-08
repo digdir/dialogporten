@@ -46,9 +46,9 @@ public sealed class SearchDialogActivityEndpointSummary : Summary<SearchDialogAc
         Description = """
                 Gets the list of activities belonging to a dialog
                 """;
-        Responses[StatusCodes.Status200OK] = Constants.SwaggerSummary.ReturnedResult.Format("activity list");
+        Responses[StatusCodes.Status200OK] = Constants.SwaggerSummary.ReturnedResult.FormatInvariant("activity list");
         Responses[StatusCodes.Status401Unauthorized] = Constants.SwaggerSummary.EndUserAuthenticationFailure;
-        Responses[StatusCodes.Status403Forbidden] = Constants.SwaggerSummary.AccessDeniedToDialog.Format("get");
+        Responses[StatusCodes.Status403Forbidden] = Constants.SwaggerSummary.AccessDeniedToDialog.FormatInvariant("get");
         Responses[StatusCodes.Status404NotFound] = Constants.SwaggerSummary.DialogNotFound;
     }
 }

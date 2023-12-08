@@ -56,9 +56,9 @@ public sealed class CreateDialogEndpointSummary : Summary<CreateDialogEndpoint>
 
         ResponseExamples[StatusCodes.Status201Created] = "018bb8e5-d9d0-7434-8ec5-569a6c8e01fc";
 
-        Responses[StatusCodes.Status201Created] = Constants.SwaggerSummary.Created.Format("aggregate");
+        Responses[StatusCodes.Status201Created] = Constants.SwaggerSummary.Created.FormatInvariant("aggregate");
         Responses[StatusCodes.Status400BadRequest] = Constants.SwaggerSummary.ValidationError;
-        Responses[StatusCodes.Status401Unauthorized] = Constants.SwaggerSummary.ServiceOwnerAuthenticationFailure;
+        Responses[StatusCodes.Status401Unauthorized] = Constants.SwaggerSummary.ServiceOwnerAuthenticationFailure.FormatInvariant(AuthorizationScope.ServiceProvider);
         Responses[StatusCodes.Status403Forbidden] = Constants.SwaggerSummary.DialogCreationNotAllowed;
         Responses[StatusCodes.Status422UnprocessableEntity] = Constants.SwaggerSummary.DomainError;
     }

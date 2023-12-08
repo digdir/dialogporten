@@ -94,9 +94,9 @@ public sealed class DeleteDialogElementEndpointSummary : Summary<DeleteDialogEle
 
                 {Constants.SwaggerSummary.OptimisticConcurrencyNote}
                 """;
-        Responses[StatusCodes.Status204NoContent] = Constants.SwaggerSummary.Deleted.Format("element");
-        Responses[StatusCodes.Status401Unauthorized] = Constants.SwaggerSummary.ServiceOwnerAuthenticationFailure;
-        Responses[StatusCodes.Status403Forbidden] = Constants.SwaggerSummary.AccessDeniedToDialogForChildEntity.Format("delete");
+        Responses[StatusCodes.Status204NoContent] = Constants.SwaggerSummary.Deleted.FormatInvariant("element");
+        Responses[StatusCodes.Status401Unauthorized] = Constants.SwaggerSummary.ServiceOwnerAuthenticationFailure.FormatInvariant(AuthorizationScope.ServiceProvider);
+        Responses[StatusCodes.Status403Forbidden] = Constants.SwaggerSummary.AccessDeniedToDialogForChildEntity.FormatInvariant("delete");
         Responses[StatusCodes.Status404NotFound] = Constants.SwaggerSummary.DialogElementNotFound;
         Responses[StatusCodes.Status412PreconditionFailed] = Constants.SwaggerSummary.EtagMismatch;
     }

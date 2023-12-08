@@ -4,6 +4,10 @@
         <TargetFramework>net7.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+
+        <!-- In order to support doc blocks for Swagger generation in PatchDialogsController.cs -->
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <NoWarn>1591</NoWarn> <!-- Disable warnings for missing XML comments -->
     </PropertyGroup>
 
     <ItemGroup>
