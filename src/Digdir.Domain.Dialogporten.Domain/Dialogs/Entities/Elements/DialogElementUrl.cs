@@ -1,6 +1,6 @@
 ﻿using Digdir.Library.Entity.Abstractions;
 
-namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements;
+namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements;
 
 public class DialogElementUrl : IEntity
 {

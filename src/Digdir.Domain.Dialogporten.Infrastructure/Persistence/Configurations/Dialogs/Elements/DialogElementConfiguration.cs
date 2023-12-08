@@ -1,8 +1,8 @@
-﻿using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements;
+﻿using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Configurations.DialogElements;
+namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Configurations.Dialogs.Elements;
 
 internal sealed class DialogElementConfiguration : IEntityTypeConfiguration<DialogElement>
 {

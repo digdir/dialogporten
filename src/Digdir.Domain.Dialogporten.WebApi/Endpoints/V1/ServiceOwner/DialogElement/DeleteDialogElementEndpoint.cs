@@ -46,7 +46,7 @@ public sealed class DeleteDialogActivityEndpoint : Endpoint<DeleteDialogElementR
         var dialogElement = updateDialogDto.Elements.FirstOrDefault(x => x.Id == req.ElementId);
         if (dialogElement is null)
         {
-            await this.NotFoundAsync(new EntityNotFound<Domain.Dialogs.Entities.DialogElements.DialogElement>(req.ElementId), cancellationToken: ct);
+            await this.NotFoundAsync(new EntityNotFound<Domain.Dialogs.Entities.Elements.DialogElement>(req.ElementId), cancellationToken: ct);
             return;
         }
 

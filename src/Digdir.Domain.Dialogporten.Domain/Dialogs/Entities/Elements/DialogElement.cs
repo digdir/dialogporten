@@ -6,7 +6,7 @@ using Digdir.Library.Entity.Abstractions;
 using Digdir.Library.Entity.Abstractions.Features.Aggregate;
 using Digdir.Library.Entity.Abstractions.Features.EventPublisher;
 
-namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements;
+namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements;
 
 public class DialogElement : IEntity, IAggregateChangedHandler, IEventPublisher
 {

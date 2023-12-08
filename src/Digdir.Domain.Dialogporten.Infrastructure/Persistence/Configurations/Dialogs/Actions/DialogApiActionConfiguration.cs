@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Configurations.Actions;
+namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Configurations.Dialogs.Actions;
 
 internal sealed class DialogApiActionConfiguration : IEntityTypeConfiguration<DialogApiAction>
 {

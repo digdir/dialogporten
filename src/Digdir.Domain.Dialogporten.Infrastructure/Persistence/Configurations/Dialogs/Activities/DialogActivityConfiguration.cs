@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Configurations.DialogActivities;
+namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Configurations.Dialogs.Activities;
 
 internal sealed class DialogActivityConfiguration : IEntityTypeConfiguration<DialogActivity>
 {

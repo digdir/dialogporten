@@ -44,7 +44,7 @@ public sealed class UpdateDialogActivityEndpoint : Endpoint<UpdateDialogElementR
         if (dialogElement is null)
         {
             await this.NotFoundAsync(
-                new EntityNotFound<Domain.Dialogs.Entities.DialogElements.DialogElement>(req.ElementId),
+                new EntityNotFound<Domain.Dialogs.Entities.Elements.DialogElement>(req.ElementId),
                 cancellationToken: ct);
             return;
         }
