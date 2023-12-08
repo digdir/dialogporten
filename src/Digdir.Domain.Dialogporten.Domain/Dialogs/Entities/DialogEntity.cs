@@ -43,14 +43,7 @@ public class DialogEntity :
 
     // === Principal relationships === 
     [AggregateChild]
-    public DialogBody? Body { get; set; }
-
-    [AggregateChild]
-    public DialogTitle? Title { get; set; }
-
-    [AggregateChild]
-    public DialogSenderName? SenderName { get; set; }
-
+    public List<DialogContent> Content { get; set; } = new();
     [AggregateChild]
     public List<DialogSearchTag> SearchTags { get; set; } = new();
 
@@ -65,9 +58,6 @@ public class DialogEntity :
 
     [AggregateChild]
     public List<DialogActivity> Activities { get; set; } = new();
-
-    [AggregateChild]
-    public List<DialogContent> Content { get; set; } = new();
 
     public void SoftDelete()
     {
@@ -114,22 +104,4 @@ public class DialogEntity :
 
     private readonly List<IDomainEvent> _domainEvents = new();
     public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents;
-}
-
-public class DialogBody : LocalizationSet
-{
-    public Guid DialogId { get; set; }
-    public DialogEntity Dialog { get; set; } = null!;
-}
-
-public class DialogTitle : LocalizationSet
-{
-    public Guid DialogId { get; set; }
-    public DialogEntity Dialog { get; set; } = null!;
-}
-
-public class DialogSenderName : LocalizationSet
-{
-    public Guid DialogId { get; set; }
-    public DialogEntity Dialog { get; set; } = null!;
 }
