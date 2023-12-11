@@ -19,6 +19,9 @@ public sealed class SearchDialogQuery : SortablePaginationParameter<SearchDialog
 {
     private readonly string? _searchCultureCode;
 
+    /// <summary>
+    /// Filter by one or more service owner codes
+    /// </summary>
     public List<string>? Org { get; init; }
 
     /// <summary>

@@ -16,6 +16,7 @@ internal sealed class SuffixedSchemaNameGenerator : ISchemaNameGenerator
     public string Generate(Type type)
     {
         var baseName = BaseGenerate(type);
+
         // TODO! Find a more typed approach
         if (type.FullName != null &&
             (baseName.StartsWith("GetDialog", StringComparison.Ordinal) ||
