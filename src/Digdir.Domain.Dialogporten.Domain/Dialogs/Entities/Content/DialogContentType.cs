@@ -51,4 +51,9 @@ public class DialogContentType : AbstractLookupEntity<DialogContentType, DialogC
         },
         _ => throw new ArgumentOutOfRangeException(nameof(id), id, null)
     };
+
+    public static readonly Values[] RequiredTypes = GetValues()
+        .Where(x => x.Required)
+        .Select(x => x.Id)
+        .ToArray();
 }

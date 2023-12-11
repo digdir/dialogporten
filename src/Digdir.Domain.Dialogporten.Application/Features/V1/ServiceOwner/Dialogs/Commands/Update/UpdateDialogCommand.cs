@@ -7,7 +7,9 @@ using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements;
+using Digdir.Domain.Dialogporten.Domain.Localizations;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
@@ -55,9 +57,8 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         var resourceIds = await _userService.GetCurrentUserResourceIds(cancellationToken);
 
         var dialog = await _db.Dialogs
-            .Include(x => x.Body!.Localizations)
-            .Include(x => x.Title!.Localizations)
-            .Include(x => x.SenderName!.Localizations)
+            .Include(x => x.Content)
+                .ThenInclude(x => x.Value.Localizations)
             .Include(x => x.SearchTags)
             .Include(x => x.Elements)
                 .ThenInclude(x => x.DisplayName!.Localizations)
@@ -82,9 +83,13 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         ValidateTimeFields(dialog);
         await AppendActivity(dialog, request.Dto, cancellationToken);
 
-        dialog.Body = _localizationService.Merge(dialog.Body, request.Dto.Body);
-        dialog.Title = _localizationService.Merge(dialog.Title, request.Dto.Title);
-        dialog.SenderName = _localizationService.Merge(dialog.SenderName, request.Dto.SenderName);
+        dialog.Content
+            .Merge(request.Dto.Content,
+                destinationKeySelector: x => x.TypeId,
+                sourceKeySelector: x => x.Type,
+                create: CreateContent,
+                update: UpdateContent,
+                delete: DeleteDelegate.NoOp);
 
         dialog.SearchTags
             .Merge(request.Dto.SearchTags,
@@ -125,6 +130,25 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
             success => success,
             domainError => domainError,
             concurrencyError => concurrencyError);
+    }
+
+    private IEnumerable<DialogContent> CreateContent(IEnumerable<UpdateDialogContentDto> creatables)
+    {
+        foreach (var contentDto in creatables)
+        {
+            var content = _mapper.Map<DialogContent>(contentDto);
+            content.Value = _mapper.Map<DialogContentValue>(contentDto.Value);
+            yield return content;
+        }
+    }
+
+    private void UpdateContent(IEnumerable<UpdateSet<DialogContent, UpdateDialogContentDto>> updateSets)
+    {
+        foreach (var (dto, entity) in updateSets)
+        {
+            _mapper.Map(dto, entity);
+            entity.Value = _localizationService.Merge(entity.Value, dto.Value)!;
+        }
     }
 
     private void ValidateTimeFields(DialogEntity dialog)

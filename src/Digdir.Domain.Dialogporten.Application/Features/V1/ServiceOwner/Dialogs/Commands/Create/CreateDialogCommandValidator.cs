@@ -10,12 +10,6 @@ namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialog
 
 internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDialogCommand>
 {
-    private static readonly DialogContentType.Values[] RequiredDialogContentTypes = DialogContentType
-        .GetValues()
-        .Where(x => x.Required)
-        .Select(x => x.Id)
-        .ToArray();
-
     public CreateDialogCommandValidator(
         IValidator<CreateDialogDialogElementDto> elementValidator,
         IValidator<CreateDialogDialogGuiActionDto> guiActionValidator,
@@ -70,11 +64,11 @@ internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDia
 
         RuleFor(x => x.Content)
             .UniqueBy(x => x.Type)
-            .Must(content => RequiredDialogContentTypes
+            .Must(content => DialogContentType.RequiredTypes
                 .All(requiredContent => content
                     .Select(x => x.Type)
                     .Contains(requiredContent)))
-            .WithMessage($"Dialog must contain the following content: [{string.Join(", ", RequiredDialogContentTypes)}].")
+            .WithMessage($"Dialog must contain the following content: [{string.Join(", ", DialogContentType.RequiredTypes)}].")
             .ForEach(x => x.SetValidator(contentValidator));
 
         RuleForEach(x => x.SearchTags)
@@ -135,7 +129,6 @@ internal sealed class CreateDialogContentDtoValidator : AbstractValidator<Create
             .SetValidator(x => new LocalizationDtosValidator(DialogContentType.GetValue(x.Type).MaxLength));
     }
 }
-
 
 internal sealed class CreateDialogDialogElementDtoValidator : AbstractValidator<CreateDialogDialogElementDto>
 {

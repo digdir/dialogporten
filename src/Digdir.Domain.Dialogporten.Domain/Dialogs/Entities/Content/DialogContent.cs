@@ -19,7 +19,7 @@ public class DialogContent : IEntity
 
     // === Principal relationships ===
     [AggregateChild]
-    public DialogContentValue Value { get; set; } = new();
+    public DialogContentValue Value { get; set; } = null!;
 }
 
 public class DialogContentValue : LocalizationSet
