@@ -32,7 +32,7 @@ public static class MigrationVerifier
         _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {tokenResult.Token}");
 
         logger.Information("### Executions URL: {ExecutionsUrl} ###", executionsUrl);
-        
+
         var retries = 0;
         while (retries++ < MaxRetries)
         {
@@ -54,10 +54,10 @@ public static class MigrationVerifier
 
                 foreach (var execution in containerAppJobExecutions.Executions)
                 {
-                    logger.Information("### Execution: ({Status}, {Image}) ###", 
+                    logger.Information("### Execution: ({Status}, {Image}) ###",
                         execution.Properties.Status, execution.Properties.Template.Containers[0].Image);
                 }
-                
+
                 var executionsForGitSha = containerAppJobExecutions.Executions
                     .Where(x => x.Properties.Template.Containers.Any(y => y.Image.Contains(gitSha)))
                     .ToList();
