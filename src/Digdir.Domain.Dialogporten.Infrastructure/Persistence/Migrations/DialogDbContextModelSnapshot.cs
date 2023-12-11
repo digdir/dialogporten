@@ -362,7 +362,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         new
                         {
                             Id = 1,
-                            MaxLength = 200,
+                            MaxLength = 255,
                             Name = "Title",
                             OutputInList = true,
                             RenderAsHtml = false,
@@ -371,7 +371,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         new
                         {
                             Id = 2,
-                            MaxLength = 200,
+                            MaxLength = 255,
                             Name = "SenderName",
                             OutputInList = true,
                             RenderAsHtml = false,
@@ -380,7 +380,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         new
                         {
                             Id = 3,
-                            MaxLength = 200,
+                            MaxLength = 255,
                             Name = "Summary",
                             OutputInList = true,
                             RenderAsHtml = false,

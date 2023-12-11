@@ -1,3 +1,4 @@
+using Digdir.Domain.Dialogporten.Domain.Common;
 using Digdir.Domain.Dialogporten.Domain.Localizations;
 using Digdir.Library.Entity.Abstractions.Features.Lookup;
 
@@ -25,21 +26,21 @@ public class DialogContentType : AbstractLookupEntity<DialogContentType, DialogC
         {
             Required = true,
             RenderAsHtml = false,
-            MaxLength = 200,
+            MaxLength = Constants.DefaultMaxStringLength,
             OutputInList = true
         },
         Values.SenderName => new(id)
         {
             Required = false,
             RenderAsHtml = false,
-            MaxLength = 200,
+            MaxLength = Constants.DefaultMaxStringLength,
             OutputInList = true
         },
         Values.Summary => new(id)
         {
             Required = true,
             RenderAsHtml = false,
-            MaxLength = 200,
+            MaxLength = Constants.DefaultMaxStringLength,
             OutputInList = true
         },
         Values.AdditionalInfo => new(id)

@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(DialogDbContext))]
-    [Migration("20231211110113_AddTableDialogContent")]
+    [Migration("20231211112802_AddTableDialogContent")]
     partial class AddTableDialogContent
     {
         /// <inheritdoc />
@@ -365,7 +365,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         new
                         {
                             Id = 1,
-                            MaxLength = 200,
+                            MaxLength = 255,
                             Name = "Title",
                             OutputInList = true,
                             RenderAsHtml = false,
@@ -374,7 +374,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         new
                         {
                             Id = 2,
-                            MaxLength = 200,
+                            MaxLength = 255,
                             Name = "SenderName",
                             OutputInList = true,
                             RenderAsHtml = false,
@@ -383,7 +383,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         new
                         {
                             Id = 3,
-                            MaxLength = 200,
+                            MaxLength = 255,
                             Name = "Summary",
                             OutputInList = true,
                             RenderAsHtml = false,

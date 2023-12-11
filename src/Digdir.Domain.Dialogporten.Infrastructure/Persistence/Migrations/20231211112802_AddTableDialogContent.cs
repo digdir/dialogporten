@@ -13,8 +13,6 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.Sql(@$"DELETE FROM ""LocalizationSet"";");
-
             migrationBuilder.DropForeignKey(
                 name: "FK_LocalizationSet_Dialog_DialogBody_DialogId",
                 table: "LocalizationSet");
@@ -101,9 +99,9 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                 columns: new[] { "Id", "MaxLength", "Name", "OutputInList", "RenderAsHtml", "Required" },
                 values: new object[,]
                 {
-                    { 1, 200, "Title", true, false, true },
-                    { 2, 200, "SenderName", true, false, false },
-                    { 3, 200, "Summary", true, false, true },
+                    { 1, 255, "Title", true, false, true },
+                    { 2, 255, "SenderName", true, false, false },
+                    { 3, 255, "Summary", true, false, true },
                     { 4, 1023, "AdditionalInfo", false, true, false }
                 });
 
