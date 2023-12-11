@@ -24,9 +24,17 @@ internal static class ErrorResponseBuilderExtensions
                 Instance = ctx.Request.Path,
                 Extensions = { { "traceId", Activity.Current?.Id ?? ctx.TraceIdentifier } },
             },
+            StatusCodes.Status403Forbidden => new ValidationProblemDetails(errors)
+            {
+                Title = "Forbidden.",
+                Type = "https://datatracker.ietf.org/doc/html/rfc7231#section-6.5.3",
+                Status = statusCode,
+                Instance = ctx.Request.Path,
+                Extensions = { { "traceId", Activity.Current?.Id ?? ctx.TraceIdentifier } },
+            },
             StatusCodes.Status404NotFound => new ValidationProblemDetails(errors)
             {
-                Title = "Reource not found.",
+                Title = "Resource not found.",
                 Type = "https://datatracker.ietf.org/doc/html/rfc7231#section-6.5.4",
                 Status = statusCode,
                 Instance = ctx.Request.Path,
@@ -34,7 +42,7 @@ internal static class ErrorResponseBuilderExtensions
             },
             StatusCodes.Status410Gone => new ValidationProblemDetails(errors)
             {
-                Title = "Reource no longer available.",
+                Title = "Resource no longer available.",
                 Type = "https://datatracker.ietf.org/doc/html/rfc7231#section-6.5.9",
                 Status = statusCode,
                 Instance = ctx.Request.Path,

@@ -6,7 +6,7 @@ using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Domain.Common;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements;
 using MediatR;
 using OneOf;
 using OneOf.Types;
@@ -16,7 +16,7 @@ namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialog
 public sealed class CreateDialogCommand : CreateDialogDto, IRequest<CreateDialogResult> { }
 
 [GenerateOneOf]
-public partial class CreateDialogResult : OneOfBase<Success<Guid>, DomainError, ValidationError, Unauthorized> { }
+public partial class CreateDialogResult : OneOfBase<Success<Guid>, DomainError, ValidationError, Forbidden> { }
 
 internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogCommand, CreateDialogResult>
 {
@@ -44,7 +44,7 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
     {
         if (!await _userService.CurrentUserIsOwner(request.ServiceResource, cancellationToken))
         {
-            return new Unauthorized();
+            return new Forbidden($"Not owner of {request.ServiceResource}.");
         }
 
         var dialog = _mapper.Map<DialogEntity>(request);

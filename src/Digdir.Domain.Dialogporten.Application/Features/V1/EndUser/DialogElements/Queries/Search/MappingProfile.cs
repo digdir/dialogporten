@@ -1,5 +1,5 @@
 using AutoMapper;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogElements.Queries.Search;
 
