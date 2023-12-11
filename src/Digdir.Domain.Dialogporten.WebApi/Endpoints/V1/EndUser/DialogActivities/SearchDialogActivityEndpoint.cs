@@ -1,4 +1,6 @@
+using System.Globalization;
 using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogActivities.Queries.Search;
+using Digdir.Domain.Dialogporten.WebApi.Common;
 using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
 using FastEndpoints;
@@ -20,6 +22,10 @@ public class SearchDialogActivityEndpoint : Endpoint<SearchDialogActivityQuery>
         Get("dialogs/{dialogId}/activities");
         Policies(AuthorizationPolicy.EndUser);
         Group<EndUserGroup>();
+
+        Description(b => b
+            .OperationId("GetDialogActivityList")
+        );
     }
 
     public override async Task HandleAsync(SearchDialogActivityQuery req, CancellationToken ct)
@@ -29,5 +35,20 @@ public class SearchDialogActivityEndpoint : Endpoint<SearchDialogActivityQuery>
             dto => SendOkAsync(dto, ct),
             notFound => this.NotFoundAsync(notFound, ct),
             deleted => this.GoneAsync(deleted, ct));
+    }
+}
+
+public sealed class SearchDialogActivityEndpointSummary : Summary<SearchDialogActivityEndpoint, SearchDialogActivityQuery>
+{
+    public SearchDialogActivityEndpointSummary()
+    {
+        Summary = "Gets a list of dialog activities";
+        Description = """
+                Gets the list of activities belonging to a dialog
+                """;
+        Responses[StatusCodes.Status200OK] = Constants.SwaggerSummary.ReturnedResult.FormatInvariant("activity list");
+        Responses[StatusCodes.Status401Unauthorized] = Constants.SwaggerSummary.EndUserAuthenticationFailure;
+        Responses[StatusCodes.Status403Forbidden] = Constants.SwaggerSummary.AccessDeniedToDialog.FormatInvariant("get");
+        Responses[StatusCodes.Status404NotFound] = Constants.SwaggerSummary.DialogNotFound;
     }
 }

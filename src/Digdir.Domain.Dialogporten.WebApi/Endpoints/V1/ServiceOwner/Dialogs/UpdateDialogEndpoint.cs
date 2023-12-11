@@ -1,4 +1,6 @@
-﻿using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Update;
+﻿using System.Reflection.Metadata;
+using System.Text;
+using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Update;
 using Digdir.Domain.Dialogporten.WebApi.Common;
 using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
@@ -21,6 +23,16 @@ public sealed class UpdateDialogEndpoint : Endpoint<UpdateDialogRequest>
         Put("dialogs/{dialogId}");
         Policies(AuthorizationPolicy.ServiceProvider);
         Group<ServiceOwnerGroup>();
+
+        Description(b => b
+            .OperationId("ReplaceDialog")
+            .ProducesOneOf(
+                StatusCodes.Status204NoContent,
+                StatusCodes.Status400BadRequest,
+                StatusCodes.Status404NotFound,
+                StatusCodes.Status412PreconditionFailed,
+                StatusCodes.Status422UnprocessableEntity)
+        );
     }
 
     public override async Task HandleAsync(UpdateDialogRequest req, CancellationToken ct)
@@ -45,4 +57,24 @@ public sealed class UpdateDialogRequest
 
     [FromHeader(headerName: Constants.IfMatch, isRequired: false)]
     public Guid? ETag { get; set; }
+}
+
+public sealed class UpdateDialogEndpointSummary : Summary<UpdateDialogEndpoint>
+{
+    public UpdateDialogEndpointSummary()
+    {
+        Summary = "Replaces a dialog";
+        Description = $"""
+                Replaces a given dialog with the supplied model. For more information see the documentation (link TBD).
+
+                {Constants.SwaggerSummary.OptimisticConcurrencyNote}
+                """;
+        Responses[StatusCodes.Status204NoContent] = Constants.SwaggerSummary.Updated.FormatInvariant("aggregate");
+        Responses[StatusCodes.Status400BadRequest] = Constants.SwaggerSummary.ValidationError;
+        Responses[StatusCodes.Status401Unauthorized] = Constants.SwaggerSummary.ServiceOwnerAuthenticationFailure.FormatInvariant(AuthorizationScope.ServiceProvider);
+        Responses[StatusCodes.Status403Forbidden] = Constants.SwaggerSummary.AccessDeniedToDialog.FormatInvariant("update");
+        Responses[StatusCodes.Status404NotFound] = Constants.SwaggerSummary.DialogNotFound;
+        Responses[StatusCodes.Status412PreconditionFailed] = Constants.SwaggerSummary.EtagMismatch;
+        Responses[StatusCodes.Status422UnprocessableEntity] = Constants.SwaggerSummary.DomainError;
+    }
 }

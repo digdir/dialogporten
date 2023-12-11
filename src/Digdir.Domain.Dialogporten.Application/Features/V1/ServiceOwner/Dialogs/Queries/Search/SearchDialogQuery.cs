@@ -18,24 +18,74 @@ public sealed class SearchDialogQuery : SortablePaginationParameter<SearchDialog
 {
     private string? _searchCultureCode;
 
+    /// <summary>
+    /// Filter by one or more service resources
+    /// </summary>
     public List<string>? ServiceResource { get; init; }
+
+    /// <summary>
+    /// Filter by one or more owning parties
+    /// </summary>
     public List<string>? Party { get; init; }
+
+    /// <summary>
+    /// Filter by one or more extended statuses
+    /// </summary>
     public List<string>? ExtendedStatus { get; init; }
+
+    /// <summary>
+    /// Filter by status
+    /// </summary>
     public List<DialogStatus.Values>? Status { get; init; }
 
+    /// <summary>
+    /// Only return dialogs created after this date
+    /// </summary>
     public DateTimeOffset? CreatedAfter { get; init; }
+
+    /// <summary>
+    /// Only return dialogs created before this date
+    /// </summary>
     public DateTimeOffset? CreatedBefore { get; init; }
 
+    /// <summary>
+    /// Only return dialogs updated after this date
+    /// </summary>
     public DateTimeOffset? UpdatedAfter { get; init; }
+
+    /// <summary>
+    /// Only return dialogs updated before this date
+    /// </summary>
     public DateTimeOffset? UpdatedBefore { get; init; }
 
+    /// <summary>
+    /// Only return dialogs with due date after this date
+    /// </summary>
     public DateTimeOffset? DueAfter { get; init; }
+
+    /// <summary>
+    /// Only return dialogs with due date before this date
+    /// </summary>
     public DateTimeOffset? DueBefore { get; init; }
 
+    /// <summary>
+    /// Only return dialogs with visible-from date after this date
+    /// </summary>
     public DateTimeOffset? VisibleAfter { get; init; }
+
+    /// <summary>
+    /// Only return dialogs with visible-from date before this date
+    /// </summary>
     public DateTimeOffset? VisibleBefore { get; init; }
 
+    /// <summary>
+    /// Search string for free text search. Will attempt to fuzzily match in all free text fields in the aggregate
+    /// </summary>
     public string? Search { get; init; }
+
+    /// <summary>
+    /// Limit free text search to texts with this culture code, e.g. \"nb-NO\". Default: search all culture codes
+    /// </summary>
     public string? SearchCultureCode
     {
         get => _searchCultureCode;
