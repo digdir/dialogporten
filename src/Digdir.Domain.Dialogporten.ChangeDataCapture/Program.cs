@@ -28,6 +28,7 @@ try
 catch (Exception ex) when (ex is not OperationCanceledException)
 {
     Log.Fatal(ex, "Application terminated unexpectedly");
+    throw;
 }
 finally
 {
