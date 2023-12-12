@@ -31,7 +31,6 @@ public static class MigrationVerifier
 
         _httpClient.DefaultRequestHeaders.Remove("Authorization");
         _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {tokenResult.Token}");
-
         _httpClient.DefaultRequestHeaders.CacheControl = new CacheControlHeaderValue
         {
             NoCache = true
@@ -42,6 +41,8 @@ public static class MigrationVerifier
         var retries = 0;
         while (retries++ < MaxRetries)
         {
+            await Sleep();
+
             try
             {
                 var containerAppJobExecutions = await _httpClient.GetFromJsonAsync<ContainerAppJobExecutions>(executionsUrl);
@@ -51,41 +52,31 @@ public static class MigrationVerifier
                     // The container app job might not exist yet because of timing in the IaC pipeline
                     logger.Information("### MigrationJob/Executions not found, retrying in {SecondsBetweenRetries} seconds",
                         SecondsBetweenRetries);
-                    await Sleep();
                     continue;
                 }
 
                 logger.Information("### Found {ExecutionsCount} executions for job {JobName} ###",
                     containerAppJobExecutions.Executions.Count, jobName);
 
-                foreach (var execution in containerAppJobExecutions.Executions)
-                {
-                    logger.Information("### Execution: ({Status}, {Image}) ###",
-                        execution.Properties.Status, execution.Properties.Template.Containers[0].Image);
-                }
+                var executionForGitSha = containerAppJobExecutions.Executions
+                    .FirstOrDefault(x => x.Properties.Template.Containers.Any(y => y.Image.Contains(gitSha)));
 
-                var executionsForGitSha = containerAppJobExecutions.Executions
-                    .Where(x => x.Properties.Template.Containers.Any(y => y.Image.Contains(gitSha)))
-                    .ToList();
-
-                if (executionsForGitSha.Count == 0)
+                if (executionForGitSha == null)
                 {
                     // The specific execution might not exist yet because of timing in the IaC pipeline
                     logger.Information("### No job executions found for gitSha {GitSha}, retrying in {SecondsBetweenRetries} seconds",
                         gitSha, SecondsBetweenRetries);
-                    await Sleep();
                     continue;
                 }
 
-                if (executionsForGitSha.Any(x => x.Properties.Status == "Succeeded"))
+                if (executionForGitSha.Properties.Status == "Succeeded")
                 {
                     logger.Information("### Migration execution for gitSha {GitSha} successful ###", gitSha);
                     return;
                 }
 
-                logger.Information("### No successful job executions found for gitSha {GitSha}, retrying in {SecondsBetweenRetries} seconds",
-                    gitSha, SecondsBetweenRetries);
-                await Sleep();
+                logger.Information("### Migration execution status for gitSha {GitSha} is '{Status}', retrying in {SecondsBetweenRetries} seconds",
+                    gitSha, executionForGitSha.Properties.Status, SecondsBetweenRetries);
             }
             catch (Exception e)
             {
