@@ -8,10 +8,11 @@ namespace Digdir.Tool.Dialogporten.MigrationVerifier;
 public static class MigrationVerifier
 {
     private const int SecondsBetweenRetries = 2;
-    private const int MaxRetries = 300;
+    private const int MaxRetries = 60;
     private const string ApiVersion = "2023-05-01";
     private static readonly string[] Scopes = { "https://management.azure.com/.default" };
     private static readonly HttpClient _httpClient = new();
+
     private static async Task Sleep() => await Task.Delay(TimeSpan.FromSeconds(SecondsBetweenRetries));
 
     public static async Task Verify(ILogger logger)
