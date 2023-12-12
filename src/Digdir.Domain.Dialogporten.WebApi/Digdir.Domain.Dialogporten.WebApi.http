@@ -1,0 +1,77 @@
+﻿@baseAdress = https://localhost:7214
+@dialogId = C1167463-730A-464A-87DD-50BB1D475F47
+
+###############################################
+################### Enduser ###################
+###############################################
+
+GET {{baseAdress}}/api/v1/enduser/dialogs?Party=/org/991825827&search=Hello&cultureCode=en_us
+
+###
+
+GET {{baseAdress}}/api/v1/enduser/dialogs/{{dialogId}}
+
+
+###############################################
+################ Serviceowner #################
+###############################################
+
+GET {{baseAdress}}/api/v1/serviceowner/dialogs?search=TAG1
+
+###
+
+GET {{baseAdress}}/api/v1/serviceowner/dialogs/{{dialogId}}
+
+###
+
+POST {{baseAdress}}/api/v1/serviceowner/dialogs
+Content-Type: application/json
+
+{
+  "Party": "/org/991825827",
+  "Id": "{{dialogId}}",
+  "ServiceResource": "urn:altinn:resource:super-simple-service",
+  "Status": "InProgress",
+  "Content": [
+      { "Type": "Title", "Value": [ { "CultureCode": "en-us", "Value": "Hello world!" } ]},
+      { "Type": "Summary", "Value": [ { "CultureCode": "NB_NO", "Value": "Dette er en oppsummering." } ]},
+      { "Type": "SenderName", "Value": [ { "CultureCode": "NB_NO", "Value": "Jeg er meg og jeg har sendt" } ]},
+      { "Type": "AdditionalInfo", "Value": [ { "CultureCode": "NB_NO", "Value": "Dette er en paragref <p/>" } ]}
+  ]
+}
+
+###
+
+PUT {{baseAdress}}/api/v1/serviceowner/dialogs/{{dialogId}}
+Content-Type: application/json
+
+{
+  "Party": "/org/991825827",
+  "Id": "{{dialogId}}",
+  "ServiceResource": "urn:altinn:resource:super-simple-service",
+  "Status": "InProgress",
+  "Content": [
+      { "Type": "Title", "Value": [ { "CultureCode": "NB_NO", "Value": "Hei verden!" } ]},
+      { "Type": "Summary", "Value": [ { "CultureCode": "NB_NO", "Value": "Dette er en oppsummering." } ]},
+      { "Type": "SenderName", "Value": [ { "CultureCode": "NB_NO", "Value": "Jeg er meg og jeg har sendt" } ]},
+      { "Type": "AdditionalInfo", "Value": [ { "CultureCode": "NB_NO", "Value": "Dette er en paragref <p/>" } ]}
+  ],
+  "SearchTags": [
+    { "value": "tag1" },
+    { "value": "tag2" }
+  ]
+}
+
+###
+
+PATCH {{baseAdress}}/api/v1/serviceowner/dialogs/{{dialogId}}
+Content-Type: application/json
+
+[
+    { "op": "replace", "path": "/content/0/value/0", "value": { "CultureCode": "en_US", "Value": "Hello world!" } },
+    { "op": "replace", "path": "/content/1/value/0/value", "value": "Ny oppsummering." }
+]
+
+###
+
+DELETE {{baseAdress}}/api/v1/serviceowner/dialogs/{{dialogId}}

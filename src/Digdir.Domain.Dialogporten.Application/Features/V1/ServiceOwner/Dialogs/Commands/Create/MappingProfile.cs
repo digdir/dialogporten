@@ -37,7 +37,8 @@ internal sealed class MappingProfile : Profile
             .ForMember(dest => dest.Type, opt => opt.Ignore())
             .ForMember(dest => dest.TypeId, opt => opt.MapFrom(src => src.Type));
 
-        CreateMap<DialogContent, CreateDialogContentDto>()
-            .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.TypeId));
+        CreateMap<CreateDialogContentDto, DialogContent>()
+            .ForMember(dest => dest.Type, opt => opt.Ignore())
+            .ForMember(dest => dest.TypeId, opt => opt.MapFrom(src => src.Type));
     }
 }
