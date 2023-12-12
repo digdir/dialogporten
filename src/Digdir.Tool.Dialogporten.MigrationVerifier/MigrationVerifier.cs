@@ -9,6 +9,7 @@ public static class MigrationVerifier
 {
     private const int SecondsBetweenRetries = 2;
     private const int MaxRetries = 300;
+    private const string ApiVersion = "2023-05-01";
     private static readonly string[] Scopes = { "https://management.azure.com/.default" };
     private static readonly HttpClient _httpClient = new();
     private static async Task Sleep() => await Task.Delay(TimeSpan.FromSeconds(SecondsBetweenRetries));
@@ -27,7 +28,7 @@ public static class MigrationVerifier
         var executionsUrl =
             $"https://management.azure.com/subscriptions/" +
             $"{subscriptionId}/resourceGroups/{resourceGroupName}/" +
-            $"providers/Microsoft.App/jobs/{jobName}/executions?api-version=2023-05-01";
+            $"providers/Microsoft.App/jobs/{jobName}/executions?api-version={ApiVersion}";
 
         _httpClient.DefaultRequestHeaders.Remove("Authorization");
         _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {tokenResult.Token}");
