@@ -85,6 +85,7 @@ public static class MigrationVerifier
 
                 logger.Information("### No successful job executions found for gitSha {GitSha}, retrying in {SecondsBetweenRetries} seconds",
                     gitSha, SecondsBetweenRetries);
+                await Sleep();
             }
             catch (Exception e)
             {
