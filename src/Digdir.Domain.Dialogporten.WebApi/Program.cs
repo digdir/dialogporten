@@ -24,11 +24,13 @@ using NJsonSchema.Generation.TypeMappers;
 using NJsonSchema;
 using Digdir.Domain.Dialogporten.Application.Common.Pagination.Continuation;
 using Digdir.Domain.Dialogporten.Application.Common.Pagination.Order;
+using System.Globalization;
 
 // Using two-stage initialization to catch startup errors.
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Warning()
     .Enrich.FromLogContext()
+    .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture)
     .WriteTo.ApplicationInsights(
         TelemetryConfiguration.CreateDefault(),
         TelemetryConverter.Traces)
@@ -41,10 +43,12 @@ try
 catch (Exception ex) when (ex is not OperationCanceledException)
 {
     Log.Fatal(ex, "Application terminated unexpectedly");
+    throw;
 }
 finally
 {
     Log.CloseAndFlush();
+
 }
 
 static void BuildAndRun(string[] args)
