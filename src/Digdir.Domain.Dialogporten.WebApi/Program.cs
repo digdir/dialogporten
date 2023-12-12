@@ -153,6 +153,11 @@ static void BuildAndRun(string[] args)
             x.Versioning.PrependToRoute = true;
             x.Versioning.DefaultVersion = 1;
             x.Serializer.Options.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+            // Do not serialize empty collections
+            x.Serializer.Options.TypeInfoResolver = new DefaultJsonTypeInfoResolver
+            {
+                Modifiers = { IgnoreEmptyCollections }
+            };
             x.Serializer.Options.Converters.Add(new JsonStringEnumConverter());
             x.Serializer.Options.Converters.Add(new UtcDateTimeOffsetConverter());
             x.Serializer.Options.Converters.Add(new DateTimeNotSupportedConverter());
@@ -167,3 +172,13 @@ static void BuildAndRun(string[] args)
     app.Run();
 }
 
+static void IgnoreEmptyCollections(JsonTypeInfo typeInfo)
+{
+    foreach (var property in typeInfo.Properties)
+    {
+        if (property.PropertyType.IsAssignableTo(typeof(ICollection)))
+        {
+            property.ShouldSerialize = (_, val) => val is ICollection collection && collection.Count > 0;
+        }
+    }
+}
