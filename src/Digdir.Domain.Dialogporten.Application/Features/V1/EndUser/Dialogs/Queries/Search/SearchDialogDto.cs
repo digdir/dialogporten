@@ -18,7 +18,6 @@ public sealed class SearchDialogDto
     public DialogStatus.Values Status { get; set; }
 
     public List<SearchDialogContentDto> Content { get; set; } = new();
-
 }
 
 public sealed class SearchDialogContentDto
