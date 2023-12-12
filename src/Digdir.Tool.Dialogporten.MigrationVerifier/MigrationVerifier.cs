@@ -38,8 +38,6 @@ public static class MigrationVerifier
             NoCache = true
         };
 
-        logger.Information("### Executions URL: {ExecutionsUrl} ###", executionsUrl);
-
         var retries = 0;
         while (retries++ < MaxRetries)
         {
