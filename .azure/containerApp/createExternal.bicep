@@ -99,10 +99,6 @@ var initContainers = [
         value: migrationJob.name
       }
       {
-          name: 'GIT_SHA'
-          value: gitSha
-      }
-      {
           name: 'RESOURCE_GROUP_NAME'
           value: resourceGroup().name
       }
