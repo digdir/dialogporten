@@ -1,3 +1,4 @@
+using System.Net.Http.Headers;
 using Azure.Core;
 using Azure.Identity;
 using ILogger = Serilog.ILogger;
@@ -7,7 +8,7 @@ namespace Digdir.Tool.Dialogporten.MigrationVerifier;
 public static class MigrationVerifier
 {
     private const int SecondsBetweenRetries = 2;
-    private const int MaxRetries = 30;
+    private const int MaxRetries = 300;
     private static readonly string[] Scopes = { "https://management.azure.com/.default" };
     private static readonly HttpClient _httpClient = new();
     private static async Task Sleep() => await Task.Delay(TimeSpan.FromSeconds(SecondsBetweenRetries));
@@ -31,6 +32,11 @@ public static class MigrationVerifier
         _httpClient.DefaultRequestHeaders.Remove("Authorization");
         _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {tokenResult.Token}");
 
+        _httpClient.DefaultRequestHeaders.CacheControl = new CacheControlHeaderValue
+        {
+            NoCache = true
+        };
+        
         logger.Information("### Executions URL: {ExecutionsUrl} ###", executionsUrl);
 
         var retries = 0;
