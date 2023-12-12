@@ -10,5 +10,12 @@ Log.Logger = new LoggerConfiguration()
         TelemetryConverter.Traces)
     .CreateBootstrapLogger();
 
-await MigrationVerifier.Verify(Log.Logger);
+try
+{
+    await MigrationVerifier.Verify(Log.Logger);
+}
+catch (Exception e)
+{
+    Environment.FailFast("MigrationVerifier failed", e);
+}
 
