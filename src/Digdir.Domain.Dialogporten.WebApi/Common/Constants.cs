@@ -3,6 +3,8 @@
 internal static class Constants
 {
     internal const string IfMatch = "If-Match";
+    internal const string Authorization = "Authorization";
+    internal const string CurrentTokenIssuer = "CurrentIssuer";
 
     internal static class SwaggerSummary
     {

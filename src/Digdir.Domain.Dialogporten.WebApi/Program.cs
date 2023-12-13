@@ -147,7 +147,7 @@ static void BuildAndRun(string[] args)
     app.UseHttpsRedirection()
         .UseSerilogRequestLogging()
         .UseProblemDetailsExceptionHandler()
-        .UseAuthentication()
+        .UseDialogportenAuthentication()
         .UseAuthorization()
         .UseAzureConfiguration()
         .UseFastEndpoints(x =>
