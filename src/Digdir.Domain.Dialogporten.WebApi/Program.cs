@@ -19,12 +19,8 @@ using Digdir.Domain.Dialogporten.Application.Common.Extensions.OptionExtensions;
 using Digdir.Domain.Dialogporten.WebApi.Common.Authentication;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Microsoft.AspNetCore.Authorization;
-using System.Text.Json;
-using NJsonSchema.Generation.TypeMappers;
-using NJsonSchema;
-using Digdir.Domain.Dialogporten.Application.Common.Pagination.Continuation;
-using Digdir.Domain.Dialogporten.Application.Common.Pagination.Order;
 using System.Globalization;
+using NSwag;
 
 // Using two-stage initialization to catch startup errors.
 Log.Logger = new LoggerConfiguration()
@@ -48,7 +44,6 @@ catch (Exception ex) when (ex is not OperationCanceledException)
 finally
 {
     Log.CloseAndFlush();
-
 }
 
 static void BuildAndRun(string[] args)
@@ -167,9 +162,19 @@ static void BuildAndRun(string[] args)
             x.Serializer.Options.Converters.Add(new DateTimeNotSupportedConverter());
             x.Errors.ResponseBuilder = ErrorResponseBuilderExtensions.ResponseBuilder;
         })
-        .UseSwaggerGen(uiConfig: settings =>
+        .UseSwaggerGen(config =>
         {
-            settings.DefaultModelsExpandDepth = -1;
+            config.PostProcess = (document, _) =>
+            {
+                var serverUrl = builder.Configuration
+                    .GetSection($"{ApplicationSettings.ConfigurationSectionName}:Dialogporten:BaseUri");
+                document.Servers.Clear();
+                document.Servers.Add(new OpenApiServer { Url = serverUrl.Value });
+            };
+        }, uiConfig =>
+        {
+            // Hide schemas view
+            uiConfig.DefaultModelsExpandDepth = -1;
         });
     app.MapControllers();
     app.MapHealthChecks("/healthz");
