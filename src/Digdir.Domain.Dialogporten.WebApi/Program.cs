@@ -166,10 +166,15 @@ static void BuildAndRun(string[] args)
         {
             config.PostProcess = (document, _) =>
             {
-                var serverUrl = builder.Configuration
-                    .GetSection($"{ApplicationSettings.ConfigurationSectionName}:Dialogporten:BaseUri");
+                var dialogportenBaseUri = builder.Configuration
+                    .GetSection(ApplicationSettings.ConfigurationSectionName)
+                    .Get<ApplicationSettings>()!
+                    .Dialogporten
+                    .BaseUri
+                    .ToString();
+
                 document.Servers.Clear();
-                document.Servers.Add(new OpenApiServer { Url = serverUrl.Value });
+                document.Servers.Add(new OpenApiServer { Url = dialogportenBaseUri });
             };
         }, uiConfig =>
         {
