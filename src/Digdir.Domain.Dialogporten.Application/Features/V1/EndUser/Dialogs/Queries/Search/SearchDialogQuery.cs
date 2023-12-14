@@ -41,9 +41,9 @@ public sealed class SearchDialogQuery : SortablePaginationParameter<SearchDialog
     public List<string>? ExtendedStatus { get; init; }
 
     /// <summary>
-    /// Filter by one or more external references
+    /// Filter by external reference
     /// </summary>
-    public List<string>? ExternalReference { get; init; }
+    public string? ExternalReference { get; init; }
 
     /// <summary>
     /// Filter by status
@@ -141,7 +141,8 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
             .WhereIf(!request.ServiceResource.IsNullOrEmpty(), x => request.ServiceResource!.Contains(x.ServiceResource))
             .WhereIf(!request.Party.IsNullOrEmpty(), x => request.Party!.Contains(x.Party))
             .WhereIf(!request.ExtendedStatus.IsNullOrEmpty(), x => x.ExtendedStatus != null && request.ExtendedStatus!.Contains(x.ExtendedStatus))
-            .WhereIf(!request.ExternalReference.IsNullOrEmpty(), x => x.ExternalReference != null && request.ExternalReference!.Contains(x.ExternalReference))
+            .WhereIf(!string.IsNullOrWhiteSpace(request.ExternalReference),
+                x => x.ExternalReference != null && request.ExternalReference == x.ExternalReference)
             .WhereIf(!request.Status.IsNullOrEmpty(), x => request.Status!.Contains(x.StatusId))
             .WhereIf(request.CreatedAfter.HasValue, x => request.CreatedAfter <= x.CreatedAt)
             .WhereIf(request.CreatedBefore.HasValue, x => x.CreatedAt <= request.CreatedBefore)
