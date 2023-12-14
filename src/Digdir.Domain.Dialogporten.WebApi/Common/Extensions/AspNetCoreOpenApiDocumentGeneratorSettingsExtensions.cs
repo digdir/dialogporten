@@ -3,7 +3,6 @@ using Digdir.Domain.Dialogporten.Application.Common.Pagination.Order;
 using Digdir.Domain.Dialogporten.WebApi.Common.Json;
 using NJsonSchema.Generation.TypeMappers;
 using NJsonSchema;
-using NSwag;
 using NSwag.Generation.AspNetCore;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
