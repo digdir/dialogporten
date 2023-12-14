@@ -32,6 +32,9 @@ internal sealed class UpdateDialogDtoValidator : AbstractValidator<UpdateDialogD
         RuleFor(x => x.ExtendedStatus)
             .MaximumLength(Constants.DefaultMaxStringLength);
 
+        RuleFor(x => x.ExternalReference)
+            .MaximumLength(Constants.DefaultMaxStringLength);
+
         RuleFor(x => x.ExpiresAt)
             .GreaterThanOrEqualTo(x => x.DueAt)
                 .WithMessage(FluentValidation_DateTimeOffset_Extensions.InFutureOfMessage)
@@ -62,14 +65,14 @@ internal sealed class UpdateDialogDtoValidator : AbstractValidator<UpdateDialogD
 
         RuleFor(x => x.GuiActions)
             .Must(x => x
-                .Where(x => x.Priority == DialogGuiActionPriority.Values.Primary)
-                .Count() <= 1).WithMessage("Only one primary GUI action is allowed.")
+                .Count(x => x.Priority == DialogGuiActionPriority.Values.Primary) <= 1)
+                .WithMessage("Only one primary GUI action is allowed.")
             .Must(x => x
-                .Where(x => x.Priority == DialogGuiActionPriority.Values.Secondary)
-                .Count() <= 1).WithMessage("Only one secondary GUI action is allowed.")
+                .Count(x => x.Priority == DialogGuiActionPriority.Values.Secondary) <= 1)
+                .WithMessage("Only one secondary GUI action is allowed.")
             .Must(x => x
-                .Where(x => x.Priority == DialogGuiActionPriority.Values.Tertiary)
-                .Count() <= 5).WithMessage("Only five tertiary GUI actions are allowed.")
+                .Count(x => x.Priority == DialogGuiActionPriority.Values.Tertiary) <= 5)
+                .WithMessage("Only five tertiary GUI actions are allowed.")
             .UniqueBy(x => x.Id)
             .ForEach(x => x.SetValidator(guiActionValidator));
 
@@ -128,6 +131,8 @@ internal sealed class UpdateDialogDialogElementDtoValidator : AbstractValidator<
         RuleFor(x => x.Type)
             .IsValidUri()
             .MaximumLength(Constants.DefaultMaxUriLength);
+        RuleFor(x => x.ExternalReference)
+            .MaximumLength(Constants.DefaultMaxStringLength);
         RuleFor(x => x.AuthorizationAttribute)
             .MaximumLength(Constants.DefaultMaxStringLength);
         RuleFor(x => x.RelatedDialogElementId)

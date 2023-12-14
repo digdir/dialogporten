@@ -43,6 +43,9 @@ internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDia
         RuleFor(x => x.ExtendedStatus)
             .MaximumLength(Constants.DefaultMaxStringLength);
 
+        RuleFor(x => x.ExternalReference)
+            .MaximumLength(Constants.DefaultMaxStringLength);
+
         RuleFor(x => x.ExpiresAt)
             .IsInFuture()
             .GreaterThanOrEqualTo(x => x.DueAt)
@@ -78,14 +81,14 @@ internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDia
 
         RuleFor(x => x.GuiActions)
             .Must(x => x
-                .Where(x => x.Priority == DialogGuiActionPriority.Values.Primary)
-                .Count() <= 1).WithMessage("Only one primary GUI action is allowed.")
+                .Count(x => x.Priority == DialogGuiActionPriority.Values.Primary) <= 1)
+                .WithMessage("Only one primary GUI action is allowed.")
             .Must(x => x
-                .Where(x => x.Priority == DialogGuiActionPriority.Values.Secondary)
-                .Count() <= 1).WithMessage("Only one secondary GUI action is allowed.")
+                .Count(x => x.Priority == DialogGuiActionPriority.Values.Secondary) <= 1)
+                .WithMessage("Only one secondary GUI action is allowed.")
             .Must(x => x
-                .Where(x => x.Priority == DialogGuiActionPriority.Values.Tertiary)
-                .Count() <= 5).WithMessage("Only five tertiary GUI actions are allowed.")
+                .Count(x => x.Priority == DialogGuiActionPriority.Values.Tertiary) <= 5)
+                .WithMessage("Only five tertiary GUI actions are allowed.")
             .ForEach(x => x.SetValidator(guiActionValidator));
 
         RuleForEach(x => x.ApiActions)
@@ -142,6 +145,8 @@ internal sealed class CreateDialogDialogElementDtoValidator : AbstractValidator<
             .IsValidUri()
             .MaximumLength(Constants.DefaultMaxUriLength);
         RuleFor(x => x.AuthorizationAttribute)
+            .MaximumLength(Constants.DefaultMaxStringLength);
+        RuleFor(x => x.ExternalReference)
             .MaximumLength(Constants.DefaultMaxStringLength);
         RuleFor(x => x.RelatedDialogElementId)
             .NotEqual(x => x.Id)
