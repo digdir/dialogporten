@@ -4,6 +4,7 @@ using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.Enumerables;
 using Digdir.Domain.Dialogporten.Application.Common.Pagination;
+using Digdir.Domain.Dialogporten.Application.Common.Pagination.Extensions;
 using Digdir.Domain.Dialogporten.Application.Common.Pagination.OrderOption;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
@@ -129,6 +130,11 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
             request.Party ?? new List<string>(),
             request.ServiceResource ?? new List<string>(),
             cancellationToken);
+
+        if (authorizedResources.HasNoAuthorizations)
+        {
+            return new PaginatedList<SearchDialogDto>(Enumerable.Empty<SearchDialogDto>(), false, null, request.OrderBy.DefaultIfNull().GetOrderString());
+        }
 
         return await _db.Dialogs
             .WhereUserIsAuthorizedFor(authorizedResources)

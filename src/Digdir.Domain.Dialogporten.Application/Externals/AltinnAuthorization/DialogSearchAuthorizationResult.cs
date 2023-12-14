@@ -7,4 +7,9 @@ public sealed class DialogSearchAuthorizationResult
     public Dictionary<string, List<string>> ResourcesByParties { get; init; } = new();
     public Dictionary<string, List<string>> PartiesByResources { get; init; } = new();
     public List<Guid> DialogIds { get; init; } = new();
+
+    public bool HasNoAuthorizations =>
+        ResourcesByParties.Count == 0
+        && PartiesByResources.Count == 0
+        && DialogIds.Count == 0;
 }

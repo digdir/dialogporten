@@ -39,6 +39,11 @@ public static class QueryableExtensions
         this IQueryable<DialogEntity> source,
         DialogSearchAuthorizationResult authorizedResources)
     {
+        if (authorizedResources.HasNoAuthorizations)
+        {
+            return source.Where(x => false);
+        }
+
         var dialogParameter = Expression.Parameter(DialogType);
         var id = Expression.MakeMemberAccess(dialogParameter, DialogIdPropertyInfo);
         var party = Expression.MakeMemberAccess(dialogParameter, DialogPartyPropertyInfo);
