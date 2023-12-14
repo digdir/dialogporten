@@ -43,6 +43,9 @@ internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDia
         RuleFor(x => x.ExtendedStatus)
             .MaximumLength(Constants.DefaultMaxStringLength);
 
+        RuleFor(x => x.ExternalReference)
+            .MaximumLength(Constants.DefaultMaxStringLength);
+
         RuleFor(x => x.ExpiresAt)
             .IsInFuture()
             .GreaterThanOrEqualTo(x => x.DueAt)
@@ -142,6 +145,8 @@ internal sealed class CreateDialogDialogElementDtoValidator : AbstractValidator<
             .IsValidUri()
             .MaximumLength(Constants.DefaultMaxUriLength);
         RuleFor(x => x.AuthorizationAttribute)
+            .MaximumLength(Constants.DefaultMaxStringLength);
+        RuleFor(x => x.ExternalReference)
             .MaximumLength(Constants.DefaultMaxStringLength);
         RuleFor(x => x.RelatedDialogElementId)
             .NotEqual(x => x.Id)

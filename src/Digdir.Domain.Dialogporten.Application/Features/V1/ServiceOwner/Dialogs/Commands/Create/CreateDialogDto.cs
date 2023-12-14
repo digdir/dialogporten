@@ -14,6 +14,7 @@ public class CreateDialogDto
     public string ServiceResource { get; set; } = null!;
     public string Party { get; set; } = null!;
     public string? ExtendedStatus { get; set; }
+    public string? ExternalReference { get; set; }
     public DateTimeOffset? VisibleFrom { get; set; }
     public DateTimeOffset? DueAt { get; set; }
     public DateTimeOffset? ExpiresAt { get; set; }
@@ -94,6 +95,7 @@ public sealed class CreateDialogDialogElementDto
 {
     public Guid? Id { get; set; }
     public Uri? Type { get; set; }
+    public string? ExternalReference { get; set; }
     public string? AuthorizationAttribute { get; set; }
 
     public Guid? RelatedDialogElementId { get; set; }

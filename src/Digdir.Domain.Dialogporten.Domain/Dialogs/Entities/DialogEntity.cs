@@ -31,6 +31,7 @@ public class DialogEntity :
     public string ServiceResource { get; set; } = null!;
     public string Party { get; set; } = null!;
     public string? ExtendedStatus { get; set; }
+    public string? ExternalReference { get; set; }
     public DateTimeOffset? VisibleFrom { get; set; }
     public DateTimeOffset? DueAt { get; set; }
     public DateTimeOffset? ExpiresAt { get; set; }
@@ -39,7 +40,6 @@ public class DialogEntity :
     // === Dependent relationships ===
     public DialogStatus.Values StatusId { get; set; }
     public DialogStatus Status { get; set; } = null!;
-
 
     // === Principal relationships === 
     [AggregateChild]

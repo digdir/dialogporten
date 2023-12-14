@@ -32,6 +32,9 @@ internal sealed class UpdateDialogDtoValidator : AbstractValidator<UpdateDialogD
         RuleFor(x => x.ExtendedStatus)
             .MaximumLength(Constants.DefaultMaxStringLength);
 
+        RuleFor(x => x.ExternalReference)
+            .MaximumLength(Constants.DefaultMaxStringLength);
+
         RuleFor(x => x.ExpiresAt)
             .GreaterThanOrEqualTo(x => x.DueAt)
                 .WithMessage(FluentValidation_DateTimeOffset_Extensions.InFutureOfMessage)
@@ -128,6 +131,8 @@ internal sealed class UpdateDialogDialogElementDtoValidator : AbstractValidator<
         RuleFor(x => x.Type)
             .IsValidUri()
             .MaximumLength(Constants.DefaultMaxUriLength);
+        RuleFor(x => x.ExternalReference)
+            .MaximumLength(Constants.DefaultMaxStringLength);
         RuleFor(x => x.AuthorizationAttribute)
             .MaximumLength(Constants.DefaultMaxStringLength);
         RuleFor(x => x.RelatedDialogElementId)
