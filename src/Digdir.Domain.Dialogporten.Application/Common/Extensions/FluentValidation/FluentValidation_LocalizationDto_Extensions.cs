@@ -7,17 +7,17 @@ namespace Digdir.Domain.Dialogporten.Application.Common.Extensions.FluentValidat
 internal static class FluentValidationLocalizationDtoExtensions
 {
     private static readonly string[] AllowedTags = { "p", "a", "br", "em", "strong", "ul", "ol", "li" };
-    private static readonly string ContainsValidHttpError =
+    private static readonly string ContainsValidHtmlError =
         $"{{PropertyName}} contains unsupported html. The following tags are supported: " +
         $"[{string.Join(",", AllowedTags.Select(x => '<' + x + '>'))}]. Tag attributes " +
         $"are not supported except for on '<a>' which must contain a 'href' starting " +
         $"with 'https://'.";
 
-    public static IRuleBuilderOptions<T, LocalizationDto> ContainsValidHttp<T>(this IRuleBuilder<T, LocalizationDto> ruleBuilder)
+    public static IRuleBuilderOptions<T, LocalizationDto> ContainsValidHtml<T>(this IRuleBuilder<T, LocalizationDto> ruleBuilder)
     {
         return ruleBuilder
             .Must(x => x.Value is null || x.Value.HtmlAgilityPackCheck())
-            .WithMessage(ContainsValidHttpError);
+            .WithMessage(ContainsValidHtmlError);
     }
 
     private static bool HtmlAgilityPackCheck(this string html)

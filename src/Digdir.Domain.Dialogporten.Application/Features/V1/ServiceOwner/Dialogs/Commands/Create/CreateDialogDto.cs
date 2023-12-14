@@ -2,6 +2,7 @@
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements;
 using Digdir.Domain.Dialogporten.Domain.Http;
 
@@ -18,16 +19,20 @@ public class CreateDialogDto
     public DateTimeOffset? ExpiresAt { get; set; }
 
     public DialogStatus.Values Status { get; set; }
+    public List<CreateDialogContentDto> Content { get; set; } = new();
 
-    public List<LocalizationDto> Body { get; set; } = new();
-    public List<LocalizationDto> Title { get; set; } = new();
-    public List<LocalizationDto> SenderName { get; set; } = new();
     public List<CreateDialogSearchTagDto> SearchTags { get; set; } = new();
 
     public List<CreateDialogDialogElementDto> Elements { get; set; } = new();
     public List<CreateDialogDialogGuiActionDto> GuiActions { get; set; } = new();
     public List<CreateDialogDialogApiActionDto> ApiActions { get; set; } = new();
     public List<CreateDialogDialogActivityDto> Activities { get; set; } = new();
+}
+
+public sealed class CreateDialogContentDto
+{
+    public DialogContentType.Values Type { get; set; }
+    public List<LocalizationDto> Value { get; set; } = new();
 }
 
 public sealed class CreateDialogSearchTagDto

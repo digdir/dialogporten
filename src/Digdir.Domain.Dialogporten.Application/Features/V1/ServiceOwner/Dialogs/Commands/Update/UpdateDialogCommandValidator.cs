@@ -2,6 +2,7 @@
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using Digdir.Domain.Dialogporten.Domain.Common;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
 using FluentValidation;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Update;
@@ -21,12 +22,12 @@ internal sealed class UpdateDialogCommandValidator : AbstractValidator<UpdateDia
 internal sealed class UpdateDialogDtoValidator : AbstractValidator<UpdateDialogDto>
 {
     public UpdateDialogDtoValidator(
-        IValidator<IEnumerable<LocalizationDto>> localizationsValidator,
         IValidator<UpdateDialogDialogElementDto> elementValidator,
         IValidator<UpdateDialogDialogGuiActionDto> guiActionValidator,
         IValidator<UpdateDialogDialogApiActionDto> apiActionValidator,
         IValidator<UpdateDialogDialogActivityDto> activityValidator,
-        IValidator<UpdateDialogSearchTagDto> searchTagValidator)
+        IValidator<UpdateDialogSearchTagDto> searchTagValidator,
+        IValidator<UpdateDialogContentDto> contentValidator)
     {
         RuleFor(x => x.ExtendedStatus)
             .MaximumLength(Constants.DefaultMaxStringLength);
@@ -46,19 +47,18 @@ internal sealed class UpdateDialogDtoValidator : AbstractValidator<UpdateDialogD
         RuleFor(x => x.Status)
             .IsInEnum();
 
-        RuleFor(x => x.Title)
-            .NotEmpty()
-            .SetValidator(localizationsValidator);
-        RuleFor(x => x.Body)
-            .SetValidator(new LocalizationDtosValidator(maximumLength: 1023));
-        RuleForEach(x => x.Body)
-            .ContainsValidHttp();
-        RuleFor(x => x.SenderName)
-            .SetValidator(localizationsValidator);
-        RuleForEach(x => x.SearchTags)
-            .SetValidator(searchTagValidator);
+        RuleFor(x => x.Content)
+            .UniqueBy(x => x.Type)
+            .Must(content => DialogContentType.RequiredTypes
+                .All(requiredContent => content
+                    .Select(x => x.Type)
+                    .Contains(requiredContent)))
+            .WithMessage($"Dialog must contain the following content: [{string.Join(", ", DialogContentType.RequiredTypes)}].")
+            .ForEach(x => x.SetValidator(contentValidator));
+
         RuleFor(x => x.SearchTags)
-            .UniqueBy(x => x.Value, StringComparer.InvariantCultureIgnoreCase);
+            .UniqueBy(x => x.Value, StringComparer.InvariantCultureIgnoreCase)
+            .ForEach(x => x.SetValidator(searchTagValidator));
 
         RuleFor(x => x.GuiActions)
             .Must(x => x
@@ -99,6 +99,21 @@ internal sealed class UpdateDialogDtoValidator : AbstractValidator<UpdateDialogD
                 dependentKeySelector: activity => activity.RelatedActivityId,
                 principalKeySelector: activity => activity.Id)
             .SetValidator(activityValidator);
+    }
+}
+
+internal sealed class UpdateDialogContentDtoValidator : AbstractValidator<UpdateDialogContentDto>
+{
+    public UpdateDialogContentDtoValidator()
+    {
+        RuleFor(x => x.Type)
+            .IsInEnum();
+        RuleForEach(x => x.Value)
+            .ContainsValidHtml()
+            .When(x => DialogContentType.GetValue(x.Type).RenderAsHtml);
+        RuleFor(x => x.Value)
+            .NotEmpty()
+            .SetValidator(x => new LocalizationDtosValidator(DialogContentType.GetValue(x.Type).MaxLength));
     }
 }
 
