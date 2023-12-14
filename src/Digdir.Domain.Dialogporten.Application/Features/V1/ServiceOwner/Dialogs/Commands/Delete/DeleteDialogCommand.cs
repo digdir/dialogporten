@@ -41,8 +41,7 @@ internal sealed class DeleteDialogCommandHandler : IRequestHandler<DeleteDialogC
         var resourceIds = await _userService.GetCurrentUserResourceIds(cancellationToken);
 
         var dialog = await _db.Dialogs
-            // Load the elements so that we dont have to load them during cascading events update
-            // TODO: Test this
+            // Load the elements so that we notify them of their deletion. (This won't work due to https://github.com/digdir/dialogporten/issues/288)
             .Include(x => x.Elements)
             .Where(x => resourceIds.Contains(x.ServiceResource))
             .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
