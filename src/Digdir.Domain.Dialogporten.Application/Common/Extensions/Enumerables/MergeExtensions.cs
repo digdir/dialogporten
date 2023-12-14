@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 
-namespace Digdir.Domain.Dialogporten.Application.Common.Extensions.Enumerable;
+namespace Digdir.Domain.Dialogporten.Application.Common.Extensions.Enumerables;
 
 internal delegate Task<IEnumerable<TDestination>> CreateAsyncDelegate<TDestination, in TSource>(IEnumerable<TSource> creatables, CancellationToken cancellationToken = default);
 internal delegate Task UpdateAsyncDelegate<TDestination, TSource>(IEnumerable<UpdateSet<TDestination, TSource>> updateSets, CancellationToken cancellationToken = default);
@@ -95,18 +95,14 @@ internal static class MergeExtensions
         CancellationToken cancellationToken)
     {
         if (create is null)
-        {
             return;
-        }
 
         var creates = sources
             .Except(updateSets.Select(x => x.Source))
             .ToList();
 
         if (creates.Count == 0)
-        {
             return;
-        }
 
         destinations.AddRange(await create(creates, cancellationToken));
     }
@@ -117,9 +113,7 @@ internal static class MergeExtensions
         CancellationToken cancellationToken)
     {
         if (update is null || updateSets.Count == 0)
-        {
             return;
-        }
         await update(updateSets, cancellationToken);
     }
 
@@ -130,18 +124,14 @@ internal static class MergeExtensions
         CancellationToken cancellationToken)
     {
         if (delete is null)
-        {
             return;
-        }
 
         var delegates = destinations
             .Except(updateSets.Select(x => x.Destination))
             .ToList();
 
         if (delegates.Count == 0)
-        {
             return;
-        }
 
         await delete(delegates, cancellationToken);
         foreach (var item in delegates)
@@ -157,18 +147,14 @@ internal static class MergeExtensions
         List<UpdateSet<TDestination, TSource>> updateSets)
     {
         if (create is null)
-        {
             return;
-        }
 
         var creates = sources
             .Except(updateSets.Select(x => x.Source))
             .ToList();
 
         if (creates.Count == 0)
-        {
             return;
-        }
 
         destinations.AddRange(create(creates));
     }
@@ -178,9 +164,7 @@ internal static class MergeExtensions
         List<UpdateSet<TDestination, TSource>> updateSets)
     {
         if (update is null || updateSets.Count == 0)
-        {
             return;
-        }
         update(updateSets);
     }
 
@@ -190,18 +174,14 @@ internal static class MergeExtensions
         List<UpdateSet<TDestination, TSource>> updateSets)
     {
         if (delete is null)
-        {
             return;
-        }
 
         var delegates = destinations
             .Except(updateSets.Select(x => x.Destination))
             .ToList();
 
         if (delegates.Count == 0)
-        {
             return;
-        }
 
         delete(delegates);
         foreach (var item in delegates)

@@ -1,6 +1,10 @@
-﻿using System.Linq.Expressions;
+﻿using System.Globalization;
+using System.Linq.Expressions;
+using System.Reflection;
 using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.Mapping;
 
 namespace Digdir.Domain.Dialogporten.Application.Common.Extensions;
 
@@ -11,35 +15,69 @@ public static class QueryableExtensions
         return predicate ? source.Where(queryPredicate) : source;
     }
 
-    public static IQueryable<DialogEntity> WhereUserIsAuthorizedFor(this IQueryable<DialogEntity> source, DialogSearchAuthorizationResult authorizedResources)
+    private static readonly Type StringType = typeof(string);
+
+    private static readonly Type DialogType = typeof(DialogEntity);
+    private static readonly PropertyInfo DialogIdPropertyInfo = DialogType.GetProperty(nameof(DialogEntity.Id))!;
+    private static readonly PropertyInfo DialogPartyPropertyInfo = DialogType.GetProperty(nameof(DialogEntity.Party))!;
+    private static readonly PropertyInfo DialogServiceResourcePropertyInfo = DialogType.GetProperty(nameof(DialogEntity.ServiceResource))!;
+
+    private static readonly Type StringListType = typeof(List<string>);
+    private static readonly MethodInfo StringListContainsMethodInfo = StringListType.GetMethod(nameof(List<object>.Contains))!;
+
+    private static readonly Type GuidListType = typeof(List<Guid>);
+    private static readonly MethodInfo GuidListContainsMethodInfo = GuidListType.GetMethod(nameof(List<object>.Contains))!;
+
+    private static readonly Type KeyValueType = typeof(KeyValuePair<string, List<string>>);
+    private static readonly PropertyInfo KeyPropertyInfo = KeyValueType.GetProperty(nameof(KeyValuePair<object, object>.Key))!;
+    private static readonly PropertyInfo ValuePropertyInfo = KeyValueType.GetProperty(nameof(KeyValuePair<object, object>.Value))!;
+
+    private static readonly Type DialogSearchAuthorizationResultType = typeof(DialogSearchAuthorizationResult);
+    private static readonly PropertyInfo DialogIdsPropertyInfo = DialogSearchAuthorizationResultType.GetProperty(nameof(DialogSearchAuthorizationResult.DialogIds))!;
+
+    public static IQueryable<DialogEntity> WhereUserIsAuthorizedFor(
+        this IQueryable<DialogEntity> source,
+        DialogSearchAuthorizationResult authorizedResources)
     {
-        var predicate = Expressions.Boolean<DialogEntity>.False;
+        var dialogParameter = Expression.Parameter(DialogType);
+        var id = Expression.MakeMemberAccess(dialogParameter, DialogIdPropertyInfo);
+        var party = Expression.MakeMemberAccess(dialogParameter, DialogPartyPropertyInfo);
+        var serviceResource = Expression.MakeMemberAccess(dialogParameter, DialogServiceResourcePropertyInfo);
+
+        var partyResourceExpressions = new List<Expression>();
+
+        foreach (var item in authorizedResources.ResourcesByParties)
+        {
+            var itemArg = Expression.Constant(item, KeyValueType);
+            var partyAccess = Expression.MakeMemberAccess(itemArg, KeyPropertyInfo);
+            var resourcesAccess = Expression.MakeMemberAccess(itemArg, ValuePropertyInfo);
+            var partyEquals = Expression.Equal(partyAccess, party);
+            var resourceContains = Expression.Call(resourcesAccess, StringListContainsMethodInfo, serviceResource);
+            partyResourceExpressions.Add(Expression.AndAlso(partyEquals, resourceContains));
+        }
+
+        foreach (var item in authorizedResources.PartiesByResources)
+        {
+            var itemArg = Expression.Constant(item, KeyValueType);
+            var resourceAccess = Expression.MakeMemberAccess(itemArg, KeyPropertyInfo);
+            var partiesAccess = Expression.MakeMemberAccess(itemArg, ValuePropertyInfo);
+            var resourceEquals = Expression.Equal(resourceAccess, serviceResource);
+            var partiesContains = Expression.Call(partiesAccess, StringListContainsMethodInfo, party);
+            partyResourceExpressions.Add(Expression.AndAlso(resourceEquals, partiesContains));
+        }
 
         if (authorizedResources.DialogIds.Count > 0)
         {
-            predicate = x => authorizedResources.DialogIds.Contains(x.Id);
+            var itemArg = Expression.Constant(authorizedResources, DialogSearchAuthorizationResultType);
+            var dialogIdsAccess = Expression.MakeMemberAccess(itemArg, DialogIdsPropertyInfo);
+            var dialogIdsContains = Expression.Call(dialogIdsAccess, GuidListContainsMethodInfo, id);
+            partyResourceExpressions.Add(dialogIdsContains);
         }
 
-        if (authorizedResources.ResourcesByParties.Count > 0)
-        {
-            var partyPredicate = Expressions.Boolean<DialogEntity>.False;
-            foreach (var (party, resources) in authorizedResources.ResourcesByParties)
-            {
-                partyPredicate = Expressions.Or(partyPredicate, x => x.Party == party && resources.Contains(x.ServiceResource));
-            }
-            predicate = Expressions.Or(predicate, partyPredicate);
-        }
+        var predicate = partyResourceExpressions
+            .DefaultIfEmpty(Expression.Constant(false))
+            .Aggregate(Expression.OrElse);
 
-        if (authorizedResources.PartiesByResources.Count > 0)
-        {
-            var resourcePredicate = Expressions.Boolean<DialogEntity>.False;
-            foreach (var (resource, parties) in authorizedResources.PartiesByResources)
-            {
-                resourcePredicate = Expressions.Or(resourcePredicate, x => x.ServiceResource == resource && parties.Contains(x.Party));
-            }
-            predicate = Expressions.Or(predicate, resourcePredicate);
-        }
-
-        return source.Where(predicate);
+        return source.Where(Expression.Lambda<Func<DialogEntity, bool>>(predicate, dialogParameter));
     }
 }

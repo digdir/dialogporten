@@ -1,4 +1,4 @@
-﻿using Digdir.Domain.Dialogporten.Application.Common.Extensions.Enumerable;
+﻿using Digdir.Domain.Dialogporten.Application.Common.Extensions.Enumerables;
 using Digdir.Domain.Dialogporten.Application.Common.Pagination;
 using Digdir.Domain.Dialogporten.Domain.Localizations;
 using FluentValidation;
