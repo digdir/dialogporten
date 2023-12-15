@@ -2,8 +2,9 @@ using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
-using Digdir.Domain.Dialogporten.Application.Common.Extensions.Enumerable;
+using Digdir.Domain.Dialogporten.Application.Common.Extensions.Enumerables;
 using Digdir.Domain.Dialogporten.Application.Common.Pagination;
+using Digdir.Domain.Dialogporten.Application.Common.Pagination.Extensions;
 using Digdir.Domain.Dialogporten.Application.Common.Pagination.OrderOption;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
@@ -11,6 +12,7 @@ using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Localizations;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using OneOf;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Queries.Search;
@@ -38,6 +40,11 @@ public sealed class SearchDialogQuery : SortablePaginationParameter<SearchDialog
     /// Filter by one or more extended statuses
     /// </summary>
     public List<string>? ExtendedStatus { get; init; }
+
+    /// <summary>
+    /// Filter by external reference
+    /// </summary>
+    public string? ExternalReference { get; init; }
 
     /// <summary>
     /// Filter by status
@@ -129,12 +136,19 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
             request.ServiceResource ?? new List<string>(),
             cancellationToken);
 
+        if (authorizedResources.HasNoAuthorizations)
+        {
+            return new PaginatedList<SearchDialogDto>(Enumerable.Empty<SearchDialogDto>(), false, null, request.OrderBy.DefaultIfNull().GetOrderString());
+        }
+
         return await _db.Dialogs
             .WhereUserIsAuthorizedFor(authorizedResources)
             .WhereIf(!request.Org.IsNullOrEmpty(), x => request.Org!.Contains(x.Org))
             .WhereIf(!request.ServiceResource.IsNullOrEmpty(), x => request.ServiceResource!.Contains(x.ServiceResource))
             .WhereIf(!request.Party.IsNullOrEmpty(), x => request.Party!.Contains(x.Party))
             .WhereIf(!request.ExtendedStatus.IsNullOrEmpty(), x => x.ExtendedStatus != null && request.ExtendedStatus!.Contains(x.ExtendedStatus))
+            .WhereIf(!string.IsNullOrWhiteSpace(request.ExternalReference),
+                x => x.ExternalReference != null && request.ExternalReference == x.ExternalReference)
             .WhereIf(!request.Status.IsNullOrEmpty(), x => request.Status!.Contains(x.StatusId))
             .WhereIf(request.CreatedAfter.HasValue, x => request.CreatedAfter <= x.CreatedAt)
             .WhereIf(request.CreatedBefore.HasValue, x => x.CreatedAt <= request.CreatedBefore)
@@ -143,10 +157,8 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
             .WhereIf(request.DueAfter.HasValue, x => request.DueAfter <= x.DueAt)
             .WhereIf(request.DueBefore.HasValue, x => x.DueAt <= request.DueBefore)
             .WhereIf(request.Search is not null, x =>
-                x.Title!.Localizations.AsQueryable().Any(searchExpression) ||
-                x.SearchTags.Any(x => x.Value.Equals(request.Search, StringComparison.OrdinalIgnoreCase)) ||
-                x.SenderName!.Localizations.AsQueryable().Any(searchExpression) ||
-                x.Body!.Localizations.AsQueryable().Any(searchExpression)
+                x.Content.Any(x => x.Value.Localizations.AsQueryable().Any(searchExpression)) ||
+                x.SearchTags.Any(x => EF.Functions.ILike(x.Value, request.Search!))
             )
             .Where(x => !x.VisibleFrom.HasValue || _clock.UtcNowOffset > x.VisibleFrom)
             .Where(x => !x.ExpiresAt.HasValue || x.ExpiresAt > _clock.UtcNowOffset)

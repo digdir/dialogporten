@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using AutoMapper;
+using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
@@ -23,11 +24,13 @@ internal sealed class GetDialogElementQueryHandler : IRequestHandler<GetDialogEl
 {
     private readonly IMapper _mapper;
     private readonly IDialogDbContext _dbContext;
+    private readonly IUserService _userService;
 
-    public GetDialogElementQueryHandler(IMapper mapper, IDialogDbContext dbContext)
+    public GetDialogElementQueryHandler(IMapper mapper, IDialogDbContext dbContext, IUserService userService)
     {
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+        _userService = userService;
     }
 
     public async Task<GetDialogElementResult> Handle(GetDialogElementQuery request,
@@ -36,12 +39,15 @@ internal sealed class GetDialogElementQueryHandler : IRequestHandler<GetDialogEl
         Expression<Func<DialogEntity, IEnumerable<DialogElement>>> elementFilter = dialog =>
             dialog.Elements.Where(x => x.Id == request.ElementId);
 
+        var resourceIds = await _userService.GetCurrentUserResourceIds(cancellationToken);
+
         var dialog = await _dbContext.Dialogs
             .Include(elementFilter)
             .ThenInclude(x => x.DisplayName!.Localizations)
             .Include(elementFilter)
             .ThenInclude(x => x.Urls)
             .IgnoreQueryFilters()
+            .Where(x => resourceIds.Contains(x.ServiceResource))
             .FirstOrDefaultAsync(x => x.Id == request.DialogId,
                 cancellationToken: cancellationToken);
 

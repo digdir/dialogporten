@@ -1,5 +1,6 @@
 ﻿using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Events;
 using Digdir.Domain.Dialogporten.Domain.Localizations;
@@ -30,6 +31,7 @@ public class DialogEntity :
     public string ServiceResource { get; set; } = null!;
     public string Party { get; set; } = null!;
     public string? ExtendedStatus { get; set; }
+    public string? ExternalReference { get; set; }
     public DateTimeOffset? VisibleFrom { get; set; }
     public DateTimeOffset? DueAt { get; set; }
     public DateTimeOffset? ExpiresAt { get; set; }
@@ -39,17 +41,9 @@ public class DialogEntity :
     public DialogStatus.Values StatusId { get; set; }
     public DialogStatus Status { get; set; } = null!;
 
-
     // === Principal relationships === 
     [AggregateChild]
-    public DialogBody? Body { get; set; }
-
-    [AggregateChild]
-    public DialogTitle? Title { get; set; }
-
-    [AggregateChild]
-    public DialogSenderName? SenderName { get; set; }
-
+    public List<DialogContent> Content { get; set; } = new();
     [AggregateChild]
     public List<DialogSearchTag> SearchTags { get; set; } = new();
 
@@ -110,22 +104,4 @@ public class DialogEntity :
 
     private readonly List<IDomainEvent> _domainEvents = new();
     public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents;
-}
-
-public class DialogBody : LocalizationSet
-{
-    public Guid DialogId { get; set; }
-    public DialogEntity Dialog { get; set; } = null!;
-}
-
-public class DialogTitle : LocalizationSet
-{
-    public Guid DialogId { get; set; }
-    public DialogEntity Dialog { get; set; } = null!;
-}
-
-public class DialogSenderName : LocalizationSet
-{
-    public Guid DialogId { get; set; }
-    public DialogEntity Dialog { get; set; } = null!;
 }

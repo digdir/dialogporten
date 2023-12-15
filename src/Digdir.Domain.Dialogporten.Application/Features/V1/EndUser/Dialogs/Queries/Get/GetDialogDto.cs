@@ -2,6 +2,7 @@
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements;
 using Digdir.Domain.Dialogporten.Domain.Http;
 
@@ -14,6 +15,7 @@ public sealed class GetDialogDto
     public string ServiceResource { get; set; } = null!;
     public string Party { get; set; } = null!;
     public string? ExtendedStatus { get; set; }
+    public string? ExternalReference { get; set; }
     public DateTimeOffset? VisibleFrom { get; set; }
     public DateTimeOffset? DueAt { get; set; }
     public DateTimeOffset? ExpiresAt { get; set; }
@@ -23,14 +25,18 @@ public sealed class GetDialogDto
 
     public DialogStatus.Values Status { get; set; }
 
-    public List<LocalizationDto>? Body { get; set; }
-    public List<LocalizationDto> Title { get; set; } = new();
-    public List<LocalizationDto>? SenderName { get; set; }
+    public List<GetDialogContentDto> Content { get; set; } = new();
 
     public List<GetDialogDialogElementDto> Elements { get; set; } = new();
     public List<GetDialogDialogGuiActionDto> GuiActions { get; set; } = new();
     public List<GetDialogDialogApiActionDto> ApiActions { get; set; } = new();
     public List<GetDialogDialogActivityDto> Activities { get; set; } = new();
+}
+
+public sealed class GetDialogContentDto
+{
+    public DialogContentType.Values Type { get; set; }
+    public List<LocalizationDto> Value { get; set; } = new();
 }
 
 public sealed class GetDialogDialogActivityDto
@@ -92,6 +98,7 @@ public sealed class GetDialogDialogElementDto
 {
     public Guid Id { get; set; }
     public Uri? Type { get; set; }
+    public string? ExternalReference { get; set; }
     public string? AuthorizationAttribute { get; set; }
     public bool IsAuthorized { get; set; }
 

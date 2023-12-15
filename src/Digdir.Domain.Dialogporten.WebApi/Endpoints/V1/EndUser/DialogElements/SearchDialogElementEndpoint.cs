@@ -1,4 +1,3 @@
-using System.Globalization;
 using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogElements.Queries.Search;
 using Digdir.Domain.Dialogporten.WebApi.Common;
 using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;

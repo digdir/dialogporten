@@ -17,10 +17,11 @@ public class DialogElement : IEntity, IAggregateChangedHandler, IEventPublisher
     public string? AuthorizationAttribute { get; set; }
     public Uri? Type { get; set; }
 
+    public string? ExternalReference { get; set; }
+
     // === Dependent relationships ===
     public Guid DialogId { get; set; }
     public DialogEntity Dialog { get; set; } = null!;
-
 
     public Guid? RelatedDialogElementId { get; set; }
     public DialogElement? RelatedDialogElement { get; set; }

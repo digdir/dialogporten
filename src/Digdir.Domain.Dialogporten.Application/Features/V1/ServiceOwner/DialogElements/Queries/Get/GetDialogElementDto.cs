@@ -7,6 +7,7 @@ public sealed class GetDialogElementDto
 {
     public Guid Id { get; set; }
     public Uri? Type { get; set; }
+    public string? ExternalReference { get; set; }
     public string? AuthorizationAttribute { get; set; }
 
     public Guid? RelatedDialogElementId { get; set; }

@@ -3,6 +3,7 @@ using Digdir.Domain.Dialogporten.Application.Common.Numbers;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using Digdir.Domain.Dialogporten.Domain.Common;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
 using FluentValidation;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Create;
@@ -10,12 +11,12 @@ namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialog
 internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDialogCommand>
 {
     public CreateDialogCommandValidator(
-        IValidator<IEnumerable<LocalizationDto>> localizationsValidator,
         IValidator<CreateDialogDialogElementDto> elementValidator,
         IValidator<CreateDialogDialogGuiActionDto> guiActionValidator,
         IValidator<CreateDialogDialogApiActionDto> apiActionValidator,
         IValidator<CreateDialogDialogActivityDto> activityValidator,
-        IValidator<CreateDialogSearchTagDto> searchTagValidator)
+        IValidator<CreateDialogSearchTagDto> searchTagValidator,
+        IValidator<CreateDialogContentDto> contentValidator)
     {
         RuleFor(x => x.Id)
             .NotEqual(default(Guid));
@@ -42,6 +43,9 @@ internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDia
         RuleFor(x => x.ExtendedStatus)
             .MaximumLength(Constants.DefaultMaxStringLength);
 
+        RuleFor(x => x.ExternalReference)
+            .MaximumLength(Constants.DefaultMaxStringLength);
+
         RuleFor(x => x.ExpiresAt)
             .IsInFuture()
             .GreaterThanOrEqualTo(x => x.DueAt)
@@ -61,15 +65,15 @@ internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDia
         RuleFor(x => x.Status)
             .IsInEnum();
 
-        RuleFor(x => x.Title)
-            .NotEmpty()
-            .SetValidator(localizationsValidator);
-        RuleFor(x => x.Body)
-            .SetValidator(new LocalizationDtosValidator(maximumLength: 1023));
-        RuleForEach(x => x.Body)
-            .ContainsValidHttp();
-        RuleFor(x => x.SenderName)
-            .SetValidator(localizationsValidator);
+        RuleFor(x => x.Content)
+            .UniqueBy(x => x.Type)
+            .Must(content => DialogContentType.RequiredTypes
+                .All(requiredContent => content
+                    .Select(x => x.Type)
+                    .Contains(requiredContent)))
+            .WithMessage($"Dialog must contain the following content: [{string.Join(", ", DialogContentType.RequiredTypes)}].")
+            .ForEach(x => x.SetValidator(contentValidator));
+
         RuleForEach(x => x.SearchTags)
             .SetValidator(searchTagValidator);
         RuleFor(x => x.SearchTags)
@@ -77,14 +81,14 @@ internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDia
 
         RuleFor(x => x.GuiActions)
             .Must(x => x
-                .Where(x => x.Priority == DialogGuiActionPriority.Values.Primary)
-                .Count() <= 1).WithMessage("Only one primary GUI action is allowed.")
+                .Count(x => x.Priority == DialogGuiActionPriority.Values.Primary) <= 1)
+                .WithMessage("Only one primary GUI action is allowed.")
             .Must(x => x
-                .Where(x => x.Priority == DialogGuiActionPriority.Values.Secondary)
-                .Count() <= 1).WithMessage("Only one secondary GUI action is allowed.")
+                .Count(x => x.Priority == DialogGuiActionPriority.Values.Secondary) <= 1)
+                .WithMessage("Only one secondary GUI action is allowed.")
             .Must(x => x
-                .Where(x => x.Priority == DialogGuiActionPriority.Values.Tertiary)
-                .Count() <= 5).WithMessage("Only five tertiary GUI actions are allowed.")
+                .Count(x => x.Priority == DialogGuiActionPriority.Values.Tertiary) <= 5)
+                .WithMessage("Only five tertiary GUI actions are allowed.")
             .ForEach(x => x.SetValidator(guiActionValidator));
 
         RuleForEach(x => x.ApiActions)
@@ -114,6 +118,21 @@ internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDia
     }
 }
 
+internal sealed class CreateDialogContentDtoValidator : AbstractValidator<CreateDialogContentDto>
+{
+    public CreateDialogContentDtoValidator()
+    {
+        RuleFor(x => x.Type)
+            .IsInEnum();
+        RuleForEach(x => x.Value)
+            .ContainsValidHtml()
+            .When(x => DialogContentType.GetValue(x.Type).RenderAsHtml);
+        RuleFor(x => x.Value)
+            .NotEmpty()
+            .SetValidator(x => new LocalizationDtosValidator(DialogContentType.GetValue(x.Type).MaxLength));
+    }
+}
+
 internal sealed class CreateDialogDialogElementDtoValidator : AbstractValidator<CreateDialogDialogElementDto>
 {
     public CreateDialogDialogElementDtoValidator(
@@ -126,6 +145,8 @@ internal sealed class CreateDialogDialogElementDtoValidator : AbstractValidator<
             .IsValidUri()
             .MaximumLength(Constants.DefaultMaxUriLength);
         RuleFor(x => x.AuthorizationAttribute)
+            .MaximumLength(Constants.DefaultMaxStringLength);
+        RuleFor(x => x.ExternalReference)
             .MaximumLength(Constants.DefaultMaxStringLength);
         RuleFor(x => x.RelatedDialogElementId)
             .NotEqual(x => x.Id)

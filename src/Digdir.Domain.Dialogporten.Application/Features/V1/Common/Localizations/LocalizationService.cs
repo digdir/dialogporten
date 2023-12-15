@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Digdir.Domain.Dialogporten.Application.Common.Extensions.Enumerable;
+using Digdir.Domain.Dialogporten.Application.Common.Extensions.Enumerables;
 using Digdir.Domain.Dialogporten.Domain.Localizations;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
@@ -26,12 +26,9 @@ internal sealed class LocalizationService : ILocalizationService
             delete: DeleteDelegate.NoOp,
             comparer: StringComparer.InvariantCultureIgnoreCase);
 
-        if (set.Localizations.Count == 0)
-        {
-            return null;
-        }
-
-        return set;
+        return set.Localizations.Count == 0
+            ? null
+            : set;
     }
 
     private void UpdateLocalization(IEnumerable<UpdateSet<Localization, LocalizationDto>> updateSets)
