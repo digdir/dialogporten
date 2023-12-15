@@ -1,32 +1,33 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-	<UserSecretsId>750256a4-f332-4783-8802-8a7d9566f9ca</UserSecretsId>
-    
-    <!-- In order to support doc blocks for Swagger generation in PatchDialogsController.cs -->
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <NoWarn>1591</NoWarn> <!-- Disable warnings for missing XML comments -->
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <UserSecretsId>750256a4-f332-4783-8802-8a7d9566f9ca</UserSecretsId>
 
-  <ItemGroup>
-    <PackageReference Include="Azure.Identity" Version="1.10.4" />
-    <PackageReference Include="FastEndpoints.Swagger" Version="5.20.1" />
-    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.22.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.0" />
-    <PackageReference Include="Microsoft.Azure.AppConfiguration.AspNetCore" Version="7.0.0" />
-    <PackageReference Include="Serilog.AspNetCore" Version="8.0.0" />
-    <PackageReference Include="Serilog.Sinks.ApplicationInsights" Version="4.0.0" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
-  </ItemGroup>
+        <!-- In order to support doc blocks for Swagger generation in PatchDialogsController.cs -->
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <NoWarn>1591</NoWarn> <!-- Disable warnings for missing XML comments -->
+    </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Digdir.Domain.Dialogporten.Application\Digdir.Domain.Dialogporten.Application.csproj" />
-    <ProjectReference Include="..\Digdir.Domain.Dialogporten.Infrastructure\Digdir.Domain.Dialogporten.Infrastructure.csproj" />
-  </ItemGroup>
-  
+    <ItemGroup>
+        <PackageReference Include="Azure.Identity" Version="1.10.4"/>
+        <PackageReference Include="FastEndpoints.Swagger" Version="5.20.1"/>
+        <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1"/>
+        <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.22.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.0"/>
+        <PackageReference Include="Microsoft.Azure.AppConfiguration.AspNetCore" Version="7.0.0"/>
+        <PackageReference Include="Serilog.AspNetCore" Version="8.0.0"/>
+        <PackageReference Include="Serilog.Sinks.ApplicationInsights" Version="4.0.0"/>
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Digdir.Domain.Dialogporten.Application\Digdir.Domain.Dialogporten.Application.csproj"/>
+        <ProjectReference Include="..\Digdir.Domain.Dialogporten.Infrastructure\Digdir.Domain.Dialogporten.Infrastructure.csproj"/>
+    </ItemGroup>
+
 </Project>

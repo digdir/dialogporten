@@ -1,19 +1,24 @@
-﻿using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Queries.Get;
+﻿using System.Text.Json.Serialization;
+using AutoMapper;
+using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Queries.Get;
 using Digdir.Domain.Dialogporten.WebApi.Common;
 using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
 using FastEndpoints;
 using MediatR;
+using IMapper = AutoMapper.IMapper;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.Dialogs;
 
-public class GetDialogEndpoint : Endpoint<GetDialogQuery, GetDialogDto>
+public class GetDialogEndpoint : Endpoint<GetDialogQuery, GetDialogResponse>
 {
     private readonly ISender _sender;
+    private readonly IMapper _mapper;
 
-    public GetDialogEndpoint(ISender sender)
+    public GetDialogEndpoint(ISender sender, IMapper mapper)
     {
         _sender = sender ?? throw new ArgumentNullException(nameof(sender));
+        _mapper = mapper;
     }
 
     public override void Configure()
@@ -37,12 +42,26 @@ public class GetDialogEndpoint : Endpoint<GetDialogQuery, GetDialogDto>
             dto =>
             {
                 HttpContext.Response.Headers.ETag = dto.ETag.ToString();
-                return SendOkAsync(dto, ct);
+                var response = _mapper.Map<GetDialogResponse>(dto);
+                return SendOkAsync(response, ct);
             },
             notFound => this.NotFoundAsync(notFound, ct));
     }
 }
 
+public class GetDialogResponse : GetDialogDto
+{
+    [JsonIgnore]
+    public override Guid ETag { get; set; }
+}
+
+internal sealed class MappingProfile : Profile
+{
+    public MappingProfile()
+    {
+        CreateMap<GetDialogDto, GetDialogResponse>();
+    }
+}
 public sealed class GetDialogEndpointSummary : Summary<GetDialogEndpoint>
 {
     public GetDialogEndpointSummary()

@@ -8,9 +8,10 @@ using Digdir.Domain.Dialogporten.Domain.Http;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Queries.Get;
 
-public sealed class GetDialogDto
+public class GetDialogDto
 {
     public Guid Id { get; set; }
+    public virtual Guid ETag { get; set; }
     public string Org { get; set; } = null!;
     public string ServiceResource { get; set; } = null!;
     public string Party { get; set; } = null!;
