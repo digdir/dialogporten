@@ -29,6 +29,11 @@ internal sealed class UpdateDialogDtoValidator : AbstractValidator<UpdateDialogD
         IValidator<UpdateDialogSearchTagDto> searchTagValidator,
         IValidator<UpdateDialogContentDto> contentValidator)
     {
+        // TODO: 'Progress' not allowed for correspondence dialogs
+        // https://github.com/digdir/dialogporten/issues/233
+        RuleFor(x => x.Progress)
+            .InclusiveBetween(0, 100);
+
         RuleFor(x => x.ExtendedStatus)
             .MaximumLength(Constants.DefaultMaxStringLength);
 

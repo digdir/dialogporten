@@ -10,6 +10,7 @@ namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialog
 
 public sealed class UpdateDialogDto
 {
+    public int? Progress { get; set; }
     public string? ExtendedStatus { get; set; }
     public string? ExternalReference { get; set; }
     public DateTimeOffset? VisibleFrom { get; set; }
