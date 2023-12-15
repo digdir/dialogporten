@@ -1,7 +1,7 @@
-﻿FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
+﻿FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
 
-FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
 COPY ["src/**/*.csproj", "./"]
@@ -17,12 +17,8 @@ ENV PATH $PATH:/root/.dotnet/tools
 RUN dotnet ef migrations -v bundle -o /app/publish/efbundle
 
 FROM base AS final
-
-RUN useradd appuser && chown -R appuser /app
-
-USER appuser
 ENV Infrastructure__DialogDbConnectionString=""
-
 WORKDIR /app
+USER $APP_UID
 COPY --from=build /app/publish .
 ENTRYPOINT ./efbundle -v --connection "${Infrastructure__DialogDbConnectionString}"
