@@ -9,11 +9,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="MassTransit.RabbitMQ" Version="8.1.1"/>
-        <PackageReference Include="RabbitMQ.Client" Version="6.5.0"/>
-        <PackageReference Include="Serilog.AspNetCore" Version="7.0.0"/>
+        <PackageReference Include="MassTransit.RabbitMQ" Version="8.1.2" />
+        <PackageReference Include="RabbitMQ.Client" Version="6.8.1" />
+        <PackageReference Include="Serilog.AspNetCore" Version="8.0.0" />
         <PackageReference Include="Serilog.Sinks.ApplicationInsights" Version="4.0.0"/>
-        <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.21.0"/>
+        <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.22.0" />
     </ItemGroup>
 
     <ItemGroup>
