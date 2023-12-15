@@ -1,11 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
     
-<!--    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">-->
-<!--        <NoWarn>CS1591</NoWarn>-->
-<!--    </PropertyGroup>-->
-    
     <PropertyGroup>
-        <TargetFramework>net7.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <AzureFunctionsVersion>v4</AzureFunctionsVersion>
         <OutputType>Exe</OutputType>
         <ImplicitUsings>enable</ImplicitUsings>
