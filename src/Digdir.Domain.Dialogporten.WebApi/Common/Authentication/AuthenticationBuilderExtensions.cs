@@ -1,4 +1,5 @@
 ﻿using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Diagnostics;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Common.Authentication;
@@ -21,6 +22,8 @@ internal static class AuthenticationBuilderExtensions
             throw new UnreachableException();
         }
 
+        services.AddSingleton<ITokenIssuerCache, TokenIssuerCache>();
+
         var authenticationBuilder = services.AddAuthentication();
 
         foreach (var schema in jwtTokenSchemas)
@@ -36,6 +39,23 @@ internal static class AuthenticationBuilderExtensions
                     RequireExpirationTime = true,
                     ValidateLifetime = true,
                     ClockSkew = TimeSpan.Zero
+                };
+
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = async context =>
+                    {
+                        var expectedIssuer = await context.HttpContext
+                            .RequestServices
+                            .GetRequiredService<ITokenIssuerCache>()
+                            .GetIssuerForScheme(schema.Name);
+
+                        if (context.HttpContext.Items.TryGetValue(Constants.CurrentTokenIssuer, out var tokenIssuer)
+                            && (string?)tokenIssuer != expectedIssuer)
+                        {
+                            context.NoResult();
+                        }
+                    }
                 };
             });
         }
