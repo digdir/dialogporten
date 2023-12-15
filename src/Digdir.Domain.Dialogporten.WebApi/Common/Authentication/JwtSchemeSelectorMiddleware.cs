@@ -13,23 +13,36 @@ public class JwtSchemeSelectorMiddleware
         _next = next;
     }
 
-    public async Task InvokeAsync(HttpContext context)
+    public Task InvokeAsync(HttpContext context)
     {
-        if (context.Request.Headers.TryGetValue(Constants.Authorization, out var authorizationHeader))
+        if (!context.Request.Headers.TryGetValue(Constants.Authorization, out var authorizationHeader))
         {
-            var token = authorizationHeader.ToString().Split(' ').LastOrDefault();
-
-            if (!string.IsNullOrEmpty(token))
-            {
-                var handler = new JwtSecurityTokenHandler();
-                if (handler.CanReadToken(token))
-                {
-                    var jwtToken = handler.ReadJwtToken(token);
-                    context.Items[Constants.CurrentTokenIssuer] = jwtToken.Issuer;
-                }
-            }
+            return _next(context);
         }
 
-        await _next(context);
+        var token = authorizationHeader.ToString()
+            .Split(' ')
+            .LastOrDefault();
+
+        if (string.IsNullOrEmpty(token))
+        {
+            return _next(context);
+        }
+
+        var handler = new JwtSecurityTokenHandler();
+        if (!handler.CanReadToken(token))
+        {
+            return _next(context);
+        }
+
+        var jwtToken = handler.ReadJwtToken(token);
+        context.Items[Constants.CurrentTokenIssuer] = jwtToken.Issuer;
+        return _next(context);
     }
+}
+
+public static class JwtSchemeSelectorMiddlewareExtensions
+{
+    public static IApplicationBuilder UseJwtSchemeSelector(this IApplicationBuilder app)
+        => app.UseMiddleware<JwtSchemeSelectorMiddleware>();
 }

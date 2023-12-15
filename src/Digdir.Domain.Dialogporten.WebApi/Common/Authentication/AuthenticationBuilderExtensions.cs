@@ -54,7 +54,6 @@ internal static class AuthenticationBuilderExtensions
                             && (string?)tokenIssuer != expectedIssuer)
                         {
                             context.NoResult();
-                            return;
                         }
                     }
                 };
