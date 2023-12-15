@@ -1,4 +1,4 @@
-﻿namespace Digdir.Domain.Dialogporten.Application.Common.Extensions.Enumerable;
+﻿namespace Digdir.Domain.Dialogporten.Application.Common.Extensions.Enumerables;
 
 internal readonly struct UpdateSet<TDestination, TSource>
 {
