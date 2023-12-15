@@ -15,18 +15,13 @@ public static class QueryableExtensions
         return predicate ? source.Where(queryPredicate) : source;
     }
 
-    private static readonly Type StringType = typeof(string);
-
     private static readonly Type DialogType = typeof(DialogEntity);
     private static readonly PropertyInfo DialogIdPropertyInfo = DialogType.GetProperty(nameof(DialogEntity.Id))!;
     private static readonly PropertyInfo DialogPartyPropertyInfo = DialogType.GetProperty(nameof(DialogEntity.Party))!;
     private static readonly PropertyInfo DialogServiceResourcePropertyInfo = DialogType.GetProperty(nameof(DialogEntity.ServiceResource))!;
 
-    private static readonly Type StringListType = typeof(List<string>);
-    private static readonly MethodInfo StringListContainsMethodInfo = StringListType.GetMethod(nameof(List<object>.Contains))!;
-
-    private static readonly Type GuidListType = typeof(List<Guid>);
-    private static readonly MethodInfo GuidListContainsMethodInfo = GuidListType.GetMethod(nameof(List<object>.Contains))!;
+    private static readonly MethodInfo StringListContainsMethodInfo = typeof(List<string>).GetMethod(nameof(List<object>.Contains))!;
+    private static readonly MethodInfo GuidListContainsMethodInfo = typeof(List<Guid>).GetMethod(nameof(List<object>.Contains))!;
 
     private static readonly Type KeyValueType = typeof(KeyValuePair<string, List<string>>);
     private static readonly PropertyInfo KeyPropertyInfo = KeyValueType.GetProperty(nameof(KeyValuePair<object, object>.Key))!;
