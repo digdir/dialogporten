@@ -3,7 +3,7 @@
 ## Getting started with local development
 
 ### Prerequisites
-- [.NET 7 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/7.0)
+- [.NET 8 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
 - [Docker](https://www.docker.com/products/docker-desktop/) (Docker Desktop version 4.22 or later or Docker Compose version 2.20 or later)
 
 
@@ -11,7 +11,9 @@ You can run the entire project locally using docker compose.
 ```powershell
 docker compose up
 ```
+The APIs SwaggerUI should now be available at [localhost:7124/swagger](https://localhost:7214/swagger/index.html)
 
+### Running the WebApi in an IDE
 If you need do debug the WebApi project in an IDE, you can alternatively run docker compose without the WebAPI.  
 First create a dotnet user secret for the DB connection string.
 
