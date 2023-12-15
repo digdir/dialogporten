@@ -129,13 +129,13 @@ var probes = [
 var ingress = {
   targetPort: port
   external: true
-  // ipSecurityRestrictions: [
-  //   {
-  //     name: 'allow-apim-ip'
-  //     action: 'Allow'
-  //     ipAddressRange: apiManagementIp
-  //   }
-  // ]
+  ipSecurityRestrictions: [
+    {
+      name: 'allow-apim-ip'
+      action: 'Allow'
+      ipAddressRange: apiManagementIp
+    }
+  ]
 }
 
 var webapiSoName = '${namePrefix}-webapi-so-ca'
