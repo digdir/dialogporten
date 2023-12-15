@@ -1,6 +1,7 @@
 ﻿using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Protocols;
 using System.Collections.ObjectModel;
+using Microsoft.Extensions.Options;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Common.Authentication;
 
@@ -9,20 +10,20 @@ public interface ITokenIssuerCache
     public Task<string?> GetIssuerForScheme(string schemeName);
 }
 
-public class TokenIssuerCache : ITokenIssuerCache, IDisposable
+public sealed class TokenIssuerCache : ITokenIssuerCache, IDisposable
 {
     private readonly Dictionary<string, string> _issuerMappings = new();
     private readonly SemaphoreSlim _initializationSemaphore = new(1, 1);
     private bool _initialized;
-    private readonly IEnumerable<JwtBearerTokenSchemasOptions>? _jwtTokenSchemas;
+    private readonly IReadOnlyCollection<JwtBearerTokenSchemasOptions> _jwtTokenSchemas;
 
-    public TokenIssuerCache(IConfiguration configuration)
+    public TokenIssuerCache(IOptions<WebApiSettings> apiSettings)
     {
-        _jwtTokenSchemas = configuration
-            .GetSection(WebApiSettings.SectionName)
-            .Get<WebApiSettings>()
-            ?.Authentication
-            ?.JwtBearerTokenSchemas;
+        _jwtTokenSchemas = apiSettings
+            .Value
+            .Authentication
+            .JwtBearerTokenSchemas
+            ?? throw new ArgumentException("JwtBearerTokenSchemas is required.");
     }
 
     public async Task<string?> GetIssuerForScheme(string schemeName)
@@ -35,42 +36,30 @@ public class TokenIssuerCache : ITokenIssuerCache, IDisposable
 
     private async Task EnsureInitializedAsync()
     {
-        if (!_initialized && _jwtTokenSchemas != null)
-        {
-            await _initializationSemaphore.WaitAsync();
-            try
-            {
-                if (!_initialized)
-                {
-                    foreach (var schema in _jwtTokenSchemas)
-                    {
-                        var configManager = new ConfigurationManager<OpenIdConnectConfiguration>(
-                            schema.WellKnown, new OpenIdConnectConfigurationRetriever());
-                        var config = await configManager.GetConfigurationAsync();
-                        _issuerMappings[schema.Name] = config.Issuer;
-                    }
+        if (_initialized) return;
+        await _initializationSemaphore.WaitAsync();
+        if (_initialized) return;
 
-                    _initialized = true;
-                }
-            }
-            finally
+        try
+        {
+            foreach (var schema in _jwtTokenSchemas)
             {
-                _initializationSemaphore.Release();
+                var configManager = new ConfigurationManager<OpenIdConnectConfiguration>(
+                    schema.WellKnown, new OpenIdConnectConfigurationRetriever());
+                var config = await configManager.GetConfigurationAsync();
+                _issuerMappings[schema.Name] = config.Issuer;
             }
+
+            _initialized = true;
+        }
+        finally
+        {
+            _initializationSemaphore.Release();
         }
     }
 
     public void Dispose()
     {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
-
-    protected virtual void Dispose(bool disposing)
-    {
-        if (disposing)
-        {
-            _initializationSemaphore.Dispose();
-        }
+        _initializationSemaphore.Dispose();
     }
 }

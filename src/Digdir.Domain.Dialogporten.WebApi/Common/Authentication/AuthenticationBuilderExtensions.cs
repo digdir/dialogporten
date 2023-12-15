@@ -45,16 +45,16 @@ internal static class AuthenticationBuilderExtensions
                 {
                     OnMessageReceived = async context =>
                     {
-                        var issuerCache = context.HttpContext.RequestServices.GetRequiredService<ITokenIssuerCache>();
-                        var expectedIssuer = await issuerCache.GetIssuerForScheme(schema.Name);
-                        if (context.HttpContext.Items.TryGetValue(Constants.CurrentTokenIssuer, out var issuerObject))
+                        var expectedIssuer = await context.HttpContext
+                            .RequestServices
+                            .GetRequiredService<ITokenIssuerCache>()
+                            .GetIssuerForScheme(schema.Name);
+
+                        if (context.HttpContext.Items.TryGetValue(Constants.CurrentTokenIssuer, out var tokenIssuer)
+                            && (string?)tokenIssuer != expectedIssuer)
                         {
-                            var actualIssuer = issuerObject as string;
-                            if (actualIssuer != expectedIssuer)
-                            {
-                                context.NoResult();
-                                return;
-                            }
+                            context.NoResult();
+                            return;
                         }
                     }
                 };
