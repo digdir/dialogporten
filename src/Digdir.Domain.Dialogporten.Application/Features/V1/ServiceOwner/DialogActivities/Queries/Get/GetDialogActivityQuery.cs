@@ -1,4 +1,5 @@
 using AutoMapper;
+using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
@@ -16,27 +17,30 @@ public sealed class GetDialogActivityQuery : IRequest<GetDialogActivityResult>
 }
 
 [GenerateOneOf]
-public partial class GetDialogActivityResult : OneOfBase<GetDialogActivityDto, EntityNotFound>
-{
-}
+public partial class GetDialogActivityResult : OneOfBase<GetDialogActivityDto, EntityNotFound> { }
 
 internal sealed class GetDialogActivityQueryHandler : IRequestHandler<GetDialogActivityQuery, GetDialogActivityResult>
 {
     private readonly IMapper _mapper;
     private readonly IDialogDbContext _dbContext;
+    private readonly IUserService _userService;
 
-    public GetDialogActivityQueryHandler(IMapper mapper, IDialogDbContext dbContext)
+    public GetDialogActivityQueryHandler(IMapper mapper, IDialogDbContext dbContext, IUserService userService)
     {
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+        _userService = userService;
     }
 
     public async Task<GetDialogActivityResult> Handle(GetDialogActivityQuery request,
         CancellationToken cancellationToken)
     {
+        var resourceIds = await _userService.GetCurrentUserResourceIds(cancellationToken);
+
         var dialog = await _dbContext.Dialogs
             .Include(x => x.Activities.Where(x => x.Id == request.ActivityId))
             .IgnoreQueryFilters()
+            .Where(x => resourceIds.Contains(x.ServiceResource))
             .FirstOrDefaultAsync(x => x.Id == request.DialogId,
                 cancellationToken: cancellationToken);
 
