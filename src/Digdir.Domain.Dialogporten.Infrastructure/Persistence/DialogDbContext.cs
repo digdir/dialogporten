@@ -37,11 +37,11 @@ internal sealed class DialogDbContext : DbContext, IDialogDbContext
     public DbSet<OutboxMessageConsumer> OutboxMessageConsumers => Set<OutboxMessageConsumer>();
 
     public bool TrySetOriginalRevision<TEntity>(
-        TEntity entity,
+        TEntity? entity,
         Guid? revision)
         where TEntity : class, IVersionableEntity
     {
-        if (entity is null || !revision.HasValue) // TODO: Ask B&M
+        if (entity is null || !revision.HasValue)
         {
             return false;
         }
