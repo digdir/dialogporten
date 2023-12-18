@@ -1,6 +1,6 @@
 param (
     [Parameter(Mandatory=$true)]
-    [ValidateSet('localdev','poc','test','staging')]
+    [ValidateSet('localdev','test','staging','prod')]
     [string]$ApiEnvironment,
 
     [string]$ApiVersion = 'v1',

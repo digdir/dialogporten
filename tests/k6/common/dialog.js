@@ -1,32 +1,32 @@
 import { customConsole as console } from './console.js';
 
 export function setTitle(dialog, title, language = "nb_NO") {
-    if (typeof title !== "string") {
-        throw new Error("Invalid title provided.");
-    }
-
-    dialog.title = dialog.title || [];
-    const index = dialog.title.findIndex(t => t.cultureCode === language);
-    
-    if (index !== -1) {
-        dialog.title[index].value = title;
-    } else {
-        dialog.title.push({ cultureCode: language, value: title });
-    }
+    setContent(dialog, "Title", title, language);
 }
 
-export function setBody(dialog, body, language = "nb_NO") {
-    if (typeof body !== "string") {
-        throw new Error("Invalid body provided.");
+export function setAdditionalInfo(dialog, additionalInfo, language = "nb_NO") {
+    setContent(dialog, "AdditionalInfo", additionalInfo, language);
+}
+
+export function setContent(dialog, type, value, language = "nb_NO") {
+    if (typeof value !== "string") {
+        throw new Error("Invalid value provided.");
     }
 
-    dialog.body = dialog.body || [];
-    const index = dialog.body.findIndex(t => t.cultureCode === language);
+    dialog.content = dialog.content || [];
+    const title_index = dialog.content.findIndex(t => t.type === type);
     
-    if (index !== -1) {
-        dialog.body[index].value = body;
-    } else {
-        dialog.body.push({ cultureCode: language, value: body });
+    if (title_index !== -1) {
+        const lang_index = dialog.content[title_index].value.findIndex(t => t.cultureCode === language);
+        if (lang_index !== -1) {
+            dialog.content[title_index].value[lang_index].value = value;
+        }
+        else {
+            dialog.content[title_index].value.push({ cultureCode: language, value: value });
+        }
+    }
+    else {
+        dialog.content.push({ "type": type, value: [ { cultureCode: language, value: value } ] });
     }
 }
 

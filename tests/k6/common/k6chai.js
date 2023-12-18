@@ -52,6 +52,20 @@ chai.use(function(chai, utils) {
         `expected #{this} not to have a localized text of ${expectedValue}${cultureCode ? ` with culture code ${cultureCode}` : ''}`
       );
     });
+
+    chai.Assertion.addMethod('haveContentOfType', function(type) {
+      const obj = this._obj; // current object under assertion
+
+      // Ensure the current object has a 'content' property which is an array
+      new chai.Assertion(obj).to.have.property('content').that.is.an('array');
+
+      // Filter content for the specified type
+      const filteredContent = obj.content.filter(item => item.type === type);
+
+      // Pass the filtered content for further assertions
+      utils.flag(this, 'object', filteredContent[0].value);
+    });
+
   });
 
 export { chai, expect, expectStatusFor }
