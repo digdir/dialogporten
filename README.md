@@ -14,7 +14,7 @@ docker compose up
 The APIs SwaggerUI should now be available at [localhost:7124/swagger](https://localhost:7214/swagger/index.html)
 
 ### Running the WebApi in an IDE
-If you need do debug the WebApi project in an IDE, you can alternatively run docker compose without the WebAPI.  
+If you need to debug the WebApi project in an IDE, you can alternatively run docker compose without the WebAPI.  
 First create a dotnet user secret for the DB connection string.
 
 ```powerhell
@@ -59,12 +59,12 @@ dotnet ef migrations add TestMigration
 ```
 ## Testing
 
-Besides ordinary unit- and integration tests, there are test suites for both functional end-to-end testing implemented with [K6](https://k6.io/).
+Besides ordinary unit and integration tests, there are test suites for both functional end-to-end testings implemented with [K6](https://k6.io/).
 
 See `tests/k6/README.md` for more information.
 
 ## Development in local and test environments
-To generate test tokens see https://github.com/Altinn/AltinnTestTools. There is a request in the Postman collection for this.
+To generate test tokens, see https://github.com/Altinn/AltinnTestTools. There is a request in the Postman collection for this.
 
 ### Local development settings
 We are able to toggle some external resources in local development. This is done through the `appsettings.Development.json` file. The following settings are available:
