@@ -13,6 +13,7 @@ public class CreateDialogDto
     public Guid? Id { get; set; }
     public string ServiceResource { get; set; } = null!;
     public string Party { get; set; } = null!;
+    public int? Progress { get; set; }
     public string? ExtendedStatus { get; set; }
     public string? ExternalReference { get; set; }
     public DateTimeOffset? VisibleFrom { get; set; }

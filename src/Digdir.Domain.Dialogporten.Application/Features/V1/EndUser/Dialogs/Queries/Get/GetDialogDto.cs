@@ -14,6 +14,7 @@ public sealed class GetDialogDto
     public string Org { get; set; } = null!;
     public string ServiceResource { get; set; } = null!;
     public string Party { get; set; } = null!;
+    public int? Progress { get; set; }
     public string? ExtendedStatus { get; set; }
     public string? ExternalReference { get; set; }
     public DateTimeOffset? VisibleFrom { get; set; }
