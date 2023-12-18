@@ -66,7 +66,7 @@ public sealed class UpdateDialogElementEndpoint : Endpoint<UpdateDialogElementRe
         updateDialogDto.Elements.Add(updateDialogElementDto);
 
         var updateDialogCommand = new UpdateDialogCommand
-        { Id = req.DialogId, ETag = req.ETag, Dto = updateDialogDto };
+        { Id = req.DialogId, Revision = req.Revision, Dto = updateDialogDto };
 
         var result = await _sender.Send(updateDialogCommand, ct);
         await result.Match(
@@ -95,7 +95,7 @@ public sealed class UpdateDialogElementRequest
     public Guid ElementId { get; set; }
 
     [FromHeader(headerName: Constants.IfMatch, isRequired: false)]
-    public Guid? ETag { get; set; }
+    public Guid? Revision { get; set; }
 
     public Uri? Type { get; set; }
     public string? AuthorizationAttribute { get; set; }
@@ -114,14 +114,14 @@ public sealed class UpdateDialogElementEndpointSummary : Summary<UpdateDialogEle
         Description = """
                 Replaces a given dialog element with the supplied model. For more information see the documentation (link TBD).
 
-                Optimistic concurrency control is implemented using the If-Match header. Supply the ETag value from the GetDialog endpoint to ensure that the dialog is not deleted by another request in the meantime.
+                Optimistic concurrency control is implemented using the If-Match header. Supply the Revision value from the GetDialog endpoint to ensure that the dialog is not deleted by another request in the meantime.
                 """;
         Responses[StatusCodes.Status204NoContent] = Constants.SwaggerSummary.Updated.FormatInvariant("element");
         Responses[StatusCodes.Status400BadRequest] = Constants.SwaggerSummary.ValidationError;
         Responses[StatusCodes.Status401Unauthorized] = Constants.SwaggerSummary.ServiceOwnerAuthenticationFailure.FormatInvariant(AuthorizationScope.ServiceProvider);
         Responses[StatusCodes.Status403Forbidden] = Constants.SwaggerSummary.AccessDeniedToDialogForChildEntity.FormatInvariant("update");
         Responses[StatusCodes.Status404NotFound] = Constants.SwaggerSummary.DialogElementNotFound;
-        Responses[StatusCodes.Status412PreconditionFailed] = Constants.SwaggerSummary.EtagMismatch;
+        Responses[StatusCodes.Status412PreconditionFailed] = Constants.SwaggerSummary.RevisionMismatch;
         Responses[StatusCodes.Status422UnprocessableEntity] = Constants.SwaggerSummary.DomainError;
     }
 }

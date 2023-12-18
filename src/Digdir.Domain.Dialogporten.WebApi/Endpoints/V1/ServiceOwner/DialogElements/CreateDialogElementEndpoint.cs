@@ -56,7 +56,7 @@ public sealed class CreateDialogElementEndpoint : Endpoint<CreateDialogElementRe
 
         updateDialogDto.Elements.Add(req);
 
-        var updateDialogCommand = new UpdateDialogCommand { Id = req.DialogId, ETag = req.ETag, Dto = updateDialogDto };
+        var updateDialogCommand = new UpdateDialogCommand { Id = req.DialogId, Revision = req.Revision, Dto = updateDialogDto };
 
         var result = await _sender.Send(updateDialogCommand, ct);
         await result.Match(
@@ -73,7 +73,7 @@ public sealed class CreateDialogElementRequest : UpdateDialogDialogElementDto
     public Guid DialogId { get; set; }
 
     [FromHeader(headerName: Constants.IfMatch, isRequired: false)]
-    public Guid? ETag { get; set; }
+    public Guid? Revision { get; set; }
 }
 
 public sealed class CreateDialogElementEndpointSummary : Summary<CreateDialogElementEndpoint>
@@ -94,7 +94,7 @@ public sealed class CreateDialogElementEndpointSummary : Summary<CreateDialogEle
         Responses[StatusCodes.Status401Unauthorized] = Constants.SwaggerSummary.ServiceOwnerAuthenticationFailure.FormatInvariant(AuthorizationScope.ServiceProvider);
         Responses[StatusCodes.Status403Forbidden] = Constants.SwaggerSummary.AccessDeniedToDialogForChildEntity.FormatInvariant("create");
         Responses[StatusCodes.Status404NotFound] = Constants.SwaggerSummary.DialogNotFound;
-        Responses[StatusCodes.Status412PreconditionFailed] = Constants.SwaggerSummary.EtagMismatch;
+        Responses[StatusCodes.Status412PreconditionFailed] = Constants.SwaggerSummary.RevisionMismatch;
         Responses[StatusCodes.Status422UnprocessableEntity] = Constants.SwaggerSummary.DomainError;
     }
 }

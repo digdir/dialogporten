@@ -11,7 +11,7 @@ namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialog
 public class GetDialogDto
 {
     public Guid Id { get; set; }
-    public virtual Guid ETag { get; set; }
+    public Guid Revision { get; set; }
     public string Org { get; set; } = null!;
     public string ServiceResource { get; set; } = null!;
     public string Party { get; set; } = null!;

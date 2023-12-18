@@ -35,7 +35,7 @@ public sealed class UpdateDialogEndpoint : Endpoint<UpdateDialogRequest>
 
     public override async Task HandleAsync(UpdateDialogRequest req, CancellationToken ct)
     {
-        var command = new UpdateDialogCommand { Id = req.DialogId, ETag = req.ETag, Dto = req.Dto };
+        var command = new UpdateDialogCommand { Id = req.DialogId, Revision = req.Revision, Dto = req.Dto };
         var updateDialogResult = await _sender.Send(command, ct);
         await updateDialogResult.Match(
             success => SendNoContentAsync(ct),
@@ -54,7 +54,7 @@ public sealed class UpdateDialogRequest
     public UpdateDialogDto Dto { get; set; } = null!;
 
     [FromHeader(headerName: Constants.IfMatch, isRequired: false)]
-    public Guid? ETag { get; set; }
+    public Guid? Revision { get; set; }
 }
 
 public sealed class UpdateDialogEndpointSummary : Summary<UpdateDialogEndpoint>
@@ -72,7 +72,7 @@ public sealed class UpdateDialogEndpointSummary : Summary<UpdateDialogEndpoint>
         Responses[StatusCodes.Status401Unauthorized] = Constants.SwaggerSummary.ServiceOwnerAuthenticationFailure.FormatInvariant(AuthorizationScope.ServiceProvider);
         Responses[StatusCodes.Status403Forbidden] = Constants.SwaggerSummary.AccessDeniedToDialog.FormatInvariant("update");
         Responses[StatusCodes.Status404NotFound] = Constants.SwaggerSummary.DialogNotFound;
-        Responses[StatusCodes.Status412PreconditionFailed] = Constants.SwaggerSummary.EtagMismatch;
+        Responses[StatusCodes.Status412PreconditionFailed] = Constants.SwaggerSummary.RevisionMismatch;
         Responses[StatusCodes.Status422UnprocessableEntity] = Constants.SwaggerSummary.DomainError;
     }
 }

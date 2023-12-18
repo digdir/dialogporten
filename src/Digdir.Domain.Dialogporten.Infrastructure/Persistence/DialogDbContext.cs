@@ -36,18 +36,18 @@ internal sealed class DialogDbContext : DbContext, IDialogDbContext
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
     public DbSet<OutboxMessageConsumer> OutboxMessageConsumers => Set<OutboxMessageConsumer>();
 
-    public bool TrySetOriginalETag<TEntity>(
+    public bool TrySetOriginalRevision<TEntity>(
         TEntity entity,
-        Guid? etag)
+        Guid? revision)
         where TEntity : class, IVersionableEntity
     {
-        if (entity is null || !etag.HasValue) // TODO: Ask B&M
+        if (entity is null || !revision.HasValue) // TODO: Ask B&M
         {
             return false;
         }
 
-        var prop = Entry(entity).Property(x => x.ETag);
-        prop.OriginalValue = etag.Value;
+        var prop = Entry(entity).Property(x => x.Revision);
+        prop.OriginalValue = revision.Value;
         prop.IsModified = false;
         return true;
     }
