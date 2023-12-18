@@ -73,15 +73,13 @@ internal sealed class DialogDbContext : DbContext, IDialogDbContext
             .Where(x => x != default)
             .ToList();
 
-        if (ids.Count == 0)
-        {
-            return new();
-        }
-
-        return await Set<TEntity>()
-            .Select(x => x.Id)
-            .Where(x => ids.Contains(x))
-            .ToListAsync(cancellationToken);
+        return ids.Count == 0
+            ? new()
+            : await Set<TEntity>()
+                .IgnoreQueryFilters()
+                .Select(x => x.Id)
+                .Where(x => ids.Contains(x))
+                .ToListAsync(cancellationToken);
     }
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
