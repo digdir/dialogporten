@@ -2,7 +2,8 @@
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements;
 using Digdir.Domain.Dialogporten.Domain.Localizations;
 using Digdir.Library.Entity.Abstractions.Features.Aggregate;
 using Digdir.Library.Entity.Abstractions.Features.Identifiable;
@@ -58,10 +59,9 @@ public static class AggregateNodeExtensions
         DialogApiActionEndpoint => "endpoint",
         DialogGuiAction => "guiAction",
         DialogActivity => "activity",
+        DialogContent => "content",
 
-        DialogBody => "body",
-        DialogTitle => "title",
-        DialogSenderName => "senderName",
+        DialogContentValue => "contentValue",
         DialogActivityDescription => "description",
         DialogActivityPerformedBy => "performedBy",
         DialogElementDisplayName => "displayName",

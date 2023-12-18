@@ -4,7 +4,8 @@ using Digdir.Domain.Dialogporten.Application.Integration.Tests.Common;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements;
 using Digdir.Domain.Dialogporten.Domain.Http;
 using FluentAssertions;
 
@@ -55,9 +56,12 @@ public class GetDialogTests : ApplicationCollectionFixture
             //DueAt = new(new DateTime(2022, 12, 01), TimeSpan.Zero),
             //ExpiresAt = new(new DateTime(2022, 12, 01), TimeSpan.Zero),
             // SearchTags = new() { new() { CultureCode = "nb_NO", Value = "Et eksempel på en tittel" } },
-            Title = new() { new() { CultureCode = "nb_NO", Value = "Et eksempel på en tittel" } },
-            SenderName = new() { new() { CultureCode = "nb_NO", Value = "Overstyrt avsendernavn (bruker default tjenesteeiers navn)" } },
-            Body = { new() { CultureCode = "nb_NO", Value = "Innhold med <em>begrenset</em> HTML-støtte. Dette innholdet vises når dialogen ekspanderes." } },
+            Content =
+            {
+                new() { Type = DialogContentType.Values.Title, Value = { new() { CultureCode = "nb_NO", Value = "Et eksempel på en tittel" } } },
+                new() { Type = DialogContentType.Values.SenderName, Value = { new() { CultureCode = "nb_NO", Value = "Overstyrt avsendernavn (bruker default tjenesteeiers navn)" } } },
+                new() { Type = DialogContentType.Values.AdditionalInfo, Value = { new() { CultureCode = "nb_NO", Value = "Innhold med <em>begrenset</em> HTML-støtte. Dette innholdet vises når dialogen ekspanderes." } } }
+            },
             Elements = new()
             {
                 new()

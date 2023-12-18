@@ -1,8 +1,8 @@
 ﻿using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Events;
-using Digdir.Domain.Dialogporten.Domain.Localizations;
 using Digdir.Library.Entity.Abstractions;
 using Digdir.Library.Entity.Abstractions.Features.Aggregate;
 using Digdir.Library.Entity.Abstractions.Features.EventPublisher;
@@ -19,7 +19,7 @@ public class DialogEntity :
     IEventPublisher
 {
     public Guid Id { get; set; }
-    public Guid ETag { get; set; }
+    public Guid Revision { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
     public DateTimeOffset UpdatedAt { get; set; }
     public bool Deleted { get; set; }
@@ -29,7 +29,9 @@ public class DialogEntity :
     public string Org { get; set; } = "DummyOrg";
     public string ServiceResource { get; set; } = null!;
     public string Party { get; set; } = null!;
+    public int? Progress { get; set; }
     public string? ExtendedStatus { get; set; }
+    public string? ExternalReference { get; set; }
     public DateTimeOffset? VisibleFrom { get; set; }
     public DateTimeOffset? DueAt { get; set; }
     public DateTimeOffset? ExpiresAt { get; set; }
@@ -39,17 +41,9 @@ public class DialogEntity :
     public DialogStatus.Values StatusId { get; set; }
     public DialogStatus Status { get; set; } = null!;
 
-
     // === Principal relationships === 
     [AggregateChild]
-    public DialogBody? Body { get; set; }
-
-    [AggregateChild]
-    public DialogTitle? Title { get; set; }
-
-    [AggregateChild]
-    public DialogSenderName? SenderName { get; set; }
-
+    public List<DialogContent> Content { get; set; } = new();
     [AggregateChild]
     public List<DialogSearchTag> SearchTags { get; set; } = new();
 
@@ -110,22 +104,4 @@ public class DialogEntity :
 
     private readonly List<IDomainEvent> _domainEvents = new();
     public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents;
-}
-
-public class DialogBody : LocalizationSet
-{
-    public Guid DialogId { get; set; }
-    public DialogEntity Dialog { get; set; } = null!;
-}
-
-public class DialogTitle : LocalizationSet
-{
-    public Guid DialogId { get; set; }
-    public DialogEntity Dialog { get; set; } = null!;
-}
-
-public class DialogSenderName : LocalizationSet
-{
-    public Guid DialogId { get; set; }
-    public DialogEntity Dialog { get; set; } = null!;
 }

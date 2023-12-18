@@ -1,5 +1,6 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Queries.Search;
 
@@ -9,6 +10,7 @@ public sealed class SearchDialogDto
     public string Org { get; set; } = null!;
     public string ServiceResource { get; set; } = null!;
     public string Party { get; set; } = null!;
+    public int? Progress { get; set; }
     public string? ExtendedStatus { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
     public DateTimeOffset UpdatedAt { get; set; }
@@ -17,12 +19,16 @@ public sealed class SearchDialogDto
 
     public DialogStatus.Values Status { get; set; }
 
-    public List<LocalizationDto> Title { get; set; } = new();
-    public List<LocalizationDto>? SenderName { get; set; }
-    public List<SearchDialogSearchTagDto> SearchTags { get; set; } = new();
+    public List<SearchDialogContentDto> Content { get; set; } = new();
 }
 
 public sealed class SearchDialogSearchTagDto
 {
     public string Value { get; set; } = null!;
+}
+
+public sealed class SearchDialogContentDto
+{
+    public DialogContentType.Values Type { get; set; }
+    public List<LocalizationDto> Value { get; set; } = new();
 }

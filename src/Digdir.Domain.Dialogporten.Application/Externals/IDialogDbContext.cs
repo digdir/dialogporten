@@ -1,7 +1,7 @@
 ﻿using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements;
 using Digdir.Domain.Dialogporten.Domain.Outboxes;
 using Digdir.Library.Entity.Abstractions.Features.Identifiable;
 using Digdir.Library.Entity.Abstractions.Features.Versionable;
@@ -48,5 +48,5 @@ public interface IDialogDbContext
         IEnumerable<TEntity> entities,
         CancellationToken cancellationToken)
         where TEntity : class, IIdentifiableEntity;
-    bool TrySetOriginalETag<TEntity>(TEntity entity, Guid? etag) where TEntity : class, IVersionableEntity;
+    bool TrySetOriginalRevision<TEntity>(TEntity entity, Guid? revision) where TEntity : class, IVersionableEntity;
 }

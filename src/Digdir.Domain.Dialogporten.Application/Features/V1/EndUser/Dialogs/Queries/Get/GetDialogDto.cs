@@ -2,7 +2,8 @@
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements;
 using Digdir.Domain.Dialogporten.Domain.Http;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Queries.Get;
@@ -10,10 +11,13 @@ namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Que
 public sealed class GetDialogDto
 {
     public Guid Id { get; set; }
+    public Guid Revision { get; set; }
     public string Org { get; set; } = null!;
     public string ServiceResource { get; set; } = null!;
     public string Party { get; set; } = null!;
+    public int? Progress { get; set; }
     public string? ExtendedStatus { get; set; }
+    public string? ExternalReference { get; set; }
     public DateTimeOffset? VisibleFrom { get; set; }
     public DateTimeOffset? DueAt { get; set; }
     public DateTimeOffset? ExpiresAt { get; set; }
@@ -23,14 +27,18 @@ public sealed class GetDialogDto
 
     public DialogStatus.Values Status { get; set; }
 
-    public List<LocalizationDto>? Body { get; set; }
-    public List<LocalizationDto> Title { get; set; } = new();
-    public List<LocalizationDto>? SenderName { get; set; }
+    public List<GetDialogContentDto> Content { get; set; } = new();
 
     public List<GetDialogDialogElementDto> Elements { get; set; } = new();
     public List<GetDialogDialogGuiActionDto> GuiActions { get; set; } = new();
     public List<GetDialogDialogApiActionDto> ApiActions { get; set; } = new();
     public List<GetDialogDialogActivityDto> Activities { get; set; } = new();
+}
+
+public sealed class GetDialogContentDto
+{
+    public DialogContentType.Values Type { get; set; }
+    public List<LocalizationDto> Value { get; set; } = new();
 }
 
 public sealed class GetDialogDialogActivityDto
@@ -53,6 +61,7 @@ public sealed class GetDialogDialogApiActionDto
     public Guid Id { get; set; }
     public string Action { get; set; } = null!;
     public string? AuthorizationAttribute { get; set; }
+    public bool IsAuthorized { get; set; }
 
     public Guid? DialogElementId { get; set; }
 
@@ -78,6 +87,7 @@ public sealed class GetDialogDialogGuiActionDto
     public string Action { get; set; } = null!;
     public Uri Url { get; set; } = null!;
     public string? AuthorizationAttribute { get; set; }
+    public bool IsAuthorized { get; set; }
     public bool IsBackChannel { get; set; }
     public bool IsDeleteAction { get; set; }
 
@@ -90,7 +100,9 @@ public sealed class GetDialogDialogElementDto
 {
     public Guid Id { get; set; }
     public Uri? Type { get; set; }
+    public string? ExternalReference { get; set; }
     public string? AuthorizationAttribute { get; set; }
+    public bool IsAuthorized { get; set; }
 
     public Guid? RelatedDialogElementId { get; set; }
 

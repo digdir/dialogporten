@@ -2,7 +2,8 @@
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements;
 using Digdir.Domain.Dialogporten.Domain.Http;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Create;
@@ -12,22 +13,28 @@ public class CreateDialogDto
     public Guid? Id { get; set; }
     public string ServiceResource { get; set; } = null!;
     public string Party { get; set; } = null!;
+    public int? Progress { get; set; }
     public string? ExtendedStatus { get; set; }
+    public string? ExternalReference { get; set; }
     public DateTimeOffset? VisibleFrom { get; set; }
     public DateTimeOffset? DueAt { get; set; }
     public DateTimeOffset? ExpiresAt { get; set; }
 
     public DialogStatus.Values Status { get; set; }
+    public List<CreateDialogContentDto> Content { get; set; } = new();
 
-    public List<LocalizationDto> Body { get; set; } = new();
-    public List<LocalizationDto> Title { get; set; } = new();
-    public List<LocalizationDto> SenderName { get; set; } = new();
     public List<CreateDialogSearchTagDto> SearchTags { get; set; } = new();
 
     public List<CreateDialogDialogElementDto> Elements { get; set; } = new();
     public List<CreateDialogDialogGuiActionDto> GuiActions { get; set; } = new();
     public List<CreateDialogDialogApiActionDto> ApiActions { get; set; } = new();
     public List<CreateDialogDialogActivityDto> Activities { get; set; } = new();
+}
+
+public sealed class CreateDialogContentDto
+{
+    public DialogContentType.Values Type { get; set; }
+    public List<LocalizationDto> Value { get; set; } = new();
 }
 
 public sealed class CreateDialogSearchTagDto
@@ -89,6 +96,7 @@ public sealed class CreateDialogDialogElementDto
 {
     public Guid? Id { get; set; }
     public Uri? Type { get; set; }
+    public string? ExternalReference { get; set; }
     public string? AuthorizationAttribute { get; set; }
 
     public Guid? RelatedDialogElementId { get; set; }

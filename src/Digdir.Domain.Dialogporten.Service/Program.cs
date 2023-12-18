@@ -29,6 +29,7 @@ try
 catch (Exception ex) when (ex is not OperationCanceledException)
 {
     Log.Fatal(ex, "Application terminated unexpectedly");
+    throw;
 }
 finally
 {
@@ -85,9 +86,11 @@ static void BuildAndRun(string[] args)
         })
         .AddApplication(builder.Configuration, builder.Environment)
         .AddInfrastructure(builder.Configuration, builder.Environment)
-        .AddTransient<IUser, ServiceUser>();
+        .AddTransient<IUser, ServiceUser>()
+        .AddHealthChecks();
 
     var app = builder.Build();
     app.UseHttpsRedirection();
+    app.MapHealthChecks("/healthz");
     app.Run();
 }

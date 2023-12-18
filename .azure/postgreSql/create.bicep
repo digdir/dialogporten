@@ -1,8 +1,10 @@
 param namePrefix string
 param location string
 param keyVaultName string
-param srcKeyVault object
 param srcSecretName string
+
+@secure()
+param srcKeyVault object
 
 @secure()
 param administratorLoginPassword string
@@ -84,4 +86,3 @@ module psqlConnectionString '../keyvault/upsertSecret.bicep' = {
 
 output adoConnectionStringSecretUri string = adoConnectionString.outputs.secretUri
 output psqlConnectionStringSecretUri string = psqlConnectionString.outputs.secretUri
-output serverName string = postgres.name

@@ -3,7 +3,7 @@
 ## Getting started with local development
 
 ### Prerequisites
-- [.NET 7 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/7.0)
+- [.NET 8 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
 - [Docker](https://www.docker.com/products/docker-desktop/) (Docker Desktop version 4.22 or later or Docker Compose version 2.20 or later)
 
 
@@ -11,8 +11,10 @@ You can run the entire project locally using docker compose.
 ```powershell
 docker compose up
 ```
+The APIs SwaggerUI should now be available at [localhost:7124/swagger](https://localhost:7214/swagger/index.html)
 
-If you need debug the WebApi project in an IDE, you can alternatively run docker compose without the WebAPI.  
+### Running the WebApi in an IDE
+If you need do debug the WebApi project in an IDE, you can alternatively run docker compose without the WebAPI.  
 First create a dotnet user secret for the DB connection string.
 
 ```powerhell
@@ -21,15 +23,15 @@ dotnet user-secrets set -p .\src\Digdir.Domain.Dialogporten.WebApi\ "Infrastruct
 
 Then run docker compose without the WebAPI project.
 ```powershell
-docker compose -f docker-compose-no-webapi.yaml up 
+docker compose -f docker-compose-no-webapi.yml up 
 ```
 
 
 ## DB development
-This project uses Entity Framework core to manage DB migrations. DB development can either be done through Visual Studios Package Manager Console (PMC), or through the CLI. 
+This project uses Entity Framework core to manage DB migrations. DB development can ether be done through Visual Studios Package Manager Console (PMC), or through the CLI. 
 
 ### DB development through PMC
-Set Digdir.Domain.Dialogporten.Infrastructure as startup project in Visual Studio's solution explorer, and as default project in PMC. You are now ready to use [EF core tools through PMC](https://learn.microsoft.com/en-us/ef/core/cli/powershell). Run the following command for more information:
+Set Digdir.Domain.Dialogporten.Infrastructure as startup project in Visual Studios solution explorer, and as default project in PMC. You are now ready to use [EF core tools through PMC](https://learn.microsoft.com/en-us/ef/core/cli/powershell). Run the following command for more information:
 ```powershell
 Get-Help about_EntityFrameworkCore
 ```
@@ -50,14 +52,14 @@ Remember to target `Digdir.Domain.Dialogporten.Infrastructure` project when runn
 dotnet ef migrations add -p .\src\Digdir.Domain.Dialogporten.Infrastructure\ TestMigration
 ```
 
-or change your directory to the infrastructure project and then run the command.
+or change your directory to the infrastructure project, and then run the command.
 ```powershell
 cd .\src\Digdir.Domain.Dialogporten.Infrastructure\
 dotnet ef migrations add TestMigration
 ```
 ## Testing
 
-Besides ordinary unit- and integration tests, there are also test suites for functional end-to-end testing implemented with [K6](https://k6.io/).
+Besides ordinary unit- and integration tests, there are test suites for both functional end-to-end testing implemented with [K6](https://k6.io/).
 
 See `tests/k6/README.md` for more information.
 
@@ -74,4 +76,4 @@ We are able to toggle some external resources in local development. This is done
 	"DisableAuth": true
 }
 ```
-Toggle between these flags will enable/disable the external resources. The `DisableAuth` flag, for example, will disable authentication in the WebAPI project. This is useful when debugging the WebAPI project in an IDE. These settings will only be respected in the `Development` environment.
+Toggling these flags will enable/disable the external resources. The `DisableAuth` flag, for example, will disable authentication in the WebAPI project. This is useful when debugging the WebAPI project in an IDE. These settings will only be respected in the `Development` environment.

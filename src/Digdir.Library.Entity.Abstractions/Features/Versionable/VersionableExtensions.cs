@@ -11,5 +11,5 @@ public static class VersionableExtensions
     /// <param name="concurrentEntity">The <see cref="IVersionableEntity"/> to update.</param>
     /// <param name="eTag">The entity tag unique to each version of the entity.</param>
     public static void NewVersion(this IVersionableEntity concurrentEntity, Guid? eTag = null) =>
-        concurrentEntity.ETag = eTag ?? Guid.NewGuid();
+        concurrentEntity.Revision = eTag ?? Guid.NewGuid();
 }

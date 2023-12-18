@@ -2,29 +2,37 @@
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements;
 using Digdir.Domain.Dialogporten.Domain.Http;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Update;
 
 public sealed class UpdateDialogDto
 {
+    public int? Progress { get; set; }
     public string? ExtendedStatus { get; set; }
+    public string? ExternalReference { get; set; }
     public DateTimeOffset? VisibleFrom { get; set; }
     public DateTimeOffset? DueAt { get; set; }
     public DateTimeOffset? ExpiresAt { get; set; }
 
     public DialogStatus.Values Status { get; set; }
 
-    public List<LocalizationDto> Body { get; set; } = new();
-    public List<LocalizationDto> Title { get; set; } = new();
-    public List<LocalizationDto> SenderName { get; set; } = new();
+    public List<UpdateDialogContentDto> Content { get; set; } = new();
+
     public List<UpdateDialogSearchTagDto> SearchTags { get; set; } = new();
 
     public List<UpdateDialogDialogElementDto> Elements { get; set; } = new();
     public List<UpdateDialogDialogGuiActionDto> GuiActions { get; set; } = new();
     public List<UpdateDialogDialogApiActionDto> ApiActions { get; set; } = new();
     public List<UpdateDialogDialogActivityDto> Activities { get; set; } = new();
+}
+
+public sealed class UpdateDialogContentDto
+{
+    public DialogContentType.Values Type { get; set; }
+    public List<LocalizationDto> Value { get; set; } = new();
 }
 
 public sealed class UpdateDialogSearchTagDto
@@ -89,6 +97,7 @@ public class UpdateDialogDialogElementDto
 {
     public Guid? Id { get; set; }
     public Uri? Type { get; set; }
+    public string? ExternalReference { get; set; }
     public string? AuthorizationAttribute { get; set; }
 
     public Guid? RelatedDialogElementId { get; set; }

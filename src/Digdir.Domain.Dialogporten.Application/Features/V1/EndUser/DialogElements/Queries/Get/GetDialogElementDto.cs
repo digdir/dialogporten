@@ -1,5 +1,5 @@
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogElements.Queries.Get;
 
@@ -7,7 +7,9 @@ public sealed class GetDialogElementDto
 {
     public Guid Id { get; set; }
     public Uri? Type { get; set; }
+    public string? ExternalReference { get; set; }
     public string? AuthorizationAttribute { get; set; }
+    public bool IsAuthorized { get; set; }
 
     public Guid? RelatedDialogElementId { get; set; }
 

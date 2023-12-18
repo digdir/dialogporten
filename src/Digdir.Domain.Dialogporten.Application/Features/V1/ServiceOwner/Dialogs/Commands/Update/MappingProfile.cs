@@ -4,7 +4,8 @@ using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Qu
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Update;
 
@@ -12,7 +13,9 @@ internal sealed class MappingProfile : Profile
 {
     public MappingProfile()
     {
-        // In
+        // ===========================================
+        // ================== In =====================
+        // ===========================================
         CreateMap<UpdateDialogDto, DialogEntity>()
             .IgnoreComplexDestinationProperties()
             .ForMember(dest => dest.Status, opt => opt.Ignore())
@@ -47,13 +50,20 @@ internal sealed class MappingProfile : Profile
             .ForMember(dest => dest.ConsumerType, opt => opt.Ignore())
             .ForMember(dest => dest.ConsumerTypeId, opt => opt.MapFrom(src => src.ConsumerType));
 
+        CreateMap<UpdateDialogContentDto, DialogContent>()
+            .IgnoreComplexDestinationProperties()
+            .ForMember(dest => dest.Type, opt => opt.Ignore())
+            .ForMember(dest => dest.TypeId, opt => opt.MapFrom(src => src.Type));
+
         // Since this is append only, we don't need to merge with existing
         // activity records and thus can map complex properties
         CreateMap<UpdateDialogDialogActivityDto, DialogActivity>()
             .ForMember(dest => dest.Type, opt => opt.Ignore())
             .ForMember(dest => dest.TypeId, opt => opt.MapFrom(src => src.Type));
 
-        // To support json patch
+        // ===========================================
+        // ================== Patch ==================
+        // ===========================================
         CreateMap<GetDialogDto, UpdateDialogDto>()
             // Remove all existing activities, since this list is append only and
             // existing activities should not be considered in the update request.
@@ -65,5 +75,6 @@ internal sealed class MappingProfile : Profile
         CreateMap<GetDialogDialogGuiActionDto, UpdateDialogDialogGuiActionDto>();
         CreateMap<GetDialogDialogElementDto, UpdateDialogDialogElementDto>();
         CreateMap<GetDialogDialogElementUrlDto, UpdateDialogDialogElementUrlDto>();
+        CreateMap<GetDialogContentDto, UpdateDialogContentDto>();
     }
 }

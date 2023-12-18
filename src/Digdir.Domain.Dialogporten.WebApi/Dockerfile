@@ -1,9 +1,9 @@
-﻿FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
+﻿FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
-FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
 COPY ["src/**/*.csproj", "./"]
@@ -13,15 +13,10 @@ RUN dotnet restore "src/Digdir.Domain.Dialogporten.WebApi/Digdir.Domain.Dialogpo
 COPY . .
 
 WORKDIR "/src/src/Digdir.Domain.Dialogporten.WebApi"
-RUN dotnet build "Digdir.Domain.Dialogporten.WebApi.csproj" -c Release -o /app/build
 RUN dotnet publish "Digdir.Domain.Dialogporten.WebApi.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
-
-RUN adduser appuser && chown -R appuser /app
-
-USER appuser
-
 WORKDIR /app
+USER $APP_UID
 COPY --from=build /app/publish .
 ENTRYPOINT ["dotnet", "Digdir.Domain.Dialogporten.WebApi.dll"]

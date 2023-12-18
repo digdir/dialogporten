@@ -1,11 +1,15 @@
 targetScope = 'subscription'
-
+@minLength(3)
 param environment string
 param location string
 param keyVault object
-var namePrefix = 'dp${environment}'
+param gitSha string
+
 @secure()
 param secrets object
+
+var namePrefix = 'dp-be-${environment}'
+var baseImageUrl = 'ghcr.io/digdir/dialogporten-'
 
 // Create resource groups
 resource resourceGroup 'Microsoft.Resources/resourceGroups@2022-09-01' = {
@@ -13,13 +17,13 @@ resource resourceGroup 'Microsoft.Resources/resourceGroups@2022-09-01' = {
 	location: location
 }
 
-// Create resources without dependencies to other resources
-module website 'website/create.bicep' = {
+module apiManagement 'apim/create.bicep' = {
     scope: resourceGroup
-    name: 'website'
+    name: 'apiManagement'
     params: {
-        namePrefix: namePrefix
+        publisherEmail: secrets.apiManagementDigDirEmail
         location: location
+        namePrefix: namePrefix
     }
 }
 
@@ -29,7 +33,6 @@ module keyVaultModule 'keyvault/create.bicep' = {
 	params: {
 		namePrefix: namePrefix
 		location: location
-		adminObjectIds: keyVault.adminObjectIds
 	}
 }
 
@@ -51,13 +54,25 @@ module appInsights 'applicationInsights/create.bicep' = {
     }
 }
 
+// #######################################
 // Create references to existing resources
+// #######################################
+
 resource srcKeyVaultResource 'Microsoft.KeyVault/vaults@2022-11-01' existing = {
-	name: keyVault.source.name
-    scope: az.resourceGroup(keyVault.source.subscriptionId, keyVault.source.resourceGroupName)
+	name: secrets.sourceKeyVaultName
+    scope: az.resourceGroup(secrets.sourceKeyVaultSubscriptionId, secrets.sourceKeyVaultResourceGroup)
 }
 
+// #####################################################
 // Create resources with dependencies to other resources
+// #####################################################
+
+var srcKeyVault = {
+    name: secrets.sourceKeyVaultName
+    subscriptionId: secrets.sourceKeyVaultSubscriptionId
+    resourceGroupName: secrets.sourceKeyVaultResourceGroup
+}
+
 module postgresql 'postgreSql/create.bicep' = {
     scope: resourceGroup
     name: 'postgresql'
@@ -65,35 +80,99 @@ module postgresql 'postgreSql/create.bicep' = {
         namePrefix: namePrefix
         location: location
 		keyVaultName: keyVaultModule.outputs.name
-        srcKeyVault: keyVault.source
+        srcKeyVault: srcKeyVault
         srcSecretName: 'dialogportenPgAdminPassword${environment}'
 		administratorLoginPassword: contains(keyVault.source.keys, 'dialogportenPgAdminPassword${environment}') ? srcKeyVaultResource.getSecret('dialogportenPgAdminPassword${environment}') : secrets.dialogportenPgAdminPassword
     }
 }
 
-module copySecret 'keyvault/copySecrets.bicep' = {
+module copySecrets 'keyvault/copySecrets.bicep' = {
 	scope: resourceGroup
 	name: 'copySecrets'
 	params: {
 		srcKeyVaultKeys: keyVault.source.keys
-		srcKeyVaultName: keyVault.source.name
-		srcKeyVaultRGNName: keyVault.source.resourceGroupName
-		srcKeyVaultSubId: keyVault.source.subscriptionId
+		srcKeyVaultName: secrets.sourceKeyVaultName
+		srcKeyVaultRGNName: secrets.sourceKeyVaultResourceGroup
+		srcKeyVaultSubId: secrets.sourceKeyVaultSubscriptionId
 		destKeyVaultName: keyVaultModule.outputs.name
 		secretPrefix: 'dialogporten--${environment}--'
 	}
 }
 
-module appsettings 'website/upsertAppsettings.bicep' = {
-	scope: resourceGroup
-	name: 'appsettings'
-	params: {
-		websiteName: website.outputs.name
-		settings: {
-			APPLICATIONINSIGHTS_CONNECTION_STRING: appInsights.outputs.connectionString
-			AZURE_APPCONFIG_URI: appConfiguration.outputs.endpoint
-		}
-	}
+var containerAppEnvVars = [
+    {
+        name: 'ASPNETCORE_ENVIRONMENT'
+        value: environment
+    }
+    {
+        name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
+        value: appInsights.outputs.connectionString
+    }
+    {
+        name: 'AZURE_APPCONFIG_URI'
+        value: appConfiguration.outputs.endpoint
+    }
+    {
+        name: 'ASPNETCORE_URLS'
+        value: 'http://+:8080'
+    }
+    {
+        name: 'GIT_SHA'
+        value: gitSha
+    }
+]
+
+module containerAppsExternal 'containerApp/createExternal.bicep' = {
+    scope: resourceGroup
+    name: 'containerAppsExternal'
+    params: {
+        baseImageUrl: baseImageUrl
+        namePrefix: namePrefix
+        location: location
+        gitSha: gitSha
+        envVariables: containerAppEnvVars
+        migrationVerifierPrincipalAppId: srcKeyVaultResource.getSecret('MigrationVerificationInitContainerPrincipalAppId')
+        migrationVerifierPrincipalPassword: srcKeyVaultResource.getSecret('MigrationVerificationInitContainerPrincipalPassword')
+        apiManagementIp: apiManagement.outputs.apiManagementIp
+        appInsightsWorkspaceName: appInsights.outputs.appInsightsWorkspaceName
+        adoConnectionStringSecretUri: postgresql.outputs.adoConnectionStringSecretUri
+    }
+}
+
+module apiBackends 'apim/addBackends.bicep' = {
+    scope: resourceGroup
+    name: 'apiBackends'
+    params: {
+        apiManagementName: apiManagement.outputs.apiManagementName
+        containerAppEnvName: containerAppsExternal.outputs.containerAppEnvName
+        webApiEuName: containerAppsExternal.outputs.webApiEuName
+        webApiSoName: containerAppsExternal.outputs.webApiSoName
+    }
+}
+// module containerAppsInternal 'containerApp/createInternal.bicep' = {
+//     scope: resourceGroup
+//     name: 'containerAppsInternal'
+//     params: {
+//         baseImageUrl: baseImageUrl
+//         namePrefix: namePrefix
+//         location: location
+//         gitSha: gitSha
+//         envVariables: containerAppEnvVars
+//         environmentId: containerAppEnvs.outputs.internalEnvId
+//     }
+// }
+
+var containerAppsPrincipals = concat(
+    containerAppsExternal.outputs.identityPrincipalIds)
+    // containerAppsInternal.outputs.identityPrincipalIds
+
+module appConfigReaderAccessPolicy 'appConfiguration/addReaderRoles.bicep' = {
+    scope: resourceGroup
+    name: 'appConfigReaderAccessPolicy'
+    params: {
+        appConfigurationName: appConfiguration.outputs.name
+        principalIds: containerAppsPrincipals
+    }
 }
 
 module appConfigConfigurations 'appConfiguration/upsertKeyValue.bicep' = {
@@ -112,21 +191,9 @@ module keyVaultReaderAccessPolicy 'keyvault/addReaderRoles.bicep' = {
     name: 'keyVaultReaderAccessPolicy'
     params: {
         keyvaultName: keyVaultModule.outputs.name
-        // TODO: Har lagt til dialogporten-subscription-deploy-principal ettersom den m� hente ut db connectionstring fra keyvault for migrasjon
-        principalIds: [ website.outputs.identityPrincipalId, 'ce4fe21d-6e93-41af-8e2d-7ae6f7abef74' ]
+        principalIds: containerAppsPrincipals
     }
 }
 
-module appConfigReaderAccessPolicy 'appConfiguration/addReaderRoles.bicep' = {
-    scope: resourceGroup
-    name: 'appConfigReaderAccessPolicy'
-    params: {
-        appConfigurationName: appConfiguration.outputs.name
-        principalIds: [ website.outputs.identityPrincipalId ]
-    }
-}
-
+output migrationJobName string = containerAppsExternal.outputs.migrationJobName
 output resourceGroupName string = resourceGroup.name
-output postgreServerName string = postgresql.outputs.serverName
-output psqlConnectionStringSecretUri string = postgresql.outputs.psqlConnectionStringSecretUri
-output websiteName string = website.outputs.name

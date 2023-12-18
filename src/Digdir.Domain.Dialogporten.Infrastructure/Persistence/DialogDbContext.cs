@@ -3,7 +3,8 @@ using Digdir.Domain.Dialogporten.Domain.Common;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogElements;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements;
 using Digdir.Domain.Dialogporten.Domain.Outboxes;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence.ValueConverters;
 using Digdir.Library.Entity.Abstractions.Features.Identifiable;
@@ -29,22 +30,24 @@ internal sealed class DialogDbContext : DbContext, IDialogDbContext
     public DbSet<DialogElementUrl> DialogElementUrls => Set<DialogElementUrl>();
     public DbSet<DialogGuiActionPriority> DialogGuiActionTypes => Set<DialogGuiActionPriority>();
     public DbSet<DialogActivityType> DialogActivityTypes => Set<DialogActivityType>();
+    public DbSet<DialogContentType> DialogContentTypes => Set<DialogContentType>();
+    public DbSet<DialogContent> DialogContent => Set<DialogContent>();
 
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
     public DbSet<OutboxMessageConsumer> OutboxMessageConsumers => Set<OutboxMessageConsumer>();
 
-    public bool TrySetOriginalETag<TEntity>(
-        TEntity entity,
-        Guid? etag)
+    public bool TrySetOriginalRevision<TEntity>(
+        TEntity? entity,
+        Guid? revision)
         where TEntity : class, IVersionableEntity
     {
-        if (entity is null || !etag.HasValue) // TODO: Ask B&M
+        if (entity is null || !revision.HasValue)
         {
             return false;
         }
 
-        var prop = Entry(entity).Property(x => x.ETag);
-        prop.OriginalValue = etag.Value;
+        var prop = Entry(entity).Property(x => x.Revision);
+        prop.OriginalValue = revision.Value;
         prop.IsModified = false;
         return true;
     }
@@ -70,15 +73,13 @@ internal sealed class DialogDbContext : DbContext, IDialogDbContext
             .Where(x => x != default)
             .ToList();
 
-        if (ids.Count == 0)
-        {
-            return new();
-        }
-
-        return await Set<TEntity>()
-            .Select(x => x.Id)
-            .Where(x => ids.Contains(x))
-            .ToListAsync(cancellationToken);
+        return ids.Count == 0
+            ? new()
+            : await Set<TEntity>()
+                .IgnoreQueryFilters()
+                .Select(x => x.Id)
+                .Where(x => ids.Contains(x))
+                .ToListAsync(cancellationToken);
     }
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)

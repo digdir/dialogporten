@@ -14,7 +14,7 @@ namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialog
 public sealed class DeleteDialogCommand : IRequest<DeleteDialogResult>
 {
     public Guid Id { get; set; }
-    public Guid? ETag { get; set; }
+    public Guid? Revision { get; set; }
 }
 
 [GenerateOneOf]
@@ -41,6 +41,7 @@ internal sealed class DeleteDialogCommandHandler : IRequestHandler<DeleteDialogC
         var resourceIds = await _userService.GetCurrentUserResourceIds(cancellationToken);
 
         var dialog = await _db.Dialogs
+            // Load the elements so that we notify them of their deletion. (This won't work due to https://github.com/digdir/dialogporten/issues/288)
             .Include(x => x.Elements)
             .Where(x => resourceIds.Contains(x.ServiceResource))
             .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
@@ -50,7 +51,7 @@ internal sealed class DeleteDialogCommandHandler : IRequestHandler<DeleteDialogC
             return new EntityNotFound<DialogEntity>(request.Id);
         }
 
-        _db.TrySetOriginalETag(dialog, request.ETag);
+        _db.TrySetOriginalRevision(dialog, request.Revision);
         _db.Dialogs.SoftRemove(dialog);
         var saveResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
         return saveResult.Match<DeleteDialogResult>(
