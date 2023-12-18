@@ -22,7 +22,7 @@ internal static class AspNetCoreOpenApiDocumentGeneratorSettingsExtensions
             typeof(OrderSet<,>)
         })
         {
-            settings.TypeMappers.Add(new ObjectTypeMapper(ignoreType, new JsonSchema { Type = JsonObjectType.None }));
+            settings.SchemaSettings.TypeMappers.Add(new ObjectTypeMapper(ignoreType, new JsonSchema { Type = JsonObjectType.None }));
         }
 
         return settings;
@@ -31,7 +31,7 @@ internal static class AspNetCoreOpenApiDocumentGeneratorSettingsExtensions
     public static AspNetCoreOpenApiDocumentGeneratorSettings AddServiceOwnerSuffixToSchemas(
         this AspNetCoreOpenApiDocumentGeneratorSettings settings)
     {
-        settings.SchemaNameGenerator = new SuffixedSchemaNameGenerator();
+        settings.SchemaSettings.SchemaNameGenerator = new SuffixedSchemaNameGenerator();
         return settings;
     }
 }
