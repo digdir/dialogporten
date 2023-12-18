@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
+﻿using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

@@ -48,5 +48,5 @@ public interface IDialogDbContext
         IEnumerable<TEntity> entities,
         CancellationToken cancellationToken)
         where TEntity : class, IIdentifiableEntity;
-    bool TrySetOriginalETag<TEntity>(TEntity entity, Guid? etag) where TEntity : class, IVersionableEntity;
+    bool TrySetOriginalRevision<TEntity>(TEntity entity, Guid? revision) where TEntity : class, IVersionableEntity;
 }

@@ -33,7 +33,7 @@ public sealed class DeleteDialogEndpoint : Endpoint<DeleteDialogRequest>
 
     public override async Task HandleAsync(DeleteDialogRequest req, CancellationToken ct)
     {
-        var command = new DeleteDialogCommand { Id = req.DialogId, ETag = req.ETag };
+        var command = new DeleteDialogCommand { Id = req.DialogId, Revision = req.Revision };
         var result = await _sender.Send(command, ct);
         await result.Match(
             success => SendNoContentAsync(ct),
@@ -47,7 +47,7 @@ public sealed class DeleteDialogRequest
     public Guid DialogId { get; set; }
 
     [FromHeader(headerName: Constants.IfMatch, isRequired: false, removeFromSchema: true)]
-    public Guid? ETag { get; set; }
+    public Guid? Revision { get; set; }
 }
 
 public sealed class DeleteDialogEndpointSummary : Summary<DeleteDialogEndpoint>
@@ -61,12 +61,12 @@ public sealed class DeleteDialogEndpointSummary : Summary<DeleteDialogEndpoint>
                 Note that the dialog will still be available on the single details endpoint, but will have a deleted status. It will not appear on the list endpoint for either service owners nor end users.
                 If end users attempt to access the dialog via the details endpoint, they will get a 410 Gone response.
 
-                Optimistic concurrency control is implemented using the If-Match header. Supply the ETag value from the GetDialog endpoint to ensure that the dialog is not deleted by another request in the meantime.
+                Optimistic concurrency control is implemented using the If-Match header. Supply the Revision value from the GetDialog endpoint to ensure that the dialog is not deleted by another request in the meantime.
                 """;
         Responses[StatusCodes.Status204NoContent] = Constants.SwaggerSummary.Deleted.FormatInvariant("aggregate");
         Responses[StatusCodes.Status401Unauthorized] = Constants.SwaggerSummary.ServiceOwnerAuthenticationFailure.FormatInvariant(AuthorizationScope.ServiceProvider);
         Responses[StatusCodes.Status403Forbidden] = Constants.SwaggerSummary.AccessDeniedToDialog.FormatInvariant("delete");
         Responses[StatusCodes.Status404NotFound] = Constants.SwaggerSummary.DialogNotFound;
-        Responses[StatusCodes.Status412PreconditionFailed] = Constants.SwaggerSummary.EtagMismatch;
+        Responses[StatusCodes.Status412PreconditionFailed] = Constants.SwaggerSummary.RevisionMismatch;
     }
 }
