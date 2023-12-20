@@ -2,7 +2,7 @@ version: '3.9'
 
 services:
   dialogporten-postgres:
-    image: postgres:15.4
+    image: postgres:16.1
     restart: always
     command: postgres -c wal_level=logical
     environment:
