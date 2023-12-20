@@ -22,7 +22,7 @@ resource webApiEu 'Microsoft.App/containerApps@2023-05-01' existing = {
 var managementBaseUrl = 'https://management.azure.com'
 
 var webApiSoFqdn = 'https://${webApiSoName}.${containerAppEnv.properties.defaultDomain}'
-resource serviceownerBackend 'Microsoft.ApiManagement/service/backends@2021-08-01' = {
+resource serviceownerBackend 'Microsoft.ApiManagement/service/backends@2022-08-01' = {
   name: 'serviceownerBackend'
   parent: apim
   properties: {
@@ -35,7 +35,7 @@ resource serviceownerBackend 'Microsoft.ApiManagement/service/backends@2021-08-0
 }
 
 var webApiEuFqdn = 'https://${webApiEuName}.${containerAppEnv.properties.defaultDomain}'
-resource enduserBackend 'Microsoft.ApiManagement/service/backends@2021-08-01' = {
+resource enduserBackend 'Microsoft.ApiManagement/service/backends@2022-08-01' = {
   name: 'enduserBackend'
   parent: apim
   properties: {
