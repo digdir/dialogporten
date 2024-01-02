@@ -9,6 +9,7 @@ public abstract class AggregateNode
 {
     private static readonly Type _openGenericAggregateNodeType = typeof(AggregateNode<>);
     private readonly List<AggregateNode> _children = new();
+    private readonly List<AggregateNode> _parents = new();
     private readonly List<AggregateNodeProperty> _modifiedProperties;
 
     /// <summary>
@@ -29,9 +30,19 @@ public abstract class AggregateNode
     public IReadOnlyCollection<AggregateNode> Children => _children;
 
     /// <summary>
+    /// A collection of parents.
+    /// </summary>
+    public IReadOnlyCollection<AggregateNode> Parents => _parents;
+
+    /// <summary>
     /// The state of the <see cref="Entity"/> this node represents.
     /// </summary>
-    public AggregateNodeState State { get; }
+    public AggregateNodeState State { get; internal set; }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public bool IsDirectlyModified { get; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AggregateNode"/> class.
@@ -45,6 +56,10 @@ public abstract class AggregateNode
     }
 
     internal void AddChild(AggregateNode node) => _children.Add(node);
+    internal void AddParent(AggregateNode node) => _parents.Add(node);
+
+    internal bool IsLeafNode => _children.Count == 0;
+    internal bool IsRootNode => _parents.Count == 0;
 
     internal static AggregateNode Create(Type type, object entity, AggregateNodeState state,
         IEnumerable<AggregateNodeProperty> modifiedProperties)
@@ -92,7 +107,7 @@ public enum AggregateNodeState
     Added = 1,
 
     /// <summary>
-    /// All or some of the entities property values have been modified.
+    /// All or some of the entities property values, or part of its aggregate have been modified.
     /// </summary>
     Modified = 2,
 

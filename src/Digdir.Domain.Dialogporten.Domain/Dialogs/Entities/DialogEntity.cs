@@ -74,7 +74,7 @@ public class DialogEntity :
 
     public void OnUpdate(AggregateNode self, DateTimeOffset utcNow)
     {
-        var shouldProduceEvent = self.State is AggregateNodeState.Modified ||
+        var shouldProduceEvent = self.IsDirectlyModified ||
             self.Children
                 .Any(x => x is not AggregateNode<DialogElement>
                     and not AggregateNode<DialogActivity>
