@@ -37,7 +37,7 @@ jobs:
 
       - name: Upload azure bicep artifacts for IaC deployment
         if: ${{inputs.publishArtifacts}}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: azure-artifacts
           path: .azure
