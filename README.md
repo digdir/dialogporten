@@ -59,7 +59,7 @@ dotnet ef migrations add TestMigration
 ```
 ## Testing
 
-Besides ordinary unit and integration tests, there are test suites for both functional end-to-end testings implemented with [K6](https://k6.io/).
+Besides ordinary unit and integration tests, there are test suites for both functional and non-functional end-to-end tests implemented with [K6](https://k6.io/).
 
 See `tests/k6/README.md` for more information.
 
