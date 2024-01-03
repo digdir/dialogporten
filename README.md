@@ -6,7 +6,6 @@
 - [.NET 8 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
 - [Docker](https://www.docker.com/products/docker-desktop/) (Docker Desktop version 4.22 or later or Docker Compose version 2.20 or later)
 
-
 You can run the entire project locally using docker compose.
 ```powershell
 docker compose up
@@ -14,7 +13,7 @@ docker compose up
 The APIs SwaggerUI should now be available at [localhost:7124/swagger](https://localhost:7214/swagger/index.html)
 
 ### Running the WebApi in an IDE
-If you need to debug the WebApi project in an IDE, you can alternatively run docker compose without the WebAPI.  
+If you need to debug the WebApi project in an IDE, you can alternatively run docker compose without the WebAPI.<br>
 First create a dotnet user secret for the DB connection string.
 
 ```powerhell
@@ -26,12 +25,12 @@ Then run docker compose without the WebAPI project.
 docker compose -f docker-compose-no-webapi.yml up 
 ```
 
-
 ## DB development
 This project uses Entity Framework core to manage DB migrations. DB development can ether be done through Visual Studios Package Manager Console (PMC), or through the CLI. 
 
 ### DB development through PMC
-Set Digdir.Domain.Dialogporten.Infrastructure as startup project in Visual Studios solution explorer, and as default project in PMC. You are now ready to use [EF core tools through PMC](https://learn.microsoft.com/en-us/ef/core/cli/powershell). Run the following command for more information:
+Set Digdir.Domain.Dialogporten.Infrastructure as startup project in Visual Studios solution explorer, and as default project in PMC. You are now ready to use [EF core tools through PMC](https://learn.microsoft.com/en-us/ef/core/cli/powershell).<br>
+Run the following command for more information:
 ```powershell
 Get-Help about_EntityFrameworkCore
 ```
@@ -67,7 +66,8 @@ See `tests/k6/README.md` for more information.
 To generate test tokens, see https://github.com/Altinn/AltinnTestTools. There is a request in the Postman collection for this.
 
 ### Local development settings
-We are able to toggle some external resources in local development. This is done through the `appsettings.Development.json` file. The following settings are available:
+We are able to toggle some external resources in local development. This is done through the `appsettings.Development.json` file.<br>
+The following settings are available:
 ```json
 "LocalDevelopment": {
 	"UseLocalDevelopmentUser": true,
