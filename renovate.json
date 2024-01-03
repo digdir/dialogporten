@@ -4,5 +4,6 @@
     "config:base"
   ],
   "schedule": ["before 7am on Sunday", "before 7am on Wednesday"],
-  "updateNotScheduled": false
+  "updateNotScheduled": false,
+  "minimumReleaseAge": "7 days"
 }
