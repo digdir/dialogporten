@@ -1,15 +1,10 @@
 # Slack notifier
 This function app is designed to convert Azure log alert v2 to a Slack message formatted as an ASCII table. 
 
-When an Azure log alert triggers, it notifies every consumer of the configured Azure action group.
-One of the consumers is this Azure function app
-which receives an HTTP Post request with the [log alert v2 format](https://learn.microsoft.com/en-us/azure/azure-monitor/alerts/alerts-common-schema#sample-log-alert-when-the-monitoringservice--log-alerts-v2).
+When an Azure log alert triggers, it notifies every consumer of the configured Azure action group. One of the consumers is this Azure function app which receives an HTTP Post request with the [log alert v2 format](https://learn.microsoft.com/en-us/azure/azure-monitor/alerts/alerts-common-schema#sample-log-alert-when-the-monitoringservice--log-alerts-v2).
 See [AzureAlertDto.cs](./Features/AzureAlertToSlackForwarder/AzureAlertDto.cs) for the format this function app expects. 
 
-The log alert v2 format does not include the actual query data which triggered the alert.
-Therefore, the function app must fetch it by calling application insight.
-The data is then transformed to an ASCII table and pushed to the configured Slack webhook URL through the field `exceptionReport`.
-It will also include a link to the application insight log with the following predefined query in the field named `link`:
+The log alert v2 format does not include the actual query data which triggered the alert. Therefore, the function app must fetch it by calling application insight. The data is then transformed to an ASCII table and pushed to the configured Slack webhook URL through the field `exceptionReport`. It will also include a link to the application insight log with the following predefined query in the field named `link`:
 ```KQL
 exceptions
 | order by timestamp desc
@@ -36,9 +31,7 @@ HTTP POST [Slack_Webhook_Url]
 The configured URL doesn't have to be an actual Slack workflow webhook url. It could point to an online webhook tester like https://webhook.site or a homemade webhook tester on your local machine.
 
 ### Get a valid log alert v2 request
-This function app uses the links in the incoming alerts request to fetch data.
-Therefore, the requests are app instance and time specific.
-The provided example request is most likely to be invalid by the time this article is read.
+This function app uses the links in the incoming alerts request to fetch data. Therefore, the requests are app instance and time specific. The provided example request is most likely to be invalid by the time this article is read.<br>
 Do the following to get a valid request: 
 1. Go to https://webhook.site and copy your unique url
 2. Add the url as a webhook action of the azure action group 
