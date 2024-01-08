@@ -15,10 +15,17 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 var apiEndpointGuid = Guid.NewGuid();
+Guid dialogId = default;
 
-var dialogId = await Step1(apiEndpointGuid);
-await Step2(apiEndpointGuid);
-await Step3(dialogId);
+try
+{
+    dialogId = await CreateDialog(apiEndpointGuid);
+    await EditApiEndpoint(apiEndpointGuid);
+}
+finally
+{
+    await DeleteDialog(dialogId);
+}
 
 //using var dbContext = new DialogDbContext(new DbContextOptionsBuilder<DialogDbContext>()
 //    .UseNpgsql("Server=localhost;Port=5432;Database=Dialogporten;User ID=postgres;Password=postgres;")
@@ -45,7 +52,7 @@ await Step3(dialogId);
 
 //dbContext.Dialogs.Remove(dialog);
 
-static async Task<Guid> Step1(Guid apiEndpointId)
+static async Task<Guid> CreateDialog(Guid apiEndpointId)
 {
     using var dbContext = CreateDbContext();
 
@@ -78,7 +85,7 @@ static async Task<Guid> Step1(Guid apiEndpointId)
     return dialog.Id;
 }
 
-static async Task Step2(Guid apiEndpointId)
+static async Task EditApiEndpoint(Guid apiEndpointId)
 {
     using var dbContext = CreateDbContext();
 
@@ -92,7 +99,7 @@ static async Task Step2(Guid apiEndpointId)
     await dbContext.SaveChangesAsync();
 }
 
-static async Task Step3(Guid dialogId)
+static async Task DeleteDialog(Guid dialogId)
 {
     using var dbContext = CreateDbContext();
 

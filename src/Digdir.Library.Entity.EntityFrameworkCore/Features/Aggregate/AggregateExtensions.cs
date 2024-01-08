@@ -58,10 +58,18 @@ internal static class AggregateExtensions
         var entities = modelBuilder.Model
             .GetEntityTypes()
             .Where(x => x.BaseType is null)
-            .SelectMany(entityType => entityType
-                .FindAggregateChildren()
-                .Select(foreignKey => entityType
-                    .FindNavigation(foreignKey.PrincipalToDependent!.Name)!));
+            .SelectMany(entityType =>
+            {
+                var children = entityType
+                    .FindAggregateChildren()
+                    .Select(foreignKey => entityType
+                        .FindNavigation(foreignKey.PrincipalToDependent!.Name)!);
+                var parents = entityType
+                    .FindAggregateParents()
+                    .Select(foreignKey => entityType
+                        .FindNavigation(foreignKey.DependentToPrincipal!.Name)!);
+                return children.Concat(parents);
+            });
 
         foreach (var entityType in entities)
         {
@@ -153,7 +161,7 @@ internal static class AggregateExtensions
     {
         if (!nodeByEntry.TryGetValue(childEntry, out var childNode))
         {
-            throw new UnreachableException();
+            throw new InvalidOperationException("Node must be added before calling this method.");
         }
 
         foreach (var parentForeignKey in childEntry.Metadata.FindAggregateParents())
@@ -194,19 +202,16 @@ internal static class AggregateExtensions
     {
         if (!nodeByEntry.TryGetValue(parentEntry, out var parentNode))
         {
-            throw new UnreachableException();
+            throw new InvalidOperationException("Node must be added before calling this method.");
         }
 
         foreach (var childForeignKey in parentEntry.Metadata.FindAggregateChildren())
         {
             var childNav = parentEntry.Navigation(childForeignKey.PrincipalToDependent!.Name);
-            if (!childNav.IsLoaded)
-            {
-                // TODO: Log warning? 
-            }
+            await childNav.LoadAsync(cancellationToken);
 
-            // TODO: Fungerer dette for slettede elementer? Burde det vøre OriginalValue i stede for CurrentValue?
-            var originalValues = parentEntry.OriginalValues[childForeignKey.PrincipalToDependent!.Name];
+            // TODO: Fungerer dette for slettede elementer? Burde det være OriginalValue i stede for CurrentValue?
+            //var originalValues = parentEntry.OriginalValues[childForeignKey.PrincipalToDependent!.Name];
             var currentValues = childForeignKey.PrincipalToDependent!.IsCollection
                 ? childNav.CurrentValue as IEnumerable<object> ?? Enumerable.Empty<object>()
                 : Enumerable.Empty<object>()

@@ -75,7 +75,7 @@ public static class EntityLibraryEfCoreExtensions
     {
         return modelBuilder
             .EnableSoftDeletableQueryFilter()
-            //.AddAggregateEntities()
+            .AddAggregateEntities()
             .AddIdentifiableEntities()
             .AddImmutableEntities()
             .AddVersionableEntities()
