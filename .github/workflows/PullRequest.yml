@@ -1,0 +1,16 @@
+name: Workflow
+
+on:
+    pull_request:
+
+jobs:
+    deployTest:
+        uses: ./.github/workflows/actions/dummy.yaml
+        secrets: inherit
+#
+#  deployTest:
+#    needs: [ publish ]
+#    uses: ./.github/workflows/Deploy.yml
+#    secrets: inherit
+#    with:
+#      environment: test
