@@ -33,7 +33,7 @@ jobs:
       contents: read
     steps:
       - name: Download bicep artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: azure-artifacts
           path: .azure

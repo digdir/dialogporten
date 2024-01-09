@@ -89,6 +89,7 @@ static void BuildAndRun(string[] args)
         .AddInfrastructure(builder.Configuration, builder.Environment)
 
         // Asp infrastructure
+        .AddAutoMapper(Assembly.GetExecutingAssembly())
         .AddScoped<IUser, ApplicationUser>()
         .AddHttpContextAccessor()
         .AddValidatorsFromAssembly(thisAssembly, ServiceLifetime.Transient, includeInternalTypes: true)

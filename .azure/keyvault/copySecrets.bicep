@@ -20,7 +20,7 @@ var environmentKeys = [for key in srcKeyVaultKeys: {
     fullName: key
 }]
 
-resource srcKeyVaultResource 'Microsoft.KeyVault/vaults@2022-11-01' existing = {
+resource srcKeyVaultResource 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
 	name: srcKeyVaultName
     scope: resourceGroup(srcKeyVaultSubId, srcKeyVaultRGNName)
 }

@@ -8,5 +8,5 @@ public interface IVersionableEntity
     /// <summary>
     /// The entity tag unique to each version of the entity.
     /// </summary>
-    public Guid ETag { get; set; }
+    public Guid Revision { get; set; }
 }

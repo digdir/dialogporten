@@ -64,7 +64,7 @@ public sealed class DeleteDialogElementEndpoint : Endpoint<DeleteDialogElementRe
         updateDialogDto.Elements.Remove(dialogElement);
 
         var updateDialogCommand = new UpdateDialogCommand
-        { Id = req.DialogId, ETag = req.ETag, Dto = updateDialogDto };
+        { Id = req.DialogId, Revision = req.Revision, Dto = updateDialogDto };
 
         var result = await _sender.Send(updateDialogCommand, ct);
         await result.Match(
@@ -82,7 +82,7 @@ public sealed class DeleteDialogElementRequest
     public Guid ElementId { get; set; }
 
     [FromHeader(headerName: Constants.IfMatch, isRequired: false, removeFromSchema: true)]
-    public Guid? ETag { get; set; }
+    public Guid? Revision { get; set; }
 }
 
 public sealed class DeleteDialogElementEndpointSummary : Summary<DeleteDialogElementEndpoint>
@@ -99,7 +99,7 @@ public sealed class DeleteDialogElementEndpointSummary : Summary<DeleteDialogEle
         Responses[StatusCodes.Status401Unauthorized] = Constants.SwaggerSummary.ServiceOwnerAuthenticationFailure.FormatInvariant(AuthorizationScope.ServiceProvider);
         Responses[StatusCodes.Status403Forbidden] = Constants.SwaggerSummary.AccessDeniedToDialogForChildEntity.FormatInvariant("delete");
         Responses[StatusCodes.Status404NotFound] = Constants.SwaggerSummary.DialogElementNotFound;
-        Responses[StatusCodes.Status412PreconditionFailed] = Constants.SwaggerSummary.EtagMismatch;
+        Responses[StatusCodes.Status412PreconditionFailed] = Constants.SwaggerSummary.RevisionMismatch;
     }
 }
 

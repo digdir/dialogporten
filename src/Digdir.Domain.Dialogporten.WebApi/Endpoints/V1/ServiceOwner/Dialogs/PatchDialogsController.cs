@@ -40,14 +40,14 @@ public sealed class PatchDialogsController : ControllerBase
     /// Patches a dialog aggregate with a RFC6902 JSON Patch document. The patch document must be a JSON array of RFC6902 operations.
     /// See [https://tools.ietf.org/html/rfc6902](https://tools.ietf.org/html/rfc6902) for more information.
     ///
-    /// Optimistic concurrency control is implemented using the If-Match header. Supply the ETag value from the GetDialog endpoint to ensure that the dialog is not modified/deleted by another request in the meantime.
+    /// Optimistic concurrency control is implemented using the If-Match header. Supply the Revision value from the GetDialog endpoint to ensure that the dialog is not modified/deleted by another request in the meantime.
     /// </remarks>
     /// <response code="204">Patch was successfully applied.</response>
     /// <response code="400">Validation error occured. See problem details for a list of errors.</response>
     /// <response code="401">Missing or invalid authentication token. Requires a Maskinporten-token with the scope \"digdir:dialogporten.serviceprovider\"</response>
     /// <response code="403">Unauthorized to update a dialog for the given serviceResource (not owned by authenticated organization or has additional scope requirements defined in policy)</response>
     /// <response code="404">The given dialog ID was not found or is deleted</response>
-    /// <response code="412">The supplied ETag does not match the current ETag of the dialog</response>
+    /// <response code="412">The supplied Revision does not match the current Revision of the dialog</response>
     /// <response code="422">Domain error occured. See problem details for a list of errors.</response>
     [HttpPatch("{dialogId}")]
 
@@ -77,7 +77,7 @@ public sealed class PatchDialogsController : ControllerBase
             return BadRequest(ModelState);
         }
 
-        var command = new UpdateDialogCommand { Id = dialogId, ETag = etag, Dto = updateDialogDto };
+        var command = new UpdateDialogCommand { Id = dialogId, Revision = etag, Dto = updateDialogDto };
         var result = await _sender.Send(command, ct);
         return result.Match(
             success => (IActionResult)NoContent(),
