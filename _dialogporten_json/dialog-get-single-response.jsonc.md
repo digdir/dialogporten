@@ -9,12 +9,12 @@
     "id": "e0300961-85fb-4ef2-abff-681d77f9960e",
     "org": "digdir", // Identifikator for tjenestetilbyder
     "serviceResource": "urn:altinn:resource:super-simple-service", 
-    "dialogGroup": {
+    "process": {
         "id": "some-arbitrary-id",
         "order": 1,
-        "name": [ { "code": "nb_NO", "value": "Navn på dialoggruppe." } ]
+        "name": [ { "code": "nb_NO", "value": "Navn på prosess." } ]
     },
-    "party": "org/991825827",
+    "party": "urn:altinn:party-identifier:organization-no::991825827",
     "externalReference": "123456789",
     "status": "in-progress",
     "extendedStatus": "SKE-ABC",
@@ -26,15 +26,28 @@
         "readDateTime": "2022-12-01T10:00:00.000Z", 
         "dueDateTime": "2022-12-01T12:00:00.000Z"
     },
-    "content": {
-        "body": [ { "code": "nb_NO", 
-            "value": "Innhold med <em>begrenset</em> HTML-støtte. Dette innholdet vises når dialogen ekspanderes." } ],
-        "title": [ { "code": "nb_NO", "value": "En eksempel på en tittel" } ],
-
-        // Overstyrt tittel til bruk i søke/liste-visning. Kan potensielt være synlig uten tilgang til dialogen.
-        "searchTitle": [ { "code": "nb_NO", "value": "En eksempel på en tittel brukt i listevisning" } ],
-        "senderName": [ { "code": "nb_NO", "value": "Overstyrt avsendernavn (bruker default tjenesteeiers navn)" } ]            
-    },
+    "content": [
+        {
+            "type": "Title",
+            "value": [{ "code": "nb_NO", "value": "En eksempel på en tittel" } ]
+        },
+        {
+            "type": "Summary",
+            "value": [{ "code": "nb_NO", "value": "Kort tekst for oppsummering" } ]
+        },
+        {
+            "type": "AdditionalInfo",
+            "value": [{ "code": "nb_NO", "value": "Ytterligere informasjon med <em>begrenset</em> HTML-støtte.
+                Dette innholdet vises kun i detaljvisning av dialogen." } ]
+        },
+        {
+            "type": "SenderName",
+            "value": [{ "code": "nb_NO", "value": "Overstyrt avsendernavn (bruker default tjenesteeiers navn)" } ]
+        }
+    ],
+    // Et token med EdDSA-algoritme, signert av et sertifikat tilgjengelig på et .well-known-endepunkt
+    // Blir kun generert hvis det finnes dialogElementer med frontChannelEmbed eller actions som er isWriteAction/isDeleteAction
+    "dialogToken": "eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJsIjo0LCJjIjoidXJuOmFsdGlubjpwYXJ0eS1pZGVudGlmaWVyOnBlcnNvbi1ubzo6MTIwMTgyMTIzNDUiLCJwIjoidXJuOmFsdGlubjpwYXJ0eS1pZGVudGlmaWVyOm9yZ2FuaXphdGlvbi1ubzo6OTkxODI1ODI3IiwicyI6InVybjphbHRpbm46cGFydHktaWRlbnRpZmllcjpvcmdhbml6YXRpb24tbm86OjgyNTgyNzk5MSIsImkiOiJlMDMwMDk2MS04NWZiLTRlZjItYWJmZi02ODFkNzdmOTk2MGUiLCJhIjpbIm9wZW4iLCJhdHRhY2htZW50MTpvcGVuIiwiY29uZmlybSJdLCJleHAiOjE2NzI3NzI4MzQsImlzcyI6Imh0dHBzOi8vZGlhbG9ncG9ydGVuLm5vIiwibmJmIjoxNjcyNzcxOTM0LCJpYXQiOjE2NzI3NzE5MzR9.2k5Ml8OksIiDoRevoEEaLG6Y2vHyAV3ivSwx4ouk5raSys_L8ePkBPIp8wydNwG66rVYYx_SJDQqNn4Vx4LfAA",
     "dialogElements": [
         {
             "dialogElementId": "5b5446a7-9b65-4faf-8888-5a5802ce7de7",
@@ -53,6 +66,16 @@
                 }
             ]
         },
+        {
+            "authorizationAttribute": "urn:altinn:subresource:somesubresource",
+            "urls": [
+                {
+                    "consumerType": "gui",
+                    "frontChannelEmbed": true,
+                    "url": "https://example.com/api/dialogs/123456789/user-instructions"
+                }
+            ]
+        }, 
         {
             "dialogElementId": "cd6bf231-2347-4131-8ccc-513a6345ef0b",
             "dialogElementType": "form-type-1",
@@ -139,7 +162,7 @@
                 "isAuthorized": false,
                 "priority": "secondary",
                 "title": [ { "code": "nb_NO", "value": "Bekreft mottatt" } ],
-                "isBackChannel": true,
+                "isWriteAction": true,
                 "url": "https://example.com/some/deep/link/to/dialogs/123456789/confirmReceived"
             },
             { 

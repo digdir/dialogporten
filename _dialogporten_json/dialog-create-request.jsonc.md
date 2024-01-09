@@ -18,23 +18,23 @@
 
     // Organisasjonsnummer, fødselsnummer eller brukernavn (aka "avgiver" eller "aktør") - altså hvem sin dialogboks 
     // skal dialogen tilhøre. Brukernavn benyttes for selv-registrerte bruker, og er typisk en e-postadresse.
-    "party": "/org/991825827", 
+    "party": "urn:altinn:party-identifier:organization-no::991825827", 
                                   
     // Vilkårlig referanse som presenteres sluttbruker i UI. Dialogporten tilegger denne ingen semantikk (trenger f.eks. ikke
     // være unik). Merk at identifikator/primærnøkkel vil kunne være den samme gjennom at tjenestetilbyder kan oppgi "id",
     // så dette kan f.eks. brukes for et saksnummer eller en annen referanse hos party eller en tredjepart (systemleverandør). 
     "externalReference": "123456789",
 
-    // Alle dialoger som har samme dialoggruppe-id vil kunne grupperes eller på annet vis samles i GUI    
-    "dialogGroup": {
+    // Alle dialoger som har samme prosess-id vil kunne grupperes eller på annet vis samles i GUI    
+    "process": {
         "id": "some-arbitrary-id",
         
-        // Bestemmer rekkefølgen denne dialogen har blant alle dialoger som har samme dialogGroup.id
+        // Bestemmer rekkefølgen denne dialogen har blant alle dialoger som har samme prosess-id
         "order": 1,
         
         // Trenger bare oppgis av én dialog. Hvis oppgitt av flere, er det den med høyest "order"-verdi 
         // som skal benyttes.
-        "name": [ { "code": "nb_NO", "value": "Navn på dialoggruppe." } ]
+        "name": [ { "code": "nb_NO", "value": "Navn på prosess." } ]
     },
 
     // Kjente aggregerte statuser som bestemmer hvordan dialogen vises for bruker: 
@@ -59,19 +59,45 @@
         // Mulighet for å skjule/deaktivere en dialog på et eller annet tidspunkt?
         "expiryDate": "2023-12-01T12:00:00.000Z" 
     },
-    "content": {
-        // Alle tekster som vises verbatim må oppgis som en array av oversatte tekster. 
-        // Det som benyttes er brukerens valgte språk i Dialogboksen
-        "body": [ { "code": "nb_NO", 
-            "value": "Innhold med <em>begrenset</em> HTML-støtte. Dette innholdet vises når dialogen ekspanderes." } ],
-        "title": [ { "code": "nb_NO", "value": "En eksempel på en tittel" } ],
-        "senderName": [ { "code": "nb_NO", "value": "Overstyrt avsendernavn (bruker default tjenesteeiers navn)" } ]            
-    },
+    
+    // Alle tekster som vises verbatim må oppgis som en array av oversatte tekster. 
+    // Det som benyttes er brukerens valgte språk i Dialogboksen
+    "content": [
+        {
+            "type": "Title",
+            "value": [{ "code": "nb_NO", "value": "En eksempel på en tittel" } ]
+        },
+        {
+            "type": "Summary",
+            "value": [{ "code": "nb_NO", "value": "Kort tekst for oppsummering" } ]
+        },
+        {
+            "type": "AdditionalInfo",
+            "value": [{ "code": "nb_NO", "value": "Ytterligere informasjon med <em>begrenset</em> HTML-støtte.
+                Dette innholdet vises kun i detaljvisning av dialogen." } ]
+        },
+        {
+            "type": "SenderName",
+            "value": [{ "code": "nb_NO", "value": "Overstyrt avsendernavn (bruker default tjenesteeiers navn)" } ]
+        }
+    ],
+
+    // Search Tags gjør det mulig å oppgi ord og fraser som det skal kunne søkes på, men som en ikke ønsker å
+    // eksponere i DTO-en til sluttbrukere
+    "searchTags": [
+        {
+            "value": "noe søkbart"
+        }
+    ],
+
     // Dialogelementer kan være tiltenkt enten GUI eller API, eller begge. GUI-dialogelementer er typiske filvedlegg i 
     // menneskelesbart format, f.eks. PDF, som tjenestetilbyder legger ved dialogen. Dette kan være utsendinger fra 
     // tjenestilbyder eller innsendinger fra parten. API-dialogelementer er strukturerte filer tiltenkt SBS-er. 
     // Dette kan være enkelteskjemaer, egne prefill-modeller, strukturerte feilmeldinger,tidligere innsendte skjema etc.
     //
+    // Dialogelementer kan også indikeres at de skal embeddes, altså lastes og vises direkte i det aktuelle 
+    // sluttbrukersystemet (arbeidsflate/nettleser). Denne typer dialogelementer har typisk mimeType: text/html
+    // 
     // Dialogelementer kan hentes (leses) gjennom oppgitt URL. Actions kan peke på et spesifikt dialogelement for andre
     // operasjoner direkte knyttet til et dialogelement.
     "dialogElements": [
@@ -107,7 +133,33 @@
                     "mimeType": "application/json"
                 }
             ]
-        },   
+        },
+        {
+            // Dialogelementer kan også representere innhold som skal lastes og embeddes i GUI
+            "authorizationAttribute": "urn:altinn:subresource:somesubresource",
+            // Valgfri: Blir rendret som en tittel for det embedda innholdet.
+            "displayName": [ { "code": "nb_NO", "value": "Melding om bla bla bla" } ],
+            "urls": [
+                {
+                    "consumerType": "gui",
+                    // Kan bare brukes på "gui" actions. Sluttbrukersystemet (statisk del i nettleseren) vil laste 
+                    // denne med Fetch API og oppgi dialogtoken, og vise dette direkte i detaljvisning.
+                    // Det kan være flere front-channel embeds, enten innenfor et og samme dialogelement eller på
+                    // tvers av flere dialogelementer. Innenfor samme dialogelement vil statisk del av arbeidsflate 
+                    // typisk rendre disse etter hverandre med en eller annen visuell separator. 
+                    //
+                    // Hvis flere dialogelementer inneholder frontChannelEmbeds, vil GUI måtte bestemme
+                    // hvem av disse som er relevant å vise. En mulig logikk her vil være å vise den som er referert 
+                    // til av det nyeste aktivitetshistorikk-innslaget, og vise evt. øvrige kollapset (kan lene seg
+                    // på "displayName"). Hvis ingen er referert til av aktivitetshistorikk-innslag, vis kun den siste
+                    // i lista.
+                    "frontChannelEmbed": true,
+                    // mimeType blir i utgangspunktet ikke hensyntatt, det antas mimeType: text/html
+                    // Her kan det tenkes at andre mimeTypes (f.eks. video) kan håndteres på andre måter i fremtiden
+                    "url": "https://example.com/api/dialogs/123456789/user-instructions"
+                }
+            ]
+        } 
     ],
     "actions": {
         "gui": [ 
@@ -124,10 +176,10 @@
                 "priority": "secondary",
                 "title": [ { "code": "nb_NO", "value": "Bekreft mottatt" } ],
 
-                // Dette foretar et POST bakkanal-kall til oppgitt URL, og det vises i frontend bare en spinner mens 
-                // kallet går. Må returnere en oppdatert dialog-modell (som da vises bruker) eller 204 (hvis dialogen 
-                // synkront oppdateres i annet bakkanal-kall), eller en RFC7807-kompatibel feilmelding.
-                "isBackChannel": true, 
+                // Dette indikerer til GUI at dette er en eller annen skrivehandling som ikke skal innebære
+                // en omdirigering av nettleseren, men kun foreta en POST med Fetch API-et med dialogtoken.
+                // Må returnere 204 (som trigger at arbeidsflate laster dialogen på nytt), eller en RFC7807-kompatibel feilmelding.
+                "isWriteAction": true, 
 
                 "url": "https://example.com/some/deep/link/to/dialogs/123456789/confirmReceived"
             },
@@ -136,11 +188,12 @@
                 "priority": "tertiary",
                 "title": [ { "code": "nb_NO", "value": "Avbryt" } ],
 
-                // Impliserer IsBackChannel: true. Vil gjøre det mulig for arbeidsflate å umiddelbart fjerne dialogen fra visning
+                // Impliserer isWriteAction: true. Vil gjøre det mulig for arbeidsflate å umiddelbart fjerne dialogen fra visning
                 "isDeleteAction": true, 
-                "yesNoPrompt": [ { "code": "nb_NO", "value": "Vil du avbryte? Dette innebærer blablabla" } ],
+                "prompt": [ { "code": "nb_NO", "value": "Vil du avbryte? Dette innebærer blablabla" } ],
 
-                // Blir kalt med DELETE i bakkanal. Må returnere 204 eller en RFC7807-kompatibel feilmelding.
+                // Blir kalt med DELETE i framkanal med dialogtoken. Må returnere 204 eller en RFC7807-kompatibel feilmelding.
+                // Ved 204 vil statisk frontend fjerne dialogen umiddelbart fra DOM.
                 "url": "https://example.com/some/deep/link/to/dialogs/123456789" 
             }
         ],

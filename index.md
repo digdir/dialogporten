@@ -6,11 +6,11 @@ layout: page
 topmenu: false
 ---
 
-Versjon 0.91 - Bjørn Dybvik Langfors, sist endret: {{ page.last_modified_at  | date: '%d. %b %Y, kl. %H:%M:%S' }} [(se git-historikk)](https://github.com/digdir/dialogporten/commits/docs/index.md)
+Versjon 0.92 - Bjørn Dybvik Langfors, sist endret: {{ page.last_modified_at  | date: '%d. %b %Y, kl. %H:%M:%S' }} [(se git-historikk)](https://github.com/digdir/dialogporten/commits/docs/index.md)
 
 # Introduksjon
 
-I dette dokumentet beskrives et konsept for hvordan tjenester, som i denne konteksten er begrenset til dialog- og meldingstjenester, kan nyttiggjøre seg av fellesfunksjonalitet i økosystemet av Altinn-produkter, herunder dagens "innboks", sluttbrukers arkiv, autorisasjon, varsling og hendelser uten at det innebærer behov for å benytte seg av Altinns utviklingsmiljøer eller applikasjonskjøretidsmiljø. Alle interaksjoner mellom tjenestetilbydere og denne løsningen foregår via API-er, og det legges opp til stor fleksibilitet i hvorvidt løsningen involveres og det legges ingen begrensninger på hvordan forretningslogikken eller ulike brukerflater hos tjenestetilbyder realiseres.
+I dette dokumentet beskrives et konsept for hvordan tjenester, som i denne konteksten er begrenset til dialog- og meldingstjenester, kan nyttiggjøre seg av fellesfunksjonalitet i økosystemet av Altinn-produkter, herunder dagens "innboks", sluttbrukers arkiv, autorisasjon, varsling og hendelser uten at det innebærer behov for å benytte seg av Altinns utviklingsmiljøer eller applikasjonskjøretidsmiljø. Alle interaksjoner mellom tjenestetilbydere og denne løsningen foregår via API-er, og det legges opp til stor fleksibilitet i hvorvidt løsningen involveres og bestrebes minst mulig begrensninger på hvordan forretningslogikken eller ulike brukerflater hos tjenestetilbyder realiseres.
 
 # Scenarioer som påvirker Dialogporten
 
@@ -79,7 +79,7 @@ Som det pekes på i avsnittet [Scenarioer som påvirker Dialogporten](#scenarioe
 
 ## Dialog
 
-Dialogen er en abstrakt og felles modell for alle pågående eller avsluttede [spesialiserte dialoger](#spesialisert-dialog) hos en tjenestetilbyder, og inneholder beskrivende metadata, f.eks. hvem som er mottakende part, adresse (URL), overskrift, dato, status, en liste over aktuelle _handlinger_ som kan utføres av brukeren samt en valgfri liste over [dialogelementer](#dialogelement). Dialogporten knytter semantikk kun til slette-handlinger, hvis dette gjøres tilgjengelig av tjenestetilbyder. Andre handlinger kan vilkårlig defineres av tjenestetilbyder, og all interaksjon med den dialogen foregår i tjenestetilbyders brukerflater (unntaket er GUI-handlinger som går gjennom bakkanal, se mer om dette i avsnittet [Hendelser](#hendelser)).
+Dialogen er en abstrakt og felles modell for alle pågående eller avsluttede [spesialiserte dialoger](#spesialisert-dialog) hos en tjenestetilbyder, og inneholder beskrivende metadata, f.eks. hvem som er mottakende part, adresse (URL), overskrift, dato, status, en liste over aktuelle _handlinger_ som kan utføres av brukeren samt en valgfri liste over [dialogelementer](#dialogelement). Handlinger kan vilkårlig defineres av tjenestetilbyder, og all interaksjon med den dialogen foregår i tjenestetilbyders brukerflater eller mot tjenestetilbyders API-endepunkter (unntaket er GUI-handlinger som beskriver skriveoperasjoner, se mer om dette i avsnittet [Handlinger](#handlinger)).
 
 En viktig forskjell mot dagens «correspondence» i Altinn, er at dialogene i Dialogporten er _mutérbare_. Tjenestetilbyder kan når som helst oppdatere metadata og tilgjengelige handlinger på dialogen. Enhver endring fører til at det genereres _hendelser_, som autoriserte parter kan agere på, f.eks. at det sendes et varsel eller at et SBS foretar seg noe.
 
@@ -93,11 +93,16 @@ Med _spesialisert dialog_, refereres det til en konkret dialog (f.eks. innsendin
 
 Dialogelementer utgjør distinkte bestanddeler av en dialog og kan brukes i komplekse dialoger hvor det kan være hensiktsmessig for sluttbrukere og systemer å forholde seg til enkelte deler av dialogen i tillegg til dialogen som helhet. Dette kan være meldinger og pre-utfylte skjemaer fra tjenestetilbyder, innsendte skjemaer fra parten, kvitteringer, strukturerte feilmeldinger, rapporter, ustrukturerte vedlegg til meldinger etc. som utgjør en del av den totale dialogen. Dialogelementer blir typisk referert av innslag i activityHistory. API-handlinger kan også referere et enkelt dialogelement. 
 
-## Dialoggruppe (DG)
+Dialogelementer kan indikeres at de skal embeddes i arbeidsflate/sluttbrukersystemet, og ikke vises som en lenke som bruker foretar en navigasjon til. Disse vil da embeddes direkte i arbeidsflate, og dette foretas av nettleser i framkanal med Fetch API og ved hjelp av [Dialogtoken](#dialogtoken) og kalles "front channel embeds".
 
-Enkelte typer saksganger består av flere distinkte delprosesser/dialoger som ikke enkelt eller hensiktsmessig kan knyttes til en og samme dialog, f.eks. når det er ulike dialoger som må gjennomføres med ulike parter og som ikke nødvendigvis skal foregå sekvensielt.
+## Prosess-identifikator 
 
-Alle dialoger kan referere en dialoggruppe (DG), som knytter disse sammen. En dialoggruppe er ikke en egen entitet, men er en rik attributt på dialogen som lar GUI-implementasjoner gruppere/sammenknytte dialoger som logisk hører sammen.
+(Tidligere kalt "dialoggruppe") Enkelte typer saksganger består av flere distinkte delprosesser/dialoger som ikke enkelt eller hensiktsmessig kan knyttes til en og samme dialog, f.eks. når det er ulike dialoger som må gjennomføres med ulike tjenesteeiere og som ikke nødvendigvis skal foregå sekvensielt.
+
+Alle dialoger kan referere en prosess-identifikator, som knytter disse sammen. En prosess-identifikator er ikke en egen entitet, men er en rik attributt på dialogen som lar GUI-implementasjoner gruppere/sammenknytte dialoger som logisk hører sammen.
+
+## Dialogtoken (DT)
+Et dialogtoken er et signert JSON Web Token (JWT) som inneholder informasjon om den autentiserte brukeren/organisasjonen, hvilken aktør som er valgt, identifikator til dialogen, dato og andre opplysninger. Les mer i avsnittet [om dialogtoken](#dialogtoken).
 
 ## Hendelser
 
@@ -115,13 +120,13 @@ En handling er enten en _«GUI»-handling_ eller en _«API»-handling_. Alle han
 
 GUI-handlinger gjøres synlige for brukeren i form av knapper, lenker eller lignende. Tjenestetilbyderen oppgir selv om en gitt handling er å regne som en primær-, sekundær eller tertiær-handling, noe som påvirker hvordan dette presenteres til brukeren. En primærhandling vil typisk presenteres som en fremhevet knapp («call to action»), og benyttes for det som er det logiske neste steget. En sekundærhandling (f.eks. «Avbryt») kan være en mer nedtonet knapp, eller tekstlenker, mens en tertiærhandling (f.eks. «Les mer om denne tjenesten») kan gjemmes bak en nedtrekksmeny eller lignende. Alt dette vil være opp til det aktuelle GUI-et som benyttes å vurdere, og ulike vurderinger vil kunne gjøres avhengig av "view" - altså kontekst, tenkt brukergruppe m.m. Det vil være begrensninger på hvor mange GUI-handlinger som kan defineres av de ulike typene.
 
-Alle GUI-handlinger har en URL. Disse URLene brukes i framkanal når brukeren aktiverer den aktuelle handlingen, og innebærer at brukeren blir omdirigert til etatens egen brukerflate hvor den aktuelle handlingen da utføres, enten automatisk eller gjennom videre brukerinteraksjon. Denne omdirigeringen skjer alltid med en GET, som sikrer at eventuelle sesjoner som allerede eksisterer hos tjenestetilbyder blir benyttet (altså at nettlesere vil sende sesjonscookies), eller at omdirigering via SSO-innlogging i ID-porten fungerer. Disse URL-ene må altså returnere enten omdirigeringer eller HTML, og siden det er GET anbefales det ikke at disse handlingene direkte medfører tilstandsendringer.
+Alle GUI-handlinger har en URL. Disse URLene brukes i framkanal når brukeren aktiverer den aktuelle handlingen, og innebærer at brukeren blir omdirigert til tjenestetilbyderens egen brukerflate hvor den aktuelle handlingen da utføres, enten automatisk eller gjennom videre brukerinteraksjon. Denne omdirigeringen skjer alltid med en GET, som sikrer at eventuelle sesjoner som allerede eksisterer hos tjenestetilbyder blir benyttet (altså at nettlesere vil sende sesjonscookies), eller at omdirigering via SSO-innlogging i ID-porten fungerer. Disse URL-ene må altså returnere enten omdirigeringer eller HTML, og siden det er GET anbefales det ikke at disse handlingene direkte medfører tilstandsendringer.
 
-{% include note.html type="warning" content="GUI-handlinger i bakkanal er ikke ferdig utarbeidet." %}
+{% include note.html type="warning" content="GUI-handlinger for skriving/sletting er under utredning." %}
 
-GUI-handlinger kan imidlertid markeres at de skal utføres gjennom bakkanal-kall, og kan da også brukes for å gjennomføre tilstandsendringer. Brukeren blir da ikke omdirigert, men Dialogporten vil da foreta en (tom) forespørsel på vegne av brukeren til den oppgitte URL-en. Tjenestetilbyderen returnerer da den oppdaterte dialogen, som umiddelbart blir vist brukeren igjen. Ved feil (enten av tekniske eller forretningslogiske årsaker) kan en feilmelding vises.
+GUI-handlinger kan imidlertid markeres at de er skriveoperasjoner, og kan da også brukes for å gjennomføre tilstandsendringer. Brukeren blir da ikke omdirigert, men Dialogporten vil da foreta en (tom) POST-forespørsel på vegne av brukeren til den oppgitte URL-en. Tjenestetilbyderen oppdaterer dialogen i bakkanal, og returnerer HTTP-kode 204, som indikerer suksess og trigger at arbeidsflate laster dialogen på nytt. Ved feil (enten av tekniske eller forretningslogiske årsaker) kan en feilmelding vises.
 
-Det er kun én GUI-handling som Dialogporten knytter semantikk til; slett. Denne fungerer som andre handlinger, men vil alltid innebære et bakkanal-kall, som hvis vellykket, fører til at dialogen blir markert som slettet i Dialogporten, og da typisk flyttes til en "papirkurv" eller lignende. Felles Arbeidsflate vil også kunne knytte ekstra UI-logikk til disse handlingene (f.eks. vise en «Er du sikker?» dialog i forkant).
+Handlinger kan også indikeres å være slette-handlinger. Disse fungerer på samme måte som skriveoperasjoner, men vil i stedet fjerne dialogen fra DOM umiddelbart (det legges da til grunn at tjenesteeier har slettet dialogen i bakkanal slik at denne dukker opp igjen ved neste søk)
 
 ### API-handling
 
@@ -363,6 +368,61 @@ Tokens utstedt av Maskinporten vil inneholde en systembruker-id, mens tokens uts
 
 Tokens mottatt fra Maskinporten eller ID-porten vil på sikt kunne berikes med finkornede autorisasjonsopplysninger basert på Rich Authorization Requests (RAR) fra SBS-et som Maskinporten/ID-porten verifiserer opp mot Altinn Autorisasjon som foretar en autorisasjonsbeslutning. Hvis tilgang er gitt, populeres tokenet med opplysninger som vil kunne brukes av både Dialogporten og tjenestetilbyder for å håndheve tilgangskontroll uten videre oppslag mot Altinn Autorisasjon (innenfor levetiden av tokenet).
 
+## Dialogtoken 
+
+For GUI-write actions eller front channel embeds vil det genereres tokens som nettleser/SBS vil kunne bruke mot endepunkter hos tjenestetilbyder. Dette gjør det mulig å foreta forespørsler til sikrede endepunkter uten at sluttbruker må omdirigeres innom ID-porten for SSO, og for tjenesteeier å foreta et ytterligere autorisasjonsoppslag.
+
+Dialogtokenet benyttes som et "bearer token", altså noe som indikerer at ihendehaveren er autorisert av Dialogporten til en liste med påstander (claims) som ligger i tokenet. [Standard JWT-claims](https://www.rfc-editor.org/rfc/rfc7519#section-4.1) og [JWS-parametere](https://www.rfc-editor.org/rfc/rfc7515#section-4.1) som definert i RFC7519 og RFC7515 vil inkluderes, i tillegg til de Dialogporten-spesifikke påstandene under:
+
+### Dialogporten-spesifikke claims
+
+| Claim            | Beskrivelse                                                                                                                                                        | Eksempel                                                                           |
+|------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------- |----------------------------------------------------------------------------------- |
+| c                | Autentisert som konsument av Dialogporten. Prefikset for  hhv. personer (typisk ID-porten), organisasjoner (typisk Maskinporten) eller selvregistrerte brukere.    | `"urn:altinn:party-identifier:person-no::12018212345`, `"urn:altinn:party-identifier:organization-no::991825827"` eller `"urn:altinn:party-identifier:username::someemail@example.com"` |
+| l                | Sikkerhetsnivå på autentisering (4)                                                                                                                                | `4`                                                                                |
+| s                | Valgfritt. Hvis det er benyttet et leverandørtoken i Maskinporten, vil autentisert leverandørs organisasjonsnummer oppgis her.           | `"urn:altinn:party-identifier:organization-no::991825827""`                                                                  |
+| p                | Hvem konsument opptrer på vegne av (om ikke seg selv), altså hvem som eier det aktuelle dialogen.                                                           | `"urn:altinn:party-identifier:person-no::12018212345"`, `"ourn:altinn:party-identifier:organization-no::991825827""` eller `"urn:altinn:party-identifier:username::someemail@example.com"` |
+| i                | Unik identifikator til dialog.                                                                                                                              | `"e0300961-85fb-4ef2-abff-681d77f9960e"`                                           |
+| a                | Liste over autoriserte actions. Kan være prefixet med `<ressurs>:` hvis actionen omfatter en navngitt ressurs i XACML policy som ikke er tjenesteressursen         | `[ "open", "attachment1:open", "confirm" ]`                                        |
+
+### Eksempel på dekodet token
+
+```jsonc
+{
+  "alg": "EdDSA",
+  "typ": "JWT",
+  "kid" : "dp-2023-01" 
+}
+// .
+{
+  "l": 4, // Sikkerhetsnivå
+  "c": "urn:altinn:party-identifier:person-no::12018212345", // Autentisert part
+  "p": "urn:altinn:party-identifier:organization-no::991825827", // Party
+  "s": "urn:altinn:party-identifier:organization-no::825827991", // Supplier (hvis MP-leverandørtoken)
+  "i": "e0300961-85fb-4ef2-abff-681d77f9960e", // Dialog-ID
+  "a": [ // Actions
+    "open",
+    "attachment1:open", // For subressurs
+    "confirm"
+  ],
+  "exp": 1672772834,
+  "iss": "https://dialogporten.no",
+  "nbf": 1672771934,
+  "iat": 1672771934 
+}
+ 
+// .
+// <signatur>
+```
+
+Tokenet kan verifiseres på vanlig vis gjennom at det publiseres et nøkkelsett (JWK) på et kjent endepunkt. Med å hente den offentlige nøkkelen definert av `kid` kan tjenestetilbyder verifisere at tokenet er gyldig. 
+
+### Overføring av token til tjenestetilbyder
+
+Tokenet vil inkluderes i responsmodellen som returneres til SBS-er og Felles arbeidsflate i feltet `dialogToken`. Arbeidsflate vil overføre dette tokenet til statisk frontend (nettleser), hvor front channel embeds eller actions uten navigasjon benytter dette tokenet i en standard `Authorization: Bearer <token>` HTTP-header gjennom [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API). 
+
+Endepunktene som aksesseres med dette denne mekanismen må da ha "trust" til Dialogporten som token issuer, og verifisere tokenet (signatur, levetid, claims). De offentlige nøklene som brukes for å verifisere tokenet eksponeres gjennom et well-known-endepunkt med JWK-er. 
+
 ## Integrasjonsmønster for SBS-er
 
 {% include note.html type="info" content="Dette er avsnittet som tidligere var kalt &quot;Varianter for autorisasjon&quot;" %}
@@ -455,7 +515,7 @@ TT->>SBS: Returner respons på handling
 ```
 # Integrasjon med event-komponent
 
-Dialogporten vil generere events automatisk basert på endringer som gjøres på dialog-entiteten. Det vil også gjøres genereres events for hvert separate innslag i aktivitetshistorikken og dialoglementer. Se 
+Dialogporten vil generere events automatisk basert på endringer som gjøres på dialog-entiteten. Det vil også gjøres genereres events for hvert separate innslag i aktivitetshistorikken samt dialoglementer. Se 
 
 Se [case-01]({% link _dialogporten_case/example-case-01.md %}) for eksempler på hvordan events genereres.
 
@@ -471,7 +531,7 @@ Opprettelse/endring/sletting av dialog-entiteten genererer meldinger med følgen
 
 I tillegg genereres det en event med type `dialogporten.dialog.read.v1` når dialogen lastes for første gang etter at den er oppdatert (altså readDateTime < max(updatedDateTime, createdDateTime).
 
-### Eksempel
+### Eksempel på event ved opprettelse
 
 ```jsonc
 {
@@ -493,10 +553,39 @@ I tillegg genereres det en event med type `dialogporten.dialog.read.v1` når dia
     "resourceinstance": "f4e6df3c-7434-44c3-875e-8dca1cdf0b20",
     
     // Party
-    "subject": "org/91234578", 
+    "subject": "urn:altinn:party-identifier:organization-no::991825827", 
     
     // URL til dialog i Dialogporten. Merk denne vil gi 410 Gone hvis type er `dialogporten.dialog.deleted.v1`
     "source": "https://dialogporten.no/api/v1/enduser/dialogs/f4e6df3c-7434-44c3-875e-8dca1cdf0b20" 
+}
+```
+
+### Eksempel på event ved endring
+
+```jsonc
+{
+    "specversion": "1.0",
+
+    // Unik event-id
+    "id": "91f2388f-bd8c-4647-8684-fd9f68af5b15",
+    
+    // Se "Type" i tabell over for liste over mulige hendelser
+    "type": "dialogporten.dialog.updated.v1",
+    
+    // Timestamp for når hendelsen inntraff i Dialogporten
+    "time": "2023-02-20T08:00:06.4014168Z",
+    
+    // urn:altinn:resource:{serviceResource}
+    "resource": "urn:altinn:resource:super-simple-service", 
+    
+    // Dialog-ID
+    "resourceinstance": "f4e6df3c-7434-44c3-875e-8dca1cdf0b20",
+    
+    // Party
+    "subject": "urn:altinn:party-identifier:organization-no::991825827", 
+    
+    // URL til dialog i Dialogporten. Merk denne vil gi 410 Gone hvis type er `dialogporten.dialog.deleted.v1`
+    "source": "https://dialogporten.no/api/v1/enduser/dialogs/f4e6df3c-7434-44c3-875e-8dca1cdf0b20"
 }
 ```
 
@@ -535,7 +624,7 @@ Eventer har type som er prefikset/navnerommet `dialogporten.dialog.element`. Und
     "resourceinstance": "b8643c00-c826-41c7-8758-bfc0ca5c19fa",
     
     // Party
-    "subject": "org/91234578",
+    "subject": "urn:altinn:party-identifier:organization-no::991825827",
 
     // URL til dialogelementet i Dialogporten
     "source": "https://dialogporten.no/api/v1/enduser/dialogs/b8643c00-c826-41c7-8758-bfc0ca5c19fa/elements/da506c38-b19f-45d4-963e-927df959a5f8",
@@ -590,7 +679,7 @@ Eventer har type som er prefikset/navnerommet `dialogporten.dialog.activity`. Su
     "resourceinstance": "f4e6df3c-7434-44c3-875e-8dca1cdf0b20",
     
     // Party
-    "subject": "org/91234578",
+    "subject": "urn:altinn:party-identifier:organization-no::991825827",
 
     // URL til aktivitetshistorikk-innslag i Dialogporten
     "source": "https://dialogporten.no/api/v1/enduser/dialogs/f4e6df3c-7434-44c3-875e-8dca1cdf0b20/activityhistory/21241c7e-819f-462b-b8a4-d5d32352311a",
@@ -734,9 +823,9 @@ end
             * En identifikator for handlingen. "Standard"-handlinger vil kunne oppgis som allerede finnes oversatt i Dialogporten.
             * Hvis ikke standard-handling, tekst som beskriver handlingen i flere språk
             * En valgfri hjelpetekst som kan fremvises brukeren som gir mer informasjon om hva handlingen innebærer
-            * Flagg som indikerer om handlingen skal utføres i bakkanal
-            * En URI som enten (1) brukeren vil omdirigert til når hen aktiverer det aktuelle GUI-dialogen (f.eks. en knapp) eller (2) Felles Arbeidsflate vil kalle hvis på vegne av brukeren hvis flagget som bakkanal-kall
-            * Hvis bakkanal-kall, skal URI-en skal returnerer en standardmodell som indikerer om kallet var vellykket, eller om det skal vises en feilmelding.
+            * Flagg som indikerer om handlingen er en skriveoperasjon
+            * En URI som enten (1) brukeren vil omdirigert til når hen aktiverer det aktuelle GUI-dialogen (f.eks. en knapp) eller (2) sluttbrukersystemet (i kontekst av arbeidsflate, brukerens nettleser) kaller med POST
+            * Hvis skriveoperasjon, skal URI-en skal oppdatere dialogen i bakkanal og returnere HTTP-kode 204, eller returnere en feilmelding.
             * Flagg som indikerer om dialogen skal slettes/arkiveres i Dialogporten hvis kall til URI lykkes (vil brukes til f.eks. "Er du sikker"-prompts)
         * Hver API-handling inneholder
             * En identifikator for handlingen
@@ -861,7 +950,7 @@ TEGUI->>TEGUI: Opprette dialog
 par
     note over API,TEGUI: Opprettelse av dialogen gjøres når tjenestetilbyder finner dette hensiktsmessig
     opt
-        TEGUI->>API: Bakkanal kall for å opprette dialog med egengenerert identifikatpr
+        TEGUI->>API: Bakkanal kall for å opprette dialog med egengenerert identifikator
         API->>TEGUI: Returnere dialog
     end
 and
