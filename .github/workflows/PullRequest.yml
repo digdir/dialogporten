@@ -1,0 +1,14 @@
+﻿name: Workflow
+
+on:
+    workflow_dispatch:
+    pull_request:
+        branches: [main]
+        paths-ignore:
+            - "tests/k6/**"
+
+jobs:
+    publish:
+        uses: ./.github/workflows/BuildTestPublish.yml
+        with:
+            publishArtifacts: false
