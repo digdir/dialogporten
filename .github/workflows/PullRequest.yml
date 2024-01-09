@@ -1,4 +1,4 @@
-﻿name: Workflow
+﻿name: PullRequest
 
 on:
     pull_request:
