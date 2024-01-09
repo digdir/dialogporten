@@ -1,29 +1,24 @@
 ﻿name: Workflow
 
 on:
-  workflow_dispatch:
-  push:
-    branches: [ main ]
-    #paths: [ src/**, tests/**, .github/workflows/** ]
-    paths-ignore:
-      - 'tests/k6/**'
+    workflow_dispatch:
+    push:
+        branches: [main]
+        #paths: [ src/**, tests/**, .github/workflows/** ]
+        paths-ignore:
+            - "tests/k6/**"
 
 jobs:
-  publish:
-    uses: ./.github/workflows/BuildTestPublish.yml
-    with:
-      publishArtifacts: true
+    buildTest:
+        uses: ./.github/workflows/BuildTest.yml
 
-  deployTest:
-    needs: [ publish ]
-    uses: ./.github/workflows/Deploy.yml
-    secrets: inherit
-    with:
-      environment: test
-#
-#  deployTest:
-#    needs: [ publish ]
-#    uses: ./.github/workflows/Deploy.yml
-#    secrets: inherit
-#    with:
-#      environment: test
+    publish:
+        needs: [buildTest]
+        uses: ./.github/workflows/Publish.yml
+
+    deployTest:
+        needs: [publish]
+        uses: ./.github/workflows/Deploy.yml
+        secrets: inherit
+        with:
+            environment: test
