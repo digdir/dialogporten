@@ -11,7 +11,7 @@ jobs:
     uses: ./.github/workflows/BuildAndTest.yml
 
   # todo: only if .azure-files are changed
-  build-infra:
+  build-infrastructure:
     uses: ./.github/workflows/BuildInfrastructure.yml
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
