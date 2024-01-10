@@ -8,24 +8,19 @@ on:
         required: false
         type: boolean
         default: false
-  pull_request:
-    branches: [ main ]
-    paths-ignore:
-      - 'tests/k6/**'
-    #paths: [ src/**, tests/**, .github/workflows/** ]
 
 jobs:
   build-test-publish:
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v4
 
       - name: Set up .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.x'
-    
+          dotnet-version: "8.x"
+
       - name: Restore
         run: dotnet restore
 
@@ -41,7 +36,7 @@ jobs:
         with:
           name: azure-artifacts
           path: .azure
-          
+
   publish-docker-images:
     env:
       DOCKER_IMAGE_BASE: ghcr.io/digdir/dialogporten-
@@ -50,7 +45,7 @@ jobs:
     runs-on: ubuntu-latest
 
     strategy:
-      fail-fast: true 
+      fail-fast: true
       matrix:
         include:
           - dockerfile: ./src/Digdir.Domain.Dialogporten.WebApi/Dockerfile
