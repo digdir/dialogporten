@@ -9,11 +9,11 @@ on:
             - "tests/k6/**"
 
 jobs:
-    buildTest:
-        uses: ./.github/workflows/BuildTest.yml
+    buildAndTest:
+        uses: ./.github/workflows/BuildAndTest.yml
 
     publish:
-        needs: [buildTest]
+        needs: [buildAndTest]
         uses: ./.github/workflows/Publish.yml
 
     deployTest:

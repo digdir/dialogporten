@@ -1,11 +1,11 @@
-name: BuildTest
+name: BuildAndTest
 
 on:
     workflow_dispatch:
     workflow_call:
 
 jobs:
-    build-test:
+    build-and-test:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
@@ -23,10 +23,3 @@ jobs:
 
             - name: Test
               run: dotnet test --no-build --configuration Release
-
-            - name: Upload azure bicep artifacts for IaC deployment
-              if: ${{inputs.publishArtifacts}}
-              uses: actions/upload-artifact@v4
-              with:
-                  name: azure-artifacts
-                  path: .azure
