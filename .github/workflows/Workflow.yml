@@ -18,7 +18,7 @@ jobs:
     secrets:
       GCR_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
     with:
-      dockerBaseImage: ghcr.io/digdir/dialogporten-
+      dockerImageBaseName: ghcr.io/digdir/dialogporten-
 
   deploy-test:
     needs: [publish]
