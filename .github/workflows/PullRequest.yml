@@ -7,7 +7,8 @@ on:
       - "tests/k6/**"
 
 jobs:
-  check-changes:
+  check_for_changes:
+    name: Check for changes
     uses: ./.github/workflows/CheckChanges.yml
 
   build:
@@ -16,6 +17,8 @@ jobs:
   # todo: only if .azure-files are changed
   build-infrastructure:
     uses: ./.github/workflows/BuildInfrastructure.yml
+    needs: ["check_for_changes"]
+    if: ${{ needs.check_for_changes.outputs.azure == 'true' }}
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}

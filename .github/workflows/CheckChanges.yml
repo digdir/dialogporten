@@ -1,19 +1,38 @@
-name: Deploy
+name: "Check for changes"
 
 on:
   workflow_call:
+    outputs:
+      azure:
+        description: "Azure related files changed"
+        value: ${{ jobs.check_for_changes.outputs.azure }}
+      backend:
+        description: "Backend related files changed"
+        value: ${{ jobs.check_for_changes.outputs.backend }}
 
 jobs:
-  deploy:
-    name: Check for changes in folders
+  check_for_changes:
+    name: Filter
     runs-on: ubuntu-latest
+    outputs:
+      azure: ${{ steps.azure_filter.outputs.src == 'true' }}
+      backend: ${{ steps.backend_filter.outputs.src == 'true' }}
     steps:
       - uses: actions/checkout@v4
 
-        # todo: use dorny/paths-filter@v2 and output the value so we can use the value from the calling workflow
-      - name: Check for changes in folders
-        id: paths-filter
-        uses: dorny/paths-filter@v1
+      - uses: dorny/paths-filter@v2
+        id: backend_filter
         with:
+          base: ${{ github.ref }}
           filters: |
-          
+            src:
+              - 'src/**/*'
+
+      - uses: dorny/paths-filter@v2
+        id: azure_filter
+        with:
+          base: ${{ github.ref }}
+          filters: |
+            src:
+              - '.azure/**/*'
+            # todo: add additional files that should trigger a build
