@@ -1,28 +1,28 @@
 ﻿name: Workflow
 
 on:
-    workflow_dispatch:
-    push:
-        branches: [main]
-        #paths: [ src/**, tests/**, .github/workflows/** ]
-        paths-ignore:
-            - "tests/k6/**"
+  workflow_dispatch:
+  push:
+    branches: [main]
+    #paths: [ src/**, tests/**, .github/workflows/** ]
+    paths-ignore:
+      - "tests/k6/**"
 
 jobs:
-    buildAndTest:
-        uses: ./.github/workflows/BuildAndTest.yml
+  buildAndTest:
+    uses: ./.github/workflows/BuildAndTest.yml
 
-    publish:
-        needs: [buildAndTest]
-        uses: ./.github/workflows/Publish.yml
-        secrets:
-            GCR_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
-        with:
-            dockerBaseImage: ghcr.io/digdir/dialogporten-
+  publish:
+    needs: [buildAndTest]
+    uses: ./.github/workflows/Publish.yml
+    secrets:
+      GCR_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+    with:
+      dockerBaseImage: ghcr.io/digdir/dialogporten-
 
-    deployTest:
-        needs: [publish]
-        uses: ./.github/workflows/Deploy.yml
-        secrets: inherit
-        with:
-            environment: test
+  deployTest:
+    needs: [publish]
+    uses: ./.github/workflows/Deploy.yml
+    secrets: inherit
+    with:
+      environment: test
