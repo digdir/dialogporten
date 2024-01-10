@@ -69,5 +69,5 @@ dotnet_diagnostic.CA2208.severity = suggestion
 [*.yml]
 
 # Enforce indentation to be 2 spaces
-indent_style = space
+indent_style = spaces
 indent_size = 2

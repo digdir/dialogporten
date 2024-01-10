@@ -9,18 +9,18 @@ on:
       - "tests/k6/**"
 
 jobs:
-  buildAndTest:
+  build-and-test:
     uses: ./.github/workflows/BuildAndTest.yml
 
   publish:
-    needs: [buildAndTest]
+    needs: [build-and-test]
     uses: ./.github/workflows/Publish.yml
     secrets:
       GCR_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
     with:
-      dockerBaseImage: ghcr.io/digdir/dialogporten-
+      dockerImageBaseName: ghcr.io/digdir/dialogporten-
 
-  deployTest:
+  deploy-test:
     needs: [publish]
     uses: ./.github/workflows/Deploy.yml
     secrets:
