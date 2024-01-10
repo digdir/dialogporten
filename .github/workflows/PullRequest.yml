@@ -1,13 +1,13 @@
 ﻿name: PullRequest
 
 on:
-    pull_request:
-        branches: [main]
-        paths-ignore:
-            - "tests/k6/**"
+  pull_request:
+    branches: [main]
+    paths-ignore:
+      - "tests/k6/**"
 
 jobs:
-    publish:
-        uses: ./.github/workflows/BuildTestPublish.yml
-        with:
-            publishArtifacts: false
+  publish:
+    uses: ./.github/workflows/BuildTestPublish.yml
+    with:
+      publishArtifacts: false

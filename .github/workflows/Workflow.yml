@@ -3,10 +3,10 @@
 on:
   workflow_dispatch:
   push:
-    branches: [ main ]
+    branches: [main]
     #paths: [ src/**, tests/**, .github/workflows/** ]
     paths-ignore:
-      - 'tests/k6/**'
+      - "tests/k6/**"
 
 jobs:
   publish:
@@ -15,7 +15,7 @@ jobs:
       publishArtifacts: true
 
   deployTest:
-    needs: [ publish ]
+    needs: [publish]
     uses: ./.github/workflows/Deploy.yml
     secrets: inherit
     with:

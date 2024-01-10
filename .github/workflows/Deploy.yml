@@ -5,16 +5,16 @@ on:
     secrets:
       AZURE_CLIENT_ID:
         required: true
-      AZURE_TENANT_ID: 
+      AZURE_TENANT_ID:
         required: true
       AZURE_SUBSCRIPTION_ID:
         required: true
       AZURE_SOURCE_KEY_VAULT_NAME:
         required: true
       AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID:
-          required: true
+        required: true
       AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP:
-          required: true
+        required: true
       APIM_DIGDIR_EMAIL:
         required: true
 
@@ -32,11 +32,7 @@ jobs:
       id-token: write
       contents: read
     steps:
-      - name: Download bicep artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: azure-artifacts
-          path: .azure
+      - uses: actions/checkout@v4
 
       - name: OIDC Login to Azure Public Cloud with AzPowershell
         uses: azure/login@v1
