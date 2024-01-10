@@ -15,6 +15,10 @@ jobs:
     publish:
         needs: [buildAndTest]
         uses: ./.github/workflows/Publish.yml
+        secrets:
+            GCR_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+        with:
+            dockerBaseImage: ghcr.io/digdir/dialogporten-
 
     deployTest:
         needs: [publish]

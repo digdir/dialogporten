@@ -1,13 +1,20 @@
 name: Publish
 
 on:
-    workflow_dispatch:
     workflow_call:
-
+        secrets:
+            GCR_PASSWORD:
+                description: "Password for Github Container Registry"
+                required: true
+        inputs:
+            dockerBaseImage:
+                description: "Base image for docker images"
+                required: true
+                type: string
 jobs:
     publish-docker-images:
         env:
-            DOCKER_IMAGE_BASE: ghcr.io/digdir/dialogporten-
+            DOCKER_IMAGE_BASE: ${{ inputs.dockerBaseImage }}
         runs-on: ubuntu-latest
         strategy:
             fail-fast: true
@@ -38,7 +45,7 @@ jobs:
               with:
                   registry: ghcr.io
                   username: ${{ github.actor }}
-                  password: ${{ secrets.GITHUB_TOKEN }}
+                  password: ${{ secrets.GCR_PASSWORD }}
 
             - name: Extract metadata (tags, labels)
               id: meta
