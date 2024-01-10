@@ -9,15 +9,19 @@ on:
         required: true
       AZURE_SUBSCRIPTION_ID:
         required: true
+    inputs:
+      environment:
+        required: true
+        type: string
 
 jobs:
   build:
-    name: Build infrastructure
+    name: Build infrastructure for ${{ inputs.environment }}
     runs-on: ubuntu-latest
     permissions:
       id-token: write
       contents: read
-    environment: test
+    environment: ${{ inputs.environment }}
     steps:
       - uses: actions/checkout@v4
 
