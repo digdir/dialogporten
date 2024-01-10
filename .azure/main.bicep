@@ -12,7 +12,7 @@ var namePrefix = 'dp-be-${environment}'
 var baseImageUrl = 'ghcr.io/digdir/dialogporten-'
 
 // Create resource groups
-resource resourceGroup 'Microsoft.Resources/resourceGroups@2022-09-01' = {
+resource resourceGroup 'Microsoft.Resources/resourceGroups@2023-07-01' = {
 	name: '${namePrefix}-rg'
 	location: location
 }
