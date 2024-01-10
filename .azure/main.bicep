@@ -99,6 +99,16 @@ module copySecrets 'keyvault/copySecrets.bicep' = {
 	}
 }
 
+module slackNotifier 'functionApp/slackNotifier.bicep' = {
+    name: 'slackNotifier'
+    scope: resourceGroup
+    params: {
+        location: location
+        applicationInsightsName: appInsights.outputs.appInsightsName
+        namePrefix: namePrefix
+    }
+}
+
 var containerAppEnvVars = [
     {
         name: 'ASPNETCORE_ENVIRONMENT'
