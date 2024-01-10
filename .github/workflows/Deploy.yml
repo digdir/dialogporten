@@ -32,11 +32,7 @@ jobs:
       id-token: write
       contents: read
     steps:
-      - name: Download bicep artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: azure-artifacts
-          path: .azure
+      - uses: actions/checkout@v4
 
       - name: OIDC Login to Azure Public Cloud with AzPowershell
         uses: azure/login@v1

@@ -1,49 +1,21 @@
-name: BuildTestPublish
+name: Publish
 
 on:
-  workflow_dispatch:
   workflow_call:
+    secrets:
+      GCR_PASSWORD:
+        description: "Password for Github Container Registry"
+        required: true
     inputs:
-      publishArtifacts:
-        required: false
-        type: boolean
-        default: false
-
+      dockerImageBaseName:
+        description: "Base image name for docker images"
+        required: true
+        type: string
 jobs:
-  build-test-publish:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: "8.x"
-
-      - name: Restore
-        run: dotnet restore
-
-      - name: Build
-        run: dotnet build --no-restore --configuration Release
-
-      - name: Test
-        run: dotnet test --no-build --configuration Release
-
-      - name: Upload azure bicep artifacts for IaC deployment
-        if: ${{inputs.publishArtifacts}}
-        uses: actions/upload-artifact@v4
-        with:
-          name: azure-artifacts
-          path: .azure
-
   publish-docker-images:
     env:
-      DOCKER_IMAGE_BASE: ghcr.io/digdir/dialogporten-
-    needs: build-test-publish
-    if: ${{inputs.publishArtifacts}}
+      DOCKER_IMAGE_BASE_NAME: ${{ inputs.dockerImageBaseName }}
     runs-on: ubuntu-latest
-
     strategy:
       fail-fast: true
       matrix:
@@ -73,13 +45,13 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          password: ${{ secrets.GCR_PASSWORD }}
 
       - name: Extract metadata (tags, labels)
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.DOCKER_IMAGE_BASE }}${{ matrix.imageName }}
+          images: ${{ env.DOCKER_IMAGE_BASE_NAME }}${{ matrix.imageName }}
       - uses: docker/setup-buildx-action@v3
       - name: Build and push docker image
         uses: docker/build-push-action@v5
@@ -89,7 +61,7 @@ jobs:
           push: true
           tags: |
             ${{ steps.meta.outputs.tags }},
-            ${{ env.DOCKER_IMAGE_BASE }}${{ matrix.imageName }}:${{ github.sha }}
+            ${{ env.DOCKER_IMAGE_BASE_NAME }}${{ matrix.imageName }}:${{ github.sha }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max

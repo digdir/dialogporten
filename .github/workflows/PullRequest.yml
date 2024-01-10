@@ -7,7 +7,5 @@ on:
       - "tests/k6/**"
 
 jobs:
-  publish:
-    uses: ./.github/workflows/BuildTestPublish.yml
-    with:
-      publishArtifacts: false
+  build:
+    uses: ./.github/workflows/BuildAndTest.yml
