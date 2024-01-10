@@ -31,7 +31,7 @@ public sealed class SearchDialogQuery : SortablePaginationParameter<SearchDialog
     public List<string>? Party { get; init; }
 
     /// <summary>
-    /// Filter by national identifier
+    /// Filter by national identity number
     /// </summary>
     public string? AuthEndUserPid { get; init; }
 

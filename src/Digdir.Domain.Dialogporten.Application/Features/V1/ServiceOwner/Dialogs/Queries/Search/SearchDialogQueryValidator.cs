@@ -20,12 +20,10 @@ internal sealed class SearchDialogQueryValidator : AbstractValidator<SearchDialo
             .WithMessage("'{PropertyName}' must be a valid culture code.");
 
         RuleFor(x => x)
+            .Must(x => SocialSecurityNumber.IsValid(x.AuthEndUserPid))
+            .WithMessage($"'{nameof(SearchDialogQuery.AuthEndUserPid)}' must be a valid national identity number.")
             .Must(x => !x.ServiceResource.IsNullOrEmpty() || !x.Party.IsNullOrEmpty())
             .WithMessage($"Either {nameof(SearchDialogQuery.ServiceResource)} or {nameof(SearchDialogQuery.Party)} must be specified.")
-            .When(x => x.AuthEndUserPid is not null);
-
-        RuleFor(x => x.AuthEndUserPid)
-            .Must(x => SocialSecurityNumber.IsValid(x))
             .When(x => x.AuthEndUserPid is not null);
 
         RuleFor(x => x.ServiceResource!.Count)
