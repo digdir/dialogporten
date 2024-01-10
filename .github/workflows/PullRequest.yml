@@ -7,6 +7,9 @@ on:
       - "tests/k6/**"
 
 jobs:
+  check-changes:
+    uses: ./.github/workflows/CheckChanges.yml
+
   build:
     uses: ./.github/workflows/BuildAndTest.yml
 

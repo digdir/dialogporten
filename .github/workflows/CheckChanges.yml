@@ -1,0 +1,19 @@
+name: Deploy
+
+on:
+  workflow_call:
+
+jobs:
+  deploy:
+    name: Check for changes in folders
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+        # todo: use dorny/paths-filter@v2 and output the value so we can use the value from the calling workflow
+      - name: Check for changes in folders
+        id: paths-filter
+        uses: dorny/paths-filter@v1
+        with:
+          filters: |
+          
