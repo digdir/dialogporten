@@ -43,18 +43,7 @@ export function setSearchTags(dialog, searchTags) {
 }
 
 export function setSenderName(dialog, senderName, language = "nb_NO") {
-    if (typeof senderName !== "string") {
-        throw new Error("Invalid sender name provided.");
-    }
-
-    dialog.senderName = dialog.senderName || [];
-    const index = dialog.senderName.findIndex(b => b.cultureCode === language);
-
-    if (index !== -1) {
-        dialog.senderName[index].value = senderName;
-    } else {
-        dialog.senderName.push({ cultureCode: language, value: senderName });
-    }
+    setContent(dialog, "SenderName", senderName, language);
 }
 
 export function setStatus(dialog, status) {

@@ -19,6 +19,7 @@ import {
     deleteSO } from '../../common/testimports.js'
 
 import { default as dialogToInsert } from './testdata/01-create-dialog.js';
+import { defaultEndUserOrgNo } from '../../common/config.js'
 
 export default function () {
 
@@ -31,8 +32,8 @@ export default function () {
     let extendedStatusToSearchFor = "status:" + uuidv4();
     let secondExtendedStatusToSearchFor = "status:" + uuidv4();
     let senderNameToSearchFor = uuidv4()
-    let auxParty = "/person/07874299582";
-    let auxResource = "urn:altinn:resource:ttd-altinn-events-automated-tests"; // Note! We assume that this exists!
+    let auxParty = "/org/" + defaultEndUserOrgNo; // A party other than ourselves that we authorized for
+    let auxResource = "urn:altinn:resource:ttd-dialogporten-automated-tests"; // This must exist in Resource Registry
     let titleForDueAtItem = uuidv4();
     let titleForExpiresAtItem = uuidv4();
     let titleForVisibleFromItem = uuidv4();
@@ -107,7 +108,7 @@ export default function () {
         expect(r.json(), 'response json').to.have.property("items").with.lengthOf(1);
     });
 
-    describe('Search for sender name', () => {
+    describe('Search for sender name ', () => {
         let r = getSO('dialogs/?CreatedAfter=' + createdAfter + '&Search=' + senderNameToSearchFor);
         expectStatusFor(r).to.equal(200);
         expect(r, 'response').to.have.validJsonBody();

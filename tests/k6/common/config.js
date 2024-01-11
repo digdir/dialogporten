@@ -17,6 +17,10 @@ export const baseUrls = {
     }    
 };
 
+export const defaultEndUserOrgNo = "212475912";
+export const defaultEndUserSsn = "14886498226"; // has "DAGL" for 212475912
+export const defaultServiceOwnerOrgNo = "991825827";
+
 if (__ENV.IS_DOCKER && __ENV.API_ENVIRONMENT == "localdev") {
     __ENV.API_ENVIRONMENT = "localdev_docker";
 }
