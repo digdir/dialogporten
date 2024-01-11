@@ -13,10 +13,10 @@ using OneOf.Types;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Create;
 
-public sealed class CreateDialogCommand : CreateDialogDto, IRequest<CreateDialogResult> { }
+public sealed class CreateDialogCommand : CreateDialogDto, IRequest<CreateDialogResult>;
 
 [GenerateOneOf]
-public partial class CreateDialogResult : OneOfBase<Success<Guid>, DomainError, ValidationError, Forbidden> { }
+public partial class CreateDialogResult : OneOfBase<Success<Guid>, DomainError, ValidationError, Forbidden>;
 
 internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogCommand, CreateDialogResult>
 {
@@ -48,6 +48,13 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
         }
 
         var dialog = _mapper.Map<DialogEntity>(request);
+
+        dialog.Org = await _userService.GetCurrentUserOrgShortName(cancellationToken) ?? string.Empty;
+        if (string.IsNullOrWhiteSpace(dialog.Org))
+        {
+            _domainContext.AddError(new DomainFailure(nameof(DialogEntity.Org),
+                $"Cannot find service owner organization shortname for current user. Please ensure that you are logged in as a service owner."));
+        }
 
         var existingDialogIds = await _db.GetExistingIds(new[] { dialog }, cancellationToken);
         if (existingDialogIds.Count != 0)

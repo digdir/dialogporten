@@ -10,6 +10,7 @@ public sealed class InfrastructureSettings
 
     public required string DialogDbConnectionString { get; init; }
     public required AltinnPlatformSettings Altinn { get; init; }
+    public required AltinnCDNPlatformSettings AltinnCDN { get; init; }
     public required MaskinportenSettings Maskinporten { get; init; }
 }
 
@@ -19,10 +20,16 @@ public sealed class AltinnPlatformSettings
     public required string SubscriptionKey { get; init; }
 }
 
+public sealed class AltinnCDNPlatformSettings
+{
+    public required Uri BaseUri { get; init; }
+}
+
 internal sealed class InfrastructureSettingsValidator : AbstractValidator<InfrastructureSettings>
 {
     public InfrastructureSettingsValidator(
         IValidator<AltinnPlatformSettings> altinnPlatformSettingsValidator,
+        IValidator<AltinnCDNPlatformSettings> altinnCDNPlatformSettingsValidator,
         IValidator<MaskinportenSettings> maskinportenSettingsValidator)
     {
         RuleFor(x => x.DialogDbConnectionString)
@@ -31,6 +38,10 @@ internal sealed class InfrastructureSettingsValidator : AbstractValidator<Infras
         RuleFor(x => x.Altinn)
             .NotEmpty()
             .SetValidator(altinnPlatformSettingsValidator);
+
+        RuleFor(x => x.AltinnCDN)
+            .NotEmpty()
+            .SetValidator(altinnCDNPlatformSettingsValidator);
 
         RuleFor(x => x.Maskinporten)
             .NotEmpty()
@@ -41,6 +52,14 @@ internal sealed class InfrastructureSettingsValidator : AbstractValidator<Infras
 internal sealed class AltinnPlatformSettingsValidator : AbstractValidator<AltinnPlatformSettings>
 {
     public AltinnPlatformSettingsValidator()
+    {
+        RuleFor(x => x.BaseUri).NotEmpty().IsValidUri();
+    }
+}
+
+internal sealed class AltinnCDNPlatformSettingsValidator : AbstractValidator<AltinnCDNPlatformSettings>
+{
+    public AltinnCDNPlatformSettingsValidator()
     {
         RuleFor(x => x.BaseUri).NotEmpty().IsValidUri();
     }

@@ -16,7 +16,6 @@ using Polly.Extensions.Http;
 using Polly;
 using Polly.Contrib.WaitAndRetry;
 using Digdir.Domain.Dialogporten.Infrastructure.Common;
-using Digdir.Domain.Dialogporten.Infrastructure.Altinn.Registry;
 using FluentValidation;
 using System.Reflection;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.OptionExtensions;
@@ -25,6 +24,8 @@ using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.Authorization;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.Events;
+using Digdir.Domain.Dialogporten.Infrastructure.Altinn.OrganizationRegistry;
+using Digdir.Domain.Dialogporten.Infrastructure.Altinn.ResourceRegistry;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure;
 
@@ -74,7 +75,7 @@ public static class InfrastructureExtensions
             // Decorate
             .Decorate(typeof(INotificationHandler<>), typeof(IdempotentDomainEventHandler<>));
 
-        // HttpClient 
+        // HttpClient
         services.
             AddMaskinportenHttpClient<ICloudEventBus, AltinnEventsClient, SettingsJwkClientDefinition>(
                 infrastructureConfigurationSection,
@@ -85,6 +86,10 @@ public static class InfrastructureExtensions
             });
         services.AddHttpClient<IResourceRegistry, ResourceRegistryClient>((services, client) =>
                 client.BaseAddress = services.GetRequiredService<IOptions<InfrastructureSettings>>().Value.Altinn.BaseUri)
+            .AddPolicyHandlerFromRegistry(PollyPolicy.DefaultHttpRetryPolicy);
+
+        services.AddHttpClient<IOrganizationRegistry, OrganizationRegistryClient>((services, client) =>
+                client.BaseAddress = services.GetRequiredService<IOptions<InfrastructureSettings>>().Value.AltinnCDN.BaseUri)
             .AddPolicyHandlerFromRegistry(PollyPolicy.DefaultHttpRetryPolicy);
 
         services.AddHttpClient<IAltinnAuthorization, AltinnAuthorizationClient>((services, client) =>
