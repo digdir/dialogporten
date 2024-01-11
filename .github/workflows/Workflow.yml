@@ -9,12 +9,18 @@ on:
       - "tests/k6/**"
 
 jobs:
+  check_for_changes:
+    name: Check for changes
+    uses: ./.github/workflows/CheckChanges.yml
+
   build-and-test:
     uses: ./.github/workflows/BuildAndTest.yml
+    needs: [check_for_changes]
+    if: ${{ needs.check_for_changes.outputs.backend == 'true' }}
 
   publish:
-    needs: [build-and-test]
     uses: ./.github/workflows/Publish.yml
+    needs: [build-and-test]
     secrets:
       GCR_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
     with:

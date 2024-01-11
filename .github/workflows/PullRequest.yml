@@ -13,8 +13,9 @@ jobs:
 
   build:
     uses: ./.github/workflows/BuildAndTest.yml
+    needs: ["check_for_changes"]
+    if: ${{ needs.check_for_changes.outputs.backend == 'true' }}
 
-  # todo: only if .azure-files are changed
   build-infrastructure:
     uses: ./.github/workflows/BuildInfrastructure.yml
     needs: ["check_for_changes"]
