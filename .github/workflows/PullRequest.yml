@@ -7,19 +7,19 @@ on:
       - "tests/k6/**"
 
 jobs:
-  check_for_changes:
+  check-for-changes:
     name: Check for changes
-    uses: ./.github/workflows/CheckChanges.yml
+    uses: ./.github/workflows/CheckForChanges.yml
 
   build:
     uses: ./.github/workflows/BuildAndTest.yml
-    needs: ["check_for_changes"]
-    if: ${{ needs.check_for_changes.outputs.backend == 'true' }}
+    needs: ["check-for-changes"]
+    if: ${{ needs.check-for-changes.outputs.backend == 'true' }}
 
   build-infrastructure:
     uses: ./.github/workflows/BuildInfrastructure.yml
-    needs: ["check_for_changes"]
-    if: ${{ needs.check_for_changes.outputs.azure == 'true' }}
+    needs: ["check-for-changes"]
+    if: ${{ needs.check-for-changes.outputs.azure == 'true' }}
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}

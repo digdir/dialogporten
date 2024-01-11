@@ -5,23 +5,23 @@ on:
     outputs:
       azure:
         description: "Azure related files changed"
-        value: ${{ jobs.check_for_changes.outputs.azure }}
+        value: ${{ jobs.check-for-changes.outputs.azure }}
       backend:
         description: "Backend related files changed"
-        value: ${{ jobs.check_for_changes.outputs.backend }}
+        value: ${{ jobs.check-for-changes.outputs.backend }}
 
 jobs:
-  check_for_changes:
+  check-for-changes:
     name: Filter
     runs-on: ubuntu-latest
     outputs:
-      azure: ${{ steps.azure_filter.outputs.src == 'true' }}
-      backend: ${{ steps.backend_filter.outputs.src == 'true' }}
+      azure: ${{ steps.azure-filter.outputs.src == 'true' }}
+      backend: ${{ steps.backend-filter.outputs.src == 'true' }}
     steps:
       - uses: actions/checkout@v4
 
       - uses: dorny/paths-filter@v2
-        id: backend_filter
+        id: backend-filter
         with:
           base: ${{ github.ref }}
           filters: |
@@ -29,7 +29,7 @@ jobs:
               - 'src/**/*'
 
       - uses: dorny/paths-filter@v2
-        id: azure_filter
+        id: azure-filter
         with:
           base: ${{ github.ref }}
           filters: |
