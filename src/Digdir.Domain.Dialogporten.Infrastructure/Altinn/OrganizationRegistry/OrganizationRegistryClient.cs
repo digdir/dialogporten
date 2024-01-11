@@ -40,14 +40,14 @@ public class OrganizationRegistryClient : IOrganizationRegistry
         var response = await _client
             .GetFromJsonAsync<OrganizationRegistryResponse>(searchEndpoint, cancellationToken) ?? throw new UnreachableException();
 
-        var orgShortNameByOrgDetails = response
+        var orgShortNameByOrgNumber = response
             .Orgs
             .ToDictionary(
                 pair => pair.Value.Orgnr,
                 pair => pair.Key
             );
 
-        return orgShortNameByOrgDetails;
+        return orgShortNameByOrgNumber;
     }
 
     private sealed class OrganizationRegistryResponse

@@ -89,7 +89,7 @@ public static class InfrastructureExtensions
             .AddPolicyHandlerFromRegistry(PollyPolicy.DefaultHttpRetryPolicy);
 
         services.AddHttpClient<IOrganizationRegistry, OrganizationRegistryClient>((services, client) =>
-                client.BaseAddress = services.GetRequiredService<IOptions<InfrastructureSettings>>().Value.AltinnCDN.BaseUri)
+                client.BaseAddress = services.GetRequiredService<IOptions<InfrastructureSettings>>().Value.AltinnCdn.BaseUri)
             .AddPolicyHandlerFromRegistry(PollyPolicy.DefaultHttpRetryPolicy);
 
         services.AddHttpClient<IAltinnAuthorization, AltinnAuthorizationClient>((services, client) =>

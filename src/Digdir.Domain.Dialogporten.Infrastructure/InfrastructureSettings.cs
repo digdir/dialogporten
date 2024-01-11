@@ -10,7 +10,7 @@ public sealed class InfrastructureSettings
 
     public required string DialogDbConnectionString { get; init; }
     public required AltinnPlatformSettings Altinn { get; init; }
-    public required AltinnCDNPlatformSettings AltinnCDN { get; init; }
+    public required AltinnCdnPlatformSettings AltinnCdn { get; init; }
     public required MaskinportenSettings Maskinporten { get; init; }
 }
 
@@ -20,7 +20,7 @@ public sealed class AltinnPlatformSettings
     public required string SubscriptionKey { get; init; }
 }
 
-public sealed class AltinnCDNPlatformSettings
+public sealed class AltinnCdnPlatformSettings
 {
     public required Uri BaseUri { get; init; }
 }
@@ -29,7 +29,7 @@ internal sealed class InfrastructureSettingsValidator : AbstractValidator<Infras
 {
     public InfrastructureSettingsValidator(
         IValidator<AltinnPlatformSettings> altinnPlatformSettingsValidator,
-        IValidator<AltinnCDNPlatformSettings> altinnCDNPlatformSettingsValidator,
+        IValidator<AltinnCdnPlatformSettings> altinnCdnPlatformSettingsValidator,
         IValidator<MaskinportenSettings> maskinportenSettingsValidator)
     {
         RuleFor(x => x.DialogDbConnectionString)
@@ -39,9 +39,9 @@ internal sealed class InfrastructureSettingsValidator : AbstractValidator<Infras
             .NotEmpty()
             .SetValidator(altinnPlatformSettingsValidator);
 
-        RuleFor(x => x.AltinnCDN)
+        RuleFor(x => x.AltinnCdn)
             .NotEmpty()
-            .SetValidator(altinnCDNPlatformSettingsValidator);
+            .SetValidator(altinnCdnPlatformSettingsValidator);
 
         RuleFor(x => x.Maskinporten)
             .NotEmpty()
@@ -57,9 +57,9 @@ internal sealed class AltinnPlatformSettingsValidator : AbstractValidator<Altinn
     }
 }
 
-internal sealed class AltinnCDNPlatformSettingsValidator : AbstractValidator<AltinnCDNPlatformSettings>
+internal sealed class AltinnCdnPlatformSettingsValidator : AbstractValidator<AltinnCdnPlatformSettings>
 {
-    public AltinnCDNPlatformSettingsValidator()
+    public AltinnCdnPlatformSettingsValidator()
     {
         RuleFor(x => x.BaseUri).NotEmpty().IsValidUri();
     }
