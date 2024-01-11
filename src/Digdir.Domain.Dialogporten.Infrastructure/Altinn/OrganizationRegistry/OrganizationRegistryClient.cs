@@ -38,9 +38,9 @@ public class OrganizationRegistryClient : IOrganizationRegistry
     {
         const string searchEndpoint = "orgs/altinn-orgs.json";
         var response = await _client
-            .GetFromJsonAsync<OrganizationRegistryResponse>(searchEndpoint, cancellationToken);
+            .GetFromJsonAsync<OrganizationRegistryResponse>(searchEndpoint, cancellationToken) ?? throw new UnreachableException();
 
-        var orgShortNameByOrgDetails = response!
+        var orgShortNameByOrgDetails = response
             .Orgs
             .ToDictionary(
                 pair => pair.Value.Orgnr,
@@ -52,7 +52,7 @@ public class OrganizationRegistryClient : IOrganizationRegistry
 
     private sealed class OrganizationRegistryResponse
     {
-        public required IDictionary<string, OrganizationDetails> Orgs { get; set; }
+        public required IDictionary<string, OrganizationDetails> Orgs { get; init; }
     }
 
     private sealed class OrganizationDetails

@@ -19,9 +19,6 @@ public static class ClaimsPrincipalExtensions
     public static bool TryGetOrgNumber(this ClaimsPrincipal claimsPrincipal, [NotNullWhen(true)] out string? orgNumber)
         => claimsPrincipal.FindFirst(ConsumerClaim).TryGetOrgNumber(out orgNumber);
 
-    public static bool TryGetOrgShortName(this ClaimsPrincipal claimsPrincipal, [NotNullWhen(true)] out string? orgShortName)
-        => claimsPrincipal.FindFirst(OrgClaim).TryGetOrgShortName(out orgShortName);
-
     public static bool TryGetOrgNumber(this Claim? consumerClaim, [NotNullWhen(true)] out string? orgNumber)
     {
         orgNumber = null;
@@ -56,6 +53,9 @@ public static class ClaimsPrincipalExtensions
 
         return orgNumber is not null;
     }
+
+    public static bool TryGetOrgShortName(this ClaimsPrincipal claimsPrincipal, [NotNullWhen(true)] out string? orgShortName)
+        => claimsPrincipal.FindFirst(OrgClaim).TryGetOrgShortName(out orgShortName);
 
     public static bool TryGetOrgShortName(this Claim? orgClaim, [NotNullWhen(true)] out string? orgShortName)
     {
