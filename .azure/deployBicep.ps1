@@ -53,9 +53,9 @@ AddMemberPath $paramsJson "parameters.environment.value" $environment
 # Format parameters to be used in az deployment sub create
 $formattedParamsJson = $paramsJson `
 	| ConvertTo-Json -Compress -Depth 100 `
-	# | % {$_ -replace "`"", "\`""} `
-	# | % {$_ -replace "`n", ""} `
-	# | % {$_ -replace "\s", ""}
+	| % {$_ -replace "`"", "\`""} `
+	| % {$_ -replace "`n", ""} `
+	| % {$_ -replace "\s", ""}
 
 # Deploy
 $deploymentOutputs = @( `
