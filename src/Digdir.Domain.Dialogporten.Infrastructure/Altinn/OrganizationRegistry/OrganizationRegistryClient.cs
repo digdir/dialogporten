@@ -6,7 +6,7 @@ using Microsoft.Extensions.Caching.Distributed;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.OrganizationRegistry;
 
-public class OrganizationRegistryClient : IOrganizationRegistry
+internal class OrganizationRegistryClient : IOrganizationRegistry
 {
     private const string OrgShortNameReferenceCacheKey = "OrgShortNameReference";
     private static readonly DistributedCacheEntryOptions _oneDayCacheDuration = new() { AbsoluteExpiration = DateTimeOffset.UtcNow.AddDays(1) };
