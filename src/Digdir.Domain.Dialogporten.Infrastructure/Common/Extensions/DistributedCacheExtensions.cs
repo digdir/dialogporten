@@ -1,10 +1,13 @@
-﻿using Microsoft.Extensions.Caching.Distributed;
+﻿using System.Collections.Concurrent;
+using Microsoft.Extensions.Caching.Distributed;
 using System.Text.Json;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Common.Extensions;
 
 internal static class DistributedCacheExtensions
 {
+    private static readonly ConcurrentDictionary<string, SemaphoreSlim> _locks = new();
+
     /// <summary>
     /// Gets the value associated with the specified key from the distributed cache, or adds it if not found.
     /// </summary>
@@ -43,20 +46,47 @@ internal static class DistributedCacheExtensions
         JsonSerializerOptions? jsonOptions = null,
         CancellationToken cancellationToken = default)
     {
-        var cachedValue = await cache.GetAsync(key, cancellationToken);
-        if (cachedValue is not null)
-        {
-            return JsonSerializer.Deserialize<T>(cachedValue, jsonOptions)!;
-        }
-
-        var value = await valueFactory(cancellationToken);
-        var options = optionsFactory?.Invoke(value) ?? new();
-        if (options.AbsoluteExpiration < DateTimeOffset.UtcNow)
+        var value = await TryGetFromCache<T>(cache, key, jsonOptions, cancellationToken);
+        if (value is not null)
         {
             return value;
         }
 
-        await cache.SetAsync(key, JsonSerializer.SerializeToUtf8Bytes(value), options, cancellationToken);
+        var keyLock = _locks.GetOrAdd(key, new SemaphoreSlim(1, 1));
+        await keyLock.WaitAsync(cancellationToken);
+
+        try
+        {
+            // Try getting the value from cache again (it might have been added to cache by another task while waiting for lock).
+            value = await TryGetFromCache<T>(cache, key, jsonOptions, cancellationToken);
+            if (value is not null)
+            {
+                return value;
+            }
+
+            value = await valueFactory(cancellationToken);
+            var options = optionsFactory?.Invoke(value) ?? new();
+            if (options.AbsoluteExpiration < DateTimeOffset.UtcNow)
+            {
+                return value;
+            }
+
+            await cache.SetAsync(key, JsonSerializer.SerializeToUtf8Bytes(value), options, cancellationToken);
+        }
+        finally
+        {
+            keyLock.Release();
+        }
         return value;
+    }
+
+    private static async Task<T?> TryGetFromCache<T>(IDistributedCache cache, string key, JsonSerializerOptions? jsonOptions, CancellationToken cancellationToken)
+    {
+        var cachedValue = await cache.GetAsync(key, cancellationToken);
+        if (cachedValue is not null)
+        {
+            return JsonSerializer.Deserialize<T>(cachedValue, jsonOptions);
+        }
+        return default;
     }
 }
