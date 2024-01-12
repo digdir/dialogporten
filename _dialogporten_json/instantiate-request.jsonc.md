@@ -7,7 +7,7 @@
 // en 4xx/5xx med en RFC7807-kompatibel feilmelding.
 {
     "serviceResource": "urn:altinn:resource:super-simple-service",
-    "party": "urn:altinn:party-identifier:person-no::12018212345",
+    "party": "urn:altinn:person:identifier-no::12018212345",
     // Hvis det ifm instansiering kreves noen parametre kan disse oppgis her. Disse sendes verbatim til instatiationUrl 
     // (kun gjenstand for størrelsesbegrensninger). All logikk og øvrig validering foretas av tjenesteeier.
     "inputParameters": { 

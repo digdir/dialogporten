@@ -378,12 +378,12 @@ Dialogtokenet benyttes som et "bearer token", altså noe som indikerer at ihende
 
 | Claim            | Beskrivelse                                                                                                                                                        | Eksempel                                                                           |
 |------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------- |----------------------------------------------------------------------------------- |
-| c                | Autentisert som konsument av Dialogporten. Prefikset for  hhv. personer (typisk ID-porten), organisasjoner (typisk Maskinporten) eller selvregistrerte brukere.    | `"urn:altinn:party-identifier:person-no::12018212345`, `"urn:altinn:party-identifier:organization-no::991825827"` eller `"urn:altinn:party-identifier:username::someemail@example.com"` |
+| c                | Autentisert som konsument av Dialogporten. Prefikset for  hhv. personer (typisk ID-porten), organisasjoner (typisk Maskinporten) eller selvregistrerte brukere.    | `"urn:altinn:person:identifier-no::12018212345`, `"urn:altinn:organization:identifier-no::991825827"` eller `"urn:altinn:party-identifier:username::someemail@example.com"` |
 | l                | Sikkerhetsnivå på autentisering (4)                                                                                                                                | `4`                                                                                |
-| s                | Valgfritt. Hvis det er benyttet et leverandørtoken i Maskinporten, vil autentisert leverandørs organisasjonsnummer oppgis her.           | `"urn:altinn:party-identifier:organization-no::991825827""`                                                                  |
-| p                | Hvem konsument opptrer på vegne av (om ikke seg selv), altså hvem som eier det aktuelle dialogen.                                                           | `"urn:altinn:party-identifier:person-no::12018212345"`, `"ourn:altinn:party-identifier:organization-no::991825827""` eller `"urn:altinn:party-identifier:username::someemail@example.com"` |
+| s                | Valgfritt. Hvis det er benyttet et leverandørtoken i Maskinporten, vil autentisert leverandørs organisasjonsnummer oppgis her.           | `"urn:altinn:organization:identifier-no::991825827""`                                                                  |
+| p                | Hvem konsument opptrer på vegne av (om ikke seg selv), altså hvem som eier det aktuelle dialogen.                                                           | `"urn:altinn:person:identifier-no::12018212345"`, `"ourn:altinn:organization:identifier-no::991825827""` eller `"urn:altinn:party-identifier:username::someemail@example.com"` |
 | i                | Unik identifikator til dialog.                                                                                                                              | `"e0300961-85fb-4ef2-abff-681d77f9960e"`                                           |
-| a                | Liste over autoriserte actions. Kan være prefixet med `<ressurs>:` hvis actionen omfatter en navngitt ressurs i XACML policy som ikke er tjenesteressursen         | `[ "open", "attachment1:open", "confirm" ]`                                        |
+| u                | URL som dialogtokenet er knyttet til         | `"https://example.com/api/dialogs/123456789/dialogelements/5b5446a7.pdf"`                                        |
 
 ### Eksempel på dekodet token
 
@@ -396,15 +396,11 @@ Dialogtokenet benyttes som et "bearer token", altså noe som indikerer at ihende
 // .
 {
   "l": 4, // Sikkerhetsnivå
-  "c": "urn:altinn:party-identifier:person-no::12018212345", // Autentisert part
-  "p": "urn:altinn:party-identifier:organization-no::991825827", // Party
-  "s": "urn:altinn:party-identifier:organization-no::825827991", // Supplier (hvis MP-leverandørtoken)
+  "c": "urn:altinn:person:identifier-no::12018212345", // Autentisert part
+  "p": "urn:altinn:organization:identifier-no::991825827", // Party
+  "s": "urn:altinn:organization:identifier-no::825827991", // Supplier (hvis MP-leverandørtoken)
   "i": "e0300961-85fb-4ef2-abff-681d77f9960e", // Dialog-ID
-  "a": [ // Actions
-    "open",
-    "attachment1:open", // For subressurs
-    "confirm"
-  ],
+  "u": "https://example.com/api/dialogs/123456789/dialogelements/5b5446a7.pdf",
   "exp": 1672772834,
   "iss": "https://dialogporten.no",
   "nbf": 1672771934,
@@ -419,7 +415,7 @@ Tokenet kan verifiseres på vanlig vis gjennom at det publiseres et nøkkelsett 
 
 ### Overføring av token til tjenestetilbyder
 
-Tokenet vil inkluderes i responsmodellen som returneres til SBS-er og Felles arbeidsflate i feltet `dialogToken`. Arbeidsflate vil overføre dette tokenet til statisk frontend (nettleser), hvor front channel embeds eller actions uten navigasjon benytter dette tokenet i en standard `Authorization: Bearer <token>` HTTP-header gjennom [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API). 
+Tokenet vil inkluderes i responsmodellen som returneres til SBS-er og Felles arbeidsflate i feltet `dialogToken`. Arbeidsflate vil overføre dette tokenet til statisk frontend (nettleser), hvor front channel embeds eller actions uten navigasjon benytter dette tokenet i en standard `Authorization: Bearer <token>` HTTP-header gjennom [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API). Det er egne tokens per action med write/delete-action og dialogelementer med frontchannel embed.
 
 Endepunktene som aksesseres med dette denne mekanismen må da ha "trust" til Dialogporten som token issuer, og verifisere tokenet (signatur, levetid, claims). De offentlige nøklene som brukes for å verifisere tokenet eksponeres gjennom et well-known-endepunkt med JWK-er. 
 
@@ -553,7 +549,7 @@ I tillegg genereres det en event med type `dialogporten.dialog.read.v1` når dia
     "resourceinstance": "f4e6df3c-7434-44c3-875e-8dca1cdf0b20",
     
     // Party
-    "subject": "urn:altinn:party-identifier:organization-no::991825827", 
+    "subject": "urn:altinn:organization:identifier-no::991825827", 
     
     // URL til dialog i Dialogporten. Merk denne vil gi 410 Gone hvis type er `dialogporten.dialog.deleted.v1`
     "source": "https://dialogporten.no/api/v1/enduser/dialogs/f4e6df3c-7434-44c3-875e-8dca1cdf0b20" 
@@ -582,7 +578,7 @@ I tillegg genereres det en event med type `dialogporten.dialog.read.v1` når dia
     "resourceinstance": "f4e6df3c-7434-44c3-875e-8dca1cdf0b20",
     
     // Party
-    "subject": "urn:altinn:party-identifier:organization-no::991825827", 
+    "subject": "urn:altinn:organization:identifier-no::991825827", 
     
     // URL til dialog i Dialogporten. Merk denne vil gi 410 Gone hvis type er `dialogporten.dialog.deleted.v1`
     "source": "https://dialogporten.no/api/v1/enduser/dialogs/f4e6df3c-7434-44c3-875e-8dca1cdf0b20"
@@ -624,7 +620,7 @@ Eventer har type som er prefikset/navnerommet `dialogporten.dialog.element`. Und
     "resourceinstance": "b8643c00-c826-41c7-8758-bfc0ca5c19fa",
     
     // Party
-    "subject": "urn:altinn:party-identifier:organization-no::991825827",
+    "subject": "urn:altinn:organization:identifier-no::991825827",
 
     // URL til dialogelementet i Dialogporten
     "source": "https://dialogporten.no/api/v1/enduser/dialogs/b8643c00-c826-41c7-8758-bfc0ca5c19fa/elements/da506c38-b19f-45d4-963e-927df959a5f8",
@@ -679,7 +675,7 @@ Eventer har type som er prefikset/navnerommet `dialogporten.dialog.activity`. Su
     "resourceinstance": "f4e6df3c-7434-44c3-875e-8dca1cdf0b20",
     
     // Party
-    "subject": "urn:altinn:party-identifier:organization-no::991825827",
+    "subject": "urn:altinn:organization:identifier-no::991825827",
 
     // URL til aktivitetshistorikk-innslag i Dialogporten
     "source": "https://dialogporten.no/api/v1/enduser/dialogs/f4e6df3c-7434-44c3-875e-8dca1cdf0b20/activityhistory/21241c7e-819f-462b-b8a4-d5d32352311a",

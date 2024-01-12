@@ -11,7 +11,7 @@
         "org": "digdir",
         "serviceResource": "super-simple-service",
         "externalReference": "someReference",
-        "party": "urn:altinn:party-identifier:person-no::12018212345",        
+        "party": "urn:altinn:person:identifier-no::12018212345",        
         "dates": {
             "createdDateTime": "2022-12-01T10:00:00.000Z",
             "updatedDateTime": "2022-12-01T10:00:00.000Z",

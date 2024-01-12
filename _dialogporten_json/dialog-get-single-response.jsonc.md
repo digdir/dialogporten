@@ -14,7 +14,7 @@
         "order": 1,
         "name": [ { "code": "nb_NO", "value": "Navn på prosess." } ]
     },
-    "party": "urn:altinn:party-identifier:organization-no::991825827",
+    "party": "urn:altinn:organization:identifier-no::991825827",
     "externalReference": "123456789",
     "status": "in-progress",
     "extendedStatus": "SKE-ABC",
@@ -45,9 +45,6 @@
             "value": [{ "code": "nb_NO", "value": "Overstyrt avsendernavn (bruker default tjenesteeiers navn)" } ]
         }
     ],
-    // Et token med EdDSA-algoritme, signert av et sertifikat tilgjengelig på et .well-known-endepunkt
-    // Blir kun generert hvis det finnes dialogElementer med frontChannelEmbed eller actions som er isWriteAction/isDeleteAction
-    "dialogToken": "eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJsIjo0LCJjIjoidXJuOmFsdGlubjpwYXJ0eS1pZGVudGlmaWVyOnBlcnNvbi1ubzo6MTIwMTgyMTIzNDUiLCJwIjoidXJuOmFsdGlubjpwYXJ0eS1pZGVudGlmaWVyOm9yZ2FuaXphdGlvbi1ubzo6OTkxODI1ODI3IiwicyI6InVybjphbHRpbm46cGFydHktaWRlbnRpZmllcjpvcmdhbml6YXRpb24tbm86OjgyNTgyNzk5MSIsImkiOiJlMDMwMDk2MS04NWZiLTRlZjItYWJmZi02ODFkNzdmOTk2MGUiLCJhIjpbIm9wZW4iLCJhdHRhY2htZW50MTpvcGVuIiwiY29uZmlybSJdLCJleHAiOjE2NzI3NzI4MzQsImlzcyI6Imh0dHBzOi8vZGlhbG9ncG9ydGVuLm5vIiwibmJmIjoxNjcyNzcxOTM0LCJpYXQiOjE2NzI3NzE5MzR9.2k5Ml8OksIiDoRevoEEaLG6Y2vHyAV3ivSwx4ouk5raSys_L8ePkBPIp8wydNwG66rVYYx_SJDQqNn4Vx4LfAA",
     "dialogElements": [
         {
             "dialogElementId": "5b5446a7-9b65-4faf-8888-5a5802ce7de7",
@@ -72,6 +69,9 @@
                 {
                     "consumerType": "gui",
                     "frontChannelEmbed": true,
+                    // Et token med EdDSA-algoritme, signert av et sertifikat tilgjengelig på et .well-known-endepunkt
+                    // Blir kun generert på dialogElementer med frontChannelEmbed eller actions som er isWriteAction/isDeleteAction
+                    "dialogToken": "eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ....",
                     "url": "https://example.com/api/dialogs/123456789/user-instructions"
                 }
             ]
@@ -163,6 +163,9 @@
                 "priority": "secondary",
                 "title": [ { "code": "nb_NO", "value": "Bekreft mottatt" } ],
                 "isWriteAction": true,
+                // Et token med EdDSA-algoritme, signert av et sertifikat tilgjengelig på et .well-known-endepunkt
+                // Blir kun generert på dialogElementer med frontChannelEmbed eller actions som er isWriteAction/isDeleteAction
+                "dialogToken": "eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ....",
                 "url": "https://example.com/some/deep/link/to/dialogs/123456789/confirmReceived"
             },
             { 
@@ -170,6 +173,9 @@
                 "priority": "tertiary",
                 "title": [ { "code": "nb_NO", "value": "Avbryt" } ],
                 "isDeleteAction": true,
+                // Et token med EdDSA-algoritme, signert av et sertifikat tilgjengelig på et .well-known-endepunkt
+                // Blir kun generert på dialogElementer med frontChannelEmbed eller actions som er isWriteAction/isDeleteAction
+                "dialogToken": "eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ....",
                 "url": "https://example.com/some/deep/link/to/dialogs/123456789"
             }
         ],
