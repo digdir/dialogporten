@@ -3,27 +3,39 @@
 on:
   workflow_dispatch:
   push:
-    branches: [ main ]
+    branches: [main]
     #paths: [ src/**, tests/**, .github/workflows/** ]
     paths-ignore:
-      - 'tests/k6/**'
+      - "tests/k6/**"
 
 jobs:
-  publish:
-    uses: ./.github/workflows/BuildTestPublish.yml
-    with:
-      publishArtifacts: true
+  check-for-changes:
+    name: Check for changes
+    uses: ./.github/workflows/CheckForChanges.yml
 
-  deployTest:
-    needs: [ publish ]
+  build-and-test:
+    uses: ./.github/workflows/BuildAndTest.yml
+    needs: [check-for-changes]
+    if: ${{ needs.check-for-changes.outputs.hasBackendChanges == 'true' }}
+
+  publish:
+    uses: ./.github/workflows/Publish.yml
+    needs: [build-and-test]
+    secrets:
+      GCR_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+    with:
+      dockerImageBaseName: ghcr.io/digdir/dialogporten-
+
+  deploy-test:
+    needs: [publish]
     uses: ./.github/workflows/Deploy.yml
-    secrets: inherit
+    secrets:
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      AZURE_SOURCE_KEY_VAULT_NAME: ${{ secrets.AZURE_SOURCE_KEY_VAULT_NAME }}
+      AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID: ${{ secrets.AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID }}
+      AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP: ${{ secrets.AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP }}
+      APIM_DIGDIR_EMAIL: ${{ secrets.APIM_DIGDIR_EMAIL }}
     with:
       environment: test
-#
-#  deployTest:
-#    needs: [ publish ]
-#    uses: ./.github/workflows/Deploy.yml
-#    secrets: inherit
-#    with:
-#      environment: test

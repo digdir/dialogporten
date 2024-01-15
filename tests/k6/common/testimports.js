@@ -13,7 +13,7 @@ export {
 } from './request.js';
 export {
     setTitle,
-    setBody,
+    setAdditionalInfo,
     setSearchTags,
     setSenderName,
     setStatus,

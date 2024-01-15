@@ -2,8 +2,9 @@ import {
     describe, expect, expectStatusFor,
     getSO,
     uuidv4,
+    customConsole as console,
     setTitle,
-    setBody,
+    setAdditionalInfo,
     setSearchTags,
     setSenderName,
     setStatus,
@@ -18,6 +19,7 @@ import {
     deleteSO } from '../../common/testimports.js'
 
 import { default as dialogToInsert } from './testdata/01-create-dialog.js';
+import { defaultEndUserOrgNo } from '../../common/config.js'
 
 export default function () {
 
@@ -25,13 +27,13 @@ export default function () {
     let dialogIds = [];
     
     let titleToSearchFor = uuidv4();    
-    let bodyToSearchFor = uuidv4();
+    let additionalInfoToSearchFor = uuidv4();
     let searchTagsToSearchFor = [ uuidv4(), uuidv4() ];
     let extendedStatusToSearchFor = "status:" + uuidv4();
     let secondExtendedStatusToSearchFor = "status:" + uuidv4();
     let senderNameToSearchFor = uuidv4()
-    let auxParty = "/person/07874299582";
-    let auxResource = "urn:altinn:resource:ttd-altinn-events-automated-tests"; // Note! We assume that this exists!
+    let auxParty = "/org/" + defaultEndUserOrgNo; // A party other than ourselves that we authorized for
+    let auxResource = "urn:altinn:resource:ttd-dialogporten-automated-tests"; // This must exist in Resource Registry
     let titleForDueAtItem = uuidv4();
     let titleForExpiresAtItem = uuidv4();
     let titleForVisibleFromItem = uuidv4();
@@ -49,7 +51,7 @@ export default function () {
 
         let d = -1;        
         setTitle(dialogs[++d], titleToSearchFor);
-        setBody(dialogs[++d], bodyToSearchFor);
+        setAdditionalInfo(dialogs[++d], additionalInfoToSearchFor);
         setSearchTags(dialogs[++d], searchTagsToSearchFor);
         setStatus(dialogs[++d], "signing");
         setExtendedStatus(dialogs[++d], extendedStatusToSearchFor);
@@ -100,13 +102,13 @@ export default function () {
     });
 
     describe('Search for body', () => {
-        let r = getSO('dialogs/?CreatedAfter=' + createdAfter + '&Search=' + bodyToSearchFor);
+        let r = getSO('dialogs/?CreatedAfter=' + createdAfter + '&Search=' + additionalInfoToSearchFor);
         expectStatusFor(r).to.equal(200);
         expect(r, 'response').to.have.validJsonBody();
         expect(r.json(), 'response json').to.have.property("items").with.lengthOf(1);
     });
 
-    describe('Search for sender name', () => {
+    describe('Search for sender name ', () => {
         let r = getSO('dialogs/?CreatedAfter=' + createdAfter + '&Search=' + senderNameToSearchFor);
         expectStatusFor(r).to.equal(200);
         expect(r, 'response').to.have.validJsonBody();
@@ -143,16 +145,16 @@ export default function () {
         expectStatusFor(r).to.equal(200);
         expect(r, 'response').to.have.validJsonBody();
         expect(r.json(), 'response json').to.have.property("items").with.lengthOf(3);
-        expect(r.json().items[0], 'first dialog').to.have.property("title").that.hasLocalizedText(titleForDueAtItem);
-        expect(r.json().items[1], 'second dialog').to.have.property("title").that.hasLocalizedText(titleForUpdatedItem);
-        expect(r.json().items[2], 'third dialog').to.have.property("title").that.hasLocalizedText(titleForLastItem);
+        expect(r.json().items[0], 'first dialog title').to.haveContentOfType("Title").that.hasLocalizedText(titleForDueAtItem);
+        expect(r.json().items[1], 'second dialog title').to.haveContentOfType("Title").that.hasLocalizedText(titleForUpdatedItem);
+        expect(r.json().items[2], 'third dialog title').to.haveContentOfType("Title").that.hasLocalizedText(titleForLastItem);
 
         r = getSO('dialogs/?CreatedAfter=' + createdAfter + '&Limit=3&OrderBy=dueAt_asc,updatedAt_desc');
         expectStatusFor(r).to.equal(200);
         expect(r, 'response').to.have.validJsonBody();
         expect(r.json(), 'response json').to.have.property("items").with.lengthOf(3);
-        expect(r.json().items[0], 'first dialog reversed').to.have.property("title").that.hasLocalizedText(titleForUpdatedItem);
-        expect(r.json().items[1], 'second dialog reversed').to.have.property("title").that.hasLocalizedText(titleForLastItem);
+        expect(r.json().items[0], 'first dialog reversed title').to.haveContentOfType("Title").that.hasLocalizedText(titleForUpdatedItem);
+        expect(r.json().items[1], 'second dialog reversed title').to.haveContentOfType("Title").that.hasLocalizedText(titleForLastItem);
     });
 
     describe('List with party filter', () => {
