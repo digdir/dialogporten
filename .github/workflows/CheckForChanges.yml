@@ -5,18 +5,18 @@ on:
     outputs:
       hasAzureChanges:
         description: "Azure related files changed"
-        value: ${{ jobs.check-for-changes.outputs.azure }}
+        value: ${{ jobs.check-for-changes.outputs.hasAzureChanges }}
       hasBackendChanges:
         description: "Backend related files changed"
-        value: ${{ jobs.check-for-changes.outputs.backend }}
+        value: ${{ jobs.check-for-changes.outputs.hasBackendChanges }}
 
 jobs:
   check-for-changes:
     name: Filter
     runs-on: ubuntu-latest
     outputs:
-      backend: ${{ steps.paths-filter.outputs.backend == 'true' }}
-      azure: ${{ steps.paths-filter.outputs.azure == 'true' }}
+      hasBackendChanges: ${{ steps.paths-filter.outputs.backend == 'true' }}
+      hasAzureChanges: ${{ steps.paths-filter.outputs.azure == 'true' }}
     steps:
       - uses: actions/checkout@v4
 
