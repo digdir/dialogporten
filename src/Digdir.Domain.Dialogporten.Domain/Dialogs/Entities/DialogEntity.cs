@@ -24,9 +24,7 @@ public class DialogEntity :
     public DateTimeOffset UpdatedAt { get; set; }
     public bool Deleted { get; set; }
     public DateTimeOffset? DeletedAt { get; set; }
-
-    // TODO: Hent dette fra token?
-    public string Org { get; set; } = "DummyOrg";
+    public string Org { get; set; } = null!;
     public string ServiceResource { get; set; } = null!;
     public string Party { get; set; } = null!;
     public int? Progress { get; set; }
@@ -41,7 +39,7 @@ public class DialogEntity :
     public DialogStatus.Values StatusId { get; set; }
     public DialogStatus Status { get; set; } = null!;
 
-    // === Principal relationships === 
+    // === Principal relationships ===
     [AggregateChild]
     public List<DialogContent> Content { get; set; } = new();
     [AggregateChild]
