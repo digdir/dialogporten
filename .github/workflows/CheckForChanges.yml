@@ -35,5 +35,5 @@ jobs:
             azure:
               - '.azure/**/*'
             slackNotifier:
-              - 'src/src/Digdir.Tool.Dialogporten.SlackNotifier/**/*'
+              - 'src/Digdir.Tool.Dialogporten.SlackNotifier/**/*'
             # todo: add additional files that should trigger a build

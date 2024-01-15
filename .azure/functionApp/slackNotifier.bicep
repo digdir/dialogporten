@@ -45,7 +45,7 @@ resource functionApp 'Microsoft.Web/sites@2023-01-01' = {
         serverFarmId: applicationServicePlan.id
         publicNetworkAccess: 'Enabled'
         siteConfig: {
-            // Setting/updating appSettings in separate module in order no not delete already deployed functions, see below
+            // Setting/updating appSettings in separate module in order to not delete already deployed functions, see below
         }
         httpsOnly: true
     }
@@ -83,7 +83,7 @@ resource notifyDevTeam 'Microsoft.Insights/actionGroups@2023-01-01' = {
                 name: functionApp.properties.defaultHostName
                 functionName: 'ForwardAlertToSlack'
                 functionAppResourceId: functionApp.id
-                httpTriggerUrl: 'https://${functionApp.properties.defaultHostName}/api/forewardalerttoslack?code=${defaultFunctionKey}'
+                httpTriggerUrl: 'https://${functionApp.properties.defaultHostName}/api/forwardalerttoslack?code=${defaultFunctionKey}'
                 useCommonAlertSchema: true
             }
         ]
