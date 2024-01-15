@@ -14,12 +14,12 @@ jobs:
   build:
     uses: ./.github/workflows/BuildAndTest.yml
     needs: ["check-for-changes"]
-    if: ${{ needs.check-for-changes.outputs.hasBackendChanges}}
+    if: ${{ needs.check-for-changes.outputs.hasBackendChanges == 'true' }}
 
   build-infrastructure:
     uses: ./.github/workflows/BuildInfrastructure.yml
     needs: ["check-for-changes"]
-    if: ${{ needs.check-for-changes.outputs.hasAzureChanges}}
+    if: ${{ needs.check-for-changes.outputs.hasAzureChanges == 'true' }}
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
