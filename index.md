@@ -124,9 +124,11 @@ Alle GUI-handlinger har en URL. Disse URLene brukes i framkanal når brukeren ak
 
 {% include note.html type="warning" content="GUI-handlinger for skriving/sletting er under utredning." %}
 
-GUI-handlinger kan imidlertid markeres at de er skriveoperasjoner, og kan da også brukes for å gjennomføre tilstandsendringer. Brukeren blir da ikke omdirigert, men Dialogporten vil da foreta en (tom) POST-forespørsel på vegne av brukeren til den oppgitte URL-en. Tjenestetilbyderen oppdaterer dialogen i bakkanal, og returnerer HTTP-kode 204, som indikerer suksess og trigger at arbeidsflate laster dialogen på nytt. Ved feil (enten av tekniske eller forretningslogiske årsaker) kan en feilmelding vises.
+GUI-handlinger kan imidlertid markeres at de er skriveoperasjoner, og kan da også brukes for å gjennomføre tilstandsendringer. Brukeren blir da ikke omdirigert, men arbeidsflate/GUI vil da foreta en (tom) POST- eller DELETE-forespørsel på vegne av brukeren til den oppgitte URL-en i framkanal, og oppgi [dialogtoken](#dialogtoken) som autorisasjonsmiddel. Avhengig av konfigurasjon, vil sluttbrukere blir presentert med en oppdatert dialog-visning. Ved feil (enten av tekniske eller forretningslogiske årsaker) kan en feilmelding vises, enten basert på den faktisk responsen eller predefineres i dialogen.
 
-Handlinger kan også indikeres å være slette-handlinger. Disse fungerer på samme måte som skriveoperasjoner, men vil i stedet fjerne dialogen fra DOM umiddelbart (det legges da til grunn at tjenesteeier har slettet dialogen i bakkanal slik at denne dukker opp igjen ved neste søk)
+Dialogporten/arbeidsflate har ikke logikk knyttet til actions, så for handlinger som innebærer komplekse muteringen av dialogen, må tjenesteeier oppdatere dialogen i bakkanal og returnere en 2xx-respons i requesten som ble kalt i fremkanal. I disse tilfellene må det konfigureres at arbeidsflate/GUI skal laste dialogen på nytt etter mottatt 2xx-respons. 
+
+Alternativt kan det oppgis at det skal vises en eller annen predefinert melding og at dialogen/aktuell knapp skal skjules i GUI. Merk at sluttbruker _ikke_ vil kunne mutere dialogen gjennom sluttbruker-API-et, annet enn det som går på merking (labelling) av dialogen, så denne håndteringen vil _ikke_ persisteres annet enn i sluttbrukers local storage, og tilbys kun som en UX-mekanisme for å støtte asynkron oppdatering av dialogen fra tjenesteeiers side. 
 
 ### API-handling
 
@@ -149,6 +151,12 @@ Dette muliggjør at man kan ha ulike autorisasjonskrav for samme type handling s
 ## Aktivitet
 
 En _aktivitet_ beskriver en eller annen utført handling eller hendelse som har skjedd i tilknytning til dialogen. Hver aktivitet inngår i aktivitetshistorikken, som er en kronologisk liste over aktiviteter. Det er tjenestetilbyder som populerer aktivitetshistorikken etter hvert som ulike tilstandsendringer inntreffer. Dialogporten kan også foreta innslag i aktivitetshistorikken, f.eks. om en dialog blir åpnet for første gang, eller tilgang til dialogen delegeres videre.
+
+## Merking (labels)
+
+For å støtte brukerstyrt organisering av dialoger, skal det bygges støtte for å kunne knytter merkelapper (labels) til dialoger. Dette er skriveoperasjoner som finnes kun i sluttbruker-API-et, og påvirker ikke tilstand på selve dialogen. 
+
+{% include note.html type="info" content="Labels er under utredning, og trackes i <a href='https://github.com/digdir/dialogporten/issues/198'>issue #198</a>" %}
 
 # Begrepsmodell
 
@@ -820,8 +828,7 @@ end
             * Hvis ikke standard-handling, tekst som beskriver handlingen i flere språk
             * En valgfri hjelpetekst som kan fremvises brukeren som gir mer informasjon om hva handlingen innebærer
             * Flagg som indikerer om handlingen er en skriveoperasjon
-            * En URI som enten (1) brukeren vil omdirigert til når hen aktiverer det aktuelle GUI-dialogen (f.eks. en knapp) eller (2) sluttbrukersystemet (i kontekst av arbeidsflate, brukerens nettleser) kaller med POST
-            * Hvis skriveoperasjon, skal URI-en skal oppdatere dialogen i bakkanal og returnere HTTP-kode 204, eller returnere en feilmelding.
+            * En URI som enten (1) brukeren vil omdirigert til når hen aktiverer det aktuelle GUI-dialogen (f.eks. en knapp) eller (2) sluttbrukersystemet (i kontekst av arbeidsflate, brukerens nettleser) kaller med POST/DELETE
             * Flagg som indikerer om dialogen skal slettes/arkiveres i Dialogporten hvis kall til URI lykkes (vil brukes til f.eks. "Er du sikker"-prompts)
         * Hver API-handling inneholder
             * En identifikator for handlingen
