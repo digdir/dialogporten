@@ -1,0 +1,98 @@
+﻿name: Deploy
+
+on:
+  workflow_call:
+    secrets:
+      AZURE_CLIENT_ID:
+        required: true
+      AZURE_TENANT_ID:
+        required: true
+      AZURE_SUBSCRIPTION_ID:
+        required: true
+      AZURE_SOURCE_KEY_VAULT_NAME:
+        required: true
+      AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID:
+        required: true
+      AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP:
+        required: true
+      APIM_DIGDIR_EMAIL:
+        required: true
+      REGION:
+        required: true
+
+    inputs:
+      environment:
+        required: true
+        type: string
+      dryRun:
+        description: "If true, the deployment will be validated but not executed."
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  deploy:
+    name: Deploy to ${{ inputs.environment }}
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: OIDC Login to Azure Public Cloud
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      # todo: generate secrets, create the json file of parameters and pass it to the bicep deploy
+      # todo: separate this into a reusable action
+      - name: Fetch secret keys from Azure Vault
+        uses: azure/CLI@v1
+        id: keyvault-keys
+        with:
+          azcliversion: 2.30.0
+          inlineScript: |
+            KEY_VAULT_KEYS=$(az keyvault secret list --vault-name ${{ secrets.AZURE_SOURCE_KEY_VAULT_NAME }} --subscription ${{ secrets.AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID }} --query "[].name" -o tsv)
+            # todo: output the key to the next step
+            echo "::add-mask::$KEY_VAULT_KEYS"
+            echo "::set-output name=key-vault-keys::$KEY_VAULT_KEYS"
+
+      # todo: consider auto rotation of password in Azure Vault, or generate this in another fashion
+      - name: Generate postgresql password
+        id: pwd-generator
+        shell: pwsh
+        run: |
+          Import-module "./azure/powershell/pwdGenerator.ps1" -Force
+          $password = (GeneratePassword -length 30).Password
+          echo "::add-mask::$password"
+          echo "::set-output name=postgresqlPassword::$password"
+
+      - uses: azure/arm-deploy@v1
+        with:
+          # token: ${{steps.keyvault-keys.outputs.key-vault-keys}}
+          scope: subscription
+          template: ./.azure/main.bicep
+          subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          deploymentMode: "${{ inputs.dryRun && 'Validate' || 'Incremental' }}"
+          region: ${{ secrets.REGION }}
+          parameters: >
+            ./.azure/${{ inputs.environment }}.bicepparam 
+            gitSha='${{ github.sha }}' 
+            environment='${{ inputs.environment }}' 
+            keyVaultSourceKeys='${{ steps.pwd-generator.outputs.postgresqlPassword }}' 
+            dialogportenPgAdminPassword='${{ steps.pwd-generator.outputs.postgresqlPassword }}' 
+            apiManagementDigDirEmail='${{ secrets.APIM_DIGDIR_EMAIL }}' 
+            sourceKeyVaultSubscriptionId='${{ secrets.AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID }}' 
+            sourceKeyVaultResourceGroup='${{ secrets.AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP }}' 
+            sourceKeyVaultName='${{ secrets.AZURE_SOURCE_KEY_VAULT_NAME }}'
+
+      - 
+      
+      - name: Logout from azure
+        if: ${{failure() || success()}}
+        continue-on-error: true
+        run: az logout
