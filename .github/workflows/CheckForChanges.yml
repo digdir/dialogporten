@@ -3,10 +3,10 @@ name: "Check for changes"
 on:
   workflow_call:
     outputs:
-      azure:
+      hasAzureChanges:
         description: "Azure related files changed"
         value: ${{ jobs.check-for-changes.outputs.azure }}
-      backend:
+      hasBackendChanges:
         description: "Backend related files changed"
         value: ${{ jobs.check-for-changes.outputs.backend }}
 
