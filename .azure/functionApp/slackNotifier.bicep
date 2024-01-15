@@ -78,16 +78,6 @@ resource notifyDevTeam 'Microsoft.Insights/actionGroups@2023-01-01' = {
   properties: {
     enabled: true
     groupShortName: 'DevNotify'
-    // TEMP
-    webhookReceivers: [
-      {
-        name: 'WebHukTest'
-        serviceUri: 'https://webhook.site/16163247-af35-4d0d-a529-18ec3a780229'
-        useAadAuth: false
-        useCommonAlertSchema: true
-      }
-    ]
-    // TEMP
     azureFunctionReceivers: [
       {
         name: functionApp.properties.defaultHostName
