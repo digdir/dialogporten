@@ -4,7 +4,6 @@ param environment string
 param location string
 param keyVault object
 param gitSha string
-param hei string
 
 @secure()
 param secrets object
