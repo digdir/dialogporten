@@ -15,24 +15,18 @@ jobs:
     name: Filter
     runs-on: ubuntu-latest
     outputs:
-      azure: ${{ steps.azure-filter.outputs.src == 'true' }}
-      backend: ${{ steps.backend-filter.outputs.src == 'true' }}
+      backend: ${{ steps.paths-filter.outputs.backend == 'true' }}
+      azure: ${{ steps.paths-filter.outputs.azure == 'true' }}
     steps:
       - uses: actions/checkout@v4
 
       - uses: dorny/paths-filter@v2
-        id: backend-filter
+        id: paths-filter
         with:
           base: ${{ github.ref }}
           filters: |
-            src:
+            backend:
               - 'src/**/*'
-
-      - uses: dorny/paths-filter@v2
-        id: azure-filter
-        with:
-          base: ${{ github.ref }}
-          filters: |
-            src:
+            azure:
               - '.azure/**/*'
             # todo: add additional files that should trigger a build
