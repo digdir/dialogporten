@@ -39,3 +39,4 @@ jobs:
       APIM_DIGDIR_EMAIL: ${{ secrets.APIM_DIGDIR_EMAIL }}
     with:
       environment: test
+      region: norwayeast

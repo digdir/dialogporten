@@ -19,9 +19,17 @@ on:
         required: true
 
     inputs:
+      region:
+        required: true
+        type: string
       environment:
         required: true
         type: string
+      dryRun:
+        description: "If true, the deployment will be validated but not executed."
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   deploy:
@@ -41,18 +49,60 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Deploy infrastructure
-        id: bicep
+      # todo: separate this into a reusable action
+      - name: Fetch secret keys from Azure Vault
+        uses: azure/CLI@v1
+        id: keyvault-keys
+        with:
+          azcliversion: 2.30.0
+          inlineScript: |
+            KEY_VAULT_KEYS=$(az keyvault secret list --vault-name ${{ secrets.AZURE_SOURCE_KEY_VAULT_NAME }} --subscription ${{ secrets.AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID }} --query "[].name" -o json)
+            echo "::set-output name=key-vault-keys::$KEY_VAULT_KEYS"
+
+      # todo: consider auto rotation of password in Azure Vault, or generate this in another fashion
+      - name: Generate postgresql password
+        id: pwd-generator
         shell: pwsh
-        run: >
-          .azure/deployBicep.ps1
-          -gitSha ${{github.sha}} 
-          -environment ${{ inputs.environment }}
-          -subscriptionId ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          -sourceKeyVaultName ${{ secrets.AZURE_SOURCE_KEY_VAULT_NAME }}
-          -sourceKeyVaultSubscriptionId ${{ secrets.AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID }}
-          -sourceKeyVaultResourceGroup ${{ secrets.AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP }}
-          -apiManagementDigDirEmail ${{ secrets.APIM_DIGDIR_EMAIL}}
+        run: |
+          Import-module "./azure/powershell/pwdGenerator.ps1" -Force
+          $password = (GeneratePassword -length 30).Password
+          echo "::add-mask::$password"
+          echo "::set-output name=postgresqlPassword::$password"
+
+      # todo: when running a dry-run, post the result back to the pull
+      # Maybe we want to do that outside this action to ensure SOC
+      - name: Deploy infrastructure (${{ inputs.environment }})
+        uses: azure/arm-deploy@v1
+        id: deploy
+        env:
+          # todo: we might want to abstract away this into a "version" or something similar?
+          GIT_SHA: ${{ github.sha }}
+          KEY_VAULT_SOURCE_KEYS: ${{steps.keyvault-keys.outputs.key-vault-keys}}
+
+          # secrets
+          PG_ADMIN_PASSWORD: ${{ steps.pwd-generator.outputs.postgresqlPassword }}
+          APIM_DIGDIR_EMAIL: ${{ secrets.APIM_DIGDIR_EMAIL }}
+          SOURCE_KEYVAULT_SUBSCRIPTION_ID: ${{ secrets.AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID }}
+          SOURCE_KEYVAULT_RESOURCE_GROUP: ${{ secrets.AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP }}
+          SOURCE_KEYVAULT_NAME: ${{ secrets.AZURE_SOURCE_KEY_VAULT_NAME }}
+        with:
+          scope: subscription
+          template: ./.azure/main.bicep
+          subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          deploymentMode: Incremental
+          region: ${{ secrets.REGION }}
+          #todo: consider using --rollback-on-error
+          additionalArguments: "${{inputs.dryRun && '--what-if'}}"
+          parameters: ./.azure/.${{ inputs.environment }}.bicepparam
+
+      - name: Start migration job
+        uses: azure/CLI@v1
+        if: ${{!inputs.dryRun}}
+        with:
+          azcliversion: 2.30.0
+          inlineScript: |
+            # todo: might be json output, test this
+            az containerapp job start -n ${{ steps.deploy.outputs.migrationJobName }} -g ${{ steps.deploy.outputs.resourceGroup }}
 
       - name: Logout from azure
         if: ${{failure() || success()}}

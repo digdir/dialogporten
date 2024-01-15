@@ -28,8 +28,9 @@ jobs:
       environment: "test"
 
   # todo: this can be conditional based on which files changed inside .azure
-  dry-run-infrastructure:
-    uses: ./.github/workflows/Deploy2.yml
+  # todo: consider using what-if here
+  dry-run-deploy:
+    uses: ./.github/workflows/Deploy.yml
     needs: ["check-for-changes", "build-infrastructure"]
     if: ${{ needs.check-for-changes.outputs.azure == 'true' }}
     secrets:
@@ -41,4 +42,6 @@ jobs:
       AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP: ${{ secrets.AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP }}
       APIM_DIGDIR_EMAIL: ${{ secrets.APIM_DIGDIR_EMAIL }}
     with:
+      environment: test
+      region: norwayeast
       dryRun: true
