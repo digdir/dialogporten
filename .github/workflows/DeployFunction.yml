@@ -1,0 +1,41 @@
+name: Deploy DotNet project to Azure Function App
+
+on:
+  workflow_call:
+    inputs:
+      function-app-name: 
+        type: string
+        required: true
+      function-project-path:
+        type: string
+        required: true
+
+env:
+  DOTNET_VERSION: '8.0.x'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: 'Checkout GitHub Action'
+      uses: actions/checkout@v3
+
+    - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: 'Resolve Project Dependencies Using Dotnet'
+      shell: bash
+      run: |
+        pushd './${{ inputs.functionProjectPath }}'
+        dotnet build -c Release -o ./output
+        popd
+
+    - name: 'Run Azure Functions Action'
+      uses: Azure/functions-action@v1
+      id: fa
+      with:
+        app-name: ${{ inputs.function-app-name }}
+        package: '${{ inputs.function-project-path }}/output'
+        publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
