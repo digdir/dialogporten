@@ -25,9 +25,9 @@ export default function () {
         expect(r.json().createdAt, 'createdAt').to.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{7}Z$/);
         expect(r.json(), 'dialog').to.have.property("updatedAt");
         expect(r.json().updatedAt, 'updatedAt').to.equal(r.json().createdAt);
-        expect(r.json(), 'dialog').to.have.property('eTag');
+        expect(r.json(), 'dialog').to.have.property('revision');
         
-        eTag = r.json()["eTag"];        
+        eTag = r.json()["revision"];
     });
 
     describe('Deny attempt to patch with invalid If-Match', () => {
@@ -64,8 +64,8 @@ export default function () {
         expect(r.json().updatedAt, 'updatedAt').to.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{7}Z$/);
         expect(r.json(), 'dialog').to.have.property("createdAt");
         expect(r.json().updatedAt, 'updatedAt').to.not.equal(r.json().createdAt);
-        expect(r.json(), 'dialog').to.have.property('eTag');
-        expect(r.json().eTag, 'updated eTag').to.not.equal(eTag);  
+        expect(r.json(), 'dialog').to.have.property('revision');
+        expect(r.json().revision, 'updated revision').to.not.equal(eTag);
         expect(r.json(), 'dialog').to.have.nested.property("apiActions[0].endpoints[1].url").to.equal(newApiActionEndpointUrl);
     });
 
