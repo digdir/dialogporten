@@ -1,10 +1,11 @@
 using System.Security.Cryptography;
 using System.Text;
 using BenchmarkDotNet.Attributes;
-using Org.BouncyCastle.Crypto;
-using Org.BouncyCastle.Crypto.Generators;
-using Org.BouncyCastle.Security;
 using Org.BouncyCastle.Crypto.Signers;
+using NSec.Cryptography;
+using Org.BouncyCastle.Crypto.Parameters;
+using Org.BouncyCastle.OpenSsl;
+using NsecEd25519 = NSec.Cryptography.Ed25519;
 
 namespace Digdir.Tool.Dialogporten.Benchmarks;
 
@@ -13,8 +14,10 @@ public class TokenGenerationBenchmark
 {
     private RSA _rsa = null!;
     private ECDsa _ecdsa = null!;
-    private AsymmetricCipherKeyPair _eddsaKeys = null!;
+    private Ed25519PrivateKeyParameters _eddsaKeys = null!;
     private Ed25519Signer _eddsaSigner = null!;
+    private NsecEd25519 _nSecAlgorithm = null!;
+    private Key _nSecKey = null!;
 
     private readonly byte[] _payload = Encoding.UTF8.GetBytes(Base64UrlEncode(
         """
@@ -41,32 +44,57 @@ public class TokenGenerationBenchmark
         // ECDSA Setup (gives security equivalent to a 128 bit symmetric key)
         _ecdsa = ECDsa.Create(ECCurve.NamedCurves.nistP256);
 
+        // For correctness checks, use a pre-defined key in EdDSA signatures
+        const string ed25519Pkcs8 = """
+                                    -----BEGIN PRIVATE KEY-----
+                                    MC4CAQAwBQYDK2VwBCIEIAYIsKL0xkTkAXDhUN6eDheqODEOGyFZ04jsgFNCFxZf
+                                    -----END PRIVATE KEY-----
+                                    """;
         // EdDSA Setup using Ed25519 (gives security equivalent to a 128 bit symmetric key)
-        var generator = new Ed25519KeyPairGenerator();
-        generator.Init(new KeyGenerationParameters(new SecureRandom(), 256));
-        _eddsaKeys = generator.GenerateKeyPair();
+        var pemReaderPrivate = new PemReader(new StringReader(ed25519Pkcs8));
+        _eddsaKeys = (Ed25519PrivateKeyParameters)pemReaderPrivate.ReadObject();
         _eddsaSigner = new Ed25519Signer();
-        _eddsaSigner.Init(true, _eddsaKeys.Private);
+        _eddsaSigner.Init(true, _eddsaKeys);
+
+        // Setup for NSec
+        _nSecAlgorithm = SignatureAlgorithm.Ed25519;
+        _nSecKey = Key.Import(_nSecAlgorithm, Encoding.UTF8.GetBytes(ed25519Pkcs8), KeyBlobFormat.PkixPrivateKeyText);
+
+        var r1 = GenerateTokenWithEdDsaBouncyCastle();
+        var r2 = GenerateTokenWithEdDsaNSec();
+
+        if (!r1.SequenceEqual(r2))
+        {
+            Console.WriteLine("BouncyCastle: " + BitConverter.ToString(r1));
+            Console.WriteLine("        NSec: " + BitConverter.ToString(r2));
+            throw new InvalidOperationException();
+        }
     }
 
     [Benchmark]
-    public void GenerateTokenWithRsa()
+    public byte[] GenerateTokenWithRsa()
     {
-        _rsa.SignData(_payload, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+        return _rsa.SignData(_payload, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
     }
 
     [Benchmark]
-    public void GenerateTokenWithEcdsa()
+    public byte[] GenerateTokenWithEcdsa()
     {
-        _ecdsa.SignData(_payload, HashAlgorithmName.SHA256);
+        return _ecdsa.SignData(_payload, HashAlgorithmName.SHA256);
     }
 
     [Benchmark]
-    public void GenerateTokenWithEdDsa()
+    public byte[] GenerateTokenWithEdDsaBouncyCastle()
     {
-        _eddsaSigner.Init(true, _eddsaKeys.Private);
+        _eddsaSigner.Init(true, _eddsaKeys);
         _eddsaSigner.BlockUpdate(_payload, 0, _payload.Length);
-        _eddsaSigner.GenerateSignature();
+        return _eddsaSigner.GenerateSignature();
+    }
+
+    [Benchmark]
+    public byte[] GenerateTokenWithEdDsaNSec()
+    {
+        return _nSecAlgorithm.Sign(_nSecKey, _payload);
     }
 
     private static string Base64UrlEncode(string input)
