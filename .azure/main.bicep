@@ -13,8 +13,8 @@ var baseImageUrl = 'ghcr.io/digdir/dialogporten-'
 
 // Create resource groups
 resource resourceGroup 'Microsoft.Resources/resourceGroups@2023-07-01' = {
-    name: '${namePrefix}-rg'
-    location: location
+	name: '${namePrefix}-rg'
+	location: location
 }
 
 module apiManagement 'apim/create.bicep' = {
@@ -28,12 +28,12 @@ module apiManagement 'apim/create.bicep' = {
 }
 
 module keyVaultModule 'keyvault/create.bicep' = {
-    scope: resourceGroup
-    name: 'keyVault'
-    params: {
-        namePrefix: namePrefix
-        location: location
-    }
+	scope: resourceGroup
+	name: 'keyVault'
+	params: {
+		namePrefix: namePrefix
+		location: location
+	}
 }
 
 module appConfiguration 'appConfiguration/create.bicep' = {
@@ -59,7 +59,7 @@ module appInsights 'applicationInsights/create.bicep' = {
 // #######################################
 
 resource srcKeyVaultResource 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
-    name: secrets.sourceKeyVaultName
+	name: secrets.sourceKeyVaultName
     scope: az.resourceGroup(secrets.sourceKeyVaultSubscriptionId, secrets.sourceKeyVaultResourceGroup)
 }
 
@@ -79,24 +79,24 @@ module postgresql 'postgreSql/create.bicep' = {
     params: {
         namePrefix: namePrefix
         location: location
-        keyVaultName: keyVaultModule.outputs.name
+		keyVaultName: keyVaultModule.outputs.name
         srcKeyVault: srcKeyVault
         srcSecretName: 'dialogportenPgAdminPassword${environment}'
-        administratorLoginPassword: contains(keyVault.source.keys, 'dialogportenPgAdminPassword${environment}') ? srcKeyVaultResource.getSecret('dialogportenPgAdminPassword${environment}') : secrets.dialogportenPgAdminPassword
+		administratorLoginPassword: contains(keyVault.source.keys, 'dialogportenPgAdminPassword${environment}') ? srcKeyVaultResource.getSecret('dialogportenPgAdminPassword${environment}') : secrets.dialogportenPgAdminPassword
     }
 }
 
 module copySecrets 'keyvault/copySecrets.bicep' = {
-    scope: resourceGroup
-    name: 'copySecrets'
-    params: {
-        srcKeyVaultKeys: keyVault.source.keys
-        srcKeyVaultName: secrets.sourceKeyVaultName
-        srcKeyVaultRGNName: secrets.sourceKeyVaultResourceGroup
-        srcKeyVaultSubId: secrets.sourceKeyVaultSubscriptionId
-        destKeyVaultName: keyVaultModule.outputs.name
-        secretPrefix: 'dialogporten--${environment}--'
-    }
+	scope: resourceGroup
+	name: 'copySecrets'
+	params: {
+		srcKeyVaultKeys: keyVault.source.keys
+		srcKeyVaultName: secrets.sourceKeyVaultName
+		srcKeyVaultRGNName: secrets.sourceKeyVaultResourceGroup
+		srcKeyVaultSubId: secrets.sourceKeyVaultSubscriptionId
+		destKeyVaultName: keyVaultModule.outputs.name
+		secretPrefix: 'dialogporten--${environment}--'
+	}
 }
 
 var containerAppEnvVars = [
@@ -164,7 +164,7 @@ module apiBackends 'apim/addBackends.bicep' = {
 
 var containerAppsPrincipals = concat(
     containerAppsExternal.outputs.identityPrincipalIds)
-// containerAppsInternal.outputs.identityPrincipalIds
+    // containerAppsInternal.outputs.identityPrincipalIds
 
 module appConfigReaderAccessPolicy 'appConfiguration/addReaderRoles.bicep' = {
     scope: resourceGroup
@@ -180,7 +180,7 @@ module appConfigConfigurations 'appConfiguration/upsertKeyValue.bicep' = {
     name: 'AppConfig_Add_DialogDbConnectionString'
     params: {
         configStoreName: appConfiguration.outputs.name
-        key: 'Infrastructure:DialogDbConnectionString'
+        key: 'Infrastructure:DialogDbConnectionString' 
         value: postgresql.outputs.adoConnectionStringSecretUri
         keyValueType: 'keyVaultReference'
     }
