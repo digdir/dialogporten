@@ -1,12 +1,13 @@
 import http from "k6/http";
 import encoding from "k6/encoding";
 import { extend } from "./extend.js";
+import { defaultEndUserSsn, defaultServiceOwnerOrgNo } from "./config.js";
 
 let defaultTokenOptions = {
   scopes: "digdir:dialogporten digdir:dialogporten.serviceprovider digdir:dialogporten.serviceprovider.search",
   orgName: "ttd",
-  orgNo: "991825827",
-  ssn: "07874299582"
+  orgNo: defaultServiceOwnerOrgNo,
+  ssn: defaultEndUserSsn
 };
 
 const tokenUsername = __ENV.TOKEN_GENERATOR_USERNAME;
@@ -64,4 +65,12 @@ export function getEnduserTokenFromGenerator(tokenOptions = null) {
   let fullTokenOptions = extend({}, defaultTokenOptions, tokenOptions);
   const url = `http://altinn-testtools-token-generator.azurewebsites.net/api/GetPersonalToken?env=tt02&scopes=${encodeURIComponent(fullTokenOptions.scopes)}&pid=${fullTokenOptions.ssn}&userId=123&partyId=123&ttl=${tokenTtl}`;
   return fetchToken(url, fullTokenOptions, `end user (ssn:${fullTokenOptions.ssn})`);
+}
+
+export function getDefaultEnduserOrgNo() {
+  return defaultTokenOptions.orgNo;
+}
+
+export function getDefaultEnduserSsn() {
+  return defaultTokenOptions.ssn;
 }

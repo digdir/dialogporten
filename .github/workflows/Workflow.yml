@@ -16,7 +16,7 @@ jobs:
   build-and-test:
     uses: ./.github/workflows/BuildAndTest.yml
     needs: [check-for-changes]
-    if: ${{ needs.check-for-changes.outputs.backend == 'true' }}
+    if: ${{ needs.check-for-changes.outputs.hasBackendChanges == 'true' }}
 
   publish:
     uses: ./.github/workflows/Publish.yml

@@ -14,12 +14,12 @@ jobs:
   build:
     uses: ./.github/workflows/BuildAndTest.yml
     needs: ["check-for-changes"]
-    if: ${{ needs.check-for-changes.outputs.backend == 'true' }}
+    if: ${{ needs.check-for-changes.outputs.hasBackendChanges == 'true' }}
 
   build-infrastructure:
     uses: ./.github/workflows/BuildInfrastructure.yml
     needs: ["check-for-changes"]
-    if: ${{ needs.check-for-changes.outputs.azure == 'true' }}
+    if: ${{ needs.check-for-changes.outputs.hasAzureChanges == 'true' }}
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
@@ -27,12 +27,10 @@ jobs:
     with:
       environment: "test"
 
-  # todo: this can be conditional based on which files changed inside .azure
-  # todo: consider using what-if here
   dry-run-deploy:
     uses: ./.github/workflows/Deploy.yml
     needs: ["check-for-changes", "build-infrastructure"]
-    if: ${{ needs.check-for-changes.outputs.azure == 'true' }}
+    if: ${{ needs.check-for-changes.outputs.hasAzureChanges == 'true' }}
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}

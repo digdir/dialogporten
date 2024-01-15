@@ -1,7 +1,7 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Externals;
 using Microsoft.EntityFrameworkCore;
 
-namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.Registry;
+namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.ResourceRegistry;
 
 internal sealed class LocalDevelopmentResourceRegistry : IResourceRegistry
 {
