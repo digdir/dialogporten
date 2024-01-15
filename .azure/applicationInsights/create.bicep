@@ -2,8 +2,8 @@ param namePrefix string
 param location string
 
 resource appInsightsWorkspace 'Microsoft.OperationalInsights/workspaces@2022-10-01' = {
-	name: '${namePrefix}-insightsWorkspace'
-	location: location
+    name: '${namePrefix}-insightsWorkspace'
+    location: location
 }
 
 resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
