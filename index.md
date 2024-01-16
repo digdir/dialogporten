@@ -423,9 +423,9 @@ Tokenet kan verifiseres på vanlig vis gjennom at det publiseres et nøkkelsett 
 
 ### Overføring av token til tjenestetilbyder
 
-Tokenet vil inkluderes i responsmodellen som returneres til SBS-er og Felles arbeidsflate i feltet `dialogToken`. Arbeidsflate vil overføre dette tokenet til statisk frontend (nettleser), hvor front channel embeds eller actions uten navigasjon benytter dette tokenet i en standard `Authorization: Bearer <token>` HTTP-header gjennom [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API). Det er egne tokens per action med write/delete-action og dialogelementer med frontchannel embed.
+Tokenet vil inkluderes i responsmodellen som returneres til SBS-er og Felles arbeidsflate i feltet `dialogToken`. Arbeidsflate vil overføre dette tokenet til statisk frontend (nettleser), hvor front channel embeds eller actions uten navigasjon benytter dette tokenet i en standard `Authorization: Bearer <token>` HTTP-header gjennom [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API). Det er egne tokens per write action og dialogelementer med frontchannel embed.
 
-Endepunktene som aksesseres med dette denne mekanismen må da ha "trust" til Dialogporten som token issuer, og verifisere tokenet (signatur, levetid, claims). De offentlige nøklene som brukes for å verifisere tokenet eksponeres gjennom et well-known-endepunkt med JWK-er. 
+Endepunktene som aksesseres med dette denne mekanismen må da ha "trust" til Dialogporten som token issuer, og verifisere tokenet (signatur, levetid, claims). De offentlige nøklene som brukes for å verifisere tokenet eksponeres gjennom et well-known-endepunkt med JWK-er. Siden dette foregår via nettleser på fra en annen "origin", må endepunktene her støtte CORS-protokollen (inkludert pre-flight).
 
 ## Integrasjonsmønster for SBS-er
 
