@@ -96,6 +96,10 @@ jobs:
           additionalArguments: "${{inputs.dryRun && '--what-if'}}"
           parameters: ./.azure/.${{ inputs.environment }}.bicepparam
 
+      - name: Echo the result of deployment
+        run: |
+          echo "Deployment result: ${{ steps.deploy.outputs }}"
+
       - name: Start migration job
         uses: azure/CLI@v1
         if: ${{!inputs.dryRun}}
