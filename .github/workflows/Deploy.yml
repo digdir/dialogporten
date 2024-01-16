@@ -90,6 +90,8 @@ jobs:
           subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           deploymentMode: Incremental
           region: ${{ inputs.region }}
+          #todo: consider actually failing here. We cannot fail now because warnings are treated as errors
+          failOnStdErr: false
           #todo: consider using --rollback-on-error
           additionalArguments: "${{inputs.dryRun && '--what-if'}}"
           parameters: ./.azure/.${{ inputs.environment }}.bicepparam
