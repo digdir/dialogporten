@@ -183,7 +183,7 @@
                     // Indikerer hvilket verb som skal benyttes i requesten
                     "method": "post",
                 
-                    // enum: reload, archive, delete, noop (default: noop)
+                    // enum: reload, archive, delete, noop, hideAction, disableAction (default: hideAction)
                     // Indikerer hva GUI-et skal gjøre ved vellykket operasjoner (2xx respons)
                     // - reload: Indikerer at GUI-et laster dialogen på nytt og viser denne. Legger opp til at tjenesteeier har 
                     //           oppdatert dialogen synkront i bakkanal. 
@@ -192,7 +192,7 @@
                     // - noop: Indikerer at GUI-et ikke utfører noe med dialogvisningen
                     // - hideAction: Indikerer at GUI-et i DOM skal skjule knappen/lenken som ble brukt for å trigge handlingen
                     // - disableAction: Indikerer at GUI-et i DOM skal deaktivere knappen/lenken som ble brukt for å trigge handlingen
-                    "onSuccess": "noop", 
+                    "onSuccess": "reload", 
 
                     // Vises etter vellykket utført handling. Valgfri, vil benytte en standardtekst hvis ikke oppgitt.
                     "successMessage": [ { "code": "nb_NO", "value": "Handlingen ble utført" } ],

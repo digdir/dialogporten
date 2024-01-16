@@ -164,7 +164,7 @@
                 "title": [ { "code": "nb_NO", "value": "Bekreft mottatt" } ],
                 "writeAction": {
                     "method": "post",
-                    "onSuccess": "noop", 
+                    "onSuccess": "reload", 
                     "successMessage": [ { "code": "nb_NO", "value": "Handlingen ble utført" } ],
                     "errorMessage": [ { "code": "nb_NO", "value": "Handlingen ble ikke utført" } ],
                     "prompt": [ { "code": "nb_NO", "value": "Vil du sende lesebekreftelse?" } ]
