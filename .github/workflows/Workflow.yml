@@ -44,6 +44,10 @@ jobs:
     needs: [deploy-test, check-for-changes]
     uses: ./.github/workflows/DeployFunction.yml
     if: ${{ needs.check-for-changes.outputs.hasSlackNotifierChanges == 'true' }}
+    secrets:
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
     with:
       function-app-name: 'dp-be-test-slacknotifier-fa'
       function-project-path: './src/Digdir.Tool.Dialogporten.SlackNotifier'
