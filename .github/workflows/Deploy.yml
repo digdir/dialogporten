@@ -89,7 +89,7 @@ jobs:
           template: ./.azure/main.bicep
           subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           deploymentMode: Incremental
-          region: ${{ secrets.REGION }}
+          region: ${{ inputs.region }}
           #todo: consider using --rollback-on-error
           additionalArguments: "${{inputs.dryRun && '--what-if'}}"
           parameters: ./.azure/.${{ inputs.environment }}.bicepparam
