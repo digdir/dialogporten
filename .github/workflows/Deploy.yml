@@ -64,7 +64,7 @@ jobs:
         id: pwd-generator
         shell: pwsh
         run: |
-          Import-module "./azure/powershell/pwdGenerator.ps1" -Force
+          Import-module "./.azure/powershell/pwdGenerator.ps1" -Force
           $password = (GeneratePassword -length 30).Password
           echo "::add-mask::$password"
           echo "::set-output name=postgresqlPassword::$password"
@@ -78,7 +78,6 @@ jobs:
           # todo: we might want to abstract away this into a "version" or something similar?
           GIT_SHA: ${{ github.sha }}
           KEY_VAULT_SOURCE_KEYS: ${{steps.keyvault-keys.outputs.key-vault-keys}}
-
           # secrets
           PG_ADMIN_PASSWORD: ${{ steps.pwd-generator.outputs.postgresqlPassword }}
           APIM_DIGDIR_EMAIL: ${{ secrets.APIM_DIGDIR_EMAIL }}
