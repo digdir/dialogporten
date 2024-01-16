@@ -99,8 +99,8 @@ var initContainers = [
         value: migrationJob.name
       }
       {
-          name: 'RESOURCE_GROUP_NAME'
-          value: resourceGroup().name
+        name: 'RESOURCE_GROUP_NAME'
+        value: resourceGroup().name
       }
     ])
   }]
