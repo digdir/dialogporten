@@ -32,8 +32,11 @@ jobs:
           filters: |
             backend:
               - 'src/**/*'
+              - '.github/**/*'
             azure:
               - '.azure/**/*'
+              - '.github/**/*'
             slackNotifier:
               - 'src/Digdir.Tool.Dialogporten.SlackNotifier/**/*'
+              - '.github/**/*'
             # todo: add additional files that should trigger a build
