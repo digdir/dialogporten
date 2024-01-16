@@ -102,9 +102,9 @@ module postgresql 'postgreSql/create.bicep' = {
     }
 }
 
-module copySecrets 'keyvault/copySecrets.bicep' = {
+module copyEnvironmentSecrets 'keyvault/copySecrets.bicep' = {
     scope: resourceGroup
-    name: 'copySecrets'
+    name: 'copyEnvironmentSecrets'
     params: {
         srcKeyVaultKeys: keyVaultSourceKeys
         srcKeyVaultName: secrets.sourceKeyVaultName
@@ -112,6 +112,29 @@ module copySecrets 'keyvault/copySecrets.bicep' = {
         srcKeyVaultSubId: secrets.sourceKeyVaultSubscriptionId
         destKeyVaultName: keyVaultModule.outputs.name
         secretPrefix: 'dialogporten--${environment}--'
+    }
+}
+
+module copyCrossEnvironmentSecrets 'keyvault/copySecrets.bicep' = {
+    scope: resourceGroup
+    name: 'copyCrossEnvironmentSecrets'
+    params: { srcKeyVaultKeys: keyVaultSourceKeys
+        srcKeyVaultName: secrets.sourceKeyVaultName
+        srcKeyVaultRGNName: secrets.sourceKeyVaultResourceGroup
+        srcKeyVaultSubId: secrets.sourceKeyVaultSubscriptionId
+        destKeyVaultName: keyVaultModule.outputs.name
+        secretPrefix: 'dialogporten--any--'
+    }
+}
+
+module slackNotifier 'functionApp/slackNotifier.bicep' = {
+    name: 'slackNotifier'
+    scope: resourceGroup
+    params: {
+        location: location
+        keyVaultName: keyVaultModule.outputs.name
+        namePrefix: namePrefix
+        applicationInsightsName: appInsights.outputs.appInsightsName
     }
 }
 
@@ -191,6 +214,15 @@ module appConfigReaderAccessPolicy 'appConfiguration/addReaderRoles.bicep' = {
     }
 }
 
+module appInsightsReaderAccessPolicy 'applicationInsights/addReaderRoles.bicep' = {
+    scope: resourceGroup
+    name: 'appInsightsReaderAccessPolicy'
+    params: {
+        appInsightsName: appInsights.outputs.appInsightsName
+        principalIds: [ slackNotifier.outputs.functionAppPrincipalId ]
+    }
+}
+
 module appConfigConfigurations 'appConfiguration/upsertKeyValue.bicep' = {
     scope: resourceGroup
     name: 'AppConfig_Add_DialogDbConnectionString'
@@ -207,7 +239,7 @@ module keyVaultReaderAccessPolicy 'keyvault/addReaderRoles.bicep' = {
     name: 'keyVaultReaderAccessPolicy'
     params: {
         keyvaultName: keyVaultModule.outputs.name
-        principalIds: containerAppsPrincipals
+        principalIds: concat(containerAppsPrincipals, [ slackNotifier.outputs.functionAppPrincipalId ])
     }
 }
 

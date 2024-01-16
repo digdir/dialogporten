@@ -40,3 +40,11 @@ jobs:
     with:
       environment: test
       region: norwayeast
+
+  deploy-slack-notifier-test:
+    needs: [deploy-test, check-for-changes]
+    uses: ./.github/workflows/DeployFunction.yml
+    if: ${{ needs.check-for-changes.outputs.hasSlackNotifierChanges == 'true' }}
+    with:
+      function-app-name: "dp-be-test-slacknotifier-fa"
+      function-project-path: "./src/Digdir.Tool.Dialogporten.SlackNotifier"
