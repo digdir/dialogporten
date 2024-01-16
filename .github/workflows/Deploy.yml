@@ -62,7 +62,7 @@ jobs:
         id: pwd-generator
         shell: pwsh
         run: |
-          Import-module "./.azure/powershell/pwdGenerator.ps1" -Force
+          Import-module "./.github/tools/pwdGenerator.ps1" -Force
           $password = (GeneratePassword -length 30).Password
           echo "::add-mask::$password"
           echo "::set-output name=postgresqlPassword::$password"
