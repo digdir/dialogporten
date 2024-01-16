@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -45,13 +46,21 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
     public async Task<DialogSearchAuthorizationResult> GetAuthorizedResourcesForSearch(
         List<string> constraintParties,
         List<string> serviceResources,
-        CancellationToken cancellationToken = default) =>
-        await PerformNonScalableDialogSearchAuthorization(new DialogSearchAuthorizationRequest
+        string? authEndUserPid,
+        CancellationToken cancellationToken = default)
+    {
+        var principal = _user.GetPrincipal();
+        if (authEndUserPid is not null && principal.Identity is ClaimsIdentity claimsIdentity)
         {
-            ClaimsPrincipal = _user.GetPrincipal(),
+            claimsIdentity.AddClaim(new Claim("urn:altinn:ssn", authEndUserPid));
+        }
+        return await PerformNonScalableDialogSearchAuthorization(new DialogSearchAuthorizationRequest
+        {
+            ClaimsPrincipal = principal,
             ConstraintParties = constraintParties,
             ConstraintServiceResources = serviceResources
         }, cancellationToken);
+    }
 
     private async Task<DialogSearchAuthorizationResult> PerformNonScalableDialogSearchAuthorization(DialogSearchAuthorizationRequest request, CancellationToken cancellationToken)
     {

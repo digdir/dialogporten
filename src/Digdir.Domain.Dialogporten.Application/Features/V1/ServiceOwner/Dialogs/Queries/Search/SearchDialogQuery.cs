@@ -166,12 +166,12 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
 
         if (request.AuthEndUserPid is not null)
         {
-            //todo: include authEndUserPid in GetAuthorizedResourcesForSearch
             var authorizedResources = await _altinnAuthorization.GetAuthorizedResourcesForSearch(
                 request.Party ?? new List<string>(),
                 request.ServiceResource ?? new List<string>(),
+                request.AuthEndUserPid,
                 cancellationToken);
-            query.WhereUserIsAuthorizedFor(authorizedResources);
+            query = query.WhereUserIsAuthorizedFor(authorizedResources);
         }
 
         return await query
