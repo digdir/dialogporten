@@ -70,7 +70,7 @@
                     "consumerType": "gui",
                     "frontChannelEmbed": true,
                     // Et token med EdDSA-algoritme, signert av et sertifikat tilgjengelig på et .well-known-endepunkt
-                    // Blir kun generert på dialogElementer med frontChannelEmbed eller actions som er isWriteAction/isDeleteAction
+                    // Blir kun generert på dialogElementer med frontChannelEmbed eller actions som er writeAction/deleteAction
                     "dialogToken": "eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ....",
                     "url": "https://example.com/api/dialogs/123456789/user-instructions"
                 }
@@ -162,9 +162,15 @@
                 "isAuthorized": false,
                 "priority": "secondary",
                 "title": [ { "code": "nb_NO", "value": "Bekreft mottatt" } ],
-                "isWriteAction": true,
+                "writeAction": {
+                    "method": "post",
+                    "onSuccess": "noop", 
+                    "successMessage": [ { "code": "nb_NO", "value": "Handlingen ble utført" } ],
+                    "errorMessage": [ { "code": "nb_NO", "value": "Handlingen ble ikke utført" } ],
+                    "prompt": [ { "code": "nb_NO", "value": "Vil du sende lesebekreftelse?" } ]
+                },
                 // Et token med EdDSA-algoritme, signert av et sertifikat tilgjengelig på et .well-known-endepunkt
-                // Blir kun generert på dialogElementer med frontChannelEmbed eller actions som er isWriteAction/isDeleteAction
+                // Blir kun generert på dialogElementer med frontChannelEmbed eller write actions
                 "dialogToken": "eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ....",
                 "url": "https://example.com/some/deep/link/to/dialogs/123456789/confirmReceived"
             },
@@ -172,9 +178,9 @@
                 "action": "delete",
                 "priority": "tertiary",
                 "title": [ { "code": "nb_NO", "value": "Avbryt" } ],
-                "isDeleteAction": true,
+                "deleteAction": true,
                 // Et token med EdDSA-algoritme, signert av et sertifikat tilgjengelig på et .well-known-endepunkt
-                // Blir kun generert på dialogElementer med frontChannelEmbed eller actions som er isWriteAction/isDeleteAction
+                // Blir kun generert på dialogElementer med frontChannelEmbed eller write actions
                 "dialogToken": "eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ....",
                 "url": "https://example.com/some/deep/link/to/dialogs/123456789"
             }

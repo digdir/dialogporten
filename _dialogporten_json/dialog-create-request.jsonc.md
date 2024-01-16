@@ -199,7 +199,7 @@
 
                     // Feilmelding som vises hvis handlingen feiler. Kan overstyres av responsen (hvis RFC7807). Valgfri, vil 
                     // benytte en stadardtekst hvis ikke oppgitt.
-                    "errorMessage": [ { "code": "nb_NO", "value": "Handlingen ble utført" } ],
+                    "errorMessage": [ { "code": "nb_NO", "value": "Handlingen ble ikke utført" } ],
 
                     // Hvis oppgitt, vil vise en continue/cancel prompt til sluttbruker som må bekreftes før handlinge blir 
                     // forsøkt utført
