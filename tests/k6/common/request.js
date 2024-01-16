@@ -62,6 +62,12 @@ export function postSO(url, body, params = null, tokenOptions = null) {
     return http.post(baseUrlServiceOwner + url, body, getServiceOwnerRequestParams(params, tokenOptions));
 }
 
+export function postSOAsync(url, body, params = null, tokenOptions = null) {
+    body = maybeStringifyBody(body);
+    params = extend(true, {}, params, { headers: { 'Content-Type': 'application/json' }});
+    return http.asyncRequest('POST', baseUrlServiceOwner + url, body, getServiceOwnerRequestParams(params, tokenOptions));
+}
+
 export function putSO(url, body, params = null, tokenOptions = null) {
     body = maybeStringifyBody(body);
     params = extend(true, {}, params, { headers: { 'Content-Type': 'application/json' }});
