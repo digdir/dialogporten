@@ -28,7 +28,7 @@ jobs:
     - name: 'Resolve Project Dependencies Using Dotnet'
       shell: bash
       run: |
-        pushd './${{ inputs.functionProjectPath }}'
+        pushd './${{ inputs.function-project-path }}'
         dotnet build -c Release -o ./output
         popd
 
