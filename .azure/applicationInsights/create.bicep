@@ -4,6 +4,15 @@ param location string
 resource appInsightsWorkspace 'Microsoft.OperationalInsights/workspaces@2022-10-01' = {
     name: '${namePrefix}-insightsWorkspace'
     location: location
+    properties: {
+        retentionInDays: 30
+        sku: {
+            name: 'PerGB2018'
+        }
+        workspaceCapping: {
+            dailyQuotaGb: -1
+        }
+    }
 }
 
 resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
