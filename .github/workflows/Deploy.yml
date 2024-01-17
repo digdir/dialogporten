@@ -32,7 +32,8 @@ jobs:
       id-token: write
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - name: "Checkout GitHub Action"
+        uses: actions/checkout@v4
 
       - name: OIDC Login to Azure Public Cloud
         uses: azure/login@v1
