@@ -71,7 +71,7 @@ module updateAppSettings 'appSettings.bicep' = {
 }
 
 var defaultFunctionKey = listkeys('${functionApp.id}/host/default', '2023-01-01').functionKeys.default
-
+var forwardAlertToSlackTriggerUrl = 'https://${functionApp.properties.defaultHostName}/api/forwardalerttoslack?code=${defaultFunctionKey}'
 resource notifyDevTeam 'Microsoft.Insights/actionGroups@2023-01-01' = {
     name: '${namePrefix}-notify-devteam-ag'
     location: 'Global'
@@ -83,7 +83,7 @@ resource notifyDevTeam 'Microsoft.Insights/actionGroups@2023-01-01' = {
                 name: functionApp.properties.defaultHostName
                 functionName: 'ForwardAlertToSlack'
                 functionAppResourceId: functionApp.id
-                httpTriggerUrl: 'https://${functionApp.properties.defaultHostName}/api/forwardalerttoslack?code=${defaultFunctionKey}'
+                httpTriggerUrl: forwardAlertToSlackTriggerUrl
                 useCommonAlertSchema: true
             }
         ]
