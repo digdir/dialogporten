@@ -30,7 +30,9 @@ on:
         required: false
         type: boolean
         default: false
-
+concurrency:
+  group: ${{ github.workflow }}-${{ inputs.environment }}
+  cancel-in-progress: true
 jobs:
   deploy:
     name: Deploy to ${{ inputs.environment }}
@@ -85,9 +87,7 @@ jobs:
           template: ./.azure/main.bicep
           subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           deploymentMode: Incremental
-          deploymentName: GithubActionsDeploy-be-${{ inputs.environment }}
-          # todo: Maybe use sha in the deployment name?
-          # deploymentName: ${{ inputs.environment }}-deployment-${{ github.sha }}
+          deploymentName: dp-be-${{ inputs.environment }}-deployment-${{ github.sha }}
           region: ${{ inputs.region }}
           failOnStdErr: true
           additionalArguments: "${{inputs.dryRun && '--what-if'}}"
