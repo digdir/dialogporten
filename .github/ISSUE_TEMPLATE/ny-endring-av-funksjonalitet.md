@@ -9,7 +9,7 @@ projects: ['digdir/7']
 ---
 
 ### Introduksjon
-En kort og konsis beskrivelse på hvilken funksjonalitet denne issuen omhandler
+En kort og konsis beskrivelse på hvilken funksjonalitet denne issuen omhandler.
 
 ### Beskrivelse
 En lengre beskrivelse som gjør rede for behovet, og som beskriver hvordan funksjonaliteten skal fungere i detalj (i prosaform, se forøvrig akseptansekriterier). 
