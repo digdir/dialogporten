@@ -43,9 +43,6 @@ resource postgres 'Microsoft.DBforPostgreSQL/flexibleServers@2022-12-01' = {
         administratorLogin: administratorLogin
         administratorLoginPassword: administratorLoginPassword
         storage: { storageSizeGB: 32 }
-        authConfig: {
-            activeDirectoryAuth: 'Disabled'
-        }
         dataEncryption: {
             type: 'SystemManaged'
         }
