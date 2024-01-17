@@ -13,6 +13,8 @@ resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
     properties: {
         Application_Type: 'web'
         WorkspaceResourceId: appInsightsWorkspace.id
+        Flow_Type: 'Bluefield'
+        Request_Source: 'rest'
     }
 }
 

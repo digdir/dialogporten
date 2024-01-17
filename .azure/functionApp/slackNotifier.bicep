@@ -94,6 +94,7 @@ resource exceptionOccuredAlertRule 'Microsoft.Insights/scheduledQueryRules@2023-
     name: '${namePrefix}-exception-occured-sqr'
     location: location
     properties: {
+        enabled: true
         severity: 1
         evaluationFrequency: 'PT5M'
         windowSize: 'PT5M'
