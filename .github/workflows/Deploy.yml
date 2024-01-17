@@ -100,7 +100,7 @@ jobs:
         with:
           azcliversion: 2.56.0
           inlineScript: |
-            az containerapp job start -n ${{ steps.deploy.outputs.migrationJobName }} -g ${{ steps.deploy.outputs.resourceGroup }}
+            az containerapp job start -n ${{ steps.deploy.outputs.migrationJobName }} -g ${{ steps.deploy.outputs.resourceGroupName }}
 
       - name: Logout from azure
         if: ${{failure() || success()}}
