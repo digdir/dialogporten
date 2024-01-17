@@ -2,11 +2,27 @@ targetScope = 'subscription'
 @minLength(3)
 param environment string
 param location string
-param keyVault object
+param keyVaultSourceKeys array
 param gitSha string
 
 @secure()
-param secrets object
+param dialogportenPgAdminPassword string
+@secure()
+param apiManagementDigDirEmail string
+@secure()
+param sourceKeyVaultSubscriptionId string
+@secure()
+param sourceKeyVaultResourceGroup string
+@secure()
+param sourceKeyVaultName string
+
+var secrets = {
+    dialogportenPgAdminPassword: dialogportenPgAdminPassword
+    apiManagementDigDirEmail: apiManagementDigDirEmail
+    sourceKeyVaultSubscriptionId: sourceKeyVaultSubscriptionId
+    sourceKeyVaultResourceGroup: sourceKeyVaultResourceGroup
+    sourceKeyVaultName: sourceKeyVaultName
+}
 
 var namePrefix = 'dp-be-${environment}'
 var baseImageUrl = 'ghcr.io/digdir/dialogporten-'
@@ -82,7 +98,7 @@ module postgresql 'postgreSql/create.bicep' = {
         keyVaultName: keyVaultModule.outputs.name
         srcKeyVault: srcKeyVault
         srcSecretName: 'dialogportenPgAdminPassword${environment}'
-        administratorLoginPassword: contains(keyVault.source.keys, 'dialogportenPgAdminPassword${environment}') ? srcKeyVaultResource.getSecret('dialogportenPgAdminPassword${environment}') : secrets.dialogportenPgAdminPassword
+        administratorLoginPassword: contains(keyVaultSourceKeys, 'dialogportenPgAdminPassword${environment}') ? srcKeyVaultResource.getSecret('dialogportenPgAdminPassword${environment}') : secrets.dialogportenPgAdminPassword
     }
 }
 
@@ -90,7 +106,7 @@ module copyEnvironmentSecrets 'keyvault/copySecrets.bicep' = {
     scope: resourceGroup
     name: 'copyEnvironmentSecrets'
     params: {
-        srcKeyVaultKeys: keyVault.source.keys
+        srcKeyVaultKeys: keyVaultSourceKeys
         srcKeyVaultName: secrets.sourceKeyVaultName
         srcKeyVaultRGNName: secrets.sourceKeyVaultResourceGroup
         srcKeyVaultSubId: secrets.sourceKeyVaultSubscriptionId
@@ -102,7 +118,7 @@ module copyEnvironmentSecrets 'keyvault/copySecrets.bicep' = {
 module copyCrossEnvironmentSecrets 'keyvault/copySecrets.bicep' = {
     scope: resourceGroup
     name: 'copyCrossEnvironmentSecrets'
-    params: { srcKeyVaultKeys: keyVault.source.keys
+    params: { srcKeyVaultKeys: keyVaultSourceKeys
         srcKeyVaultName: secrets.sourceKeyVaultName
         srcKeyVaultRGNName: secrets.sourceKeyVaultResourceGroup
         srcKeyVaultSubId: secrets.sourceKeyVaultSubscriptionId

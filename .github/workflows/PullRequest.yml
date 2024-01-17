@@ -26,3 +26,20 @@ jobs:
       AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
     with:
       environment: "test"
+
+  dry-run-deploy:
+    uses: ./.github/workflows/Deploy.yml
+    needs: ["check-for-changes", "build-infrastructure"]
+    if: ${{ needs.check-for-changes.outputs.hasAzureChanges == 'true' }}
+    secrets:
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      AZURE_SOURCE_KEY_VAULT_NAME: ${{ secrets.AZURE_SOURCE_KEY_VAULT_NAME }}
+      AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID: ${{ secrets.AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID }}
+      AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP: ${{ secrets.AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP }}
+      APIM_DIGDIR_EMAIL: ${{ secrets.APIM_DIGDIR_EMAIL }}
+    with:
+      environment: test
+      region: norwayeast
+      dryRun: true
