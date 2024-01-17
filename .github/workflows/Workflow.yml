@@ -39,6 +39,7 @@ jobs:
       APIM_DIGDIR_EMAIL: ${{ secrets.APIM_DIGDIR_EMAIL }}
     with:
       environment: test
+      region: norwayeast
 
   deploy-slack-notifier-test:
     needs: [deploy-test, check-for-changes]

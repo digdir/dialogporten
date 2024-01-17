@@ -1,4 +1,4 @@
-param apiManagementName string 
+param apiManagementName string
 param containerAppEnvName string
 param webApiSoName string
 param webApiEuName string
@@ -19,7 +19,7 @@ resource webApiEu 'Microsoft.App/containerApps@2023-05-01' existing = {
   name: webApiEuName
 }
 
-var managementBaseUrl = 'https://management.azure.com'
+var managementBaseUrl = environment().resourceManager
 
 var webApiSoFqdn = 'https://${webApiSoName}.${containerAppEnv.properties.defaultDomain}'
 resource serviceownerBackend 'Microsoft.ApiManagement/service/backends@2022-08-01' = {
@@ -65,14 +65,14 @@ resource apimPolicy 'Microsoft.ApiManagement/service/policies@2023-03-01-preview
       <inbound>
         <choose>
     <when condition="@(context.Request.Url.Path != null &amp;&amp; Regex.IsMatch(context.Request.Url.Path, @&quot;^api/[^/]+/enduser/&quot;) || context.Request.Url.Path.StartsWith(&quot;swagger&quot;))">
-    ''', 
-    '<set-backend-service backend-id="${enduserBackend.name}" />',
-    '''
+    ''',
+      '<set-backend-service backend-id="${enduserBackend.name}" />',
+      '''
           </when>
           <when condition="@(context.Request.Url.Path != null &amp;&amp; Regex.IsMatch(context.Request.Url.Path, @&quot;^api/[^/]+/serviceowner/&quot;))">
-    ''', 
-    '<set-backend-service backend-id="${serviceownerBackend.name}" />', 
-    '''
+    ''',
+      '<set-backend-service backend-id="${serviceownerBackend.name}" />',
+      '''
           </when>
           <otherwise>
             <return-response>
@@ -111,7 +111,7 @@ resource defaultApi 'Microsoft.ApiManagement/service/apis@2023-03-01-preview' = 
     path: ''
   }
 
-  resource operations 'operations' = [for operation in ['DELETE', 'GET', 'POST', 'PUT', 'PATCH', 'OPTIONS', 'HEAD', 'TRACE'] : {
+  resource operations 'operations' = [for operation in [ 'DELETE', 'GET', 'POST', 'PUT', 'PATCH', 'OPTIONS', 'HEAD', 'TRACE' ]: {
     name: toLower(operation)
     properties: {
       displayName: operation
