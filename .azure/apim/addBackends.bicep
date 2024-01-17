@@ -19,7 +19,6 @@ resource webApiEu 'Microsoft.App/containerApps@2023-05-01' existing = {
   name: webApiEuName
 }
 
-#disable-next-line no-hardcoded-env-urls
 var managementBaseUrl = environment().resourceManager
 
 var webApiSoFqdn = 'https://${webApiSoName}.${containerAppEnv.properties.defaultDomain}'
