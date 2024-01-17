@@ -138,7 +138,7 @@ public class DecisionRequestHelperTests
         allClaims.AddRange(principalClaims);
         return new DialogDetailsAuthorizationRequest
         {
-            ClaimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(allClaims, "test")),
+            Claims = allClaims,
             ServiceResource = "urn:altinn:resource:some-service",
             DialogId = Guid.NewGuid(),
 

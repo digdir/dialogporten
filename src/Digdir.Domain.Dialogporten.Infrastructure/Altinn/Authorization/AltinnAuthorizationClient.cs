@@ -15,6 +15,8 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.Authorization;
 
 internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
 {
+    private const string AttributeIdSsn = "urn:altinn:ssn";
+
     private readonly HttpClient _httpClient;
     private readonly IUser _user;
     private readonly IDialogDbContext _db;
@@ -36,7 +38,7 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
         CancellationToken cancellationToken = default) =>
         await PerformDialogDetailsAuthorization(new DialogDetailsAuthorizationRequest
         {
-            ClaimsPrincipal = _user.GetPrincipal(),
+            Claims = _user.GetPrincipal().Claims.ToList(),
             ServiceResource = dialogEntity.ServiceResource,
             DialogId = dialogEntity.Id,
             Party = dialogEntity.Party,
@@ -49,14 +51,10 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
         string? authEndUserPid,
         CancellationToken cancellationToken = default)
     {
-        var principal = _user.GetPrincipal();
-        if (authEndUserPid is not null && principal.Identity is ClaimsIdentity claimsIdentity)
-        {
-            claimsIdentity.AddClaim(new Claim("urn:altinn:ssn", authEndUserPid));
-        }
+        var claims = GetOrCreateClaimsBasedOnEndUserPid(authEndUserPid);
         return await PerformNonScalableDialogSearchAuthorization(new DialogSearchAuthorizationRequest
         {
-            ClaimsPrincipal = principal,
+            Claims = claims,
             ConstraintParties = constraintParties,
             ConstraintServiceResources = serviceResources
         }, cancellationToken);
@@ -104,6 +102,20 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
         var xacmlJsonRequest = DecisionRequestHelper.CreateDialogDetailsRequest(request);
         var xamlJsonResponse = await SendRequest(xacmlJsonRequest, cancellationToken);
         return DecisionRequestHelper.CreateDialogDetailsResponse(request.AltinnActions, xamlJsonResponse);
+    }
+
+    private List<Claim> GetOrCreateClaimsBasedOnEndUserPid(string? endUserPid)
+    {
+        List<Claim> claims = new();
+        if (endUserPid is not null)
+        {
+            claims.Add(new Claim(AttributeIdSsn, endUserPid));
+        }
+        else
+        {
+            claims.AddRange(_user.GetPrincipal().Claims);
+        }
+        return claims;
     }
 
     private static readonly JsonSerializerOptions _serializerOptions = new()
