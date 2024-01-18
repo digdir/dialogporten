@@ -1,12 +1,13 @@
 param location string
 param namePrefix string
 param publisherEmail string
+param sku string
 
 resource apim 'Microsoft.ApiManagement/service@2023-03-01-preview' = {
   location: location
   name: '${namePrefix}-apim'
   sku: {
-    name: 'Developer'
+    name: sku
     capacity: 1
   }
   properties: {

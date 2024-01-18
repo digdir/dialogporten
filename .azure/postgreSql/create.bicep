@@ -2,6 +2,7 @@ param namePrefix string
 param location string
 param keyVaultName string
 param srcSecretName string
+param sku string
 
 @secure()
 param srcKeyVault object
@@ -49,7 +50,7 @@ resource postgres 'Microsoft.DBforPostgreSQL/flexibleServers@2022-12-01' = {
         replicationRole: 'Primary'
     }
     sku: {
-        name: 'Standard_B1ms'
+        name: sku
         tier: 'Burstable'
     }
     resource database 'databases' = {

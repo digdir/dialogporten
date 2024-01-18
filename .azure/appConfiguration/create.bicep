@@ -1,22 +1,23 @@
 param namePrefix string
 param location string
+param sku string
 
 resource appConfig 'Microsoft.AppConfiguration/configurationStores@2023-03-01' = {
 	name: '${namePrefix}-appConfiguration'
 	location: location
 	sku: {
-		name: 'standard'
+		name: sku
 	}
 	properties: {
 		// TODO: Remove
 		enablePurgeProtection: false
 	}
 	resource configStoreKeyValue 'keyValues' = {
-        name: 'Sentinel'
-        properties: {
-            value: '1'
-        }
-    }
+		name: 'Sentinel'
+		properties: {
+			value: '1'
+		}
+	}
 }
 
 output endpoint string = appConfig.properties.endpoint
