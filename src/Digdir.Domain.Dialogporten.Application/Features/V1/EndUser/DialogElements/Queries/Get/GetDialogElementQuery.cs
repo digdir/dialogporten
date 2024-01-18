@@ -58,7 +58,7 @@ internal sealed class GetDialogElementQueryHandler : IRequestHandler<GetDialogEl
 
         var authorizationResult = await _altinnAuthorization.GetDialogDetailsAuthorization(
             dialog,
-            cancellationToken: cancellationToken);
+            cancellationToken);
 
         // If we cannot read the dialog at all, we don't allow access to any of the dialog elements
         if (!authorizationResult.HasReadAccessToMainResource())
