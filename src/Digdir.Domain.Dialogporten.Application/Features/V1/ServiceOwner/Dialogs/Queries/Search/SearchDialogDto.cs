@@ -9,8 +9,8 @@ public sealed class SearchDialogDto
     public Guid Id { get; set; }
     public string Org { get; set; } = null!;
     public string ServiceResource { get; set; } = null!;
-    public string? AuthEndUserPid { get; set; } = null!;
     public string Party { get; set; } = null!;
+    public string? EndUserId { get; set; } = null!;
     public int? Progress { get; set; }
     public string? ExtendedStatus { get; set; }
     public DateTimeOffset CreatedAt { get; set; }

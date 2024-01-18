@@ -15,7 +15,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.Authorization;
 
 internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
 {
-    private const string AttributeIdSsn = "urn:altinn:ssn";
+    private const string AttributePidClaim = "urn:altinn:ssn";
 
     private readonly HttpClient _httpClient;
     private readonly IUser _user;
@@ -48,10 +48,10 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
     public async Task<DialogSearchAuthorizationResult> GetAuthorizedResourcesForSearch(
         List<string> constraintParties,
         List<string> serviceResources,
-        string? authEndUserPid,
+        string? endUserId,
         CancellationToken cancellationToken = default)
     {
-        var claims = GetOrCreateClaimsBasedOnEndUserPid(authEndUserPid);
+        var claims = GetOrCreateClaimsBasedOnEndUserId(endUserId);
         return await PerformNonScalableDialogSearchAuthorization(new DialogSearchAuthorizationRequest
         {
             Claims = claims,
@@ -104,12 +104,12 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
         return DecisionRequestHelper.CreateDialogDetailsResponse(request.AltinnActions, xamlJsonResponse);
     }
 
-    private List<Claim> GetOrCreateClaimsBasedOnEndUserPid(string? endUserPid)
+    private List<Claim> GetOrCreateClaimsBasedOnEndUserId(string? endUserId)
     {
         List<Claim> claims = new();
-        if (endUserPid is not null)
+        if (endUserId is not null)
         {
-            claims.Add(new Claim(AttributeIdSsn, endUserPid));
+            claims.Add(new Claim(AttributePidClaim, ExtractEndUserIdNumber(endUserId)!));
         }
         else
         {
@@ -117,6 +117,9 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
         }
         return claims;
     }
+
+    private static string ExtractEndUserIdNumber(string endUserId) =>
+        endUserId.Split("::").LastOrDefault() ?? string.Empty;
 
     private static readonly JsonSerializerOptions _serializerOptions = new()
     {

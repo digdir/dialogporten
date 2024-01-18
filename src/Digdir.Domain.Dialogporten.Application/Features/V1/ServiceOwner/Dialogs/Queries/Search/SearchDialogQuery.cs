@@ -3,6 +3,7 @@ using AutoMapper.QueryableExtensions;
 using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.Enumerables;
+using Digdir.Domain.Dialogporten.Application.Common.Numbers;
 using Digdir.Domain.Dialogporten.Application.Common.Pagination;
 using Digdir.Domain.Dialogporten.Application.Common.Pagination.OrderOption;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
@@ -31,9 +32,9 @@ public sealed class SearchDialogQuery : SortablePaginationParameter<SearchDialog
     public List<string>? Party { get; init; }
 
     /// <summary>
-    /// Filter by national identity number
+    /// Filter by end user id
     /// </summary>
-    public string? AuthEndUserPid { get; init; }
+    public string? EndUserId { get; init; }
 
     /// <summary>
     /// Filter by one or more extended statuses
@@ -164,12 +165,12 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
             )
             .Where(x => resourceIds.Contains(x.ServiceResource));
 
-        if (request.AuthEndUserPid is not null)
+        if (request.EndUserId is not null)
         {
             var authorizedResources = await _altinnAuthorization.GetAuthorizedResourcesForSearch(
                 request.Party ?? new List<string>(),
                 request.ServiceResource ?? new List<string>(),
-                request.AuthEndUserPid,
+                request.EndUserId,
                 cancellationToken);
             query = query.WhereUserIsAuthorizedFor(authorizedResources);
         }
