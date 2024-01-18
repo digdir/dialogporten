@@ -18,7 +18,7 @@ export default function () {
 
         let promises = [];
         
-        for (var i=0; i<4; i++) {
+        for (let i=0; i<4; i++) {
             let activity = { type: "Information", description: [ { value: i.toString(), cultureCode: "nb-no"}]};
             promises.push(postSOAsync('dialogs/' + dialogId + '/activities?' + i, activity))
         }
