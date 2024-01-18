@@ -3,12 +3,14 @@ using System.Text.RegularExpressions;
 
 namespace Digdir.Domain.Dialogporten.Application.Common.Numbers;
 
-internal static class PersonIdentifier
+internal static partial class PersonIdentifier
 {
+    [GeneratedRegex(@"^urn:altinn:person:[\w-]+::\d+$", RegexOptions.None, matchTimeoutMilliseconds: 1000)]
+    private static partial Regex ValidateIdentifierRegex();
+
     public static bool IsValid(ReadOnlySpan<char> personIdentifier)
     {
-        var regex = new Regex(@"^urn:altinn:person:[\w-]+::\d+$");
-        return regex.IsMatch(personIdentifier.ToString());
+        return ValidateIdentifierRegex().IsMatch(personIdentifier.ToString());
     }
 
     public static string? ExtractEndUserIdNumber(string? endUserId) =>
