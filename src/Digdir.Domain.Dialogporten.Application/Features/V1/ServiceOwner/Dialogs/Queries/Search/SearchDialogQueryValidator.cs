@@ -20,10 +20,8 @@ internal sealed class SearchDialogQueryValidator : AbstractValidator<SearchDialo
             .WithMessage("'{PropertyName}' must be a valid culture code.");
 
         RuleFor(x => x)
-            .Must(x => PersonIdentifier.IsValid(x.EndUserId))
-            .WithMessage($"'{nameof(SearchDialogQuery.EndUserId)}' must be a valid person identifier. It should match the format 'urn:altinn:person:identifier-no::12345678901'.")
-            .Must(x => SocialSecurityNumber.IsValid(PersonIdentifier.ExtractEndUserIdNumber(x.EndUserId!)))
-            .WithMessage($"'{nameof(SearchDialogQuery.EndUserId)}' must include a valid national identity number.")
+            .Must(x => EndUserIdentifier.IsValid(x.EndUserId!))
+            .WithMessage($"'{nameof(SearchDialogQuery.EndUserId)}' must be a valid end user identifier. It should match the format 'urn:altinn:person:identifier-no::{{norwegian f-nr/d-nr}} or 'urn:altinn:systemuser:{{uuid}}\"")
             .Must(x => !x.ServiceResource.IsNullOrEmpty() || !x.Party.IsNullOrEmpty())
             .WithMessage($"Either '{nameof(SearchDialogQuery.ServiceResource)}' or '{nameof(SearchDialogQuery.Party)}' must be specified if '{nameof(SearchDialogQuery.EndUserId)}' is provided.")
             .When(x => x.EndUserId is not null);
