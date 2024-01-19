@@ -2,8 +2,9 @@ param location string
 param applicationInsightsName string
 param namePrefix string
 param keyVaultName string
-param storageAccountSKU string
-param applicationServicePlanSKU string
+param storageAccountSKUName string
+param applicationServicePlanSKUName string
+param applicationServicePlanSKUTier string
 
 // Storage account names only supports lower case and numbers
 var storageAccountName = '${replace(namePrefix, '-', '')}slacknotifiersa'
@@ -12,7 +13,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
     name: storageAccountName
     location: location
     sku: {
-        name: storageAccountSKU
+        name: storageAccountSKUName
     }
     kind: 'Storage'
     properties: {
@@ -25,8 +26,8 @@ resource applicationServicePlan 'Microsoft.Web/serverfarms@2021-03-01' = {
     name: '${namePrefix}-slacknotifier-asp'
     location: location
     sku: {
-        name: applicationServicePlanSKU
-        tier: 'Dynamic'
+        name: applicationServicePlanSKUName
+        tier: applicationServicePlanSKUTier
     }
     properties: {}
 }

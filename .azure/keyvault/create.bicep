@@ -1,6 +1,7 @@
 param namePrefix string
 param location string
-param sku string
+param skuName string
+param skuFamily string
 
 var keyVaultName = take('${namePrefix}-kv-${uniqueString(resourceGroup().id)}', 24)
 
@@ -12,8 +13,8 @@ resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
 		enablePurgeProtection: null // Null is the same as false and false is invalid for some reason
 		enabledForTemplateDeployment: false
 		sku: {
-			family: 'A'
-			name: sku
+			name: skuName
+			family: skuFamily
 		}
 		tenantId: subscription().tenantId
 		accessPolicies: []

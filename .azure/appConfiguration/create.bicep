@@ -1,12 +1,12 @@
 param namePrefix string
 param location string
-param sku string
+param skuName string
 
 resource appConfig 'Microsoft.AppConfiguration/configurationStores@2023-03-01' = {
 	name: '${namePrefix}-appConfiguration'
 	location: location
 	sku: {
-		name: sku
+		name: skuName
 	}
 	properties: {
 		// TODO: Remove

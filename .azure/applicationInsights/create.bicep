@@ -1,6 +1,6 @@
 param namePrefix string
 param location string
-param sku string
+param skuName string
 
 resource appInsightsWorkspace 'Microsoft.OperationalInsights/workspaces@2022-10-01' = {
     name: '${namePrefix}-insightsWorkspace'
@@ -8,7 +8,7 @@ resource appInsightsWorkspace 'Microsoft.OperationalInsights/workspaces@2022-10-
     properties: {
         retentionInDays: 30
         sku: {
-            name: sku
+            name: skuName
         }
         workspaceCapping: {
             dailyQuotaGb: -1
