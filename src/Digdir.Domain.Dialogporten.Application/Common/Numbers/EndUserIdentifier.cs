@@ -8,7 +8,7 @@ internal static partial class EndUserIdentifier
     private static readonly int[] NorwegianIdentifierNumberWeights1 = [3, 7, 6, 1, 8, 9, 4, 5, 2, 1];
     private static readonly int[] NorwegianIdentifierNumberWeights2 = [5, 4, 3, 2, 7, 6, 5, 4, 3, 2, 1];
 
-    [GeneratedRegex(@"urn:altinn:([\w-]{5,20}):([\w-]{4,20})::([\w-]{11,36})", RegexOptions.None, matchTimeoutMilliseconds: 100)]
+    [GeneratedRegex(@"urn:altinn:([\w-]{5,20}):([\w-]{4,20})::([\w-]{5,36})", RegexOptions.None, matchTimeoutMilliseconds: 100)]
     private static partial Regex IdRegex();
 
     public static bool IsValid(string identifier)
