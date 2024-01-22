@@ -16,6 +16,83 @@ param sourceKeyVaultResourceGroup string
 @secure()
 param sourceKeyVaultName string
 
+@allowed(
+    [
+        'Basic'
+        'Consumption'
+        'Developer'
+        'Isolated'
+        'Premium'
+        'Standard'
+    ]
+)
+param APIMSKUName string
+
+@minValue(1)
+param APIMSKUCapcity int
+
+@allowed(
+    [
+        'premium'
+        'standard'
+    ]
+)
+param keyVaultSKUName string
+
+@allowed([
+    'A'
+])
+param keyVaultSKUFamily string
+
+@allowed([
+    'standard'
+])
+param appConfigurationSKUName string
+
+@allowed([
+    'CapacityReservation'
+    'Free'
+    'LACluster'
+    'PerGB2018'
+    'PerNode'
+    'Premium'
+    'Standalone'
+    'Standard'
+])
+param appInsightsSKUName string
+
+@allowed([
+    'Standard_LRS'
+    'Standard_GRS'
+    'Standard_RAGRS'
+    'Standard_ZRS'
+    'Premium_LRS'
+    'Premium_ZRS'
+])
+param slackNotifierStorageAccountSKUName string
+
+@allowed([
+    'Y1'
+])
+param slackNotifierApplicationServicePlanSKUName string
+
+@allowed([
+    'Dynamic'
+
+])
+param slackNotifierApplicationServicePlanSKUTier string
+
+@allowed([
+    'Standard_B1ms'
+])
+param postgresServerSKUName string
+@allowed([
+    'Burstable'
+    'GeneralPurpose'
+    'MemoryOptimized'
+])
+param postgresServerSKUTier string
+
 var secrets = {
     dialogportenPgAdminPassword: dialogportenPgAdminPassword
     apiManagementDigDirEmail: apiManagementDigDirEmail
@@ -40,6 +117,8 @@ module apiManagement 'apim/create.bicep' = {
         publisherEmail: secrets.apiManagementDigDirEmail
         location: location
         namePrefix: namePrefix
+        skuName: APIMSKUName
+        skuCapacity: APIMSKUCapcity
     }
 }
 
@@ -49,6 +128,8 @@ module keyVaultModule 'keyvault/create.bicep' = {
     params: {
         namePrefix: namePrefix
         location: location
+        skuName: keyVaultSKUName
+        skuFamily: keyVaultSKUFamily
     }
 }
 
@@ -58,6 +139,7 @@ module appConfiguration 'appConfiguration/create.bicep' = {
     params: {
         namePrefix: namePrefix
         location: location
+        skuName: appConfigurationSKUName
     }
 }
 
@@ -67,6 +149,7 @@ module appInsights 'applicationInsights/create.bicep' = {
     params: {
         namePrefix: namePrefix
         location: location
+        skuName: appInsightsSKUName
     }
 }
 
@@ -99,6 +182,8 @@ module postgresql 'postgreSql/create.bicep' = {
         srcKeyVault: srcKeyVault
         srcSecretName: 'dialogportenPgAdminPassword${environment}'
         administratorLoginPassword: contains(keyVaultSourceKeys, 'dialogportenPgAdminPassword${environment}') ? srcKeyVaultResource.getSecret('dialogportenPgAdminPassword${environment}') : secrets.dialogportenPgAdminPassword
+        skuName: postgresServerSKUName
+        skuTier: postgresServerSKUTier
     }
 }
 
@@ -135,6 +220,9 @@ module slackNotifier 'functionApp/slackNotifier.bicep' = {
         keyVaultName: keyVaultModule.outputs.name
         namePrefix: namePrefix
         applicationInsightsName: appInsights.outputs.appInsightsName
+        storageAccountSKUName: slackNotifierStorageAccountSKUName
+        applicationServicePlanSKUName: slackNotifierApplicationServicePlanSKUName
+        applicationServicePlanSKUTier: slackNotifierApplicationServicePlanSKUTier
     }
 }
 
