@@ -1,4 +1,6 @@
-﻿using Digdir.Domain.Dialogporten.Application.Common.Pagination;
+﻿using Digdir.Domain.Dialogporten.Application.Common.Extensions.Enumerables;
+using Digdir.Domain.Dialogporten.Application.Common.Numbers;
+using Digdir.Domain.Dialogporten.Application.Common.Pagination;
 using Digdir.Domain.Dialogporten.Domain.Localizations;
 using FluentValidation;
 
@@ -16,6 +18,13 @@ internal sealed class SearchDialogQueryValidator : AbstractValidator<SearchDialo
         RuleFor(x => x.SearchCultureCode)
             .Must(x => x is null || Localization.IsValidCultureCode(x))
             .WithMessage("'{PropertyName}' must be a valid culture code.");
+
+        RuleFor(x => x)
+            .Must(x => EndUserIdentifier.IsValid(x.EndUserId!))
+            .WithMessage($"'{nameof(SearchDialogQuery.EndUserId)}' must be a valid end user identifier. It should match the format 'urn:altinn:person:identifier-no::{{norwegian f-nr/d-nr}} or 'urn:altinn:systemuser:{{uuid}}\"")
+            .Must(x => !x.ServiceResource.IsNullOrEmpty() || !x.Party.IsNullOrEmpty())
+            .WithMessage($"Either '{nameof(SearchDialogQuery.ServiceResource)}' or '{nameof(SearchDialogQuery.Party)}' must be specified if '{nameof(SearchDialogQuery.EndUserId)}' is provided.")
+            .When(x => x.EndUserId is not null);
 
         RuleFor(x => x.ServiceResource!.Count)
             .LessThanOrEqualTo(20)

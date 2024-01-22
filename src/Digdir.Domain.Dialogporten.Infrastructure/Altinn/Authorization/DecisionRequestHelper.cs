@@ -24,7 +24,7 @@ internal static class DecisionRequestHelper
 
     public static XacmlJsonRequestRoot CreateDialogDetailsRequest(DialogDetailsAuthorizationRequest request)
     {
-        var accessSubject = CreateAccessSubjectCategory(request.ClaimsPrincipal.Claims);
+        var accessSubject = CreateAccessSubjectCategory(request.Claims);
         var actions = CreateActionCategories(request.AltinnActions, out var actionIdByName);
         var resources = CreateResourceCategories(request.ServiceResource, request.DialogId, request.Party, request.AltinnActions, out var resourceIdByName);
 
@@ -223,7 +223,7 @@ internal static class DecisionRequestHelper
                 new (Constants.ReadAction, Constants.MainResource)
             };
 
-            var accessSubject = CreateAccessSubjectCategory(request.ClaimsPrincipal.Claims);
+            var accessSubject = CreateAccessSubjectCategory(request.Claims);
             var actions = CreateActionCategories(requestActions, out _);
             var resources = CreateResourceCategoriesForSearch(request.ConstraintServiceResources, request.ConstraintParties);
 

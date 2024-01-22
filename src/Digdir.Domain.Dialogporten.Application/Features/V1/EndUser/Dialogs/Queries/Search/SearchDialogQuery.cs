@@ -134,7 +134,7 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
         var authorizedResources = await _altinnAuthorization.GetAuthorizedResourcesForSearch(
             request.Party ?? new List<string>(),
             request.ServiceResource ?? new List<string>(),
-            cancellationToken);
+            cancellationToken: cancellationToken);
 
         if (authorizedResources.HasNoAuthorizations)
         {

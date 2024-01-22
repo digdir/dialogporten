@@ -5,7 +5,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.Authorization;
 
 public sealed class DialogDetailsAuthorizationRequest
 {
-    public required ClaimsPrincipal ClaimsPrincipal { get; init; }
+    public required List<Claim> Claims { get; init; }
     public required string ServiceResource { get; init; }
     public required Guid DialogId { get; init; }
     public required string Party { get; init; }
