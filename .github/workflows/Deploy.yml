@@ -58,7 +58,7 @@ jobs:
         with:
           azcliversion: 2.56.0
           inlineScript: |
-            KEY_VAULT_KEYS=$(az keyvault secret list --vault-name ${{ secrets.AZURE_SOURCE_KEY_VAULT_NAME }} --subscription ${{ secrets.AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID }} --query "[].name" -o json)
+            KEY_VAULT_KEYS=$(az keyvault secret list --vault-name ${{ secrets.AZURE_SOURCE_KEY_VAULT_NAME }} --subscription ${{ secrets.AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID }} --query "[].name" -o json | tr -d '\n')
             echo "::set-output name=key-vault-keys::$KEY_VAULT_KEYS"
 
       - name: Generate postgresql password
