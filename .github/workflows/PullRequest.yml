@@ -11,10 +11,18 @@ jobs:
     name: Check for changes
     uses: ./.github/workflows/CheckForChanges.yml
 
-  build:
+  build-and-test:
     uses: ./.github/workflows/BuildAndTest.yml
     needs: ["check-for-changes"]
     if: ${{ needs.check-for-changes.outputs.hasBackendChanges == 'true' }}
+
+  publish:
+    uses: ./.github/workflows/Publish.yml
+    needs: [build-and-test]
+    secrets:
+      GCR_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+    with:
+      dockerImageBaseName: ghcr.io/digdir/dialogporten-
 
   build-infrastructure:
     uses: ./.github/workflows/BuildInfrastructure.yml

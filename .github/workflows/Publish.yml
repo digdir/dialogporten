@@ -58,7 +58,8 @@ jobs:
         with:
           context: .
           file: ${{ matrix.dockerfile }}
-          push: true
+          # todo: pass a flag publish: true instead of using the event_name
+          push: ${{ github.event_name != 'pull_request' }}
           tags: |
             ${{ steps.meta.outputs.tags }},
             ${{ env.DOCKER_IMAGE_BASE_NAME }}${{ matrix.imageName }}:${{ github.sha }}
