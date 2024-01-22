@@ -16,13 +16,14 @@ jobs:
     needs: ["check-for-changes"]
     if: ${{ needs.check-for-changes.outputs.hasBackendChanges == 'true' }}
 
-  publish:
+  build-docker-images:
     uses: ./.github/workflows/Publish.yml
     needs: [build-and-test]
     secrets:
       GCR_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
     with:
       dockerImageBaseName: ghcr.io/digdir/dialogporten-
+      publish: false
 
   build-infrastructure:
     uses: ./.github/workflows/BuildInfrastructure.yml

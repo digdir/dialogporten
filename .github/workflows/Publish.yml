@@ -11,6 +11,11 @@ on:
         description: "Base image name for docker images"
         required: true
         type: string
+      publish:
+        description: "If false, does not publish the docker image to registry"
+        required: false
+        type: boolean
+        default: true
 jobs:
   publish-docker-images:
     env:
@@ -58,8 +63,7 @@ jobs:
         with:
           context: .
           file: ${{ matrix.dockerfile }}
-          # todo: pass a flag publish: true instead of using the event_name
-          push: ${{ github.event_name != 'pull_request' }}
+          push: ${{ inputs.publish }}
           tags: |
             ${{ steps.meta.outputs.tags }},
             ${{ env.DOCKER_IMAGE_BASE_NAME }}${{ matrix.imageName }}:${{ github.sha }}
