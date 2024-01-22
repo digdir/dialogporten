@@ -5,7 +5,6 @@ title: ''
 labels: ''
 assignees: ''
 projects: ['digdir/7']
-
 ---
 
 ### Introduksjon
