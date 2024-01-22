@@ -47,7 +47,7 @@ public sealed class CreateDialogEndpointSummary : Summary<CreateDialogEndpoint>
 {
     public CreateDialogEndpointSummary()
     {
-        Summary = "Creates a new dialog";
+        Summary = "Createses a new dialog";
         Description = """
                 The dialog is created with the given configuration. For more information see the documentation (link TBD).
 
