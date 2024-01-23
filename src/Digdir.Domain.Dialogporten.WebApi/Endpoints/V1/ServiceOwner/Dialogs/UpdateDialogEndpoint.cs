@@ -23,7 +23,7 @@ public sealed class UpdateDialogEndpoint : Endpoint<UpdateDialogRequest>
         Group<ServiceOwnerGroup>();
 
         Description(b => b
-            .OperationId("ReplaceDialogsHogs")
+            .OperationId("ReplaceDialogsHogsShogs")
             .ProducesOneOf(
                 StatusCodes.Status204NoContent,
                 StatusCodes.Status400BadRequest,
