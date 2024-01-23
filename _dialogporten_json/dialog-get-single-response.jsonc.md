@@ -162,13 +162,7 @@
                 "isAuthorized": false,
                 "priority": "secondary",
                 "title": [ { "code": "nb_NO", "value": "Bekreft mottatt" } ],
-                "writeAction": {
-                    "method": "post",
-                    "onSuccess": "reload", 
-                    "successMessage": [ { "code": "nb_NO", "value": "Handlingen ble utført" } ],
-                    "errorMessage": [ { "code": "nb_NO", "value": "Handlingen ble ikke utført" } ],
-                    "prompt": [ { "code": "nb_NO", "value": "Vil du sende lesebekreftelse?" } ]
-                },
+                "writeAction": true,
                 // Et token med EdDSA-algoritme, signert av et sertifikat tilgjengelig på et .well-known-endepunkt
                 // Blir kun generert på dialogElementer med frontChannelEmbed eller write actions
                 "dialogToken": "eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ....",

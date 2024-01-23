@@ -183,23 +183,11 @@
                     // Indikerer hvilket verb som skal benyttes i requesten
                     "method": "post",
                 
-                    // enum: reload, archive, delete, noop, hideAction, disableAction (default: hideAction)
-                    // Indikerer hva GUI-et skal gjøre ved vellykket operasjoner (2xx respons)
-                    // - reload: Indikerer at GUI-et laster dialogen på nytt og viser denne. Legger opp til at tjenesteeier har 
-                    //           oppdatert dialogen synkront i bakkanal. 
-                    // - archive: Indikerer at GUI-et skal utføre noe tilsvarende en brukerstyrt arkiveringshandling (via labelling)
-                    // - delete: Indikerer at GUI-et skal utføre noe tislvarende en brukerstyrt slettehandling (via labelling)                    
-                    // - noop: Indikerer at GUI-et ikke utfører noe med dialogvisningen
-                    // - hideAction: Indikerer at GUI-et i DOM skal skjule knappen/lenken som ble brukt for å trigge handlingen
-                    // - disableAction: Indikerer at GUI-et i DOM skal deaktivere knappen/lenken som ble brukt for å trigge handlingen
-                    "onSuccess": "reload", 
-
-                    // Vises etter vellykket utført handling. Valgfri, vil benytte en standardtekst hvis ikke oppgitt.
-                    "successMessage": [ { "code": "nb_NO", "value": "Handlingen ble utført" } ],
-
-                    // Feilmelding som vises hvis handlingen feiler. Kan overstyres av responsen (hvis RFC7807). Valgfri, vil 
-                    // benytte en stadardtekst hvis ikke oppgitt.
-                    "errorMessage": [ { "code": "nb_NO", "value": "Handlingen ble ikke utført" } ],
+                    // TODO! Det må her defineres hva (om noe) som er nødvendig av tjenesteeier å indikere knyttet til handlingen
+                    // Det legges opp til at detalj-visningen i frontend (via BFF) skal kunne abonnere på endringer som oppstår
+                    // på den konkrete dialogen i Dialogporten, som da medfører at den lastes på nytt. Foruten det:
+                    // - Skal det være mulig å vise en melding ved suksess/ikke-suksess av kallet til action-endepunktet, som kan
+                    //   skje asynkront med oppdatering av selve dialogen?
 
                     // Hvis oppgitt, vil vise en continue/cancel prompt til sluttbruker som må bekreftes før handlinge blir 
                     // forsøkt utført
@@ -214,13 +202,7 @@
                 "priority": "tertiary",
                 "title": [ { "code": "nb_NO", "value": "Avbryt" } ],
 
-                // Shorthand for en writeAction tilsvarende:
-                //"writeAction": {
-                //    "method": "delete",
-                //    "onSuccess": "delete",
-                //    "successMessage": [ { "code": "nb_NO", "value": "Sletting utført" } ],
-                //    "prompt": [ { "code": "nb_NO", "value": "Er du sikker på du vil slette?" } ]
-                //}                 
+                // Spesialisering av writeAction, hinter til SBS-et at det ikke vil være aktuelt å laste dialogen på nytt, men umiddelbart gå tilbake til listevisning. Bruker også DELETE som method. TODO! Trengs denne?
                 "deleteAction": true,
                 "url": "https://example.com/some/deep/link/to/dialogs/123456789" 
             }
