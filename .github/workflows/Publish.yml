@@ -52,11 +52,11 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GCR_PASSWORD }}
 
-      - name: Extract metadata (tags, labels)
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.DOCKER_IMAGE_BASE_NAME }}${{ matrix.imageName }}
+      # - name: Extract metadata (tags, labels)
+      #   id: meta
+      #   uses: docker/metadata-action@v5
+      #   with:
+      #     images: ${{ env.DOCKER_IMAGE_BASE_NAME }}${{ matrix.imageName }}
       - uses: docker/setup-buildx-action@v3
       - name: Build and push docker image
         uses: docker/build-push-action@v5
@@ -65,8 +65,7 @@ jobs:
           file: ${{ matrix.dockerfile }}
           push: ${{ inputs.publish }}
           tags: |
-            ${{ steps.meta.outputs.tags }},
             ${{ env.DOCKER_IMAGE_BASE_NAME }}${{ matrix.imageName }}:${{ github.sha }}
-          labels: ${{ steps.meta.outputs.labels }}
+          # labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha,scope=${{ matrix.imageName }}
           cache-to: type=gha,mode=max,scope=${{ matrix.imageName }}
