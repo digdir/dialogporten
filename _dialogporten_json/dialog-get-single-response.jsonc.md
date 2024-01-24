@@ -45,6 +45,9 @@
             "value": [{ "code": "nb_NO", "value": "Overstyrt avsendernavn (bruker default tjenesteeiers navn)" } ]
         }
     ],
+    // Et token med EdDSA-algoritme, signert av et sertifikat tilgjengelig på et .well-known-endepunkt. 
+    // Brukes i utgangspunktet for writeActions, front channel embeds og SignalR
+    "dialogToken": "eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ....",
     "dialogElements": [
         {
             "dialogElementId": "5b5446a7-9b65-4faf-8888-5a5802ce7de7",
@@ -69,9 +72,6 @@
                 {
                     "consumerType": "gui",
                     "frontChannelEmbed": true,
-                    // Et token med EdDSA-algoritme, signert av et sertifikat tilgjengelig på et .well-known-endepunkt
-                    // Blir kun generert på dialogElementer med frontChannelEmbed eller actions som er writeAction/deleteAction
-                    "dialogToken": "eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ....",
                     "url": "https://example.com/api/dialogs/123456789/user-instructions",
 
                     // Ved front channel embeds må content type oppgis. I første omgang støttes 

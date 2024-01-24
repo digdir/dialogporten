@@ -126,9 +126,9 @@ Alle GUI-handlinger har en URL. Disse URLene brukes i framkanal når brukeren ak
 
 GUI-handlinger kan imidlertid markeres at de er skriveoperasjoner, og kan da også brukes for å gjennomføre tilstandsendringer. Brukeren blir da ikke omdirigert, men arbeidsflate/GUI vil da foreta en (tom) POST- eller DELETE-forespørsel på vegne av brukeren til den oppgitte URL-en i framkanal, og oppgi [dialogtoken](#dialogtoken) som autorisasjonsmiddel. Avhengig av konfigurasjon, vil sluttbrukere blir presentert med en oppdatert dialog-visning. Ved feil (enten av tekniske eller forretningslogiske årsaker) kan en feilmelding vises, enten basert på den faktisk responsen eller predefineres i dialogen.
 
-Dialogporten/arbeidsflate har ikke logikk knyttet til actions, så for handlinger som innebærer komplekse muteringen av dialogen, må tjenesteeier oppdatere dialogen i bakkanal og returnere en 2xx-respons i requesten som ble kalt i fremkanal. I disse tilfellene må det konfigureres at arbeidsflate/GUI skal laste dialogen på nytt etter mottatt 2xx-respons. 
+Dialogporten/arbeidsflate har ikke logikk knyttet til actions, så for handlinger som innebærer komplekse muteringen av dialogen, må tjenesteeier oppdatere dialogen i bakkanal og returnere en 2xx-respons i requesten som ble kalt i fremkanal. I disse tilfellene må det konfigureres at arbeidsflate/GUI skal laste dialogen på nytt etter mottatt 2xx-respons. Her vil Dialogporten støtte [SignalR](https://dotnet.microsoft.com/en-us/apps/aspnet/signalr)-basert notififkasjon, slik at arbeidsflate kan vise spinner frem til dialogen er blitt oppdatert og laste den på nytt da.
 
-Alternativt kan det oppgis at det skal vises en eller annen predefinert melding og at dialogen/aktuell knapp skal skjules i GUI. Merk at sluttbruker _ikke_ vil kunne mutere dialogen gjennom sluttbruker-API-et, annet enn det som går på merking (labelling) av dialogen, så denne håndteringen vil _ikke_ persisteres annet enn i sluttbrukers local storage, og tilbys kun som en UX-mekanisme for å støtte asynkron oppdatering av dialogen fra tjenesteeiers side. 
+Det vil også være mulig å indikere til sluttbrukersystem/SBS at endringen ikke skjer umiddelbart, slik at det kan vises en eller annen predefinert melding umiddelbar og at dialogen/aktuell knapp skal skjules i GUI. Merk at sluttbruker _ikke_ vil kunne mutere dialogen gjennom sluttbruker-API-et, annet enn det som går på merking (labelling) av dialogen. Denne håndteringen kan da persisteres i sluttbrukers local storage inntil endringen av dialogen faktisk har funnet sted.
 
 ### API-handling
 
@@ -388,10 +388,10 @@ Dialogtokenet benyttes som et "bearer token", altså noe som indikerer at ihende
 |------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------- |----------------------------------------------------------------------------------- |
 | c                | Autentisert som konsument av Dialogporten. Prefikset for  hhv. personer (typisk ID-porten), organisasjoner (typisk Maskinporten) eller selvregistrerte brukere.    | `"urn:altinn:person:identifier-no::12018212345`, `"urn:altinn:organization:identifier-no::991825827"` eller `"urn:altinn:party-identifier:username::someemail@example.com"` |
 | l                | Sikkerhetsnivå på autentisering (4)                                                                                                                                | `4`                                                                                |
-| s                | Valgfritt. Hvis det er benyttet et leverandørtoken i Maskinporten, vil autentisert leverandørs organisasjonsnummer oppgis her.           | `"urn:altinn:organization:identifier-no::991825827""`                                                                  |
+| s                | Valgfritt. Hvis det er benyttet et leverandørtoken i Maskinporten, vil autentisert leverandørs organisasjonsnummer oppgis her.           | `"urn:altinn:organization:identifier-no::991825827"`                                                                  |
 | p                | Hvem konsument opptrer på vegne av (om ikke seg selv), altså hvem som eier det aktuelle dialogen.                                                           | `"urn:altinn:person:identifier-no::12018212345"`, `"ourn:altinn:organization:identifier-no::991825827""` eller `"urn:altinn:party-identifier:username::someemail@example.com"` |
 | i                | Unik identifikator til dialog.                                                                                                                              | `"e0300961-85fb-4ef2-abff-681d77f9960e"`                                           |
-| u                | URL som dialogtokenet er knyttet til         | `"https://example.com/api/dialogs/123456789/dialogelements/5b5446a7.pdf"`                                        |
+| a                | Autoriserte actions/autorisasjonsattributter                                                                                                                | `"read;write;sign;elementread,urn:altinn:subresource:autorisasjonsattributt1"`                                     | 
 
 ### Eksempel på dekodet token
 
@@ -408,7 +408,7 @@ Dialogtokenet benyttes som et "bearer token", altså noe som indikerer at ihende
   "p": "urn:altinn:organization:identifier-no::991825827", // Party
   "s": "urn:altinn:organization:identifier-no::825827991", // Supplier (hvis MP-leverandørtoken)
   "i": "e0300961-85fb-4ef2-abff-681d77f9960e", // Dialog-ID
-  "u": "https://example.com/api/dialogs/123456789/dialogelements/5b5446a7.pdf",
+  "a": "read;write;sign;elementread,urn:altinn:subresource:autorisasjonsattributt1",
   "exp": 1672772834,
   "iss": "https://dialogporten.no",
   "nbf": 1672771934,
@@ -423,9 +423,13 @@ Tokenet kan verifiseres på vanlig vis gjennom at det publiseres et nøkkelsett 
 
 ### Overføring av token til tjenestetilbyder
 
-Tokenet vil inkluderes i responsmodellen som returneres til SBS-er og Felles arbeidsflate i feltet `dialogToken`. Arbeidsflate vil overføre dette tokenet til statisk frontend (nettleser), hvor front channel embeds eller actions uten navigasjon benytter dette tokenet i en standard `Authorization: Bearer <token>` HTTP-header gjennom [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API). Det er egne tokens per write action og dialogelementer med frontchannel embed.
+Tokenet vil inkluderes i responsmodellen som returneres til SBS-er og Felles arbeidsflate i feltet `dialogToken`. Arbeidsflate vil overføre dette tokenet til statisk frontend (nettleser), hvor front channel embeds eller actions uten navigasjon benytter dette tokenet i en standard `Authorization: Bearer <token>` HTTP-header gjennom [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API). 
 
 Endepunktene som aksesseres med dette denne mekanismen må da ha "trust" til Dialogporten som token issuer, og verifisere tokenet (signatur, levetid, claims). De offentlige nøklene som brukes for å verifisere tokenet eksponeres gjennom et well-known-endepunkt med JWK-er. Siden dette foregår via nettleser på fra en annen "origin", må endepunktene her støtte CORS-protokollen (inkludert pre-flight).
+
+### Overføring av token til Dialogporten-API
+
+Dialogporten vil støtte [SignalR](https://dotnet.microsoft.com/en-us/apps/aspnet/signalr)-basert notififkasjon til sluttbrukersystemer, herunder arbeidsflate, når endringer på dialoger oppstår. SBS-er kan benytte dette i de tilfellene hvor det er behov for å laste dialogen på nytt umiddelbart etter en endring.
 
 ## Integrasjonsmønster for SBS-er
 

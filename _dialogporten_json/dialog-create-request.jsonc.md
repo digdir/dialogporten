@@ -183,11 +183,13 @@
                     // Indikerer hvilket verb som skal benyttes i requesten
                     "method": "post",
                 
-                    // TODO! Det må her defineres hva (om noe) som er nødvendig av tjenesteeier å indikere knyttet til handlingen
-                    // Det legges opp til at detalj-visningen i frontend (via BFF) skal kunne abonnere på endringer som oppstår
-                    // på den konkrete dialogen i Dialogporten, som da medfører at den lastes på nytt. Foruten det:
-                    // - Skal det være mulig å vise en melding ved suksess/ikke-suksess av kallet til action-endepunktet, som kan
-                    //   skje asynkront med oppdatering av selve dialogen?
+                    // Arbeidsflate og andre SBS-er står fritt til å definere hva som skal skje avhengig av hva responsen
+                    // til dette endepunktet viser. Arbeidsflate vil i utgangspunktet basere seg på at SignalR-basert
+                    // notifikasjon mottas etter at tjenesteeier har oppdatert elementet i bakkanal, slik at dette da kan
+                    // lastes på nytt. I noen tilfeller vil ikke tjenesteeier rekke å foreta oppdatering av elementet innen
+                    // rimelig tid, og det kan være hensiktsmessig å hinte dette til klienten slik at den vise noe i UI
+                    // til sluttbrukeren umiddelbart og indikere at endringen kommer sere.
+                    "isDialogUpdateDelayed": false, 
 
                     // Hvis oppgitt, vil vise en continue/cancel prompt til sluttbruker som må bekreftes før handlinge blir 
                     // forsøkt utført
@@ -202,8 +204,9 @@
                 "priority": "tertiary",
                 "title": [ { "code": "nb_NO", "value": "Avbryt" } ],
 
-                // Spesialisering av writeAction, hinter til SBS-et at det ikke vil være aktuelt å laste dialogen på nytt, men umiddelbart gå tilbake til listevisning. Bruker også DELETE som method. TODO! Trengs denne?
-                "deleteAction": true,
+                // Spesialisering av writeAction, hinter til SBS-et at det ikke vil være aktuelt å laste dialogen på nytt, 
+                // men umiddelbart gå tilbake til listevisning. Bruker også DELETE som method. 
+                "isDeleteAction": true,
                 "url": "https://example.com/some/deep/link/to/dialogs/123456789" 
             }
         ],
