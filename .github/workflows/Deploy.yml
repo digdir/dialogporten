@@ -85,14 +85,14 @@ jobs:
           SOURCE_KEYVAULT_NAME: ${{ secrets.AZURE_SOURCE_KEY_VAULT_NAME }}
         with:
           scope: subscription
-          template: ./.azure/main.bicep
+          template: ./.azure/environments/${{ inputs.environment }}/main.bicep
           subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           deploymentMode: Incremental
           deploymentName: dp-be-${{ inputs.environment }}-deployment-${{ github.sha }}
           region: ${{ inputs.region }}
           failOnStdErr: true
           additionalArguments: "${{inputs.dryRun && '--what-if'}}"
-          parameters: ./.azure/.${{ inputs.environment }}.bicepparam
+          parameters: ./.azure/environments/${{ inputs.environment }}/.bicepparam
 
       - name: Start migration job
         uses: azure/CLI@v1
