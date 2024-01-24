@@ -169,6 +169,7 @@
                 "title": [ { "code": "nb_NO", "value": "Bekreft mottatt" } ],
                 "writeAction": {
                     "method": "post",
+                    "isDialogUpdateDelayed": false,
                     "prompt": [ { "code": "nb_NO", "value": "Vil du sende lesebekreftelse?" } ]
                 },
                 // Et token med EdDSA-algoritme, signert av et sertifikat tilgjengelig på et .well-known-endepunkt
@@ -180,7 +181,7 @@
                 "action": "delete",
                 "priority": "tertiary",
                 "title": [ { "code": "nb_NO", "value": "Avbryt" } ],
-                "deleteAction": true,
+                "isDeleteAction": true,
                 // Et token med EdDSA-algoritme, signert av et sertifikat tilgjengelig på et .well-known-endepunkt
                 // Blir kun generert på dialogElementer med frontChannelEmbed eller write actions
                 "dialogToken": "eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ....",
