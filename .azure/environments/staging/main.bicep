@@ -94,7 +94,7 @@ param postgresServerSKUName string
 ])
 param postgresServerSKUTier string
 
-module keyVaultModule '../../common/main.bicep' = {
+module common '../../common/main.bicep' = {
     name: 'common'
     params: {
         keyVaultSKUName: keyVaultSKUName
@@ -119,3 +119,6 @@ module keyVaultModule '../../common/main.bicep' = {
         slackNotifierStorageAccountSKUName: slackNotifierStorageAccountSKUName
     }
 }
+
+output migrationJobName string = common.outputs.migrationJobName
+output resourceGroupName string = common.outputs.resourceGroupName
