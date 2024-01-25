@@ -1,4 +1,4 @@
-name: Publish
+name: Build and push images to GCR
 
 on:
   workflow_call:
