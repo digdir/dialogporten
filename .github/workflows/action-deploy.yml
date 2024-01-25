@@ -35,6 +35,10 @@ on:
         required: false
         type: boolean
         default: false
+      skip:
+        description: "If true, skip the deploy job."
+        type: boolean
+        default: false
 concurrency:
   group: ${{ github.workflow }}-${{ inputs.environment }}
   # if the dryrun input is true, we want to cancel any running deployments in order to not block the pipeline
@@ -43,6 +47,7 @@ jobs:
   deploy:
     name: Deploy to ${{ inputs.environment }}
     runs-on: ubuntu-latest
+    if: ${{ !inputs.skip }}
     # todo: solve this in another way
     environment: "${{ !inputs.skipApproval && inputs.environment || 'test' }}"
     permissions:

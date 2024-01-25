@@ -11,23 +11,20 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+    if: ${{ !inputs.skip }}
     steps:
       - uses: actions/checkout@v4
 
       - name: Set up .NET
         uses: actions/setup-dotnet@v4
-        if: ${{ !inputs.skip }}
         with:
           dotnet-version: "8.x"
 
       - name: Restore
-        if: ${{ !inputs.skip }}
         run: dotnet restore
 
       - name: Build
-        if: ${{ !inputs.skip }}
         run: dotnet build --no-restore --configuration Release
 
       - name: Test
-        if: ${{ !inputs.skip }}
         run: dotnet test --no-build --configuration Release

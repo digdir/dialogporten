@@ -17,7 +17,6 @@ jobs:
     uses: ./.github/workflows/action-build-and-test.yml
     needs: [check-for-changes]
     with:
-      # copy to pullrequest workflow as well
       skip: ${{ needs.check-for-changes.outputs.hasBackendChanges != 'true' }}
 
   publish:
@@ -27,9 +26,8 @@ jobs:
     secrets:
       GCR_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
     with:
-      dockerImageBaseName: ghcr.io/digdir/dialogporten-
-      # copy to pullrequest workflow as well
       skip: ${{ needs.check-for-changes.outputs.hasBackendChanges != 'true' }}
+      dockerImageBaseName: ghcr.io/digdir/dialogporten-
 
   deploy-test:
     name: Deploy to test
@@ -44,9 +42,23 @@ jobs:
       AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP: ${{ secrets.AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP }}
       APIM_DIGDIR_EMAIL: ${{ secrets.APIM_DIGDIR_EMAIL }}
     with:
+      skip: ${{ needs.check-for-changes.outputs.hasAzureChanges != 'true' }}
       environment: test
       region: norwayeast
       dryRun: true
+
+  deploy-slack-notifier-test:
+    needs: [deploy-test, check-for-changes]
+    uses: ./.github/workflows/action-deploy-function.yml
+    secrets:
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+    with:
+      skip: ${{ needs.check-for-changes.outputs.hasSlackNotifierChanges != 'true' }}
+      function-app-name: "dp-be-test-slacknotifier-fa"
+      function-project-path: "./src/Digdir.Tool.Dialogporten.SlackNotifier"
+      environment: test
 
   dry-run-deploy-staging:
     name: Deploy to staging (dry run)
@@ -61,6 +73,7 @@ jobs:
       AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP: ${{ secrets.AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP }}
       APIM_DIGDIR_EMAIL: ${{ secrets.APIM_DIGDIR_EMAIL }}
     with:
+      skip: ${{ needs.check-for-changes.outputs.hasAzureChanges != 'true' }}
       environment: staging
       region: norwayeast
       skipApproval: true
@@ -79,6 +92,7 @@ jobs:
       AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP: ${{ secrets.AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP }}
       APIM_DIGDIR_EMAIL: ${{ secrets.APIM_DIGDIR_EMAIL }}
     with:
+      skip: ${{ needs.check-for-changes.outputs.hasAzureChanges != 'true' }}
       environment: staging
       region: norwayeast
       dryRun: true
