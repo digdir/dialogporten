@@ -130,4 +130,3 @@ resource exceptionOccuredAlertRule 'Microsoft.Insights/scheduledQueryRules@2023-
 }
 
 output functionAppPrincipalId string = functionApp.identity.principalId
-output functionAppPrincipalId string = functionApp.identity.principalId
