@@ -41,7 +41,7 @@ internal static partial class EndUserIdentifier
         return type == "uuid" && Guid.TryParse(value, out _);
     }
 
-    private static bool ValidateNorwegianIdentifier(ReadOnlySpan<char> norwegianIdentifier)
+    internal static bool ValidateNorwegianIdentifier(ReadOnlySpan<char> norwegianIdentifier)
     {
         return norwegianIdentifier.Length == 11
                && Mod11.TryCalculateControlDigit(norwegianIdentifier[..9], NorwegianIdentifierNumberWeights1, out var control1)

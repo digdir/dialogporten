@@ -22,7 +22,7 @@ public class DecisionRequestHelperTests
                 // This should not be copied as subject claim since there's a "pid"-claim
                 ("consumer", ConsumerClaimValue)
             ),
-            "/org/912345678");
+            "urn:altinn:organization:identifier-no::912345678");
         var dialogId = request.DialogId;
 
         // Act
@@ -82,7 +82,7 @@ public class DecisionRequestHelperTests
                 // Should be copied as subject claim since there's not a "pid"-claim
                 ("consumer", ConsumerClaimValue)
             ),
-            "/person/12345678901");
+            "urn:altinn:person:identifier-no::12345678901");
 
         // Act
         var result = DecisionRequestHelper.CreateDialogDetailsRequest(request);
@@ -107,7 +107,7 @@ public class DecisionRequestHelperTests
                 // Should be copied as subject claim since there's not a "pid"-claim
                 ("consumer", ConsumerClaimValue)
             ),
-            "/person/12345678901");
+            "urn:altinn:person:identifier-no::12345678901");
 
         // Add an additional action to the request that the mocked response should give a non-permit response for
         request.AltinnActions.Add(new AltinnAction("failaction", Constants.MainResource));
@@ -142,8 +142,8 @@ public class DecisionRequestHelperTests
             ServiceResource = "urn:altinn:resource:some-service",
             DialogId = Guid.NewGuid(),
 
-            // This should be copied resources with attributes "urn:altinn:organizationnumber" if starting with "/org/"
-            // and "urn:altinn:ssn" if starting with "/person/"
+            // This should be copied resources with attributes "urn:altinn:organizationnumber" if starting with "urn:altinn:organization:identifier-no::"
+            // and "urn:altinn:ssn" if starting with "urn:altinn:person:identifier-no::"
             Party = party,
             AltinnActions = new HashSet<AltinnAction>
             {

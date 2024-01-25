@@ -34,7 +34,6 @@ internal static partial class OrganizationIdentifier
         };
     }
 
-
     internal static bool ValidateNorwegianOrganizationIdentifier(ReadOnlySpan<char> norwegianOrgIdentifier)
     {
         return norwegianOrgIdentifier.Length == 9

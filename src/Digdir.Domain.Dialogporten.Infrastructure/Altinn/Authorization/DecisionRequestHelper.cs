@@ -12,8 +12,8 @@ internal static class DecisionRequestHelper
     private const string AltinnUrnNsPrefix = "urn:altinn:";
     private const string PidClaimType = "pid";
     private const string ConsumerClaimType = "consumer";
-    private const string PartyPrefixOrg = "/org/";
-    private const string PartyPrefixPerson = "/person/";
+    private const string PartyPrefixOrg = "urn:altinn:organization:identifier-no::";
+    private const string PartyPrefixPerson = "urn:altinn:person:identifier-no::";
     private const string AttributeIdSsn = "urn:altinn:ssn";
     private const string AttributeIdOrganizationNumber = "urn:altinn:organizationnumber";
     private const string AttributeIdAction = "urn:oasis:names:tc:xacml:1.0:action:action-id";
@@ -163,6 +163,7 @@ internal static class DecisionRequestHelper
 
     private static XacmlJsonAttribute? ExtractPartyAttribute(string party)
     {
+        // TODO: This can be removed once Altinn Auth has been updated to use the new party format.
         var partyAttribute = new XacmlJsonAttribute();
 
         if (party.StartsWith(PartyPrefixOrg, StringComparison.Ordinal))

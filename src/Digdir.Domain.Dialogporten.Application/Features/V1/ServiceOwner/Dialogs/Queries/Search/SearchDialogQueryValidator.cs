@@ -26,6 +26,12 @@ internal sealed class SearchDialogQueryValidator : AbstractValidator<SearchDialo
             .WithMessage($"Either '{nameof(SearchDialogQuery.ServiceResource)}' or '{nameof(SearchDialogQuery.Party)}' must be specified if '{nameof(SearchDialogQuery.EndUserId)}' is provided.")
             .When(x => x.EndUserId is not null);
 
+        RuleForEach(x => x.Party)
+            .Must(x => x is null || EndUserIdentifier.IsValid(x) || OrganizationIdentifier.IsValid(x))
+            .WithMessage(
+                "'{PropertyName}' must be on format 'urn:altinn:organization:identifier-no::{{norwegian org-nr}}' or " +
+                "'urn:altinn:person:identifier-no::{{norwegian f-nr/d-nr}}' with valid numbers respectively.");
+
         RuleFor(x => x.ServiceResource!.Count)
             .LessThanOrEqualTo(20)
             .When(x => x.ServiceResource is not null);

@@ -42,7 +42,7 @@ public class QueryableExtensionsBenchmark
         };
     }
 
-    private static string GenerateParty(int count) => $"/org/{999999999 - count}";
+    private static string GenerateParty(int count) => $"urn:altinn:organization:identifier-no::{999999999 - count}";
     private static string GenerateResource(int count) => $"urn:foo:bar{count}";
 
     [Benchmark]
