@@ -30,6 +30,11 @@ on:
         required: false
         type: boolean
         default: false
+      skipApproval:
+        description: "If true, the deployment will be automatically approved."
+        required: false
+        type: boolean
+        default: false
 concurrency:
   group: ${{ github.workflow }}-${{ inputs.environment }}
   cancel-in-progress: false
@@ -37,7 +42,7 @@ jobs:
   deploy:
     name: Deploy to ${{ inputs.environment }}
     runs-on: ubuntu-latest
-    environment: ${{ inputs.environment }}
+    environment: "${{ !inputs.skipApproval && inputs.environment || '' }}"
     permissions:
       id-token: write
       contents: read

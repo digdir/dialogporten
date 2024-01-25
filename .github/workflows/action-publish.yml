@@ -11,11 +11,16 @@ on:
         description: "Base image name for docker images"
         required: true
         type: string
+      skip:
+        description: "If true, skip the publish steps."
+        type: boolean
+        default: false
 jobs:
   publish-docker-images:
     env:
       DOCKER_IMAGE_BASE_NAME: ${{ inputs.dockerImageBaseName }}
     runs-on: ubuntu-latest
+    if: ${{ !inputs.skip }}
     strategy:
       fail-fast: true
       matrix:

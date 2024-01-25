@@ -20,6 +20,10 @@ on:
       environment:
         type: string
         required: true
+      skip:
+        description: "If true, skip the deployment."
+        type: boolean
+        default: false
 
 env:
   DOTNET_VERSION: "8.0.x"
@@ -28,6 +32,7 @@ jobs:
   build-and-deploy:
     name: Build and deploy ${{ inputs.function-app-name }} to ${{ inputs.environment }}
     runs-on: ubuntu-latest
+    if: ${{ !inputs.skip }}
     environment: ${{ inputs.environment }}
     permissions:
       id-token: write
