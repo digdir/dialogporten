@@ -42,7 +42,8 @@ jobs:
   deploy:
     name: Deploy to ${{ inputs.environment }}
     runs-on: ubuntu-latest
-    environment: "${{ !inputs.skipApproval && inputs.environment || '' }}"
+    # todo: solve this in another way
+    environment: "${{ !inputs.skipApproval && inputs.environment || 'test' }}"
     permissions:
       id-token: write
       contents: read
