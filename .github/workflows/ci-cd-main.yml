@@ -3,6 +3,7 @@
 on:
   workflow_dispatch:
   push:
+    # todo: change to main after testing
     branches: [chore/restructure-bicep-and-actions]
     paths-ignore:
       - "tests/k6/**"
