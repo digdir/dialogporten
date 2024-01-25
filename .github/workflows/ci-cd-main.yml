@@ -4,7 +4,6 @@ on:
   workflow_dispatch:
   push:
     branches: [chore/restructure-bicep-and-actions]
-    #paths: [ src/**, tests/**, .github/workflows/** ]
     paths-ignore:
       - "tests/k6/**"
 
