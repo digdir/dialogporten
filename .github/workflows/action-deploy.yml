@@ -94,7 +94,7 @@ jobs:
           template: ./.azure/environments/${{ inputs.environment }}/main.bicep
           subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           deploymentMode: Incremental
-          deploymentName: dp-be-${{ inputs.environment }}-deployment-${{ github.sha }}
+          deploymentName: dp-be-${{ inputs.environment }}-${{ github.sha }}
           region: ${{ inputs.region }}
           failOnStdErr: true
           additionalArguments: "${{inputs.dryRun && '--what-if'}}"

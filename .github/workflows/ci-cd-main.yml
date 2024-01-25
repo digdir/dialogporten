@@ -14,12 +14,14 @@ jobs:
     uses: ./.github/workflows/action-check-for-changes.yml
 
   build-and-test:
+    name: Build and test backend
     uses: ./.github/workflows/action-build-and-test.yml
     needs: [check-for-changes]
     with:
       skip: ${{ needs.check-for-changes.outputs.hasBackendChanges != 'true' }}
 
   publish:
+    name: Build and publish docker images
     uses: ./.github/workflows/action-publish.yml
     needs: [check-for-changes, build-and-test]
     secrets:
@@ -29,6 +31,7 @@ jobs:
       skip: ${{ needs.check-for-changes.outputs.hasBackendChanges != 'true' }}
 
   deploy-test:
+    name: Deploy to test
     needs: [publish]
     uses: ./.github/workflows/action-deploy.yml
     secrets:
@@ -45,6 +48,7 @@ jobs:
       dryRun: true
 
   dry-run-deploy-staging:
+    name: Deploy to staging (dry run)
     needs: [deploy-test]
     uses: ./.github/workflows/action-deploy.yml
     secrets:
@@ -62,6 +66,7 @@ jobs:
       dryRun: true
 
   deploy-staging:
+    name: Deploy to staging
     needs: [dry-run-deploy-staging]
     uses: ./.github/workflows/action-deploy.yml
     secrets:
