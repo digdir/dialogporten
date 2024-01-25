@@ -7,7 +7,7 @@ param applicationServicePlanSKUName string
 param applicationServicePlanSKUTier string
 
 // Storage account names only supports lower case and numbers
-var storageAccountName = '${replace(namePrefix, '-', '')}slacknotifiersa'
+var storageAccountName = '${replace(namePrefix, '-', '')}slacknotifier'
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
     name: storageAccountName
