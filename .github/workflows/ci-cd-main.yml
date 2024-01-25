@@ -31,7 +31,7 @@ jobs:
 
   deploy-test:
     name: Deploy to test
-    needs: [publish]
+    needs: [check-for-changes, publish]
     uses: ./.github/workflows/action-deploy.yml
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -49,7 +49,7 @@ jobs:
 
   deploy-slack-notifier-test:
     name: Deploy slack notifier (test)
-    needs: [deploy-test, check-for-changes]
+    needs: [check-for-changes, deploy-test]
     uses: ./.github/workflows/action-deploy-function.yml
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -63,7 +63,7 @@ jobs:
 
   dry-run-deploy-staging:
     name: Deploy to staging (dry run)
-    needs: [deploy-test]
+    needs: [check-for-changes, deploy-test]
     uses: ./.github/workflows/action-deploy.yml
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -82,7 +82,7 @@ jobs:
 
   deploy-staging:
     name: Deploy to staging
-    needs: [dry-run-deploy-staging]
+    needs: [check-for-changes, dry-run-deploy-staging]
     uses: ./.github/workflows/action-deploy.yml
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
