@@ -3,8 +3,9 @@ using System.Text.RegularExpressions;
 
 namespace Digdir.Domain.Dialogporten.Application.Common.Numbers;
 
-internal static partial class EndUserIdentifier
+public static partial class EndUserIdentifier
 {
+    public const string NorwegianPersonIdentifierPrefix = "urn:altinn:person:identifier-no::";
     private static readonly int[] NorwegianIdentifierNumberWeights1 = [3, 7, 6, 1, 8, 9, 4, 5, 2, 1];
     private static readonly int[] NorwegianIdentifierNumberWeights2 = [5, 4, 3, 2, 7, 6, 5, 4, 3, 2, 1];
 

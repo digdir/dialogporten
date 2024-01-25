@@ -21,7 +21,7 @@ internal sealed class SearchDialogQueryValidator : AbstractValidator<SearchDialo
 
         RuleFor(x => x)
             .Must(x => EndUserIdentifier.IsValid(x.EndUserId!))
-            .WithMessage($"'{nameof(SearchDialogQuery.EndUserId)}' must be a valid end user identifier. It should match the format 'urn:altinn:person:identifier-no::{{norwegian f-nr/d-nr}} or 'urn:altinn:systemuser:{{uuid}}\"")
+            .WithMessage($"'{{PropertyName}}' must be a valid end user identifier. It should match the format '{EndUserIdentifier.NorwegianPersonIdentifierPrefix}{{norwegian f-nr/d-nr}} or 'urn:altinn:systemuser:{{uuid}}\"")
             .Must(x => !x.ServiceResource.IsNullOrEmpty() || !x.Party.IsNullOrEmpty())
             .WithMessage($"Either '{nameof(SearchDialogQuery.ServiceResource)}' or '{nameof(SearchDialogQuery.Party)}' must be specified if '{nameof(SearchDialogQuery.EndUserId)}' is provided.")
             .When(x => x.EndUserId is not null);
@@ -29,8 +29,8 @@ internal sealed class SearchDialogQueryValidator : AbstractValidator<SearchDialo
         RuleForEach(x => x.Party)
             .Must(x => x is null || EndUserIdentifier.IsValid(x) || OrganizationIdentifier.IsValid(x))
             .WithMessage(
-                "'{PropertyName}' must be on format 'urn:altinn:organization:identifier-no::{{norwegian org-nr}}' or " +
-                "'urn:altinn:person:identifier-no::{{norwegian f-nr/d-nr}}' with valid numbers respectively.");
+                $"'{{PropertyName}}' must be on format '{OrganizationIdentifier.NorwegianOrganizationIdentifierPrefix}{{norwegian org-nr}}' or " +
+                $"'{EndUserIdentifier.NorwegianPersonIdentifierPrefix}{{{{norwegian f-nr/d-nr}}}}' with valid numbers respectively.");
 
         RuleFor(x => x.ServiceResource!.Count)
             .LessThanOrEqualTo(20)

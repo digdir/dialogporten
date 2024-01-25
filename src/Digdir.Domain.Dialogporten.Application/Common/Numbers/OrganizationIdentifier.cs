@@ -3,8 +3,9 @@ using System.Text.RegularExpressions;
 
 namespace Digdir.Domain.Dialogporten.Application.Common.Numbers;
 
-internal static partial class OrganizationIdentifier
+public static partial class OrganizationIdentifier
 {
+    public const string NorwegianOrganizationIdentifierPrefix = "urn:altinn:organization:identifier-no::";
     private static readonly int[] NorwegianOrgNumberWeights = [3, 2, 7, 6, 5, 4, 3, 2];
 
     [GeneratedRegex(@"urn:altinn:([\w-]{5,20}):([\w-]{4,20})::([\w-]{5,36})", RegexOptions.None, matchTimeoutMilliseconds: 100)]

@@ -1,5 +1,6 @@
 ﻿using Altinn.Authorization.ABAC.Xacml.JsonProfile;
 using System.Security.Claims;
+using Digdir.Domain.Dialogporten.Application.Common.Numbers;
 using Digdir.Domain.Dialogporten.Application.Common.Authorization;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
@@ -12,8 +13,8 @@ internal static class DecisionRequestHelper
     private const string AltinnUrnNsPrefix = "urn:altinn:";
     private const string PidClaimType = "pid";
     private const string ConsumerClaimType = "consumer";
-    private const string PartyPrefixOrg = "urn:altinn:organization:identifier-no::";
-    private const string PartyPrefixPerson = "urn:altinn:person:identifier-no::";
+    private const string PartyPrefixOrg = OrganizationIdentifier.NorwegianOrganizationIdentifierPrefix;
+    private const string PartyPrefixPerson = EndUserIdentifier.NorwegianPersonIdentifierPrefix;
     private const string AttributeIdSsn = "urn:altinn:ssn";
     private const string AttributeIdOrganizationNumber = "urn:altinn:organizationnumber";
     private const string AttributeIdAction = "urn:oasis:names:tc:xacml:1.0:action:action-id";

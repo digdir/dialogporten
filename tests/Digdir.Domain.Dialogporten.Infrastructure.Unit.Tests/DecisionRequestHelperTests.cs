@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using Altinn.Authorization.ABAC.Xacml.JsonProfile;
 using Digdir.Domain.Dialogporten.Application.Common.Authorization;
+using Digdir.Domain.Dialogporten.Application.Common.Numbers;
 using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.Authorization;
 using Xunit;
@@ -22,7 +23,7 @@ public class DecisionRequestHelperTests
                 // This should not be copied as subject claim since there's a "pid"-claim
                 ("consumer", ConsumerClaimValue)
             ),
-            "urn:altinn:organization:identifier-no::912345678");
+            $"{OrganizationIdentifier.NorwegianOrganizationIdentifierPrefix}912345678");
         var dialogId = request.DialogId;
 
         // Act
@@ -82,7 +83,7 @@ public class DecisionRequestHelperTests
                 // Should be copied as subject claim since there's not a "pid"-claim
                 ("consumer", ConsumerClaimValue)
             ),
-            "urn:altinn:person:identifier-no::12345678901");
+            $"{EndUserIdentifier.NorwegianPersonIdentifierPrefix}12345678901");
 
         // Act
         var result = DecisionRequestHelper.CreateDialogDetailsRequest(request);
@@ -107,7 +108,7 @@ public class DecisionRequestHelperTests
                 // Should be copied as subject claim since there's not a "pid"-claim
                 ("consumer", ConsumerClaimValue)
             ),
-            "urn:altinn:person:identifier-no::12345678901");
+            $"{EndUserIdentifier.NorwegianPersonIdentifierPrefix}12345678901");
 
         // Add an additional action to the request that the mocked response should give a non-permit response for
         request.AltinnActions.Add(new AltinnAction("failaction", Constants.MainResource));

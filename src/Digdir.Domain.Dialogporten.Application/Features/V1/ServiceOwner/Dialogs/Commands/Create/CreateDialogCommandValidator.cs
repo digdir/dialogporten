@@ -31,8 +31,8 @@ internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDia
         RuleFor(x => x.Party)
             .Must(x => x is null || EndUserIdentifier.IsValid(x) || OrganizationIdentifier.IsValid(x))
             .WithMessage(
-                "'{PropertyName}' must be on format 'urn:altinn:organization:identifier-no::{{norwegian org-nr}}' or " +
-                "'urn:altinn:person:identifier-no::{{norwegian f-nr/d-nr}}' with valid numbers respectively.")
+                $"'{{PropertyName}}' must be on format '{OrganizationIdentifier.NorwegianOrganizationIdentifierPrefix}{{norwegian org-nr}}' or " +
+                $"'{EndUserIdentifier.NorwegianPersonIdentifierPrefix}{{{{norwegian f-nr/d-nr}}}}' with valid numbers respectively.")
             .NotEmpty()
             .MaximumLength(Constants.DefaultMaxStringLength);
 
