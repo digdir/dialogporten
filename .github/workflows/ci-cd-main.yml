@@ -48,6 +48,7 @@ jobs:
       dryRun: true
 
   deploy-slack-notifier-test:
+    name: Deploy slack notifier (test)
     needs: [deploy-test, check-for-changes]
     uses: ./.github/workflows/action-deploy-function.yml
     secrets:
