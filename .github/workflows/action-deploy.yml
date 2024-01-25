@@ -30,14 +30,10 @@ on:
         required: false
         type: boolean
         default: false
-      skipApproval:
-        description: "If true, the deployment will be automatically approved."
-        required: false
-        type: boolean
-        default: false
 concurrency:
   group: ${{ github.workflow }}-${{ inputs.environment }}
-  cancel-in-progress: false
+  # if the dryrun input is true, we want to cancel any running deployments in order to not block the pipeline
+  cancel-in-progress: ${{ inputs.dryRun }}
 jobs:
   deploy:
     name: Deploy to ${{ inputs.environment }}
