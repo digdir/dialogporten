@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace Digdir.Domain.Dialogporten.Application.Common.Numbers;
+namespace Digdir.Domain.Dialogporten.Domain.Numbers;
 
 internal static class Mod11
 {

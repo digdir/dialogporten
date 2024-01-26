@@ -29,10 +29,7 @@ internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDia
                 .WithMessage($"'{{PropertyName}}' must start with '{Constants.ServiceResourcePrefix}'.");
 
         RuleFor(x => x.Party)
-            .Must(x => x is null || EndUserIdentifier.IsValid(x) || OrganizationIdentifier.IsValid(x))
-            .WithMessage(
-                $"'{{PropertyName}}' must be on format '{OrganizationIdentifier.NorwegianOrganizationIdentifierPrefix}{{norwegian org-nr}}' or " +
-                $"'{EndUserIdentifier.NorwegianPersonIdentifierPrefix}{{{{norwegian f-nr/d-nr}}}}' with valid numbers respectively.")
+            .IsValidPartyIdentifier()
             .NotEmpty()
             .MaximumLength(Constants.DefaultMaxStringLength);
 

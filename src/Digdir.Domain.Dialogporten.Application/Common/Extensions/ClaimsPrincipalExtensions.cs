@@ -1,8 +1,8 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
 using System.Security.Claims;
 using System.Diagnostics.CodeAnalysis;
-using Digdir.Domain.Dialogporten.Application.Common.Numbers;
 using System.Text.Json;
+using Digdir.Domain.Dialogporten.Domain.Parties;
 
 namespace Digdir.Domain.Dialogporten.Application.Common.Extensions;
 
@@ -47,7 +47,7 @@ public static class ClaimsPrincipalExtensions
 
         orgNumber = id.Split(IdDelimiter) switch
         {
-            [IdPrefix, var on] => OrganizationIdentifier.ValidateNorwegianOrganizationIdentifier(on) ? on : null,
+            [IdPrefix, var on] => NorwegianOrganizationIdentifier.IsValid(on) ? on : null,
             _ => null
         };
 
