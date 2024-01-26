@@ -11,15 +11,15 @@ on:
 jobs:
   check-for-changes:
     name: Check for changes
-    uses: ./.github/workflows/CheckForChanges.yml
+    uses: ./.github/workflows/action-check-for-changes.yml
 
   build-and-test:
-    uses: ./.github/workflows/BuildAndTest.yml
+    uses: ./.github/workflows/action-build-and-test.yml
     needs: [check-for-changes]
     if: ${{ needs.check-for-changes.outputs.hasBackendChanges == 'true' }}
 
   publish:
-    uses: ./.github/workflows/Publish.yml
+    uses: ./.github/workflows/action-publish.yml
     needs: [build-and-test]
     secrets:
       GCR_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
@@ -28,7 +28,7 @@ jobs:
 
   deploy-test:
     needs: [publish]
-    uses: ./.github/workflows/Deploy.yml
+    uses: ./.github/workflows/action-deploy.yml
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
@@ -43,7 +43,7 @@ jobs:
 
   deploy-slack-notifier-test:
     needs: [deploy-test, check-for-changes]
-    uses: ./.github/workflows/DeployFunction.yml
+    uses: ./.github/workflows/action-deploy-function.yml
     if: ${{ needs.check-for-changes.outputs.hasSlackNotifierChanges == 'true' }}
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
