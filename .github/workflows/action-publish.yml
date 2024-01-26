@@ -63,5 +63,5 @@ jobs:
             ${{ steps.meta.outputs.tags }},
             ${{ env.DOCKER_IMAGE_BASE_NAME }}${{ matrix.imageName }}:${{ github.sha }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=gha,scope=${{ matrix.imageName }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.imageName }}
