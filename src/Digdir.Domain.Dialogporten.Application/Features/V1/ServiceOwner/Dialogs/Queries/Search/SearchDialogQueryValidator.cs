@@ -22,7 +22,7 @@ internal sealed class SearchDialogQueryValidator : AbstractValidator<SearchDialo
 
         RuleFor(x => x)
             .Must(x => NorwegianPersonIdentifier.IsValid(x.EndUserId!) || SystemUserIdentifier.IsValid(x.EndUserId))
-            .WithMessage($"'{{PropertyName}}' must be a valid end user identifier. It should match the format '{NorwegianPersonIdentifier.Prefix}{{norwegian f-nr/d-nr}} or '{SystemUserIdentifier.Prefix}{{uuid}}\"")
+            .WithMessage($"'{nameof(SearchDialogQuery.EndUserId)}' must be a valid end user identifier. It should match the format '{NorwegianPersonIdentifier.Prefix}{{norwegian f-nr/d-nr}} or '{SystemUserIdentifier.Prefix}{{uuid}}\"")
             .Must(x => !x.ServiceResource.IsNullOrEmpty() || !x.Party.IsNullOrEmpty())
             .WithMessage($"Either '{nameof(SearchDialogQuery.ServiceResource)}' or '{nameof(SearchDialogQuery.Party)}' must be specified if '{nameof(SearchDialogQuery.EndUserId)}' is provided.")
             .When(x => x.EndUserId is not null);
