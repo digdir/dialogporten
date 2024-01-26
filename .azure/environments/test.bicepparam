@@ -1,4 +1,4 @@
-using 'main.bicep'
+using '../infrastructure.bicep'
 
 param environment = 'test'
 param location = 'norwayeast'

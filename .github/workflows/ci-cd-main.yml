@@ -31,9 +31,12 @@ jobs:
       skip: ${{ needs.check-for-changes.outputs.hasBackendChanges != 'true' }}
       dockerImageBaseName: ghcr.io/digdir/dialogporten-
 
+  # todo: separate deployment of container apps. Maybe have separate template definitions for each app
   deploy-test:
     name: Deploy to test
     needs: [check-for-changes, publish]
+    # todo: test this out
+    # if: ${{ jobs.build-and-test.result == 'success' || jobs.blah.result == 'skipped' }}
     uses: ./.github/workflows/action-deploy.yml
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}

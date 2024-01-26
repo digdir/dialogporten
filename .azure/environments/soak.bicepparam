@@ -1,6 +1,6 @@
-using 'main.bicep'
+using '../infrastructure.bicep'
 
-param environment = 'production'
+param environment = 'soak'
 param location = 'norwayeast'
 param keyVaultSourceKeys = json(readEnvironmentVariable('KEYVAULT_SOURCE_KEYS', '[]'))
 param gitSha = readEnvironmentVariable('GIT_SHA', '')
