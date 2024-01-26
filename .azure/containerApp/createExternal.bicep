@@ -210,5 +210,6 @@ output identityPrincipalIds array = [
 
 output containerAppEnvName string = containerAppEnv.name
 output webApiSoName string = webapiSo.name
+output webApiSoRevisionName string = webapiSo.properties.latestRevisionName
 output webApiEuName string = webapiEu.name
 output migrationJobName string = migrationJob.name
