@@ -14,21 +14,20 @@ public record SystemUserIdentifier : IPartyIdentifier
 
     public static bool TryParse(ReadOnlySpan<char> value, [NotNullWhen(true)] out IPartyIdentifier? identifier)
     {
-        var systemUserIdWithoutPrefix = GetIdPart(value);
-
-        if (!IsValid(systemUserIdWithoutPrefix))
+        if (!IsValid(value))
         {
             identifier = null;
             return false;
         }
 
-        identifier = new SystemUserIdentifier(systemUserIdWithoutPrefix);
+        identifier = new SystemUserIdentifier(GetIdPart(value));
         return true;
     }
 
     public static bool IsValid(ReadOnlySpan<char> value)
     {
-        return Guid.TryParse(value, out _);
+        var idNumberWithoutPrefix = GetIdPart(value);
+        return Guid.TryParse(idNumberWithoutPrefix, out _);
     }
 
     public static ReadOnlySpan<char> GetIdPart(ReadOnlySpan<char> value)

@@ -19,25 +19,24 @@ public class NorwegianPersonIdentifier : IPartyIdentifier
 
     public static bool TryParse(ReadOnlySpan<char> value, [NotNullWhen(true)] out IPartyIdentifier? identifier)
     {
-        var nationalIdWithoutPrefix = GetIdPart(value);
-
-        if (!IsValid(nationalIdWithoutPrefix))
+        if (!IsValid(value))
         {
             identifier = null;
             return false;
         }
 
-        identifier = new NorwegianPersonIdentifier(nationalIdWithoutPrefix);
+        identifier = new NorwegianPersonIdentifier(GetIdPart(value));
         return true;
     }
 
     public static bool IsValid(ReadOnlySpan<char> value)
     {
-        return value.Length == 11
-               && Mod11.TryCalculateControlDigit(value[..9], SocialSecurityNumberWeights1, out var control1)
-               && Mod11.TryCalculateControlDigit(value[..10], SocialSecurityNumberWeights2, out var control2)
-               && control1 == int.Parse(value[9..10], CultureInfo.InvariantCulture)
-               && control2 == int.Parse(value[10..11], CultureInfo.InvariantCulture);
+        var idNumberWithoutPrefix = GetIdPart(value);
+        return idNumberWithoutPrefix.Length == 11
+               && Mod11.TryCalculateControlDigit(idNumberWithoutPrefix[..9], SocialSecurityNumberWeights1, out var control1)
+               && Mod11.TryCalculateControlDigit(idNumberWithoutPrefix[..10], SocialSecurityNumberWeights2, out var control2)
+               && control1 == int.Parse(idNumberWithoutPrefix[9..10], CultureInfo.InvariantCulture)
+               && control2 == int.Parse(idNumberWithoutPrefix[10..11], CultureInfo.InvariantCulture);
     }
 
     public static ReadOnlySpan<char> GetIdPart(ReadOnlySpan<char> value)

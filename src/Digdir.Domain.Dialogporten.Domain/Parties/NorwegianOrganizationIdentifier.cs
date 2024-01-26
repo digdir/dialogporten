@@ -17,23 +17,22 @@ public record NorwegianOrganizationIdentifier : IPartyIdentifier
 
     public static bool TryParse(ReadOnlySpan<char> value, [NotNullWhen(true)] out IPartyIdentifier? identifier)
     {
-        var orgNumberWithoutPrefix = GetIdPart(value);
-
-        if (!IsValid(orgNumberWithoutPrefix))
+        if (!IsValid(value))
         {
             identifier = null;
             return false;
         }
 
-        identifier = new NorwegianOrganizationIdentifier(orgNumberWithoutPrefix);
+        identifier = new NorwegianOrganizationIdentifier(GetIdPart(value));
         return true;
     }
 
     public static bool IsValid(ReadOnlySpan<char> value)
     {
-        return value.Length == 9
-               && Mod11.TryCalculateControlDigit(value[..8], OrgNumberWeights, out var control)
-               && control == int.Parse(value[8..9], CultureInfo.InvariantCulture);
+        var idNumberWithoutPrefix = GetIdPart(value);
+        return idNumberWithoutPrefix.Length == 9
+               && Mod11.TryCalculateControlDigit(idNumberWithoutPrefix[..8], OrgNumberWeights, out var control)
+               && control == int.Parse(idNumberWithoutPrefix[8..9], CultureInfo.InvariantCulture);
     }
 
     public static ReadOnlySpan<char> GetIdPart(ReadOnlySpan<char> value)
