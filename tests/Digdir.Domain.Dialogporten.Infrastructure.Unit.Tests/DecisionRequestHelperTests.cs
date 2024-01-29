@@ -23,7 +23,7 @@ public class DecisionRequestHelperTests
                 // This should not be copied as subject claim since there's a "pid"-claim
                 ("consumer", ConsumerClaimValue)
             ),
-            $"{NorwegianOrganizationIdentifier.Prefix}912345678");
+            $"{NorwegianOrganizationIdentifier.Prefix}713330310");
         var dialogId = request.DialogId;
 
         // Act
@@ -55,7 +55,7 @@ public class DecisionRequestHelperTests
         Assert.NotNull(resource1);
         Assert.Contains(resource1.Attribute, a => a.AttributeId == "urn:altinn:resource" && a.Value == "some-service");
         Assert.Contains(resource1.Attribute, a => a.AttributeId == "urn:altinn:resourceinstance" && a.Value == dialogId.ToString());
-        Assert.Contains(resource1.Attribute, a => a.AttributeId == "urn:altinn:organizationnumber" && a.Value == "912345678");
+        Assert.Contains(resource1.Attribute, a => a.AttributeId == "urn:altinn:organizationnumber" && a.Value == "713330310");
 
         var resource2 = result.Request.Resource.FirstOrDefault(r => r.Id == "r2");
         Assert.NotNull(resource2);
@@ -83,7 +83,7 @@ public class DecisionRequestHelperTests
                 // Should be copied as subject claim since there's not a "pid"-claim
                 ("consumer", ConsumerClaimValue)
             ),
-            $"{NorwegianPersonIdentifier.Prefix}12345678901");
+            $"{NorwegianPersonIdentifier.Prefix}16073422888");
 
         // Act
         var result = DecisionRequestHelper.CreateDialogDetailsRequest(request);
@@ -96,7 +96,7 @@ public class DecisionRequestHelperTests
         // Check that we have the ssn attribute as resource owner
         var resource1 = result.Request.Resource.FirstOrDefault(r => r.Id == "r1");
         Assert.NotNull(resource1);
-        Assert.Contains(resource1.Attribute, a => a.AttributeId == "urn:altinn:ssn" && a.Value == "12345678901");
+        Assert.Contains(resource1.Attribute, a => a.AttributeId == "urn:altinn:ssn" && a.Value == "16073422888");
     }
 
     [Fact]
