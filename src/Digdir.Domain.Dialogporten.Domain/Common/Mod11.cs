@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace Digdir.Domain.Dialogporten.Domain.Numbers;
+namespace Digdir.Domain.Dialogporten.Domain.Common;
 
 internal static class Mod11
 {
@@ -34,9 +34,7 @@ internal static class Mod11
         foreach (var character in number)
         {
             if (char.IsDigit(character))
-            {
                 result[index++] = character - '0';
-            }
         }
 
         Array.Resize(ref result, index);

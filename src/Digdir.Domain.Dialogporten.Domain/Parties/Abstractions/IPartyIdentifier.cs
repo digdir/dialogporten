@@ -1,12 +1,11 @@
 using System.Diagnostics.CodeAnalysis;
 
-namespace Digdir.Domain.Dialogporten.Domain.Parties;
+namespace Digdir.Domain.Dialogporten.Domain.Parties.Abstractions;
 
 public interface IPartyIdentifier
 {
+    string FullId { get; }
+    string Id { get; }
     static abstract string Prefix { get; }
-    string Value { get; }
-    static abstract bool IsValid(ReadOnlySpan<char> value);
     static abstract bool TryParse(ReadOnlySpan<char> value, [NotNullWhen(true)] out IPartyIdentifier? identifier);
-    static abstract ReadOnlySpan<char> GetIdPart(ReadOnlySpan<char> value);
 }

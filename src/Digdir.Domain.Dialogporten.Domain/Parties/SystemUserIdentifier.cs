@@ -1,39 +1,31 @@
 using System.Diagnostics.CodeAnalysis;
+using Digdir.Domain.Dialogporten.Domain.Parties.Abstractions;
 
 namespace Digdir.Domain.Dialogporten.Domain.Parties;
 
 public record SystemUserIdentifier : IPartyIdentifier
 {
     public static string Prefix { get; } = "urn:altinn:systemuser::";
-    public string Value { get; }
+    public string FullId { get; }
+    public string Id { get; }
 
     private SystemUserIdentifier(ReadOnlySpan<char> value)
     {
-        Value = Prefix + value.ToString();
+        Id = value.ToString();
+        FullId = Prefix + Id;
     }
 
     public static bool TryParse(ReadOnlySpan<char> value, [NotNullWhen(true)] out IPartyIdentifier? identifier)
     {
-        if (!IsValid(value))
-        {
-            identifier = null;
-            return false;
-        }
-
-        identifier = new SystemUserIdentifier(GetIdPart(value));
-        return true;
+        identifier = IsValid(value)
+            ? new SystemUserIdentifier(PartyIdentifier.GetIdPart(value))
+            : null;
+        return identifier is not null;
     }
 
     public static bool IsValid(ReadOnlySpan<char> value)
     {
-        var idNumberWithoutPrefix = GetIdPart(value);
+        var idNumberWithoutPrefix = PartyIdentifier.GetIdPart(value);
         return Guid.TryParse(idNumberWithoutPrefix, out _);
-    }
-
-    public static ReadOnlySpan<char> GetIdPart(ReadOnlySpan<char> value)
-    {
-        return value.StartsWith(Prefix, StringComparison.OrdinalIgnoreCase)
-            ? value[Prefix.Length..]
-            : value;
     }
 }

@@ -1,7 +1,6 @@
 ﻿using System.Security.Claims;
 using Altinn.Authorization.ABAC.Xacml.JsonProfile;
 using Digdir.Domain.Dialogporten.Application.Common.Authorization;
-using Digdir.Domain.Dialogporten.Application.Common.Numbers;
 using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 using Digdir.Domain.Dialogporten.Domain.Parties;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.Authorization;
@@ -11,7 +10,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Unit.Tests;
 
 public class DecisionRequestHelperTests
 {
-    private const string ConsumerClaimValue = "{\"authority\":\"iso6523-actorid-upis\",\"ID\":\"0192:991825827\"}";
+    private const string ConsumerClaimValue = /*lang=json,strict*/ "{\"authority\":\"iso6523-actorid-upis\",\"ID\":\"0192:991825827\"}";
 
     [Fact]
     public void CreateDialogDetailsRequestShouldReturnCorrectRequest()

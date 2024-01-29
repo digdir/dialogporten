@@ -4,6 +4,7 @@ using Digdir.Domain.Dialogporten.Application.Common.Authorization;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 using Digdir.Domain.Dialogporten.Domain.Parties;
+using Digdir.Domain.Dialogporten.Domain.Parties.Abstractions;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.Authorization;
 
@@ -163,25 +164,13 @@ internal static class DecisionRequestHelper
     private static XacmlJsonAttribute? ExtractPartyAttribute(string party)
     {
         // TODO: This can be removed once Altinn Auth has been updated to use the new party format.
-        var partyAttribute = new XacmlJsonAttribute();
-
-        if (party.StartsWith(NorwegianOrganizationIdentifier.Prefix, StringComparison.Ordinal))
+        var _ = PartyIdentifier.TryParse(party, out var partyIdentifier);
+        return partyIdentifier switch
         {
-            partyAttribute.AttributeId = AttributeIdOrganizationNumber;
-            partyAttribute.Value = NorwegianOrganizationIdentifier.GetIdPart(party).ToString();
-
-        }
-        else if (party.StartsWith(NorwegianPersonIdentifier.Prefix, StringComparison.Ordinal))
-        {
-            partyAttribute.AttributeId = AttributeIdSsn;
-            partyAttribute.Value = NorwegianPersonIdentifier.GetIdPart(party).ToString();
-        }
-        else
-        {
-            return null;
-        }
-
-        return partyAttribute;
+            NorwegianOrganizationIdentifier => new XacmlJsonAttribute() { AttributeId = AttributeIdOrganizationNumber, Value = partyIdentifier.Id },
+            NorwegianPersonIdentifier => new() { AttributeId = AttributeIdSsn, Value = partyIdentifier.Id },
+            _ => null
+        };
     }
 
     private static XacmlJsonMultiRequests CreateMultiRequests(
