@@ -10,10 +10,10 @@ public class DialogStatus : AbstractLookupEntity<DialogStatus, DialogStatus.Valu
     public enum Values
     {
         /// <summary>
-        /// Dialogen har ingen spesiell status. Brukes typisk for enkle meldinger som ikke krever noe 
-        /// interaksjon. Dette er default. 
+        /// Dialogen er å regne som ny. Brukes typisk for enkle meldinger som ikke krever noe 
+        /// interaksjon, eller som et initielt steg for dialoger. Dette er default. 
         /// </summary>
-        Unspecified = 1,
+        New = 1,
 
         /// <summary>
         /// Under arbeid. Generell status som brukes for dialogtjenester der ytterligere bruker-input er 
