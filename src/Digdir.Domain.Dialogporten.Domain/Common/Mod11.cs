@@ -34,7 +34,9 @@ internal static class Mod11
         foreach (var character in number)
         {
             if (char.IsDigit(character))
+            {
                 result[index++] = character - '0';
+            }
         }
 
         Array.Resize(ref result, index);
