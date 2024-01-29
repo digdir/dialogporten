@@ -111,9 +111,9 @@ jobs:
         id: verify-deployment
         with:
           azcliversion: ${{ env.AZ_CLI_VERSION }}
-          scriptLocation: 'scriptPath'
-          scriptPath: "./.github/tools/revisionVerifier.sh"
-          arguments: "${{ steps.deploy.outputs.webApiSoRevisionName }} ${{ steps.deploy.outputs.resourceGroupName }}"
+          inlineScript: |
+            ./.github/tools/revisionVerifier.sh "${{ steps.deploy.outputs.webApiSoRevisionName }} ${{ steps.deploy.outputs.resourceGroupName }}"
+
 
       - name: Logout from azure
         if: ${{failure() || success()}}
