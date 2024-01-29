@@ -106,6 +106,14 @@ jobs:
           additionalArguments: "${{inputs.dryRun && '--what-if'}}"
           parameters: ./.azure/environments/${{ inputs.environment }}.bicepparam
 
+      - name: Deploy container apps
+        uses: azure/CLI@v1
+        if: ${{!inputs.dryRun}}
+        with:
+          azcliversion: 2.56.0
+          inlineScript: |
+            echo "Deploying container apps"
+
       - name: Start migration job
         uses: azure/CLI@v1
         if: ${{!inputs.dryRun}}

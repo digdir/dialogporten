@@ -14,7 +14,7 @@ param migrationVerifierPrincipalPassword string
 param migrationVerifierPrincipalAppId string
 
 resource appInsightsWorkspace 'Microsoft.OperationalInsights/workspaces@2022-10-01' existing = {
-	name: appInsightsWorkspaceName
+  name: appInsightsWorkspaceName
 }
 
 resource containerAppEnv 'Microsoft.App/managedEnvironments@2023-05-01' = {
@@ -75,35 +75,35 @@ resource migrationJob 'Microsoft.App/jobs@2023-05-01' = {
 var initContainers = [
   {
     name: 'migration-verifier-init'
-    image:'${baseImageUrl}migration-verifier:${gitSha}'
+    image: '${baseImageUrl}migration-verifier:${gitSha}'
     env: concat(envVariables,
-    [
-      {
-        name: 'AZURE_TENANT_ID'
-        value: subscription().tenantId
-      }
-      {
-        name: 'SUBSCRIPTION_ID'
-        value: subscription().subscriptionId
-      }
-      {
-        name: 'AZURE_CLIENT_ID'
-        value: migrationVerifierPrincipalAppId
-      }
-      {
-        name: 'AZURE_CLIENT_SECRET'
-        value: migrationVerifierPrincipalPassword
-      }
-      {
-        name: 'MIGRATION_JOB_NAME'
-        value: migrationJob.name
-      }
-      {
-        name: 'RESOURCE_GROUP_NAME'
-        value: resourceGroup().name
-      }
-    ])
-  }]
+      [
+        {
+          name: 'AZURE_TENANT_ID'
+          value: subscription().tenantId
+        }
+        {
+          name: 'SUBSCRIPTION_ID'
+          value: subscription().subscriptionId
+        }
+        {
+          name: 'AZURE_CLIENT_ID'
+          value: migrationVerifierPrincipalAppId
+        }
+        {
+          name: 'AZURE_CLIENT_SECRET'
+          value: migrationVerifierPrincipalPassword
+        }
+        {
+          name: 'MIGRATION_JOB_NAME'
+          value: migrationJob.name
+        }
+        {
+          name: 'RESOURCE_GROUP_NAME'
+          value: resourceGroup().name
+        }
+      ])
+  } ]
 
 var probes = [
   {
@@ -160,10 +160,10 @@ resource webapiSo 'Microsoft.App/containerApps@2023-05-01' = {
         {
           name: 'webapi-so'
           image: '${baseImageUrl}webapi:${gitSha}'
-          env: concat(envVariables, [{
-            name: 'RUN_OUTBOX_SCHEDULER'
-            value: 'true'
-          }])
+          env: concat(envVariables, [ {
+                name: 'RUN_OUTBOX_SCHEDULER'
+                value: 'true'
+              } ])
           probes: probes
         }
       ]
@@ -178,27 +178,12 @@ resource webapiEu 'Microsoft.App/containerApps@2023-05-01' = {
   identity: {
     type: 'SystemAssigned'
   }
-  
+
   properties: {
     configuration: {
       ingress: ingress
     }
     environmentId: containerAppEnv.id
-    template: {
-      scale: {
-        minReplicas: 1
-        maxReplicas: 5
-      }
-      initContainers: initContainers
-      containers: [
-        {
-          name: 'webapi-eu'
-          image: '${baseImageUrl}webapi:${gitSha}'
-          env: envVariables
-          probes: probes
-        }
-      ]
-    }
   }
 }
 
