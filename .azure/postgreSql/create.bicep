@@ -41,6 +41,10 @@ resource postgres 'Microsoft.DBforPostgreSQL/flexibleServers@2022-12-01' = {
     name: '${namePrefix}-postgres'
     location: location
     properties: {
+        authConfig: {
+            activeDirectoryAuth: 'Enabled'
+            passwordAuth: 'Enabled'
+        }
         version: '15'
         administratorLogin: administratorLogin
         administratorLoginPassword: administratorLoginPassword
@@ -96,3 +100,4 @@ module psqlConnectionString '../keyvault/upsertSecret.bicep' = {
 
 output adoConnectionStringSecretUri string = adoConnectionString.outputs.secretUri
 output psqlConnectionStringSecretUri string = psqlConnectionString.outputs.secretUri
+output serverName string = postgres.name
