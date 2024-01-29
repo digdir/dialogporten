@@ -94,12 +94,6 @@ jobs:
           additionalArguments: "${{inputs.dryRun && '--what-if'}}"
           parameters: ./.azure/.${{ inputs.environment }}.bicepparam
 
-      - name: echo all outputs (test)
-        run: |
-          echo "${{ steps.deploy.outputs.keyVaultSourceKeys }}"
-          echo "${{ steps.deploy.outputs.migrationJobName }}"
-          echo "${{ steps.deploy.outputs.resourceGroupName }}"
-
       - name: Start migration job
         uses: azure/CLI@v1
         if: ${{!inputs.dryRun}}
