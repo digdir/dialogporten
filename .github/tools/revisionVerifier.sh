@@ -18,14 +18,24 @@ verify_revision() {
   # Fetch app revision
   json_output=$(az containerapp revision show -g "$resource_group" --revision "$revision_name" --query "$query_filter" 2>/dev/null)
   
-  echo $json_output
+  health_state=$(echo $json_output | jq -r '.healthState')
+  running_state=$(echo $json_output | jq -r '.runningState')
+
+  echo "Revision $revision_name status:"
+  echo "-----------------------------"
+  echo "Health state: $health_state"
+  echo "Running state: $running_state"
+  echo " "
+  
   # Check health and running status
-  if [[ $json_output == *'"healthState": "Healthy",'*'"runningState": "Running"'* || $json_output == *'"healthState": "Healthy",'*'"runningState": "RunningAtMaxScale"'* ]]; then
+  if [[ $health_state == "Healthy" && ($running_state == "Running" || $running_state == "RunningAtMaxScale") ]]; then
     return 0  # OK!
   else
     return 1  # Not OK!
   fi
 }
+
+attempt=1
 
 # Loop until verified (GitHub action will do a timeout)
 while true; do
@@ -33,7 +43,8 @@ while true; do
     echo "Revision $revision_name is healthy and running"
     break
   else
-    echo "Waiting for revision $revision_name ..."
+    echo "Attempt $attempt: Waiting for revision $revision_name ..."
     sleep 10 # Sleep for 10 seconds
+    attempt=$((attempt+1))
   fi
 done
