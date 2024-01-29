@@ -108,7 +108,7 @@ jobs:
       - name: Verify deployment running
         timeout-minutes: 3
         uses: azure/CLI@v1
-        id: keyvault-keys
+        id: verify-deployment
         with:
           azcliversion: ${{ env.AZ_CLI_VERSION }}
           scriptLocation: 'scriptPath'
