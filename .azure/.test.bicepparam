@@ -2,7 +2,7 @@ using 'main.bicep'
 
 param environment = 'test'
 param location = 'norwayeast'
-param keyVaultSourceKeys = json(readEnvironmentVariable('KEYVAULT_SOURCE_KEYS', '[]'))
+param keyVaultSourceKeys = json(readEnvironmentVariable('KEY_VAULT_SOURCE_KEYS', '[]'))
 param gitSha = readEnvironmentVariable('GIT_SHA', '')
 
 // secrets
