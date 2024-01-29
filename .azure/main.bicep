@@ -333,4 +333,3 @@ module keyVaultReaderAccessPolicy 'keyvault/addReaderRoles.bicep' = {
 
 output migrationJobName string = containerAppsExternal.outputs.migrationJobName
 output resourceGroupName string = resourceGroup.name
-output keyVaultSourceKeys array = keyVaultSourceKeys
