@@ -3,6 +3,7 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Events;
+using Digdir.Domain.Dialogporten.Domain.Localizations;
 using Digdir.Library.Entity.Abstractions;
 using Digdir.Library.Entity.Abstractions.Features.Aggregate;
 using Digdir.Library.Entity.Abstractions.Features.EventPublisher;
@@ -33,6 +34,7 @@ public class DialogEntity :
     public DateTimeOffset? VisibleFrom { get; set; }
     public DateTimeOffset? DueAt { get; set; }
     public DateTimeOffset? ExpiresAt { get; set; }
+    // TODO: Remove, https://github.com/digdir/dialogporten/issues/398
     public DateTimeOffset? ReadAt { get; set; }
 
     // === Dependent relationships ===
@@ -41,21 +43,21 @@ public class DialogEntity :
 
     // === Principal relationships ===
     [AggregateChild]
-    public List<DialogContent> Content { get; set; } = new();
+    public List<DialogContent> Content { get; set; } = [];
     [AggregateChild]
-    public List<DialogSearchTag> SearchTags { get; set; } = new();
+    public List<DialogSearchTag> SearchTags { get; set; } = [];
 
     [AggregateChild]
-    public List<DialogElement> Elements { get; set; } = new();
+    public List<DialogElement> Elements { get; set; } = [];
 
     [AggregateChild]
-    public List<DialogGuiAction> GuiActions { get; set; } = new();
+    public List<DialogGuiAction> GuiActions { get; set; } = [];
 
     [AggregateChild]
-    public List<DialogApiAction> ApiActions { get; set; } = new();
+    public List<DialogApiAction> ApiActions { get; set; } = [];
 
     [AggregateChild]
-    public List<DialogActivity> Activities { get; set; } = new();
+    public List<DialogActivity> Activities { get; set; } = [];
 
     public void SoftDelete()
     {
@@ -89,17 +91,48 @@ public class DialogEntity :
         _domainEvents.Add(new DialogDeletedDomainEvent(Id, ServiceResource, Party));
     }
 
-    public void UpdateReadAt(DateTimeOffset timestamp)
+    public void UpdateSeenAt(string seenByEndUserId, string seenByEndUserName)
     {
-        if ((ReadAt ?? DateTimeOffset.MinValue) >= UpdatedAt)
+        var lastSeenByAt = Activities
+            .Where(x => x.SeenByEndUserId == seenByEndUserId)
+            .MaxBy(x => x.CreatedAt)
+            ?.CreatedAt;
+
+        if ((lastSeenByAt ?? DateTimeOffset.MinValue) >= UpdatedAt)
         {
             return;
         }
 
-        ReadAt = timestamp;
-        _domainEvents.Add(new DialogReadDomainEvent(Id));
+        if (string.IsNullOrWhiteSpace(seenByEndUserName))
+        {
+            seenByEndUserName = "NavnIkkeFunnet";
+        }
+
+        Activities.Add(new DialogActivity
+        {
+            Description = new DialogActivityDescription
+            {
+                Localizations = [new Localization
+                {
+                    CultureCode = "nb-no",
+                    Value = "Dialogen er sett"
+                }]
+            },
+            PerformedBy = new DialogActivityPerformedBy
+            {
+                Localizations = [new Localization
+                {
+                    CultureCode = "nb-no",
+                    Value = seenByEndUserName
+                }]
+            },
+            SeenByEndUserId = seenByEndUserId,
+            TypeId = DialogActivityType.Values.Seen
+        });
+
+        _domainEvents.Add(new DialogSeenDomainEvent(Id));
     }
 
-    private readonly List<IDomainEvent> _domainEvents = new();
+    private readonly List<IDomainEvent> _domainEvents = [];
     public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents;
 }

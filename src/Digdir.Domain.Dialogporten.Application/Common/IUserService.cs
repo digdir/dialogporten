@@ -1,6 +1,7 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 
 namespace Digdir.Domain.Dialogporten.Application.Common;
@@ -10,6 +11,8 @@ internal interface IUserService
     Task<bool> CurrentUserIsOwner(string serviceResource, CancellationToken cancellationToken);
     Task<IReadOnlyCollection<string>> GetCurrentUserResourceIds(CancellationToken cancellationToken);
     Task<string?> GetCurrentUserOrgShortName(CancellationToken cancellationToken);
+    bool TryGetCurrentUserPid([NotNullWhen(true)] out string? userPid);
+    Task<string?> GetCurrentUserName(string personalIdentificationNumber, CancellationToken cancellationToken);
 }
 
 internal sealed class UserService : IUserService
@@ -17,15 +20,18 @@ internal sealed class UserService : IUserService
     private readonly IUser _user;
     private readonly IResourceRegistry _resourceRegistry;
     private readonly IOrganizationRegistry _organizationRegistry;
+    private readonly INameRegistry _nameRegistry;
 
     public UserService(
         IUser user,
         IResourceRegistry resourceRegistry,
-        IOrganizationRegistry organizationRegistry)
+        IOrganizationRegistry organizationRegistry,
+        INameRegistry nameRegistry)
     {
         _user = user ?? throw new ArgumentNullException(nameof(user));
         _resourceRegistry = resourceRegistry ?? throw new ArgumentNullException(nameof(resourceRegistry));
         _organizationRegistry = organizationRegistry ?? throw new ArgumentNullException(nameof(organizationRegistry));
+        _nameRegistry = nameRegistry ?? throw new ArgumentNullException(nameof(nameRegistry));
     }
 
     public async Task<bool> CurrentUserIsOwner(string serviceResource, CancellationToken cancellationToken)
@@ -35,9 +41,14 @@ internal sealed class UserService : IUserService
     }
 
     public Task<IReadOnlyCollection<string>> GetCurrentUserResourceIds(CancellationToken cancellationToken) =>
-         !_user.TryGetOrgNumber(out var orgNumber)
+        !_user.TryGetOrgNumber(out var orgNumber)
             ? throw new UnreachableException()
             : _resourceRegistry.GetResourceIds(orgNumber, cancellationToken);
+
+    public bool TryGetCurrentUserPid([NotNullWhen(true)] out string? userPid) => _user.TryGetPid(out userPid);
+
+    public async Task<string?> GetCurrentUserName(string personalIdentificationNumber,
+        CancellationToken cancellationToken) => await _nameRegistry.GetName(personalIdentificationNumber, cancellationToken);
 
     public async Task<string?> GetCurrentUserOrgShortName(CancellationToken cancellationToken)
     {
@@ -72,4 +83,11 @@ internal sealed class LocalDevelopmentUserServiceDecorator : IUserService
 
     public Task<string?> GetCurrentUserOrgShortName(CancellationToken cancellationToken) =>
         _userService.GetCurrentUserOrgShortName(cancellationToken);
+
+    public bool TryGetCurrentUserPid([NotNullWhen(true)] out string? userPid) =>
+        _userService.TryGetCurrentUserPid(out userPid);
+
+
+    public async Task<string?> GetCurrentUserName(string personalIdentificationNumber, CancellationToken cancellationToken)
+        => await Task.FromResult("Local Development User");
 }

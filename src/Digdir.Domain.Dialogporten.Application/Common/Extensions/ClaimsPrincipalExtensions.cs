@@ -15,9 +15,29 @@ public static class ClaimsPrincipalExtensions
     private const char IdDelimiter = ':';
     private const string IdPrefix = "0192";
     private const string OrgClaim = "urn:altinn:org";
+    private const string PidClaim = "pid";
 
     public static bool TryGetOrgNumber(this ClaimsPrincipal claimsPrincipal, [NotNullWhen(true)] out string? orgNumber)
         => claimsPrincipal.FindFirst(ConsumerClaim).TryGetOrgNumber(out orgNumber);
+
+    public static bool TryGetPid(this ClaimsPrincipal claimsPrincipal, [NotNullWhen(true)] out string? pid)
+        => claimsPrincipal.FindFirst(PidClaim).TryGetPid(out pid);
+
+    public static bool TryGetPid(this Claim? pidClaim, [NotNullWhen(true)] out string? pid)
+    {
+        pid = null;
+        if (pidClaim is null || pidClaim.Type != PidClaim)
+        {
+            return false;
+        }
+
+        if (NorwegianPersonIdentifier.IsValid(pidClaim.Value))
+        {
+            pid = pidClaim.Value;
+        }
+
+        return pid is not null;
+    }
 
     public static bool TryGetOrgNumber(this Claim? consumerClaim, [NotNullWhen(true)] out string? orgNumber)
     {
@@ -54,10 +74,10 @@ public static class ClaimsPrincipalExtensions
         return orgNumber is not null;
     }
 
-    public static bool TryGetOrgShortName(this ClaimsPrincipal claimsPrincipal, [NotNullWhen(true)] out string? orgShortName)
+    private static bool TryGetOrgShortName(this ClaimsPrincipal claimsPrincipal, [NotNullWhen(true)] out string? orgShortName)
         => claimsPrincipal.FindFirst(OrgClaim).TryGetOrgShortName(out orgShortName);
 
-    public static bool TryGetOrgShortName(this Claim? orgClaim, [NotNullWhen(true)] out string? orgShortName)
+    private static bool TryGetOrgShortName(this Claim? orgClaim, [NotNullWhen(true)] out string? orgShortName)
     {
         orgShortName = orgClaim?.Value;
 
@@ -69,4 +89,7 @@ public static class ClaimsPrincipalExtensions
 
     internal static bool TryGetOrgShortName(this IUser user, [NotNullWhen(true)] out string? orgShortName) =>
         user.GetPrincipal().TryGetOrgShortName(out orgShortName);
+
+    internal static bool TryGetPid(this IUser user, [NotNullWhen(true)] out string? pid) =>
+        user.GetPrincipal().TryGetPid(out pid);
 }

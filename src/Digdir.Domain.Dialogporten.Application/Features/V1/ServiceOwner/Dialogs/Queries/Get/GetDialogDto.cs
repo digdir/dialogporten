@@ -54,7 +54,6 @@ public sealed class GetDialogDialogActivityDto
     public Guid Id { get; set; }
     public DateTimeOffset? CreatedAt { get; set; }
     public Uri? ExtendedType { get; set; }
-
     public DialogActivityType.Values Type { get; set; }
 
     public Guid? RelatedActivityId { get; set; }

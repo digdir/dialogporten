@@ -40,7 +40,8 @@ public class GetDialogEndpoint : Endpoint<GetDialogQuery, GetDialogDto>
                 return SendOkAsync(dto, ct);
             },
             notFound => this.NotFoundAsync(notFound, ct),
-            deleted => this.GoneAsync(deleted, ct));
+            deleted => this.GoneAsync(deleted, ct),
+            forbidden => this.ForbiddenAsync(forbidden, ct));
     }
 }
 
