@@ -1,32 +1,26 @@
 import { uuidv4 } from '../../../common/testimports.js'
+import { defaultEndUserSsn } from "../../../common/config.js";
 
 export default function () {
     let dialogElementId = uuidv4();
 
-    // Note! We assume that "super-simple-service" exists and is owned by 991825827
     return {
-        "serviceResource": "urn:altinn:resource:super-simple-service", // urn starting with urn:altinn:resource:
-        "party": "/org/991825827", // or /person/<11 digits>
+        "serviceResource": "urn:altinn:resource:ttd-dialogporten-automated-tests", // urn starting with urn:altinn:resource:
+        "party": "urn:altinn:person:identifier-no::" + defaultEndUserSsn, // or urn:altinn:organization:identifier-no::<9 digits>
         "status": "unspecified", // valid values: unspecified, inprogress, waiting, signing, cancelled, completed
         "extendedStatus": "urn:any/valid/uri",
         "dueAt": "2033-11-25T06:37:54.2920190Z", // must be UTC
         "expiresAt": "2053-11-25T06:37:54.2920190Z", // must be UTC
         "visibleFrom": "2032-11-25T06:37:54.2920190Z", // must be UTC
-        "searchTags": [ 
+        "searchTags": [
             { "value": "something searchable" },
             { "value": "something else searchable" }
         ],
-        "title": [
-            {
-                "cultureCode": "nb_NO",
-                "value": "Et eksempel på en tittel"
-            }   
-        ],
-        "body": [
-            {
-                "cultureCode": "nb_NO",
-                "value": "Et eksempel på en body"
-            }
+        "content": [
+            { "type": "Title", "value": [ { "cultureCode": "nb_NO", "value": "Skjema for rapportering av et eller annet" } ] },
+            { "type": "SenderName", "value": [ { "cultureCode": "nb_NO", "value": "Avsendernavn" } ] },
+            { "type": "Summary", "value": [ { "cultureCode": "nb_NO", "value": "Et sammendrag her. Maks 200 tegn, ingen HTML-støtte. Påkrevd. Vises i liste." } ] },
+            { "type": "AdditionalInfo", "value": [ { "cultureCode": "nb_NO", "value": "Utvidet forklaring (enkel HTML-støtte, inntil 1023 tegn). Ikke påkrevd. Vises kun i detaljvisning." } ] }
         ],
         "apiActions": [
             {

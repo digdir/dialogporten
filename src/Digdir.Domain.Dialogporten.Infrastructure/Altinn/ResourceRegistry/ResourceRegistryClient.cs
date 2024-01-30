@@ -1,11 +1,11 @@
-﻿using Digdir.Domain.Dialogporten.Application.Externals;
+﻿using System.Diagnostics;
+using System.Net.Http.Json;
+using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Domain.Common;
 using Digdir.Domain.Dialogporten.Infrastructure.Common.Extensions;
 using Microsoft.Extensions.Caching.Distributed;
-using System.Diagnostics;
-using System.Net.Http.Json;
 
-namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.Registry;
+namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.ResourceRegistry;
 
 internal sealed class ResourceRegistryClient : IResourceRegistry
 {

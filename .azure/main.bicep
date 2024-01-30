@@ -2,19 +2,112 @@ targetScope = 'subscription'
 @minLength(3)
 param environment string
 param location string
-param keyVault object
+param keyVaultSourceKeys array
 param gitSha string
 
 @secure()
-param secrets object
+param dialogportenPgAdminPassword string
+@secure()
+param apiManagementDigDirEmail string
+@secure()
+param sourceKeyVaultSubscriptionId string
+@secure()
+param sourceKeyVaultResourceGroup string
+@secure()
+param sourceKeyVaultName string
+
+@allowed(
+    [
+        'Basic'
+        'Consumption'
+        'Developer'
+        'Isolated'
+        'Premium'
+        'Standard'
+    ]
+)
+param APIMSKUName string
+
+@minValue(1)
+param APIMSKUCapcity int
+
+@allowed(
+    [
+        'premium'
+        'standard'
+    ]
+)
+param keyVaultSKUName string
+
+@allowed([
+    'A'
+])
+param keyVaultSKUFamily string
+
+@allowed([
+    'standard'
+])
+param appConfigurationSKUName string
+
+@allowed([
+    'CapacityReservation'
+    'Free'
+    'LACluster'
+    'PerGB2018'
+    'PerNode'
+    'Premium'
+    'Standalone'
+    'Standard'
+])
+param appInsightsSKUName string
+
+@allowed([
+    'Standard_LRS'
+    'Standard_GRS'
+    'Standard_RAGRS'
+    'Standard_ZRS'
+    'Premium_LRS'
+    'Premium_ZRS'
+])
+param slackNotifierStorageAccountSKUName string
+
+@allowed([
+    'Y1'
+])
+param slackNotifierApplicationServicePlanSKUName string
+
+@allowed([
+    'Dynamic'
+
+])
+param slackNotifierApplicationServicePlanSKUTier string
+
+@allowed([
+    'Standard_B1ms'
+])
+param postgresServerSKUName string
+@allowed([
+    'Burstable'
+    'GeneralPurpose'
+    'MemoryOptimized'
+])
+param postgresServerSKUTier string
+
+var secrets = {
+    dialogportenPgAdminPassword: dialogportenPgAdminPassword
+    apiManagementDigDirEmail: apiManagementDigDirEmail
+    sourceKeyVaultSubscriptionId: sourceKeyVaultSubscriptionId
+    sourceKeyVaultResourceGroup: sourceKeyVaultResourceGroup
+    sourceKeyVaultName: sourceKeyVaultName
+}
 
 var namePrefix = 'dp-be-${environment}'
 var baseImageUrl = 'ghcr.io/digdir/dialogporten-'
 
 // Create resource groups
 resource resourceGroup 'Microsoft.Resources/resourceGroups@2023-07-01' = {
-	name: '${namePrefix}-rg'
-	location: location
+    name: '${namePrefix}-rg'
+    location: location
 }
 
 module apiManagement 'apim/create.bicep' = {
@@ -24,16 +117,20 @@ module apiManagement 'apim/create.bicep' = {
         publisherEmail: secrets.apiManagementDigDirEmail
         location: location
         namePrefix: namePrefix
+        skuName: APIMSKUName
+        skuCapacity: APIMSKUCapcity
     }
 }
 
 module keyVaultModule 'keyvault/create.bicep' = {
-	scope: resourceGroup
-	name: 'keyVault'
-	params: {
-		namePrefix: namePrefix
-		location: location
-	}
+    scope: resourceGroup
+    name: 'keyVault'
+    params: {
+        namePrefix: namePrefix
+        location: location
+        skuName: keyVaultSKUName
+        skuFamily: keyVaultSKUFamily
+    }
 }
 
 module appConfiguration 'appConfiguration/create.bicep' = {
@@ -42,6 +139,7 @@ module appConfiguration 'appConfiguration/create.bicep' = {
     params: {
         namePrefix: namePrefix
         location: location
+        skuName: appConfigurationSKUName
     }
 }
 
@@ -51,6 +149,7 @@ module appInsights 'applicationInsights/create.bicep' = {
     params: {
         namePrefix: namePrefix
         location: location
+        skuName: appInsightsSKUName
     }
 }
 
@@ -59,7 +158,7 @@ module appInsights 'applicationInsights/create.bicep' = {
 // #######################################
 
 resource srcKeyVaultResource 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
-	name: secrets.sourceKeyVaultName
+    name: secrets.sourceKeyVaultName
     scope: az.resourceGroup(secrets.sourceKeyVaultSubscriptionId, secrets.sourceKeyVaultResourceGroup)
 }
 
@@ -79,24 +178,52 @@ module postgresql 'postgreSql/create.bicep' = {
     params: {
         namePrefix: namePrefix
         location: location
-		keyVaultName: keyVaultModule.outputs.name
+        keyVaultName: keyVaultModule.outputs.name
         srcKeyVault: srcKeyVault
         srcSecretName: 'dialogportenPgAdminPassword${environment}'
-		administratorLoginPassword: contains(keyVault.source.keys, 'dialogportenPgAdminPassword${environment}') ? srcKeyVaultResource.getSecret('dialogportenPgAdminPassword${environment}') : secrets.dialogportenPgAdminPassword
+        administratorLoginPassword: contains(keyVaultSourceKeys, 'dialogportenPgAdminPassword${environment}') ? srcKeyVaultResource.getSecret('dialogportenPgAdminPassword${environment}') : secrets.dialogportenPgAdminPassword
+        skuName: postgresServerSKUName
+        skuTier: postgresServerSKUTier
     }
 }
 
-module copySecrets 'keyvault/copySecrets.bicep' = {
-	scope: resourceGroup
-	name: 'copySecrets'
-	params: {
-		srcKeyVaultKeys: keyVault.source.keys
-		srcKeyVaultName: secrets.sourceKeyVaultName
-		srcKeyVaultRGNName: secrets.sourceKeyVaultResourceGroup
-		srcKeyVaultSubId: secrets.sourceKeyVaultSubscriptionId
-		destKeyVaultName: keyVaultModule.outputs.name
-		secretPrefix: 'dialogporten--${environment}--'
-	}
+module copyEnvironmentSecrets 'keyvault/copySecrets.bicep' = {
+    scope: resourceGroup
+    name: 'copyEnvironmentSecrets'
+    params: {
+        srcKeyVaultKeys: keyVaultSourceKeys
+        srcKeyVaultName: secrets.sourceKeyVaultName
+        srcKeyVaultRGNName: secrets.sourceKeyVaultResourceGroup
+        srcKeyVaultSubId: secrets.sourceKeyVaultSubscriptionId
+        destKeyVaultName: keyVaultModule.outputs.name
+        secretPrefix: 'dialogporten--${environment}--'
+    }
+}
+
+module copyCrossEnvironmentSecrets 'keyvault/copySecrets.bicep' = {
+    scope: resourceGroup
+    name: 'copyCrossEnvironmentSecrets'
+    params: { srcKeyVaultKeys: keyVaultSourceKeys
+        srcKeyVaultName: secrets.sourceKeyVaultName
+        srcKeyVaultRGNName: secrets.sourceKeyVaultResourceGroup
+        srcKeyVaultSubId: secrets.sourceKeyVaultSubscriptionId
+        destKeyVaultName: keyVaultModule.outputs.name
+        secretPrefix: 'dialogporten--any--'
+    }
+}
+
+module slackNotifier 'functionApp/slackNotifier.bicep' = {
+    name: 'slackNotifier'
+    scope: resourceGroup
+    params: {
+        location: location
+        keyVaultName: keyVaultModule.outputs.name
+        namePrefix: namePrefix
+        applicationInsightsName: appInsights.outputs.appInsightsName
+        storageAccountSKUName: slackNotifierStorageAccountSKUName
+        applicationServicePlanSKUName: slackNotifierApplicationServicePlanSKUName
+        applicationServicePlanSKUTier: slackNotifierApplicationServicePlanSKUTier
+    }
 }
 
 var containerAppEnvVars = [
@@ -164,7 +291,7 @@ module apiBackends 'apim/addBackends.bicep' = {
 
 var containerAppsPrincipals = concat(
     containerAppsExternal.outputs.identityPrincipalIds)
-    // containerAppsInternal.outputs.identityPrincipalIds
+// containerAppsInternal.outputs.identityPrincipalIds
 
 module appConfigReaderAccessPolicy 'appConfiguration/addReaderRoles.bicep' = {
     scope: resourceGroup
@@ -175,12 +302,21 @@ module appConfigReaderAccessPolicy 'appConfiguration/addReaderRoles.bicep' = {
     }
 }
 
+module appInsightsReaderAccessPolicy 'applicationInsights/addReaderRoles.bicep' = {
+    scope: resourceGroup
+    name: 'appInsightsReaderAccessPolicy'
+    params: {
+        appInsightsName: appInsights.outputs.appInsightsName
+        principalIds: [ slackNotifier.outputs.functionAppPrincipalId ]
+    }
+}
+
 module appConfigConfigurations 'appConfiguration/upsertKeyValue.bicep' = {
     scope: resourceGroup
     name: 'AppConfig_Add_DialogDbConnectionString'
     params: {
         configStoreName: appConfiguration.outputs.name
-        key: 'Infrastructure:DialogDbConnectionString' 
+        key: 'Infrastructure:DialogDbConnectionString'
         value: postgresql.outputs.adoConnectionStringSecretUri
         keyValueType: 'keyVaultReference'
     }
@@ -191,7 +327,7 @@ module keyVaultReaderAccessPolicy 'keyvault/addReaderRoles.bicep' = {
     name: 'keyVaultReaderAccessPolicy'
     params: {
         keyvaultName: keyVaultModule.outputs.name
-        principalIds: containerAppsPrincipals
+        principalIds: concat(containerAppsPrincipals, [ slackNotifier.outputs.functionAppPrincipalId ])
     }
 }
 

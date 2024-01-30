@@ -27,10 +27,10 @@ HTTP POST [Slack_Webhook_Url]
 3. Start the function app
 4. Send a log alert v2 format to the app
 
-The configured url does'nt have to be an actual slack workflow webhook url. It could point to an online webhook tester like https://webhook.site or a homemade webhook tester on your local machine.
+The configured url doesn't have to be an actual slack workflow webhook url. It could point to an online webhook tester like https://webhook.site or a homemade webhook tester on your local machine.
 
 ### Get a valid log alert v2 request
-This function app uses the links in the incoming alerts request to fetch data. Threrfore the requests are app instance and time specific. The provided example request is most likly to be invalid by the time this article is read. Do the following to get a valid request: 
+This function app uses the links in the incoming alerts request to fetch data. Therefore the requests are app instance and time specific. The provided example request is most likely to be invalid by the time this article is read. Do the following to get a valid request: 
 1. Go to https://webhook.site and copy your unique url
 2. Add the url as a webhook action of the azure action group 
 3. Trigger the alert

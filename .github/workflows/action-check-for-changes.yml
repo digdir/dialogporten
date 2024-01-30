@@ -1,0 +1,42 @@
+name: "Check for changes"
+
+on:
+  workflow_call:
+    outputs:
+      hasAzureChanges:
+        description: "Azure related files changed"
+        value: ${{ jobs.check-for-changes.outputs.hasAzureChanges }}
+      hasBackendChanges:
+        description: "Backend related files changed"
+        value: ${{ jobs.check-for-changes.outputs.hasBackendChanges }}
+      hasSlackNotifierChanges:
+        description: "Slack Notifier function related files changed"
+        value: ${{ jobs.check-for-changes.outputs.hasSlackNotifierChanges }}
+
+jobs:
+  check-for-changes:
+    name: Filter
+    runs-on: ubuntu-latest
+    outputs:
+      hasBackendChanges: ${{ steps.paths-filter.outputs.backend == 'true' }}
+      hasAzureChanges: ${{ steps.paths-filter.outputs.azure == 'true' }}
+      hasSlackNotifierChanges: ${{ steps.paths-filter.outputs.slackNotifier == 'true' }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dorny/paths-filter@v2
+        id: paths-filter
+        with:
+          base: ${{ github.ref }}
+          filters: |
+            backend:
+              - 'src/**/*'
+              - '.github/**/*'
+            azure:
+              - '.azure/**/*'
+              - '.github/**/*'
+            slackNotifier:
+              - 'src/Digdir.Tool.Dialogporten.SlackNotifier/**/*'
+              - '.github/**/*'
+            # todo: add additional files that should trigger a build

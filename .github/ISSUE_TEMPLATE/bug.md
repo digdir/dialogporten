@@ -1,10 +1,9 @@
 ---
 name: Bug
-about: Hvis du finner noe som ikke fungerer som det skal
+about: Hvis du finner noe som ikke fungerer som det skal.
 title: ''
 labels: bug
 assignees: ''
-
 ---
 
 ### Beskrivelse

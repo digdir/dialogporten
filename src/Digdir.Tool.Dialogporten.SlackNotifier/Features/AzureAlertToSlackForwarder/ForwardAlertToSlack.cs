@@ -8,18 +8,18 @@ using Digdir.Tool.Dialogporten.SlackNotifier.Common;
 
 namespace Digdir.Tool.Dialogporten.SlackNotifier.Features.AzureAlertToSlackForwarder;
 
-internal sealed class ForewardAlertToSlack
+internal sealed class ForwardAlertToSlack
 {
     private readonly ISlackClient _slack;
     private readonly IAppInsightsClient _appInsights;
 
-    public ForewardAlertToSlack(ISlackClient slack, IAppInsightsClient appInsights)
+    public ForwardAlertToSlack(ISlackClient slack, IAppInsightsClient appInsights)
     {
         _slack = slack;
         _appInsights = appInsights;
     }
 
-    [Function("ForewardAlertToSlack")]
+    [Function("ForwardAlertToSlack")]
     public async Task<HttpResponseData> Run(
         [HttpTrigger(AuthorizationLevel.Function, "post")] HttpRequestData req,
         CancellationToken cancellationToken)

@@ -1,4 +1,4 @@
-﻿namespace Digdir.Domain.Dialogporten.Application.Common.Numbers;
+﻿namespace Digdir.Domain.Dialogporten.Domain.Common;
 
 public static class UuidV7
 {
