@@ -37,18 +37,59 @@ public static class PartyIdentifier
             .Assembly
             .GetTypes()
             .Where(type => type.IsClass && !type.IsAbstract && type.IsAssignableTo(typeof(IPartyIdentifier)))
-            .Select(partyIdentifierType => new
-            {
-                Type = partyIdentifierType,
-                Prefix = (string)partyIdentifierType
+            .Select(partyIdentifierType => new PartyIdentifierMetadata
+            (
+                Type: partyIdentifierType,
+                Prefix: (string)partyIdentifierType
                     .GetProperty(nameof(IPartyIdentifier.Prefix), BindingFlags.Static | BindingFlags.Public)!
                     .GetValue(null)!,
-                TryParse = partyIdentifierType
+                TryParse: partyIdentifierType
                     .GetMethod(nameof(IPartyIdentifier.TryParse), new[] { typeof(ReadOnlySpan<char>), typeof(IPartyIdentifier).MakeByRefType() })!
                     .CreateDelegate<TryParseDelegate>()
-            })
-            .ToList();
+            ))
+            .ToList()
+            .AssertPrefixNotNullOrWhitespace()
+            .AssertPrefixEndsWithSeparator()
+            .AssertNoIdenticalPrefixes();
 
+        return partyIdentifiers.ToDictionary(x => x.Prefix, x => x.TryParse);
+    }
+
+    private static List<PartyIdentifierMetadata> AssertNoIdenticalPrefixes(this List<PartyIdentifierMetadata> partyIdentifiers)
+    {
+        var identicalPrefix = partyIdentifiers
+                    .GroupBy(x => x.Prefix)
+                    .Where(x => x.Count() > 1)
+                    .ToList();
+
+        if (identicalPrefix.Count != 0)
+        {
+            var typeNameGroups = string.Join(", ", identicalPrefix.Select(x => $"{{{string.Join(", ", x.Select(x => x.Type.Name))}}}"));
+            throw new InvalidOperationException(
+                $"{nameof(IPartyIdentifier.Prefix)} cannot be identical to another {nameof(IPartyIdentifier)} for the following type groups: [{typeNameGroups}].");
+        }
+
+        return partyIdentifiers;
+    }
+
+    private static List<PartyIdentifierMetadata> AssertPrefixEndsWithSeparator(this List<PartyIdentifierMetadata> partyIdentifiers)
+    {
+        var separatorlessPrefix = partyIdentifiers
+                    .Where(x => !x.Prefix.EndsWith(Separator, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+
+        if (separatorlessPrefix.Count != 0)
+        {
+            var typeNames = string.Join(", ", separatorlessPrefix.Select(x => x.Type.Name));
+            throw new InvalidOperationException(
+                $"{nameof(IPartyIdentifier.Prefix)} must end with prefix-id separator '{Separator}' for the following types: [{typeNames}].");
+        }
+
+        return partyIdentifiers;
+    }
+
+    private static List<PartyIdentifierMetadata> AssertPrefixNotNullOrWhitespace(this List<PartyIdentifierMetadata> partyIdentifiers)
+    {
         var nullOrWhitespacePrefix = partyIdentifiers
             .Where(x => string.IsNullOrWhiteSpace(x.Prefix))
             .ToList();
@@ -60,29 +101,13 @@ public static class PartyIdentifier
                 $"{nameof(IPartyIdentifier.Prefix)} cannot be null or whitespace for the following types: [{typeNames}]");
         }
 
-        var separatorlessPrefix = partyIdentifiers
-            .Where(x => !x.Prefix.EndsWith(Separator, StringComparison.OrdinalIgnoreCase))
-            .ToList();
-
-        if (separatorlessPrefix.Count != 0)
-        {
-            var typeNames = string.Join(", ", separatorlessPrefix.Select(x => x.Type.Name));
-            throw new InvalidOperationException(
-                $"{nameof(IPartyIdentifier.Prefix)} must end with prefix-id separator '{Separator}' for the following types: [{typeNames}].");
-        }
-
-        var identicalPrefix = partyIdentifiers
-            .GroupBy(x => x.Prefix)
-            .Where(x => x.Count() > 1)
-            .ToList();
-
-        if (identicalPrefix.Count != 0)
-        {
-            var typeNameGroups = string.Join(", ", identicalPrefix.Select(x => $"{{{string.Join(", ", x.Select(x => x.Type.Name))}}}"));
-            throw new InvalidOperationException(
-                $"{nameof(IPartyIdentifier.Prefix)} cannot be identical to another {nameof(IPartyIdentifier)} for the following type groups: [{typeNameGroups}].");
-        }
-
-        return partyIdentifiers.ToDictionary(x => x.Prefix, x => x.TryParse);
+        return partyIdentifiers;
     }
+
+    //private static void AssertPrefixNotNullOrWhitespace()
+
+    private record struct PartyIdentifierMetadata(
+        Type Type,
+        string Prefix,
+        TryParseDelegate TryParse);
 }
