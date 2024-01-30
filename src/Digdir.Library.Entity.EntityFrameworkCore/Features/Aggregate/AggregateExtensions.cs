@@ -1,8 +1,6 @@
-﻿using System.Collections;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Reflection;
 using Digdir.Library.Entity.Abstractions.Features.Aggregate;
-using Digdir.Library.Entity.Abstractions.Features.Creatable;
 using Digdir.Library.Entity.Abstractions.Features.Updatable;
 using Digdir.Library.Entity.Abstractions.Features.Versionable;
 using Microsoft.EntityFrameworkCore;
@@ -79,15 +77,6 @@ internal static class AggregateExtensions
         return modelBuilder;
     }
 
-    /* - oppdater oppover
-     * - slett nedover
-     * - Autoinclude children DONE
-     * - Skille på modifisert som del av agregatet eller direkte
-     * - Skille på slettet som del av agregatet eller direkte
-     * 
-     * 
-     */
-
     private static async Task<IReadOnlyDictionary<EntityEntry, AggregateNode>> GetAggregateNodeByEntry(
         this IEnumerable<EntityEntry> entries,
         CancellationToken cancellationToken)
@@ -120,8 +109,11 @@ internal static class AggregateExtensions
     /// </returns>
     private static bool CollapseAggregateState(this AggregateNode node, AggregateNodeState? parentState = null)
     {
-        if (parentState is AggregateNodeState.Deleted)
+        if (parentState is AggregateNodeState.Deleted &&
+            node.State is not AggregateNodeState.Deleted)
         {
+            // TODO: Check if required relationship?
+            node.DeletedByParent = true;
             node.State = AggregateNodeState.Deleted;
         }
 
@@ -131,6 +123,7 @@ internal static class AggregateExtensions
 
         if (node.State is AggregateNodeState.Unchanged && childrenIsModified)
         {
+            node.ModifiedByChild = true;
             node.State = AggregateNodeState.Modified;
         }
 
@@ -209,10 +202,7 @@ internal static class AggregateExtensions
         {
             var childNav = parentEntry.Navigation(childForeignKey.PrincipalToDependent!.Name);
             await childNav.LoadAsync(cancellationToken);
-
-            // TODO: Fungerer dette for slettede elementer? Burde det være OriginalValue i stede for CurrentValue?
-            //var originalValues = parentEntry.OriginalValues[childForeignKey.PrincipalToDependent!.Name];
-            var currentValues = childForeignKey.PrincipalToDependent!.IsCollection
+            var currentValues = childNav.Metadata.IsCollection
                 ? childNav.CurrentValue as IEnumerable<object> ?? Enumerable.Empty<object>()
                 : Enumerable.Empty<object>()
                     .Append(childNav.CurrentValue)
