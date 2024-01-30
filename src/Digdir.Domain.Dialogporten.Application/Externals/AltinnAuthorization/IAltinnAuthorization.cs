@@ -11,5 +11,6 @@ public interface IAltinnAuthorization
     public Task<DialogSearchAuthorizationResult> GetAuthorizedResourcesForSearch(
         List<string> constraintParties,
         List<string> constraintServiceResources,
+        string? endUserId = null,
         CancellationToken cancellationToken = default);
 }

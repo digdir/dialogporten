@@ -1,0 +1,15 @@
+﻿name: CI/CD Staging
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    #paths: [ src/**, tests/**, .github/workflows/** ]
+    paths-ignore:
+      - "tests/k6/**"
+
+jobs:
+  check-for-changes:
+    name: Check for changes
+    uses: ./.github/workflows/action-check-for-changes.yml
+# todo: build and add feature gate

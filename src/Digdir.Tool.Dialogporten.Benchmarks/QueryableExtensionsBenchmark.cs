@@ -1,7 +1,9 @@
 ﻿using BenchmarkDotNet.Attributes;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
+using Digdir.Domain.Dialogporten.Application.Common.Numbers;
 using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
+using Digdir.Domain.Dialogporten.Domain.Parties;
 
 namespace Digdir.Tool.Dialogporten.Benchmarks;
 
@@ -42,7 +44,7 @@ public class QueryableExtensionsBenchmark
         };
     }
 
-    private static string GenerateParty(int count) => $"/org/{999999999 - count}";
+    private static string GenerateParty(int count) => $"{NorwegianOrganizationIdentifier.Prefix}{999999999 - count}";
     private static string GenerateResource(int count) => $"urn:foo:bar{count}";
 
     [Benchmark]

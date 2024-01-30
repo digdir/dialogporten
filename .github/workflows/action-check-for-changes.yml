@@ -9,6 +9,9 @@ on:
       hasBackendChanges:
         description: "Backend related files changed"
         value: ${{ jobs.check-for-changes.outputs.hasBackendChanges }}
+      hasSlackNotifierChanges:
+        description: "Slack Notifier function related files changed"
+        value: ${{ jobs.check-for-changes.outputs.hasSlackNotifierChanges }}
 
 jobs:
   check-for-changes:
@@ -17,6 +20,8 @@ jobs:
     outputs:
       hasBackendChanges: ${{ steps.paths-filter.outputs.backend == 'true' }}
       hasAzureChanges: ${{ steps.paths-filter.outputs.azure == 'true' }}
+      hasSlackNotifierChanges: ${{ steps.paths-filter.outputs.slackNotifier == 'true' }}
+
     steps:
       - uses: actions/checkout@v4
 
@@ -27,6 +32,11 @@ jobs:
           filters: |
             backend:
               - 'src/**/*'
+              - '.github/**/*'
             azure:
               - '.azure/**/*'
+              - '.github/**/*'
+            slackNotifier:
+              - 'src/Digdir.Tool.Dialogporten.SlackNotifier/**/*'
+              - '.github/**/*'
             # todo: add additional files that should trigger a build

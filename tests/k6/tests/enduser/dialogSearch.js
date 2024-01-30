@@ -30,7 +30,7 @@ export default function () {
     let extendedStatusToSearchFor = "status:" + uuidv4();
     let secondExtendedStatusToSearchFor = "status:" + uuidv4();
     let senderNameToSearchFor = uuidv4()
-    let enduserParty = "/person/07874299582";
+    let enduserParty = "urn:altinn:person:identifier-no::07874299582";
     let auxResource = "urn:altinn:resource:ttd-altinn-events-automated-tests"; // Note! We assume that this exists!
     let titleForDueAtItem = "due_" + uuidv4();
     let titleForExpiresAtItem = "expires_" + uuidv4();

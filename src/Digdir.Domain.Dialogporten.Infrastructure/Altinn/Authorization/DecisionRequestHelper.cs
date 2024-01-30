@@ -3,6 +3,7 @@ using System.Security.Claims;
 using Digdir.Domain.Dialogporten.Application.Common.Authorization;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
+using Digdir.Domain.Dialogporten.Domain.Parties;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.Authorization;
 
@@ -12,8 +13,6 @@ internal static class DecisionRequestHelper
     private const string AltinnUrnNsPrefix = "urn:altinn:";
     private const string PidClaimType = "pid";
     private const string ConsumerClaimType = "consumer";
-    private const string PartyPrefixOrg = "/org/";
-    private const string PartyPrefixPerson = "/person/";
     private const string AttributeIdSsn = "urn:altinn:ssn";
     private const string AttributeIdOrganizationNumber = "urn:altinn:organizationnumber";
     private const string AttributeIdAction = "urn:oasis:names:tc:xacml:1.0:action:action-id";
@@ -24,7 +23,7 @@ internal static class DecisionRequestHelper
 
     public static XacmlJsonRequestRoot CreateDialogDetailsRequest(DialogDetailsAuthorizationRequest request)
     {
-        var accessSubject = CreateAccessSubjectCategory(request.ClaimsPrincipal.Claims);
+        var accessSubject = CreateAccessSubjectCategory(request.Claims);
         var actions = CreateActionCategories(request.AltinnActions, out var actionIdByName);
         var resources = CreateResourceCategories(request.ServiceResource, request.DialogId, request.Party, request.AltinnActions, out var resourceIdByName);
 
@@ -163,18 +162,19 @@ internal static class DecisionRequestHelper
 
     private static XacmlJsonAttribute? ExtractPartyAttribute(string party)
     {
+        // TODO: This can be removed once Altinn Auth has been updated to use the new party format.
         var partyAttribute = new XacmlJsonAttribute();
 
-        if (party.StartsWith(PartyPrefixOrg, StringComparison.Ordinal))
+        if (party.StartsWith(NorwegianOrganizationIdentifier.Prefix, StringComparison.Ordinal))
         {
             partyAttribute.AttributeId = AttributeIdOrganizationNumber;
-            partyAttribute.Value = party[PartyPrefixOrg.Length..];
+            partyAttribute.Value = NorwegianOrganizationIdentifier.GetIdPart(party).ToString();
 
         }
-        else if (party.StartsWith(PartyPrefixPerson, StringComparison.Ordinal))
+        else if (party.StartsWith(NorwegianPersonIdentifier.Prefix, StringComparison.Ordinal))
         {
             partyAttribute.AttributeId = AttributeIdSsn;
-            partyAttribute.Value = party[PartyPrefixPerson.Length..];
+            partyAttribute.Value = NorwegianPersonIdentifier.GetIdPart(party).ToString();
         }
         else
         {
@@ -223,7 +223,7 @@ internal static class DecisionRequestHelper
                 new (Constants.ReadAction, Constants.MainResource)
             };
 
-            var accessSubject = CreateAccessSubjectCategory(request.ClaimsPrincipal.Claims);
+            var accessSubject = CreateAccessSubjectCategory(request.Claims);
             var actions = CreateActionCategories(requestActions, out _);
             var resources = CreateResourceCategoriesForSearch(request.ConstraintServiceResources, request.ConstraintParties);
 
@@ -267,13 +267,13 @@ internal static class DecisionRequestHelper
                         .FirstOrDefault(a => a.AttributeId == AttributeIdOrganizationNumber);
                 if (partyOrgNr != null)
                 {
-                    party = PartyPrefixOrg + partyOrgNr.Value;
+                    party = NorwegianOrganizationIdentifier.Prefix + partyOrgNr.Value;
                 }
                 else
                 {
                     var partySsn = xamlJsonRequestRoot.Request.Resource.First(r => r.Id == resourceId).Attribute
                         .First(a => a.AttributeId == AttributeIdSsn);
-                    party = PartyPrefixPerson + partySsn.Value;
+                    party = NorwegianPersonIdentifier.Prefix + partySsn.Value;
                 }
 
                 if (!response.PartiesByResources.TryGetValue(serviceResource, out var parties))

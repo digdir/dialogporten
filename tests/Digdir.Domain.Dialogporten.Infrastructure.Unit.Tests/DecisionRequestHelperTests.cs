@@ -1,7 +1,9 @@
 ﻿using System.Security.Claims;
 using Altinn.Authorization.ABAC.Xacml.JsonProfile;
 using Digdir.Domain.Dialogporten.Application.Common.Authorization;
+using Digdir.Domain.Dialogporten.Application.Common.Numbers;
 using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
+using Digdir.Domain.Dialogporten.Domain.Parties;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.Authorization;
 using Xunit;
 
@@ -22,7 +24,7 @@ public class DecisionRequestHelperTests
                 // This should not be copied as subject claim since there's a "pid"-claim
                 ("consumer", ConsumerClaimValue)
             ),
-            "/org/912345678");
+            $"{NorwegianOrganizationIdentifier.Prefix}912345678");
         var dialogId = request.DialogId;
 
         // Act
@@ -82,7 +84,7 @@ public class DecisionRequestHelperTests
                 // Should be copied as subject claim since there's not a "pid"-claim
                 ("consumer", ConsumerClaimValue)
             ),
-            "/person/12345678901");
+            $"{NorwegianPersonIdentifier.Prefix}12345678901");
 
         // Act
         var result = DecisionRequestHelper.CreateDialogDetailsRequest(request);
@@ -107,7 +109,7 @@ public class DecisionRequestHelperTests
                 // Should be copied as subject claim since there's not a "pid"-claim
                 ("consumer", ConsumerClaimValue)
             ),
-            "/person/12345678901");
+            $"{NorwegianPersonIdentifier.Prefix}12345678901");
 
         // Add an additional action to the request that the mocked response should give a non-permit response for
         request.AltinnActions.Add(new AltinnAction("failaction", Constants.MainResource));
@@ -138,12 +140,12 @@ public class DecisionRequestHelperTests
         allClaims.AddRange(principalClaims);
         return new DialogDetailsAuthorizationRequest
         {
-            ClaimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(allClaims, "test")),
+            Claims = allClaims,
             ServiceResource = "urn:altinn:resource:some-service",
             DialogId = Guid.NewGuid(),
 
-            // This should be copied resources with attributes "urn:altinn:organizationnumber" if starting with "/org/"
-            // and "urn:altinn:ssn" if starting with "/person/"
+            // This should be copied resources with attributes "urn:altinn:organizationnumber" if starting with "urn:altinn:organization:identifier-no::"
+            // and "urn:altinn:ssn" if starting with "urn:altinn:person:identifier-no::"
             Party = party,
             AltinnActions = new HashSet<AltinnAction>
             {

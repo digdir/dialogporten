@@ -526,7 +526,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         new
                         {
                             Id = 1,
-                            Name = "Unspecified"
+                            Name = "New"
                         },
                         new
                         {

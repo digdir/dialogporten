@@ -29,14 +29,7 @@ internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDia
                 .WithMessage($"'{{PropertyName}}' must start with '{Constants.ServiceResourcePrefix}'.");
 
         RuleFor(x => x.Party)
-            .Must(x => x is null || x.Split('/') switch
-            {
-                ["", "org", var orgNumber] => OrganizationNumber.IsValid(orgNumber),
-                ["", "person", var socialSecurityNumber] => SocialSecurityNumber.IsValid(socialSecurityNumber),
-                _ => false
-            }).WithMessage(
-                "'{PropertyName}' must be on format '/org/[orgNumber]' or " +
-                "'/person/[socialSecurityNumber]' with valid numbers respectively.")
+            .IsValidPartyIdentifier()
             .NotEmpty()
             .MaximumLength(Constants.DefaultMaxStringLength);
 

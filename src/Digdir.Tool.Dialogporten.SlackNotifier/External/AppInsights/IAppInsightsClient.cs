@@ -34,7 +34,14 @@ internal sealed class AppInsightsClient : IAppInsightsClient
             })
             .Select(_httpClient.SendAsync);
         var responses = await Task.WhenAll(requests);
-        var typedResponses = await Task.WhenAll(responses.Select(x => x.Content.ReadFromJsonAsync<AppInsightsQueryResponseDto>()));
+
+        foreach (var httpResponseMessage in responses)
+        {
+            httpResponseMessage.EnsureSuccessStatusCode();
+        }
+
+        var typedResponses = await Task.WhenAll(responses.Select(x =>
+            x.Content.ReadFromJsonAsync<AppInsightsQueryResponseDto>(cancellationToken: cancellationToken)));
         return typedResponses!;
     }
 }

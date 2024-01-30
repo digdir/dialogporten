@@ -73,7 +73,7 @@ export function setServiceResource(dialog, serviceResource) {
 }
 
 export function setParty(dialog, party) {
-    const partyRegex = /^\/(org\/\d{9}|person\/\d{11})$/;
+    const partyRegex = /^urn:altinn:([\w-]{5,20}):([\w-]{4,20})::([\w-]{5,36})$/;
     
     if (!partyRegex.test(party)) {
         throw new Error("Invalid party provided.");
