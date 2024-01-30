@@ -33,7 +33,7 @@ public static class PartyIdentifier
 
     private static Dictionary<string, TryParseDelegate> CreateTryParseByPrefix()
     {
-        var partyIdentifiers = typeof(IPartyIdentifier)
+        return typeof(IPartyIdentifier)
             .Assembly
             .GetTypes()
             .Where(type => type.IsClass && !type.IsAbstract && type.IsAssignableTo(typeof(IPartyIdentifier)))
@@ -50,9 +50,8 @@ public static class PartyIdentifier
             .ToList()
             .AssertPrefixNotNullOrWhitespace()
             .AssertPrefixEndsWithSeparator()
-            .AssertNoIdenticalPrefixes();
-
-        return partyIdentifiers.ToDictionary(x => x.Prefix, x => x.TryParse);
+            .AssertNoIdenticalPrefixes()
+            .ToDictionary(x => x.Prefix, x => x.TryParse);
     }
 
     private static List<PartyIdentifierMetadata> AssertNoIdenticalPrefixes(this List<PartyIdentifierMetadata> partyIdentifiers)
@@ -103,8 +102,6 @@ public static class PartyIdentifier
 
         return partyIdentifiers;
     }
-
-    //private static void AssertPrefixNotNullOrWhitespace()
 
     private record struct PartyIdentifierMetadata(
         Type Type,
