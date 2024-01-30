@@ -1,6 +1,5 @@
 ﻿using BenchmarkDotNet.Attributes;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
-using Digdir.Domain.Dialogporten.Application.Common.Numbers;
 using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Parties;

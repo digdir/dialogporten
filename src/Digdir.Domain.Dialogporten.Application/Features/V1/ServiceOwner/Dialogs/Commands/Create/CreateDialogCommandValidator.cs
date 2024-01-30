@@ -1,5 +1,4 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Common.Extensions.FluentValidation;
-using Digdir.Domain.Dialogporten.Application.Common.Numbers;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using Digdir.Domain.Dialogporten.Domain.Common;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;

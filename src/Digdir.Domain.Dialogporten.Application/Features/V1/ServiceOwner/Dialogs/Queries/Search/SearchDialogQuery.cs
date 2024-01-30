@@ -3,7 +3,6 @@ using AutoMapper.QueryableExtensions;
 using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.Enumerables;
-using Digdir.Domain.Dialogporten.Application.Common.Numbers;
 using Digdir.Domain.Dialogporten.Application.Common.Pagination;
 using Digdir.Domain.Dialogporten.Application.Common.Pagination.OrderOption;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;

@@ -1,10 +1,11 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace Digdir.Domain.Dialogporten.Domain.Numbers;
+namespace Digdir.Domain.Dialogporten.Domain.Common;
 
 internal static class Mod11
 {
     private const int Mod11Number = 11;
+    private const int InvalidControlDigit = 10;
 
     public static bool TryCalculateControlDigit(ReadOnlySpan<char> number, int[] weights, [NotNullWhen(true)] out int? controlDigit)
     {
@@ -23,7 +24,14 @@ internal static class Mod11
             sum += digits[i] * weights[i];
         }
         controlDigit = Mod11Number - (sum % Mod11Number);
-        return true;
+        controlDigit = controlDigit switch
+        {
+            Mod11Number => 0,
+            InvalidControlDigit => null,
+            _ => controlDigit
+        };
+
+        return controlDigit is not null;
     }
 
     private static int[] ExtractDigits(this ReadOnlySpan<char> number)
