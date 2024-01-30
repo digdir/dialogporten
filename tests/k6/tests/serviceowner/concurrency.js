@@ -18,22 +18,19 @@ export default function () {
 
         let promises = [];
         
-        for (let i=0; i<4; i++) {
+        for (let i=0; i<10; i++) {
             let activity = { type: "Information", description: [ { value: i.toString(), cultureCode: "nb-no"}]};
             promises.push(postSOAsync('dialogs/' + dialogId + '/activities?' + i, activity))
         }
 
-        try {
-            const results = await Promise.all(promises);
-            results.forEach((r) => {
-                expect(r.json(), 'all status codes for concurrently added child entities').to.equal(201);
-            });
-        } catch (_) {}
-   
-    });
+        const results = await Promise.all(promises);
 
-    describe('Cleanup', () => {
-        let r = deleteSO('dialogs/' + dialogId);
-        expectStatusFor(r).to.equal(204);
+        // Cleanup here, as we're in another thread
+        deleteSO('dialogs/' + dialogId);
+
+        results.forEach((r) => {
+            expect(r.status, 'status code for concurrently added child entity').to.equal(201);
+        });
+   
     });
 }
