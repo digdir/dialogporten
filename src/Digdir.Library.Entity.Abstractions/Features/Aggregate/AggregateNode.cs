@@ -124,14 +124,19 @@ public enum AggregateNodeState
     Modified = 2,
 
     /// <summary>
-    /// The entity has been marked for deletion from the database, or part of its aggregate parent chain have been marked for deleation.
+    /// The entity, or part of its aggregate parent chain have been marked for deleation.
     /// </summary>
     Deleted = 3,
 
     /// <summary>
     /// The entities property values have not been changed from the values in the database.
     /// </summary>
-    Unchanged = 4
+    Unchanged = 4,
+
+    /// <summary>
+    /// The entity, or its aggregate parent chain have been marked for restoration.
+    /// </summary>
+    Restored = 5
 }
 
 /// <summary>

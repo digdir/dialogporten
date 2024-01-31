@@ -1,8 +1,10 @@
 ﻿using System.Diagnostics;
 using System.Reflection;
 using Digdir.Library.Entity.Abstractions.Features.Aggregate;
+using Digdir.Library.Entity.Abstractions.Features.SoftDeletable;
 using Digdir.Library.Entity.Abstractions.Features.Updatable;
 using Digdir.Library.Entity.Abstractions.Features.Versionable;
+using Digdir.Library.Entity.EntityFrameworkCore.Features.SoftDeletable;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata;
@@ -21,30 +23,29 @@ internal static class AggregateExtensions
             .Where(x => x.State is EntityState.Added or EntityState.Modified or EntityState.Deleted)
             .GetAggregateNodeByEntry(cancellationToken);
 
-        foreach (var (entry, aggregateNode) in aggregateNodeByEntry)
+        foreach (var (_, aggregateNode) in aggregateNodeByEntry)
         {
-            if (entry.Entity is IAggregateCreatedHandler created && entry.State is EntityState.Added)
+            if (aggregateNode.Entity is IAggregateCreatedHandler created && aggregateNode.State is AggregateNodeState.Added)
             {
                 created.OnCreate(aggregateNode, utcNow);
             }
 
-            if (entry.Entity is IAggregateUpdatedHandler updated &&
-                entry.State is EntityState.Modified or EntityState.Unchanged)
+            if (aggregateNode.Entity is IAggregateUpdatedHandler updated && aggregateNode.State is AggregateNodeState.Modified)
             {
                 updated.OnUpdate(aggregateNode, utcNow);
             }
 
-            if (entry.Entity is IAggregateDeletedHandler deleted && entry.State is EntityState.Deleted)
+            if (aggregateNode.Entity is IAggregateDeletedHandler deleted && aggregateNode.State is AggregateNodeState.Deleted)
             {
                 deleted.OnDelete(aggregateNode, utcNow);
             }
 
-            if (entry.Entity is IUpdateableEntity updatable)
+            if (aggregateNode.Entity is IUpdateableEntity updatable)
             {
                 updatable.Update(utcNow);
             }
 
-            if (entry.Entity is IVersionableEntity versionable)
+            if (aggregateNode.Entity is IVersionableEntity versionable)
             {
                 versionable.NewVersion();
             }
@@ -99,7 +100,7 @@ internal static class AggregateExtensions
     }
 
     /// <summary>
-    /// Will aggregate modified state from children to parent, and deleted state from parent to children. Deleted state from parent to children will take precedence.
+    /// Will aggregate modified state from children to parent, and deleted/restored state from parent to children. Deleted/restored state from parent to children will take precedence.
     /// </summary>
     /// <param name="node">The AggregateNode whose state is to be collapsed.</param>
     /// <param name="parentState"></param>
@@ -109,12 +110,15 @@ internal static class AggregateExtensions
     /// </returns>
     private static bool CollapseAggregateState(this AggregateNode node, AggregateNodeState? parentState = null)
     {
-        if (parentState is AggregateNodeState.Deleted &&
-            node.State is not AggregateNodeState.Deleted)
+        if (parentState is AggregateNodeState.Deleted)
         {
-            // TODO: Check if required relationship?
             node.DeletedByParent = true;
             node.State = AggregateNodeState.Deleted;
+        }
+
+        if (parentState is AggregateNodeState.Restored)
+        {
+            node.State = AggregateNodeState.Restored;
         }
 
         var childrenIsModified = node.Children
@@ -224,6 +228,12 @@ internal static class AggregateExtensions
         {
             EntityState.Detached => AggregateNodeState.Unchanged,
             EntityState.Unchanged => AggregateNodeState.Unchanged,
+
+            EntityState.Modified when entry.IsMarkedForSoftDeletion() => AggregateNodeState.Deleted,
+            EntityState.Modified when entry.IsMarkedForRestoration() => AggregateNodeState.Restored,
+            EntityState.Modified when entry.IsSoftDeleted() => AggregateNodeState.Unchanged,
+            EntityState.Deleted when entry.IsSoftDeleted() => AggregateNodeState.Unchanged,
+
             EntityState.Deleted => AggregateNodeState.Deleted,
             EntityState.Modified => AggregateNodeState.Modified,
             EntityState.Added => AggregateNodeState.Added,
