@@ -177,24 +177,31 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
 
         foreach (var dto in paginatedList.Items)
         {
-            var lastNonSeenOrForwardedActivity = dto.Activities
+            var lastNonSeenOrForwardedActivity = dto.LatestActivities
                 .Where(x =>
                     x.Type is not DialogActivityType.Values.Forwarded
                         and not DialogActivityType.Values.Seen)
                 .MaxBy(x => x.CreatedAt);
 
-            var seenActivitiesAfterUpdatedAt = dto.Activities
+            var seenActivitiesAfterUpdatedAt = dto.LatestActivities
                 .Where(x => x.Type == DialogActivityType.Values.Seen)
                 .Where(x => x.CreatedAt > dto.UpdatedAt)
                 .ToList();
 
-            dto.Activities = seenActivitiesAfterUpdatedAt.Union([lastNonSeenOrForwardedActivity]).ToList();
+            dto.LatestActivities = seenActivitiesAfterUpdatedAt.Union([lastNonSeenOrForwardedActivity]).ToList();
         }
 
-        // hash end user ids
         var salt = MappingUtils.GetHashSalt();
-        foreach (var activity in paginatedList.Items.SelectMany(dialog => dialog.Activities))
+        foreach (var activity in paginatedList.Items.SelectMany(dialog => dialog.LatestActivities))
         {
+            if (string.IsNullOrWhiteSpace(activity.SeenByEndUserIdHash))
+            {
+                continue;
+            }
+
+            // Before we hash the end user id, check if the current user has seen the dialog
+            activity.SeenActivityIsCurrentEndUser = userPid == activity.SeenByEndUserIdHash;
+            // Hash end user ids
             activity.SeenByEndUserIdHash = MappingUtils.HashPid(activity.SeenByEndUserIdHash, salt);
         }
 
