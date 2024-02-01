@@ -1,4 +1,3 @@
-using System.Linq;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Digdir.Domain.Dialogporten.Application.Common;
@@ -187,13 +186,10 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
             .Select(x => x.Id)
             .ToList();
 
-        var activityBaseQuery = _db.DialogActivities
+        var latestActivityByDialogIdTask = await _db.DialogActivities
             .AsNoTracking()
             .Include(x => x.Description!.Localizations)
             .Include(x => x.PerformedBy!.Localizations)
-            .AsQueryable();
-
-        var latestActivityByDialogIdTask = activityBaseQuery
             .Where(x =>
                 dialogIds.Contains(x.DialogId)
                 && x.TypeId != DialogActivityType.Values.Forwarded
@@ -206,7 +202,10 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
                     .First(),
                 cancellationToken);
 
-        var latestSeenActivityByDialogIdTask = activityBaseQuery
+        var latestSeenActivityByDialogIdTask = await _db.DialogActivities
+            .AsNoTracking()
+            .Include(x => x.Description!.Localizations)
+            .Include(x => x.PerformedBy!.Localizations)
             .Where(x =>
                 dialogIds.Contains(x.DialogId)
                 && x.TypeId == DialogActivityType.Values.Seen
@@ -214,16 +213,14 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
             .GroupBy(x => x.DialogId)
             .ToDictionaryAsync(x => x.Key, x => x.ToList(), cancellationToken);
 
-        await Task.WhenAll(latestActivityByDialogIdTask, latestSeenActivityByDialogIdTask);
-
         var salt = MappingUtils.GetHashSalt();
         foreach (var dialog in paginatedList.Items)
         {
-            var activities = latestSeenActivityByDialogIdTask.Result.TryGetValue(dialog.Id, out var seenActivities)
+            var activities = latestSeenActivityByDialogIdTask.TryGetValue(dialog.Id, out var seenActivities)
                 ? seenActivities
-                : new List<DialogActivity>();
+                : [];
 
-            if (latestActivityByDialogIdTask.Result.TryGetValue(dialog.Id, out var latestNonSeenActivity))
+            if (latestActivityByDialogIdTask.TryGetValue(dialog.Id, out var latestNonSeenActivity))
             {
                 activities.Add(latestNonSeenActivity);
             }
