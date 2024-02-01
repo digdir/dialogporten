@@ -90,7 +90,7 @@ resource resourceGroup 'Microsoft.Resources/resourceGroups@2023-07-01' = {
   location: location
 }
 
-module keyVaultModule './modules/keyvault/create.bicep' = {
+module keyVaultModule '../modules/keyvault/create.bicep' = {
   scope: resourceGroup
   name: 'keyVault'
   params: {
@@ -101,7 +101,7 @@ module keyVaultModule './modules/keyvault/create.bicep' = {
   }
 }
 
-module appConfiguration './modules/appConfiguration/create.bicep' = {
+module appConfiguration '../modules/appConfiguration/create.bicep' = {
   scope: resourceGroup
   name: 'appConfiguration'
   params: {
@@ -111,7 +111,7 @@ module appConfiguration './modules/appConfiguration/create.bicep' = {
   }
 }
 
-module appInsights './modules/applicationInsights/create.bicep' = {
+module appInsights '../modules/applicationInsights/create.bicep' = {
   scope: resourceGroup
   name: 'appInsights'
   params: {
@@ -140,7 +140,7 @@ var srcKeyVault = {
   resourceGroupName: secrets.sourceKeyVaultResourceGroup
 }
 
-module postgresql './modules/postgreSql/create.bicep' = {
+module postgresql '../modules/postgreSql/create.bicep' = {
   scope: resourceGroup
   name: 'postgresql'
   params: {
@@ -155,7 +155,7 @@ module postgresql './modules/postgreSql/create.bicep' = {
   }
 }
 
-module copyEnvironmentSecrets './modules/keyvault/copySecrets.bicep' = {
+module copyEnvironmentSecrets '../modules/keyvault/copySecrets.bicep' = {
   scope: resourceGroup
   name: 'copyEnvironmentSecrets'
   params: {
@@ -168,7 +168,7 @@ module copyEnvironmentSecrets './modules/keyvault/copySecrets.bicep' = {
   }
 }
 
-module copyCrossEnvironmentSecrets './modules/keyvault/copySecrets.bicep' = {
+module copyCrossEnvironmentSecrets '../modules/keyvault/copySecrets.bicep' = {
   scope: resourceGroup
   name: 'copyCrossEnvironmentSecrets'
   params: { srcKeyVaultKeys: keyVaultSourceKeys
@@ -180,7 +180,7 @@ module copyCrossEnvironmentSecrets './modules/keyvault/copySecrets.bicep' = {
   }
 }
 
-module slackNotifier './modules/functionApp/slackNotifier.bicep' = {
+module slackNotifier '../modules/functionApp/slackNotifier.bicep' = {
   name: 'slackNotifier'
   scope: resourceGroup
   params: {
@@ -207,7 +207,7 @@ module slackNotifier './modules/functionApp/slackNotifier.bicep' = {
 //     }
 // }
 
-module containerAppEnv 'modules/containerAppEnv/main.bicep' = {
+module containerAppEnv '../modules/containerAppEnv/main.bicep' = {
   scope: resourceGroup
   name: 'containerAppEnv'
   params: {
@@ -217,7 +217,7 @@ module containerAppEnv 'modules/containerAppEnv/main.bicep' = {
   }
 }
 
-module appInsightsReaderAccessPolicy './modules/applicationInsights/addReaderRoles.bicep' = {
+module appInsightsReaderAccessPolicy '../modules/applicationInsights/addReaderRoles.bicep' = {
   scope: resourceGroup
   name: 'appInsightsReaderAccessPolicy'
   params: {
@@ -226,7 +226,7 @@ module appInsightsReaderAccessPolicy './modules/applicationInsights/addReaderRol
   }
 }
 
-module appConfigConfigurations './modules/appConfiguration/upsertKeyValue.bicep' = {
+module appConfigConfigurations '../modules/appConfiguration/upsertKeyValue.bicep' = {
   scope: resourceGroup
   name: 'AppConfig_Add_DialogDbConnectionString'
   params: {
@@ -237,7 +237,7 @@ module appConfigConfigurations './modules/appConfiguration/upsertKeyValue.bicep'
   }
 }
 
-module keyVaultReaderAccessPolicy './modules/keyvault/addReaderRoles.bicep' = {
+module keyVaultReaderAccessPolicy '../modules/keyvault/addReaderRoles.bicep' = {
   scope: resourceGroup
   // todo: Let's create a separate policy per function/app?
   name: 'keyVaultReaderAccessPolicyFunctions'
