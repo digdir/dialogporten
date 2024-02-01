@@ -37,7 +37,7 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Lint Bicep files
-        run: az bicep build --file .azure/environments/test/main.bicep
+        run: az bicep build --file .azure/infrastructure.bicep
 
       # todo: run deployment with Validate deployment mode to send a preflight request to Azure Resource Manager
 

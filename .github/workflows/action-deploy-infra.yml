@@ -1,4 +1,4 @@
-﻿name: Deploy
+﻿name: Deploy infrastructure
 
 on:
   workflow_call:
@@ -14,8 +14,6 @@ on:
       AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID:
         required: true
       AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP:
-        required: true
-      APIM_DIGDIR_EMAIL:
         required: true
 
     inputs:
@@ -91,10 +89,9 @@ jobs:
           KEY_VAULT_SOURCE_KEYS: ${{steps.keyvault-keys.outputs.key-vault-keys}}
           # secrets
           PG_ADMIN_PASSWORD: ${{ steps.pwd-generator.outputs.postgresqlPassword }}
-          APIM_DIGDIR_EMAIL: ${{ secrets.APIM_DIGDIR_EMAIL }}
-          SOURCE_KEYVAULT_SUBSCRIPTION_ID: ${{ secrets.AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID }}
-          SOURCE_KEYVAULT_RESOURCE_GROUP: ${{ secrets.AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP }}
-          SOURCE_KEYVAULT_NAME: ${{ secrets.AZURE_SOURCE_KEY_VAULT_NAME }}
+          SOURCE_KEY_VAULT_SUBSCRIPTION_ID: ${{ secrets.AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID }}
+          SOURCE_KEY_VAULT_RESOURCE_GROUP: ${{ secrets.AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP }}
+          SOURCE_KEY_VAULT_NAME: ${{ secrets.AZURE_SOURCE_KEY_VAULT_NAME }}
         with:
           scope: subscription
           template: ./.azure/infrastructure.bicep
@@ -105,14 +102,6 @@ jobs:
           failOnStdErr: true
           additionalArguments: "${{inputs.dryRun && '--what-if'}}"
           parameters: ./.azure/environments/${{ inputs.environment }}.bicepparam
-
-      - name: Deploy container apps
-        uses: azure/CLI@v1
-        if: ${{!inputs.dryRun}}
-        with:
-          azcliversion: 2.56.0
-          inlineScript: |
-            echo "Deploying container apps"
 
       - name: Start migration job
         uses: azure/CLI@v1

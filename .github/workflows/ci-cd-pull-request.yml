@@ -29,7 +29,7 @@ jobs:
       environment: "test"
 
   dry-run-deploy:
-    uses: ./.github/workflows/action-deploy.yml
+    uses: ./.github/workflows/action-deploy-infra.yml
     needs: ["check-for-changes", "build-infrastructure"]
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -38,7 +38,6 @@ jobs:
       AZURE_SOURCE_KEY_VAULT_NAME: ${{ secrets.AZURE_SOURCE_KEY_VAULT_NAME }}
       AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID: ${{ secrets.AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID }}
       AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP: ${{ secrets.AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP }}
-      APIM_DIGDIR_EMAIL: ${{ secrets.APIM_DIGDIR_EMAIL }}
     with:
       skip: ${{ needs.check-for-changes.outputs.hasAzureChanges != 'true' }}
       environment: test

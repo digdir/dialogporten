@@ -31,13 +31,12 @@ jobs:
       skip: ${{ needs.check-for-changes.outputs.hasBackendChanges != 'true' }}
       dockerImageBaseName: ghcr.io/digdir/dialogporten-
 
-  # todo: separate deployment of container apps. Maybe have separate template definitions for each app
-  deploy-test:
-    name: Deploy to test
+  deploy-infra-test:
+    name: Deploy infra to test
     needs: [check-for-changes, publish]
     # todo: test this out
     # if: ${{ jobs.build-and-test.result == 'success' || jobs.blah.result == 'skipped' }}
-    uses: ./.github/workflows/action-deploy.yml
+    uses: ./.github/workflows/action-deploy-infra.yml
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
@@ -45,16 +44,39 @@ jobs:
       AZURE_SOURCE_KEY_VAULT_NAME: ${{ secrets.AZURE_SOURCE_KEY_VAULT_NAME }}
       AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID: ${{ secrets.AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID }}
       AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP: ${{ secrets.AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP }}
-      APIM_DIGDIR_EMAIL: ${{ secrets.APIM_DIGDIR_EMAIL }}
     with:
       skip: ${{ needs.check-for-changes.outputs.hasAzureChanges != 'true' }}
       environment: test
       region: norwayeast
       dryRun: true
 
+  deploy-apps-test:
+    name: Deploy apps to test
+    needs: [check-for-changes, deploy-infra-test]
+    uses: ./.github/workflows/action-deploy-apps.yml
+    secrets:
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      AZURE_SOURCE_KEY_VAULT_NAME: ${{ secrets.AZURE_SOURCE_KEY_VAULT_NAME }}
+      AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID: ${{ secrets.AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID }}
+      AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP: ${{ secrets.AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP }}
+      # todo: consider resolving these in another way since they are created in the infra-step
+      AZURE_ENVIRONMENT_KEY_VAULT_NAME: ${{ secrets.AZURE_ENVIRONMENT_KEY_VAULT_NAME }}
+      AZURE_CONTAINER_APP_ENVIRONMENT_ID: ${{ secrets.AZURE_CONTAINER_APP_ENVIRONMENT_ID }}
+      AZURE_APP_INSIGHTS_CONNECTION_STRING: ${{ secrets.AZURE_APP_INSIGHTS_CONNECTION_STRING }}
+      AZURE_APP_CONFIGURATION_NAME: ${{ secrets.AZURE_APP_CONFIGURATION_NAME }}
+    with:
+      skip: ${{ needs.check-for-changes.outputs.hasAzureChanges != 'true' }}
+      environment: test
+      region: norwayeast
+      skipApproval: true
+      # todo: change to false after testing
+      dryRun: true
+
   deploy-slack-notifier-test:
     name: Deploy slack notifier (test)
-    needs: [check-for-changes, deploy-test]
+    needs: [check-for-changes, deploy-apps-test]
     uses: ./.github/workflows/action-deploy-function.yml
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -66,10 +88,10 @@ jobs:
       function-project-path: "./src/Digdir.Tool.Dialogporten.SlackNotifier"
       environment: test
 
-  dry-run-deploy-staging:
-    name: Deploy to staging (dry run)
-    needs: [check-for-changes, deploy-test]
-    uses: ./.github/workflows/action-deploy.yml
+  dry-run-deploy-infra-staging:
+    name: Deploy infra to staging (dry run)
+    needs: [check-for-changes, deploy-infra-test]
+    uses: ./.github/workflows/action-deploy-infra.yml
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
@@ -77,7 +99,6 @@ jobs:
       AZURE_SOURCE_KEY_VAULT_NAME: ${{ secrets.AZURE_SOURCE_KEY_VAULT_NAME }}
       AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID: ${{ secrets.AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID }}
       AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP: ${{ secrets.AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP }}
-      APIM_DIGDIR_EMAIL: ${{ secrets.APIM_DIGDIR_EMAIL }}
     with:
       skip: ${{ needs.check-for-changes.outputs.hasAzureChanges != 'true' }}
       environment: staging
@@ -85,10 +106,10 @@ jobs:
       skipApproval: true
       dryRun: true
 
-  deploy-staging:
-    name: Deploy to staging
-    needs: [check-for-changes, dry-run-deploy-staging]
-    uses: ./.github/workflows/action-deploy.yml
+  deploy-infra-staging:
+    name: Deploy infra to staging
+    needs: [check-for-changes, dry-run-deploy-infra-staging]
+    uses: ./.github/workflows/action-deploy-infra.yml
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
@@ -96,9 +117,45 @@ jobs:
       AZURE_SOURCE_KEY_VAULT_NAME: ${{ secrets.AZURE_SOURCE_KEY_VAULT_NAME }}
       AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID: ${{ secrets.AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID }}
       AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP: ${{ secrets.AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP }}
-      APIM_DIGDIR_EMAIL: ${{ secrets.APIM_DIGDIR_EMAIL }}
     with:
       skip: ${{ needs.check-for-changes.outputs.hasAzureChanges != 'true' }}
       environment: staging
       region: norwayeast
+      # todo: change to false after testing
+      dryRun: true
+
+  # todo: don't think we need to feature gate twice here..
+  dry-run-deploy-apps-staging:
+    name: Deploy apps to staging (dryrun)
+    needs: [check-for-changes, deploy-infra-staging]
+    uses: ./.github/workflows/action-deploy-infra.yml
+    secrets:
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      AZURE_SOURCE_KEY_VAULT_NAME: ${{ secrets.AZURE_SOURCE_KEY_VAULT_NAME }}
+      AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID: ${{ secrets.AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID }}
+      AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP: ${{ secrets.AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP }}
+    with:
+      skip: ${{ needs.check-for-changes.outputs.hasAzureChanges != 'true' }}
+      environment: staging
+      region: norwayeast
+      dryRun: true
+
+  deploy-apps-staging:
+    name: Deploy apps to staging (dryrun)
+    needs: [check-for-changes, dry-run-deploy-apps-staging]
+    uses: ./.github/workflows/action-deploy-infra.yml
+    secrets:
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      AZURE_SOURCE_KEY_VAULT_NAME: ${{ secrets.AZURE_SOURCE_KEY_VAULT_NAME }}
+      AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID: ${{ secrets.AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID }}
+      AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP: ${{ secrets.AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP }}
+    with:
+      skip: ${{ needs.check-for-changes.outputs.hasAzureChanges != 'true' }}
+      environment: staging
+      region: norwayeast
+      # todo: change to false after testing
       dryRun: true
