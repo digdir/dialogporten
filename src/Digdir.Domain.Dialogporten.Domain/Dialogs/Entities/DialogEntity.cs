@@ -119,14 +119,6 @@ public class DialogEntity :
 
         Activities.Add(new DialogActivity
         {
-            Description = new DialogActivityDescription
-            {
-                Localizations = [new Localization
-                {
-                    CultureCode = "nb-no",
-                    Value = "Dialogen er sett"
-                }]
-            },
             PerformedBy = performedBy,
             SeenByEndUserId = seenByEndUserId,
             TypeId = DialogActivityType.Values.Seen
