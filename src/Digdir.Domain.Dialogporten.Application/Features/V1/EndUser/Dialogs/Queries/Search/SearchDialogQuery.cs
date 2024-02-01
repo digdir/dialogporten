@@ -18,7 +18,7 @@ using OneOf;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Queries.Search;
 
-public sealed class SearchDialogQuery : SortablePaginationParameter<SearchDialogQueryOrderDefinition, SearchDialogDto>, IRequest<SearchDialogResult>
+public sealed class SearchDialogQuery : SortablePaginationParameter<SearchDialogQueryOrderDefinition, DialogEntity>, IRequest<SearchDialogResult>
 {
     private readonly string? _searchCultureCode;
 
@@ -97,9 +97,9 @@ public sealed class SearchDialogQuery : SortablePaginationParameter<SearchDialog
     }
 }
 
-public sealed class SearchDialogQueryOrderDefinition : IOrderDefinition<SearchDialogDto>
+public sealed class SearchDialogQueryOrderDefinition : IOrderDefinition<DialogEntity>
 {
-    public static IOrderOptions<SearchDialogDto> Configure(IOrderOptionsBuilder<SearchDialogDto> options) =>
+    public static IOrderOptions<DialogEntity> Configure(IOrderOptionsBuilder<DialogEntity> options) =>
         options.AddId(x => x.Id)
             .AddDefault("createdAt", x => x.CreatedAt)
             .AddOption("updatedAt", x => x.UpdatedAt)
@@ -152,6 +152,7 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
 
         var paginatedList = await _db.Dialogs
             .AsNoTracking()
+            .Include(x => x.Content.Where(x => x.Type.OutputInList))
             .WhereUserIsAuthorizedFor(authorizedResources)
             .WhereIf(!request.Org.IsNullOrEmpty(), x => request.Org!.Contains(x.Org))
             .WhereIf(!request.ServiceResource.IsNullOrEmpty(), x => request.ServiceResource!.Contains(x.ServiceResource))
@@ -172,12 +173,13 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
             )
             .Where(x => !x.VisibleFrom.HasValue || _clock.UtcNowOffset > x.VisibleFrom)
             .Where(x => !x.ExpiresAt.HasValue || x.ExpiresAt > _clock.UtcNowOffset)
-            .ProjectTo<SearchDialogDto>(_mapper.ConfigurationProvider)
             .ToPaginatedListAsync(request, cancellationToken: cancellationToken);
 
-        await FetchRelevantActivities(paginatedList, userPid, cancellationToken);
+        var paginatedDtoList = paginatedList.To(_mapper.Map<SearchDialogDto>);
 
-        return paginatedList;
+        await FetchRelevantActivities(paginatedDtoList, userPid, cancellationToken);
+
+        return paginatedDtoList;
     }
 
     private async Task FetchRelevantActivities(PaginatedList<SearchDialogDto> paginatedList, string userPid, CancellationToken cancellationToken)
