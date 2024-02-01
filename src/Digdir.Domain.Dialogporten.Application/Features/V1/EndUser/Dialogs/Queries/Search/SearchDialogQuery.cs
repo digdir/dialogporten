@@ -187,10 +187,13 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
             .Select(x => x.Id)
             .ToList();
 
-        var latestActivityByDialogIdTask = _db.DialogActivities
+        var activityBaseQuery = _db.DialogActivities
             .AsNoTracking()
             .Include(x => x.Description!.Localizations)
             .Include(x => x.PerformedBy!.Localizations)
+            .AsQueryable();
+
+        var latestActivityByDialogIdTask = activityBaseQuery
             .Where(x =>
                 dialogIds.Contains(x.DialogId)
                 && x.TypeId != DialogActivityType.Values.Forwarded
@@ -203,10 +206,7 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
                     .First(),
                 cancellationToken);
 
-        var latestSeenActivityByDialogIdTask = _db.DialogActivities
-            .AsNoTracking()
-            .Include(x => x.Description!.Localizations)
-            .Include(x => x.PerformedBy!.Localizations)
+        var latestSeenActivityByDialogIdTask = activityBaseQuery
             .Where(x =>
                 dialogIds.Contains(x.DialogId)
                 && x.TypeId == DialogActivityType.Values.Seen
