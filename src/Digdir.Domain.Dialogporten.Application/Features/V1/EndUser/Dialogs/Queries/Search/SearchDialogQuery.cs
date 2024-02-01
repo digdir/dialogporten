@@ -177,7 +177,7 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
             .ToPaginatedListAsync(request, cancellationToken: cancellationToken);
 
         await FetchRelevantActivities(paginatedList, userPid, cancellationToken);
-        
+
         return paginatedList;
     }
 
@@ -189,6 +189,8 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
 
         var latestActivityByDialogIdTask = _db.DialogActivities
             .AsNoTracking()
+            .Include(x => x.Description!.Localizations)
+            .Include(x => x.PerformedBy!.Localizations)
             .Where(x =>
                 dialogIds.Contains(x.DialogId)
                 && x.TypeId != DialogActivityType.Values.Forwarded
@@ -203,6 +205,8 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
 
         var latestSeenActivityByDialogIdTask = _db.DialogActivities
             .AsNoTracking()
+            .Include(x => x.Description!.Localizations)
+            .Include(x => x.PerformedBy!.Localizations)
             .Where(x =>
                 dialogIds.Contains(x.DialogId)
                 && x.TypeId == DialogActivityType.Values.Seen
