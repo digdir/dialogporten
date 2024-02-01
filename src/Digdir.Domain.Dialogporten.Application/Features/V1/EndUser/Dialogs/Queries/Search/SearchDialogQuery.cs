@@ -227,13 +227,9 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
 
             dialog.LatestActivities = _mapper.Map<List<SearchDialogDialogActivityDto>>(activities);
 
-            foreach (var activity in dialog.LatestActivities)
+            foreach (var activity in dialog.LatestActivities
+                .Where(x => !string.IsNullOrWhiteSpace(x.SeenByEndUserIdHash)))
             {
-                if (string.IsNullOrWhiteSpace(activity.SeenByEndUserIdHash))
-                {
-                    continue;
-                }
-
                 // Before we hash the end user id, check if the current user has seen the dialog
                 activity.SeenActivityIsCurrentEndUser = userPid == activity.SeenByEndUserIdHash;
                 // Hash end user ids
