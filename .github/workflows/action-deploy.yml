@@ -112,7 +112,7 @@ jobs:
         with:
           azcliversion: ${{ env.AZ_CLI_VERSION }}
           inlineScript: |
-            ./.github/tools/revisionVerifier.sh "${{ steps.deploy.outputs.webApiSoRevisionName }} ${{ steps.deploy.outputs.resourceGroupName }}"
+            ./.github/tools/revisionVerifier.sh ${{ steps.deploy.outputs.webApiSoRevisionName }} ${{ steps.deploy.outputs.resourceGroupName }}
 
 
       - name: Logout from azure
