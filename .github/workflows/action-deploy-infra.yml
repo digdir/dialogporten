@@ -1,5 +1,8 @@
 ﻿name: Deploy infrastructure
 
+env:
+  AZ_CLI_VERSION: 2.56.0
+
 on:
   workflow_call:
     secrets:
@@ -66,7 +69,7 @@ jobs:
         uses: azure/CLI@v1
         id: keyvault-keys
         with:
-          azcliversion: 2.56.0
+          azcliversion: ${{ env.AZ_CLI_VERSION }}
           inlineScript: |
             KEY_VAULT_KEYS=$(az keyvault secret list --vault-name ${{ secrets.AZURE_SOURCE_KEY_VAULT_NAME }} --subscription ${{ secrets.AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID }} --query "[].name" -o json | tr -d '\n')
             echo "::set-output name=key-vault-keys::$KEY_VAULT_KEYS"
@@ -107,9 +110,20 @@ jobs:
         uses: azure/CLI@v1
         if: ${{!inputs.dryRun}}
         with:
-          azcliversion: 2.56.0
+          azcliversion: ${{ env.AZ_CLI_VERSION }}
           inlineScript: |
             az containerapp job start -n ${{ steps.deploy.outputs.migrationJobName }} -g ${{ steps.deploy.outputs.resourceGroupName }}
+
+      - name: Verify deployment running
+        uses: azure/CLI@v1
+        if: ${{!inputs.dryRun}}
+        id: verify-deployment
+        timeout-minutes: 3
+        with:
+          azcliversion: ${{ env.AZ_CLI_VERSION }}
+          inlineScript: |
+            ./.github/tools/revisionVerifier.sh ${{ steps.deploy.outputs.webApiSoRevisionName }} ${{ steps.deploy.outputs.resourceGroupName }}
+
 
       - name: Logout from azure
         if: ${{failure() || success()}}

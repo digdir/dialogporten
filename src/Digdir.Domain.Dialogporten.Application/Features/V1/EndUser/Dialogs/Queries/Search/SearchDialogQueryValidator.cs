@@ -1,4 +1,5 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Common.Extensions.Enumerables;
+using Digdir.Domain.Dialogporten.Application.Common.Extensions.FluentValidation;
 using Digdir.Domain.Dialogporten.Application.Common.Pagination;
 using Digdir.Domain.Dialogporten.Domain.Localizations;
 using FluentValidation;
@@ -21,6 +22,9 @@ internal sealed class SearchDialogQueryValidator : AbstractValidator<SearchDialo
         RuleFor(x => x)
             .Must(x => !x.ServiceResource.IsNullOrEmpty() || !x.Party.IsNullOrEmpty())
             .WithMessage($"Either {nameof(SearchDialogQuery.ServiceResource)} or {nameof(SearchDialogQuery.Party)} must be specified.");
+
+        RuleForEach(x => x.Party)
+            .IsValidPartyIdentifier();
 
         RuleFor(x => x.Org!.Count)
             .LessThanOrEqualTo(20)

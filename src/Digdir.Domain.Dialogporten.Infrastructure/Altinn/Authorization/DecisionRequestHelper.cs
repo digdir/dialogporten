@@ -3,6 +3,8 @@ using System.Security.Claims;
 using Digdir.Domain.Dialogporten.Application.Common.Authorization;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
+using Digdir.Domain.Dialogporten.Domain.Parties;
+using Digdir.Domain.Dialogporten.Domain.Parties.Abstractions;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.Authorization;
 
@@ -12,8 +14,6 @@ internal static class DecisionRequestHelper
     private const string AltinnUrnNsPrefix = "urn:altinn:";
     private const string PidClaimType = "pid";
     private const string ConsumerClaimType = "consumer";
-    private const string PartyPrefixOrg = "/org/";
-    private const string PartyPrefixPerson = "/person/";
     private const string AttributeIdSsn = "urn:altinn:ssn";
     private const string AttributeIdOrganizationNumber = "urn:altinn:organizationnumber";
     private const string AttributeIdAction = "urn:oasis:names:tc:xacml:1.0:action:action-id";
@@ -163,25 +163,14 @@ internal static class DecisionRequestHelper
 
     private static XacmlJsonAttribute? ExtractPartyAttribute(string party)
     {
-        var partyAttribute = new XacmlJsonAttribute();
-
-        if (party.StartsWith(PartyPrefixOrg, StringComparison.Ordinal))
+        // TODO: This can be removed once Altinn Auth has been updated to use the new party format.
+        var _ = PartyIdentifier.TryParse(party, out var partyIdentifier);
+        return partyIdentifier switch
         {
-            partyAttribute.AttributeId = AttributeIdOrganizationNumber;
-            partyAttribute.Value = party[PartyPrefixOrg.Length..];
-
-        }
-        else if (party.StartsWith(PartyPrefixPerson, StringComparison.Ordinal))
-        {
-            partyAttribute.AttributeId = AttributeIdSsn;
-            partyAttribute.Value = party[PartyPrefixPerson.Length..];
-        }
-        else
-        {
-            return null;
-        }
-
-        return partyAttribute;
+            NorwegianOrganizationIdentifier => new XacmlJsonAttribute() { AttributeId = AttributeIdOrganizationNumber, Value = partyIdentifier.Id },
+            NorwegianPersonIdentifier => new() { AttributeId = AttributeIdSsn, Value = partyIdentifier.Id },
+            _ => null
+        };
     }
 
     private static XacmlJsonMultiRequests CreateMultiRequests(
@@ -267,13 +256,13 @@ internal static class DecisionRequestHelper
                         .FirstOrDefault(a => a.AttributeId == AttributeIdOrganizationNumber);
                 if (partyOrgNr != null)
                 {
-                    party = PartyPrefixOrg + partyOrgNr.Value;
+                    party = NorwegianOrganizationIdentifier.Prefix + partyOrgNr.Value;
                 }
                 else
                 {
                     var partySsn = xamlJsonRequestRoot.Request.Resource.First(r => r.Id == resourceId).Attribute
                         .First(a => a.AttributeId == AttributeIdSsn);
-                    party = PartyPrefixPerson + partySsn.Value;
+                    party = NorwegianPersonIdentifier.Prefix + partySsn.Value;
                 }
 
                 if (!response.PartiesByResources.TryGetValue(serviceResource, out var parties))
