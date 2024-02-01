@@ -232,7 +232,7 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
             foreach (var activity in dialog.LatestActivities
                 .Where(x => !string.IsNullOrWhiteSpace(x.SeenByEndUserIdHash)))
             {
-                // Before we hash the end user id, check if the current user has seen the dialog
+                // Before we hash the end user id, check if the seen activity is for the current user
                 activity.SeenActivityIsCurrentEndUser = userPid == activity.SeenByEndUserIdHash;
                 // Hash end user ids
                 activity.SeenByEndUserIdHash = MappingUtils.HashPid(activity.SeenByEndUserIdHash, salt);
