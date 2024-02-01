@@ -1,4 +1,5 @@
 using System.Security.Cryptography;
+using System.Text;
 
 namespace Digdir.Domain.Dialogporten.Application.Common;
 
@@ -13,16 +14,13 @@ internal static class MappingUtils
             return null;
         }
 
-        const int keySize = 32;
-        const int iterations = 5_000;
-        var hash = Rfc2898DeriveBytes.Pbkdf2(
-            personIdentifier,
-            salt,
-            iterations,
-            HashAlgorithmName.SHA256,
-            keySize
-        );
+        var identifierBytes = Encoding.UTF8.GetBytes(personIdentifier);
+        Span<byte> buffer = stackalloc byte[identifierBytes.Length + salt.Length];
+        identifierBytes.CopyTo(buffer);
+        salt.CopyTo(buffer[identifierBytes.Length..]);
 
-        return Convert.ToHexString(hash)[..5];
+        var hashBytes = SHA256.HashData(buffer);
+
+        return BitConverter.ToString(hashBytes, 0, 5).Replace("-", "").ToLowerInvariant();
     }
 }
