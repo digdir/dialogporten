@@ -11,8 +11,8 @@ public class DialogActivity : IImmutableEntity, IAggregateCreatedHandler, IEvent
 {
     public Guid Id { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
-
     public Uri? ExtendedType { get; set; }
+    public string? SeenByEndUserId { get; set; }
 
     // === Dependent relationships ===
     public DialogActivityType.Values TypeId { get; set; }

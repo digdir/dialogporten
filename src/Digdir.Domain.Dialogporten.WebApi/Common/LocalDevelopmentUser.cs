@@ -10,6 +10,7 @@ internal sealed class LocalDevelopmentUser : IUser
     {
         new Claim(ClaimTypes.Name, "Local Development User"),
         new Claim(ClaimTypes.NameIdentifier, "local-development-user"),
+        new Claim("pid", "03886595947"),
         new Claim("scope", string.Join(" ", AuthorizationScope.AllScopes.Value)),
         new Claim("consumer",
             """

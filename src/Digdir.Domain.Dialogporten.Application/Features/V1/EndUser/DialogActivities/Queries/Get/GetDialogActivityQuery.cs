@@ -1,4 +1,5 @@
 using AutoMapper;
+using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
@@ -71,6 +72,12 @@ internal sealed class GetDialogActivityQueryHandler : IRequestHandler<GetDialogA
         if (activity is null)
         {
             return new EntityNotFound<DialogActivity>(request.ActivityId);
+        }
+
+        // Hash end user id
+        if (activity.SeenByEndUserId is not null)
+        {
+            activity.SeenByEndUserId = MappingUtils.HashPid(activity.SeenByEndUserId, MappingUtils.GetHashSalt());
         }
 
         return _mapper.Map<GetDialogActivityDto>(activity);

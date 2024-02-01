@@ -12,7 +12,7 @@ internal static class CloudEventTypes
         DialogCreatedDomainEvent => "dialogporten.dialog.created.v1",
         DialogUpdatedDomainEvent => "dialogporten.dialog.updated.v1",
         DialogDeletedDomainEvent => "dialogporten.dialog.deleted.v1",
-        DialogReadDomainEvent => "dialogporten.dialog.read.v1",
+        DialogSeenDomainEvent => "dialogporten.dialog.seen.v1",
 
         // DialogElement
         DialogElementDeletedDomainEvent => "dialogporten.dialog.element.deleted.v1",
