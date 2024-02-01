@@ -54,26 +54,33 @@ internal static class AggregateExtensions
 
     internal static ModelBuilder AddAggregateEntities(this ModelBuilder modelBuilder)
     {
-        var entities = modelBuilder.Model
-            .GetEntityTypes()
-            .Where(x => x.BaseType is null)
-            .SelectMany(entityType =>
-            {
-                var children = entityType
-                    .FindAggregateChildren()
-                    .Select(foreignKey => entityType
-                        .FindNavigation(foreignKey.PrincipalToDependent!.Name)!);
-                var parents = entityType
-                    .FindAggregateParents()
-                    .Select(foreignKey => entityType
-                        .FindNavigation(foreignKey.DependentToPrincipal!.Name)!);
-                return children.Concat(parents);
-            });
+        // This will eager load entire aggregate trees for ALL queries unless explicitly
+        // opted out for through ".IgnoreAutoIncludes()". Optimaly we want to lazy load
+        // the entire tree ONLY when service owner is altering them, not on every query.
+        // In addition - We don't want the ISoftDeletableEntity query filter to be
+        // applied when loading aggregates, but it will be through FindAsync and
+        // NavProp.LoadAsync.
 
-        foreach (var entityType in entities)
-        {
-            entityType.SetIsEagerLoaded(true);
-        }
+        //var entities = modelBuilder.Model
+        //    .GetEntityTypes()
+        //    .Where(x => x.BaseType is null)
+        //    .SelectMany(entityType =>
+        //    {
+        //        var children = entityType
+        //            .FindAggregateChildren()
+        //            .Select(foreignKey => entityType
+        //                .FindNavigation(foreignKey.PrincipalToDependent!.Name)!);
+        //        var parents = entityType
+        //            .FindAggregateParents()
+        //            .Select(foreignKey => entityType
+        //                .FindNavigation(foreignKey.DependentToPrincipal!.Name)!);
+        //        return children.Concat(parents);
+        //    });
+
+        //foreach (var entityType in entities)
+        //{
+        //    entityType.SetIsEagerLoaded(true);
+        //}
 
         return modelBuilder;
     }
