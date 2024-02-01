@@ -91,7 +91,7 @@ public class DialogEntity :
         _domainEvents.Add(new DialogDeletedDomainEvent(Id, ServiceResource, Party));
     }
 
-    public void UpdateSeenAt(string seenByEndUserId, string seenByEndUserName)
+    public void UpdateSeenAt(string seenByEndUserId, string? seenByEndUserName)
     {
         var lastSeenByAt = Activities
             .Where(x => x.SeenByEndUserId == seenByEndUserId)
@@ -103,10 +103,19 @@ public class DialogEntity :
             return;
         }
 
-        if (string.IsNullOrWhiteSpace(seenByEndUserName))
-        {
-            seenByEndUserName = "NavnIkkeFunnet";
-        }
+        var performedBy = seenByEndUserName is not null
+            ? new DialogActivityPerformedBy
+            {
+                Localizations =
+                [
+                    new Localization
+                    {
+                        CultureCode = "nb-no",
+                        Value = seenByEndUserName
+                    }
+                ]
+            }
+            : null;
 
         Activities.Add(new DialogActivity
         {
@@ -118,14 +127,7 @@ public class DialogEntity :
                     Value = "Dialogen er sett"
                 }]
             },
-            PerformedBy = new DialogActivityPerformedBy
-            {
-                Localizations = [new Localization
-                {
-                    CultureCode = "nb-no",
-                    Value = seenByEndUserName
-                }]
-            },
+            PerformedBy = performedBy,
             SeenByEndUserId = seenByEndUserId,
             TypeId = DialogActivityType.Values.Seen
         });

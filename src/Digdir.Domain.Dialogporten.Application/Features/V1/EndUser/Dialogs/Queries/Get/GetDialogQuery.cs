@@ -95,7 +95,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
         var userName = await _userService.GetCurrentUserName(userPid, cancellationToken);
         // TODO: What if name lookup fails
         // https://github.com/digdir/dialogporten/issues/387
-        dialog.UpdateSeenAt(userPid, userName ?? string.Empty);
+        dialog.UpdateSeenAt(userPid, userName);
 
         var saveResult = await _unitOfWork
             .WithoutAuditableSideEffects()
