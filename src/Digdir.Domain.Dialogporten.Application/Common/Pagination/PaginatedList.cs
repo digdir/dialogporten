@@ -14,13 +14,4 @@ public sealed class PaginatedList<T>
         OrderBy = orderBy;
         Items = items?.ToList() ?? throw new ArgumentNullException(nameof(items));
     }
-
-    public PaginatedList<TDestination> To<TDestination>(Func<T, TDestination> selector)
-    {
-        return new PaginatedList<TDestination>(
-            Items.Select(selector),
-            HasNextPage,
-            ContinuationToken,
-            OrderBy);
-    }
 }
