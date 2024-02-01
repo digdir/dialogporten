@@ -106,9 +106,10 @@ jobs:
             az containerapp job start -n ${{ steps.deploy.outputs.migrationJobName }} -g ${{ steps.deploy.outputs.resourceGroupName }}
 
       - name: Verify deployment running
-        timeout-minutes: 3
         uses: azure/CLI@v1
+        if: ${{!inputs.dryRun}}
         id: verify-deployment
+        timeout-minutes: 3
         with:
           azcliversion: ${{ env.AZ_CLI_VERSION }}
           inlineScript: |
