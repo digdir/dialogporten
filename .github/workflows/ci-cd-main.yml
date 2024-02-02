@@ -18,6 +18,7 @@ jobs:
     name: Build and test backend
     uses: ./.github/workflows/action-build-and-test.yml
     needs: [check-for-changes]
+    if: always()
     with:
       skip: ${{ needs.check-for-changes.outputs.hasBackendChanges != 'true' }}
 
@@ -25,6 +26,7 @@ jobs:
     name: Build and publish docker images
     uses: ./.github/workflows/action-publish.yml
     needs: [check-for-changes, build-and-test]
+    if: always()
     secrets:
       GCR_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
     with:
@@ -34,8 +36,7 @@ jobs:
   deploy-infra-test:
     name: Deploy infra to test
     needs: [check-for-changes, publish]
-    # todo: test this out
-    # if: ${{ jobs.build-and-test.result == 'success' || jobs.blah.result == 'skipped' }}
+    if: always()
     uses: ./.github/workflows/action-deploy-infra.yml
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -53,6 +54,7 @@ jobs:
   deploy-apps-test:
     name: Deploy apps to test
     needs: [check-for-changes, deploy-infra-test]
+    if: always()
     uses: ./.github/workflows/action-deploy-apps.yml
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -76,6 +78,7 @@ jobs:
   deploy-slack-notifier-test:
     name: Deploy slack notifier (test)
     needs: [check-for-changes, deploy-apps-test]
+    if: always()
     uses: ./.github/workflows/action-deploy-function.yml
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}

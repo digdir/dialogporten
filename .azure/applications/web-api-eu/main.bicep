@@ -52,7 +52,6 @@ resource environmentKeyVaultResource 'Microsoft.KeyVault/vaults@2023-07-01' exis
 var containerAppName = '${namePrefix}-webapi-eu-ca'
 
 module containerApp '../../modules/containerApp/main.bicep' = {
-  // todo: change to use the name of the app
   name: containerAppName
   params: {
     name: containerAppName
