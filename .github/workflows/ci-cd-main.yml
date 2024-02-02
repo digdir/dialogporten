@@ -90,6 +90,8 @@ jobs:
   dry-run-deploy-infra-staging:
     name: Deploy infra to staging (dry run)
     needs: [check-for-changes, deploy-infra-test]
+    # todo: remove once we want to roll out staging
+    if: false
     uses: ./.github/workflows/action-deploy-infra.yml
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -108,6 +110,8 @@ jobs:
   deploy-infra-staging:
     name: Deploy infra to staging
     needs: [check-for-changes, dry-run-deploy-infra-staging]
+    # todo: remove once we want to roll out staging
+    if: false
     uses: ./.github/workflows/action-deploy-infra.yml
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -127,6 +131,8 @@ jobs:
   dry-run-deploy-apps-staging:
     name: Deploy apps to staging (dryrun)
     needs: [check-for-changes, deploy-infra-staging]
+    # todo: remove once we want to roll out staging
+    if: false
     uses: ./.github/workflows/action-deploy-infra.yml
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -145,6 +151,8 @@ jobs:
     name: Deploy apps to staging (dryrun)
     needs: [check-for-changes, dry-run-deploy-apps-staging]
     uses: ./.github/workflows/action-deploy-infra.yml
+    # todo: remove once we want to roll out staging
+    if: false
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
