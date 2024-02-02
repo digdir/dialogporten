@@ -93,7 +93,7 @@ jobs:
           region: ${{ inputs.region }}
           failOnStdErr: true
           additionalArguments: "${{inputs.dryRun && '--what-if'}}"
-          parameters: ./.azure/applications/web-api-migration-job/${{ inputs.environment }}.bicep
+          parameters: ./.azure/applications/web-api-migration-job/${{ inputs.environment }}.bicepparam
 
       - name: Start migration job
         uses: azure/CLI@v1
@@ -121,6 +121,7 @@ jobs:
   deploy-apps:
     name: Deploy ${{ matrix.name }} to ${{ inputs.environment }}
     runs-on: ubuntu-latest
+    needs: deploy-migration-job
     if: ${{ !inputs.skip }}
     strategy:
       fail-fast: true
@@ -167,7 +168,7 @@ jobs:
           region: ${{ inputs.region }}
           failOnStdErr: true
           additionalArguments: "${{inputs.dryRun && '--what-if'}}"
-          parameters: ./.azure/applications/${{ matrix.name }}/${{ inputs.environment }}.bicep
+          parameters: ./.azure/applications/${{ matrix.name }}/${{ inputs.environment }}.bicepparam
 
       - name: Verify deployment (${{ matrix.name }})
         uses: azure/CLI@v1
