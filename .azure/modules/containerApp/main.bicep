@@ -1,53 +1,10 @@
 param location string
-param initContainerimage string
 param envVariables array = []
 param port int = 8080
 param name string
 param image string
 
 param containerAppEnvId string
-
-// todo: do we need this here? 🤔
-param migrationJobName string
-
-@secure()
-param migrationVerifierPrincipalPassword string
-@secure()
-param migrationVerifierPrincipalAppId string
-
-// todo: refactor out the init containers & env variables
-var initContainers = [
-  {
-    name: '${name}-init'
-    image: initContainerimage
-    env: concat(envVariables,
-      [
-        {
-          name: 'AZURE_TENANT_ID'
-          value: subscription().tenantId
-        }
-        {
-          name: 'SUBSCRIPTION_ID'
-          value: subscription().subscriptionId
-        }
-        {
-          name: 'AZURE_CLIENT_ID'
-          value: migrationVerifierPrincipalAppId
-        }
-        {
-          name: 'AZURE_CLIENT_SECRET'
-          value: migrationVerifierPrincipalPassword
-        }
-        {
-          name: 'MIGRATION_JOB_NAME'
-          value: migrationJobName
-        }
-        {
-          name: 'RESOURCE_GROUP_NAME'
-          value: resourceGroup().name
-        }
-      ])
-  } ]
 
 var probes = [
   {
@@ -93,7 +50,6 @@ resource containerApp 'Microsoft.App/containerApps@2023-05-01' = {
         minReplicas: 1
         maxReplicas: 1 // temp disable scaling for outbox scheduling
       }
-      initContainers: initContainers
       containers: [
         {
           name: name
@@ -111,3 +67,4 @@ resource containerApp 'Microsoft.App/containerApps@2023-05-01' = {
 
 output identityPrincipalId string = containerApp.identity.principalId
 output name string = containerApp.name
+output revisionName string = containerApp.properties.latestRevisionName

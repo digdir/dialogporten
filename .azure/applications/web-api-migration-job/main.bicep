@@ -5,7 +5,6 @@ param imageTag string
 param environment string
 param location string
 
-// todo: this needs to be output from infrastructure.bicep 
 param containerAppEnvironmentId string
 
 @secure()

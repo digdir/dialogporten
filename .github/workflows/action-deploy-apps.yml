@@ -1,5 +1,8 @@
 ﻿name: Deploy apps
 
+env:
+  AZ_CLI_VERSION: 2.56.0
+
 on:
   workflow_call:
     secrets:
@@ -9,11 +12,7 @@ on:
         required: true
       AZURE_SUBSCRIPTION_ID:
         required: true
-      AZURE_SOURCE_KEY_VAULT_NAME:
-        required: true
-      AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID:
-        required: true
-      AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP:
+      AZURE_RESOURCE_GROUP_NAME:
         required: true
       AZURE_ENVIRONMENT_KEY_VAULT_NAME:
         required: true
@@ -22,6 +21,8 @@ on:
       AZURE_APP_INSIGHTS_CONNECTION_STRING:
         required: true
       AZURE_APP_CONFIGURATION_NAME:
+        required: true
+      AZURE_ADO_CONNECTION_STRING_SECRET_URI:
         required: true
 
     inputs:
@@ -50,7 +51,74 @@ concurrency:
   # if the dryrun input is true, we want to cancel any running deployments in order to not block the pipeline
   cancel-in-progress: ${{ inputs.dryRun }}
 jobs:
-  deploy:
+  deploy-migration-job:
+    name: Deploy migration job to ${{ inputs.environment }}
+    runs-on: ubuntu-latest
+    if: ${{ !inputs.skip }}
+    # todo: solve this in another way
+    environment: "${{ !inputs.skipApproval && inputs.environment || 'test' }}"
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: "Checkout GitHub Action"
+        uses: actions/checkout@v4
+
+      - name: OIDC Login to Azure Public Cloud
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Deploy migration job (${{ inputs.environment }})
+        uses: azure/arm-deploy@v1
+        id: deploy
+        env:
+          # parameters
+          GIT_SHA: ${{ github.sha }}
+          IMAGE_TAG: ${{ github.sha }}
+          # secrets
+          ADO_CONNECTION_STRING_SECRET_URI: ${{ secrets.AZURE_ADO_CONNECTION_STRING_SECRET_URI }}
+          CONTAINER_APP_ENVIRONMENT_ID: ${{ secrets.AZURE_CONTAINER_APP_ENVIRONMENT_ID }}
+          ENVIRONMENT_KEY_VAULT_NAME: ${{ secrets.AZURE_ENVIRONMENT_KEY_VAULT_NAME }}
+        with:
+          scope: resourcegroup
+          template: ./.azure/applications/web-api-migration-job/main.bicep
+          resourceGroupName: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
+          # not needed becauase we sign in with the azure/login action using the subscriptionId
+          subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          deploymentMode: Incremental
+          deploymentName: "dp-be-${{ inputs.environment }}-web-api-migration-job-${{ github.sha }}"
+          region: ${{ inputs.region }}
+          failOnStdErr: true
+          additionalArguments: "${{inputs.dryRun && '--what-if'}}"
+          parameters: ./.azure/applications/web-api-migration-job/${{ inputs.environment }}.bicep
+
+      - name: Start migration job
+        uses: azure/CLI@v1
+        if: ${{!inputs.dryRun}}
+        with:
+          azcliversion: 2.56.0
+          inlineScript: |
+            az containerapp job start -n ${{ steps.deploy.outputs.migrationJobName }} -g ${{ steps.deploy.outputs.resourceGroupName }}
+
+      - name: Verify migration
+        uses: azure/CLI@v1
+        if: ${{!inputs.dryRun}}
+        id: verify-migration
+        timeout-minutes: 3
+        with:
+          azcliversion: ${{ env.AZ_CLI_VERSION }}
+          inlineScript: |
+            ./.github/tools/migrationVerifier.sh ${{ steps.deploy.outputs.migrationJobName }} ${{ secrets.AZURE_RESOURCE_GROUP_NAME }} ${{ github.sha }}
+
+      - name: Logout from azure
+        if: ${{failure() || success()}}
+        continue-on-error: true
+        run: az logout
+
+  deploy-apps:
     name: Deploy ${{ matrix.name }} to ${{ inputs.environment }}
     runs-on: ubuntu-latest
     if: ${{ !inputs.skip }}
@@ -83,17 +151,16 @@ jobs:
           # parameters
           GIT_SHA: ${{ github.sha }}
           IMAGE_TAG: ${{ github.sha }}
+          # secrets
           CONTAINER_APP_ENVIRONMENT_ID: ${{ secrets.AZURE_CONTAINER_APP_ENVIRONMENT_ID }}
           APP_INSIGHTS_CONNECTION_STRING: ${{ secrets.AZURE_APP_INSIGHTS_CONNECTION_STRING }}
           APP_CONFIGURATION_NAME: ${{ secrets.AZURE_APP_CONFIGURATION_NAME }}
-          # secrets
-          SOURCE_KEY_VAULT_SUBSCRIPTION_ID: ${{ secrets.AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID }}
-          SOURCE_KEY_VAULT_RESOURCE_GROUP: ${{ secrets.AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP }}
-          SOURCE_KEY_VAULT_NAME: ${{ secrets.AZURE_SOURCE_KEY_VAULT_NAME }}
           ENVIRONMENT_KEY_VAULT_NAME: ${{ secrets.AZURE_ENVIRONMENT_KEY_VAULT_NAME }}
         with:
-          scope: subscription
+          scope: resourcegroup
           template: ./.azure/applications/${{ matrix.name }}/main.bicep
+          resourceGroupName: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
+          # not needed becauase we sign in with the azure/login action using the subscriptionId
           subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           deploymentMode: Incremental
           deploymentName: dp-be-${{ inputs.environment }}-${{ matrix.name }}-${{ github.sha }}
@@ -102,14 +169,15 @@ jobs:
           additionalArguments: "${{inputs.dryRun && '--what-if'}}"
           parameters: ./.azure/applications/${{ matrix.name }}/${{ inputs.environment }}.bicep
 
-      # todo: move this out of this file
-      - name: Start migration job
+      - name: Verify deployment (${{ matrix.name }})
         uses: azure/CLI@v1
         if: ${{!inputs.dryRun}}
+        id: verify-deployment
+        timeout-minutes: 3
         with:
-          azcliversion: 2.56.0
+          azcliversion: ${{ env.AZ_CLI_VERSION }}
           inlineScript: |
-            az containerapp job start -n ${{ steps.deploy.outputs.migrationJobName }} -g ${{ steps.deploy.outputs.resourceGroupName }}
+            ./.github/tools/revisionVerifier.sh ${{ steps.deploy.outputs.revisionName }} ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
 
       - name: Logout from azure
         if: ${{failure() || success()}}

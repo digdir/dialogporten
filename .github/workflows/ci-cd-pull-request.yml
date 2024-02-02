@@ -1,4 +1,4 @@
-﻿name: PullRequest
+﻿name: CI/CD PullRequest
 
 on:
   pull_request:
@@ -28,7 +28,7 @@ jobs:
       skip: ${{ needs.check-for-changes.outputs.hasAzureChanges != 'true' }}
       environment: "test"
 
-  dry-run-deploy:
+  dry-run-deploy-infra:
     uses: ./.github/workflows/action-deploy-infra.yml
     needs: ["check-for-changes", "build-infrastructure"]
     secrets:
