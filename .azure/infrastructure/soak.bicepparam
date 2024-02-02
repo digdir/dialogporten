@@ -1,4 +1,4 @@
-using '../infrastructure.bicep'
+using './main.bicep'
 
 param environment = 'soak'
 param location = 'norwayeast'

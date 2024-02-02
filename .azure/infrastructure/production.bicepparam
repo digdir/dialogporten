@@ -1,9 +1,8 @@
-using '../infrastructure.bicep'
+using './main.bicep'
 
 param environment = 'production'
 param location = 'norwayeast'
 param keyVaultSourceKeys = json(readEnvironmentVariable('KEY_VAULT_SOURCE_KEYS', '[]'))
-param gitSha = readEnvironmentVariable('GIT_SHA', '')
 
 // secrets
 param dialogportenPgAdminPassword = readEnvironmentVariable('PG_ADMIN_PASSWORD', '')

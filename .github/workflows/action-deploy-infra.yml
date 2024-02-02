@@ -97,14 +97,14 @@ jobs:
           SOURCE_KEY_VAULT_NAME: ${{ secrets.AZURE_SOURCE_KEY_VAULT_NAME }}
         with:
           scope: subscription
-          template: ./.azure/infrastructure.bicep
+          template: ./.azure/infrastructure/main.bicep
           subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           deploymentMode: Incremental
           deploymentName: dp-be-${{ inputs.environment }}-${{ github.sha }}
           region: ${{ inputs.region }}
           failOnStdErr: true
           additionalArguments: "${{inputs.dryRun && '--what-if'}}"
-          parameters: ./.azure/environments/${{ inputs.environment }}.bicepparam
+          parameters: ./.azure/infrastructure/${{ inputs.environment }}.bicepparam
 
       - name: Logout from azure
         if: ${{failure() || success()}}
