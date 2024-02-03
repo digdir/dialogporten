@@ -6,7 +6,8 @@ on:
     branches: [main]
     paths-ignore:
       - "tests/k6/**"
-
+env:
+  SHORT_SHA:
 jobs:
   check-for-changes:
     name: Check for changes
@@ -43,7 +44,6 @@ jobs:
     with:
       environment: test
       region: norwayeast
-      dryRun: true
 
   deploy-apps-test:
     name: Deploy apps to test
@@ -64,9 +64,6 @@ jobs:
     with:
       environment: test
       region: norwayeast
-      skipApproval: true
-      # todo: change to false after testing
-      dryRun: true
 
   deploy-slack-notifier-test:
     name: Deploy slack notifier (test)
@@ -121,8 +118,6 @@ jobs:
     with:
       environment: staging
       region: norwayeast
-      # todo: change to false after testing
-      dryRun: true
 
   # todo: don't think we need to feature gate twice here..
   dry-run-deploy-apps-staging:
@@ -159,5 +154,3 @@ jobs:
     with:
       environment: staging
       region: norwayeast
-      # todo: change to false after testing
-      dryRun: true
