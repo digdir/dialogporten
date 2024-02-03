@@ -3,11 +3,9 @@
 on:
   workflow_dispatch:
   push:
-    # todo: change to main after testing
-    branches: [chore/restructure-bicep-and-actions]
+    branches: [main]
     paths-ignore:
       - "tests/k6/**"
-# todo: maybe split into two workflows, one for backend and one for azure
 
 jobs:
   check-for-changes:
