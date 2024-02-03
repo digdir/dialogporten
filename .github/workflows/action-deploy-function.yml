@@ -20,10 +20,6 @@ on:
       environment:
         type: string
         required: true
-      skip:
-        description: "If true, skip the deployment."
-        type: boolean
-        default: false
 
 env:
   DOTNET_VERSION: "8.0.x"
@@ -32,7 +28,6 @@ jobs:
   build-and-deploy:
     name: Build and deploy ${{ inputs.function-app-name }} to ${{ inputs.environment }}
     runs-on: ubuntu-latest
-    if: ${{ !inputs.skip }}
     environment: ${{ inputs.environment }}
     permissions:
       id-token: write
@@ -60,11 +55,10 @@ jobs:
           dotnet build -c Release -o ./output
           popd
 
-      # todo: enable once this is ready to merge
-      # - name: "Run Azure Functions Action"
-      #   uses: Azure/functions-action@v1
-      #   id: fa
-      #   with:
-      #     app-name: ${{ inputs.function-app-name }}
-      #     package: "${{ inputs.function-project-path }}/output"
-      #     publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
+      - name: "Run Azure Functions Action"
+        uses: Azure/functions-action@v1
+        id: fa
+        with:
+          app-name: ${{ inputs.function-app-name }}
+          package: "${{ inputs.function-project-path }}/output"
+          publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}

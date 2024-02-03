@@ -16,25 +16,22 @@ jobs:
     name: Build and test backend
     uses: ./.github/workflows/action-build-and-test.yml
     needs: [check-for-changes]
-    if: always()
-    with:
-      skip: ${{ needs.check-for-changes.outputs.hasBackendChanges != 'true' }}
+    if: ${{ needs.check-for-changes.outputs.hasBackendChanges == 'true' }}
 
   publish:
     name: Build and publish docker images
     uses: ./.github/workflows/action-publish.yml
     needs: [check-for-changes, build-and-test]
-    if: always()
+    if: ${{ always() && needs.check-for-changes.outputs.hasBackendChanges == 'true' }}
     secrets:
       GCR_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
     with:
-      skip: ${{ needs.check-for-changes.outputs.hasBackendChanges != 'true' }}
       dockerImageBaseName: ghcr.io/digdir/dialogporten-
 
   deploy-infra-test:
     name: Deploy infra to test
     needs: [check-for-changes, publish]
-    if: always()
+    if: ${{ always() && needs.check-for-changes.outputs.hasAzureChanges == 'true' }}
     uses: ./.github/workflows/action-deploy-infra.yml
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -44,7 +41,6 @@ jobs:
       AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID: ${{ secrets.AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID }}
       AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP: ${{ secrets.AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP }}
     with:
-      skip: ${{ needs.check-for-changes.outputs.hasAzureChanges != 'true' }}
       environment: test
       region: norwayeast
       dryRun: true
@@ -52,7 +48,7 @@ jobs:
   deploy-apps-test:
     name: Deploy apps to test
     needs: [check-for-changes, deploy-infra-test]
-    if: always()
+    if: ${{ always() && needs.check-for-changes.outputs.hasBackendChanges == 'true' }}
     uses: ./.github/workflows/action-deploy-apps.yml
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -66,7 +62,6 @@ jobs:
       AZURE_APP_INSIGHTS_CONNECTION_STRING: ${{ secrets.AZURE_APP_INSIGHTS_CONNECTION_STRING }}
       AZURE_APP_CONFIGURATION_NAME: ${{ secrets.AZURE_APP_CONFIGURATION_NAME }}
     with:
-      skip: ${{ needs.check-for-changes.outputs.hasAzureChanges != 'true' }}
       environment: test
       region: norwayeast
       skipApproval: true
@@ -76,14 +71,13 @@ jobs:
   deploy-slack-notifier-test:
     name: Deploy slack notifier (test)
     needs: [check-for-changes, deploy-apps-test]
-    if: always()
+    if: ${{ always() && needs.check-for-changes.outputs.hasSlackNotifierChanges == 'true' }}
     uses: ./.github/workflows/action-deploy-function.yml
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
       AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
     with:
-      skip: ${{ needs.check-for-changes.outputs.hasSlackNotifierChanges != 'true' }}
       function-app-name: "dp-be-test-slacknotifier-fa"
       function-project-path: "./src/Digdir.Tool.Dialogporten.SlackNotifier"
       environment: test
@@ -91,8 +85,12 @@ jobs:
   dry-run-deploy-infra-staging:
     name: Deploy infra to staging (dry run)
     needs: [check-for-changes, deploy-infra-test]
-    # todo: remove once we want to roll out staging
+    # todo: remove once we want to roll out staging. Also, we need to use something other than the check-for-changes here..
+    # we want to figure out whether we have changes in the infra since last time we deployed to staging, not whether we have changes in the repo
+    # maybe use another trigger here? An action to create a tag, and then use that tag as a trigger for the staging deployment?
+    # or we could always try to run deployments in staging after review is approved...(!)
     if: false
+    # if: ${{ always() && needs.check-for-changes.outputs.hasAzureChanges == 'true' }}
     uses: ./.github/workflows/action-deploy-infra.yml
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -102,7 +100,6 @@ jobs:
       AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID: ${{ secrets.AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID }}
       AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP: ${{ secrets.AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP }}
     with:
-      skip: ${{ needs.check-for-changes.outputs.hasAzureChanges != 'true' }}
       environment: staging
       region: norwayeast
       skipApproval: true
@@ -122,7 +119,6 @@ jobs:
       AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID: ${{ secrets.AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID }}
       AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP: ${{ secrets.AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP }}
     with:
-      skip: ${{ needs.check-for-changes.outputs.hasAzureChanges != 'true' }}
       environment: staging
       region: norwayeast
       # todo: change to false after testing
@@ -143,7 +139,6 @@ jobs:
       AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID: ${{ secrets.AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID }}
       AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP: ${{ secrets.AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP }}
     with:
-      skip: ${{ needs.check-for-changes.outputs.hasAzureChanges != 'true' }}
       environment: staging
       region: norwayeast
       dryRun: true
@@ -162,7 +157,6 @@ jobs:
       AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID: ${{ secrets.AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID }}
       AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP: ${{ secrets.AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP }}
     with:
-      skip: ${{ needs.check-for-changes.outputs.hasAzureChanges != 'true' }}
       environment: staging
       region: norwayeast
       # todo: change to false after testing

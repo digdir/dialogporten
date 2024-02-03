@@ -14,23 +14,23 @@ jobs:
   build:
     uses: ./.github/workflows/action-build-and-test.yml
     needs: ["check-for-changes"]
-    with:
-      skip: ${{ needs.check-for-changes.outputs.hasBackendChanges != 'true' }}
+    if: ${{ needs.check-for-changes.outputs.hasBackendChanges == 'true' }}
 
   build-infrastructure:
     uses: ./.github/workflows/action-build-infrastructure.yml
     needs: ["check-for-changes"]
+    if: ${{ always() && needs.check-for-changes.outputs.hasAzureChanges == 'true' }}
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
       AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
     with:
-      skip: ${{ needs.check-for-changes.outputs.hasAzureChanges != 'true' }}
       environment: "test"
 
   dry-run-deploy-infra:
     uses: ./.github/workflows/action-deploy-infra.yml
     needs: ["check-for-changes", "build-infrastructure"]
+    if: ${{ always() && needs.check-for-changes.outputs.hasAzureChanges == 'true' }}
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
@@ -39,7 +39,6 @@ jobs:
       AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID: ${{ secrets.AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID }}
       AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP: ${{ secrets.AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP }}
     with:
-      skip: ${{ needs.check-for-changes.outputs.hasAzureChanges != 'true' }}
       environment: test
       region: norwayeast
       dryRun: true

@@ -13,15 +13,11 @@ on:
       environment:
         required: true
         type: string
-      skip:
-        description: "If true, skip the build job."
-        type: boolean
-        default: false
+
 jobs:
   build:
     name: Build infrastructure for ${{ inputs.environment }}
     runs-on: ubuntu-latest
-    if: ${{ !inputs.skip }}
     permissions:
       id-token: write
       contents: read

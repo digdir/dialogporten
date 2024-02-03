@@ -3,15 +3,10 @@ name: BuildAndTest
 on:
   workflow_dispatch:
   workflow_call:
-    inputs:
-      skip:
-        description: "If true, skip the build and test steps."
-        type: boolean
-        default: false
+
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
-    if: ${{ !inputs.skip }}
     steps:
       - uses: actions/checkout@v4
 
