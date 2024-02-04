@@ -7,7 +7,7 @@ public sealed class ExceptionEndpoint : Endpoint<ExceptionEndpointRequest>
 {
     public override void Configure()
     {
-        Get("Exception");
+        Get("Exception!");
         Policies(AuthorizationPolicy.Testing);
         Description(x => x.ExcludeFromDescription());
     }
