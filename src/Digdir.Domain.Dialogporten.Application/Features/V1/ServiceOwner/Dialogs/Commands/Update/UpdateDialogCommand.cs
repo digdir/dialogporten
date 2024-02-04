@@ -163,9 +163,9 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
 
         if (!_db.MustWhenModified(dialog,
             propertyExpression: x => x.DueAt,
-            predicate: x => x > DateTimeOffset.UtcNow))
+            predicate: x => x > DateTimeOffset.UtcNow || x == null))
         {
-            _domainContext.AddError(nameof(UpdateDialogCommand.Dto.DueAt), errorMessage);
+            _domainContext.AddError(nameof(UpdateDialogCommand.Dto.DueAt), errorMessage + " (Or null)");
         }
 
         if (!_db.MustWhenModified(dialog,
