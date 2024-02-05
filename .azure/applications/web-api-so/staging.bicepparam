@@ -2,7 +2,6 @@ using './main.bicep'
 
 param environment = 'staging'
 param location = 'norwayeast'
-param gitSha = readEnvironmentVariable('GIT_SHA', '')
 param imageTag = readEnvironmentVariable('IMAGE_TAG', '')
 
 // secrets

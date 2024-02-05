@@ -42,6 +42,10 @@ on:
         required: false
         type: boolean
         default: false
+      gitShortSha:
+        description: "Short SHA of the commit"
+        required: true
+        type: string
 
 concurrency:
   group: ${{ github.workflow }}-${{ inputs.environment }}
@@ -72,12 +76,10 @@ jobs:
         id: deploy
         env:
           # parameters
-          GIT_SHA: ${{ github.sha }}
-          IMAGE_TAG: ${{ github.sha }}
+          IMAGE_TAG: ${{ inputs.gitShortSha }}
           # secrets
           ADO_CONNECTION_STRING_SECRET_URI: ${{ secrets.AZURE_ADO_CONNECTION_STRING_SECRET_URI }}
           CONTAINER_APP_ENVIRONMENT_ID: ${{ secrets.AZURE_CONTAINER_APP_ENVIRONMENT_ID }}
-          ENVIRONMENT_KEY_VAULT_NAME: ${{ secrets.AZURE_ENVIRONMENT_KEY_VAULT_NAME }}
         with:
           scope: resourcegroup
           template: ./.azure/applications/web-api-migration-job/main.bicep
@@ -85,8 +87,7 @@ jobs:
           # not needed becauase we sign in with the azure/login action using the subscriptionId
           subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           deploymentMode: Incremental
-          # todo: fix, using short_sha maybe? Max length 64 chars
-          deploymentName: "dp-be-${{ inputs.environment }}-migration-${{ github.sha }}"
+          deploymentName: "dp-be-${{ inputs.environment }}-web-api-migration-job-${{ inputs.gitShortSha }}"
           region: ${{ inputs.region }}
           failOnStdErr: true
           additionalArguments: "${{inputs.dryRun && '--what-if'}}"
@@ -108,7 +109,7 @@ jobs:
         with:
           azcliversion: ${{ env.AZ_CLI_VERSION }}
           inlineScript: |
-            ./.github/tools/migrationVerifier.sh ${{ steps.deploy.outputs.migrationJobName }} ${{ secrets.AZURE_RESOURCE_GROUP_NAME }} ${{ github.sha }}
+            ./.github/tools/migrationVerifier.sh ${{ steps.deploy.outputs.migrationJobName }} ${{ secrets.AZURE_RESOURCE_GROUP_NAME }} ${{ inputs.gitShortSha }}
 
       - name: Logout from azure
         if: ${{failure() || success()}}
@@ -147,8 +148,7 @@ jobs:
         id: deploy
         env:
           # parameters
-          GIT_SHA: ${{ github.sha }}
-          IMAGE_TAG: ${{ github.sha }}
+          IMAGE_TAG: ${{ inputs.gitShortSha }}
           # secrets
           CONTAINER_APP_ENVIRONMENT_ID: ${{ secrets.AZURE_CONTAINER_APP_ENVIRONMENT_ID }}
           APP_INSIGHTS_CONNECTION_STRING: ${{ secrets.AZURE_APP_INSIGHTS_CONNECTION_STRING }}
@@ -161,7 +161,7 @@ jobs:
           # not needed becauase we sign in with the azure/login action using the subscriptionId
           subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           deploymentMode: Incremental
-          deploymentName: dp-be-${{ inputs.environment }}-${{ matrix.name }}-${{ github.sha }}
+          deploymentName: dp-be-${{ inputs.environment }}-${{ matrix.name }}-${{ inputs.gitShortSha }}
           region: ${{ inputs.region }}
           failOnStdErr: true
           additionalArguments: "${{inputs.dryRun && '--what-if'}}"

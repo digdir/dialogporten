@@ -1,7 +1,6 @@
 targetScope = 'resourceGroup'
 
 param imageTag string
-param gitSha string
 param environment string
 param location string
 
@@ -38,10 +37,6 @@ var containerAppEnvVars = [
   {
     name: 'ASPNETCORE_URLS'
     value: 'http://+:8080'
-  }
-  {
-    name: 'GIT_SHA'
-    value: gitSha
   }
 ]
 

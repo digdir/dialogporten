@@ -9,6 +9,17 @@ on:
 env:
   SHORT_SHA:
 jobs:
+  generate-git-short-sha:
+    name: Generate git short sha
+    runs-on: ubuntu-latest
+    outputs:
+      gitShortSha: ${{ steps.set-git-short-sha.outputs.gitShortSha }}
+    steps:
+      # Current workaround to create a short git sha. Not supported as a global variable yet. https://stackoverflow.com/questions/59810838/how-to-get-the-short-sha-for-the-github-workflow
+      - name: Set git short sha
+        id: set-git-short-sha
+        run: echo "gitShortSha=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
   check-for-changes:
     name: Check for changes
     uses: ./.github/workflows/action-check-for-changes.yml
@@ -22,16 +33,17 @@ jobs:
   publish:
     name: Build and publish docker images
     uses: ./.github/workflows/action-publish.yml
-    needs: [check-for-changes, build-and-test]
+    needs: [generate-git-short-sha, check-for-changes, build-and-test]
     if: ${{ always() && needs.check-for-changes.outputs.hasBackendChanges == 'true' }}
     secrets:
       GCR_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
     with:
       dockerImageBaseName: ghcr.io/digdir/dialogporten-
+      gitShortSha: ${{ needs.generate-git-short-sha.outputs.gitShortSha }}
 
   deploy-infra-test:
     name: Deploy infra to test
-    needs: [check-for-changes, publish]
+    needs: [generate-git-short-sha, check-for-changes, publish]
     if: ${{ always() && needs.check-for-changes.outputs.hasAzureChanges == 'true' }}
     uses: ./.github/workflows/action-deploy-infra.yml
     secrets:
@@ -44,10 +56,11 @@ jobs:
     with:
       environment: test
       region: norwayeast
+      gitShortSha: ${{ needs.generate-git-short-sha.outputs.gitShortSha }}
 
   deploy-apps-test:
     name: Deploy apps to test
-    needs: [check-for-changes, deploy-infra-test]
+    needs: [generate-git-short-sha, check-for-changes, deploy-infra-test]
     if: ${{ always() && needs.check-for-changes.outputs.hasBackendChanges == 'true' }}
     uses: ./.github/workflows/action-deploy-apps.yml
     secrets:
@@ -64,6 +77,7 @@ jobs:
     with:
       environment: test
       region: norwayeast
+      gitShortSha: ${{ needs.generate-git-short-sha.outputs.gitShortSha }}
 
   deploy-slack-notifier-test:
     name: Deploy slack notifier (test)
@@ -81,7 +95,7 @@ jobs:
 
   dry-run-deploy-infra-staging:
     name: Deploy infra to staging (dry run)
-    needs: [check-for-changes, deploy-infra-test]
+    needs: [generate-git-short-sha, check-for-changes, deploy-infra-test]
     # todo: remove once we want to roll out staging. Also, we need to use something other than the check-for-changes here..
     # we want to figure out whether we have changes in the infra since last time we deployed to staging, not whether we have changes in the repo
     # maybe use another trigger here? An action to create a tag, and then use that tag as a trigger for the staging deployment?
@@ -101,10 +115,12 @@ jobs:
       region: norwayeast
       skipApproval: true
       dryRun: true
+      gitShortSha: ${{ needs.generate-git-short-sha.outputs.gitShortSha }}
 
   deploy-infra-staging:
     name: Deploy infra to staging
-    needs: [check-for-changes, dry-run-deploy-infra-staging]
+    needs:
+      [generate-git-short-sha, check-for-changes, dry-run-deploy-infra-staging]
     # todo: remove once we want to roll out staging
     if: false
     uses: ./.github/workflows/action-deploy-infra.yml
@@ -118,11 +134,12 @@ jobs:
     with:
       environment: staging
       region: norwayeast
+      gitShortSha: ${{ needs.generate-git-short-sha.outputs.gitShortSha }}
 
   # todo: don't think we need to feature gate twice here..
   dry-run-deploy-apps-staging:
     name: Deploy apps to staging (dryrun)
-    needs: [check-for-changes, deploy-infra-staging]
+    needs: [generate-git-short-sha, check-for-changes, deploy-infra-staging]
     # todo: remove once we want to roll out staging
     if: false
     uses: ./.github/workflows/action-deploy-infra.yml
@@ -137,10 +154,12 @@ jobs:
       environment: staging
       region: norwayeast
       dryRun: true
+      gitShortSha: ${{ needs.generate-git-short-sha.outputs.gitShortSha }}
 
   deploy-apps-staging:
     name: Deploy apps to staging (dryrun)
-    needs: [check-for-changes, dry-run-deploy-apps-staging]
+    needs:
+      [generate-git-short-sha, check-for-changes, dry-run-deploy-apps-staging]
     uses: ./.github/workflows/action-deploy-infra.yml
     # todo: remove once we want to roll out staging
     if: false
@@ -154,3 +173,4 @@ jobs:
     with:
       environment: staging
       region: norwayeast
+      gitShortSha: ${{ needs.generate-git-short-sha.outputs.gitShortSha }}

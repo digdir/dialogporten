@@ -36,6 +36,10 @@ on:
         required: false
         type: boolean
         default: false
+      gitShortSha:
+        description: "Short SHA of the commit"
+        required: true
+        type: string
 
 concurrency:
   group: ${{ github.workflow }}-${{ inputs.environment }}
@@ -84,7 +88,6 @@ jobs:
         id: deploy
         env:
           # parameters
-          GIT_SHA: ${{ github.sha }}
           KEY_VAULT_SOURCE_KEYS: ${{steps.keyvault-keys.outputs.key-vault-keys}}
           # secrets
           PG_ADMIN_PASSWORD: ${{ steps.pwd-generator.outputs.postgresqlPassword }}
@@ -96,7 +99,7 @@ jobs:
           template: ./.azure/infrastructure/main.bicep
           subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           deploymentMode: Incremental
-          deploymentName: dp-be-${{ inputs.environment }}-${{ github.sha }}
+          deploymentName: dp-be-${{ inputs.environment }}-${{ inputs.gitShortSha }}
           region: ${{ inputs.region }}
           failOnStdErr: true
           additionalArguments: "${{inputs.dryRun && '--what-if'}}"
