@@ -239,7 +239,6 @@ module appConfigConfigurations '../modules/appConfiguration/upsertKeyValue.bicep
 
 module keyVaultReaderAccessPolicy '../modules/keyvault/addReaderRoles.bicep' = {
   scope: resourceGroup
-  // todo: Let's create a separate policy per function/app?
   name: 'keyVaultReaderAccessPolicyFunctions'
   params: {
     keyvaultName: keyVaultModule.outputs.name

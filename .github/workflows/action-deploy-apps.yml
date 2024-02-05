@@ -37,16 +37,10 @@ on:
         required: false
         type: boolean
         default: false
-      skipApproval:
-        description: "If true, the deployment will skip approval."
-        required: false
-        type: boolean
-        default: false
       gitShortSha:
         description: "Short SHA of the commit"
         required: true
         type: string
-
 concurrency:
   group: ${{ github.workflow }}-${{ inputs.environment }}
   # if the dryrun input is true, we want to cancel any running deployments in order to not block the pipeline
@@ -55,8 +49,7 @@ jobs:
   deploy-migration-job:
     name: Deploy migration job to ${{ inputs.environment }}
     runs-on: ubuntu-latest
-    # todo: solve this in another way
-    environment: "${{ !inputs.skipApproval && inputs.environment || 'test' }}"
+    environment: ${{inputs.environment}}
     permissions:
       id-token: write
       contents: read
@@ -127,8 +120,7 @@ jobs:
         include:
           - name: web-api-eu
           - name: web-api-so
-    # todo: solve this in another way
-    environment: "${{ !inputs.skipApproval && inputs.environment || 'test' }}"
+    environment: ${{ inputs.environment }}
     permissions:
       id-token: write
       contents: read

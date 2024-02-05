@@ -38,4 +38,3 @@ jobs:
             slackNotifier:
               - 'src/Digdir.Tool.Dialogporten.SlackNotifier/**/*'
               - '.github/**/*'
-            # todo: add additional files that should trigger a build

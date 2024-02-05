@@ -8,7 +8,6 @@ param location string
 param containerAppEnvironmentId string
 
 @secure()
-// param postgresql.outputs.adoConnectionStringSecretUri string
 param adoConnectionStringSecretUri string
 
 var namePrefix = 'dp-be-${environment}'

@@ -5,7 +5,6 @@ param environment string
 param location string
 
 param containerAppEnvironmentId string
-// todo: refactor to something else
 param appInsightConnectionString string
 param appConfigurationName string
 
@@ -15,12 +14,10 @@ param environmentKeyVaultName string
 var namePrefix = 'dp-be-${environment}'
 var baseImageUrl = 'ghcr.io/digdir/dialogporten-'
 
-// todo: solve this some other way pls
 resource appConfig 'Microsoft.AppConfiguration/configurationStores@2023-03-01' existing = {
   name: '${namePrefix}-appConfiguration'
 }
 
-// todo: can we mount the environment variables from app configuration directly?
 var containerAppEnvVars = [
   {
     name: 'ASPNETCORE_ENVIRONMENT'

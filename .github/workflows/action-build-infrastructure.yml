@@ -35,8 +35,6 @@ jobs:
       - name: Lint Bicep files
         run: az bicep build --file .azure/infrastructure/main.bicep
 
-      # todo: run deployment with Validate deployment mode to send a preflight request to Azure Resource Manager
-
       - name: Logout from azure
         if: ${{failure() || success()}}
         continue-on-error: true

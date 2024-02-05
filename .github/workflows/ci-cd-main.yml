@@ -86,6 +86,8 @@ jobs:
       function-project-path: "./src/Digdir.Tool.Dialogporten.SlackNotifier"
       environment: test
 
+  # todo: figure out a way to run this and skipping environment gates on dry-run
+  # might go for a solution such as this?: https://github.com/orgs/community/discussions/27600
   dry-run-deploy-infra-staging:
     name: Deploy infra to staging (dry run)
     needs: [generate-git-short-sha, check-for-changes, deploy-infra-test]
@@ -106,7 +108,6 @@ jobs:
     with:
       environment: staging
       region: norwayeast
-      skipApproval: true
       dryRun: true
       gitShortSha: ${{ needs.generate-git-short-sha.outputs.gitShortSha }}
 
@@ -129,7 +130,6 @@ jobs:
       region: norwayeast
       gitShortSha: ${{ needs.generate-git-short-sha.outputs.gitShortSha }}
 
-  # todo: don't think we need to feature gate twice here..
   dry-run-deploy-apps-staging:
     name: Deploy apps to staging (dryrun)
     needs: [generate-git-short-sha, check-for-changes, deploy-infra-staging]
