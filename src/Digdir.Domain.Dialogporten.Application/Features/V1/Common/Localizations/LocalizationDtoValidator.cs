@@ -21,6 +21,7 @@ internal sealed class LocalizationDtoValidator : AbstractValidator<LocalizationD
         RuleFor(x => x).NotNull();
 
         RuleFor(x => x.Value)
+            .NotEmpty()
             .NotNull()
             .MaximumLength(maximumLength);
 
