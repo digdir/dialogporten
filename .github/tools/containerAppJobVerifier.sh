@@ -1,4 +1,3 @@
-# todo: we might rename this into something more generic, as it can be used for any job execution
 if [ -z "$1" ]; then
   echo "Usage: $0 <job-name>"
   exit 1
@@ -20,13 +19,13 @@ resource_group="$2"
 git_sha="$3"
 query_filter="[?properties.template.containers[?contains(image, '$git_sha')]].{name: name, status: properties.status} | [0]"
 
-verify_migration() {
+verify_job_succeeded() {
   local current_job_execution
   
   current_job_execution=$(az containerapp job execution list -n "$job_name" -g "$resource_group" --query "$query_filter" 2>/dev/null)
 
   if [ -z "$current_job_execution" ]; then
-      echo "No job execution found for migration $job_name"
+      echo "No job execution found for job $job_name"
       return 1
   fi
     
@@ -51,11 +50,11 @@ attempt=1
 
 # Loop until verified (GitHub action will do a timeout)
 while true; do
-  if verify_migration; then
-    echo "Migration $job_name has succeeded"
+  if verify_job_succeeded; then
+    echo "Job $job_name has succeeded"
     break
   else
-    echo "Attempt $attempt: Waiting for migration $job_name ..."
+    echo "Attempt $attempt: Waiting for job $job_name ..."
     sleep 10 # Sleep for 10 seconds
     attempt=$((attempt+1))
   fi

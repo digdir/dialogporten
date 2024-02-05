@@ -102,7 +102,7 @@ jobs:
         with:
           azcliversion: ${{ env.AZ_CLI_VERSION }}
           inlineScript: |
-            ./.github/tools/migrationVerifier.sh ${{ steps.deploy.outputs.migrationJobName }} ${{ secrets.AZURE_RESOURCE_GROUP_NAME }} ${{ inputs.gitShortSha }}
+            ./.github/tools/containerAppJobVerifier.sh ${{ steps.deploy.outputs.migrationJobName }} ${{ secrets.AZURE_RESOURCE_GROUP_NAME }} ${{ inputs.gitShortSha }}
 
       - name: Logout from azure
         if: ${{failure() || success()}}
