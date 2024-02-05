@@ -43,8 +43,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Digdir.Tool.Dialogporten.Sl
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{3C2C775D-F2D1-42A2-B53F-CC6D5FF59633}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Digdir.Tool.Dialogporten.MigrationVerifier", "src\Digdir.Tool.Dialogporten.MigrationVerifier\Digdir.Tool.Dialogporten.MigrationVerifier.csproj", "{19947332-D905-4861-91A5-FFDD35459112}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Digdir.Tool.Dialogporten.Benchmarks", "src\Digdir.Tool.Dialogporten.Benchmarks\Digdir.Tool.Dialogporten.Benchmarks.csproj", "{3ED713E8-6E38-4E0F-B9D9-11726FB9F427}"
 EndProject
 Global
