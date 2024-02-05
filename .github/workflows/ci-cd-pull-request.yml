@@ -7,18 +7,22 @@ on:
       - "tests/k6/**"
 
 jobs:
+  generate-git-short-sha:
+    name: Generate git short sha
+    uses: ./.github/workflows/action-generate-git-short-sha.yml
+
   check-for-changes:
     name: Check for changes
     uses: ./.github/workflows/action-check-for-changes.yml
 
   build:
     uses: ./.github/workflows/action-build-and-test.yml
-    needs: ["check-for-changes"]
+    needs: [check-for-changes]
     if: ${{ needs.check-for-changes.outputs.hasBackendChanges == 'true' }}
 
   build-infrastructure:
     uses: ./.github/workflows/action-build-infrastructure.yml
-    needs: ["check-for-changes"]
+    needs: [check-for-changes]
     if: ${{ always() && needs.check-for-changes.outputs.hasAzureChanges == 'true' }}
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -29,7 +33,7 @@ jobs:
 
   dry-run-deploy-infra:
     uses: ./.github/workflows/action-deploy-infra.yml
-    needs: ["check-for-changes", "build-infrastructure"]
+    needs: [generate-git-short-sha, check-for-changes, build-infrastructure]
     if: ${{ always() && needs.check-for-changes.outputs.hasAzureChanges == 'true' }}
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -42,3 +46,4 @@ jobs:
       environment: test
       region: norwayeast
       dryRun: true
+      gitShortSha: ${{ needs.generate-git-short-sha.outputs.gitShortSha }}

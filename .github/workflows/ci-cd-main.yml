@@ -11,14 +11,7 @@ env:
 jobs:
   generate-git-short-sha:
     name: Generate git short sha
-    runs-on: ubuntu-latest
-    outputs:
-      gitShortSha: ${{ steps.set-git-short-sha.outputs.gitShortSha }}
-    steps:
-      # Current workaround to create a short git sha. Not supported as a global variable yet. https://stackoverflow.com/questions/59810838/how-to-get-the-short-sha-for-the-github-workflow
-      - name: Set git short sha
-        id: set-git-short-sha
-        run: echo "gitShortSha=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+    uses: ./.github/workflows/action-generate-git-short-sha.yml
 
   check-for-changes:
     name: Check for changes
