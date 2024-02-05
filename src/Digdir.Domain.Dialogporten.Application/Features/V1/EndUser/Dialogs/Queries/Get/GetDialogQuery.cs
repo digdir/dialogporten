@@ -18,35 +18,40 @@ public sealed class GetDialogQuery : IRequest<GetDialogResult>
 }
 
 [GenerateOneOf]
-public partial class GetDialogResult : OneOfBase<GetDialogDto, EntityNotFound, EntityDeleted> { }
+public partial class GetDialogResult : OneOfBase<GetDialogDto, EntityNotFound, EntityDeleted, Forbidden>;
 
 internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, GetDialogResult>
 {
     private readonly IDialogDbContext _db;
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly ITransactionTime _transactionTime;
     private readonly IClock _clock;
+    private readonly IUserService _userService;
     private readonly IAltinnAuthorization _altinnAuthorization;
 
     public GetDialogQueryHandler(
         IDialogDbContext db,
         IMapper mapper,
         IUnitOfWork unitOfWork,
-        ITransactionTime transactionTime,
         IClock clock,
+        IUserService userService,
         IAltinnAuthorization altinnAuthorization)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
-        _transactionTime = transactionTime ?? throw new ArgumentNullException(nameof(transactionTime));
         _clock = clock ?? throw new ArgumentNullException(nameof(clock));
+        _userService = userService ?? throw new ArgumentNullException(nameof(userService));
         _altinnAuthorization = altinnAuthorization ?? throw new ArgumentNullException(nameof(altinnAuthorization));
     }
 
     public async Task<GetDialogResult> Handle(GetDialogQuery request, CancellationToken cancellationToken)
     {
+        if (!_userService.TryGetCurrentUserPid(out var userPid))
+        {
+            return new Forbidden("No valid user pid found.");
+        }
+
         // This query could be written without all the includes as ProjectTo will do the job for us.
         // However, we need to guarantee an order for sub resources of the dialog aggregate.
         // This is to ensure that the get is consistent, and that PATCH in the API presentation
@@ -87,7 +92,10 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
             return new EntityDeleted<DialogEntity>(request.DialogId);
         }
 
-        dialog.UpdateReadAt(_transactionTime.Value);
+        var userName = await _userService.GetCurrentUserName(userPid, cancellationToken);
+        // TODO: What if name lookup fails
+        // https://github.com/digdir/dialogporten/issues/387
+        dialog.UpdateSeenAt(userPid, userName);
 
         var saveResult = await _unitOfWork
             .WithoutAuditableSideEffects()
@@ -97,6 +105,13 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
             success => { },
             domainError => throw new UnreachableException("Should not get domain error when updating ReadAt."),
             concurrencyError => throw new UnreachableException("Should not get concurrencyError when updating ReadAt."));
+
+        // hash end user ids
+        var salt = MappingUtils.GetHashSalt();
+        foreach (var activity in dialog.Activities)
+        {
+            activity.SeenByEndUserId = MappingUtils.HashPid(activity.SeenByEndUserId, salt);
+        }
 
         var dto = _mapper.Map<GetDialogDto>(dialog);
 

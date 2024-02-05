@@ -10,6 +10,7 @@ using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Localizations;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -107,33 +108,41 @@ public sealed class SearchDialogQueryOrderDefinition : IOrderDefinition<SearchDi
 }
 
 [GenerateOneOf]
-public partial class SearchDialogResult : OneOfBase<PaginatedList<SearchDialogDto>, ValidationError> { }
+public partial class SearchDialogResult : OneOfBase<PaginatedList<SearchDialogDto>, ValidationError, Forbidden>;
 
 internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQuery, SearchDialogResult>
 {
     private readonly IDialogDbContext _db;
     private readonly IMapper _mapper;
     private readonly IClock _clock;
+    private readonly IUserService _userService;
     private readonly IAltinnAuthorization _altinnAuthorization;
 
     public SearchDialogQueryHandler(
         IDialogDbContext db,
         IMapper mapper,
         IClock clock,
+        IUserService userService,
         IAltinnAuthorization altinnAuthorization)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _clock = clock ?? throw new ArgumentNullException(nameof(clock));
+        _userService = userService ?? throw new ArgumentNullException(nameof(userService));
         _altinnAuthorization = altinnAuthorization ?? throw new ArgumentNullException(nameof(altinnAuthorization));
     }
 
     public async Task<SearchDialogResult> Handle(SearchDialogQuery request, CancellationToken cancellationToken)
     {
+        if (!_userService.TryGetCurrentUserPid(out var userPid))
+        {
+            return new Forbidden("No valid user pid found.");
+        }
+
         var searchExpression = Expressions.LocalizedSearchExpression(request.Search, request.SearchCultureCode);
         var authorizedResources = await _altinnAuthorization.GetAuthorizedResourcesForSearch(
-            request.Party ?? new List<string>(),
-            request.ServiceResource ?? new List<string>(),
+            request.Party ?? [],
+            request.ServiceResource ?? [],
             cancellationToken: cancellationToken);
 
         if (authorizedResources.HasNoAuthorizations)
@@ -141,7 +150,8 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
             return new PaginatedList<SearchDialogDto>(Enumerable.Empty<SearchDialogDto>(), false, null, request.OrderBy.DefaultIfNull().GetOrderString());
         }
 
-        return await _db.Dialogs
+        var paginatedList = await _db.Dialogs
+            .AsNoTracking()
             .WhereUserIsAuthorizedFor(authorizedResources)
             .WhereIf(!request.Org.IsNullOrEmpty(), x => request.Org!.Contains(x.Org))
             .WhereIf(!request.ServiceResource.IsNullOrEmpty(), x => request.ServiceResource!.Contains(x.ServiceResource))
@@ -164,5 +174,67 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
             .Where(x => !x.ExpiresAt.HasValue || x.ExpiresAt > _clock.UtcNowOffset)
             .ProjectTo<SearchDialogDto>(_mapper.ConfigurationProvider)
             .ToPaginatedListAsync(request, cancellationToken: cancellationToken);
+
+        await FetchRelevantActivities(paginatedList, userPid, cancellationToken);
+
+        return paginatedList;
+    }
+
+    private async Task FetchRelevantActivities(PaginatedList<SearchDialogDto> paginatedList, string userPid, CancellationToken cancellationToken)
+    {
+        var dialogIds = paginatedList.Items
+            .Select(x => x.Id)
+            .ToList();
+
+        var latestActivityByDialogIdTask = await _db.DialogActivities
+            .AsNoTracking()
+            .Include(x => x.Description!.Localizations)
+            .Include(x => x.PerformedBy!.Localizations)
+            .Where(x =>
+                dialogIds.Contains(x.DialogId)
+                && x.TypeId != DialogActivityType.Values.Forwarded
+                && x.TypeId != DialogActivityType.Values.Seen)
+            .GroupBy(x => x.DialogId)
+            .ToDictionaryAsync(
+                x => x.Key,
+                x => x.OrderByDescending(x => x.CreatedAt)
+                    .ThenBy(x => x.Id)
+                    .First(),
+                cancellationToken);
+
+        var latestSeenActivityByDialogIdTask = await _db.DialogActivities
+            .AsNoTracking()
+            .Include(x => x.Description!.Localizations)
+            .Include(x => x.PerformedBy!.Localizations)
+            .Where(x =>
+                dialogIds.Contains(x.DialogId)
+                && x.TypeId == DialogActivityType.Values.Seen
+                && x.CreatedAt > x.Dialog.UpdatedAt)
+            .GroupBy(x => x.DialogId)
+            .ToDictionaryAsync(x => x.Key, x => x.ToList(), cancellationToken);
+
+        var salt = MappingUtils.GetHashSalt();
+        foreach (var dialog in paginatedList.Items)
+        {
+            var activities = latestSeenActivityByDialogIdTask.TryGetValue(dialog.Id, out var seenActivities)
+                ? seenActivities
+                : [];
+
+            if (latestActivityByDialogIdTask.TryGetValue(dialog.Id, out var latestNonSeenActivity))
+            {
+                activities.Add(latestNonSeenActivity);
+            }
+
+            dialog.LatestActivities = _mapper.Map<List<SearchDialogDialogActivityDto>>(activities);
+
+            foreach (var activity in dialog.LatestActivities
+                .Where(x => !string.IsNullOrWhiteSpace(x.SeenByEndUserIdHash)))
+            {
+                // Before we hash the end user id, check if the seen activity is for the current user
+                activity.SeenActivityIsCurrentEndUser = userPid == activity.SeenByEndUserIdHash;
+                // Hash end user ids
+                activity.SeenByEndUserIdHash = MappingUtils.HashPid(activity.SeenByEndUserIdHash, salt);
+            }
+        }
     }
 }

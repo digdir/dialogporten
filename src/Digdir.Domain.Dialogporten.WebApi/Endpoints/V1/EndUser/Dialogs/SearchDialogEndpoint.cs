@@ -34,7 +34,8 @@ public class SearchDialogEndpoint : Endpoint<SearchDialogQuery, PaginatedList<Se
         var result = await _sender.Send(req, ct);
         await result.Match(
             paginatedDto => SendOkAsync(paginatedDto, ct),
-            validationError => this.BadRequestAsync(validationError, ct));
+            validationError => this.BadRequestAsync(validationError, ct),
+            forbidden => this.ForbiddenAsync(forbidden, ct));
     }
 }
 public sealed class SearchDialogEndpointSummary : Summary<SearchDialogEndpoint, SearchDialogQuery>

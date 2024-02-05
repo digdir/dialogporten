@@ -11,7 +11,7 @@ internal sealed class DialogEventToAltinnForwarder : DomainEventToAltinnForwarde
     INotificationHandler<DialogCreatedDomainEvent>,
     INotificationHandler<DialogUpdatedDomainEvent>,
     INotificationHandler<DialogDeletedDomainEvent>,
-    INotificationHandler<DialogReadDomainEvent>
+    INotificationHandler<DialogSeenDomainEvent>
 {
     public DialogEventToAltinnForwarder(ICloudEventBus cloudEventBus, IDialogDbContext db,
         IOptions<ApplicationSettings> settings)
@@ -31,7 +31,7 @@ internal sealed class DialogEventToAltinnForwarder : DomainEventToAltinnForwarde
         await CloudEventBus.Publish(cloudEvent, cancellationToken);
     }
 
-    public async Task Handle(DialogReadDomainEvent domainEvent, CancellationToken cancellationToken)
+    public async Task Handle(DialogSeenDomainEvent domainEvent, CancellationToken cancellationToken)
     {
         var dialog = await GetDialog(domainEvent.DialogId, cancellationToken);
         var cloudEvent = CreateCloudEvent(domainEvent, dialog);
