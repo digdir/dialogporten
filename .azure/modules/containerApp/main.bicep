@@ -54,10 +54,7 @@ resource containerApp 'Microsoft.App/containerApps@2023-05-01' = {
         {
           name: name
           image: image
-          env: concat(envVariables, [ {
-                name: 'RUN_OUTBOX_SCHEDULER'
-                value: 'true'
-              } ])
+          env: envVariables
           probes: probes
         }
       ]

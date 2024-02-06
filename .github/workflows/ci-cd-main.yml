@@ -6,8 +6,7 @@ on:
     branches: [main]
     paths-ignore:
       - "tests/k6/**"
-env:
-  SHORT_SHA:
+
 jobs:
   generate-git-short-sha:
     name: Generate git short sha

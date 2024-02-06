@@ -194,19 +194,6 @@ module slackNotifier '../modules/functionApp/slackNotifier.bicep' = {
   }
 }
 
-// module containerAppsInternal 'containerApp/createInternal.bicep' = {
-//     scope: resourceGroup
-//     name: 'containerAppsInternal'
-//     params: {
-//         baseImageUrl: baseImageUrl
-//         namePrefix: namePrefix
-//         location: location
-//         gitSha: gitSha
-//         envVariables: containerAppEnvVars
-//         environmentId: containerAppEnvs.outputs.internalEnvId
-//     }
-// }
-
 module containerAppEnv '../modules/containerAppEnv/main.bicep' = {
   scope: resourceGroup
   name: 'containerAppEnv'

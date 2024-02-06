@@ -35,8 +35,6 @@ jobs:
             imageName: migration-bundle
           - dockerfile: ./RabbitMq/Dockerfile
             imageName: rabbitmq
-          - dockerfile: ./src/Digdir.Tool.Dialogporten.MigrationVerifier/Dockerfile
-            imageName: migration-verifier
 
     permissions:
       contents: read

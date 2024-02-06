@@ -44,7 +44,7 @@ jobs:
   deploy:
     name: Deploy to ${{ inputs.environment }}
     runs-on: ubuntu-latest
-    environment: ${{inputs.environment}}
+    environment: ${{ inputs.environment }}
     permissions:
       id-token: write
       contents: read
@@ -82,7 +82,7 @@ jobs:
         id: deploy
         env:
           # parameters
-          KEY_VAULT_SOURCE_KEYS: ${{steps.keyvault-keys.outputs.key-vault-keys}}
+          KEY_VAULT_SOURCE_KEYS: ${{ steps.keyvault-keys.outputs.key-vault-keys }}
           # secrets
           PG_ADMIN_PASSWORD: ${{ steps.pwd-generator.outputs.postgresqlPassword }}
           SOURCE_KEY_VAULT_SUBSCRIPTION_ID: ${{ secrets.AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID }}
@@ -96,7 +96,7 @@ jobs:
           deploymentName: dp-be-${{ inputs.environment }}-${{ inputs.gitShortSha }}
           region: ${{ inputs.region }}
           failOnStdErr: true
-          additionalArguments: "${{inputs.dryRun && '--what-if'}}"
+          additionalArguments: "${{ inputs.dryRun && '--what-if' }}"
           parameters: ./.azure/infrastructure/${{ inputs.environment }}.bicepparam
 
       - name: Logout from azure
