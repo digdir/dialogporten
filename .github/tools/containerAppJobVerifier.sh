@@ -21,6 +21,9 @@ resource_group="$2"
 git_sha="$3"
 query_filter="[?properties.template.containers[?contains(image, '$git_sha')]].{name: name, status: properties.status} | [0]"
 
+echo "Verifying job $job_name for git sha $git_sha"
+echo " "
+
 verify_job_succeeded() {
   local current_job_execution
   
@@ -31,18 +34,18 @@ verify_job_succeeded() {
       return 1
   fi
     
-  current_job_execution_name=$(echo $json_output | jq -r '.name')
-  current_job_execution_status=$(echo $json_output | jq -r '.status')
+  current_job_execution_name=$(echo $current_job_execution | jq -r '.name')
+  current_job_execution_status=$(echo $current_job_execution | jq -r '.status')
 
-  echo "Job execution state for job $job_name status:"
-  echo "-----------------------------"
-  echo "Name: $current_job_execution_name"
+  echo "Container: $current_job_execution_name"
   echo "Running status: $current_job_execution_status"
-  echo " "
   
   # Check job execution status
-  if [[ $current_job_execution_status == "Succeeded"]]; then
+  if [[ $current_job_execution_status == "Succeeded" ]]; then
     return 0  # OK!
+  elif [[ $current_job_execution_status == "Failed" ]]; then
+    echo "Job execution failed. Exiting script." 
+    exit 1
   else
     return 1  # Not OK!
   fi
@@ -56,8 +59,11 @@ while true; do
     echo "Job $job_name has succeeded"
     break
   else
+    attempt=$((attempt+1))
+    echo " "
+    echo "-----------------------------"
+    echo " "
     echo "Attempt $attempt: Waiting for job $job_name ..."
     sleep 10 # Sleep for 10 seconds
-    attempt=$((attempt+1))
   fi
 done
