@@ -24,6 +24,10 @@ on:
 env:
   DOTNET_VERSION: "8.0.x"
 
+concurrency:
+  # If multiple merges to main are performed simultaneously, they will just be queued up.
+  group: ${{ github.workflow }}-${{ inputs.environment }}-${{ github.ref_name }}
+
 jobs:
   build-and-deploy:
     name: Build and deploy ${{ inputs.function-app-name }} to ${{ inputs.environment }}

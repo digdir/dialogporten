@@ -1,4 +1,4 @@
-﻿name: Deploy
+﻿name: Deploy infrastructure
 
 env:
   AZ_CLI_VERSION: 2.56.0
@@ -18,8 +18,6 @@ on:
         required: true
       AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP:
         required: true
-      APIM_DIGDIR_EMAIL:
-        required: true
 
     inputs:
       region:
@@ -33,9 +31,17 @@ on:
         required: false
         type: boolean
         default: false
+      gitShortSha:
+        description: "Short SHA of the commit"
+        required: true
+        type: string
+
 concurrency:
-  group: ${{ github.workflow }}-${{ inputs.environment }}
-  cancel-in-progress: false
+  # Existing runs are cancelled if someone repeatedly commits to their own Pull Request (PR). However, it does not stop others' dry runs or actual deployments from the main branch.
+  # Also, the cancellation does not occur on merges to the main branch. Therefore, if multiple merges to main are performed simultaneously, they will just be queued up.
+  group: ${{ github.workflow }}-${{ inputs.environment }}-${{ github.ref_name }}-${{ inputs.dryRun }}
+  # if the dryrun input is true, we want to cancel any running deployments in order to not block the pipeline e.g for environment approvals
+  cancel-in-progress: ${{ inputs.dryRun }}
 jobs:
   deploy:
     name: Deploy to ${{ inputs.environment }}
@@ -78,42 +84,22 @@ jobs:
         id: deploy
         env:
           # parameters
-          GIT_SHA: ${{ github.sha }}
-          KEY_VAULT_SOURCE_KEYS: ${{steps.keyvault-keys.outputs.key-vault-keys}}
+          KEY_VAULT_SOURCE_KEYS: ${{ steps.keyvault-keys.outputs.key-vault-keys }}
           # secrets
           PG_ADMIN_PASSWORD: ${{ steps.pwd-generator.outputs.postgresqlPassword }}
-          APIM_DIGDIR_EMAIL: ${{ secrets.APIM_DIGDIR_EMAIL }}
-          SOURCE_KEYVAULT_SUBSCRIPTION_ID: ${{ secrets.AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID }}
-          SOURCE_KEYVAULT_RESOURCE_GROUP: ${{ secrets.AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP }}
-          SOURCE_KEYVAULT_NAME: ${{ secrets.AZURE_SOURCE_KEY_VAULT_NAME }}
+          SOURCE_KEY_VAULT_SUBSCRIPTION_ID: ${{ secrets.AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID }}
+          SOURCE_KEY_VAULT_RESOURCE_GROUP: ${{ secrets.AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP }}
+          SOURCE_KEY_VAULT_NAME: ${{ secrets.AZURE_SOURCE_KEY_VAULT_NAME }}
         with:
           scope: subscription
           template: ./.azure/infrastructure/main.bicep
           subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           deploymentMode: Incremental
-          deploymentName: dp-be-${{ inputs.environment }}-deployment-${{ github.sha }}
+          deploymentName: dp-be-${{ inputs.environment }}-${{ inputs.gitShortSha }}
           region: ${{ inputs.region }}
           failOnStdErr: true
-          additionalArguments: "${{inputs.dryRun && '--what-if'}}"
-          parameters: ./.azure/infrastructure/.${{ inputs.environment }}.bicepparam
-
-      - name: Start migration job
-        uses: azure/CLI@v1
-        if: ${{!inputs.dryRun}}
-        with:
-          azcliversion: ${{ env.AZ_CLI_VERSION }}
-          inlineScript: |
-            az containerapp job start -n ${{ steps.deploy.outputs.migrationJobName }} -g ${{ steps.deploy.outputs.resourceGroupName }}
-
-      - name: Verify deployment running
-        uses: azure/CLI@v1
-        if: ${{!inputs.dryRun}}
-        id: verify-deployment
-        timeout-minutes: 3
-        with:
-          azcliversion: ${{ env.AZ_CLI_VERSION }}
-          inlineScript: |
-            ./.github/tools/revisionVerifier.sh ${{ steps.deploy.outputs.webApiSoRevisionName }} ${{ steps.deploy.outputs.resourceGroupName }}
+          additionalArguments: "${{ inputs.dryRun && '--what-if' }}"
+          parameters: ./.azure/infrastructure/${{ inputs.environment }}.bicepparam
 
       - name: Logout from azure
         if: ${{failure() || success()}}

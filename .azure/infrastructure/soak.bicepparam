@@ -1,20 +1,16 @@
-using 'main.bicep'
+using './main.bicep'
 
-param environment = 'test'
+param environment = 'soak'
 param location = 'norwayeast'
-param keyVaultSourceKeys = json(readEnvironmentVariable('KEY_VAULT_SOURCE_KEYS', '[]'))
-param gitSha = readEnvironmentVariable('GIT_SHA', '')
+param keyVaultSourceKeys = json(readEnvironmentVariable('KEYVAULT_SOURCE_KEYS', '[]'))
 
 // secrets
 param dialogportenPgAdminPassword = readEnvironmentVariable('PG_ADMIN_PASSWORD', '')
-param apiManagementDigDirEmail = readEnvironmentVariable('APIM_DIGDIR_EMAIL', '')
 param sourceKeyVaultSubscriptionId = readEnvironmentVariable('SOURCE_KEYVAULT_SUBSCRIPTION_ID', '')
 param sourceKeyVaultResourceGroup = readEnvironmentVariable('SOURCE_KEYVAULT_RESOURCE_GROUP', '')
 param sourceKeyVaultName = readEnvironmentVariable('SOURCE_KEYVAULT_NAME', '')
 
 // SKUs
-param APIMSKUName = 'Developer'
-param APIMSKUCapcity = 1
 param keyVaultSKUName = 'standard'
 param keyVaultSKUFamily = 'A'
 param appConfigurationSKUName = 'standard'

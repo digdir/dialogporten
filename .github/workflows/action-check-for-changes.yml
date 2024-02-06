@@ -12,7 +12,6 @@ on:
       hasSlackNotifierChanges:
         description: "Slack Notifier function related files changed"
         value: ${{ jobs.check-for-changes.outputs.hasSlackNotifierChanges }}
-
 jobs:
   check-for-changes:
     name: Filter
@@ -39,4 +38,3 @@ jobs:
             slackNotifier:
               - 'src/Digdir.Tool.Dialogporten.SlackNotifier/**/*'
               - '.github/**/*'
-            # todo: add additional files that should trigger a build

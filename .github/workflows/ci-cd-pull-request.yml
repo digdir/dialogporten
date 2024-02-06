@@ -1,4 +1,4 @@
-﻿name: PullRequest
+﻿name: CI/CD PullRequest
 
 on:
   pull_request:
@@ -7,19 +7,23 @@ on:
       - "tests/k6/**"
 
 jobs:
+  generate-git-short-sha:
+    name: Generate git short sha
+    uses: ./.github/workflows/action-generate-git-short-sha.yml
+
   check-for-changes:
     name: Check for changes
     uses: ./.github/workflows/action-check-for-changes.yml
 
   build:
     uses: ./.github/workflows/action-build-and-test.yml
-    needs: ["check-for-changes"]
+    needs: [check-for-changes]
     if: ${{ needs.check-for-changes.outputs.hasBackendChanges == 'true' }}
 
   build-infrastructure:
     uses: ./.github/workflows/action-build-infrastructure.yml
-    needs: ["check-for-changes"]
-    if: ${{ needs.check-for-changes.outputs.hasAzureChanges == 'true' }}
+    needs: [check-for-changes]
+    if: ${{ always() && needs.check-for-changes.outputs.hasAzureChanges == 'true' }}
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
@@ -27,10 +31,10 @@ jobs:
     with:
       environment: "test"
 
-  dry-run-deploy:
-    uses: ./.github/workflows/action-deploy.yml
-    needs: ["check-for-changes", "build-infrastructure"]
-    if: ${{ needs.check-for-changes.outputs.hasAzureChanges == 'true' }}
+  dry-run-deploy-infra:
+    uses: ./.github/workflows/action-deploy-infra.yml
+    needs: [generate-git-short-sha, check-for-changes, build-infrastructure]
+    if: ${{ always() && needs.check-for-changes.outputs.hasAzureChanges == 'true' }}
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
@@ -38,8 +42,8 @@ jobs:
       AZURE_SOURCE_KEY_VAULT_NAME: ${{ secrets.AZURE_SOURCE_KEY_VAULT_NAME }}
       AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID: ${{ secrets.AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID }}
       AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP: ${{ secrets.AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP }}
-      APIM_DIGDIR_EMAIL: ${{ secrets.APIM_DIGDIR_EMAIL }}
     with:
       environment: test
       region: norwayeast
       dryRun: true
+      gitShortSha: ${{ needs.generate-git-short-sha.outputs.gitShortSha }}

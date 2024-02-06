@@ -1,4 +1,4 @@
-name: Publish
+name: Build and push images to GCR
 
 on:
   workflow_call:
@@ -11,6 +11,11 @@ on:
         description: "Base image name for docker images"
         required: true
         type: string
+      gitShortSha:
+        description: "Short SHA of the commit"
+        required: true
+        type: string
+
 jobs:
   publish-docker-images:
     env:
@@ -30,8 +35,6 @@ jobs:
             imageName: migration-bundle
           - dockerfile: ./RabbitMq/Dockerfile
             imageName: rabbitmq
-          - dockerfile: ./src/Digdir.Tool.Dialogporten.MigrationVerifier/Dockerfile
-            imageName: migration-verifier
 
     permissions:
       contents: read
@@ -61,7 +64,7 @@ jobs:
           push: true
           tags: |
             ${{ steps.meta.outputs.tags }},
-            ${{ env.DOCKER_IMAGE_BASE_NAME }}${{ matrix.imageName }}:${{ github.sha }}
+            ${{ env.DOCKER_IMAGE_BASE_NAME }}${{ matrix.imageName }}:${{ inputs.gitShortSha }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha,scope=${{ matrix.imageName }}
           cache-to: type=gha,mode=max,scope=${{ matrix.imageName }}

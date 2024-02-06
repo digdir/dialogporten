@@ -3,33 +3,15 @@ targetScope = 'subscription'
 param environment string
 param location string
 param keyVaultSourceKeys array
-param gitSha string
 
 @secure()
 param dialogportenPgAdminPassword string
-@secure()
-param apiManagementDigDirEmail string
 @secure()
 param sourceKeyVaultSubscriptionId string
 @secure()
 param sourceKeyVaultResourceGroup string
 @secure()
 param sourceKeyVaultName string
-
-@allowed(
-  [
-    'Basic'
-    'Consumption'
-    'Developer'
-    'Isolated'
-    'Premium'
-    'Standard'
-  ]
-)
-param APIMSKUName string
-
-@minValue(1)
-param APIMSKUCapcity int
 
 @allowed(
   [
@@ -95,31 +77,17 @@ param postgresServerSKUTier string
 
 var secrets = {
   dialogportenPgAdminPassword: dialogportenPgAdminPassword
-  apiManagementDigDirEmail: apiManagementDigDirEmail
   sourceKeyVaultSubscriptionId: sourceKeyVaultSubscriptionId
   sourceKeyVaultResourceGroup: sourceKeyVaultResourceGroup
   sourceKeyVaultName: sourceKeyVaultName
 }
 
 var namePrefix = 'dp-be-${environment}'
-var baseImageUrl = 'ghcr.io/digdir/dialogporten-'
 
 // Create resource groups
 resource resourceGroup 'Microsoft.Resources/resourceGroups@2023-07-01' = {
   name: '${namePrefix}-rg'
   location: location
-}
-
-module apiManagement '../modules/apim/create.bicep' = {
-  scope: resourceGroup
-  name: 'apiManagement'
-  params: {
-    publisherEmail: secrets.apiManagementDigDirEmail
-    location: location
-    namePrefix: namePrefix
-    skuName: APIMSKUName
-    skuCapacity: APIMSKUCapcity
-  }
 }
 
 module keyVaultModule '../modules/keyvault/create.bicep' = {
@@ -226,79 +194,13 @@ module slackNotifier '../modules/functionApp/slackNotifier.bicep' = {
   }
 }
 
-var containerAppEnvVars = [
-  {
-    name: 'ASPNETCORE_ENVIRONMENT'
-    value: environment
-  }
-  {
-    name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
-    value: appInsights.outputs.connectionString
-  }
-  {
-    name: 'AZURE_APPCONFIG_URI'
-    value: appConfiguration.outputs.endpoint
-  }
-  {
-    name: 'ASPNETCORE_URLS'
-    value: 'http://+:8080'
-  }
-  {
-    name: 'GIT_SHA'
-    value: gitSha
-  }
-]
-
-module containerAppsExternal '../modules/containerApp/createExternal.bicep' = {
+module containerAppEnv '../modules/containerAppEnv/main.bicep' = {
   scope: resourceGroup
-  name: 'containerAppsExternal'
+  name: 'containerAppEnv'
   params: {
-    baseImageUrl: baseImageUrl
     namePrefix: namePrefix
     location: location
-    gitSha: gitSha
-    envVariables: containerAppEnvVars
-    migrationVerifierPrincipalAppId: srcKeyVaultResource.getSecret('MigrationVerificationInitContainerPrincipalAppId')
-    migrationVerifierPrincipalPassword: srcKeyVaultResource.getSecret('MigrationVerificationInitContainerPrincipalPassword')
-    apiManagementIp: apiManagement.outputs.apiManagementIp
-    appInsightsWorkspaceName: appInsights.outputs.appInsightsWorkspaceName
-    adoConnectionStringSecretUri: postgresql.outputs.adoConnectionStringSecretUri
-  }
-}
-
-module apiBackends '../modules/apim/addBackends.bicep' = {
-  scope: resourceGroup
-  name: 'apiBackends'
-  params: {
-    apiManagementName: apiManagement.outputs.apiManagementName
-    containerAppEnvName: containerAppsExternal.outputs.containerAppEnvName
-    webApiEuName: containerAppsExternal.outputs.webApiEuName
-    webApiSoName: containerAppsExternal.outputs.webApiSoName
-  }
-}
-// module containerAppsInternal 'containerApp/createInternal.bicep' = {
-//     scope: resourceGroup
-//     name: 'containerAppsInternal'
-//     params: {
-//         baseImageUrl: baseImageUrl
-//         namePrefix: namePrefix
-//         location: location
-//         gitSha: gitSha
-//         envVariables: containerAppEnvVars
-//         environmentId: containerAppEnvs.outputs.internalEnvId
-//     }
-// }
-
-var containerAppsPrincipals = concat(
-  containerAppsExternal.outputs.identityPrincipalIds)
-// containerAppsInternal.outputs.identityPrincipalIds
-
-module appConfigReaderAccessPolicy '../modules/appConfiguration/addReaderRoles.bicep' = {
-  scope: resourceGroup
-  name: 'appConfigReaderAccessPolicy'
-  params: {
-    appConfigurationName: appConfiguration.outputs.name
-    principalIds: containerAppsPrincipals
+    appInsightWorkspaceName: appInsights.outputs.appInsightsWorkspaceName
   }
 }
 
@@ -324,13 +226,13 @@ module appConfigConfigurations '../modules/appConfiguration/upsertKeyValue.bicep
 
 module keyVaultReaderAccessPolicy '../modules/keyvault/addReaderRoles.bicep' = {
   scope: resourceGroup
-  name: 'keyVaultReaderAccessPolicy'
+  name: 'keyVaultReaderAccessPolicyFunctions'
   params: {
     keyvaultName: keyVaultModule.outputs.name
-    principalIds: concat(containerAppsPrincipals, [ slackNotifier.outputs.functionAppPrincipalId ])
+    principalIds: [ slackNotifier.outputs.functionAppPrincipalId ]
   }
 }
 
-output migrationJobName string = containerAppsExternal.outputs.migrationJobName
 output resourceGroupName string = resourceGroup.name
-output webapiSoRevisionName string = containerAppsExternal.outputs.webApiSoRevisionName
+output containterAppEnvId string = containerAppEnv.outputs.containerAppEnvId
+output environmentKeyVaultName string = keyVaultModule.outputs.name
