@@ -1,16 +1,18 @@
+usage_params="<job-name> <resource-group-name> <git-sha>"
+
 if [ -z "$1" ]; then
-  echo "Usage: $0 <job-name>"
+  echo "Usage: $0 $usage_params"
   exit 1
 fi
 
 if [ -z "$2" ]; then
-  echo "Usage: $0 <resource-group-name>"
+  echo "Usage: $0 $usage_params"
   exit 1
 fi
 
 # todo: use something else than git sha to target the job execution
 if [ -z "$3" ]; then
-  echo "Usage: $0 <git-sha>"
+  echo "Usage: $0 $usage_params"
   exit 1
 fi
 
