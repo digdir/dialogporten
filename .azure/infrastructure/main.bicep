@@ -3,7 +3,7 @@ targetScope = 'subscription'
 param environment string
 @minLength(3)
 param location string
-@minLength(3)
+
 param keyVaultSourceKeys array
 
 @secure()
