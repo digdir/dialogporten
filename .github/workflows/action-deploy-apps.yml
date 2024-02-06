@@ -42,8 +42,10 @@ on:
         required: true
         type: string
 concurrency:
-  group: ${{ github.workflow }}-${{ inputs.environment }}
-  # if the dryrun input is true, we want to cancel any running deployments in order to not block the pipeline
+  # Existing runs are cancelled if someone repeatedly commits to their own Pull Request (PR). However, it does not stop others' dry runs or actual deployments from the main branch.
+  # Also, the cancellation does not occur on merges to the main branch. Therefore, if multiple merges to main are performed simultaneously, they will just be queued up.
+  group: ${{ github.workflow }}-${{ inputs.environment }}-${{ github.ref_name }}-${{ inputs.dryRun }}
+  # if the dryrun input is true, we want to cancel any running deployments in order to not block the pipeline e.g for environment approvals
   cancel-in-progress: ${{ inputs.dryRun }}
 jobs:
   deploy-migration-job:
