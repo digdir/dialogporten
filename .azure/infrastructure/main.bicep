@@ -240,5 +240,5 @@ module keyVaultReaderAccessPolicy '../modules/keyvault/addReaderRoles.bicep' = {
 }
 
 output resourceGroupName string = resourceGroup.name
-output containterAppEnvId string = containerAppEnv.outputs.containerAppEnvId
+output containerAppEnvId string = containerAppEnv.outputs.containerAppEnvId
 output environmentKeyVaultName string = keyVaultModule.outputs.name
