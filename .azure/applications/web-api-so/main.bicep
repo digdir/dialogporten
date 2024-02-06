@@ -1,13 +1,22 @@
 targetScope = 'resourceGroup'
 
+@minLength(1)
 param imageTag string
+@minLength(1)
 param environment string
+@minLength(1)
 param location string
 
+@minLength(1)
+@secure()
 param containerAppEnvironmentId string
+@minLength(1)
+@secure()
 param appInsightConnectionString string
+@minLength(1)
+@secure()
 param appConfigurationName string
-
+@minLength(1)
 @secure()
 param environmentKeyVaultName string
 

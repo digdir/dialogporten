@@ -1,16 +1,22 @@
 targetScope = 'subscription'
 @minLength(3)
 param environment string
+@minLength(3)
 param location string
+
 param keyVaultSourceKeys array
 
 @secure()
+@minLength(3)
 param dialogportenPgAdminPassword string
 @secure()
+@minLength(3)
 param sourceKeyVaultSubscriptionId string
 @secure()
+@minLength(3)
 param sourceKeyVaultResourceGroup string
 @secure()
+@minLength(3)
 param sourceKeyVaultName string
 
 @allowed(
