@@ -5,4 +5,3 @@
 `.github/tools/pwdGenerator.ps1` is used to generate passwords.
 
 `.github/tools/revisionVerifier.sh` is used to verify the revision of the deployed container app. It ensures that the current revision has been deployed successfully.
-
