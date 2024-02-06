@@ -61,7 +61,7 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Fetch secret keys from Azure Vault
+      - name: Fetch secret keys from source Azure Key Vault
         uses: azure/CLI@v1
         id: keyvault-keys
         with:
