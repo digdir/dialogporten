@@ -79,8 +79,6 @@ jobs:
           scope: resourcegroup
           template: ./.azure/applications/web-api-migration-job/main.bicep
           resourceGroupName: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
-          # not needed becauase we sign in with the azure/login action using the subscriptionId
-          subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           deploymentMode: Incremental
           deploymentName: "dp-be-${{ inputs.environment }}-web-api-migration-job-${{ inputs.gitShortSha }}"
           region: ${{ inputs.region }}
@@ -151,8 +149,6 @@ jobs:
           scope: resourcegroup
           template: ./.azure/applications/${{ matrix.name }}/main.bicep
           resourceGroupName: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
-          # not needed becauase we sign in with the azure/login action using the subscriptionId
-          subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           deploymentMode: Incremental
           deploymentName: dp-be-${{ inputs.environment }}-${{ matrix.name }}-${{ inputs.gitShortSha }}
           region: ${{ inputs.region }}
