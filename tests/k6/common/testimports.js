@@ -7,6 +7,7 @@ export {
     getEU,
     getSO,
     postSO,
+    postSOAsync,
     putSO,
     patchSO,
     deleteSO
