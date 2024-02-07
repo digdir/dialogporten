@@ -84,7 +84,7 @@ jobs:
           deploymentMode: Incremental
           deploymentName: "dp-be-${{ inputs.environment }}-web-api-migration-job-${{ inputs.gitShortSha }}"
           region: ${{ inputs.region }}
-          failOnStdErr: true
+          failOnStdErr: false
           additionalArguments: "${{inputs.dryRun && '--what-if'}}"
           parameters: ./.azure/applications/web-api-migration-job/${{ inputs.environment }}.bicepparam
 
@@ -156,7 +156,7 @@ jobs:
           deploymentMode: Incremental
           deploymentName: dp-be-${{ inputs.environment }}-${{ matrix.name }}-${{ inputs.gitShortSha }}
           region: ${{ inputs.region }}
-          failOnStdErr: true
+          failOnStdErr: false
           additionalArguments: "${{inputs.dryRun && '--what-if'}}"
           parameters: ./.azure/applications/${{ matrix.name }}/${{ inputs.environment }}.bicepparam
 

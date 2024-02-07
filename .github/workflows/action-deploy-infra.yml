@@ -97,7 +97,7 @@ jobs:
           deploymentMode: Incremental
           deploymentName: dp-be-${{ inputs.environment }}-${{ inputs.gitShortSha }}
           region: ${{ inputs.region }}
-          failOnStdErr: true
+          failOnStdErr: false
           additionalArguments: "${{ inputs.dryRun && '--what-if' }}"
           parameters: ./.azure/infrastructure/${{ inputs.environment }}.bicepparam
 
