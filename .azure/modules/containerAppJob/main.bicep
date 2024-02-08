@@ -16,7 +16,7 @@ resource job 'Microsoft.App/jobs@2023-05-01' = {
       secrets: [
         {
           // todo: move this and refactor into adding this somewhere else
-          name: 'dialogdbconnectionstringsecreturi'
+          name: 'dbconnectionstring'
           keyVaultUrl: adoConnectionStringSecretUri
           identity: 'System'
         }
@@ -36,7 +36,7 @@ resource job 'Microsoft.App/jobs@2023-05-01' = {
           env: [
             {
               name: 'Infrastructure__DialogDbConnectionString'
-              secretRef: 'dialogdbconnectionstringsecreturi'
+              secretRef: 'dbconnectionstring'
             }
           ]
           image: image
