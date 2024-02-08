@@ -168,12 +168,7 @@ static void BuildAndRun(string[] args)
         {
             config.PostProcess = (document, _) =>
             {
-                var dialogportenBaseUri = builder.Configuration
-                    .GetSection(ApplicationSettings.ConfigurationSectionName)
-                    .Get<ApplicationSettings>()!
-                    .Dialogporten
-                    .BaseUri
-                    .ToString();
+                var dialogportenBaseUri = builder.Configuration["WebApi:DialogPortenBaseUri"];
 
                 document.Servers.Clear();
                 document.Servers.Add(new OpenApiServer { Url = dialogportenBaseUri });

@@ -1,30 +1,34 @@
 targetScope = 'resourceGroup'
 
-@minLength(1)
+@minLength(3)
 param imageTag string
-@minLength(1)
+@minLength(3)
 param environment string
-@minLength(1)
+@minLength(3)
 param location string
 
-@minLength(1)
+@minLength(3)
 @secure()
-param containerAppEnvironmentId string
-@minLength(1)
+param containerAppEnvironmentName string
+@minLength(3)
 @secure()
 param appInsightConnectionString string
-@minLength(1)
+@minLength(5)
 @secure()
 param appConfigurationName string
-@minLength(1)
+@minLength(3)
 @secure()
 param environmentKeyVaultName string
 
 var namePrefix = 'dp-be-${environment}'
 var baseImageUrl = 'ghcr.io/digdir/dialogporten-'
 
-resource appConfig 'Microsoft.AppConfiguration/configurationStores@2023-03-01' existing = {
-  name: '${namePrefix}-appConfiguration'
+resource appConfiguration 'Microsoft.AppConfiguration/configurationStores@2023-03-01' existing = {
+  name: appConfigurationName
+}
+
+resource containerAppEnvironment 'Microsoft.App/managedEnvironments@2023-05-01' existing = {
+  name: containerAppEnvironmentName
 }
 
 var containerAppEnvVars = [
@@ -38,7 +42,7 @@ var containerAppEnvVars = [
   }
   {
     name: 'AZURE_APPCONFIG_URI'
-    value: appConfig.properties.endpoint
+    value: appConfiguration.properties.endpoint
   }
   {
     name: 'ASPNETCORE_URLS'
@@ -63,7 +67,19 @@ module containerApp '../../modules/containerApp/main.bicep' = {
     image: '${baseImageUrl}webapi:${imageTag}'
     location: location
     envVariables: containerAppEnvVars
-    containerAppEnvId: containerAppEnvironmentId
+    containerAppEnvId: containerAppEnvironment.id
+  }
+}
+
+var appConfigWebApiEuFqdn = 'https://${containerAppName}.${containerAppEnvironment.properties.defaultDomain}'
+
+module appConfigConfigurations '../../modules/appConfiguration/upsertKeyValue.bicep' = {
+  name: 'AppConfig_Add_DialogPortenBaseUri'
+  params: {
+    configStoreName: appConfigurationName
+    key: 'WebApi:DialogPortenBaseUri'
+    value: appConfigWebApiEuFqdn
+    keyValueType: 'custom'
   }
 }
 

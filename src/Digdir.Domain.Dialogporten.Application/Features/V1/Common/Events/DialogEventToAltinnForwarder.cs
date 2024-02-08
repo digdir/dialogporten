@@ -3,6 +3,7 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Events;
 using Digdir.Library.Entity.Abstractions.Features.EventPublisher;
 using MediatR;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.Common.Events;
@@ -14,8 +15,8 @@ internal sealed class DialogEventToAltinnForwarder : DomainEventToAltinnForwarde
     INotificationHandler<DialogSeenDomainEvent>
 {
     public DialogEventToAltinnForwarder(ICloudEventBus cloudEventBus, IDialogDbContext db,
-        IOptions<ApplicationSettings> settings)
-        : base(cloudEventBus, db, settings) { }
+        IConfiguration configuration)
+        : base(cloudEventBus, db, configuration) { }
 
     public async Task Handle(DialogCreatedDomainEvent domainEvent, CancellationToken cancellationToken)
     {

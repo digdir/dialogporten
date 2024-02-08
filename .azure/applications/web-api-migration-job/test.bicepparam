@@ -5,5 +5,5 @@ param location = 'norwayeast'
 
 //secrets
 param imageTag = readEnvironmentVariable('IMAGE_TAG')
-param containerAppEnvironmentId = readEnvironmentVariable('CONTAINER_APP_ENVIRONMENT_ID')
+param containerAppEnvironmentId = readEnvironmentVariable('CONTAINER_APP_ENVIRONMENT_NAME')
 param adoConnectionStringSecretUri = readEnvironmentVariable('ADO_CONNECTION_STRING_SECRET_URI')
