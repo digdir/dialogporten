@@ -17,7 +17,7 @@ param adoConnectionStringSecretUri string
 var namePrefix = 'dp-be-${environment}'
 var baseImageUrl = 'ghcr.io/digdir/dialogporten-'
 
-var name = '${namePrefix}-migration-job'
+var name = '${namePrefix}-db-migration-job'
 
 module migrationJob '../../modules/containerAppJob/main.bicep' = {
   name: name

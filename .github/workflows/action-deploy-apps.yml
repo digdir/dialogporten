@@ -1,8 +1,6 @@
 ﻿name: Deploy apps
-
 env:
   AZ_CLI_VERSION: 2.56.0
-
 on:
   workflow_call:
     secrets:
