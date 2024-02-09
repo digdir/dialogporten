@@ -103,7 +103,17 @@ internal sealed class UnitOfWork : IUnitOfWork
             foreach (var entry in concurrencyException.Entries)
             {
                 var dbValues = entry.GetDatabaseValues();
+                if (dbValues == null)
+                {
+                    continue;
+                }
+
                 var revision = dbValues![nameof(DialogEntity.Revision)];
+                if (revision == null)
+                {
+                    continue;
+                }
+
                 entry.CurrentValues[nameof(DialogEntity.Revision)] = revision;
                 entry.OriginalValues.SetValues(dbValues);
             }
