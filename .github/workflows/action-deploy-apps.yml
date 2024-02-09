@@ -39,6 +39,10 @@ on:
         description: "Short SHA of the commit"
         required: true
         type: string
+      apimUri:
+        description: "The public URI of the Azure API Management instance"
+        required: true
+        type: string
 concurrency:
   # Existing runs are cancelled if someone repeatedly commits to their own Pull Request (PR). However, it does not stop others' dry runs or actual deployments from the main branch.
   # Also, the cancellation does not occur on merges to the main branch. Therefore, if multiple merges to main are performed simultaneously, they will just be queued up.
@@ -138,6 +142,7 @@ jobs:
         env:
           # parameters
           IMAGE_TAG: ${{ inputs.gitShortSha }}
+          APIM_URI: ${{ inputs.apimUri }}
           # secrets
           CONTAINER_APP_ENVIRONMENT_NAME: ${{ secrets.AZURE_CONTAINER_APP_ENVIRONMENT_NAME }}
           APP_INSIGHTS_CONNECTION_STRING: ${{ secrets.AZURE_APP_INSIGHTS_CONNECTION_STRING }}

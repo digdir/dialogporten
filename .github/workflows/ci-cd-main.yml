@@ -70,6 +70,7 @@ jobs:
       environment: test
       region: norwayeast
       gitShortSha: ${{ needs.generate-git-short-sha.outputs.gitShortSha }}
+      apimUri: ${{ vars.AZURE_APIM_URI }}
 
   deploy-slack-notifier-test:
     name: Deploy slack notifier (test)
