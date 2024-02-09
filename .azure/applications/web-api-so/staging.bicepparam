@@ -3,6 +3,7 @@ using './main.bicep'
 param environment = 'staging'
 param location = 'norwayeast'
 param imageTag = readEnvironmentVariable('IMAGE_TAG')
+param apimUri = readEnvironmentVariable('APIM_URI', '')
 
 // secrets
 param environmentKeyVaultName = readEnvironmentVariable('ENVIRONMENT_KEY_VAULT_NAME')
