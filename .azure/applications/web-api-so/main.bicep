@@ -19,9 +19,6 @@ param appConfigurationName string
 @minLength(3)
 @secure()
 param environmentKeyVaultName string
-@minLength(3)
-@secure()
-param apimUri string
 
 var namePrefix = 'dp-be-${environment}'
 var baseImageUrl = 'ghcr.io/digdir/dialogporten-'
@@ -71,19 +68,6 @@ module containerApp '../../modules/containerApp/main.bicep' = {
     location: location
     envVariables: containerAppEnvVars
     containerAppEnvId: containerAppEnvironment.id
-  }
-}
-
-// If the APIM URI is not provided, we will use the default domain of the container app environment. We only do this for the so service.
-var baseUri = !empty(apimUri) ? apimUri : 'https://${containerAppName}.${containerAppEnvironment.properties.defaultDomain}'
-
-module appConfigConfigurations '../../modules/appConfiguration/upsertKeyValue.bicep' = {
-  name: 'AppConfig_Add_DialogPortenBaseUri'
-  params: {
-    configStoreName: appConfigurationName
-    key: 'Application:Dialoporten:BaseUri'
-    value: baseUri
-    keyValueType: 'custom'
   }
 }
 
