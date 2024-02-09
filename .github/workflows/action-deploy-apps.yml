@@ -14,7 +14,7 @@ on:
         required: true
       AZURE_ENVIRONMENT_KEY_VAULT_NAME:
         required: true
-      AZURE_CONTAINER_APP_ENVIRONMENT_ID:
+      AZURE_CONTAINER_APP_ENVIRONMENT_NAME:
         required: true
       AZURE_APP_INSIGHTS_CONNECTION_STRING:
         required: true
@@ -72,7 +72,7 @@ jobs:
   #         IMAGE_TAG: ${{ inputs.gitShortSha }}
   #         # secrets
   #         ADO_CONNECTION_STRING_SECRET_URI: ${{ secrets.AZURE_ADO_CONNECTION_STRING_SECRET_URI }}
-  #         CONTAINER_APP_ENVIRONMENT_ID: ${{ secrets.AZURE_CONTAINER_APP_ENVIRONMENT_ID }}
+  #         CONTAINER_APP_ENVIRONMENT_NAME: ${{ secrets.AZURE_CONTAINER_APP_ENVIRONMENT_NAME }}
   #       with:
   #         scope: resourcegroup
   #         template: ./.azure/applications/web-api-migration-job/main.bicep
@@ -139,7 +139,7 @@ jobs:
           # parameters
           IMAGE_TAG: ${{ inputs.gitShortSha }}
           # secrets
-          CONTAINER_APP_ENVIRONMENT_ID: ${{ secrets.AZURE_CONTAINER_APP_ENVIRONMENT_ID }}
+          CONTAINER_APP_ENVIRONMENT_NAME: ${{ secrets.AZURE_CONTAINER_APP_ENVIRONMENT_NAME }}
           APP_INSIGHTS_CONNECTION_STRING: ${{ secrets.AZURE_APP_INSIGHTS_CONNECTION_STRING }}
           APP_CONFIGURATION_NAME: ${{ secrets.AZURE_APP_CONFIGURATION_NAME }}
           ENVIRONMENT_KEY_VAULT_NAME: ${{ secrets.AZURE_ENVIRONMENT_KEY_VAULT_NAME }}
