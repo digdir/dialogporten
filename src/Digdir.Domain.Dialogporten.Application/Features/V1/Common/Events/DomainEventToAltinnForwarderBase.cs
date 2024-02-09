@@ -10,16 +10,16 @@ internal class DomainEventToAltinnForwarderBase
 {
     protected readonly ICloudEventBus CloudEventBus;
     protected readonly IDialogDbContext Db;
-    private readonly IConfiguration _configuration;
+    private readonly DialogportenSettings _dialogportenSettings;
 
-    protected DomainEventToAltinnForwarderBase(ICloudEventBus cloudEventBus, IDialogDbContext db, IConfiguration configuration)
+    protected DomainEventToAltinnForwarderBase(ICloudEventBus cloudEventBus, IDialogDbContext db, IOptions<ApplicationSettings> settings)
     {
         CloudEventBus = cloudEventBus ?? throw new ArgumentNullException(nameof(cloudEventBus));
         Db = db ?? throw new ArgumentNullException(nameof(db));
-        _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+        _dialogportenSettings = settings.Value.Dialogporten ?? throw new ArgumentNullException(nameof(settings));
     }
 
-    protected string? DialogportenBaseUrl() => _configuration["WebApi:DialogPortenBaseUri"];
+    protected string? DialogportenBaseUrl() => _dialogportenSettings.BaseUri.ToString();
 
     protected async Task<DialogEntity> GetDialog(Guid dialogId, CancellationToken cancellationToken)
     {

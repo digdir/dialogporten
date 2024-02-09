@@ -67,18 +67,6 @@ module containerApp '../../modules/containerApp/main.bicep' = {
   }
 }
 
-var appConfigWebApiEuFqdn = 'https://${containerAppName}.${containerAppEnvironment.properties.defaultDomain}'
-
-module appConfigConfigurations '../../modules/appConfiguration/upsertKeyValue.bicep' = {
-  name: 'AppConfig_Add_DialogPortenBaseUri'
-  params: {
-    configStoreName: appConfigurationName
-    key: 'WebApi:DialogPortenBaseUri'
-    value: appConfigWebApiEuFqdn
-    keyValueType: 'custom'
-  }
-}
-
 module keyVaultReaderAccessPolicy '../../modules/keyvault/addReaderRoles.bicep' = {
   name: 'keyVaultReaderAccessPolicy-${containerAppName}'
   params: {

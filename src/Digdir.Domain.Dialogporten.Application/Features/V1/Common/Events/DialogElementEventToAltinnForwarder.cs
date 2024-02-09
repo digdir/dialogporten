@@ -14,8 +14,8 @@ internal sealed class DialogElementEventToAltinnForwarder : DomainEventToAltinnF
     INotificationHandler<DialogElementCreatedDomainEvent>,
     INotificationHandler<DialogElementDeletedDomainEvent>
 {
-    public DialogElementEventToAltinnForwarder(ICloudEventBus cloudEventBus, IDialogDbContext db, IConfiguration configuration)
-        : base(cloudEventBus, db, configuration)
+    public DialogElementEventToAltinnForwarder(ICloudEventBus cloudEventBus, IDialogDbContext db, IOptions<ApplicationSettings> settings)
+        : base(cloudEventBus, db, settings)
     {
     }
 
