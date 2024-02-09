@@ -12,6 +12,7 @@ public sealed class SearchDialogDto
     public string ServiceResource { get; set; } = null!;
     public string Party { get; set; } = null!;
     public int? Progress { get; set; }
+    public int? GuiAttachmentCount { get; set; }
     public string? ExtendedStatus { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
     public DateTimeOffset UpdatedAt { get; set; }
@@ -21,7 +22,6 @@ public sealed class SearchDialogDto
 
     public List<SearchDialogContentDto> Content { get; set; } = [];
     public List<SearchDialogDialogActivityDto> LatestActivities { get; set; } = [];
-
 }
 
 public sealed class SearchDialogContentDto

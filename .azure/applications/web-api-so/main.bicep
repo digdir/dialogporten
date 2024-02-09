@@ -20,6 +20,9 @@ param appConfigurationName string
 @minLength(3)
 @secure()
 param environmentKeyVaultName string
+@minLength(3)
+@secure()
+param apimUri string
 
 var namePrefix = 'dp-be-${environment}'
 var baseImageUrl = 'ghcr.io/digdir/dialogporten-'
