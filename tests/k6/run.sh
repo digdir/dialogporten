@@ -100,8 +100,8 @@ fi
 
 DIR="$(dirname "$0")"
 
-"$DIR/scripts/generate_alltests.sh" "$DIR/tests/serviceowner/" >/dev/null
-"$DIR/scripts/generate_alltests.sh" "$DIR/tests/enduser/" >/dev/null
+"$DIR/scripts/generate_all_tests.sh" "$DIR/tests/serviceowner/" >/dev/null
+"$DIR/scripts/generate_all_tests.sh" "$DIR/tests/enduser/" >/dev/null
 
 if [[ "$API_ENVIRONMENT" == "localdev" ]]; then
     # Handle self-signed certs when using docker compose

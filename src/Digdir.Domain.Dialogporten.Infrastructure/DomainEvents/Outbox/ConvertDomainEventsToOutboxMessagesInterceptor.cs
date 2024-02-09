@@ -1,6 +1,8 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Common;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Outboxes;
 using Digdir.Library.Entity.Abstractions.Features.EventPublisher;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.DomainEvents.Outbox;
@@ -42,7 +44,15 @@ internal sealed class ConvertDomainEventsToOutboxMessagesInterceptor : SaveChang
             .Select(OutboxMessage.Create)
             .ToList();
 
-        dbContext.Set<OutboxMessage>().AddRange(outboxMessages);
+        foreach (var outboxMessage in outboxMessages)
+        {
+            var existingOutboxMessage = dbContext.Set<OutboxMessage>().Find(outboxMessage.EventId);
+            if (existingOutboxMessage == null)
+            {
+                dbContext.Set<OutboxMessage>().Add(outboxMessage);
+            }
+        }
+
         return base.SavingChangesAsync(eventData, result, cancellationToken);
     }
 }

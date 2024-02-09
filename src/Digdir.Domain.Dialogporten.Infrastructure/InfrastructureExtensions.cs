@@ -60,7 +60,10 @@ public static class InfrastructureExtensions
                 var connectionString = services.GetRequiredService<IOptions<InfrastructureSettings>>()
                     .Value.DialogDbConnectionString;
                 options.UseNpgsql(connectionString)
-                    .AddInterceptors(services.GetRequiredService<ConvertDomainEventsToOutboxMessagesInterceptor>());
+                    .AddInterceptors(
+                        // Are these called in order?
+                        services.GetRequiredService<ConvertDomainEventsToOutboxMessagesInterceptor>());
+                // services.GetRequiredService<ConcurrencyInterceptor>());
             })
             .AddHostedService<DevelopmentMigratorHostedService>()
 
@@ -71,6 +74,7 @@ public static class InfrastructureExtensions
             // Transient
             .AddTransient<OutboxDispatcher>()
             .AddTransient<ConvertDomainEventsToOutboxMessagesInterceptor>()
+            // .AddTransient<ConcurrencyInterceptor>()
 
             // Decorate
             .Decorate(typeof(INotificationHandler<>), typeof(IdempotentDomainEventHandler<>));

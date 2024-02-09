@@ -123,8 +123,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
                 update: UpdateApiActions,
                 delete: DeleteDelegate.NoOp);
 
-
-        var saveResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
+        var saveResult = await _unitOfWork.SaveChangesAsync(optimisticConcurrency: !request.Revision.HasValue, cancellationToken);
         return saveResult.Match<UpdateDialogResult>(
             success => success,
             domainError => domainError,

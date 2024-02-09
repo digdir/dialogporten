@@ -133,9 +133,7 @@ static void BuildAndRun(string[] args)
         builder.Services
             .ReplaceSingleton<IUser, LocalDevelopmentUser>(predicate: localDevelopmentSettings.UseLocalDevelopmentUser)
             .ReplaceSingleton<IAuthorizationHandler, AllowAnonymousHandler>(
-                predicate: localDevelopmentSettings.DisableAuth)
-            .AddHostedService<
-                OutboxScheduler>(predicate: !localDevelopmentSettings.DisableShortCircuitOutboxDispatcher);
+                predicate: localDevelopmentSettings.DisableAuth);
     }
 
     var app = builder.Build();

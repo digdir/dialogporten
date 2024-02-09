@@ -7,7 +7,7 @@ namespace Digdir.Domain.Dialogporten.Application.Externals;
 public interface IUnitOfWork
 {
     IUnitOfWork WithoutAuditableSideEffects();
-    Task<SaveChangesResult> SaveChangesAsync(CancellationToken cancellationToken = default);
+    Task<SaveChangesResult> SaveChangesAsync(bool optimisticConcurrency, CancellationToken cancellationToken = default);
 }
 
 [GenerateOneOf]
