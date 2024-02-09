@@ -71,7 +71,6 @@ public static class InfrastructureExtensions
             // Transient
             .AddTransient<OutboxDispatcher>()
             .AddTransient<ConvertDomainEventsToOutboxMessagesInterceptor>()
-            // .AddTransient<ConcurrencyInterceptor>()
 
             // Decorate
             .Decorate(typeof(INotificationHandler<>), typeof(IdempotentDomainEventHandler<>));
