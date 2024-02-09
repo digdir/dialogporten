@@ -14,7 +14,7 @@ namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialog
 public sealed class DeleteDialogCommand : IRequest<DeleteDialogResult>
 {
     public Guid Id { get; set; }
-    public Guid? Revision { get; set; }
+    public Guid? IfMatchDialogRevision { get; set; }
 }
 
 [GenerateOneOf]
@@ -51,9 +51,9 @@ internal sealed class DeleteDialogCommandHandler : IRequestHandler<DeleteDialogC
             return new EntityNotFound<DialogEntity>(request.Id);
         }
 
-        _db.TrySetOriginalRevision(dialog, request.Revision);
+        _db.TrySetOriginalRevision(dialog, request.IfMatchDialogRevision);
         _db.Dialogs.SoftRemove(dialog);
-        var saveResult = await _unitOfWork.SaveChangesAsync(optimisticConcurrency: !request.Revision.HasValue, cancellationToken);
+        var saveResult = await _unitOfWork.SaveChangesAsync(optimisticConcurrency: !request.IfMatchDialogRevision.HasValue, cancellationToken);
         return saveResult.Match<DeleteDialogResult>(
             success => success,
             domainError => throw new UnreachableException("Should never get a domain error when creating a new dialog"),

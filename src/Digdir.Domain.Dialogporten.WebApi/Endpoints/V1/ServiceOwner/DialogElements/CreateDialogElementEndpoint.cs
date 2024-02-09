@@ -56,7 +56,7 @@ public sealed class CreateDialogElementEndpoint : Endpoint<CreateDialogElementRe
 
         updateDialogDto.Elements.Add(req);
 
-        var updateDialogCommand = new UpdateDialogCommand { Id = req.DialogId, Revision = req.IfMatchDialogRevision, Dto = updateDialogDto };
+        var updateDialogCommand = new UpdateDialogCommand { Id = req.DialogId, IfMatchDialogRevision = req.IfMatchDialogRevision, Dto = updateDialogDto };
 
         var result = await _sender.Send(updateDialogCommand, ct);
         await result.Match(

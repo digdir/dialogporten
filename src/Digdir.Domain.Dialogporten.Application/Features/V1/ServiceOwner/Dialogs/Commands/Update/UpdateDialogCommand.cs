@@ -19,7 +19,7 @@ namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialog
 public sealed class UpdateDialogCommand : IRequest<UpdateDialogResult>
 {
     public Guid Id { get; set; }
-    public Guid? Revision { get; set; }
+    public Guid? IfMatchDialogRevision { get; set; }
     public UpdateDialogDto Dto { get; set; } = null!;
 }
 
@@ -75,7 +75,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
             return new EntityNotFound<DialogEntity>(request.Id);
         }
 
-        _db.TrySetOriginalRevision(dialog, request.Revision);
+        _db.TrySetOriginalRevision(dialog, request.IfMatchDialogRevision);
 
         // Update primitive properties
         _mapper.Map(request.Dto, dialog);
@@ -123,7 +123,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
                 update: UpdateApiActions,
                 delete: DeleteDelegate.NoOp);
 
-        var saveResult = await _unitOfWork.SaveChangesAsync(optimisticConcurrency: !request.Revision.HasValue, cancellationToken);
+        var saveResult = await _unitOfWork.SaveChangesAsync(optimisticConcurrency: !request.IfMatchDialogRevision.HasValue, cancellationToken);
         return saveResult.Match<UpdateDialogResult>(
             success => success,
             domainError => domainError,

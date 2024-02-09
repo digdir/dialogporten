@@ -33,7 +33,7 @@ public sealed class DeleteDialogEndpoint : Endpoint<DeleteDialogRequest>
 
     public override async Task HandleAsync(DeleteDialogRequest req, CancellationToken ct)
     {
-        var command = new DeleteDialogCommand { Id = req.DialogId, Revision = req.Revision };
+        var command = new DeleteDialogCommand { Id = req.DialogId, IfMatchDialogRevision = req.IfMatchDialogRevision };
         var result = await _sender.Send(command, ct);
         await result.Match(
             success => SendNoContentAsync(ct),
@@ -47,7 +47,7 @@ public sealed class DeleteDialogRequest
     public Guid DialogId { get; set; }
 
     [FromHeader(headerName: Constants.IfMatch, isRequired: false, removeFromSchema: true)]
-    public Guid? Revision { get; set; }
+    public Guid? IfMatchDialogRevision { get; set; }
 }
 
 public sealed class DeleteDialogEndpointSummary : Summary<DeleteDialogEndpoint>

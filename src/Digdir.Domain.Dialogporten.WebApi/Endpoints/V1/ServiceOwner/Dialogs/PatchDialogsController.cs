@@ -77,7 +77,7 @@ public sealed class PatchDialogsController : ControllerBase
             return BadRequest(ModelState);
         }
 
-        var command = new UpdateDialogCommand { Id = dialogId, Revision = etag, Dto = updateDialogDto };
+        var command = new UpdateDialogCommand { Id = dialogId, IfMatchDialogRevision = etag, Dto = updateDialogDto };
         var result = await _sender.Send(command, ct);
         return result.Match(
             success => (IActionResult)NoContent(),

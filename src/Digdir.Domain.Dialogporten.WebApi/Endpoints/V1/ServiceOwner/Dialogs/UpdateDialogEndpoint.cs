@@ -35,7 +35,7 @@ public sealed class UpdateDialogEndpoint : Endpoint<UpdateDialogRequest>
 
     public override async Task HandleAsync(UpdateDialogRequest req, CancellationToken ct)
     {
-        var command = new UpdateDialogCommand { Id = req.DialogId, Revision = req.IfMatchDialogRevision, Dto = req.Dto };
+        var command = new UpdateDialogCommand { Id = req.DialogId, IfMatchDialogRevision = req.IfMatchDialogRevision, Dto = req.Dto };
         var updateDialogResult = await _sender.Send(command, ct);
         await updateDialogResult.Match(
             success => SendNoContentAsync(ct),
