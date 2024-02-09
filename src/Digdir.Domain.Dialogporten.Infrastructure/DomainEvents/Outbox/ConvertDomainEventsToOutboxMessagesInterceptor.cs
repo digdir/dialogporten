@@ -1,8 +1,6 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Common;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Outboxes;
 using Digdir.Library.Entity.Abstractions.Features.EventPublisher;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.DomainEvents.Outbox;
