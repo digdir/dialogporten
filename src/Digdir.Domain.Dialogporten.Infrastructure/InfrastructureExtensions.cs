@@ -60,8 +60,7 @@ public static class InfrastructureExtensions
                 var connectionString = services.GetRequiredService<IOptions<InfrastructureSettings>>()
                     .Value.DialogDbConnectionString;
                 options.UseNpgsql(connectionString)
-                    .AddInterceptors(
-                        services.GetRequiredService<ConvertDomainEventsToOutboxMessagesInterceptor>());
+                    .AddInterceptors(services.GetRequiredService<ConvertDomainEventsToOutboxMessagesInterceptor>());
             })
             .AddHostedService<DevelopmentMigratorHostedService>()
 
