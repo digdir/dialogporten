@@ -2,7 +2,6 @@
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Configuration;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.Common.Events;
 
@@ -19,7 +18,7 @@ internal class DomainEventToAltinnForwarderBase
         _dialogportenSettings = settings.Value.Dialogporten ?? throw new ArgumentNullException(nameof(settings));
     }
 
-    protected string? DialogportenBaseUrl() => _dialogportenSettings.BaseUri.ToString();
+    protected string DialogportenBaseUrl() => _dialogportenSettings.BaseUri.ToString();
 
     protected async Task<DialogEntity> GetDialog(Guid dialogId, CancellationToken cancellationToken)
     {
