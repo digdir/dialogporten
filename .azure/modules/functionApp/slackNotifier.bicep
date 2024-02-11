@@ -23,7 +23,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
     }
 }
 
-resource applicationServicePlan 'Microsoft.Web/serverfarms@2021-03-01' = {
+resource applicationServicePlan 'Microsoft.Web/serverfarms@2023-01-01' = {
     name: '${namePrefix}-slacknotifier-asp'
     location: location
     sku: {
