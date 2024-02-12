@@ -128,5 +128,10 @@ public class DialogEntity :
     }
 
     private readonly List<IDomainEvent> _domainEvents = [];
-    public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents;
+    public IEnumerable<IDomainEvent> PopDomainEvents()
+    {
+        var events = _domainEvents.ToList();
+        _domainEvents.Clear();
+        return events;
+    }
 }
