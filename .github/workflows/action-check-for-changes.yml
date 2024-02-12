@@ -30,11 +30,13 @@ jobs:
           base: ${{ github.ref }}
           filters: |
             backend:
+              - '.github/**/*'
               - 'src/**/*'
-              - '.github/**/*'
+              - '.azure/applications/**/*'
             azure:
-              - '.azure/**/*'
               - '.github/**/*'
+              - '.azure/infrastructure/**/*'
+              - '.azure/modules/**/*'
             slackNotifier:
-              - 'src/Digdir.Tool.Dialogporten.SlackNotifier/**/*'
               - '.github/**/*'
+              - 'src/Digdir.Tool.Dialogporten.SlackNotifier/**/*'
