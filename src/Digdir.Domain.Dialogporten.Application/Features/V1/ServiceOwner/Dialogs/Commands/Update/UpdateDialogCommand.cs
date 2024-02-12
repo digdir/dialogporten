@@ -75,8 +75,6 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
             return new EntityNotFound<DialogEntity>(request.Id);
         }
 
-        // _db.TrySetOriginalRevision(dialog, request.IfMatchDialogRevision);
-
         // Update primitive properties
         _mapper.Map(request.Dto, dialog);
         ValidateTimeFields(dialog);

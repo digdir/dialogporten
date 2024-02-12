@@ -35,13 +35,12 @@ internal sealed class UnitOfWork : IUnitOfWork
     static UnitOfWork()
     {
         // Backoff strategy with jitter for retry policy, starting at ~5ms
-        const int MedianFirstDelayInMs = 5;
-        // Optimistic concurrency
+        const int medianFirstDelayInMs = 5;
         // Total timeout for optimistic concurrency handling
-        const int TimeoutInSeconds = 10;
+        const int timeoutInSeconds = 10;
 
         var timeoutPolicy =
-            Policy.TimeoutAsync(TimeoutInSeconds,
+            Policy.TimeoutAsync(timeoutInSeconds,
                 TimeoutStrategy.Pessimistic,
                 (_, _, _) => throw new OptimisticConcurrencyTimeoutException());
 
@@ -51,7 +50,7 @@ internal sealed class UnitOfWork : IUnitOfWork
             .Handle<DbUpdateConcurrencyException>()
             .WaitAndRetryAsync(
                 sleepDurations: Backoff.DecorrelatedJitterBackoffV2(
-                    medianFirstRetryDelay: TimeSpan.FromMilliseconds(MedianFirstDelayInMs),
+                    medianFirstRetryDelay: TimeSpan.FromMilliseconds(medianFirstDelayInMs),
                     retryCount: int.MaxValue),
                 onRetryAsync: FetchCurrentRevision);
 
