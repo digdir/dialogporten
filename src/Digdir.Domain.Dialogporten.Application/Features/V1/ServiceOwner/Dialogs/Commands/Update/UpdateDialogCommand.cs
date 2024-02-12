@@ -75,7 +75,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
             return new EntityNotFound<DialogEntity>(request.Id);
         }
 
-        _db.TrySetOriginalRevision(dialog, request.IfMatchDialogRevision);
+        // _db.TrySetOriginalRevision(dialog, request.IfMatchDialogRevision);
 
         // Update primitive properties
         _mapper.Map(request.Dto, dialog);
@@ -123,7 +123,10 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
                 update: UpdateApiActions,
                 delete: DeleteDelegate.NoOp);
 
-        var saveResult = await _unitOfWork.SaveChangesAsync(optimisticConcurrency: !request.IfMatchDialogRevision.HasValue, cancellationToken);
+        var saveResult = await _unitOfWork
+            .EnableConcurrencyCheck(dialog, request.IfMatchDialogRevision)
+            .SaveChangesAsync(cancellationToken);
+
         return saveResult.Match<UpdateDialogResult>(
             success => success,
             domainError => domainError,

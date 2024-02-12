@@ -23,6 +23,7 @@ internal sealed class UnitOfWork : IUnitOfWork
     private readonly IDomainContext _domainContext;
 
     private bool _auditableSideEffects = true;
+    private bool _enableConcurrencyCheck;
 
     public UnitOfWork(DialogDbContext dialogDbContext, ITransactionTime transactionTime, IDomainContext domainContext)
     {
@@ -57,13 +58,26 @@ internal sealed class UnitOfWork : IUnitOfWork
         ConcurrencyRetryPolicy = timeoutPolicy.WrapAsync(retryPolicy);
     }
 
+    public IUnitOfWork EnableConcurrencyCheck<TEntity>(
+        TEntity? entity,
+        Guid? revision)
+        where TEntity : class, IVersionableEntity
+    {
+        if (_dialogDbContext.TrySetOriginalRevision(entity, revision))
+        {
+            _enableConcurrencyCheck = true;
+        }
+
+        return this;
+    }
+
     public IUnitOfWork WithoutAuditableSideEffects()
     {
         _auditableSideEffects = false;
         return this;
     }
 
-    public async Task<SaveChangesResult> SaveChangesAsync(bool optimisticConcurrency, CancellationToken cancellationToken = default)
+    public async Task<SaveChangesResult> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         if (!_domainContext.IsValid)
         {
@@ -80,8 +94,9 @@ internal sealed class UnitOfWork : IUnitOfWork
             await _dialogDbContext.ChangeTracker.HandleAuditableEntities(_transactionTime.Value, cancellationToken);
         }
 
-        if (optimisticConcurrency)
+        if (!_enableConcurrencyCheck)
         {
+            // Attempt to save changes without concurrency check
             await ConcurrencyRetryPolicy.ExecuteAsync(ct => _dialogDbContext.SaveChangesAsync(ct), cancellationToken);
 
             return new Success();

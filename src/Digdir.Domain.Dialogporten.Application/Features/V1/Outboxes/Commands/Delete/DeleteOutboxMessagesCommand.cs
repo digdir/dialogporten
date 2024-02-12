@@ -37,7 +37,7 @@ internal sealed class DeleteOutboxMessagesCommandHandler : IRequestHandler<Delet
         }
 
         _db.OutboxMessages.Remove(outboxMessage);
-        var saveResult = await _unitOfWork.SaveChangesAsync(optimisticConcurrency: false, cancellationToken);
+        var saveResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
         saveResult.Switch(
             success => { },
             domainError => throw new UnreachableException("Should never get a domain error when deleting an outbox message"),

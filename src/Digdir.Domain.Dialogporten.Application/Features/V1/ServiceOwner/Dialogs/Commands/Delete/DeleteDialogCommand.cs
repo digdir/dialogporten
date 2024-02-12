@@ -51,9 +51,11 @@ internal sealed class DeleteDialogCommandHandler : IRequestHandler<DeleteDialogC
             return new EntityNotFound<DialogEntity>(request.Id);
         }
 
-        _db.TrySetOriginalRevision(dialog, request.IfMatchDialogRevision);
         _db.Dialogs.SoftRemove(dialog);
-        var saveResult = await _unitOfWork.SaveChangesAsync(optimisticConcurrency: !request.IfMatchDialogRevision.HasValue, cancellationToken);
+        var saveResult = await _unitOfWork
+            .EnableConcurrencyCheck(dialog, request.IfMatchDialogRevision)
+            .SaveChangesAsync(cancellationToken);
+
         return saveResult.Match<DeleteDialogResult>(
             success => success,
             domainError => throw new UnreachableException("Should never get a domain error when creating a new dialog"),

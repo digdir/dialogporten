@@ -76,7 +76,7 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
 
         await _db.Dialogs.AddAsync(dialog, cancellationToken);
 
-        var saveResult = await _unitOfWork.SaveChangesAsync(optimisticConcurrency: false, cancellationToken);
+        var saveResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
         return saveResult.Match<CreateDialogResult>(
             success => new Success<Guid>(dialog.Id),
             domainError => domainError,
