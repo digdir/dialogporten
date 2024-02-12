@@ -3,6 +3,7 @@ using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence;
+using Digdir.Library.Entity.Abstractions.Features.Versionable;
 using Digdir.Library.Entity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using OneOf.Types;
@@ -16,6 +17,8 @@ namespace Digdir.Domain.Dialogporten.Infrastructure;
 
 internal sealed class UnitOfWork : IUnitOfWork
 {
+    private static readonly AsyncPolicyWrap ConcurrencyRetryPolicy;
+
     private readonly DialogDbContext _dialogDbContext;
     private readonly ITransactionTime _transactionTime;
     private readonly IDomainContext _domainContext;
@@ -27,6 +30,32 @@ internal sealed class UnitOfWork : IUnitOfWork
         _dialogDbContext = dialogDbContext ?? throw new ArgumentNullException(nameof(dialogDbContext));
         _transactionTime = transactionTime ?? throw new ArgumentNullException(nameof(transactionTime));
         _domainContext = domainContext ?? throw new ArgumentNullException(nameof(domainContext));
+    }
+
+    static UnitOfWork()
+    {
+        // Backoff strategy with jitter for retry policy, starting at ~5ms
+        const int MedianFirstDelayInMs = 5;
+        // Optimistic concurrency
+        // Total timeout for optimistic concurrency handling
+        const int TimeoutInSeconds = 10;
+
+        var timeoutPolicy =
+            Policy.TimeoutAsync(TimeoutInSeconds,
+                TimeoutStrategy.Pessimistic,
+                (_, _, _) => throw new OptimisticConcurrencyTimeoutException());
+
+        // Fetch the db revision and retry
+        // https://learn.microsoft.com/en-us/ef/core/saving/concurrency?tabs=data-annotations#resolving-concurrency-conflicts
+        var retryPolicy = Policy
+            .Handle<DbUpdateConcurrencyException>()
+            .WaitAndRetryAsync(
+                sleepDurations: Backoff.DecorrelatedJitterBackoffV2(
+                    medianFirstRetryDelay: TimeSpan.FromMilliseconds(MedianFirstDelayInMs),
+                    retryCount: int.MaxValue),
+                onRetryAsync: FetchCurrentRevision);
+
+        ConcurrencyRetryPolicy = timeoutPolicy.WrapAsync(retryPolicy);
     }
 
     public IUnitOfWork WithoutAuditableSideEffects()
@@ -54,10 +83,7 @@ internal sealed class UnitOfWork : IUnitOfWork
 
         if (optimisticConcurrency)
         {
-            await ConcurrencyRetryPolicy.ExecuteAsync(async () =>
-            {
-                await _dialogDbContext.SaveChangesAsync(cancellationToken);
-            });
+            await ConcurrencyRetryPolicy.ExecuteAsync(ct => _dialogDbContext.SaveChangesAsync(ct), cancellationToken);
 
             return new Success();
         }
@@ -74,51 +100,30 @@ internal sealed class UnitOfWork : IUnitOfWork
         return new Success();
     }
 
-    // Optimistic concurrency
-    // Total timeout for optimistic concurrency handling
-    private const int TimeoutInSeconds = 10;
-    private static readonly AsyncTimeoutPolicy TimeoutPolicy =
-        Policy.TimeoutAsync(TimeoutInSeconds,
-        TimeoutStrategy.Pessimistic,
-        (_, _, _) => throw new OptimisticConcurrencyTimeoutException());
-
-    // Backoff strategy with jitter for retry policy, starting at ~5ms
-    private const int MedianFirstDelayInMs = 5;
-    private static readonly IEnumerable<TimeSpan> JitterDelay = Backoff.DecorrelatedJitterBackoffV2(
-        medianFirstRetryDelay: TimeSpan.FromMilliseconds(MedianFirstDelayInMs),
-        retryCount: int.MaxValue);
-
-    // Fetch the db revision and retry
-    // https://learn.microsoft.com/en-us/ef/core/saving/concurrency?tabs=data-annotations#resolving-concurrency-conflicts
-    private static readonly AsyncRetryPolicy RetryPolicy = Policy
-        .Handle<DbUpdateConcurrencyException>()
-        .WaitAndRetryAsync(JitterDelay, (exception, _) =>
+    private static async Task FetchCurrentRevision(Exception exception, TimeSpan _)
+    {
+        if (exception is not DbUpdateConcurrencyException concurrencyException)
         {
-            if (exception is not DbUpdateConcurrencyException concurrencyException)
+            return;
+        }
+
+        foreach (var entry in concurrencyException.Entries)
+        {
+            if (entry.Entity is not IVersionableEntity)
             {
-                return;
+                continue;
             }
 
-            foreach (var entry in concurrencyException.Entries)
+            var dbValues = await entry.GetDatabaseValuesAsync();
+            if (dbValues == null)
             {
-                var dbValues = entry.GetDatabaseValues();
-                if (dbValues == null)
-                {
-                    continue;
-                }
-
-                var revision = dbValues![nameof(DialogEntity.Revision)];
-                if (revision == null)
-                {
-                    continue;
-                }
-
-                entry.CurrentValues[nameof(DialogEntity.Revision)] = revision;
-                entry.OriginalValues.SetValues(dbValues);
+                continue;
             }
-        });
 
-    private static readonly AsyncPolicyWrap ConcurrencyRetryPolicy = TimeoutPolicy.WrapAsync(RetryPolicy);
+            var currentRevision = dbValues[nameof(IVersionableEntity.Revision)]!;
+            entry.Property(nameof(IVersionableEntity.Revision)).OriginalValue = currentRevision;
+        }
+    }
 }
 
 internal class OptimisticConcurrencyTimeoutException : Exception;
