@@ -12,6 +12,11 @@ namespace Digdir.Tool.Dialogporten.GenerateFakeData;
 
 public class Program
 {
+    private const int RefreshRateMs = 200; // How often the progress is updated
+    private const int DialogsPerBatch = 20; // How many dialogs to generate per call DialogGenerator
+    private const int BoundedCapacity = 300; // Max number of dialogs in the queue
+    private const int Consumers = 4; // Number of consumers posting to the API
+
     public static async Task Main(string[] args)
     {
         await Parser.Default.ParseArguments<Options>(args).WithParsedAsync(RunAsync);
@@ -38,10 +43,7 @@ public class Program
 
         Directory.CreateDirectory("failed");
 
-        const int boundedCapacity = 300; // Max number of dialogs in the queue
-        const int consumers = 4; // Number of consumers posting to the API
-
-        var dialogQueue = new BlockingCollection<(int, CreateDialogDto)>(boundedCapacity);
+        var dialogQueue = new BlockingCollection<(int, CreateDialogDto)>(BoundedCapacity);
         var cancellationTokenSource = new CancellationTokenSource();
         var cancellationToken = cancellationTokenSource.Token;
 
@@ -57,7 +59,7 @@ public class Program
         var progressTask = Task.Run(() => UpdateProgress(options, cancellationToken), cancellationToken);
 
         var consumerTasks = new List<Task>();
-        for (var i = 0; i < consumers; i++)
+        for (var i = 0; i < Consumers; i++)
         {
             // ReSharper disable once AccessToDisposedClosure
             consumerTasks.Add(Task.Run(() =>
@@ -74,7 +76,6 @@ public class Program
         await progressTask;
     }
 
-    private const int RefreshRateMs = 200;
     private static async Task UpdateProgress(Options options, CancellationToken cancellationToken)
     {
         while (!cancellationToken.IsCancellationRequested)
@@ -106,22 +107,26 @@ public class Program
             _dialogCounter / _stopwatch.Elapsed.TotalSeconds);
     }
 
-
     private static void ProduceDialogs(Options options, BlockingCollection<(int, CreateDialogDto)> dialogQueue, CancellationToken cancellationToken)
     {
         Randomizer.Seed = new Random(options.Seed);
         var totalDialogs = options.Count;
-        for (var i = 0; i < totalDialogs; i++)
-        {
-            if (cancellationToken.IsCancellationRequested)
-                break;
+        var dialogCounter = 0;
 
-            var dialog = DialogGenerator.GenerateFakeDialogs(new Randomizer().Number(int.MaxValue), 1).FirstOrDefault();
-            if (dialog != null)
+        while (dialogCounter < totalDialogs && !cancellationToken.IsCancellationRequested)
+        {
+            var dialogsToGenerate = Math.Min(DialogsPerBatch, totalDialogs - dialogCounter);
+            var dialogs = DialogGenerator.GenerateFakeDialogs(new Randomizer().Number(int.MaxValue), dialogsToGenerate).Take(dialogsToGenerate);
+            foreach (var dialog in dialogs)
             {
-                dialogQueue.Add((i + 1, dialog), cancellationToken);
+                dialogQueue.Add((dialogCounter + 1, dialog), cancellationToken);
+                dialogCounter++;
+
+                if (dialogCounter >= totalDialogs)
+                    break;
             }
         }
+
         dialogQueue.CompleteAdding();
     }
 
