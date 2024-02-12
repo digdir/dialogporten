@@ -1,4 +1,3 @@
-using Digdir.Library.Entity.Abstractions.Features.EventPublisher;
 using Microsoft.EntityFrameworkCore;
 
 namespace Digdir.Library.Entity.EntityFrameworkCore.Features.EventPublisher;
