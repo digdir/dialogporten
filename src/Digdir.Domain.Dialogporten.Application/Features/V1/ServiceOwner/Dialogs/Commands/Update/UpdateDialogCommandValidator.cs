@@ -56,13 +56,19 @@ internal sealed class UpdateDialogDtoValidator : AbstractValidator<UpdateDialogD
             .IsInEnum();
 
         RuleFor(x => x.Content)
-            .UniqueBy(x => x.Type)
-            .Must(content => DialogContentType.RequiredTypes
-                .All(requiredContent => content
-                    .Select(x => x.Type)
-                    .Contains(requiredContent)))
-            .WithMessage($"Dialog must contain the following content: [{string.Join(", ", DialogContentType.RequiredTypes)}].")
-            .ForEach(x => x.SetValidator(contentValidator));
+            .NotNull()
+            .DependentRules(() =>
+            {
+                RuleFor(x => x.Content)
+                    .UniqueBy(x => x.Type)
+                    .Must(content => DialogContentType.RequiredTypes
+                        .All(requiredContent => content
+                            .Select(x => x.Type)
+                            .Contains(requiredContent)))
+                    .WithMessage("Dialog must contain the following content: " +
+                                 $"[{string.Join(", ", DialogContentType.RequiredTypes)}].")
+                    .ForEach(x => x.SetValidator(contentValidator));
+            });
 
         RuleFor(x => x.SearchTags)
             .UniqueBy(x => x.Value, StringComparer.InvariantCultureIgnoreCase)
