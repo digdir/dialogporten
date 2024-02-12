@@ -90,12 +90,9 @@ jobs:
   dry-run-deploy-infra-staging:
     name: Deploy infra to staging (dry run)
     needs: [generate-git-short-sha, check-for-changes, deploy-infra-test]
-    # todo: remove once we want to roll out staging. Also, we need to use something other than the check-for-changes here..
-    # we want to figure out whether we have changes in the infra since last time we deployed to staging, not whether we have changes in the repo
+    # todo: we want to figure out whether we have changes in the infra since last time we deployed to staging, not whether we have changes in the repo
     # maybe use another trigger here? An action to create a tag, and then use that tag as a trigger for the staging deployment?
     # or we could always try to run deployments in staging after review is approved...(!)
-    if: false
-    # if: ${{ always() && needs.check-for-changes.outputs.hasAzureChanges == 'true' }}
     uses: ./.github/workflows/action-deploy-infra.yml
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -114,47 +111,7 @@ jobs:
     name: Deploy infra to staging
     needs:
       [generate-git-short-sha, check-for-changes, dry-run-deploy-infra-staging]
-    # todo: remove once we want to roll out staging
-    if: false
     uses: ./.github/workflows/action-deploy-infra.yml
-    secrets:
-      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-      AZURE_SOURCE_KEY_VAULT_NAME: ${{ secrets.AZURE_SOURCE_KEY_VAULT_NAME }}
-      AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID: ${{ secrets.AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID }}
-      AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP: ${{ secrets.AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP }}
-    with:
-      environment: staging
-      region: norwayeast
-      gitShortSha: ${{ needs.generate-git-short-sha.outputs.gitShortSha }}
-
-  dry-run-deploy-apps-staging:
-    name: Deploy apps to staging (dryrun)
-    needs: [generate-git-short-sha, check-for-changes, deploy-infra-staging]
-    # todo: remove once we want to roll out staging
-    if: false
-    uses: ./.github/workflows/action-deploy-infra.yml
-    secrets:
-      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-      AZURE_SOURCE_KEY_VAULT_NAME: ${{ secrets.AZURE_SOURCE_KEY_VAULT_NAME }}
-      AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID: ${{ secrets.AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID }}
-      AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP: ${{ secrets.AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP }}
-    with:
-      environment: staging
-      region: norwayeast
-      dryRun: true
-      gitShortSha: ${{ needs.generate-git-short-sha.outputs.gitShortSha }}
-
-  deploy-apps-staging:
-    name: Deploy apps to staging (dryrun)
-    needs:
-      [generate-git-short-sha, check-for-changes, dry-run-deploy-apps-staging]
-    uses: ./.github/workflows/action-deploy-infra.yml
-    # todo: remove once we want to roll out staging
-    if: false
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
