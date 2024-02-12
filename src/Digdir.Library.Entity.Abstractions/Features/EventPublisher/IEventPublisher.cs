@@ -5,8 +5,13 @@ namespace Digdir.Library.Entity.Abstractions.Features.EventPublisher;
 /// </summary>
 public interface IEventPublisher
 {
+    // /// <summary>
+    // /// A collection of <see cref="IDomainEvent"/> queued up for dispatching at the end of the next unit of work.
+    // /// </summary>
+    // public IReadOnlyCollection<IDomainEvent> DomainEvents { get; set; }
     /// <summary>
-    /// A collection of <see cref="IDomainEvent"/> queued up for dispatching at the end of the next unit of work.
+    /// Get a collection of <see cref="IDomainEvent"/> queued up for dispatching 
+    /// at the end of the next unit of work, and clear the collection.
     /// </summary>
-    public IReadOnlyCollection<IDomainEvent> DomainEvents { get; }
+    public IEnumerable<IDomainEvent> PopDomainEvents();
 }

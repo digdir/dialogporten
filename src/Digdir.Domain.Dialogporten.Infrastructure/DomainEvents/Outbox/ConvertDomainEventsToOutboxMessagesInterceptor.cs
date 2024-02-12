@@ -29,7 +29,7 @@ internal sealed class ConvertDomainEventsToOutboxMessagesInterceptor : SaveChang
         var domainEvents = dbContext.ChangeTracker.Entries()
             .SelectMany(x =>
                 x.Entity is IEventPublisher publisher
-                    ? publisher.DomainEvents
+                    ? publisher.PopDomainEvents()
                     : Enumerable.Empty<IDomainEvent>())
             .ToList();
 
@@ -42,14 +42,7 @@ internal sealed class ConvertDomainEventsToOutboxMessagesInterceptor : SaveChang
             .Select(OutboxMessage.Create)
             .ToList();
 
-        foreach (var outboxMessage in outboxMessages)
-        {
-            var existingOutboxMessage = dbContext.Set<OutboxMessage>().Find(outboxMessage.EventId);
-            if (existingOutboxMessage == null)
-            {
-                dbContext.Set<OutboxMessage>().Add(outboxMessage);
-            }
-        }
+        dbContext.Set<OutboxMessage>().AddRange(outboxMessages);
 
         return base.SavingChangesAsync(eventData, result, cancellationToken);
     }

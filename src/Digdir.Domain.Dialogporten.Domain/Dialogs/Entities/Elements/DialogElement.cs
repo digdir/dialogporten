@@ -27,13 +27,11 @@ public class DialogElement : IEntity, IAggregateChangedHandler, IEventPublisher
     public DialogElement? RelatedDialogElement { get; set; }
 
     // === Principal relationships ===
-    [AggregateChild]
-    public DialogElementDisplayName? DisplayName { get; set; }
-    [AggregateChild]
-    public List<DialogElementUrl> Urls { get; set; } = new();
-    public List<DialogApiAction> ApiActions { get; set; } = new();
-    public List<DialogActivity> Activities { get; set; } = new();
-    public List<DialogElement> RelatedDialogElements { get; set; } = new();
+    [AggregateChild] public DialogElementDisplayName? DisplayName { get; set; }
+    [AggregateChild] public List<DialogElementUrl> Urls { get; set; } = [];
+    public List<DialogApiAction> ApiActions { get; set; } = [];
+    public List<DialogActivity> Activities { get; set; } = [];
+    public List<DialogElement> RelatedDialogElements { get; set; } = [];
 
     public void OnCreate(AggregateNode self, DateTimeOffset utcNow)
     {
@@ -50,12 +48,18 @@ public class DialogElement : IEntity, IAggregateChangedHandler, IEventPublisher
         _domainEvents.Add(new DialogElementDeletedDomainEvent(DialogId, Id, RelatedDialogElementId, Type));
     }
 
-    public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents;
-    private readonly List<IDomainEvent> _domainEvents = new();
-
     public void SoftDelete()
     {
         _domainEvents.Add(new DialogElementDeletedDomainEvent(DialogId, Id, RelatedDialogElementId, Type));
+    }
+
+    private readonly List<IDomainEvent> _domainEvents = [];
+
+    public IEnumerable<IDomainEvent> PopDomainEvents()
+    {
+        var events = _domainEvents.ToList();
+        _domainEvents.Clear();
+        return events;
     }
 }
 
