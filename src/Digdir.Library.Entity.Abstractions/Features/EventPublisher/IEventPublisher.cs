@@ -6,7 +6,8 @@ namespace Digdir.Library.Entity.Abstractions.Features.EventPublisher;
 public interface IEventPublisher
 {
     /// <summary>
-    /// A collection of <see cref="IDomainEvent"/> queued up for dispatching at the end of the next unit of work.
+    /// Get a collection of <see cref="IDomainEvent"/> queued up for dispatching at the end of the next unit of work.
+    /// This also clears the collection on the EventPublisher.
     /// </summary>
-    public IReadOnlyCollection<IDomainEvent> DomainEvents { get; }
+    public IEnumerable<IDomainEvent> PopDomainEvents();
 }

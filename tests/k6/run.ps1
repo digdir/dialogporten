@@ -49,8 +49,8 @@ if (-not (Test-Path $FilePath)) {
 }
 
 # Generate tests
-& "$PSScriptRoot\scripts\generate_alltests.ps1" "$PSScriptRoot\tests\serviceowner\" > $null
-& "$PSScriptRoot\scripts\generate_alltests.ps1" "$PSScriptRoot\tests\enduser\" > $null
+& "$PSScriptRoot\scripts\generate_all_tests.ps1" "$PSScriptRoot\tests\serviceowner\" > $null
+& "$PSScriptRoot\scripts\generate_all_tests.ps1" "$PSScriptRoot\tests\enduser\" > $null
 
 # Handle environment settings
 $insecureSkipTLS = $null
