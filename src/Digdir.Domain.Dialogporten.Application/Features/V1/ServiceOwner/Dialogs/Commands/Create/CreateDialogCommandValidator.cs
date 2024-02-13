@@ -125,6 +125,7 @@ internal sealed class CreateDialogContentDtoValidator : AbstractValidator<Create
 {
     public CreateDialogContentDtoValidator()
     {
+        ClassLevelCascadeMode = CascadeMode.Stop;
         RuleFor(x => x.Type)
             .IsInEnum();
         RuleForEach(x => x.Value)
