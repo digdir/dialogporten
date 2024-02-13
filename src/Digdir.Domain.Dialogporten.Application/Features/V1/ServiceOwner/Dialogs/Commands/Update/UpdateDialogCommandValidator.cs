@@ -120,6 +120,7 @@ internal sealed class UpdateDialogContentDtoValidator : AbstractValidator<Update
 {
     public UpdateDialogContentDtoValidator()
     {
+        ClassLevelCascadeMode = CascadeMode.Stop;
         RuleFor(x => x.Type)
             .IsInEnum();
         RuleForEach(x => x.Value)
