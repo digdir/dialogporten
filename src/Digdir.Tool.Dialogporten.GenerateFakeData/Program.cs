@@ -10,17 +10,15 @@ using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Co
 
 namespace Digdir.Tool.Dialogporten.GenerateFakeData;
 
-public class Program
+public static class Program
 {
     private const int RefreshRateMs = 200; // How often the progress is updated
     private const int DialogsPerBatch = 20; // How many dialogs to generate per call DialogGenerator
     private const int BoundedCapacity = 300; // Max number of dialogs in the queue
     private const int Consumers = 4; // Number of consumers posting to the API
+    private const string FailedDirectory = "failed"; // Directory to write failed requests to
 
-    public static async Task Main(string[] args)
-    {
-        await Parser.Default.ParseArguments<Options>(args).WithParsedAsync(RunAsync);
-    }
+    public static async Task Main(string[] args) => await Parser.Default.ParseArguments<Options>(args).WithParsedAsync(RunAsync);
 
     private static readonly JsonSerializerOptions _jsonSerializerOptions = new()
     {
@@ -32,7 +30,7 @@ public class Program
     private static readonly Stopwatch _stopwatch = new();
     private static async Task RunAsync(Options options)
     {
-        if (options.Json)
+        if (!options.Submit)
         {
             Randomizer.Seed = new Random(options.Seed);
             var dialogs = DialogGenerator.GenerateFakeDialogs(new Randomizer().Number(int.MaxValue), options.Count);
@@ -40,8 +38,6 @@ public class Program
             Console.WriteLine(serialized);
             return;
         }
-
-        Directory.CreateDirectory("failed");
 
         var dialogQueue = new BlockingCollection<(int, CreateDialogDto)>(BoundedCapacity);
         var cancellationTokenSource = new CancellationTokenSource();
@@ -170,9 +166,17 @@ public class Program
         var result = await response.Content.ReadAsStringAsync();
         Console.WriteLine(result);
         var json = JsonSerializer.Serialize(item.Item2, _jsonSerializerOptions);
-        var output = $"failed/{item.Item1}.json";
-        await File.WriteAllTextAsync(output, json);
-        Console.WriteLine($"Wrote request payload to {output}");
+        var output = $"{FailedDirectory}/{item.Item1}.json";
+        try
+        {
+            Directory.CreateDirectory(FailedDirectory);
+            await File.WriteAllTextAsync(output, json);
+            Console.WriteLine($"Wrote request payload to '{output}'");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Failed to write request payload to '{output}': {e.Message}");
+        }
     }
 }
 
@@ -184,11 +188,11 @@ public class Options
     [Option('s', "seed", Required = false, HelpText = "Seed for the random number generator.")]
     public int Seed { get; set; } = 1337;
 
-    [Option('j', "json", Required = false, HelpText = "Generate JSON output of generated data.")]
-    public bool Json { get; set; } = false;
+    [Option('s', "submit", Required = false, HelpText = "Attempt to create the generated dialogs using service owner API.")]
+    public bool Submit { get; set; } = false;
 
     [Option('u', "url", Required = false,
         Default = "https://localhost:7214/api/v1/serviceowner/dialogs",
-        HelpText = "Serviceowner endpoint to post dialogs")]
+        HelpText = "Service owner endpoint to post dialogs")]
     public string Url { get; set; } = null!;
 }

@@ -1,5 +1,4 @@
 using System.Globalization;
-using System.Text;
 using Bogus;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Create;
@@ -20,8 +19,8 @@ public static class DialogGenerator
         Randomizer.Seed = new Random(seed);
         return new Faker<CreateDialogDto>()
             //.RuleFor(o => o.Id, f => f.Random.Uuid())
-            .RuleFor(o => o.ServiceResource, f => "urn:altinn:resource:" + f.Random.AlphaNumeric(10))
-            .RuleFor(o => o.Party, f => GenerateRandomParty())
+            .RuleFor(o => o.ServiceResource, _ => GenerateFakeResource())
+            .RuleFor(o => o.Party, _ => GenerateRandomParty())
             .RuleFor(o => o.Progress, f => f.Random.Number(0, 100))
             .RuleFor(o => o.ExtendedStatus, f => f.Random.AlphaNumeric(10))
             .RuleFor(o => o.ExternalReference, f => f.Random.AlphaNumeric(10))
@@ -35,6 +34,22 @@ public static class DialogGenerator
             .RuleFor(o => o.ApiActions, _ => GenerateFakeDialogApiActions())
             .RuleFor(o => o.Activities, _ => GenerateFakeDialogActivities())
             .Generate(count);
+    }
+
+    private const string ResourcePrefix = "urn:altinn:resource:";
+
+    private static string GenerateFakeResource()
+    {
+        var r = new Randomizer();
+        // Apply a power function to skew the distribution towards higher numbers
+        // The exponent controls the shape of the distribution curve
+        var numberOfDistinctResources = 1000;
+        var exponent = 15; // Uses to adjust the distribution curve. Higher value = more skewed towards higher numbers
+        var biasedRandom = Math.Pow(r.Double(), 1.0 / exponent);
+
+        var result = 1 + (int)(biasedRandom * (numberOfDistinctResources - 1));
+
+        return ResourcePrefix + result.ToString("D4", CultureInfo.InvariantCulture);
     }
 
     private static string GenerateRandomParty()
@@ -74,7 +89,8 @@ public static class DialogGenerator
         int c;
         do
         {
-            orgNumberWithoutControlDigit = r.Number(10000000, 99999999).ToString(CultureInfo.InvariantCulture);
+            // We clamp the range to avoid generating far too many distinct org numbers
+            orgNumberWithoutControlDigit = r.Number(99000000, 99999999).ToString(CultureInfo.InvariantCulture);
             c = CalculateControlDigit(orgNumberWithoutControlDigit, OrgNumberWeights);
         } while (c == -1);
 
@@ -89,13 +105,17 @@ public static class DialogGenerator
 
         var individualNumber = year < 2000
             ? year < 1940 ? r.Number(1, 500) : r.Number(900, 999)
-            : year < 2040 ? r.Number(500, 999) : throw new ArgumentException($"Invalid birth year: {year}", nameof(year));
-
+            : year < 2040
+                ? r.Number(500, 999)
+                : throw new ArgumentException($"Invalid birth year: {year}", nameof(year));
         return individualNumber.ToString("D3", CultureInfo.InvariantCulture);
     }
 
-    private static readonly DateTime BirthDateRangeBegin = new(1900, 1, 1);
-    private static readonly DateTime BirthDateRangeEnd = new(2010, 1, 1);
+    // 5 years - up to 100 valid individual numbers per year (in this range)
+    // = appx 1,7million distinct PIDs. The distribution is uniform, which is probably not
+    // realistic, but hopefully it works for our purposes.
+    private static readonly DateTime BirthDateRangeBegin = new(1965, 1, 1);
+    private static readonly DateTime BirthDateRangeEnd = new(1970, 1, 1);
     private static readonly TimeSpan Range = BirthDateRangeEnd - BirthDateRangeBegin;
     private static DateTime GenerateRandomDateOfBirth()
     {
@@ -154,7 +174,7 @@ public static class DialogGenerator
         var hasSecondary = false;
         return new Faker<CreateDialogDialogGuiActionDto>()
             .RuleFor(o => o.Action, f => f.Random.AlphaNumeric(8))
-            .RuleFor(o => o.Priority, f =>
+            .RuleFor(o => o.Priority, _ =>
             {
                 if (hasPrimary)
                 {

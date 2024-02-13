@@ -5,7 +5,11 @@
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-       <!-- <PublishAot>true</PublishAot> -->
+    </PropertyGroup>
+
+    <!-- Make default build configuration Release for easier "dotnet run" usage -->
+    <PropertyGroup>
+        <Configuration>Release</Configuration>
     </PropertyGroup>
 
     <ItemGroup>
