@@ -1,4 +1,5 @@
-﻿using Digdir.Domain.Dialogporten.Application.Common.Extensions.FluentValidation;
+﻿using Digdir.Domain.Dialogporten.Application.Common.Extensions.Enumerables;
+using Digdir.Domain.Dialogporten.Application.Common.Extensions.FluentValidation;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using Digdir.Domain.Dialogporten.Domain.Common;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
@@ -56,19 +57,15 @@ internal sealed class UpdateDialogDtoValidator : AbstractValidator<UpdateDialogD
             .IsInEnum();
 
         RuleFor(x => x.Content)
-            .NotNull()
-            .DependentRules(() =>
-            {
-                RuleFor(x => x.Content)
-                    .UniqueBy(x => x.Type)
-                    .Must(content => DialogContentType.RequiredTypes
-                        .All(requiredContent => content
-                            .Select(x => x.Type)
-                            .Contains(requiredContent)))
-                    .WithMessage("Dialog must contain the following content: " +
-                                 $"[{string.Join(", ", DialogContentType.RequiredTypes)}].")
-                    .ForEach(x => x.SetValidator(contentValidator));
-            });
+            .UniqueBy(x => x.Type)
+            .Must(content => DialogContentType.RequiredTypes
+                .All(requiredContent => content
+                    .EmptyIfNull()
+                    .Select(x => x.Type)
+                    .Contains(requiredContent)))
+            .WithMessage("Dialog must contain the following content: " +
+                         $"[{string.Join(", ", DialogContentType.RequiredTypes)}].")
+            .ForEach(x => x.SetValidator(contentValidator));
 
         RuleFor(x => x.SearchTags)
             .UniqueBy(x => x.Value, StringComparer.InvariantCultureIgnoreCase)
@@ -76,12 +73,15 @@ internal sealed class UpdateDialogDtoValidator : AbstractValidator<UpdateDialogD
 
         RuleFor(x => x.GuiActions)
             .Must(x => x
+                .EmptyIfNull()
                 .Count(x => x.Priority == DialogGuiActionPriority.Values.Primary) <= 1)
                 .WithMessage("Only one primary GUI action is allowed.")
             .Must(x => x
+                .EmptyIfNull()
                 .Count(x => x.Priority == DialogGuiActionPriority.Values.Secondary) <= 1)
                 .WithMessage("Only one secondary GUI action is allowed.")
             .Must(x => x
+                .EmptyIfNull()
                 .Count(x => x.Priority == DialogGuiActionPriority.Values.Tertiary) <= 5)
                 .WithMessage("Only five tertiary GUI actions are allowed.")
             .UniqueBy(x => x.Id)
