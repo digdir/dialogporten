@@ -91,7 +91,7 @@ public static class SoftDeletableExtensions
         return modelBuilder.EntitiesOfType<ISoftDeletableEntity>(builder =>
         {
             var method = _openGenericInternalMethodInfo.MakeGenericMethod(builder.Metadata.ClrType);
-            method.Invoke(null, new object[] { modelBuilder });
+            method.Invoke(null, [modelBuilder]);
         });
     }
 

@@ -14,7 +14,7 @@ internal static class OneOfExtensions
         var oneOfFactory = _oneOfFactoryByType.GetOrAdd(
             key: new(typeof(TOneOf), value.GetType()),
             valueFactory: GetOneOfFactoryOrNull);
-        result = (TOneOf)oneOfFactory?.Invoke(null, new object[] { value })! ?? default;
+        result = (TOneOf)oneOfFactory?.Invoke(null, [value])! ?? default;
         return oneOfFactory is not null;
     }
 
@@ -26,7 +26,7 @@ internal static class OneOfExtensions
         var oneOfImplicitOperator = oneOf.GetMethod(
             name: ImplicitOperatorName,
             bindingAttr: ImplicitOperatorFlags,
-            types: new[] { type });
+            types: [type]);
         return oneOfImplicitOperator;
     }
 }

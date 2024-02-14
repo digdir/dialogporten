@@ -30,14 +30,14 @@ public class QueryableExtensionsTests
 
         var authorizedResources = new DialogSearchAuthorizationResult
         {
-            DialogIds = new List<Guid> { dialogEntities.First().Id },
+            DialogIds = [dialogEntities.First().Id],
             ResourcesByParties = new Dictionary<string, List<string>>
             {
-                { party2, new List<string> { resource2, resource3 } }
+                { party2, [resource2, resource3]}
             },
             PartiesByResources = new Dictionary<string, List<string>>
             {
-                { resource2, new List<string> { party1 } }
+                { resource2, [party1]}
             }
         };
 

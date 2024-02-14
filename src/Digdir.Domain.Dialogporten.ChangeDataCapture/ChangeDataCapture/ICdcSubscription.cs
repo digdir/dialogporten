@@ -67,13 +67,13 @@ internal sealed class PostgresCdcSubscription : ICdcSubscription<OutboxMessage>
         var (connectionString, slotName, publicationName, tableName, _) = _options;
         var dataSource = NpgsqlDataSource.Create(connectionString);
 
-        var publicationExists = await dataSource.Exists("pg_publication", "pubname = $1", new object[] { publicationName }, ct);
+        var publicationExists = await dataSource.Exists("pg_publication", "pubname = $1", [publicationName], ct);
         if (!publicationExists)
         {
             await dataSource.Execute($"""CREATE PUBLICATION {publicationName} FOR TABLE "{tableName}" WITH (publish = 'insert', publish_via_partition_root = false);""", ct);
         }
 
-        var replicationSlotExists = await dataSource.Exists("pg_replication_slots", "slot_name = $1", new object[] { slotName }, ct);
+        var replicationSlotExists = await dataSource.Exists("pg_replication_slots", "slot_name = $1", [slotName], ct);
         if (!replicationSlotExists)
         {
             var replicationSlot = await connection.CreatePgOutputReplicationSlot(slotName,

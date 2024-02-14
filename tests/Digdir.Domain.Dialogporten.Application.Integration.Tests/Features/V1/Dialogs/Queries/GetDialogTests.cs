@@ -62,103 +62,133 @@ public class GetDialogTests : ApplicationCollectionFixture
                 new() { Type = DialogContentType.Values.SenderName, Value = { new() { CultureCode = "nb_NO", Value = "Overstyrt avsendernavn (bruker default tjenesteeiers navn)" } } },
                 new() { Type = DialogContentType.Values.AdditionalInfo, Value = { new() { CultureCode = "nb_NO", Value = "Innhold med <em>begrenset</em> HTML-støtte. Dette innholdet vises når dialogen ekspanderes." } } }
             },
-            Elements = new()
-            {
+            Elements =
+            [
                 new()
                 {
                     Id = dialogElementGuid,
-                    DisplayName = new() { new() { CultureCode = "nb_NO", Value = "Dette er et vedlegg" } },
+                    DisplayName = [new() {CultureCode = "nb_NO", Value = "Dette er et vedlegg"}],
                     Type = new Uri("some:type"),
                     AuthorizationAttribute = "attachment1",
-                    Urls = new List<CreateDialogDialogElementUrlDto>
-                    {
-                        new ()
+                    Urls =
+                    [
+                        new()
                         {
                             ConsumerType = DialogElementUrlConsumerType.Values.Gui,
                             MimeType = "application/pdf",
                             Url = new Uri("http://example.com/some/deep/link/to/attachment1.pdf")
                         }
-                    }
-                },
-            },
-            GuiActions = new()
-            {
-                new() {
+                    ]
+                }
+
+            ],
+            GuiActions =
+            [
+                new()
+                {
                     Action = "open",
                     Priority = DialogGuiActionPriority.Values.Primary,
-                    Title = new() { new() { CultureCode = "nb_NO", Value = "Åpne i dialogtjeneste" } },
-                    Url = new("https://example.com/some/deep/link/to/dialogs/123456789")},
-                new() {
+                    Title = [new() {CultureCode = "nb_NO", Value = "Åpne i dialogtjeneste"}],
+                    Url = new("https://example.com/some/deep/link/to/dialogs/123456789")
+                },
+
+                new()
+                {
                     Action = "confirm",
                     Priority = DialogGuiActionPriority.Values.Secondary,
-                    Title = new() { new() { CultureCode = "nb_NO", Value = "Bekreft mottatt" } },
+                    Title = [new() {CultureCode = "nb_NO", Value = "Bekreft mottatt"}],
                     Url = new("https://example.com/some/deep/link/to/dialogs/123456789/confirmReceived"),
                     AuthorizationAttribute = "somesubresource",
-                    IsBackChannel = true},
-                new() {
+                    IsBackChannel = true
+                },
+
+                new()
+                {
                     Action = "delete",
                     Priority = DialogGuiActionPriority.Values.Tertiary,
-                    Title = new() { new() { CultureCode = "nb_NO", Value = "Avbryt" } },
+                    Title = [new() {CultureCode = "nb_NO", Value = "Avbryt"}],
                     Url = new("https://example.com/some/deep/link/to/dialogs/123456789/confirmReceived"),
-                    IsDeleteAction = true}
-            },
-            ApiActions = new()
-            {
-                new() {
+                    IsDeleteAction = true
+                }
+            ],
+            ApiActions =
+            [
+                new()
+                {
                     Action = "open",
-                    Endpoints = new() {
-                        new() {
+                    Endpoints =
+                    [
+                        new()
+                        {
                             Url = new("https://example.com/api/dialogs/123456789"),
                             HttpMethod = HttpVerb.Values.GET,
                             ResponseSchema = new("https://schemas.altinn.no/dialogs/v1/dialogs.json"),
                             DocumentationUrl = new("https://api-docs.example.com/dialogservice/open-action")
-                        },
-                    }
+                        }
+
+                    ]
                 },
-                new() {
+
+                new()
+                {
                     Action = "confirm",
-                    Endpoints = new() {
-                        new() {
+                    Endpoints =
+                    [
+                        new()
+                        {
                             Url = new("https://example.com/api/dialogs/123456789/confirmReceived"),
                             HttpMethod = HttpVerb.Values.POST,
                             DocumentationUrl = new("https://api-docs.example.com/dialogservice/confirm-action")
-                        },
-                    }
+                        }
+
+                    ]
                 },
-                new() {
+
+                new()
+                {
                     Action = "submit",
-                    Endpoints = new() {
-                        new() {
+                    Endpoints =
+                    [
+                        new()
+                        {
                             Url = new("https://example.com/api/dialogs/123456789"),
                             HttpMethod = HttpVerb.Values.POST,
                             RequestSchema = new("https://schemas.example.com/dialogservice/v1/dialogservice.json"),
                             ResponseSchema = new("https://schemas.altinn.no/dialogs/v1/dialogs.json")
-                        },
-                    }
+                        }
+
+                    ]
                 },
-                new() {
+
+                new()
+                {
                     Action = "delete",
-                    Endpoints = new() {
-                        new() {
+                    Endpoints =
+                    [
+                        new()
+                        {
                             Url = new("https://example.com/api/dialogs/123456789"),
                             HttpMethod = HttpVerb.Values.DELETE
-                        },
-                    }
-                },
-            },
-            Activities = new()
-            {
+                        }
+
+                    ]
+                }
+
+            ],
+            Activities =
+            [
                 new()
                 {
                     Id = Guid.NewGuid(),
                     //CreatedAt = DateTimeOffset.UtcNow,
                     Type = DialogActivityType.Values.Submission,
-                    PerformedBy = new() { new() { CultureCode = "nb_NO", Value = "Et navn" } },
+                    PerformedBy = [new() {CultureCode = "nb_NO", Value = "Et navn"}],
                     ExtendedType = new Uri("SKE:1234-received-precheck-ok"),
-                    Description = new() { new() { CultureCode = "nb_NO", Value = "Innsending er mottatt og sendt til behandling" } },
+                    Description =
+                        [new() {CultureCode = "nb_NO", Value = "Innsending er mottatt og sendt til behandling"}],
                     DialogElementId = dialogElementGuid
                 }
-            }
+            ]
         };
         var createCommandResponse = await Application.Send(createCommand);
 
