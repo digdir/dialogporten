@@ -70,7 +70,7 @@ internal static class DecisionRequestHelper
             attributes.RemoveAll(x => x.AttributeId == AttributeIdOrganizationNumber);
         }
 
-        return new() { new() { Id = SubjectId, Attribute = attributes } };
+        return [new() { Id = SubjectId, Attribute = attributes }];
     }
 
     private static List<XacmlJsonCategory> CreateActionCategories(
@@ -88,7 +88,7 @@ internal static class DecisionRequestHelper
             .Select(x => new XacmlJsonCategory
             {
                 Id = x.Value,
-                Attribute = new() { new() { AttributeId = AttributeIdAction, Value = x.Key } }
+                Attribute = [new() { AttributeId = AttributeIdAction, Value = x.Key }]
             })
             .ToList();
     }
@@ -180,7 +180,7 @@ internal static class DecisionRequestHelper
     {
         var multiRequests = new XacmlJsonMultiRequests
         {
-            RequestReference = new List<XacmlJsonRequestReference>()
+            RequestReference = []
         };
 
 
@@ -190,7 +190,7 @@ internal static class DecisionRequestHelper
             {
                 multiRequests.RequestReference.Add(new XacmlJsonRequestReference
                 {
-                    ReferenceId = new List<string> { SubjectId, resourceIdByName[resourceName], actionId }
+                    ReferenceId = [SubjectId, resourceIdByName[resourceName], actionId]
                 });
             }
         }
@@ -267,7 +267,7 @@ internal static class DecisionRequestHelper
 
                 if (!response.PartiesByResources.TryGetValue(serviceResource, out var parties))
                 {
-                    parties = new List<string>();
+                    parties = [];
                     response.PartiesByResources.Add(serviceResource, parties);
                 }
 
@@ -303,14 +303,14 @@ internal static class DecisionRequestHelper
         {
             var multiRequests = new XacmlJsonMultiRequests
             {
-                RequestReference = new List<XacmlJsonRequestReference>()
+                RequestReference = []
             };
 
             for (var i = 1; i <= resources.Count; i++)
             {
                 multiRequests.RequestReference.Add(new XacmlJsonRequestReference
                 {
-                    ReferenceId = new List<string> { SubjectId, $"r{i}", "a1" }
+                    ReferenceId = [SubjectId, $"r{i}", "a1"]
                 });
             }
 

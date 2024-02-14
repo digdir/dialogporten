@@ -24,7 +24,7 @@ internal sealed class IdempotentDomainEventHandler<TDomainEvent> : INotification
         var consumer = _decorated.GetType().Name;
         var outboxMessageConsumer = await _db
             .OutboxMessageConsumers
-            .FindAsync(new object[] { notification.EventId, consumer }, cancellationToken);
+            .FindAsync([notification.EventId, consumer], cancellationToken);
         if (outboxMessageConsumer is not null)
         {
             // I've handled this event before, so I'm not going to do it again.

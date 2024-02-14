@@ -146,14 +146,14 @@ public class DecisionRequestHelperTests
             // This should be copied resources with attributes "urn:altinn:organizationnumber" if starting with "urn:altinn:organization:identifier-no::"
             // and "urn:altinn:ssn" if starting with "urn:altinn:person:identifier-no::"
             Party = party,
-            AltinnActions = new HashSet<AltinnAction>
-            {
-                new ("read",  Constants.MainResource),
-                new ("write",  Constants.MainResource),
-                new ("sign",  "element1"),
-                new ("elementread",  "element2"),
-                new ("elementread",  "element3")
-            }
+            AltinnActions =
+            [
+                new("read", Constants.MainResource),
+                new("write", Constants.MainResource),
+                new("sign", "element1"),
+                new("elementread", "element2"),
+                new("elementread", "element3")
+            ]
         };
     }
 
@@ -161,7 +161,7 @@ public class DecisionRequestHelperTests
     {
         var response = new XacmlJsonResponse
         {
-            Response = new List<XacmlJsonResult>()
+            Response = []
         };
 
         foreach (var requestReference in request.Request.MultiRequests.RequestReference)

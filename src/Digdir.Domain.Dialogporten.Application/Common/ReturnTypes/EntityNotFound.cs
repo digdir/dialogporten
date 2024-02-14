@@ -14,5 +14,5 @@ public record EntityNotFound(string Name, IEnumerable<object> Keys)
     public EntityNotFound(string name, IEnumerable<Guid> keys) : this(name, keys.Cast<object>()) { }
     public EntityNotFound(string name, Guid key) : this(name, new object[] { key }) { }
 
-    public List<ValidationFailure> ToValidationResults() => new() { new ValidationFailure(Name, Message) };
+    public List<ValidationFailure> ToValidationResults() => [new ValidationFailure(Name, Message)];
 }

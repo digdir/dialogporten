@@ -24,7 +24,7 @@ internal sealed class AppInsightsClient : IAppInsightsClient
     public async Task<AppInsightsQueryResponseDto[]> QueryAppInsights(AzureAlertDto azureAlertRequest, CancellationToken cancellationToken)
     {
         const string appInsightsTokenScope = "https://api.applicationinsights.io";
-        var token = await _credentials.GetTokenAsync(new TokenRequestContext(new[] { appInsightsTokenScope }), cancellationToken);
+        var token = await _credentials.GetTokenAsync(new TokenRequestContext([appInsightsTokenScope]), cancellationToken);
         var requests = azureAlertRequest.Data.AlertContext.Condition.AllOf
             .Select(x =>
             {

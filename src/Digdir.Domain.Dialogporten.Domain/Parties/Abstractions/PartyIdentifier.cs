@@ -44,7 +44,8 @@ public static class PartyIdentifier
                     .GetProperty(nameof(IPartyIdentifier.Prefix), BindingFlags.Static | BindingFlags.Public)!
                     .GetValue(null)!,
                 TryParse: partyIdentifierType
-                    .GetMethod(nameof(IPartyIdentifier.TryParse), new[] { typeof(ReadOnlySpan<char>), typeof(IPartyIdentifier).MakeByRefType() })!
+                    .GetMethod(nameof(IPartyIdentifier.TryParse), [typeof(ReadOnlySpan<char>), typeof(IPartyIdentifier).MakeByRefType()
+                    ])!
                     .CreateDelegate<TryParseDelegate>()
             ))
             .ToList()

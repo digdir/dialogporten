@@ -14,5 +14,5 @@ public record EntityDeleted(string Name, IEnumerable<object> Keys)
     public EntityDeleted(string name, IEnumerable<Guid> keys) : this(name, keys.Cast<object>()) { }
     public EntityDeleted(string name, Guid key) : this(name, new object[] { key }) { }
 
-    public List<ValidationFailure> ToValidationResults() => new() { new ValidationFailure(Name, Message) };
+    public List<ValidationFailure> ToValidationResults() => [new ValidationFailure(Name, Message)];
 }

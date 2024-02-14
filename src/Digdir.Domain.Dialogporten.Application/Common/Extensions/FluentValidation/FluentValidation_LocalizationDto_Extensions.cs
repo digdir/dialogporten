@@ -6,7 +6,7 @@ namespace Digdir.Domain.Dialogporten.Application.Common.Extensions.FluentValidat
 
 internal static class FluentValidationLocalizationDtoExtensions
 {
-    private static readonly string[] AllowedTags = { "p", "a", "br", "em", "strong", "ul", "ol", "li" };
+    private static readonly string[] AllowedTags = ["p", "a", "br", "em", "strong", "ul", "ol", "li"];
     private static readonly string ContainsValidHtmlError =
         $"{{PropertyName}} contains unsupported html. The following tags are supported: " +
         $"[{string.Join(",", AllowedTags.Select(x => '<' + x + '>'))}]. Tag attributes " +
