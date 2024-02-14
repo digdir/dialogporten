@@ -96,7 +96,7 @@ internal sealed class UnitOfWork : IUnitOfWork
         if (!_enableConcurrencyCheck)
         {
             // Attempt to save changes without concurrency check
-            await ConcurrencyRetryPolicy.ExecuteAsync(ct => _dialogDbContext.SaveChangesAsync(ct), cancellationToken);
+            await ConcurrencyRetryPolicy.ExecuteAsync(_dialogDbContext.SaveChangesAsync, cancellationToken);
 
             return new Success();
         }

@@ -67,7 +67,7 @@ public static class ClaimsPrincipalExtensions
 
         orgNumber = id.Split(IdDelimiter) switch
         {
-            [IdPrefix, var on] => NorwegianOrganizationIdentifier.IsValid(on) ? on : null,
+        [IdPrefix, var on] => NorwegianOrganizationIdentifier.IsValid(on) ? on : null,
             _ => null
         };
 
