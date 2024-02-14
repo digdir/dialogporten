@@ -144,10 +144,11 @@ jobs:
       region: norwayeast
       dryRun: true
       gitShortSha: ${{ needs.generate-git-short-sha.outputs.gitShortSha }}
-  
+
   deploy-apps-staging:
     name: Deploy apps to staging
-    needs: [generate-git-short-sha, check-for-changes, deploy-apps-test]
+    needs:
+      [generate-git-short-sha, check-for-changes, dry-run-deploy-apps-staging]
     uses: ./.github/workflows/action-deploy-apps.yml
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
