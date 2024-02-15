@@ -8,6 +8,7 @@ on:
       - "tests/k6/**"
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref_name }}
+
 jobs:
   generate-git-short-sha:
     name: Generate git short sha
