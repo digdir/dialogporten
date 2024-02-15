@@ -26,4 +26,4 @@ ENV Infrastructure__DialogDbConnectionString=""
 WORKDIR /app
 USER $APP_UID
 COPY --from=build /app/publish .
-ENTRYPOINT echo $Infrastructure__DialogDbConnectionString && ./efbundle -v --connection "${Infrastructure__DialogDbConnectionString}"
+ENTRYPOINT ./efbundle -v --connection "${Infrastructure__DialogDbConnectionString}"
