@@ -24,6 +24,13 @@ public class SearchDialogActivityEndpoint : Endpoint<SearchDialogActivityQuery>
 
         Description(b => b
             .OperationId("GetDialogActivityList")
+            .ProducesOneOf<SearchDialogActivityResult>(
+                StatusCodes.Status200OK,
+                StatusCodes.Status400BadRequest,
+                StatusCodes.Status401Unauthorized,
+                StatusCodes.Status403Forbidden,
+                StatusCodes.Status404NotFound,
+                StatusCodes.Status410Gone)
         );
     }
 
@@ -46,8 +53,10 @@ public sealed class SearchDialogActivityEndpointSummary : Summary<SearchDialogAc
                 Gets the list of activities belonging to a dialog
                 """;
         Responses[StatusCodes.Status200OK] = Constants.SwaggerSummary.ReturnedResult.FormatInvariant("activity list");
+        Responses[StatusCodes.Status400BadRequest] = Constants.SwaggerSummary.ValidationError;
         Responses[StatusCodes.Status401Unauthorized] = Constants.SwaggerSummary.EndUserAuthenticationFailure;
         Responses[StatusCodes.Status403Forbidden] = Constants.SwaggerSummary.AccessDeniedToDialog.FormatInvariant("get");
         Responses[StatusCodes.Status404NotFound] = Constants.SwaggerSummary.DialogNotFound;
+        Responses[StatusCodes.Status410Gone] = Constants.SwaggerSummary.DialogDeleted;
     }
 }

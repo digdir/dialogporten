@@ -25,7 +25,6 @@ public class SearchDialogEndpoint : Endpoint<SearchDialogQuery, PaginatedList<Se
 
         Description(b => b
             .OperationId("GetDialogList")
-            .ClearDefaultProduces(StatusCodes.Status403Forbidden)
         );
     }
 
@@ -50,7 +49,9 @@ public sealed class SearchDialogEndpointSummary : Summary<SearchDialogEndpoint, 
                 * See "continuationToken" in the response for how to get the next page of results.
                 * hasNextPage will be set to true if there are more items to get.
                 """;
+
         Responses[StatusCodes.Status200OK] = Constants.SwaggerSummary.ReturnedResult.FormatInvariant("list");
+        Responses[StatusCodes.Status400BadRequest] = Constants.SwaggerSummary.ValidationError;
         Responses[StatusCodes.Status401Unauthorized] = Constants.SwaggerSummary.EndUserAuthenticationFailure;
 
         RequestParam(p => p.ContinuationToken, "Supply \"continuationToken\" for the response to get the next page of results, if hasNextPage is true");

@@ -24,6 +24,13 @@ public class SearchDialogElementEndpoint : Endpoint<SearchDialogElementQuery>
 
         Description(b => b
             .OperationId("GetDialogElementList")
+            .ProducesOneOf<SearchDialogElementResult>(
+                StatusCodes.Status200OK,
+                StatusCodes.Status400BadRequest,
+                StatusCodes.Status401Unauthorized,
+                StatusCodes.Status403Forbidden,
+                StatusCodes.Status404NotFound,
+                StatusCodes.Status410Gone)
         );
 
     }
@@ -47,8 +54,10 @@ public sealed class SearchDialogElementEndpointSummary : Summary<SearchDialogEle
                 Gets the list of elements belonging to a dialog
                 """;
         Responses[StatusCodes.Status200OK] = Constants.SwaggerSummary.ReturnedResult.FormatInvariant("element list");
+        Responses[StatusCodes.Status400BadRequest] = Constants.SwaggerSummary.ValidationError;
         Responses[StatusCodes.Status401Unauthorized] = Constants.SwaggerSummary.EndUserAuthenticationFailure;
-        Responses[StatusCodes.Status404NotFound] = Constants.SwaggerSummary.DialogNotFound;
         Responses[StatusCodes.Status403Forbidden] = Constants.SwaggerSummary.AccessDeniedToDialog.FormatInvariant("get");
+        Responses[StatusCodes.Status404NotFound] = Constants.SwaggerSummary.DialogNotFound;
+        Responses[StatusCodes.Status410Gone] = Constants.SwaggerSummary.DialogDeleted;
     }
 }
