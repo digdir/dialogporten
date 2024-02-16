@@ -166,9 +166,6 @@ static void BuildAndRun(string[] args)
         })
         .UseSwaggerGen(config =>
         {
-            // We have to add dialogporten here to get the correct base url for swagger.json in the APIM
-            // todo: we cannot have dialogporten as prefix when we run this locally. Won't be available on container apps either. 
-            config.Path = "/dialogporten/swagger/{documentName}/swagger.json";
             config.PostProcess = (document, _) =>
             {
                 var dialogportenBaseUri = builder.Configuration
@@ -185,6 +182,8 @@ static void BuildAndRun(string[] args)
         {
             // Hide schemas view
             uiConfig.DefaultModelsExpandDepth = -1;
+            // We have to add dialogporten here to get the correct base url for swagger.json in the APIM
+            // todo: we cannot have dialogporten as prefix when we run this locally. Won't be available on container apps either. 
             uiConfig.DocumentPath = "/dialogporten/swagger/{documentName}/swagger.json";
         });
     app.MapControllers();
