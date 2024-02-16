@@ -6,6 +6,8 @@ param imageTag string
 param environment string
 @minLength(3)
 param location string
+@minLength(3)
+param apimIp string
 
 @minLength(3)
 @secure()
@@ -64,6 +66,7 @@ module containerApp '../../modules/containerApp/main.bicep' = {
     location: location
     envVariables: containerAppEnvVars
     containerAppEnvId: containerAppEnvironment.id
+    apimIp: apimIp
   }
 }
 
