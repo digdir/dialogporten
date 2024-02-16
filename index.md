@@ -621,7 +621,7 @@ Eventer har type som er prefikset/navnerommet `dialogporten.dialog.element`. Und
     "id": "7b358c4f-4073-41f0-a39d-a1fac90b630b",
     
     // Se "Type" i tabell over for liste over mulige hendelser
-    "type": "dialogporten.dialog.activity.created.v1",
+    "type": "dialogporten.dialog.element.created.v1",
     
     // Timestamp for når hendelsen inntraff i Dialogporten
     "time": "2023-02-20T08:00:06.4014168Z",
