@@ -21,7 +21,7 @@ internal sealed class DialogActivityEventToAltinnForwarder : DomainEventToAltinn
             Resource = domainEvent.ServiceResource,
             ResourceInstance = domainEvent.DialogId.ToString(),
             Subject = domainEvent.Party,
-            Source = $"{DialogportenBaseUrl()}/api/v1/enduser/dialogs/{domainEvent.DialogId}/activities/{domainEvent.ActivityId}",
+            Source = $"{SourceBaseUrl()}{domainEvent.DialogId}/activities/{domainEvent.ActivityId}",
             Data = GetCloudEventData(domainEvent)
         };
 
@@ -37,7 +37,7 @@ internal sealed class DialogActivityEventToAltinnForwarder : DomainEventToAltinn
 
         if (domainEvent.ExtendedType is not null)
         {
-            data["extendedActivityType"] = domainEvent.ExtendedType;
+            data["extendedActivityType"] = domainEvent.ExtendedType.ToString();
         }
 
         if (domainEvent.RelatedActivityId is not null)

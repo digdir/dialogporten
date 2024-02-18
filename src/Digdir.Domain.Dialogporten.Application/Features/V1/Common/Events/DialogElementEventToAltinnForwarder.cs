@@ -38,7 +38,7 @@ internal sealed class DialogElementEventToAltinnForwarder : DomainEventToAltinnF
             Resource = domainEvent.ServiceResource,
             ResourceInstance = domainEvent.DialogId.ToString(),
             Subject = domainEvent.Party,
-            Source = $"{DialogportenBaseUrl()}/api/v1/enduser/dialogs/{domainEvent.DialogId}/elements/{domainEvent.DialogElementId}",
+            Source = $"{SourceBaseUrl()}{domainEvent.DialogId}/elements/{domainEvent.DialogElementId}",
             Data = data
         };
 
@@ -70,7 +70,7 @@ internal sealed class DialogElementEventToAltinnForwarder : DomainEventToAltinnF
             Resource = domainEvent.ServiceResource,
             ResourceInstance = domainEvent.DialogId.ToString(),
             Subject = domainEvent.Party,
-            Source = $"{DialogportenBaseUrl()}/api/v1/enduser/dialogs/{domainEvent.DialogId}/elements/{domainEvent.DialogElementId}",
+            Source = $"{SourceBaseUrl()}{domainEvent.DialogId}/elements/{domainEvent.DialogElementId}",
             Data = data
         };
 
@@ -102,7 +102,7 @@ internal sealed class DialogElementEventToAltinnForwarder : DomainEventToAltinnF
             Resource = domainEvent.ServiceResource,
             ResourceInstance = domainEvent.DialogId.ToString(),
             Subject = domainEvent.Party,
-            Source = $"{DialogportenBaseUrl()}/api/v1/enduser/dialogs/{domainEvent.DialogId}/elements/{domainEvent.DialogElementId}",
+            Source = $"{SourceBaseUrl()}{domainEvent.DialogId}/elements/{domainEvent.DialogElementId}",
             Data = data
         };
 

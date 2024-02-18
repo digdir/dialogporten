@@ -24,7 +24,7 @@ internal sealed class DialogEventToAltinnForwarder : DomainEventToAltinnForwarde
             Resource = domainEvent.ServiceResource,
             ResourceInstance = domainEvent.DialogId.ToString(),
             Subject = domainEvent.Party,
-            Source = $"{DialogportenBaseUrl()}/api/v1/enduser/dialogs/{domainEvent.DialogId}"
+            Source = $"{SourceBaseUrl()}{domainEvent.DialogId}"
         };
         await CloudEventBus.Publish(cloudEvent, cancellationToken);
     }
@@ -39,7 +39,7 @@ internal sealed class DialogEventToAltinnForwarder : DomainEventToAltinnForwarde
             Resource = domainEvent.ServiceResource,
             ResourceInstance = domainEvent.DialogId.ToString(),
             Subject = domainEvent.Party,
-            Source = $"{DialogportenBaseUrl()}/api/v1/enduser/dialogs/{domainEvent.DialogId}"
+            Source = $"{SourceBaseUrl()}{domainEvent.DialogId}"
         };
 
         await CloudEventBus.Publish(cloudEvent, cancellationToken);
@@ -55,7 +55,7 @@ internal sealed class DialogEventToAltinnForwarder : DomainEventToAltinnForwarde
             Resource = domainEvent.ServiceResource,
             ResourceInstance = domainEvent.DialogId.ToString(),
             Subject = domainEvent.Party,
-            Source = $"{DialogportenBaseUrl()}/api/v1/enduser/dialogs/{domainEvent.DialogId}"
+            Source = $"{SourceBaseUrl()}{domainEvent.DialogId}"
         };
 
         await CloudEventBus.Publish(cloudEvent, cancellationToken);
@@ -71,7 +71,7 @@ internal sealed class DialogEventToAltinnForwarder : DomainEventToAltinnForwarde
             Resource = domainEvent.ServiceResource,
             ResourceInstance = domainEvent.DialogId.ToString(),
             Subject = domainEvent.Party,
-            Source = $"{DialogportenBaseUrl()}/api/v1/enduser/dialogs/{domainEvent.DialogId}"
+            Source = $"{SourceBaseUrl()}{domainEvent.DialogId}"
         };
 
         await CloudEventBus.Publish(cloudEvent, cancellationToken);
