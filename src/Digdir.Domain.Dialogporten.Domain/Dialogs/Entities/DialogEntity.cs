@@ -69,7 +69,7 @@ public class DialogEntity :
 
     public void OnCreate(AggregateNode self, DateTimeOffset utcNow)
     {
-        _domainEvents.Add(new DialogCreatedDomainEvent(Id));
+        _domainEvents.Add(new DialogCreatedDomainEvent(Id, ServiceResource, Party));
     }
 
     public void OnUpdate(AggregateNode self, DateTimeOffset utcNow)
@@ -82,7 +82,7 @@ public class DialogEntity :
 
         if (shouldProduceEvent)
         {
-            _domainEvents.Add(new DialogUpdatedDomainEvent(Id));
+            _domainEvents.Add(new DialogUpdatedDomainEvent(Id, ServiceResource, Party));
         }
     }
 
@@ -124,7 +124,7 @@ public class DialogEntity :
             TypeId = DialogActivityType.Values.Seen
         });
 
-        _domainEvents.Add(new DialogSeenDomainEvent(Id));
+        _domainEvents.Add(new DialogSeenDomainEvent(Id, ServiceResource, Party));
     }
 
     private readonly List<IDomainEvent> _domainEvents = [];

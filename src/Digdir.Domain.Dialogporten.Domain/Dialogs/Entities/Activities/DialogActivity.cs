@@ -38,7 +38,10 @@ public class DialogActivity : IImmutableEntity, IAggregateCreatedHandler, IEvent
 
     public void OnCreate(AggregateNode self, DateTimeOffset utcNow)
     {
-        _domainEvents.Add(new DialogActivityCreatedDomainEvent(DialogId, Id));
+        _domainEvents.Add(new DialogActivityCreatedDomainEvent(
+            DialogId, Id, TypeId, Dialog.Party,
+            Dialog.ServiceResource, ExtendedType,
+            RelatedActivityId, DialogElementId, DialogElement?.Type));
     }
 
     private readonly List<IDomainEvent> _domainEvents = [];

@@ -2,4 +2,4 @@
 
 namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Events;
 
-public sealed record DialogCreatedDomainEvent(Guid DialogId) : DomainEvent;
+public sealed record DialogCreatedDomainEvent(Guid DialogId, string ServiceResource, string Party) : DomainEvent;

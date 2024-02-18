@@ -13,28 +13,53 @@ internal sealed class DialogEventToAltinnForwarder : DomainEventToAltinnForwarde
     INotificationHandler<DialogDeletedDomainEvent>,
     INotificationHandler<DialogSeenDomainEvent>
 {
-    public DialogEventToAltinnForwarder(ICloudEventBus cloudEventBus, IDialogDbContext db,
-        IOptions<ApplicationSettings> settings)
-        : base(cloudEventBus, db, settings) { }
+    public DialogEventToAltinnForwarder(ICloudEventBus cloudEventBus, IOptions<ApplicationSettings> settings)
+        : base(cloudEventBus, settings) { }
 
     public async Task Handle(DialogCreatedDomainEvent domainEvent, CancellationToken cancellationToken)
     {
-        var dialog = await GetDialog(domainEvent.DialogId, cancellationToken);
-        var cloudEvent = CreateCloudEvent(domainEvent, dialog);
+        var cloudEvent = new CloudEvent
+        {
+            Id = domainEvent.EventId,
+            Type = CloudEventTypes.Get(domainEvent),
+            Time = domainEvent.OccuredAt,
+            Resource = domainEvent.ServiceResource,
+            ResourceInstance = domainEvent.DialogId.ToString(),
+            Subject = domainEvent.Party,
+            Source = $"{DialogportenBaseUrl()}/api/v1/enduser/dialogs/{domainEvent.DialogId}"
+        };
         await CloudEventBus.Publish(cloudEvent, cancellationToken);
     }
 
     public async Task Handle(DialogUpdatedDomainEvent domainEvent, CancellationToken cancellationToken)
     {
-        var dialog = await GetDialog(domainEvent.DialogId, cancellationToken);
-        var cloudEvent = CreateCloudEvent(domainEvent, dialog);
+        var cloudEvent = new CloudEvent
+        {
+            Id = domainEvent.EventId,
+            Type = CloudEventTypes.Get(domainEvent),
+            Time = domainEvent.OccuredAt,
+            Resource = domainEvent.ServiceResource,
+            ResourceInstance = domainEvent.DialogId.ToString(),
+            Subject = domainEvent.Party,
+            Source = $"{DialogportenBaseUrl()}/api/v1/enduser/dialogs/{domainEvent.DialogId}"
+        };
+
         await CloudEventBus.Publish(cloudEvent, cancellationToken);
     }
 
     public async Task Handle(DialogSeenDomainEvent domainEvent, CancellationToken cancellationToken)
     {
-        var dialog = await GetDialog(domainEvent.DialogId, cancellationToken);
-        var cloudEvent = CreateCloudEvent(domainEvent, dialog);
+        var cloudEvent = new CloudEvent
+        {
+            Id = domainEvent.EventId,
+            Type = CloudEventTypes.Get(domainEvent),
+            Time = domainEvent.OccuredAt,
+            Resource = domainEvent.ServiceResource,
+            ResourceInstance = domainEvent.DialogId.ToString(),
+            Subject = domainEvent.Party,
+            Source = $"{DialogportenBaseUrl()}/api/v1/enduser/dialogs/{domainEvent.DialogId}"
+        };
+
         await CloudEventBus.Publish(cloudEvent, cancellationToken);
     }
 
@@ -53,16 +78,4 @@ internal sealed class DialogEventToAltinnForwarder : DomainEventToAltinnForwarde
 
         await CloudEventBus.Publish(cloudEvent, cancellationToken);
     }
-
-    private CloudEvent CreateCloudEvent(IDomainEvent domainEvent, DialogEntity dialog, Dictionary<string, object>? data = null) => new()
-    {
-        Id = domainEvent.EventId,
-        Type = CloudEventTypes.Get(domainEvent),
-        Time = domainEvent.OccuredAt,
-        Resource = dialog.ServiceResource,
-        ResourceInstance = dialog.Id.ToString(),
-        Subject = dialog.Party,
-        Source = $"{DialogportenBaseUrl()}/api/v1/enduser/dialogs/{dialog.Id}",
-        Data = data
-    };
 }

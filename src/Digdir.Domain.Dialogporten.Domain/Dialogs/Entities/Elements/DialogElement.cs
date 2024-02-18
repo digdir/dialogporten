@@ -35,22 +35,30 @@ public class DialogElement : IEntity, IAggregateChangedHandler, IEventPublisher
 
     public void OnCreate(AggregateNode self, DateTimeOffset utcNow)
     {
-        _domainEvents.Add(new DialogElementCreatedDomainEvent(DialogId, Id));
+        _domainEvents.Add(new DialogElementCreatedDomainEvent(
+            DialogId, Id, Dialog.ServiceResource, Dialog.Party,
+            RelatedDialogElementId?.ToString(), Type?.ToString()));
     }
 
     public void OnUpdate(AggregateNode self, DateTimeOffset utcNow)
     {
-        _domainEvents.Add(new DialogElementUpdatedDomainEvent(DialogId, Id));
+        _domainEvents.Add(new DialogElementUpdatedDomainEvent(
+            DialogId, Id, Dialog.ServiceResource, Dialog.Party,
+            RelatedDialogElementId?.ToString(), Type?.ToString()));
     }
 
     public void OnDelete(AggregateNode self, DateTimeOffset utcNow)
     {
-        _domainEvents.Add(new DialogElementDeletedDomainEvent(DialogId, Id, RelatedDialogElementId, Type));
+        _domainEvents.Add(new DialogElementDeletedDomainEvent(
+            DialogId, Id, Dialog.ServiceResource,
+            Dialog.Party, RelatedDialogElementId, Type));
     }
 
     public void SoftDelete()
     {
-        _domainEvents.Add(new DialogElementDeletedDomainEvent(DialogId, Id, RelatedDialogElementId, Type));
+        _domainEvents.Add(new DialogElementDeletedDomainEvent(
+            DialogId, Id, Dialog.ServiceResource,
+            Dialog.Party, RelatedDialogElementId, Type));
     }
 
     private readonly List<IDomainEvent> _domainEvents = [];
