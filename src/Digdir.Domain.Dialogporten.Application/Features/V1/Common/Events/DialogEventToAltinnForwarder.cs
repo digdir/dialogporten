@@ -1,7 +1,5 @@
 using Digdir.Domain.Dialogporten.Application.Externals;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Events;
-using Digdir.Library.Entity.Abstractions.Features.EventPublisher;
 using MediatR;
 using Microsoft.Extensions.Options;
 

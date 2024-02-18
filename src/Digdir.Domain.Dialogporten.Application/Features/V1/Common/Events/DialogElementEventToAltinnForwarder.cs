@@ -1,12 +1,7 @@
 using Digdir.Domain.Dialogporten.Application.Externals;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Events.DialogElements;
-using Digdir.Library.Entity.Abstractions.Features.EventPublisher;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Options;
-using OneOf;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.Common.Events;
 
