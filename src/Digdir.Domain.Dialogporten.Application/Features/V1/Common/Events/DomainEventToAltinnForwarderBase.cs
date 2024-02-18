@@ -14,6 +14,6 @@ internal class DomainEventToAltinnForwarderBase
         _dialogportenSettings = settings.Value.Dialogporten ?? throw new ArgumentNullException(nameof(settings));
     }
 
-    internal string SourceBaseUrl() => 
-        $"{_dialogportenSettings.BaseUri.ToString()}/api/v1/enduser/dialogs/";
+    internal string SourceBaseUrl() =>
+        $"{_dialogportenSettings.BaseUri}/api/v1/enduser/dialogs/";
 }
