@@ -16,6 +16,7 @@ public static class DialogGenerator
     private static readonly DateTime RefTime = new(2026, 1, 1);
     public static CreateDialogDto GenerateFakeDialog(
         int? seed = null,
+        Guid? id = null,
         string? serviceResource = null,
         string? party = null,
         int? progress = null,
@@ -34,6 +35,7 @@ public static class DialogGenerator
         return GenerateFakeDialogs(
             seed,
             1,
+            id,
             serviceResource,
             party,
             progress,
@@ -54,6 +56,7 @@ public static class DialogGenerator
     public static List<CreateDialogDto> GenerateFakeDialogs(
         int? seed = null,
         int count = 1,
+        Guid? id = null,
         string? serviceResource = null,
         string? party = null,
         int? progress = null,
@@ -71,6 +74,7 @@ public static class DialogGenerator
     {
         Randomizer.Seed = seed.HasValue ? new Random(seed.Value) : new Random();
         return new Faker<CreateDialogDto>()
+            .RuleFor(o => o.Id, f => id)
             .RuleFor(o => o.ServiceResource, _ => serviceResource ?? GenerateFakeResource())
             .RuleFor(o => o.Party, _ => party ?? GenerateRandomParty())
             .RuleFor(o => o.Progress, f => progress ?? f.Random.Number(0, 100))
