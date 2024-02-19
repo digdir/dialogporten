@@ -14,6 +14,43 @@ namespace Digdir.Tool.Dialogporten.GenerateFakeData;
 public static class DialogGenerator
 {
     private static readonly DateTime RefTime = new(2026, 1, 1);
+    public static CreateDialogDto GenerateFakeDialog(
+        int? seed = null,
+        string? serviceResource = null,
+        string? party = null,
+        int? progress = null,
+        string? extendedStatus = null,
+        string? externalReference = null,
+        DateTimeOffset? dueAt = null,
+        DateTimeOffset? expiresAt = null,
+        DialogStatus.Values? status = null,
+        List<CreateDialogContentDto>? content = null,
+        List<CreateDialogSearchTagDto>? searchTags = null,
+        List<CreateDialogDialogElementDto>? elements = null,
+        List<CreateDialogDialogGuiActionDto>? guiActions = null,
+        List<CreateDialogDialogApiActionDto>? apiActions = null,
+        List<CreateDialogDialogActivityDto>? activities = null)
+    {
+        return GenerateFakeDialogs(
+            seed,
+            1,
+            serviceResource,
+            party,
+            progress,
+            extendedStatus,
+            externalReference,
+            dueAt,
+            expiresAt,
+            status,
+            content,
+            searchTags,
+            elements,
+            guiActions,
+            apiActions,
+            activities
+        )[0];
+    }
+
     public static List<CreateDialogDto> GenerateFakeDialogs(
         int? seed = null,
         int count = 1,
