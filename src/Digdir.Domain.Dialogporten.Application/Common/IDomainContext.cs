@@ -16,7 +16,7 @@ public interface IDomainContext
 
 internal class DomainContext : IDomainContext
 {
-    private readonly List<DomainFailure> _errors = new();
+    private readonly List<DomainFailure> _errors = [];
 
     public IReadOnlyCollection<DomainFailure> Errors => _errors.ToList();
 

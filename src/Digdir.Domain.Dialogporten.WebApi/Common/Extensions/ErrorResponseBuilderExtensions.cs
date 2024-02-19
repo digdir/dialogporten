@@ -7,7 +7,7 @@ namespace Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
 internal static class ErrorResponseBuilderExtensions
 {
     public static object ResponseBuilder(this HttpContext ctx, int statusCode, List<ValidationFailure>? failures = null) =>
-        ResponseBuilder(failures ?? new(), ctx, statusCode);
+        ResponseBuilder(failures ?? [], ctx, statusCode);
 
     public static object ResponseBuilder(List<ValidationFailure> failures, HttpContext ctx, int statusCode)
     {

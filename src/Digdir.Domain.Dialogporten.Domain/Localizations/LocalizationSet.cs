@@ -10,5 +10,5 @@ public abstract class LocalizationSet : IImmutableEntity
 
     // === Plural principal relationships === 
     [AggregateChild]
-    public List<Localization> Localizations { get; set; } = new();
+    public List<Localization> Localizations { get; set; } = [];
 }

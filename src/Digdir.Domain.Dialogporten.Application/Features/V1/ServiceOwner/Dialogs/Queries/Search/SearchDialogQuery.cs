@@ -167,8 +167,8 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
         if (request.EndUserId is not null)
         {
             var authorizedResources = await _altinnAuthorization.GetAuthorizedResourcesForSearch(
-                request.Party ?? new List<string>(),
-                request.ServiceResource ?? new List<string>(),
+                request.Party ?? [],
+                request.ServiceResource ?? [],
                 request.EndUserId,
                 cancellationToken);
             query = query.WhereUserIsAuthorizedFor(authorizedResources);

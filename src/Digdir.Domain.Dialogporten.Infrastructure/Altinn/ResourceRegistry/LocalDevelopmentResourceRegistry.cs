@@ -5,7 +5,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.ResourceRegistry;
 
 internal sealed class LocalDevelopmentResourceRegistry : IResourceRegistry
 {
-    private static readonly HashSet<string> _cachedResourceIds = new();
+    private static readonly HashSet<string> _cachedResourceIds = [];
     private readonly IDialogDbContext _db;
 
     public LocalDevelopmentResourceRegistry(IDialogDbContext db)

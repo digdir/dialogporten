@@ -106,7 +106,7 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
 
     private List<Claim> GetOrCreateClaimsBasedOnEndUserId(string? endUserId)
     {
-        List<Claim> claims = new();
+        List<Claim> claims = [];
         if (endUserId is not null)
         {
             claims.Add(new Claim(AttributePidClaim, ExtractEndUserIdNumber(endUserId)!));

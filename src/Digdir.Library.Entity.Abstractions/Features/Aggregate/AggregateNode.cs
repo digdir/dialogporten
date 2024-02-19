@@ -8,7 +8,7 @@ namespace Digdir.Library.Entity.Abstractions.Features.Aggregate;
 public abstract class AggregateNode
 {
     private static readonly Type _openGenericAggregateNodeType = typeof(AggregateNode<>);
-    private readonly List<AggregateNode> _children = new();
+    private readonly List<AggregateNode> _children = [];
     private readonly List<AggregateNodeProperty> _modifiedProperties;
 
     /// <summary>

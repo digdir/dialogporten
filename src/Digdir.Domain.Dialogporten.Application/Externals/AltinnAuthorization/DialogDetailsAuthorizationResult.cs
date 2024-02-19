@@ -7,7 +7,7 @@ public sealed class DialogDetailsAuthorizationResult
 {
     // Each action applies to a resource. This is the main resource, or another resource indicated by a authorization attribute
     // eg. "urn:altinn:subresource:some-sub-resource" or "urn:altinn:task:task_1"
-    public HashSet<AltinnAction> AuthorizedAltinnActions { get; init; } = new();
+    public HashSet<AltinnAction> AuthorizedAltinnActions { get; init; } = [];
 
     public bool HasReadAccessToMainResource() =>
         AuthorizedAltinnActions.Contains(new(Constants.ReadAction, Constants.MainResource));

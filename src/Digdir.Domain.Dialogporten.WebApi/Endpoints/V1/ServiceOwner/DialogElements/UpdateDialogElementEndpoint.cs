@@ -102,8 +102,8 @@ public sealed class UpdateDialogElementRequest
 
     public Guid? RelatedDialogElementId { get; set; }
 
-    public List<LocalizationDto> DisplayName { get; set; } = new();
-    public List<UpdateDialogDialogElementUrlDto> Urls { get; set; } = new();
+    public List<LocalizationDto> DisplayName { get; set; } = [];
+    public List<UpdateDialogDialogElementUrlDto> Urls { get; set; } = [];
 }
 
 public sealed class UpdateDialogElementEndpointSummary : Summary<UpdateDialogElementEndpoint>

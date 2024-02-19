@@ -74,7 +74,7 @@ internal sealed class DialogDbContext : DbContext, IDialogDbContext
             .ToList();
 
         return ids.Count == 0
-            ? new()
+            ? []
             : await Set<TEntity>()
                 .IgnoreQueryFilters()
                 .Select(x => x.Id)
