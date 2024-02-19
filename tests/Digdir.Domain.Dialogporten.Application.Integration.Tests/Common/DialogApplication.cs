@@ -1,6 +1,9 @@
 ﻿using System.Collections.ObjectModel;
 using Digdir.Domain.Dialogporten.Application.Externals;
+using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
 using Digdir.Domain.Dialogporten.Infrastructure;
+using Digdir.Domain.Dialogporten.Infrastructure.Altinn.ResourceRegistry;
+using Digdir.Domain.Dialogporten.Infrastructure.Altinn.OrganizationRegistry;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence;
 using Digdir.Library.Entity.Abstractions.Features.Lookup;
 using FluentAssertions;
@@ -22,7 +25,7 @@ public class DialogApplication : IAsyncLifetime
     private Respawner _respawner = null!;
     private ServiceProvider _rootProvider = null!;
     private readonly PostgreSqlContainer _dbContainer = new PostgreSqlBuilder()
-        .WithImage("postgres:alpine3.17")
+        .WithImage("postgres:15.4")
         .Build();
 
     public async Task InitializeAsync()
@@ -35,12 +38,23 @@ public class DialogApplication : IAsyncLifetime
             return options;
         });
 
-        _rootProvider = new ServiceCollection()
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddHttpClient<IOrganizationRegistry, OrganizationRegistryClient>((services, client)
+            => client.BaseAddress = new Uri("https://altinncdn.no/"));
+
+        serviceCollection.AddHttpClient<INameRegistry, NameRegistryClient>((services, client)
+            => client.BaseAddress = new Uri("https://notcurrentlyinuse.no/"));
+
+        _rootProvider = serviceCollection
             .AddApplication(Substitute.For<IConfiguration>(), Substitute.For<IHostEnvironment>())
+            .AddDistributedMemoryCache()
             .AddDbContext<DialogDbContext>(x => x.UseNpgsql(_dbContainer.GetConnectionString()))
             .AddScoped<IDialogDbContext>(x => x.GetRequiredService<DialogDbContext>())
+            .AddScoped<IUser, IntegrationTestUser>()
+            .AddScoped<IResourceRegistry, LocalDevelopmentResourceRegistry>()
             .AddScoped<IUnitOfWork, UnitOfWork>()
             .BuildServiceProvider();
+
         await _dbContainer.StartAsync();
         await EnsureDatabaseAsync();
         await BuildRespawnState();
