@@ -14,31 +14,47 @@ namespace Digdir.Tool.Dialogporten.GenerateFakeData;
 public static class DialogGenerator
 {
     private static readonly DateTime RefTime = new(2026, 1, 1);
-    public static List<CreateDialogDto> GenerateFakeDialogs(int seed, int count)
+    public static List<CreateDialogDto> GenerateFakeDialogs(
+        int seed,
+        int count,
+        string? serviceResource = null,
+        string? party = null,
+        int? progress = null,
+        string? extendedStatus = null,
+        string? externalReference = null,
+        DateTimeOffset? dueAt = null,
+        DateTimeOffset? expiresAt = null,
+        DialogStatus.Values? status = null,
+        List<CreateDialogContentDto>? content = null,
+        List<CreateDialogSearchTagDto>? searchTags = null,
+        List<CreateDialogDialogElementDto>? elements = null,
+        List<CreateDialogDialogGuiActionDto>? guiActions = null,
+        List<CreateDialogDialogApiActionDto>? apiActions = null,
+        List<CreateDialogDialogActivityDto>? activities = null)
     {
         Randomizer.Seed = new Random(seed);
         return new Faker<CreateDialogDto>()
             //.RuleFor(o => o.Id, f => f.Random.Uuid())
-            .RuleFor(o => o.ServiceResource, _ => GenerateFakeResource())
-            .RuleFor(o => o.Party, _ => GenerateRandomParty())
-            .RuleFor(o => o.Progress, f => f.Random.Number(0, 100))
-            .RuleFor(o => o.ExtendedStatus, f => f.Random.AlphaNumeric(10))
-            .RuleFor(o => o.ExternalReference, f => f.Random.AlphaNumeric(10))
-            .RuleFor(o => o.DueAt, f => f.Date.Future(10, RefTime))
-            .RuleFor(o => o.ExpiresAt, f => f.Date.Future(20, RefTime.AddYears(11)))
-            .RuleFor(o => o.Status, f => f.PickRandom<DialogStatus.Values>())
-            .RuleFor(o => o.Content, _ => GenerateFakeDialogContent())
-            .RuleFor(o => o.SearchTags, _ => GenerateFakeSearchTags())
-            .RuleFor(o => o.Elements, _ => GenerateFakeDialogElements())
-            .RuleFor(o => o.GuiActions, _ => GenerateFakeDialogGuiActions())
-            .RuleFor(o => o.ApiActions, _ => GenerateFakeDialogApiActions())
-            .RuleFor(o => o.Activities, _ => GenerateFakeDialogActivities())
+            .RuleFor(o => o.ServiceResource, _ => serviceResource ?? GenerateFakeResource())
+            .RuleFor(o => o.Party, _ => party ?? GenerateRandomParty())
+            .RuleFor(o => o.Progress, f => progress ?? f.Random.Number(0, 100))
+            .RuleFor(o => o.ExtendedStatus, f => extendedStatus ?? f.Random.AlphaNumeric(10))
+            .RuleFor(o => o.ExternalReference, f => externalReference ?? f.Random.AlphaNumeric(10))
+            .RuleFor(o => o.DueAt, f => dueAt ?? f.Date.Future(10, RefTime))
+            .RuleFor(o => o.ExpiresAt, f => expiresAt ?? f.Date.Future(20, RefTime.AddYears(11)))
+            .RuleFor(o => o.Status, f => status ?? f.PickRandom<DialogStatus.Values>())
+            .RuleFor(o => o.Content, _ => content ?? GenerateFakeDialogContent())
+            .RuleFor(o => o.SearchTags, _ => searchTags ?? GenerateFakeSearchTags())
+            .RuleFor(o => o.Elements, _ => elements ?? GenerateFakeDialogElements())
+            .RuleFor(o => o.GuiActions, _ => guiActions ?? GenerateFakeDialogGuiActions())
+            .RuleFor(o => o.ApiActions, _ => apiActions ?? GenerateFakeDialogApiActions())
+            .RuleFor(o => o.Activities, _ => activities ?? GenerateFakeDialogActivities())
             .Generate(count);
     }
 
     private const string ResourcePrefix = "urn:altinn:resource:";
 
-    private static string GenerateFakeResource()
+    public static string GenerateFakeResource()
     {
         var r = new Randomizer();
         // Apply a power function to skew the distribution towards higher numbers
@@ -52,17 +68,17 @@ public static class DialogGenerator
         return ResourcePrefix + result.ToString("D4", CultureInfo.InvariantCulture);
     }
 
-    private static string GenerateRandomParty()
+    public static string GenerateRandomParty()
     {
         var r = new Randomizer();
         return r.Bool() ? $"urn:altinn:organization:identifier-no::{GenerateFakeOrgNo()}" : $"urn:altinn:person:identifier-no::{GenerateFakePid()}";
     }
 
-    private static readonly int[] SocialSecurityNumberWeights1 = { 3, 7, 6, 1, 8, 9, 4, 5, 2 };
-    private static readonly int[] SocialSecurityNumberWeights2 = { 5, 4, 3, 2, 7, 6, 5, 4, 3, 2 };
-    private static readonly int[] OrgNumberWeights = { 3, 2, 7, 6, 5, 4, 3, 2 };
+    private static readonly int[] SocialSecurityNumberWeights1 = [3, 7, 6, 1, 8, 9, 4, 5, 2];
+    private static readonly int[] SocialSecurityNumberWeights2 = [5, 4, 3, 2, 7, 6, 5, 4, 3, 2];
+    private static readonly int[] OrgNumberWeights = [3, 2, 7, 6, 5, 4, 3, 2];
 
-    private static string GenerateFakePid()
+    public static string GenerateFakePid()
     {
 
         int c1, c2;
@@ -82,7 +98,7 @@ public static class DialogGenerator
         return pidWithoutControlDigits + c1 + c2;
     }
 
-    private static string GenerateFakeOrgNo()
+    public static string GenerateFakeOrgNo()
     {
         var r = new Randomizer();
         string orgNumberWithoutControlDigit;
@@ -136,7 +152,7 @@ public static class DialogGenerator
         mod = 11 - mod;
         return mod == 10 ? -1 : mod;
     }
-    private static List<CreateDialogDialogActivityDto> GenerateFakeDialogActivities()
+    public static List<CreateDialogDialogActivityDto> GenerateFakeDialogActivities()
     {
         return new Faker<CreateDialogDialogActivityDto>()
             .RuleFor(o => o.CreatedAt, f => f.Date.Past())
@@ -147,7 +163,7 @@ public static class DialogGenerator
             .Generate(new Randomizer().Number(1, 4));
     }
 
-    private static List<CreateDialogDialogApiActionDto> GenerateFakeDialogApiActions()
+    public static List<CreateDialogDialogApiActionDto> GenerateFakeDialogApiActions()
     {
         return new Faker<CreateDialogDialogApiActionDto>()
             .RuleFor(o => o.Action, f => f.Random.AlphaNumeric(8))
@@ -155,7 +171,7 @@ public static class DialogGenerator
             .Generate(new Randomizer().Number(1, 4));
     }
 
-    private static List<CreateDialogDialogApiActionEndpointDto> GenerateFakeDialogApiActionEndpoints()
+    public static List<CreateDialogDialogApiActionEndpointDto> GenerateFakeDialogApiActionEndpoints()
     {
         return new Faker<CreateDialogDialogApiActionEndpointDto>()
             .RuleFor(o => o.Url, f => new Uri(f.Internet.UrlWithPath()))
@@ -168,7 +184,7 @@ public static class DialogGenerator
             .Generate(new Randomizer().Number(min: 1, 4));
     }
 
-    private static List<CreateDialogDialogGuiActionDto> GenerateFakeDialogGuiActions()
+    public static List<CreateDialogDialogGuiActionDto> GenerateFakeDialogGuiActions()
     {
         var hasPrimary = false;
         var hasSecondary = false;
@@ -195,7 +211,7 @@ public static class DialogGenerator
             .Generate(new Randomizer().Number(min: 1, 4));
     }
 
-    private static List<CreateDialogDialogElementDto> GenerateFakeDialogElements()
+    public static List<CreateDialogDialogElementDto> GenerateFakeDialogElements()
     {
         return new Faker<CreateDialogDialogElementDto>()
             .RuleFor(o => o.Type, f => new Uri("urn:" + f.Random.AlphaNumeric(10)))
@@ -204,9 +220,14 @@ public static class DialogGenerator
             .Generate(new Randomizer().Number(1, 6));
     }
 
-    private static readonly string[] MimeTypes = { "application/json", "application/xml", "text/html", "application/pdf" };
+    private static readonly string[] MimeTypes = [
+        "application/json",
+        "application/xml",
+        "text/html",
+        "application/pdf"
+    ];
 
-    private static List<CreateDialogDialogElementUrlDto> GenerateFakeDialogElementUrls()
+    public static List<CreateDialogDialogElementUrlDto> GenerateFakeDialogElementUrls()
     {
         return new Faker<CreateDialogDialogElementUrlDto>()
             .RuleFor(o => o.Url, f => new Uri(f.Internet.UrlWithPath()))
@@ -215,14 +236,14 @@ public static class DialogGenerator
             .Generate(new Randomizer().Number(1, 3));
     }
 
-    private static List<CreateDialogSearchTagDto> GenerateFakeSearchTags()
+    public static List<CreateDialogSearchTagDto> GenerateFakeSearchTags()
     {
         return new Faker<CreateDialogSearchTagDto>()
             .RuleFor(o => o.Value, f => f.Random.AlphaNumeric(10))
             .Generate(new Randomizer().Number(1, 6));
     }
 
-    private static List<CreateDialogContentDto> GenerateFakeDialogContent()
+    public static List<CreateDialogContentDto> GenerateFakeDialogContent()
     {
         // We always need Title and Summary. Coin flip to determine to include AdditionalInfo
         // and/or SendersName
@@ -265,7 +286,7 @@ public static class DialogGenerator
         return content;
     }
 
-    private static List<LocalizationDto> GenerateFakeLocalizations(int wordCount)
+    public static List<LocalizationDto> GenerateFakeLocalizations(int wordCount)
     {
         var r = new Randomizer();
         return
