@@ -5,7 +5,7 @@ namespace Digdir.Domain.Dialogporten.Domain.Parties;
 
 public record SystemUserIdentifier : IPartyIdentifier
 {
-    public static string Prefix { get; } = "urn:altinn:systemuser::";
+    public static string Prefix => "urn:altinn:systemuser::";
     public string FullId { get; }
     public string Id { get; }
 
