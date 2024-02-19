@@ -75,9 +75,9 @@
                     "url": "https://example.com/api/dialogs/123456789/user-instructions",
 
                     // Ved front channel embeds må content type oppgis. I første omgang støttes 
-                    // bare text/html, men på sikt kan flere typer innføres. Arbeidsflate/SBS
-                    // vil ha ansvaret for å sikkerhet håndtere innholdet
-                    "contentType": "text/html"
+                    // bare text/markdown (CommonMark-variant), men på sikt kan flere typer innføres. 
+                    // Arbeidsflate/SBS vil ha ansvaret for å sikkerhet håndtere innholdet
+                    "contentType": "text/markdown"
                 }
             ]
         }, 

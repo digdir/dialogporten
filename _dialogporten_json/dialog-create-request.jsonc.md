@@ -96,7 +96,7 @@
     // Dette kan være enkelteskjemaer, egne prefill-modeller, strukturerte feilmeldinger,tidligere innsendte skjema etc.
     //
     // Dialogelementer kan også indikeres at de skal embeddes, altså lastes og vises direkte i det aktuelle 
-    // sluttbrukersystemet (arbeidsflate/nettleser). Denne typer dialogelementer har typisk mimeType: text/html
+    // sluttbrukersystemet (arbeidsflate/nettleser). Denne typer dialogelementer har typisk mimeType: text/markdown
     // 
     // Dialogelementer kan hentes (leses) gjennom oppgitt URL. Actions kan peke på et spesifikt dialogelement for andre
     // operasjoner direkte knyttet til et dialogelement.
@@ -154,8 +154,10 @@
                     // på "displayName"). Hvis ingen er referert til av aktivitetshistorikk-innslag, vis kun den siste
                     // i lista.
                     "frontChannelEmbed": true,
-                    // mimeType blir i utgangspunktet ikke hensyntatt, det antas mimeType: text/html
-                    // Her kan det tenkes at andre mimeTypes (f.eks. video) kan håndteres på andre måter i fremtiden
+                    // Hvis frontChannelEmbed er oppgitt, må også contentType oppgis. Her støttes i første omggang
+                    // kun "text/markdown", men her kan det tenkes at andre mimeTypes (f.eks. video) kan håndteres 
+                    // på andre måter i fremtiden, eller at man støtter andre strukturerte formater som rendres
+                    // på en spesifikk måte
                     "url": "https://example.com/api/dialogs/123456789/user-instructions"
                 }
             ]
