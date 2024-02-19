@@ -30,7 +30,7 @@ internal static class DecisionRequestHelper
 
         var multiRequests = CreateMultiRequests(request.AltinnActions, actionIdByName, resourceIdByName);
 
-        var xacmlJsonRequest = new XacmlJsonRequest()
+        var xacmlJsonRequest = new XacmlJsonRequest
         {
             AccessSubject = accessSubject,
             Action = actions,
@@ -167,7 +167,7 @@ internal static class DecisionRequestHelper
         var _ = PartyIdentifier.TryParse(party, out var partyIdentifier);
         return partyIdentifier switch
         {
-            NorwegianOrganizationIdentifier => new XacmlJsonAttribute() { AttributeId = AttributeIdOrganizationNumber, Value = partyIdentifier.Id },
+            NorwegianOrganizationIdentifier => new XacmlJsonAttribute { AttributeId = AttributeIdOrganizationNumber, Value = partyIdentifier.Id },
             NorwegianPersonIdentifier => new() { AttributeId = AttributeIdSsn, Value = partyIdentifier.Id },
             _ => null
         };
@@ -218,7 +218,7 @@ internal static class DecisionRequestHelper
 
             var multiRequests = CreateMultiRequestsForSearch(resources);
 
-            var xacmlJsonRequest = new XacmlJsonRequest()
+            var xacmlJsonRequest = new XacmlJsonRequest
             {
                 AccessSubject = accessSubject,
                 Action = actions,
