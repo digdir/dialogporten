@@ -49,6 +49,6 @@ public class QueryableExtensionsBenchmark
     [Benchmark]
     public void WhereUserIsAuthorizedFor()
     {
-        QueryableExtensions.WhereUserIsAuthorizedFor(_queryable, _authResult);
+        _queryable.WhereUserIsAuthorizedFor(_authResult);
     }
 }
