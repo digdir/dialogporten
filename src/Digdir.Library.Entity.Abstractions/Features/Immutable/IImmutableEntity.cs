@@ -15,5 +15,4 @@ namespace Digdir.Library.Entity.Abstractions.Features.Immutable;
 /// </remarks>
 public interface IImmutableEntity :
     IIdentifiableEntity,
-    ICreatableEntity
-{ }
+    ICreatableEntity;

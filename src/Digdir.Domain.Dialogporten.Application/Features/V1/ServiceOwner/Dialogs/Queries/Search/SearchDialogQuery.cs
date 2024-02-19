@@ -115,7 +115,7 @@ public sealed class SearchDialogQueryOrderDefinition : IOrderDefinition<SearchDi
 }
 
 [GenerateOneOf]
-public partial class SearchDialogResult : OneOfBase<PaginatedList<SearchDialogDto>, ValidationError> { }
+public partial class SearchDialogResult : OneOfBase<PaginatedList<SearchDialogDto>, ValidationError>;
 
 internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQuery, SearchDialogResult>
 {

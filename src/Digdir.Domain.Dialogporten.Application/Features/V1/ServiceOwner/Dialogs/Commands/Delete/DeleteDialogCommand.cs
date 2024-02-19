@@ -18,7 +18,7 @@ public sealed class DeleteDialogCommand : IRequest<DeleteDialogResult>
 }
 
 [GenerateOneOf]
-public partial class DeleteDialogResult : OneOfBase<Success, EntityNotFound, ConcurrencyError> { }
+public partial class DeleteDialogResult : OneOfBase<Success, EntityNotFound, ConcurrencyError>;
 
 internal sealed class DeleteDialogCommandHandler : IRequestHandler<DeleteDialogCommand, DeleteDialogResult>
 {

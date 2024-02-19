@@ -15,7 +15,7 @@ public sealed class SearchDialogElementQuery : IRequest<SearchDialogElementResul
 }
 
 [GenerateOneOf]
-public partial class SearchDialogElementResult : OneOfBase<List<SearchDialogElementDto>, EntityNotFound, EntityDeleted> { }
+public partial class SearchDialogElementResult : OneOfBase<List<SearchDialogElementDto>, EntityNotFound, EntityDeleted>;
 
 internal sealed class SearchDialogElementQueryHandler : IRequestHandler<SearchDialogElementQuery, SearchDialogElementResult>
 {

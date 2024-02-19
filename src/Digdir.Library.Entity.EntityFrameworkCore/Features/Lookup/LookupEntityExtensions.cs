@@ -98,6 +98,6 @@ internal static class LookupEntityExtensions
         {
         }
 
-        public enum Enum { }
+        public enum Enum;
     }
 }
