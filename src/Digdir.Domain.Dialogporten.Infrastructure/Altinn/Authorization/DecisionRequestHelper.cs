@@ -35,7 +35,7 @@ internal static class DecisionRequestHelper
             AccessSubject = accessSubject,
             Action = actions,
             Resource = resources,
-            MultiRequests = multiRequests,
+            MultiRequests = multiRequests
         };
 
         return new XacmlJsonRequestRoot { Request = xacmlJsonRequest };
@@ -223,7 +223,7 @@ internal static class DecisionRequestHelper
                 AccessSubject = accessSubject,
                 Action = actions,
                 Resource = resources,
-                MultiRequests = multiRequests,
+                MultiRequests = multiRequests
             };
 
             return new XacmlJsonRequestRoot { Request = xacmlJsonRequest };

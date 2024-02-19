@@ -48,6 +48,6 @@ public class DialogActivityType : AbstractLookupEntity<DialogActivityType, Dialo
         /// <summary>
         /// Når dialogen blir videresendt (tilgang delegert) av noen med tilgang til andre.
         /// </summary>
-        Forwarded = 7,
+        Forwarded = 7
     }
 }

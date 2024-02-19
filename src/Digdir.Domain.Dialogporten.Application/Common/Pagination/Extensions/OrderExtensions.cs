@@ -123,7 +123,7 @@ internal static class OrderExtensions
 
                 OrderDirection.Asc => Expression.GreaterThan(x.orderBody, x.tokenExpression),
                 OrderDirection.Desc => Expression.LessThan(x.orderBody, x.tokenExpression),
-                _ => throw new InvalidOperationException(),
+                _ => throw new InvalidOperationException()
             })
             // [ a < an, a = an AND b < bn, a = an AND b = bn AND c < cn, ... ]
             .Select((ltGtPart, index) => eqParts[..index]

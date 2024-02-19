@@ -25,7 +25,7 @@ public class QueryableExtensionsTests
             new() { Id = Guid.NewGuid(), Party = party2, ServiceResource = resource2 },
             new() { Id = Guid.NewGuid(), Party = party2, ServiceResource = resource3 },
             new() { Id = Guid.NewGuid(), Party = party1, ServiceResource = resource3 },
-            new() { Id = Guid.NewGuid(), Party = party3, ServiceResource = resource3 },
+            new() { Id = Guid.NewGuid(), Party = party3, ServiceResource = resource3 }
         };
 
         var authorizedResources = new DialogSearchAuthorizationResult

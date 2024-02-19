@@ -11,6 +11,6 @@ public class DialogGuiActionPriority : AbstractLookupEntity<DialogGuiActionPrior
     {
         Primary = 1,
         Secondary = 2,
-        Tertiary = 3,
+        Tertiary = 3
     }
 }

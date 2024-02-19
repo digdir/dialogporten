@@ -40,6 +40,6 @@ public class DialogStatus : AbstractLookupEntity<DialogStatus, DialogStatus.Valu
         /// <summary>
         /// Dialigen ble fullført. Dette gjør at dialogen typisk flyttes til et GUI-arkiv eller lignende.
         /// </summary>
-        Completed = 6,
+        Completed = 6
     }
 }

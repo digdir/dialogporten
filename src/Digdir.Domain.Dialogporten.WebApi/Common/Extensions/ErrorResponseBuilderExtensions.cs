@@ -22,7 +22,7 @@ internal static class ErrorResponseBuilderExtensions
                 Type = "https://datatracker.ietf.org/doc/html/rfc7231#section-6.5.1",
                 Status = statusCode,
                 Instance = ctx.Request.Path,
-                Extensions = { { "traceId", Activity.Current?.Id ?? ctx.TraceIdentifier } },
+                Extensions = { { "traceId", Activity.Current?.Id ?? ctx.TraceIdentifier } }
             },
             StatusCodes.Status403Forbidden => new ValidationProblemDetails(errors)
             {
@@ -30,7 +30,7 @@ internal static class ErrorResponseBuilderExtensions
                 Type = "https://datatracker.ietf.org/doc/html/rfc7231#section-6.5.3",
                 Status = statusCode,
                 Instance = ctx.Request.Path,
-                Extensions = { { "traceId", Activity.Current?.Id ?? ctx.TraceIdentifier } },
+                Extensions = { { "traceId", Activity.Current?.Id ?? ctx.TraceIdentifier } }
             },
             StatusCodes.Status404NotFound => new ValidationProblemDetails(errors)
             {
@@ -38,7 +38,7 @@ internal static class ErrorResponseBuilderExtensions
                 Type = "https://datatracker.ietf.org/doc/html/rfc7231#section-6.5.4",
                 Status = statusCode,
                 Instance = ctx.Request.Path,
-                Extensions = { { "traceId", Activity.Current?.Id ?? ctx.TraceIdentifier } },
+                Extensions = { { "traceId", Activity.Current?.Id ?? ctx.TraceIdentifier } }
             },
             StatusCodes.Status410Gone => new ValidationProblemDetails(errors)
             {
@@ -46,7 +46,7 @@ internal static class ErrorResponseBuilderExtensions
                 Type = "https://datatracker.ietf.org/doc/html/rfc7231#section-6.5.9",
                 Status = statusCode,
                 Instance = ctx.Request.Path,
-                Extensions = { { "traceId", Activity.Current?.Id ?? ctx.TraceIdentifier } },
+                Extensions = { { "traceId", Activity.Current?.Id ?? ctx.TraceIdentifier } }
             },
             StatusCodes.Status412PreconditionFailed => new ProblemDetails
             {
@@ -54,7 +54,7 @@ internal static class ErrorResponseBuilderExtensions
                 Type = "https://datatracker.ietf.org/doc/html/rfc7232#section-4.2",
                 Status = statusCode,
                 Instance = ctx.Request.Path,
-                Extensions = { { "traceId", Activity.Current?.Id ?? ctx.TraceIdentifier } },
+                Extensions = { { "traceId", Activity.Current?.Id ?? ctx.TraceIdentifier } }
             },
             StatusCodes.Status422UnprocessableEntity => new ValidationProblemDetails(errors)
             {
@@ -62,7 +62,7 @@ internal static class ErrorResponseBuilderExtensions
                 Type = "https://datatracker.ietf.org/doc/html/rfc4918#section-11.2",
                 Status = statusCode,
                 Instance = ctx.Request.Path,
-                Extensions = { { "traceId", Activity.Current?.Id ?? ctx.TraceIdentifier } },
+                Extensions = { { "traceId", Activity.Current?.Id ?? ctx.TraceIdentifier } }
             },
             _ => new ProblemDetails
             {
@@ -72,7 +72,7 @@ internal static class ErrorResponseBuilderExtensions
                 Status = ctx.Response.StatusCode,
                 Instance = ctx.Request.Path,
                 Extensions = { { "traceId", Activity.Current?.Id ?? ctx.TraceIdentifier } }
-            },
+            }
         };
     }
 }
