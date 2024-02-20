@@ -20,7 +20,8 @@ public class DomainEventsTests(DialogApplication application) : ApplicationColle
         var activities = allActivityTypes.Select(activityType =>
             DialogGenerator.GenerateFakeDialogActivity(activityType)).ToList();
 
-        var createDialogCommand = DialogGenerator.GenerateFakeDialog(activities: activities);
+        var dialogId = Guid.NewGuid();
+        var createDialogCommand = DialogGenerator.GenerateFakeDialog(id: dialogId, activities: activities);
 
         // Act
         _ = await Application.Send(createDialogCommand);
@@ -28,6 +29,10 @@ public class DomainEventsTests(DialogApplication application) : ApplicationColle
         var cloudEvents = Application.PopPublishedCloudEvents();
 
         // Assert
+        cloudEvents.Should().OnlyContain(cloudEvent => cloudEvent.ResourceInstance == dialogId.ToString());
+        cloudEvents.Should().OnlyContain(cloudEvent => cloudEvent.Resource == createDialogCommand.ServiceResource);
+        cloudEvents.Should().OnlyContain(cloudEvent => cloudEvent.Subject == createDialogCommand.Party);
+
         cloudEvents.Should().ContainSingle(cloudEvent =>
             cloudEvent.Type == CloudEventTypes.Get(nameof(DialogCreatedDomainEvent)));
 
