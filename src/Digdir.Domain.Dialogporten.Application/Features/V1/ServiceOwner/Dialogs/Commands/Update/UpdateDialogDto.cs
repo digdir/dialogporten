@@ -19,20 +19,20 @@ public sealed class UpdateDialogDto
 
     public DialogStatus.Values Status { get; set; }
 
-    public List<UpdateDialogContentDto> Content { get; set; } = new();
+    public List<UpdateDialogContentDto> Content { get; set; } = [];
 
-    public List<UpdateDialogSearchTagDto> SearchTags { get; set; } = new();
+    public List<UpdateDialogSearchTagDto> SearchTags { get; set; } = [];
 
-    public List<UpdateDialogDialogElementDto> Elements { get; set; } = new();
-    public List<UpdateDialogDialogGuiActionDto> GuiActions { get; set; } = new();
-    public List<UpdateDialogDialogApiActionDto> ApiActions { get; set; } = new();
-    public List<UpdateDialogDialogActivityDto> Activities { get; set; } = new();
+    public List<UpdateDialogDialogElementDto> Elements { get; set; } = [];
+    public List<UpdateDialogDialogGuiActionDto> GuiActions { get; set; } = [];
+    public List<UpdateDialogDialogApiActionDto> ApiActions { get; set; } = [];
+    public List<UpdateDialogDialogActivityDto> Activities { get; set; } = [];
 }
 
 public sealed class UpdateDialogContentDto
 {
     public DialogContentType.Values Type { get; set; }
-    public List<LocalizationDto> Value { get; set; } = new();
+    public List<LocalizationDto> Value { get; set; } = [];
 }
 
 public sealed class UpdateDialogSearchTagDto
@@ -51,8 +51,8 @@ public class UpdateDialogDialogActivityDto
     public Guid? RelatedActivityId { get; set; }
     public Guid? DialogElementId { get; set; }
 
-    public List<LocalizationDto> PerformedBy { get; set; } = new();
-    public List<LocalizationDto> Description { get; set; } = new();
+    public List<LocalizationDto> PerformedBy { get; set; } = [];
+    public List<LocalizationDto> Description { get; set; } = [];
 }
 
 public sealed class UpdateDialogDialogApiActionDto
@@ -63,7 +63,7 @@ public sealed class UpdateDialogDialogApiActionDto
 
     public Guid? DialogElementId { get; set; }
 
-    public List<UpdateDialogDialogApiActionEndpointDto> Endpoints { get; set; } = new();
+    public List<UpdateDialogDialogApiActionEndpointDto> Endpoints { get; set; } = [];
 }
 
 public sealed class UpdateDialogDialogApiActionEndpointDto
@@ -90,7 +90,7 @@ public sealed class UpdateDialogDialogGuiActionDto
 
     public DialogGuiActionPriority.Values Priority { get; set; }
 
-    public List<LocalizationDto> Title { get; set; } = new();
+    public List<LocalizationDto> Title { get; set; } = [];
 }
 
 public class UpdateDialogDialogElementDto
@@ -102,8 +102,8 @@ public class UpdateDialogDialogElementDto
 
     public Guid? RelatedDialogElementId { get; set; }
 
-    public List<LocalizationDto> DisplayName { get; set; } = new();
-    public List<UpdateDialogDialogElementUrlDto> Urls { get; set; } = new();
+    public List<LocalizationDto> DisplayName { get; set; } = [];
+    public List<UpdateDialogDialogElementUrlDto> Urls { get; set; } = [];
 }
 
 public sealed class UpdateDialogDialogElementUrlDto

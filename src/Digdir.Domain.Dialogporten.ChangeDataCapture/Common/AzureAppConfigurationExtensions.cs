@@ -50,7 +50,7 @@ internal static class AzureAppConfigurationExtensions
         // configuration before using azure app configuration middleware.
         return builder.ApplicationServices
             .GetRequiredService<IConfiguration>()
-            .TryGetAzureAppConfigUri(out var _)
+            .TryGetAzureAppConfigUri(out _)
                 ? builder.UseAzureAppConfiguration()
                 : builder;
     }

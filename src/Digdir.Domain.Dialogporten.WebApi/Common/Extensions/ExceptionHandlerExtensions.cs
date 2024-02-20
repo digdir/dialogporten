@@ -31,5 +31,5 @@ internal static class ExceptionHandlerExtensions
         return app;
     }
 
-    private sealed class ExceptionHandler { }
+    private sealed class ExceptionHandler;
 }

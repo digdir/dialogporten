@@ -15,7 +15,7 @@ public class SearchDialogElementDto
     public Guid DialogId { get; set; }
     public DateTimeOffset? DeletedAt { get; set; }
 
-    public List<LocalizationDto> DisplayName { get; set; } = new();
+    public List<LocalizationDto> DisplayName { get; set; } = [];
 
     public Guid? RelatedDialogElementId { get; set; }
 }

@@ -14,7 +14,7 @@ public class SearchDialogElementDto
     // === Dependent relationships ===
     public Guid DialogId { get; set; }
 
-    public List<LocalizationDto> DisplayName { get; set; } = new();
+    public List<LocalizationDto> DisplayName { get; set; } = [];
 
     public Guid? RelatedDialogElementId { get; set; }
 }

@@ -115,7 +115,7 @@ public sealed class SearchDialogQueryOrderDefinition : IOrderDefinition<SearchDi
 }
 
 [GenerateOneOf]
-public partial class SearchDialogResult : OneOfBase<PaginatedList<SearchDialogDto>, ValidationError> { }
+public partial class SearchDialogResult : OneOfBase<PaginatedList<SearchDialogDto>, ValidationError>;
 
 internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQuery, SearchDialogResult>
 {
@@ -167,8 +167,8 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
         if (request.EndUserId is not null)
         {
             var authorizedResources = await _altinnAuthorization.GetAuthorizedResourcesForSearch(
-                request.Party ?? new List<string>(),
-                request.ServiceResource ?? new List<string>(),
+                request.Party ?? [],
+                request.ServiceResource ?? [],
                 request.EndUserId,
                 cancellationToken);
             query = query.WhereUserIsAuthorizedFor(authorizedResources);

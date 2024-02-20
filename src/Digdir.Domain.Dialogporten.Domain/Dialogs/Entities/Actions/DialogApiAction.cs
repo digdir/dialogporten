@@ -22,5 +22,5 @@ public class DialogApiAction : IEntity
 
     // === Principal relationships ===
     [AggregateChild]
-    public List<DialogApiActionEndpoint> Endpoints { get; set; } = new();
+    public List<DialogApiActionEndpoint> Endpoints { get; set; } = [];
 }

@@ -14,7 +14,7 @@ public class DeleteOutboxMessagesCommand : IRequest<DeleteOutboxMessagesResult>
 }
 
 [GenerateOneOf]
-public partial class DeleteOutboxMessagesResult : OneOfBase<Success, EntityNotFound> { }
+public partial class DeleteOutboxMessagesResult : OneOfBase<Success, EntityNotFound>;
 
 internal sealed class DeleteOutboxMessagesCommandHandler : IRequestHandler<DeleteOutboxMessagesCommand, DeleteOutboxMessagesResult>
 {

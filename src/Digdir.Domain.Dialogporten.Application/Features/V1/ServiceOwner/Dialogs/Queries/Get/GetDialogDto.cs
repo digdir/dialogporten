@@ -28,20 +28,20 @@ public sealed class GetDialogDto
 
     public DialogStatus.Values Status { get; set; }
 
-    public List<GetDialogContentDto> Content { get; set; } = new();
+    public List<GetDialogContentDto> Content { get; set; } = [];
 
     public List<GetDialogSearchTagDto>? SearchTags { get; set; }
 
-    public List<GetDialogDialogElementDto> Elements { get; set; } = new();
-    public List<GetDialogDialogGuiActionDto> GuiActions { get; set; } = new();
-    public List<GetDialogDialogApiActionDto> ApiActions { get; set; } = new();
-    public List<GetDialogDialogActivityDto> Activities { get; set; } = new();
+    public List<GetDialogDialogElementDto> Elements { get; set; } = [];
+    public List<GetDialogDialogGuiActionDto> GuiActions { get; set; } = [];
+    public List<GetDialogDialogApiActionDto> ApiActions { get; set; } = [];
+    public List<GetDialogDialogActivityDto> Activities { get; set; } = [];
 }
 
 public sealed class GetDialogContentDto
 {
     public DialogContentType.Values Type { get; set; }
-    public List<LocalizationDto> Value { get; set; } = new();
+    public List<LocalizationDto> Value { get; set; } = [];
 }
 
 public sealed class GetDialogSearchTagDto
@@ -59,8 +59,8 @@ public sealed class GetDialogDialogActivityDto
     public Guid? RelatedActivityId { get; set; }
     public Guid? DialogElementId { get; set; }
 
-    public List<LocalizationDto>? PerformedBy { get; set; } = new();
-    public List<LocalizationDto> Description { get; set; } = new();
+    public List<LocalizationDto>? PerformedBy { get; set; } = [];
+    public List<LocalizationDto> Description { get; set; } = [];
 }
 
 public sealed class GetDialogDialogApiActionDto
@@ -71,7 +71,7 @@ public sealed class GetDialogDialogApiActionDto
 
     public Guid? DialogElementId { get; set; }
 
-    public List<GetDialogDialogApiActionEndpointDto> Endpoints { get; set; } = new();
+    public List<GetDialogDialogApiActionEndpointDto> Endpoints { get; set; } = [];
 }
 
 public sealed class GetDialogDialogApiActionEndpointDto
@@ -98,7 +98,7 @@ public sealed class GetDialogDialogGuiActionDto
 
     public DialogGuiActionPriority.Values Priority { get; set; }
 
-    public List<LocalizationDto> Title { get; set; } = new();
+    public List<LocalizationDto> Title { get; set; } = [];
 }
 
 public sealed class GetDialogDialogElementDto
@@ -109,8 +109,8 @@ public sealed class GetDialogDialogElementDto
 
     public Guid? RelatedDialogElementId { get; set; }
 
-    public List<LocalizationDto> DisplayName { get; set; } = new();
-    public List<GetDialogDialogElementUrlDto> Urls { get; set; } = new();
+    public List<LocalizationDto> DisplayName { get; set; } = [];
+    public List<GetDialogDialogElementUrlDto> Urls { get; set; } = [];
 }
 
 public sealed class GetDialogDialogElementUrlDto

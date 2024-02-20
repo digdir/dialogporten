@@ -24,7 +24,7 @@ public sealed class UpdateDialogCommand : IRequest<UpdateDialogResult>
 }
 
 [GenerateOneOf]
-public partial class UpdateDialogResult : OneOfBase<Success, EntityNotFound, ValidationError, DomainError, ConcurrencyError> { }
+public partial class UpdateDialogResult : OneOfBase<Success, EntityNotFound, ValidationError, DomainError, ConcurrencyError>;
 
 internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogCommand, UpdateDialogResult>
 {

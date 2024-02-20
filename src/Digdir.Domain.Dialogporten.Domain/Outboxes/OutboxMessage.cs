@@ -9,7 +9,7 @@ public sealed class OutboxMessage
     public required string EventType { get; init; }
     public required string EventPayload { get; init; }
 
-    public List<OutboxMessageConsumer> OutboxMessageConsumers { get; set; } = new();
+    public List<OutboxMessageConsumer> OutboxMessageConsumers { get; set; } = [];
 
     public static OutboxMessage Create<TDomainEvent>(TDomainEvent domainEvent)
         where TDomainEvent : IDomainEvent

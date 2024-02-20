@@ -56,7 +56,7 @@ internal sealed class OutboxReplicationDataMapper : IReplicationDataMapper<Outbo
         {
             EventId = Guid.Parse(dic[nameof(OutboxMessage.EventId)]),
             EventType = dic[nameof(OutboxMessage.EventType)],
-            EventPayload = dic[nameof(OutboxMessage.EventPayload)],
+            EventPayload = dic[nameof(OutboxMessage.EventPayload)]
         };
     }
 }

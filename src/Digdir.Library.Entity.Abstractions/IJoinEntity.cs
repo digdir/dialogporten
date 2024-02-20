@@ -13,5 +13,4 @@ namespace Digdir.Library.Entity.Abstractions;
 /// </remarks>
 public interface IJoinEntity :
     ICreatableEntity,
-    IUpdateableEntity
-{ }
+    IUpdateableEntity;

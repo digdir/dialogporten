@@ -20,7 +20,7 @@ public sealed class SearchDialogDto
 
     public DialogStatus.Values Status { get; set; }
 
-    public List<SearchDialogContentDto> Content { get; set; } = new();
+    public List<SearchDialogContentDto> Content { get; set; } = [];
 }
 
 public sealed class SearchDialogSearchTagDto
@@ -31,5 +31,5 @@ public sealed class SearchDialogSearchTagDto
 public sealed class SearchDialogContentDto
 {
     public DialogContentType.Values Type { get; set; }
-    public List<LocalizationDto> Value { get; set; } = new();
+    public List<LocalizationDto> Value { get; set; } = [];
 }

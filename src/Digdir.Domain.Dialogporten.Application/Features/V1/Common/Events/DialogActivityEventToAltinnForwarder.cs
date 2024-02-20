@@ -32,7 +32,7 @@ internal sealed class DialogActivityEventToAltinnForwarder : DomainEventToAltinn
     {
         var data = new Dictionary<string, object>
         {
-            ["activityId"] = domainEvent.ActivityId.ToString(),
+            ["activityId"] = domainEvent.ActivityId.ToString()
         };
 
         if (domainEvent.ExtendedType is not null)

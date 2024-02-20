@@ -13,8 +13,8 @@ public sealed class GetDialogElementDto
 
     public Guid? RelatedDialogElementId { get; set; }
 
-    public List<LocalizationDto> DisplayName { get; set; } = new();
-    public List<GetDialogElementUrlDto> Urls { get; set; } = new();
+    public List<LocalizationDto> DisplayName { get; set; } = [];
+    public List<GetDialogElementUrlDto> Urls { get; set; } = [];
 }
 
 public sealed class GetDialogElementUrlDto
