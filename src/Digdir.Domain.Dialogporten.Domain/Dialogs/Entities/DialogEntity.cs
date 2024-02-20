@@ -34,8 +34,6 @@ public class DialogEntity :
     public DateTimeOffset? VisibleFrom { get; set; }
     public DateTimeOffset? DueAt { get; set; }
     public DateTimeOffset? ExpiresAt { get; set; }
-    // TODO: Remove, https://github.com/digdir/dialogporten/issues/398
-    public DateTimeOffset? ReadAt { get; set; }
 
     // === Dependent relationships ===
     public DialogStatus.Values StatusId { get; set; }
