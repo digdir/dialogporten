@@ -29,7 +29,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <InternalsVisibleTo Include="Digdir.Domain.Dialogporten.Application.Tests.Integration" />
+        <InternalsVisibleTo Include="Digdir.Domain.Dialogporten.Application.Integration.Tests" />
     </ItemGroup>
 
 </Project>

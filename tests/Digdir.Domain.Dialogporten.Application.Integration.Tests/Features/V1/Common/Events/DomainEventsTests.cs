@@ -1,5 +1,6 @@
 using Digdir.Domain.Dialogporten.Application.Integration.Tests.Common;
 using Digdir.Domain.Dialogporten.Application.Integration.Tests.Features.V1.Dialogs;
+using Digdir.Domain.Dialogporten.Domain.Outboxes;
 using Digdir.Tool.Dialogporten.GenerateFakeData;
 using FluentAssertions;
 
@@ -15,12 +16,30 @@ public class DomainEventsTests(DialogApplication application) : ApplicationColle
         var createDialogCommand = DialogGenerator.GenerateFakeDialog();
 
         // Act
-        var response = await Application.Send(createDialogCommand!);
+        var _ = await Application.Send(createDialogCommand!);
 
         // Assert
-        response.TryPickT0(out _, out _).Should().BeTrue();
-        //result.Should().NotBeNull();
-        //result.Should().BeEquivalentTo(createCommand);
+        var outBoxMessages = Application.GetDbEntities<OutboxMessage>();
+        var eventAssembly = typeof(OutboxMessage).Assembly;
+        foreach (var outboxMessage in outBoxMessages)
+        {
+            var eventType = eventAssembly.GetType(outboxMessage.EventType);
+            var domainEvent = JsonSerializer.Deserialize(outboxMessage.EventPayload, eventType);
+
+            switch (domainEvent)
+            {
+                case DialogCreatedEvent dialogCreatedEvent:
+                    dialogCreatedEvent.Should().NotBeNull();
+                    dialogCreatedEvent.Id.Should().Be(createDialogCommand.Id);
+                    dialogCreatedEvent.ServiceResource.Should().Be(createDialogCommand.ServiceResource);
+                    dialogCreatedEvent.Party.Should().Be(createDialogCommand.Party);
+                    dialogCreatedEvent.Status.Should().Be(createDialogCommand.Status);
+                    break;
+                default:
+                    throw new Exception("Unknown domain event");
+            }
+        }
+        Console.WriteLine(outBoxMessages);
     }
 
     // [Fact]

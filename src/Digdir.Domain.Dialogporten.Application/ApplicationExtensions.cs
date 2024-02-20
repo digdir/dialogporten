@@ -42,7 +42,10 @@ public static class ApplicationExtensions
             .AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>))
             .AddTransient(typeof(IPipelineBehavior<,>), typeof(DomainContextBehaviour<,>));
 
-        if (!environment.IsDevelopment()) return services;
+        if (!environment.IsDevelopment())
+        {
+            return services;
+        }
 
         var localDeveloperSettings = configuration.GetLocalDevelopmentSettings();
         services.Decorate<IUserService, LocalDevelopmentUserServiceDecorator>(

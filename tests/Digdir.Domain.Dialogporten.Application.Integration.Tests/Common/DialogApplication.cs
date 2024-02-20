@@ -1,9 +1,10 @@
 ﻿using System.Collections.ObjectModel;
+using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
 using Digdir.Domain.Dialogporten.Infrastructure;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.ResourceRegistry;
-using Digdir.Domain.Dialogporten.Infrastructure.Altinn.OrganizationRegistry;
+using Digdir.Domain.Dialogporten.Infrastructure.DomainEvents.Outbox;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence;
 using Digdir.Library.Entity.Abstractions.Features.Lookup;
 using FluentAssertions;
@@ -38,23 +39,25 @@ public class DialogApplication : IAsyncLifetime
             return options;
         });
 
-        var configuration = CreateConfigurationSubstitution();
-
         var serviceCollection = new ServiceCollection();
-        serviceCollection.AddHttpClient<IOrganizationRegistry, OrganizationRegistryClient>((services, client)
-            => client.BaseAddress = new Uri("https://altinncdn.no/"));
-
-        serviceCollection.AddHttpClient<INameRegistry, NameRegistryClient>((services, client)
-            => client.BaseAddress = new Uri("https://notcurrentlyinuse.no/"));
 
         _rootProvider = serviceCollection
-            .AddApplication(configuration, Substitute.For<IHostEnvironment>())
+            .AddApplication(Substitute.For<IConfiguration>(), Substitute.For<IHostEnvironment>())
             .AddDistributedMemoryCache()
-            .AddDbContext<DialogDbContext>(x => x.UseNpgsql(_dbContainer.GetConnectionString()))
+            .AddTransient<ConvertDomainEventsToOutboxMessagesInterceptor>()
+            .AddDbContext<DialogDbContext>((services, options) =>
+                options.UseNpgsql(_dbContainer.GetConnectionString(), o =>
+                {
+                    o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
+                })
+                .AddInterceptors(services.GetRequiredService<ConvertDomainEventsToOutboxMessagesInterceptor>()))
             .AddScoped<IDialogDbContext>(x => x.GetRequiredService<DialogDbContext>())
             .AddScoped<IUser, IntegrationTestUser>()
             .AddScoped<IResourceRegistry, LocalDevelopmentResourceRegistry>()
+            .AddScoped<IOrganizationRegistry>(_ => CreateOrganizationRegistrySubstitute())
+            .AddScoped<INameRegistry>(_ => CreateNameRegistrySubstitute())
             .AddScoped<IUnitOfWork, UnitOfWork>()
+            .Decorate<IUserService, LocalDevelopmentUserServiceDecorator>()
             .BuildServiceProvider();
 
         await _dbContainer.StartAsync();
@@ -62,22 +65,27 @@ public class DialogApplication : IAsyncLifetime
         await BuildRespawnState();
     }
 
-    private static IConfiguration CreateConfigurationSubstitution()
+    private static INameRegistry CreateNameRegistrySubstitute()
     {
-        var configurationSubstitution = Substitute.For<IConfiguration>();
-        var localDevSettings = new LocalDevelopmentSettings
-        {
-            UseLocalDevelopmentUser = true,
-            UseLocalDevelopmentResourceRegister = true
-        };
+        var nameRegistrySubstitute = Substitute.For<INameRegistry>();
 
-        configurationSubstitution
-            .GetLocalDevelopmentSettings()
-            .Returns(localDevSettings);
+        nameRegistrySubstitute
+            .GetName(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns("Brando Sando");
 
-        return configurationSubstitution;
+        return nameRegistrySubstitute;
     }
 
+    private static IOrganizationRegistry CreateOrganizationRegistrySubstitute()
+    {
+        var organizationRegistrySubstitute = Substitute.For<IOrganizationRegistry>();
+
+        organizationRegistrySubstitute
+            .GetOrgShortName(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns("digdir");
+
+        return organizationRegistrySubstitute;
+    }
 
     public async Task DisposeAsync()
     {
@@ -113,10 +121,17 @@ public class DialogApplication : IAsyncLifetime
         _respawner = await Respawner.CreateAsync(connection, new()
         {
             DbAdapter = DbAdapter.Postgres,
-            TablesToIgnore = new[] { new Respawn.Graph.Table("__EFMigrationsHistory") }
+            TablesToIgnore = new[] { new Table("__EFMigrationsHistory") }
                 .Concat(GetLookupTables())
                 .ToArray()
         });
+    }
+
+    public List<T> GetDbEntities<T>() where T : class
+    {
+        using var scope = _rootProvider.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<DialogDbContext>();
+        return db.Set<T>().ToList();
     }
 
     private ReadOnlyCollection<Table> GetLookupTables()
@@ -125,7 +140,7 @@ public class DialogApplication : IAsyncLifetime
         var db = scope.ServiceProvider.GetRequiredService<DialogDbContext>();
         return db.Model.GetEntityTypes()
             .Where(x => typeof(ILookupEntity).IsAssignableFrom(x.ClrType))
-            .Select(x => new Respawn.Graph.Table(x.GetTableName()!))
+            .Select(x => new Table(x.GetTableName()!))
             .ToList()
             .AsReadOnly();
     }
