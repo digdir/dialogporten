@@ -1,7 +1,9 @@
 ﻿using System.Collections.ObjectModel;
+using System.Text.Json;
 using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
+using Digdir.Domain.Dialogporten.Domain.Outboxes;
 using Digdir.Domain.Dialogporten.Infrastructure;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.ResourceRegistry;
 using Digdir.Domain.Dialogporten.Infrastructure.DomainEvents.Outbox;
@@ -13,6 +15,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Npgsql;
 using NSubstitute;
 using Respawn;
@@ -56,7 +59,9 @@ public class DialogApplication : IAsyncLifetime
             .AddScoped<IResourceRegistry, LocalDevelopmentResourceRegistry>()
             .AddScoped<IOrganizationRegistry>(_ => CreateOrganizationRegistrySubstitute())
             .AddScoped<INameRegistry>(_ => CreateNameRegistrySubstitute())
+            .AddScoped<IOptions<ApplicationSettings>>(_ => CreateApplicationSettingsSubstitute())
             .AddScoped<IUnitOfWork, UnitOfWork>()
+            .AddSingleton<ICloudEventBus, IntegrationTestCloudBus>()
             .Decorate<IUserService, LocalDevelopmentUserServiceDecorator>()
             .BuildServiceProvider();
 
@@ -76,6 +81,22 @@ public class DialogApplication : IAsyncLifetime
         return nameRegistrySubstitute;
     }
 
+    private static IOptions<ApplicationSettings> CreateApplicationSettingsSubstitute()
+    {
+        var applicationSettingsSubstitute = Substitute.For<IOptions<ApplicationSettings>>();
+
+        applicationSettingsSubstitute
+            .Value
+            .Returns(new ApplicationSettings
+            {
+                Dialogporten = new DialogportenSettings
+                {
+                    BaseUri = new Uri("https://integration.test")
+                }
+            });
+
+        return applicationSettingsSubstitute;
+    }
     private static IOrganizationRegistry CreateOrganizationRegistrySubstitute()
     {
         var organizationRegistrySubstitute = Substitute.For<IOrganizationRegistry>();
@@ -91,6 +112,13 @@ public class DialogApplication : IAsyncLifetime
     {
         await _rootProvider.DisposeAsync();
         await _dbContainer.DisposeAsync();
+    }
+
+    private async Task Publish(INotification notification)
+    {
+        using var scope = _rootProvider.CreateScope();
+        var mediator = scope.ServiceProvider.GetRequiredService<IPublisher>();
+        await mediator.Publish(notification);
     }
 
     public async Task<TResponse> Send<TResponse>(IRequest<TResponse> request)
@@ -127,7 +155,30 @@ public class DialogApplication : IAsyncLifetime
         });
     }
 
-    public List<T> GetDbEntities<T>() where T : class
+    public async Task PublishOutBoxMessages()
+    {
+        var outBoxMessages = GetDbEntities<OutboxMessage>();
+        var eventAssembly = typeof(OutboxMessage).Assembly;
+        foreach (var outboxMessage in outBoxMessages)
+        {
+            var eventType = eventAssembly.GetType(outboxMessage.EventType);
+            var domainEvent = JsonSerializer.Deserialize(outboxMessage.EventPayload, eventType!) as INotification;
+            await Publish(domainEvent!);
+        }
+    }
+
+    public List<CloudEvent> PopPublishedCloudEvents()
+    {
+        using var scope = _rootProvider.CreateScope();
+        var cloudBus = scope.ServiceProvider.GetRequiredService<ICloudEventBus>() as IntegrationTestCloudBus;
+
+        var events = cloudBus!.Events.ToList();
+        cloudBus.Events.Clear();
+
+        return events;
+    }
+
+    private List<T> GetDbEntities<T>() where T : class
     {
         using var scope = _rootProvider.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<DialogDbContext>();

@@ -16,7 +16,7 @@ internal sealed class DialogActivityEventToAltinnForwarder : DomainEventToAltinn
         var cloudEvent = new CloudEvent
         {
             Id = domainEvent.EventId,
-            Type = CloudEventTypes.Get(domainEvent.TypeId),
+            Type = CloudEventTypes.Get(domainEvent.TypeId.ToString()),
             Time = domainEvent.OccuredAt,
             Resource = domainEvent.ServiceResource,
             ResourceInstance = domainEvent.DialogId.ToString(),

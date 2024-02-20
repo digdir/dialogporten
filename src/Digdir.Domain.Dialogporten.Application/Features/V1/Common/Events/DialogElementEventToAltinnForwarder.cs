@@ -33,7 +33,7 @@ internal sealed class DialogElementEventToAltinnForwarder : DomainEventToAltinnF
         var cloudEvent = new CloudEvent
         {
             Id = domainEvent.EventId,
-            Type = CloudEventTypes.Get(domainEvent),
+            Type = CloudEventTypes.Get(nameof(DialogElementUpdatedDomainEvent)),
             Time = domainEvent.OccuredAt,
             Resource = domainEvent.ServiceResource,
             ResourceInstance = domainEvent.DialogId.ToString(),
@@ -65,7 +65,7 @@ internal sealed class DialogElementEventToAltinnForwarder : DomainEventToAltinnF
         var cloudEvent = new CloudEvent
         {
             Id = domainEvent.EventId,
-            Type = CloudEventTypes.Get(domainEvent),
+            Type = CloudEventTypes.Get(nameof(DialogElementCreatedDomainEvent)),
             Time = domainEvent.OccuredAt,
             Resource = domainEvent.ServiceResource,
             ResourceInstance = domainEvent.DialogId.ToString(),
@@ -97,7 +97,7 @@ internal sealed class DialogElementEventToAltinnForwarder : DomainEventToAltinnF
         var cloudEvent = new CloudEvent
         {
             Id = domainEvent.EventId,
-            Type = CloudEventTypes.Get(domainEvent),
+            Type = CloudEventTypes.Get(nameof(DialogElementDeletedDomainEvent)),
             Time = domainEvent.OccuredAt,
             Resource = domainEvent.ServiceResource,
             ResourceInstance = domainEvent.DialogId.ToString(),

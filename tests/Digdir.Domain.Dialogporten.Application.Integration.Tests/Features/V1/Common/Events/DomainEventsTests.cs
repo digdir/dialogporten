@@ -1,6 +1,9 @@
+using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Events;
 using Digdir.Domain.Dialogporten.Application.Integration.Tests.Common;
 using Digdir.Domain.Dialogporten.Application.Integration.Tests.Features.V1.Dialogs;
-using Digdir.Domain.Dialogporten.Domain.Outboxes;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Events;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Events.DialogElements;
 using Digdir.Tool.Dialogporten.GenerateFakeData;
 using FluentAssertions;
 
@@ -10,96 +13,38 @@ namespace Digdir.Domain.Dialogporten.Application.Integration.Tests.Features.V1.C
 public class DomainEventsTests(DialogApplication application) : ApplicationCollectionFixture(application)
 {
     [Fact]
-    public async Task Creates_DomainEvents_When_Dialog_Created()
+    public async Task Creates_CloudEvents_When_Dialog_Created()
     {
         // Arrange
-        var createDialogCommand = DialogGenerator.GenerateFakeDialog();
+        var allActivityTypes = Enum.GetValues<DialogActivityType.Values>().ToList();
+        var activities = allActivityTypes.Select(activityType =>
+            DialogGenerator.GenerateFakeDialogActivity(activityType)).ToList();
+
+        var createDialogCommand = DialogGenerator.GenerateFakeDialog(activities: activities);
 
         // Act
-        var _ = await Application.Send(createDialogCommand!);
+        _ = await Application.Send(createDialogCommand);
+        await Application.PublishOutBoxMessages();
+        var cloudEvents = Application.PopPublishedCloudEvents();
 
         // Assert
-        var outBoxMessages = Application.GetDbEntities<OutboxMessage>();
-        var eventAssembly = typeof(OutboxMessage).Assembly;
-        foreach (var outboxMessage in outBoxMessages)
-        {
-            var eventType = eventAssembly.GetType(outboxMessage.EventType);
-            var domainEvent = JsonSerializer.Deserialize(outboxMessage.EventPayload, eventType);
+        cloudEvents.Should().ContainSingle(cloudEvent =>
+            cloudEvent.Type == CloudEventTypes.Get(nameof(DialogCreatedDomainEvent)));
 
-            switch (domainEvent)
-            {
-                case DialogCreatedEvent dialogCreatedEvent:
-                    dialogCreatedEvent.Should().NotBeNull();
-                    dialogCreatedEvent.Id.Should().Be(createDialogCommand.Id);
-                    dialogCreatedEvent.ServiceResource.Should().Be(createDialogCommand.ServiceResource);
-                    dialogCreatedEvent.Party.Should().Be(createDialogCommand.Party);
-                    dialogCreatedEvent.Status.Should().Be(createDialogCommand.Status);
-                    break;
-                default:
-                    throw new Exception("Unknown domain event");
-            }
-        }
-        Console.WriteLine(outBoxMessages);
+        cloudEvents.Count(cloudEvent =>
+                cloudEvent.Type == CloudEventTypes.Get(nameof(DialogElementCreatedDomainEvent)))
+            .Should()
+            .Be(createDialogCommand.Elements.Count);
+
+        allActivityTypes.ForEach(activityType =>
+            cloudEvents.Should().ContainSingle(cloudEvent =>
+                cloudEvent.Type == CloudEventTypes.Get(activityType.ToString())));
+
+        cloudEvents.Count
+            .Should()
+            .Be(
+                createDialogCommand.Elements.Count
+                + createDialogCommand.Activities.Count
+                + 1); // + 1 for the dialog created event
     }
-
-    // [Fact]
-    // public async Task Creates_DomainEvents_When_Dialog_Updated()
-    // {
-    //     // Arrange
-    //     var dialogId = Guid.NewGuid();
-    //     var createCommand = new CreateDialogCommand
-    //     {
-    //         Id = dialogId,
-    //         ServiceResource = "urn:altinn:resource:example_dialog_service",
-    //         Party = "org:991825827",
-    //         Status = DialogStatus.Values.New
-    //     };
-    //     var response = await Application.Send(createCommand);
-    //     response.TryPickT0(out var result, out var _).Should().BeTrue();
-    //
-    //     // Act
-    //     var updateCommand = new UpdateDialogCommand
-    //     {
-    //         Id = dialogId,
-    //         ServiceResource = "urn:altinn:resource:example_dialog_service",
-    //         Party = "org:991825827",
-    //         Status = DialogStatus.Values.InProgress
-    //     };
-    //     var updateResponse = await Application.Send(updateCommand);
-    //
-    //     // Assert
-    //     updateResponse.TryPickT0(out var updateResult, out var _).Should().BeTrue();
-    //     //updateResult.Should().NotBeNull();
-    //     //updateResult.Should().BeEquivalentTo(updateCommand);
-    // }
-    //
-    // [Fact]
-    // public async Task Creates_DomainEvents_When_Dialog_Deleted()
-    // {
-    //     // Arrange
-    //     var dialogId = Guid.NewGuid();
-    //     var createCommand = new CreateDialogCommand
-    //     {
-    //         Id = dialogId,
-    //         ServiceResource = "urn:altinn:resource:example_dialog_service",
-    //         Party = "org:991825827",
-    //         Status = DialogStatus.Values.New
-    //     };
-    //     var response = await Application.Send(createCommand);
-    //     response.TryPickT0(out var result, out var _).Should().BeTrue();
-    //
-    //     // Act
-    //     var deleteCommand = new DeleteDialogCommand
-    //     {
-    //         Id = dialogId,
-    //         ServiceResource = "urn:altinn:resource:example_dialog_service",
-    //         Party = "org:991825827"
-    //     };
-    //     var deleteResponse = await Application.Send(deleteCommand);
-    //
-    //     // Assert
-    //     deleteResponse.TryPickT0(out var deleteResult, out var _).Should().BeTrue();
-    //     //deleteResult.Should().NotBeNull();
-    //     //deleteResult.Should().BeEquivalentTo(deleteCommand);
-    // }
 }
