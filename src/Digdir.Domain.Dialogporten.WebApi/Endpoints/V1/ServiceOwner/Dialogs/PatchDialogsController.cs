@@ -81,7 +81,8 @@ public sealed class PatchDialogsController : ControllerBase
         var result = await _sender.Send(command, ct);
         return result.Match(
             success => (IActionResult)NoContent(),
-            entityNotFound => NotFound(HttpContext.ResponseBuilder(StatusCodes.Status404NotFound, entityNotFound.ToValidationResults())),
+            notFound => NotFound(HttpContext.ResponseBuilder(StatusCodes.Status404NotFound, notFound.ToValidationResults())),
+            badRequest => BadRequest(HttpContext.ResponseBuilder(StatusCodes.Status400BadRequest, badRequest.ToValidationResults())),
             validationFailed => BadRequest(HttpContext.ResponseBuilder(StatusCodes.Status400BadRequest, validationFailed.Errors.ToList())),
             domainError => UnprocessableEntity(HttpContext.ResponseBuilder(StatusCodes.Status422UnprocessableEntity, domainError.ToValidationResults())),
             concurrencyError => new ObjectResult(HttpContext.ResponseBuilder(StatusCodes.Status412PreconditionFailed)) { StatusCode = StatusCodes.Status412PreconditionFailed }

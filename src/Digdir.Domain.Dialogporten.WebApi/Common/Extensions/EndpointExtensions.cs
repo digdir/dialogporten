@@ -10,6 +10,10 @@ public static class EndpointExtensions
         => ep.BadRequestAsync(failure.Errors, cancellationToken);
     public static Task BadRequestAsync(this IEndpoint ep, IEnumerable<ValidationFailure> failures, CancellationToken cancellationToken = default)
         => ep.HttpContext.Response.SendErrorsAsync(failures.ToList() ?? [], StatusCodes.Status400BadRequest, cancellation: cancellationToken);
+    public static Task BadRequestAsync(this IEndpoint ep, BadRequest badRequest, CancellationToken cancellationToken = default)
+        => ep.HttpContext.Response.SendErrorsAsync(
+            badRequest.ToValidationResults(),
+            cancellation: cancellationToken);
 
     public static Task PreconditionFailed(this IEndpoint ep, CancellationToken cancellationToken = default)
         => ep.HttpContext.Response.SendErrorsAsync([], StatusCodes.Status412PreconditionFailed, cancellation: cancellationToken);

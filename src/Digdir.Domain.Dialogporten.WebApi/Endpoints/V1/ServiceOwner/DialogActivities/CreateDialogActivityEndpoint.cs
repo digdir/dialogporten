@@ -66,6 +66,7 @@ public sealed class CreateDialogActivityEndpoint : Endpoint<CreateDialogActivity
         await result.Match(
             success => SendCreatedAtAsync<GetDialogActivityEndpoint>(new GetDialogActivityQuery { DialogId = dialog.Id, ActivityId = req.Id.Value }, req.Id, cancellation: ct),
             notFound => this.NotFoundAsync(notFound, ct),
+            badRequest => this.BadRequestAsync(badRequest, ct),
             validationError => this.BadRequestAsync(validationError, ct),
             domainError => this.UnprocessableEntityAsync(domainError, ct),
             concurrencyError => this.PreconditionFailed(cancellationToken: ct));
