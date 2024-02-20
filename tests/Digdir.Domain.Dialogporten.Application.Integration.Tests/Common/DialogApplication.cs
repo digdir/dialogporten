@@ -38,6 +38,8 @@ public class DialogApplication : IAsyncLifetime
             return options;
         });
 
+        var configuration = CreateConfigurationSubstitution();
+
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddHttpClient<IOrganizationRegistry, OrganizationRegistryClient>((services, client)
             => client.BaseAddress = new Uri("https://altinncdn.no/"));
@@ -46,7 +48,7 @@ public class DialogApplication : IAsyncLifetime
             => client.BaseAddress = new Uri("https://notcurrentlyinuse.no/"));
 
         _rootProvider = serviceCollection
-            .AddApplication(Substitute.For<IConfiguration>(), Substitute.For<IHostEnvironment>())
+            .AddApplication(configuration, Substitute.For<IHostEnvironment>())
             .AddDistributedMemoryCache()
             .AddDbContext<DialogDbContext>(x => x.UseNpgsql(_dbContainer.GetConnectionString()))
             .AddScoped<IDialogDbContext>(x => x.GetRequiredService<DialogDbContext>())
@@ -59,6 +61,23 @@ public class DialogApplication : IAsyncLifetime
         await EnsureDatabaseAsync();
         await BuildRespawnState();
     }
+
+    private static IConfiguration CreateConfigurationSubstitution()
+    {
+        var configurationSubstitution = Substitute.For<IConfiguration>();
+        var localDevSettings = new LocalDevelopmentSettings
+        {
+            UseLocalDevelopmentUser = true,
+            UseLocalDevelopmentResourceRegister = true
+        };
+
+        configurationSubstitution
+            .GetLocalDevelopmentSettings()
+            .Returns(localDevSettings);
+
+        return configurationSubstitution;
+    }
+
 
     public async Task DisposeAsync()
     {

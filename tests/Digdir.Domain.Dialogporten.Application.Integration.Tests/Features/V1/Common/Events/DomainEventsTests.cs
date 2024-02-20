@@ -1,9 +1,5 @@
-using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
-using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Create;
 using Digdir.Domain.Dialogporten.Application.Integration.Tests.Common;
 using Digdir.Domain.Dialogporten.Application.Integration.Tests.Features.V1.Dialogs;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
 using Digdir.Tool.Dialogporten.GenerateFakeData;
 using FluentAssertions;
 
@@ -16,7 +12,7 @@ public class DomainEventsTests(DialogApplication application) : ApplicationColle
     public async Task Creates_DomainEvents_When_Dialog_Created()
     {
         // Arrange
-        var createDialogCommand = DialogGenerator.GenerateFakeDialog() as CreateDialogCommand;
+        var createDialogCommand = DialogGenerator.GenerateFakeDialog();
 
         // Act
         var response = await Application.Send(createDialogCommand!);
