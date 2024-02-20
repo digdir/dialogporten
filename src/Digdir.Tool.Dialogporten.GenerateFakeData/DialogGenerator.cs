@@ -1,4 +1,6 @@
 using System.Globalization;
+using System.Reflection;
+using AutoMapper;
 using Bogus;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Create;
@@ -13,6 +15,23 @@ namespace Digdir.Tool.Dialogporten.GenerateFakeData;
 
 public static class DialogGenerator
 {
+    private static readonly MapperConfiguration _mapperConfiguration;
+    private static IMapper GetMapper() => _mapperConfiguration.CreateMapper();
+
+    static DialogGenerator()
+    {
+        var ass = typeof(CreateDialogCommand).Assembly;
+        _mapperConfiguration = new MapperConfiguration(cfg =>
+        {
+            cfg.AddMaps(typeof(CreateDialogCommand).Assembly);
+        });
+    }
+
+    public static TOut ToCommand<TIn, TOut>(this TIn dto)
+    {
+        return GetMapper().Map<TOut>(dto);
+    }
+
     private static readonly DateTime RefTime = new(2026, 1, 1);
     public static CreateDialogDto GenerateFakeDialog(
         int? seed = null,
