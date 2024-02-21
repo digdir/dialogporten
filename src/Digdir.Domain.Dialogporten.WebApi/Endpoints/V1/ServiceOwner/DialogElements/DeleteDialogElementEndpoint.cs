@@ -70,6 +70,7 @@ public sealed class DeleteDialogElementEndpoint : Endpoint<DeleteDialogElementRe
         await result.Match(
             success => SendNoContentAsync(ct),
             notFound => this.NotFoundAsync(notFound, ct),
+            badRequest => this.BadRequestAsync(badRequest, ct),
             validationError => this.BadRequestAsync(validationError, ct),
             domainError => this.UnprocessableEntityAsync(domainError, ct),
             concurrencyError => this.PreconditionFailed(cancellationToken: ct));
@@ -102,4 +103,3 @@ public sealed class DeleteDialogElementEndpointSummary : Summary<DeleteDialogEle
         Responses[StatusCodes.Status412PreconditionFailed] = Constants.SwaggerSummary.RevisionMismatch;
     }
 }
-

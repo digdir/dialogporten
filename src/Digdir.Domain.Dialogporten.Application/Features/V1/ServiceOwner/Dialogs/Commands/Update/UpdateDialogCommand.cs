@@ -24,7 +24,7 @@ public sealed class UpdateDialogCommand : IRequest<UpdateDialogResult>
 }
 
 [GenerateOneOf]
-public partial class UpdateDialogResult : OneOfBase<Success, EntityNotFound, ValidationError, DomainError, ConcurrencyError>;
+public partial class UpdateDialogResult : OneOfBase<Success, EntityNotFound, BadRequest, ValidationError, DomainError, ConcurrencyError>;
 
 internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogCommand, UpdateDialogResult>
 {
@@ -67,12 +67,20 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
                 .ThenInclude(x => x.Title!.Localizations)
             .Include(x => x.ApiActions)
                 .ThenInclude(x => x.Endpoints)
+            .IgnoreQueryFilters()
             .Where(x => resourceIds.Contains(x.ServiceResource))
             .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
 
         if (dialog is null)
         {
             return new EntityNotFound<DialogEntity>(request.Id);
+        }
+
+        if (dialog.Deleted)
+        {
+            // TODO: When restoration is implemented, add a hint to the error message.
+            // https://github.com/digdir/dialogporten/pull/406
+            return new BadRequest($"Entity '{nameof(DialogEntity)}' with key '{request.Id}' is removed, and cannot be updated.");
         }
 
         // Update primitive properties

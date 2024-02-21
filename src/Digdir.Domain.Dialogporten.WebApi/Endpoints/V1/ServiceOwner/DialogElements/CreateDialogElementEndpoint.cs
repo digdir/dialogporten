@@ -62,6 +62,7 @@ public sealed class CreateDialogElementEndpoint : Endpoint<CreateDialogElementRe
         await result.Match(
             success => SendCreatedAtAsync<GetDialogElementEndpoint>(new GetDialogElementQuery { DialogId = dialog.Id, ElementId = req.Id.Value }, req.Id, cancellation: ct),
             notFound => this.NotFoundAsync(notFound, ct),
+            badRequest => this.BadRequestAsync(badRequest, ct),
             validationError => this.BadRequestAsync(validationError, ct),
             domainError => this.UnprocessableEntityAsync(domainError, ct),
             concurrencyError => this.PreconditionFailed(cancellationToken: ct));
