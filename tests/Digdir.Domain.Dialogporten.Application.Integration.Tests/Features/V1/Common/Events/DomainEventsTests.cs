@@ -79,6 +79,8 @@ public class DomainEventsTests(DialogApplication application) : ApplicationColle
         getDialogResult.TryPickT0(out var getDialogDto, out _);
 
         var updateDialogDto = _mapper.Map<UpdateDialogDto>(getDialogDto);
+
+        // Act
         updateDialogDto.Progress = 1;
 
         var updateDialogCommand = new UpdateDialogCommand()
@@ -87,7 +89,6 @@ public class DomainEventsTests(DialogApplication application) : ApplicationColle
             Dto = updateDialogDto
         };
 
-        // Act
         _ = await Application.Send(updateDialogCommand);
 
         await Application.PublishOutBoxMessages();
@@ -121,6 +122,8 @@ public class DomainEventsTests(DialogApplication application) : ApplicationColle
         getDialogResult.TryPickT0(out var getDialogDto, out _);
 
         var updateDialogDto = _mapper.Map<UpdateDialogDto>(getDialogDto);
+
+        // Act
         updateDialogDto.Elements[0].ExternalReference = "newExternalReference";
 
         var updateDialogCommand = new UpdateDialogCommand()
@@ -129,7 +132,6 @@ public class DomainEventsTests(DialogApplication application) : ApplicationColle
             Dto = updateDialogDto
         };
 
-        // Act
         _ = await Application.Send(updateDialogCommand);
 
         await Application.PublishOutBoxMessages();
@@ -164,6 +166,7 @@ public class DomainEventsTests(DialogApplication application) : ApplicationColle
 
         var updateDialogDto = _mapper.Map<UpdateDialogDto>(getDialogDto);
 
+        // Act
         updateDialogDto.Elements = [];
 
         var updateDialogCommand = new UpdateDialogCommand()
@@ -172,7 +175,6 @@ public class DomainEventsTests(DialogApplication application) : ApplicationColle
             Dto = updateDialogDto
         };
 
-        // Act
         _ = await Application.Send(updateDialogCommand);
 
         await Application.PublishOutBoxMessages();
@@ -196,12 +198,11 @@ public class DomainEventsTests(DialogApplication application) : ApplicationColle
 
         _ = await Application.Send(createDialogCommand);
 
+        // Act
         var deleteDialogCommand = new DeleteDialogCommand
         {
             Id = dialogId
         };
-
-        // Act
         _ = await Application.Send(deleteDialogCommand);
 
         await Application.PublishOutBoxMessages();
