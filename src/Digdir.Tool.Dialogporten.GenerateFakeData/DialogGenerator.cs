@@ -94,6 +94,17 @@ public static class DialogGenerator
 
     private const string ResourcePrefix = "urn:altinn:resource:";
 
+    public static CreateDialogCommand GenerateSimpleFakeDialog(Guid? id = null)
+    {
+        return GenerateFakeDialog(
+            id: id,
+            activities: [],
+            elements: [],
+            guiActions: [],
+            apiActions: [],
+            searchTags: []);
+    }
+
     public static string GenerateFakeResource()
     {
         var r = new Randomizer();
@@ -199,6 +210,7 @@ public static class DialogGenerator
     public static List<CreateDialogDialogActivityDto> GenerateFakeDialogActivities(int? count = null, DialogActivityType.Values? type = null)
     {
         return new Faker<CreateDialogDialogActivityDto>()
+            .RuleFor(o => o.Id, f => f.Random.Guid())
             .RuleFor(o => o.CreatedAt, f => f.Date.Past())
             .RuleFor(o => o.ExtendedType, f => new Uri(f.Internet.UrlWithPath()))
             .RuleFor(o => o.Type, f => type ?? f.PickRandom<DialogActivityType.Values>())
@@ -258,6 +270,7 @@ public static class DialogGenerator
     public static List<CreateDialogDialogElementDto> GenerateFakeDialogElements()
     {
         return new Faker<CreateDialogDialogElementDto>()
+            .RuleFor(o => o.Id, f => f.Random.Guid())
             .RuleFor(o => o.Type, f => new Uri("urn:" + f.Random.AlphaNumeric(10)))
             .RuleFor(o => o.DisplayName, f => GenerateFakeLocalizations(f.Random.Number(2, 5)))
             .RuleFor(o => o.Urls, _ => GenerateFakeDialogElementUrls())
