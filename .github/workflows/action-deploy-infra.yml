@@ -80,7 +80,7 @@ jobs:
           echo "::set-output name=postgresqlPassword::$password"
 
       - name: Deploy infrastructure (${{ inputs.environment }})
-        uses: azure/arm-deploy@v1
+        uses: azure/arm-deploy@v2
         id: deploy
         env:
           # parameters
