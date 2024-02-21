@@ -262,7 +262,7 @@ public static class DialogGenerator
     public static List<CreateDialogDialogElementDto> GenerateFakeDialogElements(int? count = null)
     {
         return new Faker<CreateDialogDialogElementDto>()
-            .RuleFor(o => o.Id, f => Guid.NewGuid())
+            .RuleFor(o => o.Id, _ => Guid.NewGuid())
             .RuleFor(o => o.Type, f => new Uri("urn:" + f.Random.AlphaNumeric(10)))
             .RuleFor(o => o.DisplayName, f => GenerateFakeLocalizations(f.Random.Number(2, 5)))
             .RuleFor(o => o.Urls, _ => GenerateFakeDialogElementUrls())

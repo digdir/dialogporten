@@ -1,5 +1,6 @@
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Events;
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Update;
+using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Queries.Get;
 using Digdir.Domain.Dialogporten.Application.Integration.Tests.Common;
 using Digdir.Domain.Dialogporten.Application.Integration.Tests.Features.V1.Dialogs;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
@@ -62,7 +63,7 @@ public class DomainEventsTests(DialogApplication application) : ApplicationColle
     }
 
     [Fact]
-    public async Task Creates_CloudEvents_When_Dialog_Updated()
+    public async Task Creates_CloudEvent_When_Dialog_Updates()
     {
         // Arrange
         var dialogId = Guid.NewGuid();
@@ -70,13 +71,15 @@ public class DomainEventsTests(DialogApplication application) : ApplicationColle
             id: dialogId,
             activities: [],
             progress: 0,
-            elements: [DialogGenerator.GenerateFakeDialogElement()]);
+            elements: []);
 
         _ = await Application.Send(createDialogCommand);
 
-        var updateDialogDto = _mapper.Map<UpdateDialogDto>(createDialogCommand);
+        var getDialogResult = await Application.Send(new GetDialogQuery { DialogId = dialogId });
+        getDialogResult.TryPickT0(out var getDialogDto, out _);
+
+        var updateDialogDto = _mapper.Map<UpdateDialogDto>(getDialogDto);
         updateDialogDto.Progress = 1;
-        updateDialogDto.Elements[0].ExternalReference = "newExternalReference";
 
         var updateDialogCommand = new UpdateDialogCommand()
         {
@@ -98,6 +101,48 @@ public class DomainEventsTests(DialogApplication application) : ApplicationColle
         cloudEvents.Should().ContainSingle(cloudEvent =>
             cloudEvent.Type == CloudEventTypes.Get(nameof(DialogUpdatedDomainEvent)));
 
+        cloudEvents.Should().NotContain(cloudEvent =>
+            cloudEvent.Type == CloudEventTypes.Get(nameof(DialogElementUpdatedDomainEvent)));
+    }
+
+    [Fact]
+    public async Task Creates_CloudEvent_When_DialogElement_Updates()
+    {
+        // Arrange
+        var dialogId = Guid.NewGuid();
+        var createDialogCommand = DialogGenerator.GenerateFakeDialog(
+            id: dialogId,
+            activities: [],
+            elements: [DialogGenerator.GenerateFakeDialogElement()]);
+
+        _ = await Application.Send(createDialogCommand);
+
+        var getDialogResult = await Application.Send(new GetDialogQuery { DialogId = dialogId });
+        getDialogResult.TryPickT0(out var getDialogDto, out _);
+
+        var updateDialogDto = _mapper.Map<UpdateDialogDto>(getDialogDto);
+        updateDialogDto.Elements[0].ExternalReference = "newExternalReference";
+
+        var updateDialogCommand = new UpdateDialogCommand()
+        {
+            Id = dialogId,
+            Dto = updateDialogDto
+        };
+
+        // Act
+        _ = await Application.Send(updateDialogCommand);
+
+        await Application.PublishOutBoxMessages();
+        var cloudEvents = Application.PopPublishedCloudEvents();
+
+        // Assert
+        cloudEvents.Should().OnlyContain(cloudEvent => cloudEvent.ResourceInstance == dialogId.ToString());
+        cloudEvents.Should().OnlyContain(cloudEvent => cloudEvent.Resource == createDialogCommand.ServiceResource);
+        cloudEvents.Should().OnlyContain(cloudEvent => cloudEvent.Subject == createDialogCommand.Party);
+
+        cloudEvents.Should().NotContain(cloudEvent =>
+            cloudEvent.Type == CloudEventTypes.Get(nameof(DialogUpdatedDomainEvent)));
+
         cloudEvents.Should().ContainSingle(cloudEvent =>
             cloudEvent.Type == CloudEventTypes.Get(nameof(DialogElementUpdatedDomainEvent)));
     }
@@ -114,7 +159,11 @@ public class DomainEventsTests(DialogApplication application) : ApplicationColle
 
         _ = await Application.Send(createDialogCommand);
 
-        var updateDialogDto = _mapper.Map<UpdateDialogDto>(createDialogCommand);
+        var getDialogResult = await Application.Send(new GetDialogQuery { DialogId = dialogId });
+        getDialogResult.TryPickT0(out var getDialogDto, out _);
+
+        var updateDialogDto = _mapper.Map<UpdateDialogDto>(getDialogDto);
+
         updateDialogDto.Elements = [];
 
         var updateDialogCommand = new UpdateDialogCommand()
