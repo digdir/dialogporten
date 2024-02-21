@@ -1,17 +1,22 @@
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Events;
+using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Update;
 using Digdir.Domain.Dialogporten.Application.Integration.Tests.Common;
 using Digdir.Domain.Dialogporten.Application.Integration.Tests.Features.V1.Dialogs;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Events;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Events.DialogElements;
 using Digdir.Tool.Dialogporten.GenerateFakeData;
+using AutoMapper;
 using FluentAssertions;
+using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Delete;
 
 namespace Digdir.Domain.Dialogporten.Application.Integration.Tests.Features.V1.Common.Events;
 
 [Collection(nameof(DialogCqrsCollectionFixture))]
 public class DomainEventsTests(DialogApplication application) : ApplicationCollectionFixture(application)
 {
+    private static readonly IMapper _mapper = new MapperConfiguration(cfg => cfg.AddProfile<Tests.Common.MappingProfile>()).CreateMapper();
+
     [Fact]
     public async Task Creates_CloudEvents_When_Dialog_Created()
     {
@@ -21,7 +26,10 @@ public class DomainEventsTests(DialogApplication application) : ApplicationColle
             DialogGenerator.GenerateFakeDialogActivity(activityType)).ToList();
 
         var dialogId = Guid.NewGuid();
-        var createDialogCommand = DialogGenerator.GenerateFakeDialog(id: dialogId, activities: activities);
+        var createDialogCommand = DialogGenerator.GenerateFakeDialog(
+            id: dialogId,
+            activities: activities,
+            elements: DialogGenerator.GenerateFakeDialogElements(3));
 
         // Act
         _ = await Application.Send(createDialogCommand);
@@ -50,6 +58,112 @@ public class DomainEventsTests(DialogApplication application) : ApplicationColle
             .Be(
                 createDialogCommand.Elements.Count
                 + createDialogCommand.Activities.Count
-                + 1); // + 1 for the dialog created event
+                + 1); // +1 for the dialog created event
+    }
+
+    [Fact]
+    public async Task Creates_CloudEvents_When_Dialog_Updated()
+    {
+        // Arrange
+        var dialogId = Guid.NewGuid();
+        var createDialogCommand = DialogGenerator.GenerateFakeDialog(
+            id: dialogId,
+            activities: [],
+            progress: 0,
+            elements: [DialogGenerator.GenerateFakeDialogElement()]);
+
+        _ = await Application.Send(createDialogCommand);
+
+        var updateDialogDto = _mapper.Map<UpdateDialogDto>(createDialogCommand);
+        updateDialogDto.Progress = 1;
+        updateDialogDto.Elements[0].ExternalReference = "newExternalReference";
+
+        var updateDialogCommand = new UpdateDialogCommand()
+        {
+            Id = dialogId,
+            Dto = updateDialogDto
+        };
+
+        // Act
+        _ = await Application.Send(updateDialogCommand);
+
+        await Application.PublishOutBoxMessages();
+        var cloudEvents = Application.PopPublishedCloudEvents();
+
+        // Assert
+        cloudEvents.Should().OnlyContain(cloudEvent => cloudEvent.ResourceInstance == dialogId.ToString());
+        cloudEvents.Should().OnlyContain(cloudEvent => cloudEvent.Resource == createDialogCommand.ServiceResource);
+        cloudEvents.Should().OnlyContain(cloudEvent => cloudEvent.Subject == createDialogCommand.Party);
+
+        cloudEvents.Should().ContainSingle(cloudEvent =>
+            cloudEvent.Type == CloudEventTypes.Get(nameof(DialogUpdatedDomainEvent)));
+
+        cloudEvents.Should().ContainSingle(cloudEvent =>
+            cloudEvent.Type == CloudEventTypes.Get(nameof(DialogElementUpdatedDomainEvent)));
+    }
+
+    [Fact(Skip = "This is currently broken, will be fixed/rewritten in https://github.com/digdir/dialogporten/pull/406")]
+    public async Task Creates_CloudEvents_When_Deleting_DialogElement()
+    {
+        // Arrange
+        var dialogId = Guid.NewGuid();
+        var createDialogCommand = DialogGenerator.GenerateFakeDialog(
+            id: dialogId,
+            activities: [],
+            elements: [DialogGenerator.GenerateFakeDialogElement()]);
+
+        _ = await Application.Send(createDialogCommand);
+
+        var updateDialogDto = _mapper.Map<UpdateDialogDto>(createDialogCommand);
+        updateDialogDto.Elements = [];
+
+        var updateDialogCommand = new UpdateDialogCommand()
+        {
+            Id = dialogId,
+            Dto = updateDialogDto
+        };
+
+        // Act
+        _ = await Application.Send(updateDialogCommand);
+
+        await Application.PublishOutBoxMessages();
+        var cloudEvents = Application.PopPublishedCloudEvents();
+
+        // Assert
+        cloudEvents.Should().OnlyContain(cloudEvent => cloudEvent.ResourceInstance == createDialogCommand.Elements[0].Id.ToString());
+        cloudEvents.Should().OnlyContain(cloudEvent => cloudEvent.Resource == createDialogCommand.ServiceResource);
+        cloudEvents.Should().OnlyContain(cloudEvent => cloudEvent.Subject == createDialogCommand.Party);
+
+        cloudEvents.Should().ContainSingle(cloudEvent =>
+            cloudEvent.Type == CloudEventTypes.Get(nameof(DialogElementDeletedDomainEvent)));
+    }
+
+    [Fact(Skip = "This is currently broken, will be fixed/rewritten in https://github.com/digdir/dialogporten/pull/406")]
+    public async Task Creates_CloudEvents_When_Dialog_Deleted()
+    {
+        // Arrange
+        var dialogId = Guid.NewGuid();
+        var createDialogCommand = DialogGenerator.GenerateFakeDialog(id: dialogId, elements: [], activities: []);
+
+        _ = await Application.Send(createDialogCommand);
+
+        var deleteDialogCommand = new DeleteDialogCommand
+        {
+            Id = dialogId
+        };
+
+        // Act
+        _ = await Application.Send(deleteDialogCommand);
+
+        await Application.PublishOutBoxMessages();
+        var cloudEvents = Application.PopPublishedCloudEvents();
+
+        // Assert
+        cloudEvents.Should().OnlyContain(cloudEvent => cloudEvent.ResourceInstance == dialogId.ToString());
+        cloudEvents.Should().OnlyContain(cloudEvent => cloudEvent.Resource == createDialogCommand.ServiceResource);
+        cloudEvents.Should().OnlyContain(cloudEvent => cloudEvent.Subject == createDialogCommand.Party);
+
+        cloudEvents.Should().ContainSingle(cloudEvent =>
+            cloudEvent.Type == CloudEventTypes.Get(nameof(DialogDeletedDomainEvent)));
     }
 }
