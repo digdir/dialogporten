@@ -7,7 +7,10 @@ public static class PartyIdentifier
 {
     private delegate bool TryParseDelegate(ReadOnlySpan<char> value, [NotNullWhen(true)] out IPartyIdentifier? identifier);
     private static readonly Dictionary<string, TryParseDelegate> TryParseByPrefix = CreateTryParseByPrefix();
-    private const string Separator = "::";
+    public const string Separator = "::";
+
+    public static string Prefix(this IPartyIdentifier identifier)
+        => identifier.FullId[..(identifier.FullId.IndexOf(identifier.Id, StringComparison.Ordinal) - Separator.Length)];
 
     public static bool TryParse(ReadOnlySpan<char> value, [NotNullWhen(true)] out IPartyIdentifier? identifier)
     {
@@ -41,10 +44,12 @@ public static class PartyIdentifier
             (
                 Type: partyIdentifierType,
                 Prefix: (string)partyIdentifierType
-                    .GetProperty(nameof(IPartyIdentifier.Prefix), BindingFlags.Static | BindingFlags.Public)!
+                    .GetProperty(nameof(IPartyIdentifier.PrefixWithSeparator),
+                        BindingFlags.Static | BindingFlags.Public)!
                     .GetValue(null)!,
                 TryParse: partyIdentifierType
-                    .GetMethod(nameof(IPartyIdentifier.TryParse), [typeof(ReadOnlySpan<char>), typeof(IPartyIdentifier).MakeByRefType()
+                    .GetMethod(nameof(IPartyIdentifier.TryParse), [
+                        typeof(ReadOnlySpan<char>), typeof(IPartyIdentifier).MakeByRefType()
                     ])!
                     .CreateDelegate<TryParseDelegate>()
             ))

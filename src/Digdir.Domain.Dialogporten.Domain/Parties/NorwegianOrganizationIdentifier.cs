@@ -8,14 +8,15 @@ namespace Digdir.Domain.Dialogporten.Domain.Parties;
 public record NorwegianOrganizationIdentifier : IPartyIdentifier
 {
     private static readonly int[] OrgNumberWeights = [3, 2, 7, 6, 5, 4, 3, 2];
-    public static string Prefix => "urn:altinn:organization:identifier-no::";
+    public static string Prefix => "urn:altinn:organization:identifier-no";
+    public static string PrefixWithSeparator => Prefix + PartyIdentifier.Separator;
     public string FullId { get; }
     public string Id { get; }
 
     private NorwegianOrganizationIdentifier(ReadOnlySpan<char> value)
     {
         Id = value.ToString();
-        FullId = Prefix + Id;
+        FullId = PrefixWithSeparator + Id;
     }
 
     public static bool TryParse(ReadOnlySpan<char> value, [NotNullWhen(true)] out IPartyIdentifier? identifier)

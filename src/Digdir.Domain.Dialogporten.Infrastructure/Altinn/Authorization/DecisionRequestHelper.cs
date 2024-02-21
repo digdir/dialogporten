@@ -14,8 +14,6 @@ internal static class DecisionRequestHelper
     private const string AltinnUrnNsPrefix = "urn:altinn:";
     private const string PidClaimType = "pid";
     private const string ConsumerClaimType = "consumer";
-    private const string AttributeIdSsn = "urn:altinn:ssn";
-    private const string AttributeIdOrganizationNumber = "urn:altinn:organizationnumber";
     private const string AttributeIdAction = "urn:oasis:names:tc:xacml:1.0:action:action-id";
     private const string AttributeIdResource = "urn:altinn:resource";
     private const string AttributeIdResourceInstance = "urn:altinn:resourceinstance";
@@ -56,18 +54,20 @@ internal static class DecisionRequestHelper
         var attributes = claims
             .Select(x => x switch
             {
-                { Type: PidClaimType } => new XacmlJsonAttribute { AttributeId = AttributeIdSsn, Value = x.Value },
+                { Type: PidClaimType } => new XacmlJsonAttribute { AttributeId = NorwegianPersonIdentifier.Prefix, Value = x.Value },
                 { Type: var type } when type.StartsWith(AltinnUrnNsPrefix, StringComparison.Ordinal) => new() { AttributeId = type, Value = x.Value },
-                { Type: ConsumerClaimType } when x.TryGetOrgNumber(out var organizationNumber) => new() { AttributeId = AttributeIdOrganizationNumber, Value = organizationNumber },
+                { Type: ConsumerClaimType } when x.TryGetOrgNumber(out var organizationNumber) => new() { AttributeId = NorwegianOrganizationIdentifier.Prefix, Value = organizationNumber },
                 _ => null
             })
             .Where(x => x is not null)
             .Cast<XacmlJsonAttribute>()
             .ToList();
 
-        if (attributes.Any(x => x.AttributeId == AttributeIdSsn))
+        // If we're authorizing a person (ie. ID-porten token), we are not interested in the consumer-claim (organization number)
+        // as that is not relevant for the authorization decision (it's just the organization owning the OAuth client).
+        if (attributes.Any(x => x.AttributeId == NorwegianPersonIdentifier.Prefix))
         {
-            attributes.RemoveAll(x => x.AttributeId == AttributeIdOrganizationNumber);
+            attributes.RemoveAll(x => x.AttributeId == NorwegianOrganizationIdentifier.Prefix);
         }
 
         return [new() { Id = SubjectId, Attribute = attributes }];
@@ -108,7 +108,7 @@ internal static class DecisionRequestHelper
                 x => x.id);
 
 
-        var partyAttribute = ExtractPartyAttribute(party);
+        var partyAttribute = GetPartyAttribute(party);
         return resourceIdByName
             .Select(x =>
                 CreateResourceCategory(x.Value, serviceResource, dialogId, partyAttribute, x.Key))
@@ -161,16 +161,18 @@ internal static class DecisionRequestHelper
         return (ns, value);
     }
 
-    private static XacmlJsonAttribute? ExtractPartyAttribute(string party)
+    private static XacmlJsonAttribute? GetPartyAttribute(string party)
     {
-        // TODO: This can be removed once Altinn Auth has been updated to use the new party format.
-        var _ = PartyIdentifier.TryParse(party, out var partyIdentifier);
-        return partyIdentifier switch
+        if (PartyIdentifier.TryParse(party, out var partyIdentifier))
         {
-            NorwegianOrganizationIdentifier => new XacmlJsonAttribute { AttributeId = AttributeIdOrganizationNumber, Value = partyIdentifier.Id },
-            NorwegianPersonIdentifier => new() { AttributeId = AttributeIdSsn, Value = partyIdentifier.Id },
-            _ => null
-        };
+            return new XacmlJsonAttribute
+            {
+                AttributeId = partyIdentifier.Prefix(),
+                Value = partyIdentifier.Id
+            };
+        }
+
+        return null;
     }
 
     private static XacmlJsonMultiRequests CreateMultiRequests(
@@ -253,16 +255,16 @@ internal static class DecisionRequestHelper
 
                 string party;
                 var partyOrgNr = xamlJsonRequestRoot.Request.Resource.First(r => r.Id == resourceId).Attribute
-                        .FirstOrDefault(a => a.AttributeId == AttributeIdOrganizationNumber);
+                        .FirstOrDefault(a => a.AttributeId == NorwegianOrganizationIdentifier.Prefix);
                 if (partyOrgNr != null)
                 {
-                    party = NorwegianOrganizationIdentifier.Prefix + partyOrgNr.Value;
+                    party = NorwegianOrganizationIdentifier.PrefixWithSeparator + partyOrgNr.Value;
                 }
                 else
                 {
                     var partySsn = xamlJsonRequestRoot.Request.Resource.First(r => r.Id == resourceId).Attribute
-                        .First(a => a.AttributeId == AttributeIdSsn);
-                    party = NorwegianPersonIdentifier.Prefix + partySsn.Value;
+                        .First(a => a.AttributeId == NorwegianPersonIdentifier.Prefix);
+                    party = NorwegianPersonIdentifier.PrefixWithSeparator + partySsn.Value;
                 }
 
                 if (!response.PartiesByResources.TryGetValue(serviceResource, out var parties))
@@ -286,7 +288,7 @@ internal static class DecisionRequestHelper
             var resourceCounter = 0;
             foreach (var party in parties)
             {
-                var partyAttribute = ExtractPartyAttribute(party);
+                var partyAttribute = GetPartyAttribute(party);
 
                 foreach (var serviceResource in serviceResources)
                 {

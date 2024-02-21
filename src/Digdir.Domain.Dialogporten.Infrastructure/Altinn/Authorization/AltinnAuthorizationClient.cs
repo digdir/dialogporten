@@ -8,6 +8,7 @@ using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
+using Digdir.Domain.Dialogporten.Domain.Parties.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -15,8 +16,6 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.Authorization;
 
 internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
 {
-    private const string AttributePidClaim = "urn:altinn:ssn";
-
     private readonly HttpClient _httpClient;
     private readonly IUser _user;
     private readonly IDialogDbContext _db;
@@ -81,6 +80,7 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
                 .Where(dialog => request.ConstraintServiceResources.Contains(dialog.ServiceResource))
                 .Select(dialog => dialog.Party)
                 .Distinct()
+                .Take(20) // Limit to 20 parties to limit request size
                 .ToListAsync(cancellationToken: cancellationToken);
         }
 
@@ -89,7 +89,9 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
             request.ConstraintServiceResources = await _db.Dialogs
                 .Where(dialog => request.ConstraintParties.Contains(dialog.Party))
                 .Select(x => x.ServiceResource)
-                .Distinct().ToListAsync(cancellationToken: cancellationToken);
+                .Distinct()
+                .Take(20) // Limit to 20 resources to limit request size
+                .ToListAsync(cancellationToken: cancellationToken);
         }
 
         var xacmlJsonRequest = DecisionRequestHelper.NonScalable.CreateDialogSearchRequest(request);
@@ -107,19 +109,17 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
     private List<Claim> GetOrCreateClaimsBasedOnEndUserId(string? endUserId)
     {
         List<Claim> claims = [];
-        if (endUserId is not null)
+        if (endUserId is not null && PartyIdentifier.TryParse(endUserId, out var partyIdentifier))
         {
-            claims.Add(new Claim(AttributePidClaim, ExtractEndUserIdNumber(endUserId)!));
+            claims.Add(new Claim(partyIdentifier.Prefix(), partyIdentifier.Id));
         }
         else
         {
             claims.AddRange(_user.GetPrincipal().Claims);
         }
+
         return claims;
     }
-
-    private static string ExtractEndUserIdNumber(string endUserId) =>
-        endUserId.Split("::").LastOrDefault() ?? string.Empty;
 
     private static readonly JsonSerializerOptions _serializerOptions = new()
     {
@@ -129,7 +129,7 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
 
     private async Task<XacmlJsonResponse?> SendRequest(XacmlJsonRequestRoot xacmlJsonRequest, CancellationToken cancellationToken)
     {
-        const string apiUrl = "authorization/api/v1/Decision";
+        const string apiUrl = "authorization/api/v1/authorize";
         var requestJson = JsonSerializer.Serialize(xacmlJsonRequest, _serializerOptions);
         _logger.LogDebug("Generated XACML request: {RequestJson}", requestJson);
         var httpContent = new StringContent(requestJson, Encoding.UTF8, "application/json");
