@@ -14,7 +14,7 @@ namespace Digdir.Tool.Dialogporten.GenerateFakeData;
 public static class DialogGenerator
 {
     private static readonly DateTime RefTime = new(2026, 1, 1);
-    public static CreateDialogDto GenerateFakeDialog(
+    public static CreateDialogCommand GenerateFakeDialog(
         int? seed = null,
         Guid? id = null,
         string? serviceResource = null,
@@ -53,7 +53,7 @@ public static class DialogGenerator
         )[0];
     }
 
-    public static List<CreateDialogDto> GenerateFakeDialogs(
+    public static List<CreateDialogCommand> GenerateFakeDialogs(
         int? seed = null,
         int count = 1,
         Guid? id = null,
@@ -73,7 +73,7 @@ public static class DialogGenerator
         List<CreateDialogDialogActivityDto>? activities = null)
     {
         Randomizer.Seed = seed.HasValue ? new Random(seed.Value) : new Random();
-        return new Faker<CreateDialogDto>()
+        return new Faker<CreateDialogCommand>()
             .RuleFor(o => o.Id, f => id)
             .RuleFor(o => o.ServiceResource, _ => serviceResource ?? GenerateFakeResource())
             .RuleFor(o => o.Party, _ => party ?? GenerateRandomParty())
@@ -192,15 +192,19 @@ public static class DialogGenerator
         mod = 11 - mod;
         return mod == 10 ? -1 : mod;
     }
-    public static List<CreateDialogDialogActivityDto> GenerateFakeDialogActivities()
+
+    public static CreateDialogDialogActivityDto GenerateFakeDialogActivity(DialogActivityType.Values? type = null)
+        => GenerateFakeDialogActivities(1, type)[0];
+
+    public static List<CreateDialogDialogActivityDto> GenerateFakeDialogActivities(int? count = null, DialogActivityType.Values? type = null)
     {
         return new Faker<CreateDialogDialogActivityDto>()
             .RuleFor(o => o.CreatedAt, f => f.Date.Past())
             .RuleFor(o => o.ExtendedType, f => new Uri(f.Internet.UrlWithPath()))
-            .RuleFor(o => o.Type, f => f.PickRandom<DialogActivityType.Values>())
+            .RuleFor(o => o.Type, f => type ?? f.PickRandom<DialogActivityType.Values>())
             .RuleFor(o => o.PerformedBy, f => GenerateFakeLocalizations(f.Random.Number(2, 4)))
             .RuleFor(o => o.Description, f => GenerateFakeLocalizations(f.Random.Number(4, 8)))
-            .Generate(new Randomizer().Number(1, 4));
+            .Generate(count ?? new Randomizer().Number(1, 4));
     }
 
     public static List<CreateDialogDialogApiActionDto> GenerateFakeDialogApiActions()
