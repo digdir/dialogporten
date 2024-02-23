@@ -23,19 +23,19 @@ internal sealed class GetDialogActivityQueryHandler : IRequestHandler<GetDialogA
 {
     private readonly IMapper _mapper;
     private readonly IDialogDbContext _dbContext;
-    private readonly IUserService _userService;
+    private readonly IUserResourceRegistry _userResourceRegistry;
 
-    public GetDialogActivityQueryHandler(IMapper mapper, IDialogDbContext dbContext, IUserService userService)
+    public GetDialogActivityQueryHandler(IMapper mapper, IDialogDbContext dbContext, IUserResourceRegistry userResourceRegistry)
     {
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
-        _userService = userService;
+        _userResourceRegistry = userResourceRegistry ?? throw new ArgumentNullException(nameof(userResourceRegistry));
     }
 
     public async Task<GetDialogActivityResult> Handle(GetDialogActivityQuery request,
         CancellationToken cancellationToken)
     {
-        var resourceIds = await _userService.GetCurrentUserResourceIds(cancellationToken);
+        var resourceIds = await _userResourceRegistry.GetCurrentUserResourceIds(cancellationToken);
 
         var dialog = await _dbContext.Dialogs
             .Include(x => x.Activities.Where(x => x.Id == request.ActivityId))

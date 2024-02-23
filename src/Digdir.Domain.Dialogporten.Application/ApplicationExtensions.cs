@@ -36,7 +36,9 @@ public static class ApplicationExtensions
             .AddScoped<ITransactionTime, TransactionTime>()
 
             // Transient
-            .AddTransient<IUserService, UserService>()
+            .AddTransient<IUserOrganizationRegistry, UserOrganizationRegistry>()
+            .AddTransient<IUserResourceRegistry, UserResourceRegistry>()
+            .AddTransient<IUserNameRegistry, UserNameRegistry>()
             .AddTransient<ILocalizationService, LocalizationService>()
             .AddTransient<IClock, Clock>()
             .AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>))
@@ -48,10 +50,15 @@ public static class ApplicationExtensions
         }
 
         var localDeveloperSettings = configuration.GetLocalDevelopmentSettings();
-        services.Decorate<IUserService, LocalDevelopmentUserServiceDecorator>(
+        services.Decorate<IUserResourceRegistry, LocalDevelopmentUserResourceRegistryDecorator>(
             predicate:
             localDeveloperSettings.UseLocalDevelopmentUser ||
             localDeveloperSettings.UseLocalDevelopmentResourceRegister);
+
+        services.Decorate<IUserNameRegistry, LocalDevelopmentUserNameRegistryDecorator>(
+            predicate:
+            localDeveloperSettings.UseLocalDevelopmentUser ||
+            localDeveloperSettings.UseLocalDevelopmentNameRegister);
 
         return services;
     }

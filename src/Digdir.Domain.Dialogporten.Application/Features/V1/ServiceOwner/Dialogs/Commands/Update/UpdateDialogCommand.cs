@@ -33,7 +33,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILocalizationService _localizationService;
     private readonly IDomainContext _domainContext;
-    private readonly IUserService _userService;
+    private readonly IUserResourceRegistry _userResourceRegistry;
 
     public UpdateDialogCommandHandler(
         IDialogDbContext db,
@@ -41,19 +41,19 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         IUnitOfWork unitOfWork,
         ILocalizationService localizationService,
         IDomainContext domainContext,
-        IUserService userService)
+        IUserResourceRegistry userResourceRegistry)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _localizationService = localizationService ?? throw new ArgumentNullException(nameof(localizationService));
         _domainContext = domainContext ?? throw new ArgumentNullException(nameof(domainContext));
-        _userService = userService ?? throw new ArgumentNullException(nameof(userService));
+        _userResourceRegistry = userResourceRegistry ?? throw new ArgumentNullException(nameof(userResourceRegistry));
     }
 
     public async Task<UpdateDialogResult> Handle(UpdateDialogCommand request, CancellationToken cancellationToken)
     {
-        var resourceIds = await _userService.GetCurrentUserResourceIds(cancellationToken);
+        var resourceIds = await _userResourceRegistry.GetCurrentUserResourceIds(cancellationToken);
 
         var dialog = await _db.Dialogs
             .Include(x => x.Content)

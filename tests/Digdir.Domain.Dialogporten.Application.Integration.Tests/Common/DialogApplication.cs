@@ -62,7 +62,8 @@ public class DialogApplication : IAsyncLifetime
             .AddScoped<IOptions<ApplicationSettings>>(_ => CreateApplicationSettingsSubstitute())
             .AddScoped<IUnitOfWork, UnitOfWork>()
             .AddSingleton<ICloudEventBus, IntegrationTestCloudBus>()
-            .Decorate<IUserService, LocalDevelopmentUserServiceDecorator>()
+            .Decorate<IUserResourceRegistry, LocalDevelopmentUserResourceRegistryDecorator>()
+            .Decorate<IUserNameRegistry, LocalDevelopmentUserNameRegistryDecorator>()
             .BuildServiceProvider();
 
         await _dbContainer.StartAsync();

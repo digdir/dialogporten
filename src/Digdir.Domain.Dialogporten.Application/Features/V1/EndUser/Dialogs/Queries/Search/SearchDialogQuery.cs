@@ -115,26 +115,26 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
     private readonly IDialogDbContext _db;
     private readonly IMapper _mapper;
     private readonly IClock _clock;
-    private readonly IUserService _userService;
+    private readonly IUserNameRegistry _userNameRegistry;
     private readonly IAltinnAuthorization _altinnAuthorization;
 
     public SearchDialogQueryHandler(
         IDialogDbContext db,
         IMapper mapper,
         IClock clock,
-        IUserService userService,
+        IUserNameRegistry userNameRegistry,
         IAltinnAuthorization altinnAuthorization)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _clock = clock ?? throw new ArgumentNullException(nameof(clock));
-        _userService = userService ?? throw new ArgumentNullException(nameof(userService));
+        _userNameRegistry = userNameRegistry ?? throw new ArgumentNullException(nameof(userNameRegistry));
         _altinnAuthorization = altinnAuthorization ?? throw new ArgumentNullException(nameof(altinnAuthorization));
     }
 
     public async Task<SearchDialogResult> Handle(SearchDialogQuery request, CancellationToken cancellationToken)
     {
-        if (!_userService.TryGetCurrentUserPid(out var userPid))
+        if (!_userNameRegistry.TryGetCurrentUserPid(out var userPid))
         {
             return new Forbidden("No valid user pid found.");
         }
