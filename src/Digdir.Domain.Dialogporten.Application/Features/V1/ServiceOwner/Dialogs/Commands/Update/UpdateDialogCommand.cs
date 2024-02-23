@@ -90,8 +90,8 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
             .Merge(request.Dto.Content,
                 destinationKeySelector: x => x.TypeId,
                 sourceKeySelector: x => x.Type,
-                create: CreateContent,
-                update: UpdateContent,
+                create: _mapper.Map<List<DialogContent>>,
+                update: _mapper.Update,
                 delete: DeleteDelegate.NoOp);
 
         dialog.SearchTags
@@ -115,8 +115,8 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
             .Merge(request.Dto.GuiActions,
                 destinationKeySelector: x => x.Id,
                 sourceKeySelector: x => x.Id,
-                create: CreateGuiActions,
-                update: UpdateGuiActions,
+                create: _mapper.Map<List<DialogGuiAction>>,
+                update: _mapper.Update,
                 delete: DeleteDelegate.NoOp);
 
         dialog.ApiActions
@@ -135,25 +135,6 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
             success => success,
             domainError => domainError,
             concurrencyError => concurrencyError);
-    }
-
-    private IEnumerable<DialogContent> CreateContent(IEnumerable<UpdateDialogContentDto> creatables)
-    {
-        foreach (var contentDto in creatables)
-        {
-            var content = _mapper.Map<DialogContent>(contentDto);
-            content.Value = _mapper.Map<DialogContentValue>(contentDto.Value);
-            yield return content;
-        }
-    }
-
-    private void UpdateContent(IEnumerable<UpdateSet<DialogContent, UpdateDialogContentDto>> updateSets)
-    {
-        foreach (var (dto, entity) in updateSets)
-        {
-            _mapper.Map(dto, entity);
-            entity.Value = _mapper.Map(dto.Value, entity.Value);
-        }
     }
 
     private void ValidateTimeFields(DialogEntity dialog)
@@ -226,32 +207,12 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         }
     }
 
-    private IEnumerable<DialogGuiAction> CreateGuiActions(IEnumerable<UpdateDialogDialogGuiActionDto> creatables)
-    {
-        return creatables.Select(x =>
-        {
-            var guiAction = _mapper.Map<DialogGuiAction>(x);
-            guiAction.Title = _mapper.Map<DialogGuiActionTitle>(x.Title);
-            return guiAction;
-        });
-    }
-
-    private void UpdateGuiActions(IEnumerable<UpdateSet<DialogGuiAction, UpdateDialogDialogGuiActionDto>> updateSets)
-    {
-        foreach (var (source, destination) in updateSets)
-        {
-            _mapper.Map(source, destination);
-            destination.Title = _mapper.Map(source.Title, destination.Title);
-        }
-    }
-
     private async Task<IEnumerable<DialogElement>> CreateElements(IEnumerable<UpdateDialogDialogElementDto> creatables, CancellationToken cancellationToken)
     {
         var elements = new List<DialogElement>();
         foreach (var elementDto in creatables)
         {
             var element = _mapper.Map<DialogElement>(elementDto);
-            element.DisplayName = _mapper.Map(elementDto.DisplayName, element.DisplayName);
             element.Urls = _mapper.Map<List<DialogElementUrl>>(elementDto.Urls);
             elements.Add(element);
         }
@@ -271,8 +232,6 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         foreach (var updateSet in updateSets)
         {
             _mapper.Map(updateSet.Source, updateSet.Destination);
-            updateSet.Destination.DisplayName = _mapper.Map(updateSet.Source.DisplayName, updateSet.Destination.DisplayName);
-
             updateSet.Destination.Urls
                 .Merge(updateSet.Source.Urls,
                     destinationKeySelector: x => x.Id,
