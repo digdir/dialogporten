@@ -79,7 +79,7 @@ internal static class MergeExtensions
         await CreateAsync(destinations, concreteSources, create, updateSets, cancellationToken);
     }
 
-    internal static void Update<TDestination, TSource>(this IMapper mapper, IEnumerable<UpdateSet<TDestination, TSource>> updateSets)
+    internal static void Update<TDestination, TSource>(this IMapperBase mapper, IEnumerable<UpdateSet<TDestination, TSource>> updateSets)
     {
         foreach (var (source, destination) in updateSets)
         {

@@ -37,7 +37,6 @@ public static class ApplicationExtensions
 
             // Transient
             .AddTransient<IUserService, UserService>()
-            .AddTransient<ILocalizationService, LocalizationService>()
             .AddTransient<IClock, Clock>()
             .AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>))
             .AddTransient(typeof(IPipelineBehavior<,>), typeof(DomainContextBehaviour<,>));
