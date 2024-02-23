@@ -9,6 +9,7 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements;
+using Digdir.Library.Entity.Abstractions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
@@ -31,7 +32,6 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
     private readonly IDialogDbContext _db;
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly ILocalizationService _localizationService;
     private readonly IDomainContext _domainContext;
     private readonly IUserService _userService;
 
@@ -39,14 +39,12 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         IDialogDbContext db,
         IMapper mapper,
         IUnitOfWork unitOfWork,
-        ILocalizationService localizationService,
         IDomainContext domainContext,
         IUserService userService)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
-        _localizationService = localizationService ?? throw new ArgumentNullException(nameof(localizationService));
         _domainContext = domainContext ?? throw new ArgumentNullException(nameof(domainContext));
         _userService = userService ?? throw new ArgumentNullException(nameof(userService));
     }
@@ -154,7 +152,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         foreach (var (dto, entity) in updateSets)
         {
             _mapper.Map(dto, entity);
-            entity.Value = _localizationService.Merge(entity.Value, dto.Value)!;
+            entity.Value = _mapper.Map(dto.Value, entity.Value);
         }
     }
 
@@ -243,7 +241,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         foreach (var (source, destination) in updateSets)
         {
             _mapper.Map(source, destination);
-            destination.Title = _localizationService.Merge(destination.Title, source.Title);
+            destination.Title = _mapper.Map(source.Title, destination.Title);
         }
     }
 
@@ -253,7 +251,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         foreach (var elementDto in creatables)
         {
             var element = _mapper.Map<DialogElement>(elementDto);
-            element.DisplayName = _localizationService.Merge(element.DisplayName, elementDto.DisplayName);
+            element.DisplayName = _mapper.Map(elementDto.DisplayName, element.DisplayName);
             element.Urls = _mapper.Map<List<DialogElementUrl>>(elementDto.Urls);
             elements.Add(element);
         }
@@ -273,7 +271,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         foreach (var updateSet in updateSets)
         {
             _mapper.Map(updateSet.Source, updateSet.Destination);
-            updateSet.Destination.DisplayName = _localizationService.Merge(updateSet.Destination.DisplayName, updateSet.Source.DisplayName);
+            updateSet.Destination.DisplayName = _mapper.Map(updateSet.Source.DisplayName, updateSet.Destination.DisplayName);
 
             updateSet.Destination.Urls
                 .Merge(updateSet.Source.Urls,
