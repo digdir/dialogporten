@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Digdir.Domain.Dialogporten.Domain.Localizations;
 
 namespace Digdir.Domain.Dialogporten.Application.Common.Extensions;
 
@@ -37,6 +38,6 @@ internal static class AutoMapperExtensions
             return type.GetGenericArguments()[0].IsSimple();
         }
 
-        return type.IsValueType || TypeOverrides.Contains(type);
+        return type.IsValueType || TypeOverrides.Contains(type) || type.IsSubclassOf(typeof(LocalizationSet));
     }
 }
