@@ -14,6 +14,7 @@ namespace Digdir.Tool.Dialogporten.GenerateFakeData;
 public static class DialogGenerator
 {
     private static readonly DateTime RefTime = new(2026, 1, 1);
+
     public static CreateDialogCommand GenerateFakeDialog(
         int? seed = null,
         Guid? id = null,
@@ -93,6 +94,17 @@ public static class DialogGenerator
     }
 
     private const string ResourcePrefix = "urn:altinn:resource:";
+
+    public static CreateDialogCommand GenerateSimpleFakeDialog(Guid? id = null)
+    {
+        return GenerateFakeDialog(
+            id: id,
+            activities: [],
+            elements: [],
+            guiActions: [],
+            apiActions: [],
+            searchTags: []);
+    }
 
     public static string GenerateFakeResource()
     {
@@ -199,6 +211,7 @@ public static class DialogGenerator
     public static List<CreateDialogDialogActivityDto> GenerateFakeDialogActivities(int? count = null, DialogActivityType.Values? type = null)
     {
         return new Faker<CreateDialogDialogActivityDto>()
+            .RuleFor(o => o.Id, f => f.Random.Guid())
             .RuleFor(o => o.CreatedAt, f => f.Date.Past())
             .RuleFor(o => o.ExtendedType, f => new Uri(f.Internet.UrlWithPath()))
             .RuleFor(o => o.Type, f => type ?? f.PickRandom<DialogActivityType.Values>())
@@ -255,13 +268,17 @@ public static class DialogGenerator
             .Generate(new Randomizer().Number(min: 1, 4));
     }
 
-    public static List<CreateDialogDialogElementDto> GenerateFakeDialogElements()
+    public static CreateDialogDialogElementDto GenerateFakeDialogElement()
+        => GenerateFakeDialogElements(1)[0];
+
+    public static List<CreateDialogDialogElementDto> GenerateFakeDialogElements(int? count = null)
     {
         return new Faker<CreateDialogDialogElementDto>()
+            .RuleFor(o => o.Id, _ => Guid.NewGuid())
             .RuleFor(o => o.Type, f => new Uri("urn:" + f.Random.AlphaNumeric(10)))
             .RuleFor(o => o.DisplayName, f => GenerateFakeLocalizations(f.Random.Number(2, 5)))
             .RuleFor(o => o.Urls, _ => GenerateFakeDialogElementUrls())
-            .Generate(new Randomizer().Number(1, 6));
+            .Generate(count ?? new Randomizer().Number(1, 6));
     }
 
     private static readonly string[] MimeTypes = [

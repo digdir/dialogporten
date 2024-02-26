@@ -9,6 +9,7 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements;
+using Digdir.Library.Entity.Abstractions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
@@ -31,7 +32,6 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
     private readonly IDialogDbContext _db;
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly ILocalizationService _localizationService;
     private readonly IDomainContext _domainContext;
     private readonly IUserResourceRegistry _userResourceRegistry;
 
@@ -39,14 +39,12 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         IDialogDbContext db,
         IMapper mapper,
         IUnitOfWork unitOfWork,
-        ILocalizationService localizationService,
         IDomainContext domainContext,
         IUserResourceRegistry userResourceRegistry)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
-        _localizationService = localizationService ?? throw new ArgumentNullException(nameof(localizationService));
         _domainContext = domainContext ?? throw new ArgumentNullException(nameof(domainContext));
         _userResourceRegistry = userResourceRegistry ?? throw new ArgumentNullException(nameof(userResourceRegistry));
     }
@@ -92,8 +90,8 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
             .Merge(request.Dto.Content,
                 destinationKeySelector: x => x.TypeId,
                 sourceKeySelector: x => x.Type,
-                create: CreateContent,
-                update: UpdateContent,
+                create: _mapper.Map<List<DialogContent>>,
+                update: _mapper.Update,
                 delete: DeleteDelegate.NoOp);
 
         dialog.SearchTags
@@ -117,8 +115,8 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
             .Merge(request.Dto.GuiActions,
                 destinationKeySelector: x => x.Id,
                 sourceKeySelector: x => x.Id,
-                create: CreateGuiActions,
-                update: UpdateGuiActions,
+                create: _mapper.Map<List<DialogGuiAction>>,
+                update: _mapper.Update,
                 delete: DeleteDelegate.NoOp);
 
         dialog.ApiActions
@@ -137,25 +135,6 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
             success => success,
             domainError => domainError,
             concurrencyError => concurrencyError);
-    }
-
-    private IEnumerable<DialogContent> CreateContent(IEnumerable<UpdateDialogContentDto> creatables)
-    {
-        foreach (var contentDto in creatables)
-        {
-            var content = _mapper.Map<DialogContent>(contentDto);
-            content.Value = _mapper.Map<DialogContentValue>(contentDto.Value);
-            yield return content;
-        }
-    }
-
-    private void UpdateContent(IEnumerable<UpdateSet<DialogContent, UpdateDialogContentDto>> updateSets)
-    {
-        foreach (var (dto, entity) in updateSets)
-        {
-            _mapper.Map(dto, entity);
-            entity.Value = _localizationService.Merge(entity.Value, dto.Value)!;
-        }
     }
 
     private void ValidateTimeFields(DialogEntity dialog)
@@ -228,32 +207,12 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         }
     }
 
-    private IEnumerable<DialogGuiAction> CreateGuiActions(IEnumerable<UpdateDialogDialogGuiActionDto> creatables)
-    {
-        return creatables.Select(x =>
-        {
-            var guiAction = _mapper.Map<DialogGuiAction>(x);
-            guiAction.Title = _mapper.Map<DialogGuiActionTitle>(x.Title);
-            return guiAction;
-        });
-    }
-
-    private void UpdateGuiActions(IEnumerable<UpdateSet<DialogGuiAction, UpdateDialogDialogGuiActionDto>> updateSets)
-    {
-        foreach (var (source, destination) in updateSets)
-        {
-            _mapper.Map(source, destination);
-            destination.Title = _localizationService.Merge(destination.Title, source.Title);
-        }
-    }
-
     private async Task<IEnumerable<DialogElement>> CreateElements(IEnumerable<UpdateDialogDialogElementDto> creatables, CancellationToken cancellationToken)
     {
         var elements = new List<DialogElement>();
         foreach (var elementDto in creatables)
         {
             var element = _mapper.Map<DialogElement>(elementDto);
-            element.DisplayName = _localizationService.Merge(element.DisplayName, elementDto.DisplayName);
             element.Urls = _mapper.Map<List<DialogElementUrl>>(elementDto.Urls);
             elements.Add(element);
         }
@@ -273,8 +232,6 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         foreach (var updateSet in updateSets)
         {
             _mapper.Map(updateSet.Source, updateSet.Destination);
-            updateSet.Destination.DisplayName = _localizationService.Merge(updateSet.Destination.DisplayName, updateSet.Source.DisplayName);
-
             updateSet.Destination.Urls
                 .Merge(updateSet.Source.Urls,
                     destinationKeySelector: x => x.Id,
