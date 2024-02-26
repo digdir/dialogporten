@@ -1,7 +1,13 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
+using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Delete;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Library.Entity.EntityFrameworkCore.Features.SoftDeletable;
 using MediatR;
@@ -9,24 +15,23 @@ using Microsoft.EntityFrameworkCore;
 using OneOf;
 using OneOf.Types;
 
-namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Delete;
-
-public sealed class DeleteDialogCommand : IRequest<DeleteDialogResult>
+namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Purge;
+public sealed class PurgeDialogCommand : IRequest<PurgeDialogResult>
 {
     public Guid Id { get; set; }
     public Guid? IfMatchDialogRevision { get; set; }
 }
 
 [GenerateOneOf]
-public partial class DeleteDialogResult : OneOfBase<Success, EntityNotFound, ConcurrencyError>;
+public partial class PurgeDialogResult : OneOfBase<Success, EntityNotFound, ConcurrencyError>;
 
-internal sealed class DeleteDialogCommandHandler : IRequestHandler<DeleteDialogCommand, DeleteDialogResult>
+internal sealed class PurgeDialogCommandHandler : IRequestHandler<PurgeDialogCommand, PurgeDialogResult>
 {
     private readonly IDialogDbContext _db;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IUserResourceRegistry _userResourceRegistry;
 
-    public DeleteDialogCommandHandler(
+    public PurgeDialogCommandHandler(
         IDialogDbContext db,
         IUnitOfWork unitOfWork,
         IUserResourceRegistry userResourceRegistry)
@@ -36,7 +41,7 @@ internal sealed class DeleteDialogCommandHandler : IRequestHandler<DeleteDialogC
         _userResourceRegistry = userResourceRegistry ?? throw new ArgumentNullException(nameof(userResourceRegistry));
     }
 
-    public async Task<DeleteDialogResult> Handle(DeleteDialogCommand request, CancellationToken cancellationToken)
+    public async Task<PurgeDialogResult> Handle(PurgeDialogCommand request, CancellationToken cancellationToken)
     {
         var resourceIds = await _userResourceRegistry.GetCurrentUserResourceIds(cancellationToken);
 
@@ -52,12 +57,12 @@ internal sealed class DeleteDialogCommandHandler : IRequestHandler<DeleteDialogC
             return new EntityNotFound<DialogEntity>(request.Id);
         }
 
-        _db.Dialogs.SoftRemove(dialog);
+        _db.Dialogs.HardRemove(dialog);
         var saveResult = await _unitOfWork
             .EnableConcurrencyCheck(dialog, request.IfMatchDialogRevision)
             .SaveChangesAsync(cancellationToken);
 
-        return saveResult.Match<DeleteDialogResult>(
+        return saveResult.Match<PurgeDialogResult>(
             success => success,
             domainError => throw new UnreachableException("Should never get a domain error when deleting a dialog"),
             concurrencyError => concurrencyError);
