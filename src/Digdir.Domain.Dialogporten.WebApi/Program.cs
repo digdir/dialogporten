@@ -49,7 +49,6 @@ finally
 static void BuildAndRun(string[] args)
 {
     var builder = WebApplication.CreateBuilder(args);
-
     builder.Host.UseSerilog((context, services, configuration) => configuration
         .MinimumLevel.Warning()
         .MinimumLevel.Override("Microsoft.EntityFrameworkCore", Serilog.Events.LogEventLevel.Fatal)
@@ -183,7 +182,7 @@ static void BuildAndRun(string[] args)
             // Hide schemas view
             uiConfig.DefaultModelsExpandDepth = -1;
             // We have to add dialogporten here to get the correct base url for swagger.json in the APIM
-            // todo: we cannot have dialogporten as prefix when we run this locally. Won't be available on container apps either. 
+            // todo: we cannot have dialogporten as prefix when we run this locally. Won't be available on container apps either.
             uiConfig.DocumentPath = "/dialogporten/swagger/{documentName}/swagger.json";
         });
     app.MapControllers();
