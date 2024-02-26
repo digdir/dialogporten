@@ -24,36 +24,39 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IDomainContext _domainContext;
-    private readonly IUserService _userService;
+    private readonly IUserResourceRegistry _userResourceRegistry;
+    private readonly IUserOrganizationRegistry _userOrganizationRegistry;
 
     public CreateDialogCommandHandler(
         IDialogDbContext db,
         IMapper mapper,
         IUnitOfWork unitOfWork,
         IDomainContext domainContext,
-        IUserService userService)
+        IUserResourceRegistry userResourceRegistry,
+        IUserOrganizationRegistry userOrganizationRegistry)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _domainContext = domainContext ?? throw new ArgumentNullException(nameof(domainContext));
-        _userService = userService ?? throw new ArgumentNullException(nameof(userService));
+        _userResourceRegistry = userResourceRegistry ?? throw new ArgumentNullException(nameof(userResourceRegistry));
+        _userOrganizationRegistry = userOrganizationRegistry ?? throw new ArgumentNullException(nameof(userOrganizationRegistry));
     }
 
     public async Task<CreateDialogResult> Handle(CreateDialogCommand request, CancellationToken cancellationToken)
     {
-        if (!await _userService.CurrentUserIsOwner(request.ServiceResource, cancellationToken))
+        if (!await _userResourceRegistry.CurrentUserIsOwner(request.ServiceResource, cancellationToken))
         {
             return new Forbidden($"Not owner of {request.ServiceResource}.");
         }
 
         var dialog = _mapper.Map<DialogEntity>(request);
 
-        dialog.Org = await _userService.GetCurrentUserOrgShortName(cancellationToken) ?? string.Empty;
+        dialog.Org = await _userOrganizationRegistry.GetCurrentUserOrgShortName(cancellationToken) ?? string.Empty;
         if (string.IsNullOrWhiteSpace(dialog.Org))
         {
             _domainContext.AddError(new DomainFailure(nameof(DialogEntity.Org),
-                $"Cannot find service owner organization shortname for current user. Please ensure that you are logged in as a service owner."));
+                "Cannot find service owner organization shortname for current user. Please ensure that you are logged in as a service owner."));
         }
 
         var existingDialogIds = await _db.GetExistingIds(new[] { dialog }, cancellationToken);

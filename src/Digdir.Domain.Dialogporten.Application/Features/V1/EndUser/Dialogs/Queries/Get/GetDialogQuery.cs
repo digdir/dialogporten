@@ -26,7 +26,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IClock _clock;
-    private readonly IUserService _userService;
+    private readonly IUserNameRegistry _userNameRegistry;
     private readonly IAltinnAuthorization _altinnAuthorization;
 
     public GetDialogQueryHandler(
@@ -34,20 +34,20 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
         IMapper mapper,
         IUnitOfWork unitOfWork,
         IClock clock,
-        IUserService userService,
+        IUserNameRegistry userNameRegistry,
         IAltinnAuthorization altinnAuthorization)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _clock = clock ?? throw new ArgumentNullException(nameof(clock));
-        _userService = userService ?? throw new ArgumentNullException(nameof(userService));
+        _userNameRegistry = userNameRegistry ?? throw new ArgumentNullException(nameof(userNameRegistry));
         _altinnAuthorization = altinnAuthorization ?? throw new ArgumentNullException(nameof(altinnAuthorization));
     }
 
     public async Task<GetDialogResult> Handle(GetDialogQuery request, CancellationToken cancellationToken)
     {
-        if (!_userService.TryGetCurrentUserPid(out var userPid))
+        if (!_userNameRegistry.TryGetCurrentUserPid(out var userPid))
         {
             return new Forbidden("No valid user pid found.");
         }
@@ -92,7 +92,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
             return new EntityDeleted<DialogEntity>(request.DialogId);
         }
 
-        var userName = await _userService.GetCurrentUserName(userPid, cancellationToken);
+        var userName = await _userNameRegistry.GetCurrentUserName(userPid, cancellationToken);
         // TODO: What if name lookup fails
         // https://github.com/digdir/dialogporten/issues/387
         dialog.UpdateSeenAt(userPid, userName);

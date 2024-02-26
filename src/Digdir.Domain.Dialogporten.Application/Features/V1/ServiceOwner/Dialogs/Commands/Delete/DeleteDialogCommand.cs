@@ -24,21 +24,21 @@ internal sealed class DeleteDialogCommandHandler : IRequestHandler<DeleteDialogC
 {
     private readonly IDialogDbContext _db;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IUserService _userService;
+    private readonly IUserResourceRegistry _userResourceRegistry;
 
     public DeleteDialogCommandHandler(
         IDialogDbContext db,
         IUnitOfWork unitOfWork,
-        IUserService userService)
+        IUserResourceRegistry userResourceRegistry)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
-        _userService = userService ?? throw new ArgumentNullException(nameof(userService));
+        _userResourceRegistry = userResourceRegistry ?? throw new ArgumentNullException(nameof(userResourceRegistry));
     }
 
     public async Task<DeleteDialogResult> Handle(DeleteDialogCommand request, CancellationToken cancellationToken)
     {
-        var resourceIds = await _userService.GetCurrentUserResourceIds(cancellationToken);
+        var resourceIds = await _userResourceRegistry.GetCurrentUserResourceIds(cancellationToken);
 
         var dialog = await _db.Dialogs
             // Load the elements so that we notify them of their deletion. (This won't work due to https://github.com/digdir/dialogporten/issues/288)
