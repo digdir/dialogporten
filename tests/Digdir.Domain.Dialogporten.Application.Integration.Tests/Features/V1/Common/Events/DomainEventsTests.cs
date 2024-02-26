@@ -16,7 +16,17 @@ namespace Digdir.Domain.Dialogporten.Application.Integration.Tests.Features.V1.C
 [Collection(nameof(DialogCqrsCollectionFixture))]
 public class DomainEventsTests(DialogApplication application) : ApplicationCollectionFixture(application)
 {
-    private static readonly IMapper _mapper = new MapperConfiguration(cfg => cfg.AddProfile<Tests.Common.MappingProfile>()).CreateMapper();
+    private static readonly IMapper _mapper;
+
+    static DomainEventsTests()
+    {
+        var mapperConfiguration = new MapperConfiguration(cfg =>
+        {
+            cfg.AddMaps(typeof(ApplicationExtensions).Assembly);
+        });
+
+        _mapper = mapperConfiguration.CreateMapper();
+    }
 
     [Fact]
     public async Task Creates_CloudEvents_When_Dialog_Created()
