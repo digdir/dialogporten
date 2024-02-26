@@ -1,0 +1,8 @@
+<RunSettings>
+  <RunConfiguration>
+      <EnvironmentVariables>
+          <DOCKER_HOST>unix:///tmp/podman.sock</DOCKER_HOST>
+          <TESTCONTAINERS_RYUK_DISABLED>true</TESTCONTAINERS_RYUK_DISABLED>
+      </EnvironmentVariables>
+  </RunConfiguration>
+</RunSettings>
