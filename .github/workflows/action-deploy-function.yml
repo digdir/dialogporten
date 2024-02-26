@@ -21,9 +21,6 @@ on:
         type: string
         required: true
 
-env:
-  DOTNET_VERSION: "8.0.x"
-
 concurrency:
   # If multiple merges to main are performed simultaneously, they will just be queued up.
   group: ${{ github.workflow }}-${{ inputs.environment }}-${{ github.ref_name }}
@@ -47,10 +44,10 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
+      - name: Setup DotNet Environment
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: ${{ env.DOTNET_VERSION }}
+          global-json-file: ./global.json
 
       - name: "Resolve Project Dependencies Using Dotnet"
         shell: bash
