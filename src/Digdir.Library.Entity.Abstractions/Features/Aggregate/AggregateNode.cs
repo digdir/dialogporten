@@ -85,6 +85,16 @@ public abstract class AggregateNode
     }
 
     /// <summary>
+    /// Checks whether the entity has changed its state for a specified type.
+    /// </summary>
+    /// <typeparam name="T">The type to check against.</typeparam>
+    /// <returns>
+    /// <c>true</c> if the entity is of the specified type and its state is not <see cref="AggregateNodeState.Unchanged"/>;
+    /// otherwise, <c>false</c>.
+    /// </returns>
+    public bool IsChanged<T>() => Entity is T && State is not AggregateNodeState.Unchanged;
+
+    /// <summary>
     /// Convenience method to check if the state of the node is <see cref="AggregateNodeState.Modified"/> and not by a child node.
     /// </summary>
     public bool IsDirectlyModified() => State is AggregateNodeState.Modified && !ModifiedByChild;
