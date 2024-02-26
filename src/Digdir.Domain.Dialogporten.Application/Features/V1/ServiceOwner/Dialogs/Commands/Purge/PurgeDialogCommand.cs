@@ -40,7 +40,6 @@ internal sealed class PurgeDialogCommandHandler : IRequestHandler<PurgeDialogCom
         var resourceIds = await _userResourceRegistry.GetCurrentUserResourceIds(cancellationToken);
 
         var dialog = await _db.Dialogs
-            // Load the elements so that we notify them of their deletion. (This won't work due to https://github.com/digdir/dialogporten/issues/288)
             .Include(x => x.Elements)
             .Include(x => x.Activities)
             .Where(x => resourceIds.Contains(x.ServiceResource))
