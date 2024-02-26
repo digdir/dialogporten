@@ -55,6 +55,11 @@ public static class ApplicationExtensions
             localDeveloperSettings.UseLocalDevelopmentUser ||
             localDeveloperSettings.UseLocalDevelopmentResourceRegister);
 
+        services.Decorate<IUserOrganizationRegistry, LocalDevelopmentUserOrganizationRegistryDecorator>(
+            predicate:
+            localDeveloperSettings.UseLocalDevelopmentUser ||
+            localDeveloperSettings.UseLocalDevelopmentOrganizationRegister);
+
         services.Decorate<IUserNameRegistry, LocalDevelopmentUserNameRegistryDecorator>(
             predicate:
             localDeveloperSettings.UseLocalDevelopmentUser ||

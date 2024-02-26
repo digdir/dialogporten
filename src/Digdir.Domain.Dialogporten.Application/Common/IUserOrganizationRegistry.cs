@@ -35,3 +35,15 @@ public class UserOrganizationRegistry : IUserOrganizationRegistry
         return await _organizationRegistry.GetOrgShortName(orgNumber, cancellationToken);
     }
 }
+
+internal sealed class LocalDevelopmentUserOrganizationRegistryDecorator : IUserOrganizationRegistry
+{
+    private readonly IUserOrganizationRegistry _userOrganizationRegistry;
+
+    public LocalDevelopmentUserOrganizationRegistryDecorator(IUserOrganizationRegistry userOrganizationRegistry)
+    {
+        _userOrganizationRegistry = userOrganizationRegistry ?? throw new ArgumentNullException(nameof(userOrganizationRegistry));
+    }
+
+    public Task<string?> GetCurrentUserOrgShortName(CancellationToken cancellationToken) => Task.FromResult("digdir")!;
+}
