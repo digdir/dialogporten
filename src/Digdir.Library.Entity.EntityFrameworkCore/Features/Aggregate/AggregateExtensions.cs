@@ -66,26 +66,26 @@ internal static class AggregateExtensions
         // applied when loading aggregates, but it will be through FindAsync and
         // NavProp.LoadAsync.
 
-        var entities = modelBuilder.Model
-            .GetEntityTypes()
-            .Where(x => x.BaseType is null)
-            .SelectMany(entityType =>
-            {
-                var children = entityType
-                    .FindAggregateChildren()
-                    .Select(foreignKey => entityType
-                        .FindNavigation(foreignKey.PrincipalToDependent!.Name)!);
-                var parents = entityType
-                    .FindAggregateParents()
-                    .Select(foreignKey => entityType
-                        .FindNavigation(foreignKey.DependentToPrincipal!.Name)!);
-                return children.Concat(parents);
-            });
+        //var entities = modelBuilder.Model
+        //    .GetEntityTypes()
+        //    .Where(x => x.BaseType is null)
+        //    .SelectMany(entityType =>
+        //    {
+        //        var children = entityType
+        //            .FindAggregateChildren()
+        //            .Select(foreignKey => entityType
+        //                .FindNavigation(foreignKey.PrincipalToDependent!.Name)!);
+        //        var parents = entityType
+        //            .FindAggregateParents()
+        //            .Select(foreignKey => entityType
+        //                .FindNavigation(foreignKey.DependentToPrincipal!.Name)!);
+        //        return children.Concat(parents);
+        //    });
 
-        foreach (var entityType in entities)
-        {
-            entityType.SetIsEagerLoaded(true);
-        }
+        //foreach (var entityType in entities)
+        //{
+        //    entityType.SetIsEagerLoaded(true);
+        //}
 
         return modelBuilder;
     }
@@ -217,11 +217,11 @@ internal static class AggregateExtensions
         foreach (var childForeignKey in parentEntry.Metadata.FindAggregateChildren())
         {
             var childNav = parentEntry.Navigation(childForeignKey.PrincipalToDependent!.Name);
-            if (!childNav.IsLoaded)
-            {
-                // Alternativ 1: Throw!
-                // Alternativ 2: Log Warning!
-            }
+            //if (!childNav.IsLoaded)
+            //{
+            //    // Alternativ 1: Throw!
+            //    // Alternativ 2: Log Warning!
+            //}
             await childNav.LoadAsync(cancellationToken);
             var currentValues = childNav.Metadata.IsCollection
                 ? childNav.CurrentValue as IEnumerable<object> ?? Enumerable.Empty<object>()
