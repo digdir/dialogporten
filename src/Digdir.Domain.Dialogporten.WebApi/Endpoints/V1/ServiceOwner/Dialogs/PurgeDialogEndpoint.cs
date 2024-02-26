@@ -50,7 +50,7 @@ public sealed class PurgeDialogRequest
     public Guid? IfMatchDialogRevision { get; set; }
 }
 
-public sealed class PurgeDialogEndpointSummary : Summary<DeleteDialogEndpoint>
+public sealed class PurgeDialogEndpointSummary : Summary<PurgeDialogEndpoint>
 {
     public PurgeDialogEndpointSummary()
     {
