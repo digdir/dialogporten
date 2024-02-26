@@ -14,6 +14,7 @@ namespace Digdir.Tool.Dialogporten.GenerateFakeData;
 public static class DialogGenerator
 {
     private static readonly DateTime RefTime = new(2026, 1, 1);
+
     public static CreateDialogCommand GenerateFakeDialog(
         int? seed = null,
         Guid? id = null,
@@ -267,14 +268,17 @@ public static class DialogGenerator
             .Generate(new Randomizer().Number(min: 1, 4));
     }
 
-    public static List<CreateDialogDialogElementDto> GenerateFakeDialogElements()
+    public static CreateDialogDialogElementDto GenerateFakeDialogElement()
+        => GenerateFakeDialogElements(1)[0];
+
+    public static List<CreateDialogDialogElementDto> GenerateFakeDialogElements(int? count = null)
     {
         return new Faker<CreateDialogDialogElementDto>()
-            .RuleFor(o => o.Id, f => f.Random.Guid())
+            .RuleFor(o => o.Id, _ => Guid.NewGuid())
             .RuleFor(o => o.Type, f => new Uri("urn:" + f.Random.AlphaNumeric(10)))
             .RuleFor(o => o.DisplayName, f => GenerateFakeLocalizations(f.Random.Number(2, 5)))
             .RuleFor(o => o.Urls, _ => GenerateFakeDialogElementUrls())
-            .Generate(new Randomizer().Number(1, 6));
+            .Generate(count ?? new Randomizer().Number(1, 6));
     }
 
     private static readonly string[] MimeTypes = [
