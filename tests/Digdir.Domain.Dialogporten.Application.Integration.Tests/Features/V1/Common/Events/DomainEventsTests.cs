@@ -1,4 +1,5 @@
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Events;
+using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Purge;
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Update;
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Queries.Get;
 using Digdir.Domain.Dialogporten.Application.Integration.Tests.Common;
@@ -159,6 +160,7 @@ public class DomainEventsTests(DialogApplication application) : ApplicationColle
             cloudEvent.Type == CloudEventTypes.Get(nameof(DialogElementUpdatedDomainEvent)));
     }
 
+    // Throws NRE on parent Dialog
     [Fact(Skip = "This is currently broken, will be fixed/rewritten in https://github.com/digdir/dialogporten/pull/406")]
     public async Task Creates_CloudEvents_When_Deleting_DialogElement()
     {
@@ -191,7 +193,7 @@ public class DomainEventsTests(DialogApplication application) : ApplicationColle
         var cloudEvents = Application.PopPublishedCloudEvents();
 
         // Assert
-        cloudEvents.Should().OnlyContain(cloudEvent => cloudEvent.ResourceInstance == createDialogCommand.Elements[0].Id.ToString());
+        cloudEvents.Should().OnlyContain(cloudEvent => cloudEvent.ResourceInstance == dialogId.ToString());
         cloudEvents.Should().OnlyContain(cloudEvent => cloudEvent.Resource == createDialogCommand.ServiceResource);
         cloudEvents.Should().OnlyContain(cloudEvent => cloudEvent.Subject == createDialogCommand.Party);
 
@@ -199,6 +201,7 @@ public class DomainEventsTests(DialogApplication application) : ApplicationColle
             cloudEvent.Type == CloudEventTypes.Get(nameof(DialogElementDeletedDomainEvent)));
     }
 
+    // Creates DialogUpdatedDomainEvent instead of DialogDeletedDomainEvent
     [Fact(Skip = "This is currently broken, will be fixed/rewritten in https://github.com/digdir/dialogporten/pull/406")]
     public async Task Creates_CloudEvents_When_Dialog_Deleted()
     {
@@ -225,5 +228,65 @@ public class DomainEventsTests(DialogApplication application) : ApplicationColle
 
         cloudEvents.Should().ContainSingle(cloudEvent =>
             cloudEvent.Type == CloudEventTypes.Get(nameof(DialogDeletedDomainEvent)));
+    }
+
+    [Fact]
+    public async Task Creates_DialogDeletedEvent_When_Dialog_Purged()
+    {
+        // Arrange
+        var dialogId = Guid.NewGuid();
+        var createDialogCommand = DialogGenerator.GenerateFakeDialog(id: dialogId, elements: [], activities: []);
+
+        _ = await Application.Send(createDialogCommand);
+
+        // Act
+        var purgeCommand = new PurgeDialogCommand
+        {
+            Id = dialogId
+        };
+
+        await Application.Send(purgeCommand);
+        await Application.PublishOutBoxMessages();
+        var cloudEvents = Application.PopPublishedCloudEvents();
+
+        // Assert
+        cloudEvents.Should().OnlyContain(cloudEvent => cloudEvent.ResourceInstance == dialogId.ToString());
+        cloudEvents.Should().OnlyContain(cloudEvent => cloudEvent.Resource == createDialogCommand.ServiceResource);
+        cloudEvents.Should().OnlyContain(cloudEvent => cloudEvent.Subject == createDialogCommand.Party);
+
+        cloudEvents.Should().ContainSingle(cloudEvent =>
+            cloudEvent.Type == CloudEventTypes.Get(nameof(DialogDeletedDomainEvent)));
+    }
+
+    [Fact]
+    public async Task Creates_DialogElementDeleted_CloudEvent_When_Purging_Dialog()
+    {
+        // Arrange
+        var dialogId = Guid.NewGuid();
+        var createDialogCommand = DialogGenerator.GenerateFakeDialog(
+            id: dialogId,
+            activities: [],
+            elements: [DialogGenerator.GenerateFakeDialogElement()]);
+
+        await Application.Send(createDialogCommand);
+
+        // Act
+        var purgeCommand = new PurgeDialogCommand
+        {
+            Id = dialogId
+        };
+
+        await Application.Send(purgeCommand);
+
+        await Application.PublishOutBoxMessages();
+        var cloudEvents = Application.PopPublishedCloudEvents();
+
+        // Assert
+        cloudEvents.Should().OnlyContain(cloudEvent => cloudEvent.ResourceInstance == dialogId.ToString());
+        cloudEvents.Should().OnlyContain(cloudEvent => cloudEvent.Resource == createDialogCommand.ServiceResource);
+        cloudEvents.Should().OnlyContain(cloudEvent => cloudEvent.Subject == createDialogCommand.Party);
+
+        cloudEvents.Should().ContainSingle(cloudEvent =>
+            cloudEvent.Type == CloudEventTypes.Get(nameof(DialogElementDeletedDomainEvent)));
     }
 }

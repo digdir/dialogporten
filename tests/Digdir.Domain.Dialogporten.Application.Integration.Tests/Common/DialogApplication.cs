@@ -158,7 +158,7 @@ public class DialogApplication : IAsyncLifetime
 
     public async Task PublishOutBoxMessages()
     {
-        var outBoxMessages = GetDbEntities<OutboxMessage>();
+        var outBoxMessages = await GetDbEntities<OutboxMessage>();
         var eventAssembly = typeof(OutboxMessage).Assembly;
         foreach (var outboxMessage in outBoxMessages)
         {
@@ -179,11 +179,14 @@ public class DialogApplication : IAsyncLifetime
         return events;
     }
 
-    private List<T> GetDbEntities<T>() where T : class
+    public async Task<List<T>> GetDbEntities<T>() where T : class
     {
         using var scope = _rootProvider.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<DialogDbContext>();
-        return db.Set<T>().ToList();
+        return await db
+            .Set<T>()
+            .AsNoTracking()
+            .ToListAsync();
     }
 
     private ReadOnlyCollection<Table> GetLookupTables()

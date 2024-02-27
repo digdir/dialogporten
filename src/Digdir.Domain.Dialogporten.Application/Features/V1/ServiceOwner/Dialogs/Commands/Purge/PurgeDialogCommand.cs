@@ -9,24 +9,23 @@ using Microsoft.EntityFrameworkCore;
 using OneOf;
 using OneOf.Types;
 
-namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Delete;
-
-public sealed class DeleteDialogCommand : IRequest<DeleteDialogResult>
+namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Purge;
+public sealed class PurgeDialogCommand : IRequest<PurgeDialogResult>
 {
     public Guid Id { get; set; }
     public Guid? IfMatchDialogRevision { get; set; }
 }
 
 [GenerateOneOf]
-public partial class DeleteDialogResult : OneOfBase<Success, EntityNotFound, ConcurrencyError>;
+public partial class PurgeDialogResult : OneOfBase<Success, EntityNotFound, ConcurrencyError>;
 
-internal sealed class DeleteDialogCommandHandler : IRequestHandler<DeleteDialogCommand, DeleteDialogResult>
+internal sealed class PurgeDialogCommandHandler : IRequestHandler<PurgeDialogCommand, PurgeDialogResult>
 {
     private readonly IDialogDbContext _db;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IUserResourceRegistry _userResourceRegistry;
 
-    public DeleteDialogCommandHandler(
+    public PurgeDialogCommandHandler(
         IDialogDbContext db,
         IUnitOfWork unitOfWork,
         IUserResourceRegistry userResourceRegistry)
@@ -36,12 +35,11 @@ internal sealed class DeleteDialogCommandHandler : IRequestHandler<DeleteDialogC
         _userResourceRegistry = userResourceRegistry ?? throw new ArgumentNullException(nameof(userResourceRegistry));
     }
 
-    public async Task<DeleteDialogResult> Handle(DeleteDialogCommand request, CancellationToken cancellationToken)
+    public async Task<PurgeDialogResult> Handle(PurgeDialogCommand request, CancellationToken cancellationToken)
     {
         var resourceIds = await _userResourceRegistry.GetCurrentUserResourceIds(cancellationToken);
 
         var dialog = await _db.Dialogs
-            // Load the elements so that we notify them of their deletion. (This won't work due to https://github.com/digdir/dialogporten/issues/288)
             .Include(x => x.Elements)
             .Include(x => x.Activities)
             .Where(x => resourceIds.Contains(x.ServiceResource))
@@ -52,12 +50,12 @@ internal sealed class DeleteDialogCommandHandler : IRequestHandler<DeleteDialogC
             return new EntityNotFound<DialogEntity>(request.Id);
         }
 
-        _db.Dialogs.SoftRemove(dialog);
+        _db.Dialogs.HardRemove(dialog);
         var saveResult = await _unitOfWork
             .EnableConcurrencyCheck(dialog, request.IfMatchDialogRevision)
             .SaveChangesAsync(cancellationToken);
 
-        return saveResult.Match<DeleteDialogResult>(
+        return saveResult.Match<PurgeDialogResult>(
             success => success,
             domainError => throw new UnreachableException("Should never get a domain error when deleting a dialog"),
             concurrencyError => concurrencyError);
