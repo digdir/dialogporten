@@ -25,7 +25,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          # fetch-depth needs to be 0 in order to fetch previous tag
+          # fetch-depth needs to be 0 in cases where we want to fetch changes since previous tag for example
           fetch-depth: 0
 
       - uses: tj-actions/changed-files@v42

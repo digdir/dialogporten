@@ -26,9 +26,6 @@ jobs:
     name: Deploy infra to staging (dry run)
     needs: [generate-git-short-sha, check-for-changes]
     if: ${{ needs.check-for-changes.outputs.hasAzureChanges == 'true' }}
-    # todo: we want to figure out whether we have changes in the infra since last time we deployed to staging, not whether we have changes in the repo
-    # maybe use another trigger here? An action to create a tag, and then use that tag as a trigger for the staging deployment?
-    # or we could always try to run deployments in staging after review is approved...(!)
     uses: ./.github/workflows/action-deploy-infra.yml
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}

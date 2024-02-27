@@ -12,7 +12,6 @@ concurrency:
 
 jobs:
   # Get changed files between previous tag and current tag: https://github.com/marketplace/actions/changed-files
-  # todo: if this works like a charm, consider replacing dorny-filter action with this one
   check-for-changes:
     name: Check for changes
     uses: ./.github/workflows/action-check-for-changes.yml
@@ -25,7 +24,6 @@ jobs:
     steps:
       - name: "Checkout GitHub Action"
         uses: actions/checkout@v4
-      # Current workaround to create a short git sha. Not supported as a global variable yet. https://stackoverflow.com/questions/59810838/how-to-get-the-short-sha-for-the-github-workflow
       - name: Set git tag
         id: set-git-tag
         run: echo "gitTag=${GITHUB_REF#refs/*/}" >> $GITHUB_OUTPUT
