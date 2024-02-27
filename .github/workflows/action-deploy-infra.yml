@@ -31,8 +31,8 @@ on:
         required: false
         type: boolean
         default: false
-      gitShortSha:
-        description: "Short SHA of the commit"
+      version:
+        description: "Current version to use as tag"
         required: true
         type: string
 
@@ -95,7 +95,7 @@ jobs:
           template: ./.azure/infrastructure/main.bicep
           subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           deploymentMode: Incremental
-          deploymentName: dp-be-${{ inputs.environment }}-${{ inputs.gitShortSha }}
+          deploymentName: dp-be-${{ inputs.environment }}-${{ inputs.version }}
           region: ${{ inputs.region }}
           failOnStdErr: false
           additionalArguments: "${{ inputs.dryRun && '--what-if' }}"

@@ -11,8 +11,8 @@ on:
         description: "Base image name for docker images"
         required: true
         type: string
-      gitShortSha:
-        description: "Short SHA of the commit"
+      version:
+        description: "Version to tag"
         required: true
         type: string
 
@@ -64,7 +64,7 @@ jobs:
           push: true
           tags: |
             ${{ steps.meta.outputs.tags }},
-            ${{ env.DOCKER_IMAGE_BASE_NAME }}${{ matrix.imageName }}:${{ inputs.gitShortSha }}
+            ${{ env.DOCKER_IMAGE_BASE_NAME }}${{ matrix.imageName }}:${{ inputs.version }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha,scope=${{ matrix.imageName }}
           cache-to: type=gha,mode=max,scope=${{ matrix.imageName }}

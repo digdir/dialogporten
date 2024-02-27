@@ -46,4 +46,4 @@ jobs:
       environment: test
       region: norwayeast
       dryRun: true
-      gitShortSha: ${{ needs.generate-git-short-sha.outputs.gitShortSha }}
+      version: pr-test-${{ needs.generate-git-short-sha.outputs.gitShortSha }}

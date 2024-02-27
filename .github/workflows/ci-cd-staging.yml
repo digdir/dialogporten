@@ -1,0 +1,79 @@
+﻿name: CI/CD Staging
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+    paths-ignore:
+      - "tests/k6/**"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref_name }}
+
+jobs:
+  # Get changed files between previous tag and current tag: https://github.com/marketplace/actions/changed-files
+  # todo: if this works like a charm, consider replacing dorny-filter action with this one
+  check-for-changes:
+    name: Check for changes
+    uses: ./.github/workflows/action-check-for-changes.yml
+
+  get-current-tag:
+    name: Get current git tag
+    runs-on: ubuntu-latest
+    outputs:
+      gitTag: ${{ steps.set-git-tag.outputs.gitTag }}
+    steps:
+      - name: "Checkout GitHub Action"
+        uses: actions/checkout@v4
+      # Current workaround to create a short git sha. Not supported as a global variable yet. https://stackoverflow.com/questions/59810838/how-to-get-the-short-sha-for-the-github-workflow
+      - name: Set git tag
+        id: set-git-tag
+        run: echo "gitTag=${GITHUB_REF#refs/*/}" >> $GITHUB_OUTPUT
+
+  publish:
+    name: Build and publish docker images
+    uses: ./.github/workflows/action-publish.yml
+    if: ${{ needs.check-for-changes.outputs.hasBackendChanges == 'true' }}
+    needs: [get-current-tag, check-for-changes]
+    secrets:
+      GCR_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+    with:
+      dockerImageBaseName: ghcr.io/digdir/dialogporten-
+      version: ${{ needs.get-current-tag.outputs.gitTag }}
+
+  deploy-infra-staging:
+    name: Deploy infra to staging
+    if: ${{ needs.check-for-changes.outputs.hasAzureChanges == 'true' }}
+    needs: [get-current-tag, check-for-changes]
+    uses: ./.github/workflows/action-deploy-infra.yml
+    secrets:
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      AZURE_SOURCE_KEY_VAULT_NAME: ${{ secrets.AZURE_SOURCE_KEY_VAULT_NAME }}
+      AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID: ${{ secrets.AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID }}
+      AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP: ${{ secrets.AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP }}
+    with:
+      environment: staging
+      region: norwayeast
+      version: ${{ needs.get-current-tag.outputs.gitTag }}
+
+  deploy-apps-staging:
+    name: Deploy apps to staging
+    needs: [get-current-tag, publish]
+    uses: ./.github/workflows/action-deploy-apps.yml
+    secrets:
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      # todo: consider resolving these in another way since they are created in the infra-step
+      AZURE_RESOURCE_GROUP_NAME: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
+      AZURE_ADO_CONNECTION_STRING_SECRET_URI: ${{ secrets.AZURE_ADO_CONNECTION_STRING_SECRET_URI }}
+      AZURE_ENVIRONMENT_KEY_VAULT_NAME: ${{ secrets.AZURE_ENVIRONMENT_KEY_VAULT_NAME }}
+      AZURE_CONTAINER_APP_ENVIRONMENT_NAME: ${{ secrets.AZURE_CONTAINER_APP_ENVIRONMENT_NAME }}
+      AZURE_APP_INSIGHTS_CONNECTION_STRING: ${{ secrets.AZURE_APP_INSIGHTS_CONNECTION_STRING }}
+      AZURE_APP_CONFIGURATION_NAME: ${{ secrets.AZURE_APP_CONFIGURATION_NAME }}
+    with:
+      environment: staging
+      region: norwayeast
+      version: ${{ needs.get-current-tag.outputs.gitTag }}
