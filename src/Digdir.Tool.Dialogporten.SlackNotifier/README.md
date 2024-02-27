@@ -34,7 +34,7 @@ This function app uses the links in the incoming alerts request to fetch data. T
 1. Go to https://webhook.site and copy your unique url
 2. Add the url as a webhook action of the azure action group 
 3. Trigger the alert
-4. Copy the request from https://webhook.site into Post. It may take several minutes for the alert to produce a request to the webhook.
+4. Copy the request from https://webhook.site into Postman. It may take several minutes for the alert to produce a request to the webhook.
 5. Delete the webhook action from the azure action group
 
 Example log alert v2 request:
