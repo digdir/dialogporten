@@ -182,9 +182,9 @@ static void BuildAndRun(string[] args)
         {
             // Hide schemas view
             uiConfig.DefaultModelsExpandDepth = -1;
-            // We have to add dialogporten here to get the correct base url for swagger.json in the APIM
-            // todo: we cannot have dialogporten as prefix when we run this locally. Won't be available on container apps either. 
-            uiConfig.DocumentPath = "/dialogporten/swagger/{documentName}/swagger.json";
+            // We have to add dialogporten here to get the correct base url for swagger.json in the APIM. Should not be done for development
+            var dialogPrefix = builder.Environment.IsDevelopment() ? "" : "/dialogporten";
+            uiConfig.DocumentPath = dialogPrefix + "/swagger/{documentName}/swagger.json";
         });
     app.MapControllers();
     app.MapHealthChecks("/healthz");
