@@ -25,7 +25,7 @@ jobs:
   generate-git-short-sha:
     name: Generate git short sha
     uses: ./.github/workflows/action-generate-git-short-sha.yml
-
+  
   # might use previous tag as a version instead of the current version in file
   # https://github.com/WyriHaximus/github-action-get-previous-tag
   get-current-version:
