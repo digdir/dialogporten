@@ -16,33 +16,25 @@ jobs:
     name: Check for changes
     uses: ./.github/workflows/action-check-for-changes.yml
 
-  get-current-tag:
-    name: Get current git tag
-    runs-on: ubuntu-latest
-    outputs:
-      gitTag: ${{ steps.set-git-tag.outputs.gitTag }}
-    steps:
-      - name: "Checkout GitHub Action"
-        uses: actions/checkout@v4
-      - name: Set git tag
-        id: set-git-tag
-        run: echo "gitTag=${GITHUB_REF#refs/*/}" >> $GITHUB_OUTPUT
+  get-current-version:
+    name: Get current version
+    uses: ./.github/workflows/action-get-current-version.yml
 
   publish:
     name: Build and publish docker images
     uses: ./.github/workflows/action-publish.yml
     if: ${{ needs.check-for-changes.outputs.hasBackendChanges == 'true' }}
-    needs: [get-current-tag, check-for-changes]
+    needs: [get-current-version, check-for-changes]
     secrets:
       GCR_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
     with:
       dockerImageBaseName: ghcr.io/digdir/dialogporten-
-      version: ${{ needs.get-current-tag.outputs.gitTag }}
+      version: ${{ needs.get-current-version.outputs.version }}
 
   deploy-infra-staging:
     name: Deploy infra to staging
     if: ${{ needs.check-for-changes.outputs.hasAzureChanges == 'true' }}
-    needs: [get-current-tag, check-for-changes]
+    needs: [get-current-version, check-for-changes]
     uses: ./.github/workflows/action-deploy-infra.yml
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -54,11 +46,11 @@ jobs:
     with:
       environment: staging
       region: norwayeast
-      version: ${{ needs.get-current-tag.outputs.gitTag }}
+      version: ${{ needs.get-current-version.outputs.version }}
 
   deploy-apps-staging:
     name: Deploy apps to staging
-    needs: [get-current-tag, publish]
+    needs: [get-current-version, publish]
     uses: ./.github/workflows/action-deploy-apps.yml
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -74,4 +66,4 @@ jobs:
     with:
       environment: staging
       region: norwayeast
-      version: ${{ needs.get-current-tag.outputs.gitTag }}
+      version: ${{ needs.get-current-version.outputs.version }}

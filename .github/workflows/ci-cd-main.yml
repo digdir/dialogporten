@@ -25,23 +25,10 @@ jobs:
   generate-git-short-sha:
     name: Generate git short sha
     uses: ./.github/workflows/action-generate-git-short-sha.yml
-  
-  # might use previous tag as a version instead of the current version in file
-  # https://github.com/WyriHaximus/github-action-get-previous-tag
+
   get-current-version:
     name: Get current version
-    runs-on: ubuntu-latest
-    needs: [generate-git-short-sha]
-    outputs:
-      # todo: use something else to increment instead of sha? Sha should be good enough for now
-      version: ${{ steps.set-current-version.outputs.version }}-${{ needs.generate-git-short-sha.outputs.gitShortSha }}
-    steps:
-      - name: "Checkout GitHub Action"
-        uses: actions/checkout@v4
-      # Current workaround to create a short git sha. Not supported as a global variable yet. https://stackoverflow.com/questions/59810838/how-to-get-the-short-sha-for-the-github-workflow
-      - name: Set current version
-        id: set-current-version
-        run: echo "version=$(cat version.txt)" >> $GITHUB_OUTPUT
+    uses: ./.github/workflows/action-get-current-version.yml
 
   check-for-changes:
     name: Check for changes
@@ -56,17 +43,24 @@ jobs:
   publish:
     name: Build and publish docker images
     uses: ./.github/workflows/action-publish.yml
-    needs: [get-current-version, check-for-changes, build-and-test]
+    needs:
+      [
+        get-current-version,
+        check-for-changes,
+        generate-git-short-sha,
+        build-and-test,
+      ]
     if: ${{ always() && !failure() && !cancelled() && needs.check-for-changes.outputs.hasBackendChanges == 'true' }}
     secrets:
       GCR_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
     with:
       dockerImageBaseName: ghcr.io/digdir/dialogporten-
-      version: ${{ needs.get-current-version.outputs.version }}
+      version: ${{ needs.get-current-version.outputs.version }}-${{ needs.generate-git-short-sha.outputs.gitShortSha }}
 
   deploy-infra-test:
     name: Deploy infra to test
-    needs: [get-current-version, check-for-changes, publish]
+    needs:
+      [get-current-version, check-for-changes, generate-git-short-sha, publish]
     if: ${{ always() && !failure() && !cancelled() && needs.check-for-changes.outputs.hasAzureChanges == 'true' }}
     uses: ./.github/workflows/action-deploy-infra.yml
     secrets:
@@ -79,11 +73,17 @@ jobs:
     with:
       environment: test
       region: norwayeast
-      version: ${{ needs.get-current-version.outputs.version }}
+      version: ${{ needs.get-current-version.outputs.version }}-${{ needs.generate-git-short-sha.outputs.gitShortSha }}
 
   deploy-apps-test:
     name: Deploy apps to test
-    needs: [get-current-version, check-for-changes, deploy-infra-test]
+    needs:
+      [
+        get-current-version,
+        check-for-changes,
+        generate-git-short-sha,
+        deploy-infra-test,
+      ]
     if: ${{ always() && !failure() && !cancelled() && needs.check-for-changes.outputs.hasBackendChanges == 'true' }}
     uses: ./.github/workflows/action-deploy-apps.yml
     secrets:
@@ -100,7 +100,7 @@ jobs:
     with:
       environment: test
       region: norwayeast
-      version: ${{ needs.get-current-version.outputs.version }}
+      version: ${{ needs.get-current-version.outputs.version }}-${{ needs.generate-git-short-sha.outputs.gitShortSha }}
 
   deploy-slack-notifier-test:
     name: Deploy slack notifier (test)

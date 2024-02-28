@@ -12,7 +12,7 @@ on:
           - test
           - staging
           - prod
-
+# todo: take version as param?
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref_name }}
 
@@ -21,9 +21,13 @@ jobs:
     name: Generate git short sha
     uses: ./.github/workflows/action-generate-git-short-sha.yml
 
+  get-current-version:
+    name: Get current version
+    uses: ./.github/workflows/action-get-current-version.yml
+
   deploy-infra-test:
     name: Deploy infra to test
-    needs: [generate-git-short-sha]
+    needs: [generate-git-short-sha, get-current-version]
     uses: ./.github/workflows/action-deploy-infra.yml
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -35,4 +39,4 @@ jobs:
     with:
       environment: ${{ inputs.environment }}
       region: norwayeast
-      gitShortSha: ${{ needs.generate-git-short-sha.outputs.gitShortSha }}
+      version: ${{ needs.get-current-version.outputs.version }}-${{ needs.generate-git-short-sha.outputs.gitShortSha }}

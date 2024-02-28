@@ -13,6 +13,10 @@ jobs:
     steps:
       - run: echo "Confirmed to be a release please branch"
 
+  get-current-version:
+    name: Get current version
+    uses: ./.github/workflows/action-get-current-version.yml
+
   check-for-changes:
     name: Check for changes
     uses: ./.github/workflows/action-check-for-changes.yml
@@ -24,7 +28,7 @@ jobs:
 
   dry-run-deploy-infra-staging:
     name: Deploy infra to staging (dry run)
-    needs: [generate-git-short-sha, check-for-changes]
+    needs: [generate-git-short-sha, get-current-version, check-for-changes]
     if: ${{ needs.check-for-changes.outputs.hasAzureChanges == 'true' }}
     uses: ./.github/workflows/action-deploy-infra.yml
     secrets:
@@ -38,11 +42,11 @@ jobs:
       environment: staging
       region: norwayeast
       dryRun: true
-      version: pr-staging-${{ needs.generate-git-short-sha.outputs.gitShortSha }}
+      version: ${{ needs.get-current-version.outputs.version }}-${{ needs.generate-git-short-sha.outputs.gitShortSha }}
 
   dry-run-deploy-apps-staging:
     name: Deploy apps to staging (dry run)
-    needs: [generate-git-short-sha, check-for-changes]
+    needs: [generate-git-short-sha, get-current-version, check-for-changes]
     if: ${{ needs.check-for-changes.outputs.hasBackendChanges == 'true' }}
     uses: ./.github/workflows/action-deploy-apps.yml
     secrets:
@@ -60,4 +64,4 @@ jobs:
       environment: staging
       region: norwayeast
       dryRun: true
-      version: pr-staging-${{ needs.generate-git-short-sha.outputs.gitShortSha }}
+      version: ${{ needs.get-current-version.outputs.version }}-${{ needs.generate-git-short-sha.outputs.gitShortSha }}
