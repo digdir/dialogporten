@@ -4,8 +4,6 @@ on:
   push:
     tags:
       - "v*.*.*"
-    paths-ignore:
-      - "tests/k6/**"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref_name }}
