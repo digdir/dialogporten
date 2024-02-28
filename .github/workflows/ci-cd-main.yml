@@ -10,6 +10,10 @@ on:
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref_name }}
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   release-please:
     name: Release please
@@ -18,7 +22,7 @@ jobs:
       - uses: google-github-actions/release-please-action@v4
         id: release
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GH_TOKEN_RELEASE_PLEASE }}
           release-type: simple
 
   generate-git-short-sha:
