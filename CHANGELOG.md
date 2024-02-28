@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/digdir/dialogporten/compare/v1.0.0...v1.0.1) (2024-02-28)
+
+
+### Bug Fixes
+
+* remove main-tag when tagging docker images ([#498](https://github.com/digdir/dialogporten/issues/498)) ([ddc1bad](https://github.com/digdir/dialogporten/commit/ddc1badd6fe71de9abacf7dd8dbd1714abf3ba11))
+
 ## 1.0.0 (2024-02-28)
 
 
