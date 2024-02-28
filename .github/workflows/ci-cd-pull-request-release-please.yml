@@ -29,7 +29,6 @@ jobs:
   dry-run-deploy-infra-staging:
     name: Deploy infra to staging (dry run)
     needs: [generate-git-short-sha, get-current-version, check-for-changes]
-    if: ${{ needs.check-for-changes.outputs.hasAzureChanges == 'true' }}
     uses: ./.github/workflows/action-deploy-infra.yml
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -47,7 +46,6 @@ jobs:
   dry-run-deploy-apps-staging:
     name: Deploy apps to staging (dry run)
     needs: [generate-git-short-sha, get-current-version, check-for-changes]
-    if: ${{ needs.check-for-changes.outputs.hasBackendChanges == 'true' }}
     uses: ./.github/workflows/action-deploy-apps.yml
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
