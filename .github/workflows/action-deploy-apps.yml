@@ -35,8 +35,8 @@ on:
         required: false
         type: boolean
         default: false
-      gitShortSha:
-        description: "Short SHA of the commit"
+      version:
+        description: "Current version to use as tag"
         required: true
         type: string
 concurrency:
@@ -141,7 +141,7 @@ jobs:
         id: deploy
         env:
           # parameters
-          IMAGE_TAG: ${{ inputs.gitShortSha }}
+          IMAGE_TAG: ${{ inputs.version }}
           # secrets
           CONTAINER_APP_ENVIRONMENT_NAME: ${{ secrets.AZURE_CONTAINER_APP_ENVIRONMENT_NAME }}
           APP_INSIGHTS_CONNECTION_STRING: ${{ secrets.AZURE_APP_INSIGHTS_CONNECTION_STRING }}
@@ -152,7 +152,7 @@ jobs:
           template: ./.azure/applications/${{ matrix.name }}/main.bicep
           resourceGroupName: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
           deploymentMode: Incremental
-          deploymentName: dp-be-${{ inputs.environment }}-${{ matrix.name }}-${{ inputs.gitShortSha }}
+          deploymentName: dp-be-${{ inputs.environment }}-${{ matrix.name }}-${{ inputs.version }}
           region: ${{ inputs.region }}
           failOnStdErr: false
           additionalArguments: "${{inputs.dryRun && '--what-if'}}"

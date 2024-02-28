@@ -1,0 +1,21 @@
+name: "Get current version"
+# might use previous tag as a version instead of the current version in file
+# https://github.com/WyriHaximus/github-action-get-previous-tag
+on:
+  workflow_call:
+    outputs:
+      version:
+        description: "Version"
+        value: ${{ jobs.get-current-version.outputs.version }}
+jobs:
+  get-current-version:
+    name: Filter
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.set-current-version.outputs.version }}
+    steps:
+      - name: "Checkout GitHub Action"
+        uses: actions/checkout@v4
+      - name: Set current version
+        id: set-current-version
+        run: echo "version=$(cat version.txt)" >> $GITHUB_OUTPUT
