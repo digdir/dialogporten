@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.3](https://github.com/digdir/dialogporten/compare/v1.0.2...v1.0.3) (2024-02-28)
+
+
+### Bug Fixes
+
+* remove whiteline in dockerfile ([9b14994](https://github.com/digdir/dialogporten/commit/9b149949cfb36a527acf62318acaeadb3dca3fd1))
+
 ## [1.0.2](https://github.com/digdir/dialogporten/compare/v1.0.1...v1.0.2) (2024-02-28)
 
 
