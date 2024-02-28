@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.0.2](https://github.com/digdir/dialogporten/compare/v1.0.1...v1.0.2) (2024-02-28)
+
+
+### Bug Fixes
+
+* always run staging dry-runs in release-please-pr ([3e390e7](https://github.com/digdir/dialogporten/commit/3e390e758d2c1797ab7e4ae36f151a17de072662))
+* fix workflow permissions ([40e5485](https://github.com/digdir/dialogporten/commit/40e5485bd3aa39150e482e58de9cb03a2b347d03))
+* fix workflow permissions ([b2213b2](https://github.com/digdir/dialogporten/commit/b2213b29e71d82e60cec3b55fa476d77aee1639f))
+* **release-please:** use correct gh token ([#500](https://github.com/digdir/dialogporten/issues/500)) ([ebff656](https://github.com/digdir/dialogporten/commit/ebff65611ed5f94b1fe42a9a288d7a2b1644d906))
+* use temporary gh token ([c1118ae](https://github.com/digdir/dialogporten/commit/c1118ae436854d3aabff59689ad1a8a342b97df5))
+
 ## [1.0.1](https://github.com/digdir/dialogporten/compare/v1.0.0...v1.0.1) (2024-02-28)
 
 
