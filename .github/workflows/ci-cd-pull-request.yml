@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths-ignore:
       - "tests/k6/**"
+      - "CHANGELOG.md"
 
 jobs:
   generate-git-short-sha:
