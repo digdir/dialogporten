@@ -1,4 +1,4 @@
-## This script removes /api/vX from the endpoint paths, to avoid duplication of these in the common Apim instance.
+## This script removes /api/vX from the endpoint paths, to avoid duplication of these in the common APIM instance.
 
 param(
     [string]$appName = "dialogporten",

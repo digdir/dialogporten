@@ -43,7 +43,7 @@ This will create ARM templates for the new version of the API in the folder `.\d
 
 
   - Go to the Azure DevOps pipeline [apim-deploy-creator-templates](https://dev.azure.com/brreg/altinn-studio-ops/_build?definitionId=121) and trigger the pipeline. Select `dialogporten` from the Application dropdown.   
-This will deploy the API to the `altinn-dev-api` Apim instance
+This will deploy the API to the `altinn-dev-api` APIM instance
 
 
   - If you are happy with the API deployed to dev, you can create templates for deploy to all the other environments by doing the following:
@@ -54,4 +54,4 @@ This will create ARM templates for all the environments in the folder `.\dialogp
   - Commit and push the changes to the `altinn-studio-ops` repository (create a branch and PR if you want to be safe, or just push to master if you are confident)
 
 
-  - You are then able to deploy the API to the other Apim-environments by triggering pipelines in the Azure DevOps project. The pipelines have the form a`pim-deploy-api.XXXX` where `XXXX` is the environment name.
+  - You are then able to deploy the API to the other APIM-environments by triggering pipelines in the Azure DevOps project. The pipelines have the form a`pim-deploy-api.XXXX` where `XXXX` is the environment name.
