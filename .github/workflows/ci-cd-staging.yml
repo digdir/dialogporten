@@ -48,7 +48,9 @@ jobs:
 
   deploy-apps-staging:
     name: Deploy apps to staging
-    needs: [get-current-version, publish]
+    needs:
+      [get-current-version, check-for-changes, deploy-infra-staging, publish]
+    if: ${{ always() && !failure() && !cancelled() && needs.check-for-changes.outputs.hasBackendChanges == 'true' }}
     uses: ./.github/workflows/action-deploy-apps.yml
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}

@@ -12,6 +12,11 @@ on:
           - test
           - staging
           - prod
+      version:
+        description: "Version to deploy. Needs to be a git tag"
+        required: true
+        type: string
+
 # todo: take version as param?
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref_name }}
@@ -21,13 +26,9 @@ jobs:
     name: Generate git short sha
     uses: ./.github/workflows/action-generate-git-short-sha.yml
 
-  get-current-version:
-    name: Get current version
-    uses: ./.github/workflows/action-get-current-version.yml
-
   deploy-infra-test:
     name: Deploy infra to test
-    needs: [generate-git-short-sha, get-current-version]
+    needs: [generate-git-short-sha]
     uses: ./.github/workflows/action-deploy-infra.yml
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -39,4 +40,5 @@ jobs:
     with:
       environment: ${{ inputs.environment }}
       region: norwayeast
-      version: ${{ needs.get-current-version.outputs.version }}-${{ needs.generate-git-short-sha.outputs.gitShortSha }}
+      version: ${{ inputs.version }}
+      ref: "refs/tags/${{ inputs.version }}"

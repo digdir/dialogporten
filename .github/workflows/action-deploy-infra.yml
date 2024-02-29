@@ -35,6 +35,11 @@ on:
         description: "Current version to use as tag"
         required: true
         type: string
+      ref:
+        description: "The branch or tag ref to deploy. Using default checkout ref if not provided."
+        required: false
+        default: ${{ github.ref }}
+        type: string
 
 concurrency:
   # Existing runs are cancelled if someone repeatedly commits to their own Pull Request (PR). However, it does not stop others' dry runs or actual deployments from the main branch.
@@ -53,6 +58,8 @@ jobs:
     steps:
       - name: "Checkout GitHub Action"
         uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
 
       - name: OIDC Login to Azure Public Cloud
         uses: azure/login@v1
