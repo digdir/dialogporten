@@ -5,7 +5,7 @@ This document contains instructions on how to publish a new version of the Dialo
 - Start up the Dialogporten application in your IDE and go to your local swagger (default is https://localhost:7214/swagger/)
 - Select version from the dropdown in the upper right corner
 - Right click and save on the `/swagger/vX/swagger.json` link under the API name.
-- Save the file as `swagger.json`, where X is the version number.
+- Save the file as `swagger.json`.
 
 ## 2. Copy the swagger.json to the Windows VM
 
