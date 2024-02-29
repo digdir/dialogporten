@@ -1,4 +1,4 @@
-name: "Check for changes"
+name: "Check for file changes"
 
 on:
   workflow_call:
