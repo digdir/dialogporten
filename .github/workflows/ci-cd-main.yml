@@ -55,7 +55,7 @@ jobs:
         generate-git-short-sha,
         build-and-test,
       ]
-    if: ${{ always() && !failure() && !cancelled() && needs.check-for-changes.outputs.hasBackendChanges == 'true' }}
+    if: ${{ needs.check-for-changes.outputs.hasBackendChanges == 'true' }}
     secrets:
       GCR_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
     with:
@@ -64,9 +64,8 @@ jobs:
 
   deploy-infra-test:
     name: Deploy infra to test
-    needs:
-      [get-current-version, check-for-changes, generate-git-short-sha, publish]
-    if: ${{ always() && !failure() && !cancelled() && needs.check-for-changes.outputs.hasAzureChanges == 'true' }}
+    needs: [get-current-version, check-for-changes, generate-git-short-sha]
+    if: ${{ needs.check-for-changes.outputs.hasAzureChanges == 'true' }}
     uses: ./.github/workflows/action-deploy-infra.yml
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -87,6 +86,7 @@ jobs:
         get-current-version,
         check-for-changes,
         generate-git-short-sha,
+        publish,
         deploy-infra-test,
       ]
     if: ${{ always() && !failure() && !cancelled() && needs.check-for-changes.outputs.hasBackendChanges == 'true' }}
@@ -109,8 +109,8 @@ jobs:
 
   deploy-slack-notifier-test:
     name: Deploy slack notifier (test)
-    needs: [check-for-changes, deploy-apps-test]
-    if: ${{ always() && !failure() && !cancelled() && needs.check-for-changes.outputs.hasSlackNotifierChanges == 'true' }}
+    needs: [check-for-changes]
+    if: ${{ needs.check-for-changes.outputs.hasSlackNotifierChanges == 'true' }}
     uses: ./.github/workflows/action-deploy-function.yml
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
