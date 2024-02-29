@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.4](https://github.com/digdir/dialogporten/compare/v1.0.3...v1.0.4) (2024-02-29)
+
+
+### Bug Fixes
+
+* add extra comment in dockerfile ([#503](https://github.com/digdir/dialogporten/issues/503)) ([77541cb](https://github.com/digdir/dialogporten/commit/77541cba45ae914c73e07856c8654732a97e86e5))
+
 ## [1.0.3](https://github.com/digdir/dialogporten/compare/v1.0.2...v1.0.3) (2024-02-28)
 
 
