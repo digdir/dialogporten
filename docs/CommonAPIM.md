@@ -12,7 +12,7 @@ This document contains instructions on how to publish a new version of the Dialo
 - Go to the Azure Portal and find the resource group `dp-be-common-rg`
 - Start the VM `apim-template-gen` and RDP into it (The VM shuts down automatically every night at 00.00)
   - username: digdiradmin
-  - password: stored as a secret in the keyvault in the same resource group
+  - password: stored as a secret in the key vault in the same resource group
 - Open the file explorer and navigate to the folder `C:\Scripts\FixPaths`
 - Copy the `swagger.json` file to this folder
 
