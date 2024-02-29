@@ -17,7 +17,6 @@ on:
         required: true
         type: string
 
-# todo: take version as param?
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref_name }}
 
