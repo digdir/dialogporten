@@ -20,6 +20,7 @@ using Digdir.Domain.Dialogporten.WebApi.Common.Authentication;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using System.Globalization;
+using Digdir.Domain.Dialogporten.WebApi;
 using NSwag;
 
 // Using two-stage initialization to catch startup errors.
@@ -177,6 +178,9 @@ static void BuildAndRun(string[] args)
 
                 document.Servers.Clear();
                 document.Servers.Add(new OpenApiServer { Url = dialogportenBaseUri });
+                document.Generator = null;
+                document.ReplaceProblemDetailsDescriptions();
+                document.ReplaceRequestExampleBodies();
             };
         }, uiConfig =>
         {
@@ -201,3 +205,6 @@ static void IgnoreEmptyCollections(JsonTypeInfo typeInfo)
         }
     }
 }
+
+// ReSharper disable once ClassNeverInstantiated.Global
+public partial class Program;
