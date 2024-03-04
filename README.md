@@ -4,28 +4,54 @@
 
 ### Prerequisites
 - [.NET 8 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
-- [Docker](https://www.docker.com/products/docker-desktop/) (Docker Desktop version 4.22 or later or Docker Compose version 2.20 or later)
+- [Podman](https://podman.io/)
 
+#### Installing Podman (Mac)
 
-You can run the entire project locally using docker compose.
+1. Install [Podman](https://podman.io/)
+
+2. Install dependencies:
+```bash
+brew tap cfergeau/crc
+# https://github.com/containers/podman/issues/21064
+brew install vfkit
+brew install docker-compose
+```
+
+3. Restart your Mac
+
+4. Finish setup in Podman Desktop
+
+5. Check that `Docker Compatility mode` is enabled, see bottom left corner
+
+6. Enable privileged [testcontainers-dotnet](https://github.com/testcontainers/testcontainers-dotnet/issues/876#issuecomment-1930397928)  
+`echo "ryuk.container.privileged = true" >> $HOME/.testcontainers.properties`
+
+#### Installing Podman (Windows)
+
+TODO
+
+#### Verify prerequisites
+
+You can run the entire project locally using `podman compose`.
 ```powershell
-docker compose up
+podman compose up
 ```
 The APIs SwaggerUI should now be available at [localhost:7124/swagger](https://localhost:7214/swagger/index.html)
 
+
 ### Running the WebApi in an IDE
-If you need to debug the WebApi project in an IDE, you can alternatively run docker compose without the WebAPI.  
+If you need do debug the WebApi project in an IDE, you can alternatively run `podman compose` without the WebAPI.  
 First create a dotnet user secret for the DB connection string.
 
-```powerhell
+```powershell
 dotnet user-secrets set -p .\src\Digdir.Domain.Dialogporten.WebApi\ "Infrastructure:DialogDbConnectionString" "Server=localhost;Port=5432;Database=Dialogporten;User ID=postgres;Password=supersecret;"
 ```
 
-Then run docker compose without the WebAPI project.
+Then run `podman compose` without the WebAPI project.
 ```powershell
-docker compose -f docker-compose-no-webapi.yml up 
+podman compose -f docker-compose-no-webapi.yml up 
 ```
-
 
 ## DB development
 This project uses Entity Framework core to manage DB migrations. DB development can ether be done through Visual Studios Package Manager Console (PMC), or through the CLI. 
