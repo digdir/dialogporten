@@ -50,6 +50,7 @@ jobs:
     name: Deploy apps to staging
     needs:
       [get-current-version, check-for-changes, deploy-infra-staging, publish]
+    # we want deployment of apps to be dependent on deployment of infrastructure, but if infrastructure is skipped, we still want to deploy the apps
     if: ${{ always() && !failure() && !cancelled() && needs.check-for-changes.outputs.hasBackendChanges == 'true' }}
     uses: ./.github/workflows/action-deploy-apps.yml
     secrets:
