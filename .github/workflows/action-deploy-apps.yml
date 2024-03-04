@@ -158,13 +158,6 @@ jobs:
           additionalArguments: "${{inputs.dryRun && '--what-if'}}"
           parameters: ./.azure/applications/${{ matrix.name }}/${{ inputs.environment }}.bicepparam
 
-      - name: Create a connection to postgresql database
-        uses: azure/CLI@v1
-        with:
-          azcliversion: ${{ env.AZ_CLI_VERSION }}
-          inlineScript: |
-            az containerapp connection create -n ${{ matrix.name }} -g ${{ secrets.AZURE_RESOURCE_GROUP_NAME }} --connection-name "db-connection" --connection-string ${{ secrets.AZURE_DB_CONNECTION_STRING }}
-
       - name: Verify deployment (${{ matrix.name }})
         uses: azure/CLI@v1
         if: ${{!inputs.dryRun}}
