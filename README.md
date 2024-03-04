@@ -8,21 +8,21 @@
 
 #### Installing Podman (Mac)
 
-1. a) If installed, uninstall Docker
-1. b) Install [Podman](https://podman.io/)
+1. Install [Podman](https://podman.io/)
 
 2. Install dependencies:
 ```bash
 brew tap cfergeau/crc
+# https://github.com/containers/podman/issues/21064
 brew install vfkit
-brew install podman-compose
+brew install docker-compose
 ```
 
 3. Restart your Mac
 
 4. Finish setup in Podman Desktop
 
-5. Enable `Docker Compatility mode` by clicking on the `Docker compatibility` on the bottom left corner
+5. Check that `Docker Compatility mode` is enabled, see bottom left corner
 
 6. Enable privileged [testcontainers-dotnet](https://github.com/testcontainers/testcontainers-dotnet/issues/876#issuecomment-1930397928)  
 `echo "ryuk.container.privileged = true" >> $HOME/.testcontainers.properties`
