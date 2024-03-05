@@ -12,7 +12,6 @@ type Sku = {
   @minValue(1)
   capacity: int
 }
-
 param sku Sku
 
 // https://learn.microsoft.com/en-us/azure/templates/microsoft.cache/redis?pivots=deployment-language-bicep
@@ -33,12 +32,12 @@ resource redis 'Microsoft.Cache/Redis@2023-08-01' = {
 }
 
 module redisConnectionString '../keyvault/upsertSecret.bicep' = {
-  name: 'adoConnectionString'
+  name: 'redisConnectionString'
   params: {
-      destKeyVaultName: environmentKeyVaultName
-      secretName: 'dialogportenRedisConnectionString'
-      // disable public access? Use vnet here maybe?
-      secretValue: 'redis://${redis.properties.hostName}:${redis.properties.port},password=${redis.properties.accessKeys.primaryKey},ssl=True,abortConnect=False'
+    destKeyVaultName: environmentKeyVaultName
+    secretName: 'dialogportenRedisConnectionString'
+    // disable public access? Use vnet here maybe?
+    secretValue: 'redis://${redis.properties.hostName}:${redis.properties.port},password=${redis.properties.accessKeys.primaryKey},ssl=True,abortConnect=False'
   }
 }
 
