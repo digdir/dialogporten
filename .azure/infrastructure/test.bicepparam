@@ -11,12 +11,22 @@ param sourceKeyVaultResourceGroup = readEnvironmentVariable('SOURCE_KEY_VAULT_RE
 param sourceKeyVaultName = readEnvironmentVariable('SOURCE_KEY_VAULT_NAME')
 
 // SKUs
-param keyVaultSKUName = 'standard'
-param keyVaultSKUFamily = 'A'
-param appConfigurationSKUName = 'standard'
-param appInsightsSKUName = 'PerGB2018'
-param slackNotifierStorageAccountSKUName = 'Standard_LRS'
-param slackNotifierApplicationServicePlanSKUName = 'Y1'
-param slackNotifierApplicationServicePlanSKUTier = 'Dynamic'
-param postgresServerSKUName = 'Standard_B1ms'
-param postgresServerSKUTier = 'Burstable'
+param keyVaultSku = {
+  name: 'standard'
+  family: 'A'
+}
+param appConfigurationSku = {
+  name: 'standard'
+}
+param appInsightsSku = {
+  name: 'PerGB2018'
+}
+param slackNotifierSku = {
+  storageAccountName: 'Standard_LRS'
+  applicationServicePlanName: 'Y1'
+  applicationServicePlanTier: 'Dynamic'
+}
+param postgresSku = {
+  name: 'Standard_B1ms'
+  tier: 'Burstable'
+}
