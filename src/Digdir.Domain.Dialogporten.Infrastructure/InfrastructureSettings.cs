@@ -9,6 +9,7 @@ public sealed class InfrastructureSettings
     public const string ConfigurationSectionName = "Infrastructure";
 
     public required string DialogDbConnectionString { get; init; }
+    public required string DialogRedisConnectionString { get; init; }
     public required AltinnPlatformSettings Altinn { get; init; }
     public required AltinnCdnPlatformSettings AltinnCdn { get; init; }
     public required MaskinportenSettings Maskinporten { get; init; }

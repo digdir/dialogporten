@@ -55,6 +55,14 @@ public static class InfrastructureExtensions
             // Framework
             .AddValidatorsFromAssembly(thisAssembly, ServiceLifetime.Transient, includeInternalTypes: true)
             .AddDistributedMemoryCache()
+            .AddStackExchangeRedisCache(options =>
+            {
+                var infrastructureSettings = configuration.GetSection("Infrastructure").Get<InfrastructureSettings>()
+                    ?? throw new InvalidOperationException("Failed to get Redis connection string. Infrastructure settings must not be null.");
+                var connectionString = infrastructureSettings.DialogRedisConnectionString;
+                options.Configuration = connectionString;
+                options.InstanceName = "Redis";
+            })
             .AddDbContext<DialogDbContext>((services, options) =>
             {
                 var connectionString = services.GetRequiredService<IOptions<InfrastructureSettings>>()

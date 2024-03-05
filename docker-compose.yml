@@ -10,8 +10,10 @@ services:
     depends_on:
       dialogporten-postgres:
         condition: service_healthy
-
+      dialogporten-redis:
+        condition: service_healthy
     environment:
+      - Infrastructure:DialogRedisConnectionString=redis://dialogporten-redis:6379
       - Infrastructure:DialogDbConnectionString=${DB_CONNECTION_STRING}
       - Serilog__WriteTo__0__Name=Console
       - Serilog__MinimumLevel__Default=Debug
