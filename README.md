@@ -107,3 +107,48 @@ We are able to toggle some external resources in local development. This is done
 }
 ```
 Toggling these flags will enable/disable the external resources. The `DisableAuth` flag, for example, will disable authentication in the WebAPI project. This is useful when debugging the WebAPI project in an IDE. These settings will only be respected in the `Development` environment.
+
+## Deployment
+
+This repository contains code for both infrastructure and applications. Configurations for infrastructure is located in `.azure/infrastructure`. Application configuration is in `.azure/applications`. 
+
+### Deployment process
+
+Deployments are done using `Github Actions` with the following process:
+
+![Deployment process](docs/deploy-process.png)
+
+[Release Please](https://github.com/google-github-actions/release-please-action) is used in order to create releases, generate changelog and bumping version numbers.
+
+`CHANGELOG.md` and `version.txt` are automatically updated and should not be changed manually.
+
+### Github actions
+
+Naming conventions for github actions:
+- `action-*.yml`: Reusable workflows
+- `ci-cd-*.yml`: Workflows that are triggered by an event
+- `dispatch-*.yml`: Workflows that are dispatchable
+
+The `action-check-for-changes.yml` workflow uses the `tj-actions/changed-files` action to check which files have been altered since last commit or tag. We use this filter to ensure we only deploy backend code or infrastructure if the respective files have been altered. 
+
+### Infrastructure
+
+Infrastructure definitions for the project are located in the `.azure/infrastructure` folder. To add new infrastructure components, follow the existing pattern found within this directory. This involves creating new Bicep files or modifying existing ones to define the necessary infrastructure resources.
+
+For example, to add a new storage account, you would:
+- Create or update a Bicep file within the `.azure/infrastructure` folder to include the storage account resource definition.
+- Ensure that the Bicep file is referenced correctly in `.azure/infrastructure/infrastructure.bicep` to be included in the deployment process.
+
+Refer to the existing infrastructure definitions as templates for creating new components.
+
+### Applications
+
+All application Bicep definitions are located in the `.azure/applications` folder. To add a new application, follow the existing pattern found within this directory. This involves creating a new folder for your application under `.azure/applications` and adding the necessary Bicep files (`main.bicep` and environment-specific parameter files, e.g., `test.bicepparam`, `staging.bicepparam`).
+
+For example, to add a new application named `web-api-new`, you would:
+- Create a new folder: `.azure/applications/web-api-new`
+- Add a `main.bicep` file within this folder to define the application's infrastructure.
+- Use the appropriate `Bicep`-modules within this file. There is one for `Container apps` which you most likely would use.
+- Add parameter files for each environment (e.g., `test.bicepparam`, `staging.bicepparam`) to specify environment-specific values.
+
+Refer to the existing applications like `web-api-so` and `web-api-eu` as templates.
