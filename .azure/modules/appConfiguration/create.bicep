@@ -3,7 +3,7 @@ param location string
 
 @export()
 type Sku = {
-	name: 'standard'
+  name: 'standard'
 }
 param sku Sku
 
