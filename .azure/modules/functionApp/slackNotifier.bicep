@@ -2,9 +2,14 @@ param location string
 param applicationInsightsName string
 param namePrefix string
 param keyVaultName string
-param storageAccountSKUName string
-param applicationServicePlanSKUName string
-param applicationServicePlanSKUTier string
+
+@export()
+type Sku = {
+    storageAccountName: 'Standard_LRS' | 'Standard_GRS' | 'Standard_RAGRS' | 'Standard_ZRS' | 'Premium_LRS' | 'Premium_ZRS'
+    applicationServicePlanName: 'F1' | 'D1' | 'B1' | 'B2' | 'B3' | 'S1' | 'S2' | 'S3' | 'P1' | 'P2' | 'P3' | 'P1V2' | 'P2V2' | 'P3V2' | 'I1' | 'I2' | 'I3' | 'Y1' | 'Y2' | 'Y3' | 'Y1v2' | 'Y2v2' | 'Y3v2' | 'Y1v2Isolated' | 'Y2v2Isolated' | 'Y3v2Isolated'
+    applicationServicePlanTier: 'Free' | 'Shared' | 'Basic' | 'Dynamic' | 'Standard' | 'Premium' | 'Isolated'
+}
+param sku Sku
 
 // Storage account names only supports lower case and numbers
 // todo: add name of function as param and turn this into a reusable module
@@ -14,7 +19,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
     name: storageAccountName
     location: location
     sku: {
-        name: storageAccountSKUName
+        name: sku.storageAccountName
     }
     kind: 'Storage'
     properties: {
@@ -27,8 +32,8 @@ resource applicationServicePlan 'Microsoft.Web/serverfarms@2023-01-01' = {
     name: '${namePrefix}-slacknotifier-asp'
     location: location
     sku: {
-        name: applicationServicePlanSKUName
-        tier: applicationServicePlanSKUTier
+        name: sku.applicationServicePlanName
+        tier: sku.applicationServicePlanTier
     }
     properties: {}
 }

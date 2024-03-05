@@ -2,8 +2,13 @@ param namePrefix string
 param location string
 param keyVaultName string
 param srcSecretName string
-param skuName string
-param skuTier string
+
+@export()
+type Sku = {
+  name: 'Standard_B1ms'
+  tier: 'Burstable' | 'GeneralPurpose' | 'MemoryOptimized'
+}
+param sku Sku
 
 @secure()
 param srcKeyVault object
@@ -50,10 +55,7 @@ resource postgres 'Microsoft.DBforPostgreSQL/flexibleServers@2022-12-01' = {
         }
         replicationRole: 'Primary'
     }
-    sku: {
-        name: skuName
-        tier: skuTier
-    }
+    sku: sku
     resource database 'databases' = {
         name: databaseName
         properties: {
