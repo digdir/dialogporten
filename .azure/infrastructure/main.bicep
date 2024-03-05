@@ -34,6 +34,11 @@ param slackNotifierSku SlackNotifierSku
 import {Sku as PostgresSku} from '../modules/postgreSql/create.bicep'
 param postgresSku PostgresSku
 
+import {Sku as RedisSku} from '../modules/redis/main.bicep'
+param redisSku RedisSku
+@minLength(1)
+param redisVersion string
+
 var secrets = {
   dialogportenPgAdminPassword: dialogportenPgAdminPassword
   sourceKeyVaultSubscriptionId: sourceKeyVaultSubscriptionId
@@ -49,7 +54,7 @@ resource resourceGroup 'Microsoft.Resources/resourceGroups@2023-07-01' = {
   location: location
 }
 
-module keyVaultModule '../modules/keyvault/create.bicep' = {
+module environmentKeyVault '../modules/keyvault/create.bicep' = {
   scope: resourceGroup
   name: 'keyVault'
   params: {
@@ -104,13 +109,27 @@ module postgresql '../modules/postgreSql/create.bicep' = {
   params: {
     namePrefix: namePrefix
     location: location
-    keyVaultName: keyVaultModule.outputs.name
+    environmentKeyVaultName: environmentKeyVault.outputs.name
     srcKeyVault: srcKeyVault
     srcSecretName: 'dialogportenPgAdminPassword${environment}'
     administratorLoginPassword: contains(keyVaultSourceKeys, 'dialogportenPgAdminPassword${environment}') ? srcKeyVaultResource.getSecret('dialogportenPgAdminPassword${environment}') : secrets.dialogportenPgAdminPassword
     sku: postgresSku
   }
 }
+
+module redis '../modules/redis/main.bicep' = {
+  scope: resourceGroup
+  name: 'redis'
+  params: {
+    namePrefix: namePrefix
+    location: location
+    environmentKeyVaultName: environmentKeyVault.outputs.name
+    sku: redisSku
+    version: redisVersion
+  }
+}
+
+
 
 module copyEnvironmentSecrets '../modules/keyvault/copySecrets.bicep' = {
   scope: resourceGroup
@@ -120,7 +139,7 @@ module copyEnvironmentSecrets '../modules/keyvault/copySecrets.bicep' = {
     srcKeyVaultName: secrets.sourceKeyVaultName
     srcKeyVaultRGNName: secrets.sourceKeyVaultResourceGroup
     srcKeyVaultSubId: secrets.sourceKeyVaultSubscriptionId
-    destKeyVaultName: keyVaultModule.outputs.name
+    destKeyVaultName: environmentKeyVault.outputs.name
     secretPrefix: 'dialogporten--${environment}--'
   }
 }
@@ -132,7 +151,7 @@ module copyCrossEnvironmentSecrets '../modules/keyvault/copySecrets.bicep' = {
     srcKeyVaultName: secrets.sourceKeyVaultName
     srcKeyVaultRGNName: secrets.sourceKeyVaultResourceGroup
     srcKeyVaultSubId: secrets.sourceKeyVaultSubscriptionId
-    destKeyVaultName: keyVaultModule.outputs.name
+    destKeyVaultName: environmentKeyVault.outputs.name
     secretPrefix: 'dialogporten--any--'
   }
 }
@@ -142,7 +161,7 @@ module slackNotifier '../modules/functionApp/slackNotifier.bicep' = {
   scope: resourceGroup
   params: {
     location: location
-    keyVaultName: keyVaultModule.outputs.name
+    keyVaultName: environmentKeyVault.outputs.name
     namePrefix: namePrefix
     applicationInsightsName: appInsights.outputs.appInsightsName
     sku: slackNotifierSku
@@ -168,7 +187,7 @@ module appInsightsReaderAccessPolicy '../modules/applicationInsights/addReaderRo
   }
 }
 
-module appConfigConfigurations '../modules/appConfiguration/upsertKeyValue.bicep' = {
+module postgresConnectionStringAppConfig '../modules/appConfiguration/upsertKeyValue.bicep' = {
   scope: resourceGroup
   name: 'AppConfig_Add_DialogDbConnectionString'
   params: {
@@ -179,15 +198,26 @@ module appConfigConfigurations '../modules/appConfiguration/upsertKeyValue.bicep
   }
 }
 
+module redisConnectionStringAppConfig '../modules/appConfiguration/upsertKeyValue.bicep' = {
+  scope: resourceGroup
+  name: 'AppConfig_Add_DialogRedisConnectionString'
+  params: {
+    configStoreName: appConfiguration.outputs.name
+    key: 'Infrastructure:DialogRedisConnectionString'
+    value: redis.outputs.connectionStringSecretUri
+    keyValueType: 'keyVaultReference'
+  }
+}
+
 module keyVaultReaderAccessPolicy '../modules/keyvault/addReaderRoles.bicep' = {
   scope: resourceGroup
   name: 'keyVaultReaderAccessPolicyFunctions'
   params: {
-    keyvaultName: keyVaultModule.outputs.name
+    keyvaultName: environmentKeyVault.outputs.name
     principalIds: [ slackNotifier.outputs.functionAppPrincipalId ]
   }
 }
 
 output resourceGroupName string = resourceGroup.name
 output containerAppEnvId string = containerAppEnv.outputs.containerAppEnvId
-output environmentKeyVaultName string = keyVaultModule.outputs.name
+output environmentKeyVaultName string = environmentKeyVault.outputs.name
