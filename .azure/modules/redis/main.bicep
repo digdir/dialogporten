@@ -32,7 +32,7 @@ resource redis 'Microsoft.Cache/Redis@2023-08-01' = {
   }
 }
 
-module redisConnectionString '../keyvault/upsertSecret.bicep' = {
+module redisHostName '../keyvault/upsertSecret.bicep' = {
   name: 'redisHostName'
   params: {
     destKeyVaultName: environmentKeyVaultName
@@ -42,4 +42,4 @@ module redisConnectionString '../keyvault/upsertSecret.bicep' = {
   }
 }
 
-output hostName string = redis.properties.hostName
+output hostNameKeyVaultUri string = redisHostName.outputs.secretUri
