@@ -81,23 +81,14 @@ module containerApp '../../modules/containerApp/main.bicep' = {
   }
 }
 
-resource redisCustomAccessPolicy 'Microsoft.Cache/redis/accessPolicies@2023-08-01' = {
+resource redisAccessPolicyAssignment 'Microsoft.Cache/redis/accessPolicyAssignments@2023-08-01' = {
   parent: redis
   name: containerAppName
   properties: {
-    permissions: 'Contributor'
-  }
-}
-
-resource redisCustomAccessPolicyAssignment 'Microsoft.Cache/redis/accessPolicyAssignments@2023-08-01' = {
-  parent: redis
-  name: containerAppName
-  properties: {
-    accessPolicyName: containerAppName
+    accessPolicyName: 'Data Contributor'
     objectId: containerApp.outputs.identityPrincipalId
     objectIdAlias: '${containerAppName}-access-policy-redis'
   }
-  dependsOn: [redisCustomAccessPolicy]
 }
 
 module keyVaultReaderAccessPolicy '../../modules/keyvault/addReaderRoles.bicep' = {
