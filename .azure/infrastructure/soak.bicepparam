@@ -4,6 +4,8 @@ param environment = 'soak'
 param location = 'norwayeast'
 param keyVaultSourceKeys = json(readEnvironmentVariable('KEY_VAULT_SOURCE_KEYS'))
 
+param redisVersion = '6.0'
+
 // secrets
 param dialogportenPgAdminPassword = readEnvironmentVariable('PG_ADMIN_PASSWORD')
 param sourceKeyVaultSubscriptionId = readEnvironmentVariable('SOURCE_KEY_VAULT_SUBSCRIPTION_ID')
@@ -29,4 +31,10 @@ param slackNotifierSku = {
 param postgresSku = {
   name: 'Standard_B1ms'
   tier: 'Burstable'
+}
+
+param redisSku = {
+  name: 'Basic'
+  family: 'C'
+  capacity: 1
 }
