@@ -129,8 +129,6 @@ module redis '../modules/redis/main.bicep' = {
   }
 }
 
-
-
 module copyEnvironmentSecrets '../modules/keyvault/copySecrets.bicep' = {
   scope: resourceGroup
   name: 'copyEnvironmentSecrets'
