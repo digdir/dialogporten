@@ -119,6 +119,8 @@ jobs:
     # needs: deploy-migration-job
     strategy:
       fail-fast: true
+      # to ensure that the bicep commands doesn't conflict with eachother, we need to set the max-parallel to 1
+      max-parallel: 1
       matrix:
         include:
           - name: web-api-eu
