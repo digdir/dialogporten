@@ -202,7 +202,7 @@ module redisHostNameAppConfig '../modules/appConfiguration/upsertKeyValue.bicep'
   params: {
     configStoreName: appConfiguration.outputs.name
     key: 'Infrastructure:RedisHostName'
-    value: redis.outputs.hostName
+    value: redis.outputs.hostNameKeyVaultUri
     keyValueType: 'keyVaultReference'
   }
 }
