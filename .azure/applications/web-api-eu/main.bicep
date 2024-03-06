@@ -85,7 +85,7 @@ resource redisCustomAccessPolicy 'Microsoft.Cache/redis/accessPolicies@2023-08-0
   }
 }
 
-resource redisCacheName_customAccessPolicyAssignment 'Microsoft.Cache/redis/accessPolicyAssignments@2023-08-01' = {
+resource redisCustomAccessPolicyAssignment 'Microsoft.Cache/redis/accessPolicyAssignments@2023-08-01' = {
   parent: redis
   name: containerAppName
   properties: {
