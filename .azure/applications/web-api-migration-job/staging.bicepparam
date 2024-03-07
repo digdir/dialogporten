@@ -7,3 +7,4 @@ param containerAppEnvironmentName = readEnvironmentVariable('CONTAINER_APP_ENVIR
 
 //secrets
 param adoConnectionStringSecretUri = readEnvironmentVariable('ADO_CONNECTION_STRING_SECRET_URI')
+param redisName = readEnvironmentVariable('REDIS_NAME')

@@ -32,3 +32,9 @@ param postgresSku = {
   name: 'Standard_B1ms'
   tier: 'Burstable'
 }
+
+param redisSku = {
+  name: 'Basic'
+  family: 'C'
+  capacity: 1
+}

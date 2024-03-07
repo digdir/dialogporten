@@ -25,20 +25,21 @@ resource redis 'Microsoft.Cache/Redis@2023-08-01' = {
     sku: sku
     enableNonSslPort: false
     redisConfiguration: {
-      'maxmemory-policy': 'allkeys-lru'
+      'aad-enabled': 'true'
+      'maxmemory-policy': 'allkeys-lru' 
     }
     redisVersion: version
   }
 }
 
-module redisConnectionString '../keyvault/upsertSecret.bicep' = {
-  name: 'redisConnectionString'
+module redisHostName '../keyvault/upsertSecret.bicep' = {
+  name: 'redisHostName'
   params: {
     destKeyVaultName: environmentKeyVaultName
-    secretName: 'dialogportenRedisConnectionString'
+    secretName: 'dialogportenRedisHostName'
     // disable public access? Use vnet here maybe?
-    secretValue: 'redis://${redis.properties.hostName}:${redis.properties.port},password=${redis.properties.accessKeys.primaryKey},ssl=True,abortConnect=False'
+    secretValue: redis.properties.hostName
   }
 }
 
-output connectionStringSecretUri string = redisConnectionString.outputs.secretUri
+output hostNameKeyVaultUri string = redisHostName.outputs.secretUri

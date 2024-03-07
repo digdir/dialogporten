@@ -14,6 +14,9 @@ param apimIp string
 param containerAppEnvironmentName string
 @minLength(3)
 @secure()
+param redisName string
+@minLength(3)
+@secure()
 param appInsightConnectionString string
 @minLength(5)
 @secure()
@@ -31,6 +34,10 @@ resource appConfiguration 'Microsoft.AppConfiguration/configurationStores@2023-0
 
 resource containerAppEnvironment 'Microsoft.App/managedEnvironments@2023-05-01' existing = {
   name: containerAppEnvironmentName
+}
+
+resource redis 'Microsoft.Cache/redis@2023-08-01' existing = {
+  name: redisName
 }
 
 var containerAppEnvVars = [
@@ -67,6 +74,16 @@ module containerApp '../../modules/containerApp/main.bicep' = {
     envVariables: containerAppEnvVars
     containerAppEnvId: containerAppEnvironment.id
     apimIp: apimIp
+  }
+}
+
+resource redisAccessPolicyAssignment 'Microsoft.Cache/redis/accessPolicyAssignments@2023-08-01' = {
+  parent: redis
+  name: containerAppName
+  properties: {
+    accessPolicyName: 'Data Contributor'
+    objectId: containerApp.outputs.identityPrincipalId
+    objectIdAlias: '${containerAppName}-access-policy-redis'
   }
 }
 

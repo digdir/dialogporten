@@ -22,6 +22,8 @@ on:
         required: true
       AZURE_ADO_CONNECTION_STRING_SECRET_URI:
         required: true
+      AZURE_REDIS_NAME:
+        required: true
 
     inputs:
       region:
@@ -117,6 +119,8 @@ jobs:
     # needs: deploy-migration-job
     strategy:
       fail-fast: true
+      # to ensure that the bicep commands doesn't conflict with eachother, we need to set the max-parallel to 1
+      max-parallel: 1
       matrix:
         include:
           - name: web-api-eu
@@ -147,6 +151,7 @@ jobs:
           APP_INSIGHTS_CONNECTION_STRING: ${{ secrets.AZURE_APP_INSIGHTS_CONNECTION_STRING }}
           APP_CONFIGURATION_NAME: ${{ secrets.AZURE_APP_CONFIGURATION_NAME }}
           ENVIRONMENT_KEY_VAULT_NAME: ${{ secrets.AZURE_ENVIRONMENT_KEY_VAULT_NAME }}
+          REDIS_NAME: ${{ secrets.AZURE_REDIS_NAME }}
         with:
           scope: resourcegroup
           template: ./.azure/applications/${{ matrix.name }}/main.bicep

@@ -117,6 +117,7 @@ module postgresql '../modules/postgreSql/create.bicep' = {
   }
 }
 
+<<<<<<< HEAD
 module redis '../modules/redis/main.bicep' = {
   scope: resourceGroup
   name: 'redis'
@@ -131,6 +132,21 @@ module redis '../modules/redis/main.bicep' = {
 
 
 
+||||||| f671b5d
+=======
+module redis '../modules/redis/main.bicep' = {
+  scope: resourceGroup
+  name: 'redis'
+  params: {
+    namePrefix: namePrefix
+    location: location
+    environmentKeyVaultName: environmentKeyVault.outputs.name
+    sku: redisSku
+    version: redisVersion
+  }
+}
+
+>>>>>>> main
 module copyEnvironmentSecrets '../modules/keyvault/copySecrets.bicep' = {
   scope: resourceGroup
   name: 'copyEnvironmentSecrets'
@@ -198,13 +214,13 @@ module postgresConnectionStringAppConfig '../modules/appConfiguration/upsertKeyV
   }
 }
 
-module redisConnectionStringAppConfig '../modules/appConfiguration/upsertKeyValue.bicep' = {
+module redisHostNameAppConfig '../modules/appConfiguration/upsertKeyValue.bicep' = {
   scope: resourceGroup
-  name: 'AppConfig_Add_DialogRedisConnectionString'
+  name: 'AppConfig_Add_RedisHostName'
   params: {
     configStoreName: appConfiguration.outputs.name
-    key: 'Infrastructure:DialogRedisConnectionString'
-    value: redis.outputs.connectionStringSecretUri
+    key: 'Infrastructure:RedisHostName'
+    value: redis.outputs.hostNameKeyVaultUri
     keyValueType: 'keyVaultReference'
   }
 }
