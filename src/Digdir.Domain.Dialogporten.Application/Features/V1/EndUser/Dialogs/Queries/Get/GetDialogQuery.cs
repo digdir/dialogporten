@@ -103,8 +103,8 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
 
         saveResult.Switch(
             success => { },
-            domainError => throw new UnreachableException("Should not get domain error when updating ReadAt."),
-            concurrencyError => throw new UnreachableException("Should not get concurrencyError when updating ReadAt."));
+            domainError => throw new UnreachableException("Should not get domain error when updating SeenAt."),
+            concurrencyError => throw new UnreachableException("Should not get concurrencyError when updating SeenAt."));
 
         // hash end user ids
         var salt = MappingUtils.GetHashSalt();
