@@ -23,7 +23,6 @@ public sealed class GetDialogDto
     public DateTimeOffset? ExpiresAt { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
     public DateTimeOffset UpdatedAt { get; set; }
-    public DateTimeOffset? ReadAt { get; set; }
 
     public DialogStatus.Values Status { get; set; }
 
