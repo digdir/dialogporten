@@ -19,7 +19,7 @@ import {
     deleteSO } from '../../common/testimports.js'
 
 import { default as dialogToInsert } from './testdata/01-create-dialog.js';
-import { defaultEndUserOrgNo } from '../../common/config.js'
+import { defaultEndUserSsn } from '../../common/config.js'
 
 export default function () {
 
@@ -32,8 +32,8 @@ export default function () {
     let extendedStatusToSearchFor = "status:" + uuidv4();
     let secondExtendedStatusToSearchFor = "status:" + uuidv4();
     let senderNameToSearchFor = uuidv4()
-    let auxParty = "urn:altinn:organization:identifier-no::" + defaultEndUserOrgNo; // A party other than ourselves that we authorized for
-    let auxResource = "urn:altinn:resource:ttd-dialogporten-automated-tests"; // This must exist in Resource Registry
+    let auxParty = "urn:altinn:person:identifier-no::" + defaultEndUserSsn; 
+    let auxResource = "urn:altinn:resource:ttd-dialogporten-automated-tests-2"; // This must exist in Resource Registry
     let titleForDueAtItem = uuidv4();
     let titleForExpiresAtItem = uuidv4();
     let titleForVisibleFromItem = uuidv4();
@@ -162,7 +162,7 @@ export default function () {
         expectStatusFor(r).to.equal(200);
         expect(r, 'response').to.have.validJsonBody();
         expect(r.json(), 'response json').to.have.property("items").with.lengthOf(1);
-        expect(r.json().items[0], 'party').to.have.property("party").that.equals(auxParty);
+        expect(r.json().items[0], 'party').to.have.property("party").that.contains(defaultEndUserSsn);
     });
 
     describe('List with resource filter', () => {

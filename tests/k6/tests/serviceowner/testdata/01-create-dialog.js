@@ -1,12 +1,12 @@
 import { uuidv4 } from '../../../common/testimports.js'
-import { defaultEndUserSsn } from "../../../common/config.js";
+import { defaultEndUserOrgNo } from "../../../common/config.js";
 
 export default function () {
     let dialogElementId = uuidv4();
 
     return {
         "serviceResource": "urn:altinn:resource:ttd-dialogporten-automated-tests", // urn starting with urn:altinn:resource:
-        "party": "urn:altinn:person:identifier-no::" + defaultEndUserSsn, // or urn:altinn:organization:identifier-no::<9 digits>
+        "party": "urn:altinn:organization:identifier-no::" + defaultEndUserOrgNo, 
         "status": "new", // valid values: new, inprogress, waiting, signing, cancelled, completed
         "extendedStatus": "urn:any/valid/uri",
         "dueAt": "2033-11-25T06:37:54.2920190Z", // must be UTC
