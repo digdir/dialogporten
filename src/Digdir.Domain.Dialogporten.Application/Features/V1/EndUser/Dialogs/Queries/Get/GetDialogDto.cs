@@ -11,7 +11,7 @@ namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Que
 public sealed class GetDialogDto
 {
     public Guid Id { get; set; }
-    public Guid IfMatchDialogRevision { get; set; }
+    public Guid Revision { get; set; }
     public string Org { get; set; } = null!;
     public string ServiceResource { get; set; } = null!;
     public string Party { get; set; } = null!;
