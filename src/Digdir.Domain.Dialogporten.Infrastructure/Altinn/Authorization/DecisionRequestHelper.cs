@@ -243,7 +243,7 @@ internal static class DecisionRequestHelper
 
             for (var i = 0; i < xamlJsonRequestRoot.Request.MultiRequests.RequestReference.Count; i++)
             {
-                if (xamlJsonResponse.Response[i].Decision != PermitResponse)
+                if (i >= xamlJsonResponse.Response.Count || xamlJsonResponse.Response[i].Decision != PermitResponse)
                 {
                     continue;
                 }
