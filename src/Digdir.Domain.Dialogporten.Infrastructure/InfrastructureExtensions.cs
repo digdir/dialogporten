@@ -103,9 +103,15 @@ public static class InfrastructureExtensions
                 client.BaseAddress = services.GetRequiredService<IOptions<InfrastructureSettings>>().Value.AltinnCdn.BaseUri)
             .AddPolicyHandlerFromRegistry(PollyPolicy.DefaultHttpRetryPolicy);
 
-        services.AddHttpClient<INameRegistry, NameRegistryClient>((services, client) =>
-                // TODO: Correct base URL, https://github.com/digdir/dialogporten/issues/321
-                client.BaseAddress = services.GetRequiredService<IOptions<InfrastructureSettings>>().Value.Altinn.BaseUri)
+        services.AddMaskinportenHttpClient<INameRegistry, NameRegistryClient, SettingsJwkClientDefinition>(
+                infrastructureConfigurationSection,
+                x => x.ClientSettings.ExhangeToAltinnToken = true)
+            .ConfigureHttpClient((services, client) =>
+            {
+                var altinnSettings = services.GetRequiredService<IOptions<InfrastructureSettings>>().Value.Altinn;
+                client.BaseAddress = altinnSettings.BaseUri;
+                client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", altinnSettings.SubscriptionKey);
+            })
             .AddPolicyHandlerFromRegistry(PollyPolicy.DefaultHttpRetryPolicy);
 
         services.AddHttpClient<IAltinnAuthorization, AltinnAuthorizationClient>((services, client) =>
