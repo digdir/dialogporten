@@ -61,10 +61,6 @@ public static class InfrastructureExtensions
 
         if (infrastructureSettings.Redis.Enabled)
         {
-            services.AddDistributedMemoryCache();
-        }
-        else
-        {
             services.AddStackExchangeRedisCache(options =>
             {
                 var infrastructureSettings = infrastructureConfigurationSection.Get<InfrastructureSettings>()
@@ -73,6 +69,10 @@ public static class InfrastructureExtensions
                 options.Configuration = connectionString;
                 options.InstanceName = "Redis";
             });
+        }
+        else
+        {
+            services.AddDistributedMemoryCache();
         }
 
         services.AddDbContext<DialogDbContext>((services, options) =>
