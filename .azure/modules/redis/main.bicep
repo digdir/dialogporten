@@ -32,14 +32,16 @@ resource redis 'Microsoft.Cache/Redis@2023-08-01' = {
   }
 }
 
-module redisHostName '../keyvault/upsertSecret.bicep' = {
-  name: 'redisHostName'
+// Until managed identity is supported in the Redis for IDistributedCache, we need to use a connection string
+// https://github.com/dotnet/aspnetcore/issues/54414
+module redisConnectionString '../keyvault/upsertSecret.bicep' = {
+  name: 'redisConnectionString'
   params: {
     destKeyVaultName: environmentKeyVaultName
-    secretName: 'dialogportenRedisHostName'
+    secretName: 'dialogportenRedisConnectionString'
     // disable public access? Use vnet here maybe?
-    secretValue: redis.properties.hostName
+    secretValue: 'redis://${redis.properties.hostName}:${redis.properties.port},password=${redis.properties.accessKeys.primaryKey},ssl=True,abortConnect=False'
   }
 }
 
-output hostNameKeyVaultUri string = redisHostName.outputs.secretUri
+output connectionStringSecretUri string = redisConnectionString.outputs.secretUri

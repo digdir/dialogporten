@@ -196,13 +196,13 @@ module postgresConnectionStringAppConfig '../modules/appConfiguration/upsertKeyV
   }
 }
 
-module redisHostNameAppConfig '../modules/appConfiguration/upsertKeyValue.bicep' = {
+module redisConnectionStringAppConfig '../modules/appConfiguration/upsertKeyValue.bicep' = {
   scope: resourceGroup
-  name: 'AppConfig_Add_RedisHostName'
+  name: 'AppConfig_Add_DialogRedisConnectionString'
   params: {
     configStoreName: appConfiguration.outputs.name
-    key: 'Infrastructure:RedisHostName'
-    value: redis.outputs.hostNameKeyVaultUri
+    key: 'Infrastructure:DialogRedisConnectionString'
+    value: redis.outputs.connectionStringSecretUri
     keyValueType: 'keyVaultReference'
   }
 }
