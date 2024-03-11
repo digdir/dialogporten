@@ -59,7 +59,7 @@ public static class InfrastructureExtensions
             {
                 var infrastructureSettings = infrastructureConfigurationSection.Get<InfrastructureSettings>()
                     ?? throw new InvalidOperationException("Failed to get Redis connection string. Infrastructure settings must not be null.");
-                var connectionString = infrastructureSettings.DialogRedisConnectionString;
+                var connectionString = infrastructureSettings.Redis.ConnectionString;
                 options.Configuration = connectionString;
                 options.InstanceName = "Redis";
             })
