@@ -2,9 +2,11 @@
 
 ## Getting started with local development
 
-### Prerequisites
+### Mac 
+
+#### Prerequisites
+
 - [.NET 8 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
-- [Podman](https://podman.io/)
 
 #### Installing Podman (Mac)
 
@@ -27,11 +29,26 @@ brew install docker-compose
 6. Enable privileged [testcontainers-dotnet](https://github.com/testcontainers/testcontainers-dotnet/issues/876#issuecomment-1930397928)  
 `echo "ryuk.container.privileged = true" >> $HOME/.testcontainers.properties`
 
+### Windows 
+
+#### Prerequisites
+
+- [Git](https://git-scm.com/download/win)
+- [.NET 8 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
+- [WSL2](https://docs.microsoft.com/en-us/windows/wsl/install) (To install, open a PowerShell admin window and run `wsl --install`)
+- [Virtual Machine Platform](https://support.microsoft.com/en-us/windows/enable-virtualization-on-windows-11-pcs-c5578302-6e43-4b4b-a449-8ced115f58e1) (Installs with WSL2, see link above)
+
 #### Installing Podman (Windows)
 
-TODO
+1. Install [Podman Desktop](https://podman.io/getting-started/installation).
+. 
+2. Start Podman Desktop and follow instructions to install Podman.
 
-#### Verify prerequisites
+3. Follow instructions in Podman Desktop to create and start a Podman machine.
+
+4. In Podman Desktop, go to Settings -> Resources and run setup for the Compose Extension. This will install docker-compose.
+
+### Running the project
 
 You can run the entire project locally using `podman compose`.
 ```powershell
