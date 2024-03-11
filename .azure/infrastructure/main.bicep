@@ -198,10 +198,10 @@ module postgresConnectionStringAppConfig '../modules/appConfiguration/upsertKeyV
 
 module redisConnectionStringAppConfig '../modules/appConfiguration/upsertKeyValue.bicep' = {
   scope: resourceGroup
-  name: 'AppConfig_Add_DialogRedisConnectionString'
+  name: 'AppConfig_Add_Redis_ConnectionString'
   params: {
     configStoreName: appConfiguration.outputs.name
-    key: 'Infrastructure:DialogRedisConnectionString'
+    key: 'Infrastructure:Redis:ConnectionString'
     value: redis.outputs.connectionStringSecretUri
     keyValueType: 'keyVaultReference'
   }
