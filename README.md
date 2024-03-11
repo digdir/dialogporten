@@ -50,7 +50,7 @@ brew install docker-compose
 
 ### Running the project
 
-You can run the entire project locally using `podman compose`.
+You can run the entire project locally using `podman compose`. (This uses docker-compose behind the scenes.)
 ```powershell
 podman compose up
 ```
