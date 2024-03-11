@@ -446,9 +446,6 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.Property<int?>("Progress")
                         .HasColumnType("integer");
 
-                    b.Property<DateTimeOffset?>("ReadAt")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<Guid>("Revision")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAdd()

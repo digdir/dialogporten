@@ -1,6 +1,12 @@
 ﻿using System.Collections.ObjectModel;
+using System.Text.Json;
+using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Externals;
+using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
+using Digdir.Domain.Dialogporten.Domain.Outboxes;
 using Digdir.Domain.Dialogporten.Infrastructure;
+using Digdir.Domain.Dialogporten.Infrastructure.Altinn.ResourceRegistry;
+using Digdir.Domain.Dialogporten.Infrastructure.DomainEvents.Outbox;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence;
 using Digdir.Library.Entity.Abstractions.Features.Lookup;
 using FluentAssertions;
@@ -9,6 +15,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Npgsql;
 using NSubstitute;
 using Respawn;
@@ -22,7 +29,7 @@ public class DialogApplication : IAsyncLifetime
     private Respawner _respawner = null!;
     private ServiceProvider _rootProvider = null!;
     private readonly PostgreSqlContainer _dbContainer = new PostgreSqlBuilder()
-        .WithImage("postgres:alpine3.17")
+        .WithImage("postgres:15.4")
         .Build();
 
     public async Task InitializeAsync()
@@ -35,21 +42,84 @@ public class DialogApplication : IAsyncLifetime
             return options;
         });
 
-        _rootProvider = new ServiceCollection()
+        var serviceCollection = new ServiceCollection();
+
+        _rootProvider = serviceCollection
             .AddApplication(Substitute.For<IConfiguration>(), Substitute.For<IHostEnvironment>())
-            .AddDbContext<DialogDbContext>(x => x.UseNpgsql(_dbContainer.GetConnectionString()))
+            .AddDistributedMemoryCache()
+            .AddTransient<ConvertDomainEventsToOutboxMessagesInterceptor>()
+            .AddDbContext<DialogDbContext>((services, options) =>
+                options.UseNpgsql(_dbContainer.GetConnectionString(), o =>
+                {
+                    o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
+                })
+                .AddInterceptors(services.GetRequiredService<ConvertDomainEventsToOutboxMessagesInterceptor>()))
             .AddScoped<IDialogDbContext>(x => x.GetRequiredService<DialogDbContext>())
+            .AddScoped<IUser, IntegrationTestUser>()
+            .AddScoped<IResourceRegistry, LocalDevelopmentResourceRegistry>()
+            .AddScoped<IOrganizationRegistry>(_ => CreateOrganizationRegistrySubstitute())
+            .AddScoped<INameRegistry>(_ => CreateNameRegistrySubstitute())
+            .AddScoped<IOptions<ApplicationSettings>>(_ => CreateApplicationSettingsSubstitute())
             .AddScoped<IUnitOfWork, UnitOfWork>()
+            .AddSingleton<ICloudEventBus, IntegrationTestCloudBus>()
+            .Decorate<IUserResourceRegistry, LocalDevelopmentUserResourceRegistryDecorator>()
+            .Decorate<IUserNameRegistry, LocalDevelopmentUserNameRegistryDecorator>()
             .BuildServiceProvider();
+
         await _dbContainer.StartAsync();
         await EnsureDatabaseAsync();
         await BuildRespawnState();
+    }
+
+    private static INameRegistry CreateNameRegistrySubstitute()
+    {
+        var nameRegistrySubstitute = Substitute.For<INameRegistry>();
+
+        nameRegistrySubstitute
+            .GetName(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns("Brando Sando");
+
+        return nameRegistrySubstitute;
+    }
+
+    private static IOptions<ApplicationSettings> CreateApplicationSettingsSubstitute()
+    {
+        var applicationSettingsSubstitute = Substitute.For<IOptions<ApplicationSettings>>();
+
+        applicationSettingsSubstitute
+            .Value
+            .Returns(new ApplicationSettings
+            {
+                Dialogporten = new DialogportenSettings
+                {
+                    BaseUri = new Uri("https://integration.test")
+                }
+            });
+
+        return applicationSettingsSubstitute;
+    }
+    private static IOrganizationRegistry CreateOrganizationRegistrySubstitute()
+    {
+        var organizationRegistrySubstitute = Substitute.For<IOrganizationRegistry>();
+
+        organizationRegistrySubstitute
+            .GetOrgShortName(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns("digdir");
+
+        return organizationRegistrySubstitute;
     }
 
     public async Task DisposeAsync()
     {
         await _rootProvider.DisposeAsync();
         await _dbContainer.DisposeAsync();
+    }
+
+    private async Task Publish(INotification notification)
+    {
+        using var scope = _rootProvider.CreateScope();
+        var mediator = scope.ServiceProvider.GetRequiredService<IPublisher>();
+        await mediator.Publish(notification);
     }
 
     public async Task<TResponse> Send<TResponse>(IRequest<TResponse> request)
@@ -80,10 +150,43 @@ public class DialogApplication : IAsyncLifetime
         _respawner = await Respawner.CreateAsync(connection, new()
         {
             DbAdapter = DbAdapter.Postgres,
-            TablesToIgnore = new[] { new Respawn.Graph.Table("__EFMigrationsHistory") }
+            TablesToIgnore = new[] { new Table("__EFMigrationsHistory") }
                 .Concat(GetLookupTables())
                 .ToArray()
         });
+    }
+
+    public async Task PublishOutBoxMessages()
+    {
+        var outBoxMessages = await GetDbEntities<OutboxMessage>();
+        var eventAssembly = typeof(OutboxMessage).Assembly;
+        foreach (var outboxMessage in outBoxMessages)
+        {
+            var eventType = eventAssembly.GetType(outboxMessage.EventType);
+            var domainEvent = JsonSerializer.Deserialize(outboxMessage.EventPayload, eventType!) as INotification;
+            await Publish(domainEvent!);
+        }
+    }
+
+    public List<CloudEvent> PopPublishedCloudEvents()
+    {
+        using var scope = _rootProvider.CreateScope();
+        var cloudBus = scope.ServiceProvider.GetRequiredService<ICloudEventBus>() as IntegrationTestCloudBus;
+
+        var events = cloudBus!.Events.ToList();
+        cloudBus.Events.Clear();
+
+        return events;
+    }
+
+    public async Task<List<T>> GetDbEntities<T>() where T : class
+    {
+        using var scope = _rootProvider.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<DialogDbContext>();
+        return await db
+            .Set<T>()
+            .AsNoTracking()
+            .ToListAsync();
     }
 
     private ReadOnlyCollection<Table> GetLookupTables()
@@ -92,7 +195,7 @@ public class DialogApplication : IAsyncLifetime
         var db = scope.ServiceProvider.GetRequiredService<DialogDbContext>();
         return db.Model.GetEntityTypes()
             .Where(x => typeof(ILookupEntity).IsAssignableFrom(x.ClrType))
-            .Select(x => new Respawn.Graph.Table(x.GetTableName()!))
+            .Select(x => new Table(x.GetTableName()!))
             .ToList()
             .AsReadOnly();
     }

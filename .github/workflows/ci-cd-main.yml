@@ -5,14 +5,35 @@ on:
   push:
     branches: [main]
     paths-ignore:
-      - "tests/k6/**"
+      - "tests/k6/**" # ignore changes to k6 tests
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref_name }}
 
+permissions:
+  contents: write
+  pull-requests: write
+  packages: write
+  id-token: write
+
 jobs:
+  release-please:
+    name: Release please
+    runs-on: ubuntu-latest
+    steps:
+      - uses: google-github-actions/release-please-action@v4
+        id: release
+        with:
+          token: ${{ secrets.RELEASE_PLEASE_PAT }}
+          release-type: simple
+
   generate-git-short-sha:
     name: Generate git short sha
     uses: ./.github/workflows/action-generate-git-short-sha.yml
+
+  get-current-version:
+    name: Get current version
+    uses: ./.github/workflows/action-get-current-version.yml
 
   check-for-changes:
     name: Check for changes
@@ -27,18 +48,24 @@ jobs:
   publish:
     name: Build and publish docker images
     uses: ./.github/workflows/action-publish.yml
-    needs: [generate-git-short-sha, check-for-changes, build-and-test]
-    if: ${{ always() && !failure() && !cancelled() && needs.check-for-changes.outputs.hasBackendChanges == 'true' }}
+    needs:
+      [
+        get-current-version,
+        check-for-changes,
+        generate-git-short-sha,
+        build-and-test,
+      ]
+    if: ${{ needs.check-for-changes.outputs.hasBackendChanges == 'true' }}
     secrets:
       GCR_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
     with:
       dockerImageBaseName: ghcr.io/digdir/dialogporten-
-      gitShortSha: ${{ needs.generate-git-short-sha.outputs.gitShortSha }}
+      version: ${{ needs.get-current-version.outputs.version }}-${{ needs.generate-git-short-sha.outputs.gitShortSha }}
 
   deploy-infra-test:
     name: Deploy infra to test
-    needs: [generate-git-short-sha, check-for-changes, publish]
-    if: ${{ always() && !failure() && !cancelled() && needs.check-for-changes.outputs.hasAzureChanges == 'true' }}
+    needs: [get-current-version, check-for-changes, generate-git-short-sha]
+    if: ${{ needs.check-for-changes.outputs.hasAzureChanges == 'true' }}
     uses: ./.github/workflows/action-deploy-infra.yml
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -50,11 +77,19 @@ jobs:
     with:
       environment: test
       region: norwayeast
-      gitShortSha: ${{ needs.generate-git-short-sha.outputs.gitShortSha }}
+      version: ${{ needs.get-current-version.outputs.version }}-${{ needs.generate-git-short-sha.outputs.gitShortSha }}
 
   deploy-apps-test:
     name: Deploy apps to test
-    needs: [generate-git-short-sha, check-for-changes, deploy-infra-test]
+    needs:
+      [
+        get-current-version,
+        check-for-changes,
+        generate-git-short-sha,
+        publish,
+        deploy-infra-test,
+      ]
+    # we want deployment of apps to be dependent on deployment of infrastructure, but if infrastructure is skipped, we still want to deploy the apps
     if: ${{ always() && !failure() && !cancelled() && needs.check-for-changes.outputs.hasBackendChanges == 'true' }}
     uses: ./.github/workflows/action-deploy-apps.yml
     secrets:
@@ -71,12 +106,12 @@ jobs:
     with:
       environment: test
       region: norwayeast
-      gitShortSha: ${{ needs.generate-git-short-sha.outputs.gitShortSha }}
+      version: ${{ needs.get-current-version.outputs.version }}-${{ needs.generate-git-short-sha.outputs.gitShortSha }}
 
   deploy-slack-notifier-test:
     name: Deploy slack notifier (test)
-    needs: [check-for-changes, deploy-apps-test]
-    if: ${{ always() && !failure() && !cancelled() && needs.check-for-changes.outputs.hasSlackNotifierChanges == 'true' }}
+    needs: [check-for-changes]
+    if: ${{ needs.check-for-changes.outputs.hasSlackNotifierChanges == 'true' }}
     uses: ./.github/workflows/action-deploy-function.yml
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -86,84 +121,3 @@ jobs:
       function-app-name: "dp-be-test-slacknotifier-fa"
       function-project-path: "./src/Digdir.Tool.Dialogporten.SlackNotifier"
       environment: test
-
-  # todo: figure out a way to run this and skipping environment gates on dry-run
-  # might go for a solution such as this?: https://github.com/orgs/community/discussions/27600
-  dry-run-deploy-infra-staging:
-    name: Deploy infra to staging (dry run)
-    needs: [generate-git-short-sha, check-for-changes, deploy-infra-test]
-    # todo: we want to figure out whether we have changes in the infra since last time we deployed to staging, not whether we have changes in the repo
-    # maybe use another trigger here? An action to create a tag, and then use that tag as a trigger for the staging deployment?
-    # or we could always try to run deployments in staging after review is approved...(!)
-    uses: ./.github/workflows/action-deploy-infra.yml
-    secrets:
-      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-      AZURE_SOURCE_KEY_VAULT_NAME: ${{ secrets.AZURE_SOURCE_KEY_VAULT_NAME }}
-      AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID: ${{ secrets.AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID }}
-      AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP: ${{ secrets.AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP }}
-    with:
-      environment: staging
-      region: norwayeast
-      dryRun: true
-      gitShortSha: ${{ needs.generate-git-short-sha.outputs.gitShortSha }}
-
-  deploy-infra-staging:
-    name: Deploy infra to staging
-    needs:
-      [generate-git-short-sha, check-for-changes, dry-run-deploy-infra-staging]
-    uses: ./.github/workflows/action-deploy-infra.yml
-    secrets:
-      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-      AZURE_SOURCE_KEY_VAULT_NAME: ${{ secrets.AZURE_SOURCE_KEY_VAULT_NAME }}
-      AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID: ${{ secrets.AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID }}
-      AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP: ${{ secrets.AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP }}
-    with:
-      environment: staging
-      region: norwayeast
-      gitShortSha: ${{ needs.generate-git-short-sha.outputs.gitShortSha }}
-
-  dry-run-deploy-apps-staging:
-    name: Deploy apps to staging (dry run)
-    needs: [generate-git-short-sha, check-for-changes, deploy-apps-test]
-    uses: ./.github/workflows/action-deploy-apps.yml
-    secrets:
-      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-      # todo: consider resolving these in another way since they are created in the infra-step
-      AZURE_RESOURCE_GROUP_NAME: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
-      AZURE_ADO_CONNECTION_STRING_SECRET_URI: ${{ secrets.AZURE_ADO_CONNECTION_STRING_SECRET_URI }}
-      AZURE_ENVIRONMENT_KEY_VAULT_NAME: ${{ secrets.AZURE_ENVIRONMENT_KEY_VAULT_NAME }}
-      AZURE_CONTAINER_APP_ENVIRONMENT_NAME: ${{ secrets.AZURE_CONTAINER_APP_ENVIRONMENT_NAME }}
-      AZURE_APP_INSIGHTS_CONNECTION_STRING: ${{ secrets.AZURE_APP_INSIGHTS_CONNECTION_STRING }}
-      AZURE_APP_CONFIGURATION_NAME: ${{ secrets.AZURE_APP_CONFIGURATION_NAME }}
-    with:
-      environment: staging
-      region: norwayeast
-      dryRun: true
-      gitShortSha: ${{ needs.generate-git-short-sha.outputs.gitShortSha }}
-
-  deploy-apps-staging:
-    name: Deploy apps to staging
-    needs:
-      [generate-git-short-sha, check-for-changes, dry-run-deploy-apps-staging]
-    uses: ./.github/workflows/action-deploy-apps.yml
-    secrets:
-      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-      # todo: consider resolving these in another way since they are created in the infra-step
-      AZURE_RESOURCE_GROUP_NAME: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
-      AZURE_ADO_CONNECTION_STRING_SECRET_URI: ${{ secrets.AZURE_ADO_CONNECTION_STRING_SECRET_URI }}
-      AZURE_ENVIRONMENT_KEY_VAULT_NAME: ${{ secrets.AZURE_ENVIRONMENT_KEY_VAULT_NAME }}
-      AZURE_CONTAINER_APP_ENVIRONMENT_NAME: ${{ secrets.AZURE_CONTAINER_APP_ENVIRONMENT_NAME }}
-      AZURE_APP_INSIGHTS_CONNECTION_STRING: ${{ secrets.AZURE_APP_INSIGHTS_CONNECTION_STRING }}
-      AZURE_APP_CONFIGURATION_NAME: ${{ secrets.AZURE_APP_CONFIGURATION_NAME }}
-    with:
-      environment: staging
-      region: norwayeast
-      gitShortSha: ${{ needs.generate-git-short-sha.outputs.gitShortSha }}

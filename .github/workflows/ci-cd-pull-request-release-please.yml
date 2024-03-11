@@ -1,0 +1,65 @@
+﻿name: CI/CD Pull Request Release Please
+
+on:
+  pull_request:
+    branches: [main]
+    paths-ignore:
+      - "tests/k6/**"
+
+jobs:
+  verify-release-please-branch:
+    if: startsWith(github.head_ref, 'release-please-')
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Confirmed to be a release please branch"
+
+  get-current-version:
+    name: Get current version
+    uses: ./.github/workflows/action-get-current-version.yml
+
+  check-for-changes:
+    name: Check for changes
+    uses: ./.github/workflows/action-check-for-changes.yml
+
+  generate-git-short-sha:
+    name: Generate git short sha
+    needs: [verify-release-please-branch]
+    uses: ./.github/workflows/action-generate-git-short-sha.yml
+
+  dry-run-deploy-infra-staging:
+    name: Deploy infra to staging (dry run)
+    needs: [generate-git-short-sha, get-current-version, check-for-changes]
+    uses: ./.github/workflows/action-deploy-infra.yml
+    secrets:
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      AZURE_SOURCE_KEY_VAULT_NAME: ${{ secrets.AZURE_SOURCE_KEY_VAULT_NAME }}
+      AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID: ${{ secrets.AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID }}
+      AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP: ${{ secrets.AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP }}
+    with:
+      environment: staging
+      region: norwayeast
+      dryRun: true
+      version: ${{ needs.get-current-version.outputs.version }}-${{ needs.generate-git-short-sha.outputs.gitShortSha }}
+
+  dry-run-deploy-apps-staging:
+    name: Deploy apps to staging (dry run)
+    needs: [generate-git-short-sha, get-current-version, check-for-changes]
+    uses: ./.github/workflows/action-deploy-apps.yml
+    secrets:
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      # todo: consider resolving these in another way since they are created in the infra-step
+      AZURE_RESOURCE_GROUP_NAME: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
+      AZURE_ADO_CONNECTION_STRING_SECRET_URI: ${{ secrets.AZURE_ADO_CONNECTION_STRING_SECRET_URI }}
+      AZURE_ENVIRONMENT_KEY_VAULT_NAME: ${{ secrets.AZURE_ENVIRONMENT_KEY_VAULT_NAME }}
+      AZURE_CONTAINER_APP_ENVIRONMENT_NAME: ${{ secrets.AZURE_CONTAINER_APP_ENVIRONMENT_NAME }}
+      AZURE_APP_INSIGHTS_CONNECTION_STRING: ${{ secrets.AZURE_APP_INSIGHTS_CONNECTION_STRING }}
+      AZURE_APP_CONFIGURATION_NAME: ${{ secrets.AZURE_APP_CONFIGURATION_NAME }}
+    with:
+      environment: staging
+      region: norwayeast
+      dryRun: true
+      version: ${{ needs.get-current-version.outputs.version }}-${{ needs.generate-git-short-sha.outputs.gitShortSha }}

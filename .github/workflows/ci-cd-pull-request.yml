@@ -5,11 +5,16 @@ on:
     branches: [main]
     paths-ignore:
       - "tests/k6/**"
+      - "CHANGELOG.md"
 
 jobs:
   generate-git-short-sha:
     name: Generate git short sha
     uses: ./.github/workflows/action-generate-git-short-sha.yml
+
+  get-current-version:
+    name: Get current version
+    uses: ./.github/workflows/action-get-current-version.yml
 
   check-for-changes:
     name: Check for changes
@@ -33,7 +38,13 @@ jobs:
 
   dry-run-deploy-infra:
     uses: ./.github/workflows/action-deploy-infra.yml
-    needs: [generate-git-short-sha, check-for-changes, build-infrastructure]
+    needs:
+      [
+        generate-git-short-sha,
+        check-for-changes,
+        get-current-version,
+        build-infrastructure,
+      ]
     if: ${{ always() && needs.check-for-changes.outputs.hasAzureChanges == 'true' }}
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -46,4 +57,4 @@ jobs:
       environment: test
       region: norwayeast
       dryRun: true
-      gitShortSha: ${{ needs.generate-git-short-sha.outputs.gitShortSha }}
+      version: ${{ needs.get-current-version.outputs.version }}-${{ needs.generate-git-short-sha.outputs.gitShortSha }}

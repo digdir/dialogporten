@@ -24,25 +24,26 @@ internal sealed class DeleteDialogCommandHandler : IRequestHandler<DeleteDialogC
 {
     private readonly IDialogDbContext _db;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IUserService _userService;
+    private readonly IUserResourceRegistry _userResourceRegistry;
 
     public DeleteDialogCommandHandler(
         IDialogDbContext db,
         IUnitOfWork unitOfWork,
-        IUserService userService)
+        IUserResourceRegistry userResourceRegistry)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
-        _userService = userService ?? throw new ArgumentNullException(nameof(userService));
+        _userResourceRegistry = userResourceRegistry ?? throw new ArgumentNullException(nameof(userResourceRegistry));
     }
 
     public async Task<DeleteDialogResult> Handle(DeleteDialogCommand request, CancellationToken cancellationToken)
     {
-        var resourceIds = await _userService.GetCurrentUserResourceIds(cancellationToken);
+        var resourceIds = await _userResourceRegistry.GetCurrentUserResourceIds(cancellationToken);
 
         var dialog = await _db.Dialogs
             // Load the elements so that we notify them of their deletion. (This won't work due to https://github.com/digdir/dialogporten/issues/288)
             .Include(x => x.Elements)
+            .Include(x => x.Activities)
             .Where(x => resourceIds.Contains(x.ServiceResource))
             .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
 
@@ -58,7 +59,7 @@ internal sealed class DeleteDialogCommandHandler : IRequestHandler<DeleteDialogC
 
         return saveResult.Match<DeleteDialogResult>(
             success => success,
-            domainError => throw new UnreachableException("Should never get a domain error when creating a new dialog"),
+            domainError => throw new UnreachableException("Should never get a domain error when deleting a dialog"),
             concurrencyError => concurrencyError);
     }
 }

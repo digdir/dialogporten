@@ -1,15 +1,18 @@
 param namePrefix string
 param location string
-param skuName string
+
+@export()
+type Sku = {
+    name: 'PerGB2018' | 'CapacityReservation' | 'Free' | 'LACluster' | 'PerGB2018' | 'PerNode' | 'Premium' | 'Standalone' | 'Standard'
+}
+param sku Sku
 
 resource appInsightsWorkspace 'Microsoft.OperationalInsights/workspaces@2022-10-01' = {
     name: '${namePrefix}-insightsWorkspace'
     location: location
     properties: {
         retentionInDays: 30
-        sku: {
-            name: skuName
-        }
+        sku: sku
         workspaceCapping: {
             dailyQuotaGb: -1
         }

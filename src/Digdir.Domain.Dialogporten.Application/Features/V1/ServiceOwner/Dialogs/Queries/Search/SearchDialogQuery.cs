@@ -121,24 +121,24 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
 {
     private readonly IDialogDbContext _db;
     private readonly IMapper _mapper;
-    private readonly IUserService _userService;
+    private readonly IUserResourceRegistry _userResourceRegistry;
     private readonly IAltinnAuthorization _altinnAuthorization;
 
     public SearchDialogQueryHandler(
         IDialogDbContext db,
         IMapper mapper,
-        IUserService userService,
+        IUserResourceRegistry userResourceRegistry,
         IAltinnAuthorization altinnAuthorization)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-        _userService = userService ?? throw new ArgumentNullException(nameof(userService));
+        _userResourceRegistry = userResourceRegistry ?? throw new ArgumentNullException(nameof(userResourceRegistry));
         _altinnAuthorization = altinnAuthorization;
     }
 
     public async Task<SearchDialogResult> Handle(SearchDialogQuery request, CancellationToken cancellationToken)
     {
-        var resourceIds = await _userService.GetCurrentUserResourceIds(cancellationToken);
+        var resourceIds = await _userResourceRegistry.GetCurrentUserResourceIds(cancellationToken);
         var searchExpression = Expressions.LocalizedSearchExpression(request.Search, request.SearchCultureCode);
 
         var query = _db.Dialogs

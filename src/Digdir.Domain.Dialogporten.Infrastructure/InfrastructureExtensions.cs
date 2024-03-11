@@ -85,7 +85,7 @@ public static class InfrastructureExtensions
                 x => x.ClientSettings.ExhangeToAltinnToken = true)
             .ConfigureHttpClient((services, client) =>
             {
-                client.BaseAddress = services.GetRequiredService<IOptions<InfrastructureSettings>>().Value.Altinn.BaseUri;
+                client.BaseAddress = services.GetRequiredService<IOptions<InfrastructureSettings>>().Value.Altinn.EventsBaseUri;
             });
         services.AddHttpClient<IResourceRegistry, ResourceRegistryClient>((services, client) =>
                 client.BaseAddress = services.GetRequiredService<IOptions<InfrastructureSettings>>().Value.Altinn.BaseUri)

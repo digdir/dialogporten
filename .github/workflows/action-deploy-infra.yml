@@ -31,15 +31,20 @@ on:
         required: false
         type: boolean
         default: false
-      gitShortSha:
-        description: "Short SHA of the commit"
+      version:
+        description: "Current version to use as tag"
         required: true
+        type: string
+      ref:
+        description: "The branch or tag ref to deploy. Using default checkout ref if not provided."
+        required: false
+        default: ${{ github.ref }}
         type: string
 
 concurrency:
   # Existing runs are cancelled if someone repeatedly commits to their own Pull Request (PR). However, it does not stop others' dry runs or actual deployments from the main branch.
   # Also, the cancellation does not occur on merges to the main branch. Therefore, if multiple merges to main are performed simultaneously, they will just be queued up.
-  group: ${{ github.workflow }}-${{ inputs.environment }}-${{ github.ref_name }}-${{ inputs.dryRun }}
+  group: deploy-infrastructure-${{ inputs.environment }}-${{ github.ref_name }}-${{ inputs.dryRun }}
   # if the dryrun input is true, we want to cancel any running deployments in order to not block the pipeline e.g for environment approvals
   cancel-in-progress: ${{ inputs.dryRun }}
 jobs:
@@ -53,6 +58,8 @@ jobs:
     steps:
       - name: "Checkout GitHub Action"
         uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
 
       - name: OIDC Login to Azure Public Cloud
         uses: azure/login@v1
@@ -80,7 +87,7 @@ jobs:
           echo "::set-output name=postgresqlPassword::$password"
 
       - name: Deploy infrastructure (${{ inputs.environment }})
-        uses: azure/arm-deploy@v1
+        uses: azure/arm-deploy@v2
         id: deploy
         env:
           # parameters
@@ -95,7 +102,7 @@ jobs:
           template: ./.azure/infrastructure/main.bicep
           subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           deploymentMode: Incremental
-          deploymentName: dp-be-${{ inputs.environment }}-${{ inputs.gitShortSha }}
+          deploymentName: dp-be-${{ inputs.environment }}-${{ inputs.version }}
           region: ${{ inputs.region }}
           failOnStdErr: false
           additionalArguments: "${{ inputs.dryRun && '--what-if' }}"

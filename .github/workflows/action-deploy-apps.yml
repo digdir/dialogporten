@@ -35,14 +35,14 @@ on:
         required: false
         type: boolean
         default: false
-      gitShortSha:
-        description: "Short SHA of the commit"
+      version:
+        description: "Current version to use as tag"
         required: true
         type: string
 concurrency:
   # Existing runs are cancelled if someone repeatedly commits to their own Pull Request (PR). However, it does not stop others' dry runs or actual deployments from the main branch.
   # Also, the cancellation does not occur on merges to the main branch. Therefore, if multiple merges to main are performed simultaneously, they will just be queued up.
-  group: ${{ github.workflow }}-${{ inputs.environment }}-${{ github.ref_name }}-${{ inputs.dryRun }}
+  group: deploy-apps-${{ inputs.environment }}-${{ github.ref_name }}-${{ inputs.dryRun }}
   # if the dryrun input is true, we want to cancel any running deployments in order to not block the pipeline e.g for environment approvals
   cancel-in-progress: ${{ inputs.dryRun }}
 jobs:
@@ -137,11 +137,11 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Deploy app ${{ matrix.name }}(${{ inputs.environment }})
-        uses: azure/arm-deploy@v1
+        uses: azure/arm-deploy@v2
         id: deploy
         env:
           # parameters
-          IMAGE_TAG: ${{ inputs.gitShortSha }}
+          IMAGE_TAG: ${{ inputs.version }}
           # secrets
           CONTAINER_APP_ENVIRONMENT_NAME: ${{ secrets.AZURE_CONTAINER_APP_ENVIRONMENT_NAME }}
           APP_INSIGHTS_CONNECTION_STRING: ${{ secrets.AZURE_APP_INSIGHTS_CONNECTION_STRING }}
@@ -152,7 +152,7 @@ jobs:
           template: ./.azure/applications/${{ matrix.name }}/main.bicep
           resourceGroupName: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
           deploymentMode: Incremental
-          deploymentName: dp-be-${{ inputs.environment }}-${{ matrix.name }}-${{ inputs.gitShortSha }}
+          deploymentName: dp-be-${{ inputs.environment }}-${{ matrix.name }}-${{ inputs.version }}
           region: ${{ inputs.region }}
           failOnStdErr: false
           additionalArguments: "${{inputs.dryRun && '--what-if'}}"

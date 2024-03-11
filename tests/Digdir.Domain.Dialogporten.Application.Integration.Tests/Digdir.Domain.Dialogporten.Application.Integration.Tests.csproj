@@ -29,6 +29,7 @@
     <ItemGroup>
         <ProjectReference Include="..\..\src\Digdir.Domain.Dialogporten.Application\Digdir.Domain.Dialogporten.Application.csproj"/>
         <ProjectReference Include="..\..\src\Digdir.Domain.Dialogporten.Infrastructure\Digdir.Domain.Dialogporten.Infrastructure.csproj"/>
+        <ProjectReference Include="..\..\src\Digdir.Tool.Dialogporten.GenerateFakeData\Digdir.Tool.Dialogporten.GenerateFakeData.csproj" />
     </ItemGroup>
 
 </Project>
