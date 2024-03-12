@@ -1,4 +1,5 @@
 using AutoMapper;
+using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
@@ -17,9 +18,7 @@ public sealed class GetDialogActivityQuery : IRequest<GetDialogActivityResult>
 }
 
 [GenerateOneOf]
-public partial class GetDialogActivityResult : OneOfBase<GetDialogActivityDto, EntityNotFound, EntityDeleted>
-{
-}
+public partial class GetDialogActivityResult : OneOfBase<GetDialogActivityDto, EntityNotFound, EntityDeleted>;
 
 internal sealed class GetDialogActivityQueryHandler : IRequestHandler<GetDialogActivityQuery, GetDialogActivityResult>
 {
@@ -53,7 +52,7 @@ internal sealed class GetDialogActivityQueryHandler : IRequestHandler<GetDialogA
 
         var authorizationResult = await _altinnAuthorization.GetDialogDetailsAuthorization(
             dialog,
-            cancellationToken);
+            cancellationToken: cancellationToken);
 
         // If we cannot read the dialog at all, we don't allow access to any of the activity history
         if (!authorizationResult.HasReadAccessToMainResource())
@@ -71,6 +70,12 @@ internal sealed class GetDialogActivityQueryHandler : IRequestHandler<GetDialogA
         if (activity is null)
         {
             return new EntityNotFound<DialogActivity>(request.ActivityId);
+        }
+
+        // Hash end user id
+        if (activity.SeenByEndUserId is not null)
+        {
+            activity.SeenByEndUserId = MappingUtils.HashPid(activity.SeenByEndUserId, MappingUtils.GetHashSalt());
         }
 
         return _mapper.Map<GetDialogActivityDto>(activity);

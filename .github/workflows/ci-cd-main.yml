@@ -1,0 +1,123 @@
+﻿name: CI/CD Main
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "tests/k6/**" # ignore changes to k6 tests
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref_name }}
+
+permissions:
+  contents: write
+  pull-requests: write
+  packages: write
+  id-token: write
+
+jobs:
+  release-please:
+    name: Release please
+    runs-on: ubuntu-latest
+    steps:
+      - uses: google-github-actions/release-please-action@v4
+        id: release
+        with:
+          token: ${{ secrets.RELEASE_PLEASE_PAT }}
+          release-type: simple
+
+  generate-git-short-sha:
+    name: Generate git short sha
+    uses: ./.github/workflows/action-generate-git-short-sha.yml
+
+  get-current-version:
+    name: Get current version
+    uses: ./.github/workflows/action-get-current-version.yml
+
+  check-for-changes:
+    name: Check for changes
+    uses: ./.github/workflows/action-check-for-changes.yml
+
+  build-and-test:
+    name: Build and test backend
+    uses: ./.github/workflows/action-build-and-test.yml
+    needs: [check-for-changes]
+    if: ${{ needs.check-for-changes.outputs.hasBackendChanges == 'true' }}
+
+  publish:
+    name: Build and publish docker images
+    uses: ./.github/workflows/action-publish.yml
+    needs:
+      [
+        get-current-version,
+        check-for-changes,
+        generate-git-short-sha,
+        build-and-test,
+      ]
+    if: ${{ needs.check-for-changes.outputs.hasBackendChanges == 'true' }}
+    secrets:
+      GCR_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+    with:
+      dockerImageBaseName: ghcr.io/digdir/dialogporten-
+      version: ${{ needs.get-current-version.outputs.version }}-${{ needs.generate-git-short-sha.outputs.gitShortSha }}
+
+  deploy-infra-test:
+    name: Deploy infra to test
+    needs: [get-current-version, check-for-changes, generate-git-short-sha]
+    if: ${{ needs.check-for-changes.outputs.hasAzureChanges == 'true' }}
+    uses: ./.github/workflows/action-deploy-infra.yml
+    secrets:
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      AZURE_SOURCE_KEY_VAULT_NAME: ${{ secrets.AZURE_SOURCE_KEY_VAULT_NAME }}
+      AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID: ${{ secrets.AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID }}
+      AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP: ${{ secrets.AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP }}
+    with:
+      environment: test
+      region: norwayeast
+      version: ${{ needs.get-current-version.outputs.version }}-${{ needs.generate-git-short-sha.outputs.gitShortSha }}
+
+  deploy-apps-test:
+    name: Deploy apps to test
+    needs:
+      [
+        get-current-version,
+        check-for-changes,
+        generate-git-short-sha,
+        publish,
+        deploy-infra-test,
+      ]
+    # we want deployment of apps to be dependent on deployment of infrastructure, but if infrastructure is skipped, we still want to deploy the apps
+    if: ${{ always() && !failure() && !cancelled() && needs.check-for-changes.outputs.hasBackendChanges == 'true' }}
+    uses: ./.github/workflows/action-deploy-apps.yml
+    secrets:
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      # todo: consider resolving these in another way since they are created in the infra-step
+      AZURE_RESOURCE_GROUP_NAME: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
+      AZURE_ADO_CONNECTION_STRING_SECRET_URI: ${{ secrets.AZURE_ADO_CONNECTION_STRING_SECRET_URI }}
+      AZURE_ENVIRONMENT_KEY_VAULT_NAME: ${{ secrets.AZURE_ENVIRONMENT_KEY_VAULT_NAME }}
+      AZURE_CONTAINER_APP_ENVIRONMENT_NAME: ${{ secrets.AZURE_CONTAINER_APP_ENVIRONMENT_NAME }}
+      AZURE_APP_INSIGHTS_CONNECTION_STRING: ${{ secrets.AZURE_APP_INSIGHTS_CONNECTION_STRING }}
+      AZURE_APP_CONFIGURATION_NAME: ${{ secrets.AZURE_APP_CONFIGURATION_NAME }}
+    with:
+      environment: test
+      region: norwayeast
+      version: ${{ needs.get-current-version.outputs.version }}-${{ needs.generate-git-short-sha.outputs.gitShortSha }}
+
+  deploy-slack-notifier-test:
+    name: Deploy slack notifier (test)
+    needs: [check-for-changes]
+    if: ${{ needs.check-for-changes.outputs.hasSlackNotifierChanges == 'true' }}
+    uses: ./.github/workflows/action-deploy-function.yml
+    secrets:
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+    with:
+      function-app-name: "dp-be-test-slacknotifier-fa"
+      function-project-path: "./src/Digdir.Tool.Dialogporten.SlackNotifier"
+      environment: test

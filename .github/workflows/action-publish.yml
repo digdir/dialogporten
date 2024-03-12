@@ -1,0 +1,69 @@
+name: Build and push images to GCR
+
+on:
+  workflow_call:
+    secrets:
+      GCR_PASSWORD:
+        description: "Password for Github Container Registry"
+        required: true
+    inputs:
+      dockerImageBaseName:
+        description: "Base image name for docker images"
+        required: true
+        type: string
+      version:
+        description: "Version to tag"
+        required: true
+        type: string
+
+jobs:
+  publish-docker-images:
+    env:
+      DOCKER_IMAGE_BASE_NAME: ${{ inputs.dockerImageBaseName }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - dockerfile: ./src/Digdir.Domain.Dialogporten.WebApi/Dockerfile
+            imageName: webapi
+          - dockerfile: ./src/Digdir.Domain.Dialogporten.Service/Dockerfile
+            imageName: service
+          - dockerfile: ./src/Digdir.Domain.Dialogporten.ChangeDataCapture/Dockerfile
+            imageName: cdc
+          - dockerfile: ./src/Digdir.Domain.Dialogporten.Infrastructure/MigrationBundle.dockerfile
+            imageName: migration-bundle
+          - dockerfile: ./RabbitMq/Dockerfile
+            imageName: rabbitmq
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GCR_PASSWORD }}
+
+      - name: Extract metadata (tags, labels)
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.DOCKER_IMAGE_BASE_NAME }}${{ matrix.imageName }}
+      - uses: docker/setup-buildx-action@v3
+      - name: Build and push docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ${{ matrix.dockerfile }}
+          push: true
+          tags: |
+            ${{ env.DOCKER_IMAGE_BASE_NAME }}${{ matrix.imageName }}:${{ inputs.version }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha,scope=${{ matrix.imageName }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.imageName }}

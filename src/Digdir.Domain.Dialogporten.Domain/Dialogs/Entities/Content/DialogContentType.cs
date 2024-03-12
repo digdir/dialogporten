@@ -11,7 +11,7 @@ public class DialogContentType : AbstractLookupEntity<DialogContentType, DialogC
         Title = 1,
         SenderName = 2,
         Summary = 3,
-        AdditionalInfo = 4,
+        AdditionalInfo = 4
     }
 
     public bool Required { get; private init; }

@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
@@ -21,22 +22,27 @@ internal sealed class LocalDevelopmentAltinnAuthorization : IAltinnAuthorization
         // Just allow everything
         Task.FromResult(new DialogDetailsAuthorizationResult { AuthorizedAltinnActions = dialogEntity.GetAltinnActions() });
 
-    public async Task<DialogSearchAuthorizationResult> GetAuthorizedResourcesForSearch(List<string> constraintParties, List<string> serviceResources,
+    public async Task<DialogSearchAuthorizationResult> GetAuthorizedResourcesForSearch(List<string> constraintParties, List<string> serviceResources, string? endUserId,
         CancellationToken cancellationToken = default)
     {
-        // Allow all resources for all parties
+        // constraintParties and serviceResources are passed from the client as query parameters
+        // If one and/or the other is supplied, this will limit the resources and parties to the ones supplied
         var dialogData = await _db.Dialogs
             .Select(dialog => new { dialog.Party, dialog.ServiceResource })
+            .WhereIf(constraintParties.Count != 0, dialog => constraintParties.Contains(dialog.Party))
+            .WhereIf(serviceResources.Count != 0, dialog => serviceResources.Contains(dialog.ServiceResource))
             .Distinct()
             .ToListAsync(cancellationToken);
 
-        var allParties = dialogData.Select(x => x.Party).Distinct().ToList();
-        var allResources = dialogData.Select(x => x.ServiceResource).Distinct().ToList();
+        // Keep the number of parties and resources reasonable
+        var allParties = dialogData.Select(x => x.Party).Distinct().Take(1000).ToList();
+        var allResources = dialogData.Select(x => x.ServiceResource).Distinct().Take(1000).ToList();
 
+        var hasMorePartiesThanResources = allParties.Count > allResources.Count;
         var authorizedResources = new DialogSearchAuthorizationResult
         {
-            PartiesByResources = allResources.ToDictionary(resource => resource, resource => allParties),
-            ResourcesByParties = allParties.ToDictionary(party => party, party => allResources)
+            PartiesByResources = hasMorePartiesThanResources ? allResources.ToDictionary(resource => resource, _ => allParties) : new(),
+            ResourcesByParties = hasMorePartiesThanResources ? new() : allParties.ToDictionary(party => party, _ => allResources)
         };
 
         return authorizedResources;

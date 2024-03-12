@@ -1,4 +1,5 @@
 using AutoMapper;
+using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
@@ -15,7 +16,7 @@ public sealed class SearchDialogActivityQuery : IRequest<SearchDialogActivityRes
 }
 
 [GenerateOneOf]
-public partial class SearchDialogActivityResult : OneOfBase<List<SearchDialogActivityDto>, EntityNotFound, EntityDeleted> { }
+public partial class SearchDialogActivityResult : OneOfBase<List<SearchDialogActivityDto>, EntityNotFound, EntityDeleted>;
 
 internal sealed class SearchDialogActivityQueryHandler : IRequestHandler<SearchDialogActivityQuery, SearchDialogActivityResult>
 {
@@ -59,6 +60,13 @@ internal sealed class SearchDialogActivityQueryHandler : IRequestHandler<SearchD
         if (dialog.Deleted)
         {
             return new EntityDeleted<DialogEntity>(request.DialogId);
+        }
+
+        // hash end user ids
+        var salt = MappingUtils.GetHashSalt();
+        foreach (var activity in dialog.Activities)
+        {
+            activity.SeenByEndUserId = MappingUtils.HashPid(activity.SeenByEndUserId, salt);
         }
 
         return _mapper.Map<List<SearchDialogActivityDto>>(dialog.Activities);

@@ -12,12 +12,12 @@
 
     <ItemGroup>
         <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
-        <PackageReference Include="HtmlAgilityPack" Version="1.11.55" />
+        <PackageReference Include="HtmlAgilityPack" Version="1.11.59" />
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
         <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="8.0.0" />
-        <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.8.1" />
+        <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.9.0" />
         <PackageReference Include="MediatR" Version="12.2.0" />
-        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.0" />
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.2" />
         <PackageReference Include="OneOf" Version="3.0.263" />
         <PackageReference Include="OneOf.SourceGenerator" Version="3.0.263" />
         <PackageReference Include="Scrutor" Version="4.2.2" />
@@ -29,7 +29,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <InternalsVisibleTo Include="Digdir.Domain.Dialogporten.Application.Tests.Integration" />
+        <InternalsVisibleTo Include="Digdir.Domain.Dialogporten.Application.Integration.Tests" />
     </ItemGroup>
 
 </Project>

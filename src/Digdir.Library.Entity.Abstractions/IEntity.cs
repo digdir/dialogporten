@@ -13,5 +13,4 @@ namespace Digdir.Library.Entity.Abstractions;
 public interface IEntity :
     IIdentifiableEntity,
     ICreatableEntity,
-    IUpdateableEntity
-{ }
+    IUpdateableEntity;

@@ -254,7 +254,7 @@ internal static class AggregateExtensions
             EntityState.Deleted => AggregateNodeState.Deleted,
             EntityState.Modified => AggregateNodeState.Modified,
             EntityState.Added => AggregateNodeState.Added,
-            _ => throw new UnreachableException(),
+            _ => throw new UnreachableException()
         };
 
         // Add this to modifiedProperties if needed in future.

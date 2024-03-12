@@ -10,19 +10,27 @@ public sealed class InfrastructureSettings
 
     public required string DialogDbConnectionString { get; init; }
     public required AltinnPlatformSettings Altinn { get; init; }
+    public required AltinnCdnPlatformSettings AltinnCdn { get; init; }
     public required MaskinportenSettings Maskinporten { get; init; }
 }
 
 public sealed class AltinnPlatformSettings
 {
     public required Uri BaseUri { get; init; }
+    public required Uri EventsBaseUri { get; init; }
     public required string SubscriptionKey { get; init; }
+}
+
+public sealed class AltinnCdnPlatformSettings
+{
+    public required Uri BaseUri { get; init; }
 }
 
 internal sealed class InfrastructureSettingsValidator : AbstractValidator<InfrastructureSettings>
 {
     public InfrastructureSettingsValidator(
         IValidator<AltinnPlatformSettings> altinnPlatformSettingsValidator,
+        IValidator<AltinnCdnPlatformSettings> altinnCdnPlatformSettingsValidator,
         IValidator<MaskinportenSettings> maskinportenSettingsValidator)
     {
         RuleFor(x => x.DialogDbConnectionString)
@@ -31,6 +39,10 @@ internal sealed class InfrastructureSettingsValidator : AbstractValidator<Infras
         RuleFor(x => x.Altinn)
             .NotEmpty()
             .SetValidator(altinnPlatformSettingsValidator);
+
+        RuleFor(x => x.AltinnCdn)
+            .NotEmpty()
+            .SetValidator(altinnCdnPlatformSettingsValidator);
 
         RuleFor(x => x.Maskinporten)
             .NotEmpty()
@@ -41,6 +53,14 @@ internal sealed class InfrastructureSettingsValidator : AbstractValidator<Infras
 internal sealed class AltinnPlatformSettingsValidator : AbstractValidator<AltinnPlatformSettings>
 {
     public AltinnPlatformSettingsValidator()
+    {
+        RuleFor(x => x.BaseUri).NotEmpty().IsValidUri();
+    }
+}
+
+internal sealed class AltinnCdnPlatformSettingsValidator : AbstractValidator<AltinnCdnPlatformSettings>
+{
+    public AltinnCdnPlatformSettingsValidator()
     {
         RuleFor(x => x.BaseUri).NotEmpty().IsValidUri();
     }

@@ -1,0 +1,45 @@
+name: "Check for file changes"
+
+on:
+  workflow_call:
+    outputs:
+      hasAzureChanges:
+        description: "Azure related files changed"
+        value: ${{ jobs.check-for-changes.outputs.hasAzureChanges }}
+      hasBackendChanges:
+        description: "Backend related files changed"
+        value: ${{ jobs.check-for-changes.outputs.hasBackendChanges }}
+      hasSlackNotifierChanges:
+        description: "Slack Notifier function related files changed"
+        value: ${{ jobs.check-for-changes.outputs.hasSlackNotifierChanges }}
+jobs:
+  check-for-changes:
+    name: Filter
+    runs-on: ubuntu-latest
+    outputs:
+      hasBackendChanges: ${{ steps.filter.outputs.backend_any_changed == 'true' }}
+      hasAzureChanges: ${{ steps.filter.outputs.azure_any_changed == 'true' }}
+      hasSlackNotifierChanges: ${{ steps.paths-filter.outputs.slackNotifier_any_changed == 'true'}}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # fetch-depth needs to be 0 in cases where we want to fetch changes since previous tag for example
+          fetch-depth: 0
+
+      - uses: tj-actions/changed-files@v42
+        id: filter
+        with:
+          files_yaml: |
+            backend:
+              - '.github/**/*'
+              - 'src/**/*'
+              - '.azure/applications/**/*'
+            azure:
+              - '.github/**/*'
+              - '.azure/infrastructure/**/*'
+              - '.azure/modules/**/*'
+            slackNotifier:
+              - '.github/**/*'
+              - 'src/Digdir.Tool.Dialogporten.SlackNotifier/**/*'

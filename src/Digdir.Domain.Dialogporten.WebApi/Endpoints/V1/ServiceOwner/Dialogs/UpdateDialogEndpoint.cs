@@ -35,11 +35,12 @@ public sealed class UpdateDialogEndpoint : Endpoint<UpdateDialogRequest>
 
     public override async Task HandleAsync(UpdateDialogRequest req, CancellationToken ct)
     {
-        var command = new UpdateDialogCommand { Id = req.DialogId, Revision = req.Revision, Dto = req.Dto };
+        var command = new UpdateDialogCommand { Id = req.DialogId, IfMatchDialogRevision = req.IfMatchDialogRevision, Dto = req.Dto };
         var updateDialogResult = await _sender.Send(command, ct);
         await updateDialogResult.Match(
             success => SendNoContentAsync(ct),
-            entityNotFound => this.NotFoundAsync(entityNotFound, ct),
+            notFound => this.NotFoundAsync(notFound, ct),
+            badRequest => this.BadRequestAsync(badRequest, ct),
             validationFailed => this.BadRequestAsync(validationFailed, ct),
             domainError => this.UnprocessableEntityAsync(domainError, ct),
             concurrencyError => this.PreconditionFailed(ct));
@@ -53,8 +54,8 @@ public sealed class UpdateDialogRequest
     [FromBody]
     public UpdateDialogDto Dto { get; set; } = null!;
 
-    [FromHeader(headerName: Constants.IfMatch, isRequired: false)]
-    public Guid? Revision { get; set; }
+    [FromHeader(headerName: Constants.IfMatch, isRequired: false, removeFromSchema: true)]
+    public Guid? IfMatchDialogRevision { get; set; }
 }
 
 public sealed class UpdateDialogEndpointSummary : Summary<UpdateDialogEndpoint>

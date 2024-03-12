@@ -38,7 +38,7 @@ internal static class AuthenticationBuilderExtensions
                     ValidateAudience = false,
                     RequireExpirationTime = true,
                     ValidateLifetime = true,
-                    ClockSkew = TimeSpan.Zero
+                    ClockSkew = TimeSpan.FromSeconds(2)
                 };
 
                 options.Events = new JwtBearerEvents

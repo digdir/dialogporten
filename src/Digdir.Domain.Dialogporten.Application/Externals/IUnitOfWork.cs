@@ -1,4 +1,5 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
+using Digdir.Library.Entity.Abstractions.Features.Versionable;
 using OneOf.Types;
 using OneOf;
 
@@ -8,7 +9,12 @@ public interface IUnitOfWork
 {
     IUnitOfWork WithoutAuditableSideEffects();
     Task<SaveChangesResult> SaveChangesAsync(CancellationToken cancellationToken = default);
+
+    IUnitOfWork EnableConcurrencyCheck<TEntity>(
+        TEntity? entity,
+        Guid? revision)
+        where TEntity : class, IVersionableEntity;
 }
 
 [GenerateOneOf]
-public partial class SaveChangesResult : OneOfBase<Success, DomainError, ConcurrencyError> { }
+public partial class SaveChangesResult : OneOfBase<Success, DomainError, ConcurrencyError>;

@@ -15,24 +15,24 @@ public sealed class SearchDialogElementQuery : IRequest<SearchDialogElementResul
 }
 
 [GenerateOneOf]
-public partial class SearchDialogElementResult : OneOfBase<List<SearchDialogElementDto>, EntityNotFound> { }
+public partial class SearchDialogElementResult : OneOfBase<List<SearchDialogElementDto>, EntityNotFound>;
 
 internal sealed class SearchDialogElementQueryHandler : IRequestHandler<SearchDialogElementQuery, SearchDialogElementResult>
 {
     private readonly IDialogDbContext _db;
     private readonly IMapper _mapper;
-    private readonly IUserService _userService;
+    private readonly IUserResourceRegistry _userResourceRegistry;
 
-    public SearchDialogElementQueryHandler(IDialogDbContext db, IMapper mapper, IUserService userService)
+    public SearchDialogElementQueryHandler(IDialogDbContext db, IMapper mapper, IUserResourceRegistry userResourceRegistry)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-        _userService = userService;
+        _userResourceRegistry = userResourceRegistry ?? throw new ArgumentNullException(nameof(userResourceRegistry));
     }
 
     public async Task<SearchDialogElementResult> Handle(SearchDialogElementQuery request, CancellationToken cancellationToken)
     {
-        var resourceIds = await _userService.GetCurrentUserResourceIds(cancellationToken);
+        var resourceIds = await _userResourceRegistry.GetCurrentUserResourceIds(cancellationToken);
 
         var dialog = await _db.Dialogs
             .Include(x => x.Elements)

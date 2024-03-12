@@ -6,8 +6,7 @@ namespace Digdir.Library.Entity.Abstractions.Features.Aggregate;
 public interface IAggregateChangedHandler :
     IAggregateCreatedHandler,
     IAggregateUpdatedHandler,
-    IAggregateDeletedHandler
-{ }
+    IAggregateDeletedHandler;
 
 /// <summary>
 /// Defines an entity handler for handling the creation of its own aggregate.

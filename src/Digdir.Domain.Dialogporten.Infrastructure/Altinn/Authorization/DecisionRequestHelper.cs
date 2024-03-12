@@ -3,6 +3,8 @@ using System.Security.Claims;
 using Digdir.Domain.Dialogporten.Application.Common.Authorization;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
+using Digdir.Domain.Dialogporten.Domain.Parties;
+using Digdir.Domain.Dialogporten.Domain.Parties.Abstractions;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.Authorization;
 
@@ -12,8 +14,6 @@ internal static class DecisionRequestHelper
     private const string AltinnUrnNsPrefix = "urn:altinn:";
     private const string PidClaimType = "pid";
     private const string ConsumerClaimType = "consumer";
-    private const string PartyPrefixOrg = "/org/";
-    private const string PartyPrefixPerson = "/person/";
     private const string AttributeIdSsn = "urn:altinn:ssn";
     private const string AttributeIdOrganizationNumber = "urn:altinn:organizationnumber";
     private const string AttributeIdAction = "urn:oasis:names:tc:xacml:1.0:action:action-id";
@@ -24,18 +24,18 @@ internal static class DecisionRequestHelper
 
     public static XacmlJsonRequestRoot CreateDialogDetailsRequest(DialogDetailsAuthorizationRequest request)
     {
-        var accessSubject = CreateAccessSubjectCategory(request.ClaimsPrincipal.Claims);
+        var accessSubject = CreateAccessSubjectCategory(request.Claims);
         var actions = CreateActionCategories(request.AltinnActions, out var actionIdByName);
         var resources = CreateResourceCategories(request.ServiceResource, request.DialogId, request.Party, request.AltinnActions, out var resourceIdByName);
 
         var multiRequests = CreateMultiRequests(request.AltinnActions, actionIdByName, resourceIdByName);
 
-        var xacmlJsonRequest = new XacmlJsonRequest()
+        var xacmlJsonRequest = new XacmlJsonRequest
         {
             AccessSubject = accessSubject,
             Action = actions,
             Resource = resources,
-            MultiRequests = multiRequests,
+            MultiRequests = multiRequests
         };
 
         return new XacmlJsonRequestRoot { Request = xacmlJsonRequest };
@@ -70,7 +70,7 @@ internal static class DecisionRequestHelper
             attributes.RemoveAll(x => x.AttributeId == AttributeIdOrganizationNumber);
         }
 
-        return new() { new() { Id = SubjectId, Attribute = attributes } };
+        return [new() { Id = SubjectId, Attribute = attributes }];
     }
 
     private static List<XacmlJsonCategory> CreateActionCategories(
@@ -88,7 +88,7 @@ internal static class DecisionRequestHelper
             .Select(x => new XacmlJsonCategory
             {
                 Id = x.Value,
-                Attribute = new() { new() { AttributeId = AttributeIdAction, Value = x.Key } }
+                Attribute = [new() { AttributeId = AttributeIdAction, Value = x.Key }]
             })
             .ToList();
     }
@@ -163,25 +163,14 @@ internal static class DecisionRequestHelper
 
     private static XacmlJsonAttribute? ExtractPartyAttribute(string party)
     {
-        var partyAttribute = new XacmlJsonAttribute();
-
-        if (party.StartsWith(PartyPrefixOrg, StringComparison.Ordinal))
+        // TODO: This can be removed once Altinn Auth has been updated to use the new party format.
+        var _ = PartyIdentifier.TryParse(party, out var partyIdentifier);
+        return partyIdentifier switch
         {
-            partyAttribute.AttributeId = AttributeIdOrganizationNumber;
-            partyAttribute.Value = party[PartyPrefixOrg.Length..];
-
-        }
-        else if (party.StartsWith(PartyPrefixPerson, StringComparison.Ordinal))
-        {
-            partyAttribute.AttributeId = AttributeIdSsn;
-            partyAttribute.Value = party[PartyPrefixPerson.Length..];
-        }
-        else
-        {
-            return null;
-        }
-
-        return partyAttribute;
+            NorwegianOrganizationIdentifier => new XacmlJsonAttribute { AttributeId = AttributeIdOrganizationNumber, Value = partyIdentifier.Id },
+            NorwegianPersonIdentifier => new() { AttributeId = AttributeIdSsn, Value = partyIdentifier.Id },
+            _ => null
+        };
     }
 
     private static XacmlJsonMultiRequests CreateMultiRequests(
@@ -191,7 +180,7 @@ internal static class DecisionRequestHelper
     {
         var multiRequests = new XacmlJsonMultiRequests
         {
-            RequestReference = new List<XacmlJsonRequestReference>()
+            RequestReference = []
         };
 
 
@@ -201,7 +190,7 @@ internal static class DecisionRequestHelper
             {
                 multiRequests.RequestReference.Add(new XacmlJsonRequestReference
                 {
-                    ReferenceId = new List<string> { SubjectId, resourceIdByName[resourceName], actionId }
+                    ReferenceId = [SubjectId, resourceIdByName[resourceName], actionId]
                 });
             }
         }
@@ -223,18 +212,18 @@ internal static class DecisionRequestHelper
                 new (Constants.ReadAction, Constants.MainResource)
             };
 
-            var accessSubject = CreateAccessSubjectCategory(request.ClaimsPrincipal.Claims);
+            var accessSubject = CreateAccessSubjectCategory(request.Claims);
             var actions = CreateActionCategories(requestActions, out _);
             var resources = CreateResourceCategoriesForSearch(request.ConstraintServiceResources, request.ConstraintParties);
 
             var multiRequests = CreateMultiRequestsForSearch(resources);
 
-            var xacmlJsonRequest = new XacmlJsonRequest()
+            var xacmlJsonRequest = new XacmlJsonRequest
             {
                 AccessSubject = accessSubject,
                 Action = actions,
                 Resource = resources,
-                MultiRequests = multiRequests,
+                MultiRequests = multiRequests
             };
 
             return new XacmlJsonRequestRoot { Request = xacmlJsonRequest };
@@ -267,18 +256,18 @@ internal static class DecisionRequestHelper
                         .FirstOrDefault(a => a.AttributeId == AttributeIdOrganizationNumber);
                 if (partyOrgNr != null)
                 {
-                    party = PartyPrefixOrg + partyOrgNr.Value;
+                    party = NorwegianOrganizationIdentifier.Prefix + partyOrgNr.Value;
                 }
                 else
                 {
                     var partySsn = xamlJsonRequestRoot.Request.Resource.First(r => r.Id == resourceId).Attribute
                         .First(a => a.AttributeId == AttributeIdSsn);
-                    party = PartyPrefixPerson + partySsn.Value;
+                    party = NorwegianPersonIdentifier.Prefix + partySsn.Value;
                 }
 
                 if (!response.PartiesByResources.TryGetValue(serviceResource, out var parties))
                 {
-                    parties = new List<string>();
+                    parties = [];
                     response.PartiesByResources.Add(serviceResource, parties);
                 }
 
@@ -314,14 +303,14 @@ internal static class DecisionRequestHelper
         {
             var multiRequests = new XacmlJsonMultiRequests
             {
-                RequestReference = new List<XacmlJsonRequestReference>()
+                RequestReference = []
             };
 
             for (var i = 1; i <= resources.Count; i++)
             {
                 multiRequests.RequestReference.Add(new XacmlJsonRequestReference
                 {
-                    ReferenceId = new List<string> { SubjectId, $"r{i}", "a1" }
+                    ReferenceId = [SubjectId, $"r{i}", "a1"]
                 });
             }
 

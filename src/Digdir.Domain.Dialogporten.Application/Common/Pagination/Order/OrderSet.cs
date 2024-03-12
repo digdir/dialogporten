@@ -84,7 +84,7 @@ public sealed class OrderSet<TOrderDefinition, TTarget> : IOrderSet<TTarget>
                     string s => s,
                     DateTimeOffset d => d.UtcDateTime.ToString("o"),
                     DateTime d => d.ToString("o"),
-                    var o => o.ToString(),
+                    var o => o.ToString()
                 };
                 return $"{x.Key.ToLowerInvariant()}{PaginationConstants.ContinuationTokenDelimiter}{value}";
             });

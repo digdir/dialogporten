@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -14,6 +15,8 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.Authorization;
 
 internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
 {
+    private const string AttributePidClaim = "urn:altinn:ssn";
+
     private readonly HttpClient _httpClient;
     private readonly IUser _user;
     private readonly IDialogDbContext _db;
@@ -35,7 +38,7 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
         CancellationToken cancellationToken = default) =>
         await PerformDialogDetailsAuthorization(new DialogDetailsAuthorizationRequest
         {
-            ClaimsPrincipal = _user.GetPrincipal(),
+            Claims = _user.GetPrincipal().Claims.ToList(),
             ServiceResource = dialogEntity.ServiceResource,
             DialogId = dialogEntity.Id,
             Party = dialogEntity.Party,
@@ -45,13 +48,17 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
     public async Task<DialogSearchAuthorizationResult> GetAuthorizedResourcesForSearch(
         List<string> constraintParties,
         List<string> serviceResources,
-        CancellationToken cancellationToken = default) =>
-        await PerformNonScalableDialogSearchAuthorization(new DialogSearchAuthorizationRequest
+        string? endUserId,
+        CancellationToken cancellationToken = default)
+    {
+        var claims = GetOrCreateClaimsBasedOnEndUserId(endUserId);
+        return await PerformNonScalableDialogSearchAuthorization(new DialogSearchAuthorizationRequest
         {
-            ClaimsPrincipal = _user.GetPrincipal(),
+            Claims = claims,
             ConstraintParties = constraintParties,
             ConstraintServiceResources = serviceResources
         }, cancellationToken);
+    }
 
     private async Task<DialogSearchAuthorizationResult> PerformNonScalableDialogSearchAuthorization(DialogSearchAuthorizationRequest request, CancellationToken cancellationToken)
     {
@@ -96,6 +103,23 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
         var xamlJsonResponse = await SendRequest(xacmlJsonRequest, cancellationToken);
         return DecisionRequestHelper.CreateDialogDetailsResponse(request.AltinnActions, xamlJsonResponse);
     }
+
+    private List<Claim> GetOrCreateClaimsBasedOnEndUserId(string? endUserId)
+    {
+        List<Claim> claims = [];
+        if (endUserId is not null)
+        {
+            claims.Add(new Claim(AttributePidClaim, ExtractEndUserIdNumber(endUserId)!));
+        }
+        else
+        {
+            claims.AddRange(_user.GetPrincipal().Claims);
+        }
+        return claims;
+    }
+
+    private static string ExtractEndUserIdNumber(string endUserId) =>
+        endUserId.Split("::").LastOrDefault() ?? string.Empty;
 
     private static readonly JsonSerializerOptions _serializerOptions = new()
     {

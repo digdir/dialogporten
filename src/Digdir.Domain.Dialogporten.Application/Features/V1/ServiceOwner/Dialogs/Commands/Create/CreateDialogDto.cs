@@ -21,20 +21,20 @@ public class CreateDialogDto
     public DateTimeOffset? ExpiresAt { get; set; }
 
     public DialogStatus.Values Status { get; set; }
-    public List<CreateDialogContentDto> Content { get; set; } = new();
+    public List<CreateDialogContentDto> Content { get; set; } = [];
 
-    public List<CreateDialogSearchTagDto> SearchTags { get; set; } = new();
+    public List<CreateDialogSearchTagDto> SearchTags { get; set; } = [];
 
-    public List<CreateDialogDialogElementDto> Elements { get; set; } = new();
-    public List<CreateDialogDialogGuiActionDto> GuiActions { get; set; } = new();
-    public List<CreateDialogDialogApiActionDto> ApiActions { get; set; } = new();
-    public List<CreateDialogDialogActivityDto> Activities { get; set; } = new();
+    public List<CreateDialogDialogElementDto> Elements { get; set; } = [];
+    public List<CreateDialogDialogGuiActionDto> GuiActions { get; set; } = [];
+    public List<CreateDialogDialogApiActionDto> ApiActions { get; set; } = [];
+    public List<CreateDialogDialogActivityDto> Activities { get; set; } = [];
 }
 
 public sealed class CreateDialogContentDto
 {
     public DialogContentType.Values Type { get; set; }
-    public List<LocalizationDto> Value { get; set; } = new();
+    public List<LocalizationDto> Value { get; set; } = [];
 }
 
 public sealed class CreateDialogSearchTagDto
@@ -53,8 +53,8 @@ public sealed class CreateDialogDialogActivityDto
     public Guid? RelatedActivityId { get; set; }
     public Guid? DialogElementId { get; set; }
 
-    public List<LocalizationDto> PerformedBy { get; set; } = new();
-    public List<LocalizationDto> Description { get; set; } = new();
+    public List<LocalizationDto> PerformedBy { get; set; } = [];
+    public List<LocalizationDto> Description { get; set; } = [];
 }
 
 public sealed class CreateDialogDialogApiActionDto
@@ -64,7 +64,7 @@ public sealed class CreateDialogDialogApiActionDto
 
     public Guid? DialogElementId { get; set; }
 
-    public List<CreateDialogDialogApiActionEndpointDto> Endpoints { get; set; } = new();
+    public List<CreateDialogDialogApiActionEndpointDto> Endpoints { get; set; } = [];
 }
 
 public sealed class CreateDialogDialogApiActionEndpointDto
@@ -89,7 +89,7 @@ public sealed class CreateDialogDialogGuiActionDto
 
     public DialogGuiActionPriority.Values Priority { get; set; }
 
-    public List<LocalizationDto> Title { get; set; } = new();
+    public List<LocalizationDto> Title { get; set; } = [];
 }
 
 public sealed class CreateDialogDialogElementDto
@@ -101,8 +101,8 @@ public sealed class CreateDialogDialogElementDto
 
     public Guid? RelatedDialogElementId { get; set; }
 
-    public List<LocalizationDto> DisplayName { get; set; } = new();
-    public List<CreateDialogDialogElementUrlDto> Urls { get; set; } = new();
+    public List<LocalizationDto> DisplayName { get; set; } = [];
+    public List<CreateDialogDialogElementUrlDto> Urls { get; set; } = [];
 }
 
 public sealed class CreateDialogDialogElementUrlDto

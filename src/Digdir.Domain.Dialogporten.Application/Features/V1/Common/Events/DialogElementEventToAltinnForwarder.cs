@@ -1,9 +1,6 @@
 using Digdir.Domain.Dialogporten.Application.Externals;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Events.DialogElements;
-using Digdir.Library.Entity.Abstractions.Features.EventPublisher;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.Common.Events;
@@ -13,29 +10,11 @@ internal sealed class DialogElementEventToAltinnForwarder : DomainEventToAltinnF
     INotificationHandler<DialogElementCreatedDomainEvent>,
     INotificationHandler<DialogElementDeletedDomainEvent>
 {
-    public DialogElementEventToAltinnForwarder(ICloudEventBus cloudEventBus, IDialogDbContext db, IOptions<ApplicationSettings> settings)
-        : base(cloudEventBus, db, settings)
-    {
-    }
+    public DialogElementEventToAltinnForwarder(ICloudEventBus cloudEventBus, IOptions<ApplicationSettings> settings)
+        : base(cloudEventBus, settings) { }
 
     public async Task Handle(DialogElementUpdatedDomainEvent domainEvent, CancellationToken cancellationToken)
     {
-        var dialogElement = await GetDialogElement(domainEvent.DialogElementId, cancellationToken);
-        var cloudEvent = CreateCloudEvent(dialogElement, domainEvent);
-        await CloudEventBus.Publish(cloudEvent, cancellationToken);
-    }
-
-    public async Task Handle(DialogElementCreatedDomainEvent domainEvent, CancellationToken cancellationToken)
-    {
-        var dialogElement = await GetDialogElement(domainEvent.DialogElementId, cancellationToken);
-        var cloudEvent = CreateCloudEvent(dialogElement, domainEvent);
-        await CloudEventBus.Publish(cloudEvent, cancellationToken);
-    }
-
-    public async Task Handle(DialogElementDeletedDomainEvent domainEvent, CancellationToken cancellationToken)
-    {
-        var dialog = await GetDialog(domainEvent.DialogId, cancellationToken);
-
         var data = new Dictionary<string, object>
         {
             ["dialogElementId"] = domainEvent.DialogElementId.ToString()
@@ -43,70 +22,90 @@ internal sealed class DialogElementEventToAltinnForwarder : DomainEventToAltinnF
 
         if (domainEvent.RelatedDialogElementId is not null)
         {
-            data["relatedDialogElementId"] = domainEvent.RelatedDialogElementId.Value.ToString();
+            data["relatedDialogElementId"] = domainEvent.RelatedDialogElementId;
         }
 
         if (domainEvent.Type is not null)
         {
-            data["dialogElementType"] = domainEvent.Type.ToString();
+            data["dialogElementType"] = domainEvent.Type;
         }
 
         var cloudEvent = new CloudEvent
         {
             Id = domainEvent.EventId,
-            Type = CloudEventTypes.Get(domainEvent),
+            Type = CloudEventTypes.Get(nameof(DialogElementUpdatedDomainEvent)),
             Time = domainEvent.OccuredAt,
-            Resource = dialog.ServiceResource,
-            ResourceInstance = dialog.Id.ToString(),
-            Subject = dialog.Party,
-            Source = $"{DialogportenBaseUrl()}/api/v1/enduser/dialogs/{dialog.Id}/elements/{domainEvent.DialogElementId}",
+            Resource = domainEvent.ServiceResource,
+            ResourceInstance = domainEvent.DialogId.ToString(),
+            Subject = domainEvent.Party,
+            Source = $"{SourceBaseUrl()}{domainEvent.DialogId}/elements/{domainEvent.DialogElementId}",
             Data = data
         };
 
         await CloudEventBus.Publish(cloudEvent, cancellationToken);
     }
 
-    private CloudEvent CreateCloudEvent(DialogElement dialogElement, IDomainEvent domainEvent) => new()
-    {
-        Id = domainEvent.EventId,
-        Type = CloudEventTypes.Get(domainEvent),
-        Time = domainEvent.OccuredAt,
-        Resource = dialogElement.Dialog.ServiceResource,
-        ResourceInstance = dialogElement.Dialog.Id.ToString(),
-        Subject = dialogElement.Dialog.Party,
-        Source = $"{DialogportenBaseUrl()}/api/v1/enduser/dialogs/{dialogElement.Dialog.Id}/elements/{dialogElement.Id}",
-        Data = GetCloudEventData(dialogElement)
-    };
-
-    private static Dictionary<string, object> GetCloudEventData(DialogElement dialogElement)
+    public async Task Handle(DialogElementCreatedDomainEvent domainEvent, CancellationToken cancellationToken)
     {
         var data = new Dictionary<string, object>
         {
-            ["dialogElementId"] = dialogElement.Id.ToString()
+            ["dialogElementId"] = domainEvent.DialogElementId.ToString()
         };
 
-        if (dialogElement.RelatedDialogElement is not null)
+        if (domainEvent.RelatedDialogElementId is not null)
         {
-            data["relatedDialogElementId"] = dialogElement.RelatedDialogElement.Id.ToString();
+            data["relatedDialogElementId"] = domainEvent.RelatedDialogElementId;
         }
 
-        if (dialogElement.Type is not null)
+        if (domainEvent.Type is not null)
         {
-            data["dialogElementType"] = dialogElement.Type.ToString();
+            data["dialogElementType"] = domainEvent.Type;
         }
 
-        return data;
+        var cloudEvent = new CloudEvent
+        {
+            Id = domainEvent.EventId,
+            Type = CloudEventTypes.Get(nameof(DialogElementCreatedDomainEvent)),
+            Time = domainEvent.OccuredAt,
+            Resource = domainEvent.ServiceResource,
+            ResourceInstance = domainEvent.DialogId.ToString(),
+            Subject = domainEvent.Party,
+            Source = $"{SourceBaseUrl()}{domainEvent.DialogId}/elements/{domainEvent.DialogElementId}",
+            Data = data
+        };
+
+        await CloudEventBus.Publish(cloudEvent, cancellationToken);
     }
 
-    private async Task<DialogElement> GetDialogElement(Guid dialogElementId, CancellationToken cancellationToken)
+    public async Task Handle(DialogElementDeletedDomainEvent domainEvent, CancellationToken cancellationToken)
     {
-        var dialogElement = await Db.DialogElements
-            .Include(e => e.Dialog)
-            .Include(e => e.RelatedDialogElement)
-            .AsNoTracking()
-            .FirstOrDefaultAsync(x => x.Id == dialogElementId, cancellationToken)
-            ?? throw new KeyNotFoundException($"DialogElement with id {dialogElementId} not found");
+        var data = new Dictionary<string, object>
+        {
+            ["dialogElementId"] = domainEvent.DialogElementId.ToString()
+        };
 
-        return dialogElement;
+        if (domainEvent.RelatedDialogElementId is not null)
+        {
+            data["relatedDialogElementId"] = domainEvent.RelatedDialogElementId;
+        }
+
+        if (domainEvent.Type is not null)
+        {
+            data["dialogElementType"] = domainEvent.Type;
+        }
+
+        var cloudEvent = new CloudEvent
+        {
+            Id = domainEvent.EventId,
+            Type = CloudEventTypes.Get(nameof(DialogElementDeletedDomainEvent)),
+            Time = domainEvent.OccuredAt,
+            Resource = domainEvent.ServiceResource,
+            ResourceInstance = domainEvent.DialogId.ToString(),
+            Subject = domainEvent.Party,
+            Source = $"{SourceBaseUrl()}{domainEvent.DialogId}/elements/{domainEvent.DialogElementId}",
+            Data = data
+        };
+
+        await CloudEventBus.Publish(cloudEvent, cancellationToken);
     }
 }

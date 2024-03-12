@@ -4,7 +4,6 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements;
 using Digdir.Domain.Dialogporten.Domain.Outboxes;
 using Digdir.Library.Entity.Abstractions.Features.Identifiable;
-using Digdir.Library.Entity.Abstractions.Features.Versionable;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
@@ -48,5 +47,4 @@ public interface IDialogDbContext
         IEnumerable<TEntity> entities,
         CancellationToken cancellationToken)
         where TEntity : class, IIdentifiableEntity;
-    bool TrySetOriginalRevision<TEntity>(TEntity entity, Guid? revision) where TEntity : class, IVersionableEntity;
 }

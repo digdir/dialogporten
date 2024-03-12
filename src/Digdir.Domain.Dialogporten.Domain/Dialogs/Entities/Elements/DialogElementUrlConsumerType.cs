@@ -10,6 +10,6 @@ public class DialogElementUrlConsumerType : AbstractLookupEntity<DialogElementUr
     public enum Values
     {
         Gui = 1,
-        Api = 2,
+        Api = 2
     }
 }

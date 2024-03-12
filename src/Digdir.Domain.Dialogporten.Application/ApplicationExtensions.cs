@@ -2,7 +2,6 @@
 using Digdir.Domain.Dialogporten.Application.Common.Behaviours;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.OptionExtensions;
-using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.Configuration;
@@ -36,19 +35,33 @@ public static class ApplicationExtensions
             .AddScoped<ITransactionTime, TransactionTime>()
 
             // Transient
-            .AddTransient<IUserService, UserService>()
-            .AddTransient<ILocalizationService, LocalizationService>()
+            .AddTransient<IUserOrganizationRegistry, UserOrganizationRegistry>()
+            .AddTransient<IUserResourceRegistry, UserResourceRegistry>()
+            .AddTransient<IUserNameRegistry, UserNameRegistry>()
             .AddTransient<IClock, Clock>()
             .AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>))
             .AddTransient(typeof(IPipelineBehavior<,>), typeof(DomainContextBehaviour<,>));
 
-        if (!environment.IsDevelopment()) return services;
+        if (!environment.IsDevelopment())
+        {
+            return services;
+        }
 
         var localDeveloperSettings = configuration.GetLocalDevelopmentSettings();
-        services.Decorate<IUserService, LocalDevelopmentUserServiceDecorator>(
+        services.Decorate<IUserResourceRegistry, LocalDevelopmentUserResourceRegistryDecorator>(
             predicate:
             localDeveloperSettings.UseLocalDevelopmentUser ||
             localDeveloperSettings.UseLocalDevelopmentResourceRegister);
+
+        services.Decorate<IUserOrganizationRegistry, LocalDevelopmentUserOrganizationRegistryDecorator>(
+            predicate:
+            localDeveloperSettings.UseLocalDevelopmentUser ||
+            localDeveloperSettings.UseLocalDevelopmentOrganizationRegister);
+
+        services.Decorate<IUserNameRegistry, LocalDevelopmentUserNameRegistryDecorator>(
+            predicate:
+            localDeveloperSettings.UseLocalDevelopmentUser ||
+            localDeveloperSettings.UseLocalDevelopmentNameRegister);
 
         return services;
     }

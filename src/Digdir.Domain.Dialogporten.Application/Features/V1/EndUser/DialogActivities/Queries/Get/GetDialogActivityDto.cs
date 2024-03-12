@@ -8,12 +8,13 @@ public sealed class GetDialogActivityDto
     public Guid Id { get; set; }
     public DateTimeOffset? CreatedAt { get; set; }
     public Uri? ExtendedType { get; set; }
+    public string? SeenByEndUserIdHash { get; init; }
 
     public DialogActivityType.Values Type { get; set; }
 
     public Guid? RelatedActivityId { get; set; }
     public Guid? DialogElementId { get; set; }
 
-    public List<LocalizationDto>? PerformedBy { get; set; } = new();
-    public List<LocalizationDto> Description { get; set; } = new();
+    public List<LocalizationDto>? PerformedBy { get; set; } = [];
+    public List<LocalizationDto> Description { get; set; } = [];
 }

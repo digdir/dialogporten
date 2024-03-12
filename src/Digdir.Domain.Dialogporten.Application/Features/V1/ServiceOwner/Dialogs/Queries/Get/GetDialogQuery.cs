@@ -16,27 +16,27 @@ public sealed class GetDialogQuery : IRequest<GetDialogResult>
 }
 
 [GenerateOneOf]
-public partial class GetDialogResult : OneOfBase<GetDialogDto, EntityNotFound> { }
+public partial class GetDialogResult : OneOfBase<GetDialogDto, EntityNotFound>;
 
 internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, GetDialogResult>
 {
     private readonly IDialogDbContext _db;
     private readonly IMapper _mapper;
-    private readonly IUserService _userService;
+    private readonly IUserResourceRegistry _userResourceRegistry;
 
     public GetDialogQueryHandler(
         IDialogDbContext db,
         IMapper mapper,
-        IUserService userService)
+        IUserResourceRegistry userResourceRegistry)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-        _userService = userService ?? throw new ArgumentNullException(nameof(userService));
+        _userResourceRegistry = userResourceRegistry ?? throw new ArgumentNullException(nameof(userResourceRegistry));
     }
 
     public async Task<GetDialogResult> Handle(GetDialogQuery request, CancellationToken cancellationToken)
     {
-        var resourceIds = await _userService.GetCurrentUserResourceIds(cancellationToken);
+        var resourceIds = await _userResourceRegistry.GetCurrentUserResourceIds(cancellationToken);
 
         // This query could be written without all the includes as ProjectTo will do the job for us.
         // However, we need to guarantee an order for sub resources of the dialog aggregate.

@@ -66,12 +66,13 @@ public sealed class UpdateDialogElementEndpoint : Endpoint<UpdateDialogElementRe
         updateDialogDto.Elements.Add(updateDialogElementDto);
 
         var updateDialogCommand = new UpdateDialogCommand
-        { Id = req.DialogId, Revision = req.Revision, Dto = updateDialogDto };
+        { Id = req.DialogId, IfMatchDialogRevision = req.IfMatchDialogRevision, Dto = updateDialogDto };
 
         var result = await _sender.Send(updateDialogCommand, ct);
         await result.Match(
             success => SendNoContentAsync(ct),
             notFound => this.NotFoundAsync(notFound, ct),
+            badRequest => this.BadRequestAsync(badRequest, ct),
             validationError => this.BadRequestAsync(validationError, ct),
             domainError => this.UnprocessableEntityAsync(domainError, ct),
             concurrencyError => this.PreconditionFailed(cancellationToken: ct));
@@ -94,16 +95,16 @@ public sealed class UpdateDialogElementRequest
 
     public Guid ElementId { get; set; }
 
-    [FromHeader(headerName: Constants.IfMatch, isRequired: false)]
-    public Guid? Revision { get; set; }
+    [FromHeader(headerName: Constants.IfMatch, isRequired: false, removeFromSchema: true)]
+    public Guid? IfMatchDialogRevision { get; set; }
 
     public Uri? Type { get; set; }
     public string? AuthorizationAttribute { get; set; }
 
     public Guid? RelatedDialogElementId { get; set; }
 
-    public List<LocalizationDto> DisplayName { get; set; } = new();
-    public List<UpdateDialogDialogElementUrlDto> Urls { get; set; } = new();
+    public List<LocalizationDto> DisplayName { get; set; } = [];
+    public List<UpdateDialogDialogElementUrlDto> Urls { get; set; } = [];
 }
 
 public sealed class UpdateDialogElementEndpointSummary : Summary<UpdateDialogElementEndpoint>

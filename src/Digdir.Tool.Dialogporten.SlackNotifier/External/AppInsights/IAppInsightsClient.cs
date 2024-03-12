@@ -24,7 +24,7 @@ internal sealed class AppInsightsClient : IAppInsightsClient
     public async Task<AppInsightsQueryResponseDto[]> QueryAppInsights(AzureAlertDto azureAlertRequest, CancellationToken cancellationToken)
     {
         const string appInsightsTokenScope = "https://api.applicationinsights.io";
-        var token = await _credentials.GetTokenAsync(new TokenRequestContext(new[] { appInsightsTokenScope }), cancellationToken);
+        var token = await _credentials.GetTokenAsync(new TokenRequestContext([appInsightsTokenScope]), cancellationToken);
         var requests = azureAlertRequest.Data.AlertContext.Condition.AllOf
             .Select(x =>
             {
@@ -34,7 +34,14 @@ internal sealed class AppInsightsClient : IAppInsightsClient
             })
             .Select(_httpClient.SendAsync);
         var responses = await Task.WhenAll(requests);
-        var typedResponses = await Task.WhenAll(responses.Select(x => x.Content.ReadFromJsonAsync<AppInsightsQueryResponseDto>()));
+
+        foreach (var httpResponseMessage in responses)
+        {
+            httpResponseMessage.EnsureSuccessStatusCode();
+        }
+
+        var typedResponses = await Task.WhenAll(responses.Select(x =>
+            x.Content.ReadFromJsonAsync<AppInsightsQueryResponseDto>(cancellationToken: cancellationToken)));
         return typedResponses!;
     }
 }

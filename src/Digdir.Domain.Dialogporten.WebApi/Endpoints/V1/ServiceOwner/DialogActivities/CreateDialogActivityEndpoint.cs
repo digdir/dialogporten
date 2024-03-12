@@ -60,12 +60,13 @@ public sealed class CreateDialogActivityEndpoint : Endpoint<CreateDialogActivity
 
         updateDialogDto.Activities.Add(req);
 
-        var updateDialogCommand = new UpdateDialogCommand { Id = req.DialogId, Revision = req.Revision, Dto = updateDialogDto };
+        var updateDialogCommand = new UpdateDialogCommand { Id = req.DialogId, IfMatchDialogRevision = req.IfMatchDialogRevision, Dto = updateDialogDto };
 
         var result = await _sender.Send(updateDialogCommand, ct);
         await result.Match(
             success => SendCreatedAtAsync<GetDialogActivityEndpoint>(new GetDialogActivityQuery { DialogId = dialog.Id, ActivityId = req.Id.Value }, req.Id, cancellation: ct),
             notFound => this.NotFoundAsync(notFound, ct),
+            badRequest => this.BadRequestAsync(badRequest, ct),
             validationError => this.BadRequestAsync(validationError, ct),
             domainError => this.UnprocessableEntityAsync(domainError, ct),
             concurrencyError => this.PreconditionFailed(cancellationToken: ct));
@@ -76,8 +77,8 @@ public sealed class CreateDialogActivityRequest : UpdateDialogDialogActivityDto
 {
     public Guid DialogId { get; set; }
 
-    [FromHeader(headerName: Constants.IfMatch, isRequired: false)]
-    public Guid? Revision { get; set; }
+    [FromHeader(headerName: Constants.IfMatch, isRequired: false, removeFromSchema: true)]
+    public Guid? IfMatchDialogRevision { get; set; }
 }
 
 public sealed class CreateDialogActivityEndpointSummary : Summary<CreateDialogActivityEndpoint>

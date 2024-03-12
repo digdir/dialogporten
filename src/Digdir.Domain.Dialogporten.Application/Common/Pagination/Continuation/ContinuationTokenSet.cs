@@ -37,10 +37,9 @@ public class ContinuationTokenSet<TOrderDefinition, TTarget> : IContinuationToke
             .Split(PaginationConstants.ContinuationTokenSetDelimiter, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
             .Select(x => x.Split(PaginationConstants.ContinuationTokenDelimiter, StringSplitOptions.TrimEntries) switch
                 {
-                    [var key, var ctAsString]
-                        when OrderOptions<TOrderDefinition, TTarget>.Value.TryGetSelector(key, out var option)
-                        && TryParseExtensions.TryParse(option.Body.Type, ctAsString, out var ct)
-                        => new ContinuationToken(key, ct, option.Body.Type),
+                [var key, var ctAsString]
+                    when OrderOptions<TOrderDefinition, TTarget>.Value.TryGetSelector(key, out var option)
+                         && TryParseExtensions.TryParse(option.Body.Type, ctAsString, out var ct) => new ContinuationToken(key, ct, option.Body.Type),
                     _ => null
                 });
 
@@ -73,9 +72,6 @@ public class ContinuationTokenSet<TOrderDefinition, TTarget> : IContinuationToke
             return x.Key == y.Key;
         }
 
-        public int GetHashCode([DisallowNull] ContinuationToken obj)
-        {
-            return obj.Key.GetHashCode();
-        }
+        public int GetHashCode([DisallowNull] ContinuationToken obj) => obj.Key.GetHashCode();
     }
 }

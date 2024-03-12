@@ -1,0 +1,114 @@
+﻿name: Deploy infrastructure
+
+env:
+  AZ_CLI_VERSION: 2.56.0
+
+on:
+  workflow_call:
+    secrets:
+      AZURE_CLIENT_ID:
+        required: true
+      AZURE_TENANT_ID:
+        required: true
+      AZURE_SUBSCRIPTION_ID:
+        required: true
+      AZURE_SOURCE_KEY_VAULT_NAME:
+        required: true
+      AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID:
+        required: true
+      AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP:
+        required: true
+
+    inputs:
+      region:
+        required: true
+        type: string
+      environment:
+        required: true
+        type: string
+      dryRun:
+        description: "If true, the deployment will be validated but not executed."
+        required: false
+        type: boolean
+        default: false
+      version:
+        description: "Current version to use as tag"
+        required: true
+        type: string
+      ref:
+        description: "The branch or tag ref to deploy. Using default checkout ref if not provided."
+        required: false
+        default: ${{ github.ref }}
+        type: string
+
+concurrency:
+  # Existing runs are cancelled if someone repeatedly commits to their own Pull Request (PR). However, it does not stop others' dry runs or actual deployments from the main branch.
+  # Also, the cancellation does not occur on merges to the main branch. Therefore, if multiple merges to main are performed simultaneously, they will just be queued up.
+  group: deploy-infrastructure-${{ inputs.environment }}-${{ github.ref_name }}-${{ inputs.dryRun }}
+  # if the dryrun input is true, we want to cancel any running deployments in order to not block the pipeline e.g for environment approvals
+  cancel-in-progress: ${{ inputs.dryRun }}
+jobs:
+  deploy:
+    name: Deploy to ${{ inputs.environment }}
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: "Checkout GitHub Action"
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
+
+      - name: OIDC Login to Azure Public Cloud
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Fetch secret keys from source Azure Key Vault
+        uses: azure/CLI@v1
+        id: keyvault-keys
+        with:
+          azcliversion: ${{ env.AZ_CLI_VERSION }}
+          inlineScript: |
+            KEY_VAULT_KEYS=$(az keyvault secret list --vault-name ${{ secrets.AZURE_SOURCE_KEY_VAULT_NAME }} --subscription ${{ secrets.AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID }} --query "[].name" -o json | tr -d '\n')
+            echo "::set-output name=key-vault-keys::$KEY_VAULT_KEYS"
+
+      - name: Generate postgresql password
+        id: pwd-generator
+        shell: pwsh
+        run: |
+          Import-module "./.github/tools/pwdGenerator.ps1" -Force
+          $password = (GeneratePassword -length 30).Password
+          echo "::add-mask::$password"
+          echo "::set-output name=postgresqlPassword::$password"
+
+      - name: Deploy infrastructure (${{ inputs.environment }})
+        uses: azure/arm-deploy@v2
+        id: deploy
+        env:
+          # parameters
+          KEY_VAULT_SOURCE_KEYS: ${{ steps.keyvault-keys.outputs.key-vault-keys }}
+          # secrets
+          PG_ADMIN_PASSWORD: ${{ steps.pwd-generator.outputs.postgresqlPassword }}
+          SOURCE_KEY_VAULT_SUBSCRIPTION_ID: ${{ secrets.AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID }}
+          SOURCE_KEY_VAULT_RESOURCE_GROUP: ${{ secrets.AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP }}
+          SOURCE_KEY_VAULT_NAME: ${{ secrets.AZURE_SOURCE_KEY_VAULT_NAME }}
+        with:
+          scope: subscription
+          template: ./.azure/infrastructure/main.bicep
+          subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          deploymentMode: Incremental
+          deploymentName: dp-be-${{ inputs.environment }}-${{ inputs.version }}
+          region: ${{ inputs.region }}
+          failOnStdErr: false
+          additionalArguments: "${{ inputs.dryRun && '--what-if' }}"
+          parameters: ./.azure/infrastructure/${{ inputs.environment }}.bicepparam
+
+      - name: Logout from azure
+        if: ${{failure() || success()}}
+        continue-on-error: true
+        run: az logout

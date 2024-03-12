@@ -15,7 +15,7 @@ internal static class LookupEntityExtensions
     {
         var lookupTypes = modelBuilder.Model
             .GetEntityTypes()
-            .Where(x => x.ClrType.TryGetLookupValueMethodInfo(out var _))
+            .Where(x => x.ClrType.TryGetLookupValueMethodInfo(out _))
             .ToList();
 
         foreach (var lookupType in lookupTypes)
@@ -98,6 +98,6 @@ internal static class LookupEntityExtensions
         {
         }
 
-        public enum Enum { }
+        public enum Enum;
     }
 }

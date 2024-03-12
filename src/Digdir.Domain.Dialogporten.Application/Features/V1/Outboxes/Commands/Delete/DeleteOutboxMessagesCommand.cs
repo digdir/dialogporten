@@ -14,7 +14,7 @@ public class DeleteOutboxMessagesCommand : IRequest<DeleteOutboxMessagesResult>
 }
 
 [GenerateOneOf]
-public partial class DeleteOutboxMessagesResult : OneOfBase<Success, EntityNotFound> { }
+public partial class DeleteOutboxMessagesResult : OneOfBase<Success, EntityNotFound>;
 
 internal sealed class DeleteOutboxMessagesCommandHandler : IRequestHandler<DeleteOutboxMessagesCommand, DeleteOutboxMessagesResult>
 {
@@ -29,7 +29,7 @@ internal sealed class DeleteOutboxMessagesCommandHandler : IRequestHandler<Delet
 
     public async Task<DeleteOutboxMessagesResult> Handle(DeleteOutboxMessagesCommand request, CancellationToken cancellationToken)
     {
-        var outboxMessage = await _db.OutboxMessages.FindAsync(new object?[] { request.EventId }, cancellationToken: cancellationToken);
+        var outboxMessage = await _db.OutboxMessages.FindAsync([request.EventId], cancellationToken: cancellationToken);
 
         if (outboxMessage is null)
         {

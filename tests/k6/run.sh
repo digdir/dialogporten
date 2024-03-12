@@ -5,7 +5,7 @@ display_usage() {
     echo "Usage: $0 [OPTIONS] FILEPATH [K6OPTIONS]"
     echo
     echo "Options:"
-    echo "-e|--environment               Either 'localdev', 'test', 'staging' or 'poc' (required)"
+    echo "-e|--environment               Either 'localdev', 'test', 'staging' or 'prod' (required)"
     echo "-a|--api-version               Defaults to 'v1' if not supplied (optional)"
     echo "-u|--token-generator-username  Username to Altinn Token Generator (required)"
     echo "-p|--token-generator-password  Password to Altinn Token Generator (required)"
@@ -72,8 +72,8 @@ if [[ -z $API_ENVIRONMENT || -z $TOKEN_GENERATOR_USERNAME || -z $TOKEN_GENERATOR
 fi
 
 # Check if valid environment
-if [[ "$API_ENVIRONMENT" != "localdev" && "$API_ENVIRONMENT" != "poc" && "$API_ENVIRONMENT" != "test" && "$API_ENVIRONMENT" != "staging" ]]; then
-    echo "Error: Invalid environment value. Must be 'localdev', 'poc', 'test', or 'staging'."
+if [[ "$API_ENVIRONMENT" != "localdev" && "$API_ENVIRONMENT" != "prod" && "$API_ENVIRONMENT" != "test" && "$API_ENVIRONMENT" != "staging" ]]; then
+    echo "Error: Invalid environment value. Must be 'localdev', 'prod', 'test', or 'staging'."
     exit 1
 fi
 
@@ -100,8 +100,8 @@ fi
 
 DIR="$(dirname "$0")"
 
-"$DIR/scripts/generate_alltests.sh" "$DIR/tests/serviceowner/" >/dev/null
-"$DIR/scripts/generate_alltests.sh" "$DIR/tests/enduser/" >/dev/null
+"$DIR/scripts/generate_all_tests.sh" "$DIR/tests/serviceowner/" >/dev/null
+"$DIR/scripts/generate_all_tests.sh" "$DIR/tests/enduser/" >/dev/null
 
 if [[ "$API_ENVIRONMENT" == "localdev" ]]; then
     # Handle self-signed certs when using docker compose

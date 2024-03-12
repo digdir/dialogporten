@@ -1,0 +1,43 @@
+﻿name: Dispatch infrastructure
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environment to deploy to"
+        required: true
+        default: "test"
+        type: choice
+        options:
+          - test
+          - staging
+          - prod
+      version:
+        description: "Version to deploy. Needs to be a git tag"
+        required: true
+        type: string
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref_name }}
+
+jobs:
+  generate-git-short-sha:
+    name: Generate git short sha
+    uses: ./.github/workflows/action-generate-git-short-sha.yml
+
+  deploy-infra-test:
+    name: Deploy infra to test
+    needs: [generate-git-short-sha]
+    uses: ./.github/workflows/action-deploy-infra.yml
+    secrets:
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      AZURE_SOURCE_KEY_VAULT_NAME: ${{ secrets.AZURE_SOURCE_KEY_VAULT_NAME }}
+      AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID: ${{ secrets.AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID }}
+      AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP: ${{ secrets.AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP }}
+    with:
+      environment: ${{ inputs.environment }}
+      region: norwayeast
+      version: ${{ inputs.version }}
+      ref: "refs/tags/${{ inputs.version }}"

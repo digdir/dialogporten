@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using FluentValidation.Internal;
 using System.Linq.Expressions;
+using Digdir.Domain.Dialogporten.Application.Common.Extensions.Enumerables;
 
 namespace Digdir.Domain.Dialogporten.Application.Common.Extensions.FluentValidation;
 
@@ -14,6 +15,11 @@ internal static class FluentValidation_Enumerable_Extensions
     {
         return ruleBuilder.Must((parent, enumerable, ctx) =>
         {
+            if (enumerable is null)
+            {
+                return true;
+            }
+
             comparer ??= EqualityComparer<TKey>.Default;
             var duplicateKeys = enumerable
                 .Select(keySelector)
@@ -34,7 +40,7 @@ internal static class FluentValidation_Enumerable_Extensions
         Func<TPrincipal, TKey> principalKeySelector,
         IEqualityComparer<TKey>? comparer = null)
     {
-        return ruleBuilder.Must((parrent, dependent, ctx) =>
+        return ruleBuilder.Must((parent, dependent, ctx) =>
         {
             comparer ??= EqualityComparer<TKey>.Default;
             var dependentKey = dependentKeySelector(dependent);
@@ -45,7 +51,8 @@ internal static class FluentValidation_Enumerable_Extensions
                 .AppendArgument("DependentKey", dependentKey)
                 .AppendArgument("PrincipalName", name);
             return dependentKey is null ||
-                func(parrent)
+                func(parent)
+                    .EmptyIfNull()
                     .Any(principal => comparer
                         .Equals(principalKeySelector(principal), dependentKey));
         })

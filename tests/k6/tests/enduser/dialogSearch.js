@@ -3,7 +3,7 @@ import {
     getEU,
     uuidv4,
     setTitle,
-    setBody,
+    setAdditionalInfo,
     setSearchTags,
     setSenderName,
     setStatus,
@@ -25,12 +25,12 @@ export default function () {
     let dialogIds = [];
     
     let titleToSearchFor = uuidv4();    
-    let bodyToSearchFor = uuidv4();
+    let additionalInfoToSearchFor = uuidv4();
     let searchTagsToSearchFor = [ uuidv4(), uuidv4() ];
     let extendedStatusToSearchFor = "status:" + uuidv4();
     let secondExtendedStatusToSearchFor = "status:" + uuidv4();
     let senderNameToSearchFor = uuidv4()
-    let enduserParty = "/person/07874299582";
+    let enduserParty = "urn:altinn:person:identifier-no::07874299582";
     let auxResource = "urn:altinn:resource:ttd-altinn-events-automated-tests"; // Note! We assume that this exists!
     let titleForDueAtItem = "due_" + uuidv4();
     let titleForExpiresAtItem = "expires_" + uuidv4();
@@ -51,7 +51,7 @@ export default function () {
 
         let d = -1;        
         setTitle(dialogs[++d], titleToSearchFor);
-        setBody(dialogs[++d], bodyToSearchFor);
+        setAdditionalInfo(dialogs[++d], additionalInfoToSearchFor);
         setSearchTags(dialogs[++d], searchTagsToSearchFor);
         setStatus(dialogs[++d], "signing");
         setExtendedStatus(dialogs[++d], extendedStatusToSearchFor);
@@ -99,7 +99,7 @@ export default function () {
     });
 
     describe('Search for body', () => {
-        let r = getEU('dialogs/' + defaultFilter + '&Search=' + bodyToSearchFor);
+        let r = getEU('dialogs/' + defaultFilter + '&Search=' + additionalInfoToSearchFor);
         expectStatusFor(r).to.equal(200);
         expect(r, 'response').to.have.validJsonBody();
         expect(r.json(), 'response json').to.have.property("items").with.lengthOf(1);
@@ -142,16 +142,16 @@ export default function () {
         expectStatusFor(r).to.equal(200);
         expect(r, 'response').to.have.validJsonBody();
         expect(r.json(), 'response json').to.have.property("items").with.lengthOf(3);
-        expect(r.json().items[0], 'first dialog').to.have.property("title").that.hasLocalizedText(titleForDueAtItem);
-        expect(r.json().items[1], 'second dialog').to.have.property("title").that.hasLocalizedText(titleForUpdatedItem);
-        expect(r.json().items[2], 'third dialog').to.have.property("title").that.hasLocalizedText(titleForLastItem);
+        expect(r.json().items[0], 'first dialog').to.have.haveContentOfType("Title").that.hasLocalizedText(titleForDueAtItem);
+        expect(r.json().items[1], 'second dialog').to.have.haveContentOfType("Title").that.hasLocalizedText(titleForUpdatedItem);
+        expect(r.json().items[2], 'third dialog').to.have.haveContentOfType("Title").that.hasLocalizedText(titleForLastItem);
 
         r = getEU('dialogs/' + defaultFilter + '&Limit=3&OrderBy=dueAt_asc,updatedAt_desc');
         expectStatusFor(r).to.equal(200);
         expect(r, 'response').to.have.validJsonBody();
         expect(r.json(), 'response json').to.have.property("items").with.lengthOf(3);
-        expect(r.json().items[0], 'first dialog reversed').to.have.property("title").that.hasLocalizedText(titleForUpdatedItem);
-        expect(r.json().items[1], 'second dialog reversed').to.have.property("title").that.hasLocalizedText(titleForLastItem);
+        expect(r.json().items[0], 'first dialog reversed').to.have.haveContentOfType("Title").that.hasLocalizedText(titleForUpdatedItem);
+        expect(r.json().items[1], 'second dialog reversed').to.have.haveContentOfType("Title").that.hasLocalizedText(titleForLastItem);
     });
 
     describe('List with resource filter', () => {

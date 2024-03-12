@@ -8,7 +8,7 @@ root = true
 # Enforce line endings to be LF
 end_of_line = lf
 # Enforce indentation to be 4 spaces
-indent_style = spaces
+indent_style = space
 indent_size = 4
 # Insert a final new line at the end of the file
 insert_final_newline = true
@@ -16,7 +16,7 @@ insert_final_newline = true
 [*.cs]
 
 # CA1848: Use the LoggerMessage delegates
-# TODO: Possible performance improvement 
+# TODO: Possible performance improvement
 dotnet_diagnostic.CA1848.severity = none
 
 # Identifiers should not match keywords
@@ -25,13 +25,13 @@ dotnet_diagnostic.CA1716.severity = none
 # Style faults should be warnings
 dotnet_analyzer_diagnostic.category-Style.severity = warning
 
-#  
+#
 dotnet_style_parentheses_in_arithmetic_binary_operators = always_for_clarity
 
 # Enforce file scoped namespaces
 csharp_style_namespace_declarations = file_scoped:suggestion
 # Place 'using' directives outside of namespaces
-csharp_using_directive_placement = outside_namespace:true
+csharp_using_directive_placement = outside_namespace
 
 # Disabling this because of https://github.com/dotnet/roslyn/issues/41640
 dotnet_diagnostic.IDE0005.severity = none
@@ -39,7 +39,7 @@ dotnet_diagnostic.IDE0005.severity = none
 # Disabling this because of https://github.com/dotnet/roslyn/issues/70826
 dotnet_diagnostic.IDE0028.severity = none
 
-# Primary constructors 
+# Primary constructors
 dotnet_diagnostic.IDE0290.severity = none
 
 # Disable collection expression until Rider supports it
@@ -65,3 +65,13 @@ dotnet_diagnostic.IDE0046.severity = suggestion
 dotnet_diagnostic.CA1000.severity = none
 # "Instantiate argument exceptions correctly"
 dotnet_diagnostic.CA2208.severity = suggestion
+
+[*.yml]
+
+# Enforce indentation to be 2 spaces
+indent_size = 2
+
+[*.json]
+
+# Enforce indentation to be 2 spaces
+indent_size = 2

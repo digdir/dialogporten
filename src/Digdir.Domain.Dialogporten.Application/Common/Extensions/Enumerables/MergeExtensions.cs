@@ -37,7 +37,7 @@ internal static class MergeExtensions
         ArgumentNullException.ThrowIfNull(sourceKeySelector);
         ArgumentNullException.ThrowIfNull(destinationKeySelector);
         comparer ??= EqualityComparer<TKey>.Default;
-        var concreteSources = sources is List<TSource> lSource ? lSource : sources.ToList();
+        var concreteSources = sources as List<TSource> ?? sources.ToList();
         var updateSets = UpdateSet<TDestination, TSource>.Create(
             destinations,
             concreteSources,
@@ -66,7 +66,7 @@ internal static class MergeExtensions
         ArgumentNullException.ThrowIfNull(sourceKeySelector);
         ArgumentNullException.ThrowIfNull(destinationKeySelector);
         comparer ??= EqualityComparer<TKey>.Default;
-        var concreteSources = sources is List<TSource> lSource ? lSource : sources.ToList();
+        var concreteSources = sources as List<TSource> ?? sources.ToList();
         var updateSets = UpdateSet<TDestination, TSource>.Create(
             destinations,
             concreteSources,
@@ -79,7 +79,7 @@ internal static class MergeExtensions
         await CreateAsync(destinations, concreteSources, create, updateSets, cancellationToken);
     }
 
-    internal static void Update<TDestination, TSource>(this IMapper mapper, IEnumerable<UpdateSet<TDestination, TSource>> updateSets)
+    internal static void Update<TDestination, TSource>(this IMapperBase mapper, IEnumerable<UpdateSet<TDestination, TSource>> updateSets)
     {
         foreach (var (source, destination) in updateSets)
         {

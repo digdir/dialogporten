@@ -1,15 +1,16 @@
 ﻿using AutoMapper;
+using Digdir.Domain.Dialogporten.Domain.Localizations;
 
 namespace Digdir.Domain.Dialogporten.Application.Common.Extensions;
 
 internal static class AutoMapperExtensions
 {
     private static readonly Type GenericNullableType = typeof(Nullable<>);
-    private static readonly List<Type> TypeOverrides = new()
-    {
+    private static readonly List<Type> TypeOverrides =
+    [
         typeof(string),
         typeof(Uri)
-    };
+    ];
 
     public static IMappingExpression<TSource, TDest> IgnoreComplexDestinationProperties<TSource, TDest>(
         this IMappingExpression<TSource, TDest> expression)
@@ -37,6 +38,6 @@ internal static class AutoMapperExtensions
             return type.GetGenericArguments()[0].IsSimple();
         }
 
-        return type.IsValueType || TypeOverrides.Contains(type);
+        return type.IsValueType || TypeOverrides.Contains(type) || type.IsSubclassOf(typeof(LocalizationSet));
     }
 }
