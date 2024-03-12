@@ -19,6 +19,7 @@ public sealed class PurgeDialogEndpoint : Endpoint<PurgeDialogRequest>
     public override void Configure()
     {
         Post("dialogs/{dialogId}/actions/purge");
+        RequestBinder(new PurgeDialogRequestBinder());
         Policies(AuthorizationPolicy.ServiceProvider);
         Group<ServiceOwnerGroup>();
 
@@ -45,10 +46,10 @@ public sealed class PurgeDialogEndpoint : Endpoint<PurgeDialogRequest>
 
 public sealed class PurgeDialogRequest
 {
-    public Guid DialogId { get; set; }
+    public Guid DialogId { get; init; }
 
     [FromHeader(headerName: Constants.IfMatch, isRequired: false, removeFromSchema: true)]
-    public Guid? IfMatchDialogRevision { get; set; }
+    public Guid? IfMatchDialogRevision { get; init; }
 }
 
 public sealed class PurgeDialogEndpointSummary : Summary<PurgeDialogEndpoint>
@@ -66,5 +67,18 @@ public sealed class PurgeDialogEndpointSummary : Summary<PurgeDialogEndpoint>
         Responses[StatusCodes.Status403Forbidden] = Constants.SwaggerSummary.AccessDeniedToDialog.FormatInvariant("delete");
         Responses[StatusCodes.Status404NotFound] = Constants.SwaggerSummary.DialogNotFound;
         Responses[StatusCodes.Status412PreconditionFailed] = Constants.SwaggerSummary.RevisionMismatch;
+    }
+}
+
+// Custom request binder to avoid attempted automatic deserialization of the Request body if the content type is application/json
+public class PurgeDialogRequestBinder : IRequestBinder<PurgeDialogRequest>
+{
+    public ValueTask<PurgeDialogRequest> BindAsync(BinderContext ctx, CancellationToken ct)
+    {
+        return ValueTask.FromResult(new PurgeDialogRequest
+        {
+            DialogId = Guid.Parse(ctx.HttpContext.Request.RouteValues["dialogId"]?.ToString()!),
+            IfMatchDialogRevision = ctx.HttpContext.Request.Headers.TryGetValue(Constants.IfMatch, out var revision) ? Guid.Parse(revision!) : null
+        });
     }
 }
