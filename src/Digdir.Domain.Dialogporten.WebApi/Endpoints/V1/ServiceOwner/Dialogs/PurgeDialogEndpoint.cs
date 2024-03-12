@@ -24,6 +24,7 @@ public sealed class PurgeDialogEndpoint : Endpoint<PurgeDialogRequest>
 
         Description(b => b
             .OperationId("PurgeDialog")
+            .Accepts<PurgeDialogRequest>()
             .ProducesOneOf(
                 StatusCodes.Status204NoContent,
                 StatusCodes.Status404NotFound,
