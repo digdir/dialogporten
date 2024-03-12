@@ -29,7 +29,7 @@ public sealed class AltinnCdnPlatformSettings
 
 public sealed class RedisSettings
 {
-    public required bool Enabled { get; init; }
+    public required bool? Enabled { get; init; }
     public required string ConnectionString { get; init; }
 }
 
@@ -93,7 +93,7 @@ internal sealed class RedisSettingsValidator : AbstractValidator<RedisSettings>
 {
     public RedisSettingsValidator()
     {
-        RuleFor(x => x.Enabled).NotEmpty();
+        RuleFor(x => x.Enabled).Must(x => x is false or true);
         RuleFor(x => x.ConnectionString).NotEmpty();
     }
 }

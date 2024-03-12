@@ -26,6 +26,7 @@ using Digdir.Domain.Dialogporten.Infrastructure.Altinn.Authorization;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.Events;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.OrganizationRegistry;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.ResourceRegistry;
+using StackExchange.Redis;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure;
 
@@ -59,7 +60,7 @@ public static class InfrastructureExtensions
         var infrastructureSettings = infrastructureConfigurationSection.Get<InfrastructureSettings>()
         ?? throw new InvalidOperationException("Failed to get Redis settings. Infrastructure settings must not be null.");
 
-        if (infrastructureSettings.Redis.Enabled)
+        if (infrastructureSettings.Redis.Enabled == true)
         {
             services.AddStackExchangeRedisCache(options =>
             {
