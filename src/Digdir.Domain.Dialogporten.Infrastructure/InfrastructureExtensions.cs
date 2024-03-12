@@ -127,12 +127,14 @@ public static class InfrastructureExtensions
             })
             .AddPolicyHandlerFromRegistry(PollyPolicy.DefaultHttpRetryPolicy);
 
-        services.AddHttpClient<IAltinnAuthorization, AltinnAuthorizationClient>((services, client) =>
+        services.AddMaskinportenHttpClient<IAltinnAuthorization, AltinnAuthorizationClient, SettingsJwkClientDefinition>(
+                infrastructureConfigurationSection,
+                x => x.ClientSettings.ExhangeToAltinnToken = true)
+            .ConfigureHttpClient((services, client) =>
             {
                 var altinnSettings = services.GetRequiredService<IOptions<InfrastructureSettings>>().Value.Altinn;
                 client.BaseAddress = altinnSettings.BaseUri;
                 client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", altinnSettings.SubscriptionKey);
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             })
             // TODO! Add cache policy based on request body
             .AddPolicyHandlerFromRegistry(PollyPolicy.DefaultHttpRetryPolicy);

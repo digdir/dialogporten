@@ -5,14 +5,15 @@ namespace Digdir.Domain.Dialogporten.Domain.Parties;
 
 public record SystemUserIdentifier : IPartyIdentifier
 {
-    public static string Prefix => "urn:altinn:systemuser::";
+    public static string Prefix => "urn:altinn:systemuser";
+    public static string PrefixWithSeparator => Prefix + PartyIdentifier.Separator;
     public string FullId { get; }
     public string Id { get; }
 
     private SystemUserIdentifier(ReadOnlySpan<char> value)
     {
         Id = value.ToString();
-        FullId = Prefix + Id;
+        FullId = PrefixWithSeparator + Id;
     }
 
     public static bool TryParse(ReadOnlySpan<char> value, [NotNullWhen(true)] out IPartyIdentifier? identifier)
