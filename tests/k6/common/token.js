@@ -63,7 +63,7 @@ export function getServiceOwnerTokenFromGenerator(tokenOptions = null) {
 
 export function getEnduserTokenFromGenerator(tokenOptions = null) {
   let fullTokenOptions = extend({}, defaultTokenOptions, tokenOptions);
-  const url = `http://altinn-testtools-token-generator.azurewebsites.net/api/GetPersonalToken?env=tt02&scopes=${encodeURIComponent(fullTokenOptions.scopes)}&pid=${fullTokenOptions.ssn}&userId=123&partyId=123&ttl=${tokenTtl}`;
+  const url = `http://altinn-testtools-token-generator.azurewebsites.net/api/GetPersonalToken?env=tt02&scopes=${encodeURIComponent(fullTokenOptions.scopes)}&pid=${fullTokenOptions.ssn}&ttl=${tokenTtl}`;
   return fetchToken(url, fullTokenOptions, `end user (ssn:${fullTokenOptions.ssn})`);
 }
 

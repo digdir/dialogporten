@@ -23,7 +23,7 @@ public class DecisionRequestHelperTests
                 // This should not be copied as subject claim since there's a "pid"-claim
                 ("consumer", ConsumerClaimValue)
             ),
-            $"{NorwegianOrganizationIdentifier.Prefix}713330310");
+            $"{NorwegianOrganizationIdentifier.PrefixWithSeparator}713330310");
         var dialogId = request.DialogId;
 
         // Act
@@ -41,8 +41,8 @@ public class DecisionRequestHelperTests
         var accessSubject = result.Request.AccessSubject.First();
         Assert.Equal("s1", accessSubject.Id);
         Assert.Contains(accessSubject.Attribute, a => a.AttributeId == "urn:altinn:foo" && a.Value == "bar");
-        Assert.Contains(accessSubject.Attribute, a => a.AttributeId == "urn:altinn:ssn" && a.Value == "12345678901");
-        Assert.DoesNotContain(accessSubject.Attribute, a => a.AttributeId == "urn:altinn:organizationnumber");
+        Assert.Contains(accessSubject.Attribute, a => a.AttributeId == "urn:altinn:person:identifier-no" && a.Value == "12345678901");
+        Assert.DoesNotContain(accessSubject.Attribute, a => a.AttributeId == "urn:altinn:organization:identifier-no");
 
         // Check Action attributes
         Assert.Contains(result.Request.Action, a => a.Id == "a1" && a.Attribute.Any(attr => attr.AttributeId == "urn:oasis:names:tc:xacml:1.0:action:action-id" && attr.Value == "read"));
@@ -55,7 +55,7 @@ public class DecisionRequestHelperTests
         Assert.NotNull(resource1);
         Assert.Contains(resource1.Attribute, a => a.AttributeId == "urn:altinn:resource" && a.Value == "some-service");
         Assert.Contains(resource1.Attribute, a => a.AttributeId == "urn:altinn:resourceinstance" && a.Value == dialogId.ToString());
-        Assert.Contains(resource1.Attribute, a => a.AttributeId == "urn:altinn:organizationnumber" && a.Value == "713330310");
+        Assert.Contains(resource1.Attribute, a => a.AttributeId == "urn:altinn:organization:identifier-no" && a.Value == "713330310");
 
         var resource2 = result.Request.Resource.FirstOrDefault(r => r.Id == "r2");
         Assert.NotNull(resource2);
@@ -83,7 +83,7 @@ public class DecisionRequestHelperTests
                 // Should be copied as subject claim since there's not a "pid"-claim
                 ("consumer", ConsumerClaimValue)
             ),
-            $"{NorwegianPersonIdentifier.Prefix}16073422888");
+            $"{NorwegianPersonIdentifier.PrefixWithSeparator}16073422888");
 
         // Act
         var result = DecisionRequestHelper.CreateDialogDetailsRequest(request);
@@ -91,12 +91,12 @@ public class DecisionRequestHelperTests
         // Assert
         // Check that we have the organizationnumber
         var accessSubject = result.Request.AccessSubject.First();
-        Assert.Contains(accessSubject.Attribute, a => a.AttributeId == "urn:altinn:organizationnumber" && a.Value == "991825827");
+        Assert.Contains(accessSubject.Attribute, a => a.AttributeId == "urn:altinn:organization:identifier-no" && a.Value == "991825827");
 
         // Check that we have the ssn attribute as resource owner
         var resource1 = result.Request.Resource.FirstOrDefault(r => r.Id == "r1");
         Assert.NotNull(resource1);
-        Assert.Contains(resource1.Attribute, a => a.AttributeId == "urn:altinn:ssn" && a.Value == "16073422888");
+        Assert.Contains(resource1.Attribute, a => a.AttributeId == "urn:altinn:person:identifier-no" && a.Value == "16073422888");
     }
 
     [Fact]
@@ -108,7 +108,7 @@ public class DecisionRequestHelperTests
                 // Should be copied as subject claim since there's not a "pid"-claim
                 ("consumer", ConsumerClaimValue)
             ),
-            $"{NorwegianPersonIdentifier.Prefix}12345678901");
+            $"{NorwegianPersonIdentifier.PrefixWithSeparator}12345678901");
 
         // Add an additional action to the request that the mocked response should give a non-permit response for
         request.AltinnActions.Add(new AltinnAction("failaction", Constants.MainResource));
