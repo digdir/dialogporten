@@ -8,7 +8,8 @@ namespace Digdir.Library.Entity.Abstractions.Features.Aggregate;
 public abstract class AggregateNode
 {
     private static readonly Type _openGenericAggregateNodeType = typeof(AggregateNode<>);
-    private readonly List<AggregateNode> _children = [];
+    private readonly HashSet<AggregateNode> _children = new();
+    private readonly HashSet<AggregateNode> _parents = new();
     private readonly List<AggregateNodeProperty> _modifiedProperties;
 
     /// <summary>
@@ -29,14 +30,31 @@ public abstract class AggregateNode
     public IReadOnlyCollection<AggregateNode> Children => _children;
 
     /// <summary>
+    /// A collection of parents.
+    /// </summary>
+    public IReadOnlyCollection<AggregateNode> Parents => _parents;
+
+    /// <summary>
     /// The state of the <see cref="Entity"/> this node represents.
     /// </summary>
-    public AggregateNodeState State { get; }
+    public AggregateNodeState State { get; internal set; }
+
+    /// <summary>
+    /// True when the <see cref="Entity"/> this node represents has been deleted by a parent node. False if directly deleted.
+    /// </summary>
+    public bool DeletedByParent { get; internal set; }
+
+    /// <summary>
+    /// True when the <see cref="Entity"/> this node represents has been modified by a child node. False if directly modified.
+    /// </summary>
+    public bool ModifiedByChild { get; internal set; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AggregateNode"/> class.
     /// </summary>
-    protected AggregateNode(object entity, AggregateNodeState state,
+    protected AggregateNode(
+        object entity,
+        AggregateNodeState state,
         IEnumerable<AggregateNodeProperty> modifiedProperties)
     {
         Entity = entity;
@@ -45,6 +63,10 @@ public abstract class AggregateNode
     }
 
     internal void AddChild(AggregateNode node) => _children.Add(node);
+    internal void AddParent(AggregateNode node) => _parents.Add(node);
+
+    internal bool IsLeafNode => _children.Count == 0;
+    internal bool IsRootNode => _parents.Count == 0;
 
     internal static AggregateNode Create(Type type, object entity, AggregateNodeState state,
         IEnumerable<AggregateNodeProperty> modifiedProperties)
@@ -61,6 +83,21 @@ public abstract class AggregateNode
             null, nodeArguments, null)!;
         return node;
     }
+
+    /// <summary>
+    /// Checks whether the entity has changed its state for a specified type.
+    /// </summary>
+    /// <typeparam name="T">The type to check against.</typeparam>
+    /// <returns>
+    /// <c>true</c> if the entity is of the specified type and its state is not <see cref="AggregateNodeState.Unchanged"/>;
+    /// otherwise, <c>false</c>.
+    /// </returns>
+    public bool IsChanged<T>() => Entity is T && State is not AggregateNodeState.Unchanged;
+
+    /// <summary>
+    /// Convenience method to check if the state of the node is <see cref="AggregateNodeState.Modified"/> and not by a child node.
+    /// </summary>
+    public bool IsDirectlyModified() => State is AggregateNodeState.Modified && !ModifiedByChild;
 }
 
 /// <summary>
@@ -92,19 +129,24 @@ public enum AggregateNodeState
     Added = 1,
 
     /// <summary>
-    /// All or some of the entities property values have been modified.
+    /// All or some of the entities property values, or part of its aggregate children chain have been modified.
     /// </summary>
     Modified = 2,
 
     /// <summary>
-    /// The entity has been marked for deletion from the database.
+    /// The entity, or part of its aggregate parent chain have been marked for deleation.
     /// </summary>
     Deleted = 3,
 
     /// <summary>
     /// The entities property values have not been changed from the values in the database.
     /// </summary>
-    Unchanged = 4
+    Unchanged = 4,
+
+    /// <summary>
+    /// The entity, or its aggregate parent chain have been marked for restoration.
+    /// </summary>
+    Restored = 5
 }
 
 /// <summary>

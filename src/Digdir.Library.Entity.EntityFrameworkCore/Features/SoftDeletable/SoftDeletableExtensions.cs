@@ -95,10 +95,34 @@ public static class SoftDeletableExtensions
         });
     }
 
+    internal static bool IsMarkedForSoftDeletion(this EntityEntry entry)
+    {
+        return entry.Entity is ISoftDeletableEntity
+            && !(bool)entry.Property(nameof(ISoftDeletableEntity.Deleted)).OriginalValue! // Not already soft deleted in database
+            && (bool)entry.Property(nameof(ISoftDeletableEntity.Deleted)).CurrentValue!; // Deleted in memory
+    }
+
+    internal static bool IsMarkedForRestoration(this EntityEntry entry)
+    {
+        return entry.Entity is ISoftDeletableEntity
+            && (bool)entry.Property(nameof(ISoftDeletableEntity.Deleted)).OriginalValue! // Already soft deleted in database
+            && !(bool)entry.Property(nameof(ISoftDeletableEntity.Deleted)).CurrentValue!; // Restored in memory
+    }
+
+    internal static bool IsSoftDeleted(this EntityEntry entry)
+    {
+        return entry.Entity is ISoftDeletableEntity
+            && (bool)entry.Property(nameof(ISoftDeletableEntity.Deleted)).OriginalValue!; // Already soft deleted in database
+    }
+
     internal static ChangeTracker HandleSoftDeletableEntities(this ChangeTracker changeTracker, DateTimeOffset utcNow)
     {
-        var softDeletedEntities = changeTracker
+        var softDeletableEntities = changeTracker
             .Entries<ISoftDeletableEntity>()
+            .ToList()
+            .AssertNoModifiedSoftDeletedEntity();
+
+        var softDeletedEntities = softDeletableEntities
             .Where(x => x.State is EntityState.Modified or EntityState.Added && x.Entity.Deleted);
 
         foreach (var entity in softDeletedEntities)
@@ -107,6 +131,18 @@ public static class SoftDeletableExtensions
         }
 
         return changeTracker;
+    }
+
+    private static List<EntityEntry<ISoftDeletableEntity>> AssertNoModifiedSoftDeletedEntity(this List<EntityEntry<ISoftDeletableEntity>> softDeletableEntities)
+    {
+        var invalidSoftDeleteModifications = softDeletableEntities
+            .Where(x => x.State is EntityState.Modified
+                && x.Property(x => x.Deleted).OriginalValue // Allerede slettet i databasen
+                && !x.Property(x => x.Deleted).CurrentValue); // Ikke gjennopprettet i koden
+
+        return invalidSoftDeleteModifications.Any()
+            ? throw new InvalidOperationException("Cannot modify a soft deleted entity without restoring it first.")
+            : softDeletableEntities;
     }
 
     private static void EnableSoftDeletableQueryFilter_Internal<T>(ModelBuilder modelBuilder)
