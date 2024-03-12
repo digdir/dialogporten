@@ -12,7 +12,7 @@ internal sealed class MappingProfile : Profile
     public MappingProfile()
     {
         CreateMap<DialogEntity, GetDialogDto>()
-            .ForMember(dest => dest.IfMatchDialogRevision, opt => opt.MapFrom(src => src.Revision))
+            .ForMember(dest => dest.Revision, opt => opt.MapFrom(src => src.Revision))
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.StatusId));
 
         CreateMap<DialogActivity, GetDialogDialogActivityDto>()

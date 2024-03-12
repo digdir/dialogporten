@@ -36,7 +36,7 @@ public class GetDialogEndpoint : Endpoint<GetDialogQuery, GetDialogDto>
         await result.Match(
             dto =>
             {
-                HttpContext.Response.Headers.ETag = dto.IfMatchDialogRevision.ToString();
+                HttpContext.Response.Headers.ETag = dto.Revision.ToString();
                 return SendOkAsync(dto, ct);
             },
             notFound => this.NotFoundAsync(notFound, ct));
