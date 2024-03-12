@@ -161,7 +161,7 @@ public class DomainEventsTests(DialogApplication application) : ApplicationColle
     }
 
     // Throws NRE on parent Dialog
-    [Fact(Skip = "This is currently broken, will be fixed/rewritten in https://github.com/digdir/dialogporten/pull/406")]
+    [Fact]
     public async Task Creates_CloudEvents_When_Deleting_DialogElement()
     {
         // Arrange
@@ -201,8 +201,7 @@ public class DomainEventsTests(DialogApplication application) : ApplicationColle
             cloudEvent.Type == CloudEventTypes.Get(nameof(DialogElementDeletedDomainEvent)));
     }
 
-    // Creates DialogUpdatedDomainEvent instead of DialogDeletedDomainEvent
-    [Fact(Skip = "This is currently broken, will be fixed/rewritten in https://github.com/digdir/dialogporten/pull/406")]
+    [Fact]
     public async Task Creates_CloudEvents_When_Dialog_Deleted()
     {
         // Arrange
