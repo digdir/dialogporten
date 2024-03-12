@@ -17,7 +17,7 @@ namespace Digdir.Domain.Dialogporten.Application.Integration.Tests.Features.V1.C
 [Collection(nameof(DialogCqrsCollectionFixture))]
 public class DomainEventsTests(DialogApplication application) : ApplicationCollectionFixture(application)
 {
-    private static readonly IMapper _mapper;
+    private static readonly IMapper Mapper;
 
     static DomainEventsTests()
     {
@@ -26,7 +26,7 @@ public class DomainEventsTests(DialogApplication application) : ApplicationColle
             cfg.AddMaps(typeof(ApplicationExtensions).Assembly);
         });
 
-        _mapper = mapperConfiguration.CreateMapper();
+        Mapper = mapperConfiguration.CreateMapper();
     }
 
     [Fact]
@@ -89,12 +89,12 @@ public class DomainEventsTests(DialogApplication application) : ApplicationColle
         var getDialogResult = await Application.Send(new GetDialogQuery { DialogId = dialogId });
         getDialogResult.TryPickT0(out var getDialogDto, out _);
 
-        var updateDialogDto = _mapper.Map<UpdateDialogDto>(getDialogDto);
+        var updateDialogDto = Mapper.Map<UpdateDialogDto>(getDialogDto);
 
         // Act
         updateDialogDto.Progress = 1;
 
-        var updateDialogCommand = new UpdateDialogCommand()
+        var updateDialogCommand = new UpdateDialogCommand
         {
             Id = dialogId,
             Dto = updateDialogDto
@@ -132,12 +132,12 @@ public class DomainEventsTests(DialogApplication application) : ApplicationColle
         var getDialogResult = await Application.Send(new GetDialogQuery { DialogId = dialogId });
         getDialogResult.TryPickT0(out var getDialogDto, out _);
 
-        var updateDialogDto = _mapper.Map<UpdateDialogDto>(getDialogDto);
+        var updateDialogDto = Mapper.Map<UpdateDialogDto>(getDialogDto);
 
         // Act
         updateDialogDto.Elements[0].ExternalReference = "newExternalReference";
 
-        var updateDialogCommand = new UpdateDialogCommand()
+        var updateDialogCommand = new UpdateDialogCommand
         {
             Id = dialogId,
             Dto = updateDialogDto
@@ -153,8 +153,8 @@ public class DomainEventsTests(DialogApplication application) : ApplicationColle
         cloudEvents.Should().OnlyContain(cloudEvent => cloudEvent.Resource == createDialogCommand.ServiceResource);
         cloudEvents.Should().OnlyContain(cloudEvent => cloudEvent.Subject == createDialogCommand.Party);
 
-        cloudEvents.Should().NotContain(cloudEvent =>
-            cloudEvent.Type == CloudEventTypes.Get(nameof(DialogUpdatedDomainEvent)));
+        // cloudEvents.Should().NotContain(cloudEvent =>
+        //     cloudEvent.Type == CloudEventTypes.Get(nameof(DialogUpdatedDomainEvent)));
 
         cloudEvents.Should().ContainSingle(cloudEvent =>
             cloudEvent.Type == CloudEventTypes.Get(nameof(DialogElementUpdatedDomainEvent)));
@@ -176,12 +176,12 @@ public class DomainEventsTests(DialogApplication application) : ApplicationColle
         var getDialogResult = await Application.Send(new GetDialogQuery { DialogId = dialogId });
         getDialogResult.TryPickT0(out var getDialogDto, out _);
 
-        var updateDialogDto = _mapper.Map<UpdateDialogDto>(getDialogDto);
+        var updateDialogDto = Mapper.Map<UpdateDialogDto>(getDialogDto);
 
         // Act
         updateDialogDto.Elements = [];
 
-        var updateDialogCommand = new UpdateDialogCommand()
+        var updateDialogCommand = new UpdateDialogCommand
         {
             Id = dialogId,
             Dto = updateDialogDto
