@@ -199,6 +199,9 @@ public class DomainEventsTests(DialogApplication application) : ApplicationColle
 
         cloudEvents.Should().ContainSingle(cloudEvent =>
             cloudEvent.Type == CloudEventTypes.Get(nameof(DialogElementDeletedDomainEvent)));
+
+        cloudEvents.Should().NotContain(cloudEvent =>
+            cloudEvent.Type == CloudEventTypes.Get(nameof(DialogElementUpdatedDomainEvent)));
     }
 
     [Fact]
