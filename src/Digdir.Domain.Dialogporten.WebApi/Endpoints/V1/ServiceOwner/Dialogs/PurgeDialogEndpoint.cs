@@ -35,12 +35,13 @@ public sealed class PurgeDialogEndpoint : Endpoint<PurgeDialogRequest>
 
     public override async Task HandleAsync(PurgeDialogRequest req, CancellationToken ct)
     {
-        var command = new PurgeDialogCommand { Id = req.DialogId, IfMatchDialogRevision = req.IfMatchDialogRevision };
+        var command = new PurgeDialogCommand { DialogId = req.DialogId, IfMatchDialogRevision = req.IfMatchDialogRevision };
         var result = await _sender.Send(command, ct);
         await result.Match(
             success => SendNoContentAsync(ct),
             notFound => this.NotFoundAsync(notFound, ct),
-            concurrencyError => this.PreconditionFailed(ct));
+            concurrencyError => this.PreconditionFailed(ct),
+            validationError => this.BadRequestAsync(validationError, ct));
     }
 }
 
@@ -75,10 +76,17 @@ public class PurgeDialogRequestBinder : IRequestBinder<PurgeDialogRequest>
 {
     public ValueTask<PurgeDialogRequest> BindAsync(BinderContext ctx, CancellationToken ct)
     {
+        if (!Guid.TryParse(ctx.HttpContext.Request.RouteValues["dialogId"]?.ToString()!, out var dialogId))
+            return ValueTask.FromResult(new PurgeDialogRequest());
+
+        ctx.HttpContext.Request.Headers.TryGetValue(Constants.IfMatch, out var revisionHeader);
+        var revisionFound = Guid.TryParse(revisionHeader, out var revision);
+
         return ValueTask.FromResult(new PurgeDialogRequest
         {
-            DialogId = Guid.Parse(ctx.HttpContext.Request.RouteValues["dialogId"]?.ToString()!),
-            IfMatchDialogRevision = ctx.HttpContext.Request.Headers.TryGetValue(Constants.IfMatch, out var revision) ? Guid.Parse(revision!) : null
+            DialogId = dialogId,
+            IfMatchDialogRevision = revisionFound ? revision : null
         });
+
     }
 }
