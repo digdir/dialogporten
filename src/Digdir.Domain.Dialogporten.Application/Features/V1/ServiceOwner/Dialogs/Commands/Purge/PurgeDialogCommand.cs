@@ -12,12 +12,12 @@ using OneOf.Types;
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Purge;
 public sealed class PurgeDialogCommand : IRequest<PurgeDialogResult>
 {
-    public Guid Id { get; set; }
+    public Guid DialogId { get; set; }
     public Guid? IfMatchDialogRevision { get; set; }
 }
 
 [GenerateOneOf]
-public partial class PurgeDialogResult : OneOfBase<Success, EntityNotFound, ConcurrencyError>;
+public partial class PurgeDialogResult : OneOfBase<Success, EntityNotFound, ConcurrencyError, ValidationError>;
 
 internal sealed class PurgeDialogCommandHandler : IRequestHandler<PurgeDialogCommand, PurgeDialogResult>
 {
@@ -43,11 +43,11 @@ internal sealed class PurgeDialogCommandHandler : IRequestHandler<PurgeDialogCom
             .Include(x => x.Elements)
             .Include(x => x.Activities)
             .Where(x => resourceIds.Contains(x.ServiceResource))
-            .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
+            .FirstOrDefaultAsync(x => x.Id == request.DialogId, cancellationToken);
 
         if (dialog is null)
         {
-            return new EntityNotFound<DialogEntity>(request.Id);
+            return new EntityNotFound<DialogEntity>(request.DialogId);
         }
 
         _db.Dialogs.HardRemove(dialog);
