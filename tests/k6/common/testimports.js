@@ -10,7 +10,8 @@ export {
     postSOAsync,
     putSO,
     patchSO,
-    deleteSO
+    deleteSO,
+    purgeSO
 } from './request.js';
 export {
     setTitle,
