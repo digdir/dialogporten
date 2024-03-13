@@ -2422,7 +2422,7 @@
             "type": "string",
             "format": "guid"
           },
-          "ifMatchDialogRevision": {
+          "revision": {
             "type": "string",
             "format": "guid"
           },
@@ -3456,7 +3456,7 @@
             "type": "string",
             "format": "guid"
           },
-          "ifMatchDialogRevision": {
+          "revision": {
             "type": "string",
             "format": "guid"
           },
