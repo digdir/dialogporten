@@ -31,6 +31,7 @@ internal sealed class ForwardAlertToSlack
             ExceptionReport = appInsightsResponses.ToAsciiTableExceptionReport(),
             Link = azureAlertRequest.ToQueryLink()
         }, cancellationToken);
+
         return req.CreateResponse(HttpStatusCode.OK);
     }
 }
