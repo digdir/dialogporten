@@ -7,7 +7,7 @@ internal sealed class PurgeDialogCommandValidator : AbstractValidator<PurgeDialo
     public PurgeDialogCommandValidator()
     {
         RuleFor(x => x.DialogId)
-            .NotEqual(default(Guid))
-            .WithMessage($"{{PropertyName}} was either badly formatted or {default(Guid)}");
+            .NotEqual(Guid.Empty)
+            .WithMessage($"{{PropertyName}} was either badly formatted or {Guid.Empty}");
     }
 }
