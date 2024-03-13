@@ -26,6 +26,7 @@ using Digdir.Domain.Dialogporten.Infrastructure.Altinn.Authorization;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.Events;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.OrganizationRegistry;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.ResourceRegistry;
+using StackExchange.Redis;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure;
 
@@ -51,11 +52,31 @@ public static class InfrastructureExtensions
             .ValidateOnStart();
 
         var thisAssembly = Assembly.GetExecutingAssembly();
+
         services
             // Framework
-            .AddValidatorsFromAssembly(thisAssembly, ServiceLifetime.Transient, includeInternalTypes: true)
-            .AddDistributedMemoryCache()
-            .AddDbContext<DialogDbContext>((services, options) =>
+            .AddValidatorsFromAssembly(thisAssembly, ServiceLifetime.Transient, includeInternalTypes: true);
+
+        var infrastructureSettings = infrastructureConfigurationSection.Get<InfrastructureSettings>()
+        ?? throw new InvalidOperationException("Failed to get Redis settings. Infrastructure settings must not be null.");
+
+        if (infrastructureSettings.Redis.Enabled == true)
+        {
+            services.AddStackExchangeRedisCache(options =>
+            {
+                var infrastructureSettings = infrastructureConfigurationSection.Get<InfrastructureSettings>()
+                    ?? throw new InvalidOperationException("Failed to get Redis connection string. Infrastructure settings must not be null.");
+                var connectionString = infrastructureSettings.Redis.ConnectionString;
+                options.Configuration = connectionString;
+                options.InstanceName = "Redis";
+            });
+        }
+        else
+        {
+            services.AddDistributedMemoryCache();
+        }
+
+        services.AddDbContext<DialogDbContext>((services, options) =>
             {
                 var connectionString = services.GetRequiredService<IOptions<InfrastructureSettings>>()
                     .Value.DialogDbConnectionString;

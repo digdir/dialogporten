@@ -9,6 +9,7 @@
 
     <ItemGroup>
         <PackageReference Include="Altinn.ApiClients.Maskinporten" Version="9.1.0" />
+        <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.2" />
         <PackageReference Include="Altinn.Authorization.ABAC" Version="0.0.8" />
         <PackageReference Include="Bogus" Version="35.4.1" />
         <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="8.0.0" />
@@ -24,8 +25,10 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Digdir.Domain.Dialogporten.Application\Digdir.Domain.Dialogporten.Application.csproj" />
-        <ProjectReference Include="..\Digdir.Library.Entity.EntityFrameworkCore\Digdir.Library.Entity.EntityFrameworkCore.csproj" />
+        <ProjectReference
+            Include="..\Digdir.Domain.Dialogporten.Application\Digdir.Domain.Dialogporten.Application.csproj" />
+        <ProjectReference
+            Include="..\Digdir.Library.Entity.EntityFrameworkCore\Digdir.Library.Entity.EntityFrameworkCore.csproj" />
     </ItemGroup>
 
     <ItemGroup>
