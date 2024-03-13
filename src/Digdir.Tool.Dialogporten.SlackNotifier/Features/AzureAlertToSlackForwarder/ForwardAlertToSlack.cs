@@ -26,6 +26,7 @@ internal sealed class ForwardAlertToSlack
     {
         var azureAlertRequest = await req.ReadFromJsonAsync<AzureAlertDto>(cancellationToken) ?? throw new UnreachableException();
         var appInsightsResponses = await _appInsights.QueryAppInsights(azureAlertRequest, cancellationToken);
+
         await _slack.SendAsync(new SlackRequestDto
         {
             ExceptionReport = appInsightsResponses.ToAsciiTableExceptionReport(),

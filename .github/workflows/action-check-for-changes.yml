@@ -19,7 +19,7 @@ jobs:
     outputs:
       hasBackendChanges: ${{ steps.filter.outputs.backend_any_changed == 'true' }}
       hasAzureChanges: ${{ steps.filter.outputs.azure_any_changed == 'true' }}
-      hasSlackNotifierChanges: ${{ steps.paths-filter.outputs.slackNotifier_any_changed == 'true'}}
+      hasSlackNotifierChanges: ${{ steps.filter.outputs.slackNotifier_any_changed == 'true'}}
 
     steps:
       - name: Checkout
