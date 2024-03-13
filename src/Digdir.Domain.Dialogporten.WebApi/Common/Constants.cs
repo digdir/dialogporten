@@ -16,8 +16,9 @@ internal static class Constants
         internal const string DomainError = "Domain error occured. See problem details for a list of errors.";
         internal const string ServiceOwnerAuthenticationFailure = "Missing or invalid authentication token. Requires a Maskinporten-token with the scope \"{0}\".";
         internal const string EndUserAuthenticationFailure = "Missing or invalid authentication token. Requires a Maskinporten-token with the scope \"digdir:dialogporten\".";
+        internal const string DialogDeleted = "The given dialog ID was deleted.";
         internal const string DialogNotFound = "The given dialog ID was not found or is already deleted.";
-        internal const string DialogActivityNotFound = "The given dialog ID was not found or was deleted, or the given activity ID was not found.";
+        internal const string DialogActivityNotFound = "The given dialog ID was not found, or the given activity ID was not found.";
         internal const string DialogElementNotFound = "The given dialog ID or dialog element ID was not found or was already deleted.";
         internal const string RevisionMismatch = "The supplied If-Match header did not match the current Revision value for the dialog. The request was not applied.";
         internal const string AccessDeniedToDialog = "Unauthorized to {0} the supplied dialog (not owned by authenticated organization or has additional scope requirements defined in policy).";

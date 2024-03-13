@@ -26,7 +26,11 @@ public class GetDialogEndpoint : Endpoint<GetDialogQuery, GetDialogDto>
             .OperationId("GetDialog")
             .ProducesOneOf<GetDialogDto>(
                 StatusCodes.Status200OK,
-                StatusCodes.Status404NotFound)
+                StatusCodes.Status400BadRequest,
+                StatusCodes.Status401Unauthorized,
+                StatusCodes.Status403Forbidden,
+                StatusCodes.Status404NotFound,
+                StatusCodes.Status410Gone)
         );
     }
 
@@ -53,9 +57,12 @@ public sealed class GetDialogEndpointSummary : Summary<GetDialogEndpoint>
         Description = """
                 Gets a single dialog aggregate. For more information see the documentation (link TBD).
                 """;
+
         Responses[StatusCodes.Status200OK] = Constants.SwaggerSummary.ReturnedResult.FormatInvariant("aggregate");
+        Responses[StatusCodes.Status400BadRequest] = Constants.SwaggerSummary.ValidationError;
         Responses[StatusCodes.Status401Unauthorized] = Constants.SwaggerSummary.EndUserAuthenticationFailure;
         Responses[StatusCodes.Status403Forbidden] = Constants.SwaggerSummary.AccessDeniedToDialog.FormatInvariant("get");
         Responses[StatusCodes.Status404NotFound] = Constants.SwaggerSummary.DialogNotFound;
+        Responses[StatusCodes.Status410Gone] = Constants.SwaggerSummary.DialogDeleted;
     }
 }

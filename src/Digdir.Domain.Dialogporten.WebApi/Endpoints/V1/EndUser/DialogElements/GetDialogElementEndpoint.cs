@@ -24,9 +24,13 @@ public class GetDialogElementEndpoint : Endpoint<GetDialogElementQuery>
 
         Description(b => b
             .OperationId("GetDialogElement")
-            .ProducesOneOf(
+            .ProducesOneOf<GetDialogElementResult>(
                 StatusCodes.Status200OK,
-                StatusCodes.Status404NotFound)
+                StatusCodes.Status400BadRequest,
+                StatusCodes.Status401Unauthorized,
+                StatusCodes.Status403Forbidden,
+                StatusCodes.Status404NotFound,
+                StatusCodes.Status410Gone)
         );
     }
 
@@ -49,8 +53,10 @@ public sealed class GetDialogElementEndpointSummary : Summary<GetDialogElementEn
                 Gets a single element belonging to a dialog. For more information see the documentation (link TBD).
                 """;
         Responses[StatusCodes.Status200OK] = Constants.SwaggerSummary.ReturnedResult.FormatInvariant("element");
+        Responses[StatusCodes.Status400BadRequest] = Constants.SwaggerSummary.ValidationError;
         Responses[StatusCodes.Status401Unauthorized] = Constants.SwaggerSummary.EndUserAuthenticationFailure;
         Responses[StatusCodes.Status403Forbidden] = Constants.SwaggerSummary.AccessDeniedToDialogForChildEntity.FormatInvariant("get");
         Responses[StatusCodes.Status404NotFound] = Constants.SwaggerSummary.DialogElementNotFound;
+        Responses[StatusCodes.Status410Gone] = Constants.SwaggerSummary.DialogDeleted;
     }
 }
