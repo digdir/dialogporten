@@ -8,6 +8,5 @@ internal sealed class PurgeDialogCommandValidator : AbstractValidator<PurgeDialo
     {
         RuleFor(x => x.DialogId)
             .NotEqual(default(Guid));
-
     }
 }
