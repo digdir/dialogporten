@@ -217,11 +217,12 @@ internal static class AggregateExtensions
         foreach (var childForeignKey in parentEntry.Metadata.FindAggregateChildren())
         {
             var childNav = parentEntry.Navigation(childForeignKey.PrincipalToDependent!.Name);
-            //if (!childNav.IsLoaded)
-            //{
-            //    // Alternativ 1: Throw!
-            //    // Alternativ 2: Log Warning!
-            //}
+            if (!childNav.IsLoaded)
+            {
+                Console.WriteLine($"{childNav.Metadata.Name} not loaded .. loading ...");
+                // Alternativ 1: Throw!
+                // Alternativ 2: Log Warning!
+            }
             await childNav.LoadAsync(cancellationToken);
             var currentValues = childNav.Metadata.IsCollection
                 ? childNav.CurrentValue as IEnumerable<object> ?? Enumerable.Empty<object>()

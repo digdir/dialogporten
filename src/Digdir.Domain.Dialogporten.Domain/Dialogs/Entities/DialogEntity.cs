@@ -72,12 +72,13 @@ public class DialogEntity :
 
     public void OnUpdate(AggregateNode self, DateTimeOffset utcNow)
     {
-        var shouldProduceEvent = self.IsDirectlyModified()
-            || self.Children.Any(x =>
-                !x.IsChanged<DialogElement>()
-                && !x.IsChanged<DialogSearchTag>()
-                && !x.IsChanged<DialogContent>());
+        var changedChildren = self.Children.Where(x =>
+            x.State != AggregateNodeState.Unchanged &&
+            x.Entity is not DialogElement &&
+            x.Entity is not DialogSearchTag &&
+            x.Entity is not DialogActivity);
 
+        var shouldProduceEvent = self.IsDirectlyModified() || changedChildren.Any();
         if (shouldProduceEvent)
         {
             _domainEvents.Add(new DialogUpdatedDomainEvent(Id, ServiceResource, Party));

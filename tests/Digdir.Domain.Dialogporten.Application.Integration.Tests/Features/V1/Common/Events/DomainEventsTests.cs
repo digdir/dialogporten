@@ -153,8 +153,8 @@ public class DomainEventsTests(DialogApplication application) : ApplicationColle
         cloudEvents.Should().OnlyContain(cloudEvent => cloudEvent.Resource == createDialogCommand.ServiceResource);
         cloudEvents.Should().OnlyContain(cloudEvent => cloudEvent.Subject == createDialogCommand.Party);
 
-        // cloudEvents.Should().NotContain(cloudEvent =>
-        //     cloudEvent.Type == CloudEventTypes.Get(nameof(DialogUpdatedDomainEvent)));
+        cloudEvents.Should().NotContain(cloudEvent =>
+            cloudEvent.Type == CloudEventTypes.Get(nameof(DialogUpdatedDomainEvent)));
 
         cloudEvents.Should().ContainSingle(cloudEvent =>
             cloudEvent.Type == CloudEventTypes.Get(nameof(DialogElementUpdatedDomainEvent)));
