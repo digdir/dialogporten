@@ -87,6 +87,5 @@ public class PurgeDialogRequestBinder : IRequestBinder<PurgeDialogRequest>
             DialogId = dialogId,
             IfMatchDialogRevision = revisionFound ? revision : null
         });
-
     }
 }
