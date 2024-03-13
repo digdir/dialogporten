@@ -28,6 +28,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
     private readonly IClock _clock;
     private readonly IUserNameRegistry _userNameRegistry;
     private readonly IAltinnAuthorization _altinnAuthorization;
+    private readonly IDialogTokenGenerator _dialogTokenGenerator;
 
     public GetDialogQueryHandler(
         IDialogDbContext db,
@@ -35,7 +36,8 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
         IUnitOfWork unitOfWork,
         IClock clock,
         IUserNameRegistry userNameRegistry,
-        IAltinnAuthorization altinnAuthorization)
+        IAltinnAuthorization altinnAuthorization,
+        IDialogTokenGenerator dialogTokenGenerator)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
@@ -43,6 +45,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
         _clock = clock ?? throw new ArgumentNullException(nameof(clock));
         _userNameRegistry = userNameRegistry ?? throw new ArgumentNullException(nameof(userNameRegistry));
         _altinnAuthorization = altinnAuthorization ?? throw new ArgumentNullException(nameof(altinnAuthorization));
+        _dialogTokenGenerator = dialogTokenGenerator ?? throw new ArgumentNullException(nameof(dialogTokenGenerator));
     }
 
     public async Task<GetDialogResult> Handle(GetDialogQuery request, CancellationToken cancellationToken)
@@ -115,6 +118,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
 
         var dto = _mapper.Map<GetDialogDto>(dialog);
 
+        dto.DialogToken = _dialogTokenGenerator.GetDialogToken(dialog, authorizationResult);
         DecorateWithAuthorization(dto, authorizationResult);
 
         return dto;

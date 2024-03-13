@@ -92,7 +92,22 @@ public class DialogApplication : IAsyncLifetime
             {
                 Dialogporten = new DialogportenSettings
                 {
-                    BaseUri = new Uri("https://integration.test")
+                    BaseUri = new Uri("https://integration.test"),
+                    Ed25519KeyPairs = new Ed25519KeyPairs
+                    {
+                        Primary = new Ed25519KeyPair
+                        {
+                            Kid = "kid1",
+                            PrivateComponent = "private1",
+                            PublicComponent = "public1"
+                        },
+                        Secondary = new Ed25519KeyPair
+                        {
+                            Kid = "kid2",
+                            PrivateComponent = "private2",
+                            PublicComponent = "public2"
+                        },
+                    }
                 }
             });
 

@@ -13,6 +13,20 @@ public sealed class ApplicationSettings
 public sealed class DialogportenSettings
 {
     public required Uri BaseUri { get; init; }
+    public required Ed25519KeyPairs Ed25519KeyPairs { get; init; }
+}
+
+public sealed class Ed25519KeyPairs
+{
+    public required Ed25519KeyPair Primary { get; init; }
+    public required Ed25519KeyPair Secondary { get; init; }
+}
+
+public sealed class Ed25519KeyPair
+{
+    public required string Kid { get; init; }
+    public required string PrivateComponent { get; init; }
+    public required string PublicComponent { get; init; }
 }
 
 internal sealed class ApplicationSettingsValidator : AbstractValidator<ApplicationSettings>

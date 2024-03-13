@@ -27,6 +27,7 @@ public sealed class GetDialogDto
     public DialogStatus.Values Status { get; set; }
 
     public List<GetDialogContentDto> Content { get; set; } = [];
+    public string? DialogToken { get; set; }
 
     public List<GetDialogDialogElementDto> Elements { get; set; } = [];
     public List<GetDialogDialogGuiActionDto> GuiActions { get; set; } = [];

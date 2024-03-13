@@ -9,6 +9,7 @@ namespace Digdir.Domain.Dialogporten.Application.Common.Extensions;
 public static class ClaimsPrincipalExtensions
 {
     private const string ConsumerClaim = "consumer";
+    private const string SupplierClaim = "supplier";
     private const string AuthorityClaim = "authority";
     private const string AuthorityValue = "iso6523-actorid-upis";
     private const string IdClaim = "ID";
@@ -17,8 +18,24 @@ public static class ClaimsPrincipalExtensions
     private const string OrgClaim = "urn:altinn:org";
     private const string PidClaim = "pid";
 
+    public static bool TryGetClaimValue(this ClaimsPrincipal claimsPrincipal, string claimType, [NotNullWhen(true)] out string? value)
+    {
+        var claim = claimsPrincipal.FindFirst(claimType);
+        if (claim is not null)
+        {
+            value = claim.Value;
+            return true;
+        }
+
+        value = null;
+        return false;
+    }
+
     public static bool TryGetOrgNumber(this ClaimsPrincipal claimsPrincipal, [NotNullWhen(true)] out string? orgNumber)
         => claimsPrincipal.FindFirst(ConsumerClaim).TryGetOrgNumber(out orgNumber);
+
+    public static bool TryGetSupplierOrgNumber(this ClaimsPrincipal claimsPrincipal, [NotNullWhen(true)] out string? orgNumber)
+        => claimsPrincipal.FindFirst(SupplierClaim).TryGetOrgNumber(out orgNumber);
 
     public static bool TryGetPid(this ClaimsPrincipal claimsPrincipal, [NotNullWhen(true)] out string? pid)
         => claimsPrincipal.FindFirst(PidClaim).TryGetPid(out pid);
@@ -72,6 +89,25 @@ public static class ClaimsPrincipalExtensions
         };
 
         return orgNumber is not null;
+    }
+
+    public static bool TryGetAuthenticationLevel(this ClaimsPrincipal claimsPrincipal, [NotNullWhen(true)] out string? authenticationLevel)
+    {
+        if (claimsPrincipal.TryGetClaimValue("acr", out var acr))
+        {
+            // The acr claim value is "LevelX" where X is the authentication level
+            authenticationLevel = acr[5..];
+            return true;
+        }
+
+        if (claimsPrincipal.TryGetClaimValue("urn:altinn:authlevel", out var authLevel))
+        {
+            authenticationLevel = authLevel;
+            return true;
+        }
+
+        authenticationLevel = null;
+        return false;
     }
 
     private static bool TryGetOrgShortName(this ClaimsPrincipal claimsPrincipal, [NotNullWhen(true)] out string? orgShortName)
