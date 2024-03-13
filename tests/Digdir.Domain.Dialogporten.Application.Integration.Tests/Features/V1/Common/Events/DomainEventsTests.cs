@@ -242,7 +242,7 @@ public class DomainEventsTests(DialogApplication application) : ApplicationColle
         // Act
         var purgeCommand = new PurgeDialogCommand
         {
-            Id = dialogId
+            DialogId = dialogId
         };
 
         await Application.Send(purgeCommand);
@@ -273,7 +273,7 @@ public class DomainEventsTests(DialogApplication application) : ApplicationColle
         // Act
         var purgeCommand = new PurgeDialogCommand
         {
-            Id = dialogId
+            DialogId = dialogId
         };
 
         await Application.Send(purgeCommand);

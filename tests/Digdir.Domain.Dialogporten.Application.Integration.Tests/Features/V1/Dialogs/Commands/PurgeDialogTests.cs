@@ -21,7 +21,7 @@ public class PurgeDialogTests(DialogApplication application) : ApplicationCollec
         createResponse.TryPickT0(out _, out _).Should().BeTrue();
 
         // Act
-        var purgeCommand = new PurgeDialogCommand { Id = expectedDialogId };
+        var purgeCommand = new PurgeDialogCommand { DialogId = expectedDialogId };
         var purgeResponse = await Application.Send(purgeCommand);
 
         // Assert
@@ -47,7 +47,7 @@ public class PurgeDialogTests(DialogApplication application) : ApplicationCollec
         createResponse.TryPickT0(out _, out _).Should().BeTrue();
 
         // Act
-        var purgeCommand = new PurgeDialogCommand { Id = expectedDialogId, IfMatchDialogRevision = Guid.NewGuid() };
+        var purgeCommand = new PurgeDialogCommand { DialogId = expectedDialogId, IfMatchDialogRevision = Guid.NewGuid() };
         var purgeResponse = await Application.Send(purgeCommand);
 
         // Assert
@@ -61,7 +61,7 @@ public class PurgeDialogTests(DialogApplication application) : ApplicationCollec
         var expectedDialogId = Guid.NewGuid();
         var createCommand = DialogGenerator.GenerateFakeDialog(id: expectedDialogId);
         await Application.Send(createCommand);
-        var purgeCommand = new PurgeDialogCommand { Id = expectedDialogId };
+        var purgeCommand = new PurgeDialogCommand { DialogId = expectedDialogId };
         await Application.Send(purgeCommand);
 
         // Act
