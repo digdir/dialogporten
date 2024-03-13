@@ -26,7 +26,7 @@ resource redis 'Microsoft.Cache/Redis@2023-08-01' = {
     enableNonSslPort: false
     redisConfiguration: {
       'aad-enabled': 'true'
-      'maxmemory-policy': 'allkeys-lru' 
+      'maxmemory-policy': 'allkeys-lru'
     }
     redisVersion: version
   }
@@ -40,7 +40,7 @@ module redisConnectionString '../keyvault/upsertSecret.bicep' = {
     destKeyVaultName: environmentKeyVaultName
     secretName: 'dialogportenRedisConnectionString'
     // disable public access? Use vnet here maybe?
-    secretValue: 'redis://${redis.properties.hostName}:${redis.properties.port},password=${redis.properties.accessKeys.primaryKey},ssl=True,abortConnect=False'
+    secretValue: '${redis.properties.hostName}:${redis.properties.port},password=${redis.properties.accessKeys.primaryKey},ssl=True,abortConnect=False'
   }
 }
 
