@@ -82,11 +82,8 @@ public class Ed25519Generator : ICompactJwsGenerator
             return false;
         }
 
-        var payload = Base64Url.Decode(parts[1]);
         var signature = Base64Url.Decode(parts[2]);
-
-        var dataToSign = Encoding.UTF8.GetString(header) + '.' + Encoding.UTF8.GetString(payload);
-        return SignatureAlgorithm.Ed25519.Verify(_publicKey!, Encoding.UTF8.GetBytes(dataToSign), signature);
+        return SignatureAlgorithm.Ed25519.Verify(_publicKey!, Encoding.UTF8.GetBytes(parts[0] + '.' + parts[1]), signature);
     }
 
     private void InitSigningKey()

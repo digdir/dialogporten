@@ -43,6 +43,6 @@ public class CompactJwsGeneratorTests
         var jws = generator.GetCompactJws(payload);
 
         // Assert
-        generator.VerifyCompactJws(jws);
+        Assert.True(generator.VerifyCompactJws(jws));
     }
 }
