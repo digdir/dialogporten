@@ -7,18 +7,18 @@ import {
     setSearchTags,
     setSenderName,
     setStatus,
+    setParty,
+    setServiceResource,
     setExtendedStatus,
     setDueAt,
     setExpiresAt,
     setVisibleFrom, 
     postSO,
     putSO,
-    deleteSO } from '../../common/testimports.js'
-
-import { defaultEndUserOrgNo } from "../../common/config.js";
+    purgeSO } from '../../common/testimports.js'
 
 import { default as dialogToInsert } from '../serviceowner/testdata/01-create-dialog.js';
-
+import { getDefaultEnduserOrgNo, getDefaultEnduserSsn } from '../../common/token.js';
 export default function () {
 
     let dialogs = [];
@@ -30,21 +30,22 @@ export default function () {
     let extendedStatusToSearchFor = "status:" + uuidv4();
     let secondExtendedStatusToSearchFor = "status:" + uuidv4();
     let senderNameToSearchFor = uuidv4()
-    let enduserParty = "urn:altinn:organization:identifier-no::" + defaultEndUserOrgNo;
-    let resource = "urn:altinn:resource:ttd-dialogporten-automated-tests"; // Note! We assume that this exists!
+    let defaultParty = "urn:altinn:person:identifier-no::" + getDefaultEnduserSsn();
+    let auxParty = "urn:altinn:organization:identifier-no::" + getDefaultEnduserOrgNo(); // some party that we can access
+    let auxResource = "urn:altinn:resource:ttd-dialogporten-automated-tests-2"; // Note! We assume that this exists!
     let titleForDueAtItem = "due_" + uuidv4();
     let titleForExpiresAtItem = "expires_" + uuidv4();
     let titleForUpdatedItem = "updated_" + uuidv4();
     let titleForLastItem = "last_" + uuidv4();
     let createdAfter = (new Date()).toISOString(); // We use this on all tests to hopefully avoid clashing with unrelated dialogs
-    let defaultFilter = "?CreatedAfter=" + createdAfter + "&Party=" + enduserParty;
-    const numberOfDialogs = 11;
+    let defaultFilter = "?CreatedAfter=" + createdAfter + "&Party=" + defaultParty;
 
     describe('Arrange: Create some dialogs to test against', () => {
 
-        for (let i = 0; i < numberOfDialogs; i++) {
+        for (let i = 0; i < 15; i++) {
             let d = dialogToInsert();
             setTitle(d, "e2e-test-dialog eu #" + (i+1), "nn_NO");
+            setParty(d, defaultParty);
             setVisibleFrom(d, null);
             dialogs.push(d);
         }
@@ -58,6 +59,9 @@ export default function () {
         
         setSenderName(dialogs[++d], senderNameToSearchFor);
         setExtendedStatus(dialogs[d], secondExtendedStatusToSearchFor);
+
+        setServiceResource(dialogs[++d], auxResource);
+        setParty(dialogs[++d], auxParty);
         
         setTitle(dialogs[++d], titleForDueAtItem);
         setDueAt(dialogs[d], new Date("2033-12-07T10:13:00Z"));
@@ -152,23 +156,22 @@ export default function () {
     });
 
     describe('List with resource filter', () => {
-        let r = getEU('dialogs/' + defaultFilter + '&ServiceResource=' + resource);
+        let r = getEU('dialogs/' + defaultFilter + '&ServiceResource=' + auxResource);
         expectStatusFor(r).to.equal(200);
         expect(r, 'response').to.have.validJsonBody();
-        expect(r.json(), 'response json').to.have.property("items").with.lengthOf(numberOfDialogs);
-        expect(r.json().items[0], 'party').to.have.property("serviceResource").that.equals(resource);
+        expect(r.json(), 'response json').to.have.property("items").with.lengthOf(1);
+        expect(r.json().items[0], 'party').to.have.property("serviceResource").that.equals(auxResource);
     });
 
     describe("Cleanup", () => {
         dialogIds.forEach((d) => {
-            let r = deleteSO("dialogs/" + d);
+            let r = purgeSO("dialogs/" + d);
             expect(r.status, 'response status').to.equal(204);
         });
     });
-    
-    describe("Check if we get 410 Gone", () => {
-        let r = getEU('dialogs/' + dialogIds[0]);
-        expectStatusFor(r).to.equal(410);
-    });
 
+    describe("Check if we get 404 Not found", () => {
+        let r = getEU('dialogs/' + dialogIds[0]);
+        expectStatusFor(r).to.equal(404);
+    });
 }
