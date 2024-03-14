@@ -91,19 +91,31 @@ public static class ClaimsPrincipalExtensions
         return orgNumber is not null;
     }
 
-    public static bool TryGetAuthenticationLevel(this ClaimsPrincipal claimsPrincipal, [NotNullWhen(true)] out string? authenticationLevel)
+    public static bool TryGetAuthenticationLevel(this ClaimsPrincipal claimsPrincipal, [NotNullWhen(true)] out int? authenticationLevel)
     {
         if (claimsPrincipal.TryGetClaimValue("acr", out var acr))
         {
             // The acr claim value is "LevelX" where X is the authentication level
-            authenticationLevel = acr[5..];
-            return true;
+            var parsedAuthenticationLevel = acr[5..];
+            if (int.TryParse(parsedAuthenticationLevel, out var level))
+            {
+                authenticationLevel = level;
+                return true;
+            }
+
+            authenticationLevel = null;
+            return false;
         }
 
         if (claimsPrincipal.TryGetClaimValue("urn:altinn:authlevel", out var authLevel))
         {
-            authenticationLevel = authLevel;
-            return true;
+            if (int.TryParse(authLevel, out var level))
+            {
+                authenticationLevel = level;
+                return true;
+            }
+            authenticationLevel = null;
+            return false;
         }
 
         authenticationLevel = null;

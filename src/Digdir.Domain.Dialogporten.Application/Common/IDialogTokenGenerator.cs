@@ -20,7 +20,10 @@ internal class DialogTokenGenerator : IDialogTokenGenerator
     private readonly ApplicationSettings _applicationSettings;
     private readonly IUser _user;
     private readonly ICompactJwsGenerator _compactJwsGenerator;
-    private readonly TimeSpan _tokenLifetime = TimeSpan.FromMinutes(20);
+
+    // 30 minutes of idling will presumably cause a session timeout anyway,
+    // so having the token being invalid after 30 minutes should be sufficient.
+    private readonly TimeSpan _tokenLifetime = TimeSpan.FromMinutes(30);
 
     public DialogTokenGenerator(
         IOptions<ApplicationSettings> applicationSettings,
@@ -42,7 +45,7 @@ internal class DialogTokenGenerator : IDialogTokenGenerator
             DialogId = dialog.Id,
             AuthenticatedParty = GetAuthenticatedParty(),
             AuthenticationLevel = claimsPrincipal.TryGetAuthenticationLevel(out var authenticationLevel)
-                ? int.Parse(authenticationLevel, CultureInfo.InvariantCulture)
+                ? authenticationLevel.Value
                 : 0,
             DialogParty = dialog.Party,
             SupplierParty = claimsPrincipal.TryGetSupplierOrgNumber(out var supplierOrgNumber)
@@ -94,6 +97,7 @@ internal class DialogTokenGenerator : IDialogTokenGenerator
     }
 }
 
+// TODO! Consider moving this to the domain layer
 public sealed class DialogTokenClaims
 {
     [JsonPropertyName("l")]
