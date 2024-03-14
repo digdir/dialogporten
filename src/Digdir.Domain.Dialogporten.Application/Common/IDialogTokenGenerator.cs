@@ -21,9 +21,13 @@ internal class DialogTokenGenerator : IDialogTokenGenerator
     private readonly IUser _user;
     private readonly ICompactJwsGenerator _compactJwsGenerator;
 
-    // 30 minutes of idling will presumably cause a session timeout anyway,
-    // so having the token being invalid after 30 minutes should be sufficient.
-    private readonly TimeSpan _tokenLifetime = TimeSpan.FromMinutes(30);
+    // Keep the lifetime semi-short to reduce the risk of token misuse
+    // after rights revocation, whilst still making it possible for the
+    // user to idle a reasonable amount of time before committing to an action.
+    //
+    // End user systems should make sure to re-request the dialog, upon
+    // which a new token will be issued based on current authorization data.
+    private readonly TimeSpan _tokenLifetime = TimeSpan.FromMinutes(10);
 
     public DialogTokenGenerator(
         IOptions<ApplicationSettings> applicationSettings,
