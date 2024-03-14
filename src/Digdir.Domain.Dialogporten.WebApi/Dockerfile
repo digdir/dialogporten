@@ -1,8 +1,10 @@
-﻿FROM mcr.microsoft.com/dotnet/aspnet:8.0.3@sha256:9470bf16cb8566951dfdb89d49a4de73ceb31570b3cdb59059af44fe53b19547 AS base
+﻿ARG ASPNET_IMAGE_VERSION=8.0.3
+ARG SDK_IMAGE_VERSION=8.0.202
+FROM mcr.microsoft.com/dotnet/aspnet:${ASPNET_IMAGE_VERSION}@sha256:9470bf16cb8566951dfdb89d49a4de73ceb31570b3cdb59059af44fe53b19547 AS base
 WORKDIR /app
 EXPOSE 8080
 
-FROM mcr.microsoft.com/dotnet/sdk:8.0.202@sha256:aabbef174ecb15ef9047574ae2d45a82479e670f62c0a1ad1fa6d623ee19e623 AS build
+FROM mcr.microsoft.com/dotnet/sdk:${SDK_IMAGE_VERSION}@sha256:aabbef174ecb15ef9047574ae2d45a82479e670f62c0a1ad1fa6d623ee19e623 AS build
 WORKDIR /src
 # Main project
 COPY ["src/Digdir.Domain.Dialogporten.WebApi/Digdir.Domain.Dialogporten.WebApi.csproj", "src/Digdir.Domain.Dialogporten.WebApi/"]

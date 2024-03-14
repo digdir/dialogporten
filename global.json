@@ -2,5 +2,8 @@
   "sdk": {
     "version": "8.0.202",
     "rollForward": "disable"
+  },
+  "runtime": {
+    "version": "8.0.3"
   }
 }
