@@ -20,7 +20,8 @@ internal sealed class GetOauthAuthorizationServerQueryHandler : IRequestHandler<
         return await Task.FromResult(new GetOauthAuthorizationServerDto
         {
             Issuer = _applicationSettings.Dialogporten.BaseUri.ToString(),
-            JwksUri = _applicationSettings.Dialogporten.BaseUri + "api/v1/.well-known/jwks.json"
+            // FIXME! Don't hardcode the jwks_uri
+            JwksUri = _applicationSettings.Dialogporten.BaseUri + "api/v1/metadata/.well-known/jwks.json"
         });
     }
 }

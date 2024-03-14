@@ -1,4 +1,5 @@
 using Digdir.Domain.Dialogporten.Application.Features.V1.Metadata.WellKnown.Jwks.Queries.Get;
+using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
 using FastEndpoints;
 using MediatR;
 using Microsoft.Net.Http.Headers;
@@ -17,7 +18,11 @@ public sealed class JwksEndpoint : EndpointWithoutRequest<GetJwksDto>
     public override void Configure()
     {
         Get(".well-known/jwks.json");
-        Description(x => x.ExcludeFromDescription());
+        Group<MetadataGroup>();
+        Description(b => b
+            .OperationId("GetMetadataJwks")
+            .Produces<GetJwksDto>()
+        );
     }
 
     public override async Task HandleAsync(CancellationToken ct)
@@ -33,5 +38,17 @@ public sealed class JwksEndpoint : EndpointWithoutRequest<GetJwksDto>
 
 
         await SendOkAsync(result, ct);
+    }
+
+    public sealed class JwksEndpointSummary : Summary<JwksEndpoint>
+    {
+        public JwksEndpointSummary()
+        {
+            Summary = "Gets the JSON Web Key Set (JWKS) containing the public keys used to verify dialog token signatures";
+            Description = """
+                          This endpoint can be used by client integrations supporting automatic discovery of "OAuth 2.0 Authorization Server" metadata, enabling verification of dialog tokens issues by Dialogporten.
+                          """;
+            Responses[StatusCodes.Status200OK] = "The OAuth 2.0 Authorization Server Metadata";
+        }
     }
 }
