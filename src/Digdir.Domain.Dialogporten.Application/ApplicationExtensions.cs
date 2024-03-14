@@ -19,6 +19,12 @@ public static class ApplicationExtensions
         ArgumentNullException.ThrowIfNull(configuration);
         var thisAssembly = Assembly.GetExecutingAssembly();
 
+        // FIXME! Is this the best way to do this?
+        configuration = new ConfigurationBuilder()
+            .AddConfiguration(configuration)
+            .AddUserSecrets(Assembly.GetExecutingAssembly(), true)
+            .Build();
+
         services.AddOptions<ApplicationSettings>()
             .Bind(configuration.GetSection(ApplicationSettings.ConfigurationSectionName))
             .ValidateFluently()
