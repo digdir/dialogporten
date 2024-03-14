@@ -42,7 +42,6 @@ internal class DialogTokenGenerator : IDialogTokenGenerator
         var dt = new DialogTokenClaims
         {
             JwtId = Guid.NewGuid(),
-            DialogId = dialog.Id,
             AuthenticatedParty = GetAuthenticatedParty(),
             AuthenticationLevel = claimsPrincipal.TryGetAuthenticationLevel(out var authenticationLevel)
                 ? authenticationLevel.Value
@@ -51,6 +50,8 @@ internal class DialogTokenGenerator : IDialogTokenGenerator
             SupplierParty = claimsPrincipal.TryGetSupplierOrgNumber(out var supplierOrgNumber)
                 ? NorwegianOrganizationIdentifier.PrefixWithSeparator + supplierOrgNumber
                 : null,
+            ServiceResource = dialog.ServiceResource,
+            DialogId = dialog.Id,
             Actions = GetAuthorizedActions(authorizationResult),
             Issuer = _applicationSettings.Dialogporten.BaseUri.ToString(),
             IssuedAt = now,
@@ -109,8 +110,11 @@ public sealed class DialogTokenClaims
     [JsonPropertyName("p")]
     public string DialogParty { get; set; } = null!;
 
-    [JsonPropertyName("s")]
+    [JsonPropertyName("u")]
     public string? SupplierParty { get; set; }
+
+    [JsonPropertyName("s")]
+    public string ServiceResource { get; set; } = null!;
 
     [JsonPropertyName("i")]
     public Guid DialogId { get; set; }

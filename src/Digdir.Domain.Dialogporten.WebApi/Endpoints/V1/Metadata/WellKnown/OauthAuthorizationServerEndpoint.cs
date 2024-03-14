@@ -1,4 +1,3 @@
-using Digdir.Domain.Dialogporten.Application.Features.V1.Metadata.WellKnown.Jwks.Queries.Get;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Metadata.WellKnown.OauthAuthorizationServer.Queries.Get;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
 using FastEndpoints;
