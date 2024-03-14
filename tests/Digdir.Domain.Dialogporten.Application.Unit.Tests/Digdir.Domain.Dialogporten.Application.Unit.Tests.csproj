@@ -20,11 +20,6 @@
         <Using Include="Xunit"/>
     </ItemGroup>
 
-    <ItemGroup>
-      <Reference Include="Microsoft.Extensions.Options">
-        <HintPath>..\..\..\..\..\..\usr\local\share\dotnet\shared\Microsoft.AspNetCore.App\8.0.3\Microsoft.Extensions.Options.dll</HintPath>
-      </Reference>
-    </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\..\src\Digdir.Domain.Dialogporten.Application\Digdir.Domain.Dialogporten.Application.csproj" />
