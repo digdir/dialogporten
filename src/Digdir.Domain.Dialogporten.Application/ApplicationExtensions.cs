@@ -73,6 +73,9 @@ public static class ApplicationExtensions
             localDeveloperSettings.UseLocalDevelopmentUser ||
             localDeveloperSettings.UseLocalDevelopmentNameRegister);
 
+        services.Decorate<ICompactJwsGenerator, LocalDevelopmentCompactJwsGeneratorDecorator>(
+            predicate: localDeveloperSettings.UseLocalDevelopmentCompactJwsGenerator);
+
         return services;
     }
 }

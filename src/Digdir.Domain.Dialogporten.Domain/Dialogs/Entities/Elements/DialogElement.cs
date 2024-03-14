@@ -48,10 +48,10 @@ public class DialogElement : IEntity, IAggregateChangedHandler, IEventPublisher
     }
 
     public void OnDelete(AggregateNode self, DateTimeOffset utcNow)
-    {
+    {/*
         _domainEvents.Add(new DialogElementDeletedDomainEvent(
             DialogId, Id, Dialog.ServiceResource,
-            Dialog.Party, RelatedDialogElementId, Type));
+            Dialog.Party, RelatedDialogElementId, Type));*/
     }
 
     public void SoftDelete()

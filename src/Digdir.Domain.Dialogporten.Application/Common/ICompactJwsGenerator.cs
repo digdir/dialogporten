@@ -102,6 +102,17 @@ public class Ed25519Generator : ICompactJwsGenerator
     }
 }
 
+internal sealed class LocalDevelopmentCompactJwsGeneratorDecorator : ICompactJwsGenerator
+{
+    public LocalDevelopmentCompactJwsGeneratorDecorator(ICompactJwsGenerator _)
+    {
+    }
+
+    public string GetCompactJws(DialogTokenClaims claims) => "local-development-jws";
+
+    public bool VerifyCompactJws(string compactJws) => true;
+}
+
 public static class Base64Url
 {
     public static int GetMaxEncodedToUtf8Length(int length) => (length + 2) / 3 * 4;
