@@ -53,6 +53,10 @@ Generated\ Files/
 TestResult.xml
 nunit-*.xml
 
+# VerifyTests
+# Ignoring received files from snapshot tests
+*.received.*
+
 # Build Results of an ATL Project
 [Dd]ebugPS/
 [Rr]eleasePS/

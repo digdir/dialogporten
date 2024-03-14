@@ -1,0 +1,10 @@
+{
+  "name": "dialogporten-swagger",
+  "version": "1.0.4",
+  "description": "OpenAPI spec for Dialogporten",
+  "author": "DigDir",
+  "repository": {
+    "url": "git+https://github.com/digdir/dialogporten.git"
+  },
+  "license": "ISC"
+}
