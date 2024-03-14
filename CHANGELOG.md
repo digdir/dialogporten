@@ -1,5 +1,28 @@
 # Changelog
 
+## [1.1.0](https://github.com/digdir/dialogporten/compare/v1.0.4...v1.1.0) (2024-03-13)
+
+
+### Features
+
+* Add name lookups ([#532](https://github.com/digdir/dialogporten/issues/532)) ([db9cadc](https://github.com/digdir/dialogporten/commit/db9cadca7b00bb98cee38dc2b154a36ff61b99ef))
+* **azure:** add redis resource ([#518](https://github.com/digdir/dialogporten/issues/518)) ([1b2c013](https://github.com/digdir/dialogporten/commit/1b2c0133477bb454edcec4158eb1de1c7f2b8de7))
+* use redis in web api ([#527](https://github.com/digdir/dialogporten/issues/527)) ([eabd708](https://github.com/digdir/dialogporten/commit/eabd7085b12b23ffa85ba2ce0901e033c33f0e35))
+
+
+### Bug Fixes
+
+* Allow for 2 seconds clock skew in token validation ([#536](https://github.com/digdir/dialogporten/issues/536)) ([a0147b8](https://github.com/digdir/dialogporten/commit/a0147b8035dfdaf3ba157e3967a396f5ed897e8c))
+* **azure:** rename connection string key for redis ([#533](https://github.com/digdir/dialogporten/issues/533)) ([db36213](https://github.com/digdir/dialogporten/commit/db36213f1cd4b5b306844c4a333a7556449f01fc))
+* **azure:** revert to using connection string for IDistributedCache Redis ([#526](https://github.com/digdir/dialogporten/issues/526)) ([d19350d](https://github.com/digdir/dialogporten/commit/d19350d6b3f08efc473f9f7459dd9ef00db83f67))
+* **azure:** use built-in policy for redis ([#521](https://github.com/digdir/dialogporten/issues/521)) ([2a8fa76](https://github.com/digdir/dialogporten/commit/2a8fa76761a92fe76b694f93cf263ce4336ba39d))
+* **azure:** use secret uri instead of host name in app config ([#522](https://github.com/digdir/dialogporten/issues/522)) ([7cafd77](https://github.com/digdir/dialogporten/commit/7cafd77c50dcd131fa86575cc3a0cd34b08881ea))
+* **azure:** use SSL port for redis in connection string ([#546](https://github.com/digdir/dialogporten/issues/546)) ([548bc47](https://github.com/digdir/dialogporten/commit/548bc47729e805ab078c9e158e234f860523166f))
+* Change IfMatchDialogRevision to Revision in DTO ([#535](https://github.com/digdir/dialogporten/issues/535)) ([3a065d3](https://github.com/digdir/dialogporten/commit/3a065d3aecd4c0740dbd15cef3bd0792f865b667))
+* purge should accept any content-type and no body ([#540](https://github.com/digdir/dialogporten/issues/540)) ([736fb59](https://github.com/digdir/dialogporten/commit/736fb59e511aa6b52683611af64e5c60bc224772))
+* remove prefix for redis connection string ([#541](https://github.com/digdir/dialogporten/issues/541)) ([ceb204c](https://github.com/digdir/dialogporten/commit/ceb204c4196688f8f458f656dd4f8356a4cda488))
+* Update Altinn Authorization integration ([#457](https://github.com/digdir/dialogporten/issues/457)) ([#469](https://github.com/digdir/dialogporten/issues/469)) ([d0d846d](https://github.com/digdir/dialogporten/commit/d0d846d6f7b9ee69a0dc501aafb8bae463ab14a1))
+
 ## [1.0.4](https://github.com/digdir/dialogporten/compare/v1.0.3...v1.0.4) (2024-02-29)
 
 
