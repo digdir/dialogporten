@@ -9,7 +9,7 @@ namespace Digdir.Domain.Dialogporten.Application.Common;
 
 public interface ICompactJwsGenerator
 {
-    string GetCompactJws(DialogTokenClaims claims);
+    string GetCompactJws(Dictionary<string, object?> claims);
     bool VerifyCompactJws(string compactJws);
 }
 
@@ -29,7 +29,7 @@ public class Ed25519Generator : ICompactJwsGenerator
         _applicationSettings = applicationSettings.Value;
     }
 
-    public string GetCompactJws(DialogTokenClaims claims)
+    public string GetCompactJws(Dictionary<string, object?> claims)
     {
         InitSigningKey();
 
@@ -101,11 +101,12 @@ public class Ed25519Generator : ICompactJwsGenerator
 
 internal sealed class LocalDevelopmentCompactJwsGeneratorDecorator : ICompactJwsGenerator
 {
+    // ReSharper disable once UnusedParameter.Local
     public LocalDevelopmentCompactJwsGeneratorDecorator(ICompactJwsGenerator _)
     {
     }
 
-    public string GetCompactJws(DialogTokenClaims claims) => "local-development-jws";
+    public string GetCompactJws(Dictionary<string, object?> claims) => "local-development-jws";
 
     public bool VerifyCompactJws(string compactJws) => true;
 }

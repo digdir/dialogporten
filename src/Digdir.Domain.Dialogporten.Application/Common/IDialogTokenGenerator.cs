@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Security.Claims;
 using System.Text;
 using System.Text.Json.Serialization;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
@@ -46,27 +47,30 @@ internal class DialogTokenGenerator : IDialogTokenGenerator
     {
         var claimsPrincipal = _user.GetPrincipal();
         var now = _clock.UtcNowOffset.ToUnixTimeSeconds();
-        var dt = new DialogTokenClaims
+
+        var claims = new Dictionary<string, object?>
         {
-            JwtId = Guid.NewGuid(),
-            AuthenticatedParty = GetAuthenticatedParty(),
-            AuthenticationLevel = claimsPrincipal.TryGetAuthenticationLevel(out var authenticationLevel)
+            { DialogTokenClaimTypes.JwtId, Guid.NewGuid() },
+            { DialogTokenClaimTypes.AuthenticatedParty, GetAuthenticatedParty() },
+            { DialogTokenClaimTypes.AuthenticationLevel,
+                claimsPrincipal.TryGetAuthenticationLevel(out var authenticationLevel)
                 ? authenticationLevel.Value
-                : 0,
-            DialogParty = dialog.Party,
-            SupplierParty = claimsPrincipal.TryGetSupplierOrgNumber(out var supplierOrgNumber)
-                ? NorwegianOrganizationIdentifier.PrefixWithSeparator + supplierOrgNumber
-                : null,
-            ServiceResource = dialog.ServiceResource,
-            DialogId = dialog.Id,
-            Actions = GetAuthorizedActions(authorizationResult),
-            Issuer = issuer.ToString(),
-            IssuedAt = now,
-            NotBefore = now,
-            Expires = now + (long)_tokenLifetime.TotalSeconds
+                : 0 },
+            { DialogTokenClaimTypes.DialogParty, dialog.Party },
+            { DialogTokenClaimTypes.SupplierParty,
+                claimsPrincipal.TryGetSupplierOrgNumber(out var supplierOrgNumber)
+                    ? NorwegianOrganizationIdentifier.PrefixWithSeparator + supplierOrgNumber
+                    : null },
+            { DialogTokenClaimTypes.ServiceResource, dialog.ServiceResource },
+            { DialogTokenClaimTypes.DialogId, dialog.Id },
+            { DialogTokenClaimTypes.Actions, GetAuthorizedActions(authorizationResult) },
+            { DialogTokenClaimTypes.Issuer, issuer.ToString() },
+            { DialogTokenClaimTypes.IssuedAt, now },
+            { DialogTokenClaimTypes.NotBefore, now },
+            { DialogTokenClaimTypes.Expires, now + (long)_tokenLifetime.TotalSeconds }
         };
 
-        return _compactJwsGenerator.GetCompactJws(dt);
+        return _compactJwsGenerator.GetCompactJws(claims);
     }
 
     private static string GetAuthorizedActions(DialogDetailsAuthorizationResult authorizationResult)
@@ -105,42 +109,18 @@ internal class DialogTokenGenerator : IDialogTokenGenerator
     }
 }
 
-// TODO! Consider moving this to the domain layer
-public sealed class DialogTokenClaims
+public static class DialogTokenClaimTypes
 {
-    [JsonPropertyName("l")]
-    public int AuthenticationLevel { get; set; }
-
-    [JsonPropertyName("c")]
-    public string AuthenticatedParty { get; set; } = null!;
-
-    [JsonPropertyName("p")]
-    public string DialogParty { get; set; } = null!;
-
-    [JsonPropertyName("u")]
-    public string? SupplierParty { get; set; }
-
-    [JsonPropertyName("s")]
-    public string ServiceResource { get; set; } = null!;
-
-    [JsonPropertyName("i")]
-    public Guid DialogId { get; set; }
-
-    [JsonPropertyName("a")]
-    public string Actions { get; set; } = null!;
-
-    [JsonPropertyName("iss")]
-    public string Issuer { get; set; } = null!;
-
-    [JsonPropertyName("exp")]
-    public long Expires { get; set; }
-
-    [JsonPropertyName("nbf")]
-    public long NotBefore { get; set; }
-
-    [JsonPropertyName("iat")]
-    public long IssuedAt { get; set; }
-
-    [JsonPropertyName("jti")]
-    public Guid JwtId { get; set; }
+    public const string JwtId = "jti";
+    public const string Issuer = "iss";
+    public const string IssuedAt = "iat";
+    public const string NotBefore = "nbf";
+    public const string Expires = "exp";
+    public const string AuthenticationLevel = "l";
+    public const string AuthenticatedParty = "c";
+    public const string DialogParty = "p";
+    public const string SupplierParty = "u";
+    public const string ServiceResource = "s";
+    public const string DialogId = "i";
+    public const string Actions = "a";
 }
