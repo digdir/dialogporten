@@ -1,4 +1,5 @@
-﻿using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
+﻿using System.Diagnostics;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Events.DialogElements;
 using Digdir.Domain.Dialogporten.Domain.Localizations;
@@ -49,9 +50,13 @@ public class DialogElement : IEntity, IAggregateChangedHandler, IEventPublisher
 
     public void OnDelete(AggregateNode self, DateTimeOffset utcNow)
     {
+        var dialog = (DialogEntity?)self.Parents
+            .FirstOrDefault(x => x.Entity is DialogEntity dialog && dialog.Id == DialogId)
+            ?.Entity ?? throw new UnreachableException("Expected there to be a parent dialog when deleting a dialog element.");
+
         _domainEvents.Add(new DialogElementDeletedDomainEvent(
-            DialogId, Id, Dialog.ServiceResource,
-            Dialog.Party, RelatedDialogElementId, Type));
+            DialogId, Id, dialog.ServiceResource,
+            dialog.Party, RelatedDialogElementId, Type));
     }
 
     public void SoftDelete()
