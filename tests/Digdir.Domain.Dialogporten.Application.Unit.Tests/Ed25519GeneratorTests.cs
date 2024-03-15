@@ -34,9 +34,11 @@ public class CompactJwsGeneratorTests
         var options = new OptionsMock<ApplicationSettings>(settings);
         var generator = new Ed25519Generator(options);
 
-        var payload = new DialogTokenClaims
+        var payload = new Dictionary<string, object?>
         {
-            AuthenticatedParty = "unittest"
+            { "sub", "1234567890" },
+            { "name", "John Doe" },
+            { "iat", 1516239022 }
         };
 
         // Act
