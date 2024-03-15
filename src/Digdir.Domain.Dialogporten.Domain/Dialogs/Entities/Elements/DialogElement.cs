@@ -50,13 +50,9 @@ public class DialogElement : IEntity, IAggregateChangedHandler, IEventPublisher
 
     public void OnDelete(AggregateNode self, DateTimeOffset utcNow)
     {
-        var dialog = self.Parents.First().Entity as DialogEntity;
-
-        if (dialog is null)
-        {
-            // ?????
-            throw new UnreachableException();
-        }
+        var dialog = (DialogEntity?)self.Parents
+            .FirstOrDefault(x => x.Entity is DialogEntity dialog && dialog.Id == DialogId)
+            ?.Entity ?? throw new UnreachableException("Expected there to be a parent dialog when deleting a dialog element.");
 
         _domainEvents.Add(new DialogElementDeletedDomainEvent(
             DialogId, Id, dialog.ServiceResource,
