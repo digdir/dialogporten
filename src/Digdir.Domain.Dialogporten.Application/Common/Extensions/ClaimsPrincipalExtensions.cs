@@ -93,29 +93,17 @@ public static class ClaimsPrincipalExtensions
 
     public static bool TryGetAuthenticationLevel(this ClaimsPrincipal claimsPrincipal, [NotNullWhen(true)] out int? authenticationLevel)
     {
-        if (claimsPrincipal.TryGetClaimValue("acr", out var acr))
+        string[] claimTypes = { "acr", "urn:altinn:authlevel" };
+
+        foreach (var claimType in claimTypes)
         {
+            if (!claimsPrincipal.TryGetClaimValue(claimType, out var claimValue)) continue;
             // The acr claim value is "LevelX" where X is the authentication level
-            var parsedAuthenticationLevel = acr[5..];
-            if (int.TryParse(parsedAuthenticationLevel, out var level))
-            {
-                authenticationLevel = level;
-                return true;
-            }
+            var valueToParse = claimType == "acr" ? claimValue[5..] : claimValue;
+            if (!int.TryParse(valueToParse, out var level)) continue;
 
-            authenticationLevel = null;
-            return false;
-        }
-
-        if (claimsPrincipal.TryGetClaimValue("urn:altinn:authlevel", out var authLevel))
-        {
-            if (int.TryParse(authLevel, out var level))
-            {
-                authenticationLevel = level;
-                return true;
-            }
-            authenticationLevel = null;
-            return false;
+            authenticationLevel = level;
+            return true;
         }
 
         authenticationLevel = null;
