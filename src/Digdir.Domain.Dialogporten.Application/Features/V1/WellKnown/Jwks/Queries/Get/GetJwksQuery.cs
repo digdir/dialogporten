@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using Microsoft.Extensions.Options;
 
-namespace Digdir.Domain.Dialogporten.Application.Features.V1.Metadata.WellKnown.Jwks.Queries.Get;
+namespace Digdir.Domain.Dialogporten.Application.Features.V1.WellKnown.Jwks.Queries.Get;
 
 public sealed class GetJwksQuery : IRequest<GetJwksDto>;
 

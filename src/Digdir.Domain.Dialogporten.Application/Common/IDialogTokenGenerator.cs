@@ -12,13 +12,14 @@ namespace Digdir.Domain.Dialogporten.Application.Common;
 
 public interface IDialogTokenGenerator
 {
-    string GetDialogToken(DialogEntity dialog, DialogDetailsAuthorizationResult authorizationResult);
+    string GetDialogToken(DialogEntity dialog, DialogDetailsAuthorizationResult authorizationResult, Uri issuer);
 }
 
 internal class DialogTokenGenerator : IDialogTokenGenerator
 {
     private readonly ApplicationSettings _applicationSettings;
     private readonly IUser _user;
+    private readonly IClock _clock;
     private readonly ICompactJwsGenerator _compactJwsGenerator;
 
     // Keep the lifetime semi-short to reduce the risk of token misuse
@@ -32,17 +33,19 @@ internal class DialogTokenGenerator : IDialogTokenGenerator
     public DialogTokenGenerator(
         IOptions<ApplicationSettings> applicationSettings,
         IUser user,
+        IClock clock,
         ICompactJwsGenerator compactJwsGenerator)
     {
         _applicationSettings = applicationSettings.Value ?? throw new ArgumentNullException(nameof(applicationSettings));
         _user = user ?? throw new ArgumentNullException(nameof(user));
+        _clock = clock ?? throw new ArgumentNullException(nameof(clock));
         _compactJwsGenerator = compactJwsGenerator ?? throw new ArgumentNullException(nameof(compactJwsGenerator));
     }
 
-    public string GetDialogToken(DialogEntity dialog, DialogDetailsAuthorizationResult authorizationResult)
+    public string GetDialogToken(DialogEntity dialog, DialogDetailsAuthorizationResult authorizationResult, Uri issuer)
     {
         var claimsPrincipal = _user.GetPrincipal();
-        var now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+        var now = _clock.UtcNowOffset.ToUnixTimeSeconds();
         var dt = new DialogTokenClaims
         {
             JwtId = Guid.NewGuid(),
@@ -57,7 +60,7 @@ internal class DialogTokenGenerator : IDialogTokenGenerator
             ServiceResource = dialog.ServiceResource,
             DialogId = dialog.Id,
             Actions = GetAuthorizedActions(authorizationResult),
-            Issuer = _applicationSettings.Dialogporten.BaseUri.ToString(),
+            Issuer = issuer.ToString(),
             IssuedAt = now,
             NotBefore = now,
             Expires = now + (long)_tokenLifetime.TotalSeconds

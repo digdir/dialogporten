@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Digdir.Domain.Dialogporten.Application.Features.V1.Metadata.WellKnown.OauthAuthorizationServer.Queries.Get;
+namespace Digdir.Domain.Dialogporten.Application.Features.V1.WellKnown.OauthAuthorizationServer.Queries.Get;
 
 public sealed class GetOauthAuthorizationServerDto
 {
