@@ -1,13 +1,10 @@
 using System.Globalization;
-using System.Security.Claims;
 using System.Text;
-using System.Text.Json.Serialization;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Parties;
-using Microsoft.Extensions.Options;
 
 namespace Digdir.Domain.Dialogporten.Application.Common;
 
@@ -18,7 +15,6 @@ public interface IDialogTokenGenerator
 
 internal class DialogTokenGenerator : IDialogTokenGenerator
 {
-    private readonly ApplicationSettings _applicationSettings;
     private readonly IUser _user;
     private readonly IClock _clock;
     private readonly ICompactJwsGenerator _compactJwsGenerator;
@@ -32,12 +28,10 @@ internal class DialogTokenGenerator : IDialogTokenGenerator
     private readonly TimeSpan _tokenLifetime = TimeSpan.FromMinutes(10);
 
     public DialogTokenGenerator(
-        IOptions<ApplicationSettings> applicationSettings,
         IUser user,
         IClock clock,
         ICompactJwsGenerator compactJwsGenerator)
     {
-        _applicationSettings = applicationSettings.Value ?? throw new ArgumentNullException(nameof(applicationSettings));
         _user = user ?? throw new ArgumentNullException(nameof(user));
         _clock = clock ?? throw new ArgumentNullException(nameof(clock));
         _compactJwsGenerator = compactJwsGenerator ?? throw new ArgumentNullException(nameof(compactJwsGenerator));
