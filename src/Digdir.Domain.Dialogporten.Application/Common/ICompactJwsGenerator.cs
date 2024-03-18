@@ -19,10 +19,6 @@ public class Ed25519Generator : ICompactJwsGenerator
     private string? _kid;
     private Key? _privateKey;
     private PublicKey? _publicKey;
-    private static readonly JsonSerializerOptions _serializerOptions = new()
-    {
-        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-    };
 
     public Ed25519Generator(IOptions<ApplicationSettings> applicationSettings)
     {
@@ -40,7 +36,7 @@ public class Ed25519Generator : ICompactJwsGenerator
             kid = _kid
         });
 
-        var payload = JsonSerializer.SerializeToUtf8Bytes(claims, _serializerOptions);
+        var payload = JsonSerializer.SerializeToUtf8Bytes(claims);
 
         var bufferSize = Base64Url.GetMaxEncodedToUtf8Length(header.Length) +
                          Base64Url.GetMaxEncodedToUtf8Length(payload.Length) +

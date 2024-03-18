@@ -8,7 +8,7 @@
         <!-- In order to support doc blocks for Swagger generation in PatchDialogsController.cs -->
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <NoWarn>1591</NoWarn> <!-- Disable warnings for missing XML comments -->
-      <UserSecretsId>41944251-f40a-41f8-9730-d6d105af39ed</UserSecretsId>
+      <UserSecretsId>750256a4-f332-4783-8802-8a7d9566f9ca</UserSecretsId>
   </PropertyGroup>
 
     <ItemGroup>
@@ -16,7 +16,6 @@
         <PackageReference Include="HtmlAgilityPack" Version="1.11.59" />
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
         <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="8.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="8.0.0" />
         <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.9.0" />
         <PackageReference Include="MediatR" Version="12.2.0" />
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.2" />

@@ -5,16 +5,18 @@ using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Parties;
+using Microsoft.Extensions.Options;
 
 namespace Digdir.Domain.Dialogporten.Application.Common;
 
 public interface IDialogTokenGenerator
 {
-    string GetDialogToken(DialogEntity dialog, DialogDetailsAuthorizationResult authorizationResult, Uri issuer);
+    string GetDialogToken(DialogEntity dialog, DialogDetailsAuthorizationResult authorizationResult, string issuerVersion);
 }
 
 internal class DialogTokenGenerator : IDialogTokenGenerator
 {
+    private readonly ApplicationSettings _applicationSettings;
     private readonly IUser _user;
     private readonly IClock _clock;
     private readonly ICompactJwsGenerator _compactJwsGenerator;
@@ -28,16 +30,18 @@ internal class DialogTokenGenerator : IDialogTokenGenerator
     private readonly TimeSpan _tokenLifetime = TimeSpan.FromMinutes(10);
 
     public DialogTokenGenerator(
+        IOptions<ApplicationSettings> applicationSettings,
         IUser user,
         IClock clock,
         ICompactJwsGenerator compactJwsGenerator)
     {
+        _applicationSettings = applicationSettings.Value ?? throw new ArgumentNullException(nameof(applicationSettings));
         _user = user ?? throw new ArgumentNullException(nameof(user));
         _clock = clock ?? throw new ArgumentNullException(nameof(clock));
         _compactJwsGenerator = compactJwsGenerator ?? throw new ArgumentNullException(nameof(compactJwsGenerator));
     }
 
-    public string GetDialogToken(DialogEntity dialog, DialogDetailsAuthorizationResult authorizationResult, Uri issuer)
+    public string GetDialogToken(DialogEntity dialog, DialogDetailsAuthorizationResult authorizationResult, string issuerVersion)
     {
         var claimsPrincipal = _user.GetPrincipal();
         var now = _clock.UtcNowOffset.ToUnixTimeSeconds();
@@ -51,18 +55,19 @@ internal class DialogTokenGenerator : IDialogTokenGenerator
                 ? authenticationLevel.Value
                 : 0 },
             { DialogTokenClaimTypes.DialogParty, dialog.Party },
-            { DialogTokenClaimTypes.SupplierParty,
-                claimsPrincipal.TryGetSupplierOrgNumber(out var supplierOrgNumber)
-                    ? NorwegianOrganizationIdentifier.PrefixWithSeparator + supplierOrgNumber
-                    : null },
             { DialogTokenClaimTypes.ServiceResource, dialog.ServiceResource },
             { DialogTokenClaimTypes.DialogId, dialog.Id },
             { DialogTokenClaimTypes.Actions, GetAuthorizedActions(authorizationResult) },
-            { DialogTokenClaimTypes.Issuer, issuer.ToString() },
+            { DialogTokenClaimTypes.Issuer, _applicationSettings.Dialogporten.BaseUri + issuerVersion },
             { DialogTokenClaimTypes.IssuedAt, now },
             { DialogTokenClaimTypes.NotBefore, now },
             { DialogTokenClaimTypes.Expires, now + (long)_tokenLifetime.TotalSeconds }
         };
+
+        if (claimsPrincipal.TryGetSupplierOrgNumber(out var supplierOrgNumber))
+        {
+            claims.Add(DialogTokenClaimTypes.SupplierParty, NorwegianOrganizationIdentifier.PrefixWithSeparator + supplierOrgNumber);
+        }
 
         return _compactJwsGenerator.GetCompactJws(claims);
     }

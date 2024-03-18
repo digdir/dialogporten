@@ -23,7 +23,6 @@ public partial class GetDialogResult : OneOfBase<GetDialogDto, EntityNotFound, E
 
 internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, GetDialogResult>
 {
-    private readonly ApplicationSettings _applicationSettings;
     private readonly IDialogDbContext _db;
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
@@ -33,7 +32,6 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
     private readonly IDialogTokenGenerator _dialogTokenGenerator;
 
     public GetDialogQueryHandler(
-        IOptions<ApplicationSettings> applicationSettings,
         IDialogDbContext db,
         IMapper mapper,
         IUnitOfWork unitOfWork,
@@ -42,7 +40,6 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
         IAltinnAuthorization altinnAuthorization,
         IDialogTokenGenerator dialogTokenGenerator)
     {
-        _applicationSettings = applicationSettings.Value ?? throw new ArgumentNullException(nameof(applicationSettings));
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
@@ -125,7 +122,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
         dto.DialogToken = _dialogTokenGenerator.GetDialogToken(
             dialog,
             authorizationResult,
-            new Uri(_applicationSettings.Dialogporten.BaseUri + "api/v1")
+            "api/v1"
         );
 
         DecorateWithAuthorization(dto, authorizationResult);
