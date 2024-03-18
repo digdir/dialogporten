@@ -20,15 +20,8 @@ public static class ClaimsPrincipalExtensions
 
     public static bool TryGetClaimValue(this ClaimsPrincipal claimsPrincipal, string claimType, [NotNullWhen(true)] out string? value)
     {
-        var claim = claimsPrincipal.FindFirst(claimType);
-        if (claim is not null)
-        {
-            value = claim.Value;
-            return true;
-        }
-
-        value = null;
-        return false;
+        value = claimsPrincipal.FindFirst(claimType)?.Value;
+        return value is not null;
     }
 
     public static bool TryGetOrgNumber(this ClaimsPrincipal claimsPrincipal, [NotNullWhen(true)] out string? orgNumber)
