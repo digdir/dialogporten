@@ -207,7 +207,4 @@ static void IgnoreEmptyCollections(JsonTypeInfo typeInfo)
 }
 
 // ReSharper disable once ClassNeverInstantiated.Global
-namespace Digdir.Domain.Dialogporten.WebApi
-{
-    public partial class Program;
-}
+public partial class Program;
