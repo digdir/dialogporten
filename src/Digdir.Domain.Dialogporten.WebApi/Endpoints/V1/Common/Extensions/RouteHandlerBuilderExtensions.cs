@@ -1,6 +1,6 @@
-﻿using FastEndpoints;
+using FastEndpoints;
 
-namespace Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
+namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.Common.Extensions;
 
 internal static class RouteHandlerBuilderExtensions
 {
