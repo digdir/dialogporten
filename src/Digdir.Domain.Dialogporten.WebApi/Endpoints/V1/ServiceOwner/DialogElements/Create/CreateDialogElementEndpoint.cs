@@ -9,12 +9,6 @@ using FastEndpoints;
 using MediatR;
 using Medo;
 using IMapper = AutoMapper.IMapper;
-<<<<<<< HEAD:src/Digdir.Domain.Dialogporten.WebApi/Endpoints/V1/ServiceOwner/DialogElements/CreateDialogElementEndpoint.cs
-using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
-using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
-using Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.Common.Extensions;
-=======
->>>>>>> 96c78f7 (refac):src/Digdir.Domain.Dialogporten.WebApi/Endpoints/V1/ServiceOwner/DialogElements/Create/CreateDialogElementEndpoint.cs
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.DialogElements.Create;
 

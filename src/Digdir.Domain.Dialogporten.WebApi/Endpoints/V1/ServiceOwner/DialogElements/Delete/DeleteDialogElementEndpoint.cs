@@ -5,11 +5,6 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements;
 using Digdir.Domain.Dialogporten.WebApi.Common;
 using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
-<<<<<<< HEAD:src/Digdir.Domain.Dialogporten.WebApi/Endpoints/V1/ServiceOwner/DialogElements/DeleteDialogElementEndpoint.cs
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements;
-using Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.Common.Extensions;
-=======
->>>>>>> 96c78f7 (refac):src/Digdir.Domain.Dialogporten.WebApi/Endpoints/V1/ServiceOwner/DialogElements/Delete/DeleteDialogElementEndpoint.cs
 using FastEndpoints;
 using MediatR;
 using IMapper = AutoMapper.IMapper;

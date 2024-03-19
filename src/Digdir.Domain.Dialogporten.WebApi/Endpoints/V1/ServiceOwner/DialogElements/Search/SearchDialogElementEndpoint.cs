@@ -21,9 +21,7 @@ public class SearchDialogElementEndpoint : Endpoint<SearchDialogElementQuery>
         Policies(AuthorizationPolicy.ServiceProvider);
         Group<ServiceOwnerGroup>();
 
-        Description(b => b.
-            OperationId("")
-        );
+        Description(b => SearchDialogElementSwaggerConfig.SetDescription(b));
     }
 
     public override async Task HandleAsync(SearchDialogElementQuery req, CancellationToken ct)

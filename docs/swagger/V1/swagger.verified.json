@@ -1093,7 +1093,7 @@
         ],
         "summary": "Gets a list of dialog elements",
         "description": "Gets the list of elements belonging to a dialog",
-        "operationId": "elements",
+        "operationId": "GetDialogElementListSO",
         "parameters": [
           {
             "name": "dialogId",

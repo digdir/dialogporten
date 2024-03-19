@@ -2,11 +2,8 @@ using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.DialogElem
 using Digdir.Domain.Dialogporten.WebApi.Common;
 using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
-<<<<<<< HEAD:src/Digdir.Domain.Dialogporten.WebApi/Endpoints/V1/ServiceOwner/DialogElements/SearchDialogElementEndpoint.cs
 using Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.Common.Extensions;
-=======
 using Digdir.Domain.Dialogporten.WebApi.Common.Swagger;
->>>>>>> 96c78f7 (refac):src/Digdir.Domain.Dialogporten.WebApi/Endpoints/V1/ServiceOwner/DialogElements/Search/SearchDialogElementSwaggerConfig.cs
 using FastEndpoints;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.DialogElements.Search;
