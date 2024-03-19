@@ -10,47 +10,213 @@
     }
   ],
   "paths": {
-    "/api/v1/serviceowner/dialogs": {
-      "post": {
+    "/api/v1/serviceowner/dialogs/{dialogId}": {
+      "put": {
         "tags": [
           "Serviceowner"
         ],
-        "summary": "Creates a new dialog",
-        "description": "The dialog is created with the given configuration. For more information see the documentation (link TBD).\n\nFor detailed information on validation rules, see [the source for CreateDialogCommandValidator](https://github.com/digdir/dialogporten/blob/main/src/Digdir.Domain.Dialogporten.Application/Features/V1/ServiceOwner/Dialogs/Commands/Create/CreateDialogCommandValidator.cs)",
-        "operationId": "CreateDialog",
+        "summary": "Replaces a dialog",
+        "description": "Replaces a given dialog with the supplied model. For more information see the documentation (link TBD).\n\nOptimistic concurrency control is implemented using the If-Match header. Supply the Revision value from the GetDialog endpoint to ensure that the dialog is not modified/deleted by another request in the meantime.",
+        "operationId": "ReplaceDialog",
+        "parameters": [
+          {
+            "name": "dialogId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            }
+          },
+          {
+            "name": "if-Match",
+            "in": "header",
+            "schema": {
+              "type": "string",
+              "format": "guid",
+              "nullable": true
+            }
+          }
+        ],
         "requestBody": {
-          "x-name": "CreateDialogCommand",
-          "description": "",
+          "x-name": "dto",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateDialogCommand"
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/UpdateDialogDto"
+                  }
+                ]
+              },
+              "example": {
+                "Progress": 42,
+                "ExtendedStatus": "Some extended status",
+                "ExternalReference": "Some external reference",
+                "VisibleFrom": "2054-03-04T12:13:10.01344+00:00",
+                "DueAt": "2084-04-04T12:13:10.01344+00:00",
+                "ExpiresAt": "2095-05-04T12:13:10.01344+00:00",
+                "Status": 1,
+                "Content": [
+                  {
+                    "Type": 1,
+                    "Value": [
+                      {
+                        "Value": "Some Title",
+                        "CultureCode": "en-us"
+                      }
+                    ]
+                  },
+                  {
+                    "Type": 3,
+                    "Value": [
+                      {
+                        "Value": "Some Summary",
+                        "CultureCode": "en-us"
+                      }
+                    ]
+                  }
+                ],
+                "SearchTags": [
+                  {
+                    "Value": "searchTag"
+                  },
+                  {
+                    "Value": "anotherSearchTag"
+                  }
+                ],
+                "Elements": [
+                  {
+                    "Id": "02a72809-eddd-4192-864d-8f1755d72f4e",
+                    "Type": "http://example.com/some-type",
+                    "ExternalReference": null,
+                    "AuthorizationAttribute": null,
+                    "RelatedDialogElementId": null,
+                    "DisplayName": [
+                      {
+                        "Value": "Some display name",
+                        "CultureCode": "en-us"
+                      }
+                    ],
+                    "Urls": [
+                      {
+                        "Id": "858177cb-8584-4d10-a086-3a5defa7a6c3",
+                        "Url": "http://example.com/some-url",
+                        "MimeType": "application/json",
+                        "ConsumerType": 0
+                      }
+                    ]
+                  }
+                ],
+                "GuiActions": [
+                  {
+                    "Id": "8c64ecc8-7678-44b2-8788-0b5852dd8fa0",
+                    "Action": "submit",
+                    "Url": "https://example.com/some-url",
+                    "AuthorizationAttribute": null,
+                    "IsBackChannel": false,
+                    "IsDeleteAction": false,
+                    "Priority": 1,
+                    "Title": [
+                      {
+                        "Value": "GUI action title",
+                        "CultureCode": "en-us"
+                      },
+                      {
+                        "Value": "GUI action-tittel",
+                        "CultureCode": "nb-no"
+                      }
+                    ]
+                  }
+                ],
+                "ApiActions": [
+                  {
+                    "Id": "948b07ba-1a82-403e-8eaa-2e5784af07a9",
+                    "Action": "submit",
+                    "AuthorizationAttribute": null,
+                    "DialogElementId": null,
+                    "Endpoints": [
+                      {
+                        "Id": null,
+                        "Version": "20231015",
+                        "Url": "https://example.com/some-api-action",
+                        "HttpMethod": 2,
+                        "DocumentationUrl": "https://example.com/some-api-action-doc",
+                        "RequestSchema": "https://example.com/some-api-action-request-schema",
+                        "ResponseSchema": "https://example.com/some-api-action-response-schema",
+                        "Deprecated": false,
+                        "SunsetAt": null
+                      }
+                    ]
+                  }
+                ],
+                "Activities": [
+                  {
+                    "Id": "8b95d42d-d2b6-4c01-8ca0-a817a4b3c50d",
+                    "CreatedAt": null,
+                    "ExtendedType": null,
+                    "Type": 3,
+                    "RelatedActivityId": null,
+                    "DialogElementId": null,
+                    "PerformedBy": [
+                      {
+                        "Value": "Some performer",
+                        "CultureCode": "en-us"
+                      },
+                      {
+                        "Value": "En utfører",
+                        "CultureCode": "nb-no"
+                      }
+                    ],
+                    "Description": [
+                      {
+                        "Value": "Some description",
+                        "CultureCode": "en-us"
+                      },
+                      {
+                        "Value": "En beskrivelse",
+                        "CultureCode": "nb-no"
+                      }
+                    ]
+                  }
+                ]
               }
             }
           },
-          "required": true,
-          "x-position": 1
+          "required": true
         },
         "responses": {
           "401": {
             "description": "Missing or invalid authentication token. Requires a Maskinporten-token with the scope \"digdir:dialogporten.serviceprovider\"."
           },
           "403": {
-            "description": "Unauthorized to create a dialog for the given serviceResource (not owned by authenticated organization or has additional scope requirements defined in policy)."
+            "description": "Unauthorized to update the supplied dialog (not owned by authenticated organization or has additional scope requirements defined in policy)."
           },
-          "201": {
-            "description": "The UUID of the created the dialog aggregate. A relative URL to the newly created activity is set in the \"Location\" header.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                },
-                "example": "018bb8e5-d9d0-7434-8ec5-569a6c8e01fc"
-              }
-            }
+          "204": {
+            "description": "The dialog aggregate was updated successfully."
           },
           "400": {
             "description": "Validation error occured. See problem details for a list of errors.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The given dialog ID was not found or is already deleted.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "412": {
+            "description": "The supplied If-Match header did not match the current Revision value for the dialog. The request was not applied.",
             "content": {
               "application/problem+json": {
                 "schema": {
@@ -76,6 +242,226 @@
           }
         ]
       },
+      "get": {
+        "tags": [
+          "Serviceowner"
+        ],
+        "summary": "Gets a single dialog",
+        "description": "Gets a single dialog aggregate. For more information see the documentation (link TBD).\n\nNote that this operation may return deleted dialogs (see the field `DeletedAt`).",
+        "operationId": "GetDialogSO",
+        "parameters": [
+          {
+            "name": "dialogId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Missing or invalid authentication token. Requires a Maskinporten-token with the scope \"digdir:dialogporten.serviceprovider\"."
+          },
+          "403": {
+            "description": "Unauthorized to get the supplied dialog (not owned by authenticated organization or has additional scope requirements defined in policy)."
+          },
+          "200": {
+            "description": "Successfully returned the dialog aggregate.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetDialogDtoSO"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The given dialog ID was not found or is already deleted.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWTBearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Serviceowner"
+        ],
+        "summary": "Deletes a dialog",
+        "description": "Deletes a given dialog (soft delete). For more information see the documentation (link TBD).\n\nNote that the dialog will still be available on the single details endpoint, but will have a deleted status. It will not appear on the list endpoint for either service owners nor end users.\nIf end users attempt to access the dialog via the details endpoint, they will get a 410 Gone response.\n\nOptimistic concurrency control is implemented using the If-Match header. Supply the Revision value from the GetDialog endpoint to ensure that the dialog is not deleted by another request in the meantime.",
+        "operationId": "DeleteDialog",
+        "parameters": [
+          {
+            "name": "dialogId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            }
+          },
+          {
+            "name": "if-Match",
+            "in": "header",
+            "schema": {
+              "type": "string",
+              "format": "guid",
+              "nullable": true
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Missing or invalid authentication token. Requires a Maskinporten-token with the scope \"digdir:dialogporten.serviceprovider\"."
+          },
+          "403": {
+            "description": "Unauthorized to delete the supplied dialog (not owned by authenticated organization or has additional scope requirements defined in policy)."
+          },
+          "204": {
+            "description": "The dialog aggregate was deleted successfully."
+          },
+          "404": {
+            "description": "The given dialog ID was not found or is already deleted.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "412": {
+            "description": "The supplied If-Match header did not match the current Revision value for the dialog. The request was not applied.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWTBearerAuth": []
+          }
+        ]
+      },
+      "patch": {
+        "tags": [
+          "Serviceowner"
+        ],
+        "summary": "Patch a single dialog",
+        "description": "Patches a dialog aggregate with a RFC6902 JSON Patch document. The patch document must be a JSON array of RFC6902 operations.\nSee [https://tools.ietf.org/html/rfc6902](https://tools.ietf.org/html/rfc6902) for more information.\n            \nOptimistic concurrency control is implemented using the If-Match header. Supply the Revision value from the GetDialog endpoint to ensure that the dialog is not modified/deleted by another request in the meantime.",
+        "operationId": "PatchDialogs_Patch",
+        "parameters": [
+          {
+            "name": "dialogId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "If-Match",
+            "x-originalName": "etag",
+            "in": "header",
+            "schema": {
+              "type": "string",
+              "format": "guid",
+              "nullable": true
+            },
+            "x-position": 2
+          }
+        ],
+        "requestBody": {
+          "x-name": "patchDocument",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Operation"
+                }
+              }
+            }
+          },
+          "required": true,
+          "x-position": 3
+        },
+        "responses": {
+          "204": {
+            "description": "Patch was successfully applied."
+          },
+          "400": {
+            "description": "Validation error occured. See problem details for a list of errors.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication token. Requires a Maskinporten-token with the scope \\\"digdir:dialogporten.serviceprovider\\\""
+          },
+          "403": {
+            "description": "Unauthorized to update a dialog for the given serviceResource (not owned by authenticated organization or has additional scope requirements defined in policy)"
+          },
+          "404": {
+            "description": "The given dialog ID was not found or is deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "412": {
+            "description": "The supplied Revision does not match the current Revision of the dialog",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Domain error occured. See problem details for a list of errors.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWTBearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/serviceowner/dialogs": {
       "get": {
         "tags": [
           "Serviceowner"
@@ -312,435 +698,49 @@
             "JWTBearerAuth": []
           }
         ]
-      }
-    },
-    "/api/v1/serviceowner/dialogs/{dialogId}": {
-      "delete": {
-        "tags": [
-          "Serviceowner"
-        ],
-        "summary": "Deletes a dialog",
-        "description": "Deletes a given dialog (soft delete). For more information see the documentation (link TBD).\n\nNote that the dialog will still be available on the single details endpoint, but will have a deleted status. It will not appear on the list endpoint for either service owners nor end users.\nIf end users attempt to access the dialog via the details endpoint, they will get a 410 Gone response.\n\nOptimistic concurrency control is implemented using the If-Match header. Supply the Revision value from the GetDialog endpoint to ensure that the dialog is not deleted by another request in the meantime.",
-        "operationId": "DeleteDialog",
-        "parameters": [
-          {
-            "name": "dialogId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "guid"
-            }
-          },
-          {
-            "name": "if-Match",
-            "in": "header",
-            "schema": {
-              "type": "string",
-              "format": "guid",
-              "nullable": true
-            }
-          }
-        ],
-        "responses": {
-          "401": {
-            "description": "Missing or invalid authentication token. Requires a Maskinporten-token with the scope \"digdir:dialogporten.serviceprovider\"."
-          },
-          "403": {
-            "description": "Unauthorized to delete the supplied dialog (not owned by authenticated organization or has additional scope requirements defined in policy)."
-          },
-          "204": {
-            "description": "The dialog aggregate was deleted successfully."
-          },
-          "404": {
-            "description": "The given dialog ID was not found or is already deleted.",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          },
-          "412": {
-            "description": "The supplied If-Match header did not match the current Revision value for the dialog. The request was not applied.",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "JWTBearerAuth": []
-          }
-        ]
       },
-      "get": {
+      "post": {
         "tags": [
           "Serviceowner"
         ],
-        "summary": "Gets a single dialog",
-        "description": "Gets a single dialog aggregate. For more information see the documentation (link TBD).\n\nNote that this operation may return deleted dialogs (see the field `DeletedAt`).",
-        "operationId": "GetDialogSO",
-        "parameters": [
-          {
-            "name": "dialogId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "guid"
-            }
-          }
-        ],
-        "responses": {
-          "401": {
-            "description": "Missing or invalid authentication token. Requires a Maskinporten-token with the scope \"digdir:dialogporten.serviceprovider\"."
-          },
-          "403": {
-            "description": "Unauthorized to get the supplied dialog (not owned by authenticated organization or has additional scope requirements defined in policy)."
-          },
-          "200": {
-            "description": "Successfully returned the dialog aggregate.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/GetDialogDtoSO"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "The given dialog ID was not found or is already deleted.",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "JWTBearerAuth": []
-          }
-        ]
-      },
-      "put": {
-        "tags": [
-          "Serviceowner"
-        ],
-        "summary": "Replaces a dialog",
-        "description": "Replaces a given dialog with the supplied model. For more information see the documentation (link TBD).\n\nOptimistic concurrency control is implemented using the If-Match header. Supply the Revision value from the GetDialog endpoint to ensure that the dialog is not modified/deleted by another request in the meantime.",
-        "operationId": "ReplaceDialog",
-        "parameters": [
-          {
-            "name": "dialogId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "guid"
-            }
-          },
-          {
-            "name": "if-Match",
-            "in": "header",
-            "schema": {
-              "type": "string",
-              "format": "guid",
-              "nullable": true
-            }
-          }
-        ],
+        "summary": "Creates a new dialog",
+        "description": "The dialog is created with the given configuration. For more information see the documentation (link TBD).\n\nFor detailed information on validation rules, see [the source for CreateDialogCommandValidator](https://github.com/digdir/dialogporten/blob/main/src/Digdir.Domain.Dialogporten.Application/Features/V1/ServiceOwner/Dialogs/Commands/Create/CreateDialogCommandValidator.cs)",
+        "operationId": "CreateDialog",
         "requestBody": {
-          "x-name": "dto",
+          "x-name": "CreateDialogCommand",
+          "description": "",
           "content": {
             "application/json": {
               "schema": {
-                "oneOf": [
-                  {
-                    "$ref": "#/components/schemas/UpdateDialogDto"
-                  }
-                ]
-              },
-              "example": {
-                "Progress": 42,
-                "ExtendedStatus": "Some extended status",
-                "ExternalReference": "Some external reference",
-                "VisibleFrom": "2054-03-04T12:13:10.01344+00:00",
-                "DueAt": "2084-04-04T12:13:10.01344+00:00",
-                "ExpiresAt": "2095-05-04T12:13:10.01344+00:00",
-                "Status": 1,
-                "Content": [
-                  {
-                    "Type": 1,
-                    "Value": [
-                      {
-                        "Value": "Some Title",
-                        "CultureCode": "en-us"
-                      }
-                    ]
-                  },
-                  {
-                    "Type": 3,
-                    "Value": [
-                      {
-                        "Value": "Some Summary",
-                        "CultureCode": "en-us"
-                      }
-                    ]
-                  }
-                ],
-                "SearchTags": [
-                  {
-                    "Value": "searchTag"
-                  },
-                  {
-                    "Value": "anotherSearchTag"
-                  }
-                ],
-                "Elements": [
-                  {
-                    "Id": "02a72809-eddd-4192-864d-8f1755d72f4e",
-                    "Type": "http://example.com/some-type",
-                    "ExternalReference": null,
-                    "AuthorizationAttribute": null,
-                    "RelatedDialogElementId": null,
-                    "DisplayName": [
-                      {
-                        "Value": "Some display name",
-                        "CultureCode": "en-us"
-                      }
-                    ],
-                    "Urls": [
-                      {
-                        "Id": "858177cb-8584-4d10-a086-3a5defa7a6c3",
-                        "Url": "http://example.com/some-url",
-                        "MimeType": "application/json",
-                        "ConsumerType": 0
-                      }
-                    ]
-                  }
-                ],
-                "GuiActions": [
-                  {
-                    "Id": "8c64ecc8-7678-44b2-8788-0b5852dd8fa0",
-                    "Action": "submit",
-                    "Url": "https://example.com/some-url",
-                    "AuthorizationAttribute": null,
-                    "IsBackChannel": false,
-                    "IsDeleteAction": false,
-                    "Priority": 1,
-                    "Title": [
-                      {
-                        "Value": "GUI action title",
-                        "CultureCode": "en-us"
-                      },
-                      {
-                        "Value": "GUI action-tittel",
-                        "CultureCode": "nb-no"
-                      }
-                    ]
-                  }
-                ],
-                "ApiActions": [
-                  {
-                    "Id": "948b07ba-1a82-403e-8eaa-2e5784af07a9",
-                    "Action": "submit",
-                    "AuthorizationAttribute": null,
-                    "DialogElementId": null,
-                    "Endpoints": [
-                      {
-                        "Id": null,
-                        "Version": "20231015",
-                        "Url": "https://example.com/some-api-action",
-                        "HttpMethod": 2,
-                        "DocumentationUrl": "https://example.com/some-api-action-doc",
-                        "RequestSchema": "https://example.com/some-api-action-request-schema",
-                        "ResponseSchema": "https://example.com/some-api-action-response-schema",
-                        "Deprecated": false,
-                        "SunsetAt": null
-                      }
-                    ]
-                  }
-                ],
-                "Activities": [
-                  {
-                    "Id": "8b95d42d-d2b6-4c01-8ca0-a817a4b3c50d",
-                    "CreatedAt": null,
-                    "ExtendedType": null,
-                    "Type": 3,
-                    "RelatedActivityId": null,
-                    "DialogElementId": null,
-                    "PerformedBy": [
-                      {
-                        "Value": "Some performer",
-                        "CultureCode": "en-us"
-                      },
-                      {
-                        "Value": "En utfører",
-                        "CultureCode": "nb-no"
-                      }
-                    ],
-                    "Description": [
-                      {
-                        "Value": "Some description",
-                        "CultureCode": "en-us"
-                      },
-                      {
-                        "Value": "En beskrivelse",
-                        "CultureCode": "nb-no"
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "401": {
-            "description": "Missing or invalid authentication token. Requires a Maskinporten-token with the scope \"digdir:dialogporten.serviceprovider\"."
-          },
-          "403": {
-            "description": "Unauthorized to update the supplied dialog (not owned by authenticated organization or has additional scope requirements defined in policy)."
-          },
-          "204": {
-            "description": "The dialog aggregate was updated successfully."
-          },
-          "400": {
-            "description": "Validation error occured. See problem details for a list of errors.",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "The given dialog ID was not found or is already deleted.",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          },
-          "412": {
-            "description": "The supplied If-Match header did not match the current Revision value for the dialog. The request was not applied.",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Domain error occured. See problem details for a list of errors.",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "JWTBearerAuth": []
-          }
-        ]
-      },
-      "patch": {
-        "tags": [
-          "Serviceowner"
-        ],
-        "summary": "Patch a single dialog",
-        "description": "Patches a dialog aggregate with a RFC6902 JSON Patch document. The patch document must be a JSON array of RFC6902 operations.\nSee [https://tools.ietf.org/html/rfc6902](https://tools.ietf.org/html/rfc6902) for more information.\n            \nOptimistic concurrency control is implemented using the If-Match header. Supply the Revision value from the GetDialog endpoint to ensure that the dialog is not modified/deleted by another request in the meantime.",
-        "operationId": "PatchDialogs_Patch",
-        "parameters": [
-          {
-            "name": "dialogId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "guid"
-            },
-            "x-position": 1
-          },
-          {
-            "name": "If-Match",
-            "x-originalName": "etag",
-            "in": "header",
-            "schema": {
-              "type": "string",
-              "format": "guid",
-              "nullable": true
-            },
-            "x-position": 2
-          }
-        ],
-        "requestBody": {
-          "x-name": "patchDocument",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/Operation"
-                }
+                "$ref": "#/components/schemas/CreateDialogCommand"
               }
             }
           },
           "required": true,
-          "x-position": 3
+          "x-position": 1
         },
         "responses": {
-          "204": {
-            "description": "Patch was successfully applied."
+          "401": {
+            "description": "Missing or invalid authentication token. Requires a Maskinporten-token with the scope \"digdir:dialogporten.serviceprovider\"."
+          },
+          "403": {
+            "description": "Unauthorized to create a dialog for the given serviceResource (not owned by authenticated organization or has additional scope requirements defined in policy)."
+          },
+          "201": {
+            "description": "The UUID of the created the dialog aggregate. A relative URL to the newly created activity is set in the \"Location\" header.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "018bb8e5-d9d0-7434-8ec5-569a6c8e01fc"
+              }
+            }
           },
           "400": {
             "description": "Validation error occured. See problem details for a list of errors.",
             "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Missing or invalid authentication token. Requires a Maskinporten-token with the scope \\\"digdir:dialogporten.serviceprovider\\\""
-          },
-          "403": {
-            "description": "Unauthorized to update a dialog for the given serviceResource (not owned by authenticated organization or has additional scope requirements defined in policy)"
-          },
-          "404": {
-            "description": "The given dialog ID was not found or is deleted",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          },
-          "412": {
-            "description": "The supplied Revision does not match the current Revision of the dialog",
-            "content": {
-              "application/json": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -750,7 +750,7 @@
           "422": {
             "description": "Domain error occured. See problem details for a list of errors.",
             "content": {
-              "application/json": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -831,304 +831,7 @@
         ]
       }
     },
-    "/api/v1/serviceowner/dialogs/{dialogId}/elements": {
-      "post": {
-        "tags": [
-          "Serviceowner"
-        ],
-        "summary": "Creates a new dialog element",
-        "description": "The dialog element is created with the given configuration. For more information see the documentation (link TBD).\n\nOptimistic concurrency control is implemented using the If-Match header. Supply the Revision value from the GetDialog endpoint to ensure that the dialog is not modified/deleted by another request in the meantime.",
-        "operationId": "CreateDialogElement",
-        "parameters": [
-          {
-            "name": "dialogId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "guid"
-            }
-          },
-          {
-            "name": "if-Match",
-            "in": "header",
-            "schema": {
-              "type": "string",
-              "format": "guid",
-              "nullable": true
-            }
-          }
-        ],
-        "requestBody": {
-          "x-name": "CreateDialogElementRequest",
-          "description": "",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateDialogElementRequest"
-              }
-            }
-          },
-          "required": true,
-          "x-position": 1
-        },
-        "responses": {
-          "401": {
-            "description": "Missing or invalid authentication token. Requires a Maskinporten-token with the scope \"digdir:dialogporten.serviceprovider\"."
-          },
-          "403": {
-            "description": "Unauthorized to create child entity for the given dialog (dialog not owned by authenticated organization or has additional scope requirements defined in service identifiers policy)."
-          },
-          "201": {
-            "description": "The UUID of the created the dialog element. A relative URL to the newly created activity is set in the \"Location\" header.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                },
-                "example": "b6dc8b01-1cd8-2777-b759-d84b0e384f47"
-              }
-            }
-          },
-          "400": {
-            "description": "Validation error occured. See problem details for a list of errors.",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "The given dialog ID was not found or is already deleted.",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          },
-          "412": {
-            "description": "The supplied If-Match header did not match the current Revision value for the dialog. The request was not applied.",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Domain error occured. See problem details for a list of errors.",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "JWTBearerAuth": []
-          }
-        ]
-      },
-      "get": {
-        "tags": [
-          "Serviceowner"
-        ],
-        "summary": "Gets a list of dialog elements",
-        "description": "Gets the list of elements belonging to a dialog",
-        "operationId": "GetDialogElementListSO",
-        "parameters": [
-          {
-            "name": "dialogId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "guid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successfully returned the dialog element list.",
-            "content": {
-              "text/plain": {
-                "schema": {}
-              },
-              "application/json": {
-                "schema": {}
-              }
-            }
-          },
-          "401": {
-            "description": "Missing or invalid authentication token. Requires a Maskinporten-token with the scope \"digdir:dialogporten.serviceprovider\"."
-          },
-          "403": {
-            "description": "Unauthorized to get the supplied dialog (not owned by authenticated organization or has additional scope requirements defined in policy)."
-          }
-        },
-        "security": [
-          {
-            "JWTBearerAuth": []
-          }
-        ]
-      }
-    },
     "/api/v1/serviceowner/dialogs/{dialogId}/elements/{elementId}": {
-      "delete": {
-        "tags": [
-          "Serviceowner"
-        ],
-        "summary": "Deletes a dialog element",
-        "description": "Deletes a given dialog element (hard delete). For more information see the documentation (link TBD).\n\nOptimistic concurrency control is implemented using the If-Match header. Supply the Revision value from the GetDialog endpoint to ensure that the dialog is not modified/deleted by another request in the meantime.",
-        "operationId": "DeleteDialogElement",
-        "parameters": [
-          {
-            "name": "dialogId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "guid"
-            }
-          },
-          {
-            "name": "elementId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "guid"
-            }
-          },
-          {
-            "name": "if-Match",
-            "in": "header",
-            "schema": {
-              "type": "string",
-              "format": "guid",
-              "nullable": true
-            }
-          }
-        ],
-        "responses": {
-          "401": {
-            "description": "Missing or invalid authentication token. Requires a Maskinporten-token with the scope \"digdir:dialogporten.serviceprovider\"."
-          },
-          "403": {
-            "description": "Unauthorized to delete child entity for the given dialog (dialog not owned by authenticated organization or has additional scope requirements defined in service identifiers policy)."
-          },
-          "204": {
-            "description": "The dialog element was deleted successfully."
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "The given dialog ID or dialog element ID was not found or was already deleted.",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          },
-          "412": {
-            "description": "The supplied If-Match header did not match the current Revision value for the dialog. The request was not applied.",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "JWTBearerAuth": []
-          }
-        ]
-      },
-      "get": {
-        "tags": [
-          "Serviceowner"
-        ],
-        "summary": "Gets a single dialog element",
-        "description": "Gets a single element belonging to a dialog. For more information see the documentation (link TBD).",
-        "operationId": "GetDialogElementSO",
-        "parameters": [
-          {
-            "name": "dialogId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "guid"
-            }
-          },
-          {
-            "name": "elementId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "guid"
-            }
-          }
-        ],
-        "responses": {
-          "401": {
-            "description": "Missing or invalid authentication token. Requires a Maskinporten-token with the scope \"digdir:dialogporten.serviceprovider\"."
-          },
-          "403": {
-            "description": "Unauthorized to get child entity for the given dialog (dialog not owned by authenticated organization or has additional scope requirements defined in service identifiers policy)."
-          },
-          "200": {
-            "description": "Successfully returned the dialog element."
-          },
-          "404": {
-            "description": "The given dialog ID or dialog element ID was not found or was already deleted.",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "JWTBearerAuth": []
-          }
-        ]
-      },
       "put": {
         "tags": [
           "Serviceowner"
@@ -1234,9 +937,349 @@
             "JWTBearerAuth": []
           }
         ]
+      },
+      "get": {
+        "tags": [
+          "Serviceowner"
+        ],
+        "summary": "Gets a single dialog element",
+        "description": "Gets a single element belonging to a dialog. For more information see the documentation (link TBD).",
+        "operationId": "GetDialogElementSO",
+        "parameters": [
+          {
+            "name": "dialogId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            }
+          },
+          {
+            "name": "elementId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Missing or invalid authentication token. Requires a Maskinporten-token with the scope \"digdir:dialogporten.serviceprovider\"."
+          },
+          "403": {
+            "description": "Unauthorized to get child entity for the given dialog (dialog not owned by authenticated organization or has additional scope requirements defined in service identifiers policy)."
+          },
+          "200": {
+            "description": "Successfully returned the dialog element."
+          },
+          "404": {
+            "description": "The given dialog ID or dialog element ID was not found or was already deleted.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWTBearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Serviceowner"
+        ],
+        "summary": "Deletes a dialog element",
+        "description": "Deletes a given dialog element (hard delete). For more information see the documentation (link TBD).\n\nOptimistic concurrency control is implemented using the If-Match header. Supply the Revision value from the GetDialog endpoint to ensure that the dialog is not modified/deleted by another request in the meantime.",
+        "operationId": "DeleteDialogElement",
+        "parameters": [
+          {
+            "name": "dialogId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            }
+          },
+          {
+            "name": "elementId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            }
+          },
+          {
+            "name": "if-Match",
+            "in": "header",
+            "schema": {
+              "type": "string",
+              "format": "guid",
+              "nullable": true
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Missing or invalid authentication token. Requires a Maskinporten-token with the scope \"digdir:dialogporten.serviceprovider\"."
+          },
+          "403": {
+            "description": "Unauthorized to delete child entity for the given dialog (dialog not owned by authenticated organization or has additional scope requirements defined in service identifiers policy)."
+          },
+          "204": {
+            "description": "The dialog element was deleted successfully."
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The given dialog ID or dialog element ID was not found or was already deleted.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "412": {
+            "description": "The supplied If-Match header did not match the current Revision value for the dialog. The request was not applied.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWTBearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/serviceowner/dialogs/{dialogId}/elements": {
+      "get": {
+        "tags": [
+          "Serviceowner"
+        ],
+        "summary": "Gets a list of dialog elements",
+        "description": "Gets the list of elements belonging to a dialog",
+        "operationId": "elements",
+        "parameters": [
+          {
+            "name": "dialogId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully returned the dialog element list.",
+            "content": {
+              "text/plain": {
+                "schema": {}
+              },
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication token. Requires a Maskinporten-token with the scope \"digdir:dialogporten.serviceprovider\"."
+          },
+          "403": {
+            "description": "Unauthorized to get the supplied dialog (not owned by authenticated organization or has additional scope requirements defined in policy)."
+          }
+        },
+        "security": [
+          {
+            "JWTBearerAuth": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Serviceowner"
+        ],
+        "summary": "Creates a new dialog element",
+        "description": "The dialog element is created with the given configuration. For more information see the documentation (link TBD).\n\nOptimistic concurrency control is implemented using the If-Match header. Supply the Revision value from the GetDialog endpoint to ensure that the dialog is not modified/deleted by another request in the meantime.",
+        "operationId": "CreateDialogElement",
+        "parameters": [
+          {
+            "name": "dialogId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            }
+          },
+          {
+            "name": "if-Match",
+            "in": "header",
+            "schema": {
+              "type": "string",
+              "format": "guid",
+              "nullable": true
+            }
+          }
+        ],
+        "requestBody": {
+          "x-name": "CreateDialogElementRequest",
+          "description": "",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateDialogElementRequest"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "401": {
+            "description": "Missing or invalid authentication token. Requires a Maskinporten-token with the scope \"digdir:dialogporten.serviceprovider\"."
+          },
+          "403": {
+            "description": "Unauthorized to create child entity for the given dialog (dialog not owned by authenticated organization or has additional scope requirements defined in service identifiers policy)."
+          },
+          "201": {
+            "description": "The UUID of the created the dialog element. A relative URL to the newly created activity is set in the \"Location\" header.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "b6dc8b01-1cd8-2777-b759-d84b0e384f47"
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error occured. See problem details for a list of errors.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The given dialog ID was not found or is already deleted.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "412": {
+            "description": "The supplied If-Match header did not match the current Revision value for the dialog. The request was not applied.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Domain error occured. See problem details for a list of errors.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWTBearerAuth": []
+          }
+        ]
       }
     },
     "/api/v1/serviceowner/dialogs/{dialogId}/activities": {
+      "get": {
+        "tags": [
+          "Serviceowner"
+        ],
+        "summary": "Gets a list of dialog activities",
+        "description": "Gets the list of activities belonging to a dialog",
+        "operationId": "GetDialogActivityListSO",
+        "parameters": [
+          {
+            "name": "dialogId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully returned the dialog activity list.",
+            "content": {
+              "text/plain": {
+                "schema": {}
+              },
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication token. Requires a Maskinporten-token with the scope \"digdir:dialogporten.serviceprovider\"."
+          },
+          "403": {
+            "description": "Unauthorized to get the supplied dialog (not owned by authenticated organization or has additional scope requirements defined in policy)."
+          }
+        },
+        "security": [
+          {
+            "JWTBearerAuth": []
+          }
+        ]
+      },
       "post": {
         "tags": [
           "Serviceowner"
@@ -1334,49 +1377,6 @@
                 }
               }
             }
-          }
-        },
-        "security": [
-          {
-            "JWTBearerAuth": []
-          }
-        ]
-      },
-      "get": {
-        "tags": [
-          "Serviceowner"
-        ],
-        "summary": "Gets a list of dialog activities",
-        "description": "Gets the list of activities belonging to a dialog",
-        "operationId": "GetDialogActivityListSO",
-        "parameters": [
-          {
-            "name": "dialogId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "guid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successfully returned the dialog activity list.",
-            "content": {
-              "text/plain": {
-                "schema": {}
-              },
-              "application/json": {
-                "schema": {}
-              }
-            }
-          },
-          "401": {
-            "description": "Missing or invalid authentication token. Requires a Maskinporten-token with the scope \"digdir:dialogporten.serviceprovider\"."
-          },
-          "403": {
-            "description": "Unauthorized to get the supplied dialog (not owned by authenticated organization or has additional scope requirements defined in policy)."
           }
         },
         "security": [
@@ -1720,6 +1720,51 @@
         ]
       }
     },
+    "/api/v1/enduser/dialogs/{dialogId}/elements": {
+      "get": {
+        "tags": [
+          "Enduser"
+        ],
+        "summary": "Gets a list of dialog elements",
+        "description": "Gets the list of elements belonging to a dialog",
+        "operationId": "GetDialogElementList",
+        "parameters": [
+          {
+            "name": "dialogId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully returned the dialog element list.",
+            "content": {
+              "text/plain": {
+                "schema": {}
+              },
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication token. Requires a Maskinporten-token with the scope \"digdir:dialogporten\"."
+          },
+          "403": {
+            "description": "Unauthorized to get the supplied dialog (not owned by authenticated organization or has additional scope requirements defined in policy)."
+          }
+        },
+        "security": [
+          {
+            "JWTBearerAuth": []
+          }
+        ]
+      }
+    },
     "/api/v1/enduser/dialogs/{dialogId}/elements/{elementId}": {
       "get": {
         "tags": [
@@ -1776,14 +1821,14 @@
         ]
       }
     },
-    "/api/v1/enduser/dialogs/{dialogId}/elements": {
+    "/api/v1/enduser/dialogs/{dialogId}/activities": {
       "get": {
         "tags": [
           "Enduser"
         ],
-        "summary": "Gets a list of dialog elements",
-        "description": "Gets the list of elements belonging to a dialog",
-        "operationId": "GetDialogElementList",
+        "summary": "Gets a list of dialog activities",
+        "description": "Gets the list of activities belonging to a dialog",
+        "operationId": "GetDialogActivityList",
         "parameters": [
           {
             "name": "dialogId",
@@ -1797,7 +1842,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Successfully returned the dialog element list.",
+            "description": "Successfully returned the dialog activity list.",
             "content": {
               "text/plain": {
                 "schema": {}
@@ -1876,51 +1921,6 @@
           }
         ]
       }
-    },
-    "/api/v1/enduser/dialogs/{dialogId}/activities": {
-      "get": {
-        "tags": [
-          "Enduser"
-        ],
-        "summary": "Gets a list of dialog activities",
-        "description": "Gets the list of activities belonging to a dialog",
-        "operationId": "GetDialogActivityList",
-        "parameters": [
-          {
-            "name": "dialogId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "guid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successfully returned the dialog activity list.",
-            "content": {
-              "text/plain": {
-                "schema": {}
-              },
-              "application/json": {
-                "schema": {}
-              }
-            }
-          },
-          "401": {
-            "description": "Missing or invalid authentication token. Requires a Maskinporten-token with the scope \"digdir:dialogporten\"."
-          },
-          "403": {
-            "description": "Unauthorized to get the supplied dialog (not owned by authenticated organization or has additional scope requirements defined in policy)."
-          }
-        },
-        "security": [
-          {
-            "JWTBearerAuth": []
-          }
-        ]
-      }
     }
   },
   "components": {
@@ -1984,21 +1984,19 @@
           }
         }
       },
-      "CreateDialogCommand": {
+      "UpdateDialogRequest": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "id": {
-            "type": "string",
-            "format": "guid",
-            "nullable": true
-          },
-          "serviceResource": {
-            "type": "string"
-          },
-          "party": {
-            "type": "string"
-          },
+          "dto": {
+            "$ref": "#/components/schemas/UpdateDialogDto"
+          }
+        }
+      },
+      "UpdateDialogDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
           "progress": {
             "type": "integer",
             "format": "int32",
@@ -2033,37 +2031,37 @@
           "content": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/CreateDialogContentDto"
+              "$ref": "#/components/schemas/UpdateDialogContentDto"
             }
           },
           "searchTags": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/CreateDialogSearchTagDto"
+              "$ref": "#/components/schemas/UpdateDialogSearchTagDto"
             }
           },
           "elements": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/CreateDialogDialogElementDto"
+              "$ref": "#/components/schemas/UpdateDialogDialogElementDto"
             }
           },
           "guiActions": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/CreateDialogDialogGuiActionDto"
+              "$ref": "#/components/schemas/UpdateDialogDialogGuiActionDto"
             }
           },
           "apiActions": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/CreateDialogDialogApiActionDto"
+              "$ref": "#/components/schemas/UpdateDialogDialogApiActionDto"
             }
           },
           "activities": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/CreateDialogDialogActivityDto"
+              "$ref": "#/components/schemas/UpdateDialogDialogActivityDto"
             }
           }
         }
@@ -2088,7 +2086,7 @@
           "Completed"
         ]
       },
-      "CreateDialogContentDto": {
+      "UpdateDialogContentDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -2131,7 +2129,7 @@
           }
         }
       },
-      "CreateDialogSearchTagDto": {
+      "UpdateDialogSearchTagDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -2140,7 +2138,7 @@
           }
         }
       },
-      "CreateDialogDialogElementDto": {
+      "UpdateDialogDialogElementDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -2176,15 +2174,20 @@
           "urls": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/CreateDialogDialogElementUrlDto"
+              "$ref": "#/components/schemas/UpdateDialogDialogElementUrlDto"
             }
           }
         }
       },
-      "CreateDialogDialogElementUrlDto": {
+      "UpdateDialogDialogElementUrlDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid",
+            "nullable": true
+          },
           "url": {
             "type": "string",
             "format": "uri"
@@ -2210,10 +2213,15 @@
           "Api"
         ]
       },
-      "CreateDialogDialogGuiActionDto": {
+      "UpdateDialogDialogGuiActionDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid",
+            "nullable": true
+          },
           "action": {
             "type": "string"
           },
@@ -2256,10 +2264,15 @@
           "Tertiary"
         ]
       },
-      "CreateDialogDialogApiActionDto": {
+      "UpdateDialogDialogApiActionDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid",
+            "nullable": true
+          },
           "action": {
             "type": "string"
           },
@@ -2275,15 +2288,20 @@
           "endpoints": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/CreateDialogDialogApiActionEndpointDto"
+              "$ref": "#/components/schemas/UpdateDialogDialogApiActionEndpointDto"
             }
           }
         }
       },
-      "CreateDialogDialogApiActionEndpointDto": {
+      "UpdateDialogDialogApiActionEndpointDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid",
+            "nullable": true
+          },
           "version": {
             "type": "string",
             "nullable": true
@@ -2346,7 +2364,7 @@
           "CONNECT"
         ]
       },
-      "CreateDialogDialogActivityDto": {
+      "UpdateDialogDialogActivityDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -2413,6 +2431,102 @@
           "Seen",
           "Forwarded"
         ]
+      },
+      "PaginatedListOfSearchDialogDtoSO": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SearchDialogDtoSO"
+            }
+          },
+          "hasNextPage": {
+            "type": "boolean"
+          },
+          "continuationToken": {
+            "type": "string",
+            "nullable": true
+          },
+          "orderBy": {
+            "type": "string"
+          }
+        }
+      },
+      "SearchDialogDtoSO": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "org": {
+            "type": "string"
+          },
+          "serviceResource": {
+            "type": "string"
+          },
+          "party": {
+            "type": "string"
+          },
+          "endUserId": {
+            "type": "string",
+            "nullable": true
+          },
+          "progress": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "extendedStatus": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "dueAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "visibleFrom": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "status": {
+            "$ref": "#/components/schemas/DialogStatus_Values"
+          },
+          "content": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SearchDialogContentDtoSO"
+            }
+          }
+        }
+      },
+      "SearchDialogContentDtoSO": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "type": {
+            "$ref": "#/components/schemas/DialogContentType_Values"
+          },
+          "value": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LocalizationDto"
+            }
+          }
+        }
       },
       "GetDialogDtoSO": {
         "type": "object",
@@ -2518,6 +2632,8 @@
           }
         }
       },
+      "OrderSetOfTOrderDefinitionAndTTarget": {},
+      "ContinuationTokenSetOfTOrderDefinitionAndTTarget": {},
       "GetDialogContentDtoSO": {
         "type": "object",
         "additionalProperties": false,
@@ -2753,38 +2869,14 @@
           }
         }
       },
-      "PaginatedListOfSearchDialogDtoSO": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "items": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/SearchDialogDtoSO"
-            }
-          },
-          "hasNextPage": {
-            "type": "boolean"
-          },
-          "continuationToken": {
-            "type": "string",
-            "nullable": true
-          },
-          "orderBy": {
-            "type": "string"
-          }
-        }
-      },
-      "SearchDialogDtoSO": {
+      "CreateDialogCommand": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
           "id": {
             "type": "string",
-            "format": "guid"
-          },
-          "org": {
-            "type": "string"
+            "format": "guid",
+            "nullable": true
           },
           "serviceResource": {
             "type": "string"
@@ -2792,78 +2884,6 @@
           "party": {
             "type": "string"
           },
-          "endUserId": {
-            "type": "string",
-            "nullable": true
-          },
-          "progress": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "extendedStatus": {
-            "type": "string",
-            "nullable": true
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "updatedAt": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "dueAt": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "visibleFrom": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "status": {
-            "$ref": "#/components/schemas/DialogStatus_Values"
-          },
-          "content": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/SearchDialogContentDtoSO"
-            }
-          }
-        }
-      },
-      "SearchDialogContentDtoSO": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "type": {
-            "$ref": "#/components/schemas/DialogContentType_Values"
-          },
-          "value": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/LocalizationDto"
-            }
-          }
-        }
-      },
-      "UpdateDialogRequest": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "dto": {
-            "$ref": "#/components/schemas/UpdateDialogDto"
-          }
-        }
-      },
-      "OrderSetOfTOrderDefinitionAndTTarget": {},
-      "ContinuationTokenSetOfTOrderDefinitionAndTTarget": {},
-      "UpdateDialogDto": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
           "progress": {
             "type": "integer",
             "format": "int32",
@@ -2898,42 +2918,42 @@
           "content": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/UpdateDialogContentDto"
+              "$ref": "#/components/schemas/CreateDialogContentDto"
             }
           },
           "searchTags": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/UpdateDialogSearchTagDto"
+              "$ref": "#/components/schemas/CreateDialogSearchTagDto"
             }
           },
           "elements": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/UpdateDialogDialogElementDto"
+              "$ref": "#/components/schemas/CreateDialogDialogElementDto"
             }
           },
           "guiActions": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/UpdateDialogDialogGuiActionDto"
+              "$ref": "#/components/schemas/CreateDialogDialogGuiActionDto"
             }
           },
           "apiActions": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/UpdateDialogDialogApiActionDto"
+              "$ref": "#/components/schemas/CreateDialogDialogApiActionDto"
             }
           },
           "activities": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/UpdateDialogDialogActivityDto"
+              "$ref": "#/components/schemas/CreateDialogDialogActivityDto"
             }
           }
         }
       },
-      "UpdateDialogContentDto": {
+      "CreateDialogContentDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -2948,7 +2968,7 @@
           }
         }
       },
-      "UpdateDialogSearchTagDto": {
+      "CreateDialogSearchTagDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -2957,7 +2977,7 @@
           }
         }
       },
-      "UpdateDialogDialogElementDto": {
+      "CreateDialogDialogElementDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -2993,20 +3013,15 @@
           "urls": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/UpdateDialogDialogElementUrlDto"
+              "$ref": "#/components/schemas/CreateDialogDialogElementUrlDto"
             }
           }
         }
       },
-      "UpdateDialogDialogElementUrlDto": {
+      "CreateDialogDialogElementUrlDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "id": {
-            "type": "string",
-            "format": "guid",
-            "nullable": true
-          },
           "url": {
             "type": "string",
             "format": "uri"
@@ -3020,15 +3035,10 @@
           }
         }
       },
-      "UpdateDialogDialogGuiActionDto": {
+      "CreateDialogDialogGuiActionDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "id": {
-            "type": "string",
-            "format": "guid",
-            "nullable": true
-          },
           "action": {
             "type": "string"
           },
@@ -3057,15 +3067,10 @@
           }
         }
       },
-      "UpdateDialogDialogApiActionDto": {
+      "CreateDialogDialogApiActionDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "id": {
-            "type": "string",
-            "format": "guid",
-            "nullable": true
-          },
           "action": {
             "type": "string"
           },
@@ -3081,20 +3086,15 @@
           "endpoints": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/UpdateDialogDialogApiActionEndpointDto"
+              "$ref": "#/components/schemas/CreateDialogDialogApiActionEndpointDto"
             }
           }
         }
       },
-      "UpdateDialogDialogApiActionEndpointDto": {
+      "CreateDialogDialogApiActionEndpointDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "id": {
-            "type": "string",
-            "format": "guid",
-            "nullable": true
-          },
           "version": {
             "type": "string",
             "nullable": true
@@ -3131,7 +3131,7 @@
           }
         }
       },
-      "UpdateDialogDialogActivityDto": {
+      "CreateDialogDialogActivityDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -3177,22 +3177,13 @@
           }
         }
       },
-      "CreateDialogElementRequest": {
+      "UpdateDialogElementRequest": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "id": {
-            "type": "string",
-            "format": "guid",
-            "nullable": true
-          },
           "type": {
             "type": "string",
             "format": "uri",
-            "nullable": true
-          },
-          "externalReference": {
-            "type": "string",
             "nullable": true
           },
           "authorizationAttribute": {
@@ -3218,13 +3209,22 @@
           }
         }
       },
-      "UpdateDialogElementRequest": {
+      "CreateDialogElementRequest": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid",
+            "nullable": true
+          },
           "type": {
             "type": "string",
             "format": "uri",
+            "nullable": true
+          },
+          "externalReference": {
+            "type": "string",
             "nullable": true
           },
           "authorizationAttribute": {

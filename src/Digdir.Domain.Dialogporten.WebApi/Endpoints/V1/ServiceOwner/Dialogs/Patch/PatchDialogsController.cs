@@ -10,7 +10,7 @@ using DialogportenAuthorizationPolicy = Digdir.Domain.Dialogporten.WebApi.Common
 using IMapper = AutoMapper.IMapper;
 using ProblemDetails = FastEndpoints.ProblemDetails;
 
-namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.Dialogs;
+namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.Dialogs.Patch;
 
 /* Since minimal apis don't support json patch documents out of the box,
  * and we've not been able to find a good alternative library for it yet,

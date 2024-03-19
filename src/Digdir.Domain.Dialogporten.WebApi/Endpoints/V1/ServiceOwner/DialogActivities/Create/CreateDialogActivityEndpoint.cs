@@ -4,13 +4,17 @@ using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Qu
 using Digdir.Domain.Dialogporten.WebApi.Common;
 using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
+<<<<<<< HEAD:src/Digdir.Domain.Dialogporten.WebApi/Endpoints/V1/ServiceOwner/DialogActivities/CreateDialogActivityEndpoint.cs
 using Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.Common.Extensions;
+=======
+using Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.DialogActivities.Get;
+>>>>>>> 96c78f7 (refac):src/Digdir.Domain.Dialogporten.WebApi/Endpoints/V1/ServiceOwner/DialogActivities/Create/CreateDialogActivityEndpoint.cs
 using FastEndpoints;
 using MediatR;
 using Medo;
 using IMapper = AutoMapper.IMapper;
 
-namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.DialogActivities;
+namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.DialogActivities.Create;
 
 public sealed class CreateDialogActivityEndpoint : Endpoint<CreateDialogActivityRequest>
 {
@@ -29,15 +33,7 @@ public sealed class CreateDialogActivityEndpoint : Endpoint<CreateDialogActivity
         Policies(AuthorizationPolicy.ServiceProvider);
         Group<ServiceOwnerGroup>();
 
-        Description(b => b
-            .OperationId("CreateDialogActivity")
-            .ProducesOneOf(
-                StatusCodes.Status201Created,
-                StatusCodes.Status400BadRequest,
-                StatusCodes.Status404NotFound,
-                StatusCodes.Status412PreconditionFailed,
-                StatusCodes.Status422UnprocessableEntity)
-        );
+        Description(b => CreateDialogActivitySwaggerConfig.SetDescription(b));
     }
 
     public override async Task HandleAsync(CreateDialogActivityRequest req, CancellationToken ct)
@@ -80,27 +76,4 @@ public sealed class CreateDialogActivityRequest : UpdateDialogDialogActivityDto
 
     [FromHeader(headerName: Constants.IfMatch, isRequired: false, removeFromSchema: true)]
     public Guid? IfMatchDialogRevision { get; set; }
-}
-
-public sealed class CreateDialogActivityEndpointSummary : Summary<CreateDialogActivityEndpoint>
-{
-    public CreateDialogActivityEndpointSummary()
-    {
-        Summary = "Adds a activity to a dialogs activity history";
-        Description = $"""
-                The activity is created with the given configuration. For more information see the documentation (link TBD).
-
-                {Constants.SwaggerSummary.OptimisticConcurrencyNote}
-                """;
-
-        ResponseExamples[StatusCodes.Status201Created] = "018bb8e5-d9d0-7434-8ec5-569a6c8e01fc";
-
-        Responses[StatusCodes.Status201Created] = Constants.SwaggerSummary.Created.FormatInvariant("activity");
-        Responses[StatusCodes.Status400BadRequest] = Constants.SwaggerSummary.ValidationError;
-        Responses[StatusCodes.Status401Unauthorized] = Constants.SwaggerSummary.ServiceOwnerAuthenticationFailure.FormatInvariant(AuthorizationScope.ServiceProvider);
-        Responses[StatusCodes.Status403Forbidden] = Constants.SwaggerSummary.AccessDeniedToDialogForChildEntity.FormatInvariant("create");
-        Responses[StatusCodes.Status404NotFound] = Constants.SwaggerSummary.DialogNotFound;
-        Responses[StatusCodes.Status412PreconditionFailed] = Constants.SwaggerSummary.RevisionMismatch;
-        Responses[StatusCodes.Status422UnprocessableEntity] = Constants.SwaggerSummary.DomainError;
-    }
 }

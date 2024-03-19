@@ -2,39 +2,23 @@ using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.DialogElem
 using Digdir.Domain.Dialogporten.WebApi.Common;
 using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
+<<<<<<< HEAD:src/Digdir.Domain.Dialogporten.WebApi/Endpoints/V1/ServiceOwner/DialogElements/SearchDialogElementEndpoint.cs
 using Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.Common.Extensions;
+=======
+using Digdir.Domain.Dialogporten.WebApi.Common.Swagger;
+>>>>>>> 96c78f7 (refac):src/Digdir.Domain.Dialogporten.WebApi/Endpoints/V1/ServiceOwner/DialogElements/Search/SearchDialogElementSwaggerConfig.cs
 using FastEndpoints;
-using MediatR;
 
-namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.DialogElements;
+namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.DialogElements.Search;
 
-public class SearchDialogElementEndpoint : Endpoint<SearchDialogElementQuery>
+public class SearchDialogElementSwaggerConfig : ISwaggerConfig
 {
-    private readonly ISender _sender;
+    public static string OperationId => "GetDialogElementListSO";
 
-    public SearchDialogElementEndpoint(ISender sender)
-    {
-        _sender = sender ?? throw new ArgumentNullException(nameof(sender));
-    }
+    public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder)
+        => builder.OperationId(OperationId);
 
-    public override void Configure()
-    {
-        Get("dialogs/{dialogId}/elements");
-        Policies(AuthorizationPolicy.ServiceProvider);
-        Group<ServiceOwnerGroup>();
-
-        Description(b => b.
-            OperationId("GetDialogElementListSO")
-        );
-    }
-
-    public override async Task HandleAsync(SearchDialogElementQuery req, CancellationToken ct)
-    {
-        var result = await _sender.Send(req, ct);
-        await result.Match(
-            dto => SendOkAsync(dto, ct),
-            notFound => this.NotFoundAsync(notFound, ct));
-    }
+    public static object GetExample() => throw new NotImplementedException();
 }
 
 public sealed class SearchDialogElementEndpointSummary : Summary<SearchDialogElementEndpoint, SearchDialogElementQuery>
@@ -43,8 +27,8 @@ public sealed class SearchDialogElementEndpointSummary : Summary<SearchDialogEle
     {
         Summary = "Gets a list of dialog elements";
         Description = """
-                Gets the list of elements belonging to a dialog
-                """;
+                      Gets the list of elements belonging to a dialog
+                      """;
         Responses[StatusCodes.Status200OK] = Constants.SwaggerSummary.ReturnedResult.FormatInvariant("element list");
         Responses[StatusCodes.Status401Unauthorized] = Constants.SwaggerSummary.ServiceOwnerAuthenticationFailure.FormatInvariant(AuthorizationScope.ServiceProvider);
         Responses[StatusCodes.Status404NotFound] = Constants.SwaggerSummary.DialogNotFound;

@@ -1,16 +1,20 @@
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Update;
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Queries.Get;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements;
 using Digdir.Domain.Dialogporten.WebApi.Common;
 using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
+<<<<<<< HEAD:src/Digdir.Domain.Dialogporten.WebApi/Endpoints/V1/ServiceOwner/DialogElements/DeleteDialogElementEndpoint.cs
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements;
 using Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.Common.Extensions;
+=======
+>>>>>>> 96c78f7 (refac):src/Digdir.Domain.Dialogporten.WebApi/Endpoints/V1/ServiceOwner/DialogElements/Delete/DeleteDialogElementEndpoint.cs
 using FastEndpoints;
 using MediatR;
 using IMapper = AutoMapper.IMapper;
 
-namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.DialogElements;
+namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.DialogElements.Delete;
 
 public sealed class DeleteDialogElementEndpoint : Endpoint<DeleteDialogElementRequest>
 {
@@ -29,15 +33,7 @@ public sealed class DeleteDialogElementEndpoint : Endpoint<DeleteDialogElementRe
         Policies(AuthorizationPolicy.ServiceProvider);
         Group<ServiceOwnerGroup>();
 
-        Description(b => b
-            .OperationId("DeleteDialogElement")
-            .ProducesOneOf(
-                StatusCodes.Status204NoContent,
-                StatusCodes.Status400BadRequest,
-                StatusCodes.Status404NotFound,
-                StatusCodes.Status412PreconditionFailed,
-                StatusCodes.Status422UnprocessableEntity)
-        );
+        Description(b => DeleteDialogElementSwaggerConfig.SetDescription(b));
     }
 
     public override async Task HandleAsync(DeleteDialogElementRequest req, CancellationToken ct)
@@ -85,22 +81,4 @@ public sealed class DeleteDialogElementRequest
 
     [FromHeader(headerName: Constants.IfMatch, isRequired: false, removeFromSchema: true)]
     public Guid? IfMatchDialogRevision { get; set; }
-}
-
-public sealed class DeleteDialogElementEndpointSummary : Summary<DeleteDialogElementEndpoint>
-{
-    public DeleteDialogElementEndpointSummary()
-    {
-        Summary = "Deletes a dialog element";
-        Description = $"""
-                Deletes a given dialog element (hard delete). For more information see the documentation (link TBD).
-
-                {Constants.SwaggerSummary.OptimisticConcurrencyNote}
-                """;
-        Responses[StatusCodes.Status204NoContent] = Constants.SwaggerSummary.Deleted.FormatInvariant("element");
-        Responses[StatusCodes.Status401Unauthorized] = Constants.SwaggerSummary.ServiceOwnerAuthenticationFailure.FormatInvariant(AuthorizationScope.ServiceProvider);
-        Responses[StatusCodes.Status403Forbidden] = Constants.SwaggerSummary.AccessDeniedToDialogForChildEntity.FormatInvariant("delete");
-        Responses[StatusCodes.Status404NotFound] = Constants.SwaggerSummary.DialogElementNotFound;
-        Responses[StatusCodes.Status412PreconditionFailed] = Constants.SwaggerSummary.RevisionMismatch;
-    }
 }

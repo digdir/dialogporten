@@ -15,7 +15,7 @@ using FastEndpoints;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.Dialogs.Update;
 
-internal abstract class SwaggerConfig : ISwaggerConfig
+internal abstract class UpdateDialogSwaggerConfig : ISwaggerConfig
 {
     public static string OperationId => "ReplaceDialog";
 

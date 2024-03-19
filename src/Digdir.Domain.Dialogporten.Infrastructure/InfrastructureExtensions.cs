@@ -1,5 +1,4 @@
-﻿using System.Net.Http.Headers;
-using Altinn.ApiClients.Maskinporten.Extensions;
+﻿using Altinn.ApiClients.Maskinporten.Extensions;
 using Altinn.ApiClients.Maskinporten.Interfaces;
 using Altinn.ApiClients.Maskinporten.Services;
 using Digdir.Domain.Dialogporten.Application.Externals;
@@ -26,7 +25,6 @@ using Digdir.Domain.Dialogporten.Infrastructure.Altinn.Authorization;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.Events;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.OrganizationRegistry;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.ResourceRegistry;
-using StackExchange.Redis;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure;
 

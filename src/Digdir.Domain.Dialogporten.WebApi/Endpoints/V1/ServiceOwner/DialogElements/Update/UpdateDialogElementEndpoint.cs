@@ -11,7 +11,7 @@ using FastEndpoints;
 using MediatR;
 using IMapper = AutoMapper.IMapper;
 
-namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.DialogElements;
+namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.DialogElements.Update;
 
 public sealed class UpdateDialogElementEndpoint : Endpoint<UpdateDialogElementRequest>
 {
@@ -30,15 +30,7 @@ public sealed class UpdateDialogElementEndpoint : Endpoint<UpdateDialogElementRe
         Policies(AuthorizationPolicy.ServiceProvider);
         Group<ServiceOwnerGroup>();
 
-        Description(b => b
-            .OperationId("ReplaceDialogElement")
-            .ProducesOneOf(
-                StatusCodes.Status204NoContent,
-                StatusCodes.Status400BadRequest,
-                StatusCodes.Status404NotFound,
-                StatusCodes.Status412PreconditionFailed,
-                StatusCodes.Status422UnprocessableEntity)
-        );
+        Description(b => UpdateDialogElementSwaggerConfig.SetDescription(b));
     }
 
     public override async Task HandleAsync(UpdateDialogElementRequest req, CancellationToken ct)
@@ -106,24 +98,4 @@ public sealed class UpdateDialogElementRequest
 
     public List<LocalizationDto> DisplayName { get; set; } = [];
     public List<UpdateDialogDialogElementUrlDto> Urls { get; set; } = [];
-}
-
-public sealed class UpdateDialogElementEndpointSummary : Summary<UpdateDialogElementEndpoint>
-{
-    public UpdateDialogElementEndpointSummary()
-    {
-        Summary = "Replaces a dialog element";
-        Description = """
-                Replaces a given dialog element with the supplied model. For more information see the documentation (link TBD).
-
-                Optimistic concurrency control is implemented using the If-Match header. Supply the Revision value from the GetDialog endpoint to ensure that the dialog is not deleted by another request in the meantime.
-                """;
-        Responses[StatusCodes.Status204NoContent] = Constants.SwaggerSummary.Updated.FormatInvariant("element");
-        Responses[StatusCodes.Status400BadRequest] = Constants.SwaggerSummary.ValidationError;
-        Responses[StatusCodes.Status401Unauthorized] = Constants.SwaggerSummary.ServiceOwnerAuthenticationFailure.FormatInvariant(AuthorizationScope.ServiceProvider);
-        Responses[StatusCodes.Status403Forbidden] = Constants.SwaggerSummary.AccessDeniedToDialogForChildEntity.FormatInvariant("update");
-        Responses[StatusCodes.Status404NotFound] = Constants.SwaggerSummary.DialogElementNotFound;
-        Responses[StatusCodes.Status412PreconditionFailed] = Constants.SwaggerSummary.RevisionMismatch;
-        Responses[StatusCodes.Status422UnprocessableEntity] = Constants.SwaggerSummary.DomainError;
-    }
 }

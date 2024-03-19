@@ -40,7 +40,7 @@ public static class OpenApiDocumentExtensions
 
         foreach (var (_, value) in openApiOperation.RequestBody.Content)
         {
-            var example = SwaggerConfig.GetExample();
+            var example = UpdateDialogSwaggerConfig.GetExample();
             value.Example = example;
         }
     }
