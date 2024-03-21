@@ -1,10 +1,10 @@
-using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Queries.Get;
+﻿using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Queries.Get;
 using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
 using FastEndpoints;
 using MediatR;
 
-namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.EndUser.Dialogs.Get;
+namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.Dialogs.Get;
 
 public class GetDialogEndpoint : Endpoint<GetDialogQuery, GetDialogDto>
 {
@@ -18,10 +18,10 @@ public class GetDialogEndpoint : Endpoint<GetDialogQuery, GetDialogDto>
     public override void Configure()
     {
         Get("dialogs/{dialogId}");
-        Policies(AuthorizationPolicy.EndUser);
-        Group<EndUserGroup>();
+        Policies(AuthorizationPolicy.ServiceProvider);
+        Group<ServiceOwnerGroup>();
 
-        Description(d => GetDialogSwaggerConfig.SetDescription(d));
+        Description(b => GetDialogSwaggerConfig.SetDescription(b));
     }
 
     public override async Task HandleAsync(GetDialogQuery req, CancellationToken ct)
@@ -33,8 +33,6 @@ public class GetDialogEndpoint : Endpoint<GetDialogQuery, GetDialogDto>
                 HttpContext.Response.Headers.ETag = dto.Revision.ToString();
                 return SendOkAsync(dto, ct);
             },
-            notFound => this.NotFoundAsync(notFound, ct),
-            deleted => this.GoneAsync(deleted, ct),
-            forbidden => this.ForbiddenAsync(forbidden, ct));
+            notFound => this.NotFoundAsync(notFound, ct));
     }
 }

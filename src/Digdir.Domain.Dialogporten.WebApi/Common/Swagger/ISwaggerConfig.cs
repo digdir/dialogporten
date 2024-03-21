@@ -1,5 +1,3 @@
-using FastEndpoints;
-
 namespace Digdir.Domain.Dialogporten.WebApi.Common.Swagger;
 
 public interface ISwaggerConfig

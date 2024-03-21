@@ -1,11 +1,11 @@
 using Digdir.Domain.Dialogporten.Application.Common.Pagination;
-using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Queries.Search;
+using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Queries.Search;
 using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
 using FastEndpoints;
 using MediatR;
 
-namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.EndUser.Dialogs.Search;
+namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.Dialogs.Search;
 
 public class SearchDialogEndpoint : Endpoint<SearchDialogQuery, PaginatedList<SearchDialogDto>>
 {
@@ -19,10 +19,10 @@ public class SearchDialogEndpoint : Endpoint<SearchDialogQuery, PaginatedList<Se
     public override void Configure()
     {
         Get("dialogs");
-        Policies(AuthorizationPolicy.EndUser);
-        Group<EndUserGroup>();
+        Policies(AuthorizationPolicy.ServiceProviderSearch);
+        Group<ServiceOwnerGroup>();
 
-        Description(d => SearchDialogSwaggerConfig.SetDescription(d));
+        Description(b => SwaggerConfig.SetDescription(b));
     }
 
     public override async Task HandleAsync(SearchDialogQuery req, CancellationToken ct)
@@ -30,7 +30,6 @@ public class SearchDialogEndpoint : Endpoint<SearchDialogQuery, PaginatedList<Se
         var result = await _sender.Send(req, ct);
         await result.Match(
             paginatedDto => SendOkAsync(paginatedDto, ct),
-            validationError => this.BadRequestAsync(validationError, ct),
-            forbidden => this.ForbiddenAsync(forbidden, ct));
+            validationError => this.BadRequestAsync(validationError, ct));
     }
 }
