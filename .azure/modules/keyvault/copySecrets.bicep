@@ -26,7 +26,7 @@ resource srcKeyVaultResource 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
 }
 
 module secrets 'upsertSecret.bicep' = [for key in environmentKeys: if (key.isEnvironmentKey) {
-    name: '${take(key.value, 58)}-${take(uniqueString(key.value), 6)}'
+    name: '${take(key.value, 57)}-${take(uniqueString(key.value), 6)}'
     scope: resourceGroup(destKeyVaultSubId, destKeyVaultRGName)
     params: {
         destKeyVaultName: destKeyVaultName
