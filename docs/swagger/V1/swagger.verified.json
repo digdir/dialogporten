@@ -10,6 +10,50 @@
     }
   ],
   "paths": {
+    "/api/v1/.well-known/oauth-authorization-server": {
+      "get": {
+        "tags": [
+          "Metadata"
+        ],
+        "summary": "Gets the OAuth 2.0 Metadata for automatic configuration of clients verifying dialog tokens.",
+        "description": "This endpoint can be used by client integrations supporting automatic discovery of \"OAuth 2.0 Authorization Server\" metadata, enabling verification of dialog tokens issues by Dialogporten.",
+        "operationId": "GetOauthAuthorizationServer",
+        "responses": {
+          "200": {
+            "description": "The OAuth 2.0 Authorization Server Metadata",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetOauthAuthorizationServerDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/.well-known/jwks.json": {
+      "get": {
+        "tags": [
+          "Metadata"
+        ],
+        "summary": "Gets the JSON Web Key Set (JWKS) containing the public keys used to verify dialog token signatures",
+        "description": "This endpoint can be used by client integrations supporting automatic discovery of \"OAuth 2.0 Authorization Server\" metadata, enabling verification of dialog tokens issues by Dialogporten.",
+        "operationId": "GetJwks",
+        "responses": {
+          "200": {
+            "description": "The OAuth 2.0 Authorization Server Metadata",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetJwksDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/serviceowner/dialogs/{dialogId}": {
       "put": {
         "tags": [
@@ -1925,6 +1969,54 @@
   },
   "components": {
     "schemas": {
+      "GetOauthAuthorizationServerDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "issuer": {
+            "type": "string"
+          },
+          "jwks_uri": {
+            "type": "string"
+          }
+        }
+      },
+      "GetJwksDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "keys": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Jwk"
+            }
+          }
+        }
+      },
+      "Jwk": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kty": {
+            "type": "string"
+          },
+          "use": {
+            "type": "string"
+          },
+          "kid": {
+            "type": "string"
+          },
+          "crv": {
+            "type": "string"
+          },
+          "x": {
+            "type": "string"
+          },
+          "alg": {
+            "type": "string"
+          }
+        }
+      },
       "ProblemDetails": {
         "type": "object",
         "additionalProperties": false,
@@ -3513,6 +3605,10 @@
             "items": {
               "$ref": "#/components/schemas/GetDialogContentDto"
             }
+          },
+          "dialogToken": {
+            "type": "string",
+            "nullable": true
           },
           "elements": {
             "type": "array",

@@ -30,9 +30,13 @@ public static class ApplicationExtensions
             .AddMediatR(x => x.RegisterServicesFromAssembly(thisAssembly))
             .AddValidatorsFromAssembly(thisAssembly, ServiceLifetime.Transient, includeInternalTypes: true)
 
+            // Singleton
+            .AddSingleton<ICompactJwsGenerator, Ed25519Generator>()
+
             // Scoped
             .AddScoped<IDomainContext, DomainContext>()
             .AddScoped<ITransactionTime, TransactionTime>()
+            .AddScoped<IDialogTokenGenerator, DialogTokenGenerator>()
 
             // Transient
             .AddTransient<IUserOrganizationRegistry, UserOrganizationRegistry>()
@@ -62,6 +66,9 @@ public static class ApplicationExtensions
             predicate:
             localDeveloperSettings.UseLocalDevelopmentUser ||
             localDeveloperSettings.UseLocalDevelopmentNameRegister);
+
+        services.Decorate<ICompactJwsGenerator, LocalDevelopmentCompactJwsGeneratorDecorator>(
+            predicate: localDeveloperSettings.UseLocalDevelopmentCompactJwsGenerator);
 
         return services;
     }
