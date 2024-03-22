@@ -159,7 +159,7 @@ jobs:
           parameters: ./.azure/applications/${{ matrix.name }}/${{ inputs.environment }}.bicepparam
 
       - name: Verify deployment (${{ matrix.name }})
-        uses: azure/CLI@v1
+        uses: azure/CLI@v2
         if: ${{!inputs.dryRun}}
         id: verify-deployment
         timeout-minutes: 3

@@ -153,15 +153,15 @@ public class DomainEventsTests(DialogApplication application) : ApplicationColle
         cloudEvents.Should().OnlyContain(cloudEvent => cloudEvent.Resource == createDialogCommand.ServiceResource);
         cloudEvents.Should().OnlyContain(cloudEvent => cloudEvent.Subject == createDialogCommand.Party);
 
-        // cloudEvents.Should().NotContain(cloudEvent =>
-        //     cloudEvent.Type == CloudEventTypes.Get(nameof(DialogUpdatedDomainEvent)));
+        cloudEvents.Should().NotContain(cloudEvent =>
+            cloudEvent.Type == CloudEventTypes.Get(nameof(DialogUpdatedDomainEvent)));
 
         cloudEvents.Should().ContainSingle(cloudEvent =>
             cloudEvent.Type == CloudEventTypes.Get(nameof(DialogElementUpdatedDomainEvent)));
     }
 
     // Throws NRE on parent Dialog
-    [Fact(Skip = "This is currently broken, will be fixed/rewritten in https://github.com/digdir/dialogporten/pull/406")]
+    [Fact]
     public async Task Creates_CloudEvents_When_Deleting_DialogElement()
     {
         // Arrange
@@ -199,10 +199,12 @@ public class DomainEventsTests(DialogApplication application) : ApplicationColle
 
         cloudEvents.Should().ContainSingle(cloudEvent =>
             cloudEvent.Type == CloudEventTypes.Get(nameof(DialogElementDeletedDomainEvent)));
+
+        cloudEvents.Should().NotContain(cloudEvent =>
+            cloudEvent.Type == CloudEventTypes.Get(nameof(DialogElementUpdatedDomainEvent)));
     }
 
-    // Creates DialogUpdatedDomainEvent instead of DialogDeletedDomainEvent
-    [Fact(Skip = "This is currently broken, will be fixed/rewritten in https://github.com/digdir/dialogporten/pull/406")]
+    [Fact]
     public async Task Creates_CloudEvents_When_Dialog_Deleted()
     {
         // Arrange

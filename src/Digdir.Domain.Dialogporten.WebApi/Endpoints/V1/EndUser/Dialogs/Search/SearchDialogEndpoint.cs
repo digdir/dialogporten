@@ -1,6 +1,5 @@
 using Digdir.Domain.Dialogporten.Application.Common.Pagination;
 using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Queries.Search;
-using Digdir.Domain.Dialogporten.WebApi.Common;
 using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
 using FastEndpoints;
@@ -23,7 +22,7 @@ public class SearchDialogEndpoint : Endpoint<SearchDialogQuery, PaginatedList<Se
         Policies(AuthorizationPolicy.EndUser);
         Group<EndUserGroup>();
 
-        Description(d => SwaggerConfig.SetDescription(d));
+        Description(d => SearchDialogSwaggerConfig.SetDescription(d));
     }
 
     public override async Task HandleAsync(SearchDialogQuery req, CancellationToken ct)

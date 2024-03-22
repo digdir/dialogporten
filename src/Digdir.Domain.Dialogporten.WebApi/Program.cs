@@ -1,27 +1,27 @@
-using Digdir.Domain.Dialogporten.Application;
-using Digdir.Domain.Dialogporten.Infrastructure;
-using Digdir.Domain.Dialogporten.Infrastructure.DomainEvents.Outbox.Dispatcher;
-using Digdir.Domain.Dialogporten.WebApi.Common;
-using FastEndpoints;
-using FastEndpoints.Swagger;
-using Microsoft.ApplicationInsights.Extensibility;
-using Serilog;
+using System.Collections;
+using System.Globalization;
+using System.Reflection;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
-using System.Collections;
+using Digdir.Domain.Dialogporten.Application;
+using Digdir.Domain.Dialogporten.Application.Common.Extensions;
+using Digdir.Domain.Dialogporten.Application.Common.Extensions.OptionExtensions;
+using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
+using Digdir.Domain.Dialogporten.Infrastructure;
+using Digdir.Domain.Dialogporten.Infrastructure.DomainEvents.Outbox.Dispatcher;
+using Digdir.Domain.Dialogporten.WebApi;
+using Digdir.Domain.Dialogporten.WebApi.Common;
+using Digdir.Domain.Dialogporten.WebApi.Common.Authentication;
+using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
 using Digdir.Domain.Dialogporten.WebApi.Common.Json;
-using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
+using FastEndpoints;
+using FastEndpoints.Swagger;
 using FluentValidation;
-using System.Reflection;
-using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
-using Digdir.Domain.Dialogporten.Application.Common.Extensions.OptionExtensions;
-using Digdir.Domain.Dialogporten.WebApi.Common.Authentication;
-using Digdir.Domain.Dialogporten.Application.Common.Extensions;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Authorization;
-using System.Globalization;
-using Digdir.Domain.Dialogporten.WebApi;
 using NSwag;
+using Serilog;
 
 // Using two-stage initialization to catch startup errors.
 Log.Logger = new LoggerConfiguration()

@@ -22,7 +22,7 @@ public sealed class UpdateDialogEndpoint : Endpoint<UpdateDialogRequest>
         Policies(AuthorizationPolicy.ServiceProvider);
         Group<ServiceOwnerGroup>();
 
-        Description(b => SwaggerConfig.SetDescription(b));
+        Description(b => UpdateDialogSwaggerConfig.SetDescription(b));
     }
 
     public override async Task HandleAsync(UpdateDialogRequest req, CancellationToken ct)

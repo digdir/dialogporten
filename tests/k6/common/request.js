@@ -84,6 +84,10 @@ export function deleteSO(url, params = null, tokenOptions = null) {
     return http.request('DELETE', baseUrlServiceOwner + url, {}, getServiceOwnerRequestParams(params, tokenOptions));
 }
 
+export function purgeSO(url, params = null, tokenOptions = null) {
+    return http.request('POST', baseUrlServiceOwner + url + "/actions/purge", {}, getServiceOwnerRequestParams(params, tokenOptions));
+}
+
 export function getEU(url, params = null, tokenOptions = null) {
     return http.get(baseUrlEndUser + url, getEnduserRequestParams(params, tokenOptions))
 }

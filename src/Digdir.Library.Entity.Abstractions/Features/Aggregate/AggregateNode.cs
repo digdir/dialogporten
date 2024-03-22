@@ -3,7 +3,7 @@
 namespace Digdir.Library.Entity.Abstractions.Features.Aggregate;
 
 /// <summary>
-/// Represents a node in an aggregate tree. 
+/// Represents a node in an aggregate tree.
 /// </summary>
 public abstract class AggregateNode
 {
@@ -23,9 +23,9 @@ public abstract class AggregateNode
     public IReadOnlyCollection<AggregateNodeProperty> ModifiedProperties => _modifiedProperties;
 
     /// <summary>
-    /// A collection of modified children. A child node is modified if it itself 
-    /// is modified, or one of its children are modified. Modified in this 
-    /// context meens added, modified, or deleted. 
+    /// A collection of modified children. A child node is modified if it itself
+    /// is modified, or one of its children are modified. Modified in this
+    /// context meens added, modified, or deleted.
     /// </summary>
     public IReadOnlyCollection<AggregateNode> Children => _children;
 
@@ -83,16 +83,6 @@ public abstract class AggregateNode
             null, nodeArguments, null)!;
         return node;
     }
-
-    /// <summary>
-    /// Checks whether the entity has changed its state for a specified type.
-    /// </summary>
-    /// <typeparam name="T">The type to check against.</typeparam>
-    /// <returns>
-    /// <c>true</c> if the entity is of the specified type and its state is not <see cref="AggregateNodeState.Unchanged"/>;
-    /// otherwise, <c>false</c>.
-    /// </returns>
-    public bool IsChanged<T>() => Entity is T && State is not AggregateNodeState.Unchanged;
 
     /// <summary>
     /// Convenience method to check if the state of the node is <see cref="AggregateNodeState.Modified"/> and not by a child node.
