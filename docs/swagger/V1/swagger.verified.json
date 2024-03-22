@@ -10,28 +10,6 @@
     }
   ],
   "paths": {
-    "/api/v1/.well-known/jwks.json": {
-      "get": {
-        "tags": [
-          "Metadata"
-        ],
-        "summary": "Gets the JSON Web Key Set (JWKS) containing the public keys used to verify dialog token signatures",
-        "description": "This endpoint can be used by client integrations supporting automatic discovery of \"OAuth 2.0 Authorization Server\" metadata, enabling verification of dialog tokens issues by Dialogporten.",
-        "operationId": "GetMetadataJwks",
-        "responses": {
-          "200": {
-            "description": "The OAuth 2.0 Authorization Server Metadata",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/GetJwksDto"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/v1/.well-known/oauth-authorization-server": {
       "get": {
         "tags": [
@@ -39,7 +17,7 @@
         ],
         "summary": "Gets the OAuth 2.0 Metadata for automatic configuration of clients verifying dialog tokens.",
         "description": "This endpoint can be used by client integrations supporting automatic discovery of \"OAuth 2.0 Authorization Server\" metadata, enabling verification of dialog tokens issues by Dialogporten.",
-        "operationId": "GetMetadataOauthAuthorizationServer",
+        "operationId": "GetOauthAuthorizationServer",
         "responses": {
           "200": {
             "description": "The OAuth 2.0 Authorization Server Metadata",
@@ -47,6 +25,28 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/GetOauthAuthorizationServerDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/.well-known/jwks.json": {
+      "get": {
+        "tags": [
+          "Metadata"
+        ],
+        "summary": "Gets the JSON Web Key Set (JWKS) containing the public keys used to verify dialog token signatures",
+        "description": "This endpoint can be used by client integrations supporting automatic discovery of \"OAuth 2.0 Authorization Server\" metadata, enabling verification of dialog tokens issues by Dialogporten.",
+        "operationId": "GetJwks",
+        "responses": {
+          "200": {
+            "description": "The OAuth 2.0 Authorization Server Metadata",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetJwksDto"
                 }
               }
             }
@@ -1969,6 +1969,18 @@
   },
   "components": {
     "schemas": {
+      "GetOauthAuthorizationServerDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "issuer": {
+            "type": "string"
+          },
+          "jwks_uri": {
+            "type": "string"
+          }
+        }
+      },
       "GetJwksDto": {
         "type": "object",
         "additionalProperties": false,
@@ -2001,18 +2013,6 @@
             "type": "string"
           },
           "alg": {
-            "type": "string"
-          }
-        }
-      },
-      "GetOauthAuthorizationServerDto": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "issuer": {
-            "type": "string"
-          },
-          "jwks_uri": {
             "type": "string"
           }
         }
