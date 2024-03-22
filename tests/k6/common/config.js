@@ -3,16 +3,16 @@ export const baseUrls = {
         enduser: {
             localdev: "https://localhost:7214/api/v1/enduser/",
             localdev_docker: "https://host.docker.internal:7214/api/v1/enduser/",
-            test: "https://dp-be-test-apim.azure-api.net/api/v1/enduser/",
-            staging: "https://dp-be-staging-apim.azure-api.net/api/v1/enduser/",
-            prod: "https://dp-be-prod-apim.azure-api.net/api/v1/enduser/"
+            test: "https://altinn-dev-api.azure-api.net/dialogporten/api/v1/enduser/",
+            staging: "https://platform.tt02.altinn.no/dialogporten/api/v1/enduser/",
+            prod: "https://platform.altinn.no/dialogporten/api/v1/enduser/"
         },
         serviceowner: {
             localdev: "https://localhost:7214/api/v1/serviceowner/",
             localdev_docker: "https://host.docker.internal:7214/api/v1/serviceowner/",
-            test: "https://dp-be-test-apim.azure-api.net/api/v1/serviceowner/",
-            staging: "https://dp-be-staging-apim.azure-api.net/api/v1/serviceowner/",
-            prod: "https://dp-be-prod-apim.azure-api.net/api/v1/serviceowner/"
+            test: "https://altinn-dev-api.azure-api.net/dialogporten/api/v1/serviceowner/",
+            staging: "https://platform.tt02.altinn.no/dialogporten/api/v1/serviceowner/",
+            prod: "https://platform.altinn.no/dialogporten/api/v1/serviceowner/"
         }    
     }    
 };
