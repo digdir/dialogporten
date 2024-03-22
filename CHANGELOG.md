@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.1](https://github.com/digdir/dialogporten/compare/v1.1.0...v1.1.1) (2024-03-22)
+
+
+### Bug Fixes
+
+* **azure:** avoid naming issue for secrets ([#572](https://github.com/digdir/dialogporten/issues/572)) ([50af860](https://github.com/digdir/dialogporten/commit/50af860d0037eae2611b59393974142f7e55f457))
+* UpdateDialogEvent created when dialog element is deleted or updated ([#552](https://github.com/digdir/dialogporten/issues/552)) ([8d707ff](https://github.com/digdir/dialogporten/commit/8d707ffbe8a7a5ff70c053927d8c32cbf5f74410))
+
 ## [1.1.0](https://github.com/digdir/dialogporten/compare/v1.0.4...v1.1.0) (2024-03-13)
 
 
