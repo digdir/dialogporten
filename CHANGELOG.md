@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/digdir/dialogporten/compare/v1.1.1...v1.2.0) (2024-03-22)
+
+
+### Features
+
+* token issuer ([#556](https://github.com/digdir/dialogporten/issues/556)) ([d8165c1](https://github.com/digdir/dialogporten/commit/d8165c180f4190b3fa243181cd16aa3b007d35a4))
+
 ## [1.1.1](https://github.com/digdir/dialogporten/compare/v1.1.0...v1.1.1) (2024-03-22)
 
 
