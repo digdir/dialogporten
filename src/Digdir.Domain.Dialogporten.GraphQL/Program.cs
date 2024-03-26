@@ -4,6 +4,7 @@ using Digdir.Domain.Dialogporten.Application;
 using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
 using Digdir.Domain.Dialogporten.GraphQL;
 using Digdir.Domain.Dialogporten.Infrastructure;
+using Digdir.Domain.Dialogporten.Infrastructure.Persistence;
 using Microsoft.ApplicationInsights.Extensibility;
 using Serilog;
 
@@ -42,6 +43,14 @@ static void BuildAndRun(string[] args)
     //     .Enrich.FromLogContext()
     //     .WriteTo(Console.WriteLine()));
 
+    /* TODOS:
+     * - Gjør DialogDbContext til internal. Kan måtte gjøre dette prosjektet til et "friend assembly" av infrastructure (internalsVisibleTo)
+     * 
+     * 
+     * 
+     */
+
+
     builder.Services
         .AddApplication(builder.Configuration, builder.Environment)
         .AddInfrastructure(builder.Configuration, builder.Environment)
@@ -49,7 +58,11 @@ static void BuildAndRun(string[] args)
         // .AddApplicationInsightsTelemetry()
         .AddScoped<IUser, LocalDevelopmentUser>()
         .AddGraphQLServer()
-        .AddQueryType<DialogQueries>();
+            .AddProjections()
+            .AddFiltering()
+            .AddSorting()
+            .RegisterDbContext<DialogDbContext>()
+            .AddQueryType<DialogQueries>();
 
     var app = builder.Build();
     app.MapGraphQL();

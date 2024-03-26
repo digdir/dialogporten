@@ -16,7 +16,7 @@ using System.Linq.Expressions;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence;
 
-internal sealed class DialogDbContext : DbContext, IDialogDbContext
+public sealed class DialogDbContext : DbContext, IDialogDbContext
 {
     public DialogDbContext(DbContextOptions<DialogDbContext> options) : base(options) { }
 
