@@ -126,18 +126,20 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
         );
 
         DecorateWithAuthorization(dto, authorizationResult);
+        ReplaceUnauthorizedUrls(dto);
 
         return dto;
     }
 
-    private static void DecorateWithAuthorization(GetDialogDto dto, DialogDetailsAuthorizationResult authorizationResult)
+    private static void DecorateWithAuthorization(GetDialogDto dto,
+        DialogDetailsAuthorizationResult authorizationResult)
     {
-        foreach (var (action, resources) in authorizationResult.AuthorizedAltinnActions)
+        foreach (var (action, resource) in authorizationResult.AuthorizedAltinnActions)
         {
             foreach (var apiAction in dto.ApiActions.Where(a => a.Action == action))
             {
-                if ((apiAction.AuthorizationAttribute is null && resources.Contains(Constants.MainResource))
-                    || (apiAction.AuthorizationAttribute is not null && resources.Contains(apiAction.AuthorizationAttribute)))
+                if ((apiAction.AuthorizationAttribute is null && resource == Constants.MainResource)
+                 || (apiAction.AuthorizationAttribute is not null && resource == apiAction.AuthorizationAttribute))
                 {
                     apiAction.IsAuthorized = true;
                 }
@@ -145,8 +147,8 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
 
             foreach (var guiAction in dto.GuiActions.Where(a => a.Action == action))
             {
-                if ((guiAction.AuthorizationAttribute is null && resources.Contains(Constants.MainResource))
-                    || (guiAction.AuthorizationAttribute is not null && resources.Contains(guiAction.AuthorizationAttribute)))
+                if ((guiAction.AuthorizationAttribute is null && resource == Constants.MainResource)
+                 || (guiAction.AuthorizationAttribute is not null && resource == guiAction.AuthorizationAttribute))
                 {
                     guiAction.IsAuthorized = true;
                 }
@@ -154,12 +156,35 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
 
             // Simple "read" on the main resource will give access to a dialog element, unless a authorization attribute is set,
             // in which case an "elementread" action is required
-            foreach (var dialogElement in dto.Elements.Where(
-                         dialogElement => (dialogElement.AuthorizationAttribute is null)
-                                          || (dialogElement.AuthorizationAttribute is not null
-                                              && action == Constants.ElementReadAction)))
+            foreach (var dialogElement in dto.Elements.Where(dialogElement => (dialogElement.AuthorizationAttribute is null && action == Constants.ReadAction)
+                                                                              || (dialogElement.AuthorizationAttribute is not null && action == Constants.ElementReadAction)))
             {
                 dialogElement.IsAuthorized = true;
+            }
+        }
+    }
+
+    private static void ReplaceUnauthorizedUrls(GetDialogDto dto)
+    {
+        // For all API and GUI actions and dialogelements where isAuthorized is false, replace the URLs with Constants.UnauthorizedUrl
+        foreach (var guiAction in dto.GuiActions.Where(a => !a.IsAuthorized))
+        {
+            guiAction.Url = Constants.UnauthorizedUri;
+        }
+
+        foreach (var apiAction in dto.ApiActions.Where(a => !a.IsAuthorized))
+        {
+            foreach (var endpoint in apiAction.Endpoints)
+            {
+                endpoint.Url = Constants.UnauthorizedUri;
+            }
+        }
+
+        foreach (var dialogElement in dto.Elements.Where(e => !e.IsAuthorized))
+        {
+            foreach (var url in dialogElement.Urls)
+            {
+                url.Url = Constants.UnauthorizedUri;
             }
         }
     }
