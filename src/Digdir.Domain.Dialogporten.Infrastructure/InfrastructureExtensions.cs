@@ -193,7 +193,7 @@ public static class InfrastructureExtensions
             .WithDefaultEntryOptions(new FusionCacheEntryOptions
             {
                 // todo: Let's discuss these settings..
-                Duration = TimeSpan.FromMinutes(2),
+                Duration = TimeSpan.FromDays(1),
 
                 IsFailSafeEnabled = true,
                 FailSafeMaxDuration = TimeSpan.FromHours(2),
