@@ -44,10 +44,10 @@ static void BuildAndRun(string[] args)
     //     .WriteTo(Console.WriteLine()));
 
     /* TODOS:
-     * - Gjør DialogDbContext til internal. Kan måtte gjøre dette prosjektet til et "friend assembly" av infrastructure (internalsVisibleTo)
-     * 
-     * 
-     * 
+     * - GjÃ¸r DialogDbContext til internal. Kan mÃ¥tte gjÃ¸re dette prosjektet til et "friend assembly" av infrastructure (internalsVisibleTo)
+     *
+     *
+     *
      */
 
 
