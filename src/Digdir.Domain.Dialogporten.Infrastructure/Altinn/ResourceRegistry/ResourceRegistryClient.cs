@@ -32,9 +32,6 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
         return resourceIds ?? Array.Empty<string>();
     }
 
-    private static DistributedCacheEntryOptions? CacheOptionsFactory(Dictionary<string, string[]>? resourceIdsByOrg) =>
-        resourceIdsByOrg is not null ? _oneDayCacheDuration : _zeroCacheDuration;
-
     private async Task<Dictionary<string, string[]>> GetResourceIdsByOrg(CancellationToken cancellationToken)
     {
         const string searchEndpoint = "resourceregistry/api/v1/resource/search";
