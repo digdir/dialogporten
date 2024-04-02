@@ -25,6 +25,15 @@ using Digdir.Domain.Dialogporten.Infrastructure.Altinn.Authorization;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.Events;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.OrganizationRegistry;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.ResourceRegistry;
+using ZiggyCreatures.Caching.Fusion;
+using System.Text.Json;
+using ZiggyCreatures.Caching.Fusion.Serialization.NewtonsoftJson;
+using Microsoft.Extensions.Caching.StackExchangeRedis;
+using Microsoft.Extensions.Caching.Distributed;
+using ZiggyCreatures.Caching.Fusion.Backplane.StackExchangeRedis;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Caching.Memory;
+using Digdir.Domain.Dialogporten.Infrastructure.Altinn.NameRegistry;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure;
 
@@ -56,23 +65,25 @@ public static class InfrastructureExtensions
             .AddValidatorsFromAssembly(thisAssembly, ServiceLifetime.Transient, includeInternalTypes: true);
 
         var infrastructureSettings = infrastructureConfigurationSection.Get<InfrastructureSettings>()
-        ?? throw new InvalidOperationException("Failed to get Redis settings. Infrastructure settings must not be null.");
+                    ?? throw new InvalidOperationException("Failed to get Redis settings. Infrastructure settings must not be null.");
+
+        services.AddFusionCacheNewtonsoftJsonSerializer();
 
         if (infrastructureSettings.Redis.Enabled == true)
         {
-            services.AddStackExchangeRedisCache(options =>
-            {
-                var infrastructureSettings = infrastructureConfigurationSection.Get<InfrastructureSettings>()
-                    ?? throw new InvalidOperationException("Failed to get Redis connection string. Infrastructure settings must not be null.");
-                var connectionString = infrastructureSettings.Redis.ConnectionString;
-                options.Configuration = connectionString;
-                options.InstanceName = "Redis";
-            });
+            services.AddStackExchangeRedisCache(opt => opt.Configuration = infrastructureSettings.Redis.ConnectionString);
+            services.AddFusionCacheStackExchangeRedisBackplane(opt => opt.Configuration = infrastructureSettings.Redis.ConnectionString);
         }
         else
         {
             services.AddDistributedMemoryCache();
         }
+
+        // todo: do we need default cache? 🤔
+        ConfigureFusionCache(services);
+        ConfigureFusionCache(services, nameof(NameRegistryClient));
+        ConfigureFusionCache(services, nameof(ResourceRegistryClient));
+        ConfigureFusionCache(services, nameof(OrganizationRegistryClient));
 
         services.AddDbContext<DialogDbContext>((services, options) =>
             {
@@ -162,5 +173,44 @@ public static class InfrastructureExtensions
         return services
             .AddHttpClient<TClient, TImplementation>()
             .AddMaskinportenHttpMessageHandler<TClientDefinition, TClient>(configureClientDefinition);
+    }
+
+    private static void ConfigureFusionCache(IServiceCollection services, string? cacheName = null)
+    {
+        // todo: consider open telemetry?
+        var fusionCacheConfig = services.AddFusionCache(cacheName ?? string.Empty)
+            .WithOptions(options =>
+            {
+                options.DistributedCacheCircuitBreakerDuration = TimeSpan.FromSeconds(2);
+                // todo: Consider log levels based on environment. More debug for dev, less for prod.
+                options.FailSafeActivationLogLevel = LogLevel.Debug;
+                options.SerializationErrorsLogLevel = LogLevel.Warning;
+                options.DistributedCacheSyntheticTimeoutsLogLevel = LogLevel.Debug;
+                options.DistributedCacheErrorsLogLevel = LogLevel.Error;
+                options.FactorySyntheticTimeoutsLogLevel = LogLevel.Debug;
+                options.FactoryErrorsLogLevel = LogLevel.Error;
+            })
+            .WithDefaultEntryOptions(new FusionCacheEntryOptions
+            {
+                // todo: Let's discuss these settings..
+                Duration = TimeSpan.FromMinutes(2),
+
+                IsFailSafeEnabled = true,
+                FailSafeMaxDuration = TimeSpan.FromHours(2),
+                FailSafeThrottleDuration = TimeSpan.FromSeconds(30),
+
+                FactorySoftTimeout = TimeSpan.FromMilliseconds(100),
+                FactoryHardTimeout = TimeSpan.FromMilliseconds(1500),
+
+                DistributedCacheSoftTimeout = TimeSpan.FromSeconds(1),
+                DistributedCacheHardTimeout = TimeSpan.FromSeconds(2),
+
+                AllowBackgroundDistributedCacheOperations = true,
+
+                JitterMaxDuration = TimeSpan.FromSeconds(2)
+            })
+            .WithRegisteredSerializer()
+            .WithRegisteredDistributedCache()
+            .WithRegisteredBackplane();
     }
 }

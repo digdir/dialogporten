@@ -3,18 +3,18 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Digdir.Domain.Dialogporten.Application.Externals;
-using Digdir.Domain.Dialogporten.Infrastructure.Common.Extensions;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
+using ZiggyCreatures.Caching.Fusion;
 
-namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.OrganizationRegistry;
+namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.NameRegistry;
 
 internal class NameRegistryClient : INameRegistry
 {
     private static readonly DistributedCacheEntryOptions _oneDayCacheDuration = new() { AbsoluteExpiration = DateTimeOffset.UtcNow.AddDays(1) };
     private static readonly DistributedCacheEntryOptions _zeroCacheDuration = new() { AbsoluteExpiration = DateTimeOffset.MinValue };
 
-    private readonly IDistributedCache _cache;
+    private readonly IFusionCache _cache;
     private readonly HttpClient _client;
     private readonly ILogger<NameRegistryClient> _logger;
 
@@ -25,24 +25,20 @@ internal class NameRegistryClient : INameRegistry
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault
     };
 
-    public NameRegistryClient(HttpClient client, IDistributedCache cache, ILogger<NameRegistryClient> logger)
+    public NameRegistryClient(HttpClient client, IFusionCacheProvider cacheProvider, ILogger<NameRegistryClient> logger)
     {
         _client = client ?? throw new ArgumentNullException(nameof(client));
-        _cache = cache ?? throw new ArgumentNullException(nameof(cache));
+        _cache = cacheProvider.GetCache(nameof(NameRegistry)) ?? throw new ArgumentNullException(nameof(cacheProvider));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     public async Task<string?> GetName(string personalIdentificationNumber, CancellationToken cancellationToken)
     {
-        return await _cache.GetOrAddAsync(
+        return await _cache.GetOrSetAsync(
             $"Name_{personalIdentificationNumber}",
             (ct) => GetNameFromRegister(personalIdentificationNumber, ct),
-            CacheOptionsFactory,
-            cancellationToken: cancellationToken);
+            token: cancellationToken);
     }
-
-    private static DistributedCacheEntryOptions CacheOptionsFactory(string? name) =>
-        name is not null ? _oneDayCacheDuration : _zeroCacheDuration;
 
     private async Task<string?> GetNameFromRegister(string personalIdentificationNumber, CancellationToken cancellationToken)
     {

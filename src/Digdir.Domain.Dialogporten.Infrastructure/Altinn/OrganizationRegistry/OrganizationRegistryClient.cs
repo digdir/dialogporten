@@ -1,8 +1,8 @@
 using System.Diagnostics;
 using System.Net.Http.Json;
 using Digdir.Domain.Dialogporten.Application.Externals;
-using Digdir.Domain.Dialogporten.Infrastructure.Common.Extensions;
 using Microsoft.Extensions.Caching.Distributed;
+using ZiggyCreatures.Caching.Fusion;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.OrganizationRegistry;
 
@@ -12,27 +12,21 @@ internal class OrganizationRegistryClient : IOrganizationRegistry
     private static readonly DistributedCacheEntryOptions _oneDayCacheDuration = new() { AbsoluteExpiration = DateTimeOffset.UtcNow.AddDays(1) };
     private static readonly DistributedCacheEntryOptions _zeroCacheDuration = new() { AbsoluteExpiration = DateTimeOffset.MinValue };
 
-    private readonly IDistributedCache _cache;
+    private readonly IFusionCache _cache;
     private readonly HttpClient _client;
 
-    public OrganizationRegistryClient(HttpClient client, IDistributedCache cache)
+    public OrganizationRegistryClient(HttpClient client, IFusionCacheProvider cacheProvider)
     {
         _client = client ?? throw new ArgumentNullException(nameof(client));
-        _cache = cache ?? throw new ArgumentNullException(nameof(cache));
+        _cache = cacheProvider.GetCache(nameof(OrganizationRegistry)) ?? throw new ArgumentNullException(nameof(cacheProvider));
     }
     public async Task<string?> GetOrgShortName(string orgNumber, CancellationToken cancellationToken)
     {
-        var orgShortNameByOrgNumber = await _cache.GetOrAddAsync(
-            OrgShortNameReferenceCacheKey,
-            GetOrgShortNameByOrgNumber,
-            CacheOptionsFactory,
-            cancellationToken: cancellationToken);
+        var orgShortNameByOrgNumber = await _cache.GetOrSetAsync(OrgShortNameReferenceCacheKey, async token => await GetOrgShortNameByOrgNumber(token), token: cancellationToken);
         orgShortNameByOrgNumber.TryGetValue(orgNumber, out var orgShortName);
+
         return orgShortName;
     }
-
-    private static DistributedCacheEntryOptions? CacheOptionsFactory(Dictionary<string, string>? orgShortNameByOrgNumber) =>
-        orgShortNameByOrgNumber is not null ? _oneDayCacheDuration : _zeroCacheDuration;
 
     private async Task<Dictionary<string, string>> GetOrgShortNameByOrgNumber(CancellationToken cancellationToken)
     {
