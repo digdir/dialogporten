@@ -2,7 +2,7 @@ include:
   - docker-compose-no-webapi.yml
 
 services:
-  dialogporten-webapi-loadbalancer:
+  dialogporten-webapi-ingress:
     image: nginx:latest
     ports:
       - "7214:80"
