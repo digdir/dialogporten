@@ -1,7 +1,7 @@
 ﻿FROM mcr.microsoft.com/dotnet/aspnet:8.0.3@sha256:9470bf16cb8566951dfdb89d49a4de73ceb31570b3cdb59059af44fe53b19547 AS base
 WORKDIR /app
 
-FROM mcr.microsoft.com/dotnet/sdk:8.0.203@sha256:9bb0d97c4361cc844f225c144ac2adb2b65fabfef21f95caedcf215d844238fe AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0.203@sha256:249a78aa4ce22ab872d0dff0490a6389e7bc087d2c080c4ffc7569b49cf0e23b AS build
 WORKDIR /src
 
 # Main project
