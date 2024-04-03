@@ -6,7 +6,7 @@
 
 #### Prerequisites
 
-- [.NET 8 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
+- [.NET 8 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0) (see [global.json](global.json) for the currently required version)
 
 #### Installing Podman (Mac)
 
@@ -105,6 +105,10 @@ dotnet ef migrations add TestMigration
 Besides ordinary unit and integration tests, there are test suites for both functional and non-functional end-to-end tests implemented with [K6](https://k6.io/).
 
 See `tests/k6/README.md` for more information.
+
+## Updating the SDK in global.json
+When RenovateBot updates `global.json` or base image versions in Dockerfiles, remember that these two must match.  
+`global.json` is used when building the solution in CI/CD.
 
 ## Development in local and test environments
 To generate test tokens see, https://github.com/Altinn/AltinnTestTools. There is a request in the Postman collection for this.
