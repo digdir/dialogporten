@@ -78,15 +78,15 @@ public static class InfrastructureExtensions
             services.AddDistributedMemoryCache();
         }
 
-        ConfigureFusionCache(services, nameof(Altinn.NameRegistry), new()
+        services.ConfigureFusionCache(nameof(Altinn.NameRegistry), new()
         {
             Duration = TimeSpan.FromDays(1),
-        });
-        ConfigureFusionCache(services, nameof(Altinn.ResourceRegistry), new()
+        })
+        .ConfigureFusionCache(nameof(Altinn.ResourceRegistry), new()
         {
             Duration = TimeSpan.FromMinutes(20),
-        });
-        ConfigureFusionCache(services, nameof(Altinn.OrganizationRegistry), new()
+        })
+        .ConfigureFusionCache(nameof(Altinn.OrganizationRegistry), new()
         {
             Duration = TimeSpan.FromDays(1),
         });
@@ -196,11 +196,11 @@ public static class InfrastructureExtensions
             .AddMaskinportenHttpMessageHandler<TClientDefinition, TClient>(configureClientDefinition);
     }
 
-    private static void ConfigureFusionCache(IServiceCollection services, string cacheName, FusionCacheSettings? settings = null)
+    private static IServiceCollection ConfigureFusionCache(this IServiceCollection services, string cacheName, FusionCacheSettings? settings = null)
     {
         settings ??= new FusionCacheSettings();
 
-        var fusionCacheConfig = services.AddFusionCache(cacheName)
+        services.AddFusionCache(cacheName)
             .WithOptions(options =>
             {
                 options.DistributedCacheCircuitBreakerDuration = TimeSpan.FromSeconds(2);
@@ -227,5 +227,7 @@ public static class InfrastructureExtensions
             .WithRegisteredSerializer()
             .WithRegisteredDistributedCache()
             .WithRegisteredBackplane();
+
+        return services;
     }
 }
