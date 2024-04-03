@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.3.0](https://github.com/digdir/dialogporten/compare/v1.2.0...v1.3.0) (2024-04-03)
+
+
+### Features
+
+* Add db index for Dialog.Org ([#584](https://github.com/digdir/dialogporten/issues/584)) ([a4c1953](https://github.com/digdir/dialogporten/commit/a4c19530f238e61c046fa9cb8f3b366a7fefebad))
+
+
+### Bug Fixes
+
+* Require read action on elements without auth attr, replace unauthorized URLs ([#574](https://github.com/digdir/dialogporten/issues/574)) ([f39af31](https://github.com/digdir/dialogporten/commit/f39af3112391a6d6d6df42e6e5cc6d8115c07fd3))
+
 ## [1.2.0](https://github.com/digdir/dialogporten/compare/v1.1.1...v1.2.0) (2024-03-22)
 
 
