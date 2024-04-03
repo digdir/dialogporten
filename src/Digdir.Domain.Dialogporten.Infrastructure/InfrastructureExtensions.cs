@@ -81,15 +81,15 @@ public static class InfrastructureExtensions
 
         // todo: do we need default cache? 🤔
         ConfigureFusionCache(services);
-        ConfigureFusionCache(services, nameof(NameRegistryClient), new()
+        ConfigureFusionCache(services, nameof(Altinn.NameRegistry), new()
         {
             Duration = TimeSpan.FromDays(1),
         });
-        ConfigureFusionCache(services, nameof(ResourceRegistryClient), new()
+        ConfigureFusionCache(services, nameof(Altinn.ResourceRegistry), new()
         {
             Duration = TimeSpan.FromDays(1),
         });
-        ConfigureFusionCache(services, nameof(OrganizationRegistryClient), new()
+        ConfigureFusionCache(services, nameof(Altinn.OrganizationRegistry), new()
         {
             Duration = TimeSpan.FromDays(1),
         });

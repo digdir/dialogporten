@@ -94,6 +94,10 @@ internal sealed class RedisSettingsValidator : AbstractValidator<RedisSettings>
     public RedisSettingsValidator()
     {
         RuleFor(x => x.Enabled).Must(x => x is false or true);
-        RuleFor(x => x.ConnectionString).NotEmpty();
+
+        When(x => x.Enabled == true, () =>
+        {
+            RuleFor(x => x.ConnectionString).NotEmpty();
+        });
     }
 }
