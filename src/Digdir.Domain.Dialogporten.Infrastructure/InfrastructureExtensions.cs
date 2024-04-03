@@ -81,9 +81,18 @@ public static class InfrastructureExtensions
 
         // todo: do we need default cache? 🤔
         ConfigureFusionCache(services);
-        ConfigureFusionCache(services, nameof(NameRegistryClient));
-        ConfigureFusionCache(services, nameof(ResourceRegistryClient));
-        ConfigureFusionCache(services, nameof(OrganizationRegistryClient));
+        ConfigureFusionCache(services, nameof(NameRegistryClient), new()
+        {
+            Duration = TimeSpan.FromDays(1),
+        });
+        ConfigureFusionCache(services, nameof(ResourceRegistryClient), new()
+        {
+            Duration = TimeSpan.FromDays(1),
+        });
+        ConfigureFusionCache(services, nameof(OrganizationRegistryClient), new()
+        {
+            Duration = TimeSpan.FromDays(1),
+        });
 
         services.AddDbContext<DialogDbContext>((services, options) =>
             {
@@ -160,6 +169,20 @@ public static class InfrastructureExtensions
         return services;
     }
 
+    public class FusionCacheSettings
+    {
+        public TimeSpan Duration { get; set; } = TimeSpan.FromMinutes(1);
+        public TimeSpan FailSafeMaxDuration { get; set; } = TimeSpan.FromHours(2);
+        public TimeSpan FailSafeThrottleDuration { get; set; } = TimeSpan.FromSeconds(30);
+        public TimeSpan FactorySoftTimeout { get; set; } = TimeSpan.FromMilliseconds(100);
+        public TimeSpan FactoryHardTimeout { get; set; } = TimeSpan.FromMilliseconds(1500);
+        public TimeSpan DistributedCacheSoftTimeout { get; set; } = TimeSpan.FromSeconds(1);
+        public TimeSpan DistributedCacheHardTimeout { get; set; } = TimeSpan.FromSeconds(2);
+        public bool AllowBackgroundDistributedCacheOperations { get; set; } = true;
+        public bool IsFailSafeEnabled { get; set; } = true;
+        public TimeSpan JitterMaxDuration { get; set; } = TimeSpan.FromSeconds(2);
+    }
+
     private static IHttpClientBuilder AddMaskinportenHttpClient<TClient, TImplementation, TClientDefinition>(
         this IServiceCollection services,
         IConfiguration configuration,
@@ -175,8 +198,10 @@ public static class InfrastructureExtensions
             .AddMaskinportenHttpMessageHandler<TClientDefinition, TClient>(configureClientDefinition);
     }
 
-    private static void ConfigureFusionCache(IServiceCollection services, string? cacheName = null)
+    private static void ConfigureFusionCache(IServiceCollection services, string? cacheName = null, FusionCacheSettings? settings = null)
     {
+        settings ??= new FusionCacheSettings();
+
         // todo: consider open telemetry?
         var fusionCacheConfig = services.AddFusionCache(cacheName ?? string.Empty)
             .WithOptions(options =>
@@ -193,21 +218,21 @@ public static class InfrastructureExtensions
             .WithDefaultEntryOptions(new FusionCacheEntryOptions
             {
                 // todo: Let's discuss these settings..
-                Duration = TimeSpan.FromDays(1),
+                Duration = settings.Duration,
 
-                IsFailSafeEnabled = true,
-                FailSafeMaxDuration = TimeSpan.FromHours(2),
-                FailSafeThrottleDuration = TimeSpan.FromSeconds(30),
+                IsFailSafeEnabled = settings.IsFailSafeEnabled,
+                FailSafeMaxDuration = settings.FailSafeMaxDuration,
+                FailSafeThrottleDuration = settings.FailSafeThrottleDuration,
 
-                FactorySoftTimeout = TimeSpan.FromMilliseconds(100),
-                FactoryHardTimeout = TimeSpan.FromMilliseconds(1500),
+                FactorySoftTimeout = settings.FactorySoftTimeout,
+                FactoryHardTimeout = settings.FactoryHardTimeout,
 
-                DistributedCacheSoftTimeout = TimeSpan.FromSeconds(1),
-                DistributedCacheHardTimeout = TimeSpan.FromSeconds(2),
+                DistributedCacheSoftTimeout = settings.DistributedCacheSoftTimeout,
+                DistributedCacheHardTimeout = settings.DistributedCacheHardTimeout,
 
-                AllowBackgroundDistributedCacheOperations = true,
+                AllowBackgroundDistributedCacheOperations = settings.AllowBackgroundDistributedCacheOperations,
 
-                JitterMaxDuration = TimeSpan.FromSeconds(2)
+                JitterMaxDuration = settings.JitterMaxDuration
             })
             .WithRegisteredSerializer()
             .WithRegisteredDistributedCache()
