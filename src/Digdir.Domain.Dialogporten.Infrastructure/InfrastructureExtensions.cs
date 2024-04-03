@@ -25,6 +25,14 @@ using Digdir.Domain.Dialogporten.Infrastructure.Altinn.Authorization;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.Events;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.OrganizationRegistry;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.ResourceRegistry;
+using System.Text.Json;
+using Microsoft.Extensions.Caching.StackExchangeRedis;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Caching.Memory;
+using ZiggyCreatures.Caching.Fusion;
+using ZiggyCreatures.Caching.Fusion.Backplane.StackExchangeRedis;
+using Digdir.Domain.Dialogporten.Infrastructure.Altinn.NameRegistry;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure;
 
@@ -56,23 +64,32 @@ public static class InfrastructureExtensions
             .AddValidatorsFromAssembly(thisAssembly, ServiceLifetime.Transient, includeInternalTypes: true);
 
         var infrastructureSettings = infrastructureConfigurationSection.Get<InfrastructureSettings>()
-        ?? throw new InvalidOperationException("Failed to get Redis settings. Infrastructure settings must not be null.");
+                    ?? throw new InvalidOperationException("Failed to get Redis settings. Infrastructure settings must not be null.");
+
+        services.AddFusionCacheNeueccMessagePackSerializer();
 
         if (infrastructureSettings.Redis.Enabled == true)
         {
-            services.AddStackExchangeRedisCache(options =>
-            {
-                var infrastructureSettings = infrastructureConfigurationSection.Get<InfrastructureSettings>()
-                    ?? throw new InvalidOperationException("Failed to get Redis connection string. Infrastructure settings must not be null.");
-                var connectionString = infrastructureSettings.Redis.ConnectionString;
-                options.Configuration = connectionString;
-                options.InstanceName = "Redis";
-            });
+            services.AddStackExchangeRedisCache(opt => opt.Configuration = infrastructureSettings.Redis.ConnectionString);
+            services.AddFusionCacheStackExchangeRedisBackplane(opt => opt.Configuration = infrastructureSettings.Redis.ConnectionString);
         }
         else
         {
             services.AddDistributedMemoryCache();
         }
+
+        services.ConfigureFusionCache(nameof(Altinn.NameRegistry), new()
+        {
+            Duration = TimeSpan.FromDays(1),
+        })
+        .ConfigureFusionCache(nameof(Altinn.ResourceRegistry), new()
+        {
+            Duration = TimeSpan.FromMinutes(20),
+        })
+        .ConfigureFusionCache(nameof(Altinn.OrganizationRegistry), new()
+        {
+            Duration = TimeSpan.FromDays(1),
+        });
 
         services.AddDbContext<DialogDbContext>((services, options) =>
             {
@@ -149,6 +166,21 @@ public static class InfrastructureExtensions
         return services;
     }
 
+    public class FusionCacheSettings
+    {
+        public TimeSpan Duration { get; set; } = TimeSpan.FromMinutes(1);
+        public TimeSpan FailSafeMaxDuration { get; set; } = TimeSpan.FromHours(2);
+        public TimeSpan FailSafeThrottleDuration { get; set; } = TimeSpan.FromSeconds(30);
+        public TimeSpan FactorySoftTimeout { get; set; } = TimeSpan.FromMilliseconds(100);
+        public TimeSpan FactoryHardTimeout { get; set; } = TimeSpan.FromMilliseconds(1500);
+        public TimeSpan DistributedCacheSoftTimeout { get; set; } = TimeSpan.FromSeconds(1);
+        public TimeSpan DistributedCacheHardTimeout { get; set; } = TimeSpan.FromSeconds(2);
+        public bool AllowBackgroundDistributedCacheOperations { get; set; } = true;
+        public bool IsFailSafeEnabled { get; set; } = true;
+        public TimeSpan JitterMaxDuration { get; set; } = TimeSpan.FromSeconds(2);
+        public float EagerRefreshThreshold { get; set; } = 0.8f;
+    }
+
     private static IHttpClientBuilder AddMaskinportenHttpClient<TClient, TImplementation, TClientDefinition>(
         this IServiceCollection services,
         IConfiguration configuration,
@@ -162,5 +194,40 @@ public static class InfrastructureExtensions
         return services
             .AddHttpClient<TClient, TImplementation>()
             .AddMaskinportenHttpMessageHandler<TClientDefinition, TClient>(configureClientDefinition);
+    }
+
+    private static IServiceCollection ConfigureFusionCache(this IServiceCollection services, string cacheName, FusionCacheSettings? settings = null)
+    {
+        settings ??= new FusionCacheSettings();
+
+        services.AddFusionCache(cacheName)
+            .WithOptions(options =>
+            {
+                options.DistributedCacheCircuitBreakerDuration = TimeSpan.FromSeconds(2);
+            })
+            .WithDefaultEntryOptions(new FusionCacheEntryOptions
+            {
+                Duration = settings.Duration,
+
+                IsFailSafeEnabled = settings.IsFailSafeEnabled,
+                FailSafeMaxDuration = settings.FailSafeMaxDuration,
+                FailSafeThrottleDuration = settings.FailSafeThrottleDuration,
+
+                FactorySoftTimeout = settings.FactorySoftTimeout,
+                FactoryHardTimeout = settings.FactoryHardTimeout,
+
+                DistributedCacheSoftTimeout = settings.DistributedCacheSoftTimeout,
+                DistributedCacheHardTimeout = settings.DistributedCacheHardTimeout,
+
+                AllowBackgroundDistributedCacheOperations = settings.AllowBackgroundDistributedCacheOperations,
+
+                JitterMaxDuration = settings.JitterMaxDuration,
+                EagerRefreshThreshold = settings.EagerRefreshThreshold
+            })
+            .WithRegisteredSerializer()
+            .WithRegisteredDistributedCache()
+            .WithRegisteredBackplane();
+
+        return services;
     }
 }

@@ -2,8 +2,8 @@
 using System.Net.Http.Json;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Domain.Common;
-using Digdir.Domain.Dialogporten.Infrastructure.Common.Extensions;
 using Microsoft.Extensions.Caching.Distributed;
+using ZiggyCreatures.Caching.Fusion;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.ResourceRegistry;
 
@@ -13,28 +13,24 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
     private static readonly DistributedCacheEntryOptions _oneDayCacheDuration = new() { AbsoluteExpiration = DateTimeOffset.UtcNow.AddDays(1) };
     private static readonly DistributedCacheEntryOptions _zeroCacheDuration = new() { AbsoluteExpiration = DateTimeOffset.MinValue };
 
-    private readonly IDistributedCache _cache;
+    private readonly IFusionCache _cache;
     private readonly HttpClient _client;
 
-    public ResourceRegistryClient(HttpClient client, IDistributedCache cache)
+    public ResourceRegistryClient(HttpClient client, IFusionCacheProvider cacheProvider)
     {
         _client = client ?? throw new ArgumentNullException(nameof(client));
-        _cache = cache ?? throw new ArgumentNullException(nameof(cache));
+        _cache = cacheProvider.GetCache(nameof(ResourceRegistry)) ?? throw new ArgumentNullException(nameof(cacheProvider));
     }
 
     public async Task<IReadOnlyCollection<string>> GetResourceIds(string org, CancellationToken cancellationToken)
     {
-        var resourceIdsByOrg = await _cache.GetOrAddAsync(
+        var resourceIdsByOrg = await _cache.GetOrSetAsync(
             OrgResourceReferenceCacheKey,
-            GetResourceIdsByOrg,
-            CacheOptionsFactory,
-            cancellationToken: cancellationToken);
+            async token => await GetResourceIdsByOrg(token),
+            token: cancellationToken);
         resourceIdsByOrg.TryGetValue(org, out var resourceIds);
         return resourceIds ?? Array.Empty<string>();
     }
-
-    private static DistributedCacheEntryOptions? CacheOptionsFactory(Dictionary<string, string[]>? resourceIdsByOrg) =>
-        resourceIdsByOrg is not null ? _oneDayCacheDuration : _zeroCacheDuration;
 
     private async Task<Dictionary<string, string[]>> GetResourceIdsByOrg(CancellationToken cancellationToken)
     {
