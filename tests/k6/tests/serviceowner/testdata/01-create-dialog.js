@@ -22,9 +22,22 @@ export default function () {
             { "type": "Summary", "value": [ { "cultureCode": "nb_NO", "value": "Et sammendrag her. Maks 200 tegn, ingen HTML-støtte. Påkrevd. Vises i liste." } ] },
             { "type": "AdditionalInfo", "value": [ { "cultureCode": "nb_NO", "value": "Utvidet forklaring (enkel HTML-støtte, inntil 1023 tegn). Ikke påkrevd. Vises kun i detaljvisning." } ] }
         ],
+        "guiActions": [
+            {
+                "action": "read",
+                "url": "https://digdir.no",
+                "priority": "Primary",
+                "title": [
+                    {
+                        "value": "Gå til dialog",
+                        "cultureCode": "nb-no"
+                    }
+                ]
+            }
+        ],
         "apiActions": [
             {
-                "action": "some:action",
+                "action": "some_unauthorized_action",
                 "dialogElementId": dialogElementId,
                 "endPoints": [
                     {
