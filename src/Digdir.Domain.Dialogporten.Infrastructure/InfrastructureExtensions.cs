@@ -200,7 +200,6 @@ public static class InfrastructureExtensions
     {
         settings ??= new FusionCacheSettings();
 
-        // todo: consider open telemetry?
         var fusionCacheConfig = services.AddFusionCache(cacheName)
             .WithOptions(options =>
             {
@@ -208,7 +207,6 @@ public static class InfrastructureExtensions
             })
             .WithDefaultEntryOptions(new FusionCacheEntryOptions
             {
-                // todo: Let's discuss these settings..
                 Duration = settings.Duration,
 
                 IsFailSafeEnabled = settings.IsFailSafeEnabled,
