@@ -25,14 +25,13 @@ using Digdir.Domain.Dialogporten.Infrastructure.Altinn.Authorization;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.Events;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.OrganizationRegistry;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.ResourceRegistry;
-using ZiggyCreatures.Caching.Fusion;
 using System.Text.Json;
-using ZiggyCreatures.Caching.Fusion.Serialization.NewtonsoftJson;
 using Microsoft.Extensions.Caching.StackExchangeRedis;
 using Microsoft.Extensions.Caching.Distributed;
-using ZiggyCreatures.Caching.Fusion.Backplane.StackExchangeRedis;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Caching.Memory;
+using ZiggyCreatures.Caching.Fusion;
+using ZiggyCreatures.Caching.Fusion.Backplane.StackExchangeRedis;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.NameRegistry;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure;
@@ -67,7 +66,7 @@ public static class InfrastructureExtensions
         var infrastructureSettings = infrastructureConfigurationSection.Get<InfrastructureSettings>()
                     ?? throw new InvalidOperationException("Failed to get Redis settings. Infrastructure settings must not be null.");
 
-        services.AddFusionCacheNewtonsoftJsonSerializer();
+        services.AddFusionCacheNeueccMessagePackSerializer();
 
         if (infrastructureSettings.Redis.Enabled == true)
         {
@@ -79,15 +78,13 @@ public static class InfrastructureExtensions
             services.AddDistributedMemoryCache();
         }
 
-        // todo: do we need default cache? 🤔
-        ConfigureFusionCache(services);
         ConfigureFusionCache(services, nameof(Altinn.NameRegistry), new()
         {
             Duration = TimeSpan.FromDays(1),
         });
         ConfigureFusionCache(services, nameof(Altinn.ResourceRegistry), new()
         {
-            Duration = TimeSpan.FromDays(1),
+            Duration = TimeSpan.FromMinutes(20),
         });
         ConfigureFusionCache(services, nameof(Altinn.OrganizationRegistry), new()
         {
@@ -181,6 +178,7 @@ public static class InfrastructureExtensions
         public bool AllowBackgroundDistributedCacheOperations { get; set; } = true;
         public bool IsFailSafeEnabled { get; set; } = true;
         public TimeSpan JitterMaxDuration { get; set; } = TimeSpan.FromSeconds(2);
+        public float EagerRefreshThreshold { get; set; } = 0.8f;
     }
 
     private static IHttpClientBuilder AddMaskinportenHttpClient<TClient, TImplementation, TClientDefinition>(
@@ -198,22 +196,15 @@ public static class InfrastructureExtensions
             .AddMaskinportenHttpMessageHandler<TClientDefinition, TClient>(configureClientDefinition);
     }
 
-    private static void ConfigureFusionCache(IServiceCollection services, string? cacheName = null, FusionCacheSettings? settings = null)
+    private static void ConfigureFusionCache(IServiceCollection services, string cacheName, FusionCacheSettings? settings = null)
     {
         settings ??= new FusionCacheSettings();
 
         // todo: consider open telemetry?
-        var fusionCacheConfig = services.AddFusionCache(cacheName ?? string.Empty)
+        var fusionCacheConfig = services.AddFusionCache(cacheName)
             .WithOptions(options =>
             {
                 options.DistributedCacheCircuitBreakerDuration = TimeSpan.FromSeconds(2);
-                // todo: Consider log levels based on environment. More debug for dev, less for prod.
-                options.FailSafeActivationLogLevel = LogLevel.Debug;
-                options.SerializationErrorsLogLevel = LogLevel.Warning;
-                options.DistributedCacheSyntheticTimeoutsLogLevel = LogLevel.Debug;
-                options.DistributedCacheErrorsLogLevel = LogLevel.Error;
-                options.FactorySyntheticTimeoutsLogLevel = LogLevel.Debug;
-                options.FactoryErrorsLogLevel = LogLevel.Error;
             })
             .WithDefaultEntryOptions(new FusionCacheEntryOptions
             {
@@ -232,7 +223,8 @@ public static class InfrastructureExtensions
 
                 AllowBackgroundDistributedCacheOperations = settings.AllowBackgroundDistributedCacheOperations,
 
-                JitterMaxDuration = settings.JitterMaxDuration
+                JitterMaxDuration = settings.JitterMaxDuration,
+                EagerRefreshThreshold = settings.EagerRefreshThreshold
             })
             .WithRegisteredSerializer()
             .WithRegisteredDistributedCache()
