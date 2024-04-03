@@ -3,7 +3,7 @@ include:
 
 services:
   dialogporten-webapi-ingress:
-    image: nginx:latest
+    image: nginx:1.25.4
     ports:
       - "7214:80"
     volumes:
