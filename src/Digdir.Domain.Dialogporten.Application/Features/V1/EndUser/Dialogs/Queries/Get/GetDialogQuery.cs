@@ -110,12 +110,12 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
             domainError => throw new UnreachableException("Should not get domain error when updating SeenAt."),
             concurrencyError => throw new UnreachableException("Should not get concurrencyError when updating SeenAt."));
 
-        // hash end user ids
-        var salt = MappingUtils.GetHashSalt();
-        foreach (var activity in dialog.Activities)
-        {
-            activity.SeenByEndUserId = MappingUtils.HashPid(activity.SeenByEndUserId, salt);
-        }
+        // // hash end user ids
+        // var salt = MappingUtils.GetHashSalt();
+        // foreach (var activity in dialog.Activities)
+        // {
+        //     activity.SeenByEndUserId = MappingUtils.HashPid(activity.SeenByEndUserId, salt);
+        // }
 
         var dto = _mapper.Map<GetDialogDto>(dialog);
 

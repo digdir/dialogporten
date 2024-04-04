@@ -22,7 +22,7 @@ internal sealed class MappingProfile : Profile
             .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.TypeId));
 
         CreateMap<DialogActivity, SearchDialogDialogActivityDto>()
-            .ForMember(dest => dest.SeenByEndUserIdHash, opt => opt.MapFrom(src => src.SeenByEndUserId))
+            // .ForMember(dest => dest.SeenByEndUserIdHash, opt => opt.MapFrom(src => src.SeenByEndUserId))
             .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.TypeId));
     }
 }
