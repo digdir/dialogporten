@@ -22,6 +22,19 @@ public sealed class SearchDialogDto
 
     public List<SearchDialogContentDto> Content { get; set; } = [];
     public List<SearchDialogDialogActivityDto> LatestActivities { get; set; } = [];
+    public List<SearchDialogDialogSeenLogDto> SeenLog { get; set; } = [];
+}
+
+public class SearchDialogDialogSeenLogDto
+{
+    public Guid Id { get; set; }
+    public DateTimeOffset CreatedAt { get; set; }
+
+    public string EndUserIdHash { get; set; } = null!;
+
+    public string? EndUserName { get; set; }
+
+    public bool IsAuthenticatedUser { get; set; }
 }
 
 public sealed class SearchDialogContentDto
@@ -36,7 +49,7 @@ public sealed class SearchDialogDialogActivityDto
     public DateTimeOffset? CreatedAt { get; set; }
     public Uri? ExtendedType { get; set; }
     // public string? SeenByEndUserIdHash { get; set; }
-    public bool? SeenActivityIsCurrentEndUser { get; set; }
+    // public bool? SeenActivityIsCurrentEndUser { get; set; }
 
     public DialogActivityType.Values Type { get; set; }
 

@@ -37,6 +37,9 @@ internal sealed class DialogDbContext : DbContext, IDialogDbContext
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
     public DbSet<OutboxMessageConsumer> OutboxMessageConsumers => Set<OutboxMessageConsumer>();
 
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) =>
+        optionsBuilder.LogTo(Console.WriteLine);
+
     internal bool TrySetOriginalRevision<TEntity>(
         TEntity? entity,
         Guid? revision)

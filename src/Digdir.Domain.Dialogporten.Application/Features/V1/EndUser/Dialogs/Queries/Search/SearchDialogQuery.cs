@@ -172,15 +172,25 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
             )
             .Where(x => !x.VisibleFrom.HasValue || _clock.UtcNowOffset > x.VisibleFrom)
             .Where(x => !x.ExpiresAt.HasValue || x.ExpiresAt > _clock.UtcNowOffset)
-            .Include(x => x.Activities
-                .Where(x => x.TypeId != DialogActivityType.Values.Forwarded)
-                .OrderByDescending(x => x.CreatedAt)
-                .First())
-            .Include(x => x.SeenLog.Where(y => y.CreatedAt > x.UpdatedAt))
+            // (╯°□°)╯︵ ┻━┻
+            // .Include(x => x.Activities
+            //     .Where(x => x.TypeId != DialogActivityType.Values.Forwarded)
+            //     .OrderByDescending(x => x.CreatedAt)
+            //     .Take(1))
             .ProjectTo<SearchDialogDto>(_mapper.ConfigurationProvider)
             .ToPaginatedListAsync(request, cancellationToken: cancellationToken);
 
         // await FetchRelevantActivities(paginatedList, userPid, cancellationToken);
+
+        var salt = MappingUtils.GetHashSalt();
+        var seenLogs = paginatedList.Items.SelectMany(dialog => dialog.SeenLog).ToList();
+        foreach (var seenLog in seenLogs)
+        {
+            // Before we hash the end user id, check if the seen log entry is for the current user
+            seenLog.IsAuthenticatedUser = userPid == seenLog.EndUserIdHash;
+
+            seenLog.EndUserIdHash = MappingUtils.HashPid(seenLog.EndUserIdHash, salt);
+        }
 
         return paginatedList;
     }

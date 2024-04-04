@@ -11,7 +11,12 @@ internal sealed class MappingProfile : Profile
     public MappingProfile()
     {
         CreateMap<DialogEntity, SearchDialogDto>()
-            .ForMember(dest => dest.LatestActivities, opt => opt.Ignore())
+            .ForMember(dest => dest.LatestActivities, opt => opt.MapFrom(src => src.Activities
+            // (╯°□°)╯︵ ┻━┻
+            // .Where(activity => activity.TypeId == DialogActivityType.Values.Forwarded)
+            // .OrderByDescending(activity => activity.CreatedAt)
+            // .Take(1)
+            ))
             .ForMember(dest => dest.GuiAttachmentCount, opt =>
                 opt.MapFrom(src => src.Elements.Count(x => x.Urls
                     .Any(url => url.ConsumerTypeId == DialogElementUrlConsumerType.Values.Gui))))
@@ -20,6 +25,9 @@ internal sealed class MappingProfile : Profile
 
         CreateMap<DialogContent, SearchDialogContentDto>()
             .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.TypeId));
+
+        CreateMap<DialogSeenLog, SearchDialogDialogSeenLogDto>()
+            .ForMember(dest => dest.EndUserIdHash, opt => opt.MapFrom(src => src.EndUserId));
 
         CreateMap<DialogActivity, SearchDialogDialogActivityDto>()
             // .ForMember(dest => dest.SeenByEndUserIdHash, opt => opt.MapFrom(src => src.SeenByEndUserId))
