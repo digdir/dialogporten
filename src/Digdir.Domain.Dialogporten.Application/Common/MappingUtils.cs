@@ -21,6 +21,9 @@ internal static class MappingUtils
 
         var hashBytes = SHA256.HashData(buffer);
 
-        return BitConverter.ToString(hashBytes, 0, 5).Replace("-", "").ToLowerInvariant();
+        return BitConverter
+            .ToString(hashBytes, 0, 5)
+            .Replace("-", "")
+            .ToLowerInvariant();
     }
 }

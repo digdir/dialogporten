@@ -192,8 +192,8 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
             .Include(x => x.PerformedBy!.Localizations)
             .Where(x =>
                 dialogIds.Contains(x.DialogId)
-                && x.TypeId != DialogActivityType.Values.Forwarded
-                && x.TypeId != DialogActivityType.Values.Seen)
+                && x.TypeId != DialogActivityType.Values.Forwarded)
+            // && x.TypeId != DialogActivityType.Values.Seen)
             .GroupBy(x => x.DialogId)
             .ToDictionaryAsync(
                 x => x.Key,

@@ -57,6 +57,9 @@ public class DialogEntity :
     [AggregateChild]
     public List<DialogActivity> Activities { get; set; } = [];
 
+    [AggregateChild]
+    public List<DialogSeenLog> SeenLog { get; set; } = [];
+
     public void SoftDelete()
     {
         foreach (var dialogElement in Elements)
@@ -90,10 +93,10 @@ public class DialogEntity :
         _domainEvents.Add(new DialogDeletedDomainEvent(Id, ServiceResource, Party));
     }
 
-    public void UpdateSeenAt(string seenByEndUserId, string? seenByEndUserName)
+    public void UpdateSeenAt(string endUserId, string? endUserName)
     {
-        var lastSeenByAt = Activities
-            .Where(x => x.SeenByEndUserId == seenByEndUserId)
+        var lastSeenByAt = SeenLog
+            .Where(x => x.EndUserId == endUserId)
             .MaxBy(x => x.CreatedAt)
             ?.CreatedAt;
 
@@ -102,25 +105,32 @@ public class DialogEntity :
             return;
         }
 
-        var performedBy = seenByEndUserName is not null
-            ? new DialogActivityPerformedBy
-            {
-                Localizations =
-                [
-                    new Localization
-                    {
-                        CultureCode = "nb-no",
-                        Value = seenByEndUserName
-                    }
-                ]
-            }
-            : null;
+        // var performedBy = endUserName is not null
+        //     ? new DialogActivityPerformedBy
+        //     {
+        //         Localizations =
+        //         [
+        //             new Localization
+        //             {
+        //                 CultureCode = "nb-no",
+        //                 Value = endUserName
+        //             }
+        //         ]
+        //     }
+        //     : null;
 
-        Activities.Add(new DialogActivity
+        // Create new seen by event
+
+        // Activities.Add(new DialogActivity
+        // {
+        //     PerformedBy = performedBy,
+        //     SeenByEndUserId = endUserID,
+        //     TypeId = DialogActivityType.Values.Seen
+        // });
+        SeenLog.Add(new DialogSeenLog
         {
-            PerformedBy = performedBy,
-            SeenByEndUserId = seenByEndUserId,
-            TypeId = DialogActivityType.Values.Seen
+            EndUserId = endUserId,
+            EndUserName = endUserName
         });
 
         _domainEvents.Add(new DialogSeenDomainEvent(Id, ServiceResource, Party));
