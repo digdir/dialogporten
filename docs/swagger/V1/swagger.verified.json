@@ -2200,13 +2200,15 @@
           "Title",
           "SenderName",
           "Summary",
-          "AdditionalInfo"
+          "AdditionalInfo",
+          "ExtendedStatus"
         ],
         "enum": [
           "Title",
           "SenderName",
           "Summary",
-          "AdditionalInfo"
+          "AdditionalInfo",
+          "ExtendedStatus"
         ]
       },
       "LocalizationDto": {
