@@ -15,7 +15,10 @@ public static class ClaimsPrincipalExtensions
     private const string IdClaim = "ID";
     private const char IdDelimiter = ':';
     private const string IdPrefix = "0192";
+    private const string AltinnClaimPrefix = "urn:altinn:";
     private const string OrgClaim = "urn:altinn:org";
+    private const string IdportenAuthLevelClaim = "acr";
+    private const string AltinnAuthLevelClaim = "urn:altinn:authlevel";
     private const string PidClaim = "pid";
 
     public static bool TryGetClaimValue(this ClaimsPrincipal claimsPrincipal, string claimType, [NotNullWhen(true)] out string? value)
@@ -86,13 +89,11 @@ public static class ClaimsPrincipalExtensions
 
     public static bool TryGetAuthenticationLevel(this ClaimsPrincipal claimsPrincipal, [NotNullWhen(true)] out int? authenticationLevel)
     {
-        string[] claimTypes = { "acr", "urn:altinn:authlevel" };
-
-        foreach (var claimType in claimTypes)
+        foreach (var claimType in new[] { IdportenAuthLevelClaim, AltinnAuthLevelClaim })
         {
             if (!claimsPrincipal.TryGetClaimValue(claimType, out var claimValue)) continue;
             // The acr claim value is "LevelX" where X is the authentication level
-            var valueToParse = claimType == "acr" ? claimValue[5..] : claimValue;
+            var valueToParse = claimType == IdportenAuthLevelClaim ? claimValue[5..] : claimValue;
             if (!int.TryParse(valueToParse, out var level)) continue;
 
             authenticationLevel = level;
@@ -102,6 +103,16 @@ public static class ClaimsPrincipalExtensions
         authenticationLevel = null;
         return false;
     }
+
+    public static IEnumerable<Claim> GetIdentifyingClaims(this List<Claim> claims) =>
+        claims.Where(c =>
+            c.Type == PidClaim ||
+            c.Type == ConsumerClaim ||
+            c.Type == SupplierClaim ||
+            c.Type == OrgClaim ||
+            c.Type == IdportenAuthLevelClaim ||
+            c.Type.StartsWith(AltinnClaimPrefix, StringComparison.Ordinal)
+        ).OrderBy(c => c.Type);
 
     private static bool TryGetOrgShortName(this ClaimsPrincipal claimsPrincipal, [NotNullWhen(true)] out string? orgShortName)
         => claimsPrincipal.FindFirst(OrgClaim).TryGetOrgShortName(out orgShortName);

@@ -89,6 +89,29 @@ public static class InfrastructureExtensions
         .ConfigureFusionCache(nameof(Altinn.OrganizationRegistry), new()
         {
             Duration = TimeSpan.FromDays(1),
+        })
+        .ConfigureFusionCache(nameof(Altinn.Authorization), new()
+        {
+            // This cache has high cardinality, and will create several keys per user:
+            // - One entry per user per dialog search and combination of party and service resource parameters
+            // - One entry per dialog details
+            // EU systems iterating over several parties in search view and fetching details for each dialog will
+            // potentially create hundreds over even thousands of cache entries within the cache TTL. To avoid
+            // memory exhaustion, we therefore disable the memory cache for authorization results, and rely solely on
+            // the distributed cache.
+            SkipMemoryCache = true,
+            // In normal operations, 15 minutes delay is deemed acceptable for authorization data
+            Duration = TimeSpan.FromMinutes(15),
+            // In case Altinn Authorization is down/overloaded, we allow the re-usage of stale authorization data
+            // for an additional 15 minutes. Using default FailSafeThrottleDuration.
+            FailSafeMaxDuration = TimeSpan.FromMinutes(30),
+            // If the request to Altinn Authorization takes too long, we allow the cache to return stale data
+            // temporarily whilst updating the cache in the background. Note that we are also using eager refresh
+            // and a backplane.
+            FactorySoftTimeout = TimeSpan.FromSeconds(2),
+            // Timeout for the cache to wait for the factory to complete, which when reached without fail safe data
+            // will cause an exception to be thrown
+            FactoryHardTimeout = TimeSpan.FromSeconds(10),
         });
 
         services.AddDbContext<DialogDbContext>((services, options) =>
@@ -151,7 +174,6 @@ public static class InfrastructureExtensions
                 client.BaseAddress = altinnSettings.BaseUri;
                 client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", altinnSettings.SubscriptionKey);
             })
-            // TODO! Add cache policy based on request body
             .AddPolicyHandlerFromRegistry(PollyPolicy.DefaultHttpRetryPolicy);
 
         if (environment.IsDevelopment())
@@ -179,6 +201,7 @@ public static class InfrastructureExtensions
         public bool IsFailSafeEnabled { get; set; } = true;
         public TimeSpan JitterMaxDuration { get; set; } = TimeSpan.FromSeconds(2);
         public float EagerRefreshThreshold { get; set; } = 0.8f;
+        public bool SkipMemoryCache { get; set; }
     }
 
     private static IHttpClientBuilder AddMaskinportenHttpClient<TClient, TImplementation, TClientDefinition>(
@@ -222,7 +245,9 @@ public static class InfrastructureExtensions
                 AllowBackgroundDistributedCacheOperations = settings.AllowBackgroundDistributedCacheOperations,
 
                 JitterMaxDuration = settings.JitterMaxDuration,
-                EagerRefreshThreshold = settings.EagerRefreshThreshold
+                EagerRefreshThreshold = settings.EagerRefreshThreshold,
+
+                SkipMemoryCache = settings.SkipMemoryCache,
             })
             .WithRegisteredSerializer()
             .WithRegisteredDistributedCache()
