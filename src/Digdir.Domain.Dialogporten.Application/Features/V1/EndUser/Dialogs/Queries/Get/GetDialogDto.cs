@@ -33,6 +33,19 @@ public sealed class GetDialogDto
     public List<GetDialogDialogGuiActionDto> GuiActions { get; set; } = [];
     public List<GetDialogDialogApiActionDto> ApiActions { get; set; } = [];
     public List<GetDialogDialogActivityDto> Activities { get; set; } = [];
+    public List<GetDialogDialogSeenLogDto> SeenLog { get; set; } = [];
+}
+
+public class GetDialogDialogSeenLogDto
+{
+    public Guid Id { get; set; }
+    public DateTimeOffset CreatedAt { get; set; }
+
+    public string EndUserIdHash { get; set; } = null!;
+
+    public string? EndUserName { get; set; }
+
+    public bool IsAuthenticatedUser { get; set; }
 }
 
 public sealed class GetDialogContentDto

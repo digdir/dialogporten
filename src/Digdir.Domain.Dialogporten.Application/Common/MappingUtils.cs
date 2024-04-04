@@ -7,13 +7,8 @@ internal static class MappingUtils
 {
     internal static byte[] GetHashSalt(int size = 16) => RandomNumberGenerator.GetBytes(size);
 
-    internal static string? HashPid(string? personIdentifier, byte[] salt)
+    internal static string HashPid(string personIdentifier, byte[] salt)
     {
-        if (string.IsNullOrWhiteSpace(personIdentifier))
-        {
-            return null;
-        }
-
         var identifierBytes = Encoding.UTF8.GetBytes(personIdentifier);
         Span<byte> buffer = stackalloc byte[identifierBytes.Length + salt.Length];
         identifierBytes.CopyTo(buffer);
