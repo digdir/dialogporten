@@ -133,6 +133,7 @@ module copyEnvironmentSecrets '../modules/keyvault/copySecrets.bicep' = {
   scope: resourceGroup
   name: 'copyEnvironmentSecrets'
   params: {
+    appConfigurationName: appConfiguration.outputs.name
     srcKeyVaultKeys: keyVaultSourceKeys
     srcKeyVaultName: secrets.sourceKeyVaultName
     srcKeyVaultRGNName: secrets.sourceKeyVaultResourceGroup
@@ -145,7 +146,9 @@ module copyEnvironmentSecrets '../modules/keyvault/copySecrets.bicep' = {
 module copyCrossEnvironmentSecrets '../modules/keyvault/copySecrets.bicep' = {
   scope: resourceGroup
   name: 'copyCrossEnvironmentSecrets'
-  params: { srcKeyVaultKeys: keyVaultSourceKeys
+  params: { 
+    appConfigurationName: appConfiguration.outputs.name
+    srcKeyVaultKeys: keyVaultSourceKeys
     srcKeyVaultName: secrets.sourceKeyVaultName
     srcKeyVaultRGNName: secrets.sourceKeyVaultResourceGroup
     srcKeyVaultSubId: secrets.sourceKeyVaultSubscriptionId

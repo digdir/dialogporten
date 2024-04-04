@@ -9,15 +9,17 @@ param destKeyVaultName string
 param destKeyVaultRGName string = resourceGroup().name
 param destKeyVaultSubId string = subscription().subscriptionId
 
+// App configuration
+param appConfigurationName string
+
 // Secret
 #disable-next-line secure-secrets-in-params
 param secretPrefix string
-param removeSecretPrefix bool = true
 
 var environmentKeys = [for key in srcKeyVaultKeys: {
     isEnvironmentKey: startsWith(key, secretPrefix)
-    value: removeSecretPrefix ? replace(key, secretPrefix, '') : key
-    fullName: key
+    secretName: key
+    appConfigKey: replace(replace(key, secretPrefix, ''), '--', ':')
 }]
 
 resource srcKeyVaultResource 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
@@ -25,12 +27,27 @@ resource srcKeyVaultResource 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
     scope: resourceGroup(srcKeyVaultSubId, srcKeyVaultRGNName)
 }
 
+resource appConfigurationResource 'Microsoft.AppConfiguration/configurationStores@2023-03-01' existing = {
+    name: appConfigurationName
+}
+
 module secrets 'upsertSecret.bicep' = [for key in environmentKeys: if (key.isEnvironmentKey) {
-    name: '${take(key.value, 57)}-${take(uniqueString(key.value), 6)}'
+    name: '${take(key.secretName, 57)}-${take(uniqueString(key.secretName), 6)}'
     scope: resourceGroup(destKeyVaultSubId, destKeyVaultRGName)
     params: {
         destKeyVaultName: destKeyVaultName
-        secretName: key.value
-        secretValue: srcKeyVaultResource.getSecret(key.fullName)
+        secretName: key.secretName
+        secretValue: srcKeyVaultResource.getSecret(key.secretName)
+    }
+}]
+
+module appConfiguration '../appConfiguration/upsertKeyValue.bicep' = [for key in environmentKeys: if (!key.isEnvironmentKey) {
+    name: '${take(key.secretName, 57)}-${take(uniqueString(key.secretName), 6)}'
+    scope: resourceGroup(destKeyVaultSubId, destKeyVaultRGName)
+    params: {
+        configStoreName: appConfigurationResource.name
+        key: key.appConfigKey
+        value: 'https://${destKeyVaultName}${az.environment().suffixes.keyvaultDns}/secrets/${key.secretName}'
+        keyValueType: 'keyVaultReference'
     }
 }]
