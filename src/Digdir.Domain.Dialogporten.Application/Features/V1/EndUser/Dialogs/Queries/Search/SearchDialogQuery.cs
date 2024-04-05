@@ -175,66 +175,16 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
             .ProjectTo<SearchDialogDto>(_mapper.ConfigurationProvider)
             .ToPaginatedListAsync(request, cancellationToken: cancellationToken);
 
-        await FetchRelevantActivities(paginatedList, userPid, cancellationToken);
+        var salt = MappingUtils.GetHashSalt();
+        foreach (var seenLog in paginatedList.Items.SelectMany(x => x.SeenLog))
+        {
+            // Before we hash the end user id, check if the seen log entry is for the current user
+            seenLog.IsAuthenticatedUser = userPid == seenLog.EndUserIdHash;
+            // TODO: Add test to not expose unhashed end user id to the client
+            // https://github.com/digdir/dialogporten/issues/596
+            seenLog.EndUserIdHash = MappingUtils.HashPid(seenLog.EndUserIdHash, salt);
+        }
 
         return paginatedList;
-    }
-
-    private async Task FetchRelevantActivities(PaginatedList<SearchDialogDto> paginatedList, string userPid, CancellationToken cancellationToken)
-    {
-        var dialogIds = paginatedList.Items
-            .Select(x => x.Id)
-            .ToList();
-
-        var latestActivityByDialogIdTask = await _db.DialogActivities
-            .AsNoTracking()
-            .Include(x => x.Description!.Localizations)
-            .Include(x => x.PerformedBy!.Localizations)
-            .Where(x =>
-                dialogIds.Contains(x.DialogId)
-                && x.TypeId != DialogActivityType.Values.Forwarded
-                && x.TypeId != DialogActivityType.Values.Seen)
-            .GroupBy(x => x.DialogId)
-            .ToDictionaryAsync(
-                x => x.Key,
-                x => x.OrderByDescending(x => x.CreatedAt)
-                    .ThenBy(x => x.Id)
-                    .First(),
-                cancellationToken);
-
-        var latestSeenActivityByDialogIdTask = await _db.DialogActivities
-            .AsNoTracking()
-            .Include(x => x.Description!.Localizations)
-            .Include(x => x.PerformedBy!.Localizations)
-            .Where(x =>
-                dialogIds.Contains(x.DialogId)
-                && x.TypeId == DialogActivityType.Values.Seen
-                && x.CreatedAt > x.Dialog.UpdatedAt)
-            .GroupBy(x => x.DialogId)
-            .ToDictionaryAsync(x => x.Key, x => x.ToList(), cancellationToken);
-
-        var salt = MappingUtils.GetHashSalt();
-        foreach (var dialog in paginatedList.Items)
-        {
-            var activities = latestSeenActivityByDialogIdTask.TryGetValue(dialog.Id, out var seenActivities)
-                ? seenActivities
-                : [];
-
-            if (latestActivityByDialogIdTask.TryGetValue(dialog.Id, out var latestNonSeenActivity))
-            {
-                activities.Add(latestNonSeenActivity);
-            }
-
-            dialog.LatestActivities = _mapper.Map<List<SearchDialogDialogActivityDto>>(activities);
-
-            foreach (var activity in dialog.LatestActivities
-                .Where(x => !string.IsNullOrWhiteSpace(x.SeenByEndUserIdHash)))
-            {
-                // Before we hash the end user id, check if the seen activity is for the current user
-                activity.SeenActivityIsCurrentEndUser = userPid == activity.SeenByEndUserIdHash;
-                // Hash end user ids
-                activity.SeenByEndUserIdHash = MappingUtils.HashPid(activity.SeenByEndUserIdHash, salt);
-            }
-        }
     }
 }

@@ -62,13 +62,6 @@ internal sealed class SearchDialogActivityQueryHandler : IRequestHandler<SearchD
             return new EntityDeleted<DialogEntity>(request.DialogId);
         }
 
-        // hash end user ids
-        var salt = MappingUtils.GetHashSalt();
-        foreach (var activity in dialog.Activities)
-        {
-            activity.SeenByEndUserId = MappingUtils.HashPid(activity.SeenByEndUserId, salt);
-        }
-
         return _mapper.Map<List<SearchDialogActivityDto>>(dialog.Activities);
     }
 }

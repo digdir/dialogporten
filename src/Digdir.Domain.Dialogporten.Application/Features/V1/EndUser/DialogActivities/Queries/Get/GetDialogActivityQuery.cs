@@ -72,12 +72,6 @@ internal sealed class GetDialogActivityQueryHandler : IRequestHandler<GetDialogA
             return new EntityNotFound<DialogActivity>(request.ActivityId);
         }
 
-        // Hash end user id
-        if (activity.SeenByEndUserId is not null)
-        {
-            activity.SeenByEndUserId = MappingUtils.HashPid(activity.SeenByEndUserId, MappingUtils.GetHashSalt());
-        }
-
         return _mapper.Map<GetDialogActivityDto>(activity);
     }
 }

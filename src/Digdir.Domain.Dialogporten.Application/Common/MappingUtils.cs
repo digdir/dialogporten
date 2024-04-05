@@ -7,13 +7,8 @@ internal static class MappingUtils
 {
     internal static byte[] GetHashSalt(int size = 16) => RandomNumberGenerator.GetBytes(size);
 
-    internal static string? HashPid(string? personIdentifier, byte[] salt)
+    internal static string HashPid(string personIdentifier, byte[] salt)
     {
-        if (string.IsNullOrWhiteSpace(personIdentifier))
-        {
-            return null;
-        }
-
         var identifierBytes = Encoding.UTF8.GetBytes(personIdentifier);
         Span<byte> buffer = stackalloc byte[identifierBytes.Length + salt.Length];
         identifierBytes.CopyTo(buffer);
@@ -21,6 +16,9 @@ internal static class MappingUtils
 
         var hashBytes = SHA256.HashData(buffer);
 
-        return BitConverter.ToString(hashBytes, 0, 5).Replace("-", "").ToLowerInvariant();
+        return BitConverter
+            .ToString(hashBytes, 0, 5)
+            .Replace("-", "")
+            .ToLowerInvariant();
     }
 }
