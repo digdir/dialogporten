@@ -1,5 +1,5 @@
 // Source
-param srcKeyVaultKeys array 
+param srcKeyVaultKeys array
 param srcKeyVaultName string
 param srcKeyVaultRGNName string = resourceGroup().name
 param srcKeyVaultSubId string = subscription().subscriptionId
@@ -16,38 +16,45 @@ param appConfigurationName string
 #disable-next-line secure-secrets-in-params
 param secretPrefix string
 
-var environmentKeys = [for key in srcKeyVaultKeys: {
+var environmentKeys = [
+  for key in srcKeyVaultKeys: {
     isEnvironmentKey: startsWith(key, secretPrefix)
+    secretNameWithoutPrefix: replace(key, secretPrefix, '')
     secretName: key
     appConfigKey: replace(replace(key, secretPrefix, ''), '--', ':')
-}]
+  }
+]
 
 resource srcKeyVaultResource 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
-	name: srcKeyVaultName
-    scope: resourceGroup(srcKeyVaultSubId, srcKeyVaultRGNName)
+  name: srcKeyVaultName
+  scope: resourceGroup(srcKeyVaultSubId, srcKeyVaultRGNName)
 }
 
 resource appConfigurationResource 'Microsoft.AppConfiguration/configurationStores@2023-03-01' existing = {
-    name: appConfigurationName
+  name: appConfigurationName
 }
 
-module secrets 'upsertSecret.bicep' = [for key in environmentKeys: if (key.isEnvironmentKey) {
+module secrets 'upsertSecret.bicep' = [
+  for key in environmentKeys: if (key.isEnvironmentKey) {
     name: '${take(key.secretName, 57)}-${take(uniqueString(key.secretName), 6)}'
     scope: resourceGroup(destKeyVaultSubId, destKeyVaultRGName)
     params: {
-        destKeyVaultName: destKeyVaultName
-        secretName: key.secretName
-        secretValue: srcKeyVaultResource.getSecret(key.secretName)
+      destKeyVaultName: destKeyVaultName
+      secretName: key.secretNameWithoutPrefix
+      secretValue: srcKeyVaultResource.getSecret(key.secretName)
     }
-}]
+  }
+]
 
-module appConfiguration '../appConfiguration/upsertKeyValue.bicep' = [for key in environmentKeys: if (!key.isEnvironmentKey) {
+module appConfiguration '../appConfiguration/upsertKeyValue.bicep' = [
+  for key in environmentKeys: if (!key.isEnvironmentKey) {
     name: '${take(key.secretName, 57)}-${take(uniqueString(key.secretName), 6)}'
     scope: resourceGroup(destKeyVaultSubId, destKeyVaultRGName)
     params: {
-        configStoreName: appConfigurationResource.name
-        key: key.appConfigKey
-        value: 'https://${destKeyVaultName}${az.environment().suffixes.keyvaultDns}/secrets/${key.secretName}'
-        keyValueType: 'keyVaultReference'
+      configStoreName: appConfigurationResource.name
+      key: key.appConfigKey
+      value: 'https://${destKeyVaultName}${az.environment().suffixes.keyvaultDns}/secrets/${key.secretNameWithoutPrefix}'
+      keyValueType: 'keyVaultReference'
     }
-}]
+  }
+]
