@@ -57,6 +57,8 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
                 .ThenInclude(x => x.Title!.Localizations.OrderBy(x => x.CreatedAt).ThenBy(x => x.CultureCode))
             .Include(x => x.ApiActions.OrderBy(x => x.CreatedAt).ThenBy(x => x.Id))
                 .ThenInclude(x => x.Endpoints.OrderBy(x => x.CreatedAt).ThenBy(x => x.Id))
+            .Include(x => x.Activities).ThenInclude(x => x.PerformedBy!.Localizations)
+            .Include(x => x.Activities).ThenInclude(x => x.Description!.Localizations)
             .IgnoreQueryFilters()
             .AsNoTracking() // TODO: Remove when #386 is implemented
             .Where(x => resourceIds.Contains(x.ServiceResource))
