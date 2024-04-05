@@ -95,39 +95,18 @@ public class DialogEntity :
 
     public void UpdateSeenAt(string endUserId, string? endUserName)
     {
-        var lastSeenByAt = SeenLog
+        var lastSeenAt = SeenLog
             .Where(x => x.EndUserId == endUserId)
             .MaxBy(x => x.CreatedAt)
-            ?.CreatedAt;
+            ?.CreatedAt
+            ?? DateTimeOffset.MinValue;
 
-        if ((lastSeenByAt ?? DateTimeOffset.MinValue) >= UpdatedAt)
+        if (lastSeenAt >= UpdatedAt)
         {
             return;
         }
 
-        // var performedBy = endUserName is not null
-        //     ? new DialogActivityPerformedBy
-        //     {
-        //         Localizations =
-        //         [
-        //             new Localization
-        //             {
-        //                 CultureCode = "nb-no",
-        //                 Value = endUserName
-        //             }
-        //         ]
-        //     }
-        //     : null;
-
-        // Create new seen by event
-
-        // Activities.Add(new DialogActivity
-        // {
-        //     PerformedBy = performedBy,
-        //     SeenByEndUserId = endUserID,
-        //     TypeId = DialogActivityType.Values.Seen
-        // });
-        SeenLog.Add(new DialogSeenLog
+        SeenLog.Add(new()
         {
             EndUserId = endUserId,
             EndUserName = endUserName

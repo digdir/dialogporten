@@ -13,13 +13,12 @@ internal sealed class MappingProfile : Profile
     {
         CreateMap<DialogEntity, GetDialogDto>()
             .ForMember(dest => dest.Revision, opt => opt.MapFrom(src => src.Revision))
-            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.StatusId));
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.StatusId))
+            .ForMember(dest => dest.SeenLog, opt => opt.Ignore());
 
-        CreateMap<DialogSeenLog, GetDialogDialogSeenLogDto>()
-            .ForMember(dest => dest.EndUserIdHash, opt => opt.MapFrom(src => src.EndUserId));
+        CreateMap<DialogSeenLog, GetDialogDialogSeenLogDto>();
 
         CreateMap<DialogActivity, GetDialogDialogActivityDto>()
-            // .ForMember(dest => dest.SeenByEndUserIdHash, opt => opt.MapFrom(src => src.SeenByEndUserId))
             .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.TypeId));
 
         CreateMap<DialogApiAction, GetDialogDialogApiActionDto>();

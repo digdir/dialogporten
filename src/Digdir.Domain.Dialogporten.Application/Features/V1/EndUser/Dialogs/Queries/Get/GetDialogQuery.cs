@@ -73,7 +73,9 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
                 .ThenInclude(x => x.Endpoints.OrderBy(x => x.CreatedAt).ThenBy(x => x.Id))
             .Include(x => x.Activities).ThenInclude(x => x.PerformedBy!.Localizations)
             .Include(x => x.Activities).ThenInclude(x => x.Description!.Localizations)
-            .Include(x => x.SeenLog.OrderBy(x => x.CreatedAt))
+            .Include(x => x.SeenLog
+                .Where(x => x.CreatedAt >= x.Dialog.UpdatedAt)
+                .OrderBy(x => x.CreatedAt))
             .Where(x => !x.VisibleFrom.HasValue || x.VisibleFrom < _clock.UtcNowOffset)
             .IgnoreQueryFilters()
             .FirstOrDefaultAsync(x => x.Id == request.DialogId, cancellationToken);
@@ -111,28 +113,29 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
             domainError => throw new UnreachableException("Should not get domain error when updating SeenAt."),
             concurrencyError => throw new UnreachableException("Should not get concurrencyError when updating SeenAt."));
 
-        var dto = _mapper.Map<GetDialogDto>(dialog);
+        var dialogDto = _mapper.Map<GetDialogDto>(dialog);
 
-        // hash end user ids
         var salt = MappingUtils.GetHashSalt();
-        foreach (var seenLogEntry in dto.SeenLog)
-        {
-            // activity.SeenByEndUserId = MappingUtils.HashPid(activity.SeenByEndUserId, salt);
-            seenLogEntry.IsAuthenticatedUser = seenLogEntry.EndUserIdHash == userPid;
-            seenLogEntry.EndUserIdHash = MappingUtils.HashPid(seenLogEntry.EndUserIdHash, salt);
-        }
+        dialogDto.SeenLog = dialog.SeenLog
+            .Select(log =>
+            {
+                var logDto = _mapper.Map<GetDialogDialogSeenLogDto>(log);
+                logDto.IsAuthenticatedUser = log.EndUserId == userPid;
+                logDto.EndUserIdHash = MappingUtils.HashPid(log.EndUserId, salt);
+                return logDto;
+            })
+            .ToList();
 
-
-        dto.DialogToken = _dialogTokenGenerator.GetDialogToken(
+        dialogDto.DialogToken = _dialogTokenGenerator.GetDialogToken(
             dialog,
             authorizationResult,
             "api/v1"
         );
 
-        DecorateWithAuthorization(dto, authorizationResult);
-        ReplaceUnauthorizedUrls(dto);
+        DecorateWithAuthorization(dialogDto, authorizationResult);
+        ReplaceUnauthorizedUrls(dialogDto);
 
-        return dto;
+        return dialogDto;
     }
 
     private static void DecorateWithAuthorization(GetDialogDto dto,
