@@ -30,15 +30,15 @@ internal sealed class DialogDbContext : DbContext, IDialogDbContext
     public DbSet<DialogElementUrl> DialogElementUrls => Set<DialogElementUrl>();
     public DbSet<DialogGuiActionPriority> DialogGuiActionTypes => Set<DialogGuiActionPriority>();
     public DbSet<DialogActivityType> DialogActivityTypes => Set<DialogActivityType>();
-    public DbSet<DialogSeenLog> DialogSeenLogs => Set<DialogSeenLog>();
+    public DbSet<DialogSeenRecord> DialogSeenLog => Set<DialogSeenRecord>();
     public DbSet<DialogContentType> DialogContentTypes => Set<DialogContentType>();
     public DbSet<DialogContent> DialogContent => Set<DialogContent>();
 
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
     public DbSet<OutboxMessageConsumer> OutboxMessageConsumers => Set<OutboxMessageConsumer>();
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) =>
-        optionsBuilder.LogTo(Console.WriteLine);
+    //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) =>
+    //    optionsBuilder.LogTo(Console.WriteLine);
 
     internal bool TrySetOriginalRevision<TEntity>(
         TEntity? entity,

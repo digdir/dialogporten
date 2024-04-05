@@ -6,11 +6,20 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class LatiDa : Migration
+    public partial class SplitSeenLogFromActivityToSeparateEntity : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            //migrationBuilder.Sql("""
+            //    DELETE FROM "DialogActivity" WHERE "Type" = 6;
+            //    """);
+
+            migrationBuilder.DeleteData(
+                table: "DialogActivity", 
+                keyColumn: "TypeId", 
+                keyValue: 6);
+
             migrationBuilder.DeleteData(
                 table: "DialogActivityType",
                 keyColumn: "Id",
@@ -27,7 +36,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                 nullable: true);
 
             migrationBuilder.CreateTable(
-                name: "DialogSeenLog",
+                name: "DialogSeenRecord",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
@@ -38,9 +47,9 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DialogSeenLog", x => x.Id);
+                    table.PrimaryKey("PK_DialogSeenRecord", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_DialogSeenLog_Dialog_DialogId",
+                        name: "FK_DialogSeenRecord_Dialog_DialogId",
                         column: x => x.DialogId,
                         principalTable: "Dialog",
                         principalColumn: "Id",
@@ -54,15 +63,15 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_DialogSeenLog_DialogId",
-                table: "DialogSeenLog",
+                name: "IX_DialogSeenRecord_DialogId",
+                table: "DialogSeenRecord",
                 column: "DialogId");
 
             migrationBuilder.AddForeignKey(
-                name: "FK_LocalizationSet_DialogSeenLog_DialogSeenLogId",
+                name: "FK_LocalizationSet_DialogSeenRecord_DialogSeenLogId",
                 table: "LocalizationSet",
                 column: "DialogSeenLogId",
-                principalTable: "DialogSeenLog",
+                principalTable: "DialogSeenRecord",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
         }
@@ -71,11 +80,11 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_LocalizationSet_DialogSeenLog_DialogSeenLogId",
+                name: "FK_LocalizationSet_DialogSeenRecord_DialogSeenLogId",
                 table: "LocalizationSet");
 
             migrationBuilder.DropTable(
-                name: "DialogSeenLog");
+                name: "DialogSeenRecord");
 
             migrationBuilder.DropIndex(
                 name: "IX_LocalizationSet_DialogSeenLogId",
