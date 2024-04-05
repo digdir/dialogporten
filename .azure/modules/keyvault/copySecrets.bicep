@@ -18,11 +18,14 @@ param secretPrefix string
 
 var filteredKeysBySecrePrefix = filter(srcKeyVaultKeys, key => startsWith(key, secretPrefix))
 
-var keys = map(filteredKeysBySecrePrefix, key => {
-  secretNameWithoutPrefix: replace(key, secretPrefix, '')
-  secretName: key
-  appConfigKey: replace(replace(key, secretPrefix, ''), '--', ':')
-})
+var keys = map(
+  filteredKeysBySecrePrefix,
+  key => {
+    secretNameWithoutPrefix: replace(key, secretPrefix, '')
+    secretName: key
+    appConfigKey: replace(replace(key, secretPrefix, ''), '--', ':')
+  }
+)
 
 resource srcKeyVaultResource 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
   name: srcKeyVaultName
@@ -47,7 +50,7 @@ module secrets 'upsertSecret.bicep' = [
 
 module appConfiguration '../appConfiguration/upsertKeyValue.bicep' = [
   for key in keys: {
-    name: '${take(key.secretName, 57)}-${take(uniqueString(key.secretName), 6)}'
+    name: '${take(key.secretNameWithoutPrefix, 57)}-${take(uniqueString(key.secretNameWithoutPrefix), 6)}'
     scope: resourceGroup(destKeyVaultSubId, destKeyVaultRGName)
     params: {
       configStoreName: appConfigurationResource.name
