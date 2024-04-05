@@ -1,9 +1,9 @@
 param location string
 param name string
 param image string
-param adoConnectionStringSecretUri string
-
 param containerAppEnvId string
+param environmentVariables { name: string, value: string?, secretRef: string? }[] = []
+param secrets { name: string, keyVaultUrl: string, identity: 'System' }[] = []
 
 resource job 'Microsoft.App/jobs@2023-05-01' = {
   name: name
@@ -13,14 +13,7 @@ resource job 'Microsoft.App/jobs@2023-05-01' = {
   }
   properties: {
     configuration: {
-      secrets: [
-        {
-          // todo: move this and refactor into adding this somewhere else
-          name: 'dbconnectionstring'
-          keyVaultUrl: adoConnectionStringSecretUri
-          identity: 'System'
-        }
-      ]
+      secrets: secrets
       manualTriggerConfig: {
         parallelism: 1
         replicaCompletionCount: 1
@@ -33,12 +26,7 @@ resource job 'Microsoft.App/jobs@2023-05-01' = {
     template: {
       containers: [
         {
-          env: [
-            {
-              name: 'Infrastructure__DialogDbConnectionString'
-              secretRef: 'dbconnectionstring'
-            }
-          ]
+          env: environmentVariables
           image: image
           name: name
         }
