@@ -9,8 +9,15 @@ internal sealed class MappingProfile : Profile
     public MappingProfile()
     {
         CreateMap<DialogEntity, SearchDialogDto>()
+            .ForMember(dest => dest.SeenLog, opt => opt.MapFrom(src => src.SeenLog
+                .Where(x => x.CreatedAt >= x.Dialog.UpdatedAt)
+                .OrderByDescending(x => x.CreatedAt)
+            ))
             .ForMember(dest => dest.Content, opt => opt.MapFrom(src => src.Content.Where(x => x.Type.OutputInList)))
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.StatusId));
+
+        CreateMap<DialogSeenRecord, SearchDialogDialogSeenRecordDto>()
+            .ForMember(dest => dest.EndUserIdHash, opt => opt.MapFrom(src => src.EndUserId));
 
         CreateMap<DialogSearchTag, SearchDialogSearchTagDto>();
 
