@@ -7,7 +7,7 @@ using MassTransit;
 using Microsoft.ApplicationInsights.Extensibility;
 using Serilog;
 
-// TODO: Configure RabbitMQ connection settings and endpoint exchange
+// TODO: Configure Azure Service Bus connection settings and endpoint exchange
 // TODO: Configure Postgres connection settings
 // TODO: Improve exceptions thrown in this assembly
 
@@ -59,15 +59,19 @@ static void BuildAndRun(string[] args)
         .AddHostedService<CdcBackgroundHandler>()
         .AddMassTransit(x =>
         {
-            x.UsingRabbitMq((context, cfg) =>
+            var useInMemoryTransport = builder.Configuration.GetValue<bool>("MassTransit:UseInMemoryTransport");
+
+            if (useInMemoryTransport)
             {
-                const string rabbitMqSection = "RabbitMq";
-                cfg.Host(builder.Configuration[$"{rabbitMqSection}:Host"], "/", h =>
+                x.UsingInMemory((context, cfg) =>
                 {
-                    h.Username(builder.Configuration[$"{rabbitMqSection}:Username"]);
-                    h.Password(builder.Configuration[$"{rabbitMqSection}:Password"]);
+                    cfg.ConfigureEndpoints(context);
                 });
-            });
+            }
+            else
+            {
+                // todo: Configure for using Azure Service Bus
+            }
         })
         .AddSingleton(x => new PostgresCdcSSubscriptionOptions
         (

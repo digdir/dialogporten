@@ -23,15 +23,6 @@ internal sealed class MassTransitSink : ICdcSink<OutboxMessage>
         var endpoint = await _sender.GetSendEndpoint(new Uri("exchange:Digdir.Domain.Dialogporten.Service"));
         await endpoint.Send(
             outboxMessage,
-            context =>
-            {
-                if (context is not RabbitMqSendContext rabbitMqSendContext)
-                {
-                    throw new ArgumentException("The context is not a RabbitMQ send context.", nameof(context));
-                }
-
-                rabbitMqSendContext.Mandatory = true;
-            },
             cancellationToken);
     }
 }
