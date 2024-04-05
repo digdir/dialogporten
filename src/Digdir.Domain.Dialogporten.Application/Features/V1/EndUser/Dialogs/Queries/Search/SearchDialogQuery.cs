@@ -181,6 +181,7 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
             // Before we hash the end user id, check if the seen log entry is for the current user
             seenLog.IsAuthenticatedUser = userPid == seenLog.EndUserIdHash;
             // TODO: Add test to not expose unhashed end user id to the client
+            // https://github.com/digdir/dialogporten/issues/596
             seenLog.EndUserIdHash = MappingUtils.HashPid(seenLog.EndUserIdHash, salt);
         }
 

@@ -11,13 +11,9 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            //migrationBuilder.Sql("""
-            //    DELETE FROM "DialogActivity" WHERE "Type" = 6;
-            //    """);
-
             migrationBuilder.DeleteData(
-                table: "DialogActivity", 
-                keyColumn: "TypeId", 
+                table: "DialogActivity",
+                keyColumn: "TypeId",
                 keyValue: 6);
 
             migrationBuilder.DeleteData(

@@ -25,7 +25,6 @@ internal static class CloudEventTypes
         nameof(DialogActivityType.Values.Information) => "dialogporten.dialog.activity.information.v1",
         nameof(DialogActivityType.Values.Error) => "dialogporten.dialog.activity.error.v1",
         nameof(DialogActivityType.Values.Closed) => "dialogporten.dialog.activity.closed.v1",
-        // nameof(DialogActivityType.Values.Seen) => "dialogporten.dialog.activity.seen.v1",
         nameof(DialogActivityType.Values.Forwarded) => "dialogporten.dialog.activity.forwarded.v1",
 
         _ => throw new ArgumentOutOfRangeException(nameof(eventName), eventName, null)

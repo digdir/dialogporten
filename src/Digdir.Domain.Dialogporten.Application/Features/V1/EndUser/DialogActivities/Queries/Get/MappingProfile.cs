@@ -8,7 +8,6 @@ internal sealed class MappingProfile : Profile
     public MappingProfile()
     {
         CreateMap<DialogActivity, GetDialogActivityDto>()
-            // .ForMember(dest => dest.SeenByEndUserIdHash, opt => opt.MapFrom(src => src.SeenByEndUserId))
             .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.TypeId));
     }
 }
