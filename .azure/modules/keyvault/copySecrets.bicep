@@ -16,10 +16,10 @@ param appConfigurationName string
 #disable-next-line secure-secrets-in-params
 param secretPrefix string
 
-var filteredKeysBySecrePrefix = filter(srcKeyVaultKeys, key => startsWith(key, secretPrefix))
+var filteredKeysBySecretPrefix = filter(srcKeyVaultKeys, key => startsWith(key, secretPrefix))
 
 var keys = map(
-  filteredKeysBySecrePrefix,
+  filteredKeysBySecretPrefix,
   key => {
     secretNameWithoutPrefix: replace(key, secretPrefix, '')
     secretName: key
