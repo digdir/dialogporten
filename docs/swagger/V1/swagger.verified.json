@@ -2513,7 +2513,6 @@
           "Information",
           "Error",
           "Closed",
-          "Seen",
           "Forwarded"
         ],
         "enum": [
@@ -2522,7 +2521,6 @@
           "Information",
           "Error",
           "Closed",
-          "Seen",
           "Forwarded"
         ]
       },
@@ -3459,31 +3457,24 @@
           "status": {
             "$ref": "#/components/schemas/DialogStatus_Values"
           },
+          "latestActivity": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/SearchDialogDialogActivityDto"
+              }
+            ]
+          },
           "content": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/SearchDialogContentDto"
             }
           },
-          "latestActivities": {
+          "seenLog": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/SearchDialogDialogActivityDto"
-            }
-          }
-        }
-      },
-      "SearchDialogContentDto": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "type": {
-            "$ref": "#/components/schemas/DialogContentType_Values"
-          },
-          "value": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/LocalizationDto"
+              "$ref": "#/components/schemas/SearchDialogDialogSeenRecordDto"
             }
           }
         }
@@ -3504,14 +3495,6 @@
           "extendedType": {
             "type": "string",
             "format": "uri",
-            "nullable": true
-          },
-          "seenByEndUserIdHash": {
-            "type": "string",
-            "nullable": true
-          },
-          "seenActivityIsCurrentEndUser": {
-            "type": "boolean",
             "nullable": true
           },
           "type": {
@@ -3539,6 +3522,45 @@
             "items": {
               "$ref": "#/components/schemas/LocalizationDto"
             }
+          }
+        }
+      },
+      "SearchDialogContentDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "type": {
+            "$ref": "#/components/schemas/DialogContentType_Values"
+          },
+          "value": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LocalizationDto"
+            }
+          }
+        }
+      },
+      "SearchDialogDialogSeenRecordDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endUserIdHash": {
+            "type": "string"
+          },
+          "endUserName": {
+            "type": "string",
+            "nullable": true
+          },
+          "isAuthenticatedUser": {
+            "type": "boolean"
           }
         }
       },
@@ -3634,6 +3656,12 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/GetDialogDialogActivityDto"
+            }
+          },
+          "seenLog": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GetDialogDialogSeenRecordDto"
             }
           }
         }
@@ -3849,10 +3877,6 @@
             "format": "uri",
             "nullable": true
           },
-          "seenByEndUserIdHash": {
-            "type": "string",
-            "nullable": true
-          },
           "type": {
             "$ref": "#/components/schemas/DialogActivityType_Values"
           },
@@ -3878,6 +3902,30 @@
             "items": {
               "$ref": "#/components/schemas/LocalizationDto"
             }
+          }
+        }
+      },
+      "GetDialogDialogSeenRecordDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endUserIdHash": {
+            "type": "string"
+          },
+          "endUserName": {
+            "type": "string",
+            "nullable": true
+          },
+          "isAuthenticatedUser": {
+            "type": "boolean"
           }
         }
       },
