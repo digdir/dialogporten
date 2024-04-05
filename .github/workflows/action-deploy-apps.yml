@@ -46,75 +46,71 @@ concurrency:
   # if the dryrun input is true, we want to cancel any running deployments in order to not block the pipeline e.g for environment approvals
   cancel-in-progress: ${{ inputs.dryRun }}
 jobs:
-  # deploy-migration-job:
-  #   name: Deploy migration job to ${{ inputs.environment }}
-  #   runs-on: ubuntu-latest
-  #   # todo: Enabled for staging only. Remove once working in the test environment
-  #   if: ${{ inputs.environment == 'staging' }}
-  #   environment: ${{inputs.environment}}
-  #   permissions:
-  #     id-token: write
-  #     contents: read
-  #   steps:
-  #     - name: "Checkout GitHub Action"
-  #       uses: actions/checkout@v4
+  deploy-migration-job:
+    name: Deploy migration job to ${{ inputs.environment }}
+    runs-on: ubuntu-latest
+    environment: ${{inputs.environment}}
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: "Checkout GitHub Action"
+        uses: actions/checkout@v4
 
-  #     - name: OIDC Login to Azure Public Cloud
-  #       uses: azure/login@v1
-  #       with:
-  #         client-id: ${{ secrets.AZURE_CLIENT_ID }}
-  #         tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-  #         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: OIDC Login to Azure Public Cloud
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-  #     - name: Deploy migration job (${{ inputs.environment }})
-  #       uses: azure/arm-deploy@v1
-  #       id: deploy
-  #       env:
-  #         # parameters
-  #         IMAGE_TAG: ${{ inputs.gitShortSha }}
-  #         # secrets
-  #         ADO_CONNECTION_STRING_SECRET_URI: ${{ secrets.AZURE_ADO_CONNECTION_STRING_SECRET_URI }}
-  #         CONTAINER_APP_ENVIRONMENT_NAME: ${{ secrets.AZURE_CONTAINER_APP_ENVIRONMENT_NAME }}
-  #       with:
-  #         scope: resourcegroup
-  #         template: ./.azure/applications/web-api-migration-job/main.bicep
-  #         resourceGroupName: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
-  #         deploymentMode: Incremental
-  #         deploymentName: "dp-be-${{ inputs.environment }}-web-api-migration-job-${{ inputs.gitShortSha }}"
-  #         region: ${{ inputs.region }}
-  #         failOnStdErr: false
-  #         additionalArguments: "${{inputs.dryRun && '--what-if'}}"
-  #         parameters: ./.azure/applications/web-api-migration-job/${{ inputs.environment }}.bicepparam
+      - name: Deploy migration job (${{ inputs.environment }})
+        uses: azure/arm-deploy@v1
+        id: deploy
+        env:
+          # parameters
+          IMAGE_TAG: ${{ inputs.version }}
+          # secrets
+          ADO_CONNECTION_STRING_SECRET_URI: ${{ secrets.AZURE_ADO_CONNECTION_STRING_SECRET_URI }}
+          CONTAINER_APP_ENVIRONMENT_NAME: ${{ secrets.AZURE_CONTAINER_APP_ENVIRONMENT_NAME }}
+        with:
+          scope: resourcegroup
+          template: ./.azure/applications/web-api-migration-job-aretest/main.bicep
+          resourceGroupName: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
+          deploymentMode: Incremental
+          deploymentName: "dp-be-${{ inputs.environment }}-web-api-migration-job-aretest-${{ inputs.version }}"
+          region: ${{ inputs.region }}
+          failOnStdErr: false
+          additionalArguments: "${{inputs.dryRun && '--what-if'}}"
+          parameters: ./.azure/applications/web-api-migration-job-aretest/${{ inputs.environment }}.bicepparam
 
-  #     - name: Start migration job
-  #       uses: azure/CLI@v1
-  #       if: ${{!inputs.dryRun}}
-  #       with:
-  #         azcliversion: 2.56.0
-  #         inlineScript: |
-  #           az containerapp job start -n ${{ steps.deploy.outputs.name }} -g ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
+      - name: Start migration job
+        uses: azure/CLI@v1
+        if: ${{!inputs.dryRun}}
+        with:
+          azcliversion: 2.56.0
+          inlineScript: |
+            az containerapp job start -n ${{ steps.deploy.outputs.name }} -g ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
 
-  #     - name: Verify migration
-  #       uses: azure/CLI@v1
-  #       if: ${{!inputs.dryRun}}
-  #       id: verify-migration
-  #       timeout-minutes: 3
-  #       with:
-  #         azcliversion: ${{ env.AZ_CLI_VERSION }}
-  #         inlineScript: |
-  #           ./.github/tools/containerAppJobVerifier.sh ${{ steps.deploy.outputs.name }} ${{ secrets.AZURE_RESOURCE_GROUP_NAME }} ${{ inputs.gitShortSha }}
+      - name: Verify migration
+        uses: azure/CLI@v1
+        if: ${{!inputs.dryRun}}
+        id: verify-migration
+        timeout-minutes: 3
+        with:
+          azcliversion: ${{ env.AZ_CLI_VERSION }}
+          inlineScript: |
+            ./.github/tools/containerAppJobVerifier.sh ${{ steps.deploy.outputs.name }} ${{ secrets.AZURE_RESOURCE_GROUP_NAME }} ${{ inputs.version }}
 
-  #     - name: Logout from azure
-  #       if: ${{failure() || success()}}
-  #       continue-on-error: true
-  #       run: az logout
+      - name: Logout from azure
+        if: ${{failure() || success()}}
+        continue-on-error: true
+        run: az logout
 
   deploy-apps:
     name: Deploy ${{ matrix.name }} to ${{ inputs.environment }}
     runs-on: ubuntu-latest
-    # todo: remove once migration job is working in the test environment
-    # if: ${{ always() }}
-    # needs: deploy-migration-job
+    needs: deploy-migration-job
     strategy:
       fail-fast: true
       matrix:
