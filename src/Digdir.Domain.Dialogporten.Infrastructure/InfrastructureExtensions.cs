@@ -25,13 +25,7 @@ using Digdir.Domain.Dialogporten.Infrastructure.Altinn.Authorization;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.Events;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.OrganizationRegistry;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.ResourceRegistry;
-using System.Text.Json;
-using Microsoft.Extensions.Caching.StackExchangeRedis;
-using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Caching.Memory;
 using ZiggyCreatures.Caching.Fusion;
-using ZiggyCreatures.Caching.Fusion.Backplane.StackExchangeRedis;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.NameRegistry;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure;
