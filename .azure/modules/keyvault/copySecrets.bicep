@@ -16,14 +16,13 @@ param appConfigurationName string
 #disable-next-line secure-secrets-in-params
 param secretPrefix string
 
-var environmentKeys = [
-  for key in srcKeyVaultKeys: {
-    isEnvironmentKey: startsWith(key, secretPrefix)
-    secretNameWithoutPrefix: replace(key, secretPrefix, '')
-    secretName: key
-    appConfigKey: replace(replace(key, secretPrefix, ''), '--', ':')
-  }
-]
+var filteredKeysBySecrePrefix = filter(srcKeyVaultKeys, key => startsWith(key, secretPrefix))
+
+var keys = map(filteredKeysBySecrePrefix, key => {
+  secretNameWithoutPrefix: replace(key, secretPrefix, '')
+  secretName: key
+  appConfigKey: replace(replace(key, secretPrefix, ''), '--', ':')
+})
 
 resource srcKeyVaultResource 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
   name: srcKeyVaultName
@@ -35,7 +34,7 @@ resource appConfigurationResource 'Microsoft.AppConfiguration/configurationStore
 }
 
 module secrets 'upsertSecret.bicep' = [
-  for key in environmentKeys: if (key.isEnvironmentKey) {
+  for key in keys: {
     name: '${take(key.secretName, 57)}-${take(uniqueString(key.secretName), 6)}'
     scope: resourceGroup(destKeyVaultSubId, destKeyVaultRGName)
     params: {
@@ -47,7 +46,7 @@ module secrets 'upsertSecret.bicep' = [
 ]
 
 module appConfiguration '../appConfiguration/upsertKeyValue.bicep' = [
-  for key in environmentKeys: if (!key.isEnvironmentKey) {
+  for key in keys: {
     name: '${take(key.secretName, 57)}-${take(uniqueString(key.secretName), 6)}'
     scope: resourceGroup(destKeyVaultSubId, destKeyVaultRGName)
     params: {
