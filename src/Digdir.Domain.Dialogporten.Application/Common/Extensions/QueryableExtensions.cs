@@ -8,9 +8,7 @@ namespace Digdir.Domain.Dialogporten.Application.Common.Extensions;
 public static class QueryableExtensions
 {
     public static IQueryable<TSource> WhereIf<TSource>(this IQueryable<TSource> source, bool predicate, Expression<Func<TSource, bool>> queryPredicate)
-    {
-        return predicate ? source.Where(queryPredicate) : source;
-    }
+        => predicate ? source.Where(queryPredicate) : source;
 
     private static readonly Type DialogType = typeof(DialogEntity);
     private static readonly PropertyInfo DialogIdPropertyInfo = DialogType.GetProperty(nameof(DialogEntity.Id))!;

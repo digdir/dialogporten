@@ -7,8 +7,5 @@ public sealed class OutboxMessageConsumerDefinition : ConsumerDefinition<OutboxM
     protected override void ConfigureConsumer(
         IReceiveEndpointConfigurator endpointConfigurator,
         IConsumerConfigurator<OutboxMessageConsumer> consumerConfigurator,
-        IRegistrationContext context)
-    {
-        endpointConfigurator.ConfigureConsumeTopology = false;
-    }
+        IRegistrationContext context) => endpointConfigurator.ConfigureConsumeTopology = false;
 }

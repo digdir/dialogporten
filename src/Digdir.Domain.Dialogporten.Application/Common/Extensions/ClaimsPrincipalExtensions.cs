@@ -86,7 +86,7 @@ public static class ClaimsPrincipalExtensions
 
     public static bool TryGetAuthenticationLevel(this ClaimsPrincipal claimsPrincipal, [NotNullWhen(true)] out int? authenticationLevel)
     {
-        string[] claimTypes = { "acr", "urn:altinn:authlevel" };
+        string[] claimTypes = ["acr", "urn:altinn:authlevel"];
 
         foreach (var claimType in claimTypes)
         {
