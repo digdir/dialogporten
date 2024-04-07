@@ -58,6 +58,9 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
                 .ThenInclude(x => x.Endpoints.OrderBy(x => x.CreatedAt).ThenBy(x => x.Id))
             .Include(x => x.Activities).ThenInclude(x => x.PerformedBy!.Localizations)
             .Include(x => x.Activities).ThenInclude(x => x.Description!.Localizations)
+            .Include(x => x.SeenLog
+                .Where(x => x.CreatedAt >= x.Dialog.UpdatedAt)
+                .OrderBy(x => x.CreatedAt))
             .IgnoreQueryFilters()
             .AsNoTracking() // TODO: Remove when #386 is implemented
             .Where(x => resourceIds.Contains(x.ServiceResource))
@@ -73,7 +76,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
 
         var dialogDto = _mapper.Map<GetDialogDto>(dialog);
 
-        dialogDto.SeenLog = dialog.SeenLog
+        dialogDto.SeenSinceLastUpdate = dialog.SeenLog
             .Select(log =>
             {
                 var logDto = _mapper.Map<GetDialogDialogSeenRecordDto>(log);
