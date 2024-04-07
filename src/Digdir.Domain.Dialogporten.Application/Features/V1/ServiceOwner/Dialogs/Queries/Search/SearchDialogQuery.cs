@@ -181,7 +181,7 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
             .ProjectTo<SearchDialogDto>(_mapper.ConfigurationProvider)
             .ToPaginatedListAsync(request, cancellationToken: cancellationToken);
 
-        foreach (var seenLog in paginatedList.Items.SelectMany(x => x.SeenLog))
+        foreach (var seenLog in paginatedList.Items.SelectMany(x => x.SeenSinceLastUpdate))
         {
             // TODO: Add test to not expose un-hashed end user id to the client
             // https://github.com/digdir/dialogporten/issues/596

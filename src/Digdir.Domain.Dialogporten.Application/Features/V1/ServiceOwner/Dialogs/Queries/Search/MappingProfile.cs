@@ -9,7 +9,7 @@ internal sealed class MappingProfile : Profile
     public MappingProfile()
     {
         CreateMap<DialogEntity, SearchDialogDto>()
-            .ForMember(dest => dest.SeenLog, opt => opt.MapFrom(src => src.SeenLog
+            .ForMember(dest => dest.SeenSinceLastUpdate, opt => opt.MapFrom(src => src.SeenLog
                 .Where(x => x.CreatedAt >= x.Dialog.UpdatedAt)
                 .OrderByDescending(x => x.CreatedAt)
             ))

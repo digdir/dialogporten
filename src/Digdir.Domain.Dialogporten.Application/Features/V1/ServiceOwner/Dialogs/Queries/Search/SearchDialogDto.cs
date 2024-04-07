@@ -21,7 +21,7 @@ public sealed class SearchDialogDto
     public DialogStatus.Values Status { get; set; }
 
     public List<SearchDialogContentDto> Content { get; set; } = [];
-    public List<SearchDialogDialogSeenRecordDto> SeenLog { get; set; } = [];
+    public List<SearchDialogDialogSeenRecordDto> SeenSinceLastUpdate { get; set; } = [];
 }
 
 public class SearchDialogDialogSeenRecordDto
