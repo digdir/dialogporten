@@ -117,7 +117,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
 
         var dialogDto = _mapper.Map<GetDialogDto>(dialog);
 
-        dialogDto.SeenLog = dialog.SeenLog
+        dialogDto.SeenSinceLastUpdate = dialog.SeenLog
             .Select(log =>
             {
                 var logDto = _mapper.Map<GetDialogDialogSeenRecordDto>(log);
