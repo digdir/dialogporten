@@ -2603,7 +2603,7 @@
               "$ref": "#/components/schemas/SearchDialogContentDtoSO"
             }
           },
-          "seenLog": {
+          "seenSinceLastUpdate": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/SearchDialogDialogSeenRecordDtoSO"
@@ -2644,6 +2644,9 @@
           "endUserName": {
             "type": "string",
             "nullable": true
+          },
+          "isAuthenticatedUser": {
+            "type": "boolean"
           }
         }
       },
@@ -2749,7 +2752,7 @@
               "$ref": "#/components/schemas/GetDialogDialogActivityDtoSO"
             }
           },
-          "seenLog": {
+          "seenSinceLastUpdate": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/GetDialogDialogSeenRecordDtoSO"
@@ -3525,7 +3528,7 @@
               "$ref": "#/components/schemas/SearchDialogContentDto"
             }
           },
-          "seenLog": {
+          "seenSinceLastUpdate": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/SearchDialogDialogSeenRecordDto"
@@ -3712,7 +3715,7 @@
               "$ref": "#/components/schemas/GetDialogDialogActivityDto"
             }
           },
-          "seenLog": {
+          "seenSinceLastUpdate": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/GetDialogDialogSeenRecordDto"
