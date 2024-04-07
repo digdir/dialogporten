@@ -32,8 +32,7 @@ public class SearchDialogDialogSeenRecordDto
     public string EndUserIdHash { get; set; } = null!;
 
     public string? EndUserName { get; set; }
-
-    // public bool IsAuthenticatedUser { get; set; }
+    public bool IsAuthenticatedUser { get; set; }
 }
 
 public sealed class SearchDialogSearchTagDto

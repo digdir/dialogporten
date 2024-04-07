@@ -181,11 +181,17 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
             .ProjectTo<SearchDialogDto>(_mapper.ConfigurationProvider)
             .ToPaginatedListAsync(request, cancellationToken: cancellationToken);
 
-        foreach (var seenLog in paginatedList.Items.SelectMany(x => x.SeenSinceLastUpdate))
+        foreach (var seenRecord in paginatedList.Items.SelectMany(x => x.SeenSinceLastUpdate))
         {
+            if (request.EndUserId is not null)
+            {
+                // Should this bool be nullable so to remove from dto when EndUserId is not set?
+                seenRecord.IsAuthenticatedUser = seenRecord.EndUserIdHash == request.EndUserId;
+            }
+
             // TODO: Add test to not expose un-hashed end user id to the client
             // https://github.com/digdir/dialogporten/issues/596
-            seenLog.EndUserIdHash = _stringHasher.Hash(seenLog.EndUserIdHash);
+            seenRecord.EndUserIdHash = _stringHasher.Hash(seenRecord.EndUserIdHash);
         }
 
         return paginatedList;
