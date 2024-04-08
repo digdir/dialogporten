@@ -3,12 +3,15 @@ using System.Reflection;
 using Digdir.Domain.Dialogporten.Application;
 using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
 using Digdir.Domain.Dialogporten.GraphQL;
+using Digdir.Domain.Dialogporten.GraphQL.Common;
 using Digdir.Domain.Dialogporten.GraphQL.Common.Authentication;
 using Digdir.Domain.Dialogporten.GraphQL.Common.Authorization;
 using Digdir.Domain.Dialogporten.Infrastructure;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence;
 using Microsoft.ApplicationInsights.Extensibility;
+using Digdir.Domain.Dialogporten.Application.Common.Extensions.OptionExtensions;
 using Serilog;
+using FluentValidation;
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Warning()
@@ -47,6 +50,11 @@ static void BuildAndRun(string[] args)
             services.GetRequiredService<TelemetryConfiguration>(),
             TelemetryConverter.Traces));
 
+    builder.Services
+        .AddOptions<GraphQlSettings>()
+        .Bind(builder.Configuration.GetSection(GraphQlSettings.SectionName))
+        .ValidateFluently()
+        .ValidateOnStart();
     /* TODOS:
      * - Gjør DialogDbContext til internal. Kan måtte gjøre dette prosjektet til et "friend assembly" av infrastructure (internalsVisibleTo)
      *
@@ -54,6 +62,7 @@ static void BuildAndRun(string[] args)
      *
      */
 
+    var thisAssembly = Assembly.GetExecutingAssembly();
 
     builder.Services
         // Options setup
@@ -68,6 +77,7 @@ static void BuildAndRun(string[] args)
         .AddApplicationInsightsTelemetry()
         // .AddApplicationInsightsTelemetry()
         .AddScoped<IUser, LocalDevelopmentUser>()
+        .AddValidatorsFromAssembly(thisAssembly, ServiceLifetime.Transient, includeInternalTypes: true)
 
         // Graph QL
         .AddGraphQLServer()
@@ -89,6 +99,6 @@ static void BuildAndRun(string[] args)
     app.UseAuthentication();
     app.UseAuthorization();
 
-    app.MapGraphQL().RequireAuthorization();
+    app.MapGraphQL();
     app.Run();
 }
