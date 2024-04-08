@@ -2645,7 +2645,7 @@
             "type": "string",
             "nullable": true
           },
-          "isAuthenticatedUser": {
+          "isCurrentEndUser": {
             "type": "boolean"
           }
         }
@@ -3015,6 +3015,9 @@
           "endUserName": {
             "type": "string",
             "nullable": true
+          },
+          "isCurrentEndUser": {
+            "type": "boolean"
           }
         }
       },
@@ -3616,7 +3619,7 @@
             "type": "string",
             "nullable": true
           },
-          "isAuthenticatedUser": {
+          "isCurrentEndUser": {
             "type": "boolean"
           }
         }
@@ -3981,7 +3984,7 @@
             "type": "string",
             "nullable": true
           },
-          "isAuthenticatedUser": {
+          "isCurrentEndUser": {
             "type": "boolean"
           }
         }
