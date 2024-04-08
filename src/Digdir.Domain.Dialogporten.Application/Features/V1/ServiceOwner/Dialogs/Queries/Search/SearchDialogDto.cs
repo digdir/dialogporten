@@ -32,7 +32,7 @@ public class SearchDialogDialogSeenRecordDto
     public string EndUserIdHash { get; set; } = null!;
 
     public string? EndUserName { get; set; }
-    public bool IsCurrentEndUser { get; set; }
+    public bool? IsCurrentEndUser { get; set; }
 }
 
 public sealed class SearchDialogSearchTagDto

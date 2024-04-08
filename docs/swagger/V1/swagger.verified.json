@@ -2646,7 +2646,8 @@
             "nullable": true
           },
           "isCurrentEndUser": {
-            "type": "boolean"
+            "type": "boolean",
+            "nullable": true
           }
         }
       },
@@ -3017,7 +3018,8 @@
             "nullable": true
           },
           "isCurrentEndUser": {
-            "type": "boolean"
+            "type": "boolean",
+            "nullable": true
           }
         }
       },
@@ -3620,7 +3622,8 @@
             "nullable": true
           },
           "isCurrentEndUser": {
-            "type": "boolean"
+            "type": "boolean",
+            "nullable": true
           }
         }
       },
@@ -3985,7 +3988,8 @@
             "nullable": true
           },
           "isCurrentEndUser": {
-            "type": "boolean"
+            "type": "boolean",
+            "nullable": true
           }
         }
       },
