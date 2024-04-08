@@ -2602,6 +2602,12 @@
             "items": {
               "$ref": "#/components/schemas/SearchDialogContentDtoSO"
             }
+          },
+          "seenSinceLastUpdate": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SearchDialogDialogSeenRecordDtoSO"
+            }
           }
         }
       },
@@ -2617,6 +2623,31 @@
             "items": {
               "$ref": "#/components/schemas/LocalizationDto"
             }
+          }
+        }
+      },
+      "SearchDialogDialogSeenRecordDtoSO": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endUserIdHash": {
+            "type": "string"
+          },
+          "endUserName": {
+            "type": "string",
+            "nullable": true
+          },
+          "isCurrentEndUser": {
+            "type": "boolean",
+            "nullable": true
           }
         }
       },
@@ -2720,6 +2751,12 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/GetDialogDialogActivityDtoSO"
+            }
+          },
+          "seenSinceLastUpdate": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GetDialogDialogSeenRecordDtoSO"
             }
           }
         }
@@ -2958,6 +2995,31 @@
             "items": {
               "$ref": "#/components/schemas/LocalizationDto"
             }
+          }
+        }
+      },
+      "GetDialogDialogSeenRecordDtoSO": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endUserIdHash": {
+            "type": "string"
+          },
+          "endUserName": {
+            "type": "string",
+            "nullable": true
+          },
+          "isCurrentEndUser": {
+            "type": "boolean",
+            "nullable": true
           }
         }
       },
@@ -3471,7 +3533,7 @@
               "$ref": "#/components/schemas/SearchDialogContentDto"
             }
           },
-          "seenLog": {
+          "seenSinceLastUpdate": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/SearchDialogDialogSeenRecordDto"
@@ -3559,7 +3621,7 @@
             "type": "string",
             "nullable": true
           },
-          "isAuthenticatedUser": {
+          "isCurrentEndUser": {
             "type": "boolean"
           }
         }
@@ -3658,7 +3720,7 @@
               "$ref": "#/components/schemas/GetDialogDialogActivityDto"
             }
           },
-          "seenLog": {
+          "seenSinceLastUpdate": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/GetDialogDialogSeenRecordDto"
@@ -3924,7 +3986,7 @@
             "type": "string",
             "nullable": true
           },
-          "isAuthenticatedUser": {
+          "isCurrentEndUser": {
             "type": "boolean"
           }
         }

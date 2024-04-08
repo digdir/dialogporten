@@ -7,7 +7,7 @@ namespace Digdir.Domain.Dialogporten.Application.Common.Pagination.Extensions;
 
 public static class TryParseExtensions
 {
-    private static readonly ConcurrentDictionary<Type, MethodInfo?> _tryParseByType = new();
+    private static readonly ConcurrentDictionary<Type, MethodInfo?> TryParseByType = new();
 
     public static bool TryParse(Type type, string? value, out object? result)
     {
@@ -27,7 +27,7 @@ public static class TryParseExtensions
             return true;
         }
 
-        var method = _tryParseByType.GetOrAdd(type, t => TryFindTryParseMethod(t, out var m) ? m : null);
+        var method = TryParseByType.GetOrAdd(type, t => TryFindTryParseMethod(t, out var m) ? m : null);
         if (method is null)
         {
             return false;
@@ -53,11 +53,11 @@ public static class TryParseExtensions
                 var method = (MethodInfo)m;
                 if (method.Name != tryParseMethodName) return false;
                 if (method.ReturnParameter.ParameterType != typeof(bool)) return false;
-                var parms = method.GetParameters();
-                if (parms.Length != 2) return false;
-                if (parms[0].ParameterType != typeof(string)) return false;
-                if (parms[1].ParameterType != type.MakeByRefType()) return false;
-                if (!parms[1].IsOut) return false;
+                var parameters = method.GetParameters();
+                if (parameters.Length != 2) return false;
+                if (parameters[0].ParameterType != typeof(string)) return false;
+                if (parameters[1].ParameterType != type.MakeByRefType()) return false;
+                if (!parameters[1].IsOut) return false;
 
                 return true;
 

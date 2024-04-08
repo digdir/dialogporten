@@ -102,10 +102,7 @@ public abstract class AbstractLookupEntity<TSelf, TEnum> : ILookupEntity<TSelf, 
     }
 
     /// <inheritdoc/>
-    public override int GetHashCode()
-    {
-        return Id.GetHashCode();
-    }
+    public override int GetHashCode() => Id.GetHashCode();
 
     /// <inheritdoc/>
     public static explicit operator TEnum(AbstractLookupEntity<TSelf, TEnum> entity)
@@ -119,8 +116,5 @@ public abstract class AbstractLookupEntity<TSelf, TEnum> : ILookupEntity<TSelf, 
         return GetUninitializedSelf().MapValue(id);
     }
 
-    private static TSelf GetUninitializedSelf()
-    {
-        return (TSelf)RuntimeHelpers.GetUninitializedObject(typeof(TSelf));
-    }
+    private static TSelf GetUninitializedSelf() => (TSelf)RuntimeHelpers.GetUninitializedObject(typeof(TSelf));
 }

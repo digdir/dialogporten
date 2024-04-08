@@ -49,7 +49,7 @@ static void BuildAndRun(string[] args)
         .ReadFrom.Services(services)
         .Enrich.FromLogContext()
         .WriteTo.Conditional(
-            condition: x => builder.Environment.IsDevelopment(),
+            condition: _ => builder.Environment.IsDevelopment(),
             configureSink: x => x.Console(formatProvider: CultureInfo.InvariantCulture))
         .WriteTo.ApplicationInsights(
             services.GetRequiredService<TelemetryConfiguration>(),

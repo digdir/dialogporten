@@ -7,9 +7,9 @@ namespace Digdir.Library.Entity.Abstractions.Features.Aggregate;
 /// </summary>
 public abstract class AggregateNode
 {
-    private static readonly Type _openGenericAggregateNodeType = typeof(AggregateNode<>);
-    private readonly HashSet<AggregateNode> _children = new();
-    private readonly HashSet<AggregateNode> _parents = new();
+    private static readonly Type OpenGenericAggregateNodeType = typeof(AggregateNode<>);
+    private readonly HashSet<AggregateNode> _children = [];
+    private readonly HashSet<AggregateNode> _parents = [];
     private readonly List<AggregateNodeProperty> _modifiedProperties;
 
     /// <summary>
@@ -25,7 +25,7 @@ public abstract class AggregateNode
     /// <summary>
     /// A collection of modified children. A child node is modified if it itself
     /// is modified, or one of its children are modified. Modified in this
-    /// context meens added, modified, or deleted.
+    /// context means added, modified, or deleted.
     /// </summary>
     public IReadOnlyCollection<AggregateNode> Children => _children;
 
@@ -78,7 +78,7 @@ public abstract class AggregateNode
         }
 
         var nodeArguments = new[] { entity, state, modifiedProperties };
-        var genericType = _openGenericAggregateNodeType.MakeGenericType(type);
+        var genericType = OpenGenericAggregateNodeType.MakeGenericType(type);
         var node = (AggregateNode)Activator.CreateInstance(genericType, BindingFlags.NonPublic | BindingFlags.Instance,
             null, nodeArguments, null)!;
         return node;

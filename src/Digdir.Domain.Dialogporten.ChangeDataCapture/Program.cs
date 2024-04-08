@@ -45,7 +45,7 @@ static void BuildAndRun(string[] args)
         .ReadFrom.Services(services)
         .Enrich.FromLogContext()
         .WriteTo.Conditional(
-            condition: x => builder.Environment.IsDevelopment(),
+            condition: _ => builder.Environment.IsDevelopment(),
             configureSink: x => x.Console(formatProvider: CultureInfo.InvariantCulture))
         .WriteTo.ApplicationInsights(
             services.GetRequiredService<TelemetryConfiguration>(),
@@ -73,7 +73,7 @@ static void BuildAndRun(string[] args)
                 // todo: Configure for using Azure Service Bus
             }
         })
-        .AddSingleton(x => new PostgresCdcSSubscriptionOptions
+        .AddSingleton(_ => new PostgresCdcSSubscriptionOptions
         (
             ConnectionString: builder.Configuration["Infrastructure:DialogDbConnectionString"]!,
             ReplicationSlotName: builder.Configuration["ReplicationSlotName"]!,

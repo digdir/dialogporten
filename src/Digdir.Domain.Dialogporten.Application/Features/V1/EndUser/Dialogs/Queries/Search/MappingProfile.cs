@@ -16,7 +16,7 @@ internal sealed class MappingProfile : Profile
                 .OrderByDescending(activity => activity.CreatedAt).ThenByDescending(activity => activity.Id)
                 .FirstOrDefault()
             ))
-            .ForMember(dest => dest.SeenLog, opt => opt.MapFrom(src => src.SeenLog
+            .ForMember(dest => dest.SeenSinceLastUpdate, opt => opt.MapFrom(src => src.SeenLog
                 .Where(x => x.CreatedAt >= x.Dialog.UpdatedAt)
                 .OrderByDescending(x => x.CreatedAt)
             ))
