@@ -11,14 +11,14 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.NameRegistry;
 
 internal class NameRegistryClient : INameRegistry
 {
-    private static readonly DistributedCacheEntryOptions _oneDayCacheDuration = new() { AbsoluteExpiration = DateTimeOffset.UtcNow.AddDays(1) };
-    private static readonly DistributedCacheEntryOptions _zeroCacheDuration = new() { AbsoluteExpiration = DateTimeOffset.MinValue };
+    private static readonly DistributedCacheEntryOptions OneDayCacheDuration = new() { AbsoluteExpiration = DateTimeOffset.UtcNow.AddDays(1) };
+    private static readonly DistributedCacheEntryOptions ZeroCacheDuration = new() { AbsoluteExpiration = DateTimeOffset.MinValue };
 
     private readonly IFusionCache _cache;
     private readonly HttpClient _client;
     private readonly ILogger<NameRegistryClient> _logger;
 
-    private static readonly JsonSerializerOptions _serializerOptions = new()
+    private static readonly JsonSerializerOptions SerializerOptions = new()
 
     {
         PropertyNameCaseInsensitive = true,
@@ -36,7 +36,7 @@ internal class NameRegistryClient : INameRegistry
     {
         return await _cache.GetOrSetAsync(
             $"Name_{personalIdentificationNumber}",
-            (ct) => GetNameFromRegister(personalIdentificationNumber, ct),
+            ct => GetNameFromRegister(personalIdentificationNumber, ct),
             token: cancellationToken);
     }
 
@@ -51,7 +51,7 @@ internal class NameRegistryClient : INameRegistry
             ]
         };
 
-        var requestJson = JsonSerializer.Serialize(nameLookup, _serializerOptions);
+        var requestJson = JsonSerializer.Serialize(nameLookup, SerializerOptions);
         var httpContent = new StringContent(requestJson, Encoding.UTF8, "application/json");
 
         var response = await _client.PostAsync(apiUrl, httpContent, cancellationToken);
@@ -67,7 +67,7 @@ internal class NameRegistryClient : INameRegistry
         }
 
         var responseData = await response.Content.ReadAsStringAsync(cancellationToken);
-        var nameLookupResult = JsonSerializer.Deserialize<NameLookupResult>(responseData, _serializerOptions);
+        var nameLookupResult = JsonSerializer.Deserialize<NameLookupResult>(responseData, SerializerOptions);
         return nameLookupResult?.PartyNames.FirstOrDefault()?.Name;
     }
 

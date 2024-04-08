@@ -43,14 +43,14 @@ internal sealed class UpdateDialogDtoValidator : AbstractValidator<UpdateDialogD
 
         RuleFor(x => x.ExpiresAt)
             .GreaterThanOrEqualTo(x => x.DueAt)
-                .WithMessage(FluentValidation_DateTimeOffset_Extensions.InFutureOfMessage)
+                .WithMessage(FluentValidationDateTimeOffsetExtensions.InFutureOfMessage)
                 .When(x => x.DueAt.HasValue, ApplyConditionTo.CurrentValidator)
             .GreaterThanOrEqualTo(x => x.VisibleFrom)
-                .WithMessage(FluentValidation_DateTimeOffset_Extensions.InFutureOfMessage)
+                .WithMessage(FluentValidationDateTimeOffsetExtensions.InFutureOfMessage)
                 .When(x => x.VisibleFrom.HasValue, ApplyConditionTo.CurrentValidator);
         RuleFor(x => x.DueAt)
             .GreaterThanOrEqualTo(x => x.VisibleFrom)
-                .WithMessage(FluentValidation_DateTimeOffset_Extensions.InFutureOfMessage)
+                .WithMessage(FluentValidationDateTimeOffsetExtensions.InFutureOfMessage)
                 .When(x => x.VisibleFrom.HasValue, ApplyConditionTo.CurrentValidator);
 
         RuleFor(x => x.Status)

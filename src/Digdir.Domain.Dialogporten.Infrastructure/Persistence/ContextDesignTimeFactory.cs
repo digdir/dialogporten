@@ -14,6 +14,7 @@ internal sealed class ContextDesignTimeFactory : IDesignTimeDbContextFactory<Dia
         var localPostgresConnectionString = new ConfigurationBuilder()
             .AddUserSecrets(Assembly.GetExecutingAssembly(), true)
             .Build()[ConnectionStringConfigName];
+
         return new(new DbContextOptionsBuilder<DialogDbContext>()
             .UseNpgsql(localPostgresConnectionString)
             .Options);

@@ -7,7 +7,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Common.Serialization;
 
 internal static class SerializerOptions
 {
-    private static readonly Lazy<JsonPolymorphismOptions> _polymorphismOptions = new(() =>
+    private static readonly Lazy<JsonPolymorphismOptions> PolymorphismOptions = new(() =>
     {
         var options = new JsonPolymorphismOptions();
         var domainEventType = typeof(IDomainEvent);
@@ -45,7 +45,7 @@ internal static class SerializerOptions
             return;
         }
 
-        typeInfo.PolymorphismOptions = _polymorphismOptions.Value;
+        typeInfo.PolymorphismOptions = PolymorphismOptions.Value;
     }
 }
 
@@ -54,4 +54,3 @@ internal class LowerCaseNamingPolicy : JsonNamingPolicy
     public override string ConvertName(string name) =>
         name.ToLowerInvariant();
 }
-

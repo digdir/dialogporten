@@ -2,7 +2,7 @@
 
 namespace Digdir.Domain.Dialogporten.Application.Common.Extensions.FluentValidation;
 
-internal static class FluentValidation_DateTimeOffset_Extensions
+internal static class FluentValidationDateTimeOffsetExtensions
 {
     public const string InPastMessage = "'{PropertyName}' must be in the past.";
     public const string InFutureMessage = "'{PropertyName}' must be in the future.";

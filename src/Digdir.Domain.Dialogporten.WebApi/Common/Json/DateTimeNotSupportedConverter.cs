@@ -12,11 +12,8 @@ internal sealed class DateTimeNotSupportedConverter : JsonConverter<DateTime>
         "error as a consumer.";
 
     public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        throw new NotSupportedException(ErrorMessage);
-    }
+        => throw new NotSupportedException(ErrorMessage);
+
     public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
-    {
-        throw new NotSupportedException(ErrorMessage);
-    }
+        => throw new NotSupportedException(ErrorMessage);
 }

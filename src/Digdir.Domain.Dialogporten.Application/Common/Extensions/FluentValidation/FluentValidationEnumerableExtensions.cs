@@ -5,7 +5,7 @@ using Digdir.Domain.Dialogporten.Application.Common.Extensions.Enumerables;
 
 namespace Digdir.Domain.Dialogporten.Application.Common.Extensions.FluentValidation;
 
-internal static class FluentValidation_Enumerable_Extensions
+internal static class FluentValidationEnumerableExtensions
 {
     public static IRuleBuilderOptions<T, IEnumerable<TProperty>> UniqueBy<T, TProperty, TKey>(
         this IRuleBuilder<T, IEnumerable<TProperty>> ruleBuilder,

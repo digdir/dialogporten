@@ -27,7 +27,7 @@ public class CompactJwsGeneratorTests
                         Kid = "unittestkeypair2",
                         PrivateComponent = "",
                         PublicComponent = ""
-                    },
+                    }
                 }
             }
         };

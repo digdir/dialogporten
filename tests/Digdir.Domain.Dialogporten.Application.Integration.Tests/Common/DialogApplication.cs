@@ -106,7 +106,7 @@ public class DialogApplication : IAsyncLifetime
                             Kid = "kid2",
                             PrivateComponent = "private2",
                             PublicComponent = "public2"
-                        },
+                        }
                     }
                 }
             });

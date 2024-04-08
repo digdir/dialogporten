@@ -26,7 +26,7 @@ public sealed class GetJwksEndpoint : EndpointWithoutRequest<GetJwksDto>
     {
         var result = await _sender.Send(new GetJwksQuery(), ct);
 
-        HttpContext.Response.GetTypedHeaders().CacheControl = new CacheControlHeaderValue()
+        HttpContext.Response.GetTypedHeaders().CacheControl = new CacheControlHeaderValue
         {
             Public = true,
             MaxAge = TimeSpan.FromHours(24)

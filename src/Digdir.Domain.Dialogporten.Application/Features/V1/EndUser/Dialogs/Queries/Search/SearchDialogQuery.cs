@@ -10,7 +10,6 @@ using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Localizations;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -117,19 +116,22 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
     private readonly IClock _clock;
     private readonly IUserNameRegistry _userNameRegistry;
     private readonly IAltinnAuthorization _altinnAuthorization;
+    private readonly IStringHasher _stringHasher;
 
     public SearchDialogQueryHandler(
         IDialogDbContext db,
         IMapper mapper,
         IClock clock,
         IUserNameRegistry userNameRegistry,
-        IAltinnAuthorization altinnAuthorization)
+        IAltinnAuthorization altinnAuthorization,
+        IStringHasher stringHasher)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _clock = clock ?? throw new ArgumentNullException(nameof(clock));
         _userNameRegistry = userNameRegistry ?? throw new ArgumentNullException(nameof(userNameRegistry));
         _altinnAuthorization = altinnAuthorization ?? throw new ArgumentNullException(nameof(altinnAuthorization));
+        _stringHasher = stringHasher;
     }
 
     public async Task<SearchDialogResult> Handle(SearchDialogQuery request, CancellationToken cancellationToken)
@@ -175,14 +177,13 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
             .ProjectTo<SearchDialogDto>(_mapper.ConfigurationProvider)
             .ToPaginatedListAsync(request, cancellationToken: cancellationToken);
 
-        var salt = MappingUtils.GetHashSalt();
-        foreach (var seenLog in paginatedList.Items.SelectMany(x => x.SeenLog))
+        foreach (var seenLog in paginatedList.Items.SelectMany(x => x.SeenSinceLastUpdate))
         {
             // Before we hash the end user id, check if the seen log entry is for the current user
-            seenLog.IsAuthenticatedUser = userPid == seenLog.EndUserIdHash;
-            // TODO: Add test to not expose unhashed end user id to the client
+            seenLog.IsCurrentEndUser = userPid == seenLog.EndUserIdHash;
+            // TODO: Add test to not expose un-hashed end user id to the client
             // https://github.com/digdir/dialogporten/issues/596
-            seenLog.EndUserIdHash = MappingUtils.HashPid(seenLog.EndUserIdHash, salt);
+            seenLog.EndUserIdHash = _stringHasher.Hash(seenLog.EndUserIdHash);
         }
 
         return paginatedList;

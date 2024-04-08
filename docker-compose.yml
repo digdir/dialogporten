@@ -25,6 +25,7 @@ services:
     environment:
       - Infrastructure:Redis:ConnectionString=dialogporten-redis:6379
       - Infrastructure:DialogDbConnectionString=${DB_CONNECTION_STRING}
+      - Application:Dialogporten:BaseUri=http://localhost:7214
       - Serilog__WriteTo__0__Name=Console
       - Serilog__MinimumLevel__Default=Debug
       - ASPNETCORE_URLS=http://+:8080

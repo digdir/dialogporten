@@ -8,7 +8,6 @@ using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using OneOf;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Queries.Get;
@@ -30,6 +29,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
     private readonly IUserNameRegistry _userNameRegistry;
     private readonly IAltinnAuthorization _altinnAuthorization;
     private readonly IDialogTokenGenerator _dialogTokenGenerator;
+    private readonly IStringHasher _stringHasher;
 
     public GetDialogQueryHandler(
         IDialogDbContext db,
@@ -38,7 +38,8 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
         IClock clock,
         IUserNameRegistry userNameRegistry,
         IAltinnAuthorization altinnAuthorization,
-        IDialogTokenGenerator dialogTokenGenerator)
+        IDialogTokenGenerator dialogTokenGenerator,
+        IStringHasher stringHasher)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
@@ -47,6 +48,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
         _userNameRegistry = userNameRegistry ?? throw new ArgumentNullException(nameof(userNameRegistry));
         _altinnAuthorization = altinnAuthorization ?? throw new ArgumentNullException(nameof(altinnAuthorization));
         _dialogTokenGenerator = dialogTokenGenerator ?? throw new ArgumentNullException(nameof(dialogTokenGenerator));
+        _stringHasher = stringHasher;
     }
 
     public async Task<GetDialogResult> Handle(GetDialogQuery request, CancellationToken cancellationToken)
@@ -115,13 +117,12 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
 
         var dialogDto = _mapper.Map<GetDialogDto>(dialog);
 
-        var salt = MappingUtils.GetHashSalt();
-        dialogDto.SeenLog = dialog.SeenLog
+        dialogDto.SeenSinceLastUpdate = dialog.SeenLog
             .Select(log =>
             {
                 var logDto = _mapper.Map<GetDialogDialogSeenRecordDto>(log);
-                logDto.IsAuthenticatedUser = log.EndUserId == userPid;
-                logDto.EndUserIdHash = MappingUtils.HashPid(log.EndUserId, salt);
+                logDto.IsCurrentEndUser = log.EndUserId == userPid;
+                logDto.EndUserIdHash = _stringHasher.Hash(log.EndUserId);
                 return logDto;
             })
             .ToList();
@@ -163,8 +164,11 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
 
             // Simple "read" on the main resource will give access to a dialog element, unless a authorization attribute is set,
             // in which case an "elementread" action is required
-            foreach (var dialogElement in dto.Elements.Where(dialogElement => (dialogElement.AuthorizationAttribute is null && action == Constants.ReadAction)
-                                                                              || (dialogElement.AuthorizationAttribute is not null && action == Constants.ElementReadAction)))
+            var elements = dto.Elements.Where(dialogElement =>
+                (dialogElement.AuthorizationAttribute is null && action == Constants.ReadAction) ||
+                (dialogElement.AuthorizationAttribute is not null && action == Constants.ElementReadAction));
+
+            foreach (var dialogElement in elements)
             {
                 dialogElement.IsAuthorized = true;
             }

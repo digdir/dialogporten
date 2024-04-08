@@ -35,9 +35,17 @@ public sealed class TokenIssuerCache : ITokenIssuerCache, IDisposable
 
     private async Task EnsureInitializedAsync()
     {
-        if (_initialized) return;
+        if (_initialized)
+        {
+            return;
+        }
+
         await _initializationSemaphore.WaitAsync();
-        if (_initialized) return;
+
+        if (_initialized)
+        {
+            return;
+        }
 
         try
         {
@@ -57,8 +65,5 @@ public sealed class TokenIssuerCache : ITokenIssuerCache, IDisposable
         }
     }
 
-    public void Dispose()
-    {
-        _initializationSemaphore.Dispose();
-    }
+    public void Dispose() => _initializationSemaphore.Dispose();
 }

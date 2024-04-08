@@ -20,7 +20,7 @@ public class CreateDialogTests : ApplicationCollectionFixture
         var response = await Application.Send(createCommand);
 
         // Assert
-        response.TryPickT0(out var success, out var _).Should().BeTrue();
+        response.TryPickT0(out var success, out _).Should().BeTrue();
         success.Value.Should().Be(expectedDialogId);
     }
 
@@ -36,7 +36,7 @@ public class CreateDialogTests : ApplicationCollectionFixture
         var result = await Application.Send(createDialogCommand);
 
         // Assert
-        result.TryPickT0(out var success, out var _).Should().BeTrue();
+        result.TryPickT0(out var success, out _).Should().BeTrue();
         success.Value.Should().Be(expectedDialogId);
     }
 
