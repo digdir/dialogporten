@@ -4,33 +4,36 @@ param location string
 @export()
 type Sku = {
   name: 'Basic' | 'Standard' | 'Premium'
+  tier: 'Basic' | 'Standard' | 'Premium'
+  @minValue(1)
+  capacity: int
 }
 param sku Sku
 
 // todo: add a service bus here pls
-resource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2023-03-01' = {
-  name: 'myServiceBusNamespace'
-  location: resourceGroup().location
+resource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2022-10-01-preview' = {
+  name: '${namePrefix}-service-bus'
+  location: location
   sku: sku
-  properties: {
-    maximumThroughputUnits: 0 // Set according to your needs
+  identity: {
+    type: 'SystemAssigned'
   }
+  properties: {}
 }
 
-resource serviceBusQueue 'Microsoft.ServiceBus/namespaces/queues@2023-03-01' = {
-  name: 'myQueue'
+resource serviceBusTopic 'Microsoft.ServiceBus/namespaces/topics@2022-10-01-preview' = {
   parent: serviceBusNamespace
+  // todo: resolve what topics to create
+  name: '${namePrefix}-service-bus-topic'
   properties: {
-    lockDuration: 'PT5M'
-    maxSizeInMegabytes: 1024
-    requiresDuplicateDetection: true
-    requiresSession: false
-    defaultMessageTimeToLive: 'P14D'
-    deadLetteringOnMessageExpiration: true
-    duplicateDetectionHistoryTimeWindow: 'PT10M'
-    maxDeliveryCount: 10
-    enableBatchedOperations: true
-    autoDeleteOnIdle: 'P10675199DT2H48M5.4775807S' // Set to never auto-delete
+    enablePartitioning: false
+    enableExpress: false
   }
 }
 
+resource serviceBusSubscription 'Microsoft.ServiceBus/namespaces/topics/subscriptions@2022-10-01-preview' = {
+  parent: serviceBusTopic
+  // todo: resolve what subscriptions to create
+  name: '${namePrefix}-service-bus-subscription'
+  properties: {}
+}

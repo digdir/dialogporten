@@ -19,22 +19,25 @@ param sourceKeyVaultResourceGroup string
 @minLength(3)
 param sourceKeyVaultName string
 
-import {Sku as KeyVaultSku} from '../modules/keyvault/create.bicep'
+import { Sku as KeyVaultSku } from '../modules/keyvault/create.bicep'
 param keyVaultSku KeyVaultSku
 
-import {Sku as AppConfigurationSku} from '../modules/appConfiguration/create.bicep'
+import { Sku as AppConfigurationSku } from '../modules/appConfiguration/create.bicep'
 param appConfigurationSku AppConfigurationSku
 
-import {Sku as AppInsightsSku} from '../modules/applicationInsights/create.bicep'
+import { Sku as AppInsightsSku } from '../modules/applicationInsights/create.bicep'
 param appInsightsSku AppInsightsSku
 
-import {Sku as SlackNotifierSku} from '../modules/functionApp/slackNotifier.bicep'
+import { Sku as SlackNotifierSku } from '../modules/functionApp/slackNotifier.bicep'
 param slackNotifierSku SlackNotifierSku
 
-import {Sku as PostgresSku} from '../modules/postgreSql/create.bicep'
+import { Sku as PostgresSku } from '../modules/postgreSql/create.bicep'
 param postgresSku PostgresSku
 
-import {Sku as RedisSku} from '../modules/redis/main.bicep'
+import { Sku as ServiceBusSku } from '../modules/serviceBus/main.bicep'
+param serviceBusSku ServiceBusSku
+
+import { Sku as RedisSku } from '../modules/redis/main.bicep'
 param redisSku RedisSku
 @minLength(1)
 param redisVersion string
@@ -84,6 +87,16 @@ module appInsights '../modules/applicationInsights/create.bicep' = {
   }
 }
 
+module serviceBus '../modules/serviceBus/main.bicep' = {
+  scope: resourceGroup
+  name: 'serviceBus'
+  params: {
+    namePrefix: namePrefix
+    location: location
+    sku: serviceBusSku
+  }
+}
+
 // #######################################
 // Create references to existing resources
 // #######################################
@@ -112,7 +125,9 @@ module postgresql '../modules/postgreSql/create.bicep' = {
     environmentKeyVaultName: environmentKeyVault.outputs.name
     srcKeyVault: srcKeyVault
     srcSecretName: 'dialogportenPgAdminPassword${environment}'
-    administratorLoginPassword: contains(keyVaultSourceKeys, 'dialogportenPgAdminPassword${environment}') ? srcKeyVaultResource.getSecret('dialogportenPgAdminPassword${environment}') : secrets.dialogportenPgAdminPassword
+    administratorLoginPassword: contains(keyVaultSourceKeys, 'dialogportenPgAdminPassword${environment}')
+      ? srcKeyVaultResource.getSecret('dialogportenPgAdminPassword${environment}')
+      : secrets.dialogportenPgAdminPassword
     sku: postgresSku
   }
 }
@@ -145,7 +160,8 @@ module copyEnvironmentSecrets '../modules/keyvault/copySecrets.bicep' = {
 module copyCrossEnvironmentSecrets '../modules/keyvault/copySecrets.bicep' = {
   scope: resourceGroup
   name: 'copyCrossEnvironmentSecrets'
-  params: { srcKeyVaultKeys: keyVaultSourceKeys
+  params: {
+    srcKeyVaultKeys: keyVaultSourceKeys
     srcKeyVaultName: secrets.sourceKeyVaultName
     srcKeyVaultRGNName: secrets.sourceKeyVaultResourceGroup
     srcKeyVaultSubId: secrets.sourceKeyVaultSubscriptionId
@@ -181,7 +197,7 @@ module appInsightsReaderAccessPolicy '../modules/applicationInsights/addReaderRo
   name: 'appInsightsReaderAccessPolicy'
   params: {
     appInsightsName: appInsights.outputs.appInsightsName
-    principalIds: [ slackNotifier.outputs.functionAppPrincipalId ]
+    principalIds: [slackNotifier.outputs.functionAppPrincipalId]
   }
 }
 
@@ -212,7 +228,7 @@ module keyVaultReaderAccessPolicy '../modules/keyvault/addReaderRoles.bicep' = {
   name: 'keyVaultReaderAccessPolicyFunctions'
   params: {
     keyvaultName: environmentKeyVault.outputs.name
-    principalIds: [ slackNotifier.outputs.functionAppPrincipalId ]
+    principalIds: [slackNotifier.outputs.functionAppPrincipalId]
   }
 }
 
