@@ -30,7 +30,7 @@ internal static class AzureAppConfigurationExtensions
 
         return config.AddAzureAppConfiguration(appConfigOptions => appConfigOptions
             .Connect(appConfigUri, credential)
-            .Select(KeyFilter.Any)
+            .Select(KeyFilter.Any, LabelFilter.Null)
             .SelectIf(!string.IsNullOrWhiteSpace(environment),
                 keyFilter: KeyFilter.Any,
                 labelFilter: environment!)
