@@ -23,7 +23,7 @@ public sealed class SearchDialogDto
     public SearchDialogDialogActivityDto? LatestActivity { get; set; }
 
     public List<SearchDialogContentDto> Content { get; set; } = [];
-    public List<SearchDialogDialogSeenRecordDto> SeenLog { get; set; } = [];
+    public List<SearchDialogDialogSeenRecordDto> SeenSinceLastUpdate { get; set; } = [];
 }
 
 public class SearchDialogDialogSeenRecordDto
@@ -35,7 +35,7 @@ public class SearchDialogDialogSeenRecordDto
 
     public string? EndUserName { get; set; }
 
-    public bool IsAuthenticatedUser { get; set; }
+    public bool IsCurrentEndUser { get; set; }
 }
 
 public sealed class SearchDialogContentDto

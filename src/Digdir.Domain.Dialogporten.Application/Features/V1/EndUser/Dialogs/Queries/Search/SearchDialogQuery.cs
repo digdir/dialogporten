@@ -177,10 +177,10 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
             .ProjectTo<SearchDialogDto>(_mapper.ConfigurationProvider)
             .ToPaginatedListAsync(request, cancellationToken: cancellationToken);
 
-        foreach (var seenLog in paginatedList.Items.SelectMany(x => x.SeenLog))
+        foreach (var seenLog in paginatedList.Items.SelectMany(x => x.SeenSinceLastUpdate))
         {
             // Before we hash the end user id, check if the seen log entry is for the current user
-            seenLog.IsAuthenticatedUser = userPid == seenLog.EndUserIdHash;
+            seenLog.IsCurrentEndUser = userPid == seenLog.EndUserIdHash;
             // TODO: Add test to not expose un-hashed end user id to the client
             // https://github.com/digdir/dialogporten/issues/596
             seenLog.EndUserIdHash = _stringHasher.Hash(seenLog.EndUserIdHash);
