@@ -121,7 +121,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
             .Select(log =>
             {
                 var logDto = _mapper.Map<GetDialogDialogSeenRecordDto>(log);
-                logDto.IsAuthenticatedUser = log.EndUserId == userPid;
+                logDto.IsCurrentEndUser = log.EndUserId == userPid;
                 logDto.EndUserIdHash = _stringHasher.Hash(log.EndUserId);
                 return logDto;
             })

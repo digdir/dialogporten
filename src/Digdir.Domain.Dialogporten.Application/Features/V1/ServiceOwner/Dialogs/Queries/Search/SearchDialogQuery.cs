@@ -185,7 +185,7 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
         {
             if (request.EndUserId is not null)
             {
-                seenRecord.IsAuthenticatedUser = seenRecord.EndUserIdHash == request.EndUserId;
+                seenRecord.IsCurrentEndUser = seenRecord.EndUserIdHash == request.EndUserId;
             }
 
             // TODO: Add test to not expose un-hashed end user id to the client
