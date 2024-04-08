@@ -45,7 +45,7 @@ public class GetDialogDialogSeenRecordDto
 
     public string? EndUserName { get; set; }
 
-    public bool? IsCurrentEndUser { get; set; }
+    public bool IsCurrentEndUser { get; set; }
 }
 
 public sealed class GetDialogContentDto

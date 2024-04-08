@@ -35,7 +35,7 @@ public class SearchDialogDialogSeenRecordDto
 
     public string? EndUserName { get; set; }
 
-    public bool? IsCurrentEndUser { get; set; }
+    public bool IsCurrentEndUser { get; set; }
 }
 
 public sealed class SearchDialogContentDto
