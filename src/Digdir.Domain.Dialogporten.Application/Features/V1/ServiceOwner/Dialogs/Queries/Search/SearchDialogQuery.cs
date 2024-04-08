@@ -185,7 +185,6 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
         {
             if (request.EndUserId is not null)
             {
-                // Should this bool be nullable so to remove from dto when EndUserId is not set?
                 seenRecord.IsAuthenticatedUser = seenRecord.EndUserIdHash == request.EndUserId;
             }
 
