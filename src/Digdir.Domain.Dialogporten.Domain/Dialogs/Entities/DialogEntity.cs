@@ -68,9 +68,7 @@ public class DialogEntity :
     }
 
     public void OnCreate(AggregateNode self, DateTimeOffset utcNow)
-    {
-        _domainEvents.Add(new DialogCreatedDomainEvent(Id, ServiceResource, Party));
-    }
+        => _domainEvents.Add(new DialogCreatedDomainEvent(Id, ServiceResource, Party));
 
     public void OnUpdate(AggregateNode self, DateTimeOffset utcNow)
     {
@@ -88,9 +86,7 @@ public class DialogEntity :
     }
 
     public void OnDelete(AggregateNode self, DateTimeOffset utcNow)
-    {
-        _domainEvents.Add(new DialogDeletedDomainEvent(Id, ServiceResource, Party));
-    }
+        => _domainEvents.Add(new DialogDeletedDomainEvent(Id, ServiceResource, Party));
 
     public void UpdateSeenAt(string endUserId, string? endUserName)
     {

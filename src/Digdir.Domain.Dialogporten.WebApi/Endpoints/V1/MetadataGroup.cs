@@ -7,7 +7,7 @@ public sealed class MetadataGroup : Group
     private const string GroupName = "Metadata";
     public MetadataGroup()
     {
-        Configure(String.Empty, ep =>
+        Configure(string.Empty, ep =>
         {
             ep.DontAutoTag();
             ep.Description(x => x.WithTags(GroupName));

@@ -41,12 +41,12 @@ internal static class PaginationExtensions
     {
         ArgumentNullException.ThrowIfNull(source);
 
-        const int OneMore = 1;
+        const int oneMore = 1;
 
         var items = await source
             .ApplyOrder(orderSet)
             .ApplyCondition(orderSet, continuationTokenSet)
-            .Take(limit + OneMore)
+            .Take(limit + oneMore)
             .ToArrayAsync(cancellationToken);
 
         // Fetch one more item than requested to determine if there is a next page

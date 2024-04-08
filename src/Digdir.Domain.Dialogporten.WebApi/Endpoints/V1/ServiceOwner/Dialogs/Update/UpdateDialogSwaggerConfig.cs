@@ -144,7 +144,7 @@ internal abstract class UpdateDialogSwaggerConfig : ISwaggerConfig
                         Url = new Uri("https://example.com/some-api-action"),
                         DocumentationUrl = new Uri("https://example.com/some-api-action-doc"),
                         RequestSchema = new Uri("https://example.com/some-api-action-request-schema"),
-                        ResponseSchema = new Uri("https://example.com/some-api-action-response-schema"),
+                        ResponseSchema = new Uri("https://example.com/some-api-action-response-schema")
                     }
                 ]
             }

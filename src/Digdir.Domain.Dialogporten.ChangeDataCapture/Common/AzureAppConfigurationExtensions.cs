@@ -6,7 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace Digdir.Domain.Dialogporten.ChangeDataCapture.Common;
 
 /// <summary>
-/// Wrapper around azure app configuration bootstrapping such that azure app 
+/// Wrapper around azure app configuration bootstrapping such that azure app
 /// config is activated through the environment variable AZURE_APPCONFIG_URI.
 /// </summary>
 internal static class AzureAppConfigurationExtensions

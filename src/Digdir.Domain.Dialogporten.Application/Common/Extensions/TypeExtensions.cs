@@ -3,7 +3,5 @@
 internal static class TypeExtensions
 {
     public static bool IsNullableType(this Type type)
-    {
-        return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);
-    }
+        => type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);
 }

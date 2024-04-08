@@ -183,12 +183,8 @@ public class DecisionRequestHelperTests
     }
 
     private static List<Claim> GetAsClaims(params (string, string)[] claims)
-    {
-        return claims.Select(c => new Claim(c.Item1, c.Item2)).ToList();
-    }
+        => claims.Select(c => new Claim(c.Item1, c.Item2)).ToList();
 
-    private static bool ContainsSameElements(IEnumerable<string> collection, IEnumerable<string> expectedElements)
-    {
-        return expectedElements.All(expected => collection.Contains(expected)) && collection.Count() == expectedElements.Count();
-    }
+    private static bool ContainsSameElements(IEnumerable<string> collection, IEnumerable<string> expectedElements) =>
+        expectedElements.All(collection.Contains) && collection.Count() == expectedElements.Count();
 }

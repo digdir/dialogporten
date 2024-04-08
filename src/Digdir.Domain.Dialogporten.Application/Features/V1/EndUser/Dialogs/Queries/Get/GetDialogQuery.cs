@@ -164,8 +164,11 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
 
             // Simple "read" on the main resource will give access to a dialog element, unless a authorization attribute is set,
             // in which case an "elementread" action is required
-            foreach (var dialogElement in dto.Elements.Where(dialogElement => (dialogElement.AuthorizationAttribute is null && action == Constants.ReadAction)
-                                                                              || (dialogElement.AuthorizationAttribute is not null && action == Constants.ElementReadAction)))
+            var elements = dto.Elements.Where(dialogElement =>
+                (dialogElement.AuthorizationAttribute is null && action == Constants.ReadAction) ||
+                (dialogElement.AuthorizationAttribute is not null && action == Constants.ElementReadAction));
+
+            foreach (var dialogElement in elements)
             {
                 dialogElement.IsAuthorized = true;
             }

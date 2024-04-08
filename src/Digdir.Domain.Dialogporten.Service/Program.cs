@@ -9,7 +9,7 @@ using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
 using Digdir.Domain.Dialogporten.Service;
 
 // TODO: Add AppConfiguration and key vault
-// TODO: Configure RabbitMQ connection settings 
+// TODO: Configure RabbitMQ connection settings
 // TODO: Configure Postgres connection settings
 // TODO: Improve exceptions thrown in this assembly
 
@@ -49,7 +49,7 @@ static void BuildAndRun(string[] args)
         .ReadFrom.Services(services)
         .Enrich.FromLogContext()
         .WriteTo.Conditional(
-            condition: x => builder.Environment.IsDevelopment(),
+            condition: _ => builder.Environment.IsDevelopment(),
             configureSink: x => x.Console(formatProvider: CultureInfo.InvariantCulture))
         .WriteTo.ApplicationInsights(
             services.GetRequiredService<TelemetryConfiguration>(),

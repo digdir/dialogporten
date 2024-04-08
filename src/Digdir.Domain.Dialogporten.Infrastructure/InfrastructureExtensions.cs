@@ -74,15 +74,15 @@ public static class InfrastructureExtensions
 
         services.ConfigureFusionCache(nameof(Altinn.NameRegistry), new()
         {
-            Duration = TimeSpan.FromDays(1),
+            Duration = TimeSpan.FromDays(1)
         })
         .ConfigureFusionCache(nameof(Altinn.ResourceRegistry), new()
         {
-            Duration = TimeSpan.FromMinutes(20),
+            Duration = TimeSpan.FromMinutes(20)
         })
         .ConfigureFusionCache(nameof(Altinn.OrganizationRegistry), new()
         {
-            Duration = TimeSpan.FromDays(1),
+            Duration = TimeSpan.FromDays(1)
         });
 
         services.AddDbContext<DialogDbContext>((services, options) =>
