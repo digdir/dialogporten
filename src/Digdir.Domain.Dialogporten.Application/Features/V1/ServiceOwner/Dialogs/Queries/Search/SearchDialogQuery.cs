@@ -123,17 +123,20 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
     private readonly IMapper _mapper;
     private readonly IUserResourceRegistry _userResourceRegistry;
     private readonly IAltinnAuthorization _altinnAuthorization;
+    private readonly IStringHasher _stringHasher;
 
     public SearchDialogQueryHandler(
         IDialogDbContext db,
         IMapper mapper,
         IUserResourceRegistry userResourceRegistry,
-        IAltinnAuthorization altinnAuthorization)
+        IAltinnAuthorization altinnAuthorization,
+        IStringHasher stringHasher)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _userResourceRegistry = userResourceRegistry ?? throw new ArgumentNullException(nameof(userResourceRegistry));
         _altinnAuthorization = altinnAuthorization;
+        _stringHasher = stringHasher;
     }
 
     public async Task<SearchDialogResult> Handle(SearchDialogQuery request, CancellationToken cancellationToken)
@@ -174,8 +177,22 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
             query = query.WhereUserIsAuthorizedFor(authorizedResources);
         }
 
-        return await query
+        var paginatedList = await query
             .ProjectTo<SearchDialogDto>(_mapper.ConfigurationProvider)
             .ToPaginatedListAsync(request, cancellationToken: cancellationToken);
+
+        foreach (var seenRecord in paginatedList.Items.SelectMany(x => x.SeenSinceLastUpdate))
+        {
+            if (request.EndUserId is not null)
+            {
+                seenRecord.IsCurrentEndUser = seenRecord.EndUserIdHash == request.EndUserId;
+            }
+
+            // TODO: Add test to not expose un-hashed end user id to the client
+            // https://github.com/digdir/dialogporten/issues/596
+            seenRecord.EndUserIdHash = _stringHasher.Hash(seenRecord.EndUserIdHash);
+        }
+
+        return paginatedList;
     }
 }

@@ -20,8 +20,6 @@ on:
         required: true
       AZURE_APP_CONFIGURATION_NAME:
         required: true
-      AZURE_ADO_CONNECTION_STRING_SECRET_URI:
-        required: true
 
     inputs:
       region:
@@ -73,8 +71,8 @@ jobs:
   #         # parameters
   #         IMAGE_TAG: ${{ inputs.gitShortSha }}
   #         # secrets
-  #         ADO_CONNECTION_STRING_SECRET_URI: ${{ secrets.AZURE_ADO_CONNECTION_STRING_SECRET_URI }}
   #         CONTAINER_APP_ENVIRONMENT_NAME: ${{ secrets.AZURE_CONTAINER_APP_ENVIRONMENT_NAME }}
+  #         ENVIRONMENT_KEY_VAULT_NAME: ${{ secrets.AZURE_ENVIRONMENT_KEY_VAULT_NAME }}
   #       with:
   #         scope: resourcegroup
   #         template: ./.azure/applications/web-api-migration-job/main.bicep

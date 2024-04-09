@@ -3,7 +3,6 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Events;
-using Digdir.Domain.Dialogporten.Domain.Localizations;
 using Digdir.Library.Entity.Abstractions;
 using Digdir.Library.Entity.Abstractions.Features.Aggregate;
 using Digdir.Library.Entity.Abstractions.Features.EventPublisher;
@@ -57,6 +56,9 @@ public class DialogEntity :
     [AggregateChild]
     public List<DialogActivity> Activities { get; set; } = [];
 
+    [AggregateChild]
+    public List<DialogSeenRecord> SeenLog { get; set; } = [];
+
     public void SoftDelete()
     {
         foreach (var dialogElement in Elements)
@@ -66,9 +68,7 @@ public class DialogEntity :
     }
 
     public void OnCreate(AggregateNode self, DateTimeOffset utcNow)
-    {
-        _domainEvents.Add(new DialogCreatedDomainEvent(Id, ServiceResource, Party));
-    }
+        => _domainEvents.Add(new DialogCreatedDomainEvent(Id, ServiceResource, Party));
 
     public void OnUpdate(AggregateNode self, DateTimeOffset utcNow)
     {
@@ -86,41 +86,25 @@ public class DialogEntity :
     }
 
     public void OnDelete(AggregateNode self, DateTimeOffset utcNow)
-    {
-        _domainEvents.Add(new DialogDeletedDomainEvent(Id, ServiceResource, Party));
-    }
+        => _domainEvents.Add(new DialogDeletedDomainEvent(Id, ServiceResource, Party));
 
-    public void UpdateSeenAt(string seenByEndUserId, string? seenByEndUserName)
+    public void UpdateSeenAt(string endUserId, string? endUserName)
     {
-        var lastSeenByAt = Activities
-            .Where(x => x.SeenByEndUserId == seenByEndUserId)
+        var lastSeenAt = SeenLog
+            .Where(x => x.EndUserId == endUserId)
             .MaxBy(x => x.CreatedAt)
-            ?.CreatedAt;
+            ?.CreatedAt
+            ?? DateTimeOffset.MinValue;
 
-        if ((lastSeenByAt ?? DateTimeOffset.MinValue) >= UpdatedAt)
+        if (lastSeenAt >= UpdatedAt)
         {
             return;
         }
 
-        var performedBy = seenByEndUserName is not null
-            ? new DialogActivityPerformedBy
-            {
-                Localizations =
-                [
-                    new Localization
-                    {
-                        CultureCode = "nb-no",
-                        Value = seenByEndUserName
-                    }
-                ]
-            }
-            : null;
-
-        Activities.Add(new DialogActivity
+        SeenLog.Add(new()
         {
-            PerformedBy = performedBy,
-            SeenByEndUserId = seenByEndUserId,
-            TypeId = DialogActivityType.Values.Seen
+            EndUserId = endUserId,
+            EndUserName = endUserName
         });
 
         _domainEvents.Add(new DialogSeenDomainEvent(Id, ServiceResource, Party));

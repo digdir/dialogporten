@@ -10,7 +10,7 @@ public sealed class SearchDialogDto
     public string Org { get; set; } = null!;
     public string ServiceResource { get; set; } = null!;
     public string Party { get; set; } = null!;
-    public string? EndUserId { get; set; } = null!;
+    public string? EndUserId { get; set; }
     public int? Progress { get; set; }
     public string? ExtendedStatus { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
@@ -21,6 +21,18 @@ public sealed class SearchDialogDto
     public DialogStatus.Values Status { get; set; }
 
     public List<SearchDialogContentDto> Content { get; set; } = [];
+    public List<SearchDialogDialogSeenRecordDto> SeenSinceLastUpdate { get; set; } = [];
+}
+
+public class SearchDialogDialogSeenRecordDto
+{
+    public Guid Id { get; set; }
+    public DateTimeOffset CreatedAt { get; set; }
+
+    public string EndUserIdHash { get; set; } = null!;
+
+    public string? EndUserName { get; set; }
+    public bool? IsCurrentEndUser { get; set; }
 }
 
 public sealed class SearchDialogSearchTagDto

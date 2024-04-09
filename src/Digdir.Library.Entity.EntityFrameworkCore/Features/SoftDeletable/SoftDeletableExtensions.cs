@@ -26,10 +26,7 @@ public static class SoftDeletableExtensions
     /// access to change tracking information and operations for the entity.
     /// </returns>
     public static EntityEntry<TSoftDeletableEntity> HardRemove<TSoftDeletableEntity>(this DbSet<TSoftDeletableEntity> set, TSoftDeletableEntity entity)
-        where TSoftDeletableEntity : class, ISoftDeletableEntity
-    {
-        return set.Remove(entity);
-    }
+        where TSoftDeletableEntity : class, ISoftDeletableEntity => set.Remove(entity);
 
     /// <summary>
     /// Marks a <typeparamref name="TSoftDeletableEntity"/> as hard deleted.
@@ -146,8 +143,5 @@ public static class SoftDeletableExtensions
     }
 
     private static void EnableSoftDeletableQueryFilter_Internal<T>(ModelBuilder modelBuilder)
-        where T : class, ISoftDeletableEntity
-    {
-        modelBuilder.Entity<T>().HasQueryFilter(x => !x.Deleted);
-    }
+        where T : class, ISoftDeletableEntity => modelBuilder.Entity<T>().HasQueryFilter(x => !x.Deleted);
 }

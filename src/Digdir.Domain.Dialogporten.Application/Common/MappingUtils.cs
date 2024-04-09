@@ -1,13 +1,21 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Security.Cryptography;
 using System.Text;
 
 namespace Digdir.Domain.Dialogporten.Application.Common;
 
-internal static class MappingUtils
+internal interface IStringHasher
 {
-    internal static byte[] GetHashSalt(int size = 16) => RandomNumberGenerator.GetBytes(size);
+    [return: NotNullIfNotNull(nameof(personIdentifier))]
+    string? Hash(string? personIdentifier);
+}
 
-    internal static string? HashPid(string? personIdentifier, byte[] salt)
+internal class RandomSaltStringHasher : IStringHasher
+{
+    private const int SaltSize = 16;
+    private readonly Lazy<byte[]> _lazySalt = new(() => RandomNumberGenerator.GetBytes(SaltSize));
+
+    public string? Hash(string? personIdentifier)
     {
         if (string.IsNullOrWhiteSpace(personIdentifier))
         {
@@ -15,9 +23,9 @@ internal static class MappingUtils
         }
 
         var identifierBytes = Encoding.UTF8.GetBytes(personIdentifier);
-        Span<byte> buffer = stackalloc byte[identifierBytes.Length + salt.Length];
+        Span<byte> buffer = stackalloc byte[identifierBytes.Length + _lazySalt.Value.Length];
         identifierBytes.CopyTo(buffer);
-        salt.CopyTo(buffer[identifierBytes.Length..]);
+        _lazySalt.Value.CopyTo(buffer[identifierBytes.Length..]);
 
         var hashBytes = SHA256.HashData(buffer);
 

@@ -121,7 +121,7 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
         return claims;
     }
 
-    private static readonly JsonSerializerOptions _serializerOptions = new()
+    private static readonly JsonSerializerOptions SerializerOptions = new()
     {
         PropertyNameCaseInsensitive = true,
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault
@@ -130,7 +130,7 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
     private async Task<XacmlJsonResponse?> SendRequest(XacmlJsonRequestRoot xacmlJsonRequest, CancellationToken cancellationToken)
     {
         const string apiUrl = "authorization/api/v1/authorize";
-        var requestJson = JsonSerializer.Serialize(xacmlJsonRequest, _serializerOptions);
+        var requestJson = JsonSerializer.Serialize(xacmlJsonRequest, SerializerOptions);
         _logger.LogDebug("Generated XACML request: {RequestJson}", requestJson);
         var httpContent = new StringContent(requestJson, Encoding.UTF8, "application/json");
 
@@ -147,6 +147,6 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
         }
 
         var responseData = await response.Content.ReadAsStringAsync(cancellationToken);
-        return JsonSerializer.Deserialize<XacmlJsonResponse>(responseData, _serializerOptions);
+        return JsonSerializer.Deserialize<XacmlJsonResponse>(responseData, SerializerOptions);
     }
 }

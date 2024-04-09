@@ -9,7 +9,7 @@ using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
 using Digdir.Domain.Dialogporten.Service;
 
 // TODO: Add AppConfiguration and key vault
-// TODO: Configure RabbitMQ connection settings 
+// TODO: Configure Service bus connection settings 
 // TODO: Configure Postgres connection settings
 // TODO: Improve exceptions thrown in this assembly
 
@@ -49,7 +49,7 @@ static void BuildAndRun(string[] args)
         .ReadFrom.Services(services)
         .Enrich.FromLogContext()
         .WriteTo.Conditional(
-            condition: x => builder.Environment.IsDevelopment(),
+            condition: _ => builder.Environment.IsDevelopment(),
             configureSink: x => x.Console(formatProvider: CultureInfo.InvariantCulture))
         .WriteTo.ApplicationInsights(
             services.GetRequiredService<TelemetryConfiguration>(),
@@ -60,29 +60,20 @@ static void BuildAndRun(string[] args)
         .AddMassTransit(x =>
         {
             x.AddConsumers(thisAssembly);
-            x.UsingRabbitMq((context, cfg) =>
+
+            var useInMemoryTransport = builder.Configuration.GetValue<bool>("MassTransit:UseInMemoryTransport");
+
+            if (useInMemoryTransport)
             {
-                const string rabbitMqSection = "RabbitMq";
-                cfg.Host(builder.Configuration[$"{rabbitMqSection}:Host"], "/", h =>
+                x.UsingInMemory((context, cfg) =>
                 {
-                    h.Username(builder.Configuration[$"{rabbitMqSection}:Username"]);
-                    h.Password(builder.Configuration[$"{rabbitMqSection}:Password"]);
+                    cfg.ConfigureEndpoints(context);
                 });
-                cfg.ReceiveEndpoint(thisAssembly.GetName().Name!, x =>
-                {
-                    x.UseMessageRetry(r => r.Intervals(
-                        TimeSpan.FromSeconds(1),
-                        TimeSpan.FromSeconds(3),
-                        TimeSpan.FromSeconds(10)));
-                    // TODO: Add delayed redelivery - but we need a rabbitmq plugin for this
-                    //x.UseDelayedRedelivery(r => r.Intervals(
-                    //    TimeSpan.FromMinutes(1),
-                    //    TimeSpan.FromMinutes(3),
-                    //    TimeSpan.FromMinutes(10)));
-                    x.SetQuorumQueue();
-                    x.ConfigureConsumers(context);
-                });
-            });
+            }
+            else
+            {
+                // todo: Configure for using Azure Service Bus
+            }
         })
         .AddApplication(builder.Configuration, builder.Environment)
         .AddInfrastructure(builder.Configuration, builder.Environment)
