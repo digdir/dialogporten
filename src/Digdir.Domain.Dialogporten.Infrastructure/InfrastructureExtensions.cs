@@ -23,10 +23,10 @@ using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.Authorization;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.Events;
+using Digdir.Domain.Dialogporten.Infrastructure.Altinn.NameRegistry;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.OrganizationRegistry;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.ResourceRegistry;
 using ZiggyCreatures.Caching.Fusion;
-using Digdir.Domain.Dialogporten.Infrastructure.Altinn.NameRegistry;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure;
 
