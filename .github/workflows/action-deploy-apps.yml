@@ -82,23 +82,23 @@ jobs:
           additionalArguments: "${{inputs.dryRun && '--what-if'}}"
           parameters: ./.azure/applications/web-api-migration-job/${{ inputs.environment }}.bicepparam
 
-      # - name: Start migration job
-      #   uses: azure/CLI@v1
-      #   if: ${{!inputs.dryRun}}
-      #   with:
-      #     azcliversion: 2.56.0
-      #     inlineScript: |
-      #       az containerapp job start -n ${{ steps.deploy.outputs.name }} -g ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
+      - name: Start migration job
+        uses: azure/CLI@v1
+        if: ${{!inputs.dryRun}}
+        with:
+          azcliversion: 2.56.0
+          inlineScript: |
+            az containerapp job start -n ${{ steps.deploy.outputs.name }} -g ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
 
-      # - name: Verify migration
-      #   uses: azure/CLI@v1
-      #   if: ${{!inputs.dryRun}}
-      #   id: verify-migration
-      #   timeout-minutes: 3
-      #   with:
-      #     azcliversion: ${{ env.AZ_CLI_VERSION }}
-      #     inlineScript: |
-      #       ./.github/tools/containerAppJobVerifier.sh ${{ steps.deploy.outputs.name }} ${{ secrets.AZURE_RESOURCE_GROUP_NAME }} ${{ inputs.version }}
+      - name: Verify migration
+        uses: azure/CLI@v1
+        if: ${{!inputs.dryRun}}
+        id: verify-migration
+        timeout-minutes: 3
+        with:
+          azcliversion: ${{ env.AZ_CLI_VERSION }}
+          inlineScript: |
+            ./.github/tools/containerAppJobVerifier.sh ${{ steps.deploy.outputs.name }} ${{ secrets.AZURE_RESOURCE_GROUP_NAME }} ${{ inputs.version }}
 
       - name: Logout from azure
         if: ${{failure() || success()}}
