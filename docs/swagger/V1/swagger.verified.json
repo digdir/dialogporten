@@ -3578,7 +3578,7 @@
             "type": "string",
             "format": "guid"
           },
-          "createdAt": {
+          "seenAt": {
             "type": "string",
             "format": "date-time"
           },
@@ -3602,7 +3602,7 @@
             "type": "string",
             "format": "guid"
           },
-          "createdAt": {
+          "seenAt": {
             "type": "string",
             "format": "date-time"
           },
