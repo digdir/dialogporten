@@ -57,7 +57,7 @@ public class DialogEntity :
     public List<DialogActivity> Activities { get; set; } = [];
 
     [AggregateChild]
-    public List<DialogSeenRecord> SeenLog { get; set; } = [];
+    public List<DialogSeenLog> SeenLog { get; set; } = [];
 
     public void SoftDelete()
     {

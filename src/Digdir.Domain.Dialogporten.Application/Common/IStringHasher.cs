@@ -10,7 +10,7 @@ internal interface IStringHasher
     string? Hash(string? personIdentifier);
 }
 
-internal class RandomSaltStringHasher : IStringHasher
+internal class PersistantRandomSaltStringHasher : IStringHasher
 {
     private const int SaltSize = 16;
     private readonly Lazy<byte[]> _lazySalt = new(() => RandomNumberGenerator.GetBytes(SaltSize));

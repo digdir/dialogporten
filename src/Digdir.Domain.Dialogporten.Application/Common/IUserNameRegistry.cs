@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Externals;
@@ -8,8 +9,10 @@ namespace Digdir.Domain.Dialogporten.Application.Common;
 public interface IUserNameRegistry
 {
     bool TryGetCurrentUserPid([NotNullWhen(true)] out string? userPid);
-    Task<string?> GetCurrentUserName(string personalIdentificationNumber, CancellationToken cancellationToken);
+    Task<UserInformation?> GetUserInformation(CancellationToken cancellationToken);
 }
+
+public record UserInformation(string UserPid, string? UserName);
 
 public class UserNameRegistry : IUserNameRegistry
 {
@@ -24,12 +27,22 @@ public class UserNameRegistry : IUserNameRegistry
 
     public bool TryGetCurrentUserPid([NotNullWhen(true)] out string? userPid) => _user.TryGetPid(out userPid);
 
-    public async Task<string?> GetCurrentUserName(string personalIdentificationNumber, CancellationToken cancellationToken) =>
-        await _nameRegistry.GetName(personalIdentificationNumber, cancellationToken);
+    public async Task<UserInformation?> GetUserInformation(CancellationToken cancellationToken)
+    {
+        if (!TryGetCurrentUserPid(out var userPid))
+        {
+            return null;
+        }
+
+        var userName = await _nameRegistry.GetName(userPid, cancellationToken);
+        return new(userPid, userName);
+    }
 }
 
 internal sealed class LocalDevelopmentUserNameRegistryDecorator : IUserNameRegistry
 {
+    private const string LocalDevelopmentUserPid = "Local Development User";
+
     private readonly IUserNameRegistry _userNameRegistry;
 
     public LocalDevelopmentUserNameRegistryDecorator(IUserNameRegistry userNameRegistry)
@@ -40,6 +53,8 @@ internal sealed class LocalDevelopmentUserNameRegistryDecorator : IUserNameRegis
     public bool TryGetCurrentUserPid([NotNullWhen(true)] out string? userPid) =>
         _userNameRegistry.TryGetCurrentUserPid(out userPid);
 
-    public async Task<string?> GetCurrentUserName(string personalIdentificationNumber, CancellationToken cancellationToken)
-        => await Task.FromResult("Local Development User");
+    public Task<UserInformation?> GetUserInformation(CancellationToken cancellationToken)
+        => _userNameRegistry.TryGetCurrentUserPid(out var userPid)
+            ? Task.FromResult<UserInformation?>(new UserInformation(userPid!, LocalDevelopmentUserPid))
+            : throw new UnreachableException();
 }

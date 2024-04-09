@@ -1486,6 +1486,126 @@
         ]
       }
     },
+    "/api/v1/enduser/dialogs/{dialogId}/seenlog": {
+      "get": {
+        "tags": [
+          "Enduser"
+        ],
+        "summary": "Gets a single dialog seen log record",
+        "description": "Gets a single dialog seen log record. For more information see the documentation (link TBD).",
+        "operationId": "SearchDialogSeenLog",
+        "parameters": [
+          {
+            "name": "dialogId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Missing or invalid authentication token. Requires a Maskinporten-token with the scope \"digdir:dialogporten\"."
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "200": {
+            "description": "Successfully returned the dialog seen log record.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SearchDialogSeenLogDto"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The given dialog ID or dialog element ID was not found or was already deleted.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWTBearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/enduser/dialogs/{dialogId}/seenlog/{seenLogId}": {
+      "get": {
+        "tags": [
+          "Enduser"
+        ],
+        "summary": "Gets a single dialog seen log record",
+        "description": "Gets a single dialog seen log record. For more information see the documentation (link TBD).",
+        "operationId": "GetDialogSeenLog",
+        "parameters": [
+          {
+            "name": "dialogId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            }
+          },
+          {
+            "name": "seenLogId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Missing or invalid authentication token. Requires a Maskinporten-token with the scope \"digdir:dialogporten\"."
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "200": {
+            "description": "Successfully returned the dialog seen log record.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetDialogSeenLogDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The given dialog ID or dialog element ID was not found or was already deleted.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWTBearerAuth": []
+          }
+        ]
+      }
+    },
     "/api/v1/enduser/dialogs": {
       "get": {
         "tags": [
@@ -2606,7 +2726,7 @@
           "seenSinceLastUpdate": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/SearchDialogDialogSeenRecordDtoSO"
+              "$ref": "#/components/schemas/SearchDialogDialogSeenLogDtoSO"
             }
           }
         }
@@ -2626,7 +2746,7 @@
           }
         }
       },
-      "SearchDialogDialogSeenRecordDtoSO": {
+      "SearchDialogDialogSeenLogDtoSO": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -2756,7 +2876,7 @@
           "seenSinceLastUpdate": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/GetDialogDialogSeenRecordDtoSO"
+              "$ref": "#/components/schemas/GetDialogDialogSeenLogDtoSO"
             }
           }
         }
@@ -2998,7 +3118,7 @@
           }
         }
       },
-      "GetDialogDialogSeenRecordDtoSO": {
+      "GetDialogDialogSeenLogDtoSO": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -3450,6 +3570,54 @@
           }
         }
       },
+      "SearchDialogSeenLogDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endUserIdHash": {
+            "type": "string"
+          },
+          "endUserName": {
+            "type": "string",
+            "nullable": true
+          },
+          "isCurrentEndUser": {
+            "type": "boolean"
+          }
+        }
+      },
+      "GetDialogSeenLogDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endUserIdHash": {
+            "type": "string"
+          },
+          "endUserName": {
+            "type": "string",
+            "nullable": true
+          },
+          "isCurrentEndUser": {
+            "type": "boolean"
+          }
+        }
+      },
       "PaginatedListOfSearchDialogDto": {
         "type": "object",
         "additionalProperties": false,
@@ -3536,7 +3704,7 @@
           "seenSinceLastUpdate": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/SearchDialogDialogSeenRecordDto"
+              "$ref": "#/components/schemas/SearchDialogDialogSeenLogDto"
             }
           }
         }
@@ -3602,7 +3770,7 @@
           }
         }
       },
-      "SearchDialogDialogSeenRecordDto": {
+      "SearchDialogDialogSeenLogDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -3723,7 +3891,7 @@
           "seenSinceLastUpdate": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/GetDialogDialogSeenRecordDto"
+              "$ref": "#/components/schemas/GetDialogDialogSeenLogDto"
             }
           }
         }
@@ -3967,7 +4135,7 @@
           }
         }
       },
-      "GetDialogDialogSeenRecordDto": {
+      "GetDialogDialogSeenLogDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {

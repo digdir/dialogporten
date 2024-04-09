@@ -59,7 +59,6 @@ public sealed class SearchDialogQuery : SortablePaginationParameter<SearchDialog
     /// Only return dialogs created before this date
     /// </summary>
     public DateTimeOffset? CreatedBefore { get; init; }
-
     /// <summary>
     /// Only return dialogs updated after this date
     /// </summary>
