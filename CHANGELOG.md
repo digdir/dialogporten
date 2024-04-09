@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.4.0](https://github.com/digdir/dialogporten/compare/v1.3.0...v1.4.0) (2024-04-09)
+
+
+### Features
+
+* Add EU endpoints for seen log ([#607](https://github.com/digdir/dialogporten/issues/607)) ([1aa7eeb](https://github.com/digdir/dialogporten/commit/1aa7eeb927d21fdea053640edcae7782e278c7cb))
+* Add ExtendedStatus content type ([#589](https://github.com/digdir/dialogporten/issues/589)) ([a9f10b0](https://github.com/digdir/dialogporten/commit/a9f10b09ee58453766e1de46acd2166be48fd0b5))
+* add fusion cache ([#579](https://github.com/digdir/dialogporten/issues/579)) ([973fa5c](https://github.com/digdir/dialogporten/commit/973fa5c9a68709f8ede71673fa96f06388cf2ea9))
+* **azure:** copy from keyvault to app config ([#593](https://github.com/digdir/dialogporten/issues/593)) ([d216c90](https://github.com/digdir/dialogporten/commit/d216c9087472e4e93df913a56b58e79d71becab8))
+* **service:** use in-memory transport instead of rabbitmq ([#602](https://github.com/digdir/dialogporten/issues/602)) ([dc339e7](https://github.com/digdir/dialogporten/commit/dc339e77e16c4e1014145a6811474ba15fef2b20))
+* Split SeenLog from activities ([#598](https://github.com/digdir/dialogporten/issues/598)) ([71b77d2](https://github.com/digdir/dialogporten/commit/71b77d25ca464e4194712e45a19d16d30d17e4d5))
+
+
+### Bug Fixes
+
+* Add PartyIdentifier.Separator to party validation error ([#595](https://github.com/digdir/dialogporten/issues/595)) ([14ee4a1](https://github.com/digdir/dialogporten/commit/14ee4a1a1cb57014d7d6d6ae385681fa5b3c690c))
+* **azure:** ensure key vault url is correct and add keyvault readerrole for migration job ([#597](https://github.com/digdir/dialogporten/issues/597)) ([2f11a16](https://github.com/digdir/dialogporten/commit/2f11a164b6198848d965ae3a390ba0156204a6e7))
+
 ## [1.3.0](https://github.com/digdir/dialogporten/compare/v1.2.0...v1.3.0) (2024-04-03)
 
 
