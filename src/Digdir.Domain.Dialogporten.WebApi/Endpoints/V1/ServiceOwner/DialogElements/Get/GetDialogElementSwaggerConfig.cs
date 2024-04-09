@@ -7,7 +7,7 @@ using FastEndpoints;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.DialogElements.Get;
 
-public class GetDiailogElementSwaggerConfig : ISwaggerConfig
+public class GetDialogElementSwaggerConfig : ISwaggerConfig
 {
     public static string OperationId => "GetDialogElementSO";
 

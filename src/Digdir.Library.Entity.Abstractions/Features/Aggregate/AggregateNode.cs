@@ -124,7 +124,7 @@ public enum AggregateNodeState
     Modified = 2,
 
     /// <summary>
-    /// The entity, or part of its aggregate parent chain have been marked for deleation.
+    /// The entity, or part of its aggregate parent chain have been marked for deletion.
     /// </summary>
     Deleted = 3,
 

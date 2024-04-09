@@ -31,6 +31,6 @@ public class SearchDialogSeenLogEndpoint : Endpoint<SearchDialogSeenLogQuery, Li
             dto => SendOkAsync(dto, ct),
             notFound => this.NotFoundAsync(notFound, ct),
             deleted => this.GoneAsync(deleted, ct),
-            forbiden => this.ForbiddenAsync(forbiden, ct));
+            forbidden => this.ForbiddenAsync(forbidden, ct));
     }
 }
