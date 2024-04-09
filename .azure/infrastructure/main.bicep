@@ -144,29 +144,31 @@ module redis '../modules/redis/main.bicep' = {
   }
 }
 
-module copyEnvironmentSecrets '../modules/keyvault/copySecrets.bicep' = {
-  scope: resourceGroup
-  name: 'copyEnvironmentSecrets'
-  params: {
-    srcKeyVaultKeys: keyVaultSourceKeys
-    srcKeyVaultName: secrets.sourceKeyVaultName
-    srcKeyVaultRGNName: secrets.sourceKeyVaultResourceGroup
-    srcKeyVaultSubId: secrets.sourceKeyVaultSubscriptionId
-    destKeyVaultName: environmentKeyVault.outputs.name
-    secretPrefix: 'dialogporten--${environment}--'
-  }
-}
-
 module copyCrossEnvironmentSecrets '../modules/keyvault/copySecrets.bicep' = {
   scope: resourceGroup
   name: 'copyCrossEnvironmentSecrets'
   params: {
+    appConfigurationName: appConfiguration.outputs.name
     srcKeyVaultKeys: keyVaultSourceKeys
     srcKeyVaultName: secrets.sourceKeyVaultName
     srcKeyVaultRGNName: secrets.sourceKeyVaultResourceGroup
     srcKeyVaultSubId: secrets.sourceKeyVaultSubscriptionId
     destKeyVaultName: environmentKeyVault.outputs.name
     secretPrefix: 'dialogporten--any--'
+  }
+}
+
+module copyEnvironmentSecrets '../modules/keyvault/copySecrets.bicep' = {
+  scope: resourceGroup
+  name: 'copyEnvironmentSecrets'
+  params: {
+    appConfigurationName: appConfiguration.outputs.name
+    srcKeyVaultKeys: keyVaultSourceKeys
+    srcKeyVaultName: secrets.sourceKeyVaultName
+    srcKeyVaultRGNName: secrets.sourceKeyVaultResourceGroup
+    srcKeyVaultSubId: secrets.sourceKeyVaultSubscriptionId
+    destKeyVaultName: environmentKeyVault.outputs.name
+    secretPrefix: 'dialogporten--${environment}--'
   }
 }
 
