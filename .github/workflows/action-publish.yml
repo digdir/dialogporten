@@ -33,8 +33,6 @@ jobs:
             imageName: cdc
           - dockerfile: ./src/Digdir.Domain.Dialogporten.Infrastructure/MigrationBundle.dockerfile
             imageName: migration-bundle
-          - dockerfile: ./RabbitMq/Dockerfile
-            imageName: rabbitmq
 
     permissions:
       contents: read

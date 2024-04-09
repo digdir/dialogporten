@@ -19,7 +19,6 @@ internal static class OrderOptions<TOrderDefinition, TTarget>
 
 internal class OrderOptions<TTarget> : IOrderOptions<TTarget>
 {
-    private readonly string _defaultKey;
     private readonly Dictionary<string, OrderSelector<TTarget>> _optionByKey;
 
     public Order<TTarget> DefaultOrder { get; }
@@ -27,9 +26,8 @@ internal class OrderOptions<TTarget> : IOrderOptions<TTarget>
 
     public OrderOptions(string defaultKey, Dictionary<string, OrderSelector<TTarget>> optionByKey)
     {
-        _defaultKey = defaultKey;
         _optionByKey = optionByKey;
-        DefaultOrder = new(_defaultKey, _optionByKey[_defaultKey]);
+        DefaultOrder = new(defaultKey, _optionByKey[defaultKey]);
         IdOrder = new(PaginationConstants.OrderIdKey, _optionByKey[PaginationConstants.OrderIdKey]);
     }
 

@@ -15,7 +15,7 @@ internal static class AspNetCoreOpenApiDocumentGeneratorSettingsExtensions
         settings.OperationProcessors.Add(new PaginatedListParametersProcessor());
 
         // Attempt to remove the definitions that NSwag generates for this
-        foreach (var ignoreType in new Type[]
+        foreach (var ignoreType in new[]
         {
             typeof(ContinuationTokenSet<,>),
             typeof(Order<>),

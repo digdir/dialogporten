@@ -15,18 +15,18 @@ public class DialogActivityType : AbstractLookupEntity<DialogActivityType, Dialo
         Submission = 1,
 
         /// <summary>
-        /// Indikerer en tilbakemelding fra tjenestetilbyder på en innsending. Inneholder 
+        /// Indikerer en tilbakemelding fra tjenestetilbyder på en innsending. Inneholder
         /// referanse til den aktuelle innsendingen.
         /// </summary>
         Feedback = 2,
 
         /// <summary>
-        /// Informasjon fra tjenestetilbyder, ikke (direkte) relatert til noen innsending.  
+        /// Informasjon fra tjenestetilbyder, ikke (direkte) relatert til noen innsending.
         /// </summary>
         Information = 3,
 
         /// <summary>
-        /// Brukes for å indikere en feilsituasjon, typisk på en innsending. Inneholder en 
+        /// Brukes for å indikere en feilsituasjon, typisk på en innsending. Inneholder en
         /// tjenestespesifikk activityErrorCode.
         /// </summary>
         Error = 4,
@@ -36,14 +36,6 @@ public class DialogActivityType : AbstractLookupEntity<DialogActivityType, Dialo
         /// av dialogen, eller sletting.
         /// </summary>
         Closed = 5,
-
-        /// <summary>
-        /// Når dialogen først ble hentet og av hvem. Kan brukes for å avgjøre om purring 
-        /// skal sendes ut, eller internt i virksomheten for å tracke tilganger/bruker.
-        /// Merk at dette ikke er det samme som "lest", dette må tjenestetilbyder selv håndtere 
-        /// i egne løsninger.
-        /// </summary>
-        Seen = 6,
 
         /// <summary>
         /// Når dialogen blir videresendt (tilgang delegert) av noen med tilgang til andre.

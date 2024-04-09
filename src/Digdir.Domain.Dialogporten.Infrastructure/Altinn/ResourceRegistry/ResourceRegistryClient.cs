@@ -10,8 +10,8 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.ResourceRegistry;
 internal sealed class ResourceRegistryClient : IResourceRegistry
 {
     private const string OrgResourceReferenceCacheKey = "OrgResourceReference";
-    private static readonly DistributedCacheEntryOptions _oneDayCacheDuration = new() { AbsoluteExpiration = DateTimeOffset.UtcNow.AddDays(1) };
-    private static readonly DistributedCacheEntryOptions _zeroCacheDuration = new() { AbsoluteExpiration = DateTimeOffset.MinValue };
+    private static readonly DistributedCacheEntryOptions OneDayCacheDuration = new() { AbsoluteExpiration = DateTimeOffset.UtcNow.AddDays(1) };
+    private static readonly DistributedCacheEntryOptions ZeroCacheDuration = new() { AbsoluteExpiration = DateTimeOffset.MinValue };
 
     private readonly IFusionCache _cache;
     private readonly HttpClient _client;

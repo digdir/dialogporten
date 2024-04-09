@@ -3,6 +3,7 @@ using System;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(DialogDbContext))]
-    partial class DialogDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240404075422_MakeEfAwareOfIndexAndCollationChanges")]
+    partial class MakeEfAwareOfIndexAndCollationChanges
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -60,7 +63,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("DialogId");
 
-                    b.ToTable("DialogApiAction", (string)null);
+                    b.ToTable("DialogApiAction");
                 });
 
             modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions.DialogApiActionEndpoint", b =>
@@ -119,7 +122,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("HttpMethodId");
 
-                    b.ToTable("DialogApiActionEndpoint", (string)null);
+                    b.ToTable("DialogApiActionEndpoint");
                 });
 
             modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions.DialogGuiAction", b =>
@@ -171,7 +174,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("PriorityId");
 
-                    b.ToTable("DialogGuiAction", (string)null);
+                    b.ToTable("DialogGuiAction");
                 });
 
             modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions.DialogGuiActionPriority", b =>
@@ -186,7 +189,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DialogGuiActionPriority", (string)null);
+                    b.ToTable("DialogGuiActionPriority");
 
                     b.HasData(
                         new
@@ -231,6 +234,10 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.Property<Guid?>("RelatedActivityId")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("SeenByEndUserId")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
                     b.Property<int>("TypeId")
                         .HasColumnType("integer");
 
@@ -244,7 +251,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("TypeId");
 
-                    b.ToTable("DialogActivity", (string)null);
+                    b.ToTable("DialogActivity");
                 });
 
             modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities.DialogActivityType", b =>
@@ -259,7 +266,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DialogActivityType", (string)null);
+                    b.ToTable("DialogActivityType");
 
                     b.HasData(
                         new
@@ -286,6 +293,11 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         {
                             Id = 5,
                             Name = "Closed"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Name = "Seen"
                         },
                         new
                         {
@@ -324,7 +336,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.HasIndex("DialogId", "TypeId")
                         .IsUnique();
 
-                    b.ToTable("DialogContent", (string)null);
+                    b.ToTable("DialogContent");
                 });
 
             modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content.DialogContentType", b =>
@@ -351,7 +363,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DialogContentType", (string)null);
+                    b.ToTable("DialogContentType");
 
                     b.HasData(
                         new
@@ -388,15 +400,6 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                             Name = "AdditionalInfo",
                             OutputInList = false,
                             RenderAsHtml = true,
-                            Required = false
-                        },
-                        new
-                        {
-                            Id = 5,
-                            MaxLength = 20,
-                            Name = "ExtendedStatus",
-                            OutputInList = true,
-                            RenderAsHtml = false,
                             Required = false
                         });
                 });
@@ -515,38 +518,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.HasIndex("DialogId", "Value")
                         .IsUnique();
 
-                    b.ToTable("DialogSearchTag", (string)null);
-                });
-
-            modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogSeenRecord", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasDefaultValueSql("gen_random_uuid()");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("current_timestamp at time zone 'utc'");
-
-                    b.Property<Guid>("DialogId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("EndUserId")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
-                    b.Property<string>("EndUserName")
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DialogId");
-
-                    b.ToTable("DialogSeenRecord", (string)null);
+                    b.ToTable("DialogSearchTag");
                 });
 
             modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogStatus", b =>
@@ -561,7 +533,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DialogStatus", (string)null);
+                    b.ToTable("DialogStatus");
 
                     b.HasData(
                         new
@@ -637,7 +609,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("RelatedDialogElementId");
 
-                    b.ToTable("DialogElement", (string)null);
+                    b.ToTable("DialogElement");
                 });
 
             modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements.DialogElementUrl", b =>
@@ -678,7 +650,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("DialogElementId");
 
-                    b.ToTable("DialogElementUrl", (string)null);
+                    b.ToTable("DialogElementUrl");
                 });
 
             modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements.DialogElementUrlConsumerType", b =>
@@ -693,7 +665,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DialogElementUrlConsumerType", (string)null);
+                    b.ToTable("DialogElementUrlConsumerType");
 
                     b.HasData(
                         new
@@ -720,7 +692,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("HttpVerb", (string)null);
+                    b.ToTable("HttpVerb");
 
                     b.HasData(
                         new
@@ -796,7 +768,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 
                     b.HasKey("LocalizationSetId", "CultureCode");
 
-                    b.ToTable("Localization", (string)null);
+                    b.ToTable("Localization");
                 });
 
             modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.Localizations.LocalizationSet", b =>
@@ -818,7 +790,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("LocalizationSet", (string)null);
+                    b.ToTable("LocalizationSet");
 
                     b.HasDiscriminator<string>("Discriminator").HasValue("LocalizationSet");
 
@@ -842,7 +814,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 
                     b.HasKey("EventId");
 
-                    b.ToTable("OutboxMessage", (string)null);
+                    b.ToTable("OutboxMessage");
                 });
 
             modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.Outboxes.OutboxMessageConsumer", b =>
@@ -856,7 +828,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 
                     b.HasKey("EventId", "ConsumerName");
 
-                    b.ToTable("OutboxMessageConsumer", (string)null);
+                    b.ToTable("OutboxMessageConsumer");
                 });
 
             modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions.DialogGuiActionTitle", b =>
@@ -882,7 +854,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.HasIndex("ActivityId")
                         .IsUnique();
 
-                    b.ToTable("LocalizationSet", null, t =>
+                    b.ToTable("LocalizationSet", t =>
                         {
                             t.Property("ActivityId")
                                 .HasColumnName("DialogActivityDescription_ActivityId");
@@ -915,19 +887,6 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         .IsUnique();
 
                     b.HasDiscriminator().HasValue("DialogContentValue");
-                });
-
-            modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogSeenLogVia", b =>
-                {
-                    b.HasBaseType("Digdir.Domain.Dialogporten.Domain.Localizations.LocalizationSet");
-
-                    b.Property<Guid>("DialogSeenLogId")
-                        .HasColumnType("uuid");
-
-                    b.HasIndex("DialogSeenLogId")
-                        .IsUnique();
-
-                    b.HasDiscriminator().HasValue("DialogSeenLogVia");
                 });
 
             modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements.DialogElementDisplayName", b =>
@@ -1073,17 +1032,6 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.Navigation("Dialog");
                 });
 
-            modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogSeenRecord", b =>
-                {
-                    b.HasOne("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogEntity", "Dialog")
-                        .WithMany("SeenLog")
-                        .HasForeignKey("DialogId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Dialog");
-                });
-
             modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements.DialogElement", b =>
                 {
                     b.HasOne("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogEntity", "Dialog")
@@ -1187,17 +1135,6 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.Navigation("DialogContent");
                 });
 
-            modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogSeenLogVia", b =>
-                {
-                    b.HasOne("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogSeenRecord", "DialogSeenLog")
-                        .WithOne("Via")
-                        .HasForeignKey("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogSeenLogVia", "DialogSeenLogId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("DialogSeenLog");
-                });
-
             modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements.DialogElementDisplayName", b =>
                 {
                     b.HasOne("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements.DialogElement", "Element")
@@ -1247,13 +1184,6 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.Navigation("GuiActions");
 
                     b.Navigation("SearchTags");
-
-                    b.Navigation("SeenLog");
-                });
-
-            modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogSeenRecord", b =>
-                {
-                    b.Navigation("Via");
                 });
 
             modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements.DialogElement", b =>

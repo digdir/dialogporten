@@ -9,10 +9,7 @@ namespace Digdir.Domain.Dialogporten.Application.Common.Pagination.Extensions;
 internal static class OrderExtensions
 {
     public static OrderSet<TOrderDefinition, TTarget> DefaultIfNull<TOrderDefinition, TTarget>(this OrderSet<TOrderDefinition, TTarget>? orderSet)
-        where TOrderDefinition : IOrderDefinition<TTarget>
-    {
-        return orderSet ?? OrderSet<TOrderDefinition, TTarget>.Default;
-    }
+        where TOrderDefinition : IOrderDefinition<TTarget> => orderSet ?? OrderSet<TOrderDefinition, TTarget>.Default;
 
     public static IQueryable<T> ApplyOrder<T>(this IQueryable<T> query, IOrderSet<T> orderSet)
     {
@@ -81,9 +78,9 @@ internal static class OrderExtensions
         // where a, b, c, ... are the order by expressions and an, bn, cn, ...
         // are the values from the continuation token. It's a repeating pattern
         // where the previous properties are equal and the next property is less than
-        // or greater than the next value, depending on the sort order. 
+        // or greater than the next value, depending on the sort order.
         // See https://phauer.com/2018/web-api-pagination-timestamp-id-continuation-token/ for more info.
-        // The algorithm is as follows: 
+        // The algorithm is as follows:
         // equalParst =         [ a = an, b = bn, c = cn, ... ]
         // ltGtParts =          [ a < an, b < bn, c < cn, ... ]
         // lgGtEqualParst =     [ a < an, a = an AND b < bn, a = an AND b = bn AND c < cn, ... ]
@@ -139,8 +136,8 @@ internal static class OrderExtensions
     }
 
     /// <summary>
-    /// The not null "block" is added when the continuation token is null in descending 
-    /// order, meaning we are still in the beginning where the null values are and 
+    /// The not null "block" is added when the continuation token is null in descending
+    /// order, meaning we are still in the beginning where the null values are and
     /// have not reached the set where the not null values start.
     /// </summary>
     private static BinaryExpression IncludeNotNullsBlock(Expression orderBody)
@@ -150,8 +147,8 @@ internal static class OrderExtensions
     }
 
     /// <summary>
-    /// The null "block" is added when a nullable continuation token is not null in 
-    /// ascending order, meaning we have not reached the end of the pagination 
+    /// The null "block" is added when a nullable continuation token is not null in
+    /// ascending order, meaning we have not reached the end of the pagination
     /// where the null values are.
     /// </summary>
     private static BinaryExpression IncludeNullsBlock(Expression orderBody, Expression valueExpression)
@@ -171,9 +168,6 @@ internal static class OrderExtensions
             _newParameter = newParameter;
         }
 
-        protected override Expression VisitParameter(ParameterExpression node)
-        {
-            return _newParameter;
-        }
+        protected override Expression VisitParameter(ParameterExpression node) => _newParameter;
     }
 }

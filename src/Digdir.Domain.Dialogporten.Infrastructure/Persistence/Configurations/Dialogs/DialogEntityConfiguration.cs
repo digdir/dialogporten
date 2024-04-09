@@ -15,5 +15,11 @@ internal sealed class DialogEntityConfiguration : IEntityTypeConfiguration<Dialo
         builder.HasIndex(x => x.CreatedAt);
         builder.HasIndex(x => x.DueAt);
         builder.HasIndex(x => x.UpdatedAt);
+        builder.Property(x => x.Org).UseCollation("C");
+        builder.Property(x => x.ServiceResource).UseCollation("C");
+        builder.Property(x => x.Party).UseCollation("C");
+        builder.HasIndex(x => x.Org);
+        builder.HasIndex(x => x.ServiceResource);
+        builder.HasIndex(x => x.Party);
     }
 }
