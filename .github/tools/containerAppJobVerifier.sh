@@ -1,4 +1,4 @@
-usage_params="<job-name> <resource-group-name> <git-sha>"
+usage_params="<job-name> <resource-group-name> <image-tag>"
 
 if [ -z "$1" ]; then
   echo "Usage: $0 $usage_params"
@@ -10,7 +10,6 @@ if [ -z "$2" ]; then
   exit 1
 fi
 
-# todo: use something else than git sha to target the job execution
 if [ -z "$3" ]; then
   echo "Usage: $0 $usage_params"
   exit 1
@@ -18,10 +17,10 @@ fi
 
 job_name="$1"
 resource_group="$2"
-git_sha="$3"
-query_filter="[?properties.template.containers[?contains(image, '$git_sha')]].{name: name, status: properties.status} | [0]"
+image_tag="$3"
+query_filter="[?properties.template.containers[?ends_with(image, ':$image_tag')]].{name: name, status: properties.status} | [0]"
 
-echo "Verifying job $job_name for git sha $git_sha"
+echo "Verifying job $job_name for image tag $image_tag"
 echo " "
 
 verify_job_succeeded() {
