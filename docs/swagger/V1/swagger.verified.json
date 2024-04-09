@@ -54,6 +54,126 @@
         }
       }
     },
+    "/api/v1/serviceowner/dialogs/{dialogId}/seenlog": {
+      "get": {
+        "tags": [
+          "Serviceowner"
+        ],
+        "summary": "Gets a single dialog seen log record",
+        "description": "Gets a single dialog seen log record. For more information see the documentation (link TBD).",
+        "operationId": "SearchDialogSeenLogSO",
+        "parameters": [
+          {
+            "name": "dialogId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "200": {
+            "description": "Successfully returned the dialog seen log record.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SearchDialogSeenLogDtoSO"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The given dialog ID or dialog element ID was not found or was already deleted.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWTBearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/serviceowner/dialogs/{dialogId}/seenlog/{seenLogId}": {
+      "get": {
+        "tags": [
+          "Serviceowner"
+        ],
+        "summary": "Gets a single dialog seen log record",
+        "description": "Gets a single dialog seen log record. For more information see the documentation (link TBD).",
+        "operationId": "GetDialogSeenLogSO",
+        "parameters": [
+          {
+            "name": "dialogId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            }
+          },
+          {
+            "name": "seenLogId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "200": {
+            "description": "Successfully returned the dialog seen log record.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetDialogSeenLogDtoSO"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The given dialog ID or dialog element ID was not found or was already deleted.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWTBearerAuth": []
+          }
+        ]
+      }
+    },
     "/api/v1/serviceowner/dialogs/{dialogId}": {
       "put": {
         "tags": [
@@ -2137,6 +2257,27 @@
           }
         }
       },
+      "SearchDialogSeenLogDtoSO": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "seenAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endUserIdHash": {
+            "type": "string"
+          },
+          "endUserName": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
       "ProblemDetails": {
         "type": "object",
         "additionalProperties": false,
@@ -2191,6 +2332,27 @@
             "nullable": true
           },
           "severity": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "GetDialogSeenLogDtoSO": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "seenAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endUserIdHash": {
+            "type": "string"
+          },
+          "endUserName": {
             "type": "string",
             "nullable": true
           }
