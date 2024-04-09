@@ -79,7 +79,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
         dialogDto.SeenSinceLastUpdate = dialog.SeenLog
             .Select(log =>
             {
-                var logDto = _mapper.Map<GetDialogDialogSeenRecordDto>(log);
+                var logDto = _mapper.Map<GetDialogDialogSeenLogDto>(log);
                 // TODO: Set when #386 is implemented
                 // logDto.IsAuthenticatedUser = log.EndUserId == userPid;
                 logDto.EndUserIdHash = _stringHasher.Hash(log.EndUserId);

@@ -4,7 +4,7 @@ using Digdir.Library.Entity.Abstractions.Features.Immutable;
 
 namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 
-public class DialogSeenRecord : IImmutableEntity
+public class DialogSeenLog : IImmutableEntity
 {
     public Guid Id { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
@@ -23,6 +23,6 @@ public class DialogSeenRecord : IImmutableEntity
 
 public class DialogSeenLogVia : LocalizationSet
 {
-    public DialogSeenRecord DialogSeenLog { get; set; } = null!;
+    public DialogSeenLog DialogSeenLog { get; set; } = null!;
     public Guid DialogSeenLogId { get; set; }
 }

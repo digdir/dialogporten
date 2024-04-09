@@ -53,10 +53,14 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
 
     public async Task<GetDialogResult> Handle(GetDialogQuery request, CancellationToken cancellationToken)
     {
-        if (!_userNameRegistry.TryGetCurrentUserPid(out var userPid))
+        var userInformation = await _userNameRegistry.GetUserInformation(cancellationToken);
+
+        if (userInformation is null)
         {
             return new Forbidden("No valid user pid found.");
         }
+
+        var (userPid, userName) = userInformation;
 
         // This query could be written without all the includes as ProjectTo will do the job for us.
         // However, we need to guarantee an order for sub resources of the dialog aggregate.
@@ -101,7 +105,6 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
             return new EntityDeleted<DialogEntity>(request.DialogId);
         }
 
-        var userName = await _userNameRegistry.GetCurrentUserName(userPid, cancellationToken);
         // TODO: What if name lookup fails
         // https://github.com/digdir/dialogporten/issues/387
         dialog.UpdateSeenAt(userPid, userName);
@@ -120,7 +123,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
         dialogDto.SeenSinceLastUpdate = dialog.SeenLog
             .Select(log =>
             {
-                var logDto = _mapper.Map<GetDialogDialogSeenRecordDto>(log);
+                var logDto = _mapper.Map<GetDialogDialogSeenLogDto>(log);
                 logDto.IsCurrentEndUser = log.EndUserId == userPid;
                 logDto.EndUserIdHash = _stringHasher.Hash(log.EndUserId);
                 return logDto;

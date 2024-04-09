@@ -21,10 +21,10 @@ public sealed class SearchDialogDto
     public DialogStatus.Values Status { get; set; }
 
     public List<SearchDialogContentDto> Content { get; set; } = [];
-    public List<SearchDialogDialogSeenRecordDto> SeenSinceLastUpdate { get; set; } = [];
+    public List<SearchDialogDialogSeenLogDto> SeenSinceLastUpdate { get; set; } = [];
 }
 
-public class SearchDialogDialogSeenRecordDto
+public class SearchDialogDialogSeenLogDto
 {
     public Guid Id { get; set; }
     public DateTimeOffset CreatedAt { get; set; }

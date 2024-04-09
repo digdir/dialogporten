@@ -35,10 +35,10 @@ public sealed class GetDialogDto
     public List<GetDialogDialogGuiActionDto> GuiActions { get; set; } = [];
     public List<GetDialogDialogApiActionDto> ApiActions { get; set; } = [];
     public List<GetDialogDialogActivityDto> Activities { get; set; } = [];
-    public List<GetDialogDialogSeenRecordDto> SeenSinceLastUpdate { get; set; } = [];
+    public List<GetDialogDialogSeenLogDto> SeenSinceLastUpdate { get; set; } = [];
 }
 
-public class GetDialogDialogSeenRecordDto
+public class GetDialogDialogSeenLogDto
 {
     public Guid Id { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
