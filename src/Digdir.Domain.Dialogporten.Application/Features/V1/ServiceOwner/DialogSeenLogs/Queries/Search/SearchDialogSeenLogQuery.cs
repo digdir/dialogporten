@@ -22,20 +22,17 @@ internal sealed class SearchDialogSeenLogQueryHandler : IRequestHandler<SearchDi
 {
     private readonly IDialogDbContext _db;
     private readonly IMapper _mapper;
-    private readonly IAltinnAuthorization _altinnAuthorization;
     private readonly IStringHasher _stringHasher;
     private readonly IUserResourceRegistry _userResourceRegistry;
 
     public SearchDialogSeenLogQueryHandler(
         IDialogDbContext db,
         IMapper mapper,
-        IAltinnAuthorization altinnAuthorization,
         IStringHasher stringHasher,
         IUserResourceRegistry userResourceRegistry)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-        _altinnAuthorization = altinnAuthorization ?? throw new ArgumentNullException(nameof(altinnAuthorization));
         _stringHasher = stringHasher ?? throw new ArgumentNullException(nameof(stringHasher));
         _userResourceRegistry = userResourceRegistry;
     }
