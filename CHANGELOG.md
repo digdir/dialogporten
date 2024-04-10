@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.0](https://github.com/digdir/dialogporten/compare/v1.4.0...v1.5.0) (2024-04-10)
+
+
+### Features
+
+* **azure:** add azure service bus ([#601](https://github.com/digdir/dialogporten/issues/601)) ([4b008e1](https://github.com/digdir/dialogporten/commit/4b008e176dc9c9f4355b7b101c8a192e357e63fb))
+
 ## [1.4.0](https://github.com/digdir/dialogporten/compare/v1.3.0...v1.4.0) (2024-04-09)
 
 
