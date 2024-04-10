@@ -38,3 +38,9 @@ param redisSku = {
   family: 'C'
   capacity: 1
 }
+
+param serviceBusSku = {
+  name: 'Standard'
+  tier: 'Standard'
+  capacity: 1
+}

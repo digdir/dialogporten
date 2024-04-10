@@ -34,6 +34,9 @@ param slackNotifierSku SlackNotifierSku
 import { Sku as PostgresSku } from '../modules/postgreSql/create.bicep'
 param postgresSku PostgresSku
 
+import { Sku as ServiceBusSku } from '../modules/serviceBus/main.bicep'
+param serviceBusSku ServiceBusSku
+
 import { Sku as RedisSku } from '../modules/redis/main.bicep'
 param redisSku RedisSku
 @minLength(1)
@@ -81,6 +84,16 @@ module appInsights '../modules/applicationInsights/create.bicep' = {
     namePrefix: namePrefix
     location: location
     sku: appInsightsSku
+  }
+}
+
+module serviceBus '../modules/serviceBus/main.bicep' = {
+  scope: resourceGroup
+  name: 'serviceBus'
+  params: {
+    namePrefix: namePrefix
+    location: location
+    sku: serviceBusSku
   }
 }
 
