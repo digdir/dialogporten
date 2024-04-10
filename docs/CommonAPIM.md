@@ -35,7 +35,7 @@ Here is a shortened explanation specific to Dialogporten:
     - `policy-api-vX.xml` (create a new file for the new version and update the contents)
 
 
-  - Run the following in powershell from the root directory: `create_templates.ps1 -appName dialogporten`.  
+  - Run the following in powershell from the root directory: `./create_templates.ps1 -appName dialogporten`.  
 This will create ARM templates for the new version of the API in the folder `.\dialogporten\created_templates`
 
 
@@ -46,12 +46,16 @@ This will create ARM templates for the new version of the API in the folder `.\d
 This will deploy the API to the `altinn-dev-api` APIM instance
 
 
+  - Check that you are logged into the Azure CLI
+
+
   - If you are happy with the API deployed to dev, you can create templates for deploy to all the other environments by doing the following:
-    - Run the following in powershell from the root directory: `extract_templates.ps1 -appName dialogporten`  
+    - Run the following in powershell from the root directory: `./extract_templates.ps1 -appName dialogporten`  
 This will create ARM templates for all the environments in the folder `.\dialogporten\extracted_templates` and `.\dialogporten\templates`
   
 
   - Commit and push the changes to the `altinn-studio-ops` repository (create a branch and PR if you want to be safe, or just push to master if you are confident)
 
 
-  - You are then able to deploy the API to the other APIM-environments by triggering pipelines in the Azure DevOps project. The pipelines have the form a`pim-deploy-api.XXXX` where `XXXX` is the environment name.
+  - You are then able to deploy the API to the other APIM-environments by triggering pipelines in the Azure DevOps project. The pipelines have the form a`pim-deploy-api.XXXX` where `XXXX` is the environment name.  
+    (For our `staging` environment, use `tt02`)
