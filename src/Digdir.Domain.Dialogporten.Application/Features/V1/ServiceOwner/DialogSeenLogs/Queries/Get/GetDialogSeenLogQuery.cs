@@ -23,20 +23,17 @@ internal sealed class GetDialogSeenLogQueryHandler : IRequestHandler<GetDialogSe
 {
     private readonly IMapper _mapper;
     private readonly IDialogDbContext _dbContext;
-    private readonly IAltinnAuthorization _altinnAuthorization;
     private readonly IStringHasher _stringHasher;
     private readonly IUserResourceRegistry _userResourceRegistry;
 
     public GetDialogSeenLogQueryHandler(
         IMapper mapper,
         IDialogDbContext dbContext,
-        IAltinnAuthorization altinnAuthorization,
         IStringHasher stringHasher,
         IUserResourceRegistry userResourceRegistry)
     {
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
-        _altinnAuthorization = altinnAuthorization ?? throw new ArgumentNullException(nameof(altinnAuthorization));
         _stringHasher = stringHasher ?? throw new ArgumentNullException(nameof(stringHasher));
         _userResourceRegistry = userResourceRegistry ?? throw new ArgumentNullException(nameof(userResourceRegistry));
     }
