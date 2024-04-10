@@ -35,7 +35,7 @@ Here is a shortened explanation specific to Dialogporten:
     - `policy-api-vX.xml` (create a new file for the new version and update the contents)
 
 
-  - Run the following in powershell from the root directory: `create_templates.ps1 -appName dialogporten`.  
+  - Run the following in powershell from the root directory: `./create_templates.ps1 -appName dialogporten`.  
 This will create ARM templates for the new version of the API in the folder `.\dialogporten\created_templates`
 
 
@@ -47,7 +47,7 @@ This will deploy the API to the `altinn-dev-api` APIM instance
 
 
   - If you are happy with the API deployed to dev, you can create templates for deploy to all the other environments by doing the following:
-    - Run the following in powershell from the root directory: `extract_templates.ps1 -appName dialogporten`  
+    - Run the following in powershell from the root directory: `./extract_templates.ps1 -appName dialogporten`  
 This will create ARM templates for all the environments in the folder `.\dialogporten\extracted_templates` and `.\dialogporten\templates`
   
 
