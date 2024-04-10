@@ -8,7 +8,7 @@ namespace Digdir.Library.Entity.Abstractions.Features.EventPublisher;
 public interface IDomainEvent : INotification
 {
     /// <summary>
-    /// The events identification. This can be used by consumers to ensure exacly once processing.
+    /// The events identification. This can be used by consumers to ensure exactly once processing.
     /// </summary>
     Guid EventId { get; }
 

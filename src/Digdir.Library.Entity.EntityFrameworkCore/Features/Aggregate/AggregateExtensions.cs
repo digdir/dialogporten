@@ -218,8 +218,8 @@ internal static class AggregateExtensions
             var childNav = parentEntry.Navigation(childForeignKey.PrincipalToDependent!.Name);
             // if (!childNav.IsLoaded)
             // {
-            //     // Alternativ 1: Throw!
-            //     // Alternativ 2: Log Warning!
+            //     // Alternative 1: Throw!
+            //     // Alternative 2: Log Warning!
             // }
             await childNav.LoadAsync(cancellationToken);
             var currentValues = childNav.Metadata.IsCollection

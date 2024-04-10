@@ -21,7 +21,7 @@ public class GetDialogElementEndpoint : Endpoint<GetDialogElementQuery>
         Policies(AuthorizationPolicy.ServiceProvider);
         Group<ServiceOwnerGroup>();
 
-        Description(b => GetDiailogElementSwaggerConfig.SetDescription(b));
+        Description(b => GetDialogElementSwaggerConfig.SetDescription(b));
     }
 
     public override async Task HandleAsync(GetDialogElementQuery req, CancellationToken ct)

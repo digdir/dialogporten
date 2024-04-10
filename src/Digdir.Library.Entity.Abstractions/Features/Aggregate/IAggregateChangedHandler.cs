@@ -52,9 +52,9 @@ public interface IAggregateDeletedHandler
 public interface IAggregateRestoredHandler
 {
     /// <summary>
-    /// Handles the restauration of the entity, including associated metadata.
+    /// Handles the restoration of the entity, including associated metadata.
     /// </summary>
     /// <param name="self">The aggregate representing this entity with metadata.</param>
-    /// <param name="utcNow">The timestamp of the restauration event in UTC time.</param>
+    /// <param name="utcNow">The timestamp of the restoration event in UTC time.</param>
     void OnRestore(AggregateNode self, DateTimeOffset utcNow);
 }
