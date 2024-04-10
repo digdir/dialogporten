@@ -11,38 +11,47 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Parties.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using ZiggyCreatures.Caching.Fusion;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.Authorization;
 
 internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
 {
     private readonly HttpClient _httpClient;
+    private readonly IFusionCache _cache;
     private readonly IUser _user;
     private readonly IDialogDbContext _db;
     private readonly ILogger _logger;
 
     public AltinnAuthorizationClient(
         HttpClient client,
+        IFusionCacheProvider cacheProvider,
         IUser user,
         IDialogDbContext db,
         ILogger<AltinnAuthorizationClient> logger)
     {
         _httpClient = client ?? throw new ArgumentNullException(nameof(client));
+        _cache = cacheProvider.GetCache(nameof(Authorization)) ?? throw new ArgumentNullException(nameof(cacheProvider));
         _user = user ?? throw new ArgumentNullException(nameof(user));
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     public async Task<DialogDetailsAuthorizationResult> GetDialogDetailsAuthorization(DialogEntity dialogEntity,
-        CancellationToken cancellationToken = default) =>
-        await PerformDialogDetailsAuthorization(new DialogDetailsAuthorizationRequest
+        CancellationToken cancellationToken = default)
+    {
+        var request = new DialogDetailsAuthorizationRequest
         {
             Claims = _user.GetPrincipal().Claims.ToList(),
             ServiceResource = dialogEntity.ServiceResource,
             DialogId = dialogEntity.Id,
             Party = dialogEntity.Party,
             AltinnActions = dialogEntity.GetAltinnActions()
-        }, cancellationToken);
+        };
+
+        return await _cache.GetOrSetAsync(request.GenerateCacheKey(), async token
+            => await PerformDialogDetailsAuthorization(request, token), token: cancellationToken);
+    }
 
     public async Task<DialogSearchAuthorizationResult> GetAuthorizedResourcesForSearch(
         List<string> constraintParties,
@@ -51,12 +60,15 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
         CancellationToken cancellationToken = default)
     {
         var claims = GetOrCreateClaimsBasedOnEndUserId(endUserId);
-        return await PerformNonScalableDialogSearchAuthorization(new DialogSearchAuthorizationRequest
+        var request = new DialogSearchAuthorizationRequest
         {
             Claims = claims,
             ConstraintParties = constraintParties,
             ConstraintServiceResources = serviceResources
-        }, cancellationToken);
+        };
+
+        return await _cache.GetOrSetAsync(request.GenerateCacheKey(), async token
+            => await PerformNonScalableDialogSearchAuthorization(request, token), token: cancellationToken);
     }
 
     private async Task<DialogSearchAuthorizationResult> PerformNonScalableDialogSearchAuthorization(DialogSearchAuthorizationRequest request, CancellationToken cancellationToken)
