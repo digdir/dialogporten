@@ -5,7 +5,7 @@ services:
   dialogporten-webapi-ingress:
     image: nginx:1.25.4
     ports:
-      - "7213:80"
+      - "7214:80"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
     depends_on:
