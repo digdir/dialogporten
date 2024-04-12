@@ -45,6 +45,8 @@ services:
       dockerfile: src/Digdir.Domain.Dialogporten.Service/Dockerfile
     restart: always
     depends_on:
+      dialogporten-postgres:
+        condition: service_healthy
       dialogporten-migrations:
         condition: service_completed_successfully
     environment:
@@ -57,6 +59,8 @@ services:
       dockerfile: src/Digdir.Domain.Dialogporten.ChangeDataCapture/Dockerfile
     restart: always
     depends_on:
+      dialogporten-postgres:
+        condition: service_healthy
       dialogporten-migrations:
         condition: service_completed_successfully
 
