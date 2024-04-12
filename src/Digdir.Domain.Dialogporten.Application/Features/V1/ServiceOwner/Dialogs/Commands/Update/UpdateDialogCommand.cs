@@ -8,6 +8,7 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements;
+using Digdir.Domain.Dialogporten.Domain.Localizations;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
@@ -31,6 +32,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IDomainContext _domainContext;
+    private readonly IOrganizationRegistry _organizationRegistry;
     private readonly IUserResourceRegistry _userResourceRegistry;
 
     public UpdateDialogCommandHandler(
@@ -38,12 +40,14 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         IMapper mapper,
         IUnitOfWork unitOfWork,
         IDomainContext domainContext,
+        IOrganizationRegistry organizationRegistry,
         IUserResourceRegistry userResourceRegistry)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _domainContext = domainContext ?? throw new ArgumentNullException(nameof(domainContext));
+        _organizationRegistry = organizationRegistry ?? throw new ArgumentNullException(nameof(organizationRegistry));
         _userResourceRegistry = userResourceRegistry ?? throw new ArgumentNullException(nameof(userResourceRegistry));
     }
 
@@ -165,6 +169,21 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
     {
         var newDialogActivities = _mapper.Map<List<DialogActivity>>(dto.Activities);
 
+        await EnsurePerformedByIsSetForActivities(newDialogActivities, dialog.Org, cancellationToken);
+
+        foreach (var activity in newDialogActivities)
+        {
+            if (activity.PerformedBy == null)
+            {
+                var organizationLongNames = await _organizationRegistry.GetOrganizationLongNames(dialog.Org, cancellationToken);
+
+                activity.PerformedBy = new DialogActivityPerformedBy
+                {
+                    Localizations = organizationLongNames.Select(x => new Localization { Value = x.LongName, CultureCode = x.Language }).ToList(),
+                };
+            }
+        }
+
         var existingIds = await _db.GetExistingIds(newDialogActivities, cancellationToken);
         if (existingIds.Count != 0)
         {
@@ -177,6 +196,21 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
 
         // Tell ef explicitly to add activities as new to the database.
         _db.DialogActivities.AddRange(newDialogActivities);
+    }
+
+    private async Task EnsurePerformedByIsSetForActivities(IEnumerable<DialogActivity> activities, string org, CancellationToken cancellationToken)
+    {
+        foreach (var activity in activities)
+        {
+            if (activity.PerformedBy == null)
+            {
+                var organizationLongNames = await _organizationRegistry.GetOrganizationLongNames(org, cancellationToken);
+                activity.PerformedBy = new DialogActivityPerformedBy
+                {
+                    Localizations = organizationLongNames.Select(x => new Localization { Value = x.LongName, CultureCode = x.Language }).ToList(),
+                };
+            }
+        }
     }
 
     private IEnumerable<DialogApiAction> CreateApiActions(IEnumerable<UpdateDialogDialogApiActionDto> creatables)
