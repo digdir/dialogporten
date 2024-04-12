@@ -25,8 +25,8 @@ var databaseName = 'dialogporten'
 //	//wal_level: 'logical'
 //	//max_worker_processes: '16'
 
-//	// The leading theory is that we are using pgoutput as the replication protocol
-//	// which comes out of the box in postgresql. Therefore we may not need the
+//	// The leading theory is that we are using pgoutput as the replication protocol 
+//	// which comes out of the box in postgresql. Therefore we may not need the 
 //	// following two lines.
 //	//'azure.extensions': 'pglogical'
 //	//shared_preload_libraries: 'pglogical'
@@ -46,7 +46,7 @@ resource postgres 'Microsoft.DBforPostgreSQL/flexibleServers@2022-12-01' = {
     name: '${namePrefix}-postgres'
     location: location
     properties: {
-        version: '16'
+        version: '15'
         administratorLogin: administratorLogin
         administratorLoginPassword: administratorLoginPassword
         storage: { storageSizeGB: 32 }
