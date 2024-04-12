@@ -171,19 +171,6 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
 
         await EnsurePerformedByIsSetForActivities(newDialogActivities, dialog.Org, cancellationToken);
 
-        foreach (var activity in newDialogActivities)
-        {
-            if (activity.PerformedBy == null)
-            {
-                var organizationLongNames = await _organizationRegistry.GetOrganizationLongNames(dialog.Org, cancellationToken);
-
-                activity.PerformedBy = new DialogActivityPerformedBy
-                {
-                    Localizations = organizationLongNames.Select(x => new Localization { Value = x.LongName, CultureCode = x.Language }).ToList(),
-                };
-            }
-        }
-
         var existingIds = await _db.GetExistingIds(newDialogActivities, cancellationToken);
         if (existingIds.Count != 0)
         {
@@ -207,7 +194,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
                 var organizationLongNames = await _organizationRegistry.GetOrganizationLongNames(org, cancellationToken);
                 activity.PerformedBy = new DialogActivityPerformedBy
                 {
-                    Localizations = organizationLongNames.Select(x => new Localization { Value = x.LongName, CultureCode = x.Language }).ToList(),
+                    Localizations = organizationLongNames.Select(x => new Localization { Value = x.LongName, CultureCode = x.Language.ToString() }).ToList(),
                 };
             }
         }
