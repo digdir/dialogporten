@@ -26,7 +26,7 @@ services:
     depends_on:
       dialogporten-postgres:
         condition: service_healthy
-    restart: "no"  
+    restart: "no"
 
   dialogporten-redis:
     image: redis:6.0-alpine
@@ -47,10 +47,12 @@ services:
     depends_on:
       dialogporten-postgres:
         condition: service_healthy
+      dialogporten-migrations:
+        condition: service_completed_successfully
     environment:
       - Infrastructure:DialogDbConnectionString=${DB_CONNECTION_STRING}
       - ASPNETCORE_ENVIRONMENT=Development
-  
+
   dialogporten-cdc:
     build:
       context: .
@@ -59,6 +61,9 @@ services:
     depends_on:
       dialogporten-postgres:
         condition: service_healthy
+      dialogporten-migrations:
+        condition: service_completed_successfully
+
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - Infrastructure:DialogDbConnectionString=${DB_CONNECTION_STRING}
