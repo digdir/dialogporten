@@ -194,7 +194,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
                 var organizationLongNames = await _organizationRegistry.GetOrganizationLongNames(org, cancellationToken);
                 activity.PerformedBy = new DialogActivityPerformedBy
                 {
-                    Localizations = organizationLongNames.Select(x => new Localization { Value = x.LongName, CultureCode = x.Language.ToString() }).ToList(),
+                    Localizations = organizationLongNames.Select(x => new Localization { Value = x.LongName, CultureCode = x.Language }).ToList(),
                 };
             }
         }

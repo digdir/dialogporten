@@ -9,12 +9,5 @@ public interface IOrganizationRegistry
 public sealed class OrganizationLongName
 {
     public required string LongName { get; init; }
-    public required Language Language { get; init; }
-}
-
-public enum Language
-{
-    No, // Norwegian Bokmål
-    En, // English
-    Nn  // Norwegian Nynorsk
+    public required string Language { get; init; }
 }
