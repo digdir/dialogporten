@@ -7,6 +7,7 @@ using Digdir.Domain.Dialogporten.Domain.Common;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements;
+using Digdir.Domain.Dialogporten.Domain.Localizations;
 using MediatR;
 using OneOf;
 using OneOf.Types;
@@ -25,6 +26,7 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
     private readonly IUnitOfWork _unitOfWork;
     private readonly IDomainContext _domainContext;
     private readonly IUserResourceRegistry _userResourceRegistry;
+    private readonly IOrganizationRegistry _organizationRegistry;
     private readonly IUserOrganizationRegistry _userOrganizationRegistry;
 
     public CreateDialogCommandHandler(
@@ -33,12 +35,14 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
         IUnitOfWork unitOfWork,
         IDomainContext domainContext,
         IUserResourceRegistry userResourceRegistry,
+        IOrganizationRegistry organizationRegistry,
         IUserOrganizationRegistry userOrganizationRegistry)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _domainContext = domainContext ?? throw new ArgumentNullException(nameof(domainContext));
+        _organizationRegistry = organizationRegistry ?? throw new ArgumentNullException(nameof(organizationRegistry));
         _userResourceRegistry = userResourceRegistry ?? throw new ArgumentNullException(nameof(userResourceRegistry));
         _userOrganizationRegistry = userOrganizationRegistry ?? throw new ArgumentNullException(nameof(userOrganizationRegistry));
     }
@@ -77,6 +81,8 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
             _domainContext.AddError(DomainFailure.EntityExists<DialogElement>(existingElementIds));
         }
 
+        await EnsurePerformedByIsSetForActivities(dialog.Activities, dialog.Org, cancellationToken);
+
         await _db.Dialogs.AddAsync(dialog, cancellationToken);
 
         var saveResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
@@ -84,5 +90,22 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
             success => new Success<Guid>(dialog.Id),
             domainError => domainError,
             concurrencyError => throw new UnreachableException("Should never get a concurrency error when creating a new dialog"));
+    }
+
+    private async Task EnsurePerformedByIsSetForActivities(IEnumerable<DialogActivity> activities, string org, CancellationToken cancellationToken)
+    {
+        foreach (var activity in activities)
+        {
+            if (activity.PerformedBy == null)
+            {
+                var organizationLongNames = await _organizationRegistry.GetOrganizationLongNames(org, cancellationToken);
+                activity.PerformedBy = new DialogActivityPerformedBy
+                {
+                    ActivityId = activity.Id,
+                    Id = Guid.NewGuid(),
+                    Localizations = organizationLongNames.Select(x => new Localization { Value = x.LongName, CultureCode = x.Language }).ToList(),
+                };
+            }
+        }
     }
 }
