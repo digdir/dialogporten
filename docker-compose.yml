@@ -5,12 +5,13 @@ services:
   dialogporten-webapi-ingress:
     image: nginx:1.25.4
     ports:
-      - "7214:80"
+      - "7213:80"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
     depends_on:
       - dialogporten-webapi
     restart: always
+
   dialogporten-webapi:
     scale: 2
     build:
@@ -22,6 +23,8 @@ services:
         condition: service_healthy
       dialogporten-redis:
         condition: service_healthy
+      dialogporten-migrations:
+        condition: service_completed_successfully
     environment:
       - Infrastructure:Redis:ConnectionString=dialogporten-redis:6379
       - Infrastructure:DialogDbConnectionString=${DB_CONNECTION_STRING}
@@ -32,3 +35,4 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
     volumes:
       - ./.aspnet/https:/https
+

@@ -16,7 +16,18 @@ services:
       interval: 2s
       timeout: 20s
       retries: 5
-  
+
+  dialogporten-migrations:
+    build:
+      context: .
+      dockerfile: src/Digdir.Domain.Dialogporten.Infrastructure/MigrationBundle.dockerfile
+    environment:
+      - Infrastructure__DialogDbConnectionString=${DB_CONNECTION_STRING}
+    depends_on:
+      dialogporten-postgres:
+        condition: service_healthy
+    restart: "no"  
+
   dialogporten-redis:
     image: redis:6.0-alpine
     restart: always
