@@ -57,7 +57,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
 
         if (userInformation is null)
         {
-            return new Forbidden("No valid user pid found.");
+            return new Forbidden("No valid user was authenticated");
         }
 
         var (userPid, userName) = userInformation;

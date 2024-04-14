@@ -44,9 +44,9 @@ internal sealed class GetDialogSeenLogQueryHandler : IRequestHandler<GetDialogSe
     public async Task<GetDialogSeenLogResult> Handle(GetDialogSeenLogQuery request,
         CancellationToken cancellationToken)
     {
-        if (!_userNameRegistry.TryGetCurrentUserPid(out var userPid))
+        if (!_userNameRegistry.TryGetCurrentUserExternalId(out var userPid))
         {
-            return new Forbidden("No valid user pid found.");
+            return new Forbidden("No valid user was authenticated");
         }
 
         var dialog = await _dbContext.Dialogs

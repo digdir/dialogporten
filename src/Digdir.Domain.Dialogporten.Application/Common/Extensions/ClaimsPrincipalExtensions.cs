@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
+using Digdir.Domain.Dialogporten.Application.Externals.Authentication;
 using Digdir.Domain.Dialogporten.Domain.Parties;
 
 namespace Digdir.Domain.Dialogporten.Application.Common.Extensions;
@@ -19,6 +20,10 @@ public static class ClaimsPrincipalExtensions
     private const string OrgClaim = "urn:altinn:org";
     private const string IdportenAuthLevelClaim = "acr";
     private const string AltinnAuthLevelClaim = "urn:altinn:authlevel";
+    private const string AltinnAuthenticationMethodClaim = "urn:altinn:authenticatemethod";
+    private const string AltinnAuthenticationEnterpriseUserMethod = "virksomhetsbruker";
+    private const string AltinnUserIdClaim = "urn:altinn:userid";
+    private const string AltinnUserNameClaim = "urn:altinn:username";
     private const string PidClaim = "pid";
 
     public static bool TryGetClaimValue(this ClaimsPrincipal claimsPrincipal, string claimType, [NotNullWhen(true)] out string? value)
@@ -50,6 +55,33 @@ public static class ClaimsPrincipalExtensions
         }
 
         return pid is not null;
+    }
+
+    // This is used for legacy systems using Altinn 2 enterprise users with Maskinporten authentication + token exchange
+    // as described in https://altinn.github.io/docs/api/rest/kom-i-gang/virksomhet/#autentisering-med-virksomhetsbruker-og-maskinporten
+    public static bool TryGetLegacySystemUserId(this ClaimsPrincipal claimsPrincipal, [NotNullWhen(true)] out string? systemUserId)
+    {
+        systemUserId = null;
+        if (claimsPrincipal.TryGetClaimValue(AltinnAuthenticationMethodClaim, out var authMethod) &&
+            authMethod == AltinnAuthenticationEnterpriseUserMethod &&
+            claimsPrincipal.TryGetClaimValue(AltinnUserIdClaim, out var userId))
+        {
+            systemUserId = userId;
+        }
+
+        return systemUserId is not null;
+    }
+
+    public static bool TryGetLegacySystemUserName(this ClaimsPrincipal claimsPrincipal, [NotNullWhen(true)] out string? systemUserName)
+    {
+        systemUserName = null;
+        if (claimsPrincipal.TryGetLegacySystemUserId(out _) &&
+            claimsPrincipal.TryGetClaimValue(AltinnUserNameClaim, out var claimValue))
+        {
+            systemUserName = claimValue;
+        }
+
+        return systemUserName is not null;
     }
 
     public static bool TryGetOrgNumber(this Claim? consumerClaim, [NotNullWhen(true)] out string? orgNumber)
@@ -114,6 +146,26 @@ public static class ClaimsPrincipalExtensions
             c.Type.StartsWith(AltinnClaimPrefix, StringComparison.Ordinal)
         ).OrderBy(c => c.Type);
 
+    public static UserType GetUserType(this ClaimsPrincipal claimsPrincipal)
+    {
+        if (claimsPrincipal.TryGetPid(out _))
+        {
+            return UserType.Person;
+        }
+
+        if (claimsPrincipal.TryGetLegacySystemUserId(out _))
+        {
+            return UserType.LegacySystemUser;
+        }
+
+        if (claimsPrincipal.TryGetOrgNumber(out _))
+        {
+            return UserType.Enterprise;
+        }
+
+        return UserType.Unknown;
+    }
+
     private static bool TryGetOrgShortName(this ClaimsPrincipal claimsPrincipal, [NotNullWhen(true)] out string? orgShortName)
         => claimsPrincipal.FindFirst(OrgClaim).TryGetOrgShortName(out orgShortName);
 
@@ -132,4 +184,10 @@ public static class ClaimsPrincipalExtensions
 
     internal static bool TryGetPid(this IUser user, [NotNullWhen(true)] out string? pid) =>
         user.GetPrincipal().TryGetPid(out pid);
+
+    internal static bool TryGetLegacySystemUserId(this IUser user, [NotNullWhen(true)] out string? systemUserId) =>
+        user.GetPrincipal().TryGetLegacySystemUserId(out systemUserId);
+
+    internal static bool TryGetLegacySystemUserName(this IUser user, [NotNullWhen(true)] out string? systemUserName) =>
+        user.GetPrincipal().TryGetLegacySystemUserName(out systemUserName);
 }
