@@ -9,6 +9,7 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
+using AuthenticationConstants = Digdir.Domain.Dialogporten.Application.Common.Authentication.Constants;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Queries.Get;
 
@@ -57,7 +58,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
 
         if (userInformation is null)
         {
-            return new Forbidden("No valid user was authenticated");
+            return new Forbidden(AuthenticationConstants.NoAuthenticatedUser);
         }
 
         var (userPid, userName) = userInformation;

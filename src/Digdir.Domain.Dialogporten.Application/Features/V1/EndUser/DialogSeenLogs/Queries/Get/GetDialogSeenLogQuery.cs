@@ -1,5 +1,6 @@
 using AutoMapper;
 using Digdir.Domain.Dialogporten.Application.Common;
+using Digdir.Domain.Dialogporten.Application.Common.Authentication;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
@@ -46,7 +47,7 @@ internal sealed class GetDialogSeenLogQueryHandler : IRequestHandler<GetDialogSe
     {
         if (!_userNameRegistry.TryGetCurrentUserExternalId(out var userPid))
         {
-            return new Forbidden("No valid user was authenticated");
+            return new Forbidden(Constants.NoAuthenticatedUser);
         }
 
         var dialog = await _dbContext.Dialogs

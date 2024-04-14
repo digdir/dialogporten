@@ -1,6 +1,7 @@
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Digdir.Domain.Dialogporten.Application.Common;
+using Digdir.Domain.Dialogporten.Application.Common.Authentication;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.Enumerables;
 using Digdir.Domain.Dialogporten.Application.Common.Pagination;
@@ -138,7 +139,7 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
     {
         if (!_userNameRegistry.TryGetCurrentUserExternalId(out var userPid))
         {
-            return new Forbidden("No valid user was authenticated");
+            return new Forbidden(Constants.NoAuthenticatedUser);
         }
 
         var searchExpression = Expressions.LocalizedSearchExpression(request.Search, request.SearchCultureCode);
