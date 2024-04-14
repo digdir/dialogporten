@@ -1,12 +1,13 @@
 ﻿using AutoMapper;
+using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
+using Digdir.Domain.Dialogporten.Application.Common.Authentication;
 using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using MediatR;
 using OneOf;
 using Microsoft.EntityFrameworkCore;
-using Digdir.Domain.Dialogporten.Application.Common;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogSeenLogs.Queries.Search;
 
@@ -44,7 +45,7 @@ internal sealed class SearchDialogSeenLogQueryHandler : IRequestHandler<SearchDi
     {
         if (!_userNameRegistry.TryGetCurrentUserExternalId(out var userPid))
         {
-            return new Forbidden("No valid user was authenticated");
+            return new Forbidden(Constants.NoAuthenticatedUser);
         }
 
         var dialog = await _db.Dialogs
