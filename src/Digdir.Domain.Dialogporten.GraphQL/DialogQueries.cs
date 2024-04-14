@@ -7,11 +7,12 @@ using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using MediatR;
 using Yarp.ReverseProxy.Utilities;
 using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Queries.GetQueryable;
+using Digdir.Domain.Dialogporten.GraphQL.Common.Authorization;
 using HotChocolate.Authorization;
 
 namespace Digdir.Domain.Dialogporten.GraphQL;
 
-[Authorize]
+[Authorize(Policy = AuthorizationPolicy.EndUser)]
 public class DialogQueries
 {
     //[UsePaging]
