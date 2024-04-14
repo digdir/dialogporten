@@ -12,6 +12,7 @@ using Microsoft.ApplicationInsights.Extensibility;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.OptionExtensions;
 using Serilog;
 using FluentValidation;
+using HotChocolate.AspNetCore;
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Warning()
@@ -99,6 +100,13 @@ static void BuildAndRun(string[] args)
     app.UseAuthentication();
     app.UseAuthorization();
 
-    app.MapGraphQL();
+    app.MapGraphQL()
+        .AllowAnonymous()
+        .WithOptions(new GraphQLServerOptions
+        {
+            EnableSchemaRequests = builder.Environment.IsDevelopment(),
+            Tool = { Enable = builder.Environment.IsDevelopment() }
+        });
+
     app.Run();
 }
