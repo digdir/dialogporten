@@ -100,12 +100,24 @@ static void BuildAndRun(string[] args)
     app.UseAuthentication();
     app.UseAuthorization();
 
+    // app.MapGraphQL()
+    //     .AllowAnonymous()
+    //     .WithOptions(new GraphQLServerOptions
+    //     {
+    //         EnableSchemaRequests = builder.Environment.IsDevelopment(),
+    //         Tool = { Enable = builder.Environment.IsDevelopment() }
+    //     });
+
+    app.MapBananaCakePop("/bcp");
     app.MapGraphQL()
-        .AllowAnonymous()
+        .RequireAuthorization()
         .WithOptions(new GraphQLServerOptions
         {
             EnableSchemaRequests = builder.Environment.IsDevelopment(),
-            Tool = { Enable = builder.Environment.IsDevelopment() }
+            Tool =
+            {
+                Enable = builder.Environment.IsDevelopment(),
+            }
         });
 
     app.Run();
