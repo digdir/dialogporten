@@ -1,8 +1,8 @@
 using System.Globalization;
 using System.Reflection;
 using Digdir.Domain.Dialogporten.Application;
+using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
-using Digdir.Domain.Dialogporten.GraphQL;
 using Digdir.Domain.Dialogporten.GraphQL.Common;
 using Digdir.Domain.Dialogporten.GraphQL.Common.Authentication;
 using Digdir.Domain.Dialogporten.GraphQL.Common.Authorization;
@@ -10,9 +10,11 @@ using Digdir.Domain.Dialogporten.Infrastructure;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence;
 using Microsoft.ApplicationInsights.Extensibility;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.OptionExtensions;
+using Digdir.Domain.Dialogporten.GraphQL.EndUser;
 using Serilog;
 using FluentValidation;
 using HotChocolate.AspNetCore;
+using Microsoft.AspNetCore.Authorization;
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Warning()
@@ -47,6 +49,7 @@ static void BuildAndRun(string[] args)
         .ReadFrom.Configuration(context.Configuration)
         .ReadFrom.Services(services)
         .Enrich.FromLogContext()
+        .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture)
         .WriteTo.ApplicationInsights(
             services.GetRequiredService<TelemetryConfiguration>(),
             TelemetryConverter.Traces));
@@ -63,6 +66,14 @@ static void BuildAndRun(string[] args)
      *
      */
 
+    if (builder.Environment.IsDevelopment())
+    {
+        var localDevelopmentSettings = builder.Configuration.GetLocalDevelopmentSettings();
+        builder.Services
+            .ReplaceSingleton<IUser, LocalDevelopmentUser>(predicate: localDevelopmentSettings.UseLocalDevelopmentUser)
+            .ReplaceSingleton<IAuthorizationHandler, AllowAnonymousHandler>(
+                predicate: localDevelopmentSettings.DisableAuth);
+    }
     var thisAssembly = Assembly.GetExecutingAssembly();
 
     builder.Services
@@ -100,23 +111,19 @@ static void BuildAndRun(string[] args)
     app.UseAuthentication();
     app.UseAuthorization();
 
-    // app.MapGraphQL()
-    //     .AllowAnonymous()
-    //     .WithOptions(new GraphQLServerOptions
-    //     {
-    //         EnableSchemaRequests = builder.Environment.IsDevelopment(),
-    //         Tool = { Enable = builder.Environment.IsDevelopment() }
-    //     });
+    if (app.Environment.IsDevelopment())
+    {
+        app.MapBananaCakePop("/bcp");
+    }
 
-    app.MapBananaCakePop("/bcp");
     app.MapGraphQL()
         .RequireAuthorization()
         .WithOptions(new GraphQLServerOptions
         {
-            EnableSchemaRequests = builder.Environment.IsDevelopment(),
+            EnableSchemaRequests = true,
             Tool =
             {
-                Enable = builder.Environment.IsDevelopment(),
+                Enable = false
             }
         });
 

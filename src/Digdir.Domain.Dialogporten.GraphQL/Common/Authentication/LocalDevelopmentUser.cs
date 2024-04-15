@@ -2,7 +2,7 @@ using System.Collections.ObjectModel;
 using System.Security.Claims;
 using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
 
-namespace Digdir.Domain.Dialogporten.GraphQL;
+namespace Digdir.Domain.Dialogporten.GraphQL.Common.Authentication;
 
 internal sealed class LocalDevelopmentUser : IUser
 {
