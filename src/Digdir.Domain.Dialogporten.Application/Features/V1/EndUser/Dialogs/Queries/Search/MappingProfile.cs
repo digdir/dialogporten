@@ -30,6 +30,7 @@ internal sealed class MappingProfile : Profile
             .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.TypeId));
 
         CreateMap<DialogSeenLog, SearchDialogDialogSeenLogDto>()
+            .ForMember(dest => dest.SeenAt, opt => opt.MapFrom(src => src.CreatedAt))
             .ForMember(dest => dest.EndUserIdHash, opt => opt.MapFrom(src => src.EndUserId));
 
         CreateMap<DialogActivity, SearchDialogDialogActivityDto>()
