@@ -113,6 +113,7 @@ static void BuildAndRun(string[] args)
 
     if (app.Environment.IsDevelopment())
     {
+        // GUI endpoint
         app.MapBananaCakePop("/bcp");
     }
 

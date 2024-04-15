@@ -19,16 +19,15 @@ public class DialogQueries : ISearchDialogQuery, IDialogByIdQuery
     {
         var request = new GetDialogQuery { DialogId = dialogId };
         var result = await mediator.Send(request, cancellationToken);
-        var foo = result.Match(
+        var getDialogResult = result.Match(
             dialog => dialog,
             notFound => throw new NotImplementedException("Not found"),
             deleted => throw new NotImplementedException("Deleted"),
             forbidden => throw new NotImplementedException("Forbidden"));
 
-        var dialog = mapper.Map<Dialog>(foo);
+        var dialog = mapper.Map<Dialog>(getDialogResult);
 
         return dialog;
-        // return foo;
     }
 
     public async Task<DialogSearch> SearchDialog(
@@ -39,15 +38,14 @@ public class DialogQueries : ISearchDialogQuery, IDialogByIdQuery
     {
         var request = new GetDialogQuery { DialogId = dialogId };
         var result = await mediator.Send(request, cancellationToken);
-        var foo = result.Match(
+        var dialogSearchResult = result.Match(
             dialog => dialog,
             notFound => throw new NotImplementedException("Not found"),
             deleted => throw new NotImplementedException("Deleted"),
             forbidden => throw new NotImplementedException("Forbidden"));
 
-        var dialog = mapper.Map<DialogSearch>(foo);
+        var dialog = mapper.Map<DialogSearch>(dialogSearchResult);
 
         return dialog;
-        // return foo;
     }
 }
