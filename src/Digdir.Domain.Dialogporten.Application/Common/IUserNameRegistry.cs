@@ -9,8 +9,8 @@ namespace Digdir.Domain.Dialogporten.Application.Common;
 
 public interface IUserNameRegistry
 {
-    bool TryGetCurrentUserExternalId([NotNullWhen(true)] out string? userExternalId);
-    Task<UserInformation?> GetUserInformation(CancellationToken cancellationToken);
+    string GetCurrentUserExternalId();
+    Task<UserInformation> GetCurrentUserInformation(CancellationToken cancellationToken);
 }
 
 public record UserInformation(string UserPid, string? UserName);
@@ -27,22 +27,18 @@ public class UserNameRegistry : IUserNameRegistry
         _nameRegistry = nameRegistry ?? throw new ArgumentNullException(nameof(nameRegistry));
         _organizationRegistry = organizationRegistry ?? throw new ArgumentNullException(nameof(organizationRegistry));
     }
-
-    public bool TryGetCurrentUserExternalId([NotNullWhen(true)] out string? userExternalId)
+    public string GetCurrentUserExternalId()
     {
-        if (_user.TryGetPid(out userExternalId)) return true;
-        if (_user.TryGetLegacySystemUserId(out userExternalId)) return true;
-        if (_user.TryGetOrgNumber(out userExternalId)) return true;
-        return false;
+        if (_user.TryGetPid(out var userId)) return userId;
+        if (_user.TryGetLegacySystemUserId(out userId)) return userId;
+        if (_user.TryGetOrgNumber(out userId)) return userId;
+
+        throw new InvalidOperationException("User external id not found");
     }
 
-    public async Task<UserInformation?> GetUserInformation(CancellationToken cancellationToken)
+    public async Task<UserInformation> GetCurrentUserInformation(CancellationToken cancellationToken)
     {
-        if (!TryGetCurrentUserExternalId(out var userExernalId))
-        {
-            return null;
-        }
-
+        var userExernalId = GetCurrentUserExternalId();
         string? userName;
         switch (_user.GetPrincipal().GetUserType())
         {
@@ -55,10 +51,12 @@ public class UserNameRegistry : IUserNameRegistry
             case UserType.Enterprise:
                 userName = await _organizationRegistry.GetOrgShortName(userExernalId, cancellationToken);
                 break;
+            case UserType.SystemUser:
+            // TODO: Implement when we know how system users will be handled
             case UserType.Unknown:
-            case UserType.SystemUser: // Implement when we know how this will be handled
             default:
-                throw new UnreachableException("Unknown user type");
+                // This should never happen as GetCurrentExternalId should throw if the user type is unknown
+                throw new UnreachableException();
         }
 
         return new(userExernalId, userName);
@@ -75,12 +73,8 @@ internal sealed class LocalDevelopmentUserNameRegistryDecorator : IUserNameRegis
     {
         _userNameRegistry = userNameRegistry ?? throw new ArgumentNullException(nameof(userNameRegistry));
     }
+    public string GetCurrentUserExternalId() => _userNameRegistry.GetCurrentUserExternalId();
 
-    public bool TryGetCurrentUserExternalId([NotNullWhen(true)] out string? userExternalId) =>
-        _userNameRegistry.TryGetCurrentUserExternalId(out userExternalId);
-
-    public Task<UserInformation?> GetUserInformation(CancellationToken cancellationToken)
-        => _userNameRegistry.TryGetCurrentUserExternalId(out var userPid)
-            ? Task.FromResult<UserInformation?>(new UserInformation(userPid!, LocalDevelopmentUserPid))
-            : throw new UnreachableException();
+    public Task<UserInformation> GetCurrentUserInformation(CancellationToken cancellationToken)
+        => Task.FromResult(new UserInformation(GetCurrentUserExternalId(), LocalDevelopmentUserPid));
 }

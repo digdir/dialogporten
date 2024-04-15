@@ -26,4 +26,3 @@ internal static class Constants
         internal const string OptimisticConcurrencyNote = "Optimistic concurrency control is implemented using the If-Match header. Supply the Revision value from the GetDialog endpoint to ensure that the dialog is not modified/deleted by another request in the meantime.";
     }
 }
-

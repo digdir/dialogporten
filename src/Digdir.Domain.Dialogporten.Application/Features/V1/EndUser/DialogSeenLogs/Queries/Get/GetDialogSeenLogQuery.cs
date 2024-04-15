@@ -1,6 +1,5 @@
 using AutoMapper;
 using Digdir.Domain.Dialogporten.Application.Common;
-using Digdir.Domain.Dialogporten.Application.Common.Authentication;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
@@ -45,11 +44,7 @@ internal sealed class GetDialogSeenLogQueryHandler : IRequestHandler<GetDialogSe
     public async Task<GetDialogSeenLogResult> Handle(GetDialogSeenLogQuery request,
         CancellationToken cancellationToken)
     {
-        if (!_userNameRegistry.TryGetCurrentUserExternalId(out var userPid))
-        {
-            return new Forbidden(Constants.NoAuthenticatedUser);
-        }
-
+        var userId = _userNameRegistry.GetCurrentUserExternalId();
         var dialog = await _dbContext.Dialogs
             .AsNoTracking()
             .Include(x => x.SeenLog.Where(x => x.Id == request.SeenLogId))
@@ -84,7 +79,7 @@ internal sealed class GetDialogSeenLogQueryHandler : IRequestHandler<GetDialogSe
         }
 
         var dto = _mapper.Map<GetDialogSeenLogDto>(seenLog);
-        dto.IsCurrentEndUser = userPid == seenLog.EndUserId;
+        dto.IsCurrentEndUser = userId == seenLog.EndUserId;
         dto.EndUserIdHash = _stringHasher.Hash(seenLog.EndUserId);
 
         return dto;

@@ -7,4 +7,5 @@ public enum UserType
     LegacySystemUser = 2,
     SystemUser = 3,
     Enterprise = 4
+    // TODO! Should we add a new type for service owners? ServiceownerOnBehalfOfPerson?
 }

@@ -1,7 +1,6 @@
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Digdir.Domain.Dialogporten.Application.Common;
-using Digdir.Domain.Dialogporten.Application.Common.Authentication;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.Enumerables;
 using Digdir.Domain.Dialogporten.Application.Common.Pagination;
@@ -137,11 +136,7 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
 
     public async Task<SearchDialogResult> Handle(SearchDialogQuery request, CancellationToken cancellationToken)
     {
-        if (!_userNameRegistry.TryGetCurrentUserExternalId(out var userPid))
-        {
-            return new Forbidden(Constants.NoAuthenticatedUser);
-        }
-
+        var userId = _userNameRegistry.GetCurrentUserExternalId();
         var searchExpression = Expressions.LocalizedSearchExpression(request.Search, request.SearchCultureCode);
         var authorizedResources = await _altinnAuthorization.GetAuthorizedResourcesForSearch(
             request.Party ?? [],
@@ -181,7 +176,7 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
         foreach (var seenLog in paginatedList.Items.SelectMany(x => x.SeenSinceLastUpdate))
         {
             // Before we hash the end user id, check if the seen log entry is for the current user
-            seenLog.IsCurrentEndUser = userPid == seenLog.EndUserIdHash;
+            seenLog.IsCurrentEndUser = userId == seenLog.EndUserIdHash;
             // TODO: Add test to not expose un-hashed end user id to the client
             // https://github.com/digdir/dialogporten/issues/596
             seenLog.EndUserIdHash = _stringHasher.Hash(seenLog.EndUserIdHash);

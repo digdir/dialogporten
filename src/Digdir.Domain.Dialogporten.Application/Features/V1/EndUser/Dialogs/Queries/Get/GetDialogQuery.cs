@@ -9,7 +9,6 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
-using AuthenticationConstants = Digdir.Domain.Dialogporten.Application.Common.Authentication.Constants;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Queries.Get;
 
@@ -54,14 +53,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
 
     public async Task<GetDialogResult> Handle(GetDialogQuery request, CancellationToken cancellationToken)
     {
-        var userInformation = await _userNameRegistry.GetUserInformation(cancellationToken);
-
-        if (userInformation is null)
-        {
-            return new Forbidden(AuthenticationConstants.NoAuthenticatedUser);
-        }
-
-        var (userPid, userName) = userInformation;
+        var (userId, userName) = await _userNameRegistry.GetCurrentUserInformation(cancellationToken);
 
         // This query could be written without all the includes as ProjectTo will do the job for us.
         // However, we need to guarantee an order for sub resources of the dialog aggregate.
@@ -108,7 +100,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
 
         // TODO: What if name lookup fails
         // https://github.com/digdir/dialogporten/issues/387
-        dialog.UpdateSeenAt(userPid, userName);
+        dialog.UpdateSeenAt(userId, userName);
 
         var saveResult = await _unitOfWork
             .WithoutAuditableSideEffects()
@@ -125,7 +117,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
             .Select(log =>
             {
                 var logDto = _mapper.Map<GetDialogDialogSeenLogDto>(log);
-                logDto.IsCurrentEndUser = log.EndUserId == userPid;
+                logDto.IsCurrentEndUser = log.EndUserId == userId;
                 logDto.EndUserIdHash = _stringHasher.Hash(log.EndUserId);
                 return logDto;
             })

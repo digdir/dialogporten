@@ -147,6 +147,7 @@ static void BuildAndRun(string[] args)
         .UseJwtSchemeSelector()
         .UseAuthentication()
         .UseAuthorization()
+        .UseUserTypeValidation()
         .UseAzureConfiguration()
         .UseFastEndpoints(x =>
         {
