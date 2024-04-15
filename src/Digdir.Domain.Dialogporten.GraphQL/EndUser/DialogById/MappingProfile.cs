@@ -12,8 +12,7 @@ public class MappingProfile : Profile
         CreateMap<GetDialogDto, Dialog>()
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status));
 
-        CreateMap<GetDialogContentDto, Content>()
-            .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type));
+
 
         CreateMap<GetDialogDialogElementDto, Element>();
         CreateMap<GetDialogDialogElementUrlDto, ElementUrl>()
@@ -26,10 +25,6 @@ public class MappingProfile : Profile
         CreateMap<GetDialogDialogApiActionEndpointDto, ApiActionEndpoint>()
             .ForMember(dest => dest.HttpMethod, opt => opt.MapFrom(src => src.HttpMethod));
 
-        CreateMap<GetDialogDialogActivityDto, Activity>()
-            .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type));
-
         CreateMap<GetDialogDialogSeenLogDto, SeenLog>();
-        CreateMap<LocalizationDto, Localization>();
     }
 }

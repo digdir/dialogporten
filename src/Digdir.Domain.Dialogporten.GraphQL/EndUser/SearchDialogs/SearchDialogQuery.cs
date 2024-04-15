@@ -1,14 +1,13 @@
 using AutoMapper;
 using MediatR;
 
-namespace Digdir.Domain.Dialogporten.GraphQL.EndUser.SearchDialog;
+namespace Digdir.Domain.Dialogporten.GraphQL.EndUser.SearchDialogs;
 
 public interface ISearchDialogQuery
 {
-    Task<DialogSearch> SearchDialog(
+    Task<SearchDialogsPayload> SearchDialogs(
         [Service] ISender mediator,
         [Service] IMapper mapper,
-        [Argument] Guid dialogId,
+        SearchDialogInput input,
         CancellationToken cancellationToken);
-
 }
