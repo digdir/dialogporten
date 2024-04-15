@@ -8,8 +8,8 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.OrganizationRegistry;
 
 internal class OrganizationRegistryClient : IOrganizationRegistry
 {
-    private const string OrgShortNameReferenceCacheKey = "OrgShortNameReference";
-    private const string OrgLongNameReferenceCacheKey = "OrgLongNameReference";
+    private const string OrgNameReferenceCacheKey = "OrgNameReference";
+
     private static readonly DistributedCacheEntryOptions OneDayCacheDuration = new() { AbsoluteExpiration = DateTimeOffset.UtcNow.AddDays(1) };
     private static readonly DistributedCacheEntryOptions ZeroCacheDuration = new() { AbsoluteExpiration = DateTimeOffset.MinValue };
 
@@ -22,23 +22,16 @@ internal class OrganizationRegistryClient : IOrganizationRegistry
         _cache = cacheProvider.GetCache(nameof(OrganizationRegistry)) ?? throw new ArgumentNullException(nameof(cacheProvider));
     }
 
-    public async Task<string?> GetOrgShortName(string orgNumber, CancellationToken cancellationToken)
+    public async Task<OrganizationInfo?> GetOrgInfo(string orgNumber, CancellationToken cancellationToken)
     {
-        var orgShortNameByOrgNumber = await _cache.GetOrSetAsync(OrgShortNameReferenceCacheKey, async token => await GetOrgShortNameByOrgNumber(token), token: cancellationToken);
-        orgShortNameByOrgNumber.TryGetValue(orgNumber, out var orgShortName);
+        var orgInfoByOrgNumber = await _cache.GetOrSetAsync(OrgNameReferenceCacheKey, async token => await GetOrgInfoByOrgNumber(token), token: cancellationToken);
+        orgInfoByOrgNumber.TryGetValue(orgNumber, out var orgInfo);
 
-        return orgShortName;
+        // todo: return org info: shortname and long names
+        return orgInfo;
     }
 
-    public async Task<OrganizationLongName[]> GetOrganizationLongNames(string orgNumber, CancellationToken cancellationToken)
-    {
-        var orgLongNamesByOrgNumber = await _cache.GetOrSetAsync(OrgLongNameReferenceCacheKey, async token => await GetOrgLongNamesByOrgNumber(token), token: cancellationToken);
-        orgLongNamesByOrgNumber.TryGetValue(orgNumber, out var orgLongNames);
-
-        return orgLongNames?.LongNames.ToArray() ?? Array.Empty<OrganizationLongName>();
-    }
-
-    private async Task<Dictionary<string, OrganizationLongNames>> GetOrgLongNamesByOrgNumber(CancellationToken cancellationToken)
+    private async Task<Dictionary<string, OrganizationInfo>> GetOrgInfoByOrgNumber(CancellationToken cancellationToken)
     {
         const string searchEndpoint = "orgs/altinn-orgs.json";
         var response = await _client
@@ -46,9 +39,10 @@ internal class OrganizationRegistryClient : IOrganizationRegistry
 
         var orgLongNamesByOrgNumber = response
             .Orgs
-            .ToDictionary(pair => pair.Value.Orgnr, pair => new OrganizationLongNames
+            .ToDictionary(pair => pair.Value.Orgnr, pair => new OrganizationInfo
             {
                 OrgNumber = pair.Value.Orgnr,
+                ShortName = pair.Key,
                 LongNames = pair.Value.Name?.Select(name => new OrganizationLongName
                 {
                     LongName = name.Value,
@@ -57,22 +51,6 @@ internal class OrganizationRegistryClient : IOrganizationRegistry
             });
 
         return orgLongNamesByOrgNumber;
-    }
-
-    private async Task<Dictionary<string, string>> GetOrgShortNameByOrgNumber(CancellationToken cancellationToken)
-    {
-        const string searchEndpoint = "orgs/altinn-orgs.json";
-        var response = await _client
-            .GetFromJsonAsync<OrganizationRegistryResponse>(searchEndpoint, cancellationToken) ?? throw new UnreachableException();
-
-        var orgShortNameByOrgNumber = response
-            .Orgs
-            .ToDictionary(
-                pair => pair.Value.Orgnr,
-                pair => pair.Key
-            );
-
-        return orgShortNameByOrgNumber;
     }
 
     private sealed class OrganizationRegistryResponse
@@ -88,10 +66,4 @@ internal class OrganizationRegistryClient : IOrganizationRegistry
         public string? Homepage { get; init; }
         public IList<string>? Environments { get; init; }
     }
-}
-
-public sealed class OrganizationLongNames
-{
-    public required string OrgNumber { get; init; }
-    public required IList<OrganizationLongName> LongNames { get; init; }
 }
