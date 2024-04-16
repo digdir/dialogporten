@@ -49,68 +49,42 @@ public sealed class Activity
 
 public enum ActivityType
 {
-    /// <summary>
-    /// Refererer en innsending utført av party som er mottatt hos tjenestetilbyder.
-    /// </summary>
+    [GraphQLDescription("Refers to a submission made by a party that has been received by the service provider.")]
     Submission = 1,
 
-    /// <summary>
-    /// Indikerer en tilbakemelding fra tjenestetilbyder på en innsending. Inneholder
-    /// referanse til den aktuelle innsendingen.
-    /// </summary>
+    [GraphQLDescription("Indicates feedback from the service provider on a submission. Contains a reference to the current submission.")]
     Feedback = 2,
 
-    /// <summary>
-    /// Informasjon fra tjenestetilbyder, ikke (direkte) relatert til noen innsending.
-    /// </summary>
+    [GraphQLDescription("Information from the service provider, not (directly) related to any submission.")]
     Information = 3,
 
-    /// <summary>
-    /// Brukes for å indikere en feilsituasjon, typisk på en innsending. Inneholder en
-    /// tjenestespesifikk activityErrorCode.
-    /// </summary>
+    [GraphQLDescription("Used to indicate an error situation, typically on a submission. Contains a service-specific activityErrorCode.")]
     Error = 4,
 
-    /// <summary>
-    /// Indikerer at dialogen er lukket for videre endring. Dette skjer typisk ved fullføring
-    /// av dialogen, eller sletting.
-    /// </summary>
+    [GraphQLDescription("Indicates that the dialog is closed for further changes. This typically happens when the dialog is completed or deleted.")]
     Closed = 5,
 
-    /// <summary>
-    /// Når dialogen blir videresendt (tilgang delegert) av noen med tilgang til andre.
-    /// </summary>
+    [GraphQLDescription("When the dialog is forwarded (delegated access) by someone with access to others.")]
     Forwarded = 7
 }
 
 public enum DialogStatus
 {
+    [GraphQLDescription("New")]
     New = 1,
 
-    /// <summary>
-    /// Under arbeid. Generell status som brukes for dialogtjenester der ytterligere bruker-input er
-    /// forventet.
-    /// </summary>
+    [GraphQLDescription("In progress. General status used for dialog services where further user input is expected.")]
     InProgress = 2,
 
-    /// <summary>
-    /// Venter på tilbakemelding fra tjenesteeier
-    /// </summary>
+    [GraphQLDescription("Waiting for feedback from the service provider")]
     Waiting = 3,
 
-    /// <summary>
-    /// Dialogen er i en tilstand hvor den venter på signering. Typisk siste steg etter at all
-    /// utfylling er gjennomført og validert.
-    /// </summary>
+    [GraphQLDescription("The dialog is in a state where it is waiting for signing. Typically the last step after all completion is carried out and validated.")]
     Signing = 4,
 
-    /// <summary>
-    /// Dialogen ble avbrutt. Dette gjør at dialogen typisk fjernes fra normale GUI-visninger.
-    /// </summary>
+    [GraphQLDescription("The dialog was cancelled. This typically removes the dialog from normal GUI views.")]
     Cancelled = 5,
 
-    /// <summary>
-    /// Dialigen ble fullført. Dette gjør at dialogen typisk flyttes til et GUI-arkiv eller lignende.
-    /// </summary>
+    [GraphQLDescription("The dialog was completed. This typically moves the dialog to a GUI archive or similar.")]
     Completed = 6
 }
