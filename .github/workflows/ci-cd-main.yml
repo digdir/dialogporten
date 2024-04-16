@@ -120,3 +120,7 @@ jobs:
       function-app-name: "dp-be-test-slacknotifier-fa"
       function-project-path: "./src/Digdir.Tool.Dialogporten.SlackNotifier"
       environment: test
+
+    deploy-swagger-npm:
+      name: Deploy swagger npm package
+      needs: [check-for-changes]

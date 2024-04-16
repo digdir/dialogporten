@@ -12,6 +12,9 @@ on:
       hasSlackNotifierChanges:
         description: "Slack Notifier function related files changed"
         value: ${{ jobs.check-for-changes.outputs.hasSlackNotifierChanges }}
+      hasSwaggerChanges:
+        description: "OpenApi spec. has changed"
+        value: ${{ jobs.check-for-changes.outputs.hasSwaggerChanges }}
 jobs:
   check-for-changes:
     name: Filter
@@ -20,6 +23,7 @@ jobs:
       hasBackendChanges: ${{ steps.filter.outputs.backend_any_changed == 'true' }}
       hasAzureChanges: ${{ steps.filter.outputs.azure_any_changed == 'true' }}
       hasSlackNotifierChanges: ${{ steps.filter.outputs.slackNotifier_any_changed == 'true'}}
+      hasSwaggerChanges: ${{ steps.filter.outputs.swagger_any_changed == 'true'}}
 
     steps:
       - name: Checkout
@@ -43,3 +47,5 @@ jobs:
             slackNotifier:
               - '.github/**/*'
               - 'src/Digdir.Tool.Dialogporten.SlackNotifier/**/*'
+            swagger:
+              - 'docs/swagger/V1/swagger.verified.json'
