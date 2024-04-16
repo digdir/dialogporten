@@ -22,6 +22,7 @@ public class DialogQueries : ISearchDialogQuery, IDialogByIdQuery
         var result = await mediator.Send(request, cancellationToken);
         var getDialogResult = result.Match(
             dialog => dialog,
+            // TODO: Error handling
             notFound => throw new NotImplementedException("Not found"),
             deleted => throw new NotImplementedException("Deleted"),
             forbidden => throw new NotImplementedException("Forbidden"));
@@ -44,6 +45,7 @@ public class DialogQueries : ISearchDialogQuery, IDialogByIdQuery
 
         var searchResultOneOf = result.Match(
             paginatedList => paginatedList,
+            // TODO: Error handling
             validationError => throw new NotImplementedException("Validation error"),
             forbidden => throw new NotImplementedException("Forbidden"));
 
