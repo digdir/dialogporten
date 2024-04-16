@@ -74,6 +74,7 @@ static void BuildAndRun(string[] args)
             .ReplaceSingleton<IAuthorizationHandler, AllowAnonymousHandler>(
                 predicate: localDevelopmentSettings.DisableAuth);
     }
+
     var thisAssembly = Assembly.GetExecutingAssembly();
 
     builder.Services
