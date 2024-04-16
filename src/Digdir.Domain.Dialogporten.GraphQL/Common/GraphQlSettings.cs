@@ -10,9 +10,9 @@ public sealed class GraphQlSettings
     public required AuthenticationOptions Authentication { get; init; }
 }
 
-internal sealed class WebApiOptionsValidator : AbstractValidator<GraphQlSettings>
+internal sealed class GraphQlOptionsValidator : AbstractValidator<GraphQlSettings>
 {
-    public WebApiOptionsValidator(
+    public GraphQlOptionsValidator(
                IValidator<AuthenticationOptions> authenticationOptionsValidator)
     {
         RuleFor(x => x.Authentication)
