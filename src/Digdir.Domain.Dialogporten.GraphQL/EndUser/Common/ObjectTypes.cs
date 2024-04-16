@@ -23,7 +23,7 @@ public sealed class Content
 public sealed class SeenLog
 {
     public Guid Id { get; set; }
-    public DateTimeOffset CreatedAt { get; set; }
+    public DateTimeOffset SeenAt { get; set; }
 
     public string EndUserIdHash { get; set; } = null!;
 
