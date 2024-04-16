@@ -85,10 +85,8 @@ static void BuildAndRun(string[] args)
         .AddApplication(builder.Configuration, builder.Environment)
         .AddInfrastructure(builder.Configuration, builder.Environment)
 
-        // Asp infra
         .AddAutoMapper(Assembly.GetExecutingAssembly())
         .AddApplicationInsightsTelemetry()
-        // .AddApplicationInsightsTelemetry()
         .AddScoped<IUser, LocalDevelopmentUser>()
         .AddValidatorsFromAssembly(thisAssembly, ServiceLifetime.Transient, includeInternalTypes: true)
 
