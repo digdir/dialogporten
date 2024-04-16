@@ -25,7 +25,7 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
     private readonly IUnitOfWork _unitOfWork;
     private readonly IDomainContext _domainContext;
     private readonly IUserResourceRegistry _userResourceRegistry;
-    private readonly IUserOrganizationRegistry _userOrganizationRegistry;
+    private readonly IUserRegistry _userRegistry;
 
     public CreateDialogCommandHandler(
         IDialogDbContext db,
@@ -33,14 +33,14 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
         IUnitOfWork unitOfWork,
         IDomainContext domainContext,
         IUserResourceRegistry userResourceRegistry,
-        IUserOrganizationRegistry userOrganizationRegistry)
+        IUserRegistry userRegistry)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _domainContext = domainContext ?? throw new ArgumentNullException(nameof(domainContext));
         _userResourceRegistry = userResourceRegistry ?? throw new ArgumentNullException(nameof(userResourceRegistry));
-        _userOrganizationRegistry = userOrganizationRegistry ?? throw new ArgumentNullException(nameof(userOrganizationRegistry));
+        _userRegistry = userRegistry ?? throw new ArgumentNullException(nameof(userRegistry));
     }
 
     public async Task<CreateDialogResult> Handle(CreateDialogCommand request, CancellationToken cancellationToken)
@@ -52,7 +52,8 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
 
         var dialog = _mapper.Map<DialogEntity>(request);
 
-        dialog.Org = await _userOrganizationRegistry.GetCurrentUserOrgShortName(cancellationToken) ?? string.Empty;
+        var userInfo = await _userRegistry.GetCurrentUserInformation(cancellationToken);
+        dialog.Org = userInfo.ServiceOwnerShortName ?? string.Empty;
         if (string.IsNullOrWhiteSpace(dialog.Org))
         {
             _domainContext.AddError(new DomainFailure(nameof(DialogEntity.Org),

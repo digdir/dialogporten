@@ -26,7 +26,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IClock _clock;
-    private readonly IUserNameRegistry _userNameRegistry;
+    private readonly IUserRegistry _userRegistry;
     private readonly IAltinnAuthorization _altinnAuthorization;
     private readonly IDialogTokenGenerator _dialogTokenGenerator;
     private readonly IStringHasher _stringHasher;
@@ -36,7 +36,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
         IMapper mapper,
         IUnitOfWork unitOfWork,
         IClock clock,
-        IUserNameRegistry userNameRegistry,
+        IUserRegistry userRegistry,
         IAltinnAuthorization altinnAuthorization,
         IDialogTokenGenerator dialogTokenGenerator,
         IStringHasher stringHasher)
@@ -45,7 +45,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _clock = clock ?? throw new ArgumentNullException(nameof(clock));
-        _userNameRegistry = userNameRegistry ?? throw new ArgumentNullException(nameof(userNameRegistry));
+        _userRegistry = userRegistry ?? throw new ArgumentNullException(nameof(userRegistry));
         _altinnAuthorization = altinnAuthorization ?? throw new ArgumentNullException(nameof(altinnAuthorization));
         _dialogTokenGenerator = dialogTokenGenerator ?? throw new ArgumentNullException(nameof(dialogTokenGenerator));
         _stringHasher = stringHasher;
@@ -53,7 +53,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
 
     public async Task<GetDialogResult> Handle(GetDialogQuery request, CancellationToken cancellationToken)
     {
-        var (userId, userName) = await _userNameRegistry.GetCurrentUserInformation(cancellationToken);
+        var userInfo = await _userRegistry.GetCurrentUserInformation(cancellationToken);
 
         // This query could be written without all the includes as ProjectTo will do the job for us.
         // However, we need to guarantee an order for sub resources of the dialog aggregate.
@@ -100,7 +100,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
 
         // TODO: What if name lookup fails
         // https://github.com/digdir/dialogporten/issues/387
-        dialog.UpdateSeenAt(userId, userName);
+        dialog.UpdateSeenAt(userInfo.UserId.ExternalId, new DialogUserType(userInfo.UserId.Type), userInfo.Name);
 
         var saveResult = await _unitOfWork
             .WithoutAuditableSideEffects()
@@ -117,7 +117,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
             .Select(log =>
             {
                 var logDto = _mapper.Map<GetDialogDialogSeenLogDto>(log);
-                logDto.IsCurrentEndUser = log.EndUserId == userId;
+                logDto.IsCurrentEndUser = log.EndUserId == userInfo.UserId.ExternalId;
                 logDto.EndUserIdHash = _stringHasher.Hash(log.EndUserId);
                 return logDto;
             })

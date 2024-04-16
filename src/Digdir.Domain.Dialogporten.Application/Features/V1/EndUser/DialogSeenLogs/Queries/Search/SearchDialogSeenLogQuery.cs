@@ -23,26 +23,26 @@ internal sealed class SearchDialogSeenLogQueryHandler : IRequestHandler<SearchDi
     private readonly IDialogDbContext _db;
     private readonly IMapper _mapper;
     private readonly IAltinnAuthorization _altinnAuthorization;
-    private readonly IUserNameRegistry _userNameRegistry;
+    private readonly IUserRegistry _userRegistry;
     private readonly IStringHasher _stringHasher;
 
     public SearchDialogSeenLogQueryHandler(
         IDialogDbContext db,
         IMapper mapper,
         IAltinnAuthorization altinnAuthorization,
-        IUserNameRegistry userNameRegistry,
+        IUserRegistry userRegistry,
         IStringHasher stringHasher)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _altinnAuthorization = altinnAuthorization ?? throw new ArgumentNullException(nameof(altinnAuthorization));
-        _userNameRegistry = userNameRegistry ?? throw new ArgumentNullException(nameof(userNameRegistry));
+        _userRegistry = userRegistry ?? throw new ArgumentNullException(nameof(userRegistry));
         _stringHasher = stringHasher ?? throw new ArgumentNullException(nameof(stringHasher));
     }
 
     public async Task<SearchDialogSeenLogResult> Handle(SearchDialogSeenLogQuery request, CancellationToken cancellationToken)
     {
-        var userId = _userNameRegistry.GetCurrentUserExternalId();
+        var userId = _userRegistry.GetCurrentUserId();
         var dialog = await _db.Dialogs
             .AsNoTracking()
             .Include(x => x.SeenLog)
@@ -75,7 +75,7 @@ internal sealed class SearchDialogSeenLogQueryHandler : IRequestHandler<SearchDi
             .Select(x =>
             {
                 var dto = _mapper.Map<SearchDialogSeenLogDto>(x);
-                dto.IsCurrentEndUser = x.EndUserId == userId;
+                dto.IsCurrentEndUser = x.EndUserId == userId.ExternalId;
                 dto.EndUserIdHash = _stringHasher.Hash(x.EndUserId);
                 return dto;
             })

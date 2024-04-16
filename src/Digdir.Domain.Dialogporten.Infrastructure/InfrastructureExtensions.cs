@@ -23,9 +23,9 @@ using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.Authorization;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.Events;
-using Digdir.Domain.Dialogporten.Infrastructure.Altinn.NameRegistry;
-using Digdir.Domain.Dialogporten.Infrastructure.Altinn.OrganizationRegistry;
+using Digdir.Domain.Dialogporten.Infrastructure.Altinn.PartyNameRegistry;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.ResourceRegistry;
+using Digdir.Domain.Dialogporten.Infrastructure.Altinn.ServiceOwnerNameRegistry;
 using ZiggyCreatures.Caching.Fusion;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure;
@@ -72,7 +72,7 @@ public static class InfrastructureExtensions
             services.AddDistributedMemoryCache();
         }
 
-        services.ConfigureFusionCache(nameof(Altinn.NameRegistry), new()
+        services.ConfigureFusionCache(nameof(Altinn.PartyNameRegistry), new()
         {
             Duration = TimeSpan.FromDays(1)
         })
@@ -80,7 +80,7 @@ public static class InfrastructureExtensions
         {
             Duration = TimeSpan.FromMinutes(20)
         })
-        .ConfigureFusionCache(nameof(Altinn.OrganizationRegistry), new()
+        .ConfigureFusionCache(nameof(Altinn.ServiceOwnerNameRegistry), new()
         {
             Duration = TimeSpan.FromDays(1)
         })
@@ -144,11 +144,11 @@ public static class InfrastructureExtensions
                 client.BaseAddress = services.GetRequiredService<IOptions<InfrastructureSettings>>().Value.Altinn.BaseUri)
             .AddPolicyHandlerFromRegistry(PollyPolicy.DefaultHttpRetryPolicy);
 
-        services.AddHttpClient<IOrganizationRegistry, OrganizationRegistryClient>((services, client) =>
+        services.AddHttpClient<IServiceOwnerNameRegistry, ServiceOwnerNameRegistryClient>((services, client) =>
                 client.BaseAddress = services.GetRequiredService<IOptions<InfrastructureSettings>>().Value.AltinnCdn.BaseUri)
             .AddPolicyHandlerFromRegistry(PollyPolicy.DefaultHttpRetryPolicy);
 
-        services.AddMaskinportenHttpClient<INameRegistry, NameRegistryClient, SettingsJwkClientDefinition>(
+        services.AddMaskinportenHttpClient<IPartyNameRegistry, PartyNameRegistryClient, SettingsJwkClientDefinition>(
                 infrastructureConfigurationSection,
                 x => x.ClientSettings.ExhangeToAltinnToken = true)
             .ConfigureHttpClient((services, client) =>

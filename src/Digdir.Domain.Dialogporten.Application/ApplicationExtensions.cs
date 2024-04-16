@@ -37,12 +37,11 @@ public static class ApplicationExtensions
             .AddScoped<IDomainContext, DomainContext>()
             .AddScoped<ITransactionTime, TransactionTime>()
             .AddScoped<IDialogTokenGenerator, DialogTokenGenerator>()
+            .AddScoped<IUserRegistry, UserRegistry>()
 
             // Transient
             .AddTransient<IStringHasher, PersistentRandomSaltStringHasher>()
-            .AddTransient<IUserOrganizationRegistry, UserOrganizationRegistry>()
             .AddTransient<IUserResourceRegistry, UserResourceRegistry>()
-            .AddTransient<IUserNameRegistry, UserNameRegistry>()
             .AddTransient<IClock, Clock>()
             .AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>))
             .AddTransient(typeof(IPipelineBehavior<,>), typeof(DomainContextBehaviour<,>));
@@ -58,15 +57,10 @@ public static class ApplicationExtensions
             localDeveloperSettings.UseLocalDevelopmentUser ||
             localDeveloperSettings.UseLocalDevelopmentResourceRegister);
 
-        services.Decorate<IUserOrganizationRegistry, LocalDevelopmentUserOrganizationRegistryDecorator>(
+        services.Decorate<IUserRegistry, LocalDevelopmentUserRegistryDecorator>(
             predicate:
             localDeveloperSettings.UseLocalDevelopmentUser ||
             localDeveloperSettings.UseLocalDevelopmentOrganizationRegister);
-
-        services.Decorate<IUserNameRegistry, LocalDevelopmentUserNameRegistryDecorator>(
-            predicate:
-            localDeveloperSettings.UseLocalDevelopmentUser ||
-            localDeveloperSettings.UseLocalDevelopmentNameRegister);
 
         services.Decorate<ICompactJwsGenerator, LocalDevelopmentCompactJwsGeneratorDecorator>(
             predicate: localDeveloperSettings.UseLocalDevelopmentCompactJwsGenerator);

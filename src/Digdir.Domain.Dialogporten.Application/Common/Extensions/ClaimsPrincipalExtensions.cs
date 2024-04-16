@@ -2,8 +2,8 @@
 using System.Security.Claims;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
-using Digdir.Domain.Dialogporten.Application.Externals.Authentication;
 using Digdir.Domain.Dialogporten.Domain.Parties;
+using UserIdType = Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogUserType.Values;
 
 namespace Digdir.Domain.Dialogporten.Application.Common.Extensions;
 
@@ -32,11 +32,11 @@ public static class ClaimsPrincipalExtensions
         return value is not null;
     }
 
-    public static bool TryGetOrgNumber(this ClaimsPrincipal claimsPrincipal, [NotNullWhen(true)] out string? orgNumber)
-        => claimsPrincipal.FindFirst(ConsumerClaim).TryGetOrgNumber(out orgNumber);
+    public static bool TryGetOrganizationNumber(this ClaimsPrincipal claimsPrincipal, [NotNullWhen(true)] out string? orgNumber)
+        => claimsPrincipal.FindFirst(ConsumerClaim).TryGetOrganizationNumber(out orgNumber);
 
     public static bool TryGetSupplierOrgNumber(this ClaimsPrincipal claimsPrincipal, [NotNullWhen(true)] out string? orgNumber)
-        => claimsPrincipal.FindFirst(SupplierClaim).TryGetOrgNumber(out orgNumber);
+        => claimsPrincipal.FindFirst(SupplierClaim).TryGetOrganizationNumber(out orgNumber);
 
     public static bool TryGetPid(this ClaimsPrincipal claimsPrincipal, [NotNullWhen(true)] out string? pid)
         => claimsPrincipal.FindFirst(PidClaim).TryGetPid(out pid);
@@ -84,7 +84,7 @@ public static class ClaimsPrincipalExtensions
         return systemUserName is not null;
     }
 
-    public static bool TryGetOrgNumber(this Claim? consumerClaim, [NotNullWhen(true)] out string? orgNumber)
+    public static bool TryGetOrganizationNumber(this Claim? consumerClaim, [NotNullWhen(true)] out string? orgNumber)
     {
         orgNumber = null;
         if (consumerClaim is null || consumerClaim.Type != ConsumerClaim)
@@ -146,41 +146,49 @@ public static class ClaimsPrincipalExtensions
             c.Type.StartsWith(AltinnClaimPrefix, StringComparison.Ordinal)
         ).OrderBy(c => c.Type);
 
-    public static UserType GetUserType(this ClaimsPrincipal claimsPrincipal)
+    public static (UserIdType, string externalId) GetUserType(this ClaimsPrincipal claimsPrincipal)
     {
-        if (claimsPrincipal.TryGetPid(out _))
+        if (claimsPrincipal.TryGetPid(out var externalId))
         {
-            return UserType.Person;
+            return (claimsPrincipal.TryGetServiceOwnerShortName(out _)
+                ? UserIdType.ServiceOwnerOnBehalfOfPerson
+                : UserIdType.Person, externalId);
         }
 
-        if (claimsPrincipal.TryGetLegacySystemUserId(out _))
+        if (claimsPrincipal.TryGetLegacySystemUserId(out externalId))
         {
-            return UserType.LegacySystemUser;
+            return (UserIdType.LegacySystemUser, externalId);
         }
 
-        if (claimsPrincipal.TryGetOrgNumber(out _))
+        // TODO! Add check for new service user
+
+        if (claimsPrincipal.TryGetServiceOwnerShortName(out externalId))
         {
-            return UserType.Enterprise;
+            return (UserIdType.ServiceOwner, externalId);
         }
 
-        return UserType.Unknown;
+        if (claimsPrincipal.TryGetOrganizationNumber(out externalId))
+        {
+            return (UserIdType.Enterprise, externalId);
+        }
+
+        return (UserIdType.Unknown, string.Empty);
     }
 
-    private static bool TryGetOrgShortName(this ClaimsPrincipal claimsPrincipal, [NotNullWhen(true)] out string? orgShortName)
-        => claimsPrincipal.FindFirst(OrgClaim).TryGetOrgShortName(out orgShortName);
+    private static bool TryGetServiceOwnerShortName(this ClaimsPrincipal claimsPrincipal, [NotNullWhen(true)] out string? orgShortName)
+        => claimsPrincipal.FindFirst(OrgClaim).TryGetServiceOwnerShortName(out orgShortName);
 
-    private static bool TryGetOrgShortName(this Claim? orgClaim, [NotNullWhen(true)] out string? orgShortName)
+    private static bool TryGetServiceOwnerShortName(this Claim? orgClaim, [NotNullWhen(true)] out string? orgShortName)
     {
         orgShortName = orgClaim?.Value;
-
         return orgShortName is not null;
     }
 
-    internal static bool TryGetOrgNumber(this IUser user, [NotNullWhen(true)] out string? orgNumber) =>
-        user.GetPrincipal().TryGetOrgNumber(out orgNumber);
+    internal static bool TryGetOrganizationNumber(this IUser user, [NotNullWhen(true)] out string? orgNumber) =>
+        user.GetPrincipal().TryGetOrganizationNumber(out orgNumber);
 
-    internal static bool TryGetOrgShortName(this IUser user, [NotNullWhen(true)] out string? orgShortName) =>
-        user.GetPrincipal().TryGetOrgShortName(out orgShortName);
+    internal static bool TryGetServiceOwnerShortName(this IUser user, [NotNullWhen(true)] out string? orgShortName) =>
+        user.GetPrincipal().TryGetServiceOwnerShortName(out orgShortName);
 
     internal static bool TryGetPid(this IUser user, [NotNullWhen(true)] out string? pid) =>
         user.GetPrincipal().TryGetPid(out pid);

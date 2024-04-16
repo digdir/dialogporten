@@ -25,26 +25,26 @@ internal sealed class GetDialogSeenLogQueryHandler : IRequestHandler<GetDialogSe
     private readonly IDialogDbContext _dbContext;
     private readonly IAltinnAuthorization _altinnAuthorization;
     private readonly IStringHasher _stringHasher;
-    private readonly IUserNameRegistry _userNameRegistry;
+    private readonly IUserRegistry _userRegistry;
 
     public GetDialogSeenLogQueryHandler(
         IMapper mapper,
         IDialogDbContext dbContext,
         IAltinnAuthorization altinnAuthorization,
         IStringHasher stringHasher,
-        IUserNameRegistry userNameRegistry)
+        IUserRegistry userRegistry)
     {
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         _altinnAuthorization = altinnAuthorization ?? throw new ArgumentNullException(nameof(altinnAuthorization));
         _stringHasher = stringHasher ?? throw new ArgumentNullException(nameof(stringHasher));
-        _userNameRegistry = userNameRegistry ?? throw new ArgumentNullException(nameof(userNameRegistry));
+        _userRegistry = userRegistry ?? throw new ArgumentNullException(nameof(userRegistry));
     }
 
     public async Task<GetDialogSeenLogResult> Handle(GetDialogSeenLogQuery request,
         CancellationToken cancellationToken)
     {
-        var userId = _userNameRegistry.GetCurrentUserExternalId();
+        var userId = _userRegistry.GetCurrentUserId();
         var dialog = await _dbContext.Dialogs
             .AsNoTracking()
             .Include(x => x.SeenLog.Where(x => x.Id == request.SeenLogId))
@@ -79,7 +79,7 @@ internal sealed class GetDialogSeenLogQueryHandler : IRequestHandler<GetDialogSe
         }
 
         var dto = _mapper.Map<GetDialogSeenLogDto>(seenLog);
-        dto.IsCurrentEndUser = userId == seenLog.EndUserId;
+        dto.IsCurrentEndUser = userId.ExternalId == seenLog.EndUserId;
         dto.EndUserIdHash = _stringHasher.Hash(seenLog.EndUserId);
 
         return dto;
