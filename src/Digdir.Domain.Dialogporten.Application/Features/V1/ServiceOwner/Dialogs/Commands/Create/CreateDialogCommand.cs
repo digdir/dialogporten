@@ -3,6 +3,7 @@ using AutoMapper;
 using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
+using Digdir.Domain.Dialogporten.Application.Features.V1.Common.DialogActivities;
 using Digdir.Domain.Dialogporten.Domain.Common;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
@@ -78,7 +79,12 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
             _domainContext.AddError(DomainFailure.EntityExists<DialogElement>(existingElementIds));
         }
 
-        await EnsurePerformedByIsSetForActivities(dialog.Activities, cancellationToken);
+        var organizationLongNames = await _userOrganizationRegistry.GetCurrentUserOrgLongNames(cancellationToken);
+        if (organizationLongNames != null)
+        {
+            // TODO: if organization cannot be found we need to handle this. Put on a queue to be retried later(?) https://github.com/digdir/dialogporten/issues/639
+            dialog.Activities.EnsurePerformedByIsSetForActivities(organizationLongNames);
+        }
 
         await _db.Dialogs.AddAsync(dialog, cancellationToken);
 
@@ -87,23 +93,5 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
             success => new Success<Guid>(dialog.Id),
             domainError => domainError,
             concurrencyError => throw new UnreachableException("Should never get a concurrency error when creating a new dialog"));
-    }
-
-    private async Task EnsurePerformedByIsSetForActivities(IEnumerable<DialogActivity> activities, CancellationToken cancellationToken)
-    {
-        foreach (var activity in activities)
-        {
-            if (activity.PerformedBy == null)
-            {
-                var organizationLongNames = await _userOrganizationRegistry.GetCurrentUserOrgLongNames(cancellationToken);
-                //todo: if organization cannot be found we need to handle this. Put on a queue to be retried later(?)
-                activity.PerformedBy = new DialogActivityPerformedBy
-                {
-                    ActivityId = activity.Id,
-                    Id = Guid.NewGuid(),
-                    Localizations = organizationLongNames?.Select(x => new Localization { Value = x.LongName, CultureCode = x.Language }).ToList() ?? new List<Localization>(),
-                };
-            }
-        }
     }
 }

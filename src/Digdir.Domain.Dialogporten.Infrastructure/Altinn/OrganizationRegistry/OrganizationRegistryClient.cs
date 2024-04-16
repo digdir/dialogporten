@@ -24,20 +24,19 @@ internal class OrganizationRegistryClient : IOrganizationRegistry
 
     public async Task<OrganizationInfo?> GetOrgInfo(string orgNumber, CancellationToken cancellationToken)
     {
-        var orgInfoByOrgNumber = await _cache.GetOrSetAsync(OrgNameReferenceCacheKey, async token => await GetOrgInfoByOrgNumber(token), token: cancellationToken);
+        var orgInfoByOrgNumber = await _cache.GetOrSetAsync(OrgNameReferenceCacheKey, GetOrgInfo, token: cancellationToken);
         orgInfoByOrgNumber.TryGetValue(orgNumber, out var orgInfo);
 
-        // todo: return org info: shortname and long names
         return orgInfo;
     }
 
-    private async Task<Dictionary<string, OrganizationInfo>> GetOrgInfoByOrgNumber(CancellationToken cancellationToken)
+    private async Task<Dictionary<string, OrganizationInfo>> GetOrgInfo(CancellationToken cancellationToken)
     {
         const string searchEndpoint = "orgs/altinn-orgs.json";
         var response = await _client
             .GetFromJsonAsync<OrganizationRegistryResponse>(searchEndpoint, cancellationToken) ?? throw new UnreachableException();
 
-        var orgLongNamesByOrgNumber = response
+        var orgInfoByOrgNumber = response
             .Orgs
             .ToDictionary(pair => pair.Value.Orgnr, pair => new OrganizationInfo
             {
@@ -50,7 +49,7 @@ internal class OrganizationRegistryClient : IOrganizationRegistry
                 }).ToList() ?? new List<OrganizationLongName>()
             });
 
-        return orgLongNamesByOrgNumber;
+        return orgInfoByOrgNumber;
     }
 
     private sealed class OrganizationRegistryResponse
