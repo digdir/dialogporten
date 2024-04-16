@@ -10,7 +10,7 @@ using MediatR;
 namespace Digdir.Domain.Dialogporten.GraphQL.EndUser;
 
 [Authorize(Policy = AuthorizationPolicy.EndUser)]
-public class DialogQueries : ISearchDialogQuery, IDialogByIdQuery
+public class DialogQueries
 {
     public async Task<Dialog> GetDialogById(
         [Service] ISender mediator,
