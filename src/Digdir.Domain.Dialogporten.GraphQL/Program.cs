@@ -59,12 +59,6 @@ static void BuildAndRun(string[] args)
         .Bind(builder.Configuration.GetSection(GraphQlSettings.SectionName))
         .ValidateFluently()
         .ValidateOnStart();
-    /* TODOS:
-     * - Gjør DialogDbContext til internal. Kan måtte gjøre dette prosjektet til et "friend assembly" av infrastructure (internalsVisibleTo)
-     *
-     *
-     *
-     */
 
     if (builder.Environment.IsDevelopment())
     {

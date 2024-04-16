@@ -35,6 +35,7 @@
     <ItemGroup>
         <InternalsVisibleTo Include="Digdir.Domain.Dialogporten.Application.Integration.Tests" />
         <InternalsVisibleTo Include="Digdir.Domain.Dialogporten.Infrastructure.Unit.Tests" />
+        <InternalsVisibleTo Include="Digdir.Domain.Dialogporten.GraphQL" />
     </ItemGroup>
 
 </Project>
