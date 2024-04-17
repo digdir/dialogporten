@@ -121,9 +121,9 @@ public class DialogApplication : IAsyncLifetime
             .GetOrgInfo(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(new OrganizationInfo
             {
-                OrgNumber = "123456789",
+                OrgNumber = "991825827",
                 ShortName = "digdir",
-                LongNames = new[] { new OrganizationLongName { LongName = "Digdir", Language = "nb" } }
+                LongNames = new[] { new OrganizationLongName { LongName = "Digitaliseringsdirektoratet", Language = "nb" } }
             });
 
         return organizationRegistrySubstitute;
