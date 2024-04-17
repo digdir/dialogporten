@@ -83,6 +83,7 @@ static void BuildAndRun(string[] args)
         .AddApplicationInsightsTelemetry()
         .AddScoped<IUser, LocalDevelopmentUser>()
         .AddValidatorsFromAssembly(thisAssembly, ServiceLifetime.Transient, includeInternalTypes: true)
+        .AddAzureAppConfiguration()
 
         // Graph QL
         .AddGraphQLServer()
@@ -104,6 +105,8 @@ static void BuildAndRun(string[] args)
     app.UseJwtSchemeSelector();
     app.UseAuthentication();
     app.UseAuthorization();
+    app.UseSerilogRequestLogging();
+    app.UseAzureAppConfiguration();
 
     app.MapGraphQL()
     .RequireAuthorization()
