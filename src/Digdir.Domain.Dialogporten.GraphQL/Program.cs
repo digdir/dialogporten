@@ -108,7 +108,6 @@ static void BuildAndRun(string[] args)
     app.UseJwtSchemeSelector()
         .UseAuthentication()
         .UseAuthorization()
-        .UseSerilogRequestLogging()
         .UseAzureConfiguration();
 
     app.MapGraphQL()
