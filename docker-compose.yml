@@ -5,7 +5,7 @@ services:
   dialogporten-webapi-ingress:
     image: nginx:1.25.4
     ports:
-      - "7214:80"
+      - "7217:80"
     volumes:
       - ./nginx-webapi.conf:/etc/nginx/nginx.conf
     depends_on:
@@ -47,7 +47,9 @@ services:
     restart: always
 
   dialogporten-graphql:
-    scale: 2
+    scale: 1
+    ports:
+      - "7220:5181"
     build:
       context: .
       dockerfile: src/Digdir.Domain.Dialogporten.GraphQL/Dockerfile
@@ -65,7 +67,7 @@ services:
       - Application:Dialogporten:BaseUri=http://localhost:7214
       - Serilog__WriteTo__0__Name=Console
       - Serilog__MinimumLevel__Default=Debug
-      - ASPNETCORE_URLS=http://+:8080
+      - ASPNETCORE_URLS=http://+:5181
       - ASPNETCORE_ENVIRONMENT=Development
     volumes:
       - ./.aspnet/https:/https
