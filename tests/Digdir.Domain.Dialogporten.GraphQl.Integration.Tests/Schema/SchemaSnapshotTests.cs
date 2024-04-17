@@ -1,5 +1,4 @@
 using Digdir.Domain.Dialogporten.GraphQL;
-using Digdir.Domain.Dialogporten.GraphQL.EndUser;
 using HotChocolate.Execution;
 using Microsoft.AspNetCore.Builder;
 using Path = System.IO.Path;
@@ -9,13 +8,6 @@ namespace Digdir.Domain.Dialogporten.GraphQl.Integration.Tests.Schema;
 
 public class SchemaSnapshotTests
 {
-    // private readonly WebApplicationFactory<Program> _webApplicationFactory;
-
-    public SchemaSnapshotTests()
-    {
-        // _webApplicationFactory = webApplicationFactory;
-    }
-
     [Fact]
     public async Task FailIfGraphQlSchemaSnapshotDoesNotMatch()
     {
