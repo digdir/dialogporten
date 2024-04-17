@@ -2,6 +2,7 @@
 using AutoMapper;
 using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
+using Digdir.Domain.Dialogporten.Application.Common.Services;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.DialogActivities;
 using Digdir.Domain.Dialogporten.Domain.Common;
@@ -28,6 +29,7 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
     private readonly IDomainContext _domainContext;
     private readonly IUserResourceRegistry _userResourceRegistry;
     private readonly IUserOrganizationRegistry _userOrganizationRegistry;
+    private readonly IDialogActivityService _dialogActivityService;
 
     public CreateDialogCommandHandler(
         IDialogDbContext db,
@@ -35,7 +37,8 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
         IUnitOfWork unitOfWork,
         IDomainContext domainContext,
         IUserResourceRegistry userResourceRegistry,
-        IUserOrganizationRegistry userOrganizationRegistry)
+        IUserOrganizationRegistry userOrganizationRegistry,
+        IDialogActivityService dialogActivityService)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
@@ -43,6 +46,7 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
         _domainContext = domainContext ?? throw new ArgumentNullException(nameof(domainContext));
         _userResourceRegistry = userResourceRegistry ?? throw new ArgumentNullException(nameof(userResourceRegistry));
         _userOrganizationRegistry = userOrganizationRegistry ?? throw new ArgumentNullException(nameof(userOrganizationRegistry));
+        _dialogActivityService = dialogActivityService ?? throw new ArgumentNullException(nameof(dialogActivityService));
     }
 
     public async Task<CreateDialogResult> Handle(CreateDialogCommand request, CancellationToken cancellationToken)
@@ -79,12 +83,7 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
             _domainContext.AddError(DomainFailure.EntityExists<DialogElement>(existingElementIds));
         }
 
-        var organizationLongNames = await _userOrganizationRegistry.GetCurrentUserOrgLongNames(cancellationToken);
-        if (organizationLongNames is not null)
-        {
-            // TODO: if organization cannot be found we need to handle this. Put on a queue to be retried later(?) https://github.com/digdir/dialogporten/issues/639
-            dialog.Activities.EnsurePerformedByIsSetForActivities(organizationLongNames);
-        }
+        await _dialogActivityService.EnsurePerformedByIsSetForActivities(dialog.Activities, cancellationToken);
 
         await _db.Dialogs.AddAsync(dialog, cancellationToken);
 

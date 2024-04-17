@@ -2,6 +2,7 @@
 using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.Enumerables;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
+using Digdir.Domain.Dialogporten.Application.Common.Services;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.DialogActivities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
@@ -35,6 +36,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
     private readonly IDomainContext _domainContext;
     private readonly IUserOrganizationRegistry _userOrganizationRegistry;
     private readonly IUserResourceRegistry _userResourceRegistry;
+    private readonly IDialogActivityService _dialogActivityService;
 
     public UpdateDialogCommandHandler(
         IDialogDbContext db,
@@ -42,7 +44,8 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         IUnitOfWork unitOfWork,
         IDomainContext domainContext,
         IUserOrganizationRegistry userOrganizationRegistry,
-        IUserResourceRegistry userResourceRegistry)
+        IUserResourceRegistry userResourceRegistry,
+        IDialogActivityService dialogActivityService)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
@@ -50,6 +53,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         _domainContext = domainContext ?? throw new ArgumentNullException(nameof(domainContext));
         _userOrganizationRegistry = userOrganizationRegistry ?? throw new ArgumentNullException(nameof(userOrganizationRegistry));
         _userResourceRegistry = userResourceRegistry ?? throw new ArgumentNullException(nameof(userResourceRegistry));
+        _dialogActivityService = dialogActivityService ?? throw new ArgumentNullException(nameof(dialogActivityService));
     }
 
     public async Task<UpdateDialogResult> Handle(UpdateDialogCommand request, CancellationToken cancellationToken)
@@ -170,12 +174,8 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
     {
         var newDialogActivities = _mapper.Map<List<DialogActivity>>(dto.Activities);
 
-        var organizationLongNames = await _userOrganizationRegistry.GetCurrentUserOrgLongNames(cancellationToken);
-        if (organizationLongNames is not null)
-        {
-            // TODO: if organization cannot be found we need to handle this. Put on a queue to be retried later(?) https://github.com/digdir/dialogporten/issues/639
-            newDialogActivities.EnsurePerformedByIsSetForActivities(organizationLongNames);
-        }
+
+        await _dialogActivityService.EnsurePerformedByIsSetForActivities(newDialogActivities, cancellationToken);
 
         var existingIds = await _db.GetExistingIds(newDialogActivities, cancellationToken);
         if (existingIds.Count != 0)
