@@ -10,6 +10,7 @@ using Digdir.Domain.Dialogporten.GraphQL.Common.Extensions;
 using Digdir.Domain.Dialogporten.Infrastructure;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.OptionExtensions;
+using Digdir.Domain.Dialogporten.GraphQL;
 using Digdir.Domain.Dialogporten.GraphQL.EndUser;
 using Microsoft.ApplicationInsights.Extensibility;
 using Serilog;
@@ -95,6 +96,7 @@ static void BuildAndRun(string[] args)
         .AddFiltering()
         .AddSorting()
         .RegisterDbContext<DialogDbContext>()
+        .AddDiagnosticEventListener<ApplicationInsightEventListener>()
         .AddQueryType<DialogQueries>()
         .Services
 
