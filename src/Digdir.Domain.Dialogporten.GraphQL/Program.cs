@@ -86,17 +86,18 @@ static void BuildAndRun(string[] args)
 
         // Graph QL
         .AddGraphQLServer()
-            .AddAuthorization()
-            .AddProjections()
-            .AddFiltering()
-            .AddSorting()
-            .RegisterDbContext<DialogDbContext>()
-            .AddQueryType<DialogQueries>()
+        .AddAuthorization()
+        .AddProjections()
+        .AddFiltering()
+        .AddSorting()
+        .RegisterDbContext<DialogDbContext>()
+        .AddQueryType<DialogQueries>()
         .Services
 
-    // Auth
-    .AddDialogportenAuthentication(builder.Configuration)
-    .AddAuthorization();
+        // Auth
+        .AddDialogportenAuthentication(builder.Configuration)
+        .AddAuthorization()
+        .AddHealthChecks();
 
     var app = builder.Build();
 
@@ -114,6 +115,8 @@ static void BuildAndRun(string[] args)
             Enable = true
         }
     });
+
+    app.MapHealthChecks("/healthz");
 
     app.Run();
 }
