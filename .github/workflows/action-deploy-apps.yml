@@ -115,6 +115,7 @@ jobs:
         include:
           - name: web-api-eu
           - name: web-api-so
+          - name: graphql
     environment: ${{ inputs.environment }}
     permissions:
       id-token: write
