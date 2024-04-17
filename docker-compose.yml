@@ -49,7 +49,7 @@ services:
   dialogporten-graphql:
     scale: 1
     ports:
-      - "7220:5181"
+      - "7220:8080"
     build:
       context: .
       dockerfile: src/Digdir.Domain.Dialogporten.GraphQL/Dockerfile
@@ -67,7 +67,6 @@ services:
       - Application:Dialogporten:BaseUri=http://localhost:7214
       - Serilog__WriteTo__0__Name=Console
       - Serilog__MinimumLevel__Default=Debug
-      - ASPNETCORE_URLS=http://+:5181
       - ASPNETCORE_ENVIRONMENT=Development
     volumes:
       - ./.aspnet/https:/https
