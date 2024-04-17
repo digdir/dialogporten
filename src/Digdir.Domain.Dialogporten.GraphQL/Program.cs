@@ -92,11 +92,11 @@ static void BuildAndRun(string[] args)
             .AddSorting()
             .RegisterDbContext<DialogDbContext>()
             .AddQueryType<DialogQueries>()
-            .Services
+        .Services
 
-        // Auth
-        .AddDialogportenAuthentication(builder.Configuration)
-        .AddAuthorization();
+    // Auth
+    .AddDialogportenAuthentication(builder.Configuration)
+    .AddAuthorization();
 
     var app = builder.Build();
 
@@ -104,22 +104,16 @@ static void BuildAndRun(string[] args)
     app.UseAuthentication();
     app.UseAuthorization();
 
-    if (app.Environment.IsDevelopment())
-    {
-        // GUI endpoint
-        app.MapBananaCakePop("/bcp");
-    }
-
     app.MapGraphQL()
-        .RequireAuthorization()
-        .WithOptions(new GraphQLServerOptions
+    .RequireAuthorization()
+    .WithOptions(new GraphQLServerOptions
+    {
+        EnableSchemaRequests = true,
+        Tool =
         {
-            EnableSchemaRequests = true,
-            Tool =
-            {
-                Enable = false
-            }
-        });
+            Enable = true
+        }
+    });
 
     app.Run();
 }
