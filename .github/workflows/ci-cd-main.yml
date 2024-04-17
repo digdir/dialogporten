@@ -120,3 +120,14 @@ jobs:
       function-app-name: "dp-be-test-slacknotifier-fa"
       function-project-path: "./src/Digdir.Tool.Dialogporten.SlackNotifier"
       environment: test
+
+  run-e2e-tests:
+    name: "Run K6 functional end-to-end tests"
+    uses: ./.github/workflows/action-run-k6-tests.yml
+    secrets:
+      TOKEN_GENERATOR_USERNAME: ${{ secrets.TOKEN_GENERATOR_USERNAME }}
+      TOKEN_GENERATOR_PASSWORD: ${{ secrets.TOKEN_GENERATOR_PASSWORD }}
+    with:
+      environment: test
+      apiVersion: v1
+      testSuitePath: tests/k6/suites/all-single-pass.js
