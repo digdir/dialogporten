@@ -5,7 +5,7 @@ services:
   dialogporten-webapi-ingress:
     image: nginx:1.25.4
     ports:
-      - "7217:80"
+      - "7214:80"
     volumes:
       - ./nginx-webapi.conf:/etc/nginx/nginx.conf
     depends_on:
@@ -48,6 +48,7 @@ services:
 
   dialogporten-graphql:
     scale: 1
+    # todo: remove after the nginx ingress fixed
     ports:
       - "7220:8080"
     build:
