@@ -20,8 +20,6 @@ public static class DialogActivityExtensions
         {
             activity.PerformedBy ??= new DialogActivityPerformedBy
             {
-                ActivityId = activity.Id,
-                Id = Guid.NewGuid(),
                 Localizations = organizationLongNames?.Select(x => new Localization { Value = x.LongName, CultureCode = x.Language }).ToList() ?? new List<Localization>(),
             };
         }
