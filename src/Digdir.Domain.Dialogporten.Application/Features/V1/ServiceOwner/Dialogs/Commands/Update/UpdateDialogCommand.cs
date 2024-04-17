@@ -171,7 +171,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         var newDialogActivities = _mapper.Map<List<DialogActivity>>(dto.Activities);
 
         var organizationLongNames = await _userOrganizationRegistry.GetCurrentUserOrgLongNames(cancellationToken);
-        if (organizationLongNames != null)
+        if (organizationLongNames is not null)
         {
             // TODO: if organization cannot be found we need to handle this. Put on a queue to be retried later(?) https://github.com/digdir/dialogporten/issues/639
             newDialogActivities.EnsurePerformedByIsSetForActivities(organizationLongNames);
