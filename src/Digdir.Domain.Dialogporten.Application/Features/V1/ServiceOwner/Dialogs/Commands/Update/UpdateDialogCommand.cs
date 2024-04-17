@@ -4,7 +4,6 @@ using Digdir.Domain.Dialogporten.Application.Common.Extensions.Enumerables;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Common.Services;
 using Digdir.Domain.Dialogporten.Application.Externals;
-using Digdir.Domain.Dialogporten.Application.Features.V1.Common.DialogActivities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
@@ -34,7 +33,6 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IDomainContext _domainContext;
-    private readonly IUserOrganizationRegistry _userOrganizationRegistry;
     private readonly IUserResourceRegistry _userResourceRegistry;
     private readonly IDialogActivityService _dialogActivityService;
 
@@ -43,7 +41,6 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         IMapper mapper,
         IUnitOfWork unitOfWork,
         IDomainContext domainContext,
-        IUserOrganizationRegistry userOrganizationRegistry,
         IUserResourceRegistry userResourceRegistry,
         IDialogActivityService dialogActivityService)
     {
@@ -51,7 +48,6 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _domainContext = domainContext ?? throw new ArgumentNullException(nameof(domainContext));
-        _userOrganizationRegistry = userOrganizationRegistry ?? throw new ArgumentNullException(nameof(userOrganizationRegistry));
         _userResourceRegistry = userResourceRegistry ?? throw new ArgumentNullException(nameof(userResourceRegistry));
         _dialogActivityService = dialogActivityService ?? throw new ArgumentNullException(nameof(dialogActivityService));
     }
