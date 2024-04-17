@@ -1,6 +1,6 @@
 {
-  "name": "dialogporten-swagger",
-  "version": "1.0.4",
+  "name": "dialogporten-schema",
+  "version": "1.0.5",
   "description": "OpenAPI spec for Dialogporten",
   "author": "DigDir",
   "repository": {

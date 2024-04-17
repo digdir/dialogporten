@@ -90,15 +90,7 @@ static void BuildAndRun(string[] args)
         .AddAzureAppConfiguration()
 
         // Graph QL
-        .AddGraphQLServer()
-        .AddAuthorization()
-        .AddProjections()
-        .AddFiltering()
-        .AddSorting()
-        .RegisterDbContext<DialogDbContext>()
-        .AddDiagnosticEventListener<ApplicationInsightEventListener>()
-        .AddQueryType<DialogQueries>()
-        .Services
+        .AddDialogportenGraphQl()
 
         // Auth
         .AddDialogportenAuthentication(builder.Configuration)
