@@ -4,7 +4,8 @@ using Microsoft.Extensions.Configuration.AzureAppConfiguration;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Digdir.Domain.Dialogporten.GraphQL.Common.Extensions;
-
+// TODO: Discuss in refinement, merging duplicated extensions across presentation projects
+// https://github.com/digdir/dialogporten/issues/647
 /// <summary>
 /// Wrapper around azure app configuration bootstrapping such that azure app
 /// config is activated through the environment variable AZURE_APPCONFIG_URI.
