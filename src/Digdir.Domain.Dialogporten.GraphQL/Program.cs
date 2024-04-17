@@ -80,7 +80,6 @@ static void BuildAndRun(string[] args)
         // Clean architecture projects
         .AddApplication(builder.Configuration, builder.Environment)
         .AddInfrastructure(builder.Configuration, builder.Environment)
-
         .AddAutoMapper(Assembly.GetExecutingAssembly())
         .AddApplicationInsightsTelemetry()
         .AddScoped<IUser, LocalDevelopmentUser>()
@@ -100,18 +99,19 @@ static void BuildAndRun(string[] args)
     app.UseJwtSchemeSelector()
         .UseAuthentication()
         .UseAuthorization()
+        .UseSerilogRequestLogging()
         .UseAzureConfiguration();
 
     app.MapGraphQL()
-    .RequireAuthorization()
-    .WithOptions(new GraphQLServerOptions
-    {
-        EnableSchemaRequests = true,
-        Tool =
+        .RequireAuthorization()
+        .WithOptions(new GraphQLServerOptions
         {
-            Enable = true
-        }
-    });
+            EnableSchemaRequests = true,
+            Tool =
+            {
+                Enable = true
+            }
+        });
 
     app.MapHealthChecks("/healthz");
 
