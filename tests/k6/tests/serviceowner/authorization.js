@@ -93,7 +93,7 @@ export default function () {
             // Only check that we cannot delete is as invalid SO so
             // that the dialog still exists for subsequent tests
             if (shouldSucceed) return;
-            let r = deleteSO('dialogs/' + dialogId + "/elements" + dialogElementId, null, tokenOptions);
+            let r = deleteSO('dialogs/' + dialogId + "/elements/" + dialogElementId, null, tokenOptions);
             expectEither(200, 404, r, shouldSucceed);
         });
 
