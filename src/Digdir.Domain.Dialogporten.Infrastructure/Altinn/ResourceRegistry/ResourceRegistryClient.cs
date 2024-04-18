@@ -2,7 +2,6 @@
 using System.Net.Http.Json;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Domain.Common;
-using Microsoft.Extensions.Caching.Distributed;
 using ZiggyCreatures.Caching.Fusion;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.ResourceRegistry;
@@ -10,8 +9,8 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.ResourceRegistry;
 internal sealed class ResourceRegistryClient : IResourceRegistry
 {
     private const string OrgResourceReferenceCacheKey = "OrgResourceReference";
-    private static readonly DistributedCacheEntryOptions OneDayCacheDuration = new() { AbsoluteExpiration = DateTimeOffset.UtcNow.AddDays(1) };
-    private static readonly DistributedCacheEntryOptions ZeroCacheDuration = new() { AbsoluteExpiration = DateTimeOffset.MinValue };
+    private const string ResourceTypeGenericAccess = "GenericAccessResource";
+    private const string ResourceTypeAltinnApp = "AltinnApp";
 
     private readonly IFusionCache _cache;
     private readonly HttpClient _client;
@@ -34,16 +33,18 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
 
     private async Task<Dictionary<string, string[]>> GetResourceIdsByOrg(CancellationToken cancellationToken)
     {
-        const string searchEndpoint = "resourceregistry/api/v1/resource/search";
+        const string searchEndpoint = "resourceregistry/api/v1/resource/resourcelist";
         var response = await _client
             .GetFromJsonAsync<List<ResourceRegistryResponse>>(searchEndpoint, cancellationToken)
             ?? throw new UnreachableException();
 
         var resourceIdsByOrg = response
+            .Where(x => x.ResourceType is ResourceTypeGenericAccess or ResourceTypeAltinnApp)
             .GroupBy(x => x.HasCompetentAuthority.Organization)
             .ToDictionary(
                 x => x.Key,
-                x => x.Select(x => $"{Constants.ServiceResourcePrefix}{x.Identifier}")
+                x => x.Select(
+                        x => $"{(x.ResourceType == ResourceTypeAltinnApp ? Constants.ServiceResourcePrefixApp : Constants.ServiceResourcePrefixGeneric)}{x.Identifier}")
                     .ToArray()
             );
 
@@ -54,6 +55,7 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
     {
         public required string Identifier { get; init; }
         public required CompetentAuthority HasCompetentAuthority { get; init; }
+        public required string ResourceType { get; init; }
     }
 
     private sealed class CompetentAuthority
