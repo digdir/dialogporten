@@ -70,6 +70,7 @@ jobs:
 
   run-e2e-tests:
     name: "Run K6 functional end-to-end tests"
+    needs: [deploy-apps-staging]
     uses: ./.github/workflows/action-run-k6-tests.yml
     secrets:
       TOKEN_GENERATOR_USERNAME: ${{ secrets.TOKEN_GENERATOR_USERNAME }}
