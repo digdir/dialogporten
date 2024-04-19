@@ -8,10 +8,8 @@ using Digdir.Domain.Dialogporten.GraphQL.Common.Authentication;
 using Digdir.Domain.Dialogporten.GraphQL.Common.Authorization;
 using Digdir.Domain.Dialogporten.GraphQL.Common.Extensions;
 using Digdir.Domain.Dialogporten.Infrastructure;
-using Digdir.Domain.Dialogporten.Infrastructure.Persistence;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.OptionExtensions;
 using Digdir.Domain.Dialogporten.GraphQL;
-using Digdir.Domain.Dialogporten.GraphQL.EndUser;
 using Microsoft.ApplicationInsights.Extensibility;
 using Serilog;
 using FluentValidation;
@@ -82,7 +80,6 @@ static void BuildAndRun(string[] args)
         // Clean architecture projects
         .AddApplication(builder.Configuration, builder.Environment)
         .AddInfrastructure(builder.Configuration, builder.Environment)
-
         .AddAutoMapper(Assembly.GetExecutingAssembly())
         .AddApplicationInsightsTelemetry()
         .AddScoped<IUser, LocalDevelopmentUser>()
@@ -90,15 +87,7 @@ static void BuildAndRun(string[] args)
         .AddAzureAppConfiguration()
 
         // Graph QL
-        .AddGraphQLServer()
-        .AddAuthorization()
-        .AddProjections()
-        .AddFiltering()
-        .AddSorting()
-        .RegisterDbContext<DialogDbContext>()
-        .AddDiagnosticEventListener<ApplicationInsightEventListener>()
-        .AddQueryType<DialogQueries>()
-        .Services
+        .AddDialogportenGraphQl()
 
         // Auth
         .AddDialogportenAuthentication(builder.Configuration)
@@ -110,18 +99,19 @@ static void BuildAndRun(string[] args)
     app.UseJwtSchemeSelector()
         .UseAuthentication()
         .UseAuthorization()
+        .UseSerilogRequestLogging()
         .UseAzureConfiguration();
 
     app.MapGraphQL()
-    .RequireAuthorization()
-    .WithOptions(new GraphQLServerOptions
-    {
-        EnableSchemaRequests = true,
-        Tool =
+        .RequireAuthorization()
+        .WithOptions(new GraphQLServerOptions
         {
-            Enable = true
-        }
-    });
+            EnableSchemaRequests = true,
+            Tool =
+            {
+                Enable = true
+            }
+        });
 
     app.MapHealthChecks("/healthz");
 
