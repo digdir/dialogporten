@@ -29,7 +29,7 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
             async token => await GetResourceIdsByOrg(token),
             token: cancellationToken);
         resourceIdsByOrg.TryGetValue(org, out var resourceIds);
-        return resourceIds ?? Array.Empty<string>();
+        return resourceIds ?? [];
     }
 
     private async Task<Dictionary<string, string[]>> GetResourceIdsByOrg(CancellationToken cancellationToken)
