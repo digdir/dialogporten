@@ -1,0 +1,33 @@
+name: Run K6 tests
+
+on:
+  workflow_dispatch:
+    inputs:
+      apiVersion:
+        description: 'API Version'
+        required: true
+        default: 'v1'
+      environment:
+        description: 'Environment'
+        required: true
+        default: 'test'
+        type: choice
+        options:
+          - test
+          - staging
+      testSuitePath:
+        description: 'Path to test suite to run'
+        required: true
+        default: 'tests/k6/suites/all-single-pass.js'
+
+jobs:
+  k6-test:
+    name: "Run K6 tests"
+    uses: ./.github/workflows/action-run-k6-tests.yml
+    secrets:
+      TOKEN_GENERATOR_USERNAME: ${{ secrets.TOKEN_GENERATOR_USERNAME }}
+      TOKEN_GENERATOR_PASSWORD: ${{ secrets.TOKEN_GENERATOR_PASSWORD }}
+    with:
+      environment: ${{ inputs.environment }}
+      apiVersion: ${{ inputs.apiVersion }}
+      testSuitePath: ${{ inputs.testSuitePath }}

@@ -67,3 +67,14 @@ jobs:
       environment: staging
       region: norwayeast
       version: ${{ needs.get-current-version.outputs.version }}
+
+  run-e2e-tests:
+    name: "Run K6 functional end-to-end tests"
+    uses: ./.github/workflows/action-run-k6-tests.yml
+    secrets:
+      TOKEN_GENERATOR_USERNAME: ${{ secrets.TOKEN_GENERATOR_USERNAME }}
+      TOKEN_GENERATOR_PASSWORD: ${{ secrets.TOKEN_GENERATOR_PASSWORD }}
+    with:
+      environment: staging
+      apiVersion: v1
+      testSuitePath: tests/k6/suites/all-single-pass.js
