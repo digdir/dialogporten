@@ -8,7 +8,7 @@ public interface IDialogActivityService
     Task EnsurePerformedByIsSetForActivities(IEnumerable<DialogActivity> activities, CancellationToken cancellationToken);
 }
 
-public class DialogActivityService
+public class DialogActivityService : IDialogActivityService
 {
     private readonly IUserOrganizationRegistry _userOrganizationRegistry;
 
