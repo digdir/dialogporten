@@ -21,6 +21,9 @@ on:
 jobs:
   k6-test:
     runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      pull-requests: write
 
     steps:
     - name: Checkout code
@@ -30,7 +33,7 @@ jobs:
       uses: grafana/k6-action@v0.3.1
       with:
         filename: ${{ inputs.testSuitePath }}
-        #flags: --quiet --log-output=stdout --include-system-env-vars
+        flags: --quiet --log-output=stdout --include-system-env-vars
       env:
         API_ENVIRONMENT: ${{ inputs.environment }}
         API_VERSION: ${{ inputs.apiVersion }}
@@ -41,9 +44,11 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: k6-summary-report
-        path: summary.json
+        path: junit.xml
 
     - name: 'Publish test results'
       uses: EnricoMi/publish-unit-test-result-action@v2
+      if: always()
       with:
-        junit_files: 'junit.xml'
+        files: |
+          junit.xml
