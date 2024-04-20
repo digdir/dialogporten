@@ -79,3 +79,7 @@ jobs:
       environment: staging
       apiVersion: v1
       testSuitePath: tests/k6/suites/all-single-pass.js
+    permissions:
+      checks: write
+      pull-requests: write
+  
