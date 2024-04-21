@@ -40,11 +40,20 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
 
         var resourceIdsByOrg = response
             .Where(x => x.ResourceType is ResourceTypeGenericAccess or ResourceTypeAltinnApp)
-            .GroupBy(x => x.HasCompetentAuthority.Organization)
+            .GroupBy(x => x.HasCompetentAuthority.Organization ?? string.Empty)
             .ToDictionary(
                 x => x.Key,
                 x => x.Select(
-                        x => $"{(x.ResourceType == ResourceTypeAltinnApp ? Constants.ServiceResourcePrefixApp : Constants.ServiceResourcePrefixGeneric)}{x.Identifier}")
+                        x =>
+                        {
+                            if (x.ResourceType != ResourceTypeAltinnApp)
+                                return $"{Constants.ServiceResourcePrefixGeneric}{x.Identifier}";
+
+                            // The resource registry prefixes the resource id with the org code, we need to remove this
+                            var identifier = x.Identifier.Replace($"app_{x.HasCompetentAuthority.OrgCode}_", string.Empty);
+                            return $"{Constants.ServiceResourcePrefixApp}{identifier}";
+
+                        })
                     .ToArray()
             );
 
@@ -60,6 +69,9 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
 
     private sealed class CompetentAuthority
     {
-        public required string Organization { get; init; }
+        // Altinn 2 resources does not always have an organization number as competent authority, only service owner code
+        // We filter these out anyway, but we need to allow null here
+        public string? Organization { get; init; }
+        public required string OrgCode { get; init; }
     }
 }

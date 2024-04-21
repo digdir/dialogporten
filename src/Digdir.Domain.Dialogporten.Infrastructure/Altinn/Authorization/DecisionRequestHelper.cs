@@ -17,6 +17,9 @@ internal static class DecisionRequestHelper
     private const string AttributeIdAction = "urn:oasis:names:tc:xacml:1.0:action:action-id";
     private const string AttributeIdResource = "urn:altinn:resource";
     private const string AttributeIdResourceInstance = "urn:altinn:resourceinstance";
+    private const string AttributeIdOrg = "urn:altinn:org";
+    private const string AttributeIdApp = "urn:altinn:app";
+    private const string AttributeIdAppInstance = "urn:altinn:instance-id";
     private const string AttributeIdSubResource = "urn:altinn:subresource";
     private const string PermitResponse = "Permit";
 
@@ -24,7 +27,7 @@ internal static class DecisionRequestHelper
     {
         var accessSubject = CreateAccessSubjectCategory(request.Claims);
         var actions = CreateActionCategories(request.AltinnActions, out var actionIdByName);
-        var resources = CreateResourceCategories(request.ServiceResource, request.DialogId, request.Party, request.AltinnActions, out var resourceIdByName);
+        var resources = CreateResourceCategories(request.ServiceResource, request.Org, request.DialogId, request.Party, request.AltinnActions, out var resourceIdByName);
 
         var multiRequests = CreateMultiRequests(request.AltinnActions, actionIdByName, resourceIdByName);
 
@@ -95,6 +98,7 @@ internal static class DecisionRequestHelper
 
     private static List<XacmlJsonCategory> CreateResourceCategories(
         string serviceResource,
+        string org,
         Guid dialogId,
         string party,
         HashSet<AltinnAction> altinnActions, out Dictionary<string, string> resourceIdByName)
@@ -111,15 +115,16 @@ internal static class DecisionRequestHelper
         var partyAttribute = GetPartyAttribute(party);
         return resourceIdByName
             .Select(x =>
-                CreateResourceCategory(x.Value, serviceResource, dialogId, partyAttribute, x.Key))
+                CreateResourceCategory(x.Value, serviceResource, org, dialogId, partyAttribute, x.Key))
             .ToList();
     }
 
-    private static XacmlJsonCategory CreateResourceCategory(string id, string serviceResource, Guid? dialogId, XacmlJsonAttribute? partyAttribute, string? subResource = null)
+    private static XacmlJsonCategory CreateResourceCategory(string id, string serviceResource, string org, Guid? dialogId, XacmlJsonAttribute? partyAttribute, string? subResource = null)
     {
         var (ns, value) = SplitNsAndValue(serviceResource);
         var attributes = new List<XacmlJsonAttribute>
         {
+            new() { AttributeId = AttributeIdOrg, Value = org },
             new() { AttributeId = ns, Value = value }
         };
 
@@ -128,9 +133,32 @@ internal static class DecisionRequestHelper
             attributes.Add(partyAttribute);
         }
 
-        if (dialogId is not null)
+
+        if (dialogId is not null && ns == AttributeIdResourceInstance)
         {
-            attributes.Add(new() { AttributeId = AttributeIdResourceInstance, Value = dialogId.ToString() });
+            if (ns == AttributeIdResourceInstance)
+            {
+                attributes.Add(new()
+                {
+                    AttributeId = AttributeIdResourceInstance,
+                    Value = dialogId.ToString()
+                });
+            }
+            else if (ns == AttributeIdAppInstance)
+            {
+                // TODO!
+                // For app instances, we the syntax of the value is "{partyID}/{instanceID}".
+                // We do not have Altinn partyID in the request, so we cannot support this.
+                // This means we cannot easily support instance specific authorizations for apps.
+                // This should probably be fixed in the PDP, lest we use the party lookup service
+                // to get this value (which would suck).
+                /*
+                {
+                    AttributeId = AttributeIdAppInstance,
+                    Value = dialogId.ToString()
+                });
+                */
+            }
         }
 
         if (subResource is not null)
@@ -248,10 +276,11 @@ internal static class DecisionRequestHelper
                     continue;
                 }
 
-                // Get the name of the resource.
+                // Get the name of the resource. This may be either an app or an generic service resource.
                 var resourceId = $"r{i + 1}";
-                var serviceResource = $"{AttributeIdResource}:" + xamlJsonRequestRoot.Request.Resource.First(r => r.Id == resourceId).Attribute
-                        .First(a => a.AttributeId == AttributeIdResource).Value;
+                var resourceList = xamlJsonRequestRoot.Request.Resource.First(r => r.Id == resourceId).Attribute;
+                var resource = resourceList.First(a => a.AttributeId is AttributeIdResource or AttributeIdApp);
+                var serviceResource = resource.AttributeId + ":" + resource.Value;
 
                 string party;
                 var partyOrgNr = xamlJsonRequestRoot.Request.Resource.First(r => r.Id == resourceId).Attribute
@@ -293,7 +322,9 @@ internal static class DecisionRequestHelper
                 foreach (var serviceResource in serviceResources)
                 {
                     var rid = $"r{++resourceCounter}";
-                    resources.Add(CreateResourceCategory(rid, serviceResource, null, partyAttribute));
+                    // For the non-scalable version, we cannot easily support the org attribute, so we just hard code it to "digdir".
+                    // This means that only dialogs with the org "digdir" will be authorized in the search view.
+                    resources.Add(CreateResourceCategory(rid, serviceResource, "digdir", null, partyAttribute));
                 }
             }
 

@@ -10,6 +10,7 @@ public sealed class DialogDetailsAuthorizationRequest
 {
     public required List<Claim> Claims { get; init; }
     public required string ServiceResource { get; init; }
+    public required string Org { get; init; }
     public required Guid DialogId { get; init; }
     public required string Party { get; init; }
 
