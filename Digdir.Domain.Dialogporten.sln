@@ -55,6 +55,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Digdir.Domain.Dialogporten.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Digdir.Domain.Dialogporten.GraphQL", "src\Digdir.Domain.Dialogporten.GraphQL\Digdir.Domain.Dialogporten.GraphQL.csproj", "{234FE24D-1047-4E29-A625-1EB406C37A2D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Digdir.Domain.Dialogporten.GraphQl.Integration.Tests", "tests\Digdir.Domain.Dialogporten.GraphQl.Integration.Tests\Digdir.Domain.Dialogporten.GraphQl.Integration.Tests.csproj", "{1EF1AE42-17F1-4761-ACFE-DF8E8A9B9429}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -129,6 +131,10 @@ Global
 		{234FE24D-1047-4E29-A625-1EB406C37A2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{234FE24D-1047-4E29-A625-1EB406C37A2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{234FE24D-1047-4E29-A625-1EB406C37A2D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1EF1AE42-17F1-4761-ACFE-DF8E8A9B9429}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1EF1AE42-17F1-4761-ACFE-DF8E8A9B9429}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1EF1AE42-17F1-4761-ACFE-DF8E8A9B9429}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1EF1AE42-17F1-4761-ACFE-DF8E8A9B9429}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -154,6 +160,7 @@ Global
 		{030909AA-5B61-46B4-9B74-0D2D779478FF} = {3C2C775D-F2D1-42A2-B53F-CC6D5FF59633}
 		{42004236-D45C-4A1F-9FF9-CF12B7388389} = {CADB8189-4AA1-4732-844A-C41DBF3EC8B7}
 		{234FE24D-1047-4E29-A625-1EB406C37A2D} = {320B47A0-5EB8-4B6E-8C84-90633A1849CA}
+		{1EF1AE42-17F1-4761-ACFE-DF8E8A9B9429} = {CADB8189-4AA1-4732-844A-C41DBF3EC8B7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B2FE67FF-7622-4AFB-AD8E-961B6A39D888}

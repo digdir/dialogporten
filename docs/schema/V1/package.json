@@ -1,7 +1,7 @@
 {
-  "name": "dialogporten-swagger",
-  "version": "1.0.4",
-  "description": "OpenAPI spec for Dialogporten",
+  "name": "dialogporten-schema",
+  "version": "1.0.6",
+  "description": "GraphQl schema and OpenAPI spec for Dialogporten",
   "author": "DigDir",
   "repository": {
     "url": "git+https://github.com/digdir/dialogporten.git"

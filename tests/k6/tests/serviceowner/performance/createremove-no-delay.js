@@ -1,4 +1,4 @@
-import { postSO, deleteSO, expect, describe, getServiceOwnerTokenFromGenerator } from "../../../common/testimports.js";
+import { postSO, purgeSO, expect, describe, getServiceOwnerTokenFromGenerator } from "../../../common/testimports.js";
 import { default as dialogToInsert } from '../testdata/01-create-dialog.js';
 
 export function setup() {
@@ -21,7 +21,7 @@ export default function(paramsWithToken) {
 
     describe('remove dialog', () => {
         if (dialogId) {
-            let r = deleteSO('dialogs/' + dialogId, paramsWithToken);   
+            let r = purgeSO('dialogs/' + dialogId, paramsWithToken);   
             expect(r.status, 'response status').to.equal(204);
         }
     });
