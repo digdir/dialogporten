@@ -9,9 +9,6 @@ public sealed class DialogSearchAuthorizationRequest
 {
     public required List<Claim> Claims { get; init; }
     public List<string> ConstraintParties { get; set; } = [];
-
-    // FIXME! This is not currently used, but for apps we need to also include org-name to disambiguate
-    // apps having the same name between orgs
     public List<string> ConstraintServiceResources { get; set; } = [];
 }
 
