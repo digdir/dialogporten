@@ -1,4 +1,4 @@
-﻿{
+{
   "openapi": "3.0.0",
   "info": {
     "title": "Dialogporten",
@@ -1597,6 +1597,42 @@
                 }
               }
             }
+          }
+        },
+        "security": [
+          {
+            "JWTBearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/enduser/parties": {
+      "get": {
+        "tags": [
+          "Enduser"
+        ],
+        "summary": "Gets the list of authorized parties for the end user",
+        "description": "Gets the list of authorized parties for the end user. For more information see the documentation (link TBD).",
+        "operationId": "GetParties",
+        "responses": {
+          "200": {
+            "description": "The list of authorized parties for the end user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GetPartyDto"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         },
         "security": [
@@ -3728,6 +3764,55 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/LocalizationDto"
+            }
+          }
+        }
+      },
+      "GetPartyDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "authorizedParties": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AuthorizedPartyDto"
+            }
+          }
+        }
+      },
+      "AuthorizedPartyDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "party": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "partyType": {
+            "type": "string"
+          },
+          "isDeleted": {
+            "type": "boolean"
+          },
+          "hasKeyRole": {
+            "type": "boolean"
+          },
+          "isMainAdministrator": {
+            "type": "boolean"
+          },
+          "isAccessManager": {
+            "type": "boolean"
+          },
+          "hasOnlyAccessToSubParties": {
+            "type": "boolean"
+          },
+          "subParties": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/AuthorizedPartyDto"
             }
           }
         }
