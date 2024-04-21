@@ -3,6 +3,7 @@ using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
+using Digdir.Domain.Dialogporten.Domain.Parties.Abstractions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.Authorization;
@@ -47,4 +48,7 @@ internal sealed class LocalDevelopmentAltinnAuthorization : IAltinnAuthorization
 
         return authorizedResources;
     }
+
+    public async Task<AuthorizedPartiesResult> GetAuthorizedParties(IPartyIdentifier authenticatedParty, CancellationToken cancellationToken = default)
+        => await Task.FromResult(new AuthorizedPartiesResult { AuthorizedParties = new List<AuthorizedParty> { new() { Name = "Local Party", Party = authenticatedParty.FullId } } });
 }

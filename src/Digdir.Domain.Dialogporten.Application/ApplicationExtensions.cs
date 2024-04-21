@@ -43,6 +43,7 @@ public static class ApplicationExtensions
             .AddTransient<IUserOrganizationRegistry, UserOrganizationRegistry>()
             .AddTransient<IUserResourceRegistry, UserResourceRegistry>()
             .AddTransient<IUserNameRegistry, UserNameRegistry>()
+            .AddTransient<IUserParties, UserParties>()
             .AddTransient<IClock, Clock>()
             .AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>))
             .AddTransient(typeof(IPipelineBehavior<,>), typeof(DomainContextBehaviour<,>));
