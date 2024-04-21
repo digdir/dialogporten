@@ -101,8 +101,8 @@ public class DecisionRequestHelperTests
         // Check Resource attributes
         var resource1 = result.Request.Resource.FirstOrDefault(r => r.Id == "r1");
         Assert.NotNull(resource1);
-        Assert.Contains(resource1.Attribute, a => a.AttributeId == "urn:altinn:org" && a.Value == "some-org");
-        Assert.Contains(resource1.Attribute, a => a.AttributeId == "urn:altinn:app" && a.Value == "some-app");
+        Assert.Contains(resource1.Attribute, a => a.AttributeId == "urn:altinn:org" && a.Value == "ttd");
+        Assert.Contains(resource1.Attribute, a => a.AttributeId == "urn:altinn:app" && a.Value == "some-app_with_underscores");
 
         // We cannot support instance id for apps since we don't have a partyId
         // Assert.Contains(resource1.Attribute, a => a.AttributeId == "urn:altinn:instance-id" && a.Value == dialogId.ToString());
@@ -174,8 +174,7 @@ public class DecisionRequestHelperTests
         return new DialogDetailsAuthorizationRequest
         {
             Claims = allClaims,
-            ServiceResource = isApp ? "urn:altinn:app:some-app" : "urn:altinn:resource:some-service",
-            Org = "some-org",
+            ServiceResource = isApp ? "urn:altinn:app:app_ttd_some-app_with_underscores" : "urn:altinn:resource:some-service",
             DialogId = Guid.NewGuid(),
 
             // This should be copied resources with attributes "urn:altinn:organizationnumber" if starting with "urn:altinn:organization:identifier-no::"

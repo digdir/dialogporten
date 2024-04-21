@@ -27,7 +27,7 @@ internal static class DecisionRequestHelper
     {
         var accessSubject = CreateAccessSubjectCategory(request.Claims);
         var actions = CreateActionCategories(request.AltinnActions, out var actionIdByName);
-        var resources = CreateResourceCategories(request.ServiceResource, request.Org, request.DialogId, request.Party, request.AltinnActions, out var resourceIdByName);
+        var resources = CreateResourceCategories(request.ServiceResource, request.DialogId, request.Party, request.AltinnActions, out var resourceIdByName);
 
         var multiRequests = CreateMultiRequests(request.AltinnActions, actionIdByName, resourceIdByName);
 
@@ -98,7 +98,6 @@ internal static class DecisionRequestHelper
 
     private static List<XacmlJsonCategory> CreateResourceCategories(
         string serviceResource,
-        string org,
         Guid dialogId,
         string party,
         HashSet<AltinnAction> altinnActions, out Dictionary<string, string> resourceIdByName)
@@ -115,28 +114,31 @@ internal static class DecisionRequestHelper
         var partyAttribute = GetPartyAttribute(party);
         return resourceIdByName
             .Select(x =>
-                CreateResourceCategory(x.Value, serviceResource, org, dialogId, partyAttribute, x.Key))
+                CreateResourceCategory(x.Value, serviceResource, dialogId, partyAttribute, x.Key))
             .ToList();
     }
 
-    private static XacmlJsonCategory CreateResourceCategory(string id, string serviceResource, string org, Guid? dialogId, XacmlJsonAttribute? partyAttribute, string? subResource = null)
+    private static XacmlJsonCategory CreateResourceCategory(string id, string serviceResource, Guid? dialogId, XacmlJsonAttribute? partyAttribute, string? subResource = null)
     {
-        var (ns, value) = SplitNsAndValue(serviceResource);
+        var (ns, value, org) = SplitNsAndValue(serviceResource);
         var attributes = new List<XacmlJsonAttribute>
         {
-            new() { AttributeId = AttributeIdOrg, Value = org },
             new() { AttributeId = ns, Value = value }
         };
+
+        if (org is not null)
+        {
+            attributes.Add(new XacmlJsonAttribute { AttributeId = AttributeIdOrg, Value = org });
+        }
 
         if (partyAttribute is not null)
         {
             attributes.Add(partyAttribute);
         }
 
-
-        if (dialogId is not null && ns == AttributeIdResourceInstance)
+        if (dialogId is not null)
         {
-            if (ns == AttributeIdResourceInstance)
+            if (ns == AttributeIdResource)
             {
                 attributes.Add(new()
                 {
@@ -173,20 +175,29 @@ internal static class DecisionRequestHelper
         };
     }
 
-    private static (string, string) SplitNsAndValue(string serviceResource)
+    private static (string, string, string?) SplitNsAndValue(string serviceResource)
     {
         var lastColonIndex = serviceResource.LastIndexOf(':');
         if (lastColonIndex == -1 || lastColonIndex == serviceResource.Length - 1)
         {
             // If we don't recognize the format, we just return the whole string as the value and assume
             // that the caller wants to refer a resource in the Resource Registry namespace.
-            return (AttributeIdResource, serviceResource);
+            return (AttributeIdResource, serviceResource, null);
         }
 
         var ns = serviceResource[..lastColonIndex];
         var value = serviceResource[(lastColonIndex + 1)..];
 
-        return (ns, value);
+        if (ns != AttributeIdApp) return (ns, value, null);
+
+        // If the namespace is "urn:altinn:app", the value should have the format "app_{org}_{app_id}".
+        // We want to split this into the org and app id. If not, something is borked in the data,
+        // and we will probably cause an error in the PDP API (since it throws if the org/app combo
+        // doesn't let it get to the app policy)
+        var parts = value.Split('_');
+        return parts.Length >= 3
+            ? (AttributeIdApp, string.Join('_', parts[2..]), parts[1])
+            : (AttributeIdApp, value, null);
     }
 
     private static XacmlJsonAttribute? GetPartyAttribute(string party)
@@ -280,6 +291,14 @@ internal static class DecisionRequestHelper
                 var resourceId = $"r{i + 1}";
                 var resourceList = xamlJsonRequestRoot.Request.Resource.First(r => r.Id == resourceId).Attribute;
                 var resource = resourceList.First(a => a.AttributeId is AttributeIdResource or AttributeIdApp);
+
+                // If it's an app, we need to include the org code in the service resource
+                if (resource.AttributeId == AttributeIdApp)
+                {
+                    var orgCode = resourceList.First(a => a.AttributeId == AttributeIdOrg).Value;
+                    resource.Value = $"app_{orgCode}_{resource.Value}";
+                }
+
                 var serviceResource = resource.AttributeId + ":" + resource.Value;
 
                 string party;
@@ -322,9 +341,7 @@ internal static class DecisionRequestHelper
                 foreach (var serviceResource in serviceResources)
                 {
                     var rid = $"r{++resourceCounter}";
-                    // For the non-scalable version, we cannot easily support the org attribute, so we just hard code it to "digdir".
-                    // This means that only dialogs with the org "digdir" will be authorized in the search view.
-                    resources.Add(CreateResourceCategory(rid, serviceResource, "digdir", null, partyAttribute));
+                    resources.Add(CreateResourceCategory(rid, serviceResource, null, partyAttribute));
                 }
             }
 

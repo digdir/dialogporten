@@ -44,16 +44,9 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
             .ToDictionary(
                 x => x.Key,
                 x => x.Select(
-                        x =>
-                        {
-                            if (x.ResourceType != ResourceTypeAltinnApp)
-                                return $"{Constants.ServiceResourcePrefixGeneric}{x.Identifier}";
-
-                            // The resource registry prefixes the resource id with the org code, we need to remove this
-                            var identifier = x.Identifier.Replace($"app_{x.HasCompetentAuthority.OrgCode}_", string.Empty);
-                            return $"{Constants.ServiceResourcePrefixApp}{identifier}";
-
-                        })
+                    x => x.ResourceType == ResourceTypeAltinnApp
+                        ? $"{Constants.ServiceResourcePrefixApp}{x.Identifier}"
+                        : $"{Constants.ServiceResourcePrefixGeneric}{x.Identifier}")
                     .ToArray()
             );
 
