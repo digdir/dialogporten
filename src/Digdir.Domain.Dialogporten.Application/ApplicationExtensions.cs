@@ -2,6 +2,7 @@
 using Digdir.Domain.Dialogporten.Application.Common.Behaviours;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.OptionExtensions;
+using Digdir.Domain.Dialogporten.Application.Common.Services;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.Configuration;
@@ -44,6 +45,7 @@ public static class ApplicationExtensions
             .AddTransient<IUserResourceRegistry, UserResourceRegistry>()
             .AddTransient<IUserNameRegistry, UserNameRegistry>()
             .AddTransient<IUserParties, UserParties>()
+            .AddTransient<IDialogActivityService, DialogActivityService>()
             .AddTransient<IClock, Clock>()
             .AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>))
             .AddTransient(typeof(IPipelineBehavior<,>), typeof(DomainContextBehaviour<,>));
