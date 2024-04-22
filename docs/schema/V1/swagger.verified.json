@@ -1622,7 +1622,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/GetPartyDto"
+                    "$ref": "#/components/schemas/GetPartiesDto"
                   }
                 }
               }
@@ -3768,7 +3768,7 @@
           }
         }
       },
-      "GetPartyDto": {
+      "GetPartiesDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
