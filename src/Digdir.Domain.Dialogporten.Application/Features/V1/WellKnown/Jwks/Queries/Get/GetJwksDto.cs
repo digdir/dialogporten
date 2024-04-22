@@ -2,7 +2,7 @@
 
 public sealed class GetJwksDto
 {
-    public List<Jwk> Keys { get; set; } = new();
+    public List<Jwk> Keys { get; set; } = [];
 }
 
 public sealed class Jwk

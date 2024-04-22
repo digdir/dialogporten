@@ -103,9 +103,9 @@ public static class InfrastructureExtensions
             // temporarily whilst updating the cache in the background. Note that we are also using eager refresh
             // and a backplane.
             FactorySoftTimeout = TimeSpan.FromSeconds(2),
-            // Timeout for the cache to wait for the factory to complete, which when reached without fail safe data
+            // Timeout for the cache to wait for the factory to complete, which when reached without fail-safe data
             // will cause an exception to be thrown
-            FactoryHardTimeout = TimeSpan.FromSeconds(10),
+            FactoryHardTimeout = TimeSpan.FromSeconds(10)
         });
 
         services.AddDbContext<DialogDbContext>((services, options) =>
@@ -241,7 +241,7 @@ public static class InfrastructureExtensions
                 JitterMaxDuration = settings.JitterMaxDuration,
                 EagerRefreshThreshold = settings.EagerRefreshThreshold,
 
-                SkipMemoryCache = settings.SkipMemoryCache,
+                SkipMemoryCache = settings.SkipMemoryCache
             })
             .WithRegisteredSerializer()
             .WithRegisteredDistributedCache()

@@ -35,7 +35,7 @@ public class ApplicationInsightEventListener : ExecutionDiagnosticEventListener
         var requestTelemetry = new RequestTelemetry
         {
             Name = $"/graphql{operationPath}",
-            Url = new Uri(httpContext.Request.GetUri().AbsoluteUri + operationPath),
+            Url = new Uri(httpContext.Request.GetUri().AbsoluteUri + operationPath)
         };
 
         requestTelemetry.Context.Operation.Name = $"POST /graphql/{operationPath}";
