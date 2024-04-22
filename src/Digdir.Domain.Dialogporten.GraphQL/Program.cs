@@ -82,7 +82,7 @@ static void BuildAndRun(string[] args)
         .AddInfrastructure(builder.Configuration, builder.Environment)
         .AddAutoMapper(Assembly.GetExecutingAssembly())
         .AddApplicationInsightsTelemetry()
-        .AddScoped<IUser, LocalDevelopmentUser>()
+        .AddScoped<IUser, ApplicationUser>()
         .AddValidatorsFromAssembly(thisAssembly, ServiceLifetime.Transient, includeInternalTypes: true)
         .AddAzureAppConfiguration()
 
