@@ -74,15 +74,19 @@ public static class InfrastructureExtensions
 
         services.ConfigureFusionCache(nameof(Altinn.NameRegistry), new()
         {
-            Duration = TimeSpan.FromDays(1)
+            Duration = TimeSpan.FromHours(24),
+            FailSafeMaxDuration = TimeSpan.FromHours(26)
         })
         .ConfigureFusionCache(nameof(Altinn.ResourceRegistry), new()
         {
-            Duration = TimeSpan.FromMinutes(20)
+            Duration = TimeSpan.FromMinutes(20),
+            // The resource list is several megabytes and might take a while to process
+            FactoryHardTimeout = TimeSpan.FromSeconds(10)
         })
         .ConfigureFusionCache(nameof(Altinn.OrganizationRegistry), new()
         {
-            Duration = TimeSpan.FromDays(1)
+            Duration = TimeSpan.FromHours(24),
+            FailSafeMaxDuration = TimeSpan.FromHours(26)
         })
         .ConfigureFusionCache(nameof(Altinn.Authorization), new()
         {
@@ -103,9 +107,9 @@ public static class InfrastructureExtensions
             // temporarily whilst updating the cache in the background. Note that we are also using eager refresh
             // and a backplane.
             FactorySoftTimeout = TimeSpan.FromSeconds(2),
-            // Timeout for the cache to wait for the factory to complete, which when reached without fail safe data
+            // Timeout for the cache to wait for the factory to complete, which when reached without fail-safe data
             // will cause an exception to be thrown
-            FactoryHardTimeout = TimeSpan.FromSeconds(10),
+            FactoryHardTimeout = TimeSpan.FromSeconds(10)
         });
 
         services.AddDbContext<DialogDbContext>((services, options) =>
@@ -187,8 +191,8 @@ public static class InfrastructureExtensions
         public TimeSpan Duration { get; set; } = TimeSpan.FromMinutes(1);
         public TimeSpan FailSafeMaxDuration { get; set; } = TimeSpan.FromHours(2);
         public TimeSpan FailSafeThrottleDuration { get; set; } = TimeSpan.FromSeconds(30);
-        public TimeSpan FactorySoftTimeout { get; set; } = TimeSpan.FromMilliseconds(100);
-        public TimeSpan FactoryHardTimeout { get; set; } = TimeSpan.FromMilliseconds(1500);
+        public TimeSpan FactorySoftTimeout { get; set; } = TimeSpan.FromSeconds(1);
+        public TimeSpan FactoryHardTimeout { get; set; } = TimeSpan.FromSeconds(5);
         public TimeSpan DistributedCacheSoftTimeout { get; set; } = TimeSpan.FromSeconds(1);
         public TimeSpan DistributedCacheHardTimeout { get; set; } = TimeSpan.FromSeconds(2);
         public bool AllowBackgroundDistributedCacheOperations { get; set; } = true;
@@ -241,7 +245,7 @@ public static class InfrastructureExtensions
                 JitterMaxDuration = settings.JitterMaxDuration,
                 EagerRefreshThreshold = settings.EagerRefreshThreshold,
 
-                SkipMemoryCache = settings.SkipMemoryCache,
+                SkipMemoryCache = settings.SkipMemoryCache
             })
             .WithRegisteredSerializer()
             .WithRegisteredDistributedCache()

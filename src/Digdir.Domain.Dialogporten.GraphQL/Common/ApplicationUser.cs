@@ -1,7 +1,7 @@
-﻿using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
 using System.Security.Claims;
+using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
 
-namespace Digdir.Domain.Dialogporten.WebApi.Common;
+namespace Digdir.Domain.Dialogporten.GraphQL.Common;
 
 internal sealed class ApplicationUser : IUser
 {
@@ -13,6 +13,7 @@ internal sealed class ApplicationUser : IUser
     }
 
     public ClaimsPrincipal GetPrincipal()
-        => _httpContextAccessor.HttpContext?.User ??
-           throw new InvalidOperationException("No user principal found");
+    {
+        return _httpContextAccessor.HttpContext?.User ?? throw new InvalidOperationException("No user principal found");
+    }
 }
