@@ -1,5 +1,5 @@
 ﻿schema {
-  query: DialogQueries
+  query: Queries
 }
 
 type Activity {
@@ -34,6 +34,18 @@ type ApiActionEndpoint {
   sunsetAt: DateTime
 }
 
+type AuthorizedParty {
+  party: String!
+  name: String!
+  partyType: String!
+  isDeleted: Boolean!
+  hasKeyRole: Boolean!
+  isMainAdministrator: Boolean!
+  isAccessManager: Boolean!
+  hasOnlyAccessToSubParties: Boolean!
+  subParties: [AuthorizedParty!]
+}
+
 type Content {
   type: ContentType!
   value: [Localization!]!
@@ -61,11 +73,6 @@ type Dialog {
   apiActions: [ApiAction!]!
   activities: [Activity!]!
   seenSinceLastUpdate: [SeenLog!]!
-}
-
-type DialogQueries @authorize(policy: "enduser") {
-  dialogById(dialogId: UUID!): Dialog!
-  searchDialogs(input: SearchDialogInput!): SearchDialogsPayload!
 }
 
 type Element {
@@ -101,6 +108,12 @@ type GuiAction {
 type Localization {
   value: String!
   cultureCode: String!
+}
+
+type Queries @authorize(policy: "enduser") {
+  dialogById(dialogId: UUID!): Dialog!
+  searchDialogs(input: SearchDialogInput!): SearchDialogsPayload!
+  parties: [AuthorizedParty!]!
 }
 
 type SearchDialog {
