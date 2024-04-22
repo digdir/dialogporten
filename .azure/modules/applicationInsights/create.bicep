@@ -7,7 +7,7 @@ type Sku = {
 }
 param sku Sku
 
-resource appInsightsWorkspace 'Microsoft.OperationalInsights/workspaces@2022-10-01' = {
+resource appInsightsWorkspace 'Microsoft.OperationalInsights/workspaces@2023-09-01' = {
     name: '${namePrefix}-insightsWorkspace'
     location: location
     properties: {
