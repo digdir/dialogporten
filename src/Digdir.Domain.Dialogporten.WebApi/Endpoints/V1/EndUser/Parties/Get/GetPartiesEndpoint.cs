@@ -5,7 +5,7 @@ using MediatR;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.EndUser.Parties.Get;
 
-public class GetPartiesEndpoint : EndpointWithoutRequest<GetPartyDto>
+public class GetPartiesEndpoint : EndpointWithoutRequest<GetPartiesDto>
 {
     private readonly ISender _sender;
 
@@ -25,7 +25,7 @@ public class GetPartiesEndpoint : EndpointWithoutRequest<GetPartyDto>
 
     public override async Task HandleAsync(CancellationToken ct)
     {
-        var result = await _sender.Send(new GetPartyQuery(), ct);
+        var result = await _sender.Send(new GetPartiesQuery(), ct);
         await SendOkAsync(result, ct);
     }
 }

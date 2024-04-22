@@ -1,11 +1,6 @@
-namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Parties.Queries.Get;
+namespace Digdir.Domain.Dialogporten.GraphQL.EndUser.Parties;
 
-public class GetPartyDto
-{
-    public List<AuthorizedPartyDto> AuthorizedParties { get; init; } = new();
-}
-
-public class AuthorizedPartyDto
+public class AuthorizedParty
 {
     public string Party { get; init; } = null!;
     public string Name { get; init; } = null!;
@@ -15,5 +10,5 @@ public class AuthorizedPartyDto
     public bool IsMainAdministrator { get; init; }
     public bool IsAccessManager { get; init; }
     public bool HasOnlyAccessToSubParties { get; init; }
-    public List<AuthorizedPartyDto>? SubParties { get; init; }
+    public List<AuthorizedParty>? SubParties { get; init; }
 }

@@ -11,7 +11,7 @@ public class GetPartiesSwaggerConfig : ISwaggerConfig
 
     public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder)
         => builder.OperationId(OperationId)
-            .Produces<List<GetPartyDto>>();
+            .Produces<List<GetPartiesDto>>();
 
     public static object GetExample() => throw new NotImplementedException();
 }
