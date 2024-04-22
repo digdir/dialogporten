@@ -177,8 +177,7 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
         if (response.StatusCode != HttpStatusCode.OK)
         {
             var errorResponse = await response.Content.ReadAsStringAsync(cancellationToken);
-            _logger.LogWarning(
-                nameof(AltinnAuthorizationClient) + ".SendRequest failed with non-successful status code: {StatusCode} {Response}",
+            _logger.LogWarning("AltinnAuthorizationClient.SendRequest failed with non-successful status code: {StatusCode} {Response}",
                 response.StatusCode, errorResponse);
 
             return default;

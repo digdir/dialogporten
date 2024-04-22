@@ -33,7 +33,7 @@ internal static class AuthorizedPartiesHelper
         {
             PartyTypeOrganization => NorwegianOrganizationIdentifier.PrefixWithSeparator + dto.OrganizationNumber,
             PartyTypePerson => NorwegianPersonIdentifier.PrefixWithSeparator + dto.PersonId,
-            _ => throw new ArgumentOutOfRangeException(nameof(dto.Type))
+            _ => throw new ArgumentOutOfRangeException(nameof(dto))
         };
 
         return new AuthorizedParty
@@ -44,10 +44,10 @@ internal static class AuthorizedPartiesHelper
             {
                 PartyTypeOrganization => AuthorizedPartyType.Organization,
                 PartyTypePerson => AuthorizedPartyType.Person,
-                _ => throw new ArgumentOutOfRangeException(nameof(dto.Type))
+                _ => throw new ArgumentOutOfRangeException(nameof(dto))
             },
             IsDeleted = dto.IsDeleted,
-            HasKeyRole = dto.AuthorizedRoles.Any(role => KeyRoleCodes.Contains(role)),
+            HasKeyRole = dto.AuthorizedRoles.Exists(role => KeyRoleCodes.Contains(role)),
             IsMainAdministrator = dto.AuthorizedRoles.Contains(MainAdministratorRoleCode),
             IsAccessManager = dto.AuthorizedRoles.Contains(AccessManagerRoleCode),
             HasOnlyAccessToSubParties = dto.OnlyHierarchyElementWithNoAccess,
