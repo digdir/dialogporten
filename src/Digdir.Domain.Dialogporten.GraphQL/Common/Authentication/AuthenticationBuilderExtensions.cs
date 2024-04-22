@@ -12,9 +12,9 @@ internal static class AuthenticationBuilderExtensions
     {
         var jwtTokenSchemas = configuration
             .GetSection(GraphQlSettings.SectionName)
-            .Get<GraphQlSettings>()
-            ?.Authentication
-            ?.JwtBearerTokenSchemas;
+            .Get<GraphQlSettings>()?
+            .Authentication?
+            .JwtBearerTokenSchemas;
 
         if (jwtTokenSchemas is null || jwtTokenSchemas.Count == 0)
             // Validation should have caught this.
