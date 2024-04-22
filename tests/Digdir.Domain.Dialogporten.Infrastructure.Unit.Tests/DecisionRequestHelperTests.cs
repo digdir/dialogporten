@@ -144,7 +144,7 @@ public class DecisionRequestHelperTests
             ),
             $"{NorwegianPersonIdentifier.PrefixWithSeparator}12345678901");
 
-        // Add an additional action to the request that the mocked response should give a non-permit response for
+        // Add an action to the request that the mocked response should give a non-permit response for
         request.AltinnActions.Add(new AltinnAction("failaction", Constants.MainResource));
 
         var jsonRequestRoot = DecisionRequestHelper.CreateDialogDetailsRequest(request);

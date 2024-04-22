@@ -118,8 +118,13 @@ public class DialogApplication : IAsyncLifetime
         var organizationRegistrySubstitute = Substitute.For<IOrganizationRegistry>();
 
         organizationRegistrySubstitute
-            .GetOrgShortName(Arg.Any<string>(), Arg.Any<CancellationToken>())
-            .Returns("digdir");
+            .GetOrgInfo(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(new OrganizationInfo
+            {
+                OrgNumber = "991825827",
+                ShortName = "digdir",
+                LongNames = new[] { new OrganizationLongName { LongName = "Digitaliseringsdirektoratet", Language = "nb" } }
+            });
 
         return organizationRegistrySubstitute;
     }

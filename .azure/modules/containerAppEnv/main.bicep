@@ -3,7 +3,7 @@ param namePrefix string
 
 param appInsightWorkspaceName string
 
-resource appInsightsWorkspace 'Microsoft.OperationalInsights/workspaces@2022-10-01' existing = {
+resource appInsightsWorkspace 'Microsoft.OperationalInsights/workspaces@2023-09-01' existing = {
   name: appInsightWorkspaceName
 }
 

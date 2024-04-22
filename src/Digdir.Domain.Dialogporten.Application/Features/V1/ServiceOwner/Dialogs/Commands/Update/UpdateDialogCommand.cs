@@ -2,12 +2,14 @@
 using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.Enumerables;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
+using Digdir.Domain.Dialogporten.Application.Common.Services;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements;
+using Digdir.Domain.Dialogporten.Domain.Localizations;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
@@ -32,19 +34,22 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
     private readonly IUnitOfWork _unitOfWork;
     private readonly IDomainContext _domainContext;
     private readonly IUserResourceRegistry _userResourceRegistry;
+    private readonly IDialogActivityService _dialogActivityService;
 
     public UpdateDialogCommandHandler(
         IDialogDbContext db,
         IMapper mapper,
         IUnitOfWork unitOfWork,
         IDomainContext domainContext,
-        IUserResourceRegistry userResourceRegistry)
+        IUserResourceRegistry userResourceRegistry,
+        IDialogActivityService dialogActivityService)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _domainContext = domainContext ?? throw new ArgumentNullException(nameof(domainContext));
         _userResourceRegistry = userResourceRegistry ?? throw new ArgumentNullException(nameof(userResourceRegistry));
+        _dialogActivityService = dialogActivityService ?? throw new ArgumentNullException(nameof(dialogActivityService));
     }
 
     public async Task<UpdateDialogResult> Handle(UpdateDialogCommand request, CancellationToken cancellationToken)
@@ -164,6 +169,9 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
     private async Task AppendActivity(DialogEntity dialog, UpdateDialogDto dto, CancellationToken cancellationToken)
     {
         var newDialogActivities = _mapper.Map<List<DialogActivity>>(dto.Activities);
+
+
+        await _dialogActivityService.EnsurePerformedByIsSetForActivities(newDialogActivities, cancellationToken);
 
         var existingIds = await _db.GetExistingIds(newDialogActivities, cancellationToken);
         if (existingIds.Count != 0)
