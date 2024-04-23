@@ -20,7 +20,7 @@ jobs:
     name: Check for changes
     uses: ./.github/workflows/action-check-for-changes.yml
 
-  build:
+  build-and-test:
     uses: ./.github/workflows/action-build-and-test.yml
     needs: [check-for-changes]
     if: ${{ needs.check-for-changes.outputs.hasBackendChanges == 'true' }}
@@ -28,7 +28,7 @@ jobs:
   build-infrastructure:
     uses: ./.github/workflows/action-build-infrastructure.yml
     needs: [check-for-changes]
-    if: ${{ always() && needs.check-for-changes.outputs.hasAzureChanges == 'true' }}
+    if: ${{ needs.check-for-changes.outputs.hasAzureChanges == 'true' }}
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
@@ -45,7 +45,7 @@ jobs:
         get-current-version,
         build-infrastructure,
       ]
-    if: ${{ always() && needs.check-for-changes.outputs.hasAzureChanges == 'true' }}
+    if: ${{ always() && !failure() && !cancelled() && needs.check-for-changes.outputs.hasAzureChanges == 'true' }}
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
@@ -58,3 +58,19 @@ jobs:
       region: norwayeast
       dryRun: true
       version: ${{ needs.get-current-version.outputs.version }}-${{ needs.generate-git-short-sha.outputs.gitShortSha }}
+
+  run-e2e-tests:
+    name: "Run K6 functional end-to-end tests"
+    if: ${{ always() && !failure() && !cancelled() && needs.check-for-changes.outputs.hasBackendChanges == 'true' }}
+    needs: [dry-run-deploy-infra, check-for-changes]
+    uses: ./.github/workflows/action-run-k6-tests.yml
+    secrets:
+      TOKEN_GENERATOR_USERNAME: ${{ secrets.TOKEN_GENERATOR_USERNAME }}
+      TOKEN_GENERATOR_PASSWORD: ${{ secrets.TOKEN_GENERATOR_PASSWORD }}
+    with:
+      environment: test
+      apiVersion: v1
+      testSuitePath: tests/k6/suites/all-single-pass.js
+    permissions:
+      checks: write
+      pull-requests: write
