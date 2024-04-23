@@ -43,7 +43,7 @@ jobs:
     name: Build and test backend
     uses: ./.github/workflows/action-build-and-test.yml
     needs: [check-for-changes]
-    if: ${{ needs.check-for-changes.outputs.hasBackendChanges == 'true' }}
+    if: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasBackendChanges == 'true' }}
 
   publish:
     name: Build and publish docker images
@@ -55,7 +55,7 @@ jobs:
         generate-git-short-sha,
         build-and-test,
       ]
-    if: ${{ needs.check-for-changes.outputs.hasBackendChanges == 'true' }}
+    if: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasBackendChanges == 'true' }}
     secrets:
       GCR_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
     with:
@@ -65,7 +65,7 @@ jobs:
   deploy-infra-test:
     name: Deploy infra to test
     needs: [get-current-version, check-for-changes, generate-git-short-sha]
-    if: ${{ needs.check-for-changes.outputs.hasAzureChanges == 'true' }}
+    if: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasAzureChanges == 'true' }}
     uses: ./.github/workflows/action-deploy-infra.yml
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -90,7 +90,7 @@ jobs:
         deploy-infra-test,
       ]
     # we want deployment of apps to be dependent on deployment of infrastructure, but if infrastructure is skipped, we still want to deploy the apps
-    if: ${{ always() && !failure() && !cancelled() && needs.check-for-changes.outputs.hasBackendChanges == 'true' }}
+    if: ${{ always() && !failure() && !cancelled() && (github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasBackendChanges == 'true') }}
     uses: ./.github/workflows/action-deploy-apps.yml
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -110,7 +110,7 @@ jobs:
   deploy-slack-notifier-test:
     name: Deploy slack notifier (test)
     needs: [check-for-changes]
-    if: ${{ needs.check-for-changes.outputs.hasSlackNotifierChanges == 'true' }}
+    if: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasSlackNotifierChanges == 'true' }}
     uses: ./.github/workflows/action-deploy-function.yml
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -124,7 +124,7 @@ jobs:
   run-e2e-tests:
     name: "Run K6 functional end-to-end tests"
     # we want the end-to-end tests to be dependent on deployment of infrastructure and apps, but if infrastructure is skipped, we still want to run the tests
-    if: ${{ always() && !failure() && !cancelled() && needs.check-for-changes.outputs.hasBackendChanges == 'true' }}
+    if: ${{ always() && !failure() && !cancelled() && (github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasBackendChanges == 'true') }}
     needs: [deploy-apps-test, check-for-changes]
     uses: ./.github/workflows/action-run-k6-tests.yml
     secrets:
