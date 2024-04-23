@@ -15,13 +15,11 @@ export function generateJUnitXML(k6Json) {
 
     function processGroup(group) {
         if (group.name) { // skip root group
-
-            const checkName = xmlEncode(check.name);
             const groupName = xmlEncode(group.name);
-
             xmlDoc.push(`<testsuite name="${groupName}" tests="${group.checks.length}">`);
 
             group.checks.forEach(check => {
+                const checkName = xmlEncode(check.name);
                 let failed = check.fails > 0 ;
                 xmlDoc.push(`<testcase classname="${groupName}" name="${checkName}">`);
                 if (failed) {
