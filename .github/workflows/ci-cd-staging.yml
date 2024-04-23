@@ -68,6 +68,7 @@ jobs:
       environment: staging
       region: norwayeast
       version: ${{ needs.get-current-version.outputs.version }}
+      runMigration: ${{ needs.check-for-changes.outputs.hasMigrationChanges == 'true' }}
 
   run-e2e-tests:
     name: "Run K6 functional end-to-end tests"
