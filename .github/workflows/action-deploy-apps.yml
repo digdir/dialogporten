@@ -114,6 +114,7 @@ jobs:
   deploy-apps:
     name: Deploy ${{ matrix.name }} to ${{ inputs.environment }}
     runs-on: ubuntu-latest
+    # Should run even though the migration job was skipped
     if: ${{ always() && !failure() && !cancelled() }}
     needs: deploy-migration-job
     strategy:
