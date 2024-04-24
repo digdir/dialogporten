@@ -1,5 +1,4 @@
 using Digdir.Domain.Dialogporten.GraphQL.EndUser;
-using Digdir.Domain.Dialogporten.GraphQL.EndUser.Parties;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence;
 
 namespace Digdir.Domain.Dialogporten.GraphQL;
