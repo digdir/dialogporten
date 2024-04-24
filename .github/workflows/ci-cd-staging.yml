@@ -1,6 +1,7 @@
 ﻿name: CI/CD Staging
 
 on:
+  workflow_dispatch:
   push:
     tags:
       - "v*.*.*"
@@ -21,7 +22,7 @@ jobs:
   publish:
     name: Build and publish docker images
     uses: ./.github/workflows/action-publish.yml
-    if: ${{ needs.check-for-changes.outputs.hasBackendChanges == 'true' }}
+    if: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasBackendChanges == 'true' }}
     needs: [get-current-version, check-for-changes]
     secrets:
       GCR_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
@@ -31,7 +32,7 @@ jobs:
 
   deploy-infra-staging:
     name: Deploy infra to staging
-    if: ${{ needs.check-for-changes.outputs.hasAzureChanges == 'true' }}
+    if: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasAzureChanges == 'true' }}
     needs: [get-current-version, check-for-changes]
     uses: ./.github/workflows/action-deploy-infra.yml
     secrets:
@@ -51,7 +52,7 @@ jobs:
     needs:
       [get-current-version, check-for-changes, deploy-infra-staging, publish]
     # we want deployment of apps to be dependent on deployment of infrastructure, but if infrastructure is skipped, we still want to deploy the apps
-    if: ${{ always() && !failure() && !cancelled() && needs.check-for-changes.outputs.hasBackendChanges == 'true' }}
+    if: ${{ always() && !failure() && !cancelled() && (github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasBackendChanges == 'true') }}
     uses: ./.github/workflows/action-deploy-apps.yml
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -67,11 +68,12 @@ jobs:
       environment: staging
       region: norwayeast
       version: ${{ needs.get-current-version.outputs.version }}
+      runMigration: ${{ needs.check-for-changes.outputs.hasMigrationChanges == 'true' }}
 
   run-e2e-tests:
     name: "Run K6 functional end-to-end tests"
     # we want the end-to-end tests to be dependent on deployment of infrastructure and apps, but if infrastructure is skipped, we still want to run the tests
-    if: ${{ always() && !failure() && !cancelled() && needs.check-for-changes.outputs.hasBackendChanges == 'true' }}
+    if: ${{ always() && !failure() && !cancelled() && (github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasBackendChanges == 'true') }}
     needs: [deploy-apps-staging, check-for-changes]
     uses: ./.github/workflows/action-run-k6-tests.yml
     secrets:

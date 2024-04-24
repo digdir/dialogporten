@@ -14,7 +14,7 @@ export function generateJUnitXML(k6Json) {
     }
 
     function processGroup(group) {
-        if (group.name) { // skip root group
+        if (group.name && group.checks.length) { 
             const groupName = xmlEncode(group.name);
             xmlDoc.push(`<testsuite name="${groupName}" tests="${group.checks.length}">`);
 
@@ -27,13 +27,14 @@ export function generateJUnitXML(k6Json) {
                 }
                 xmlDoc.push('</testcase>');
             });
+
+            xmlDoc.push('</testsuite>');
         }
 
         group.groups.forEach(subGroup => {
             processGroup(subGroup);
         });
 
-        xmlDoc.push('</testsuite>');
     }
 
     processGroup(k6Json.root_group);
