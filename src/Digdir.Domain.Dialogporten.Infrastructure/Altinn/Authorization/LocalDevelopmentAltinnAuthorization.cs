@@ -50,5 +50,5 @@ internal sealed class LocalDevelopmentAltinnAuthorization : IAltinnAuthorization
     }
 
     public async Task<AuthorizedPartiesResult> GetAuthorizedParties(IPartyIdentifier authenticatedParty, CancellationToken cancellationToken = default)
-        => await Task.FromResult(new AuthorizedPartiesResult { AuthorizedParties = new List<AuthorizedParty> { new() { Name = "Local Party", Party = authenticatedParty.FullId } } });
+        => await Task.FromResult(new AuthorizedPartiesResult { AuthorizedParties = [new() { Name = "Local Party", Party = authenticatedParty.FullId }] });
 }
