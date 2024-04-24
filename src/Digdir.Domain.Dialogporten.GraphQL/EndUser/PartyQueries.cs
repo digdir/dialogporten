@@ -15,6 +15,6 @@ public partial class Queries
         var request = new GetPartiesQuery();
         var result = await mediator.Send(request, cancellationToken);
 
-        return result.AuthorizedParties.Select(mapper.Map<AuthorizedParty>).ToList();
+        return mapper.Map<List<AuthorizedParty>>(result.AuthorizedParties);
     }
 }
