@@ -13,7 +13,7 @@ public static class ServiceCollectionExtensions
             .AddAuthorization()
             .RegisterDbContext<DialogDbContext>()
             .AddDiagnosticEventListener<ApplicationInsightEventListener>()
-            .AddQueryType<DialogQueries>()
+            .AddQueryType<Queries>()
             .Services;
     }
 }
