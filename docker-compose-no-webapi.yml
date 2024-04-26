@@ -34,13 +34,13 @@ services:
     ports:
       - "6379:6379"
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: [ "CMD", "redis-cli", "ping" ]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  dialogporten-redis-insight:
-    container_name: redisinsight
+  redisinsight:
+    container_name: dialogporten-redisinsight
     image: redis/redisinsight
     ports:
       - "8001:80"
