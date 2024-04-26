@@ -43,7 +43,7 @@ services:
     container_name: redisinsight
     image: redis/redisinsight
     ports:
-      - "8001:80"
+      - "7216:80"
     environment:
       RI_APP_PORT: 80
       RI_APP_HOST: '0.0.0.0'
