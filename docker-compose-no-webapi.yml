@@ -39,7 +39,7 @@ services:
       timeout: 5s
       retries: 5
 
-  redisinsight:
+  dialogporten-redis-insight:
     container_name: redisinsight
     image: redis/redisinsight
     ports:
