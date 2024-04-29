@@ -37,8 +37,10 @@ export default function () {
     let titleForExpiresAtItem = "expires_" + uuidv4();
     let titleForUpdatedItem = "updated_" + uuidv4();
     let titleForLastItem = "last_" + uuidv4();
+    let idForCustomOrg = uuidv4();
     let createdAfter = (new Date()).toISOString(); // We use this on all tests to hopefully avoid clashing with unrelated dialogs
     let defaultFilter = "?CreatedAfter=" + createdAfter + "&Party=" + defaultParty;
+    let auxOrg = "digdir";
 
     describe('Arrange: Create some dialogs to test against', () => {
 
@@ -69,10 +71,14 @@ export default function () {
         setTitle(dialogs[++d], titleForExpiresAtItem);
         setExpiresAt(dialogs[d], new Date("2034-03-07T10:13:00Z"));
 
+        dialogs[++d].id = idForCustomOrg;
+
         setTitle(dialogs[dialogs.length-1], titleForLastItem);
 
+        let tokenOptions = {};
         dialogs.forEach((d) => {
-            let r = postSO("dialogs", d);
+            tokenOptions = (d.id == idForCustomOrg) ? { orgName: auxOrg } : {};
+            let r = postSO("dialogs", d, null, tokenOptions);            
             expectStatusFor(r).to.equal(201);
             dialogIds.push(r.json());
         });
@@ -161,6 +167,14 @@ export default function () {
         expect(r, 'response').to.have.validJsonBody();
         expect(r.json(), 'response json').to.have.property("items").with.lengthOf(1);
         expect(r.json().items[0], 'party').to.have.property("serviceResource").that.equals(auxResource);
+    });
+
+    describe('List with org filter', () => {
+        let r = getEU('dialogs/' + defaultFilter + '&Org=' + auxOrg);
+        expectStatusFor(r).to.equal(200);
+        expect(r, 'response').to.have.validJsonBody();
+        expect(r.json(), 'response json').to.have.property("items").with.lengthOf(1);
+        expect(r.json().items[0], 'org').to.have.property("org").that.equals(auxOrg);
     });
 
     describe("Cleanup", () => {
