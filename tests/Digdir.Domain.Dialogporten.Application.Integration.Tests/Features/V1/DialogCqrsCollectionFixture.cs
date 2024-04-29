@@ -1,6 +1,6 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Integration.Tests.Common;
 
-namespace Digdir.Domain.Dialogporten.Application.Integration.Tests.Features.V1.Dialogs;
+namespace Digdir.Domain.Dialogporten.Application.Integration.Tests.Features.V1;
 
 [CollectionDefinition(nameof(DialogCqrsCollectionFixture))]
 public class DialogCqrsCollectionFixture : ICollectionFixture<DialogApplication>

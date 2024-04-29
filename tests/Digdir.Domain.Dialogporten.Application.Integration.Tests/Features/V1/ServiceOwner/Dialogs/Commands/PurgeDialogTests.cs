@@ -6,7 +6,7 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements;
 using Digdir.Tool.Dialogporten.GenerateFakeData;
 using FluentAssertions;
 
-namespace Digdir.Domain.Dialogporten.Application.Integration.Tests.Features.V1.Dialogs.Commands;
+namespace Digdir.Domain.Dialogporten.Application.Integration.Tests.Features.V1.ServiceOwner.Dialogs.Commands;
 
 [Collection(nameof(DialogCqrsCollectionFixture))]
 public class PurgeDialogTests(DialogApplication application) : ApplicationCollectionFixture(application)
