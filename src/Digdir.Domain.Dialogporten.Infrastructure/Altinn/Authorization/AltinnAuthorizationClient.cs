@@ -170,20 +170,7 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
 
     private async Task<T?> SendRequest<T>(string url, object request, CancellationToken cancellationToken)
     {
-        var requestJson = JsonSerializer.Serialize(request, SerializerOptions);
-        _logger.LogDebug("Authorization request to {Url}: {RequestJson}", url, requestJson);
-        var httpContent = new StringContent(requestJson, Encoding.UTF8, "application/json");
-        var response = await _httpClient.PostAsync(url, httpContent, cancellationToken);
-        if (response.StatusCode != HttpStatusCode.OK)
-        {
-            var errorResponse = await response.Content.ReadAsStringAsync(cancellationToken);
-            _logger.LogWarning("AltinnAuthorizationClient.SendRequest failed with non-successful status code: {StatusCode} {Response}",
-                response.StatusCode, errorResponse);
-
-            return default;
-        }
-
-        var responseData = await response.Content.ReadAsStringAsync(cancellationToken);
-        return JsonSerializer.Deserialize<T>(responseData, SerializerOptions);
+        _logger.LogDebug("Authorization request to {Url}: {RequestJson}", url, JsonSerializer.Serialize(request, SerializerOptions));
+        return await _httpClient.PostAsJsonEnsuredAsync<T>(url, request, serializerOptions: SerializerOptions, cancellationToken: cancellationToken);
     }
 }

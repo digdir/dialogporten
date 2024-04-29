@@ -34,9 +34,10 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
     private async Task<Dictionary<string, string[]>> GetResourceIdsByOrg(CancellationToken cancellationToken)
     {
         const string searchEndpoint = "resourceregistry/api/v1/resource/resourcelist";
+
         var response = await _client
-            .GetFromJsonAsync<List<ResourceRegistryResponse>>(searchEndpoint, cancellationToken)
-            ?? throw new UnreachableException();
+            .GetFromJsonEnsuredAsync<List<ResourceRegistryResponse>>(searchEndpoint,
+                cancellationToken: cancellationToken);
 
         var resourceIdsByOrg = response
             .Where(x => x.ResourceType is ResourceTypeGenericAccess or ResourceTypeAltinnApp)

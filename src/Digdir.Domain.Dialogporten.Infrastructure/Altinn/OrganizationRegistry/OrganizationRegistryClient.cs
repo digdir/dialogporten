@@ -1,7 +1,4 @@
-using System.Diagnostics;
-using System.Net.Http.Json;
 using Digdir.Domain.Dialogporten.Application.Externals;
-using Microsoft.Extensions.Caching.Distributed;
 using ZiggyCreatures.Caching.Fusion;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.OrganizationRegistry;
@@ -9,9 +6,6 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.OrganizationRegistry;
 internal class OrganizationRegistryClient : IOrganizationRegistry
 {
     private const string OrgNameReferenceCacheKey = "OrgNameReference";
-
-    private static readonly DistributedCacheEntryOptions OneDayCacheDuration = new() { AbsoluteExpiration = DateTimeOffset.UtcNow.AddDays(1) };
-    private static readonly DistributedCacheEntryOptions ZeroCacheDuration = new() { AbsoluteExpiration = DateTimeOffset.MinValue };
 
     private readonly IFusionCache _cache;
     private readonly HttpClient _client;
@@ -33,8 +27,9 @@ internal class OrganizationRegistryClient : IOrganizationRegistry
     private async Task<Dictionary<string, OrganizationInfo>> GetOrgInfo(CancellationToken cancellationToken)
     {
         const string searchEndpoint = "orgs/altinn-orgs.json";
+
         var response = await _client
-            .GetFromJsonAsync<OrganizationRegistryResponse>(searchEndpoint, cancellationToken) ?? throw new UnreachableException();
+            .GetFromJsonEnsuredAsync<OrganizationRegistryResponse>(searchEndpoint, cancellationToken: cancellationToken);
 
         var orgInfoByOrgNumber = response
             .Orgs
