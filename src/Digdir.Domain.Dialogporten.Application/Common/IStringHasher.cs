@@ -12,6 +12,7 @@ internal interface IStringHasher
 
 internal class PersistentRandomSaltStringHasher : IStringHasher
 {
+    public const int StringLength = 10;
     private const int SaltSize = 16;
     private readonly Lazy<byte[]> _lazySalt = new(() => RandomNumberGenerator.GetBytes(SaltSize));
 
@@ -29,6 +30,6 @@ internal class PersistentRandomSaltStringHasher : IStringHasher
 
         var hashBytes = SHA256.HashData(buffer);
 
-        return BitConverter.ToString(hashBytes, 0, 5).Replace("-", "").ToLowerInvariant();
+        return BitConverter.ToString(hashBytes, 0, StringLength / 2).Replace("-", "").ToLowerInvariant();
     }
 }
