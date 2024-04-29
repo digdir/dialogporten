@@ -1,6 +1,6 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Integration.Tests.Common;
 
-namespace Digdir.Domain.Dialogporten.Application.Integration.Tests.Features.V1.Dialogs.Queries;
+namespace Digdir.Domain.Dialogporten.Application.Integration.Tests.Features.V1.ServiceOwner.Dialogs.Queries;
 
 [Collection(nameof(DialogCqrsCollectionFixture))]
 public class SearchDialogTests : ApplicationCollectionFixture

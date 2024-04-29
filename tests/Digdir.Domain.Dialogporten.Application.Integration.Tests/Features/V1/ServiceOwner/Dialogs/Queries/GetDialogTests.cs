@@ -3,7 +3,7 @@ using Digdir.Domain.Dialogporten.Application.Integration.Tests.Common;
 using Digdir.Tool.Dialogporten.GenerateFakeData;
 using FluentAssertions;
 
-namespace Digdir.Domain.Dialogporten.Application.Integration.Tests.Features.V1.Dialogs.Queries;
+namespace Digdir.Domain.Dialogporten.Application.Integration.Tests.Features.V1.ServiceOwner.Dialogs.Queries;
 
 [Collection(nameof(DialogCqrsCollectionFixture))]
 public class GetDialogTests : ApplicationCollectionFixture
