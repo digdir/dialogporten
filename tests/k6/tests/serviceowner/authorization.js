@@ -115,7 +115,7 @@ export default function () {
     });
 
     // Finally, cleanup by deleting the dialog
-    describe('Allow deleting dialog as valid serviceowner', () => {
+    describe('Allow purging dialog as valid serviceowner', () => {
         let r = purgeSO('dialogs/' + dialogId);
         expect(r.status, 'response status').to.equal(204);
     });
