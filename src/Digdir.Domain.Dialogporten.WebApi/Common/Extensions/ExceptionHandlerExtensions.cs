@@ -22,7 +22,9 @@ internal static class ExceptionHandlerExtensions
                 var error = exHandlerFeature.Error.Message;
                 var logger = ctx.Resolve<ILogger<ExceptionHandler>>();
                 logger.LogError(exHandlerFeature.Error, "{@Http}{@Type}{@Reason}", http, type, error);
-                ctx.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                ctx.Response.StatusCode = type == nameof(HttpRequestException)
+                        ? StatusCodes.Status502BadGateway
+                        : StatusCodes.Status500InternalServerError;
                 ctx.Response.ContentType = "application/problem+json";
                 await ctx.Response.WriteAsJsonAsync(ctx.ResponseBuilder(ctx.Response.StatusCode));
             });

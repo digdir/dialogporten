@@ -1,6 +1,7 @@
 ﻿using FluentValidation.Results;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using Altinn.Authorization.ABAC.Constants;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
 
@@ -60,6 +61,15 @@ internal static class ErrorResponseBuilderExtensions
             {
                 Title = "Unprocessable request.",
                 Type = "https://datatracker.ietf.org/doc/html/rfc4918#section-11.2",
+                Status = statusCode,
+                Instance = ctx.Request.Path,
+                Extensions = { { "traceId", Activity.Current?.Id ?? ctx.TraceIdentifier } }
+            },
+            StatusCodes.Status502BadGateway => new ProblemDetails
+            {
+                Title = "Bad gateway.",
+                Detail = "An upstream server returned an invalid response. Please try again later.",
+                Type = "https://datatracker.ietf.org/doc/html/rfc7231#section-6.6.3",
                 Status = statusCode,
                 Instance = ctx.Request.Path,
                 Extensions = { { "traceId", Activity.Current?.Id ?? ctx.TraceIdentifier } }
