@@ -8,9 +8,7 @@ namespace Digdir.Domain.Dialogporten.Application.Integration.Tests.Features.V1.D
 [Collection(nameof(DialogCqrsCollectionFixture))]
 public class GetDialogTests : ApplicationCollectionFixture
 {
-    public GetDialogTests(DialogApplication application) : base(application)
-    {
-    }
+    public GetDialogTests(DialogApplication application) : base(application) { }
 
     [Fact]
     public async Task Get_ReturnsSimpleDialog_WhenDialogExists()
