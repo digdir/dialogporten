@@ -1,4 +1,4 @@
-import { describe, expect, expectStatusFor, postSO, postSOAsync, deleteSO } from '../../common/testimports.js'
+import { describe, expect, expectStatusFor, postSO, postSOAsync, purgeSO } from '../../common/testimports.js'
 import { default as dialogToInsert } from './testdata/01-create-dialog.js';
 
 export default function () {
@@ -26,7 +26,7 @@ export default function () {
         const results = await Promise.all(promises);
 
         // Cleanup here, as we're in another thread
-        deleteSO('dialogs/' + dialogId);
+        purgeSO('dialogs/' + dialogId);
 
         results.forEach((r) => {
             expect(r.status, 'status code for concurrently added child entity').to.equal(201);

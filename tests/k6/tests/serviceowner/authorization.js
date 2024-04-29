@@ -1,4 +1,4 @@
-import { describe, expect, expectStatusFor, getSO, postSO, putSO, patchSO, deleteSO } from '../../common/testimports.js'
+import { describe, expect, expectStatusFor, getSO, postSO, putSO, patchSO, deleteSO, purgeSO } from '../../common/testimports.js'
 import { default as dialogToInsert } from './testdata/01-create-dialog.js';
 
 export default function () {
@@ -116,7 +116,7 @@ export default function () {
 
     // Finally, cleanup by deleting the dialog
     describe('Allow deleting dialog as valid serviceowner', () => {
-        let r = deleteSO('dialogs/' + dialogId);
+        let r = purgeSO('dialogs/' + dialogId);
         expect(r.status, 'response status').to.equal(204);
     });
 
