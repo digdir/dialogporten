@@ -64,6 +64,15 @@ internal static class ErrorResponseBuilderExtensions
                 Instance = ctx.Request.Path,
                 Extensions = { { "traceId", Activity.Current?.Id ?? ctx.TraceIdentifier } }
             },
+            StatusCodes.Status502BadGateway => new ProblemDetails
+            {
+                Title = "Bad gateway.",
+                Detail = "An upstream server is down or returned an invalid response. Please try again later.",
+                Type = "https://datatracker.ietf.org/doc/html/rfc7231#section-6.6.3",
+                Status = statusCode,
+                Instance = ctx.Request.Path,
+                Extensions = { { "traceId", Activity.Current?.Id ?? ctx.TraceIdentifier } }
+            },
             _ => new ProblemDetails
             {
                 Title = "An error occurred while processing the request.",
