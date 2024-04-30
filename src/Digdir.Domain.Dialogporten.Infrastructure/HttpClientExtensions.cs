@@ -18,7 +18,7 @@ public static class HttpClientExtensions
         response.EnsureSuccessStatusCode();
         var result = await response.Content.ReadFromJsonAsync<T>(cancellationToken: cancellationToken);
         return result is null
-            ? throw new InvalidOperationException($"Failed to deserialize JSON from {requestUri}")
+            ? throw new JsonException($"Failed to deserialize JSON to type {typeof(T).FullName} from {requestUri}")
             : result;
     }
 
@@ -55,7 +55,7 @@ public static class HttpClientExtensions
             configureContentHeaders, serializerOptions, cancellationToken);
         var result = await response.Content.ReadFromJsonAsync<T>(cancellationToken: cancellationToken);
         return result is null
-            ? throw new InvalidOperationException($"Failed to deserialize JSON to type {typeof(T).FullName} from {requestUri}")
+            ? throw new JsonException($"Failed to deserialize JSON to type {typeof(T).FullName} from {requestUri}")
             : result;
     }
 }
