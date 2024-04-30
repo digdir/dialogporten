@@ -44,9 +44,7 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
             .ToDictionary(
                 x => x.Key,
                 x => x.Select(
-                    x => x.ResourceType == ResourceTypeAltinnApp
-                        ? $"{Constants.ServiceResourcePrefixApp}{x.Identifier}"
-                        : $"{Constants.ServiceResourcePrefixGeneric}{x.Identifier}")
+                    x => $"{Constants.ServiceResourcePrefix}{x.Identifier}")
                     .ToArray()
             );
 
