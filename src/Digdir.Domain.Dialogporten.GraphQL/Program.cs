@@ -62,15 +62,6 @@ static void BuildAndRun(string[] args)
         .ValidateFluently()
         .ValidateOnStart();
 
-    if (builder.Environment.IsDevelopment())
-    {
-        var localDevelopmentSettings = builder.Configuration.GetLocalDevelopmentSettings();
-        builder.Services
-            .ReplaceSingleton<IUser, LocalDevelopmentUser>(predicate: localDevelopmentSettings.UseLocalDevelopmentUser)
-            .ReplaceSingleton<IAuthorizationHandler, AllowAnonymousHandler>(
-                predicate: localDevelopmentSettings.DisableAuth);
-    }
-
     var thisAssembly = Assembly.GetExecutingAssembly();
 
     builder.Services
@@ -93,6 +84,15 @@ static void BuildAndRun(string[] args)
         .AddDialogportenAuthentication(builder.Configuration)
         .AddAuthorization()
         .AddHealthChecks();
+
+    if (builder.Environment.IsDevelopment())
+    {
+        var localDevelopmentSettings = builder.Configuration.GetLocalDevelopmentSettings();
+        builder.Services
+            .ReplaceSingleton<IUser, LocalDevelopmentUser>(predicate: localDevelopmentSettings.UseLocalDevelopmentUser)
+            .ReplaceSingleton<IAuthorizationHandler, AllowAnonymousHandler>(
+                predicate: localDevelopmentSettings.DisableAuth);
+    }
 
     var app = builder.Build();
 
