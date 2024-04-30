@@ -26,9 +26,8 @@ internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDia
             .IsValidUri()
             .MaximumLength(Constants.DefaultMaxUriLength)
             .Must(x =>
-                (x?.StartsWith(Constants.ServiceResourcePrefixGeneric, StringComparison.InvariantCulture) ?? false)
-                || (x?.StartsWith(Constants.ServiceResourcePrefixApp, StringComparison.InvariantCulture) ?? false))
-                .WithMessage($"'{{PropertyName}}' must start with '{Constants.ServiceResourcePrefixGeneric}' or '{Constants.ServiceResourcePrefixApp}'.");
+                x?.StartsWith(Constants.ServiceResourcePrefix, StringComparison.InvariantCulture) ?? false)
+                .WithMessage($"'{{PropertyName}}' must start with '{Constants.ServiceResourcePrefix}'.");
 
         RuleFor(x => x.Party)
             .IsValidPartyIdentifier()

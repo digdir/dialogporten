@@ -19,6 +19,7 @@ internal static class DecisionRequestHelper
     private const string AttributeIdResourceInstance = "urn:altinn:resourceinstance";
     private const string AttributeIdOrg = "urn:altinn:org";
     private const string AttributeIdApp = "urn:altinn:app";
+    private const string ReservedResourcePrefixForApps = "app_";
     private const string AttributeIdAppInstance = "urn:altinn:instance-id";
     private const string AttributeIdSubResource = "urn:altinn:subresource";
     private const string PermitResponse = "Permit";
@@ -188,12 +189,14 @@ internal static class DecisionRequestHelper
         var ns = serviceResource[..lastColonIndex];
         var value = serviceResource[(lastColonIndex + 1)..];
 
-        if (ns != AttributeIdApp) return (ns, value, null);
+        if (!value.StartsWith(ReservedResourcePrefixForApps, StringComparison.Ordinal))
+        {
+            return (ns, value, null);
+        }
 
-        // If the namespace is "urn:altinn:app", the value should have the format "app_{org}_{app_id}".
-        // We want to split this into the org and app id. If not, something is borked in the data,
-        // and we will probably cause an error in the PDP API (since it throws if the org/app combo
-        // doesn't let it get to the app policy)
+        // If the value starts with the reserved app prefix, we assume that the value is an app id
+        // and we need to split it into the org and app id based on the format "app_{org}_{app_id}".
+        // We also use the app namespace for the attribute id.
         var parts = value.Split('_');
         return parts.Length >= 3
             ? (AttributeIdApp, string.Join('_', parts[2..]), parts[1])
