@@ -2,6 +2,12 @@ using Digdir.Domain.Dialogporten.GraphQL.EndUser.Common;
 
 namespace Digdir.Domain.Dialogporten.GraphQL.EndUser.DialogById;
 
+public sealed class DialogByIdPayload
+{
+    public Dialog? Dialog { get; set; }
+    public List<string> Errors { get; set; } = [];
+}
+
 public sealed class Dialog
 {
     public Guid Id { get; set; }

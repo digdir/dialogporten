@@ -9,7 +9,7 @@ namespace Digdir.Domain.Dialogporten.GraphQL.EndUser;
 
 public partial class Queries
 {
-    public async Task<Dialog> GetDialogById(
+    public async Task<DialogByIdPayload> GetDialogById(
         [Service] ISender mediator,
         [Service] IMapper mapper,
         [Argument] Guid dialogId,
@@ -17,16 +17,12 @@ public partial class Queries
     {
         var request = new GetDialogQuery { DialogId = dialogId };
         var result = await mediator.Send(request, cancellationToken);
-        var getDialogResult = result.Match(
-            dialog => dialog,
+        return result.Match(
+            dialog => new DialogByIdPayload { Dialog = mapper.Map<Dialog>(dialog) },
             // TODO: Error handling
-            notFound => throw new NotImplementedException("Not found"),
-            deleted => throw new NotImplementedException("Deleted"),
-            forbidden => throw new NotImplementedException("Forbidden"));
-
-        var dialog = mapper.Map<Dialog>(getDialogResult);
-
-        return dialog;
+            notFound => new DialogByIdPayload { Errors = ["Not found"] },
+            deleted => new DialogByIdPayload { Errors = ["Deleted"] },
+            forbidden => new DialogByIdPayload { Errors = ["Forbidden"] });
     }
 
     public async Task<SearchDialogsPayload> SearchDialogs(
