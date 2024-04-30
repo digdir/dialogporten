@@ -1,7 +1,6 @@
 ﻿using FluentValidation.Results;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
-using Altinn.Authorization.ABAC.Constants;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
 
