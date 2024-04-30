@@ -8,8 +8,6 @@ internal static class AuthorizedPartiesHelper
     private const string PartyTypeOrganization = "Organization";
     private const string PartyTypePerson = "Person";
     private const string AttributeIdResource = "urn:altinn:resource";
-    private const string AttributeIdApp = "urn:altinn:app";
-    private const string AppIdPrefix = "app_";
     private const string MainAdministratorRoleCode = "HADM";
     private const string AccessManagerRoleCode = "ADMAI";
     private static readonly string[] KeyRoleCodes = ["DAGL", "LEDE", "INNH", "DTPR", "DTSO", "BEST"];
@@ -57,8 +55,5 @@ internal static class AuthorizedPartiesHelper
     }
 
     private static List<string> GetPrefixedResources(List<string> dtoAuthorizedResources) =>
-        dtoAuthorizedResources.Select(resource => resource.StartsWith(AppIdPrefix, StringComparison.Ordinal)
-                ? AttributeIdApp + ":" + resource
-                : AttributeIdResource + ":" + resource)
-            .ToList();
+        dtoAuthorizedResources.Select(resource => $"{AttributeIdResource}:{resource}").ToList();
 }
