@@ -19,10 +19,9 @@ public partial class Queries
         var result = await mediator.Send(request, cancellationToken);
         return result.Match(
             dialog => new DialogByIdPayload { Dialog = mapper.Map<Dialog>(dialog) },
-            // TODO: Error handling
-            notFound => new DialogByIdPayload { Errors = ["Not found"] },
-            deleted => new DialogByIdPayload { Errors = ["Deleted"] },
-            forbidden => new DialogByIdPayload { Errors = ["Forbidden"] });
+            notFound => new DialogByIdPayload { Errors = [new DialogByIdNotFound { Message = notFound.Message }] },
+            deleted => new DialogByIdPayload { Errors = [new DialogByIdDeleted { Message = deleted.Message }] },
+            forbidden => new DialogByIdPayload { Errors = [new DialogByIdForbidden { Message = "Forbidden" }] });
     }
 
     public async Task<SearchDialogsPayload> SearchDialogs(

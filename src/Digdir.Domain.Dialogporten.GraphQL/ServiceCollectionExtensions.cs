@@ -1,4 +1,5 @@
 using Digdir.Domain.Dialogporten.GraphQL.EndUser;
+using Digdir.Domain.Dialogporten.GraphQL.EndUser.DialogById;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence;
 
 namespace Digdir.Domain.Dialogporten.GraphQL;
@@ -14,6 +15,9 @@ public static class ServiceCollectionExtensions
             .RegisterDbContext<DialogDbContext>()
             .AddDiagnosticEventListener<ApplicationInsightEventListener>()
             .AddQueryType<Queries>()
+            .AddType<DialogByIdDeleted>()
+            .AddType<DialogByIdNotFound>()
+            .AddType<DialogByIdForbidden>()
             .Services;
     }
 }
