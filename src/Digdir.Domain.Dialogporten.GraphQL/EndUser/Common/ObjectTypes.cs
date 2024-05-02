@@ -1,4 +1,9 @@
+using Digdir.Domain.Dialogporten.GraphQL.EndUser.DialogById;
+using Digdir.Domain.Dialogporten.GraphQL.EndUser.SearchDialogs;
+
 namespace Digdir.Domain.Dialogporten.GraphQL.EndUser.Common;
+
+
 
 public sealed class Localization
 {

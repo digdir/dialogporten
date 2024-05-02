@@ -6,6 +6,10 @@ interface DialogByIdError {
   message: String!
 }
 
+interface SearchDialogError {
+  message: String!
+}
+
 type Activity {
   id: UUID!
   createdAt: DateTime
@@ -154,11 +158,20 @@ type SearchDialog {
   seenSinceLastUpdate: [SeenLog!]!
 }
 
+type SearchDialogForbidden implements SearchDialogError {
+  message: String!
+}
+
+type SearchDialogValidationError implements SearchDialogError {
+  message: String!
+}
+
 type SearchDialogsPayload {
-  items: [SearchDialog!]!
+  items: [SearchDialog!]
   hasNextPage: Boolean!
   continuationToken: String
   orderBy: String!
+  errors: [SearchDialogError!]!
 }
 
 type SeenLog {

@@ -30,19 +30,16 @@ public partial class Queries
         SearchDialogInput input,
         CancellationToken cancellationToken)
     {
-
         var searchDialogQuery = mapper.Map<SearchDialogQuery>(input);
 
         var result = await mediator.Send(searchDialogQuery, cancellationToken);
 
-        var searchResultOneOf = result.Match(
-            paginatedList => paginatedList,
-            // TODO: Error handling
-            validationError => throw new NotImplementedException("Validation error"),
-            forbidden => throw new NotImplementedException("Forbidden"));
-
-        var dialogSearchResult = mapper.Map<SearchDialogsPayload>(searchResultOneOf);
-
-        return dialogSearchResult;
+        return result.Match(
+            mapper.Map<SearchDialogsPayload>,
+            validationError => new SearchDialogsPayload
+            {
+                Errors = [.. validationError.Errors.Select(x => new SearchDialogValidationError { Message = x.ErrorMessage })]
+            },
+            forbidden => new SearchDialogsPayload { Errors = [new SearchDialogForbidden()] });
     }
 }
