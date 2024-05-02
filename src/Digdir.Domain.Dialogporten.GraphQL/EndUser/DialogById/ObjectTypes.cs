@@ -1,5 +1,4 @@
 using Digdir.Domain.Dialogporten.GraphQL.EndUser.Common;
-using Digdir.Domain.Dialogporten.GraphQL.EndUser.SearchDialogs;
 
 namespace Digdir.Domain.Dialogporten.GraphQL.EndUser.DialogById;
 
@@ -32,42 +31,42 @@ public sealed class DialogByIdPayload
 
 public sealed class Dialog
 {
-    public Guid Id { get; init; }
-    public Guid Revision { get; init; }
-    public string Org { get; init; } = null!;
-    public string ServiceResource { get; init; } = null!;
-    public string Party { get; init; } = null!;
-    public int? Progress { get; init; }
-    public string? ExtendedStatus { get; init; }
-    public string? ExternalReference { get; init; }
-    public DateTimeOffset? VisibleFrom { get; init; }
-    public DateTimeOffset? DueAt { get; init; }
-    public DateTimeOffset? ExpiresAt { get; init; }
-    public DateTimeOffset CreatedAt { get; init; }
-    public DateTimeOffset UpdatedAt { get; init; }
+    public Guid Id { get; set; }
+    public Guid Revision { get; set; }
+    public string Org { get; set; } = null!;
+    public string ServiceResource { get; set; } = null!;
+    public string Party { get; set; } = null!;
+    public int? Progress { get; set; }
+    public string? ExtendedStatus { get; set; }
+    public string? ExternalReference { get; set; }
+    public DateTimeOffset? VisibleFrom { get; set; }
+    public DateTimeOffset? DueAt { get; set; }
+    public DateTimeOffset? ExpiresAt { get; set; }
+    public DateTimeOffset CreatedAt { get; set; }
+    public DateTimeOffset UpdatedAt { get; set; }
 
-    public string? DialogToken { get; init; }
+    public string? DialogToken { get; set; }
 
-    public DialogStatus Status { get; init; }
+    public DialogStatus Status { get; set; }
 
-    public List<Content> Content { get; init; } = [];
-    public List<Element> Elements { get; init; } = [];
-    public List<GuiAction> GuiActions { get; init; } = [];
-    public List<ApiAction> ApiActions { get; init; } = [];
-    public List<Activity> Activities { get; init; } = [];
-    public List<SeenLog> SeenSinceLastUpdate { get; init; } = [];
+    public List<Content> Content { get; set; } = [];
+    public List<Element> Elements { get; set; } = [];
+    public List<GuiAction> GuiActions { get; set; } = [];
+    public List<ApiAction> ApiActions { get; set; } = [];
+    public List<Activity> Activities { get; set; } = [];
+    public List<SeenLog> SeenSinceLastUpdate { get; set; } = [];
 }
 
 public sealed class ApiAction
 {
-    public Guid Id { get; init; }
-    public string Action { get; init; } = null!;
-    public string? AuthorizationAttribute { get; init; }
-    public bool IsAuthorized { get; init; }
+    public Guid Id { get; set; }
+    public string Action { get; set; } = null!;
+    public string? AuthorizationAttribute { get; set; }
+    public bool IsAuthorized { get; set; }
 
-    public Guid? DialogElementId { get; init; }
+    public Guid? DialogElementId { get; set; }
 
-    public List<ApiActionEndpoint> Endpoints { get; init; } = [];
+    public List<ApiActionEndpoint> Endpoints { get; set; } = [];
 }
 
 // ReSharper disable InconsistentNaming
@@ -86,30 +85,30 @@ public enum HttpVerb
 
 public sealed class ApiActionEndpoint
 {
-    public Guid Id { get; init; }
-    public string? Version { get; init; }
-    public Uri Url { get; init; } = null!;
-    public HttpVerb HttpMethod { get; init; }
-    public Uri? DocumentationUrl { get; init; }
-    public Uri? RequestSchema { get; init; }
-    public Uri? ResponseSchema { get; init; }
-    public bool Deprecated { get; init; }
-    public DateTimeOffset? SunsetAt { get; init; }
+    public Guid Id { get; set; }
+    public string? Version { get; set; }
+    public Uri Url { get; set; } = null!;
+    public HttpVerb HttpMethod { get; set; }
+    public Uri? DocumentationUrl { get; set; }
+    public Uri? RequestSchema { get; set; }
+    public Uri? ResponseSchema { get; set; }
+    public bool Deprecated { get; set; }
+    public DateTimeOffset? SunsetAt { get; set; }
 }
 
 public sealed class GuiAction
 {
-    public Guid Id { get; init; }
-    public string Action { get; init; } = null!;
-    public Uri Url { get; init; } = null!;
-    public string? AuthorizationAttribute { get; init; }
-    public bool IsAuthorized { get; init; }
-    public bool IsBackChannel { get; init; }
-    public bool IsDeleteAction { get; init; }
+    public Guid Id { get; set; }
+    public string Action { get; set; } = null!;
+    public Uri Url { get; set; } = null!;
+    public string? AuthorizationAttribute { get; set; }
+    public bool IsAuthorized { get; set; }
+    public bool IsBackChannel { get; set; }
+    public bool IsDeleteAction { get; set; }
 
-    public GuiActionPriority Priority { get; init; }
+    public GuiActionPriority Priority { get; set; }
 
-    public List<Localization> Title { get; init; } = [];
+    public List<Localization> Title { get; set; } = [];
 }
 
 public enum GuiActionPriority
@@ -121,25 +120,25 @@ public enum GuiActionPriority
 
 public sealed class Element
 {
-    public Guid Id { get; init; }
-    public Uri? Type { get; init; }
-    public string? ExternalReference { get; init; }
-    public string? AuthorizationAttribute { get; init; }
-    public bool IsAuthorized { get; init; }
+    public Guid Id { get; set; }
+    public Uri? Type { get; set; }
+    public string? ExternalReference { get; set; }
+    public string? AuthorizationAttribute { get; set; }
+    public bool IsAuthorized { get; set; }
 
-    public Guid? RelatedDialogElementId { get; init; }
+    public Guid? RelatedDialogElementId { get; set; }
 
-    public List<Localization> DisplayName { get; init; } = [];
-    public List<ElementUrl> Urls { get; init; } = [];
+    public List<Localization> DisplayName { get; set; } = [];
+    public List<ElementUrl> Urls { get; set; } = [];
 }
 
 public sealed class ElementUrl
 {
-    public Guid Id { get; init; }
-    public Uri Url { get; init; } = null!;
-    public string? MimeType { get; init; }
+    public Guid Id { get; set; }
+    public Uri Url { get; set; } = null!;
+    public string? MimeType { get; set; }
 
-    public ElementUrlConsumer ConsumerType { get; init; }
+    public ElementUrlConsumer ConsumerType { get; set; }
 }
 
 public enum ElementUrlConsumer

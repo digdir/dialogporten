@@ -20,32 +20,32 @@ public sealed class SearchDialogValidationError : ISearchDialogError
 
 public sealed class SearchDialogsPayload
 {
-    public List<SearchDialog>? Items { get; init; }
+    public List<SearchDialog>? Items { get; set; }
     public bool HasNextPage { get; }
     public string? ContinuationToken { get; }
     public string OrderBy { get; } = null!;
-    public List<ISearchDialogError> Errors { get; init; } = [];
+    public List<ISearchDialogError> Errors { get; set; } = [];
 }
 
 public sealed class SearchDialog
 {
-    public Guid Id { get; init; }
-    public string Org { get; init; } = null!;
-    public string ServiceResource { get; init; } = null!;
-    public string Party { get; init; } = null!;
-    public int? Progress { get; init; }
-    public int? GuiAttachmentCount { get; init; }
-    public string? ExtendedStatus { get; init; }
-    public DateTimeOffset CreatedAt { get; init; }
-    public DateTimeOffset UpdatedAt { get; init; }
-    public DateTimeOffset? DueAt { get; init; }
+    public Guid Id { get; set; }
+    public string Org { get; set; } = null!;
+    public string ServiceResource { get; set; } = null!;
+    public string Party { get; set; } = null!;
+    public int? Progress { get; set; }
+    public int? GuiAttachmentCount { get; set; }
+    public string? ExtendedStatus { get; set; }
+    public DateTimeOffset CreatedAt { get; set; }
+    public DateTimeOffset UpdatedAt { get; set; }
+    public DateTimeOffset? DueAt { get; set; }
 
-    public DialogStatus Status { get; init; }
+    public DialogStatus Status { get; set; }
 
-    public Activity? LatestActivity { get; init; }
+    public Activity? LatestActivity { get; set; }
 
-    public List<Content> Content { get; init; } = [];
-    public List<SeenLog> SeenSinceLastUpdate { get; init; } = [];
+    public List<Content> Content { get; set; } = [];
+    public List<SeenLog> SeenSinceLastUpdate { get; set; } = [];
 }
 
 public sealed class SearchDialogInput
