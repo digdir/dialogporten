@@ -5,7 +5,6 @@ using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.DialogSeen
 using Digdir.Domain.Dialogporten.Application.Integration.Tests.Common;
 using Digdir.Tool.Dialogporten.GenerateFakeData;
 using FluentAssertions;
-using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Queries.Get;
 using GetDialogQueryEndUser = Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Queries.Get.GetDialogQuery;
 using GetDialogQueryServiceOwner = Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Queries.Get.GetDialogQuery;
 
