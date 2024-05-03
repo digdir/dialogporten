@@ -19,6 +19,8 @@ public static class ClaimsPrincipalExtensions
     private const string OrgClaim = "urn:altinn:org";
     private const string IdportenAuthLevelClaim = "acr";
     private const string AltinnAuthLevelClaim = "urn:altinn:authlevel";
+    private const string ScopeClaim = "scope";
+    private const char ScopeClaimSeparator = ' ';
     private const string PidClaim = "pid";
 
     public static bool TryGetClaimValue(this ClaimsPrincipal claimsPrincipal, string claimType, [NotNullWhen(true)] out string? value)
@@ -26,6 +28,10 @@ public static class ClaimsPrincipalExtensions
         value = claimsPrincipal.FindFirst(claimType)?.Value;
         return value is not null;
     }
+
+    public static bool HasScope(this ClaimsPrincipal claimsPrincipal, string scope) =>
+        claimsPrincipal.TryGetClaimValue(ScopeClaim, out var scopes) &&
+        scopes.Split(ScopeClaimSeparator).Contains(scope);
 
     public static bool TryGetOrgNumber(this ClaimsPrincipal claimsPrincipal, [NotNullWhen(true)] out string? orgNumber)
         => claimsPrincipal.FindFirst(ConsumerClaim).TryGetOrgNumber(out orgNumber);

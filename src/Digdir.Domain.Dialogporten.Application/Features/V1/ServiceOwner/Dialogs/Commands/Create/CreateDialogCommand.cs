@@ -8,9 +8,11 @@ using Digdir.Domain.Dialogporten.Domain.Common;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements;
+using FluentValidation.Results;
 using MediatR;
 using OneOf;
 using OneOf.Types;
+using Constants = Digdir.Domain.Dialogporten.Application.Common.ResourceRegistry.Constants;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Create;
 
@@ -28,6 +30,8 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
     private readonly IUserResourceRegistry _userResourceRegistry;
     private readonly IUserOrganizationRegistry _userOrganizationRegistry;
     private readonly IDialogActivityService _dialogActivityService;
+
+    private readonly ValidationFailure _progressValidationFailure = new(nameof(CreateDialogCommand.Progress), "Progress cannot be set for correspondence dialogs.");
 
     public CreateDialogCommandHandler(
         IDialogDbContext db,
@@ -54,7 +58,22 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
             return new Forbidden($"Not owner of {request.ServiceResource}.");
         }
 
+        var serviceResourceType = await _userResourceRegistry.GetResourceType(request.ServiceResource, cancellationToken);
+
+        if (!_userResourceRegistry.UserCanModifyResourceType(serviceResourceType))
+        {
+            return new Forbidden($"User cannot modify resource type {serviceResourceType}.");
+        }
+
+        if (serviceResourceType == Constants.Correspondence)
+        {
+            if (request.Progress is not null)
+                return new ValidationError(_progressValidationFailure);
+        }
+
         var dialog = _mapper.Map<DialogEntity>(request);
+
+        dialog.ServiceResourceType = serviceResourceType;
 
         dialog.Org = await _userOrganizationRegistry.GetCurrentUserOrgShortName(cancellationToken) ?? string.Empty;
         if (string.IsNullOrWhiteSpace(dialog.Org))
