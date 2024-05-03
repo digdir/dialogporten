@@ -1,5 +1,3 @@
-using Digdir.Domain.Dialogporten.Domain.Parties.Abstractions;
-
 namespace Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 
 public class AuthorizedPartiesResult

@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-using System.Net.Http.Json;
-using Digdir.Domain.Dialogporten.Application.Externals;
+﻿using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Domain.Common;
 using ZiggyCreatures.Caching.Fusion;
 
