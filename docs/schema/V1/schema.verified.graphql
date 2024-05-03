@@ -2,6 +2,14 @@
   query: Queries
 }
 
+interface DialogByIdError {
+  message: String!
+}
+
+interface SearchDialogError {
+  message: String!
+}
+
 type Activity {
   id: UUID!
   createdAt: DateTime
@@ -75,6 +83,23 @@ type Dialog {
   seenSinceLastUpdate: [SeenLog!]!
 }
 
+type DialogByIdDeleted implements DialogByIdError {
+  message: String!
+}
+
+type DialogByIdForbidden implements DialogByIdError {
+  message: String!
+}
+
+type DialogByIdNotFound implements DialogByIdError {
+  message: String!
+}
+
+type DialogByIdPayload {
+  dialog: Dialog
+  errors: [DialogByIdError!]!
+}
+
 type Element {
   id: UUID!
   type: URL
@@ -111,7 +136,7 @@ type Localization {
 }
 
 type Queries @authorize(policy: "enduser") {
-  dialogById(dialogId: UUID!): Dialog!
+  dialogById(dialogId: UUID!): DialogByIdPayload!
   searchDialogs(input: SearchDialogInput!): SearchDialogsPayload!
   parties: [AuthorizedParty!]!
 }
@@ -133,11 +158,20 @@ type SearchDialog {
   seenSinceLastUpdate: [SeenLog!]!
 }
 
+type SearchDialogForbidden implements SearchDialogError {
+  message: String!
+}
+
+type SearchDialogValidationError implements SearchDialogError {
+  message: String!
+}
+
 type SearchDialogsPayload {
-  items: [SearchDialog!]!
+  items: [SearchDialog!]
   hasNextPage: Boolean!
   continuationToken: String
   orderBy: String!
+  errors: [SearchDialogError!]!
 }
 
 type SeenLog {

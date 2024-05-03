@@ -2,6 +2,33 @@ using Digdir.Domain.Dialogporten.GraphQL.EndUser.Common;
 
 namespace Digdir.Domain.Dialogporten.GraphQL.EndUser.DialogById;
 
+[InterfaceType("DialogByIdError")]
+public interface IDialogByIdError
+{
+    public string Message { get; set; }
+}
+
+public sealed class DialogByIdNotFound : IDialogByIdError
+{
+    public string Message { get; set; } = null!;
+}
+
+public sealed class DialogByIdDeleted : IDialogByIdError
+{
+    public string Message { get; set; } = null!;
+}
+
+public sealed class DialogByIdForbidden : IDialogByIdError
+{
+    public string Message { get; set; } = "Forbidden";
+}
+
+public sealed class DialogByIdPayload
+{
+    public Dialog? Dialog { get; set; }
+    public List<IDialogByIdError> Errors { get; set; } = [];
+}
+
 public sealed class Dialog
 {
     public Guid Id { get; set; }

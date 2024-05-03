@@ -2,12 +2,29 @@ using Digdir.Domain.Dialogporten.GraphQL.EndUser.Common;
 
 namespace Digdir.Domain.Dialogporten.GraphQL.EndUser.SearchDialogs;
 
+[InterfaceType("SearchDialogError")]
+public interface ISearchDialogError
+{
+    public string Message { get; set; }
+}
+
+public sealed class SearchDialogForbidden : ISearchDialogError
+{
+    public string Message { get; set; } = "Forbidden";
+}
+
+public sealed class SearchDialogValidationError : ISearchDialogError
+{
+    public string Message { get; set; } = null!;
+}
+
 public sealed class SearchDialogsPayload
 {
-    public List<SearchDialog> Items { get; } = [];
+    public List<SearchDialog>? Items { get; set; }
     public bool HasNextPage { get; }
     public string? ContinuationToken { get; }
     public string OrderBy { get; } = null!;
+    public List<ISearchDialogError> Errors { get; set; } = [];
 }
 
 public sealed class SearchDialog

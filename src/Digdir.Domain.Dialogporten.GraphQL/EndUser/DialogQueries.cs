@@ -9,7 +9,7 @@ namespace Digdir.Domain.Dialogporten.GraphQL.EndUser;
 
 public partial class Queries
 {
-    public async Task<Dialog> GetDialogById(
+    public async Task<DialogByIdPayload> GetDialogById(
         [Service] ISender mediator,
         [Service] IMapper mapper,
         [Argument] Guid dialogId,
@@ -17,16 +17,11 @@ public partial class Queries
     {
         var request = new GetDialogQuery { DialogId = dialogId };
         var result = await mediator.Send(request, cancellationToken);
-        var getDialogResult = result.Match(
-            dialog => dialog,
-            // TODO: Error handling
-            notFound => throw new NotImplementedException("Not found"),
-            deleted => throw new NotImplementedException("Deleted"),
-            forbidden => throw new NotImplementedException("Forbidden"));
-
-        var dialog = mapper.Map<Dialog>(getDialogResult);
-
-        return dialog;
+        return result.Match(
+            dialog => new DialogByIdPayload { Dialog = mapper.Map<Dialog>(dialog) },
+            notFound => new DialogByIdPayload { Errors = [new DialogByIdNotFound { Message = notFound.Message }] },
+            deleted => new DialogByIdPayload { Errors = [new DialogByIdDeleted { Message = deleted.Message }] },
+            forbidden => new DialogByIdPayload { Errors = [new DialogByIdForbidden { Message = "Forbidden" }] });
     }
 
     public async Task<SearchDialogsPayload> SearchDialogs(
@@ -35,19 +30,16 @@ public partial class Queries
         SearchDialogInput input,
         CancellationToken cancellationToken)
     {
-
         var searchDialogQuery = mapper.Map<SearchDialogQuery>(input);
 
         var result = await mediator.Send(searchDialogQuery, cancellationToken);
 
-        var searchResultOneOf = result.Match(
-            paginatedList => paginatedList,
-            // TODO: Error handling
-            validationError => throw new NotImplementedException("Validation error"),
-            forbidden => throw new NotImplementedException("Forbidden"));
-
-        var dialogSearchResult = mapper.Map<SearchDialogsPayload>(searchResultOneOf);
-
-        return dialogSearchResult;
+        return result.Match(
+            mapper.Map<SearchDialogsPayload>,
+            validationError => new SearchDialogsPayload
+            {
+                Errors = [.. validationError.Errors.Select(x => new SearchDialogValidationError { Message = x.ErrorMessage })]
+            },
+            forbidden => new SearchDialogsPayload { Errors = [new SearchDialogForbidden()] });
     }
 }
