@@ -8,7 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="NSec.Cryptography" Version="23.9.0-preview.3" />
+      <PackageReference Include="NSec.Cryptography" Version="24.4.0" />
     </ItemGroup>
 
 </Project>
