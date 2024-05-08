@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.1](https://github.com/digdir/dialogporten/compare/v1.6.0...v1.6.1) (2024-05-08)
+
+
+### Bug Fixes
+
+* Use correct scope for authorization API ([#709](https://github.com/digdir/dialogporten/issues/709)) ([38253ad](https://github.com/digdir/dialogporten/commit/38253ad1128745f54ef5d2bd4393c2d1efdae58e))
+
 ## [1.6.0](https://github.com/digdir/dialogporten/compare/v1.5.0...v1.6.0) (2024-05-07)
 
 
