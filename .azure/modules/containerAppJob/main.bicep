@@ -5,7 +5,7 @@ param containerAppEnvId string
 param environmentVariables { name: string, value: string?, secretRef: string? }[] = []
 param secrets { name: string, keyVaultUrl: string, identity: 'System' }[] = []
 
-resource job 'Microsoft.App/jobs@2023-05-01' = {
+resource job 'Microsoft.App/jobs@2024-03-01' = {
   name: name
   location: location
   identity: {
