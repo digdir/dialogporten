@@ -25,6 +25,11 @@ If there are guidelines on architecture or other implementation choices, they ar
 - [ ] Add e2e-test (if relevant)
 ```
 
+```[tasklist]
+### Threat modelling
+- [ ] Does this change introduce any potential security issues?
+```
+
 ### Acceptance criteria
 _GIVEN_ ...
 _WHEN_ ....
