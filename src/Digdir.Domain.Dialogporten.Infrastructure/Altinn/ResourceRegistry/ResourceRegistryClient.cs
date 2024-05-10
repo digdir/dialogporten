@@ -35,7 +35,6 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
 
     public async Task<string> GetResourceType(string orgNumber, string serviceResourceId, CancellationToken token)
     {
-        // var resourceIdsByOrg = await GetResourceInfoByOrg(token);
         var resourceIdsByOrg = await GetResourceInfoByOrg(token);
         resourceIdsByOrg.TryGetValue(orgNumber, out var resourceInfo);
 
