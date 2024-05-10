@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.6.2](https://github.com/digdir/dialogporten/compare/v1.6.1...v1.6.2) (2024-05-10)
+
+
+### Bug Fixes
+
+* **gql:** Add missing graphQl appsettings for staging ([#714](https://github.com/digdir/dialogporten/issues/714)) ([97b7da6](https://github.com/digdir/dialogporten/commit/97b7da6e1b817c492467cec587513a2b4a00e518))
+* Use correct scope for authorization API for remaining runtimes ([#711](https://github.com/digdir/dialogporten/issues/711)) ([0691f36](https://github.com/digdir/dialogporten/commit/0691f360b6f28cc353279b9e65c4de7e53d113e4))
+
 ## [1.6.1](https://github.com/digdir/dialogporten/compare/v1.6.0...v1.6.1) (2024-05-08)
 
 
