@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.Enumerables;
+using Digdir.Domain.Dialogporten.Application.Common.ResourceRegistry;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Common.Services;
 using Digdir.Domain.Dialogporten.Application.Externals;
@@ -9,6 +10,7 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements;
+using FluentValidation.Results;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
@@ -24,7 +26,7 @@ public sealed class UpdateDialogCommand : IRequest<UpdateDialogResult>
 }
 
 [GenerateOneOf]
-public partial class UpdateDialogResult : OneOfBase<Success, EntityNotFound, BadRequest, ValidationError, DomainError, ConcurrencyError>;
+public partial class UpdateDialogResult : OneOfBase<Success, EntityNotFound, BadRequest, ValidationError, Forbidden, DomainError, ConcurrencyError>;
 
 internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogCommand, UpdateDialogResult>
 {
@@ -34,6 +36,8 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
     private readonly IDomainContext _domainContext;
     private readonly IUserResourceRegistry _userResourceRegistry;
     private readonly IDialogActivityService _dialogActivityService;
+
+    private readonly ValidationFailure _progressValidationFailure = new(nameof(UpdateDialogDto.Progress), "Progress cannot be set for correspondence dialogs.");
 
     public UpdateDialogCommandHandler(
         IDialogDbContext db,
@@ -74,6 +78,17 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         if (dialog is null)
         {
             return new EntityNotFound<DialogEntity>(request.Id);
+        }
+
+        if (!_userResourceRegistry.UserCanModifyResourceType(dialog.ServiceResourceType))
+        {
+            return new Forbidden($"User cannot modify resource type {dialog.ServiceResourceType}.");
+        }
+
+        if (dialog.ServiceResourceType == Constants.Correspondence)
+        {
+            if (request.Dto.Progress is not null)
+                return new ValidationError(_progressValidationFailure);
         }
 
         if (dialog.Deleted)

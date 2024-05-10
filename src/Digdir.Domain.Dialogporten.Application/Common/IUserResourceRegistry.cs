@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Digdir.Domain.Dialogporten.Application.Common.Authorization;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
@@ -9,6 +10,8 @@ public interface IUserResourceRegistry
 {
     Task<bool> CurrentUserIsOwner(string serviceResource, CancellationToken cancellationToken);
     Task<IReadOnlyCollection<string>> GetCurrentUserResourceIds(CancellationToken cancellationToken);
+    Task<string> GetResourceType(string serviceResourceId, CancellationToken cancellationToken);
+    bool UserCanModifyResourceType(string serviceResourceType);
 }
 
 public class UserResourceRegistry : IUserResourceRegistry
@@ -32,6 +35,17 @@ public class UserResourceRegistry : IUserResourceRegistry
         !_user.TryGetOrgNumber(out var orgNumber)
             ? throw new UnreachableException()
             : _resourceRegistry.GetResourceIds(orgNumber, cancellationToken);
+
+    public Task<string> GetResourceType(string serviceResourceId, CancellationToken cancellationToken) =>
+        !_user.TryGetOrgNumber(out var orgNumber)
+            ? throw new UnreachableException()
+            : _resourceRegistry.GetResourceType(orgNumber, serviceResourceId, cancellationToken);
+
+    public bool UserCanModifyResourceType(string serviceResourceType) => serviceResourceType switch
+    {
+        ResourceRegistry.Constants.Correspondence => _user.GetPrincipal().HasScope(Constants.CorrespondenceScope),
+        _ => true
+    };
 }
 
 internal sealed class LocalDevelopmentUserResourceRegistryDecorator : IUserResourceRegistry
@@ -48,4 +62,9 @@ internal sealed class LocalDevelopmentUserResourceRegistryDecorator : IUserResou
 
     public Task<IReadOnlyCollection<string>> GetCurrentUserResourceIds(CancellationToken cancellationToken) =>
         _userResourceRegistry.GetCurrentUserResourceIds(cancellationToken);
+
+    public Task<string> GetResourceType(string serviceResourceId, CancellationToken cancellationToken) =>
+        Task.FromResult("LocalResourceType");
+
+    public bool UserCanModifyResourceType(string serviceResourceType) => true;
 }

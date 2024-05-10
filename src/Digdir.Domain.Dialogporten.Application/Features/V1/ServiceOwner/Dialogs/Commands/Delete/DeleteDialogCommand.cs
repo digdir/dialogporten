@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using Digdir.Domain.Dialogporten.Application.Common;
+using Digdir.Domain.Dialogporten.Application.Common.ResourceRegistry;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
@@ -18,7 +19,7 @@ public sealed class DeleteDialogCommand : IRequest<DeleteDialogResult>
 }
 
 [GenerateOneOf]
-public partial class DeleteDialogResult : OneOfBase<Success, EntityNotFound, ConcurrencyError>;
+public partial class DeleteDialogResult : OneOfBase<Success, EntityNotFound, Forbidden, ConcurrencyError>;
 
 internal sealed class DeleteDialogCommandHandler : IRequestHandler<DeleteDialogCommand, DeleteDialogResult>
 {
@@ -50,6 +51,11 @@ internal sealed class DeleteDialogCommandHandler : IRequestHandler<DeleteDialogC
         if (dialog is null)
         {
             return new EntityNotFound<DialogEntity>(request.Id);
+        }
+
+        if (!_userResourceRegistry.UserCanModifyResourceType(dialog.ServiceResourceType))
+        {
+            return new Forbidden($"User cannot modify resource type {dialog.ServiceResourceType}.");
         }
 
         _db.Dialogs.SoftRemove(dialog);

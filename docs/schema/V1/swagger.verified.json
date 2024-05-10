@@ -2878,6 +2878,9 @@
           "serviceResource": {
             "type": "string"
           },
+          "serviceResourceType": {
+            "type": "string"
+          },
           "party": {
             "type": "string"
           },
@@ -2985,6 +2988,9 @@
             "type": "string"
           },
           "serviceResource": {
+            "type": "string"
+          },
+          "serviceResourceType": {
             "type": "string"
           },
           "party": {
@@ -3901,6 +3907,9 @@
           "serviceResource": {
             "type": "string"
           },
+          "serviceResourceType": {
+            "type": "string"
+          },
           "party": {
             "type": "string"
           },
@@ -4057,6 +4066,9 @@
             "type": "string"
           },
           "serviceResource": {
+            "type": "string"
+          },
+          "serviceResourceType": {
             "type": "string"
           },
           "party": {

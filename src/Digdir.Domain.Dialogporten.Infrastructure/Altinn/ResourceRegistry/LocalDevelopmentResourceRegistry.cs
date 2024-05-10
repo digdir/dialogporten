@@ -6,6 +6,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.ResourceRegistry;
 internal sealed class LocalDevelopmentResourceRegistry : IResourceRegistry
 {
     private static readonly HashSet<string> _cachedResourceIds = [];
+    private readonly string _localResourceType = "LocalResourceType";
     private readonly IDialogDbContext _db;
 
     public LocalDevelopmentResourceRegistry(IDialogDbContext db)
@@ -28,4 +29,8 @@ internal sealed class LocalDevelopmentResourceRegistry : IResourceRegistry
 
         return _cachedResourceIds;
     }
+
+    // TODO: Local testing of correspondence?
+    public Task<string> GetResourceType(string _, string __, CancellationToken ___)
+        => Task.FromResult(_localResourceType);
 }
