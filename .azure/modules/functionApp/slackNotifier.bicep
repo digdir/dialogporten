@@ -43,7 +43,7 @@ resource applicationInsights 'Microsoft.Insights/components@2020-02-02' existing
 }
 
 var functionAppName = '${namePrefix}-slacknotifier-fa'
-resource functionApp 'Microsoft.Web/sites@2023-01-01' = {
+resource functionApp 'Microsoft.Web/sites@2023-12-01' = {
     name: functionAppName
     location: location
     kind: 'functionapp'
