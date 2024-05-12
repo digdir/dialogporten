@@ -99,7 +99,7 @@ resource notifyDevTeam 'Microsoft.Insights/actionGroups@2023-01-01' = {
     }
 }
 
-resource exceptionOccuredAlertRule 'Microsoft.Insights/scheduledQueryRules@2023-03-15-preview' = {
+resource exceptionOccuredAlertRule 'Microsoft.Insights/scheduledQueryRules@2023-12-01' = {
     name: '${namePrefix}-exception-occured-sqr'
     location: location
     properties: {
