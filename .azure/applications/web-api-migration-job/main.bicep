@@ -19,7 +19,7 @@ var baseImageUrl = 'ghcr.io/digdir/dialogporten-'
 
 var name = '${namePrefix}-db-migration-job'
 
-resource containerAppEnvironment 'Microsoft.App/managedEnvironments@2023-05-01' existing = {
+resource containerAppEnvironment 'Microsoft.App/managedEnvironments@2024-03-01' existing = {
   name: containerAppEnvironmentName
 }
 
