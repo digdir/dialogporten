@@ -11,7 +11,6 @@ public class DialogSeenLog : IImmutableEntity
 
     public string EndUserId { get; set; } = null!;
 
-    public DialogUserType EndUserType { get; set; } = null!;
 
     public string? EndUserName { get; set; }
 
@@ -21,6 +20,9 @@ public class DialogSeenLog : IImmutableEntity
     // === Dependent relationships ===
     public Guid DialogId { get; set; }
     public DialogEntity Dialog { get; set; } = null!;
+
+    public DialogUserType.Values EndUserTypeId { get; set; }
+    public DialogUserType EndUserType { get; set; } = null!;
 }
 
 public class DialogSeenLogVia : LocalizationSet

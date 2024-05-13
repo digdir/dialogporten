@@ -112,7 +112,7 @@ public class UserRegistry : IUserRegistry
 
 internal sealed class LocalDevelopmentUserRegistryDecorator : IUserRegistry
 {
-    private const string LocalDevelopmentUserPid = "Local Development User";
+    private const string LocalDevelopmentUserName = "Local Development User";
     private readonly IUserRegistry _userRegistry;
 
     public LocalDevelopmentUserRegistryDecorator(IUserRegistry userRegistry)
@@ -126,6 +126,8 @@ internal sealed class LocalDevelopmentUserRegistryDecorator : IUserRegistry
         => Task.FromResult(new UserInformation
         {
             UserId = GetCurrentUserId(),
-            LocalizedNames = new List<LocalizedName> { new() { Name = LocalDevelopmentUserPid } }
+            // TODO: Decorating service owner org.name and enduser pid is now done in the same decorator
+            ServiceOwnerShortName = "digdir",
+            LocalizedNames = new List<LocalizedName> { new() { Name = LocalDevelopmentUserName } }
         });
 }
