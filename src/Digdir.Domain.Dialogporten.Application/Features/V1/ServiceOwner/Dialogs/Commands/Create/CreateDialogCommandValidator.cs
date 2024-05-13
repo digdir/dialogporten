@@ -34,8 +34,6 @@ internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDia
             .NotEmpty()
             .MaximumLength(Constants.DefaultMaxStringLength);
 
-        // TODO: 'Progress' not allowed for correspondence dialogs
-        // https://github.com/digdir/dialogporten/issues/233
         RuleFor(x => x.Progress)
             .InclusiveBetween(0, 100);
 

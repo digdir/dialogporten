@@ -84,6 +84,7 @@ public sealed class PatchDialogsController : ControllerBase
             notFound => NotFound(HttpContext.ResponseBuilder(StatusCodes.Status404NotFound, notFound.ToValidationResults())),
             badRequest => BadRequest(HttpContext.ResponseBuilder(StatusCodes.Status400BadRequest, badRequest.ToValidationResults())),
             validationFailed => BadRequest(HttpContext.ResponseBuilder(StatusCodes.Status400BadRequest, validationFailed.Errors.ToList())),
+            forbidden => new ObjectResult(HttpContext.ResponseBuilder(StatusCodes.Status403Forbidden, forbidden.ToValidationResults())),
             domainError => UnprocessableEntity(HttpContext.ResponseBuilder(StatusCodes.Status422UnprocessableEntity, domainError.ToValidationResults())),
             concurrencyError => new ObjectResult(HttpContext.ResponseBuilder(StatusCodes.Status412PreconditionFailed)) { StatusCode = StatusCodes.Status412PreconditionFailed }
         );

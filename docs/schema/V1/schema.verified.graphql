@@ -64,6 +64,7 @@ type Dialog {
   revision: UUID!
   org: String!
   serviceResource: String!
+  serviceResourceType: String!
   party: String!
   progress: Int
   extendedStatus: String
@@ -145,6 +146,7 @@ type SearchDialog {
   id: UUID!
   org: String!
   serviceResource: String!
+  serviceResourceType: String!
   party: String!
   progress: Int
   guiAttachmentCount: Int

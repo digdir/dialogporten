@@ -9,6 +9,7 @@ public sealed class SearchDialogDto
     public Guid Id { get; set; }
     public string Org { get; set; } = null!;
     public string ServiceResource { get; set; } = null!;
+    public string ServiceResourceType { get; set; } = null!;
     public string Party { get; set; } = null!;
     public string? EndUserId { get; set; }
     public int? Progress { get; set; }

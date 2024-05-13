@@ -31,6 +31,7 @@ internal static class AuthorizationScope
     public const string ServiceProvider = "digdir:dialogporten.serviceprovider";
     public const string ServiceProviderSearch = "digdir:dialogporten.serviceprovider.search";
     public const string Testing = "digdir:dialogporten.developer.test";
+    public const string Correspondence = "digdir:dialogporten.correspondence";
 
     internal static readonly Lazy<IReadOnlyCollection<string>> AllScopes = new(GetAll);
 
