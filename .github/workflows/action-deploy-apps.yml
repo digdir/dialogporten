@@ -1,6 +1,6 @@
 ﻿name: Deploy apps
 env:
-  AZ_CLI_VERSION: 2.56.0
+  AZ_CLI_VERSION: 2.60.0
 on:
   workflow_call:
     secrets:
@@ -92,7 +92,7 @@ jobs:
         uses: azure/CLI@v2
         if: ${{!inputs.dryRun}}
         with:
-          azcliversion: 2.56.0
+          azcliversion: ${{ env.AZ_CLI_VERSION }}
           inlineScript: |
             az containerapp job start -n ${{ steps.deploy.outputs.name }} -g ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
 

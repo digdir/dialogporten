@@ -51,7 +51,7 @@ public class PurgeDialogTests(DialogApplication application) : ApplicationCollec
         var purgeResponse = await Application.Send(purgeCommand);
 
         // Assert
-        purgeResponse.TryPickT2(out _, out _).Should().BeTrue();
+        purgeResponse.TryPickT3(out _, out _).Should().BeTrue();
     }
 
     [Fact]
