@@ -12,7 +12,8 @@ using FluentValidation.Results;
 using MediatR;
 using OneOf;
 using OneOf.Types;
-using Constants = Digdir.Domain.Dialogporten.Application.Common.ResourceRegistry.Constants;
+using ResourceRegistryConstants = Digdir.Domain.Dialogporten.Application.Common.ResourceRegistry.Constants;
+using AuthorizationConstants = Digdir.Domain.Dialogporten.Application.Common.Authorization.Constants;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Create;
 
@@ -31,7 +32,7 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
     private readonly IUserOrganizationRegistry _userOrganizationRegistry;
     private readonly IDialogActivityService _dialogActivityService;
 
-    private readonly ValidationFailure _progressValidationFailure = new(nameof(CreateDialogCommand.Progress), "Progress cannot be set for correspondence dialogs.");
+    internal static readonly ValidationFailure ProgressValidationFailure = new(nameof(CreateDialogCommand.Progress), "Progress cannot be set for correspondence dialogs.");
 
     public CreateDialogCommandHandler(
         IDialogDbContext db,
@@ -62,13 +63,13 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
 
         if (!_userResourceRegistry.UserCanModifyResourceType(serviceResourceType))
         {
-            return new Forbidden($"User cannot modify resource type {serviceResourceType}.");
+            return new Forbidden($"User cannot create resource type {serviceResourceType}. Missing scope {AuthorizationConstants.CorrespondenceScope}.");
         }
 
-        if (serviceResourceType == Constants.Correspondence)
+        if (serviceResourceType == ResourceRegistryConstants.Correspondence)
         {
             if (request.Progress is not null)
-                return new ValidationError(_progressValidationFailure);
+                return new ValidationError(ProgressValidationFailure);
         }
 
         var dialog = _mapper.Map<DialogEntity>(request);
