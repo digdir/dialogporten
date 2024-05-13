@@ -128,6 +128,6 @@ internal sealed class LocalDevelopmentUserRegistryDecorator : IUserRegistry
             UserId = GetCurrentUserId(),
             // TODO: Decorating service owner org.name and enduser pid is now done in the same decorator
             ServiceOwnerShortName = "digdir",
-            LocalizedNames = new List<LocalizedName> { new() { Name = LocalDevelopmentUserName } }
+            LocalizedNames = new List<LocalizedName> { new() { Name = LocalDevelopmentUserName, LanguageCode = "nb-no" } }
         });
 }

@@ -105,7 +105,7 @@ public class DialogEntity :
         SeenLog.Add(new()
         {
             EndUserId = endUserId,
-            EndUserType = userType,
+            EndUserTypeId = userType.Id,
             EndUserName = endUserName
         });
 

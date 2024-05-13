@@ -28,7 +28,9 @@ public class DialogActivityService : IDialogActivityService
             activity.PerformedBy ??= new DialogActivityPerformedBy
             {
                 // TODO: Ask Bjørn about returned null values from name lookups (remove ! claims below)
-                Localizations = userInformation.LocalizedNames.Select(x => new Localization { Value = x.Name!, CultureCode = x.LanguageCode! }).ToList(),
+                Localizations = userInformation.LocalizedNames
+                    // .Where(x => x.Name is not null && x.LanguageCode is not null) // TOTO: REMOVE THIS
+                    .Select(x => new Localization { Value = x.Name!, CultureCode = x.LanguageCode! }).ToList(),
             };
         }
     }
