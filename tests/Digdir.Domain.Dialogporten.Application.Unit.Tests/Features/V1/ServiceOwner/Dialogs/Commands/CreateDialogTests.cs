@@ -28,8 +28,7 @@ public class CreateDialogTests
         var userOrganizationRegistrySub = Substitute.For<IUserOrganizationRegistry>();
         var activityServiceSub = Substitute.For<IDialogActivityService>();
 
-        var expectedDialogId = Guid.NewGuid();
-        var createCommand = DialogGenerator.GenerateSimpleFakeDialog(id: expectedDialogId);
+        var createCommand = DialogGenerator.GenerateSimpleFakeDialog();
 
         userResourceRegistrySub
             .CurrentUserIsOwner(createCommand.ServiceResource, Arg.Any<CancellationToken>())
@@ -68,8 +67,7 @@ public class CreateDialogTests
         var userOrganizationRegistrySub = Substitute.For<IUserOrganizationRegistry>();
         var activityServiceSub = Substitute.For<IDialogActivityService>();
 
-        var expectedDialogId = Guid.NewGuid();
-        var createCommand = DialogGenerator.GenerateSimpleFakeDialog(id: expectedDialogId);
+        var createCommand = DialogGenerator.GenerateSimpleFakeDialog();
 
         userResourceRegistrySub
             .CurrentUserIsOwner(createCommand.ServiceResource, Arg.Any<CancellationToken>())
