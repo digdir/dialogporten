@@ -3,4 +3,5 @@
 public interface IResourceRegistry
 {
     Task<IReadOnlyCollection<string>> GetResourceIds(string orgNumber, CancellationToken cancellationToken);
+    Task<string> GetResourceType(string orgNumber, string serviceResourceId, CancellationToken cancellationToken);
 }

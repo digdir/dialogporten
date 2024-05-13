@@ -75,7 +75,7 @@ public class UserRegistry : IUserRegistry
                 names.Add(new() { Name = name });
                 break;
             case UserIdType.Enterprise:
-                // We might have a request without a "org"-claim, which will then be identified as just another enterprise
+                // We might have a request without an "org"-claim, which will then be identified as just another enterprise
                 // We therefor will have to check if the user is a service owner by seeing if we can get the service owner short name
                 // If not, we fall back to just getting the organization name
                 serviceOwnerShortName = await _serviceOwnerNameRegistry.GetServiceOwnerShortName(userId.ExternalId, cancellationToken);

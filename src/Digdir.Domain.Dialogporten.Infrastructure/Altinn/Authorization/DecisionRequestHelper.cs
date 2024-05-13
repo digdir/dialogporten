@@ -17,6 +17,10 @@ internal static class DecisionRequestHelper
     private const string AttributeIdAction = "urn:oasis:names:tc:xacml:1.0:action:action-id";
     private const string AttributeIdResource = "urn:altinn:resource";
     private const string AttributeIdResourceInstance = "urn:altinn:resourceinstance";
+    private const string AttributeIdOrg = "urn:altinn:org";
+    private const string AttributeIdApp = "urn:altinn:app";
+    private const string ReservedResourcePrefixForApps = "app_";
+    private const string AttributeIdAppInstance = "urn:altinn:instance-id";
     private const string AttributeIdSubResource = "urn:altinn:subresource";
     private const string PermitResponse = "Permit";
 
@@ -117,11 +121,16 @@ internal static class DecisionRequestHelper
 
     private static XacmlJsonCategory CreateResourceCategory(string id, string serviceResource, Guid? dialogId, XacmlJsonAttribute? partyAttribute, string? subResource = null)
     {
-        var (ns, value) = SplitNsAndValue(serviceResource);
+        var (ns, value, org) = SplitNsAndValue(serviceResource);
         var attributes = new List<XacmlJsonAttribute>
         {
             new() { AttributeId = ns, Value = value }
         };
+
+        if (org is not null)
+        {
+            attributes.Add(new XacmlJsonAttribute { AttributeId = AttributeIdOrg, Value = org });
+        }
 
         if (partyAttribute is not null)
         {
@@ -130,7 +139,29 @@ internal static class DecisionRequestHelper
 
         if (dialogId is not null)
         {
-            attributes.Add(new() { AttributeId = AttributeIdResourceInstance, Value = dialogId.ToString() });
+            if (ns == AttributeIdResource)
+            {
+                attributes.Add(new()
+                {
+                    AttributeId = AttributeIdResourceInstance,
+                    Value = dialogId.ToString()
+                });
+            }
+            else if (ns == AttributeIdAppInstance)
+            {
+                // TODO!
+                // For app instances, we the syntax of the value is "{partyID}/{instanceID}".
+                // We do not have Altinn partyID in the request, so we cannot support this.
+                // This means we cannot easily support instance specific authorizations for apps.
+                // This should probably be fixed in the PDP, lest we use the party lookup service
+                // to get this value (which would suck).
+                /*
+                {
+                    AttributeId = AttributeIdAppInstance,
+                    Value = dialogId.ToString()
+                });
+                */
+            }
         }
 
         if (subResource is not null)
@@ -145,20 +176,31 @@ internal static class DecisionRequestHelper
         };
     }
 
-    private static (string, string) SplitNsAndValue(string serviceResource)
+    private static (string, string, string?) SplitNsAndValue(string serviceResource)
     {
         var lastColonIndex = serviceResource.LastIndexOf(':');
         if (lastColonIndex == -1 || lastColonIndex == serviceResource.Length - 1)
         {
             // If we don't recognize the format, we just return the whole string as the value and assume
             // that the caller wants to refer a resource in the Resource Registry namespace.
-            return (AttributeIdResource, serviceResource);
+            return (AttributeIdResource, serviceResource, null);
         }
 
         var ns = serviceResource[..lastColonIndex];
         var value = serviceResource[(lastColonIndex + 1)..];
 
-        return (ns, value);
+        if (!value.StartsWith(ReservedResourcePrefixForApps, StringComparison.Ordinal))
+        {
+            return (ns, value, null);
+        }
+
+        // If the value starts with the reserved app prefix, we assume that the value is an app id
+        // and we need to split it into the org and app id based on the format "app_{org}_{app_id}".
+        // We also use the app namespace for the attribute id.
+        var parts = value.Split('_');
+        return parts.Length >= 3
+            ? (AttributeIdApp, string.Join('_', parts[2..]), parts[1])
+            : (AttributeIdApp, value, null);
     }
 
     private static XacmlJsonAttribute? GetPartyAttribute(string party)
@@ -248,10 +290,19 @@ internal static class DecisionRequestHelper
                     continue;
                 }
 
-                // Get the name of the resource.
+                // Get the name of the resource. This may be either an app or an generic service resource.
                 var resourceId = $"r{i + 1}";
-                var serviceResource = $"{AttributeIdResource}:" + xamlJsonRequestRoot.Request.Resource.First(r => r.Id == resourceId).Attribute
-                        .First(a => a.AttributeId == AttributeIdResource).Value;
+                var resourceList = xamlJsonRequestRoot.Request.Resource.First(r => r.Id == resourceId).Attribute;
+                var resource = resourceList.First(a => a.AttributeId is AttributeIdResource or AttributeIdApp);
+
+                // If it's an app, we need to include the org code in the service resource
+                if (resource.AttributeId == AttributeIdApp)
+                {
+                    var orgCode = resourceList.First(a => a.AttributeId == AttributeIdOrg).Value;
+                    resource.Value = $"app_{orgCode}_{resource.Value}";
+                }
+
+                var serviceResource = resource.AttributeId + ":" + resource.Value;
 
                 string party;
                 var partyOrgNr = xamlJsonRequestRoot.Request.Resource.First(r => r.Id == resourceId).Attribute

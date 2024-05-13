@@ -2,14 +2,17 @@
 using AutoMapper;
 using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
+using Digdir.Domain.Dialogporten.Application.Common.Services;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Domain.Common;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements;
+using FluentValidation.Results;
 using MediatR;
 using OneOf;
 using OneOf.Types;
+using Constants = Digdir.Domain.Dialogporten.Application.Common.ResourceRegistry.Constants;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Create;
 
@@ -26,6 +29,9 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
     private readonly IDomainContext _domainContext;
     private readonly IUserResourceRegistry _userResourceRegistry;
     private readonly IUserRegistry _userRegistry;
+    private readonly IDialogActivityService _dialogActivityService;
+
+    private readonly ValidationFailure _progressValidationFailure = new(nameof(CreateDialogCommand.Progress), "Progress cannot be set for correspondence dialogs.");
 
     public CreateDialogCommandHandler(
         IDialogDbContext db,
@@ -33,7 +39,8 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
         IUnitOfWork unitOfWork,
         IDomainContext domainContext,
         IUserResourceRegistry userResourceRegistry,
-        IUserRegistry userRegistry)
+        IUserRegistry userRegistry,
+        IDialogActivityService dialogActivityService)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
@@ -41,6 +48,7 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
         _domainContext = domainContext ?? throw new ArgumentNullException(nameof(domainContext));
         _userResourceRegistry = userResourceRegistry ?? throw new ArgumentNullException(nameof(userResourceRegistry));
         _userRegistry = userRegistry ?? throw new ArgumentNullException(nameof(userRegistry));
+        _dialogActivityService = dialogActivityService ?? throw new ArgumentNullException(nameof(dialogActivityService));
     }
 
     public async Task<CreateDialogResult> Handle(CreateDialogCommand request, CancellationToken cancellationToken)
@@ -50,10 +58,26 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
             return new Forbidden($"Not owner of {request.ServiceResource}.");
         }
 
+        var serviceResourceType = await _userResourceRegistry.GetResourceType(request.ServiceResource, cancellationToken);
+
+        if (!_userResourceRegistry.UserCanModifyResourceType(serviceResourceType))
+        {
+            return new Forbidden($"User cannot modify resource type {serviceResourceType}.");
+        }
+
+        if (serviceResourceType == Constants.Correspondence)
+        {
+            if (request.Progress is not null)
+                return new ValidationError(_progressValidationFailure);
+        }
+
         var dialog = _mapper.Map<DialogEntity>(request);
 
         var userInfo = await _userRegistry.GetCurrentUserInformation(cancellationToken);
+
         dialog.Org = userInfo.ServiceOwnerShortName ?? string.Empty;
+        dialog.ServiceResourceType = serviceResourceType;
+
         if (string.IsNullOrWhiteSpace(dialog.Org))
         {
             _domainContext.AddError(new DomainFailure(nameof(DialogEntity.Org),
@@ -77,6 +101,8 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
         {
             _domainContext.AddError(DomainFailure.EntityExists<DialogElement>(existingElementIds));
         }
+
+        await _dialogActivityService.EnsurePerformedByIsSetForActivities(dialog.Activities, cancellationToken);
 
         await _db.Dialogs.AddAsync(dialog, cancellationToken);
 

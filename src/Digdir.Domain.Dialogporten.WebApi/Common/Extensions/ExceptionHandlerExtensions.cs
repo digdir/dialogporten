@@ -1,4 +1,5 @@
-﻿using FastEndpoints;
+﻿using Digdir.Domain.Dialogporten.Infrastructure.Common.Exceptions;
+using FastEndpoints;
 using Microsoft.AspNetCore.Diagnostics;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
@@ -22,7 +23,9 @@ internal static class ExceptionHandlerExtensions
                 var error = exHandlerFeature.Error.Message;
                 var logger = ctx.Resolve<ILogger<ExceptionHandler>>();
                 logger.LogError(exHandlerFeature.Error, "{@Http}{@Type}{@Reason}", http, type, error);
-                ctx.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                ctx.Response.StatusCode = exHandlerFeature.Error is IUpstreamServiceError
+                        ? StatusCodes.Status502BadGateway
+                        : StatusCodes.Status500InternalServerError;
                 ctx.Response.ContentType = "application/problem+json";
                 await ctx.Response.WriteAsJsonAsync(ctx.ResponseBuilder(ctx.Response.StatusCode));
             });

@@ -2,6 +2,7 @@
 using Digdir.Domain.Dialogporten.Application.Common.Behaviours;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.OptionExtensions;
+using Digdir.Domain.Dialogporten.Application.Common.Services;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.Configuration;
@@ -37,11 +38,14 @@ public static class ApplicationExtensions
             .AddScoped<IDomainContext, DomainContext>()
             .AddScoped<ITransactionTime, TransactionTime>()
             .AddScoped<IDialogTokenGenerator, DialogTokenGenerator>()
-            .AddScoped<IUserRegistry, UserRegistry>()
 
             // Transient
             .AddTransient<IStringHasher, PersistentRandomSaltStringHasher>()
             .AddTransient<IUserResourceRegistry, UserResourceRegistry>()
+
+            .AddTransient<IUserRegistry, UserRegistry>()
+            .AddTransient<IUserParties, UserParties>()
+            .AddTransient<IDialogActivityService, DialogActivityService>()
             .AddTransient<IClock, Clock>()
             .AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>))
             .AddTransient(typeof(IPipelineBehavior<,>), typeof(DomainContextBehaviour<,>));

@@ -24,6 +24,8 @@ public static class ClaimsPrincipalExtensions
     private const string AltinnAuthenticationEnterpriseUserMethod = "virksomhetsbruker";
     private const string AltinnUserIdClaim = "urn:altinn:userid";
     private const string AltinnUserNameClaim = "urn:altinn:username";
+    private const string ScopeClaim = "scope";
+    private const char ScopeClaimSeparator = ' ';
     private const string PidClaim = "pid";
 
     public static bool TryGetClaimValue(this ClaimsPrincipal claimsPrincipal, string claimType, [NotNullWhen(true)] out string? value)
@@ -34,6 +36,10 @@ public static class ClaimsPrincipalExtensions
 
     public static bool TryGetOrganizationNumber(this ClaimsPrincipal claimsPrincipal, [NotNullWhen(true)] out string? orgNumber)
         => claimsPrincipal.FindFirst(ConsumerClaim).TryGetOrganizationNumber(out orgNumber);
+
+    public static bool HasScope(this ClaimsPrincipal claimsPrincipal, string scope) =>
+        claimsPrincipal.TryGetClaimValue(ScopeClaim, out var scopes) &&
+        scopes.Split(ScopeClaimSeparator).Contains(scope);
 
     public static bool TryGetSupplierOrgNumber(this ClaimsPrincipal claimsPrincipal, [NotNullWhen(true)] out string? orgNumber)
         => claimsPrincipal.FindFirst(SupplierClaim).TryGetOrganizationNumber(out orgNumber);

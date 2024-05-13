@@ -33,6 +33,7 @@ public sealed class PurgeDialogEndpoint : Endpoint<PurgeDialogRequest>
         await result.Match(
             success => SendNoContentAsync(ct),
             notFound => this.NotFoundAsync(notFound, ct),
+            forbidden => this.ForbiddenAsync(forbidden, ct),
             concurrencyError => this.PreconditionFailed(ct),
             validationError => this.BadRequestAsync(validationError, ct));
     }

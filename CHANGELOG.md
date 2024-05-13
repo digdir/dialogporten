@@ -1,5 +1,37 @@
 # Changelog
 
+## [1.6.2](https://github.com/digdir/dialogporten/compare/v1.6.1...v1.6.2) (2024-05-10)
+
+
+### Bug Fixes
+
+* **gql:** Add missing graphQl appsettings for staging ([#714](https://github.com/digdir/dialogporten/issues/714)) ([97b7da6](https://github.com/digdir/dialogporten/commit/97b7da6e1b817c492467cec587513a2b4a00e518))
+* Use correct scope for authorization API for remaining runtimes ([#711](https://github.com/digdir/dialogporten/issues/711)) ([0691f36](https://github.com/digdir/dialogporten/commit/0691f360b6f28cc353279b9e65c4de7e53d113e4))
+
+## [1.6.1](https://github.com/digdir/dialogporten/compare/v1.6.0...v1.6.1) (2024-05-08)
+
+
+### Bug Fixes
+
+* Use correct scope for authorization API ([#709](https://github.com/digdir/dialogporten/issues/709)) ([38253ad](https://github.com/digdir/dialogporten/commit/38253ad1128745f54ef5d2bd4393c2d1efdae58e))
+
+## [1.6.0](https://github.com/digdir/dialogporten/compare/v1.5.0...v1.6.0) (2024-05-07)
+
+
+### Features
+
+* Add authorization caching ([#591](https://github.com/digdir/dialogporten/issues/591)) ([2f86d7e](https://github.com/digdir/dialogporten/commit/2f86d7e6982f2d1e228a753a0b625904caf443ea))
+* Add GraphQL POC ([#636](https://github.com/digdir/dialogporten/issues/636)) ([c779eac](https://github.com/digdir/dialogporten/commit/c779eac72372e925f8bb3d348812322ebdef319a))
+* Add support for apps as serviceresource ([#658](https://github.com/digdir/dialogporten/issues/658)) ([adf91ce](https://github.com/digdir/dialogporten/commit/adf91ce739980abd0177b26d55f9db956f1e95fb))
+* Authorized parties endpoint in enduser API ([#661](https://github.com/digdir/dialogporten/issues/661)) ([050ccbb](https://github.com/digdir/dialogporten/commit/050ccbb548d9f8bf03842041bd675f8f27504141))
+
+
+### Bug Fixes
+
+* Accept app references with urn:altinn:resource prefix ([#685](https://github.com/digdir/dialogporten/issues/685)) ([c9a5606](https://github.com/digdir/dialogporten/commit/c9a5606f932fb029ecf8a891b9a9246dc631db52))
+* ensure performed by is set for activities ([#628](https://github.com/digdir/dialogporten/issues/628)) ([1adf075](https://github.com/digdir/dialogporten/commit/1adf075de2a25fa83b4909cf9b29020b53cf9c0f))
+* Use HttpClient wrappers that ensure success to match FusionCache expectations ([#684](https://github.com/digdir/dialogporten/issues/684)) ([7c1e966](https://github.com/digdir/dialogporten/commit/7c1e96650cf54594a33fb380c8b42518392f1741))
+
 ## [1.5.0](https://github.com/digdir/dialogporten/compare/v1.4.0...v1.5.0) (2024-04-10)
 
 

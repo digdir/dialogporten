@@ -1,0 +1,10 @@
+{
+  "name": "@digdir/dialogporten-schema",
+  "version": "1.0.9",
+  "description": "GraphQl schema and OpenAPI spec for Dialogporten",
+  "author": "DigDir",
+  "repository": {
+    "url": "git+https://github.com/digdir/dialogporten.git"
+  },
+  "license": "ISC"
+}

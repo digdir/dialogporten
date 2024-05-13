@@ -20,7 +20,8 @@ export default function () {
             { "type": "Title", "value": [ { "cultureCode": "nb_NO", "value": "Skjema for rapportering av et eller annet" } ] },
             { "type": "SenderName", "value": [ { "cultureCode": "nb_NO", "value": "Avsendernavn" } ] },
             { "type": "Summary", "value": [ { "cultureCode": "nb_NO", "value": "Et sammendrag her. Maks 200 tegn, ingen HTML-støtte. Påkrevd. Vises i liste." } ] },
-            { "type": "AdditionalInfo", "value": [ { "cultureCode": "nb_NO", "value": "Utvidet forklaring (enkel HTML-støtte, inntil 1023 tegn). Ikke påkrevd. Vises kun i detaljvisning." } ] }
+            { "type": "AdditionalInfo", "value": [ { "cultureCode": "nb_NO", "value": "Utvidet forklaring (enkel HTML-støtte, inntil 1023 tegn). Ikke påkrevd. Vises kun i detaljvisning." } ] },
+            { "type": "ExtendedStatus", "value": [ { "cultureCode": "nb_NO", "value": "Utvidet Status" } ] },
         ],
         "guiActions": [
             {

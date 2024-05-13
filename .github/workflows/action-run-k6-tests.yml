@@ -1,0 +1,54 @@
+name: Run K6 tests
+
+on:
+  workflow_call:
+    inputs:
+      apiVersion:
+        required: true
+        type: string   
+      environment:
+        required: true
+        type: string
+      testSuitePath:
+        required: true
+        type: string
+    secrets:
+      TOKEN_GENERATOR_USERNAME:
+        required: true
+      TOKEN_GENERATOR_PASSWORD:
+        required: true
+
+jobs:
+  k6-test:
+    runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      pull-requests: write
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Run K6 tests (${{ inputs.testSuitePath }})
+      uses: grafana/k6-action@v0.3.1
+      with:
+        filename: ${{ inputs.testSuitePath }}
+        flags: --quiet --log-output=stdout --include-system-env-vars
+      env:
+        API_ENVIRONMENT: ${{ inputs.environment }}
+        API_VERSION: ${{ inputs.apiVersion }}
+        TOKEN_GENERATOR_USERNAME: ${{ secrets.TOKEN_GENERATOR_USERNAME }}
+        TOKEN_GENERATOR_PASSWORD: ${{ secrets.TOKEN_GENERATOR_PASSWORD }}  
+    
+    - name: Store test summary
+      uses: actions/upload-artifact@v4
+      with:
+        name: k6-summary-report
+        path: junit.xml
+
+    - name: 'Publish test results'
+      uses: EnricoMi/publish-unit-test-result-action@v2
+      if: always()
+      with:
+        files: |
+          junit.xml

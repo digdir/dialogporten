@@ -58,7 +58,7 @@ function fetchToken(url, tokenOptions, type) {
 export function getServiceOwnerTokenFromGenerator(tokenOptions = null) {
   let fullTokenOptions = extend({}, defaultTokenOptions, tokenOptions);
   const url = `http://altinn-testtools-token-generator.azurewebsites.net/api/GetEnterpriseToken?env=tt02&scopes=${encodeURIComponent(fullTokenOptions.scopes)}&org=${fullTokenOptions.orgName}&orgNo=${fullTokenOptions.orgNo}&ttl=${tokenTtl}`;
-  return fetchToken(url, fullTokenOptions, `service owner (orgno:${fullTokenOptions.orgNo})`);
+  return fetchToken(url, fullTokenOptions, `service owner (orgno:${fullTokenOptions.orgNo} orgName:${fullTokenOptions.orgName})`);
 }
 
 export function getEnduserTokenFromGenerator(tokenOptions = null) {

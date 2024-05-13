@@ -1,13 +1,16 @@
 ﻿using AutoMapper;
 using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.Enumerables;
+using Digdir.Domain.Dialogporten.Application.Common.ResourceRegistry;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
+using Digdir.Domain.Dialogporten.Application.Common.Services;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements;
+using FluentValidation.Results;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
@@ -23,7 +26,7 @@ public sealed class UpdateDialogCommand : IRequest<UpdateDialogResult>
 }
 
 [GenerateOneOf]
-public partial class UpdateDialogResult : OneOfBase<Success, EntityNotFound, BadRequest, ValidationError, DomainError, ConcurrencyError>;
+public partial class UpdateDialogResult : OneOfBase<Success, EntityNotFound, BadRequest, ValidationError, Forbidden, DomainError, ConcurrencyError>;
 
 internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogCommand, UpdateDialogResult>
 {
@@ -32,19 +35,24 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
     private readonly IUnitOfWork _unitOfWork;
     private readonly IDomainContext _domainContext;
     private readonly IUserResourceRegistry _userResourceRegistry;
+    private readonly IDialogActivityService _dialogActivityService;
+
+    private readonly ValidationFailure _progressValidationFailure = new(nameof(UpdateDialogDto.Progress), "Progress cannot be set for correspondence dialogs.");
 
     public UpdateDialogCommandHandler(
         IDialogDbContext db,
         IMapper mapper,
         IUnitOfWork unitOfWork,
         IDomainContext domainContext,
-        IUserResourceRegistry userResourceRegistry)
+        IUserResourceRegistry userResourceRegistry,
+        IDialogActivityService dialogActivityService)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _domainContext = domainContext ?? throw new ArgumentNullException(nameof(domainContext));
         _userResourceRegistry = userResourceRegistry ?? throw new ArgumentNullException(nameof(userResourceRegistry));
+        _dialogActivityService = dialogActivityService ?? throw new ArgumentNullException(nameof(dialogActivityService));
     }
 
     public async Task<UpdateDialogResult> Handle(UpdateDialogCommand request, CancellationToken cancellationToken)
@@ -70,6 +78,17 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         if (dialog is null)
         {
             return new EntityNotFound<DialogEntity>(request.Id);
+        }
+
+        if (!_userResourceRegistry.UserCanModifyResourceType(dialog.ServiceResourceType))
+        {
+            return new Forbidden($"User cannot modify resource type {dialog.ServiceResourceType}.");
+        }
+
+        if (dialog.ServiceResourceType == Constants.Correspondence)
+        {
+            if (request.Dto.Progress is not null)
+                return new ValidationError(_progressValidationFailure);
         }
 
         if (dialog.Deleted)
@@ -164,6 +183,9 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
     private async Task AppendActivity(DialogEntity dialog, UpdateDialogDto dto, CancellationToken cancellationToken)
     {
         var newDialogActivities = _mapper.Map<List<DialogActivity>>(dto.Activities);
+
+
+        await _dialogActivityService.EnsurePerformedByIsSetForActivities(newDialogActivities, cancellationToken);
 
         var existingIds = await _db.GetExistingIds(newDialogActivities, cancellationToken);
         if (existingIds.Count != 0)

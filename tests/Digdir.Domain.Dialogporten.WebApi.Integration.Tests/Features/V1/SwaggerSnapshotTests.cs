@@ -17,11 +17,11 @@ public class SwaggerSnapshotTests : IClassFixture<WebApplicationFactory<Program>
     {
         // Arrange
         // This test checks for changes against the published version of the swagger.verified.json file
-        // The file is located at /docs/swagger/ on the solution root
+        // The file is located at /docs/schema/ on the solution root
         // Commiting a change to this file will trigger a build and publish
         // of the npm package located in the same folder
         var rootPath = Utils.GetSolutionRootFolder();
-        var swaggerPath = Path.Combine(rootPath!, "docs/swagger/V1");
+        var swaggerPath = Path.Combine(rootPath!, "docs/schema/V1");
 
         var client = _webApplicationFactory
             .WithWebHostBuilder(builder => builder.UseEnvironment("test"))

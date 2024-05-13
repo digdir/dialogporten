@@ -2,9 +2,11 @@
 using System.Text.Json;
 using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Externals;
+using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
 using Digdir.Domain.Dialogporten.Domain.Outboxes;
 using Digdir.Domain.Dialogporten.Infrastructure;
+using Digdir.Domain.Dialogporten.Infrastructure.Altinn.Authorization;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.ResourceRegistry;
 using Digdir.Domain.Dialogporten.Infrastructure.DomainEvents.Outbox;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence;
@@ -17,6 +19,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Npgsql;
+using NSec.Cryptography;
 using NSubstitute;
 using Respawn;
 using Respawn.Graph;
@@ -36,7 +39,6 @@ public class DialogApplication : IAsyncLifetime
     {
         AssertionOptions.AssertEquivalencyUsing(options =>
         {
-            //options.ExcludingMissingMembers();
             options.Using<DateTimeOffset>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Expectation, TimeSpan.FromMicroseconds(1)))
                 .WhenTypeIs<DateTimeOffset>();
             return options;
@@ -57,10 +59,11 @@ public class DialogApplication : IAsyncLifetime
             .AddScoped<IDialogDbContext>(x => x.GetRequiredService<DialogDbContext>())
             .AddScoped<IUser, IntegrationTestUser>()
             .AddScoped<IResourceRegistry, LocalDevelopmentResourceRegistry>()
-            .AddScoped<IServiceOwnerNameRegistry>(_ => CreateOrganizationRegistrySubstitute())
+            .AddScoped<IServiceOwnerNameRegistry>(_ => CreateServiceOwnerNameRegistrySubstitute())
             .AddScoped<IPartyNameRegistry>(_ => CreateNameRegistrySubstitute())
             .AddScoped<IOptions<ApplicationSettings>>(_ => CreateApplicationSettingsSubstitute())
             .AddScoped<IUnitOfWork, UnitOfWork>()
+            .AddScoped<IAltinnAuthorization, LocalDevelopmentAltinnAuthorization>()
             .AddSingleton<ICloudEventBus, IntegrationTestCloudBus>()
             .Decorate<IUserResourceRegistry, LocalDevelopmentUserResourceRegistryDecorator>()
             .Decorate<IUserRegistry, LocalDevelopmentUserRegistryDecorator>()
@@ -82,9 +85,21 @@ public class DialogApplication : IAsyncLifetime
         return nameRegistrySubstitute;
     }
 
+    private static string Base64UrlEncode(byte[] input) => Convert.ToBase64String(input).Replace("+", "-").Replace("/", "_").TrimEnd('=');
+
     private static IOptions<ApplicationSettings> CreateApplicationSettingsSubstitute()
     {
         var applicationSettingsSubstitute = Substitute.For<IOptions<ApplicationSettings>>();
+
+        using var primaryKeyPair = Key.Create(SignatureAlgorithm.Ed25519,
+            new KeyCreationParameters { ExportPolicy = KeyExportPolicies.AllowPlaintextExport });
+        var primaryPublicKey = primaryKeyPair.Export(KeyBlobFormat.RawPublicKey);
+        var primaryPrivateKey = primaryKeyPair.Export(KeyBlobFormat.RawPrivateKey);
+
+        using var secondaryKeyPair = Key.Create(SignatureAlgorithm.Ed25519,
+            new KeyCreationParameters { ExportPolicy = KeyExportPolicies.AllowPlaintextExport });
+        var secondaryPublicKey = secondaryKeyPair.Export(KeyBlobFormat.RawPublicKey);
+        var secondaryPrivateKey = secondaryKeyPair.Export(KeyBlobFormat.RawPrivateKey);
 
         applicationSettingsSubstitute
             .Value
@@ -97,15 +112,15 @@ public class DialogApplication : IAsyncLifetime
                     {
                         Primary = new Ed25519KeyPair
                         {
-                            Kid = "kid1",
-                            PrivateComponent = "private1",
-                            PublicComponent = "public1"
+                            Kid = "integration-test-primary-signing-key",
+                            PrivateComponent = Base64UrlEncode(primaryPrivateKey),
+                            PublicComponent = Base64UrlEncode(primaryPublicKey)
                         },
                         Secondary = new Ed25519KeyPair
                         {
-                            Kid = "kid2",
-                            PrivateComponent = "private2",
-                            PublicComponent = "public2"
+                            Kid = "integration-test-secondary-signing-key",
+                            PrivateComponent = Base64UrlEncode(secondaryPrivateKey),
+                            PublicComponent = Base64UrlEncode(secondaryPublicKey)
                         }
                     }
                 }
@@ -113,15 +128,15 @@ public class DialogApplication : IAsyncLifetime
 
         return applicationSettingsSubstitute;
     }
-    private static IServiceOwnerNameRegistry CreateOrganizationRegistrySubstitute()
+    private static IServiceOwnerNameRegistry CreateServiceOwnerNameRegistrySubstitute()
     {
-        var organizationRegistrySubstitute = Substitute.For<IServiceOwnerNameRegistry>();
+        var serviceOwnerNameRegistrySubstitute = Substitute.For<IServiceOwnerNameRegistry>();
 
-        organizationRegistrySubstitute
+        serviceOwnerNameRegistrySubstitute
             .GetServiceOwnerShortName(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns("digdir");
 
-        return organizationRegistrySubstitute;
+        return serviceOwnerNameRegistrySubstitute;
     }
 
     public async Task DisposeAsync()

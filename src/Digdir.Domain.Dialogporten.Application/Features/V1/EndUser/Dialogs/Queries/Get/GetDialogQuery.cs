@@ -58,7 +58,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
         // This query could be written without all the includes as ProjectTo will do the job for us.
         // However, we need to guarantee an order for sub resources of the dialog aggregate.
         // This is to ensure that the get is consistent, and that PATCH in the API presentation
-        // layer behaviours in an expected manner. Therefore we need to be a bit more verbose about it.
+        // layer behaviours in an expected manner. Therefore, we need to be a bit more verbose about it.
         var dialog = await _db.Dialogs
             .Include(x => x.Content.OrderBy(x => x.Id).ThenBy(x => x.CreatedAt))
                 .ThenInclude(x => x.Value.Localizations.OrderBy(x => x.CreatedAt).ThenBy(x => x.CultureCode))
@@ -158,7 +158,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
                 }
             }
 
-            // Simple "read" on the main resource will give access to a dialog element, unless a authorization attribute is set,
+            // Simple "read" on the main resource will give access to a dialog element, unless an authorization attribute is set,
             // in which case an "elementread" action is required
             var elements = dto.Elements.Where(dialogElement =>
                 (dialogElement.AuthorizationAttribute is null && action == Constants.ReadAction) ||

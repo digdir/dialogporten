@@ -9,22 +9,23 @@
 
     <ItemGroup>
         <PackageReference Include="Altinn.ApiClients.Maskinporten" Version="9.1.0" />
-        <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.3" />
+        <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.4" />
         <PackageReference Include="Altinn.Authorization.ABAC" Version="0.0.8" />
-        <PackageReference Include="Bogus" Version="35.5.0" />
+        <PackageReference Include="Bogus" Version="35.5.1" />
         <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="8.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Http.Polly" Version="8.0.3" />
+        <PackageReference Include="Microsoft.Extensions.Http.Polly" Version="8.0.4" />
+        <PackageReference Include="Npgsql" Version="8.0.3" />
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.2" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.3">
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.4">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <TreatAsUsed>true</TreatAsUsed>
         </PackageReference>
         <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0" />
         <PackageReference Include="Polly.Contrib.WaitAndRetry" Version="1.1.1" />
-        <PackageReference Include="ZiggyCreatures.FusionCache" Version="1.0.0" />
-        <PackageReference Include="ZiggyCreatures.FusionCache.Backplane.StackExchangeRedis" Version="1.0.0" />
-        <PackageReference Include="ZiggyCreatures.FusionCache.Serialization.NeueccMessagePack" Version="1.0.0" />
+        <PackageReference Include="ZiggyCreatures.FusionCache" Version="1.1.0" />
+        <PackageReference Include="ZiggyCreatures.FusionCache.Backplane.StackExchangeRedis" Version="1.1.0" />
+        <PackageReference Include="ZiggyCreatures.FusionCache.Serialization.NeueccMessagePack" Version="1.1.0" />
     </ItemGroup>
 
     <ItemGroup>
@@ -35,6 +36,15 @@
     <ItemGroup>
         <InternalsVisibleTo Include="Digdir.Domain.Dialogporten.Application.Integration.Tests" />
         <InternalsVisibleTo Include="Digdir.Domain.Dialogporten.Infrastructure.Unit.Tests" />
+        <InternalsVisibleTo Include="Digdir.Domain.Dialogporten.GraphQL" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Altinn\NameRegistry\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Remove="Altinn\NameRegistry\NameRegistryClient.cs" />
     </ItemGroup>
 
 </Project>

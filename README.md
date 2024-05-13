@@ -54,18 +54,24 @@ You can run the entire project locally using `podman compose`. (This uses docker
 ```powershell
 podman compose up
 ```
-The APIs SwaggerUI should now be available at [localhost:7124/swagger](https://localhost:7214/swagger/index.html)
+
+The following GUI services should now be available:
+* WebAPI/SwaggerUI: [localhost:7124/swagger](https://localhost:7214/swagger/index.html)
+* GraphQl/BananaCakePop: [localhost:7215/graphql](https://localhost:7214/swagger/index.html)
+* Redis/Insight: [localhost:7216](https://localhost:7214/swagger/index.html)
+
+The WebAPI and GraphQl services are behind a nginx proxy, and you can change the number of replicas by setting the `scale` property in the `docker-compose.yml` file.
 
 
-### Running the WebApi in an IDE
-If you need do debug the WebApi project in an IDE, you can alternatively run `podman compose` without the WebAPI.  
+### Running the WebApi/GraphQl in an IDE
+If you need do debug the WebApi/GraphQl projects in an IDE, you can alternatively run `podman compose` without the WebAPI/GraphQl.  
 First create a dotnet user secret for the DB connection string.
 
 ```powershell
 dotnet user-secrets set -p .\src\Digdir.Domain.Dialogporten.WebApi\ "Infrastructure:DialogDbConnectionString" "Server=localhost;Port=5432;Database=Dialogporten;User ID=postgres;Password=supersecret;"
 ```
 
-Then run `podman compose` without the WebAPI project.
+Then run `podman compose` without the WebAPI/GraphQl projects.
 ```powershell
 podman compose -f docker-compose-no-webapi.yml up 
 ```

@@ -1,22 +1,22 @@
 ---
 name: Bug
-about: Hvis du finner noe som ikke fungerer som det skal.
+about: If you find something that is not working as it should.
 title: ''
 labels: bug
 assignees: ''
 ---
 
-### Beskrivelse
-En kort og konsis beskrivelse av feilen
+### Description
+A short and concise description of the error
 
-### Reproduksjon
-Punktvise steg for å reprodusere feilen, med informasjon om hvilke requests som ble foretatt (URL-er med parametre, metoder, headers (ikke tokens!), inklusive evt DTO-er som ble brukt hvis POST/PUT/PATCH)
+### Reproduction
+Step-by-step instructions to reproduce the error, with information about the requests that were made (URLs with parameters, methods, headers (no tokens!), including any DTOs used if POST/PUT/PATCH)
 
-### Forventet oppførsel
-En kort og konsis beskrivelse av hva du forventet skulle skje
+### Expected behavior
+A short and concise description of what you expected to happen
 
-### Faktisk oppførsel
-En kort og konsis beskrivelse av hva som faktisk skjedde
+### Actual behavior
+A short and concise description of what actually happened
 
-### Ytterligere informasjon
-Hvis det er ytterligere kontekst som er relevant å ta med.
+### Additional information
+If there is additional context that is relevant to include.
