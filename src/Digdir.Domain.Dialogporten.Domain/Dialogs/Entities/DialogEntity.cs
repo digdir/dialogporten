@@ -42,6 +42,7 @@ public class DialogEntity :
     // === Principal relationships ===
     [AggregateChild]
     public List<DialogContent> Content { get; set; } = [];
+
     [AggregateChild]
     public List<DialogSearchTag> SearchTags { get; set; } = [];
 
