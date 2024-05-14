@@ -49,7 +49,7 @@ internal static class LookupEntityExtensions
     {
         return type.TryGetLookupValueMethodInfo(out var method)
             ? (IEnumerable<object>)method.Invoke(null, null)!
-            : Enumerable.Empty<object>();
+            : [];
     }
 
     private static bool TryGetLookupValueMethodInfo(this Type type, [NotNullWhen(true)] out MethodInfo? methodInfo)

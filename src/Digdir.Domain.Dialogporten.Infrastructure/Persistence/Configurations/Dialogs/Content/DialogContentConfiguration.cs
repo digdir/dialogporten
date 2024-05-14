@@ -6,7 +6,5 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Configurations.D
 internal class DialogContentConfiguration : IEntityTypeConfiguration<DialogContent>
 {
     public void Configure(EntityTypeBuilder<DialogContent> builder)
-    {
-        builder.HasIndex(x => new { x.DialogId, x.TypeId }).IsUnique();
-    }
+        => builder.HasIndex(x => new { x.DialogId, x.TypeId }).IsUnique();
 }
