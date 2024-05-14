@@ -27,9 +27,8 @@ public class DialogActivityService : IDialogActivityService
             var organizationLongNames = await _userOrganizationRegistry.GetCurrentUserOrgLongNames(cancellationToken);
             activity.PerformedBy ??= new DialogActivityPerformedBy
             {
-                Localizations = organizationLongNames?.Select(x => new Localization { Value = x.LongName, CultureCode = x.Language }).ToList() ?? new List<Localization>(),
+                Localizations = organizationLongNames?.Select(x => new Localization { Value = x.LongName, CultureCode = x.Language }).ToList() ?? []
             };
         }
     }
 }
-

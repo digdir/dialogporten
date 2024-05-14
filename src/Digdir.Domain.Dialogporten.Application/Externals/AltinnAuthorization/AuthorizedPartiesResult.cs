@@ -2,7 +2,7 @@ namespace Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 
 public class AuthorizedPartiesResult
 {
-    public List<AuthorizedParty> AuthorizedParties { get; init; } = new();
+    public List<AuthorizedParty> AuthorizedParties { get; init; } = [];
 }
 
 public class AuthorizedParty
@@ -15,7 +15,7 @@ public class AuthorizedParty
     public bool IsMainAdministrator { get; init; }
     public bool IsAccessManager { get; init; }
     public bool HasOnlyAccessToSubParties { get; init; }
-    public List<string> AuthorizedResources { get; init; } = new();
+    public List<string> AuthorizedResources { get; init; } = [];
     public List<AuthorizedParty>? SubParties { get; init; }
 }
 
