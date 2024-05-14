@@ -241,6 +241,7 @@ enum ContentType {
   SENDER_NAME
   SUMMARY
   ADDITIONAL_INFO
+  EXTENDED_STATUS
 }
 
 enum DialogStatus {
