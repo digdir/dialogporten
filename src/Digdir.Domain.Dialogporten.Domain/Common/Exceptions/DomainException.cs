@@ -6,7 +6,7 @@ public class DomainException : ApplicationException
 
     public IReadOnlyCollection<DomainFailure> Errors => _errors.ToList().AsReadOnly();
 
-    public DomainException(string message) : this(message, Enumerable.Empty<DomainFailure>())
+    public DomainException(string message) : this(message, [])
     {
 
     }
