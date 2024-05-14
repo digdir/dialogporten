@@ -47,8 +47,5 @@ public class QueryableExtensionsBenchmark
     private static string GenerateResource(int count) => $"urn:foo:bar{count}";
 
     [Benchmark]
-    public void WhereUserIsAuthorizedFor()
-    {
-        _queryable.WhereUserIsAuthorizedFor(_authResult);
-    }
+    public void WhereUserIsAuthorizedFor() => _queryable.WhereUserIsAuthorizedFor(_authResult);
 }

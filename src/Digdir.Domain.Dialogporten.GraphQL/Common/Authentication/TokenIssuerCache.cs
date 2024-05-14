@@ -57,8 +57,5 @@ public sealed class TokenIssuerCache : ITokenIssuerCache, IDisposable
         }
     }
 
-    public void Dispose()
-    {
-        _initializationSemaphore.Dispose();
-    }
+    public void Dispose() => _initializationSemaphore.Dispose();
 }

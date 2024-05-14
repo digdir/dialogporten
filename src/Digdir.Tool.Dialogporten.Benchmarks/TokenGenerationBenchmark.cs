@@ -72,16 +72,10 @@ public class TokenGenerationBenchmark
     }
 
     [Benchmark]
-    public byte[] GenerateTokenWithRsa()
-    {
-        return _rsa.SignData(_payload, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
-    }
+    public byte[] GenerateTokenWithRsa() => _rsa.SignData(_payload, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
 
     [Benchmark]
-    public byte[] GenerateTokenWithEcdsa()
-    {
-        return _ecdsa.SignData(_payload, HashAlgorithmName.SHA256);
-    }
+    public byte[] GenerateTokenWithEcdsa() => _ecdsa.SignData(_payload, HashAlgorithmName.SHA256);
 
     [Benchmark]
     public byte[] GenerateTokenWithEdDsaBouncyCastle()
@@ -92,16 +86,11 @@ public class TokenGenerationBenchmark
     }
 
     [Benchmark]
-    public byte[] GenerateTokenWithEdDsaNSec()
-    {
-        return _nSecAlgorithm.Sign(_nSecKey, _payload);
-    }
+    public byte[] GenerateTokenWithEdDsaNSec() => _nSecAlgorithm.Sign(_nSecKey, _payload);
 
     private static string Base64UrlEncode(string input)
-    {
-        return Convert.ToBase64String(Encoding.UTF8.GetBytes(input))
+        => Convert.ToBase64String(Encoding.UTF8.GetBytes(input))
                       .TrimEnd('=')
                       .Replace('+', '-')
                       .Replace('/', '_');
-    }
 }
