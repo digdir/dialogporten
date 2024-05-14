@@ -81,7 +81,6 @@ public static class InfrastructureExtensions
         {
             Duration = TimeSpan.FromMinutes(20),
             // The resource list is several megabytes and might take a while to process
-            FactorySoftTimeout = TimeSpan.FromSeconds(5),
             FactoryHardTimeout = TimeSpan.FromSeconds(10)
         })
         .ConfigureFusionCache(nameof(Altinn.OrganizationRegistry), new()
