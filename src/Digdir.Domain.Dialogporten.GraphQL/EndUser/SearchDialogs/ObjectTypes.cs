@@ -23,7 +23,7 @@ public sealed class SearchDialogsPayload
     public List<SearchDialog>? Items { get; set; }
     public bool HasNextPage { get; }
     public string? ContinuationToken { get; }
-    public string OrderBy { get; } = null!;
+    public string? OrderBy { get; }
     public List<ISearchDialogError> Errors { get; set; } = [];
 }
 
