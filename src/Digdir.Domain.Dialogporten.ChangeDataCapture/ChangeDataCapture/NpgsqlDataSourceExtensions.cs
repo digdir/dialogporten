@@ -22,7 +22,7 @@ internal static class NpgsqlDataSourceExtensions
         object[] parameters,
         CancellationToken ct)
     {
-        await using var command = dataSource.CreateCommand($"SELECT EXISTS(SELECT 1 FROM {table} WHERE {where})");
+        await using var command = dataSource.CreateCommand($"""SELECT EXISTS(SELECT 1 FROM "{table}" WHERE {where})""");
         foreach (var parameter in parameters)
         {
             command.Parameters.AddWithValue(parameter);

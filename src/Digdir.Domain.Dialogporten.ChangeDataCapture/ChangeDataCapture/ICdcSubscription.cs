@@ -35,13 +35,13 @@ internal sealed class PostgresCdcSubscription : ICdcSubscription<OutboxMessage>
 
     public async IAsyncEnumerable<OutboxMessage> Subscribe([EnumeratorCancellation] CancellationToken ct = default)
     {
-        var (connectionString, slotName, publicationName, tableName, dataMapper) = _options;
+        var (connectionString, slotName, publicationName, tableName, _) = _options;
         await using var connection = new LogicalReplicationConnection(connectionString);
         await connection.Open(ct);
 
         await foreach (var reader in CreateSubscription(connection, ct))
         {
-            yield return await dataMapper.ReadFromSnapshot(reader, ct);
+            yield return reader.To<OutboxMessage>();
         }
 
         var slot = new PgOutputReplicationSlot(slotName);
@@ -50,7 +50,7 @@ internal sealed class PostgresCdcSubscription : ICdcSubscription<OutboxMessage>
         {
             if (message is InsertMessage insertMessage && insertMessage.Relation.RelationName == tableName)
             {
-                yield return await dataMapper.ReadFromReplication(insertMessage, ct);
+                yield return await insertMessage.To<OutboxMessage>(ct);
             }
 
             // Always call SetReplicationStatus() or assign LastAppliedLsn and LastFlushedLsn individually

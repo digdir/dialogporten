@@ -5,6 +5,7 @@ using Digdir.Domain.Dialogporten.ChangeDataCapture.Common;
 using Digdir.Domain.Dialogporten.Domain.Outboxes;
 using MassTransit;
 using Microsoft.ApplicationInsights.Extensibility;
+using Npgsql.Replication;
 using Serilog;
 
 // TODO: Configure Azure Service Bus connection settings and endpoint exchange
