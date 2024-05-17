@@ -74,15 +74,15 @@ static void BuildAndRun(string[] args)
                 // todo: Configure for using Azure Service Bus
             }
         })
-        .AddSingleton(_ => new PostgresCdcSSubscriptionOptions
+        .AddSingleton(_ => new PostgresOutboxCdcSSubscriptionOptions
         (
             ConnectionString: builder.Configuration["Infrastructure:DialogDbConnectionString"]!,
             ReplicationSlotName: builder.Configuration["ReplicationSlotName"]!,
             PublicationName: builder.Configuration["PublicationName"]!,
-            TableName: builder.Configuration["TableName"]!,
-            DataMapper: new OutboxReplicationDataMapper()
+            TableName: builder.Configuration["TableName"]!
         ))
-        .AddTransient<ICdcSubscription<OutboxMessage>, PostgresCdcSubscription>()
+        .AddTransient(typeof(IReplicationDataMapper<>), typeof(DynamicReplicationDataMapper<>))
+        .AddTransient<ICdcSubscription<OutboxMessage>, PostgresOutboxCdcSubscription>()
         .AddTransient<ICdcSink<OutboxMessage>, MassTransitSink>()
         .AddHealthChecks();
 

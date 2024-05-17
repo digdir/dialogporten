@@ -12,36 +12,37 @@ internal interface ICdcSubscription<T>
     IAsyncEnumerable<T> Subscribe(CancellationToken ct);
 }
 
-public record PostgresCdcSSubscriptionOptions(
+public record PostgresOutboxCdcSSubscriptionOptions(
     string ConnectionString,
     string ReplicationSlotName,
     string PublicationName,
-    string TableName,
-    IReplicationDataMapper<OutboxMessage> DataMapper
+    string TableName
 )
 {
     internal string ReplicationSlotName { get; init; } = ReplicationSlotName.ToLowerInvariant();
     internal string PublicationName { get; init; } = PublicationName.ToLowerInvariant();
 }
 
-internal sealed class PostgresCdcSubscription : ICdcSubscription<OutboxMessage>
+internal sealed class PostgresOutboxCdcSubscription : ICdcSubscription<OutboxMessage>
 {
-    private readonly PostgresCdcSSubscriptionOptions _options;
+    private readonly PostgresOutboxCdcSSubscriptionOptions _options;
+    private readonly IReplicationDataMapper<OutboxMessage> _mapper;
 
-    public PostgresCdcSubscription(PostgresCdcSSubscriptionOptions options)
+    public PostgresOutboxCdcSubscription(PostgresOutboxCdcSSubscriptionOptions options, IReplicationDataMapper<OutboxMessage> mapper)
     {
         _options = options ?? throw new ArgumentNullException(nameof(options));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
     public async IAsyncEnumerable<OutboxMessage> Subscribe([EnumeratorCancellation] CancellationToken ct = default)
     {
-        var (connectionString, slotName, publicationName, tableName, _) = _options;
+        var (connectionString, slotName, publicationName, tableName) = _options;
         await using var connection = new LogicalReplicationConnection(connectionString);
         await connection.Open(ct);
 
         await foreach (var reader in CreateSubscription(connection, ct))
         {
-            yield return reader.To<OutboxMessage>();
+            yield return await _mapper.ReadFromSnapshot(reader, ct);
         }
 
         var slot = new PgOutputReplicationSlot(slotName);
@@ -50,7 +51,7 @@ internal sealed class PostgresCdcSubscription : ICdcSubscription<OutboxMessage>
         {
             if (message is InsertMessage insertMessage && insertMessage.Relation.RelationName == tableName)
             {
-                yield return await insertMessage.To<OutboxMessage>(ct);
+                yield return await _mapper.ReadFromReplication(insertMessage, ct);
             }
 
             // Always call SetReplicationStatus() or assign LastAppliedLsn and LastFlushedLsn individually
@@ -64,25 +65,30 @@ internal sealed class PostgresCdcSubscription : ICdcSubscription<OutboxMessage>
         LogicalReplicationConnection connection,
         [EnumeratorCancellation] CancellationToken ct)
     {
-        var (connectionString, slotName, publicationName, tableName, _) = _options;
+        var (connectionString, slotName, _, tableName) = _options;
         var dataSource = NpgsqlDataSource.Create(connectionString);
-
-        var publicationExists = await dataSource.Exists("pg_publication", "pubname = $1", [publicationName], ct);
-        if (!publicationExists)
+        await dataSource.EnsureInsertPublicationForTable(tableName, ct);
+        if (!await dataSource.ReplicationSlotExists(slotName, ct))
         {
-            await dataSource.Execute($"""CREATE PUBLICATION {publicationName} FOR TABLE "{tableName}" WITH (publish = 'insert', publish_via_partition_root = false);""", ct);
-        }
-
-        var replicationSlotExists = await dataSource.Exists("pg_replication_slots", "slot_name = $1", [slotName], ct);
-        if (!replicationSlotExists)
-        {
-            var replicationSlot = await connection.CreatePgOutputReplicationSlot(slotName,
-                slotSnapshotInitMode: LogicalSlotSnapshotInitMode.Export,
-                cancellationToken: ct);
-
-            await foreach (var reader in dataSource.ReadExistingRowsFromSnapshot(replicationSlot.SnapshotName!, tableName, ct))
+            try
             {
-                yield return reader;
+                var replicationSlot = await connection.CreatePgOutputReplicationSlot(slotName,
+                    slotSnapshotInitMode: LogicalSlotSnapshotInitMode.Export,
+                    cancellationToken: ct);
+
+                await foreach (var reader in dataSource.ReadExistingRowsFromSnapshot(replicationSlot.SnapshotName!, tableName, ct))
+                {
+                    yield return reader;
+                }
+            }
+            catch (Exception)
+            {
+                // The snapshot represents the state of the table at the time the slot was created, and the
+                // slot represents all changes that happons from that point on. If we fail to read the
+                // snapshot in its entirety, we should start from scratch the next time the subscription
+                // is started.
+                await dataSource.DropReplicationSlot(slotName, ct: CancellationToken.None);
+                throw;
             }
         }
     }
