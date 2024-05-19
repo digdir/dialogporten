@@ -6,6 +6,7 @@ namespace Digdir.Domain.Dialogporten.Domain.Outboxes;
 public sealed class OutboxMessage
 {
     public required Guid EventId { get; init; }
+    public required DateTimeOffset CreatedAt { get; init; }
     public required string EventType { get; init; }
     public required string EventPayload { get; init; }
 
@@ -18,6 +19,7 @@ public sealed class OutboxMessage
         return new()
         {
             EventId = domainEvent.EventId,
+            CreatedAt = domainEvent.OccuredAt,
             EventType = eventType.FullName!,
             EventPayload = JsonSerializer.Serialize(domainEvent, eventType)
         };

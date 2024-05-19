@@ -77,8 +77,6 @@ static void BuildAndRun(string[] args)
         .AddSingleton(_ => new PostgresOutboxCdcSSubscriptionOptions
         (
             ConnectionString: builder.Configuration["Infrastructure:DialogDbConnectionString"]!,
-            ReplicationSlotName: builder.Configuration["ReplicationSlotName"]!,
-            PublicationName: builder.Configuration["PublicationName"]!,
             TableName: builder.Configuration["TableName"]!
         ))
         .AddTransient(typeof(IReplicationDataMapper<>), typeof(DynamicReplicationDataMapper<>))
