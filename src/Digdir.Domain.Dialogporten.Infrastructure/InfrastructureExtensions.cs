@@ -27,7 +27,6 @@ using Digdir.Domain.Dialogporten.Infrastructure.Altinn.NameRegistry;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.OrganizationRegistry;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.ResourceRegistry;
 using ZiggyCreatures.Caching.Fusion;
-using Microsoft.Extensions.Logging;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure;
 
@@ -226,7 +225,6 @@ public static class InfrastructureExtensions
             .WithOptions(options =>
             {
                 options.DistributedCacheCircuitBreakerDuration = TimeSpan.FromSeconds(2);
-                options.FactoryErrorsLogLevel = LogLevel.Debug;
             })
             .WithDefaultEntryOptions(new FusionCacheEntryOptions
             {
