@@ -123,7 +123,7 @@ public static class DialogGenerator
     public static string GenerateRandomParty()
     {
         var r = new Randomizer();
-        return r.Bool() ? $"urn:altinn:organization:identifier-no::{GenerateFakeOrgNo()}" : $"urn:altinn:person:identifier-no::{GenerateFakePid()}";
+        return r.Bool() ? $"urn:altinn:organization:identifier-no:{GenerateFakeOrgNo()}" : $"urn:altinn:person:identifier-no:{GenerateFakePid()}";
     }
 
     private static readonly int[] SocialSecurityNumberWeights1 = [3, 7, 6, 1, 8, 9, 4, 5, 2];
