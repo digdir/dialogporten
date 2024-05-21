@@ -33,7 +33,7 @@ export default function () {
     let extendedStatusToSearchFor = "status:" + uuidv4();
     let secondExtendedStatusToSearchFor = "status:" + uuidv4();
     let senderNameToSearchFor = uuidv4()
-    let auxParty = "urn:altinn:organization:identifier-no::" + getDefaultEnduserOrgNo();
+    let auxParty = "urn:altinn:organization:identifier-no:" + getDefaultEnduserOrgNo();
     let auxResource = "urn:altinn:resource:ttd-dialogporten-automated-tests-2"; // This must exist in Resource Registry
     let titleForDueAtItem = uuidv4();
     let titleForExpiresAtItem = uuidv4();

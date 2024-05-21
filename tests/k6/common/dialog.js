@@ -15,7 +15,7 @@ export function setContent(dialog, type, value, language = "nb_NO") {
 
     dialog.content = dialog.content || [];
     const title_index = dialog.content.findIndex(t => t.type === type);
-    
+
     if (title_index !== -1) {
         const lang_index = dialog.content[title_index].value.findIndex(t => t.cultureCode === language);
         if (lang_index !== -1) {
@@ -48,7 +48,7 @@ export function setSenderName(dialog, senderName, language = "nb_NO") {
 
 export function setStatus(dialog, status) {
     const validStatuses = ["unspecified", "inprogress", "waiting", "signing", "cancelled", "completed"];
-    
+
     if (!validStatuses.includes(status)) {
         throw new Error("Invalid status provided.");
     }
@@ -73,8 +73,8 @@ export function setServiceResource(dialog, serviceResource) {
 }
 
 export function setParty(dialog, party) {
-    const partyRegex = /^urn:altinn:([\w-]{5,20}):([\w-]{4,20})::([\w-]{5,36})$/;
-    
+    const partyRegex = /^urn:altinn:([\w-]{5,20}):([\w-]{4,20}):([\w-]{5,36})$/;
+
     if (!partyRegex.test(party)) {
         throw new Error("Invalid party provided.");
     }
@@ -121,7 +121,7 @@ export function setVisibleFrom(dialog, visibleFrom) {
         delete dialog.visibleFrom;
         return;
     }
-    
+
     if (visibleFrom instanceof Date) {
         visibleFrom = dateToUTCString(visibleFrom);
     }

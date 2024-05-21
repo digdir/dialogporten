@@ -1,4 +1,4 @@
-import { 
+import {
     describe, expect, expectStatusFor,
     getEU,
     uuidv4,
@@ -12,7 +12,7 @@ import {
     setExtendedStatus,
     setDueAt,
     setExpiresAt,
-    setVisibleFrom, 
+    setVisibleFrom,
     postSO,
     putSO,
     purgeSO } from '../../common/testimports.js'
@@ -23,15 +23,15 @@ export default function () {
 
     let dialogs = [];
     let dialogIds = [];
-    
-    let titleToSearchFor = uuidv4();    
+
+    let titleToSearchFor = uuidv4();
     let additionalInfoToSearchFor = uuidv4();
     let searchTagsToSearchFor = [ uuidv4(), uuidv4() ];
     let extendedStatusToSearchFor = "status:" + uuidv4();
     let secondExtendedStatusToSearchFor = "status:" + uuidv4();
     let senderNameToSearchFor = uuidv4()
-    let defaultParty = "urn:altinn:person:identifier-no::" + getDefaultEnduserSsn();
-    let auxParty = "urn:altinn:organization:identifier-no::" + getDefaultEnduserOrgNo(); // some party that we can access
+    let defaultParty = "urn:altinn:person:identifier-no:" + getDefaultEnduserSsn();
+    let auxParty = "urn:altinn:organization:identifier-no:" + getDefaultEnduserOrgNo(); // some party that we can access
     let auxResource = "urn:altinn:resource:ttd-dialogporten-automated-tests-2"; // Note! We assume that this exists!
     let titleForDueAtItem = "due_" + uuidv4();
     let titleForExpiresAtItem = "expires_" + uuidv4();
@@ -52,22 +52,22 @@ export default function () {
             dialogs.push(d);
         }
 
-        let d = -1;        
+        let d = -1;
         setTitle(dialogs[++d], titleToSearchFor);
         setAdditionalInfo(dialogs[++d], additionalInfoToSearchFor);
         setSearchTags(dialogs[++d], searchTagsToSearchFor);
         setStatus(dialogs[++d], "signing");
         setExtendedStatus(dialogs[++d], extendedStatusToSearchFor);
-        
+
         setSenderName(dialogs[++d], senderNameToSearchFor);
         setExtendedStatus(dialogs[d], secondExtendedStatusToSearchFor);
 
         setServiceResource(dialogs[++d], auxResource);
         setParty(dialogs[++d], auxParty);
-        
+
         setTitle(dialogs[++d], titleForDueAtItem);
         setDueAt(dialogs[d], new Date("2033-12-07T10:13:00Z"));
-        
+
         setTitle(dialogs[++d], titleForExpiresAtItem);
         setExpiresAt(dialogs[d], new Date("2034-03-07T10:13:00Z"));
 
@@ -78,7 +78,7 @@ export default function () {
         let tokenOptions = {};
         dialogs.forEach((d) => {
             tokenOptions = (d.id == idForCustomOrg) ? { orgName: auxOrg } : {};
-            let r = postSO("dialogs", d, null, tokenOptions);            
+            let r = postSO("dialogs", d, null, tokenOptions);
             expectStatusFor(r).to.equal(201);
             dialogIds.push(r.json());
         });
