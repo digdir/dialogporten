@@ -97,6 +97,25 @@ module serviceBus '../modules/serviceBus/main.bicep' = {
   }
 }
 
+module vnet '../modules/vnet/main.bicep' = {
+  scope: resourceGroup
+  name: 'vnet'
+  params: {
+    namePrefix: namePrefix
+    location: location
+  }
+}
+
+module postgresqlPrivateDnsZone '../modules/privateDnsZone/main.bicep' = {
+  scope: resourceGroup
+  name: 'postgresqlPrivateDnsZone'
+  params: {
+    namePrefix: namePrefix
+    defaultDomain: 'privatelink.postgres.database.azure.com'
+    vnetId: vnet.outputs.virtualNetworkId
+  }
+}
+
 // #######################################
 // Create references to existing resources
 // #######################################
@@ -129,6 +148,8 @@ module postgresql '../modules/postgreSql/create.bicep' = {
       ? srcKeyVaultResource.getSecret('dialogportenPgAdminPassword${environment}')
       : secrets.dialogportenPgAdminPassword
     sku: postgresSku
+    subnetId: vnet.outputs.postgresqlSubnetId
+    privateDnsArmResourceId: postgresqlPrivateDnsZone.outputs.id
   }
 }
 
@@ -191,6 +212,7 @@ module containerAppEnv '../modules/containerAppEnv/main.bicep' = {
     namePrefix: namePrefix
     location: location
     appInsightWorkspaceName: appInsights.outputs.appInsightsWorkspaceName
+    subnetId: vnet.outputs.postgresqlSubnetId
   }
 }
 
