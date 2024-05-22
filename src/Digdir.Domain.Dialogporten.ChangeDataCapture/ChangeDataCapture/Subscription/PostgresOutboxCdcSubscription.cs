@@ -1,6 +1,4 @@
-using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
-using Azure.Messaging.EventGrid.SystemEvents;
+﻿using System.Runtime.CompilerServices;
 using Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture.ReplicationMapper;
 using Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture.Snapshot;
 using Digdir.Domain.Dialogporten.ChangeDataCapture.Common.Extensions;
@@ -9,26 +7,8 @@ using Microsoft.Extensions.Options;
 using Npgsql;
 using Npgsql.Replication;
 using Npgsql.Replication.PgOutput;
-using Npgsql.Replication.PgOutput.Messages;
 
-namespace Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture;
-
-internal interface ICdcSubscription<T>
-{
-    IAsyncEnumerable<T> Subscribe(CancellationToken ct);
-}
-
-public record PostgresOutboxCdcSSubscriptionOptions(
-    string ConnectionString,
-    string TableName,
-    string PublicationName = null!,
-    string ReplicationSlotName = null!,
-    int SnapshotSyncThreshold = 1000)
-{
-    public const string SectionName = "CdcSubscriptionOption";
-    public string PublicationName { get; init; } = PublicationName ?? $"{TableName.Trim().ToLowerInvariant()}_insert_publication";
-    public string ReplicationSlotName { get; init; } = ReplicationSlotName ?? $"{TableName.Trim().ToLowerInvariant()}_cdc_replication_slot";
-}
+namespace Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture.Subscription;
 
 internal sealed class PostgresOutboxCdcSubscription : ICdcSubscription<OutboxMessage>, IAsyncDisposable
 {
@@ -79,9 +59,7 @@ internal sealed class PostgresOutboxCdcSubscription : ICdcSubscription<OutboxMes
     {
         await _dataSource.EnsureInsertPublicationForTable(_options.TableName, _options.PublicationName, ct);
         if (await _dataSource.ReplicationSlotExists(_options.ReplicationSlotName, ct))
-        {
             return new SubscriptionResult.Exists();
-        }
 
         // At this point we know that the replication slot does not exist, and we need to create it.
         // We also need to consume every row in the target table from the replication slot
@@ -144,18 +122,14 @@ internal sealed class PostgresOutboxCdcSubscription : ICdcSubscription<OutboxMes
     public async ValueTask DisposeAsync()
     {
         if (_disposed)
-        {
             return;
-        }
 
         if (!_replicationSnapshotConsumed)
-        {
             // The snapshot represents the state of the table at the time the slot was created, and the
             // slot represents all changes that happons from that point on. If we fail to read the
             // snapshot in its entirety, we should start from scratch the next time the subscription
             // is started.
             await _dataSource.DropReplicationSlot(_options.ReplicationSlotName);
-        }
 
         await _snapshotCheckpointRepository.TryUpsertWithRetry(_options.ReplicationSlotName, _checkpoint);
         await _replicationConnection.DisposeAsync();

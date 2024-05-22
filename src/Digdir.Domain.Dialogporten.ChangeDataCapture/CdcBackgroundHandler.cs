@@ -1,4 +1,4 @@
-﻿using Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture;
+﻿using Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture.Subscription;
 using Digdir.Domain.Dialogporten.Domain.Outboxes;
 
 namespace Digdir.Domain.Dialogporten.ChangeDataCapture;
