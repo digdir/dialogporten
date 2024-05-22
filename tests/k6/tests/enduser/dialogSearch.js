@@ -91,6 +91,25 @@ export default function () {
 
     });
 
+    describe('Check seen logs in dialog list', () => {
+        // Trigger seen logs
+        getEU('dialogs/' + dialogIds[0]);
+        getEU('dialogs/' + dialogIds[1]);
+
+        let r = getEU('dialogs/' + defaultFilter);
+
+        let d1 = r.json().items.find((d) => d.id == dialogIds[0]);
+        expect(d1.seenSinceLastUpdate, 'seenSinceLastUpdate').to.have.lengthOf(1);
+        expect(d1.seenSinceLastUpdate[0].endUserIdHash, 'endUserIdHash').to.have.lengthOf(10);
+        expect(d1.seenSinceLastUpdate[0].isCurrentEndUser, 'isCurrentEndUser').to.equal(true);
+
+        let d2 = r.json().items.find((d) => d.id == dialogIds[1]);
+        expect(d2.seenSinceLastUpdate, 'seenSinceLastUpdate').to.have.lengthOf(1);
+        expect(d2.seenSinceLastUpdate[0].endUserIdHash, 'endUserIdHash').to.have.lengthOf(10);
+        expect(d2.seenSinceLastUpdate[0].isCurrentEndUser, 'isCurrentEndUser').to.equal(true);
+    });
+
+
     describe('Perform simple dialog list', () => {
         let r = getEU('dialogs' + defaultFilter);
         expectStatusFor(r).to.equal(200);

@@ -23,9 +23,17 @@ export default function () {
         let r = getEU('dialogs/' + dialogId);
         expectStatusFor(r).to.equal(200);
         expect(r, 'response').to.have.validJsonBody();
-        expect(r.json(), 'response json').to.have.property("id").to.equal(dialogId);
 
         dialog = r.json();
+        
+        expect(dialog.id, 'dialog id').to.equal(dialogId);
+    });
+
+    describe('Check that seen log has been populated', () => {
+        if (dialog == null) return;
+        expect(dialog.seenSinceLastUpdate, 'seenSinceLastUpdate').to.have.lengthOf(1);
+        expect(dialog.seenSinceLastUpdate[0].endUserIdHash, 'endUserIdHash').to.have.lengthOf(10);
+        expect(dialog.seenSinceLastUpdate[0].isCurrentEndUser, 'isCurrentEndUser').to.equal(true);
     });
 
     describe('Check that authorized actions have real URLs', () => {
