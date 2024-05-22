@@ -223,7 +223,7 @@ internal static class AggregateExtensions
             // }
             await childNav.LoadAsync(cancellationToken);
             var currentValues = childNav.Metadata.IsCollection
-                ? childNav.CurrentValue as IEnumerable<object> ?? Enumerable.Empty<object>()
+                ? childNav.CurrentValue as IEnumerable<object> ?? []
                 : Enumerable.Empty<object>()
                     .Append(childNav.CurrentValue)
                     .Where(x => x is not null)
@@ -269,7 +269,7 @@ internal static class AggregateExtensions
             entry.Entity.GetType(),
             entry.Entity,
             aggregateState,
-            Enumerable.Empty<AggregateNodeProperty>());
+            []);
     }
 
     private static IEnumerable<IReadOnlyForeignKey> FindAggregateParents(this IReadOnlyEntityType entityType)

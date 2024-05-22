@@ -15,7 +15,7 @@ param sku Sku
 // todo: add name of function as param and turn this into a reusable module
 var storageAccountName = '${replace(namePrefix, '-', '')}${substring('slacknotifier', 0, 10)}sa'
 
-resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
+resource storageAccount 'Microsoft.Storage/storageAccounts@2023-04-01' = {
     name: storageAccountName
     location: location
     sku: {
@@ -28,7 +28,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
     }
 }
 
-resource applicationServicePlan 'Microsoft.Web/serverfarms@2023-01-01' = {
+resource applicationServicePlan 'Microsoft.Web/serverfarms@2023-12-01' = {
     name: '${namePrefix}-slacknotifier-asp'
     location: location
     sku: {
@@ -43,7 +43,7 @@ resource applicationInsights 'Microsoft.Insights/components@2020-02-02' existing
 }
 
 var functionAppName = '${namePrefix}-slacknotifier-fa'
-resource functionApp 'Microsoft.Web/sites@2023-01-01' = {
+resource functionApp 'Microsoft.Web/sites@2023-12-01' = {
     name: functionAppName
     location: location
     kind: 'functionapp'

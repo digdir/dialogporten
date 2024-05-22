@@ -6,10 +6,7 @@ namespace Digdir.Library.Entity.EntityFrameworkCore.Features.Immutable;
 
 internal static class ImmutableExtensions
 {
-    public static ModelBuilder AddImmutableEntities(this ModelBuilder modelBuilder)
-    {
-        return modelBuilder;
-    }
+    public static ModelBuilder AddImmutableEntities(this ModelBuilder modelBuilder) => modelBuilder;
 
     public static ChangeTracker HandleImmutableEntities(this ChangeTracker changeTracker)
     {

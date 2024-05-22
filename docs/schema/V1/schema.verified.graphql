@@ -172,7 +172,7 @@ type SearchDialogsPayload {
   items: [SearchDialog!]
   hasNextPage: Boolean!
   continuationToken: String
-  orderBy: String!
+  orderBy: String
   errors: [SearchDialogError!]!
 }
 
@@ -241,6 +241,7 @@ enum ContentType {
   SENDER_NAME
   SUMMARY
   ADDITIONAL_INFO
+  EXTENDED_STATUS
 }
 
 enum DialogStatus {

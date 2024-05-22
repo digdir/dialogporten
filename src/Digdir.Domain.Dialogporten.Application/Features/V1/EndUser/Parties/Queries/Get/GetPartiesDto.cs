@@ -2,7 +2,7 @@ namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Parties.Que
 
 public class GetPartiesDto
 {
-    public List<AuthorizedPartyDto> AuthorizedParties { get; init; } = new();
+    public List<AuthorizedPartyDto> AuthorizedParties { get; init; } = [];
 }
 
 public class AuthorizedPartyDto

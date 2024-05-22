@@ -41,7 +41,7 @@ internal class OrganizationRegistryClient : IOrganizationRegistry
                 {
                     LongName = name.Value,
                     Language = name.Key
-                }).ToList() ?? new List<OrganizationLongName>()
+                }).ToList() ?? []
             });
 
         return orgInfoByOrgNumber;
