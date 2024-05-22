@@ -111,7 +111,7 @@ module postgresqlPrivateDnsZone '../modules/privateDnsZone/main.bicep' = {
   name: 'postgresqlPrivateDnsZone'
   params: {
     namePrefix: namePrefix
-    defaultDomain: 'privatelink.postgres.database.azure.com'
+    defaultDomain: '${namePrefix}.postgres.database.azure.com'
     vnetId: vnet.outputs.virtualNetworkId
   }
 }

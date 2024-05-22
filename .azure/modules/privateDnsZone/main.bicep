@@ -1,7 +1,3 @@
-/* 
-  This module is needed first and foremost for application gateway to route requests correctly to the container apps. https://learn.microsoft.com/en-us/azure/container-apps/waf-app-gateway?tabs=default-domain#create-and-configure-an-azure-private-dns-zone
-  Should be refactored to something more generic if needed elsewhere
-*/
 @description('Prefix used for naming resources to ensure unique names')
 param namePrefix string
 

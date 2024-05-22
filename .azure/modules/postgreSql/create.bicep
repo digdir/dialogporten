@@ -69,19 +69,6 @@ resource postgres 'Microsoft.DBforPostgreSQL/flexibleServers@2022-12-01' = {
       collation: 'en_US.utf8'
     }
   }
-  resource allowAzureAccess 'firewallRules' = {
-    name: 'AllowAccessFromAzure'
-    properties: {
-      startIpAddress: '0.0.0.0'
-      endIpAddress: '0.0.0.0'
-    }
-  }
-  //resource configurations 'configurations' = [for config in items(postgresqlConfiguration): {
-  //	name: config.key
-  //	properties: {
-  //           value: config.value
-  //       }
-  //}]
 }
 
 module adoConnectionString '../keyvault/upsertSecret.bicep' = {
