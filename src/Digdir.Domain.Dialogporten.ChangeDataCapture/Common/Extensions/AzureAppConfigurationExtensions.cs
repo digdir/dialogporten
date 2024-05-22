@@ -3,7 +3,7 @@ using Azure.Identity;
 using Microsoft.Extensions.Configuration.AzureAppConfiguration;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Digdir.Domain.Dialogporten.ChangeDataCapture.Common;
+namespace Digdir.Domain.Dialogporten.ChangeDataCapture.Common.Extensions;
 
 /// <summary>
 /// Wrapper around azure app configuration bootstrapping such that azure app
@@ -21,9 +21,7 @@ internal static class AzureAppConfigurationExtensions
         TimeSpan? refreshRate = null)
     {
         if (!config.TryGetAzureAppConfigUri(out var appConfigUri))
-        {
             return config;
-        }
 
         credential ??= new DefaultAzureCredential();
         refreshRate ??= TimeSpan.FromMinutes(1);

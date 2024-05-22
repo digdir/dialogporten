@@ -2,12 +2,13 @@
 using System.Data.Common;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture.Snapshot;
 using Digdir.Domain.Dialogporten.Domain.Outboxes;
 using Npgsql;
 using Npgsql.Replication;
 using Npgsql.Replication.PgOutput.Messages;
 
-namespace Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture;
+namespace Digdir.Domain.Dialogporten.ChangeDataCapture.Common.Extensions;
 
 internal static class NpgsqlDataSourceExtensions
 {
@@ -37,38 +38,6 @@ internal static class NpgsqlDataSourceExtensions
         await command.ExecuteNonQueryAsync(ct);
     }
 
-    public static async Task<SnapshotCheckpoint> GetSnapshotCheckpoint(this NpgsqlDataSource dataSource, string slotName, CancellationToken ct = default)
-    {
-        await using var command = dataSource.CreateCommand("SELECT confirmed_at, confirmed_id FROM cdc_snapshot_checkpoint WHERE slot_name = $1");
-        command.Parameters.AddWithValue(slotName);
-        await using var reader = await command.ExecuteReaderAsync(ct);
-
-        if (!await reader.ReadAsync(ct))
-        {
-            return SnapshotCheckpoint.Default;
-        }
-
-        var confirmedAt = await reader.GetFieldValueAsync<DateTimeOffset>("confirmed_date", ct);
-        var confirmedId = await reader.GetFieldValueAsync<Guid>("confirmed_id", ct);
-        return new(confirmedAt, confirmedId);
-    }
-
-    public static async Task SetSnapshotCheckpoint(this NpgsqlDataSource dataSource, string slotName, SnapshotCheckpoint checkpoint, CancellationToken ct = default)
-    {
-        await using var command = dataSource.CreateCommand(
-            $"""
-            INSERT INTO cdc_snapshot_checkpoint (slot_name, confirmed_at, confirmed_id)
-            VALUES ($1, $2, $3)
-            ON CONFLICT (slot_name) DO UPDATE
-            SET confirmed_at = EXCLUDED.confirmed_at, confirmed_id = EXCLUDED.confirmed_id;
-            """);
-        command.Parameters.AddWithValue(slotName);
-        command.Parameters.AddWithValue(checkpoint.ConfirmedAt);
-        command.Parameters.AddWithValue(checkpoint.ConfirmedId);
-        await command.PrepareAsync(ct);
-        await command.ExecuteNonQueryAsync(ct);
-    }
-
     public static async Task<bool> ReplicationSlotExists(
         this NpgsqlDataSource dataSource,
         string slotName,
@@ -76,7 +45,7 @@ internal static class NpgsqlDataSourceExtensions
     {
         await using var command = dataSource.CreateCommand("SELECT EXISTS(SELECT 1 FROM pg_replication_slots WHERE slot_name = $1)");
         command.Parameters.AddWithValue(slotName);
-        return (await command.ExecuteScalarAsync(ct) as bool?) == true;
+        return await command.ExecuteScalarAsync(ct) as bool? == true;
     }
 
     public static async Task DropReplicationSlot(

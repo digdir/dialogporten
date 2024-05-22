@@ -5,14 +5,14 @@ using System.Reflection;
 using Npgsql;
 using Npgsql.Replication.PgOutput.Messages;
 
-namespace Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture;
+namespace Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture.ReplicationMapper;
 
-internal static class NpgsqlConversionExtensions
+internal sealed class DynamicReplicationDataMapper<T> : IReplicationDataMapper<T>
+    where T : class
 {
     private static readonly ConcurrentDictionary<Type, Dictionary<string, PropertyInfoConverter>> _propInfoConvertersByType = new();
 
-    public static async Task<T> To<T>(this InsertMessage insertMessage, CancellationToken cancellationToken)
-        where T : class
+    public async Task<T> ReadFromReplication(InsertMessage insertMessage, CancellationToken ct)
     {
         var type = typeof(T);
         var result = (T)Activator.CreateInstance(type)!;
@@ -21,15 +21,14 @@ internal static class NpgsqlConversionExtensions
         await foreach (var value in insertMessage.NewRow)
         {
             var propName = insertMessage.Relation.Columns[columnNumber++].ColumnName;
-            var propValue = await value.Get<string?>(cancellationToken);
-            infoConverterByPropName.SetValue(result, propName, propValue);
+            var propValue = await value.Get<string?>(ct);
+            SetValue(infoConverterByPropName, result, propName, propValue);
         }
 
         return result;
     }
 
-    public static T To<T>(this NpgsqlDataReader reader)
-        where T : class
+    public Task<T> ReadFromSnapshot(NpgsqlDataReader reader, CancellationToken ct)
     {
         var type = typeof(T);
         var result = (T)Activator.CreateInstance(type)!;
@@ -38,19 +37,17 @@ internal static class NpgsqlConversionExtensions
         {
             var propName = reader.GetName(i);
             var propValue = reader.GetValue(i)?.ToString();
-            infoConverterByPropName.SetValue(result, propName, propValue);
+            SetValue(infoConverterByPropName, result, propName, propValue);
         }
 
-        return result;
+        return Task.FromResult(result);
     }
 
-    private static void SetValue<T>(this Dictionary<string, PropertyInfoConverter> infoConverterByPropName, T value, string propName, string? propValue)
-        where T : class
+
+    private static void SetValue(Dictionary<string, PropertyInfoConverter> infoConverterByPropName, T value, string propName, string? propValue)
     {
         if (!infoConverterByPropName.TryGetValue(propName, out var propInfoConverter))
-        {
             throw new InvalidOperationException($"Property {propName} not found on type {typeof(T).Name}.");
-        }
 
         propInfoConverter.ConvertAndSetValue(value, propValue);
     }
@@ -85,29 +82,5 @@ internal static class NpgsqlConversionExtensions
                     ? base.ConvertFrom(context, culture, value)
                     : null;
         }
-    }
-
-    public static async Task<Dictionary<string, string>> ToDictionary(this InsertMessage insertMessage, CancellationToken cancellationToken)
-    {
-        var columnNumber = 0;
-        var result = new Dictionary<string, string>();
-        await foreach (var value in insertMessage.NewRow)
-        {
-            var columnName = insertMessage.Relation.Columns[columnNumber++].ColumnName;
-            result[columnName] = await value.Get<string>(cancellationToken);
-        }
-
-        return result;
-    }
-
-    public static Dictionary<string, string> ToDictionary(this NpgsqlDataReader reader)
-    {
-        var result = new Dictionary<string, string>();
-        for (var i = 0; i < reader.FieldCount; i++)
-        {
-            var columnName = reader.GetName(i);
-            result[columnName] = reader.GetValue(i).ToString()!;
-        }
-        return result;
     }
 }

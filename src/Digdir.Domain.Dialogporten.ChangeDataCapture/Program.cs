@@ -1,10 +1,15 @@
 ﻿using System.Globalization;
 using Digdir.Domain.Dialogporten.ChangeDataCapture;
 using Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture;
-using Digdir.Domain.Dialogporten.ChangeDataCapture.Common;
+using Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture.ReplicationMapper;
+using Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture.Snapshot;
+using Digdir.Domain.Dialogporten.ChangeDataCapture.Common.Extensions;
 using Digdir.Domain.Dialogporten.Domain.Outboxes;
 using MassTransit;
+using MassTransit.Configuration;
 using Microsoft.ApplicationInsights.Extensibility;
+using Microsoft.Extensions.Options;
+using Npgsql;
 using Npgsql.Replication;
 using Serilog;
 
@@ -74,11 +79,15 @@ static void BuildAndRun(string[] args)
                 // todo: Configure for using Azure Service Bus
             }
         })
-        .AddSingleton(_ => new PostgresOutboxCdcSSubscriptionOptions
-        (
-            ConnectionString: builder.Configuration["Infrastructure:DialogDbConnectionString"]!,
-            TableName: builder.Configuration["TableName"]!
-        ))
+        .AddOptions<PostgresOutboxCdcSSubscriptionOptions>()
+            .BindConfiguration(PostgresOutboxCdcSSubscriptionOptions.SectionName)
+            .Configure<IConfiguration>((option, conf) =>
+                option = option.ConnectionString is null
+                    ? option with { ConnectionString = conf["Infrastructure:DialogDbConnectionString"]! }
+                    : option)
+            .Services
+        .AddSingleton(x => NpgsqlDataSource.Create(x.GetRequiredService<IOptions<PostgresOutboxCdcSSubscriptionOptions>>().Value.ConnectionString))
+        .AddTransient<ISnapshotCheckpointRepository, SnapshotCheckpointRepository>()
         .AddTransient(typeof(IReplicationDataMapper<>), typeof(DynamicReplicationDataMapper<>))
         .AddTransient<ICdcSubscription<OutboxMessage>, PostgresOutboxCdcSubscription>()
         .AddTransient<ICdcSink<OutboxMessage>, MassTransitSink>()

@@ -1,7 +1,11 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using Azure.Messaging.EventGrid.SystemEvents;
+using Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture.ReplicationMapper;
+using Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture.Snapshot;
+using Digdir.Domain.Dialogporten.ChangeDataCapture.Common.Extensions;
 using Digdir.Domain.Dialogporten.Domain.Outboxes;
+using Microsoft.Extensions.Options;
 using Npgsql;
 using Npgsql.Replication;
 using Npgsql.Replication.PgOutput;
@@ -18,35 +22,38 @@ public record PostgresOutboxCdcSSubscriptionOptions(
     string ConnectionString,
     string TableName,
     string PublicationName = null!,
-    string ReplicationSlotName = null!)
+    string ReplicationSlotName = null!,
+    int SnapshotSyncThreshold = 1000)
 {
+    public const string SectionName = "CdcSubscriptionOption";
     public string PublicationName { get; init; } = PublicationName ?? $"{TableName.Trim().ToLowerInvariant()}_insert_publication";
     public string ReplicationSlotName { get; init; } = ReplicationSlotName ?? $"{TableName.Trim().ToLowerInvariant()}_cdc_replication_slot";
 }
 
 internal sealed class PostgresOutboxCdcSubscription : ICdcSubscription<OutboxMessage>, IAsyncDisposable
 {
-    private const int SnapshotSyncThreshold = 1000;
     private readonly LogicalReplicationConnection _replicationConnection;
     private readonly NpgsqlDataSource _dataSource;
+
     private readonly PostgresOutboxCdcSSubscriptionOptions _options;
     private readonly IReplicationDataMapper<OutboxMessage> _mapper;
-    private readonly ILogger<PostgresOutboxCdcSubscription> _logger;
+    private readonly ISnapshotCheckpointRepository _snapshotCheckpointRepository;
 
     private bool _disposed;
     private bool _replicationSnapshotConsumed = true;
     private SnapshotCheckpoint _checkpoint = SnapshotCheckpoint.Default;
 
     public PostgresOutboxCdcSubscription(
-        PostgresOutboxCdcSSubscriptionOptions options,
+        IOptions<PostgresOutboxCdcSSubscriptionOptions> options,
         IReplicationDataMapper<OutboxMessage> mapper,
-        ILogger<PostgresOutboxCdcSubscription> logger)
+        ISnapshotCheckpointRepository snapshotCheckpointRepository,
+        NpgsqlDataSource dataSource)
     {
-        _options = options ?? throw new ArgumentNullException(nameof(options));
+        _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _replicationConnection = new LogicalReplicationConnection(options.ConnectionString);
-        _dataSource = NpgsqlDataSource.Create(options.ConnectionString);
+        _snapshotCheckpointRepository = snapshotCheckpointRepository ?? throw new ArgumentNullException(nameof(snapshotCheckpointRepository));
+        _dataSource = dataSource ?? throw new ArgumentNullException(nameof(dataSource));
+        _replicationConnection = new LogicalReplicationConnection(_options.ConnectionString);
     }
 
     public async IAsyncEnumerable<OutboxMessage> Subscribe([EnumeratorCancellation] CancellationToken ct = default)
@@ -70,9 +77,8 @@ internal sealed class PostgresOutboxCdcSubscription : ICdcSubscription<OutboxMes
 
     private async Task<SubscriptionResult> CreateSubscription(CancellationToken ct)
     {
-        var (_, tableName, publicationName, slotName) = _options;
-        await _dataSource.EnsureInsertPublicationForTable(tableName, publicationName, ct);
-        if (await _dataSource.ReplicationSlotExists(slotName, ct))
+        await _dataSource.EnsureInsertPublicationForTable(_options.TableName, _options.PublicationName, ct);
+        if (await _dataSource.ReplicationSlotExists(_options.ReplicationSlotName, ct))
         {
             return new SubscriptionResult.Exists();
         }
@@ -81,13 +87,13 @@ internal sealed class PostgresOutboxCdcSubscription : ICdcSubscription<OutboxMes
         // We also need to consume every row in the target table from the replication slot
         // transaction snapshot taking into account the snapshot checkpoint.
 
-        _checkpoint = await _dataSource.GetSnapshotCheckpoint(slotName, ct);
+        _checkpoint = await _snapshotCheckpointRepository.Get(_options.ReplicationSlotName, ct);
         // Ensure that we have access to the snapshot before creating the replication slot and consuming the snapshot.
-        await _dataSource.SetSnapshotCheckpoint(slotName, _checkpoint, ct);
+        await _snapshotCheckpointRepository.Upsert(_options.ReplicationSlotName, _checkpoint, ct);
 
         _replicationSnapshotConsumed = false;
         var replicationSlot = await _replicationConnection.CreatePgOutputReplicationSlot(
-            slotName,
+            _options.ReplicationSlotName,
             slotSnapshotInitMode: LogicalSlotSnapshotInitMode.Export,
             cancellationToken: ct);
         return new SubscriptionResult.Created(replicationSlot);
@@ -99,7 +105,7 @@ internal sealed class PostgresOutboxCdcSubscription : ICdcSubscription<OutboxMes
     {
         await foreach (var reader in _dataSource
             .ReadExistingRowsFromSnapshot(created.ReplicationSlot.SnapshotName!, _options.TableName, _checkpoint, ct)
-            .ForEvery(SnapshotSyncThreshold, SetSnapshotCheckpoint))
+            .ForEvery(_options.SnapshotSyncThreshold, SetSnapshotCheckpoint))
         {
             var outboxMessage = await _mapper.ReadFromSnapshot(reader, ct);
             yield return outboxMessage;
@@ -117,7 +123,7 @@ internal sealed class PostgresOutboxCdcSubscription : ICdcSubscription<OutboxMes
         var replicationOptions = new PgOutputReplicationOptions(_options.PublicationName, 1);
         await foreach (var message in _replicationConnection
             .StartReplication(slot, replicationOptions, ct)
-            .ForEvery(SnapshotSyncThreshold, SetSnapshotCheckpoint))
+            .ForEvery(_options.SnapshotSyncThreshold, SetSnapshotCheckpoint))
         {
             if (!message.IsInsertInto(_options.TableName, out var insertMessage))
             {
@@ -133,32 +139,7 @@ internal sealed class PostgresOutboxCdcSubscription : ICdcSubscription<OutboxMes
     }
 
     private Task SetSnapshotCheckpoint(object? _ = null) =>
-        _dataSource.SetSnapshotCheckpoint(_options.ReplicationSlotName, _checkpoint);
-
-    private async Task SetSnapshotCheckpointWithRetry()
-    {
-        const int numberOfRetries = 5;
-        var retryDelay = TimeSpan.FromSeconds(2);
-        using var periodicTimer = new PeriodicTimer(retryDelay);
-
-        for (var attempt = 0; attempt < numberOfRetries && await periodicTimer.WaitForNextTickAsync(); attempt++)
-        {
-            try
-            {
-                await SetSnapshotCheckpoint();
-                break;
-            }
-            catch (Exception ex)
-            {
-                if (attempt + 1 >= numberOfRetries)
-                {
-                    _logger.LogError(ex, "Failed to set snapshot checkpoint after {NumberOfRetries} attempts.", numberOfRetries);
-                }
-
-                _logger.LogWarning(ex, "Failed to set snapshot checkpoint. Retrying in {RetryDelay}.", retryDelay);
-            }
-        }
-    }
+        _snapshotCheckpointRepository.Upsert(_options.ReplicationSlotName, _checkpoint);
 
     public async ValueTask DisposeAsync()
     {
@@ -176,7 +157,7 @@ internal sealed class PostgresOutboxCdcSubscription : ICdcSubscription<OutboxMes
             await _dataSource.DropReplicationSlot(_options.ReplicationSlotName);
         }
 
-        await SetSnapshotCheckpointWithRetry();
+        await _snapshotCheckpointRepository.TryUpsertWithRetry(_options.ReplicationSlotName, _checkpoint);
         await _replicationConnection.DisposeAsync();
         await _dataSource.DisposeAsync();
         _disposed = true;
