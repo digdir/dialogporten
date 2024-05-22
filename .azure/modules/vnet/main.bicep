@@ -198,5 +198,5 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-09-01' = {
 output virtualNetworkName string = virtualNetwork.name
 output virtualNetworkId string = virtualNetwork.id
 output defaultSubnetId string = virtualNetwork.properties.subnets[0].id
-output containerAppEnvironmentSubnetId string = virtualNetwork.properties.subnets[1].id
-output postgresqlSubnetId string = virtualNetwork.properties.subnets[2].id
+output postgresqlSubnetId string = virtualNetwork.properties.subnets[1].id
+output containerAppEnvironmentSubnetId string = virtualNetwork.properties.subnets[2].id
