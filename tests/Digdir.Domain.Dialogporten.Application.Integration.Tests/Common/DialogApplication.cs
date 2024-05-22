@@ -60,14 +60,14 @@ public class DialogApplication : IAsyncLifetime
             .AddScoped<IDialogDbContext>(x => x.GetRequiredService<DialogDbContext>())
             .AddScoped<IUser, IntegrationTestUser>()
             .AddScoped<IResourceRegistry, LocalDevelopmentResourceRegistry>()
-            .AddScoped<IOrganizationRegistry>(_ => CreateOrganizationRegistrySubstitute())
-            .AddScoped<INameRegistry>(_ => CreateNameRegistrySubstitute())
+            .AddScoped<IServiceOwnerNameRegistry>(_ => CreateServiceOwnerNameRegistrySubstitute())
+            .AddScoped<IPersonNameRegistry>(_ => CreateNameRegistrySubstitute())
             .AddScoped<IOptions<ApplicationSettings>>(_ => CreateApplicationSettingsSubstitute())
             .AddScoped<IUnitOfWork, UnitOfWork>()
             .AddScoped<IAltinnAuthorization, LocalDevelopmentAltinnAuthorization>()
             .AddSingleton<ICloudEventBus, IntegrationTestCloudBus>()
             .Decorate<IUserResourceRegistry, LocalDevelopmentUserResourceRegistryDecorator>()
-            .Decorate<IUserNameRegistry, LocalDevelopmentUserNameRegistryDecorator>()
+            .Decorate<IUserRegistry, LocalDevelopmentUserRegistryDecorator>()
             .BuildServiceProvider();
 
         await _dbContainer.StartAsync();
@@ -75,9 +75,9 @@ public class DialogApplication : IAsyncLifetime
         await BuildRespawnState();
     }
 
-    private static INameRegistry CreateNameRegistrySubstitute()
+    private static IPersonNameRegistry CreateNameRegistrySubstitute()
     {
-        var nameRegistrySubstitute = Substitute.For<INameRegistry>();
+        var nameRegistrySubstitute = Substitute.For<IPersonNameRegistry>();
 
         nameRegistrySubstitute
             .GetName(Arg.Any<string>(), Arg.Any<CancellationToken>())
@@ -129,17 +129,17 @@ public class DialogApplication : IAsyncLifetime
 
         return applicationSettingsSubstitute;
     }
-    private static IOrganizationRegistry CreateOrganizationRegistrySubstitute()
+    private static IServiceOwnerNameRegistry CreateServiceOwnerNameRegistrySubstitute()
     {
-        var organizationRegistrySubstitute = Substitute.For<IOrganizationRegistry>();
+        var organizationRegistrySubstitute = Substitute.For<IServiceOwnerNameRegistry>();
 
         organizationRegistrySubstitute
-            .GetOrgInfo(Arg.Any<string>(), Arg.Any<CancellationToken>())
-            .Returns(new OrganizationInfo
+            .GetServiceOwnerInfo(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(new ServiceOwnerInfo
             {
                 OrgNumber = "991825827",
                 ShortName = "digdir",
-                LongNames = new[] { new OrganizationLongName { LongName = "Digitaliseringsdirektoratet", Language = "nb" } }
+                LongNames = new[] { new ServiceOwnerLongName { LongName = "Digitaliseringsdirektoratet", Language = "nb" } }
             });
 
         return organizationRegistrySubstitute;

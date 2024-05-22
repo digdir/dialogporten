@@ -43,7 +43,7 @@ public static class ApplicationExtensions
             .AddTransient<IStringHasher, PersistentRandomSaltStringHasher>()
             .AddTransient<IUserOrganizationRegistry, UserOrganizationRegistry>()
             .AddTransient<IUserResourceRegistry, UserResourceRegistry>()
-            .AddTransient<IUserNameRegistry, UserNameRegistry>()
+            .AddTransient<IUserRegistry, UserRegistry>()
             .AddTransient<IUserParties, UserParties>()
             .AddTransient<IDialogActivityService, DialogActivityService>()
             .AddTransient<IClock, Clock>()
@@ -66,7 +66,7 @@ public static class ApplicationExtensions
             localDeveloperSettings.UseLocalDevelopmentUser ||
             localDeveloperSettings.UseLocalDevelopmentOrganizationRegister);
 
-        services.Decorate<IUserNameRegistry, LocalDevelopmentUserNameRegistryDecorator>(
+        services.Decorate<IUserRegistry, LocalDevelopmentUserRegistryDecorator>(
             predicate:
             localDeveloperSettings.UseLocalDevelopmentUser ||
             localDeveloperSettings.UseLocalDevelopmentNameRegister);
