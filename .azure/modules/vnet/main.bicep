@@ -158,20 +158,9 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-09-01' = {
         }
       }
       {
-        name: 'containerAppEnvSubnet'
-        properties: {
-          // required size for the container app environment is /23
-          addressPrefix: '10.0.1.0/23'
-          networkSecurityGroup: {
-            id: containerAppEnvironmentNSG.id
-          }
-          privateLinkServiceNetworkPolicies: 'Disabled'
-        }
-      }
-      {
         name: 'postgresqlSubnet'
         properties: {
-          addressPrefix: '10.0.4.0/24'
+          addressPrefix: '10.0.1.0/24'
           networkSecurityGroup: {
             id: postgresqlNSG.id
           }
@@ -189,6 +178,17 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-09-01' = {
               locations: [location]
             }
           ]
+        }
+      }
+      {
+        name: 'containerAppEnvSubnet'
+        properties: {
+          // required size for the container app environment is /23
+          addressPrefix: '10.0.2.0/23'
+          networkSecurityGroup: {
+            id: containerAppEnvironmentNSG.id
+          }
+          privateLinkServiceNetworkPolicies: 'Disabled'
         }
       }
     ]
