@@ -1,7 +1,11 @@
 ﻿using System.Data;
+using System.Data.Common;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using Digdir.Domain.Dialogporten.Domain.Outboxes;
 using Npgsql;
+using Npgsql.Replication;
+using Npgsql.Replication.PgOutput.Messages;
 
 namespace Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture;
 
@@ -122,4 +126,42 @@ internal static class NpgsqlDataSourceExtensions
 
     public static SnapshotCheckpoint ToSnapshotCheckpoint(this OutboxMessage outboxMessage) =>
         new(outboxMessage.CreatedAt, outboxMessage.EventId);
+
+    public static bool IsInsertInto(
+        this PgOutputReplicationMessage message,
+        string tableName,
+        [NotNullWhen(true)] out InsertMessage? insertMessage)
+    {
+        insertMessage = message as InsertMessage;
+        return insertMessage is not null && insertMessage.Relation.RelationName == tableName;
+    }
+
+    public static async Task AcknowledgeWalMessage(
+        this LogicalReplicationConnection replicationConnection,
+        PgOutputReplicationMessage message,
+        CancellationToken ct = default)
+    {
+        // Always call SetReplicationStatus() or assign LastAppliedLsn and LastFlushedLsn individually
+        // so that Npgsql can inform the server which WAL files can be removed/recycled.
+        replicationConnection.SetReplicationStatus(message.WalEnd);
+        await replicationConnection.SendStatusUpdate(ct);
+    }
+
+    public static async IAsyncEnumerable<TSource> ForEvery<TSource>(
+        this IAsyncEnumerable<TSource> source,
+        int threshold,
+        Func<TSource, Task> action)
+    {
+        var counter = 0;
+        await foreach (var item in source)
+        {
+            yield return item;
+
+            if (++counter >= threshold)
+            {
+                await action(item);
+                counter = 0;
+            }
+        }
+    }
 }
