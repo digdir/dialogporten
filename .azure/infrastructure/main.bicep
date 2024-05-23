@@ -94,7 +94,7 @@ module serviceBus '../modules/serviceBus/main.bicep' = {
     namePrefix: namePrefix
     location: location
     sku: serviceBusSku
-    subnetIds: [vnet.outputs.containerAppEnvironmentSubnetId]
+    subnetId: vnet.outputs.serviceBusSubnetId
   }
 }
 
@@ -104,16 +104,6 @@ module vnet '../modules/vnet/main.bicep' = {
   params: {
     namePrefix: namePrefix
     location: location
-  }
-}
-
-module postgresqlPrivateDnsZone '../modules/privateDnsZone/main.bicep' = {
-  scope: resourceGroup
-  name: 'postgresqlPrivateDnsZone'
-  params: {
-    namePrefix: namePrefix
-    defaultDomain: '${namePrefix}.postgres.database.azure.com'
-    vnetId: vnet.outputs.virtualNetworkId
   }
 }
 
@@ -150,7 +140,7 @@ module postgresql '../modules/postgreSql/create.bicep' = {
       : secrets.dialogportenPgAdminPassword
     sku: postgresSku
     subnetId: vnet.outputs.postgresqlSubnetId
-    privateDnsArmResourceId: postgresqlPrivateDnsZone.outputs.id
+    vnetId: vnet.outputs.virtualNetworkId
   }
 }
 

@@ -1,7 +1,6 @@
 param namePrefix string
 param location string
-
-param subnetIds array
+param subnetId string
 
 @export()
 type Sku = {
@@ -12,8 +11,10 @@ type Sku = {
 }
 param sku Sku
 
+var name = '${namePrefix}-service-bus'
+
 resource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2022-10-01-preview' = {
-  name: '${namePrefix}-service-bus'
+  name: name
   location: location
   sku: sku
   identity: {
@@ -22,20 +23,43 @@ resource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2022-10-01-preview
   properties: {}
 }
 
-var virtualNetworkRules = [
-  for subnetId in subnetIds: {
+// Private Endpoint
+resource privateEndpoint 'Microsoft.Network/privateEndpoints@2021-05-01' = {
+  name: '${name}-pe'
+  location: location
+  properties: {
     subnet: {
       id: subnetId
     }
+    privateLinkServiceConnections: [
+      {
+        name: '${namePrefix}-plsc'
+        properties: {
+          privateLinkServiceId: serviceBusNamespace.id
+          groupIds: [
+            'namespace'
+          ]
+          requestMessage: 'Connection to the Service Bus namespace ${name} for Dialogporten'
+        }
+      }
+    ]
   }
-]
+}
 
-resource serviceBusNetworkRuleSets 'Microsoft.ServiceBus/namespaces/networkRuleSets@2022-10-01-preview' = {
-  name: 'default'
-  parent: serviceBusNamespace
-  properties: {
-    publicNetworkAccess: 'Disabled'
-    defaultAction: 'Deny'
-    virtualNetworkRules: virtualNetworkRules
+var serviceBusDomainName = '${name}.servicebus.windows.net'
+
+module privateDnsZone '../privateDnsZone/main.bicep' = {
+  name: 'serviceBusPrivateDnsZone'
+  params: {
+    namePrefix: namePrefix
+    defaultDomain: serviceBusDomainName
+    vnetId: subnetId
+    aRecords: [
+      {
+        name: 'default'
+        ttl: 300
+        ip: privateEndpoint.properties.networkInterfaces[0].properties.ipConfigurations[0].properties.privateIPAddress
+      }
+    ]
   }
 }
