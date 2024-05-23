@@ -141,7 +141,7 @@ This repository contains code for both infrastructure and applications. Configur
 
 ### Deployment process
 
-Deployments are done using `Github Actions` with the following steps:
+Deployments are done using `GitHub Actions` with the following steps:
 
 #### 1. Create and Merge Pull Request
 - **Action**: Create a pull request.
