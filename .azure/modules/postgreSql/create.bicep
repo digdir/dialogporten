@@ -44,7 +44,7 @@ module saveAdmPassword '../keyvault/upsertSecret.bicep' = {
   }
 }
 
-module postgresqlPrivateDnsZone '../privateDnsZone/main.bicep' = {
+module privateDnsZone '../privateDnsZone/main.bicep' = {
   name: 'postgresqlPrivateDnsZone'
   params: {
     namePrefix: namePrefix
@@ -67,7 +67,7 @@ resource postgres 'Microsoft.DBforPostgreSQL/flexibleServers@2022-12-01' = {
     replicationRole: 'Primary'
     network: {
       delegatedSubnetResourceId: subnetId
-      privateDnsZoneArmResourceId: postgresqlPrivateDnsZone.outputs.id
+      privateDnsZoneArmResourceId: privateDnsZone.outputs.id
     }
   }
   sku: sku

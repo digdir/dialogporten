@@ -1,3 +1,7 @@
+// This Bicep module provisions a Service Bus namespace with a Premium SKU in Azure, 
+// assigns a system-managed identity, and sets up a private endpoint for secure connectivity. 
+// It also configures a private DNS zone for the Service Bus namespace to facilitate network resolution within the virtual network.
+
 param namePrefix string
 param location string
 param subnetId string
@@ -23,7 +27,6 @@ resource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2022-10-01-preview
   properties: {}
 }
 
-// Private Endpoint
 resource privateEndpoint 'Microsoft.Network/privateEndpoints@2021-05-01' = {
   name: '${name}-pe'
   location: location
