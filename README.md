@@ -211,9 +211,9 @@ The `dispatch-infrastructure.yml` workflow is used for deploying infrastructure 
 
 This workflow facilitates the deployment of infrastructure to the specified environment, using the version details provided.
 
-### Github actions
+### GitHub Actions
 
-Naming conventions for github actions:
+Naming conventions for GitHub Actions:
 - `action-*.yml`: Reusable workflows
 - `ci-cd-*.yml`: Workflows that are triggered by an event
 - `dispatch-*.yml`: Workflows that are dispatchable
