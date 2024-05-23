@@ -1,5 +1,6 @@
 param location string
 param namePrefix string
+param subnetId string
 
 param appInsightWorkspaceName string
 
@@ -17,6 +18,10 @@ resource containerAppEnv 'Microsoft.App/managedEnvironments@2024-03-01' = {
         customerId: appInsightsWorkspace.properties.customerId
         sharedKey: appInsightsWorkspace.listKeys().primarySharedKey
       }
+    }
+    vnetConfiguration: {
+      infrastructureSubnetId: subnetId
+      internal: false
     }
   }
 }
