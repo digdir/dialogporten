@@ -15,5 +15,5 @@ internal class DomainEventToAltinnForwarderBase
     }
 
     internal string SourceBaseUrl() =>
-        $"{_dialogportenSettings.BaseUri}api/v1/enduser/dialogs/";
+        $"{_dialogportenSettings.BaseUri}/api/v1/enduser/dialogs/";
 }
