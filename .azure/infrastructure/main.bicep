@@ -94,6 +94,7 @@ module serviceBus '../modules/serviceBus/main.bicep' = {
     namePrefix: namePrefix
     location: location
     sku: serviceBusSku
+    subnetIds: [vnet.outputs.containerAppEnvironmentSubnetId]
   }
 }
 

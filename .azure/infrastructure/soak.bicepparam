@@ -40,7 +40,7 @@ param redisSku = {
 }
 
 param serviceBusSku = {
-  name: 'Standard'
-  tier: 'Standard'
+  name: 'Premium'
+  tier: 'Premium'
   capacity: 1
 }

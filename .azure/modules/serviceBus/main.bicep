@@ -1,10 +1,12 @@
 param namePrefix string
 param location string
 
+param subnetIds array
+
 @export()
 type Sku = {
-  name: 'Basic' | 'Standard' | 'Premium'
-  tier: 'Basic' | 'Standard' | 'Premium'
+  name: 'Premium'
+  tier: 'Premium'
   @minValue(1)
   capacity: int
 }
@@ -18,4 +20,22 @@ resource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2022-10-01-preview
     type: 'SystemAssigned'
   }
   properties: {}
+}
+
+var virtualNetworkRules = [
+  for subnetId in subnetIds: {
+    subnet: {
+      id: subnetId
+    }
+  }
+]
+
+resource serviceBusNetworkRuleSets 'Microsoft.ServiceBus/namespaces/networkRuleSets@2022-10-01-preview' = {
+  name: 'default'
+  parent: serviceBusNamespace
+  properties: {
+    publicNetworkAccess: 'Disabled'
+    defaultAction: 'Deny'
+    virtualNetworkRules: virtualNetworkRules
+  }
 }
