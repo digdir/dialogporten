@@ -45,7 +45,7 @@ internal static class NpgsqlDataSourceExtensions
     {
         await using var command = dataSource.CreateCommand("SELECT EXISTS(SELECT 1 FROM pg_replication_slots WHERE slot_name = $1)");
         command.Parameters.AddWithValue(slotName);
-        return await command.ExecuteScalarAsync(ct) as bool? == true;
+        return (await command.ExecuteScalarAsync(ct) as bool?) == true;
     }
 
     public static async Task DropReplicationSlot(
@@ -68,30 +68,88 @@ internal static class NpgsqlDataSourceExtensions
         SnapshotCheckpoint checkpoint,
         [EnumeratorCancellation] CancellationToken ct = default)
     {
+        const int batchSize = 1000; // Define a suitable batch size
+        const string createdAt = "CreatedAt";
+        const string eventId = "EventId";
+
         await using var connection = await dataSource.OpenConnectionAsync(ct);
         await using var transaction = await connection.BeginTransactionAsync(IsolationLevel.RepeatableRead, ct);
         await using var command = new NpgsqlCommand($"SET TRANSACTION SNAPSHOT '{snapshotName}';", connection, transaction);
         await command.ExecuteNonQueryAsync(ct);
 
-        // TODO: Where and order by clause makes this tightly cupled to the outbox table. Fix? 
-        // TODO: Set batch size variable? 
-        await using var cmd = new NpgsqlCommand(
-            $"""
-            SELECT *
-            FROM "{tableName}"
-            WHERE "CreatedAt" > $1
-                OR ("CreatedAt" = $1 AND "EventId" > $2)
-            ORDER BY "CreatedAt" ASC, "EventId" ASC
-            """, connection, transaction);
-        cmd.Parameters.AddWithValue(checkpoint.ConfirmedAt);
-        cmd.Parameters.AddWithValue(checkpoint.ConfirmedId);
-        await using var reader = await cmd.ExecuteReaderAsync(ct);
-
-        while (await reader.ReadAsync(ct))
+        while (true)
         {
-            yield return reader;
+            ct.ThrowIfCancellationRequested();
+
+            // TODO: Where and order by clause makes this tightly cupled to the outbox table. Fix? 
+            // TODO: Set batch size variable? 
+            await using var cmd = new NpgsqlCommand(
+                $"""
+                SELECT *
+                FROM "{tableName}"
+                WHERE "{createdAt}" > $1 
+                    OR ("{createdAt}" = $1 AND "{eventId}" > $2)
+                ORDER BY "{createdAt}" ASC, "{eventId}" ASC
+                LIMIT $3
+                """, connection, transaction);
+            cmd.Parameters.AddWithValue(checkpoint.ConfirmedAt);
+            cmd.Parameters.AddWithValue(checkpoint.ConfirmedId);
+            cmd.Parameters.AddWithValue(batchSize);
+            await cmd.PrepareAsync(ct);
+            await using var reader = await cmd.ExecuteReaderAsync(ct);
+
+            while (await reader.ReadAsync(ct))
+            {
+                yield return reader;
+            }
         }
     }
+
+    public static async IAsyncEnumerable<NpgsqlDataReader> ReadExistingRowsFromSnapshot2(
+    this NpgsqlDataSource dataSource,
+    string snapshotName,
+    string tableName,
+    SnapshotCheckpoint checkpoint,
+    [EnumeratorCancellation] CancellationToken ct = default)
+    {
+        const int batchSize = 1000; // Define a suitable batch size
+        const string createdAt = "CreatedAt";
+        const string eventId = "EventId";
+
+        var (confirmedAt, confirmedId) = checkpoint;
+        await using var connection = await dataSource.OpenConnectionAsync(ct);
+        await using var transaction = await connection.BeginTransactionAsync(IsolationLevel.RepeatableRead, ct);
+        await using var command = new NpgsqlCommand($"SET TRANSACTION SNAPSHOT '{snapshotName}';", connection, transaction);
+        await command.ExecuteNonQueryAsync(ct);
+
+        bool moreRows = true;
+        while (moreRows && !ct.IsCancellationRequested)
+        {
+            await using var cmd = new NpgsqlCommand(
+                $"""
+                SELECT *
+                FROM "{tableName}"
+                WHERE ("{createdAt}" > $1 OR ("{createdAt}" = $1 AND "{eventId}" > $2))
+                ORDER BY "{createdAt}" ASC, "{eventId}" ASC
+                LIMIT {batchSize}
+                """, connection, transaction);
+            cmd.Parameters.AddWithValue(confirmedAt);
+            cmd.Parameters.AddWithValue(confirmedId);
+            await cmd.PrepareAsync(ct);
+
+            await using var reader = await cmd.ExecuteReaderAsync(ct);
+            moreRows = false;
+
+            while (await reader.ReadAsync(ct))
+            {
+                moreRows = true;
+                yield return reader;
+                checkpoint.ConfirmedAt = reader.GetDateTime(reader.GetOrdinal("CreatedAt"));
+                checkpoint.ConfirmedId = reader.GetGuid(reader.GetOrdinal("EventId"));
+            }
+        }
+    }
+
 
     public static SnapshotCheckpoint ToSnapshotCheckpoint(this OutboxMessage outboxMessage) =>
         new(outboxMessage.CreatedAt, outboxMessage.EventId);
