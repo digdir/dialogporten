@@ -87,7 +87,7 @@ static void BuildAndRun(string[] args)
                     : option)
             .Services
         .AddSingleton(x => NpgsqlDataSource.Create(x.GetRequiredService<IOptions<PostgresOutboxCdcSSubscriptionOptions>>().Value.ConnectionString))
-        .AddTransient<ISnapshotCheckpointRepository, SnapshotCheckpointRepository>()
+        .AddTransient<ISnapshotRepository, SnapshotRepository>()
         .AddTransient(typeof(IReplicationDataMapper<>), typeof(DynamicReplicationDataMapper<>))
         .AddTransient<ICdcSubscription<OutboxMessage>, PostgresOutboxCdcSubscription>()
         .AddTransient<ICdcSink<OutboxMessage>, MassTransitSink>()
