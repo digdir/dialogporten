@@ -69,6 +69,7 @@ internal sealed class PostgresOutboxCdcSubscription : ICdcSubscription<OutboxMes
 
     private async Task InitSnapshotCheckpoint(CancellationToken ct)
     {
+        await _snapshotRepository.EnsureSnapshotCheckpointTableExists(ct);
         _checkpoint = await _snapshotRepository.GetCheckpoint(_options.ReplicationSlotName, ct);
         // Ensure that we have access to the snapshot before creating the replication slot and consuming the snapshot.
         await _snapshotRepository.UpsertCheckpoint(_options.ReplicationSlotName, _checkpoint, ct);
@@ -165,7 +166,7 @@ internal sealed class PostgresOutboxCdcSubscription : ICdcSubscription<OutboxMes
 
     private abstract record SubscriptionResult
     {
-        internal record Created(PgOutputReplicationSlot ReplicationSlot) : SubscriptionResult;
-        internal record Exists : SubscriptionResult;
+        internal sealed record Created(PgOutputReplicationSlot ReplicationSlot) : SubscriptionResult;
+        internal sealed record Exists : SubscriptionResult;
     }
 }

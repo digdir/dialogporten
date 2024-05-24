@@ -81,10 +81,7 @@ static void BuildAndRun(string[] args)
         })
         .AddOptions<PostgresOutboxCdcSSubscriptionOptions>()
             .BindConfiguration(PostgresOutboxCdcSSubscriptionOptions.SectionName)
-            .Configure<IConfiguration>((option, conf) =>
-                option = option.ConnectionString is null
-                    ? option with { ConnectionString = conf["Infrastructure:DialogDbConnectionString"]! }
-                    : option)
+            .Configure<IConfiguration>((option, conf) => option.ConnectionString ??= conf["Infrastructure:DialogDbConnectionString"]!)
             .Services
         .AddSingleton(x => NpgsqlDataSource.Create(x.GetRequiredService<IOptions<PostgresOutboxCdcSSubscriptionOptions>>().Value.ConnectionString))
         .AddTransient<ISnapshotRepository, SnapshotRepository>()

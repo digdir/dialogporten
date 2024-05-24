@@ -1,13 +1,25 @@
 ﻿namespace Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture.Subscription;
 
-public record PostgresOutboxCdcSSubscriptionOptions(
-    string ConnectionString,
-    string TableName,
-    string PublicationName = null!,
-    string ReplicationSlotName = null!,
-    int SnapshotSyncThreshold = 1000)
+public sealed class PostgresOutboxCdcSSubscriptionOptions
 {
     public const string SectionName = "CdcSubscriptionOption";
-    public string PublicationName { get; init; } = PublicationName ?? $"{TableName.Trim().ToLowerInvariant()}_insert_publication";
-    public string ReplicationSlotName { get; init; } = ReplicationSlotName ?? $"{TableName.Trim().ToLowerInvariant()}_cdc_replication_slot";
+
+    private string _tableName = null!;
+
+    public required string ConnectionString { get; set; }
+    public required string TableName
+    {
+        get => _tableName;
+        set
+        {
+            var tableName = value.Trim().ToLowerInvariant();
+            PublicationName = $"{tableName}_cdc_insert_publication";
+            ReplicationSlotName = $"{tableName}_cdc_replication_slot";
+            _tableName = value;
+        }
+    }
+    public string PublicationName { get; private set; } = null!;
+    public string ReplicationSlotName { get; private set; } = null!;
+    public int SnapshotSyncThreshold { get; set; } = 1000;
+    public int SnapshotBatchSize { get; set; } = 1000;
 }

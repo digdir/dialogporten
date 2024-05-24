@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.ComponentModel;
+using System.Data;
 using System.Globalization;
 using System.Reflection;
 using Npgsql;
@@ -36,6 +37,7 @@ internal sealed class DynamicReplicationDataMapper<T> : IReplicationDataMapper<T
         for (var i = 0; i < reader.FieldCount; i++)
         {
             var propName = reader.GetName(i);
+
             var propValue = reader.GetValue(i)?.ToString();
             SetValue(infoConverterByPropName, result, propName, propValue);
         }
@@ -57,7 +59,7 @@ internal sealed class DynamicReplicationDataMapper<T> : IReplicationDataMapper<T
             .Select(x => new PropertyInfoConverter(x))
             .ToDictionary(x => x.PropertyName);
 
-    private record PropertyInfoConverter
+    private sealed record PropertyInfoConverter
     {
         private static readonly NullableStringConverter _nullableStringConverter = new();
         private readonly PropertyInfo _info;
@@ -75,7 +77,7 @@ internal sealed class DynamicReplicationDataMapper<T> : IReplicationDataMapper<T
 
         public void ConvertAndSetValue(object obj, string? value) => _info.SetValue(obj, _converter.ConvertFromInvariantString(value!));
 
-        private class NullableStringConverter : StringConverter
+        private sealed class NullableStringConverter : StringConverter
         {
             public override object? ConvertFrom(ITypeDescriptorContext? context, CultureInfo? culture, object value) =>
                 value is not null

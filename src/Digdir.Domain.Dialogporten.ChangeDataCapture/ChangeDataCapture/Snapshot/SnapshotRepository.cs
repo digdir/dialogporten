@@ -17,6 +17,20 @@ internal sealed class SnapshotRepository : ISnapshotRepository
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
+    public async Task EnsureSnapshotCheckpointTableExists(CancellationToken ct = default)
+    {
+        // TODO: Burde dette ligge sammen med OutboxMessage opprettelsen i infrastruktur via EF?
+        await using var command = _dataSource.CreateCommand(
+            $"""
+            CREATE TABLE IF NOT EXISTS cdc_snapshot_checkpoint (
+              slot_name VARCHAR(255) PRIMARY KEY,
+              confirmed_at timestamp with time zone,
+              confirmed_id UUID
+            );
+            """);
+        await command.ExecuteNonQueryAsync(ct);
+    }
+
     public async Task<SnapshotCheckpoint> GetCheckpoint(string slotName, CancellationToken ct = default)
     {
         await using var command = _dataSource.CreateCommand("SELECT confirmed_at, confirmed_id FROM cdc_snapshot_checkpoint WHERE slot_name = $1");
@@ -26,7 +40,7 @@ internal sealed class SnapshotRepository : ISnapshotRepository
         if (!await reader.ReadAsync(ct))
             return SnapshotCheckpoint.Default;
 
-        var confirmedAt = await reader.GetFieldValueAsync<DateTimeOffset>("confirmed_date", ct);
+        var confirmedAt = await reader.GetFieldValueAsync<DateTimeOffset>("confirmed_at", ct);
         var confirmedId = await reader.GetFieldValueAsync<Guid>("confirmed_id", ct);
         return new(confirmedAt, confirmedId);
     }
@@ -43,7 +57,6 @@ internal sealed class SnapshotRepository : ISnapshotRepository
         command.Parameters.AddWithValue(slotName);
         command.Parameters.AddWithValue(checkpoint.ConfirmedAt);
         command.Parameters.AddWithValue(checkpoint.ConfirmedId);
-        await command.PrepareAsync(ct);
         await command.ExecuteNonQueryAsync(ct);
     }
 
@@ -80,7 +93,7 @@ internal sealed class SnapshotRepository : ISnapshotRepository
         SnapshotCheckpoint checkpoint,
         [EnumeratorCancellation] CancellationToken ct = default)
     {
-        const int batchSize = 1000;
+        const int batchSize = 1;
         const string createdAt = "CreatedAt";
         const string eventId = "EventId";
         const string cursorName = "snapshot_cursor";
@@ -100,7 +113,7 @@ internal sealed class SnapshotRepository : ISnapshotRepository
                         ORDER BY "{createdAt}" ASC, "{eventId}" ASC
                     """)
                 {
-                    Parameters = { checkpoint.ConfirmedAt, checkpoint.ConfirmedId }
+                    Parameters = { new() { Value = checkpoint.ConfirmedAt }, new() { Value = checkpoint.ConfirmedId } }
                 }
             }
         };
@@ -119,7 +132,10 @@ internal sealed class SnapshotRepository : ISnapshotRepository
                     yield break;
                 }
 
-                yield return reader;
+                while (await reader.ReadAsync(ct))
+                {
+                    yield return reader;
+                }
             }
         }
         finally
