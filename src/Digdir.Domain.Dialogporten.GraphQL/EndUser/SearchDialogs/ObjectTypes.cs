@@ -21,9 +21,9 @@ public sealed class SearchDialogValidationError : ISearchDialogError
 public sealed class SearchDialogsPayload
 {
     public List<SearchDialog>? Items { get; set; }
-    public bool HasNextPage { get; }
-    public string? ContinuationToken { get; }
-    public string OrderBy { get; } = null!;
+    public bool HasNextPage { get; set; }
+    public string? ContinuationToken { get; set; }
+    public string? OrderBy { get; set; }
     public List<ISearchDialogError> Errors { get; set; } = [];
 }
 

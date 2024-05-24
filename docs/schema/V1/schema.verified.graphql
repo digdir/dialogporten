@@ -172,7 +172,7 @@ type SearchDialogsPayload {
   items: [SearchDialog!]
   hasNextPage: Boolean!
   continuationToken: String
-  orderBy: String!
+  orderBy: String
   errors: [SearchDialogError!]!
 }
 
