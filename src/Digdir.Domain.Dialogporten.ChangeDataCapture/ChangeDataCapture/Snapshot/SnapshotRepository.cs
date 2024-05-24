@@ -80,8 +80,6 @@ internal sealed class SnapshotRepository : ISnapshotRepository
         SnapshotCheckpoint checkpoint,
         [EnumeratorCancellation] CancellationToken ct = default)
     {
-        // TODO: Where and order by clause makes this tightly cupled to the outbox table. Fix? 
-        // TODO: Set batch size variable? 
         const int batchSize = 1000;
         const string createdAt = "CreatedAt";
         const string eventId = "EventId";

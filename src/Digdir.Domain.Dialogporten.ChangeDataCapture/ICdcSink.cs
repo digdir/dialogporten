@@ -8,6 +8,15 @@ public interface ICdcSink<T>
     Task Send(T outboxMessage, CancellationToken cancellationToken);
 }
 
+internal sealed class ConcoleSink : ICdcSink<OutboxMessage>
+{
+    public Task Send(OutboxMessage outboxMessage, CancellationToken cancellationToken)
+    {
+        Console.WriteLine($"Sending {outboxMessage.EventType} {outboxMessage.EventId} to message bus.");
+        return Task.CompletedTask;
+    }
+}
+
 internal sealed class MassTransitSink : ICdcSink<OutboxMessage>
 {
     private readonly ISendEndpointProvider _sender;

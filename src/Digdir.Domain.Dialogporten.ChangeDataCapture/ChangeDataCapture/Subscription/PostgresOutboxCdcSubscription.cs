@@ -42,6 +42,14 @@ internal sealed class PostgresOutboxCdcSubscription : ICdcSubscription<OutboxMes
 
     public async IAsyncEnumerable<OutboxMessage> Subscribe([EnumeratorCancellation] CancellationToken ct = default)
     {
+        /* TODO:
+         * - Opprett SnapshotCheckpoint tabell i infrastruktur
+         * - Opprett OutboxMessage tabell i infrastruktur
+         * - Opprett OutboxMessageConsumer tabell i infrastruktur
+         * - Lesing av tabllen fra snapshot er sterkt koplet til OutboxMessage. Skal jeg fikse det?
+         * - Gjør batch størrelse av snapshot lesing konfigurerbar
+         */
+
         CheckDisposed();
         await _replicationConnection.Open(ct);
         await InitSnapshotCheckpoint(ct);

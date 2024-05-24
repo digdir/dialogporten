@@ -28,7 +28,6 @@ internal sealed class CdcBackgroundHandler : BackgroundService
         {
             await foreach (var outboxMessage in _subscription.Subscribe(stoppingToken))
             {
-                _logger.LogInformation("Forwarding {EventType} {EventId} to message bus.", outboxMessage.EventType, outboxMessage.EventId);
                 using var scope = _scopeFactory.CreateScope();
                 var sink = scope.ServiceProvider.GetRequiredService<ICdcSink<OutboxMessage>>();
                 await sink.Send(outboxMessage, stoppingToken);
