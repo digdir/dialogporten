@@ -59,7 +59,9 @@ internal sealed class PostgresOutboxCdcSubscription : ICdcSubscription<OutboxMes
     {
         await _dataSource.EnsureInsertPublicationForTable(_options.TableName, _options.PublicationName, ct);
         if (await _dataSource.ReplicationSlotExists(_options.ReplicationSlotName, ct))
+        {
             return new SubscriptionResult.Exists();
+        }
 
         // At this point we know that the replication slot does not exist, and we need to create it.
         // We also need to consume every row in the target table from the replication slot
@@ -122,14 +124,18 @@ internal sealed class PostgresOutboxCdcSubscription : ICdcSubscription<OutboxMes
     public async ValueTask DisposeAsync()
     {
         if (_disposed)
+        {
             return;
+        }
 
         if (!_replicationSnapshotConsumed)
+        {
             // The snapshot represents the state of the table at the time the slot was created, and the
             // slot represents all changes that happons from that point on. If we fail to read the
             // snapshot in its entirety, we should start from scratch the next time the subscription
             // is started.
             await _dataSource.DropReplicationSlot(_options.ReplicationSlotName);
+        }
 
         await _snapshotCheckpointRepository.TryUpsertWithRetry(_options.ReplicationSlotName, _checkpoint);
         await _replicationConnection.DisposeAsync();
