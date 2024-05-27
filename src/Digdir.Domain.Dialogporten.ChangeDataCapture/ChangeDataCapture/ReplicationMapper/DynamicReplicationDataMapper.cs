@@ -37,8 +37,10 @@ internal sealed class DynamicReplicationDataMapper<T> : IReplicationDataMapper<T
         for (var i = 0; i < reader.FieldCount; i++)
         {
             var propName = reader.GetName(i);
-
-            var propValue = reader.GetValue(i)?.ToString();
+            var valueAsObject = reader.GetValue(i);
+            var propValue = valueAsObject is DateTime dateTime
+                ? dateTime.ToString("O")
+                : valueAsObject?.ToString();
             SetValue(infoConverterByPropName, result, propName, propValue);
         }
 

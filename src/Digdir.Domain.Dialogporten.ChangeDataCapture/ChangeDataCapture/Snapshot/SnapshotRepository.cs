@@ -110,7 +110,7 @@ internal sealed class SnapshotRepository : ISnapshotRepository
                         SELECT *
                         FROM "{tableName}"
                         WHERE ("{createdAt}" > $1 OR ("{createdAt}" = $1 AND "{eventId}" > $2))
-                        ORDER BY "{createdAt}" ASC, "{eventId}" ASC
+                        ORDER BY "{createdAt}" ASC, "{eventId}" ASC;
                     """)
                 {
                     Parameters = { new() { Value = checkpoint.ConfirmedAt }, new() { Value = checkpoint.ConfirmedId } }
