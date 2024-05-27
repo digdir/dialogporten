@@ -5,6 +5,7 @@
 param namePrefix string
 param location string
 param subnetId string
+param vnetId string
 
 @export()
 type Sku = {
@@ -58,7 +59,7 @@ module privateDnsZone '../privateDnsZone/main.bicep' = {
   params: {
     namePrefix: namePrefix
     defaultDomain: serviceBusDomainName
-    vnetId: subnetId
+    vnetId: vnetId
     aRecords: [
       {
         name: 'default'

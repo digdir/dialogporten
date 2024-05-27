@@ -95,6 +95,7 @@ module serviceBus '../modules/serviceBus/main.bicep' = {
     location: location
     sku: serviceBusSku
     subnetId: vnet.outputs.serviceBusSubnetId
+    vnetId: vnet.outputs.virtualNetworkId
   }
 }
 
