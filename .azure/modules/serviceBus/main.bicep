@@ -37,6 +37,17 @@ resource privateEndpoint 'Microsoft.Network/privateEndpoints@2021-05-01' = {
     subnet: {
       id: subnetId
     }
+    ipConfigurations: [
+      {
+        name: 'default'
+        properties: {
+          groupId: 'namespace'
+          memberName: 'namespace'
+          // must be in the range of the subnet
+          privateIPAddress: '10.0.4.10'
+        }
+      }
+    ]
     privateLinkServiceConnections: [
       {
         name: '${namePrefix}-plsc'
