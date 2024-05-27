@@ -12,7 +12,7 @@ internal sealed class ConcoleSink : ICdcSink<OutboxMessage>
 {
     public Task Send(OutboxMessage outboxMessage, CancellationToken cancellationToken)
     {
-        Console.WriteLine($"Sending {outboxMessage.EventType} {outboxMessage.EventId} to message bus.");
+        Console.WriteLine($"Sending {outboxMessage.EventType} {outboxMessage.EventId} to message bus with payload {outboxMessage.EventPayload}.");
         return Task.CompletedTask;
     }
 }
