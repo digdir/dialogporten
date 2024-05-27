@@ -5,6 +5,7 @@
 param namePrefix string
 param location string
 param subnetId string
+param vnetId string
 
 @export()
 type Sku = {
@@ -24,7 +25,9 @@ resource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2022-10-01-preview
   identity: {
     type: 'SystemAssigned'
   }
-  properties: {}
+  properties: {
+    publicNetworkAccess: 'Disabled'
+  }
 }
 
 resource privateEndpoint 'Microsoft.Network/privateEndpoints@2021-05-01' = {
@@ -56,7 +59,7 @@ module privateDnsZone '../privateDnsZone/main.bicep' = {
   params: {
     namePrefix: namePrefix
     defaultDomain: serviceBusDomainName
-    vnetId: subnetId
+    vnetId: vnetId
     aRecords: [
       {
         name: 'default'
