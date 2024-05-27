@@ -24,7 +24,9 @@ resource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2022-10-01-preview
   identity: {
     type: 'SystemAssigned'
   }
-  properties: {}
+  properties: {
+    publicNetworkAccess: 'Disabled'
+  }
 }
 
 resource privateEndpoint 'Microsoft.Network/privateEndpoints@2021-05-01' = {
