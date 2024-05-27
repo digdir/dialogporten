@@ -91,9 +91,9 @@ internal sealed class SnapshotRepository : ISnapshotRepository
         string snapshotName,
         string tableName,
         SnapshotCheckpoint checkpoint,
+        int batchSize,
         [EnumeratorCancellation] CancellationToken ct = default)
     {
-        const int batchSize = 1;
         const string createdAt = "CreatedAt";
         const string eventId = "EventId";
         const string cursorName = "snapshot_cursor";

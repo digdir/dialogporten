@@ -100,7 +100,12 @@ internal sealed class PostgresOutboxCdcSubscription : ICdcSubscription<OutboxMes
         [EnumeratorCancellation] CancellationToken ct)
     {
         await foreach (var reader in _snapshotRepository
-            .ReadExistingRowsFromSnapshot(created.ReplicationSlot.SnapshotName!, _options.TableName, _checkpoint, ct)
+            .ReadExistingRowsFromSnapshot(
+                created.ReplicationSlot.SnapshotName!,
+                _options.TableName,
+                _checkpoint,
+                _options.SnapshotBatchSize,
+                ct)
             .ForEvery(_options.SnapshotSyncThreshold, SetSnapshotCheckpoint))
         {
             var outboxMessage = await _mapper.ReadFromSnapshot(reader, ct);

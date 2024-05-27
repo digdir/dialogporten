@@ -8,6 +8,6 @@ internal interface ISnapshotRepository
     Task<SnapshotCheckpoint> GetCheckpoint(string slotName, CancellationToken ct = default);
     Task UpsertCheckpoint(string slotName, SnapshotCheckpoint checkpoint, CancellationToken ct = default);
     Task<bool> TryUpsertCheckpointWithRetry(string slotName, SnapshotCheckpoint checkpoint, CancellationToken ct = default);
-    IAsyncEnumerable<NpgsqlDataReader> ReadExistingRowsFromSnapshot(string snapshotName, string tableName, SnapshotCheckpoint checkpoint, CancellationToken ct = default);
+    IAsyncEnumerable<NpgsqlDataReader> ReadExistingRowsFromSnapshot(string snapshotName, string tableName, SnapshotCheckpoint checkpoint, int batchSize, CancellationToken ct = default);
     Task EnsureSnapshotCheckpointTableExists(CancellationToken ct = default);
 }
