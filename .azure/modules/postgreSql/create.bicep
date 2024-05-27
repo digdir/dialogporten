@@ -3,7 +3,7 @@ param location string
 param environmentKeyVaultName string
 param srcSecretName string
 param subnetId string
-param privateDnsArmResourceId string
+param vnetId string
 
 @export()
 type Sku = {
@@ -44,6 +44,15 @@ module saveAdmPassword '../keyvault/upsertSecret.bicep' = {
   }
 }
 
+module privateDnsZone '../privateDnsZone/main.bicep' = {
+  name: 'postgresqlPrivateDnsZone'
+  params: {
+    namePrefix: namePrefix
+    defaultDomain: '${namePrefix}.postgres.database.azure.com'
+    vnetId: vnetId
+  }
+}
+
 resource postgres 'Microsoft.DBforPostgreSQL/flexibleServers@2022-12-01' = {
   name: '${namePrefix}-postgres'
   location: location
@@ -58,7 +67,7 @@ resource postgres 'Microsoft.DBforPostgreSQL/flexibleServers@2022-12-01' = {
     replicationRole: 'Primary'
     network: {
       delegatedSubnetResourceId: subnetId
-      privateDnsZoneArmResourceId: privateDnsArmResourceId
+      privateDnsZoneArmResourceId: privateDnsZone.outputs.id
     }
   }
   sku: sku
