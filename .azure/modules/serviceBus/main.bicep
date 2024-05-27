@@ -75,7 +75,7 @@ module privateDnsZone '../privateDnsZone/main.bicep' = {
       {
         name: 'default'
         ttl: 300
-        ip: privateEndpoint.properties.networkInterfaces[0].properties.ipConfigurations[0].properties.privateIPAddress
+        ip: privateEndpoint.properties.ipConfigurations[0].properties.privateIPAddress
       }
     ]
   }
