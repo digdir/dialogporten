@@ -57,7 +57,7 @@ resource postgres 'Microsoft.DBforPostgreSQL/flexibleServers@2022-12-01' = {
   name: '${namePrefix}-postgres'
   location: location
   properties: {
-    version: '16'
+    version: '15'
     administratorLogin: administratorLogin
     administratorLoginPassword: administratorLoginPassword
     storage: { storageSizeGB: 32 }
