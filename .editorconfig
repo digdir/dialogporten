@@ -57,6 +57,9 @@ dotnet_diagnostic.IDE0022.severity = suggestion
 # Don't mix non-braces and braces for ifs
 csharp_prefer_braces = when_multiline
 
+# Don't prefer specifying types when useing new() { ... }
+resharper_arrange_object_creation_when_type_not_evident_highlighting = none
+
 # "Expression body is never used"
 dotnet_diagnostic.IDE0058.severity = none
 # "'if' statement can be simplified"
