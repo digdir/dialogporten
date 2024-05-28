@@ -37,6 +37,17 @@ resource privateEndpoint 'Microsoft.Network/privateEndpoints@2021-05-01' = {
     subnet: {
       id: subnetId
     }
+    ipConfigurations: [
+      {
+        name: 'default'
+        properties: {
+          groupId: 'namespace'
+          memberName: 'namespace'
+          // must be in the range of the subnet
+          privateIPAddress: '10.0.4.4'
+        }
+      }
+    ]
     privateLinkServiceConnections: [
       {
         name: '${namePrefix}-plsc'
@@ -64,7 +75,7 @@ module privateDnsZone '../privateDnsZone/main.bicep' = {
       {
         name: 'default'
         ttl: 300
-        ip: privateEndpoint.properties.networkInterfaces[0].properties.ipConfigurations[0].properties.privateIPAddress
+        ip: privateEndpoint.properties.ipConfigurations[0].properties.privateIPAddress
       }
     ]
   }
