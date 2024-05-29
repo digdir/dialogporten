@@ -1,6 +1,8 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Reflection;
 using Npgsql;
@@ -22,7 +24,7 @@ internal sealed class DynamicReplicationDataMapper<T> : IReplicationDataMapper<T
         await foreach (var value in insertMessage.NewRow)
         {
             var propName = insertMessage.Relation.Columns[columnNumber++].ColumnName;
-            var propValue = await value.Get<string?>(ct);
+            var propValue = await value.Get(ct);
             SetValue(infoConverterByPropName, result, propName, propValue);
         }
 
@@ -37,23 +39,21 @@ internal sealed class DynamicReplicationDataMapper<T> : IReplicationDataMapper<T
         for (var i = 0; i < reader.FieldCount; i++)
         {
             var propName = reader.GetName(i);
-            var valueAsObject = reader.GetValue(i);
-            var propValue = valueAsObject is DateTime dateTime
-                ? dateTime.ToString("O")
-                : valueAsObject?.ToString();
+            var propValue = reader.GetValue(i);
             SetValue(infoConverterByPropName, result, propName, propValue);
         }
 
         return Task.FromResult(result);
     }
 
-
-    private static void SetValue(Dictionary<string, PropertyInfoConverter> infoConverterByPropName, T value, string propName, string? propValue)
+    private static void SetValue(Dictionary<string, PropertyInfoConverter> infoConverterByPropName, T value, string propName, object? propValue)
     {
         if (!infoConverterByPropName.TryGetValue(propName, out var propInfoConverter))
+        {
             throw new InvalidOperationException($"Property {propName} not found on type {typeof(T).Name}.");
+        }
 
-        propInfoConverter.ConvertAndSetValue(value, propValue);
+        propInfoConverter.SetValue(value, propValue);
     }
 
     private static Dictionary<string, PropertyInfoConverter> GeneratePropInfoConvertionsByPropName(Type type) =>
@@ -66,6 +66,7 @@ internal sealed class DynamicReplicationDataMapper<T> : IReplicationDataMapper<T
         private static readonly NullableStringConverter _nullableStringConverter = new();
         private readonly PropertyInfo _info;
         private readonly TypeConverter _converter;
+        private readonly ConcurrentDictionary<Type, MethodInfo?> _converters = new();
 
         public string PropertyName => _info.Name;
 
@@ -77,7 +78,43 @@ internal sealed class DynamicReplicationDataMapper<T> : IReplicationDataMapper<T
                 : TypeDescriptor.GetConverter(info.PropertyType);
         }
 
-        public void ConvertAndSetValue(object obj, string? value) => _info.SetValue(obj, _converter.ConvertFromInvariantString(value!));
+        public void SetValue(object obj, object? value)
+        {
+            var targetType = _info.PropertyType;
+            var sourceType = value?.GetType();
+            if (sourceType is null || targetType.IsAssignableFrom(sourceType))
+            {
+                _info.SetValue(obj, value);
+                return;
+            }
+
+            if (_converter.CanConvertFrom(sourceType))
+            {
+                value = _converter.ConvertFrom(null, CultureInfo.InvariantCulture, value!);
+                _info.SetValue(obj, value);
+                return;
+            }
+
+            var converter = _converters.GetOrAdd(sourceType, GenerateConverter);
+            if (converter is not null)
+            {
+                value = converter.Invoke(null, new[] { value! });
+                _info.SetValue(obj, value);
+                return;
+            }
+
+            throw new InvalidCastException();
+
+            MethodInfo? GenerateConverter(Type sourceType)
+            {
+                var targetTypeParams = new[] { targetType };
+                var sourceTypeParams = new[] { sourceType };
+                return sourceType.GetMethod("op_Explicit", targetTypeParams)
+                    ?? targetType.GetMethod("op_Explicit", sourceTypeParams)
+                    ?? sourceType.GetMethod("op_Implicit", targetTypeParams)
+                    ?? targetType.GetMethod("op_Implicit", sourceTypeParams);
+            }
+        }
 
         private sealed class NullableStringConverter : StringConverter
         {

@@ -62,6 +62,7 @@ static void BuildAndRun(string[] args)
     builder.Services
         .AddAzureAppConfiguration()
         .AddApplicationInsightsTelemetry()
+        .AddHostedService<SnapshotCheckpointSyncronizer>()
         .AddHostedService<CdcBackgroundHandler>()
         .AddMassTransit(x =>
         {
@@ -89,6 +90,7 @@ static void BuildAndRun(string[] args)
         .AddTransient(typeof(IReplicationDataMapper<>), typeof(DynamicReplicationDataMapper<>))
         .AddTransient<ICdcSubscription<OutboxMessage>, PostgresOutboxCdcSubscription>()
         .AddTransient<ICdcSink<OutboxMessage>, ConcoleSink>()
+        .AddSingleton<ISnapshotCheckpointCache, SnapshotCheckpointCache>()
         .AddHealthChecks();
 
     var app = builder.Build();
