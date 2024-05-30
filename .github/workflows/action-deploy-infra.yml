@@ -86,7 +86,7 @@ jobs:
           echo "::add-mask::$password"
           echo "::set-output name=postgresqlPassword::$password"
 
-      - name: Deploy infrastructure (${{ inputs.environment }})
+      - name: Dryrun Deploy infrastructure (${{ inputs.environment }})
         uses: azure/arm-deploy@v2
         if: ${{ inputs.dryRun }}
         id: deploy-dry-run
