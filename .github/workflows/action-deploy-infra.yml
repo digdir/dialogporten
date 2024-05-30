@@ -105,7 +105,7 @@ jobs:
           deploymentName: dp-be-${{ inputs.environment }}-${{ inputs.version }}
           region: ${{ inputs.region }}
           failOnStdErr: false
-          additionalArguments: "${{ inputs.dryRun && '--what-if' }} --debug"
+          additionalArguments: ${{ inputs.dryRun && '--what-if --debug' || '--debug' }}
           parameters: ./.azure/infrastructure/${{ inputs.environment }}.bicepparam
 
       - name: Logout from azure
