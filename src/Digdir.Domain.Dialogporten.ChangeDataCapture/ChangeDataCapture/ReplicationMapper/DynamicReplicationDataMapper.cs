@@ -61,21 +61,18 @@ internal sealed class DynamicReplicationDataMapper<T> : IReplicationDataMapper<T
             .Select(x => new PropertyInfoConverter(x))
             .ToDictionary(x => x.PropertyName);
 
-    private sealed record PropertyInfoConverter
+    private sealed class PropertyInfoConverter
     {
-        private static readonly NullableStringConverter _nullableStringConverter = new();
         private readonly PropertyInfo _info;
         private readonly TypeConverter _converter;
-        private readonly ConcurrentDictionary<Type, MethodInfo?> _converters = new();
+        private readonly ConcurrentDictionary<Type, MethodInfo?> _backupConverters = new();
 
         public string PropertyName => _info.Name;
 
         public PropertyInfoConverter(PropertyInfo info)
         {
             _info = info;
-            _converter = info.PropertyType == typeof(string)
-                ? _nullableStringConverter
-                : TypeDescriptor.GetConverter(info.PropertyType);
+            _converter = TypeDescriptor.GetConverter(info.PropertyType);
         }
 
         public void SetValue(object obj, object? value)
@@ -95,7 +92,7 @@ internal sealed class DynamicReplicationDataMapper<T> : IReplicationDataMapper<T
                 return;
             }
 
-            var converter = _converters.GetOrAdd(sourceType, GenerateConverter);
+            var converter = _backupConverters.GetOrAdd(sourceType, FindImplExplConverter);
             if (converter is not null)
             {
                 value = converter.Invoke(null, new[] { value! });
@@ -105,23 +102,17 @@ internal sealed class DynamicReplicationDataMapper<T> : IReplicationDataMapper<T
 
             throw new InvalidCastException();
 
-            MethodInfo? GenerateConverter(Type sourceType)
+            MethodInfo? FindImplExplConverter(Type sourceType)
             {
+                const string explicitConverterName = "op_Explicit";
+                const string implicitConverterName = "op_Implicit";
                 var targetTypeParams = new[] { targetType };
                 var sourceTypeParams = new[] { sourceType };
-                return sourceType.GetMethod("op_Explicit", targetTypeParams)
-                    ?? targetType.GetMethod("op_Explicit", sourceTypeParams)
-                    ?? sourceType.GetMethod("op_Implicit", targetTypeParams)
-                    ?? targetType.GetMethod("op_Implicit", sourceTypeParams);
+                return sourceType.GetMethod(explicitConverterName, targetTypeParams)
+                    ?? targetType.GetMethod(explicitConverterName, sourceTypeParams)
+                    ?? sourceType.GetMethod(implicitConverterName, targetTypeParams)
+                    ?? targetType.GetMethod(implicitConverterName, sourceTypeParams);
             }
-        }
-
-        private sealed class NullableStringConverter : StringConverter
-        {
-            public override object? ConvertFrom(ITypeDescriptorContext? context, CultureInfo? culture, object value) =>
-                value is not null
-                    ? base.ConvertFrom(context, culture, value)
-                    : null;
         }
     }
 }

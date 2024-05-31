@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
+using Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture.Checkpoints;
 using Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture.ReplicationMapper;
-using Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture.Snapshot;
 using Digdir.Domain.Dialogporten.ChangeDataCapture.Common.Extensions;
 using Digdir.Domain.Dialogporten.Domain.Outboxes;
 using Microsoft.Extensions.Options;
@@ -19,24 +19,21 @@ internal sealed class PostgresOutboxCdcSubscription : ICdcSubscription<OutboxMes
 
     private readonly PostgresOutboxCdcSSubscriptionOptions _options;
     private readonly IReplicationDataMapper<OutboxMessage> _mapper;
-    private readonly ISnapshotRepository _snapshotRepository;
+    private readonly IOutboxReaderRepository _outboxRepository;
     private readonly ISubscriptionRepository _subscriptionRepository;
-    private readonly ILogger<PostgresOutboxCdcSubscription> _logger;
-    private readonly ISnapshotCheckpointCache _snapshotCheckpointCache;
+    private readonly ICheckpointCache _snapshotCheckpointCache;
 
     public PostgresOutboxCdcSubscription(
         IOptions<PostgresOutboxCdcSSubscriptionOptions> options,
         IReplicationDataMapper<OutboxMessage> mapper,
-        ISnapshotRepository snapshotRepository,
+        IOutboxReaderRepository outboxRepository,
         ISubscriptionRepository subscriptionRepository,
-        ILogger<PostgresOutboxCdcSubscription> logger,
-        ISnapshotCheckpointCache snapshotCheckpointCache)
+        ICheckpointCache snapshotCheckpointCache)
     {
         _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-        _snapshotRepository = snapshotRepository ?? throw new ArgumentNullException(nameof(snapshotRepository));
+        _outboxRepository = outboxRepository ?? throw new ArgumentNullException(nameof(outboxRepository));
         _subscriptionRepository = subscriptionRepository ?? throw new ArgumentNullException(nameof(subscriptionRepository));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _snapshotCheckpointCache = snapshotCheckpointCache ?? throw new ArgumentNullException(nameof(snapshotCheckpointCache));
 
         _replicationConnection = new LogicalReplicationConnection(_options.ConnectionString);
@@ -92,17 +89,13 @@ internal sealed class PostgresOutboxCdcSubscription : ICdcSubscription<OutboxMes
         SubscriptionResult.Created created,
         [EnumeratorCancellation] CancellationToken ct)
     {
-        await foreach (var reader in _snapshotRepository
-            .ReadExistingRowsFromSnapshot(
-                created.ReplicationSlot.SnapshotName!,
-                _options.TableName,
-                _snapshotCheckpointCache.Get(_options.ReplicationSlotName),
-                _options.SnapshotBatchSize,
-                ct))
+        var checkpoint = _snapshotCheckpointCache.GetOrDefault(_options.ReplicationSlotName);
+        var snapshotName = created.ReplicationSlot.SnapshotName!;
+        await foreach (var reader in _outboxRepository.ReadFromCheckpoint(checkpoint, snapshotName, ct))
         {
             var outboxMessage = await _mapper.ReadFromSnapshot(reader, ct);
             yield return outboxMessage;
-            _snapshotCheckpointCache.Add(outboxMessage.ToSnapshotCheckpoint(_options.ReplicationSlotName));
+            _snapshotCheckpointCache.Upsert(outboxMessage.ToSnapshotCheckpoint(_options.ReplicationSlotName));
         }
 
         _replicationSnapshotConsumed = true;
@@ -124,7 +117,7 @@ internal sealed class PostgresOutboxCdcSubscription : ICdcSubscription<OutboxMes
 
             var outboxMessage = await _mapper.ReadFromReplication(insertMessage, ct);
             yield return outboxMessage;
-            _snapshotCheckpointCache.Add(outboxMessage.ToSnapshotCheckpoint(_options.ReplicationSlotName));
+            _snapshotCheckpointCache.Upsert(outboxMessage.ToSnapshotCheckpoint(_options.ReplicationSlotName));
             await _replicationConnection.AcknowledgeWalMessage(message, ct);
         }
     }

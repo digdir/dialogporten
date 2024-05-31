@@ -1,22 +1,23 @@
 ﻿using System.Collections.Concurrent;
 using Npgsql.Replication;
 
-namespace Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture.Snapshot;
+namespace Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture.Checkpoints;
 
-internal sealed class SnapshotCheckpointSyncronizer : BackgroundService, IAsyncDisposable
+internal sealed class CheckpointSyncronizer : BackgroundService, IAsyncDisposable
 {
-    private IReadOnlyCollection<SnapshotCheckpoint> _syncedCheckpoints = new List<SnapshotCheckpoint>().AsReadOnly();
+    private IReadOnlyCollection<Checkpoint> _syncedCheckpoints = new List<Checkpoint>().AsReadOnly();
 
     private readonly PeriodicTimer _periodicTimer = new(TimeSpan.FromSeconds(5));
     private readonly SemaphoreSlim _semaphore = new(1, 1);
-    private readonly ISnapshotCheckpointCache _snapshotCache;
-    private readonly ISnapshotRepository _snapshotRepository;
-    private readonly ILogger<SnapshotCheckpointSyncronizer> _logger;
 
-    public SnapshotCheckpointSyncronizer(
-        ISnapshotCheckpointCache cache,
-        ISnapshotRepository snapshotRepository,
-        ILogger<SnapshotCheckpointSyncronizer> logger)
+    private readonly ICheckpointCache _snapshotCache;
+    private readonly ICheckpointRepository _snapshotRepository;
+    private readonly ILogger<CheckpointSyncronizer> _logger;
+
+    public CheckpointSyncronizer(
+        ICheckpointCache cache,
+        ICheckpointRepository snapshotRepository,
+        ILogger<CheckpointSyncronizer> logger)
     {
         _snapshotCache = cache ?? throw new ArgumentNullException(nameof(cache));
         _snapshotRepository = snapshotRepository ?? throw new ArgumentNullException(nameof(snapshotRepository));
@@ -25,14 +26,18 @@ internal sealed class SnapshotCheckpointSyncronizer : BackgroundService, IAsyncD
 
     public override async Task StartAsync(CancellationToken cancellationToken)
     {
-        // Ensure table exists
-        await _snapshotRepository.EnsureSnapshotCheckpointTableExists(cancellationToken);
+        // This method will block the application from starting until
+        // snapshots are loaded and permissions are verified
 
-        // Load the checkpoints from the database
-        _snapshotCache.AddRange(_syncedCheckpoints = await _snapshotRepository.GetCheckpoints(cancellationToken));
+        // TODO: Remove? 
+        // Ensure table exists
+        await _snapshotRepository.EnsureCheckpointTableExists(cancellationToken);
+
+        // Load the checkpoints from the database and add it to the cache
+        _snapshotCache.UpsertRange(_syncedCheckpoints = await _snapshotRepository.GetCheckpoints(cancellationToken));
 
         // Ensure that the application has the necessary permissions to create checkpoints
-        if (!await _snapshotRepository.TryUpsertCheckpoints([SnapshotCheckpoint.Default("cdc_health_check")], cancellationToken))
+        if (!await _snapshotRepository.TryUpsertCheckpoints([Checkpoint.Default("cdc_health_check")], cancellationToken))
         {
             throw new InvalidOperationException(
                 "Failed to create the default snapshot checkpoint. The application " +
@@ -47,16 +52,12 @@ internal sealed class SnapshotCheckpointSyncronizer : BackgroundService, IAsyncD
         while (await _periodicTimer.WaitForNextTickAsync(stoppingToken))
         {
             if (!await _semaphore.WaitAsync(0, stoppingToken))
-            {
                 continue;
-            }
 
             try
             {
                 if (!await TrySync(stoppingToken))
-                {
                     _logger.LogWarning("Failed to sync snapshot checkpoints. Will retry in next iteration.");
-                }
             }
             finally
             {
@@ -76,9 +77,7 @@ internal sealed class SnapshotCheckpointSyncronizer : BackgroundService, IAsyncD
     {
         await _semaphore.WaitAsync();
         if (!await TrySync())
-        {
             _logger.LogError("Failed to sync snapshot checkpoints. The subscriptions may be in an inconsistent state that may result in duplicate messages.");
-        }
 
         Dispose();
     }
@@ -91,9 +90,7 @@ internal sealed class SnapshotCheckpointSyncronizer : BackgroundService, IAsyncD
             .ToList();
 
         if (!await _snapshotRepository.TryUpsertCheckpoints(unsynced, stoppingToken))
-        {
             return false;
-        }
 
         _syncedCheckpoints = current;
         return true;

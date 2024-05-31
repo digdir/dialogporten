@@ -19,38 +19,38 @@ internal sealed class PerformantOutboxDataMapper : IReplicationDataMapper<Outbox
         return ToOutboxMessage(outboxMessageDictionary);
     }
 
-    public static async Task<Dictionary<string, string>> ToDictionary(InsertMessage insertMessage, CancellationToken cancellationToken)
+    public static async Task<Dictionary<string, object?>> ToDictionary(InsertMessage insertMessage, CancellationToken cancellationToken)
     {
         var columnNumber = 0;
-        var result = new Dictionary<string, string>();
+        var result = new Dictionary<string, object?>();
         await foreach (var value in insertMessage.NewRow)
         {
             var columnName = insertMessage.Relation.Columns[columnNumber++].ColumnName;
-            result[columnName] = await value.Get<string>(cancellationToken);
+            result[columnName] = await value.Get(cancellationToken);
         }
 
         return result;
     }
 
-    public static Dictionary<string, string> ToDictionary(NpgsqlDataReader reader)
+    public static Dictionary<string, object?> ToDictionary(NpgsqlDataReader reader)
     {
-        var result = new Dictionary<string, string>();
+        var result = new Dictionary<string, object?>();
         for (var i = 0; i < reader.FieldCount; i++)
         {
             var columnName = reader.GetName(i);
-            result[columnName] = reader.GetValue(i).ToString()!;
+            result[columnName] = reader.GetValue(i);
         }
         return result;
     }
 
-    private static OutboxMessage ToOutboxMessage(IReadOnlyDictionary<string, string> dic)
+    private static OutboxMessage ToOutboxMessage(IReadOnlyDictionary<string, object?> dic)
     {
         return new OutboxMessage
         {
-            EventId = Guid.Parse(dic[nameof(OutboxMessage.EventId)]),
-            CreatedAt = DateTimeOffset.Parse(dic[nameof(OutboxMessage.CreatedAt)], CultureInfo.InvariantCulture),
-            EventType = dic[nameof(OutboxMessage.EventType)],
-            EventPayload = dic[nameof(OutboxMessage.EventPayload)]
+            EventId = (Guid)dic[nameof(OutboxMessage.EventId)]!,
+            CreatedAt = (DateTimeOffset)(DateTime)dic[nameof(OutboxMessage.CreatedAt)]!,
+            EventType = (string)dic[nameof(OutboxMessage.EventType)]!,
+            EventPayload = (string)dic[nameof(OutboxMessage.EventPayload)]!
         };
     }
 }

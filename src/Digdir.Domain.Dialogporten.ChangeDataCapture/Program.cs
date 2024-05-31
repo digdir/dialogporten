@@ -1,7 +1,7 @@
 ﻿using System.Globalization;
 using Digdir.Domain.Dialogporten.ChangeDataCapture;
+using Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture.Checkpoints;
 using Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture.ReplicationMapper;
-using Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture.Snapshot;
 using Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture.Subscription;
 using Digdir.Domain.Dialogporten.ChangeDataCapture.Common.Extensions;
 using Digdir.Domain.Dialogporten.Domain.Outboxes;
@@ -62,7 +62,7 @@ static void BuildAndRun(string[] args)
     builder.Services
         .AddAzureAppConfiguration()
         .AddApplicationInsightsTelemetry()
-        .AddHostedService<SnapshotCheckpointSyncronizer>()
+        .AddHostedService<CheckpointSyncronizer>()
         .AddHostedService<CdcBackgroundHandler>()
         .AddMassTransit(x =>
         {
@@ -85,12 +85,13 @@ static void BuildAndRun(string[] args)
             .Configure<IConfiguration>((option, conf) => option.ConnectionString ??= conf["Infrastructure:DialogDbConnectionString"]!)
             .Services
         .AddSingleton(x => NpgsqlDataSource.Create(x.GetRequiredService<IOptions<PostgresOutboxCdcSSubscriptionOptions>>().Value.ConnectionString))
-        .AddTransient<ISnapshotRepository, SnapshotRepository>()
+        .AddTransient<ICheckpointRepository, CheckpointRepository>()
         .AddTransient<ISubscriptionRepository, SubscriptionRepository>()
-        .AddTransient(typeof(IReplicationDataMapper<>), typeof(DynamicReplicationDataMapper<>))
+        //.AddTransient(typeof(IReplicationDataMapper<>), typeof(DynamicReplicationDataMapper<>))
+        .AddTransient<IReplicationDataMapper<OutboxMessage>, PerformantOutboxDataMapper>()
         .AddTransient<ICdcSubscription<OutboxMessage>, PostgresOutboxCdcSubscription>()
         .AddTransient<ICdcSink<OutboxMessage>, ConcoleSink>()
-        .AddSingleton<ISnapshotCheckpointCache, SnapshotCheckpointCache>()
+        .AddSingleton<ICheckpointCache, CheckpointCache>()
         .AddHealthChecks();
 
     var app = builder.Build();
