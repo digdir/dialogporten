@@ -14,10 +14,6 @@ using Npgsql;
 using Npgsql.Replication;
 using Serilog;
 
-// TODO: Configure Azure Service Bus connection settings and endpoint exchange
-// TODO: Configure Postgres connection settings
-// TODO: Improve exceptions thrown in this assembly
-
 // Using two-stage initialization to catch startup errors.
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Warning()
@@ -61,6 +57,13 @@ static void BuildAndRun(string[] args)
     builder.Configuration.AddAzureConfiguration(builder.Environment.EnvironmentName);
 
     builder.Services
+        // Options
+        .AddOptions<OutboxCdcSSubscriptionOptions>()
+            .BindConfiguration(OutboxCdcSSubscriptionOptions.SectionName)
+            .Configure<IConfiguration>((option, conf) => option.ConnectionString ??= conf["Infrastructure:DialogDbConnectionString"]!)
+            .Services
+
+        // Infrastrukture
         .AddAzureAppConfiguration()
         .AddApplicationInsightsTelemetry()
         .AddHostedService<CheckpointSyncronizer>()
@@ -81,25 +84,26 @@ static void BuildAndRun(string[] args)
                 // todo: Configure for using Azure Service Bus
             }
         })
-        .AddOptions<OutboxCdcSSubscriptionOptions>()
-            .BindConfiguration(OutboxCdcSSubscriptionOptions.SectionName)
-            .Configure<IConfiguration>((option, conf) => option.ConnectionString ??= conf["Infrastructure:DialogDbConnectionString"]!)
+        .AddHealthChecks()
             .Services
+
+        // Singleton
         .AddSingleton(x => NpgsqlDataSource.Create(x.GetRequiredService<IOptions<OutboxCdcSSubscriptionOptions>>().Value.ConnectionString))
+        .AddSingleton<ICheckpointCache, CheckpointCache>()
+
+        // Scoped
+
+        // Transient
         .AddTransient<ICheckpointRepository, CheckpointRepository>()
         .AddTransient<ISubscriptionRepository, SubscriptionRepository>()
         //.AddTransient(typeof(IReplicationDataMapper<>), typeof(DynamicReplicationDataMapper<>))
         .AddTransient<IReplicationMapper<OutboxMessage>, OutboxReplicationMapper>()
         .AddTransient<ICdcSubscription<OutboxMessage>, OutboxCdcSubscription>()
-        .AddTransient<ICdcSink<OutboxMessage>, ConcoleSink>()
-        .AddSingleton<ICheckpointCache, CheckpointCache>()
-        .AddHealthChecks();
+        .AddTransient<ICdcSink<OutboxMessage>, ConcoleSink>();
 
     var app = builder.Build();
-
     app.UseHttpsRedirection()
-        .UseSerilogRequestLogging();
-
-    app.UseHealthChecks("/healthz");
+        .UseSerilogRequestLogging()
+        .UseHealthChecks("/healthz");
     app.Run();
 }
