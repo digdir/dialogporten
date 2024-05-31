@@ -1,5 +1,29 @@
 # Changelog
 
+## [1.7.1](https://github.com/digdir/dialogporten/compare/v1.7.0...v1.7.1) (2024-05-31)
+
+
+### Bug Fixes
+
+* **ci:** separate migration-job deployments ([#795](https://github.com/digdir/dialogporten/issues/795)) ([c7f5dba](https://github.com/digdir/dialogporten/commit/c7f5dba8842ed373b8a7b9a8f6f75c02fc3a3f2c))
+
+## [1.7.0](https://github.com/digdir/dialogporten/compare/v1.6.2...v1.7.0) (2024-05-30)
+
+
+### Features
+
+* Change party identifier separator to single colon ([#746](https://github.com/digdir/dialogporten/issues/746)) ([3342703](https://github.com/digdir/dialogporten/commit/3342703cbbfda501c79389f09ce2b5b8aeb19ae9))
+* Correspondence dialog type  ([#692](https://github.com/digdir/dialogporten/issues/692)) ([317a213](https://github.com/digdir/dialogporten/commit/317a2137298f0034e69c2a43828c70f270c958c7))
+
+
+### Bug Fixes
+
+* Fix broken source URL in cloud events ([#753](https://github.com/digdir/dialogporten/issues/753)) ([4a45eda](https://github.com/digdir/dialogporten/commit/4a45eda8718a2a2258b61eaf768dda88a732a647))
+* **graphql:** Add missing enum value ExtendedStatus in schema ([#733](https://github.com/digdir/dialogporten/issues/733)) ([8670595](https://github.com/digdir/dialogporten/commit/8670595bbe5a5eb8c0512cac6f92628bb0aac594))
+* **graphql:** Make OrderBy nullable ([#741](https://github.com/digdir/dialogporten/issues/741)) ([3ae72ce](https://github.com/digdir/dialogporten/commit/3ae72cebab5efd041defdfabedaf70a9090d80b8))
+* Update to new scope ([#750](https://github.com/digdir/dialogporten/issues/750)) ([d6fb439](https://github.com/digdir/dialogporten/commit/d6fb4398d56eb454195188a5f2fa64736e689567))
+* **webapi:** Fix Swagger URL for new APIM ([#755](https://github.com/digdir/dialogporten/issues/755)) ([2388d54](https://github.com/digdir/dialogporten/commit/2388d5491f7ae1f9166e3ca84b07cf47e887dadd))
+
 ## [1.6.2](https://github.com/digdir/dialogporten/compare/v1.6.1...v1.6.2) (2024-05-10)
 
 

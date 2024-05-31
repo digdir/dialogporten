@@ -9,7 +9,7 @@ using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
 using Digdir.Domain.Dialogporten.Service;
 
 // TODO: Add AppConfiguration and key vault
-// TODO: Configure Service bus connection settings 
+// TODO: Configure Service bus connection settings
 // TODO: Configure Postgres connection settings
 // TODO: Improve exceptions thrown in this assembly
 
@@ -60,7 +60,6 @@ static void BuildAndRun(string[] args)
         .AddMassTransit(x =>
         {
             x.AddConsumers(thisAssembly);
-
             var useInMemoryTransport = builder.Configuration.GetValue<bool>("MassTransit:UseInMemoryTransport");
 
             if (useInMemoryTransport)

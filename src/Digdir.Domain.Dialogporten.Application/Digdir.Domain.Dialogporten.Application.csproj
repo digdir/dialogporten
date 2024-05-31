@@ -21,8 +21,8 @@
         <PackageReference Include="Npgsql" Version="8.0.3" />
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.4" />
         <PackageReference Include="NSec.Cryptography" Version="24.4.0" />
-        <PackageReference Include="OneOf" Version="3.0.263" />
-        <PackageReference Include="OneOf.SourceGenerator" Version="3.0.263" />
+        <PackageReference Include="OneOf" Version="3.0.271" />
+        <PackageReference Include="OneOf.SourceGenerator" Version="3.0.271" />
         <PackageReference Include="Scrutor" Version="4.2.2" />
     </ItemGroup>
 
