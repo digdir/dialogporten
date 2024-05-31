@@ -21,20 +21,20 @@ internal sealed class PostgresOutboxCdcSubscription : ICdcSubscription<OutboxMes
     private readonly IReplicationDataMapper<OutboxMessage> _mapper;
     private readonly IOutboxReaderRepository _outboxRepository;
     private readonly ISubscriptionRepository _subscriptionRepository;
-    private readonly ICheckpointCache _snapshotCheckpointCache;
+    private readonly ICheckpointCache _checkpointCache;
 
     public PostgresOutboxCdcSubscription(
         IOptions<PostgresOutboxCdcSSubscriptionOptions> options,
         IReplicationDataMapper<OutboxMessage> mapper,
         IOutboxReaderRepository outboxRepository,
         ISubscriptionRepository subscriptionRepository,
-        ICheckpointCache snapshotCheckpointCache)
+        ICheckpointCache checkpointCache)
     {
         _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _outboxRepository = outboxRepository ?? throw new ArgumentNullException(nameof(outboxRepository));
         _subscriptionRepository = subscriptionRepository ?? throw new ArgumentNullException(nameof(subscriptionRepository));
-        _snapshotCheckpointCache = snapshotCheckpointCache ?? throw new ArgumentNullException(nameof(snapshotCheckpointCache));
+        _checkpointCache = checkpointCache ?? throw new ArgumentNullException(nameof(checkpointCache));
 
         _replicationConnection = new LogicalReplicationConnection(_options.ConnectionString);
     }
@@ -42,7 +42,7 @@ internal sealed class PostgresOutboxCdcSubscription : ICdcSubscription<OutboxMes
     public async IAsyncEnumerable<OutboxMessage> Subscribe([EnumeratorCancellation] CancellationToken ct = default)
     {
         /* TODO:
-         * - Opprett SnapshotCheckpoint tabell i infrastruktur
+         * - Opprett Checkpoint tabell i infrastruktur
          * - Opprett OutboxMessage tabell i infrastruktur
          * - Opprett OutboxMessageConsumer tabell i infrastruktur
          * - Lesing av tabllen fra snapshot er sterkt koplet til OutboxMessage. Skal jeg fikse det?
@@ -89,13 +89,13 @@ internal sealed class PostgresOutboxCdcSubscription : ICdcSubscription<OutboxMes
         SubscriptionResult.Created created,
         [EnumeratorCancellation] CancellationToken ct)
     {
-        var checkpoint = _snapshotCheckpointCache.GetOrDefault(_options.ReplicationSlotName);
+        var checkpoint = _checkpointCache.GetOrDefault(_options.ReplicationSlotName);
         var snapshotName = created.ReplicationSlot.SnapshotName!;
         await foreach (var reader in _outboxRepository.ReadFromCheckpoint(checkpoint, snapshotName, ct))
         {
             var outboxMessage = await _mapper.ReadFromSnapshot(reader, ct);
             yield return outboxMessage;
-            _snapshotCheckpointCache.Upsert(outboxMessage.ToSnapshotCheckpoint(_options.ReplicationSlotName));
+            _checkpointCache.Upsert(outboxMessage.ToCheckpoint(_options.ReplicationSlotName));
         }
 
         _replicationSnapshotConsumed = true;
@@ -117,7 +117,7 @@ internal sealed class PostgresOutboxCdcSubscription : ICdcSubscription<OutboxMes
 
             var outboxMessage = await _mapper.ReadFromReplication(insertMessage, ct);
             yield return outboxMessage;
-            _snapshotCheckpointCache.Upsert(outboxMessage.ToSnapshotCheckpoint(_options.ReplicationSlotName));
+            _checkpointCache.Upsert(outboxMessage.ToCheckpoint(_options.ReplicationSlotName));
             await _replicationConnection.AcknowledgeWalMessage(message, ct);
         }
     }

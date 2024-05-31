@@ -5,6 +5,6 @@ namespace Digdir.Domain.Dialogporten.ChangeDataCapture.Common.Extensions;
 
 internal static class OutboxMessageExtensions
 {
-    public static Checkpoint ToSnapshotCheckpoint(this OutboxMessage outboxMessage, string slotName) =>
+    public static Checkpoint ToCheckpoint(this OutboxMessage outboxMessage, string slotName) =>
         new(slotName, outboxMessage.CreatedAt, outboxMessage.EventId);
 }
