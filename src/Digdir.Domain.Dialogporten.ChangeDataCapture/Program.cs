@@ -94,6 +94,7 @@ static void BuildAndRun(string[] args)
         // Scoped
 
         // Transient
+        .AddTransient<IOutboxReaderRepository, OutboxReaderRepository>()
         .AddTransient<ICheckpointRepository, CheckpointRepository>()
         .AddTransient<ISubscriptionRepository, SubscriptionRepository>()
         //.AddTransient(typeof(IReplicationDataMapper<>), typeof(DynamicReplicationDataMapper<>))

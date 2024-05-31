@@ -48,8 +48,19 @@ internal sealed class OutboxReplicationMapper : IReplicationMapper<OutboxMessage
     {
         return new OutboxMessage
         {
-            EventId = (Guid)dic[nameof(OutboxMessage.EventId)]!,
-            CreatedAt = (DateTimeOffset)(DateTime)dic[nameof(OutboxMessage.CreatedAt)]!,
+            EventId = dic[nameof(OutboxMessage.EventId)] switch
+            {
+                string s => Guid.Parse(s),
+                Guid guid => guid,
+                _ => throw new InvalidOperationException($"{nameof(OutboxMessage.EventId)} must be a Guid.")
+            },
+            CreatedAt = dic[nameof(OutboxMessage.CreatedAt)] switch
+            {
+                string s => DateTimeOffset.Parse(s, CultureInfo.InvariantCulture),
+                DateTime dateTime => (DateTimeOffset)dateTime,
+                DateTimeOffset dateTimeOffset => dateTimeOffset,
+                _ => throw new InvalidOperationException($"{nameof(OutboxMessage.CreatedAt)} must be a Guid.")
+            },
             EventType = (string)dic[nameof(OutboxMessage.EventType)]!,
             EventPayload = (string)dic[nameof(OutboxMessage.EventPayload)]!
         };
