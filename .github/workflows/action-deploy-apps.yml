@@ -139,8 +139,32 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
+      - name: Dryrun Deploy app ${{ matrix.name }}(${{ inputs.environment }})
+        uses: azure/arm-deploy@v2
+        if: ${{ inputs.dryRun }}
+        id: deploy-dry-run
+        env:
+          # parameters
+          IMAGE_TAG: ${{ inputs.version }}
+          # secrets
+          CONTAINER_APP_ENVIRONMENT_NAME: ${{ secrets.AZURE_CONTAINER_APP_ENVIRONMENT_NAME }}
+          APP_INSIGHTS_CONNECTION_STRING: ${{ secrets.AZURE_APP_INSIGHTS_CONNECTION_STRING }}
+          APP_CONFIGURATION_NAME: ${{ secrets.AZURE_APP_CONFIGURATION_NAME }}
+          ENVIRONMENT_KEY_VAULT_NAME: ${{ secrets.AZURE_ENVIRONMENT_KEY_VAULT_NAME }}
+        with:
+          scope: resourcegroup
+          template: ./.azure/applications/${{ matrix.name }}/main.bicep
+          resourceGroupName: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
+          deploymentMode: Incremental
+          deploymentName: dp-be-${{ inputs.environment }}-${{ matrix.name }}-${{ inputs.version }}
+          region: ${{ inputs.region }}
+          failOnStdErr: false
+          additionalArguments: '--what-if'
+          parameters: ./.azure/applications/${{ matrix.name }}/${{ inputs.environment }}.bicepparam
+      
       - name: Deploy app ${{ matrix.name }}(${{ inputs.environment }})
         uses: azure/arm-deploy@v2
+        if: ${{!inputs.dryRun}}
         id: deploy
         env:
           # parameters
@@ -158,7 +182,6 @@ jobs:
           deploymentName: dp-be-${{ inputs.environment }}-${{ matrix.name }}-${{ inputs.version }}
           region: ${{ inputs.region }}
           failOnStdErr: false
-          additionalArguments: "${{inputs.dryRun && '--what-if'}}"
           parameters: ./.azure/applications/${{ matrix.name }}/${{ inputs.environment }}.bicepparam
 
       - name: Verify deployment (${{ matrix.name }})

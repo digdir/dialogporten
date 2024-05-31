@@ -86,8 +86,32 @@ jobs:
           echo "::add-mask::$password"
           echo "::set-output name=postgresqlPassword::$password"
 
+      - name: Dryrun Deploy infrastructure (${{ inputs.environment }})
+        uses: azure/arm-deploy@v2
+        if: ${{ inputs.dryRun }}
+        id: deploy-dry-run
+        env:
+          # parameters
+          KEY_VAULT_SOURCE_KEYS: ${{ steps.keyvault-keys.outputs.key-vault-keys }}
+          # secrets
+          PG_ADMIN_PASSWORD: ${{ steps.pwd-generator.outputs.postgresqlPassword }}
+          SOURCE_KEY_VAULT_SUBSCRIPTION_ID: ${{ secrets.AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID }}
+          SOURCE_KEY_VAULT_RESOURCE_GROUP: ${{ secrets.AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP }}
+          SOURCE_KEY_VAULT_NAME: ${{ secrets.AZURE_SOURCE_KEY_VAULT_NAME }}
+        with:
+          scope: subscription
+          template: ./.azure/infrastructure/main.bicep
+          subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          deploymentMode: Incremental
+          deploymentName: dp-be-${{ inputs.environment }}-${{ inputs.version }}
+          region: ${{ inputs.region }}
+          failOnStdErr: false
+          additionalArguments: '--what-if'
+          parameters: ./.azure/infrastructure/${{ inputs.environment }}.bicepparam
+      
       - name: Deploy infrastructure (${{ inputs.environment }})
         uses: azure/arm-deploy@v2
+        if: ${{ !inputs.dryRun }}
         id: deploy
         env:
           # parameters
@@ -105,7 +129,6 @@ jobs:
           deploymentName: dp-be-${{ inputs.environment }}-${{ inputs.version }}
           region: ${{ inputs.region }}
           failOnStdErr: false
-          additionalArguments: ${{ inputs.dryRun && '--what-if --debug' || '--debug' }}
           parameters: ./.azure/infrastructure/${{ inputs.environment }}.bicepparam
 
       - name: Logout from azure
