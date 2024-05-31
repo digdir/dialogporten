@@ -52,12 +52,16 @@ internal sealed class CheckpointSyncronizer : BackgroundService, IAsyncDisposabl
         while (await _periodicTimer.WaitForNextTickAsync(stoppingToken))
         {
             if (!await _semaphore.WaitAsync(0, stoppingToken))
+            {
                 continue;
+            }
 
             try
             {
                 if (!await TrySync(stoppingToken))
+                {
                     _logger.LogWarning("Failed to sync snapshot checkpoints. Will retry in next iteration.");
+                }
             }
             finally
             {
@@ -77,7 +81,9 @@ internal sealed class CheckpointSyncronizer : BackgroundService, IAsyncDisposabl
     {
         await _semaphore.WaitAsync();
         if (!await TrySync())
+        {
             _logger.LogError("Failed to sync snapshot checkpoints. The subscriptions may be in an inconsistent state that may result in duplicate messages.");
+        }
 
         Dispose();
     }
@@ -90,7 +96,9 @@ internal sealed class CheckpointSyncronizer : BackgroundService, IAsyncDisposabl
             .ToList();
 
         if (!await _snapshotRepository.TryUpsertCheckpoints(unsynced, stoppingToken))
+        {
             return false;
+        }
 
         _syncedCheckpoints = current;
         return true;

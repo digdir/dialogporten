@@ -1,6 +1,6 @@
 ﻿namespace Digdir.Domain.Dialogporten.ChangeDataCapture.Outbox;
 
-public sealed class PostgresOutboxCdcSSubscriptionOptions
+public sealed class OutboxCdcSSubscriptionOptions
 {
     public const string SectionName = "CdcSubscriptionOption";
 

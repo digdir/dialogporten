@@ -58,7 +58,9 @@ internal sealed class CheckpointRepository : ICheckpointRepository
     public async Task<bool> TryUpsertCheckpoints(ICollection<Checkpoint> checkpoints, CancellationToken ct = default)
     {
         if (checkpoints.Count == 0)
+        {
             return true;
+        }
 
         const int numberOfRetries = 5;
         var retryDelay = TimeSpan.FromSeconds(2);
@@ -76,7 +78,9 @@ internal sealed class CheckpointRepository : ICheckpointRepository
             catch (Exception ex)
             {
                 if (attempt + 1 < numberOfRetries)
+                {
                     _logger.LogWarning(ex, "Failed to set checkpoint. Retrying in {RetryDelay}.", retryDelay);
+                }
             }
         }
 
@@ -88,7 +92,9 @@ internal sealed class CheckpointRepository : ICheckpointRepository
         const int numberOfParametersZeroIndexed = 2;
 
         if (checkpoints.Count == 0)
+        {
             return;
+        }
 
         var values = string.Join(",", checkpoints.Select((_, index) =>
         {

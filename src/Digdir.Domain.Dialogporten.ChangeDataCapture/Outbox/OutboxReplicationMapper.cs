@@ -6,7 +6,7 @@ using Npgsql.Replication.PgOutput.Messages;
 
 namespace Digdir.Domain.Dialogporten.ChangeDataCapture.Outbox;
 
-internal sealed class PerformantOutboxDataMapper : IReplicationDataMapper<OutboxMessage>
+internal sealed class OutboxReplicationMapper : IReplicationMapper<OutboxMessage>
 {
     public Task<OutboxMessage> ReadFromSnapshot(NpgsqlDataReader reader, CancellationToken ct)
     {

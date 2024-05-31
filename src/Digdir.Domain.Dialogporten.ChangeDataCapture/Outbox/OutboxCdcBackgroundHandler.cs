@@ -1,18 +1,18 @@
 ﻿using Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture.Subscription;
 using Digdir.Domain.Dialogporten.Domain.Outboxes;
 
-namespace Digdir.Domain.Dialogporten.ChangeDataCapture;
+namespace Digdir.Domain.Dialogporten.ChangeDataCapture.Outbox;
 
-internal sealed class CdcBackgroundHandler : BackgroundService
+internal sealed class OutboxCdcBackgroundHandler : BackgroundService
 {
     private readonly ICdcSubscription<OutboxMessage> _subscription;
-    private readonly ILogger<CdcBackgroundHandler> _logger;
+    private readonly ILogger<OutboxCdcBackgroundHandler> _logger;
     private readonly IHostApplicationLifetime _applicationLifetime;
     private readonly IServiceScopeFactory _scopeFactory;
 
-    public CdcBackgroundHandler(
+    public OutboxCdcBackgroundHandler(
         ICdcSubscription<OutboxMessage> subscription,
-        ILogger<CdcBackgroundHandler> logger,
+        ILogger<OutboxCdcBackgroundHandler> logger,
         IHostApplicationLifetime applicationLifetime,
         IServiceScopeFactory scopeFactory)
     {

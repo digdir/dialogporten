@@ -11,22 +11,22 @@ using Npgsql.Replication.PgOutput;
 
 namespace Digdir.Domain.Dialogporten.ChangeDataCapture.Outbox;
 
-internal sealed class PostgresOutboxCdcSubscription : ICdcSubscription<OutboxMessage>, IAsyncDisposable
+internal sealed class OutboxCdcSubscription : ICdcSubscription<OutboxMessage>, IAsyncDisposable
 {
     private bool _disposed;
     private bool _replicationSnapshotConsumed = true;
 
     private readonly LogicalReplicationConnection _replicationConnection;
 
-    private readonly PostgresOutboxCdcSSubscriptionOptions _options;
-    private readonly IReplicationDataMapper<OutboxMessage> _mapper;
+    private readonly OutboxCdcSSubscriptionOptions _options;
+    private readonly IReplicationMapper<OutboxMessage> _mapper;
     private readonly IOutboxReaderRepository _outboxRepository;
     private readonly ISubscriptionRepository _subscriptionRepository;
     private readonly ICheckpointCache _checkpointCache;
 
-    public PostgresOutboxCdcSubscription(
-        IOptions<PostgresOutboxCdcSSubscriptionOptions> options,
-        IReplicationDataMapper<OutboxMessage> mapper,
+    public OutboxCdcSubscription(
+        IOptions<OutboxCdcSSubscriptionOptions> options,
+        IReplicationMapper<OutboxMessage> mapper,
         IOutboxReaderRepository outboxRepository,
         ISubscriptionRepository subscriptionRepository,
         ICheckpointCache checkpointCache)

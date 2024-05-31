@@ -64,7 +64,7 @@ static void BuildAndRun(string[] args)
         .AddAzureAppConfiguration()
         .AddApplicationInsightsTelemetry()
         .AddHostedService<CheckpointSyncronizer>()
-        .AddHostedService<CdcBackgroundHandler>()
+        .AddHostedService<OutboxCdcBackgroundHandler>()
         .AddMassTransit(x =>
         {
             var useInMemoryTransport = builder.Configuration.GetValue<bool>("MassTransit:UseInMemoryTransport");
@@ -81,16 +81,16 @@ static void BuildAndRun(string[] args)
                 // todo: Configure for using Azure Service Bus
             }
         })
-        .AddOptions<PostgresOutboxCdcSSubscriptionOptions>()
-            .BindConfiguration(PostgresOutboxCdcSSubscriptionOptions.SectionName)
+        .AddOptions<OutboxCdcSSubscriptionOptions>()
+            .BindConfiguration(OutboxCdcSSubscriptionOptions.SectionName)
             .Configure<IConfiguration>((option, conf) => option.ConnectionString ??= conf["Infrastructure:DialogDbConnectionString"]!)
             .Services
-        .AddSingleton(x => NpgsqlDataSource.Create(x.GetRequiredService<IOptions<PostgresOutboxCdcSSubscriptionOptions>>().Value.ConnectionString))
+        .AddSingleton(x => NpgsqlDataSource.Create(x.GetRequiredService<IOptions<OutboxCdcSSubscriptionOptions>>().Value.ConnectionString))
         .AddTransient<ICheckpointRepository, CheckpointRepository>()
         .AddTransient<ISubscriptionRepository, SubscriptionRepository>()
         //.AddTransient(typeof(IReplicationDataMapper<>), typeof(DynamicReplicationDataMapper<>))
-        .AddTransient<IReplicationDataMapper<OutboxMessage>, PerformantOutboxDataMapper>()
-        .AddTransient<ICdcSubscription<OutboxMessage>, PostgresOutboxCdcSubscription>()
+        .AddTransient<IReplicationMapper<OutboxMessage>, OutboxReplicationMapper>()
+        .AddTransient<ICdcSubscription<OutboxMessage>, OutboxCdcSubscription>()
         .AddTransient<ICdcSink<OutboxMessage>, ConcoleSink>()
         .AddSingleton<ICheckpointCache, CheckpointCache>()
         .AddHealthChecks();

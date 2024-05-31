@@ -10,7 +10,7 @@ using Npgsql.Replication.PgOutput.Messages;
 
 namespace Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture.ReplicationMapper;
 
-internal sealed class DynamicReplicationDataMapper<T> : IReplicationDataMapper<T>
+internal sealed class DynamicReplicationDataMapper<T> : IReplicationMapper<T>
     where T : class
 {
     private static readonly ConcurrentDictionary<Type, Dictionary<string, PropertyInfoConverter>> _propInfoConvertersByType = new();

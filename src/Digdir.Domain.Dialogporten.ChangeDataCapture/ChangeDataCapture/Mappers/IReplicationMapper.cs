@@ -9,7 +9,7 @@ using Npgsql.Replication.PgOutput.Messages;
 
 namespace Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture.ReplicationMapper;
 
-internal interface IReplicationDataMapper<T>
+internal interface IReplicationMapper<T>
     where T : class
 {
     Task<T> ReadFromSnapshot(NpgsqlDataReader reader, CancellationToken ct);
