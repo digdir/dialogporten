@@ -1,4 +1,4 @@
-﻿namespace Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture.Subscription;
+﻿namespace Digdir.Domain.Dialogporten.ChangeDataCapture.Outbox;
 
 public sealed class PostgresOutboxCdcSSubscriptionOptions
 {

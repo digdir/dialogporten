@@ -1,6 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture.Checkpoints;
 using Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture.ReplicationMapper;
+using Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture.Subscription;
 using Digdir.Domain.Dialogporten.ChangeDataCapture.Common.Extensions;
 using Digdir.Domain.Dialogporten.Domain.Outboxes;
 using Microsoft.Extensions.Options;
@@ -8,7 +9,7 @@ using Npgsql;
 using Npgsql.Replication;
 using Npgsql.Replication.PgOutput;
 
-namespace Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture.Subscription;
+namespace Digdir.Domain.Dialogporten.ChangeDataCapture.Outbox;
 
 internal sealed class PostgresOutboxCdcSubscription : ICdcSubscription<OutboxMessage>, IAsyncDisposable
 {

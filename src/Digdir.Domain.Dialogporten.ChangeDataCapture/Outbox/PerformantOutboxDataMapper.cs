@@ -1,9 +1,10 @@
 ﻿using System.Globalization;
+using Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture.ReplicationMapper;
 using Digdir.Domain.Dialogporten.Domain.Outboxes;
 using Npgsql;
 using Npgsql.Replication.PgOutput.Messages;
 
-namespace Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture.ReplicationMapper;
+namespace Digdir.Domain.Dialogporten.ChangeDataCapture.Outbox;
 
 internal sealed class PerformantOutboxDataMapper : IReplicationDataMapper<OutboxMessage>
 {

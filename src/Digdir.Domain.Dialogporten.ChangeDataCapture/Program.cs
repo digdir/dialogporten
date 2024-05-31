@@ -4,6 +4,7 @@ using Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture.Checkpoints
 using Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture.ReplicationMapper;
 using Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture.Subscription;
 using Digdir.Domain.Dialogporten.ChangeDataCapture.Common.Extensions;
+using Digdir.Domain.Dialogporten.ChangeDataCapture.Outbox;
 using Digdir.Domain.Dialogporten.Domain.Outboxes;
 using MassTransit;
 using MassTransit.Configuration;

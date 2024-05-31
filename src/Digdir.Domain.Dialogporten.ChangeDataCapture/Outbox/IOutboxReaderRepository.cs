@@ -1,12 +1,12 @@
 ﻿using System.Data;
 using System.Runtime.CompilerServices;
-using Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture.Subscription;
+using Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture.Checkpoints;
 using Digdir.Domain.Dialogporten.Domain.Outboxes;
 using MassTransit.Configuration;
 using Microsoft.Extensions.Options;
 using Npgsql;
 
-namespace Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture.Checkpoints;
+namespace Digdir.Domain.Dialogporten.ChangeDataCapture.Outbox;
 internal interface IOutboxReaderRepository
 {
     IAsyncEnumerable<NpgsqlDataReader> ReadFromCheckpoint(
@@ -42,7 +42,9 @@ internal sealed class OutboxReaderRepository : IOutboxReaderRepository
         await using var initCursorCommand = new NpgsqlBatch(connection, transaction);
 
         if (!string.IsNullOrWhiteSpace(snapshotName))
+        {
             initCursorCommand.BatchCommands.Add(new($"SET TRANSACTION SNAPSHOT '{snapshotName}';"));
+        }
 
         initCursorCommand.BatchCommands.Add(new($"""
             DECLARE {cursorName} CURSOR FOR
@@ -70,7 +72,9 @@ internal sealed class OutboxReaderRepository : IOutboxReaderRepository
                 await using var reader = await fetchCursorCommand.ExecuteReaderAsync(ct);
 
                 if (!reader.HasRows)
+                {
                     yield break;
+                }
 
                 while (await reader.ReadAsync(ct))
                 {
