@@ -7,7 +7,7 @@ internal sealed class CheckpointSyncronizer : BackgroundService, IAsyncDisposabl
 {
     private IReadOnlyCollection<Checkpoint> _syncedCheckpoints = new List<Checkpoint>().AsReadOnly();
 
-    private readonly PeriodicTimer _periodicTimer = new(TimeSpan.FromSeconds(5));
+    private readonly PeriodicTimer _periodicTimer = new(TimeSpan.FromSeconds(10));
     private readonly SemaphoreSlim _semaphore = new(1, 1);
 
     private readonly ICheckpointCache _snapshotCache;
