@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.1](https://github.com/digdir/dialogporten/compare/v1.7.0...v1.7.1) (2024-05-31)
+
+
+### Bug Fixes
+
+* **ci:** separate migration-job deployments ([#795](https://github.com/digdir/dialogporten/issues/795)) ([c7f5dba](https://github.com/digdir/dialogporten/commit/c7f5dba8842ed373b8a7b9a8f6f75c02fc3a3f2c))
+
 ## [1.7.0](https://github.com/digdir/dialogporten/compare/v1.6.2...v1.7.0) (2024-05-30)
 
 
