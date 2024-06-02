@@ -11,8 +11,15 @@ export default function () {
     let dialogId = null;
     let dialog = null;
 
+    const availableExternalResource = "urn:altinn:resource:app_digdir_be-om-api-nokkel"; // should have "read" on this
+    const unavailableExternalResource = "urn:altinn:resource:ttd-altinn-events-automated-tests"; // should not have "read" on this
+    const unavailableSubresource = "someunavailablesubresource"; // should not have "elementread" on this;
+
     describe('Arrange: Create a dialog to test against', () => {
         let d = dialogToInsert();
+        d.elements[0].authorizationAttribute = availableExternalResource;
+        d.elements[1].authorizationAttribute = unavailableExternalResource;
+        d.elements[2].authorizationAttribute = unavailableSubresource;
         setVisibleFrom(d, null);
         let r = postSO("dialogs", d);
         expectStatusFor(r).to.equal(201);
@@ -52,6 +59,14 @@ export default function () {
             console.log(dialog.apiActions[i]);
             expect(dialog.apiActions[i], 'endpoint').to.have.property("url").to.equal("urn:dialogporten:unauthorized");
         }
+    });
+
+    describe('Check that we are authorized for the dialog element referring an external resource', () => {
+        if (dialog == null) return;
+        expect(dialog, 'dialog').to.have.property("elements");
+        expect(dialog.elements.find(x => x.authorizationAttribute == unavailableExternalResource), 'element with unavaiable external resource').to.have.property("isAuthorized").to.equal(false);
+        expect(dialog.elements.find(x => x.authorizationAttribute == unavailableSubresource), 'element with unavaiable subresource').to.have.property("isAuthorized").to.equal(false);
+        expect(dialog.elements.find(x => x.authorizationAttribute == availableExternalResource), 'element with avaiable external resource').to.have.property("isAuthorized").to.equal(true);
     });
 
     describe("Cleanup", () => {

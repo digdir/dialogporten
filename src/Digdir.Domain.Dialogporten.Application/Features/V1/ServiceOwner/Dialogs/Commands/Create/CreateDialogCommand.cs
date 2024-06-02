@@ -54,9 +54,12 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
 
     public async Task<CreateDialogResult> Handle(CreateDialogCommand request, CancellationToken cancellationToken)
     {
-        if (!await _userResourceRegistry.CurrentUserIsOwner(request.ServiceResource, cancellationToken))
+        foreach (var serviceResourceReference in GetServiceResourceReferences(request))
         {
-            return new Forbidden($"Not owner of {request.ServiceResource}.");
+            if (!await _userResourceRegistry.CurrentUserIsOwner(serviceResourceReference, cancellationToken))
+            {
+                return new Forbidden($"Not allowed to reference {serviceResourceReference}.");
+            }
         }
 
         var serviceResourceType = await _userResourceRegistry.GetResourceType(request.ServiceResource, cancellationToken);
@@ -110,5 +113,21 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
             success => new Success<Guid>(dialog.Id),
             domainError => domainError,
             concurrencyError => throw new UnreachableException("Should never get a concurrency error when creating a new dialog"));
+    }
+
+    private static List<string> GetServiceResourceReferences(CreateDialogDto request)
+    {
+        var serviceResourceReferences = new List<string> { request.ServiceResource };
+
+        static bool IsExternalResource(string? resource)
+        {
+            return resource is not null && resource.StartsWith(Constants.ServiceResourcePrefix, StringComparison.OrdinalIgnoreCase);
+        }
+
+        serviceResourceReferences.AddRange(from action in request.ApiActions where IsExternalResource(action.AuthorizationAttribute) select action.AuthorizationAttribute!);
+        serviceResourceReferences.AddRange(from action in request.GuiActions where IsExternalResource(action.AuthorizationAttribute) select action.AuthorizationAttribute!);
+        serviceResourceReferences.AddRange(from element in request.Elements where IsExternalResource(element.AuthorizationAttribute) select element.AuthorizationAttribute!);
+
+        return serviceResourceReferences.Distinct().ToList();
     }
 }
