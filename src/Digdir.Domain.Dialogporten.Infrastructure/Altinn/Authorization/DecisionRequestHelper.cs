@@ -44,30 +44,14 @@ internal static class DecisionRequestHelper
 
         return new XacmlJsonRequestRoot { Request = xacmlJsonRequest };
     }
-    /*
-    public static DialogDetailsAuthorizationResult CreateDialogDetailsResponse(List<AltinnAction> altinnActions, XacmlJsonResponse? xamlJsonResponse) =>
-        new()
-        {
-            AuthorizedAltinnActions = altinnActions.SortForXacml()
-                .Zip(xamlJsonResponse?.Response ?? Enumerable.Empty<XacmlJsonResult>(),
-                    (action, response) => (action, response))
-                .Where(x => x.response.Decision == PermitResponse)
-                .Select(x => x.action)
-                .ToList()
-        };
-    */
 
     public static DialogDetailsAuthorizationResult CreateDialogDetailsResponse(List<AltinnAction> altinnActions, XacmlJsonResponse? xamlJsonResponse)
     {
         var authorizedAltinnActions = new List<AltinnAction>();
 
-        // Ensure altinnActions are sorted
         var sortedAltinnActions = altinnActions.SortForXacml();
-
-        // Get the xacmlJsonResponse list or an empty list
         var xacmlJsonResults = xamlJsonResponse?.Response ?? new List<XacmlJsonResult>();
 
-        // Zip the two lists manually
         int count = Math.Min(sortedAltinnActions.Count, xacmlJsonResults.Count);
         for (int i = 0; i < count; i++)
         {
@@ -79,7 +63,6 @@ internal static class DecisionRequestHelper
             }
         }
 
-        // Create the result object
         return new DialogDetailsAuthorizationResult
         {
             AuthorizedAltinnActions = authorizedAltinnActions
