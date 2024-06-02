@@ -15,7 +15,7 @@ type Sku = {
 param sku Sku
 
 // https://learn.microsoft.com/en-us/azure/templates/microsoft.cache/redis?pivots=deployment-language-bicep
-resource redis 'Microsoft.Cache/Redis@2023-08-01' = {
+resource redis 'Microsoft.Cache/Redis@2024-03-01' = {
   name: '${namePrefix}-redis'
   location: location
   identity: {
