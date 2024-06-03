@@ -62,7 +62,8 @@ internal sealed class OutboxReplicationMapper : IReplicationMapper<OutboxMessage
                 _ => throw new InvalidOperationException($"{nameof(OutboxMessage.CreatedAt)} must be a Guid.")
             },
             EventType = (string)dic[nameof(OutboxMessage.EventType)]!,
-            EventPayload = (string)dic[nameof(OutboxMessage.EventPayload)]!
+            EventPayload = (string)dic[nameof(OutboxMessage.EventPayload)]!,
+            CorrelationId = (string)dic[nameof(OutboxMessage.CorrelationId)]!,
         };
     }
 }

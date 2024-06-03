@@ -9,6 +9,7 @@ public sealed class OutboxMessage
     public required DateTimeOffset CreatedAt { get; init; }
     public required string EventType { get; init; }
     public required string EventPayload { get; init; }
+    public required string CorrelationId { get; init; }
 
     public List<OutboxMessageConsumer> OutboxMessageConsumers { get; set; } = [];
 
@@ -21,7 +22,9 @@ public sealed class OutboxMessage
             EventId = domainEvent.EventId,
             CreatedAt = domainEvent.OccuredAt,
             EventType = eventType.FullName!,
-            EventPayload = JsonSerializer.Serialize(domainEvent, eventType)
+            EventPayload = JsonSerializer.Serialize(domainEvent, eventType),
+            // TODO: Set correlation id
+            CorrelationId = Guid.NewGuid().ToString()
         };
     }
 }
