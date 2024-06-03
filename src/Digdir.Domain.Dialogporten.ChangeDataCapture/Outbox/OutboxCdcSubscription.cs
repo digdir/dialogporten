@@ -46,8 +46,6 @@ internal sealed class OutboxCdcSubscription : ICdcSubscription<OutboxMessage>, I
          * - Opprett Checkpoint tabell i infrastruktur
          * - Opprett OutboxMessage tabell i infrastruktur
          * - Opprett OutboxMessageConsumer tabell i infrastruktur
-         * - Lesing av tabllen fra snapshot er sterkt koplet til OutboxMessage. Skal jeg fikse det?
-         * - Gjør batch størrelse av snapshot lesing konfigurerbar
          */
 
         CheckDisposed();
