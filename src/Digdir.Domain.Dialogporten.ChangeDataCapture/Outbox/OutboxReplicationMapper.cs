@@ -1,5 +1,5 @@
 ﻿using System.Globalization;
-using Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture.ReplicationMapper;
+using Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture.Mappers;
 using Digdir.Domain.Dialogporten.Domain.Outboxes;
 using Npgsql;
 using Npgsql.Replication.PgOutput.Messages;

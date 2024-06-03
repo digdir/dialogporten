@@ -7,7 +7,7 @@ using MassTransit.Initializers.TypeConverters;
 using Npgsql;
 using Npgsql.Replication.PgOutput.Messages;
 
-namespace Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture.ReplicationMapper;
+namespace Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture.Mappers;
 
 internal interface IReplicationMapper<T>
     where T : class

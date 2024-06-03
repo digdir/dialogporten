@@ -1,8 +1,8 @@
 ﻿using System.Globalization;
 using Digdir.Domain.Dialogporten.ChangeDataCapture;
 using Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture.Checkpoints;
-using Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture.ReplicationMapper;
-using Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture.Subscription;
+using Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture.Mappers;
+using Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture.Subscriptions;
 using Digdir.Domain.Dialogporten.ChangeDataCapture.Common.Extensions;
 using Digdir.Domain.Dialogporten.ChangeDataCapture.Outbox;
 using Digdir.Domain.Dialogporten.Domain.Outboxes;

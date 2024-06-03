@@ -1,6 +1,6 @@
 ﻿using Npgsql;
 
-namespace Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture.Subscription;
+namespace Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture.Subscriptions;
 
 internal interface ISubscriptionRepository
 {
@@ -49,7 +49,7 @@ internal sealed class SubscriptionRepository : ISubscriptionRepository
     {
         await using var command = _dataSource.CreateCommand("SELECT EXISTS(SELECT 1 FROM pg_replication_slots WHERE slot_name = $1)");
         command.Parameters.AddWithValue(slotName);
-        return (await command.ExecuteScalarAsync(ct) as bool?) == true;
+        return await command.ExecuteScalarAsync(ct) as bool? == true;
     }
 
     public async Task DropReplicationSlot(

@@ -8,7 +8,7 @@ using System.Reflection;
 using Npgsql;
 using Npgsql.Replication.PgOutput.Messages;
 
-namespace Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture.ReplicationMapper;
+namespace Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture.Mappers;
 
 internal sealed class DynamicReplicationDataMapper<T> : IReplicationMapper<T>
     where T : class
@@ -49,9 +49,7 @@ internal sealed class DynamicReplicationDataMapper<T> : IReplicationMapper<T>
     private static void SetValue(Dictionary<string, PropertyInfoConverter> infoConverterByPropName, T value, string propName, object? propValue)
     {
         if (!infoConverterByPropName.TryGetValue(propName, out var propInfoConverter))
-        {
             throw new InvalidOperationException($"Property {propName} not found on type {typeof(T).Name}.");
-        }
 
         propInfoConverter.SetValue(value, propValue);
     }
