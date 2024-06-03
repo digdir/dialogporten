@@ -21,7 +21,9 @@ internal static class AzureAppConfigurationExtensions
         TimeSpan? refreshRate = null)
     {
         if (!config.TryGetAzureAppConfigUri(out var appConfigUri))
+        {
             return config;
+        }
 
         credential ??= new DefaultAzureCredential();
         refreshRate ??= TimeSpan.FromMinutes(1);
