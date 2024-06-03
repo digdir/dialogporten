@@ -23,14 +23,17 @@ internal sealed class OutboxCdcSubscription : ICdcSubscription<OutboxMessage>, I
     private readonly IOutboxReaderRepository _outboxRepository;
     private readonly ISubscriptionRepository _subscriptionRepository;
     private readonly ICheckpointCache _checkpointCache;
+    private readonly ILogger<OutboxCdcSubscription> _logger;
 
     public OutboxCdcSubscription(
+        ILogger<OutboxCdcSubscription> logger,
         IOptions<OutboxCdcSSubscriptionOptions> options,
         IReplicationMapper<OutboxMessage> mapper,
         IOutboxReaderRepository outboxRepository,
         ISubscriptionRepository subscriptionRepository,
         ICheckpointCache checkpointCache)
     {
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _outboxRepository = outboxRepository ?? throw new ArgumentNullException(nameof(outboxRepository));
@@ -66,9 +69,13 @@ internal sealed class OutboxCdcSubscription : ICdcSubscription<OutboxMessage>, I
 
     private async Task<SubscriptionResult> CreateSubscription(CancellationToken ct)
     {
+        _logger.LogDebug("Creating subscription for table '{TableName}' with publication '{PublicationName}' and replication slot '{ReplicationSlot}'.",
+            _options.TableName, _options.PublicationName, _options.ReplicationSlotName);
+
         await _subscriptionRepository.EnsureInsertPublicationForTable(_options.TableName, _options.PublicationName, ct);
         if (await _subscriptionRepository.ReplicationSlotExists(_options.ReplicationSlotName, ct))
         {
+            _logger.LogDebug("Subscription already exists for replication slot '{ReplicationSlot}'.", _options.ReplicationSlotName);
             return new SubscriptionResult.Exists();
         }
 
@@ -81,6 +88,8 @@ internal sealed class OutboxCdcSubscription : ICdcSubscription<OutboxMessage>, I
             _options.ReplicationSlotName,
             slotSnapshotInitMode: LogicalSlotSnapshotInitMode.Export,
             cancellationToken: ct);
+
+        _logger.LogDebug("Replication slot '{ReplicationSlot}' created.", _options.ReplicationSlotName);
         return new SubscriptionResult.Created(replicationSlot);
     }
 
@@ -88,6 +97,7 @@ internal sealed class OutboxCdcSubscription : ICdcSubscription<OutboxMessage>, I
         SubscriptionResult.Created created,
         [EnumeratorCancellation] CancellationToken ct)
     {
+        _logger.LogDebug("Consuming snapshot for replication slot '{ReplicationSlot}'.", _options.ReplicationSlotName);
         var checkpoint = _checkpointCache.GetOrDefault(_options.ReplicationSlotName);
         var snapshotName = created.ReplicationSlot.SnapshotName!;
         await foreach (var reader in _outboxRepository.ReadFromCheckpoint(checkpoint, snapshotName, ct))
@@ -98,11 +108,13 @@ internal sealed class OutboxCdcSubscription : ICdcSubscription<OutboxMessage>, I
         }
 
         _replicationSnapshotConsumed = true;
+        _logger.LogDebug("Snapshot consumed for replication slot '{ReplicationSlot}'.", _options.ReplicationSlotName);
     }
 
     private async IAsyncEnumerable<OutboxMessage> ConsumeReplicationSlot(
         [EnumeratorCancellation] CancellationToken ct)
     {
+        _logger.LogDebug("Consuming replication slot '{ReplicationSlot}'.", _options.ReplicationSlotName);
         var slot = new PgOutputReplicationSlot(_options.ReplicationSlotName);
         var replicationOptions = new PgOutputReplicationOptions(_options.PublicationName, 1);
         await foreach (var message in _replicationConnection
@@ -134,6 +146,7 @@ internal sealed class OutboxCdcSubscription : ICdcSubscription<OutboxMessage>, I
             // slot represents all changes that happons from that point on. If we fail to read the
             // snapshot in its entirety, we should start from scratch the next time the subscription
             // is started.
+            _logger.LogDebug("Replication slot '{ReplicationSlot}' was not fully consumed, dropping slot.", _options.ReplicationSlotName);
             await _subscriptionRepository.DropReplicationSlot(_options.ReplicationSlotName);
         }
 

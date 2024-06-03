@@ -10,9 +10,17 @@ public interface ICdcSink<T>
 
 internal sealed class ConcoleSink : ICdcSink<OutboxMessage>
 {
+    private readonly ILogger<ConcoleSink> _logger;
+
+    public ConcoleSink(ILogger<ConcoleSink> logger)
+    {
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
+
     public Task Send(OutboxMessage outboxMessage, CancellationToken cancellationToken)
     {
-        Console.WriteLine($"Sending {outboxMessage.EventType} {outboxMessage.EventId} to message bus with payload {outboxMessage.EventPayload}.");
+        _logger.LogDebug("Sending {EventType} {EventId} to message bus with payload {EventPayload}.",
+            outboxMessage.EventType, outboxMessage.EventId, outboxMessage.EventPayload);
         return Task.CompletedTask;
     }
 }

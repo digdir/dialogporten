@@ -29,12 +29,13 @@ internal sealed class CheckpointSyncronizer : BackgroundService, IAsyncDisposabl
         // This method will block the application from starting until
         // snapshots are loaded and permissions are verified
 
-        // TODO: Remove? 
+        // TODO: Remove when checkpoint migration exists
         // Ensure table exists
         await _snapshotRepository.EnsureCheckpointTableExists(cancellationToken);
 
         // Load the checkpoints from the database and add it to the cache
-        _snapshotCache.UpsertRange(_syncedCheckpoints = await _snapshotRepository.GetCheckpoints(cancellationToken));
+        _syncedCheckpoints = await _snapshotRepository.GetCheckpoints(cancellationToken);
+        _snapshotCache.UpsertRange(_syncedCheckpoints);
 
         // Ensure that the application has the necessary permissions to create checkpoints
         if (!await _snapshotRepository.TryUpsertCheckpoints([Checkpoint.Default("cdc_health_check")], cancellationToken))
@@ -49,6 +50,7 @@ internal sealed class CheckpointSyncronizer : BackgroundService, IAsyncDisposabl
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        _logger.LogDebug("Starting checkpoint syncronizer.");
         while (await _periodicTimer.WaitForNextTickAsync(stoppingToken))
         {
             if (!await _semaphore.WaitAsync(0, stoppingToken))
@@ -94,6 +96,13 @@ internal sealed class CheckpointSyncronizer : BackgroundService, IAsyncDisposabl
         var unsynced = current
             .Except(_syncedCheckpoints)
             .ToList();
+
+        if (unsynced.Count == 0)
+        {
+            return true;
+        }
+
+        _logger.LogDebug("Syncing {UnsyncedCheckpointCount} unsynced checkpoints.", unsynced.Count);
 
         if (!await _snapshotRepository.TryUpsertCheckpoints(unsynced, stoppingToken))
         {
