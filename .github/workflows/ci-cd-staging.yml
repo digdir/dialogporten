@@ -70,11 +70,11 @@ jobs:
       version: ${{ needs.get-current-version.outputs.version }}
       runMigration: ${{ needs.check-for-changes.outputs.hasMigrationChanges == 'true' }}
 
-  deploy-schema-npm:
-    name: Deploy schema npm package
+  publish-schema-npm:
+    name: Publish schema npm package
     needs: [check-for-changes, get-current-version]
     if: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasSchemaChanges == 'true' }}
-    uses: ./.github/workflows/action-deploy-schema.yml
+    uses: ./.github/workflows/action-publish-schema.yml
     with:
       version: ${{ needs.get-current-version.outputs.version }}
   
