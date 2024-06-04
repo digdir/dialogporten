@@ -70,6 +70,14 @@ jobs:
       version: ${{ needs.get-current-version.outputs.version }}
       runMigration: ${{ needs.check-for-changes.outputs.hasMigrationChanges == 'true' }}
 
+  deploy-schema-npm:
+    name: Deploy schema npm package
+    needs: [check-for-changes, get-current-version]
+    if: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasSchemaChanges == 'true' }}
+    uses: ./.github/workflows/action-deploy-schema.yml
+    with:
+      version: ${{ needs.get-current-version.outputs.version }}
+  
   run-e2e-tests:
     name: "Run K6 functional end-to-end tests"
     # we want the end-to-end tests to be dependent on deployment of infrastructure and apps, but if infrastructure is skipped, we still want to run the tests
