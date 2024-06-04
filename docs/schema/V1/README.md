@@ -1,6 +1,6 @@
 # Dialogporten Schema Package
 
-This npm package contains both the Swagger and GraphQL schema definitions for the Dialogporten API. It is designed to provide developers with the necessary specifications to interact with the Dialogporten services effectively.
+This npm package contains both the Swagger and GraphQL schema definitions for the Dialogporten API. It is designed to provide developers with the necessary specifications to interact with the Dialogporten API effectively.
 
 ## Description
 This package includes:
