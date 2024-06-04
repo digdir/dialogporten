@@ -9,6 +9,8 @@ on:
     secrets:
       NPM_TOKEN:
         required: true
+env:
+  WORKING_DIRECTORY: docs/schema/V1
 
 jobs:
   publish-schema-to-npm:
@@ -24,19 +26,17 @@ jobs:
           registry-url: 'https://registry.npmjs.org/'
 
       - name: Install dependencies
-        run: |
-          cd ./docs/schema
-          npm ci
+        run: npm ci
+        working-directory: ${{ env.WORKING_DIRECTORY }}
         
       - name: Update package version
         run: |
-          cd ./docs/schema
           jq '.version = "${{ inputs.version }}"' package.json > temp.json
           mv temp.json package.json
+        working-directory: ${{ env.WORKING_DIRECTORY }}
 
       - name: Publish package
-        run: |
-          cd ./docs/schema
-          npm publish --provenance --access public
+        run: npm publish --provenance --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        working-directory: ${{ env.WORKING_DIRECTORY }}
