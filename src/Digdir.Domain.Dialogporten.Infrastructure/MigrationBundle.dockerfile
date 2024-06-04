@@ -6,7 +6,7 @@ WORKDIR /src
 
 # Main project
 COPY ["src/Digdir.Domain.Dialogporten.Infrastructure/Digdir.Domain.Dialogporten.Infrastructure.csproj", "src/Digdir.Domain.Dialogporten.Infrastructure/"]
-# Dependencies 
+# Dependencies
 COPY ["src/Digdir.Domain.Dialogporten.Domain/Digdir.Domain.Dialogporten.Domain.csproj", "src/Digdir.Domain.Dialogporten.Domain/"]
 COPY ["src/Digdir.Library.Entity.Abstractions/Digdir.Library.Entity.Abstractions.csproj", "src/Digdir.Library.Entity.Abstractions/"]
 COPY ["src/Digdir.Library.Entity.EntityFrameworkCore/Digdir.Library.Entity.EntityFrameworkCore.csproj", "src/Digdir.Library.Entity.EntityFrameworkCore/"]
@@ -17,7 +17,7 @@ COPY ["src/", "."]
 
 WORKDIR "/src/Digdir.Domain.Dialogporten.Infrastructure"
 RUN mkdir -p /app/publish
-RUN dotnet tool install --global dotnet-ef --version 7.0.14
+RUN dotnet tool install --global dotnet-ef
 ENV PATH $PATH:/root/.dotnet/tools
 RUN dotnet ef migrations -v bundle -o /app/publish/efbundle
 
