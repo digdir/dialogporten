@@ -128,7 +128,7 @@ jobs:
     if: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasSchemaChanges == 'true' }}
     uses: ./.github/workflows/action-publish-schema.yml
     with:
-      version: ${{ needs.get-current-version.outputs.version }}
+      version: ${{ needs.get-current-version.outputs.version }}-${{ needs.generate-git-short-sha.outputs.gitShortSha }}
     secrets:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
