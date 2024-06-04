@@ -77,6 +77,8 @@ jobs:
     uses: ./.github/workflows/action-publish-schema.yml
     with:
       version: ${{ needs.get-current-version.outputs.version }}
+    secrets:
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
   
   run-e2e-tests:
     name: "Run K6 functional end-to-end tests"
