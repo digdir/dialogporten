@@ -155,19 +155,7 @@ internal abstract class UpdateDialogSwaggerConfig : ISwaggerConfig
             {
                 Id = Guid.Parse("8b95d42d-d2b6-4c01-8ca0-a817a4b3c50d"),
                 Type = DialogActivityType.Values.Information,
-                PerformedBy =
-                [
-                    new LocalizationDto
-                    {
-                        CultureCode = "en-us",
-                        Value = "Some performer"
-                    },
-                    new LocalizationDto
-                    {
-                        CultureCode = "nb-no",
-                        Value = "En utfører"
-                    }
-                ],
+                PerformedBy = "Some performed",
                 Description =
                 [
                     new LocalizationDto

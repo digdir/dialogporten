@@ -44,7 +44,7 @@ public sealed class Activity
     public Guid? RelatedActivityId { get; set; }
     public Guid? DialogElementId { get; set; }
 
-    public List<Localization>? PerformedBy { get; set; } = [];
+    public string? PerformedBy { get; set; }
     public List<Localization> Description { get; set; } = [];
 }
 

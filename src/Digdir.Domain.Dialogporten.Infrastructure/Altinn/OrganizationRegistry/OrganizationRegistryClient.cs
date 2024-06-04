@@ -36,12 +36,7 @@ internal class OrganizationRegistryClient : IOrganizationRegistry
             .ToDictionary(pair => pair.Value.Orgnr, pair => new OrganizationInfo
             {
                 OrgNumber = pair.Value.Orgnr,
-                ShortName = pair.Key,
-                LongNames = pair.Value.Name?.Select(name => new OrganizationLongName
-                {
-                    LongName = name.Value,
-                    Language = name.Key
-                }).ToList() ?? []
+                ShortName = pair.Key
             });
 
         return orgInfoByOrgNumber;

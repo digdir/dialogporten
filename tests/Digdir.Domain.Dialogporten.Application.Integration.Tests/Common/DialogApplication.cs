@@ -139,7 +139,6 @@ public class DialogApplication : IAsyncLifetime
             {
                 OrgNumber = "991825827",
                 ShortName = "digdir",
-                LongNames = new[] { new OrganizationLongName { LongName = "Digitaliseringsdirektoratet", Language = "nb" } }
             });
 
         return organizationRegistrySubstitute;

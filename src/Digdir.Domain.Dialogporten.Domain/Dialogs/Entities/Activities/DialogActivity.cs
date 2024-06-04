@@ -31,7 +31,7 @@ public class DialogActivity : IImmutableEntity, IAggregateCreatedHandler, IEvent
     public DialogActivityDescription? Description { get; set; }
 
     [AggregateChild]
-    public DialogActivityPerformedBy? PerformedBy { get; set; }
+    public string? PerformedBy { get; set; }
 
     public List<DialogActivity> RelatedActivities { get; set; } = [];
 
@@ -54,12 +54,6 @@ public class DialogActivity : IImmutableEntity, IAggregateCreatedHandler, IEvent
 }
 
 public class DialogActivityDescription : LocalizationSet
-{
-    public DialogActivity Activity { get; set; } = null!;
-    public Guid ActivityId { get; set; }
-}
-
-public class DialogActivityPerformedBy : LocalizationSet
 {
     public DialogActivity Activity { get; set; } = null!;
     public Guid ActivityId { get; set; }

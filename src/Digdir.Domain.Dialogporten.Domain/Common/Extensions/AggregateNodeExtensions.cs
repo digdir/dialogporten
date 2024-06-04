@@ -63,7 +63,6 @@ public static class AggregateNodeExtensions
 
         DialogContentValue => "contentValue",
         DialogActivityDescription => "description",
-        DialogActivityPerformedBy => "performedBy",
         DialogElementDisplayName => "displayName",
         DialogGuiActionTitle => "title",
 

@@ -268,7 +268,7 @@ internal sealed class UpdateDialogDialogActivityDtoValidator : AbstractValidator
             .NotEqual(x => x.Id)
             .When(x => x.RelatedActivityId.HasValue);
         RuleFor(x => x.PerformedBy)
-            .SetValidator(localizationsValidator);
+            .MaximumLength(Constants.DefaultMaxStringLength);
         RuleFor(x => x.Description)
             .NotEmpty()
             .SetValidator(localizationsValidator);
