@@ -125,7 +125,7 @@ jobs:
   deploy-swagger-npm:
     name: Deploy swagger npm package
     needs: [check-for-changes, get-current-version, generate-git-short-sha]
-    if: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasSwaggerChanges == 'true' }}
+    if: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasSchemaChanges == 'true' }}
     uses: ./.github/workflows/action-deploy-schema.yml
     with:
       version: ${{ needs.get-current-version.outputs.version }}-${{ needs.generate-git-short-sha.outputs.gitShortSha }}
