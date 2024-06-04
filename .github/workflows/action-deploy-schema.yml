@@ -1,0 +1,39 @@
+name: Publish Schema to NPM
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        required: true
+        type: string
+
+jobs:
+  publish-schema-to-npm:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org/'
+
+      - name: Install dependencies
+        run: |
+          cd ./docs/schema
+          npm ci
+        
+      - name: Update package version
+        run: |
+          cd ./docs/schema
+          jq '.version = "${{ inputs.version }}"' package.json > temp.json
+          mv temp.json package.json
+
+      - name: Publish package
+        run: |
+          cd ./docs/schema
+          npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
