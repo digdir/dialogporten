@@ -17,7 +17,7 @@ type Activity {
   type: ActivityType!
   relatedActivityId: UUID
   dialogElementId: UUID
-  performedBy: [Localization!]
+  performedBy: String
   description: [Localization!]!
 }
 

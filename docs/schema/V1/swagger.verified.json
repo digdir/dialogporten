@@ -322,16 +322,7 @@
                     "Type": 3,
                     "RelatedActivityId": null,
                     "DialogElementId": null,
-                    "PerformedBy": [
-                      {
-                        "Value": "Some performer",
-                        "CultureCode": "en-us"
-                      },
-                      {
-                        "Value": "En utfører",
-                        "CultureCode": "nb-no"
-                      }
-                    ],
+                    "PerformedBy": "Some performed",
                     "Description": [
                       {
                         "Value": "Some description",
@@ -2809,10 +2800,8 @@
             "nullable": true
           },
           "performedBy": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/LocalizationDto"
-            }
+            "type": "string",
+            "nullable": true
           },
           "description": {
             "type": "array",
@@ -3308,11 +3297,8 @@
             "nullable": true
           },
           "performedBy": {
-            "type": "array",
-            "nullable": true,
-            "items": {
-              "$ref": "#/components/schemas/LocalizationDto"
-            }
+            "type": "string",
+            "nullable": true
           },
           "description": {
             "type": "array",
@@ -3642,10 +3628,8 @@
             "nullable": true
           },
           "performedBy": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/LocalizationDto"
-            }
+            "type": "string",
+            "nullable": true
           },
           "description": {
             "type": "array",
@@ -3761,10 +3745,8 @@
             "nullable": true
           },
           "performedBy": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/LocalizationDto"
-            }
+            "type": "string",
+            "nullable": true
           },
           "description": {
             "type": "array",
@@ -3997,11 +3979,8 @@
             "nullable": true
           },
           "performedBy": {
-            "type": "array",
-            "nullable": true,
-            "items": {
-              "$ref": "#/components/schemas/LocalizationDto"
-            }
+            "type": "string",
+            "nullable": true
           },
           "description": {
             "type": "array",
@@ -4380,11 +4359,8 @@
             "nullable": true
           },
           "performedBy": {
-            "type": "array",
-            "nullable": true,
-            "items": {
-              "$ref": "#/components/schemas/LocalizationDto"
-            }
+            "type": "string",
+            "nullable": true
           },
           "description": {
             "type": "array",
