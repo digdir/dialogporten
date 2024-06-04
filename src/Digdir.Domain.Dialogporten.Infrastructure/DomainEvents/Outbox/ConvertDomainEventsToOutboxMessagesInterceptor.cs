@@ -30,7 +30,7 @@ internal sealed class ConvertDomainEventsToOutboxMessagesInterceptor : SaveChang
             .SelectMany(x =>
                 x.Entity is IEventPublisher publisher
                     ? publisher.PopDomainEvents()
-                    : Enumerable.Empty<IDomainEvent>())
+                    : [])
             .ToList();
 
         foreach (var domainEvent in domainEvents)

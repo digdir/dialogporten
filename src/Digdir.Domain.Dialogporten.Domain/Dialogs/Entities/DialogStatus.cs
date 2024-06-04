@@ -10,13 +10,13 @@ public class DialogStatus : AbstractLookupEntity<DialogStatus, DialogStatus.Valu
     public enum Values
     {
         /// <summary>
-        /// Dialogen er å regne som ny. Brukes typisk for enkle meldinger som ikke krever noe 
-        /// interaksjon, eller som et initielt steg for dialoger. Dette er default. 
+        /// Dialogen er å regne som ny. Brukes typisk for enkle meldinger som ikke krever noe
+        /// interaksjon, eller som et initielt steg for dialoger. Dette er default.
         /// </summary>
         New = 1,
 
         /// <summary>
-        /// Under arbeid. Generell status som brukes for dialogtjenester der ytterligere bruker-input er 
+        /// Under arbeid. Generell status som brukes for dialogtjenester der ytterligere bruker-input er
         /// forventet.
         /// </summary>
         InProgress = 2,
@@ -27,8 +27,8 @@ public class DialogStatus : AbstractLookupEntity<DialogStatus, DialogStatus.Valu
         Waiting = 3,
 
         /// <summary>
-        /// Dialogen er i en tilstand hvor den venter på signering. Typisk siste steg etter at all  
-        /// utfylling er gjennomført og validert. 
+        /// Dialogen er i en tilstand hvor den venter på signering. Typisk siste steg etter at all
+        /// utfylling er gjennomført og validert.
         /// </summary>
         Signing = 4,
 

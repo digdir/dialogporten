@@ -52,7 +52,7 @@ var secrets = {
 var namePrefix = 'dp-be-${environment}'
 
 // Create resource groups
-resource resourceGroup 'Microsoft.Resources/resourceGroups@2023-07-01' = {
+resource resourceGroup 'Microsoft.Resources/resourceGroups@2024-03-01' = {
   name: '${namePrefix}-rg'
   location: location
 }
@@ -94,6 +94,17 @@ module serviceBus '../modules/serviceBus/main.bicep' = {
     namePrefix: namePrefix
     location: location
     sku: serviceBusSku
+    subnetId: vnet.outputs.serviceBusSubnetId
+    vnetId: vnet.outputs.virtualNetworkId
+  }
+}
+
+module vnet '../modules/vnet/main.bicep' = {
+  scope: resourceGroup
+  name: 'vnet'
+  params: {
+    namePrefix: namePrefix
+    location: location
   }
 }
 
@@ -129,6 +140,8 @@ module postgresql '../modules/postgreSql/create.bicep' = {
       ? srcKeyVaultResource.getSecret('dialogportenPgAdminPassword${environment}')
       : secrets.dialogportenPgAdminPassword
     sku: postgresSku
+    subnetId: vnet.outputs.postgresqlSubnetId
+    vnetId: vnet.outputs.virtualNetworkId
   }
 }
 
@@ -191,6 +204,7 @@ module containerAppEnv '../modules/containerAppEnv/main.bicep' = {
     namePrefix: namePrefix
     location: location
     appInsightWorkspaceName: appInsights.outputs.appInsightsWorkspaceName
+    subnetId: vnet.outputs.containerAppEnvironmentSubnetId
   }
 }
 

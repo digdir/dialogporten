@@ -111,8 +111,8 @@ public static class DialogGenerator
         var r = new Randomizer();
         // Apply a power function to skew the distribution towards higher numbers
         // The exponent controls the shape of the distribution curve
-        var numberOfDistinctResources = 1000;
-        var exponent = 15; // Uses to adjust the distribution curve. Higher value = more skewed towards higher numbers
+        const int numberOfDistinctResources = 1000;
+        const int exponent = 15; // Uses to adjust the distribution curve. Higher value = more skewed towards higher numbers
         var biasedRandom = Math.Pow(r.Double(), 1.0 / exponent);
 
         var result = 1 + (int)(biasedRandom * (numberOfDistinctResources - 1));
@@ -123,7 +123,7 @@ public static class DialogGenerator
     public static string GenerateRandomParty()
     {
         var r = new Randomizer();
-        return r.Bool() ? $"urn:altinn:organization:identifier-no::{GenerateFakeOrgNo()}" : $"urn:altinn:person:identifier-no::{GenerateFakePid()}";
+        return r.Bool() ? $"urn:altinn:organization:identifier-no:{GenerateFakeOrgNo()}" : $"urn:altinn:person:identifier-no:{GenerateFakePid()}";
     }
 
     private static readonly int[] SocialSecurityNumberWeights1 = [3, 7, 6, 1, 8, 9, 4, 5, 2];

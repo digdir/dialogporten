@@ -15,6 +15,9 @@ on:
       hasSwaggerChanges:
         description: "OpenApi spec. has changed"
         value: ${{ jobs.check-for-changes.outputs.hasSwaggerChanges }}
+      hasMigrationChanges:
+        description: "Migration related files changed"
+        value: ${{ jobs.check-for-changes.outputs.hasMigrationChanges }}
 jobs:
   check-for-changes:
     name: Filter
@@ -24,7 +27,7 @@ jobs:
       hasAzureChanges: ${{ steps.filter.outputs.azure_any_changed == 'true' }}
       hasSlackNotifierChanges: ${{ steps.filter.outputs.slackNotifier_any_changed == 'true'}}
       hasSwaggerChanges: ${{ steps.filter.outputs.swagger_any_changed == 'true'}}
-
+      hasMigrationChanges: ${{ steps.filter.outputs.migration_any_changed == 'true'}}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -49,3 +52,5 @@ jobs:
               - 'src/Digdir.Tool.Dialogporten.SlackNotifier/**/*'
             swagger:
               - 'docs/swagger/V1/swagger.verified.json'
+            migration: 
+              - 'src/Digdir.Domain.Dialogporten.Infrastructure/Persistence/Migrations/**/*'

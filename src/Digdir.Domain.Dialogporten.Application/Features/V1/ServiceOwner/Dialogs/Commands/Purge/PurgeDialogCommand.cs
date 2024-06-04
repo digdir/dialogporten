@@ -17,7 +17,7 @@ public sealed class PurgeDialogCommand : IRequest<PurgeDialogResult>
 }
 
 [GenerateOneOf]
-public partial class PurgeDialogResult : OneOfBase<Success, EntityNotFound, ConcurrencyError, ValidationError>;
+public partial class PurgeDialogResult : OneOfBase<Success, EntityNotFound, Forbidden, ConcurrencyError, ValidationError>;
 
 internal sealed class PurgeDialogCommandHandler : IRequestHandler<PurgeDialogCommand, PurgeDialogResult>
 {
@@ -48,6 +48,11 @@ internal sealed class PurgeDialogCommandHandler : IRequestHandler<PurgeDialogCom
         if (dialog is null)
         {
             return new EntityNotFound<DialogEntity>(request.DialogId);
+        }
+
+        if (!_userResourceRegistry.UserCanModifyResourceType(dialog.ServiceResourceType))
+        {
+            return new Forbidden($"User cannot modify resource type {dialog.ServiceResourceType}.");
         }
 
         _db.Dialogs.HardRemove(dialog);

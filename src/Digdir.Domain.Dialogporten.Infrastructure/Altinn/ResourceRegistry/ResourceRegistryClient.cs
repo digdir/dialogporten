@@ -1,8 +1,5 @@
-﻿using System.Diagnostics;
-using System.Net.Http.Json;
-using Digdir.Domain.Dialogporten.Application.Externals;
+﻿using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Domain.Common;
-using Microsoft.Extensions.Caching.Distributed;
 using ZiggyCreatures.Caching.Fusion;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.ResourceRegistry;
@@ -10,8 +7,9 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.ResourceRegistry;
 internal sealed class ResourceRegistryClient : IResourceRegistry
 {
     private const string OrgResourceReferenceCacheKey = "OrgResourceReference";
-    private static readonly DistributedCacheEntryOptions OneDayCacheDuration = new() { AbsoluteExpiration = DateTimeOffset.UtcNow.AddDays(1) };
-    private static readonly DistributedCacheEntryOptions ZeroCacheDuration = new() { AbsoluteExpiration = DateTimeOffset.MinValue };
+    private const string ResourceTypeGenericAccess = "GenericAccessResource";
+    private const string ResourceTypeAltinnApp = "AltinnApp";
+    private const string ResourceTypeCorrespondence = "Correspondence";
 
     private readonly IFusionCache _cache;
     private readonly HttpClient _client;
@@ -22,42 +20,69 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
         _cache = cacheProvider.GetCache(nameof(ResourceRegistry)) ?? throw new ArgumentNullException(nameof(cacheProvider));
     }
 
+    private async Task<Dictionary<string, AltinnResourceInformation[]>> GetResourceInfoByOrg(CancellationToken cancellationToken) =>
+        await _cache.GetOrSetAsync(
+            OrgResourceReferenceCacheKey,
+            async token => await GetResourceInfoByOrgFromAltinn(token),
+            token: cancellationToken);
+
     public async Task<IReadOnlyCollection<string>> GetResourceIds(string org, CancellationToken cancellationToken)
     {
-        var resourceIdsByOrg = await _cache.GetOrSetAsync(
-            OrgResourceReferenceCacheKey,
-            async token => await GetResourceIdsByOrg(token),
-            token: cancellationToken);
-        resourceIdsByOrg.TryGetValue(org, out var resourceIds);
-        return resourceIds ?? Array.Empty<string>();
+        var resourceIdsByOrg = await GetResourceInfoByOrg(cancellationToken);
+        resourceIdsByOrg.TryGetValue(org, out var resourceInfos);
+        return resourceInfos?.Select(x => x.ResourceId).ToList() ?? [];
     }
 
-    private async Task<Dictionary<string, string[]>> GetResourceIdsByOrg(CancellationToken cancellationToken)
+    public async Task<string> GetResourceType(string orgNumber, string serviceResourceId, CancellationToken token)
     {
-        const string searchEndpoint = "resourceregistry/api/v1/resource/search";
-        var response = await _client
-            .GetFromJsonAsync<List<ResourceRegistryResponse>>(searchEndpoint, cancellationToken)
-            ?? throw new UnreachableException();
+        var resourceIdsByOrg = await GetResourceInfoByOrg(token);
+        resourceIdsByOrg.TryGetValue(orgNumber, out var resourceInfo);
 
-        var resourceIdsByOrg = response
-            .GroupBy(x => x.HasCompetentAuthority.Organization)
+        return resourceInfo?
+            .FirstOrDefault(x => x.ResourceId == serviceResourceId)?
+            .ResourceType ??
+               throw new KeyNotFoundException();
+    }
+
+    private async Task<Dictionary<string, AltinnResourceInformation[]>> GetResourceInfoByOrgFromAltinn(CancellationToken cancellationToken)
+    {
+        const string searchEndpoint = "resourceregistry/api/v1/resource/resourcelist";
+
+        var response = await _client
+            .GetFromJsonEnsuredAsync<List<ResourceRegistryResponse>>(searchEndpoint,
+                cancellationToken: cancellationToken);
+
+        var resourceInfoByOrg = response
+            .Where(x => !string.IsNullOrWhiteSpace(x.HasCompetentAuthority.Organization))
+            .Where(x => x.ResourceType is
+                ResourceTypeGenericAccess or
+                ResourceTypeAltinnApp or
+                ResourceTypeCorrespondence)
+            .GroupBy(x => x.HasCompetentAuthority.Organization!)
             .ToDictionary(
                 x => x.Key,
-                x => x.Select(x => $"{Constants.ServiceResourcePrefix}{x.Identifier}")
+                x => x.Select(
+                    x => new AltinnResourceInformation($"{Constants.ServiceResourcePrefix}{x.Identifier}", x.ResourceType))
                     .ToArray()
             );
 
-        return resourceIdsByOrg;
+        return resourceInfoByOrg;
     }
 
     private sealed class ResourceRegistryResponse
     {
         public required string Identifier { get; init; }
         public required CompetentAuthority HasCompetentAuthority { get; init; }
+        public required string ResourceType { get; init; }
     }
 
     private sealed class CompetentAuthority
     {
-        public required string Organization { get; init; }
+        // Altinn 2 resources does not always have an organization number as competent authority, only service owner code
+        // We filter these out anyway, but we need to allow null here
+        public string? Organization { get; init; }
+        public required string OrgCode { get; init; }
     }
 }
+
+public sealed record AltinnResourceInformation(string ResourceId, string ResourceType);

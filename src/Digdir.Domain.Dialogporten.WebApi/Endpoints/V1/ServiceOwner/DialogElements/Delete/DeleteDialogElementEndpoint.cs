@@ -64,6 +64,7 @@ public sealed class DeleteDialogElementEndpoint : Endpoint<DeleteDialogElementRe
             notFound => this.NotFoundAsync(notFound, ct),
             badRequest => this.BadRequestAsync(badRequest, ct),
             validationError => this.BadRequestAsync(validationError, ct),
+            forbidden => this.ForbiddenAsync(forbidden, ct),
             domainError => this.UnprocessableEntityAsync(domainError, ct),
             concurrencyError => this.PreconditionFailed(cancellationToken: ct));
     }

@@ -14,7 +14,5 @@ public record AltinnAction
     }
 
     public void Deconstruct(out string key, out string value)
-    {
-        (key, value) = (Name, AuthorizationAttribute);
-    }
+        => (key, value) = (Name, AuthorizationAttribute);
 }

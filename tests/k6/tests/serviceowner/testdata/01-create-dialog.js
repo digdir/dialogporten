@@ -6,7 +6,7 @@ export default function () {
 
     return {
         "serviceResource": "urn:altinn:resource:ttd-dialogporten-automated-tests", // urn starting with urn:altinn:resource:
-        "party": "urn:altinn:person:identifier-no::" + getDefaultEnduserSsn(), // or urn:altinn:organization:identifier-no::<9 digits>
+        "party": "urn:altinn:person:identifier-no:" + getDefaultEnduserSsn(), // or urn:altinn:organization:identifier-no:<9 digits>
         "status": "new", // valid values: new, inprogress, waiting, signing, cancelled, completed
         "extendedStatus": "urn:any/valid/uri",
         "dueAt": "2033-11-25T06:37:54.2920190Z", // must be UTC
@@ -20,7 +20,8 @@ export default function () {
             { "type": "Title", "value": [ { "cultureCode": "nb_NO", "value": "Skjema for rapportering av et eller annet" } ] },
             { "type": "SenderName", "value": [ { "cultureCode": "nb_NO", "value": "Avsendernavn" } ] },
             { "type": "Summary", "value": [ { "cultureCode": "nb_NO", "value": "Et sammendrag her. Maks 200 tegn, ingen HTML-støtte. Påkrevd. Vises i liste." } ] },
-            { "type": "AdditionalInfo", "value": [ { "cultureCode": "nb_NO", "value": "Utvidet forklaring (enkel HTML-støtte, inntil 1023 tegn). Ikke påkrevd. Vises kun i detaljvisning." } ] }
+            { "type": "AdditionalInfo", "value": [ { "cultureCode": "nb_NO", "value": "Utvidet forklaring (enkel HTML-støtte, inntil 1023 tegn). Ikke påkrevd. Vises kun i detaljvisning." } ] },
+            { "type": "ExtendedStatus", "value": [ { "cultureCode": "nb_NO", "value": "Utvidet Status" } ] },
         ],
         "guiActions": [
             {

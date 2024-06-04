@@ -27,6 +27,8 @@ jobs:
         include:
           - dockerfile: ./src/Digdir.Domain.Dialogporten.WebApi/Dockerfile
             imageName: webapi
+          - dockerfile: ./src/Digdir.Domain.Dialogporten.GraphQL/Dockerfile
+            imageName: graphql
           - dockerfile: ./src/Digdir.Domain.Dialogporten.Service/Dockerfile
             imageName: service
           - dockerfile: ./src/Digdir.Domain.Dialogporten.ChangeDataCapture/Dockerfile

@@ -1,6 +1,4 @@
-﻿using System.Net;
-using System.Security.Claims;
-using System.Text;
+﻿using System.Security.Claims;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Altinn.Authorization.ABAC.Xacml.JsonProfile;
@@ -14,14 +12,22 @@ using Microsoft.Extensions.Logging;
 using ZiggyCreatures.Caching.Fusion;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.Authorization;
-
 internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
 {
+    private const string AuthorizeUrl = "authorization/api/v1/authorize";
+    private const string AuthorizedPartiesUrl = "/accessmanagement/api/v1/resourceowner/authorizedparties?includeAltinn2=true";
+
     private readonly HttpClient _httpClient;
     private readonly IFusionCache _cache;
     private readonly IUser _user;
     private readonly IDialogDbContext _db;
     private readonly ILogger _logger;
+
+    private static readonly JsonSerializerOptions SerializerOptions = new()
+    {
+        PropertyNameCaseInsensitive = true,
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault
+    };
 
     public AltinnAuthorizationClient(
         HttpClient client,
@@ -71,7 +77,23 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
             => await PerformNonScalableDialogSearchAuthorization(request, token), token: cancellationToken);
     }
 
-    private async Task<DialogSearchAuthorizationResult> PerformNonScalableDialogSearchAuthorization(DialogSearchAuthorizationRequest request, CancellationToken cancellationToken)
+    public async Task<AuthorizedPartiesResult> GetAuthorizedParties(IPartyIdentifier authenticatedParty,
+        CancellationToken cancellationToken = default)
+    {
+        var authorizedPartiesRequest = new AuthorizedPartiesRequest(authenticatedParty);
+        return await _cache.GetOrSetAsync(authorizedPartiesRequest.GenerateCacheKey(), async token
+            => await PerformAuthorizedPartiesRequest(authorizedPartiesRequest, token), token: cancellationToken);
+    }
+
+    private async Task<AuthorizedPartiesResult> PerformAuthorizedPartiesRequest(AuthorizedPartiesRequest authorizedPartiesRequest,
+        CancellationToken token)
+    {
+        var authorizedPartiesDto = await SendAuthorizedPartiesRequest(authorizedPartiesRequest, token);
+        return AuthorizedPartiesHelper.CreateAuthorizedPartiesResult(authorizedPartiesDto);
+    }
+
+    private async Task<DialogSearchAuthorizationResult> PerformNonScalableDialogSearchAuthorization(
+        DialogSearchAuthorizationRequest request, CancellationToken cancellationToken)
     {
         /*
          * This is a preliminary implementation as per https://github.com/digdir/dialogporten/issues/249
@@ -107,14 +129,15 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
         }
 
         var xacmlJsonRequest = DecisionRequestHelper.NonScalable.CreateDialogSearchRequest(request);
-        var xamlJsonResponse = await SendRequest(xacmlJsonRequest, cancellationToken);
+        var xamlJsonResponse = await SendPdpRequest(xacmlJsonRequest, cancellationToken);
         return DecisionRequestHelper.NonScalable.CreateDialogSearchResponse(xacmlJsonRequest, xamlJsonResponse);
     }
 
-    private async Task<DialogDetailsAuthorizationResult> PerformDialogDetailsAuthorization(DialogDetailsAuthorizationRequest request, CancellationToken cancellationToken)
+    private async Task<DialogDetailsAuthorizationResult> PerformDialogDetailsAuthorization(
+        DialogDetailsAuthorizationRequest request, CancellationToken cancellationToken)
     {
         var xacmlJsonRequest = DecisionRequestHelper.CreateDialogDetailsRequest(request);
-        var xamlJsonResponse = await SendRequest(xacmlJsonRequest, cancellationToken);
+        var xamlJsonResponse = await SendPdpRequest(xacmlJsonRequest, cancellationToken);
         return DecisionRequestHelper.CreateDialogDetailsResponse(request.AltinnActions, xamlJsonResponse);
     }
 
@@ -133,32 +156,19 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
         return claims;
     }
 
-    private static readonly JsonSerializerOptions SerializerOptions = new()
+    private async Task<XacmlJsonResponse?> SendPdpRequest(
+        XacmlJsonRequestRoot xacmlJsonRequest, CancellationToken cancellationToken) =>
+        await SendRequest<XacmlJsonResponse>(
+            AuthorizeUrl, xacmlJsonRequest, cancellationToken);
+
+    private async Task<List<AuthorizedPartiesResultDto>?> SendAuthorizedPartiesRequest(
+        AuthorizedPartiesRequest authorizedPartiesRequest, CancellationToken cancellationToken) =>
+        await SendRequest<List<AuthorizedPartiesResultDto>>(
+            AuthorizedPartiesUrl, authorizedPartiesRequest, cancellationToken);
+
+    private async Task<T?> SendRequest<T>(string url, object request, CancellationToken cancellationToken)
     {
-        PropertyNameCaseInsensitive = true,
-        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault
-    };
-
-    private async Task<XacmlJsonResponse?> SendRequest(XacmlJsonRequestRoot xacmlJsonRequest, CancellationToken cancellationToken)
-    {
-        const string apiUrl = "authorization/api/v1/authorize";
-        var requestJson = JsonSerializer.Serialize(xacmlJsonRequest, SerializerOptions);
-        _logger.LogDebug("Generated XACML request: {RequestJson}", requestJson);
-        var httpContent = new StringContent(requestJson, Encoding.UTF8, "application/json");
-
-        var response = await _httpClient.PostAsync(apiUrl, httpContent, cancellationToken);
-
-        if (response.StatusCode != HttpStatusCode.OK)
-        {
-            var errorResponse = await response.Content.ReadAsStringAsync(cancellationToken);
-            _logger.LogInformation(
-                "AltinnAuthorizationClient.SendRequest failed with non-successful status code: {StatusCode} {Response}",
-                response.StatusCode, errorResponse);
-
-            return null;
-        }
-
-        var responseData = await response.Content.ReadAsStringAsync(cancellationToken);
-        return JsonSerializer.Deserialize<XacmlJsonResponse>(responseData, SerializerOptions);
+        _logger.LogDebug("Authorization request to {Url}: {RequestJson}", url, JsonSerializer.Serialize(request, SerializerOptions));
+        return await _httpClient.PostAsJsonEnsuredAsync<T>(url, request, serializerOptions: SerializerOptions, cancellationToken: cancellationToken);
     }
 }

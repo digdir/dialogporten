@@ -57,5 +57,5 @@ This will create ARM templates for all the environments in the folder `.\dialogp
   - Commit and push the changes to the `altinn-studio-ops` repository (create a branch and PR if you want to be safe, or just push to master if you are confident)
 
 
-  - You are then able to deploy the API to the other APIM-environments by triggering pipelines in the Azure DevOps project. The pipelines have the form a`pim-deploy-api.XXXX` where `XXXX` is the environment name.  
+  - You are then able to deploy the API to the other APIM-environments by triggering pipelines in the Azure DevOps project. The pipelines have the form `apim-deploy-api.XXXX` where `XXXX` is the environment name.  
     (For our `staging` environment, use `tt02`)

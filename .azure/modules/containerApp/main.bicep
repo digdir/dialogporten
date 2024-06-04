@@ -3,7 +3,7 @@ param envVariables array = []
 param port int = 8080
 param name string
 param image string
-param apimIp string
+param apimIp string?
 
 param containerAppEnvId string
 
@@ -28,19 +28,23 @@ var probes = [
   }
 ]
 
+var ipSecurityRestrictions = empty(apimIp)
+  ? []
+  : [
+      {
+        name: 'apim'
+        action: 'Allow'
+        ipAddressRange: apimIp!
+      }
+    ]
+
 var ingress = {
   targetPort: port
   external: true
-  ipSecurityRestrictions: [
-    {
-      name: 'apim'
-      action: 'Allow'
-      ipAddressRange: apimIp
-    }
-  ]
+  ipSecurityRestrictions: ipSecurityRestrictions
 }
 
-resource containerApp 'Microsoft.App/containerApps@2023-05-01' = {
+resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
   name: name
   location: location
   identity: {

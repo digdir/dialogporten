@@ -54,18 +54,24 @@ You can run the entire project locally using `podman compose`. (This uses docker
 ```powershell
 podman compose up
 ```
-The APIs SwaggerUI should now be available at [localhost:7124/swagger](https://localhost:7214/swagger/index.html)
+
+The following GUI services should now be available:
+* WebAPI/SwaggerUI: [localhost:7124/swagger](https://localhost:7214/swagger/index.html)
+* GraphQl/BananaCakePop: [localhost:7215/graphql](https://localhost:7214/swagger/index.html)
+* Redis/Insight: [localhost:7216](https://localhost:7214/swagger/index.html)
+
+The WebAPI and GraphQl services are behind a nginx proxy, and you can change the number of replicas by setting the `scale` property in the `docker-compose.yml` file.
 
 
-### Running the WebApi in an IDE
-If you need do debug the WebApi project in an IDE, you can alternatively run `podman compose` without the WebAPI.  
+### Running the WebApi/GraphQl in an IDE
+If you need do debug the WebApi/GraphQl projects in an IDE, you can alternatively run `podman compose` without the WebAPI/GraphQl.  
 First create a dotnet user secret for the DB connection string.
 
 ```powershell
 dotnet user-secrets set -p .\src\Digdir.Domain.Dialogporten.WebApi\ "Infrastructure:DialogDbConnectionString" "Server=localhost;Port=5432;Database=Dialogporten;User ID=postgres;Password=supersecret;"
 ```
 
-Then run `podman compose` without the WebAPI project.
+Then run `podman compose` without the WebAPI/GraphQl projects.
 ```powershell
 podman compose -f docker-compose-no-webapi.yml up 
 ```
@@ -135,7 +141,38 @@ This repository contains code for both infrastructure and applications. Configur
 
 ### Deployment process
 
-Deployments are done using `Github Actions` with the following process:
+Deployments are done using `GitHub Actions` with the following steps:
+
+#### 1. Create and Merge Pull Request
+- **Action**: Create a pull request.
+- **Merge**: Once the pull request is reviewed and approved, merge it into the `main` branch.
+
+#### 2. Build and Deploy to Test
+- **Trigger**: Merging the pull request into `main`.
+- **Action**: The code is built and deployed to the test environment.
+- **Tag**: The deployment is tagged with `<version>-<git-sha>`.
+
+#### 3. Prepare Release for Staging
+- **Passive**: Release-please creates or updates a release pull request.
+- **Purpose**: This generates a changelog and bumps the version number.
+- **Merge**: Merge the release pull request into the `main` branch.
+
+#### 4. Deploy to Staging (Bump Version and Create Tag)
+- **Trigger**: Merging the release pull request.
+- **Action**: 
+  - Bumps the version number.
+  - Generates the release and changelog.
+  - Deployment is tagged with the new `<version>` without `<git-sha>`
+  - The new version is built and deployed to the staging environment.
+
+#### 5. Prepare deployment to Production
+- **Action**: Perform a dry run towards the production environment to ensure the deployment can proceed without issues.
+
+#### 6. Deploy to Production
+- **Trigger**: Approval of the dry run.
+- **Action**: The new version is built and deployed to the production environment.
+
+#### Visual Workflow
 
 ![Deployment process](docs/deploy-process.png)
 
@@ -143,9 +180,40 @@ Deployments are done using `Github Actions` with the following process:
 
 `CHANGELOG.md` and `version.txt` are automatically updated and should not be changed manually.
 
-### Github actions
+### Manual deployment (⚠️ handle with care)
 
-Naming conventions for github actions:
+This project utilizes two GitHub dispatch workflows to manage manual deployments: `dispatch-apps.yml` and `dispatch-infrastructure.yml`. These workflows allow for manual triggers of deployments through GitHub Actions, providing flexibility for deploying specific versions to designated environments.
+
+#### Using `dispatch-apps.yml`
+
+The `dispatch-apps.yml` workflow is responsible for deploying applications. To trigger this workflow:
+
+1. Navigate to the Actions tab in the GitHub repository.
+2. Select the `Dispatch Apps` workflow.
+3. Click on "Run workflow".
+4. Fill in the required inputs:
+   - **environment**: Choose the target environment (`test`, `staging`, or `prod`).
+   - **version**: Specify the version to deploy. Could be git tag or a docker-tag published in packages.
+   - **runMigration** (optional): Indicate whether to run database migrations (`true` or `false`).
+
+This workflow will handle the deployment of applications based on the specified parameters, ensuring that the correct version is deployed to the chosen environment.
+
+#### Using `dispatch-infrastructure.yml`
+
+The `dispatch-infrastructure.yml` workflow is used for deploying infrastructure components. To use this workflow:
+
+1. Go to the Actions tab in the GitHub repository.
+2. Select the `Dispatch Infrastructure` workflow.
+3. Click on "Run workflow".
+4. Provide the necessary inputs:
+   - **environment**: Select the environment you wish to deploy to (`test`, `staging`, or `prod`).
+   - **version**: Enter the version to deploy, which should correspond to a git tag.
+
+This workflow facilitates the deployment of infrastructure to the specified environment, using the version details provided.
+
+### GitHub Actions
+
+Naming conventions for GitHub Actions:
 - `action-*.yml`: Reusable workflows
 - `ci-cd-*.yml`: Workflows that are triggered by an event
 - `dispatch-*.yml`: Workflows that are dispatchable

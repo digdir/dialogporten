@@ -1,0 +1,292 @@
+﻿schema {
+  query: Queries
+}
+
+interface DialogByIdError {
+  message: String!
+}
+
+interface SearchDialogError {
+  message: String!
+}
+
+type Activity {
+  id: UUID!
+  createdAt: DateTime
+  extendedType: URL
+  type: ActivityType!
+  relatedActivityId: UUID
+  dialogElementId: UUID
+  performedBy: [Localization!]
+  description: [Localization!]!
+}
+
+type ApiAction {
+  id: UUID!
+  action: String!
+  authorizationAttribute: String
+  isAuthorized: Boolean!
+  dialogElementId: UUID
+  endpoints: [ApiActionEndpoint!]!
+}
+
+type ApiActionEndpoint {
+  id: UUID!
+  version: String
+  url: URL!
+  httpMethod: HttpVerb!
+  documentationUrl: URL
+  requestSchema: URL
+  responseSchema: URL
+  deprecated: Boolean!
+  sunsetAt: DateTime
+}
+
+type AuthorizedParty {
+  party: String!
+  name: String!
+  partyType: String!
+  isDeleted: Boolean!
+  hasKeyRole: Boolean!
+  isMainAdministrator: Boolean!
+  isAccessManager: Boolean!
+  hasOnlyAccessToSubParties: Boolean!
+  subParties: [AuthorizedParty!]
+}
+
+type Content {
+  type: ContentType!
+  value: [Localization!]!
+}
+
+type Dialog {
+  id: UUID!
+  revision: UUID!
+  org: String!
+  serviceResource: String!
+  serviceResourceType: String!
+  party: String!
+  progress: Int
+  extendedStatus: String
+  externalReference: String
+  visibleFrom: DateTime
+  dueAt: DateTime
+  expiresAt: DateTime
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  dialogToken: String
+  status: DialogStatus!
+  content: [Content!]!
+  elements: [Element!]!
+  guiActions: [GuiAction!]!
+  apiActions: [ApiAction!]!
+  activities: [Activity!]!
+  seenSinceLastUpdate: [SeenLog!]!
+}
+
+type DialogByIdDeleted implements DialogByIdError {
+  message: String!
+}
+
+type DialogByIdForbidden implements DialogByIdError {
+  message: String!
+}
+
+type DialogByIdNotFound implements DialogByIdError {
+  message: String!
+}
+
+type DialogByIdPayload {
+  dialog: Dialog
+  errors: [DialogByIdError!]!
+}
+
+type Element {
+  id: UUID!
+  type: URL
+  externalReference: String
+  authorizationAttribute: String
+  isAuthorized: Boolean!
+  relatedDialogElementId: UUID
+  displayName: [Localization!]!
+  urls: [ElementUrl!]!
+}
+
+type ElementUrl {
+  id: UUID!
+  url: URL!
+  mimeType: String
+  consumerType: ElementUrlConsumer!
+}
+
+type GuiAction {
+  id: UUID!
+  action: String!
+  url: URL!
+  authorizationAttribute: String
+  isAuthorized: Boolean!
+  isBackChannel: Boolean!
+  isDeleteAction: Boolean!
+  priority: GuiActionPriority!
+  title: [Localization!]!
+}
+
+type Localization {
+  value: String!
+  cultureCode: String!
+}
+
+type Queries @authorize(policy: "enduser") {
+  dialogById(dialogId: UUID!): DialogByIdPayload!
+  searchDialogs(input: SearchDialogInput!): SearchDialogsPayload!
+  parties: [AuthorizedParty!]!
+}
+
+type SearchDialog {
+  id: UUID!
+  org: String!
+  serviceResource: String!
+  serviceResourceType: String!
+  party: String!
+  progress: Int
+  guiAttachmentCount: Int
+  extendedStatus: String
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  dueAt: DateTime
+  status: DialogStatus!
+  latestActivity: Activity
+  content: [Content!]!
+  seenSinceLastUpdate: [SeenLog!]!
+}
+
+type SearchDialogForbidden implements SearchDialogError {
+  message: String!
+}
+
+type SearchDialogValidationError implements SearchDialogError {
+  message: String!
+}
+
+type SearchDialogsPayload {
+  items: [SearchDialog!]
+  hasNextPage: Boolean!
+  continuationToken: String
+  orderBy: String
+  errors: [SearchDialogError!]!
+}
+
+type SeenLog {
+  id: UUID!
+  seenAt: DateTime!
+  endUserIdHash: String!
+  endUserName: String
+  isCurrentEndUser: Boolean!
+}
+
+input SearchDialogInput {
+  "Filter by one or more service owner codes"
+  org: [String!]
+  "Filter by one or more service resources"
+  serviceResource: [String!]
+  "Filter by one or more owning parties"
+  party: [String!]
+  "Filter by one or more extended statuses"
+  extendedStatus: [String!]
+  "Filter by external reference"
+  externalReference: String
+  "Filter by status"
+  status: [DialogStatus!]
+  "Only return dialogs created after this date"
+  createdAfter: DateTime
+  "Only return dialogs created before this date"
+  createdBefore: DateTime
+  "Only return dialogs updated after this date"
+  updatedAfter: DateTime
+  "Only return dialogs updated before this date"
+  updatedBefore: DateTime
+  "Only return dialogs with due date after this date"
+  dueAfter: DateTime
+  "Only return dialogs with due date before this date"
+  dueBefore: DateTime
+  "Search string for free text search. Will attempt to fuzzily match in all free text fields in the aggregate"
+  search: String
+  "Limit free text search to texts with this culture code, e.g. \"nb-NO\". Default: search all culture codes"
+  searchCultureCode: String
+}
+
+enum ActivityType {
+  "Refers to a submission made by a party that has been received by the service provider."
+  SUBMISSION
+  "Indicates feedback from the service provider on a submission. Contains a reference to the current submission."
+  FEEDBACK
+  "Information from the service provider, not (directly) related to any submission."
+  INFORMATION
+  "Used to indicate an error situation, typically on a submission. Contains a service-specific activityErrorCode."
+  ERROR
+  "Indicates that the dialog is closed for further changes. This typically happens when the dialog is completed or deleted."
+  CLOSED
+  "When the dialog is forwarded (delegated access) by someone with access to others."
+  FORWARDED
+}
+
+enum ApplyPolicy {
+  BEFORE_RESOLVER
+  AFTER_RESOLVER
+  VALIDATION
+}
+
+enum ContentType {
+  TITLE
+  SENDER_NAME
+  SUMMARY
+  ADDITIONAL_INFO
+  EXTENDED_STATUS
+}
+
+enum DialogStatus {
+  "New"
+  NEW
+  "In progress. General status used for dialog services where further user input is expected."
+  IN_PROGRESS
+  "Waiting for feedback from the service provider"
+  WAITING
+  "The dialog is in a state where it is waiting for signing. Typically the last step after all completion is carried out and validated."
+  SIGNING
+  "The dialog was cancelled. This typically removes the dialog from normal GUI views."
+  CANCELLED
+  "The dialog was completed. This typically moves the dialog to a GUI archive or similar."
+  COMPLETED
+}
+
+enum ElementUrlConsumer {
+  GUI
+  API
+}
+
+enum GuiActionPriority {
+  PRIMARY
+  SECONDARY
+  TERTIARY
+}
+
+enum HttpVerb {
+  GET
+  POST
+  PUT
+  PATCH
+  DELETE
+  HEAD
+  OPTIONS
+  TRACE
+  CONNECT
+}
+
+directive @authorize("The name of the authorization policy that determines access to the annotated resource." policy: String "Roles that are allowed to access the annotated resource." roles: [String!] "Defines when when the authorize directive shall be applied.By default the authorize directives are applied during the validation phase." apply: ApplyPolicy! = BEFORE_RESOLVER) repeatable on OBJECT | FIELD_DEFINITION
+
+"The `DateTime` scalar represents an ISO-8601 compliant date time type."
+scalar DateTime @specifiedBy(url: "https:\/\/www.graphql-scalars.com\/date-time")
+
+scalar URL @specifiedBy(url: "https:\/\/tools.ietf.org\/html\/rfc3986")
+
+scalar UUID @specifiedBy(url: "https:\/\/tools.ietf.org\/html\/rfc4122")

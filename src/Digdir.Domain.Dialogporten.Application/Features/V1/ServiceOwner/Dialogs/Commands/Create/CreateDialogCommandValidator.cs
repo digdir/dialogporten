@@ -25,7 +25,8 @@ internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDia
             .NotNull()
             .IsValidUri()
             .MaximumLength(Constants.DefaultMaxUriLength)
-            .Must(x => x?.StartsWith(Constants.ServiceResourcePrefix, StringComparison.InvariantCulture) ?? false)
+            .Must(x =>
+                x?.StartsWith(Constants.ServiceResourcePrefix, StringComparison.InvariantCulture) ?? false)
                 .WithMessage($"'{{PropertyName}}' must start with '{Constants.ServiceResourcePrefix}'.");
 
         RuleFor(x => x.Party)
@@ -33,8 +34,6 @@ internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDia
             .NotEmpty()
             .MaximumLength(Constants.DefaultMaxStringLength);
 
-        // TODO: 'Progress' not allowed for correspondence dialogs
-        // https://github.com/digdir/dialogporten/issues/233
         RuleFor(x => x.Progress)
             .InclusiveBetween(0, 100);
 

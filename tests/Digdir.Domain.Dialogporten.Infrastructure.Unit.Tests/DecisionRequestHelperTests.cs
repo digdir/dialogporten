@@ -75,6 +75,40 @@ public class DecisionRequestHelperTests
     }
 
     [Fact]
+    public void CreateDialogDetailsRequestShouldReturnCorrectRequestForApp()
+    {
+        // Arrange
+        var request = CreateDialogDetailsAuthorizationRequest(
+            GetAsClaims(
+                ("pid", "12345678901"),
+
+                // This should not be copied as subject claim since there's a "pid"-claim
+                ("consumer", ConsumerClaimValue)
+            ),
+            $"{NorwegianOrganizationIdentifier.PrefixWithSeparator}713330310",
+            isApp: true);
+
+        var dialogId = request.DialogId;
+
+        // Act
+        var result = DecisionRequestHelper.CreateDialogDetailsRequest(request);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.NotNull(result.Request);
+        Assert.NotNull(result.Request.Resource);
+
+        // Check Resource attributes
+        var resource1 = result.Request.Resource.FirstOrDefault(r => r.Id == "r1");
+        Assert.NotNull(resource1);
+        Assert.Contains(resource1.Attribute, a => a.AttributeId == "urn:altinn:org" && a.Value == "ttd");
+        Assert.Contains(resource1.Attribute, a => a.AttributeId == "urn:altinn:app" && a.Value == "some-app_with_underscores");
+
+        // We cannot support instance id for apps since we don't have a partyId
+        // Assert.Contains(resource1.Attribute, a => a.AttributeId == "urn:altinn:instance-id" && a.Value == dialogId.ToString());
+    }
+
+    [Fact]
     public void CreateDialogDetailsRequestShouldReturnCorrectRequestForConsumerOrgAndPersonParty()
     {
         // Arrange
@@ -110,7 +144,7 @@ public class DecisionRequestHelperTests
             ),
             $"{NorwegianPersonIdentifier.PrefixWithSeparator}12345678901");
 
-        // Add an additional action to the request that the mocked response should give a non-permit response for
+        // Add an action to the request that the mocked response should give a non-permit response for
         request.AltinnActions.Add(new AltinnAction("failaction", Constants.MainResource));
 
         var jsonRequestRoot = DecisionRequestHelper.CreateDialogDetailsRequest(request);
@@ -130,7 +164,7 @@ public class DecisionRequestHelperTests
         Assert.DoesNotContain(new AltinnAction("failaction", Constants.MainResource), response.AuthorizedAltinnActions);
     }
 
-    private static DialogDetailsAuthorizationRequest CreateDialogDetailsAuthorizationRequest(List<Claim> principalClaims, string party)
+    private static DialogDetailsAuthorizationRequest CreateDialogDetailsAuthorizationRequest(List<Claim> principalClaims, string party, bool isApp = false)
     {
         var allClaims = new List<Claim>
         {
@@ -140,7 +174,7 @@ public class DecisionRequestHelperTests
         return new DialogDetailsAuthorizationRequest
         {
             Claims = allClaims,
-            ServiceResource = "urn:altinn:resource:some-service",
+            ServiceResource = isApp ? "urn:altinn:app:app_ttd_some-app_with_underscores" : "urn:altinn:resource:some-service",
             DialogId = Guid.NewGuid(),
 
             // This should be copied resources with attributes "urn:altinn:organizationnumber" if starting with "urn:altinn:organization:identifier-no::"

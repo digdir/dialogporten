@@ -2,7 +2,7 @@ version: '3.9'
 
 services:
   dialogporten-postgres:
-    image: postgres:15.4
+    image: postgres:15.6
     restart: always
     command: postgres -c wal_level=logical
     environment:
@@ -34,10 +34,20 @@ services:
     ports:
       - "6379:6379"
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: [ "CMD", "redis-cli", "ping" ]
       interval: 10s
       timeout: 5s
       retries: 5
+
+  dialogporten-redisinsight:
+    image: redis/redisinsight
+    ports:
+      - "7216:80"
+    environment:
+      RI_APP_PORT: 80
+      RI_APP_HOST: '0.0.0.0'
+    volumes:
+      - redisinsight_cache:/data
 
   dialogporten-service:
     build:
@@ -70,3 +80,7 @@ services:
       - ReplicationSlotName=outboxmessage_replication_slot
       - PublicationName=outboxmessage_publication
       - TableName=OutboxMessage
+
+volumes:
+  redisinsight_cache:
+    driver: local

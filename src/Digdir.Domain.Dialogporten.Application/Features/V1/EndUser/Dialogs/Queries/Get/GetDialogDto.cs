@@ -14,6 +14,7 @@ public sealed class GetDialogDto
     public Guid Revision { get; set; }
     public string Org { get; set; } = null!;
     public string ServiceResource { get; set; } = null!;
+    public string ServiceResourceType { get; set; } = null!;
     public string Party { get; set; } = null!;
     public int? Progress { get; set; }
     public string? ExtendedStatus { get; set; }
@@ -40,7 +41,7 @@ public sealed class GetDialogDto
 public class GetDialogDialogSeenLogDto
 {
     public Guid Id { get; set; }
-    public DateTimeOffset CreatedAt { get; set; }
+    public DateTimeOffset SeenAt { get; set; }
 
     public string EndUserIdHash { get; set; } = null!;
 
