@@ -7,7 +7,6 @@ namespace Digdir.Domain.Dialogporten.Application.Common;
 public interface IUserOrganizationRegistry
 {
     Task<string?> GetCurrentUserOrgShortName(CancellationToken cancellationToken);
-    Task<IList<ServiceOwnerLongName>?> GetCurrentUserOrgLongNames(CancellationToken cancellationToken);
 }
 
 public class UserOrganizationRegistry : IUserOrganizationRegistry
@@ -33,17 +32,6 @@ public class UserOrganizationRegistry : IUserOrganizationRegistry
         return orgInfo?.ShortName;
     }
 
-    public async Task<IList<ServiceOwnerLongName>?> GetCurrentUserOrgLongNames(CancellationToken cancellationToken)
-    {
-        if (!_user.TryGetOrganizationNumber(out var orgNumber))
-        {
-            return null;
-        }
-
-        var orgInfo = await _serviceOwnerNameRegistry.GetServiceOwnerInfo(orgNumber, cancellationToken);
-
-        return orgInfo?.LongNames.ToArray();
-    }
 }
 
 internal sealed class LocalDevelopmentUserOrganizationRegistryDecorator : IUserOrganizationRegistry
@@ -51,6 +39,4 @@ internal sealed class LocalDevelopmentUserOrganizationRegistryDecorator : IUserO
     public LocalDevelopmentUserOrganizationRegistryDecorator(IUserOrganizationRegistry _) { }
 
     public Task<string?> GetCurrentUserOrgShortName(CancellationToken cancellationToken) => Task.FromResult("digdir")!;
-    public Task<IList<ServiceOwnerLongName>?> GetCurrentUserOrgLongNames(CancellationToken cancellationToken) =>
-        Task.FromResult<IList<ServiceOwnerLongName>?>(new[] { new ServiceOwnerLongName { LongName = "Digdir", Language = "nb" } });
 }

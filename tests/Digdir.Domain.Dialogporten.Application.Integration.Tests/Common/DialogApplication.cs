@@ -138,8 +138,7 @@ public class DialogApplication : IAsyncLifetime
             .Returns(new ServiceOwnerInfo
             {
                 OrgNumber = "991825827",
-                ShortName = "digdir",
-                LongNames = new[] { new ServiceOwnerLongName { LongName = "Digitaliseringsdirektoratet", Language = "nb" } }
+                ShortName = "digdir"
             });
 
         return organizationRegistrySubstitute;

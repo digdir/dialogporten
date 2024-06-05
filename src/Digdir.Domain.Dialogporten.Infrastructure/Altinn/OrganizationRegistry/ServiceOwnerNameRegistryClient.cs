@@ -36,12 +36,7 @@ internal class ServiceOwnerNameRegistryClient : IServiceOwnerNameRegistry
             .ToDictionary(pair => pair.Value.Orgnr, pair => new ServiceOwnerInfo
             {
                 OrgNumber = pair.Value.Orgnr,
-                ShortName = pair.Key,
-                LongNames = pair.Value.Name?.Select(name => new ServiceOwnerLongName
-                {
-                    LongName = name.Value,
-                    Language = name.Key
-                }).ToList() ?? []
+                ShortName = pair.Key
             });
 
         return serviceOwnerInfoByOrgNumber;
