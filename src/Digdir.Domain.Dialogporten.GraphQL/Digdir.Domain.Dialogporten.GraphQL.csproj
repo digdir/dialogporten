@@ -13,7 +13,7 @@
         <PackageReference Include="HotChocolate.AspNetCore" Version="13.9.4" />
         <PackageReference Include="HotChocolate.Data.EntityFramework" Version="13.9.4" />
         <PackageReference Include="HotChocolate.AspNetCore.Authorization" Version="13.9.4" />
-        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.5" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.6" />
         <PackageReference Include="Microsoft.Azure.AppConfiguration.AspNetCore" Version="7.2.0" />
         <PackageReference Include="Serilog.AspNetCore" Version="8.0.1" />
         <PackageReference Include="Serilog.Sinks.ApplicationInsights" Version="4.0.0" />
