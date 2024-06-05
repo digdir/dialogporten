@@ -99,6 +99,7 @@ public static class ClaimsPrincipalExtensions
             return false;
         }
 
+        // If a claim is an array, but contains only one element, it will be deserialized as a single object by dotnet
         if (authDetailsJsonNode.GetValueKind() is JsonValueKind.Array)
         {
             authorizationDetails = JsonSerializer.Deserialize<SystemUserAuthorizationDetails[]>(authDetailsJson);
