@@ -12,6 +12,8 @@ public class DecisionRequestHelperTests
 {
     private const string ConsumerClaimValue = /*lang=json,strict*/ "{\"authority\":\"iso6523-actorid-upis\",\"ID\":\"0192:991825827\"}";
 
+    private const string AuthorizationDetailsClaimValue = /*lang=json,strict*/"[{\"type\":\"urn:altinn:systemuser\",\"systemuser_id\":[\"unique_systemuser_id\"]}]";
+
     [Fact]
     public void CreateDialogDetailsRequestShouldReturnCorrectRequest()
     {
@@ -75,6 +77,30 @@ public class DecisionRequestHelperTests
     }
 
     [Fact]
+    public void CreateDialogDetailsRequestShouldReturnCorrectRequestForLegacyEnterpriseUsers()
+    {
+        // Arrange
+        var request = CreateDialogDetailsAuthorizationRequest(
+            GetAsClaims(
+                ("urn:altinn:userid", "5678901"),
+
+                // This should not be copied as subject claim since there's a "urn:altinn:user-id"-claim
+                ("consumer", ConsumerClaimValue)
+            ),
+            $"{NorwegianOrganizationIdentifier.PrefixWithSeparator}713330310");
+        var dialogId = request.DialogId;
+
+        // Act
+        var result = DecisionRequestHelper.CreateDialogDetailsRequest(request);
+
+        // Check AccessSubject attributes
+        var accessSubject = result.Request.AccessSubject.First();
+        Assert.Equal("s1", accessSubject.Id);
+        Assert.Contains(accessSubject.Attribute, a => a.AttributeId == "urn:altinn:userid" && a.Value == "5678901");
+        Assert.DoesNotContain(accessSubject.Attribute, a => a.AttributeId == "urn:altinn:organization:identifier-no");
+    }
+
+    [Fact]
     public void CreateDialogDetailsRequestShouldReturnCorrectRequestForApp()
     {
         // Arrange
@@ -106,6 +132,31 @@ public class DecisionRequestHelperTests
 
         // We cannot support instance id for apps since we don't have a partyId
         // Assert.Contains(resource1.Attribute, a => a.AttributeId == "urn:altinn:instance-id" && a.Value == dialogId.ToString());
+    }
+
+    [Fact]
+    public void CreateDialogDetailsRequestShouldReturnCorrectRequestForSystemUser()
+    {
+        // Arrange
+        var request = CreateDialogDetailsAuthorizationRequest(
+            GetAsClaims(
+                ("authorization_details", AuthorizationDetailsClaimValue)
+            ),
+            $"{NorwegianOrganizationIdentifier.PrefixWithSeparator}713330310"
+            );
+
+        // Act
+        var result = DecisionRequestHelper.CreateDialogDetailsRequest(request);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.NotNull(result.Request);
+        Assert.NotNull(result.Request.Resource);
+
+        var accessSubject = result.Request.AccessSubject.First();
+        Assert.Equal("s1", accessSubject.Id);
+        Assert.Contains(accessSubject.Attribute, a => a.AttributeId == "urn:altinn:foo" && a.Value == "bar");
+        Assert.Contains(accessSubject.Attribute, a => a.AttributeId == "urn:altinn:systemuser" && a.Value == "unique_systemuser_id");
     }
 
     [Fact]

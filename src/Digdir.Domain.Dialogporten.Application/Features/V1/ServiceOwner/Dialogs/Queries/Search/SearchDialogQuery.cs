@@ -187,8 +187,6 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
                 seenRecord.IsCurrentEndUser = seenRecord.EndUserIdHash == request.EndUserId;
             }
 
-            // TODO: Add test to not expose un-hashed end user id to the client
-            // https://github.com/digdir/dialogporten/issues/596
             seenRecord.EndUserIdHash = _stringHasher.Hash(seenRecord.EndUserIdHash);
         }
 
