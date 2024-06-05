@@ -172,9 +172,9 @@ internal sealed class CreateDialogDialogElementUrlDtoValidator : AbstractValidat
             .MaximumLength(Constants.DefaultMaxUriLength);
         RuleFor(x => x.MediaType)
             .MaximumLength(Constants.DefaultMaxStringLength);
-        RuleFor(x => x.MimeType)
+        RuleFor(x => x.MediaType)
             .Must(MediaTypes.IsValid!)
-            .When(x => x.MimeType != null)
+            .When(x => x.MediaType != null)
             .WithMessage("Invalid media type, see docs for complete list <URL TDB>");
 
         RuleFor(x => x.ConsumerType)
