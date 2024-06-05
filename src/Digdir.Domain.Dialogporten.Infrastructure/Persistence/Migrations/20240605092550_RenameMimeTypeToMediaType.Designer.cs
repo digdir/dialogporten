@@ -3,6 +3,7 @@ using System;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(DialogDbContext))]
-    partial class DialogDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240605092550_RenameMimeTypeToMediaType")]
+    partial class RenameMimeTypeToMediaType
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -547,14 +550,9 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
 
-                    b.Property<int>("EndUserTypeId")
-                        .HasColumnType("integer");
-
                     b.HasKey("Id");
 
                     b.HasIndex("DialogId");
-
-                    b.HasIndex("EndUserTypeId");
 
                     b.ToTable("DialogSeenLog");
                 });
@@ -603,53 +601,6 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         {
                             Id = 6,
                             Name = "Completed"
-                        });
-                });
-
-            modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogUserType", b =>
-                {
-                    b.Property<int>("Id")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("DialogUserType");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 0,
-                            Name = "Unknown"
-                        },
-                        new
-                        {
-                            Id = 1,
-                            Name = "Person"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "LegacySystemUser"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "SystemUser"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Name = "ServiceOwner"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Name = "ServiceOwnerOnBehalfOfPerson"
                         });
                 });
 
@@ -1138,15 +1089,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogUserType", "EndUserType")
-                        .WithMany()
-                        .HasForeignKey("EndUserTypeId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.Navigation("Dialog");
-
-                    b.Navigation("EndUserType");
                 });
 
             modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements.DialogElement", b =>

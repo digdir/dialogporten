@@ -3,48 +3,48 @@ using ZiggyCreatures.Caching.Fusion;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.OrganizationRegistry;
 
-internal class OrganizationRegistryClient : IOrganizationRegistry
+internal class ServiceOwnerNameRegistryClient : IServiceOwnerNameRegistry
 {
-    private const string OrgNameReferenceCacheKey = "OrgNameReference";
+    private const string ServiceOwnerShortNameReferenceCacheKey = "ServiceOwnerShortNameReference";
 
     private readonly IFusionCache _cache;
     private readonly HttpClient _client;
 
-    public OrganizationRegistryClient(HttpClient client, IFusionCacheProvider cacheProvider)
+    public ServiceOwnerNameRegistryClient(HttpClient client, IFusionCacheProvider cacheProvider)
     {
         _client = client ?? throw new ArgumentNullException(nameof(client));
         _cache = cacheProvider.GetCache(nameof(OrganizationRegistry)) ?? throw new ArgumentNullException(nameof(cacheProvider));
     }
 
-    public async Task<OrganizationInfo?> GetOrgInfo(string orgNumber, CancellationToken cancellationToken)
+    public async Task<ServiceOwnerInfo?> GetServiceOwnerInfo(string orgNumber, CancellationToken cancellationToken)
     {
-        var orgInfoByOrgNumber = await _cache.GetOrSetAsync(OrgNameReferenceCacheKey, GetOrgInfo, token: cancellationToken);
+        var orgInfoByOrgNumber = await _cache.GetOrSetAsync(ServiceOwnerShortNameReferenceCacheKey, GetServiceOwnerInfo, token: cancellationToken);
         orgInfoByOrgNumber.TryGetValue(orgNumber, out var orgInfo);
 
         return orgInfo;
     }
 
-    private async Task<Dictionary<string, OrganizationInfo>> GetOrgInfo(CancellationToken cancellationToken)
+    private async Task<Dictionary<string, ServiceOwnerInfo>> GetServiceOwnerInfo(CancellationToken cancellationToken)
     {
         const string searchEndpoint = "orgs/altinn-orgs.json";
 
         var response = await _client
             .GetFromJsonEnsuredAsync<OrganizationRegistryResponse>(searchEndpoint, cancellationToken: cancellationToken);
 
-        var orgInfoByOrgNumber = response
+        var serviceOwnerInfoByOrgNumber = response
             .Orgs
-            .ToDictionary(pair => pair.Value.Orgnr, pair => new OrganizationInfo
+            .ToDictionary(pair => pair.Value.Orgnr, pair => new ServiceOwnerInfo
             {
                 OrgNumber = pair.Value.Orgnr,
                 ShortName = pair.Key,
-                LongNames = pair.Value.Name?.Select(name => new OrganizationLongName
+                LongNames = pair.Value.Name?.Select(name => new ServiceOwnerLongName
                 {
                     LongName = name.Value,
                     Language = name.Key
                 }).ToList() ?? []
             });
 
-        return orgInfoByOrgNumber;
+        return serviceOwnerInfoByOrgNumber;
     }
 
     private sealed class OrganizationRegistryResponse

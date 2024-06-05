@@ -17,5 +17,5 @@ internal static class AuthorizationPolicyBuilderExtensions
                 .Contains(scope)));
 
     public static AuthorizationPolicyBuilder RequireValidConsumerClaim(this AuthorizationPolicyBuilder builder) =>
-        builder.RequireAssertion(ctx => ctx.User.TryGetOrgNumber(out _));
+        builder.RequireAssertion(ctx => ctx.User.TryGetOrganizationNumber(out _));
 }

@@ -115,7 +115,7 @@ type Element {
 type ElementUrl {
   id: UUID!
   url: URL!
-  mimeType: String
+  mediaType: String
   consumerType: ElementUrlConsumer!
 }
 

@@ -114,7 +114,7 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
     private readonly IDialogDbContext _db;
     private readonly IMapper _mapper;
     private readonly IClock _clock;
-    private readonly IUserNameRegistry _userNameRegistry;
+    private readonly IUserRegistry _userRegistry;
     private readonly IAltinnAuthorization _altinnAuthorization;
     private readonly IStringHasher _stringHasher;
 
@@ -122,24 +122,21 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
         IDialogDbContext db,
         IMapper mapper,
         IClock clock,
-        IUserNameRegistry userNameRegistry,
+        IUserRegistry userRegistry,
         IAltinnAuthorization altinnAuthorization,
         IStringHasher stringHasher)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _clock = clock ?? throw new ArgumentNullException(nameof(clock));
-        _userNameRegistry = userNameRegistry ?? throw new ArgumentNullException(nameof(userNameRegistry));
+        _userRegistry = userRegistry ?? throw new ArgumentNullException(nameof(userRegistry));
         _altinnAuthorization = altinnAuthorization ?? throw new ArgumentNullException(nameof(altinnAuthorization));
         _stringHasher = stringHasher;
     }
 
     public async Task<SearchDialogResult> Handle(SearchDialogQuery request, CancellationToken cancellationToken)
     {
-        if (!_userNameRegistry.TryGetCurrentUserPid(out var userPid))
-        {
-            return new Forbidden("No valid user pid found.");
-        }
+        var currentUserInfo = await _userRegistry.GetCurrentUserInformation(cancellationToken);
 
         var searchExpression = Expressions.LocalizedSearchExpression(request.Search, request.SearchCultureCode);
         var authorizedResources = await _altinnAuthorization.GetAuthorizedResourcesForSearch(
@@ -180,9 +177,7 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
         foreach (var seenLog in paginatedList.Items.SelectMany(x => x.SeenSinceLastUpdate))
         {
             // Before we hash the end user id, check if the seen log entry is for the current user
-            seenLog.IsCurrentEndUser = userPid == seenLog.EndUserIdHash;
-            // TODO: Add test to not expose un-hashed end user id to the client
-            // https://github.com/digdir/dialogporten/issues/596
+            seenLog.IsCurrentEndUser = currentUserInfo.UserId.ExternalId == seenLog.EndUserIdHash;
             seenLog.EndUserIdHash = _stringHasher.Hash(seenLog.EndUserIdHash);
         }
 
