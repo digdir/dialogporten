@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(DialogDbContext))]
-    [Migration("20240605131100_ChangePerformedByToString")]
+    [Migration("20240605131704_ChangePerformedByToString")]
     partial class ChangePerformedByToString
     {
         /// <inheritdoc />
