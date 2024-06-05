@@ -30,7 +30,7 @@ resource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2022-10-01-preview
   }
 }
 
-resource privateEndpoint 'Microsoft.Network/privateEndpoints@2021-05-01' = {
+resource privateEndpoint 'Microsoft.Network/privateEndpoints@2023-11-01' = {
   name: '${name}-pe'
   location: location
   properties: {
