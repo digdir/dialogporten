@@ -1,5 +1,4 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Integration.Tests.Common;
-using Digdir.Domain.Dialogporten.Domain;
 using Digdir.Tool.Dialogporten.GenerateFakeData;
 using FluentAssertions;
 
