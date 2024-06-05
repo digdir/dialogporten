@@ -1,12 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-        <UserSecretsId>750256a4-f332-4783-8802-8a7d9566f9ca</UserSecretsId>
-    </PropertyGroup>
-
     <ItemGroup>
         <PackageReference Include="Altinn.ApiClients.Maskinporten" Version="9.1.0" />
         <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.6" />
