@@ -148,11 +148,11 @@ public static class InfrastructureExtensions
                 client.BaseAddress = services.GetRequiredService<IOptions<InfrastructureSettings>>().Value.Altinn.BaseUri)
             .AddPolicyHandlerFromRegistry(PollyPolicy.DefaultHttpRetryPolicy);
 
-        services.AddHttpClient<IOrganizationRegistry, OrganizationRegistryClient>((services, client) =>
+        services.AddHttpClient<IServiceOwnerNameRegistry, ServiceOwnerNameRegistryClient>((services, client) =>
                 client.BaseAddress = services.GetRequiredService<IOptions<InfrastructureSettings>>().Value.AltinnCdn.BaseUri)
             .AddPolicyHandlerFromRegistry(PollyPolicy.DefaultHttpRetryPolicy);
 
-        services.AddMaskinportenHttpClient<INameRegistry, NameRegistryClient, SettingsJwkClientDefinition>(
+        services.AddMaskinportenHttpClient<IPersonNameRegistry, PersonNameRegistryClient, SettingsJwkClientDefinition>(
                 infrastructureConfigurationSection,
                 x => x.ClientSettings.ExhangeToAltinnToken = true)
             .ConfigureHttpClient((services, client) =>

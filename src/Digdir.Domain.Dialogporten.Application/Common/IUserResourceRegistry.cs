@@ -32,12 +32,12 @@ public class UserResourceRegistry : IUserResourceRegistry
     }
 
     public Task<IReadOnlyCollection<string>> GetCurrentUserResourceIds(CancellationToken cancellationToken) =>
-        !_user.TryGetOrgNumber(out var orgNumber)
+        !_user.TryGetOrganizationNumber(out var orgNumber)
             ? throw new UnreachableException()
             : _resourceRegistry.GetResourceIds(orgNumber, cancellationToken);
 
     public Task<string> GetResourceType(string serviceResourceId, CancellationToken cancellationToken) =>
-        !_user.TryGetOrgNumber(out var orgNumber)
+        !_user.TryGetOrganizationNumber(out var orgNumber)
             ? throw new UnreachableException()
             : _resourceRegistry.GetResourceType(orgNumber, serviceResourceId, cancellationToken);
 
