@@ -169,7 +169,7 @@ internal sealed class CreateDialogDialogElementUrlDtoValidator : AbstractValidat
             .NotNull()
             .IsValidUri()
             .MaximumLength(Constants.DefaultMaxUriLength);
-        RuleFor(x => x.MimeType)
+        RuleFor(x => x.MediaType)
             .MaximumLength(Constants.DefaultMaxStringLength);
         RuleFor(x => x.ConsumerType)
             .IsInEnum();

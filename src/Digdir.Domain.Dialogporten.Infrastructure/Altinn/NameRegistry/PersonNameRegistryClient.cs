@@ -5,7 +5,7 @@ using ZiggyCreatures.Caching.Fusion;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.NameRegistry;
 
-internal class NameRegistryClient : INameRegistry
+internal class PersonNameRegistryClient : IPersonNameRegistry
 {
     private readonly IFusionCache _cache;
     private readonly HttpClient _client;
@@ -16,7 +16,7 @@ internal class NameRegistryClient : INameRegistry
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault
     };
 
-    public NameRegistryClient(HttpClient client, IFusionCacheProvider cacheProvider)
+    public PersonNameRegistryClient(HttpClient client, IFusionCacheProvider cacheProvider)
     {
         _client = client ?? throw new ArgumentNullException(nameof(client));
         _cache = cacheProvider.GetCache(nameof(NameRegistry)) ?? throw new ArgumentNullException(nameof(cacheProvider));

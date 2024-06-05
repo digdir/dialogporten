@@ -281,7 +281,7 @@ public static class DialogGenerator
             .Generate(count ?? new Randomizer().Number(1, 6));
     }
 
-    private static readonly string[] MimeTypes = [
+    private static readonly string[] MediaTypes = [
         "application/json",
         "application/xml",
         "text/html",
@@ -293,7 +293,7 @@ public static class DialogGenerator
         return new Faker<CreateDialogDialogElementUrlDto>()
             .RuleFor(o => o.Url, f => new Uri(f.Internet.UrlWithPath()))
             .RuleFor(o => o.ConsumerType, f => f.PickRandom<DialogElementUrlConsumerType.Values>())
-            .RuleFor(o => o.MimeType, f => f.PickRandom(MimeTypes))
+            .RuleFor(o => o.MediaType, f => f.PickRandom(MediaTypes))
             .Generate(new Randomizer().Number(1, 3));
     }
 

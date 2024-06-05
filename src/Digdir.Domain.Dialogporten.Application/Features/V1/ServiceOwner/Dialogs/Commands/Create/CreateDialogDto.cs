@@ -108,7 +108,7 @@ public sealed class CreateDialogDialogElementDto
 public sealed class CreateDialogDialogElementUrlDto
 {
     public Uri Url { get; set; } = null!;
-    public string? MimeType { get; set; }
+    public string? MediaType { get; set; }
 
     public DialogElementUrlConsumerType.Values ConsumerType { get; set; }
 }

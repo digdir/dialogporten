@@ -3,6 +3,7 @@ using System;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(DialogDbContext))]
-    partial class DialogDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240605123831_AddEndUserTypes")]
+    partial class AddEndUserTypes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -227,10 +230,6 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.Property<string>("ExtendedType")
                         .HasMaxLength(1023)
                         .HasColumnType("character varying(1023)");
-
-                    b.Property<string>("PerformedBy")
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
 
                     b.Property<Guid?>("RelatedActivityId")
                         .HasColumnType("uuid");
@@ -943,7 +942,26 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.HasIndex("ActivityId")
                         .IsUnique();
 
+                    b.ToTable("LocalizationSet", t =>
+                        {
+                            t.Property("ActivityId")
+                                .HasColumnName("DialogActivityDescription_ActivityId");
+                        });
+
                     b.HasDiscriminator().HasValue("DialogActivityDescription");
+                });
+
+            modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities.DialogActivityPerformedBy", b =>
+                {
+                    b.HasBaseType("Digdir.Domain.Dialogporten.Domain.Localizations.LocalizationSet");
+
+                    b.Property<Guid>("ActivityId")
+                        .HasColumnType("uuid");
+
+                    b.HasIndex("ActivityId")
+                        .IsUnique();
+
+                    b.HasDiscriminator().HasValue("DialogActivityPerformedBy");
                 });
 
             modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content.DialogContentValue", b =>
@@ -1215,6 +1233,17 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.Navigation("Activity");
                 });
 
+            modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities.DialogActivityPerformedBy", b =>
+                {
+                    b.HasOne("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities.DialogActivity", "Activity")
+                        .WithOne("PerformedBy")
+                        .HasForeignKey("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities.DialogActivityPerformedBy", "ActivityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Activity");
+                });
+
             modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content.DialogContentValue", b =>
                 {
                     b.HasOne("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content.DialogContent", "DialogContent")
@@ -1261,6 +1290,8 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities.DialogActivity", b =>
                 {
                     b.Navigation("Description");
+
+                    b.Navigation("PerformedBy");
 
                     b.Navigation("RelatedActivities");
                 });
