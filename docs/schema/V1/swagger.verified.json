@@ -266,7 +266,7 @@
                       {
                         "Id": "858177cb-8584-4d10-a086-3a5defa7a6c3",
                         "Url": "http://example.com/some-url",
-                        "MimeType": "application/json",
+                        "MediaType": "application/json",
                         "ConsumerType": 0
                       }
                     ]
@@ -2604,7 +2604,7 @@
             "type": "string",
             "format": "uri"
           },
-          "mimeType": {
+          "mediaType": {
             "type": "string",
             "nullable": true
           },
@@ -3159,7 +3159,7 @@
             "type": "string",
             "format": "uri"
           },
-          "mimeType": {
+          "mediaType": {
             "type": "string",
             "nullable": true
           },
@@ -3504,7 +3504,7 @@
             "type": "string",
             "format": "uri"
           },
-          "mimeType": {
+          "mediaType": {
             "type": "string",
             "nullable": true
           },
@@ -4225,7 +4225,7 @@
             "type": "string",
             "format": "uri"
           },
-          "mimeType": {
+          "mediaType": {
             "type": "string",
             "nullable": true
           },
