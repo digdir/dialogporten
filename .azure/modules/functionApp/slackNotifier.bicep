@@ -15,7 +15,7 @@ param sku Sku
 // todo: add name of function as param and turn this into a reusable module
 var storageAccountName = '${replace(namePrefix, '-', '')}${substring('slacknotifier', 0, 10)}sa'
 
-resource storageAccount 'Microsoft.Storage/storageAccounts@2023-04-01' = {
+resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = {
     name: storageAccountName
     location: location
     sku: {
