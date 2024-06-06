@@ -8,6 +8,7 @@ using Microsoft.Extensions.Options;
 using Npgsql;
 using Npgsql.Replication;
 using Npgsql.Replication.PgOutput;
+using Npgsql.Replication.PgOutput.Messages;
 
 namespace Digdir.Domain.Dialogporten.ChangeDataCapture.Outbox;
 
@@ -43,7 +44,7 @@ internal sealed class OutboxCdcSubscription : ICdcSubscription<OutboxMessage>, I
         _replicationConnection = new LogicalReplicationConnection(_options.ConnectionString);
     }
 
-    public async IAsyncEnumerable<OutboxMessage> Subscribe([EnumeratorCancellation] CancellationToken ct = default)
+    public async IAsyncEnumerable<IReadOnlyCollection<OutboxMessage>> Subscribe([EnumeratorCancellation] CancellationToken ct = default)
     {
         /* TODO:
          * - Opprett Checkpoint tabell i infrastruktur
@@ -55,15 +56,15 @@ internal sealed class OutboxCdcSubscription : ICdcSubscription<OutboxMessage>, I
         await _replicationConnection.Open(ct);
         if (await CreateSubscription(ct) is SubscriptionResult.Created created)
         {
-            await foreach (var outboxMessage in ConsumeSnapshot(created, ct))
+            await foreach (var outboxMessages in ConsumeSnapshot(created, ct))
             {
-                yield return outboxMessage;
+                yield return outboxMessages;
             }
         }
 
-        await foreach (var outboxMessage in ConsumeReplicationSlot(ct))
+        await foreach (var outboxMessages in ConsumeReplicationSlot(ct))
         {
-            yield return outboxMessage;
+            yield return outboxMessages;
         }
     }
 
@@ -93,42 +94,49 @@ internal sealed class OutboxCdcSubscription : ICdcSubscription<OutboxMessage>, I
         return new SubscriptionResult.Created(replicationSlot);
     }
 
-    private async IAsyncEnumerable<OutboxMessage> ConsumeSnapshot(
+    private async IAsyncEnumerable<IReadOnlyCollection<OutboxMessage>> ConsumeSnapshot(
         SubscriptionResult.Created created,
         [EnumeratorCancellation] CancellationToken ct)
     {
         _logger.LogDebug("Consuming snapshot for replication slot '{ReplicationSlot}'.", _options.ReplicationSlotName);
         var checkpoint = _checkpointCache.GetOrDefault(_options.ReplicationSlotName);
         var snapshotName = created.ReplicationSlot.SnapshotName!;
+        var outboxMessages = new OutboxMessage[1];
         await foreach (var reader in _outboxRepository.ReadFromCheckpoint(checkpoint, snapshotName, ct))
         {
-            var outboxMessage = await _mapper.ReadFromSnapshot(reader, ct);
-            yield return outboxMessage;
-            _checkpointCache.Upsert(outboxMessage.ToCheckpoint(_options.ReplicationSlotName));
+            outboxMessages[0] = await _mapper.ReadFromSnapshot(reader, ct);
+            yield return outboxMessages;
+            _checkpointCache.Upsert(outboxMessages[0].ToCheckpoint(_options.ReplicationSlotName));
         }
 
         _replicationSnapshotConsumed = true;
         _logger.LogDebug("Snapshot consumed for replication slot '{ReplicationSlot}'.", _options.ReplicationSlotName);
     }
 
-    private async IAsyncEnumerable<OutboxMessage> ConsumeReplicationSlot(
+    private async IAsyncEnumerable<IReadOnlyCollection<OutboxMessage>> ConsumeReplicationSlot(
         [EnumeratorCancellation] CancellationToken ct)
     {
         _logger.LogDebug("Consuming replication slot '{ReplicationSlot}'.", _options.ReplicationSlotName);
         var slot = new PgOutputReplicationSlot(_options.ReplicationSlotName);
         var replicationOptions = new PgOutputReplicationOptions(_options.PublicationName, 1);
-        await foreach (var message in _replicationConnection
-            .StartReplication(slot, replicationOptions, ct))
+        var transactionBatch = new List<OutboxMessage>();
+        await foreach (var message in _replicationConnection.StartReplication(slot, replicationOptions, ct))
         {
-            if (!message.IsInsertInto(_options.TableName, out var insertMessage))
+            switch (message)
             {
-                await _replicationConnection.AcknowledgeWalMessage(message, ct);
-                continue;
+                case InsertMessage insertMessage when insertMessage.Relation.RelationName == _options.TableName:
+                    transactionBatch.Add(await _mapper.ReadFromReplication(insertMessage, ct));
+                    break;
+                case CommitMessage when transactionBatch.Count > 0:
+                    yield return transactionBatch;
+                    _checkpointCache.Upsert(transactionBatch
+                        .MaxBy(x => x.CreatedAt)!
+                        .ToCheckpoint(_options.ReplicationSlotName));
+                    transactionBatch.Clear();
+                    break;
+                default: break;
             }
 
-            var outboxMessage = await _mapper.ReadFromReplication(insertMessage, ct);
-            yield return outboxMessage;
-            _checkpointCache.Upsert(outboxMessage.ToCheckpoint(_options.ReplicationSlotName));
             await _replicationConnection.AcknowledgeWalMessage(message, ct);
         }
     }

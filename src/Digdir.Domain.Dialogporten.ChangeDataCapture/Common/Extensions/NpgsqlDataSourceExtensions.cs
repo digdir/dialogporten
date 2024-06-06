@@ -10,15 +10,6 @@ namespace Digdir.Domain.Dialogporten.ChangeDataCapture.Common.Extensions;
 
 internal static class NpgsqlDataSourceExtensions
 {
-    public static bool IsInsertInto(
-        this PgOutputReplicationMessage message,
-        string tableName,
-        [NotNullWhen(true)] out InsertMessage? insertMessage)
-    {
-        insertMessage = message as InsertMessage;
-        return insertMessage is not null && insertMessage.Relation.RelationName == tableName;
-    }
-
     public static async Task AcknowledgeWalMessage(
         this LogicalReplicationConnection replicationConnection,
         PgOutputReplicationMessage message,
