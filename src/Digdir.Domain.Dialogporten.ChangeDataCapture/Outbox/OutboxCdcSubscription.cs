@@ -14,6 +14,16 @@ namespace Digdir.Domain.Dialogporten.ChangeDataCapture.Outbox;
 
 internal sealed class OutboxCdcSubscription : ICdcSubscription<OutboxMessage>, IAsyncDisposable
 {
+    /// <summary>
+    /// This is to compensate for the fact that multiple transactions can be committed at the same time. 
+    /// If we continue to consume from the replication slot everything will be fine. However, if we 
+    /// need to recover from a dropped replication slot we need to make sure that we don't miss 
+    /// any messages from the other concurrent transactions that we may not have been able to consume.
+    /// We do this at the expense of messages being consumed multiple times at the beginning of the 
+    /// recovery process.
+    /// </summary>
+    private static TimeSpan ReplicationCheckpointTimeSkew = -TimeSpan.FromSeconds(2);
+
     private bool _disposed;
     private bool _replicationSnapshotConsumed = true;
 
@@ -131,7 +141,7 @@ internal sealed class OutboxCdcSubscription : ICdcSubscription<OutboxMessage>, I
                     yield return transactionBatch;
                     _checkpointCache.Upsert(transactionBatch
                         .MaxBy(x => x.CreatedAt)!
-                        .ToCheckpoint(_options.ReplicationSlotName));
+                        .ToCheckpoint(_options.ReplicationSlotName, ReplicationCheckpointTimeSkew));
                     transactionBatch.Clear();
                     break;
                 default: break;
