@@ -6,11 +6,11 @@ The CDC module acts as a postgres cluster slave by subscribing to logical WAL ch
 
 On the postgres side there exists a publication and a replication slot. The publication represents what changes are subscribed to. This can range from every change on all tables, to as fine grained as spesific actions on certain tables (insert into `OutboxMessage`). The replication slot keeps track of how far a subscriber has consumed the WAL. Should the subscriber or postgres shut down, the subscription will resume from the correct position when both are back up and running. 
 
-![Naive](doc\Naive.svg "Naive")
+![Naive](doc/Naive.svg "Naive")
 
 However, if a replication slot exists without a corresponding subscriber the WAL files will accumulate, filling up the storage to the point where postgres won't accept more commands. Effectively killing postres. Azure Database for PostgreSQL flexible server solves this by dropping unused logical replication slots. Which is a lot better than murdering postgres. But it presents us with a problem. Messages not consumed, and created between dropping and creating the replication slot are not proprigated through the new slot. We need a way to recover. 
 
-![Better](doc\Better.svg "Better")
+![Better](doc/Better.svg "Better")
 
 We can do this by reading directly from the table that we are subscribed to. In our case the `OutboxMessage` table. However, this leaves us with two issues:
 1. If we were to fail during recovery we would start to read the entire table again during the next recovery. So messages would be consumed multiple times.
@@ -20,7 +20,7 @@ We can solve issue 1 by introducing a checkpoint which we will sync every so oft
 
 We can solve issue 2 by taking use of a postgres feature specificaly dessigned to combat this issue. When we create a replication slot we have the option to export a DB snapshot. We can use this snapshot when performing recovery as a fixed point in time where the recovery ends, and the replication slot begins.
 
-![Best](doc\Best.svg "Best")
+![Best](doc/Best.svg "Best")
 
 This image represents the worst case scenario where there exists no replication slot, CDC may have failed during the last recovery attempt, and messages are created during recovery. I say "may have failed during the last recovery attempt" because this may in fact be the first recovery attempt since the replication slot was dropped. All the synced messages was consumed from the dropped slot, and the checkpoint represents the point in time that the slot should have represented had it been there. In other words - our checkpoint does not only save us on recovery error, it also saves us when the replication slot is dropped. 
 
