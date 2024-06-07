@@ -111,7 +111,6 @@ internal abstract class UpdateDialogSwaggerConfig : ISwaggerConfig
                 Action = "submit",
                 Priority = DialogGuiActionPriority.Values.Primary,
                 Url = new Uri("https://example.com/some-url"),
-                IsBackChannel = false,
                 IsDeleteAction = false,
                 Title =
                 [

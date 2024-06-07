@@ -106,7 +106,6 @@ public sealed class GetDialogDialogGuiActionDto
     public string Action { get; set; } = null!;
     public Uri Url { get; set; } = null!;
     public string? AuthorizationAttribute { get; set; }
-    public bool IsBackChannel { get; set; }
     public bool IsDeleteAction { get; set; }
 
     public DialogGuiActionPriority.Values Priority { get; set; }
