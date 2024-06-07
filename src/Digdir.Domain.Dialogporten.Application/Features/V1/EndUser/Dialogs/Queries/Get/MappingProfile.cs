@@ -28,7 +28,8 @@ internal sealed class MappingProfile : Profile
             .ForMember(dest => dest.HttpMethod, opt => opt.MapFrom(src => src.HttpMethodId));
 
         CreateMap<DialogGuiAction, GetDialogDialogGuiActionDto>()
-            .ForMember(dest => dest.Priority, opt => opt.MapFrom(src => src.PriorityId));
+            .ForMember(dest => dest.Priority, opt => opt.MapFrom(src => src.PriorityId))
+            .ForMember(dest => dest.HttpMethod, opt => opt.MapFrom(src => src.HttpMethodId));
 
         CreateMap<DialogElement, GetDialogDialogElementDto>();
 

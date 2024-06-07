@@ -107,8 +107,10 @@ public sealed class GuiAction
     public bool IsDeleteDialogAction { get; set; }
 
     public GuiActionPriority Priority { get; set; }
+    public HttpVerb HttpMethod { get; set; }
 
     public List<Localization> Title { get; set; } = [];
+    public List<Localization>? Prompt { get; set; } = [];
 }
 
 public enum GuiActionPriority

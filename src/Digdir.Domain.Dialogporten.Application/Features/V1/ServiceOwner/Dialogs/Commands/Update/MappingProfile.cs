@@ -39,7 +39,9 @@ internal sealed class MappingProfile : Profile
             .IgnoreComplexDestinationProperties()
             .ForMember(x => x.Id, opt => opt.Ignore())
             .ForMember(dest => dest.Priority, opt => opt.Ignore())
-            .ForMember(dest => dest.PriorityId, opt => opt.MapFrom(src => src.Priority));
+            .ForMember(dest => dest.PriorityId, opt => opt.MapFrom(src => src.Priority))
+            .ForMember(dest => dest.HttpMethod, opt => opt.Ignore())
+            .ForMember(dest => dest.HttpMethodId, opt => opt.MapFrom(src => src.HttpMethod));
 
         CreateMap<UpdateDialogDialogElementDto, DialogElement>()
             .IgnoreComplexDestinationProperties();

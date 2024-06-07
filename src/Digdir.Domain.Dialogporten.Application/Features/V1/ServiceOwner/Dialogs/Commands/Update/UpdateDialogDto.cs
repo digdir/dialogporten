@@ -87,9 +87,12 @@ public sealed class UpdateDialogDialogGuiActionDto
     public string? AuthorizationAttribute { get; set; }
     public bool IsDeleteDialogAction { get; set; }
 
+    public HttpVerb.Values? HttpMethod { get; set; } = HttpVerb.Values.GET;
+
     public DialogGuiActionPriority.Values Priority { get; set; }
 
     public List<LocalizationDto> Title { get; set; } = [];
+    public List<LocalizationDto>? Prompt { get; set; }
 }
 
 public class UpdateDialogDialogElementDto
