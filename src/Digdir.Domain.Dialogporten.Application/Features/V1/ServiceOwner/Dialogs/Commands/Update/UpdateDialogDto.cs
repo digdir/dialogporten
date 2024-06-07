@@ -51,7 +51,7 @@ public class UpdateDialogDialogActivityDto
     public Guid? RelatedActivityId { get; set; }
     public Guid? DialogElementId { get; set; }
 
-    public List<LocalizationDto> PerformedBy { get; set; } = [];
+    public string? PerformedBy { get; set; }
     public List<LocalizationDto> Description { get; set; } = [];
 }
 
@@ -110,7 +110,7 @@ public sealed class UpdateDialogDialogElementUrlDto
 {
     public Guid? Id { get; set; }
     public Uri Url { get; set; } = null!;
-    public string? MimeType { get; set; }
+    public string? MediaType { get; set; }
 
     public DialogElementUrlConsumerType.Values ConsumerType { get; set; }
 }

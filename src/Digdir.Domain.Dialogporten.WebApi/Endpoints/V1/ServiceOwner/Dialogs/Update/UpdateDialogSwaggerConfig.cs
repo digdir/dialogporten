@@ -97,7 +97,7 @@ internal abstract class UpdateDialogSwaggerConfig : ISwaggerConfig
                     new UpdateDialogDialogElementUrlDto
                     {
                         Id = Guid.Parse("858177cb-8584-4d10-a086-3a5defa7a6c3"),
-                        MimeType = "application/json",
+                        MediaType = "application/json",
                         Url = new Uri("http://example.com/some-url")
                     }
                 ]
@@ -155,19 +155,7 @@ internal abstract class UpdateDialogSwaggerConfig : ISwaggerConfig
             {
                 Id = Guid.Parse("8b95d42d-d2b6-4c01-8ca0-a817a4b3c50d"),
                 Type = DialogActivityType.Values.Information,
-                PerformedBy =
-                [
-                    new LocalizationDto
-                    {
-                        CultureCode = "en-us",
-                        Value = "Some performer"
-                    },
-                    new LocalizationDto
-                    {
-                        CultureCode = "nb-no",
-                        Value = "En utfører"
-                    }
-                ],
+                PerformedBy = "Some performed",
                 Description =
                 [
                     new LocalizationDto

@@ -1,5 +1,6 @@
 ﻿using Altinn.Authorization.ABAC.Xacml.JsonProfile;
 using System.Security.Claims;
+using System.Text.Json;
 using Digdir.Domain.Dialogporten.Application.Common.Authorization;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
@@ -17,8 +18,11 @@ internal static class DecisionRequestHelper
     private const string AttributeIdAction = "urn:oasis:names:tc:xacml:1.0:action:action-id";
     private const string AttributeIdResource = "urn:altinn:resource";
     private const string AttributeIdResourceInstance = "urn:altinn:resourceinstance";
+    private const string AltinnAutorizationDetailsClaim = "authorization_details";
     private const string AttributeIdOrg = "urn:altinn:org";
     private const string AttributeIdApp = "urn:altinn:app";
+    private const string AttributeIdSystemUser = "urn:altinn:systemuser";
+    private const string AttributeIdUserId = "urn:altinn:userid";
     private const string ReservedResourcePrefixForApps = "app_";
     private const string AttributeIdAppInstance = "urn:altinn:instance-id";
     private const string AttributeIdSubResource = "urn:altinn:subresource";
@@ -76,7 +80,8 @@ internal static class DecisionRequestHelper
             {
                 { Type: PidClaimType } => new XacmlJsonAttribute { AttributeId = NorwegianPersonIdentifier.Prefix, Value = x.Value },
                 { Type: var type } when type.StartsWith(AltinnUrnNsPrefix, StringComparison.Ordinal) => new() { AttributeId = type, Value = x.Value },
-                { Type: ConsumerClaimType } when x.TryGetOrgNumber(out var organizationNumber) => new() { AttributeId = NorwegianOrganizationIdentifier.Prefix, Value = organizationNumber },
+                { Type: ConsumerClaimType } when x.TryGetOrganizationNumber(out var organizationNumber) => new() { AttributeId = NorwegianOrganizationIdentifier.Prefix, Value = organizationNumber },
+                { Type: AltinnAutorizationDetailsClaim } => new() { AttributeId = AttributeIdSystemUser, Value = GetSystemUserId(x) },
                 _ => null
             })
             .Where(x => x is not null)
@@ -85,12 +90,21 @@ internal static class DecisionRequestHelper
 
         // If we're authorizing a person (ie. ID-porten token), we are not interested in the consumer-claim (organization number)
         // as that is not relevant for the authorization decision (it's just the organization owning the OAuth client).
-        if (attributes.Any(x => x.AttributeId == NorwegianPersonIdentifier.Prefix))
+        // The same goes if urn:altinn:userid is present, which might be present if using a legacy enterprise user token
+        if (attributes.Any(x => x.AttributeId == NorwegianPersonIdentifier.Prefix) ||
+            attributes.Any(x => x.AttributeId == AttributeIdUserId))
         {
             attributes.RemoveAll(x => x.AttributeId == NorwegianOrganizationIdentifier.Prefix);
         }
 
         return [new() { Id = SubjectId, Attribute = attributes }];
+    }
+
+    private static string GetSystemUserId(Claim claim)
+    {
+        var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new[] { claim }));
+        claimsPrincipal.TryGetSystemUserId(out var systemUserId);
+        return systemUserId!;
     }
 
     private static List<XacmlJsonCategory> CreateActionCategories(
@@ -332,7 +346,7 @@ internal static class DecisionRequestHelper
                     continue;
                 }
 
-                // Get the name of the resource. This may be either an app or an generic service resource.
+                // Get the name of the resource. This may be either an app or a generic service resource.
                 var resourceId = $"r{i + 1}";
                 var resourceList = xamlJsonRequestRoot.Request.Resource.First(r => r.Id == resourceId).Attribute;
                 var resource = resourceList.First(a => a.AttributeId is AttributeIdResource or AttributeIdApp);

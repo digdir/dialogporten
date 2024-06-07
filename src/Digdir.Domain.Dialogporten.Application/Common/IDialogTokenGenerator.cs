@@ -99,7 +99,7 @@ internal class DialogTokenGenerator : IDialogTokenGenerator
             return NorwegianPersonIdentifier.PrefixWithSeparator + pid;
         }
 
-        if (_user.TryGetOrgNumber(out var orgNumber))
+        if (_user.TryGetOrganizationNumber(out var orgNumber))
         {
             return NorwegianOrganizationIdentifier.PrefixWithSeparator + orgNumber;
         }

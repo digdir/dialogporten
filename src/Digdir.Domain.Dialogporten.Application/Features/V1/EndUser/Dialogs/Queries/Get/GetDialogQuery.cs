@@ -26,7 +26,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IClock _clock;
-    private readonly IUserNameRegistry _userNameRegistry;
+    private readonly IUserRegistry _userRegistry;
     private readonly IAltinnAuthorization _altinnAuthorization;
     private readonly IDialogTokenGenerator _dialogTokenGenerator;
     private readonly IStringHasher _stringHasher;
@@ -36,7 +36,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
         IMapper mapper,
         IUnitOfWork unitOfWork,
         IClock clock,
-        IUserNameRegistry userNameRegistry,
+        IUserRegistry userRegistry,
         IAltinnAuthorization altinnAuthorization,
         IDialogTokenGenerator dialogTokenGenerator,
         IStringHasher stringHasher)
@@ -45,7 +45,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _clock = clock ?? throw new ArgumentNullException(nameof(clock));
-        _userNameRegistry = userNameRegistry ?? throw new ArgumentNullException(nameof(userNameRegistry));
+        _userRegistry = userRegistry ?? throw new ArgumentNullException(nameof(userRegistry));
         _altinnAuthorization = altinnAuthorization ?? throw new ArgumentNullException(nameof(altinnAuthorization));
         _dialogTokenGenerator = dialogTokenGenerator ?? throw new ArgumentNullException(nameof(dialogTokenGenerator));
         _stringHasher = stringHasher;
@@ -53,14 +53,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
 
     public async Task<GetDialogResult> Handle(GetDialogQuery request, CancellationToken cancellationToken)
     {
-        var userInformation = await _userNameRegistry.GetUserInformation(cancellationToken);
-
-        if (userInformation is null)
-        {
-            return new Forbidden("No valid user pid found.");
-        }
-
-        var (userPid, userName) = userInformation;
+        var currentUserInformation = await _userRegistry.GetCurrentUserInformation(cancellationToken);
 
         // This query could be written without all the includes as ProjectTo will do the job for us.
         // However, we need to guarantee an order for sub resources of the dialog aggregate.
@@ -77,7 +70,6 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
                 .ThenInclude(x => x.Title!.Localizations.OrderBy(x => x.CreatedAt).ThenBy(x => x.CultureCode))
             .Include(x => x.ApiActions.OrderBy(x => x.CreatedAt).ThenBy(x => x.Id))
                 .ThenInclude(x => x.Endpoints.OrderBy(x => x.CreatedAt).ThenBy(x => x.Id))
-            .Include(x => x.Activities).ThenInclude(x => x.PerformedBy!.Localizations)
             .Include(x => x.Activities).ThenInclude(x => x.Description!.Localizations)
             .Include(x => x.SeenLog
                 .Where(x => x.CreatedAt >= x.Dialog.UpdatedAt)
@@ -107,7 +99,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
 
         // TODO: What if name lookup fails
         // https://github.com/digdir/dialogporten/issues/387
-        dialog.UpdateSeenAt(userPid, userName);
+        dialog.UpdateSeenAt(currentUserInformation.UserId.ExternalId, currentUserInformation.UserId.Type, currentUserInformation.Name);
 
         var saveResult = await _unitOfWork
             .WithoutAuditableSideEffects()
@@ -124,7 +116,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
             .Select(log =>
             {
                 var logDto = _mapper.Map<GetDialogDialogSeenLogDto>(log);
-                logDto.IsCurrentEndUser = log.EndUserId == userPid;
+                logDto.IsCurrentEndUser = log.EndUserId == currentUserInformation.UserId.ExternalId;
                 logDto.EndUserIdHash = _stringHasher.Hash(log.EndUserId);
                 return logDto;
             })

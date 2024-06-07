@@ -9,7 +9,7 @@ public class DialogElementUrl : IEntity
     public DateTimeOffset UpdatedAt { get; set; }
 
     public Uri Url { get; set; } = null!;
-    public string? MimeType { get; set; }
+    public string? MediaType { get; set; }
 
     // === Dependent relationships ===
     public DialogElementUrlConsumerType.Values ConsumerTypeId { get; set; }

@@ -266,7 +266,7 @@
                       {
                         "Id": "858177cb-8584-4d10-a086-3a5defa7a6c3",
                         "Url": "http://example.com/some-url",
-                        "MimeType": "application/json",
+                        "MediaType": "application/json",
                         "ConsumerType": 0
                       }
                     ]
@@ -322,16 +322,7 @@
                     "Type": 3,
                     "RelatedActivityId": null,
                     "DialogElementId": null,
-                    "PerformedBy": [
-                      {
-                        "Value": "Some performer",
-                        "CultureCode": "en-us"
-                      },
-                      {
-                        "Value": "En utfører",
-                        "CultureCode": "nb-no"
-                      }
-                    ],
+                    "PerformedBy": "Some performed",
                     "Description": [
                       {
                         "Value": "Some description",
@@ -2604,7 +2595,7 @@
             "type": "string",
             "format": "uri"
           },
-          "mimeType": {
+          "mediaType": {
             "type": "string",
             "nullable": true
           },
@@ -2809,10 +2800,8 @@
             "nullable": true
           },
           "performedBy": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/LocalizationDto"
-            }
+            "type": "string",
+            "nullable": true
           },
           "description": {
             "type": "array",
@@ -3159,7 +3148,7 @@
             "type": "string",
             "format": "uri"
           },
-          "mimeType": {
+          "mediaType": {
             "type": "string",
             "nullable": true
           },
@@ -3308,11 +3297,8 @@
             "nullable": true
           },
           "performedBy": {
-            "type": "array",
-            "nullable": true,
-            "items": {
-              "$ref": "#/components/schemas/LocalizationDto"
-            }
+            "type": "string",
+            "nullable": true
           },
           "description": {
             "type": "array",
@@ -3504,7 +3490,7 @@
             "type": "string",
             "format": "uri"
           },
-          "mimeType": {
+          "mediaType": {
             "type": "string",
             "nullable": true
           },
@@ -3642,10 +3628,8 @@
             "nullable": true
           },
           "performedBy": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/LocalizationDto"
-            }
+            "type": "string",
+            "nullable": true
           },
           "description": {
             "type": "array",
@@ -3761,10 +3745,8 @@
             "nullable": true
           },
           "performedBy": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/LocalizationDto"
-            }
+            "type": "string",
+            "nullable": true
           },
           "description": {
             "type": "array",
@@ -3997,11 +3979,8 @@
             "nullable": true
           },
           "performedBy": {
-            "type": "array",
-            "nullable": true,
-            "items": {
-              "$ref": "#/components/schemas/LocalizationDto"
-            }
+            "type": "string",
+            "nullable": true
           },
           "description": {
             "type": "array",
@@ -4225,7 +4204,7 @@
             "type": "string",
             "format": "uri"
           },
-          "mimeType": {
+          "mediaType": {
             "type": "string",
             "nullable": true
           },
@@ -4380,11 +4359,8 @@
             "nullable": true
           },
           "performedBy": {
-            "type": "array",
-            "nullable": true,
-            "items": {
-              "$ref": "#/components/schemas/LocalizationDto"
-            }
+            "type": "string",
+            "nullable": true
           },
           "description": {
             "type": "array",

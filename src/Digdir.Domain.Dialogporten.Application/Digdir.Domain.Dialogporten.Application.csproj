@@ -1,14 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-
         <!-- In order to support doc blocks for Swagger generation in PatchDialogsController.cs -->
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <NoWarn>1591</NoWarn> <!-- Disable warnings for missing XML comments -->
-      <UserSecretsId>750256a4-f332-4783-8802-8a7d9566f9ca</UserSecretsId>
   </PropertyGroup>
 
     <ItemGroup>

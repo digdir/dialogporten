@@ -1,11 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
-    
+
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
         <AzureFunctionsVersion>v4</AzureFunctionsVersion>
         <OutputType>Exe</OutputType>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
         <UserSecretsId>dd6841cd-1cfd-4f1c-a63e-edc687bff657</UserSecretsId>
     </PropertyGroup>
     <ItemGroup>

@@ -1,6 +1,7 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Common.Extensions.Enumerables;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.FluentValidation;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
+using Digdir.Domain.Dialogporten.Domain;
 using Digdir.Domain.Dialogporten.Domain.Common;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
@@ -166,8 +167,12 @@ internal sealed class UpdateDialogDialogElementUrlDtoValidator : AbstractValidat
             .NotNull()
             .IsValidUri()
             .MaximumLength(Constants.DefaultMaxUriLength);
-        RuleFor(x => x.MimeType)
+        RuleFor(x => x.MediaType)
             .MaximumLength(Constants.DefaultMaxStringLength);
+        RuleFor(x => x.MediaType)
+            .Must(MediaTypes.IsValid!)
+            .When(x => x.MediaType != null)
+            .WithMessage("Invalid media type, see docs for complete list <URL TDB>");
         RuleFor(x => x.ConsumerType)
             .IsInEnum();
     }
@@ -268,7 +273,7 @@ internal sealed class UpdateDialogDialogActivityDtoValidator : AbstractValidator
             .NotEqual(x => x.Id)
             .When(x => x.RelatedActivityId.HasValue);
         RuleFor(x => x.PerformedBy)
-            .SetValidator(localizationsValidator);
+            .MaximumLength(Constants.DefaultMaxStringLength);
         RuleFor(x => x.Description)
             .NotEmpty()
             .SetValidator(localizationsValidator);

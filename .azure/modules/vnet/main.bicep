@@ -5,7 +5,7 @@ param namePrefix string
 param location string
 
 // https://learn.microsoft.com/en-us/azure/container-apps/firewall-integration?tabs=consumption-only
-resource containerAppEnvironmentNSG 'Microsoft.Network/networkSecurityGroups@2023-09-01' = {
+resource containerAppEnvironmentNSG 'Microsoft.Network/networkSecurityGroups@2023-11-01' = {
   name: '${namePrefix}-container-app-environment-nsg'
   location: location
   properties: {
@@ -103,7 +103,7 @@ resource containerAppEnvironmentNSG 'Microsoft.Network/networkSecurityGroups@202
   }
 }
 
-resource postgresqlNSG 'Microsoft.Network/networkSecurityGroups@2023-09-01' = {
+resource postgresqlNSG 'Microsoft.Network/networkSecurityGroups@2023-11-01' = {
   name: '${namePrefix}-postgresql-nsg'
   location: location
   properties: {
@@ -141,7 +141,7 @@ resource postgresqlNSG 'Microsoft.Network/networkSecurityGroups@2023-09-01' = {
   }
 }
 
-resource serviceBusNSG 'Microsoft.Network/networkSecurityGroups@2023-09-01' = {
+resource serviceBusNSG 'Microsoft.Network/networkSecurityGroups@2023-11-01' = {
   name: '${namePrefix}-service-bus-nsg'
   location: location
   properties: {
@@ -179,7 +179,7 @@ resource serviceBusNSG 'Microsoft.Network/networkSecurityGroups@2023-09-01' = {
   }
 }
 
-resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-09-01' = {
+resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-11-01' = {
   name: '${namePrefix}-vnet'
   location: location
   properties: {

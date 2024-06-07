@@ -109,16 +109,7 @@ export default function () {
             {
                 "type": "Error",
                 "dialogElementId": dialogElementId,
-                "performedBy": [
-                    {
-                        "value": "Politiet",
-                        "cultureCode":"nb_no"
-                    },
-                    {
-                        "value": "La policia",
-                        "cultureCode":"es_es"
-                    }
-                ],
+                "performedBy": "Politiet", 
                 "description": [
                     {
                         "value": "Lovbrudd",
@@ -132,12 +123,7 @@ export default function () {
             },
             {
                 "type": "Submission",
-                "performedBy": [
-                    {
-                        "value": "NAV",
-                        "cultureCode": "nb_no"
-                    }
-                ],
+                "performedBy": "NAV",
                 "description": [
                     {
                         "value": "Brukeren har levert et viktig dokument.",
@@ -147,16 +133,7 @@ export default function () {
             },
             {
                 "type": "Submission",
-                "performedBy": [
-                    {
-                        "value": "Skatteetaten",
-                        "cultureCode": "nb_no"
-                    },
-                    {
-                        "value": "IRS",
-                        "cultureCode": "en_us"
-                    }
-                ],
+                "performedBy": "Skatteetaten",
                 "description": [
                     {
                         "value": "Brukeren har begått skattesvindel",

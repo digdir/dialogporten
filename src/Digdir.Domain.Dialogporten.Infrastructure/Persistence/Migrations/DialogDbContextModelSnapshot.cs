@@ -17,7 +17,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.4")
+                .HasAnnotation("ProductVersion", "8.0.6")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -227,6 +227,10 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.Property<string>("ExtendedType")
                         .HasMaxLength(1023)
                         .HasColumnType("character varying(1023)");
+
+                    b.Property<string>("PerformedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
 
                     b.Property<Guid?>("RelatedActivityId")
                         .HasColumnType("uuid");
@@ -547,9 +551,14 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
 
+                    b.Property<int>("EndUserTypeId")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.HasIndex("DialogId");
+
+                    b.HasIndex("EndUserTypeId");
 
                     b.ToTable("DialogSeenLog");
                 });
@@ -598,6 +607,53 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         {
                             Id = 6,
                             Name = "Completed"
+                        });
+                });
+
+            modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogUserType", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DialogUserType");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 0,
+                            Name = "Unknown"
+                        },
+                        new
+                        {
+                            Id = 1,
+                            Name = "Person"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "LegacySystemUser"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "SystemUser"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "ServiceOwner"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name = "ServiceOwnerOnBehalfOfPerson"
                         });
                 });
 
@@ -663,7 +719,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("DialogElementId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("MimeType")
+                    b.Property<string>("MediaType")
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
 
@@ -887,26 +943,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.HasIndex("ActivityId")
                         .IsUnique();
 
-                    b.ToTable("LocalizationSet", t =>
-                        {
-                            t.Property("ActivityId")
-                                .HasColumnName("DialogActivityDescription_ActivityId");
-                        });
-
                     b.HasDiscriminator().HasValue("DialogActivityDescription");
-                });
-
-            modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities.DialogActivityPerformedBy", b =>
-                {
-                    b.HasBaseType("Digdir.Domain.Dialogporten.Domain.Localizations.LocalizationSet");
-
-                    b.Property<Guid>("ActivityId")
-                        .HasColumnType("uuid");
-
-                    b.HasIndex("ActivityId")
-                        .IsUnique();
-
-                    b.HasDiscriminator().HasValue("DialogActivityPerformedBy");
                 });
 
             modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content.DialogContentValue", b =>
@@ -1086,7 +1123,15 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogUserType", "EndUserType")
+                        .WithMany()
+                        .HasForeignKey("EndUserTypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.Navigation("Dialog");
+
+                    b.Navigation("EndUserType");
                 });
 
             modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements.DialogElement", b =>
@@ -1170,17 +1215,6 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.Navigation("Activity");
                 });
 
-            modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities.DialogActivityPerformedBy", b =>
-                {
-                    b.HasOne("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities.DialogActivity", "Activity")
-                        .WithOne("PerformedBy")
-                        .HasForeignKey("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities.DialogActivityPerformedBy", "ActivityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Activity");
-                });
-
             modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content.DialogContentValue", b =>
                 {
                     b.HasOne("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content.DialogContent", "DialogContent")
@@ -1227,8 +1261,6 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities.DialogActivity", b =>
                 {
                     b.Navigation("Description");
-
-                    b.Navigation("PerformedBy");
 
                     b.Navigation("RelatedActivities");
                 });

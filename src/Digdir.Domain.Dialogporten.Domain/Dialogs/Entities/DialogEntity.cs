@@ -90,7 +90,7 @@ public class DialogEntity :
     public void OnDelete(AggregateNode self, DateTimeOffset utcNow)
         => _domainEvents.Add(new DialogDeletedDomainEvent(Id, ServiceResource, Party));
 
-    public void UpdateSeenAt(string endUserId, string? endUserName)
+    public void UpdateSeenAt(string endUserId, DialogUserType.Values userTypeId, string? endUserName)
     {
         var lastSeenAt = SeenLog
             .Where(x => x.EndUserId == endUserId)
@@ -106,6 +106,7 @@ public class DialogEntity :
         SeenLog.Add(new()
         {
             EndUserId = endUserId,
+            EndUserTypeId = userTypeId,
             EndUserName = endUserName
         });
 

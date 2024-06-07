@@ -12,6 +12,9 @@ on:
       hasSlackNotifierChanges:
         description: "Slack Notifier function related files changed"
         value: ${{ jobs.check-for-changes.outputs.hasSlackNotifierChanges }}
+      hasSchemaChanges:
+        description: "Schema has changed"
+        value: ${{ jobs.check-for-changes.outputs.hasSchemaChanges }}
       hasMigrationChanges:
         description: "Migration related files changed"
         value: ${{ jobs.check-for-changes.outputs.hasMigrationChanges }}
@@ -23,6 +26,7 @@ jobs:
       hasBackendChanges: ${{ steps.filter.outputs.backend_any_changed == 'true' }}
       hasAzureChanges: ${{ steps.filter.outputs.azure_any_changed == 'true' }}
       hasSlackNotifierChanges: ${{ steps.filter.outputs.slackNotifier_any_changed == 'true'}}
+      hasSchemaChanges: ${{ steps.filter.outputs.schema_any_changed == 'true'}}
       hasMigrationChanges: ${{ steps.filter.outputs.migration_any_changed == 'true'}}
     steps:
       - name: Checkout
@@ -46,5 +50,7 @@ jobs:
             slackNotifier:
               - '.github/**/*'
               - 'src/Digdir.Tool.Dialogporten.SlackNotifier/**/*'
+            schema:
+              - 'docs/schema/V1/**/*'
             migration: 
               - 'src/Digdir.Domain.Dialogporten.Infrastructure/Persistence/Migrations/**/*'
