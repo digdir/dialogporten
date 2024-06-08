@@ -104,7 +104,6 @@ public sealed class GuiAction
     public Uri Url { get; set; } = null!;
     public string? AuthorizationAttribute { get; set; }
     public bool IsAuthorized { get; set; }
-    public bool IsBackChannel { get; set; }
     public bool IsDeleteAction { get; set; }
 
     public GuiActionPriority Priority { get; set; }

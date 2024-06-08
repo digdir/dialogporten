@@ -278,7 +278,6 @@
                     "Action": "submit",
                     "Url": "https://example.com/some-url",
                     "AuthorizationAttribute": null,
-                    "IsBackChannel": false,
                     "IsDeleteAction": false,
                     "Priority": 1,
                     "Title": [
@@ -2636,9 +2635,6 @@
             "type": "string",
             "nullable": true
           },
-          "isBackChannel": {
-            "type": "boolean"
-          },
           "isDeleteAction": {
             "type": "boolean"
           },
@@ -3176,9 +3172,6 @@
             "type": "string",
             "nullable": true
           },
-          "isBackChannel": {
-            "type": "boolean"
-          },
           "isDeleteAction": {
             "type": "boolean"
           },
@@ -3513,9 +3506,6 @@
           "authorizationAttribute": {
             "type": "string",
             "nullable": true
-          },
-          "isBackChannel": {
-            "type": "boolean"
           },
           "isDeleteAction": {
             "type": "boolean"
@@ -4233,9 +4223,6 @@
             "nullable": true
           },
           "isAuthorized": {
-            "type": "boolean"
-          },
-          "isBackChannel": {
             "type": "boolean"
           },
           "isDeleteAction": {
