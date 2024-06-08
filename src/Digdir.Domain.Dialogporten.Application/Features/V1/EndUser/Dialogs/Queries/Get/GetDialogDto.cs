@@ -103,7 +103,7 @@ public sealed class GetDialogDialogGuiActionDto
     public Uri Url { get; set; } = null!;
     public string? AuthorizationAttribute { get; set; }
     public bool IsAuthorized { get; set; }
-    public bool IsDeleteAction { get; set; }
+    public bool IsDeleteDialogAction { get; set; }
 
     public DialogGuiActionPriority.Values Priority { get; set; }
 
