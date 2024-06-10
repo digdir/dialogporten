@@ -155,7 +155,6 @@ module redis '../modules/redis/main.bicep' = {
     sku: redisSku
     version: redisVersion
     subnetId: vnet.outputs.redisSubnetId
-    vnetId: vnet.outputs.virtualNetworkId
   }
 }
 

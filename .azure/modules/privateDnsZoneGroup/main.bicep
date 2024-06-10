@@ -1,6 +1,10 @@
-param dnsZoneId string
+param dnsZoneName string
 param privateEndpointName string
 param namePrefix string
+
+resource privateDNSZone 'Microsoft.Network/privateDnsZones@2020-06-01' existing = {
+  name: dnsZoneName
+}
 
 resource privateEndpoint 'Microsoft.Network/privateEndpoints@2023-04-01' existing = {
   name: privateEndpointName
@@ -14,7 +18,7 @@ resource pe_dns_zone_group 'Microsoft.Network/privateEndpoints/privateDnsZoneGro
       {
         name: '${namePrefix}-pe-dzg'
         properties: {
-          privateDnsZoneId: dnsZoneId
+          privateDnsZoneId: privateDNSZone.id
         }
       }
     ]
