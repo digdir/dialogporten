@@ -45,7 +45,7 @@ resource redisPrivateEndpoint 'Microsoft.Network/privateEndpoints@2022-01-01' = 
         properties: {
           privateLinkServiceId: redis.id
           groupIds: [
-            'redis'
+            'redisCache'
           ]
         }
       }
