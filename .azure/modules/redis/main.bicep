@@ -71,8 +71,6 @@ module privateDnsZoneGroup '../privateDnsZoneGroup/main.bicep' = {
     privateDnsZone
   ]
   params: {
-    // the private DNS Zone is created automatically by Azure, so we just want to reference it
-    // https://learn.microsoft.com/en-us/azure/azure-cache-for-redis/cache-private-link#how-do-i-connect-to-my-cache-with-private-endpoint
     dnsZoneId: privateDnsZone.outputs.id
     privateEndpointName: redisPrivateEndpoint.name
     namePrefix: namePrefix
@@ -86,7 +84,6 @@ module redisConnectionString '../keyvault/upsertSecret.bicep' = {
   params: {
     destKeyVaultName: environmentKeyVaultName
     secretName: 'dialogportenRedisConnectionString'
-    // disable public access? Use vnet here maybe?
     secretValue: '${redis.properties.hostName}:${redis.properties.sslPort},password=${redis.properties.accessKeys.primaryKey},ssl=True,abortConnect=False'
   }
 }
