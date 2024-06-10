@@ -278,7 +278,7 @@
                     "Action": "submit",
                     "Url": "https://example.com/some-url",
                     "AuthorizationAttribute": null,
-                    "IsDeleteAction": false,
+                    "IsDeleteDialogAction": false,
                     "Priority": 1,
                     "Title": [
                       {
@@ -2635,7 +2635,7 @@
             "type": "string",
             "nullable": true
           },
-          "isDeleteAction": {
+          "isDeleteDialogAction": {
             "type": "boolean"
           },
           "priority": {
@@ -3172,7 +3172,7 @@
             "type": "string",
             "nullable": true
           },
-          "isDeleteAction": {
+          "isDeleteDialogAction": {
             "type": "boolean"
           },
           "priority": {
@@ -3507,7 +3507,7 @@
             "type": "string",
             "nullable": true
           },
-          "isDeleteAction": {
+          "isDeleteDialogAction": {
             "type": "boolean"
           },
           "priority": {
@@ -4225,7 +4225,7 @@
           "isAuthorized": {
             "type": "boolean"
           },
-          "isDeleteAction": {
+          "isDeleteDialogAction": {
             "type": "boolean"
           },
           "priority": {
