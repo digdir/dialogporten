@@ -14,7 +14,7 @@ public class DialogGuiAction : IEntity
     public Uri Url { get; set; } = null!;
     public string? AuthorizationAttribute { get; set; }
 
-    public bool IsDeleteAction { get; set; }
+    public bool IsDeleteDialogAction { get; set; }
 
     // === Dependent relationships ===
     public DialogGuiActionPriority.Values PriorityId { get; set; }
