@@ -30,7 +30,7 @@ public static class DialogEntityExtensions
         // In the former case, we need to use "elementread" as the action, as having "read" on the main resource would
         // also give access to the subresource/task. In the latter case, we should use "read", as the resource is a
         // separate entity.
-        return authorizationAttribute.StartsWith("urn:altinn:resource:", StringComparison.OrdinalIgnoreCase)
+        return authorizationAttribute.StartsWith(Domain.Common.Constants.ServiceResourcePrefix, StringComparison.OrdinalIgnoreCase)
             ? Constants.ReadAction
             : Constants.ElementReadAction;
     }
