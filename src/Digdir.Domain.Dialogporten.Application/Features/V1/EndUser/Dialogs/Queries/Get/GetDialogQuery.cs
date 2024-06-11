@@ -157,15 +157,12 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
                 }
             }
 
-            var elements = dto.Elements.Where(dialogElement =>
-                // If no authorization attribute is set, we just required "read" on the main resource
-                (dialogElement.AuthorizationAttribute is null && action == Constants.ReadAction && resource == Constants.MainResource) ||
-                // If an authorization attribute is set, we require either "elementread" (if subresource) or "read" (if external resource)
-                (dialogElement.AuthorizationAttribute == resource && action is Constants.ElementReadAction or Constants.ReadAction));
-
-            foreach (var element in elements)
+            foreach (var element in dto.Elements)
             {
-                element.IsAuthorized = true;
+                if (authorizationResult.HasReadAccessToDialogElement(element))
+                {
+                    element.IsAuthorized = true;
+                }
             }
         }
     }

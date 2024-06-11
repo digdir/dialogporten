@@ -1,4 +1,6 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Common.Authorization;
+using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogElements.Queries.Get;
+using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Queries.Get;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements;
 
 namespace Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
@@ -13,13 +15,19 @@ public sealed class DialogDetailsAuthorizationResult
     public bool HasReadAccessToMainResource() =>
         AuthorizedAltinnActions.Contains(new(Constants.ReadAction, Constants.MainResource));
 
-    public bool HasReadAccessToDialogElement(DialogElement dialogElement)
+    public bool HasReadAccessToDialogElement(DialogElement dialogElement) =>
+        HasReadAccessToDialogElement(dialogElement.AuthorizationAttribute);
+
+    public bool HasReadAccessToDialogElement(GetDialogDialogElementDto dialogElement) =>
+        HasReadAccessToDialogElement(dialogElement.AuthorizationAttribute);
+
+    private bool HasReadAccessToDialogElement(string? authorizationAttribute)
     {
-        return dialogElement.AuthorizationAttribute is not null
+        return authorizationAttribute is not null
             ? ( // Dialog elements are authorized by either the elementread or read action, depending on the authorization attribute type
                 // The infrastructure will ensure that the correct action is used, so here we just check for either
-                AuthorizedAltinnActions.Contains(new(Constants.ElementReadAction, dialogElement.AuthorizationAttribute))
-             || AuthorizedAltinnActions.Contains(new(Constants.ReadAction, dialogElement.AuthorizationAttribute))
+                AuthorizedAltinnActions.Contains(new(Constants.ElementReadAction, authorizationAttribute))
+                || AuthorizedAltinnActions.Contains(new(Constants.ReadAction, authorizationAttribute))
             ) : HasReadAccessToMainResource();
     }
 }

@@ -151,7 +151,7 @@ internal static class DecisionRequestHelper
 
     private static XacmlJsonCategory CreateResourceCategory(string id, string serviceResource, Guid? dialogId, XacmlJsonAttribute? partyAttribute, string? authorizationAttribute = null)
     {
-        var (ns, value, org) = SplitNsAndValue(serviceResource);
+        var (ns, value, org) = SplitNamespaceAndValue(serviceResource);
         var attributes = new List<XacmlJsonAttribute>
         {
             new() { AttributeId = ns, Value = value }
@@ -200,7 +200,7 @@ internal static class DecisionRequestHelper
 
             // If we get either urn:altinn:app/urn:altinn:org or urn:altinn:resource attributes, this should
             // be considered overrides that should be used instead of the default resource attributes.
-            if (resourceAttributesFromAuthorizationAttribute.Any(x => x.AttributeId is AttributeIdApp or AttributeIdResource))
+            if (resourceAttributesFromAuthorizationAttribute.Any(x => x.AttributeId is AttributeIdApp or AttributeIdOrg or AttributeIdResource))
             {
                 attributes.RemoveAll(x =>
                     x.AttributeId is AttributeIdResource or AttributeIdResourceInstance or AttributeIdApp or AttributeIdOrg or AttributeIdAppInstance);
@@ -219,7 +219,7 @@ internal static class DecisionRequestHelper
     private static List<XacmlJsonAttribute> GetResourceAttributesForAuthorizationAttribute(string subResource)
     {
         var result = new List<XacmlJsonAttribute>();
-        var (ns, value, org) = SplitNsAndValue(subResource, AttributeIdSubResource);
+        var (ns, value, org) = SplitNamespaceAndValue(subResource, AttributeIdSubResource);
         result.Add(new XacmlJsonAttribute { AttributeId = ns, Value = value });
         if (org is not null)
         {
@@ -229,14 +229,14 @@ internal static class DecisionRequestHelper
         return result;
     }
 
-    private static (string, string, string?) SplitNsAndValue(string serviceResource, string defaultNs = AttributeIdResource)
+    private static (string, string, string?) SplitNamespaceAndValue(string serviceResource, string defaultNamespace = AttributeIdResource)
     {
         var lastColonIndex = serviceResource.LastIndexOf(':');
         if (lastColonIndex == -1 || lastColonIndex == serviceResource.Length - 1)
         {
             // If we don't recognize the format, we just return the whole string as the value and assume
             // that the caller wants to refer a resource in the Resource Registry namespace.
-            return (defaultNs, serviceResource, null);
+            return (defaultNamespace, serviceResource, null);
         }
 
         var ns = serviceResource[..lastColonIndex];
