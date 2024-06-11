@@ -41,12 +41,17 @@ resource redisPrivateEndpoint 'Microsoft.Network/privateEndpoints@2022-01-01' = 
   properties: {
     privateLinkServiceConnections: [
       {
-        name: '${namePrefix}-plsc'
+        name: '${namePrefix}-redis-plsc'
         properties: {
           privateLinkServiceId: redis.id
           groupIds: [
             'redisCache'
           ]
+          privateLinkServiceConnectionState: {
+            status: 'Approved'
+            description: 'Auto-Approved'
+            actionsRequired: 'None'
+          }
         }
       }
     ]
