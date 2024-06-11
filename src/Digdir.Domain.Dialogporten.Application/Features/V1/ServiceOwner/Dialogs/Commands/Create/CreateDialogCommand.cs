@@ -118,9 +118,15 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
             return resource is not null && resource.StartsWith(Constants.ServiceResourcePrefix, StringComparison.OrdinalIgnoreCase);
         }
 
-        serviceResourceReferences.AddRange(from action in request.ApiActions where IsExternalResource(action.AuthorizationAttribute) select action.AuthorizationAttribute!);
-        serviceResourceReferences.AddRange(from action in request.GuiActions where IsExternalResource(action.AuthorizationAttribute) select action.AuthorizationAttribute!);
-        serviceResourceReferences.AddRange(from element in request.Elements where IsExternalResource(element.AuthorizationAttribute) select element.AuthorizationAttribute!);
+        serviceResourceReferences.AddRange(request.ApiActions
+            .Where(action => IsExternalResource(action.AuthorizationAttribute))
+            .Select(action => action.AuthorizationAttribute!));
+        serviceResourceReferences.AddRange(request.GuiActions
+            .Where(action => IsExternalResource(action.AuthorizationAttribute))
+            .Select(action => action.AuthorizationAttribute!));
+        serviceResourceReferences.AddRange(request.Elements
+            .Where(element => IsExternalResource(element.AuthorizationAttribute))
+            .Select(element => element.AuthorizationAttribute!));
 
         return serviceResourceReferences.Distinct().ToList();
     }
