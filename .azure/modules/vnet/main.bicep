@@ -4,6 +4,44 @@ param namePrefix string
 @description('The location where the resources will be deployed')
 param location string
 
+resource defaultNSG 'Microsoft.Network/networkSecurityGroups@2023-11-01' = {
+  name: '${namePrefix}-default-nsg'
+  location: location
+  properties: {
+    securityRules: [
+      // todo: restrict the ports further
+      {
+        name: 'AllowAnyCustomAnyInbound'
+        type: 'Microsoft.Network/networkSecurityGroups/securityRules'
+        properties: {
+          protocol: '*'
+          sourcePortRange: '*'
+          destinationPortRange: '*'
+          sourceAddressPrefix: '*'
+          destinationAddressPrefix: '*'
+          access: 'Allow'
+          priority: 100
+          direction: 'Inbound'
+        }
+      }
+      {
+        name: 'AllowAnyCustomAnyOutbound'
+        type: 'Microsoft.Network/networkSecurityGroups/securityRules'
+        properties: {
+          protocol: '*'
+          sourcePortRange: '*'
+          destinationPortRange: '*'
+          sourceAddressPrefix: '*'
+          destinationAddressPrefix: '*'
+          access: 'Allow'
+          priority: 100
+          direction: 'Outbound'
+        }
+      }
+    ]
+  }
+}
+
 // https://learn.microsoft.com/en-us/azure/container-apps/firewall-integration?tabs=consumption-only
 resource containerAppEnvironmentNSG 'Microsoft.Network/networkSecurityGroups@2023-11-01' = {
   name: '${namePrefix}-container-app-environment-nsg'
@@ -141,6 +179,44 @@ resource postgresqlNSG 'Microsoft.Network/networkSecurityGroups@2023-11-01' = {
   }
 }
 
+resource redisNSG 'Microsoft.Network/networkSecurityGroups@2023-09-01' = {
+  name: '${namePrefix}-redis-nsg'
+  location: location
+  properties: {
+    securityRules: [
+      // todo: restrict the ports furter: https://learn.microsoft.com/en-us/azure/postgresql/flexible-server/concepts-networking-private#virtual-network-concepts
+      {
+        name: 'AllowAnyCustomAnyInbound'
+        type: 'Microsoft.Network/networkSecurityGroups/securityRules'
+        properties: {
+          protocol: '*'
+          sourcePortRange: '*'
+          destinationPortRange: '*'
+          sourceAddressPrefix: '*'
+          destinationAddressPrefix: '*'
+          access: 'Allow'
+          priority: 100
+          direction: 'Inbound'
+        }
+      }
+      {
+        name: 'AllowAnyCustomAnyOutbound'
+        type: 'Microsoft.Network/networkSecurityGroups/securityRules'
+        properties: {
+          protocol: '*'
+          sourcePortRange: '*'
+          destinationPortRange: '*'
+          sourceAddressPrefix: '*'
+          destinationAddressPrefix: '*'
+          access: 'Allow'
+          priority: 100
+          direction: 'Outbound'
+        }
+      }
+    ]
+  }
+}
+
 resource serviceBusNSG 'Microsoft.Network/networkSecurityGroups@2023-11-01' = {
   name: '${namePrefix}-service-bus-nsg'
   location: location
@@ -193,6 +269,9 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-11-01' = {
         name: 'default'
         properties: {
           addressPrefix: '10.0.0.0/24'
+          networkSecurityGroup: {
+            id: defaultNSG.id
+          }
         }
       }
       {
@@ -238,6 +317,15 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-11-01' = {
           }
         }
       }
+      {
+        name: 'redisSubnet'
+        properties: {
+          addressPrefix: '10.0.5.0/24'
+          networkSecurityGroup: {
+            id: redisNSG.id
+          }
+        }
+      }
     ]
   }
 }
@@ -248,3 +336,4 @@ output defaultSubnetId string = virtualNetwork.properties.subnets[0].id
 output postgresqlSubnetId string = virtualNetwork.properties.subnets[1].id
 output containerAppEnvironmentSubnetId string = virtualNetwork.properties.subnets[2].id
 output serviceBusSubnetId string = virtualNetwork.properties.subnets[3].id
+output redisSubnetId string = virtualNetwork.properties.subnets[4].id

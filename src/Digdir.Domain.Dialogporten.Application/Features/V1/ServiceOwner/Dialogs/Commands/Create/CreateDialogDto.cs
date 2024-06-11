@@ -84,8 +84,7 @@ public sealed class CreateDialogDialogGuiActionDto
     public string Action { get; set; } = null!;
     public Uri Url { get; set; } = null!;
     public string? AuthorizationAttribute { get; set; }
-    public bool IsBackChannel { get; set; }
-    public bool IsDeleteAction { get; set; }
+    public bool IsDeleteDialogAction { get; set; }
 
     public DialogGuiActionPriority.Values Priority { get; set; }
 

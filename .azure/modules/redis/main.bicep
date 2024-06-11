@@ -1,5 +1,7 @@
 param namePrefix string
 param location string
+param subnetId string
+param vnetId string
 @minLength(1)
 param environmentKeyVaultName string
 @minLength(1)
@@ -29,6 +31,49 @@ resource redis 'Microsoft.Cache/Redis@2023-08-01' = {
       'maxmemory-policy': 'allkeys-lru'
     }
     redisVersion: version
+    publicNetworkAccess: 'Disabled'
+  }
+}
+
+resource redisPrivateEndpoint 'Microsoft.Network/privateEndpoints@2022-01-01' = {
+  name: '${namePrefix}-redis-pe'
+  location: location
+  properties: {
+    privateLinkServiceConnections: [
+      {
+        name: '${namePrefix}-plsc'
+        properties: {
+          privateLinkServiceId: redis.id
+          groupIds: [
+            'redisCache'
+          ]
+        }
+      }
+    ]
+    subnet: {
+      id: subnetId
+    }
+  }
+}
+
+module privateDnsZone '../privateDnsZone/main.bicep' = {
+  name: '${namePrefix}-redis-pdz'
+  params: {
+    namePrefix: namePrefix
+    defaultDomain: 'privatelink.redis.cache.windows.net'
+    vnetId: vnetId
+  }
+}
+
+module privateDnsZoneGroup '../privateDnsZoneGroup/main.bicep' = {
+  name: '${namePrefix}-redis-privateDnsZoneGroup'
+  dependsOn: [
+    privateDnsZone
+  ]
+  params: {
+    dnsZoneId: privateDnsZone.outputs.id
+    privateEndpointName: redisPrivateEndpoint.name
+    namePrefix: namePrefix
   }
 }
 
@@ -39,7 +84,6 @@ module redisConnectionString '../keyvault/upsertSecret.bicep' = {
   params: {
     destKeyVaultName: environmentKeyVaultName
     secretName: 'dialogportenRedisConnectionString'
-    // disable public access? Use vnet here maybe?
     secretValue: '${redis.properties.hostName}:${redis.properties.sslPort},password=${redis.properties.accessKeys.primaryKey},ssl=True,abortConnect=False'
   }
 }

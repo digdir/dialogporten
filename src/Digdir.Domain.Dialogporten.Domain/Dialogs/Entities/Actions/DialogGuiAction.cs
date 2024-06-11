@@ -13,8 +13,8 @@ public class DialogGuiAction : IEntity
     public string Action { get; set; } = null!;
     public Uri Url { get; set; } = null!;
     public string? AuthorizationAttribute { get; set; }
-    public bool IsBackChannel { get; set; }
-    public bool IsDeleteAction { get; set; }
+
+    public bool IsDeleteDialogAction { get; set; }
 
     // === Dependent relationships ===
     public DialogGuiActionPriority.Values PriorityId { get; set; }

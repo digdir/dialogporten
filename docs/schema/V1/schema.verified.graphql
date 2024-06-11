@@ -125,8 +125,7 @@ type GuiAction {
   url: URL!
   authorizationAttribute: String
   isAuthorized: Boolean!
-  isBackChannel: Boolean!
-  isDeleteAction: Boolean!
+  isDeleteDialogAction: Boolean!
   priority: GuiActionPriority!
   title: [Localization!]!
 }
