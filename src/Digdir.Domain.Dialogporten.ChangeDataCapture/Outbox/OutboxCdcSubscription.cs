@@ -22,7 +22,7 @@ internal sealed class OutboxCdcSubscription : ICdcSubscription<OutboxMessage>, I
     /// We do this at the expense of messages being consumed multiple times at the beginning of the 
     /// recovery process.
     /// </summary>
-    private static TimeSpan ReplicationCheckpointTimeSkew = -TimeSpan.FromSeconds(2);
+    private static readonly TimeSpan ReplicationCheckpointTimeSkew = -TimeSpan.FromSeconds(2);
 
     private bool _disposed;
     private bool _replicationSnapshotConsumed = true;
