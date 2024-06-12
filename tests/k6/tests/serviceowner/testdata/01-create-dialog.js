@@ -34,6 +34,19 @@ export default function () {
                         "cultureCode": "nb-no"
                     }
                 ]
+            },
+            {
+                "action": "read",
+                "url": "https://digdir.no",
+                "priority": "Secondary",
+                "httpMethod": "POST",
+                "title": [
+                    {
+                        "value": "Utfør handling uten navigasjon",
+                        "cultureCode": "nb-no"
+                    }
+                ],
+                "prompt": [ { "value": "Er du sikker?", "cultureCode": "nb-no" } ]
             }
         ],
         "apiActions": [

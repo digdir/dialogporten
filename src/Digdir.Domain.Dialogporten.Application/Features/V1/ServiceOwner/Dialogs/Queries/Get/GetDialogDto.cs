@@ -109,8 +109,10 @@ public sealed class GetDialogDialogGuiActionDto
     public bool IsDeleteDialogAction { get; set; }
 
     public DialogGuiActionPriority.Values Priority { get; set; }
+    public HttpVerb.Values HttpMethod { get; set; }
 
     public List<LocalizationDto> Title { get; set; } = [];
+    public List<LocalizationDto>? Prompt { get; set; }
 }
 
 public sealed class GetDialogDialogElementDto

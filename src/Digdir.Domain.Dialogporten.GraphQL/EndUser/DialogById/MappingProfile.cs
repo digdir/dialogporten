@@ -16,7 +16,8 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.ConsumerType, opt => opt.MapFrom(src => src.ConsumerType));
 
         CreateMap<GetDialogDialogGuiActionDto, GuiAction>()
-            .ForMember(dest => dest.Priority, opt => opt.MapFrom(src => src.Priority));
+            .ForMember(dest => dest.Priority, opt => opt.MapFrom(src => src.Priority))
+            .ForMember(dest => dest.HttpMethod, opt => opt.MapFrom(src => src.HttpMethod));
 
         CreateMap<GetDialogDialogApiActionDto, ApiAction>();
         CreateMap<GetDialogDialogApiActionEndpointDto, ApiActionEndpoint>()
