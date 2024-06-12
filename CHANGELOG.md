@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.1](https://github.com/digdir/dialogporten/compare/v1.8.0...v1.8.1) (2024-06-12)
+
+
+### Bug Fixes
+
+* **azure:** fix redis deployment ([#847](https://github.com/digdir/dialogporten/issues/847)) ([23781e6](https://github.com/digdir/dialogporten/commit/23781e65e5bd567f84e728ed3f808d10b2c904c5))
+
 ## [1.8.0](https://github.com/digdir/dialogporten/compare/v1.7.1...v1.8.0) (2024-06-12)
 
 
