@@ -22,7 +22,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                 table: "DialogGuiAction",
                 type: "integer",
                 nullable: false,
-                defaultValue: 0);
+                defaultValue: 1);
 
             migrationBuilder.CreateIndex(
                 name: "IX_LocalizationSet_DialogGuiActionPrompt_GuiActionId",
