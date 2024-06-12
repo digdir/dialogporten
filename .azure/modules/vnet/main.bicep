@@ -179,7 +179,7 @@ resource postgresqlNSG 'Microsoft.Network/networkSecurityGroups@2023-11-01' = {
   }
 }
 
-resource redisNSG 'Microsoft.Network/networkSecurityGroups@2023-09-01' = {
+resource redisNSG 'Microsoft.Network/networkSecurityGroups@2023-11-01' = {
   name: '${namePrefix}-redis-nsg'
   location: location
   properties: {
