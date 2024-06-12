@@ -1,4 +1,5 @@
-﻿using Digdir.Domain.Dialogporten.Domain.Localizations;
+﻿using Digdir.Domain.Dialogporten.Domain.Http;
+using Digdir.Domain.Dialogporten.Domain.Localizations;
 using Digdir.Library.Entity.Abstractions;
 using Digdir.Library.Entity.Abstractions.Features.Aggregate;
 
@@ -20,12 +21,24 @@ public class DialogGuiAction : IEntity
     public DialogGuiActionPriority.Values PriorityId { get; set; }
     public DialogGuiActionPriority Priority { get; set; } = null!;
 
+    public HttpVerb.Values HttpMethodId { get; set; } = HttpVerb.Values.GET;
+    public HttpVerb HttpMethod { get; set; } = null!;
+
     public Guid DialogId { get; set; }
     public DialogEntity Dialog { get; set; } = null!;
 
     // === Principal relationships ===
     [AggregateChild]
     public DialogGuiActionTitle? Title { get; set; }
+
+    [AggregateChild]
+    public DialogGuiActionPrompt? Prompt { get; set; }
+}
+
+public class DialogGuiActionPrompt : LocalizationSet
+{
+    public Guid GuiActionId { get; set; }
+    public DialogGuiAction GuiAction { get; set; } = null!;
 }
 
 public class DialogGuiActionTitle : LocalizationSet

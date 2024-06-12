@@ -65,6 +65,8 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
                 .ThenInclude(x => x.Urls)
             .Include(x => x.GuiActions)
                 .ThenInclude(x => x.Title!.Localizations)
+            .Include(x => x.GuiActions)
+                .ThenInclude(x => x!.Prompt!.Localizations)
             .Include(x => x.ApiActions)
                 .ThenInclude(x => x.Endpoints)
             .IgnoreQueryFilters()
