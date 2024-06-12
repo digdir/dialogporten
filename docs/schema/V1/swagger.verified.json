@@ -987,261 +987,6 @@
         ]
       }
     },
-    "/api/v1/serviceowner/dialogs/{dialogId}/elements/{elementId}": {
-      "put": {
-        "tags": [
-          "Serviceowner"
-        ],
-        "summary": "Replaces a dialog element",
-        "description": "Replaces a given dialog element with the supplied model. For more information see the documentation (link TBD).\n\nOptimistic concurrency control is implemented using the If-Match header. Supply the Revision value from the GetDialog endpoint to ensure that the dialog is not deleted by another request in the meantime.",
-        "operationId": "ReplaceDialogElement",
-        "parameters": [
-          {
-            "name": "dialogId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "guid"
-            }
-          },
-          {
-            "name": "elementId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "guid"
-            }
-          },
-          {
-            "name": "if-Match",
-            "in": "header",
-            "schema": {
-              "type": "string",
-              "format": "guid",
-              "nullable": true
-            }
-          }
-        ],
-        "requestBody": {
-          "x-name": "UpdateDialogElementRequest",
-          "description": "",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateDialogElementRequest"
-              }
-            }
-          },
-          "required": true,
-          "x-position": 1
-        },
-        "responses": {
-          "401": {
-            "description": "Missing or invalid authentication token. Requires a Maskinporten-token with the scope \"digdir:dialogporten.serviceprovider\"."
-          },
-          "403": {
-            "description": "Unauthorized to update child entity for the given dialog (dialog not owned by authenticated organization or has additional scope requirements defined in service identifiers policy)."
-          },
-          "204": {
-            "description": "The dialog element was updated successfully."
-          },
-          "400": {
-            "description": "Validation error occured. See problem details for a list of errors.",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "The given dialog ID or dialog element ID was not found or was already deleted.",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          },
-          "412": {
-            "description": "The supplied If-Match header did not match the current Revision value for the dialog. The request was not applied.",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Domain error occured. See problem details for a list of errors.",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "JWTBearerAuth": []
-          }
-        ]
-      },
-      "get": {
-        "tags": [
-          "Serviceowner"
-        ],
-        "summary": "Gets a single dialog element",
-        "description": "Gets a single element belonging to a dialog. For more information see the documentation (link TBD).",
-        "operationId": "GetDialogElementSO",
-        "parameters": [
-          {
-            "name": "dialogId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "guid"
-            }
-          },
-          {
-            "name": "elementId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "guid"
-            }
-          }
-        ],
-        "responses": {
-          "401": {
-            "description": "Missing or invalid authentication token. Requires a Maskinporten-token with the scope \"digdir:dialogporten.serviceprovider\"."
-          },
-          "403": {
-            "description": "Unauthorized to get child entity for the given dialog (dialog not owned by authenticated organization or has additional scope requirements defined in service identifiers policy)."
-          },
-          "200": {
-            "description": "Successfully returned the dialog element."
-          },
-          "404": {
-            "description": "The given dialog ID or dialog element ID was not found or was already deleted.",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "JWTBearerAuth": []
-          }
-        ]
-      },
-      "delete": {
-        "tags": [
-          "Serviceowner"
-        ],
-        "summary": "Deletes a dialog element",
-        "description": "Deletes a given dialog element (hard delete). For more information see the documentation (link TBD).\n\nOptimistic concurrency control is implemented using the If-Match header. Supply the Revision value from the GetDialog endpoint to ensure that the dialog is not modified/deleted by another request in the meantime.",
-        "operationId": "DeleteDialogElement",
-        "parameters": [
-          {
-            "name": "dialogId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "guid"
-            }
-          },
-          {
-            "name": "elementId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "guid"
-            }
-          },
-          {
-            "name": "if-Match",
-            "in": "header",
-            "schema": {
-              "type": "string",
-              "format": "guid",
-              "nullable": true
-            }
-          }
-        ],
-        "responses": {
-          "401": {
-            "description": "Missing or invalid authentication token. Requires a Maskinporten-token with the scope \"digdir:dialogporten.serviceprovider\"."
-          },
-          "403": {
-            "description": "Unauthorized to delete child entity for the given dialog (dialog not owned by authenticated organization or has additional scope requirements defined in service identifiers policy)."
-          },
-          "204": {
-            "description": "The dialog element was deleted successfully."
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "The given dialog ID or dialog element ID was not found or was already deleted.",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          },
-          "412": {
-            "description": "The supplied If-Match header did not match the current Revision value for the dialog. The request was not applied.",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "JWTBearerAuth": []
-          }
-        ]
-      }
-    },
     "/api/v1/serviceowner/dialogs/{dialogId}/elements": {
       "get": {
         "tags": [
@@ -1376,6 +1121,62 @@
           },
           "422": {
             "description": "Domain error occured. See problem details for a list of errors.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWTBearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/serviceowner/dialogs/{dialogId}/elements/{elementId}": {
+      "get": {
+        "tags": [
+          "Serviceowner"
+        ],
+        "summary": "Gets a single dialog element",
+        "description": "Gets a single element belonging to a dialog. For more information see the documentation (link TBD).",
+        "operationId": "GetDialogElementSO",
+        "parameters": [
+          {
+            "name": "dialogId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            }
+          },
+          {
+            "name": "elementId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Missing or invalid authentication token. Requires a Maskinporten-token with the scope \"digdir:dialogporten.serviceprovider\"."
+          },
+          "403": {
+            "description": "Unauthorized to get child entity for the given dialog (dialog not owned by authenticated organization or has additional scope requirements defined in service identifiers policy)."
+          },
+          "200": {
+            "description": "Successfully returned the dialog element."
+          },
+          "404": {
+            "description": "The given dialog ID or dialog element ID was not found or was already deleted.",
             "content": {
               "application/problem+json": {
                 "schema": {
@@ -3667,38 +3468,6 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/LocalizationDto"
-            }
-          }
-        }
-      },
-      "UpdateDialogElementRequest": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "type": {
-            "type": "string",
-            "format": "uri",
-            "nullable": true
-          },
-          "authorizationAttribute": {
-            "type": "string",
-            "nullable": true
-          },
-          "relatedDialogElementId": {
-            "type": "string",
-            "format": "guid",
-            "nullable": true
-          },
-          "displayName": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/LocalizationDto"
-            }
-          },
-          "urls": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/UpdateDialogDialogElementUrlDto"
             }
           }
         }
