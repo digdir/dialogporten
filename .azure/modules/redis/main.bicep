@@ -35,7 +35,7 @@ resource redis 'Microsoft.Cache/Redis@2023-08-01' = {
   }
 }
 
-resource redisPrivateEndpoint 'Microsoft.Network/privateEndpoints@2022-01-01' = {
+resource redisPrivateEndpoint 'Microsoft.Network/privateEndpoints@2023-11-01' = {
   name: '${namePrefix}-redis-pe'
   location: location
   properties: {
