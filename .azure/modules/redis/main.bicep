@@ -41,20 +41,16 @@ resource redisPrivateEndpoint 'Microsoft.Network/privateEndpoints@2022-01-01' = 
   properties: {
     privateLinkServiceConnections: [
       {
-        name: '${namePrefix}-redis-plsc'
+        name: '${namePrefix}-redis-pe'
         properties: {
           privateLinkServiceId: redis.id
           groupIds: [
             'redisCache'
           ]
-          privateLinkServiceConnectionState: {
-            status: 'Approved'
-            description: 'Auto-Approved'
-            actionsRequired: 'None'
-          }
         }
       }
     ]
+    customNetworkInterfaceName: 'dp-be-test-redis-pe-nic'
     subnet: {
       id: subnetId
     }
@@ -76,9 +72,10 @@ module privateDnsZoneGroup '../privateDnsZoneGroup/main.bicep' = {
     privateDnsZone
   ]
   params: {
+    name: 'default'
+    dnsZoneGroupName: 'privatelink-redis-cache-windows-net'
     dnsZoneId: privateDnsZone.outputs.id
     privateEndpointName: redisPrivateEndpoint.name
-    namePrefix: namePrefix
   }
 }
 
