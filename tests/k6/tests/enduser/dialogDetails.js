@@ -1,7 +1,7 @@
-import { 
+import {
     describe, expect, expectStatusFor,
     getEU,
-    setVisibleFrom, 
+    setVisibleFrom,
     postSO,
     purgeSO } from '../../common/testimports.js'
 
@@ -32,7 +32,7 @@ export default function () {
         expect(r, 'response').to.have.validJsonBody();
 
         dialog = r.json();
-        
+
         expect(dialog.id, 'dialog id').to.equal(dialogId);
     });
 
@@ -45,11 +45,14 @@ export default function () {
 
     describe('Check that authorized actions have real URLs', () => {
         if (dialog == null) return;
-        expect(dialog, 'dialog').to.have.property("guiActions").with.lengthOf(1);
-        expect(dialog.guiActions[0], 'gui action').to.have.property("isAuthorized").to.equal(true);
-        expect(dialog.guiActions[0], 'url').to.have.property("url").to.include("https://");
+        expect(dialog, 'dialog').to.have.property("guiActions").with.lengthOf(2);
+        expect(dialog.guiActions[0], 'first gui action').to.have.property("isAuthorized").to.equal(true);
+        expect(dialog.guiActions[0], 'first gui action').to.have.property("url");
+        expect(dialog.guiActions[0].url, 'first gui action url').to.include("https://");
+        expect(dialog.guiActions[1], 'second gui action').to.have.property("prompt");
+        expect(dialog.guiActions[1].httpMethod, 'second gui action httpMethod').to.equal("POST");
     });
-    
+
     describe('Check that unauthorized actions to have default URLs', () => {
         if (dialog == null) return;
         expect(dialog, 'dialog').to.have.property("apiActions").with.lengthOf(1);

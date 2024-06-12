@@ -127,7 +127,9 @@ type GuiAction {
   isAuthorized: Boolean!
   isDeleteDialogAction: Boolean!
   priority: GuiActionPriority!
+  httpMethod: HttpVerb!
   title: [Localization!]!
+  prompt: [Localization!]
 }
 
 type Localization {
