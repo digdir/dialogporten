@@ -31,7 +31,7 @@ resource redis 'Microsoft.Cache/Redis@2023-08-01' = {
       'maxmemory-policy': 'allkeys-lru'
     }
     redisVersion: version
-    publicNetworkAccess: 'Enabled'
+    publicNetworkAccess: 'Disabled'
   }
 }
 
@@ -41,7 +41,7 @@ resource redisPrivateEndpoint 'Microsoft.Network/privateEndpoints@2022-01-01' = 
   properties: {
     privateLinkServiceConnections: [
       {
-        name: '${namePrefix}-plsc'
+        name: '${namePrefix}-redis-pe'
         properties: {
           privateLinkServiceId: redis.id
           groupIds: [
@@ -50,6 +50,7 @@ resource redisPrivateEndpoint 'Microsoft.Network/privateEndpoints@2022-01-01' = 
         }
       }
     ]
+    customNetworkInterfaceName: '${namePrefix}-redis-pe-nic'
     subnet: {
       id: subnetId
     }
@@ -71,9 +72,10 @@ module privateDnsZoneGroup '../privateDnsZoneGroup/main.bicep' = {
     privateDnsZone
   ]
   params: {
+    name: 'default'
+    dnsZoneGroupName: 'privatelink-redis-cache-windows-net'
     dnsZoneId: privateDnsZone.outputs.id
     privateEndpointName: redisPrivateEndpoint.name
-    namePrefix: namePrefix
   }
 }
 

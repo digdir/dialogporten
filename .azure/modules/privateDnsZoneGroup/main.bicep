@@ -1,18 +1,19 @@
 param dnsZoneId string
 param privateEndpointName string
-param namePrefix string
+param name string
+param dnsZoneGroupName string
 
 resource privateEndpoint 'Microsoft.Network/privateEndpoints@2023-04-01' existing = {
   name: privateEndpointName
 }
 
 resource pe_dns_zone_group 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2023-04-01' = {
-  name: '${namePrefix}-pe-dzg'
+  name: name
   parent: privateEndpoint
   properties: {
     privateDnsZoneConfigs: [
       {
-        name: '${namePrefix}-pe-dzg'
+        name: dnsZoneGroupName
         properties: {
           privateDnsZoneId: dnsZoneId
         }

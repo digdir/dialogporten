@@ -332,8 +332,24 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-11-01' = {
 
 output virtualNetworkName string = virtualNetwork.name
 output virtualNetworkId string = virtualNetwork.id
-output defaultSubnetId string = virtualNetwork.properties.subnets[0].id
-output postgresqlSubnetId string = virtualNetwork.properties.subnets[1].id
-output containerAppEnvironmentSubnetId string = virtualNetwork.properties.subnets[2].id
-output serviceBusSubnetId string = virtualNetwork.properties.subnets[3].id
-output redisSubnetId string = virtualNetwork.properties.subnets[4].id
+output defaultSubnetId string = resourceId('Microsoft.Network/virtualNetworks/subnets', virtualNetwork.name, 'default')
+output postgresqlSubnetId string = resourceId(
+  'Microsoft.Network/virtualNetworks/subnets',
+  virtualNetwork.name,
+  'postgresqlSubnet'
+)
+output containerAppEnvironmentSubnetId string = resourceId(
+  'Microsoft.Network/virtualNetworks/subnets',
+  virtualNetwork.name,
+  'containerAppEnvSubnet'
+)
+output serviceBusSubnetId string = resourceId(
+  'Microsoft.Network/virtualNetworks/subnets',
+  virtualNetwork.name,
+  'serviceBusSubnet'
+)
+output redisSubnetId string = resourceId(
+  'Microsoft.Network/virtualNetworks/subnets',
+  virtualNetwork.name,
+  'redisSubnet'
+)
