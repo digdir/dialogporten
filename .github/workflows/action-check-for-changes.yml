@@ -23,11 +23,11 @@ jobs:
     name: Filter
     runs-on: ubuntu-latest
     outputs:
-      hasBackendChanges: ${{ steps.filter.outputs.backend_any_changed == 'true' }}
-      hasAzureChanges: ${{ steps.filter.outputs.azure_any_changed == 'true' }}
-      hasSlackNotifierChanges: ${{ steps.filter.outputs.slackNotifier_any_changed == 'true'}}
-      hasSchemaChanges: ${{ steps.filter.outputs.schema_any_changed == 'true'}}
-      hasMigrationChanges: ${{ steps.filter.outputs.migration_any_changed == 'true'}}
+      hasBackendChanges: ${{ steps.filter.outputs.backend_any_modified == 'true' }}
+      hasAzureChanges: ${{ steps.filter.outputs.azure_any_modified == 'true' }}
+      hasSlackNotifierChanges: ${{ steps.filter.outputs.slackNotifier_any_modified == 'true'}}
+      hasSchemaChanges: ${{ steps.filter.outputs.schema_any_modified == 'true'}}
+      hasMigrationChanges: ${{ steps.filter.outputs.migration_any_modified == 'true'}}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
