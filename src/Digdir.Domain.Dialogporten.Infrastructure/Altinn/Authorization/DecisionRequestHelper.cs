@@ -30,11 +30,13 @@ internal static class DecisionRequestHelper
 
     public static XacmlJsonRequestRoot CreateDialogDetailsRequest(DialogDetailsAuthorizationRequest request)
     {
-        var accessSubject = CreateAccessSubjectCategory(request.Claims);
-        var actions = CreateActionCategories(request.AltinnActions, out var actionIdByName);
-        var resources = CreateResourceCategories(request.ServiceResource, request.DialogId, request.Party, request.AltinnActions, out var resourceIdByName);
+        var sortedActions = request.AltinnActions.SortForXacml();
 
-        var multiRequests = CreateMultiRequests(request.AltinnActions, actionIdByName, resourceIdByName);
+        var accessSubject = CreateAccessSubjectCategory(request.Claims);
+        var actions = CreateActionCategories(sortedActions, out var actionIdByName);
+        var resources = CreateResourceCategories(request.ServiceResource, request.DialogId, request.Party, sortedActions, out var resourceIdByName);
+
+        var multiRequests = CreateMultiRequests(sortedActions, actionIdByName, resourceIdByName);
 
         var xacmlJsonRequest = new XacmlJsonRequest
         {
@@ -47,15 +49,29 @@ internal static class DecisionRequestHelper
         return new XacmlJsonRequestRoot { Request = xacmlJsonRequest };
     }
 
-    public static DialogDetailsAuthorizationResult CreateDialogDetailsResponse(HashSet<AltinnAction> altinnActions, XacmlJsonResponse? xamlJsonResponse) =>
-        new()
+    public static DialogDetailsAuthorizationResult CreateDialogDetailsResponse(List<AltinnAction> altinnActions, XacmlJsonResponse? xamlJsonResponse)
+    {
+        var authorizedAltinnActions = new List<AltinnAction>();
+
+        var sortedAltinnActions = altinnActions.SortForXacml();
+        var xacmlJsonResults = xamlJsonResponse?.Response ?? new List<XacmlJsonResult>();
+
+        int count = Math.Min(sortedAltinnActions.Count, xacmlJsonResults.Count);
+        for (int i = 0; i < count; i++)
         {
-            AuthorizedAltinnActions = altinnActions
-                .Zip(xamlJsonResponse?.Response ?? Enumerable.Empty<XacmlJsonResult>(), (action, response) => (action, response))
-                .Where(x => x.response.Decision == PermitResponse)
-                .Select(x => x.action)
-                .ToHashSet()
+            var action = sortedAltinnActions[i];
+            var response = xacmlJsonResults[i];
+            if (response.Decision == PermitResponse)
+            {
+                authorizedAltinnActions.Add(action);
+            }
+        }
+
+        return new DialogDetailsAuthorizationResult
+        {
+            AuthorizedAltinnActions = authorizedAltinnActions
         };
+    }
 
     private static List<XacmlJsonCategory> CreateAccessSubjectCategory(IEnumerable<Claim> claims)
     {
@@ -92,7 +108,7 @@ internal static class DecisionRequestHelper
     }
 
     private static List<XacmlJsonCategory> CreateActionCategories(
-        HashSet<AltinnAction> altinnActions, out Dictionary<string, string> actionIdByName)
+        List<AltinnAction> altinnActions, out Dictionary<string, string> actionIdByName)
     {
         actionIdByName = altinnActions
             .Select(x => x.Name)
@@ -115,7 +131,7 @@ internal static class DecisionRequestHelper
         string serviceResource,
         Guid dialogId,
         string party,
-        HashSet<AltinnAction> altinnActions, out Dictionary<string, string> resourceIdByName)
+        List<AltinnAction> altinnActions, out Dictionary<string, string> resourceIdByName)
     {
         resourceIdByName = altinnActions
             .Select(x => x.AuthorizationAttribute)
@@ -133,9 +149,9 @@ internal static class DecisionRequestHelper
             .ToList();
     }
 
-    private static XacmlJsonCategory CreateResourceCategory(string id, string serviceResource, Guid? dialogId, XacmlJsonAttribute? partyAttribute, string? subResource = null)
+    private static XacmlJsonCategory CreateResourceCategory(string id, string serviceResource, Guid? dialogId, XacmlJsonAttribute? partyAttribute, string? authorizationAttribute = null)
     {
-        var (ns, value, org) = SplitNsAndValue(serviceResource);
+        var (ns, value, org) = SplitNamespaceAndValue(serviceResource);
         var attributes = new List<XacmlJsonAttribute>
         {
             new() { AttributeId = ns, Value = value }
@@ -178,9 +194,19 @@ internal static class DecisionRequestHelper
             }
         }
 
-        if (subResource is not null)
+        if (authorizationAttribute is not null)
         {
-            attributes.Add(new XacmlJsonAttribute { AttributeId = AttributeIdSubResource, Value = subResource });
+            var resourceAttributesFromAuthorizationAttribute = GetResourceAttributesForAuthorizationAttribute(authorizationAttribute);
+
+            // If we get either urn:altinn:app/urn:altinn:org or urn:altinn:resource attributes, this should
+            // be considered overrides that should be used instead of the default resource attributes.
+            if (resourceAttributesFromAuthorizationAttribute.Any(x => x.AttributeId is AttributeIdApp or AttributeIdOrg or AttributeIdResource))
+            {
+                attributes.RemoveAll(x =>
+                    x.AttributeId is AttributeIdResource or AttributeIdResourceInstance or AttributeIdApp or AttributeIdOrg or AttributeIdAppInstance);
+            }
+
+            attributes.AddRange(resourceAttributesFromAuthorizationAttribute);
         }
 
         return new XacmlJsonCategory
@@ -190,14 +216,27 @@ internal static class DecisionRequestHelper
         };
     }
 
-    private static (string, string, string?) SplitNsAndValue(string serviceResource)
+    private static List<XacmlJsonAttribute> GetResourceAttributesForAuthorizationAttribute(string subResource)
+    {
+        var result = new List<XacmlJsonAttribute>();
+        var (ns, value, org) = SplitNamespaceAndValue(subResource, AttributeIdSubResource);
+        result.Add(new XacmlJsonAttribute { AttributeId = ns, Value = value });
+        if (org is not null)
+        {
+            result.Add(new XacmlJsonAttribute { AttributeId = AttributeIdOrg, Value = org });
+        }
+
+        return result;
+    }
+
+    private static (string, string, string?) SplitNamespaceAndValue(string serviceResource, string defaultNamespace = AttributeIdResource)
     {
         var lastColonIndex = serviceResource.LastIndexOf(':');
         if (lastColonIndex == -1 || lastColonIndex == serviceResource.Length - 1)
         {
             // If we don't recognize the format, we just return the whole string as the value and assume
             // that the caller wants to refer a resource in the Resource Registry namespace.
-            return (AttributeIdResource, serviceResource, null);
+            return (defaultNamespace, serviceResource, null);
         }
 
         var ns = serviceResource[..lastColonIndex];
@@ -232,7 +271,7 @@ internal static class DecisionRequestHelper
     }
 
     private static XacmlJsonMultiRequests CreateMultiRequests(
-        HashSet<AltinnAction> altinnActions,
+        List<AltinnAction> altinnActions,
         Dictionary<string, string> actionIdByName,
         Dictionary<string, string> resourceIdByName)
     {
@@ -256,6 +295,9 @@ internal static class DecisionRequestHelper
         return multiRequests;
     }
 
+    private static List<AltinnAction> SortForXacml(this List<AltinnAction> altinnActions) =>
+        altinnActions.OrderBy(x => x.Name).ThenBy(x => x.AuthorizationAttribute).ToList();
+
     public static class NonScalable
     {
         // This contains the helpers for the preliminary implementation which doesn't scale, and should only be used in very low volume situations
@@ -265,7 +307,7 @@ internal static class DecisionRequestHelper
 
         public static XacmlJsonRequestRoot CreateDialogSearchRequest(DialogSearchAuthorizationRequest request)
         {
-            var requestActions = new HashSet<AltinnAction>
+            var requestActions = new List<AltinnAction>
             {
                 new (Constants.ReadAction, Constants.MainResource)
             };

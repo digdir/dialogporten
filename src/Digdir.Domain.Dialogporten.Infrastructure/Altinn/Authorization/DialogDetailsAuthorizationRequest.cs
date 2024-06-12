@@ -15,7 +15,7 @@ public sealed class DialogDetailsAuthorizationRequest
 
     // Each action applies to a resource. This is the main resource, or another resource indicated by a authorization attribute
     // eg. "urn:altinn:subresource:some-sub-resource" or "urn:altinn:task:task_1"
-    public required HashSet<AltinnAction> AltinnActions { get; init; }
+    public required List<AltinnAction> AltinnActions { get; init; }
 }
 
 public static class DialogDetailsAuthorizationRequestExtensions

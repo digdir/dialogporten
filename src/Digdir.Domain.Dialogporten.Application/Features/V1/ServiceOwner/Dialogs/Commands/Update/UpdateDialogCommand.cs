@@ -76,6 +76,14 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
             return new EntityNotFound<DialogEntity>(request.Id);
         }
 
+        foreach (var serviceResourceReference in GetServiceResourceReferences(request.Dto))
+        {
+            if (!await _userResourceRegistry.CurrentUserIsOwner(serviceResourceReference, cancellationToken))
+            {
+                return new Forbidden($"Not allowed to reference {serviceResourceReference}.");
+            }
+        }
+
         if (!_userResourceRegistry.UserCanModifyResourceType(dialog.ServiceResourceType))
         {
             return new Forbidden($"User cannot modify resource type {dialog.ServiceResourceType}.");
@@ -148,6 +156,28 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
             success => success,
             domainError => domainError,
             concurrencyError => concurrencyError);
+    }
+
+    private static List<string> GetServiceResourceReferences(UpdateDialogDto request)
+    {
+        var serviceResourceReferences = new List<string>();
+
+        static bool IsExternalResource(string? resource)
+        {
+            return resource is not null && resource.StartsWith(Domain.Common.Constants.ServiceResourcePrefix, StringComparison.OrdinalIgnoreCase);
+        }
+
+        serviceResourceReferences.AddRange(request.ApiActions
+            .Where(action => IsExternalResource(action.AuthorizationAttribute))
+            .Select(action => action.AuthorizationAttribute!));
+        serviceResourceReferences.AddRange(request.GuiActions
+            .Where(action => IsExternalResource(action.AuthorizationAttribute))
+            .Select(action => action.AuthorizationAttribute!));
+        serviceResourceReferences.AddRange(request.Elements
+            .Where(element => IsExternalResource(element.AuthorizationAttribute))
+            .Select(element => element.AuthorizationAttribute!));
+
+        return serviceResourceReferences.Distinct().ToList();
     }
 
     private void ValidateTimeFields(DialogEntity dialog)
