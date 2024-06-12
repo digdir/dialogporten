@@ -31,7 +31,7 @@ resource redis 'Microsoft.Cache/Redis@2023-08-01' = {
       'maxmemory-policy': 'allkeys-lru'
     }
     redisVersion: version
-    publicNetworkAccess: 'Enabled'
+    publicNetworkAccess: 'Disabled'
   }
 }
 
