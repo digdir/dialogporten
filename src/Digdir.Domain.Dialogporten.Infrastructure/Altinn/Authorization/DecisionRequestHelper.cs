@@ -54,10 +54,10 @@ internal static class DecisionRequestHelper
         var authorizedAltinnActions = new List<AltinnAction>();
 
         var sortedAltinnActions = altinnActions.SortForXacml();
-        var xacmlJsonResults = xamlJsonResponse?.Response ?? new List<XacmlJsonResult>();
+        var xacmlJsonResults = xamlJsonResponse?.Response ?? [];
 
-        int count = Math.Min(sortedAltinnActions.Count, xacmlJsonResults.Count);
-        for (int i = 0; i < count; i++)
+        var count = Math.Min(sortedAltinnActions.Count, xacmlJsonResults.Count);
+        for (var i = 0; i < count; i++)
         {
             var action = sortedAltinnActions[i];
             var response = xacmlJsonResults[i];
@@ -88,7 +88,7 @@ internal static class DecisionRequestHelper
             .Cast<XacmlJsonAttribute>()
             .ToList();
 
-        // If we're authorizing a person (ie. ID-porten token), we are not interested in the consumer-claim (organization number)
+        // If we're authorizing a person (i.e. ID-porten token), we are not interested in the consumer-claim (organization number)
         // as that is not relevant for the authorization decision (it's just the organization owning the OAuth client).
         // The same goes if urn:altinn:userid is present, which might be present if using a legacy enterprise user token
         if (attributes.Any(x => x.AttributeId == NorwegianPersonIdentifier.Prefix) ||
@@ -247,7 +247,7 @@ internal static class DecisionRequestHelper
             return (ns, value, null);
         }
 
-        // If the value starts with the reserved app prefix, we assume that the value is an app id
+        // If the value starts with the reserved app prefix, we assume that the value is an app id,
         // and we need to split it into the org and app id based on the format "app_{org}_{app_id}".
         // We also use the app namespace for the attribute id.
         var parts = value.Split('_');
