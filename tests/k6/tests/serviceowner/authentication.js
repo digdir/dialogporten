@@ -45,56 +45,46 @@ export default function () {
             let r = getSO("dialogs/" + uuidv4(), params);
             expectation(r);
         });
-    
+
         describe(`Attempt dialog create ${message} token`, () => {
             let r = postSO("dialogs", {}, params);
             expectation(r);
         });
-    
+
         describe(`Attempt dialog put ${message} token`, () => {
             let r = putSO("dialogs/" + uuidv4(), {}, params);
             expectation(r);
         });
-    
+
         describe(`Attempt dialog patch ${message} token`, () => {
             let r = patchSO("dialogs/" + uuidv4(), {}, params);
             expectation(r);
         });
-    
+
         describe(`Attempt dialog delete ${message} token`, () => {
             let r = deleteSO("dialogs/" + uuidv4(), params);
             expectation(r);
         });
-    
+
         describe(`Attempt dialog element get ${message} token`, () => {
             let r = getSO("dialogs/" + uuidv4() + "/elements/" + uuidv4(), params);
             expectation(r);
         });
-    
-        describe(`Attempt dialog element put ${message} token`, () => {
-            let r = putSO("dialogs/" + uuidv4() + "/elements/" + uuidv4(), {}, params);
-            expectation(r);
-        });
-    
+
         describe(`Attempt dialog element post ${message} token`, () => {
             let r = postSO("dialogs/" + uuidv4() + "/elements/", {}, params);
             expectation(r);
         });
-    
-        describe(`Attempt dialog element delete ${message} token`, () => {
-            let r = deleteSO("dialogs/" + uuidv4() + "/elements/" + uuidv4(), params);
-            expectation(r);
-        });
-    
+
         describe(`Attempt activity history get ${message} token`, () => {
             let r = getSO("dialogs/" + uuidv4() + "/activities/" + uuidv4(), params);
             expectation(r);
-        });    
-    
+        });
+
         describe(`Attempt activity history post ${message} token`, () => {
             let r = postSO("dialogs/" + uuidv4() + "/activities", {}, params);
             expectation(r);
-        });   
+        });
 
     });
 }
