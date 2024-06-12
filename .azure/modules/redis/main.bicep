@@ -50,7 +50,7 @@ resource redisPrivateEndpoint 'Microsoft.Network/privateEndpoints@2022-01-01' = 
         }
       }
     ]
-    customNetworkInterfaceName: 'dp-be-test-redis-pe-nic'
+    customNetworkInterfaceName: '${namePrefix}-redis-pe-nic'
     subnet: {
       id: subnetId
     }
