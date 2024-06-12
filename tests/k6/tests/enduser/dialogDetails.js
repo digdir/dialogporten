@@ -1,7 +1,7 @@
-import { 
+import {
     describe, expect, expectStatusFor,
     getEU,
-    setVisibleFrom, 
+    setVisibleFrom,
     postSO,
     purgeSO } from '../../common/testimports.js'
 
@@ -11,8 +11,15 @@ export default function () {
     let dialogId = null;
     let dialog = null;
 
+    const availableExternalResource = "urn:altinn:resource:app_digdir_be-om-api-nokkel"; // should have "read" on this
+    const unavailableExternalResource = "urn:altinn:resource:ttd-altinn-events-automated-tests"; // should not have "read" on this
+    const unavailableSubresource = "someunavailablesubresource"; // should not have "elementread" on this;
+
     describe('Arrange: Create a dialog to test against', () => {
         let d = dialogToInsert();
+        d.elements[0].authorizationAttribute = availableExternalResource;
+        d.elements[1].authorizationAttribute = unavailableExternalResource;
+        d.elements[2].authorizationAttribute = unavailableSubresource;
         setVisibleFrom(d, null);
         let r = postSO("dialogs", d);
         expectStatusFor(r).to.equal(201);
@@ -25,7 +32,7 @@ export default function () {
         expect(r, 'response').to.have.validJsonBody();
 
         dialog = r.json();
-        
+
         expect(dialog.id, 'dialog id').to.equal(dialogId);
     });
 
@@ -38,11 +45,14 @@ export default function () {
 
     describe('Check that authorized actions have real URLs', () => {
         if (dialog == null) return;
-        expect(dialog, 'dialog').to.have.property("guiActions").with.lengthOf(1);
-        expect(dialog.guiActions[0], 'gui action').to.have.property("isAuthorized").to.equal(true);
-        expect(dialog.guiActions[0], 'url').to.have.property("url").to.include("https://");
+        expect(dialog, 'dialog').to.have.property("guiActions").with.lengthOf(2);
+        expect(dialog.guiActions[0], 'first gui action').to.have.property("isAuthorized").to.equal(true);
+        expect(dialog.guiActions[0], 'first gui action').to.have.property("url");
+        expect(dialog.guiActions[0].url, 'first gui action url').to.include("https://");
+        expect(dialog.guiActions[1], 'second gui action').to.have.property("prompt");
+        expect(dialog.guiActions[1].httpMethod, 'second gui action httpMethod').to.equal("POST");
     });
-    
+
     describe('Check that unauthorized actions to have default URLs', () => {
         if (dialog == null) return;
         expect(dialog, 'dialog').to.have.property("apiActions").with.lengthOf(1);
@@ -52,6 +62,14 @@ export default function () {
             console.log(dialog.apiActions[i]);
             expect(dialog.apiActions[i], 'endpoint').to.have.property("url").to.equal("urn:dialogporten:unauthorized");
         }
+    });
+
+    describe('Check that we are authorized for the dialog element referring an external resource', () => {
+        if (dialog == null) return;
+        expect(dialog, 'dialog').to.have.property("elements");
+        expect(dialog.elements.find(x => x.authorizationAttribute == unavailableExternalResource), 'element with unavaiable external resource').to.have.property("isAuthorized").to.equal(false);
+        expect(dialog.elements.find(x => x.authorizationAttribute == unavailableSubresource), 'element with unavaiable subresource').to.have.property("isAuthorized").to.equal(false);
+        expect(dialog.elements.find(x => x.authorizationAttribute == availableExternalResource), 'element with avaiable external resource').to.have.property("isAuthorized").to.equal(true);
     });
 
     describe("Cleanup", () => {

@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.8.0](https://github.com/digdir/dialogporten/compare/v1.7.1...v1.8.0) (2024-06-12)
+
+
+### Features
+
+* Add support for external resource references in authorizationAttributes ([#801](https://github.com/digdir/dialogporten/issues/801)) ([1e674bd](https://github.com/digdir/dialogporten/commit/1e674bdd3a133fb73d9a5418822486d1c26d32de))
+* Add user types ([#768](https://github.com/digdir/dialogporten/issues/768)) ([b6fd439](https://github.com/digdir/dialogporten/commit/b6fd439e8865e3eeec9470172abe7117ed948ee4))
+* Front channel embeds ([#792](https://github.com/digdir/dialogporten/issues/792)) ([c3000bd](https://github.com/digdir/dialogporten/commit/c3000bdbc546670e1001d608c0f7541e7af64187))
+* GUI actions without navigation ([#785](https://github.com/digdir/dialogporten/issues/785)) ([f2d9136](https://github.com/digdir/dialogporten/commit/f2d91364f708139be3c23b3be26ef95092675824))
+* Remove IsBackChannel concept from GUI Actions ([#819](https://github.com/digdir/dialogporten/issues/819)) ([18101c1](https://github.com/digdir/dialogporten/commit/18101c1efa6854e3720d6335490b2142933400f3))
+* Rename IsDeleteAction to IsDeleteDialogAction ([#820](https://github.com/digdir/dialogporten/issues/820)) ([18a1f6e](https://github.com/digdir/dialogporten/commit/18a1f6e2f3ac3d4d322e269a58780fa922a9f400))
+* **schema:** Rename MimeType to MediaType ([#813](https://github.com/digdir/dialogporten/issues/813)) ([6490625](https://github.com/digdir/dialogporten/commit/64906258a9880899d086b16406c0a8ae85ffd073))
+* **schema:** undo setting performed by if not set ([#802](https://github.com/digdir/dialogporten/issues/802)) ([c19f47a](https://github.com/digdir/dialogporten/commit/c19f47a4d1a018e7ba2ad1802ff62bc7b27f7b11))
+
+
+### Bug Fixes
+
+* remove maskinporten aux from config ([#827](https://github.com/digdir/dialogporten/issues/827)) ([2e4e81a](https://github.com/digdir/dialogporten/commit/2e4e81a2984dc23d91470d959804eb617dd63f1a))
+* **schema:** add package-lock file ([#804](https://github.com/digdir/dialogporten/issues/804)) ([987dfa1](https://github.com/digdir/dialogporten/commit/987dfa170f38caf6488979e883578f43319b6cb9))
+
 ## [1.7.1](https://github.com/digdir/dialogporten/compare/v1.7.0...v1.7.1) (2024-05-31)
 
 
