@@ -78,3 +78,7 @@ indent_size = 2
 
 # Enforce indentation to be 2 spaces
 indent_size = 2
+
+[Makefile]
+indent_style = tab
+

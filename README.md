@@ -2,7 +2,7 @@
 
 ## Getting started with local development
 
-### Mac 
+### Mac
 
 #### Prerequisites
 
@@ -10,26 +10,23 @@
 
 #### Installing Podman (Mac)
 
-1. Install [Podman](https://podman.io/)
+1. Install [Podman](https://podman.io/) and its dependencies using Homebrew:
 
-2. Install dependencies:
 ```bash
-brew tap cfergeau/crc
-# https://github.com/containers/podman/issues/21064
-brew install vfkit
-brew install docker-compose
+brew tap cfergeau/crc # https://github.com/containers/podman/issues/21064
+brew install vfkit docker-compose podman podman-desktop
 ```
 
-3. Restart your Mac
+1. Restart your Mac
 
-4. Finish setup in Podman Desktop
+1. Finish setup in Podman Desktop
 
-5. Check that `Docker Compatility mode` is enabled, see bottom left corner
+1. Check that `Docker Compatility mode` is enabled, see bottom left corner
 
-6. Enable privileged [testcontainers-dotnet](https://github.com/testcontainers/testcontainers-dotnet/issues/876#issuecomment-1930397928)  
+1. Enable privileged [testcontainers-dotnet](https://github.com/testcontainers/testcontainers-dotnet/issues/876#issuecomment-1930397928)  
 `echo "ryuk.container.privileged = true" >> $HOME/.testcontainers.properties`
 
-### Windows 
+### Windows
 
 #### Prerequisites
 
@@ -40,31 +37,28 @@ brew install docker-compose
 
 #### Installing Podman (Windows)
 
-1. Install [Podman Desktop](https://podman.io/getting-started/installation).
-. 
-2. Start Podman Desktop and follow instructions to install Podman.
+1. Install [Podman Desktop](https://podman.io/getting-started/installation)
 
-3. Follow instructions in Podman Desktop to create and start a Podman machine.
+2. Start Podman Desktop and follow instructions to install Podman
 
-4. In Podman Desktop, go to Settings -> Resources and run setup for the Compose Extension. This will install docker-compose.
+3. Follow instructions in Podman Desktop to create and start a Podman machine
+
+4. In Podman Desktop, go to Settings -> Resources and run setup for the Compose Extension, this will install docker-compose
 
 ### Running the project
 
-You can run the entire project locally using `podman compose`. (This uses docker-compose behind the scenes.)
+You can run the entire project locally using `podman compose` (This uses docker-compose behind the scenes)
 ```powershell
-podman compose up
+make dev # starts up podman compose
 ```
 
-The following GUI services should now be available:
-* WebAPI/SwaggerUI: [localhost:7124/swagger](https://localhost:7214/swagger/index.html)
-* GraphQl/BananaCakePop: [localhost:7215/graphql](https://localhost:7214/swagger/index.html)
-* Redis/Insight: [localhost:7216](https://localhost:7214/swagger/index.html)
+Visit [localhost](http://localhost/) to see running services
 
-The WebAPI and GraphQl services are behind a nginx proxy, and you can change the number of replicas by setting the `scale` property in the `docker-compose.yml` file.
+The WebAPI and GraphQl services are behind a traefik proxy, and you can change the number of replicas by setting the `scale` property in the `docker-compose.yml` file.
 
 
 ### Running the WebApi/GraphQl in an IDE
-If you need do debug the WebApi/GraphQl projects in an IDE, you can alternatively run `podman compose` without the WebAPI/GraphQl.  
+If you need do debug the WebApi/GraphQl projects in an IDE, you can alternatively run `podman compose` without the WebAPI/GraphQl
 First create a dotnet user secret for the DB connection string.
 
 ```powershell
@@ -73,7 +67,7 @@ dotnet user-secrets set -p .\src\Digdir.Domain.Dialogporten.WebApi\ "Infrastruct
 
 Then run `podman compose` without the WebAPI/GraphQl projects.
 ```powershell
-podman compose -f docker-compose-no-webapi.yml up 
+make no-webapi
 ```
 
 ## DB development
