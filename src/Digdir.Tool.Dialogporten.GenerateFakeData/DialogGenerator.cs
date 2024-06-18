@@ -293,7 +293,7 @@ public static class DialogGenerator
         return new Faker<CreateDialogDialogElementUrlDto>()
             .RuleFor(o => o.Url, f => new Uri(f.Internet.UrlWithPath()))
             .RuleFor(o => o.ConsumerType, f => f.PickRandom<DialogElementUrlConsumerType.Values>())
-            .RuleFor(o => o.MediaType, f => f.PickRandom(MediaTypes))
+            // .RuleFor(o => o.MediaType, f => f.PickRandom(MediaTypes))
             .Generate(new Randomizer().Number(1, 3));
     }
 

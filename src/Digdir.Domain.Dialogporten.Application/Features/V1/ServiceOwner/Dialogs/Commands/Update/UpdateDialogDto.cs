@@ -33,6 +33,7 @@ public sealed class UpdateDialogContentDto
 {
     public DialogContentType.Values Type { get; set; }
     public List<LocalizationDto> Value { get; set; } = [];
+    public string? MediaType { get; set; }
 }
 
 public sealed class UpdateDialogSearchTagDto
@@ -112,7 +113,6 @@ public sealed class UpdateDialogDialogElementUrlDto
 {
     public Guid? Id { get; set; }
     public Uri Url { get; set; } = null!;
-    public string? MediaType { get; set; }
 
     public DialogElementUrlConsumerType.Values ConsumerType { get; set; }
 }

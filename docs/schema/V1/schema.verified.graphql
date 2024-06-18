@@ -57,6 +57,7 @@ type AuthorizedParty {
 type Content {
   type: ContentType!
   value: [Localization!]!
+  mediaType: String
 }
 
 type Dialog {
@@ -115,7 +116,6 @@ type Element {
 type ElementUrl {
   id: UUID!
   url: URL!
-  mediaType: String
   consumerType: ElementUrlConsumer!
 }
 

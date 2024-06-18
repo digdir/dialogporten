@@ -1,6 +1,7 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using FluentValidation;
 using HtmlAgilityPack;
+using Markdig;
 
 namespace Digdir.Domain.Dialogporten.Application.Common.Extensions.FluentValidation;
 
@@ -8,15 +9,24 @@ internal static class FluentValidationLocalizationDtoExtensions
 {
     private static readonly string[] AllowedTags = ["p", "a", "br", "em", "strong", "ul", "ol", "li"];
     private static readonly string ContainsValidHtmlError =
-        $"{{PropertyName}} contains unsupported html. The following tags are supported: " +
+        "Value contains unsupported HTML/markdown. The following tags are supported: " +
         $"[{string.Join(",", AllowedTags.Select(x => '<' + x + '>'))}]. Tag attributes " +
-        $"are not supported except for on '<a>' which must contain a 'href' starting " +
-        $"with 'https://'.";
+        "are not supported except for on '<a>' which must contain a 'href' starting " +
+        "with 'https://'.";
 
-    public static IRuleBuilderOptions<T, LocalizationDto> ContainsValidHtml<T>(this IRuleBuilder<T, LocalizationDto> ruleBuilder)
+    public static IRuleBuilderOptions<T, LocalizationDto> ContainsValidHtml<T>(
+        this IRuleBuilder<T, LocalizationDto> ruleBuilder)
     {
         return ruleBuilder
             .Must(x => x.Value is null || x.Value.HtmlAgilityPackCheck())
+            .WithMessage(ContainsValidHtmlError);
+    }
+
+    public static IRuleBuilderOptions<T, LocalizationDto> ContainsValidMarkdown<T>(
+        this IRuleBuilder<T, LocalizationDto> ruleBuilder)
+    {
+        return ruleBuilder
+            .Must(x => x.Value is null || Markdown.ToHtml(x.Value).HtmlAgilityPackCheck())
             .WithMessage(ContainsValidHtmlError);
     }
 
@@ -33,8 +43,8 @@ internal static class FluentValidationLocalizationDtoExtensions
             {
                 return false;
             }
-            // If the node is a hyperlink, it should only have an href attribute
-            // and it should start with 'https://'
+            // If the node is a hyperlink, it should only have a href attribute,
+            // and it must start with 'https://'
             if (node.IsAnchorTag())
             {
                 if (!node.IsValidAnchorTag())

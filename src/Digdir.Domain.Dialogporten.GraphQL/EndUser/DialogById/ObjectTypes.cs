@@ -138,7 +138,6 @@ public sealed class ElementUrl
 {
     public Guid Id { get; set; }
     public Uri Url { get; set; } = null!;
-    public string? MediaType { get; set; }
 
     public ElementUrlConsumer ConsumerType { get; set; }
 }

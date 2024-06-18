@@ -35,6 +35,7 @@ public sealed class CreateDialogContentDto
 {
     public DialogContentType.Values Type { get; set; }
     public List<LocalizationDto> Value { get; set; } = [];
+    public string? MediaType { get; set; }
 }
 
 public sealed class CreateDialogSearchTagDto
@@ -109,7 +110,6 @@ public sealed class CreateDialogDialogElementDto
 public sealed class CreateDialogDialogElementUrlDto
 {
     public Uri Url { get; set; } = null!;
-    public string? MediaType { get; set; }
 
     public DialogElementUrlConsumerType.Values ConsumerType { get; set; }
 }
