@@ -337,6 +337,7 @@ public static class DialogGenerator
             content.Add(
                 new()
                 {
+                    MediaType = Domain.Dialogporten.Domain.MediaTypes.PlainText,
                     Type = DialogContentType.Values.AdditionalInfo,
                     Value = GenerateFakeLocalizations(r.Number(10, 20))
                 }
