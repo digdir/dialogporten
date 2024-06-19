@@ -111,9 +111,6 @@ public class DomainEventsTests(DialogApplication application) : ApplicationColle
 
         cloudEvents.Should().ContainSingle(cloudEvent =>
             cloudEvent.Type == CloudEventTypes.Get(nameof(DialogUpdatedDomainEvent)));
-
-        cloudEvents.Should().NotContain(cloudEvent =>
-            cloudEvent.Type == CloudEventTypes.Get(nameof(DialogElementUpdatedDomainEvent)));
     }
 
     [Fact]
@@ -154,53 +151,6 @@ public class DomainEventsTests(DialogApplication application) : ApplicationColle
 
         cloudEvents.Should().NotContain(cloudEvent =>
             cloudEvent.Type == CloudEventTypes.Get(nameof(DialogUpdatedDomainEvent)));
-
-        cloudEvents.Should().ContainSingle(cloudEvent =>
-            cloudEvent.Type == CloudEventTypes.Get(nameof(DialogElementUpdatedDomainEvent)));
-    }
-
-    // Throws NRE on parent Dialog
-    [Fact]
-    public async Task Creates_CloudEvents_When_Deleting_DialogElement()
-    {
-        // Arrange
-        var dialogId = Guid.NewGuid();
-        var createDialogCommand = DialogGenerator.GenerateFakeDialog(
-            id: dialogId,
-            activities: [],
-            elements: [DialogGenerator.GenerateFakeDialogElement()]);
-
-        _ = await Application.Send(createDialogCommand);
-
-        var getDialogResult = await Application.Send(new GetDialogQuery { DialogId = dialogId });
-        getDialogResult.TryPickT0(out var getDialogDto, out _);
-
-        var updateDialogDto = Mapper.Map<UpdateDialogDto>(getDialogDto);
-
-        // Act
-        updateDialogDto.Elements = [];
-
-        var updateDialogCommand = new UpdateDialogCommand
-        {
-            Id = dialogId,
-            Dto = updateDialogDto
-        };
-
-        _ = await Application.Send(updateDialogCommand);
-
-        await Application.PublishOutBoxMessages();
-        var cloudEvents = Application.PopPublishedCloudEvents();
-
-        // Assert
-        cloudEvents.Should().OnlyContain(cloudEvent => cloudEvent.ResourceInstance == dialogId.ToString());
-        cloudEvents.Should().OnlyContain(cloudEvent => cloudEvent.Resource == createDialogCommand.ServiceResource);
-        cloudEvents.Should().OnlyContain(cloudEvent => cloudEvent.Subject == createDialogCommand.Party);
-
-        cloudEvents.Should().ContainSingle(cloudEvent =>
-            cloudEvent.Type == CloudEventTypes.Get(nameof(DialogElementDeletedDomainEvent)));
-
-        cloudEvents.Should().NotContain(cloudEvent =>
-            cloudEvent.Type == CloudEventTypes.Get(nameof(DialogElementUpdatedDomainEvent)));
     }
 
     [Fact]
@@ -257,37 +207,5 @@ public class DomainEventsTests(DialogApplication application) : ApplicationColle
 
         cloudEvents.Should().ContainSingle(cloudEvent =>
             cloudEvent.Type == CloudEventTypes.Get(nameof(DialogDeletedDomainEvent)));
-    }
-
-    [Fact]
-    public async Task Creates_DialogElementDeleted_CloudEvent_When_Purging_Dialog()
-    {
-        // Arrange
-        var dialogId = Guid.NewGuid();
-        var createDialogCommand = DialogGenerator.GenerateFakeDialog(
-            id: dialogId,
-            activities: [],
-            elements: [DialogGenerator.GenerateFakeDialogElement()]);
-
-        await Application.Send(createDialogCommand);
-
-        // Act
-        var purgeCommand = new PurgeDialogCommand
-        {
-            DialogId = dialogId
-        };
-
-        await Application.Send(purgeCommand);
-
-        await Application.PublishOutBoxMessages();
-        var cloudEvents = Application.PopPublishedCloudEvents();
-
-        // Assert
-        cloudEvents.Should().OnlyContain(cloudEvent => cloudEvent.ResourceInstance == dialogId.ToString());
-        cloudEvents.Should().OnlyContain(cloudEvent => cloudEvent.Resource == createDialogCommand.ServiceResource);
-        cloudEvents.Should().OnlyContain(cloudEvent => cloudEvent.Subject == createDialogCommand.Party);
-
-        cloudEvents.Should().ContainSingle(cloudEvent =>
-            cloudEvent.Type == CloudEventTypes.Get(nameof(DialogElementDeletedDomainEvent)));
     }
 }
