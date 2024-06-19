@@ -186,12 +186,6 @@ internal sealed class UpdateDialogDialogElementUrlDtoValidator : AbstractValidat
             .NotNull()
             .IsValidUri()
             .MaximumLength(Constants.DefaultMaxUriLength);
-        // RuleFor(x => x.MediaType)
-        //     .MaximumLength(Constants.DefaultMaxStringLength);
-        // RuleFor(x => x.MediaType)
-        //     .Must(MediaTypes.IsValid!)
-        //     .When(x => x.MediaType != null)
-        //     .WithMessage("Invalid media type, see docs for complete list <URL TDB>");
         RuleFor(x => x.ConsumerType)
             .IsInEnum();
     }
