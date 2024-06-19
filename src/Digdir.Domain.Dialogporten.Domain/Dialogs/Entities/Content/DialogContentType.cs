@@ -20,7 +20,6 @@ public class DialogContentType : AbstractLookupEntity<DialogContentType, DialogC
     public bool OutputInList { get; private init; }
     public int MaxLength { get; private init; }
 
-    // This has to be nullable in order to have empty array as default value
     public string[] AllowedMediaTypes { get; init; } = [];
 
     public override DialogContentType MapValue(Values id) => id switch
