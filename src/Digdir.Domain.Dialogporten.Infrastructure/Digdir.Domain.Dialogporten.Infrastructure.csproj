@@ -32,17 +32,4 @@
         <InternalsVisibleTo Include="Digdir.Domain.Dialogporten.GraphQL" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Compile Remove="Persistence\Migrations\20240617143216_MoveFrontChannelEmbedsToContent.cs" />
-      <Compile Remove="Persistence\Migrations\20240617143216_MoveFrontChannelEmbedsToContent.Designer.cs" />
-      <Compile Remove="Persistence\Migrations\20240618183909_MoveFrontChannelEmbedsToContent.cs" />
-      <Compile Remove="Persistence\Migrations\20240618183909_MoveFrontChannelEmbedsToContent.Designer.cs" />
-      <Compile Remove="Persistence\Migrations\20240618185221_MoveFrontChannelEmbedsToContent.cs" />
-      <Compile Remove="Persistence\Migrations\20240618185221_MoveFrontChannelEmbedsToContent.Designer.cs" />
-      <Compile Remove="Persistence\Migrations\20240618185726_MoveFrontChannelEmbedsToContent.cs" />
-      <Compile Remove="Persistence\Migrations\20240618185726_MoveFrontChannelEmbedsToContent.Designer.cs" />
-      <Compile Remove="Persistence\Migrations\20240618201150_MoveFrontChannelEmbedsToContent.cs" />
-      <Compile Remove="Persistence\Migrations\20240618201150_MoveFrontChannelEmbedsToContent.Designer.cs" />
-    </ItemGroup>
-
 </Project>
