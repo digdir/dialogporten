@@ -83,7 +83,7 @@ internal abstract class UpdateDialogSwaggerConfig : ISwaggerConfig
             new UpdateDialogDialogElementDto
             {
                 Id = Guid.Parse("02a72809-eddd-4192-864d-8f1755d72f4e"),
-                Type = new Uri("http://example.com/some-type"),
+                Type = new Uri("https://example.com/some-type"),
                 DisplayName =
                 [
                     new LocalizationDto
@@ -97,8 +97,7 @@ internal abstract class UpdateDialogSwaggerConfig : ISwaggerConfig
                     new UpdateDialogDialogElementUrlDto
                     {
                         Id = Guid.Parse("858177cb-8584-4d10-a086-3a5defa7a6c3"),
-                        MediaType = "application/json",
-                        Url = new Uri("http://example.com/some-url")
+                        Url = new Uri("https://example.com/some-url")
                     }
                 ]
             }

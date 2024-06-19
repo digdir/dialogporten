@@ -128,9 +128,26 @@ internal sealed class CreateDialogContentDtoValidator : AbstractValidator<Create
         ClassLevelCascadeMode = CascadeMode.Stop;
         RuleFor(x => x.Type)
             .IsInEnum();
+        RuleFor(x => x.MediaType)
+            .Must((dto, value) =>
+            {
+                var type = DialogContentType.GetValue(dto.Type);
+                return value is null ? type.AllowedMediaTypes.Length == 0 : type.AllowedMediaTypes.Contains(value);
+            })
+            .WithMessage(x =>
+                $"{{PropertyName}} '{x.MediaType ?? "null"}' is not allowed for content type {DialogContentType.GetValue(x.Type).Name}. " +
+                $"Valid media types are: {(DialogContentType.GetValue(x.Type).AllowedMediaTypes.Length == 0 ? "None" :
+                    $"{string.Join(", ", DialogContentType.GetValue(x.Type).AllowedMediaTypes!)}")}");
         RuleForEach(x => x.Value)
             .ContainsValidHtml()
-            .When(x => DialogContentType.GetValue(x.Type).RenderAsHtml);
+            .When(x => x.MediaType is not null && (x.MediaType == MediaTypes.Html));
+        RuleForEach(x => x.Value)
+            .ContainsValidMarkdown()
+            .When(x => x.MediaType is not null && x.MediaType == MediaTypes.Markdown);
+        RuleForEach(x => x.Value)
+            .Must(x => Uri.TryCreate(x.Value, UriKind.Absolute, out var uri) && uri.Scheme == Uri.UriSchemeHttps)
+            .When(x => x.MediaType is not null && x.MediaType.StartsWith(MediaTypes.EmbeddablePrefix, StringComparison.InvariantCultureIgnoreCase))
+            .WithMessage("{PropertyName} must be a valid HTTPS URL for embeddable content types");
         RuleFor(x => x.Value)
             .NotEmpty()
             .SetValidator(x => new LocalizationDtosValidator(DialogContentType.GetValue(x.Type).MaxLength));
@@ -171,13 +188,6 @@ internal sealed class CreateDialogDialogElementUrlDtoValidator : AbstractValidat
             .NotNull()
             .IsValidUri()
             .MaximumLength(Constants.DefaultMaxUriLength);
-        RuleFor(x => x.MediaType)
-            .MaximumLength(Constants.DefaultMaxStringLength);
-        RuleFor(x => x.MediaType)
-            .Must(MediaTypes.IsValid!)
-            .When(x => x.MediaType != null)
-            .WithMessage("Invalid media type, see docs for complete list <URL TDB>");
-
         RuleFor(x => x.ConsumerType)
             .IsInEnum();
     }

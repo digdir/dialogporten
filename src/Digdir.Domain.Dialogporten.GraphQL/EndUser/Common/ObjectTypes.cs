@@ -19,6 +19,7 @@ public sealed class Content
 {
     public ContentType Type { get; set; }
     public List<Localization> Value { get; set; } = [];
+    public string? MediaType { get; set; }
 }
 
 public sealed class SeenLog

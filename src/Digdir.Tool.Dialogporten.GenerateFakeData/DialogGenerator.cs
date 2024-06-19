@@ -293,7 +293,6 @@ public static class DialogGenerator
         return new Faker<CreateDialogDialogElementUrlDto>()
             .RuleFor(o => o.Url, f => new Uri(f.Internet.UrlWithPath()))
             .RuleFor(o => o.ConsumerType, f => f.PickRandom<DialogElementUrlConsumerType.Values>())
-            .RuleFor(o => o.MediaType, f => f.PickRandom(MediaTypes))
             .Generate(new Randomizer().Number(1, 3));
     }
 
@@ -338,6 +337,7 @@ public static class DialogGenerator
             content.Add(
                 new()
                 {
+                    MediaType = Domain.Dialogporten.Domain.MediaTypes.PlainText,
                     Type = DialogContentType.Values.AdditionalInfo,
                     Value = GenerateFakeLocalizations(r.Number(10, 20))
                 }

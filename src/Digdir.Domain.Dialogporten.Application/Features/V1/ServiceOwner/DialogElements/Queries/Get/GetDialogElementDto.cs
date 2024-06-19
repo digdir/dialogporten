@@ -22,7 +22,6 @@ public sealed class GetDialogElementUrlDto
 {
     public Guid Id { get; set; }
     public Uri Url { get; set; } = null!;
-    public string? MediaType { get; set; }
 
     public DialogElementUrlConsumerType.Values ConsumerType { get; set; }
 }

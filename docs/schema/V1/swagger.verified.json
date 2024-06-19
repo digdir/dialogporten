@@ -229,7 +229,8 @@
                         "Value": "Some Title",
                         "CultureCode": "en-us"
                       }
-                    ]
+                    ],
+                    "MediaType": null
                   },
                   {
                     "Type": 3,
@@ -238,7 +239,8 @@
                         "Value": "Some Summary",
                         "CultureCode": "en-us"
                       }
-                    ]
+                    ],
+                    "MediaType": null
                   }
                 ],
                 "SearchTags": [
@@ -252,7 +254,7 @@
                 "Elements": [
                   {
                     "Id": "02a72809-eddd-4192-864d-8f1755d72f4e",
-                    "Type": "http://example.com/some-type",
+                    "Type": "https://example.com/some-type",
                     "ExternalReference": null,
                     "AuthorizationAttribute": null,
                     "RelatedDialogElementId": null,
@@ -265,8 +267,7 @@
                     "Urls": [
                       {
                         "Id": "858177cb-8584-4d10-a086-3a5defa7a6c3",
-                        "Url": "http://example.com/some-url",
-                        "MediaType": "application/json",
+                        "Url": "https://example.com/some-url",
                         "ConsumerType": 0
                       }
                     ]
@@ -2301,6 +2302,10 @@
             "items": {
               "$ref": "#/components/schemas/LocalizationDto"
             }
+          },
+          "mediaType": {
+            "type": "string",
+            "nullable": true
           }
         }
       },
@@ -2312,14 +2317,16 @@
           "SenderName",
           "Summary",
           "AdditionalInfo",
-          "ExtendedStatus"
+          "ExtendedStatus",
+          "MainContentReference"
         ],
         "enum": [
           "Title",
           "SenderName",
           "Summary",
           "AdditionalInfo",
-          "ExtendedStatus"
+          "ExtendedStatus",
+          "MainContentReference"
         ]
       },
       "LocalizationDto": {
@@ -2396,10 +2403,6 @@
           "url": {
             "type": "string",
             "format": "uri"
-          },
-          "mediaType": {
-            "type": "string",
-            "nullable": true
           },
           "consumerType": {
             "$ref": "#/components/schemas/DialogElementUrlConsumerType_Values"
@@ -2902,6 +2905,10 @@
             "items": {
               "$ref": "#/components/schemas/LocalizationDto"
             }
+          },
+          "mediaType": {
+            "type": "string",
+            "nullable": true
           }
         }
       },
@@ -2961,10 +2968,6 @@
           "url": {
             "type": "string",
             "format": "uri"
-          },
-          "mediaType": {
-            "type": "string",
-            "nullable": true
           },
           "consumerType": {
             "$ref": "#/components/schemas/DialogElementUrlConsumerType_Values"
@@ -3250,6 +3253,10 @@
             "items": {
               "$ref": "#/components/schemas/LocalizationDto"
             }
+          },
+          "mediaType": {
+            "type": "string",
+            "nullable": true
           }
         }
       },
@@ -3310,10 +3317,6 @@
           "url": {
             "type": "string",
             "format": "uri"
-          },
-          "mediaType": {
-            "type": "string",
-            "nullable": true
           },
           "consumerType": {
             "$ref": "#/components/schemas/DialogElementUrlConsumerType_Values"
@@ -3947,6 +3950,10 @@
             "items": {
               "$ref": "#/components/schemas/LocalizationDto"
             }
+          },
+          "mediaType": {
+            "type": "string",
+            "nullable": true
           }
         }
       },
@@ -4004,10 +4011,6 @@
           "url": {
             "type": "string",
             "format": "uri"
-          },
-          "mediaType": {
-            "type": "string",
-            "nullable": true
           },
           "consumerType": {
             "$ref": "#/components/schemas/DialogElementUrlConsumerType_Values"
