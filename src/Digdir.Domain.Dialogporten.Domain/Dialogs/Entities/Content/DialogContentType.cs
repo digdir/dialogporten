@@ -30,18 +30,21 @@ public class DialogContentType : AbstractLookupEntity<DialogContentType, DialogC
             Required = true,
             MaxLength = Constants.DefaultMaxStringLength,
             OutputInList = true,
+            AllowedMediaTypes = []
         },
         Values.SenderName => new(id)
         {
             Required = false,
             MaxLength = Constants.DefaultMaxStringLength,
             OutputInList = true,
+            AllowedMediaTypes = []
         },
         Values.Summary => new(id)
         {
             Required = true,
             MaxLength = Constants.DefaultMaxStringLength,
             OutputInList = true,
+            AllowedMediaTypes = []
         },
         Values.AdditionalInfo => new(id)
         {
@@ -55,6 +58,7 @@ public class DialogContentType : AbstractLookupEntity<DialogContentType, DialogC
             Required = false,
             MaxLength = 20,
             OutputInList = true,
+            AllowedMediaTypes = []
         },
         Values.MainContentReference => new(id)
         {
