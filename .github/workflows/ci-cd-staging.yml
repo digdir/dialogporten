@@ -70,6 +70,20 @@ jobs:
       version: ${{ needs.get-current-version.outputs.version }}
       runMigration: ${{ needs.check-for-changes.outputs.hasMigrationChanges == 'true' }}
 
+  deploy-slack-notifier-staging:
+    name: Deploy slack notifier (staging)
+    needs: [check-for-changes]
+    if: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasSlackNotifierChanges == 'true' }}
+    uses: ./.github/workflows/action-deploy-function.yml
+    secrets:
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+    with:
+      function-app-name: "dp-be-staging-slacknotifier-fa"
+      function-project-path: "./src/Digdir.Tool.Dialogporten.SlackNotifier"
+      environment: staging
+
   publish-schema-npm:
     name: Publish schema npm package
     needs: [check-for-changes, get-current-version]
@@ -79,7 +93,7 @@ jobs:
       version: ${{ needs.get-current-version.outputs.version }}
     secrets:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-  
+
   run-e2e-tests:
     name: "Run K6 functional end-to-end tests"
     # we want the end-to-end tests to be dependent on deployment of infrastructure and apps, but if infrastructure is skipped, we still want to run the tests
@@ -96,4 +110,3 @@ jobs:
     permissions:
       checks: write
       pull-requests: write
-  
