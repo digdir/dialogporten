@@ -9,7 +9,7 @@ using Digdir.Library.Entity.Abstractions.Features.EventPublisher;
 
 namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements;
 
-public class DialogElement : IEntity, IAggregateChangedHandler, IEventPublisher
+public class DialogElement : IEntity, IAggregateCreatedHandler, IEventPublisher
 {
     public Guid Id { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
@@ -41,29 +41,11 @@ public class DialogElement : IEntity, IAggregateChangedHandler, IEventPublisher
             RelatedDialogElementId?.ToString(), Type?.ToString()));
     }
 
-    public void OnUpdate(AggregateNode self, DateTimeOffset utcNow)
-    {
-        _domainEvents.Add(new DialogElementUpdatedDomainEvent(
-            DialogId, Id, Dialog.ServiceResource, Dialog.Party,
-            RelatedDialogElementId?.ToString(), Type?.ToString()));
-    }
-
-    public void OnDelete(AggregateNode self, DateTimeOffset utcNow)
-    {
-        var dialog = (DialogEntity?)self.Parents
-            .FirstOrDefault(x => x.Entity is DialogEntity dialog && dialog.Id == DialogId)
-            ?.Entity ?? throw new UnreachableException("Expected there to be a parent dialog when deleting a dialog element.");
-
-        _domainEvents.Add(new DialogElementDeletedDomainEvent(
-            DialogId, Id, dialog.ServiceResource,
-            dialog.Party, RelatedDialogElementId, Type));
-    }
-
+#pragma warning disable CA1822
     public void SoftDelete()
+#pragma warning restore CA1822
     {
-        _domainEvents.Add(new DialogElementDeletedDomainEvent(
-            DialogId, Id, Dialog.ServiceResource,
-            Dialog.Party, RelatedDialogElementId, Type));
+        // TODO: Will be removed in later transmissions rewrite PR
     }
 
     private readonly List<IDomainEvent> _domainEvents = [];
