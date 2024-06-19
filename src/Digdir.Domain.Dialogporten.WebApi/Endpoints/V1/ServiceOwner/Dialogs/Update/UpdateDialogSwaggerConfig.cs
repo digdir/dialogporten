@@ -97,7 +97,6 @@ internal abstract class UpdateDialogSwaggerConfig : ISwaggerConfig
                     new UpdateDialogDialogElementUrlDto
                     {
                         Id = Guid.Parse("858177cb-8584-4d10-a086-3a5defa7a6c3"),
-                        // MediaType = "application/json",
                         Url = new Uri("http://example.com/some-url")
                     }
                 ]
