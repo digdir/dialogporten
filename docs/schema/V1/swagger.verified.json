@@ -254,7 +254,7 @@
                 "Elements": [
                   {
                     "Id": "02a72809-eddd-4192-864d-8f1755d72f4e",
-                    "Type": "http://example.com/some-type",
+                    "Type": "https://example.com/some-type",
                     "ExternalReference": null,
                     "AuthorizationAttribute": null,
                     "RelatedDialogElementId": null,
@@ -267,7 +267,7 @@
                     "Urls": [
                       {
                         "Id": "858177cb-8584-4d10-a086-3a5defa7a6c3",
-                        "Url": "http://example.com/some-url",
+                        "Url": "https://example.com/some-url",
                         "ConsumerType": 0
                       }
                     ]
