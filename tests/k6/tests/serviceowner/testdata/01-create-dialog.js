@@ -2,8 +2,6 @@ import { uuidv4 } from '../../../common/testimports.js'
 import { getDefaultEnduserSsn } from "../../../common/token.js";
 
 export default function () {
-    let dialogElementId = uuidv4();
-
     return {
         "serviceResource": "urn:altinn:resource:ttd-dialogporten-automated-tests", // urn starting with urn:altinn:resource:
         "party": "urn:altinn:person:identifier-no:" + getDefaultEnduserSsn(), // or urn:altinn:organization:identifier-no:<9 digits>
@@ -20,7 +18,7 @@ export default function () {
             { "type": "Title", "value": [ { "cultureCode": "nb_NO", "value": "Skjema for rapportering av et eller annet" } ] },
             { "type": "SenderName", "value": [ { "cultureCode": "nb_NO", "value": "Avsendernavn" } ] },
             { "type": "Summary", "value": [ { "cultureCode": "nb_NO", "value": "Et sammendrag her. Maks 200 tegn, ingen HTML-støtte. Påkrevd. Vises i liste." } ] },
-            { "type": "AdditionalInfo", "value": [ { "cultureCode": "nb_NO", "value": "Utvidet forklaring (enkel HTML-støtte, inntil 1023 tegn). Ikke påkrevd. Vises kun i detaljvisning." } ] },
+            { "type": "AdditionalInfo", "mediaType": "text/plain", "value": [ { "cultureCode": "nb_NO", "value": "Utvidet forklaring (enkel HTML-støtte, inntil 1023 tegn). Ikke påkrevd. Vises kun i detaljvisning." } ] },
             { "type": "ExtendedStatus", "value": [ { "cultureCode": "nb_NO", "value": "Utvidet Status" } ] },
         ],
         "guiActions": [
@@ -52,7 +50,6 @@ export default function () {
         "apiActions": [
             {
                 "action": "some_unauthorized_action",
-                "dialogElementId": dialogElementId,
                 "endPoints": [
                     {
                         "url": "https://digdir.no",
@@ -66,10 +63,8 @@ export default function () {
                 ]
             }
         ],
-        "elements": [
+        "attachments": [
             {
-                "id": dialogElementId,
-                "type": "some:type",
                 "displayName": [
                     {
                         "cultureCode": "nb_NO",
@@ -80,13 +75,11 @@ export default function () {
                     {
                         "consumerType": "gui",
                         "url": "https://foo.com/foo.pdf",
-                        "mimeType": "application/pdf"
+                        "mediaType": "application/pdf"
                     }
                 ]
             },
             {
-                "relatedDialogElementId": dialogElementId,
-                "type": "some:type",
                 "displayName": [
                     {
                         "cultureCode": "nb_NO",
@@ -97,12 +90,11 @@ export default function () {
                     {
                         "consumerType": "gui",
                         "url": "https://foo.com/foo.pdf",
-                        "mimeType": "application/pdf"
+                        "mediaType": "application/pdf"
                     }
                 ]
             },
             {
-                "type": "some:type",
                 "displayName": [
                     {
                         "cultureCode": "nb_NO",
@@ -113,7 +105,7 @@ export default function () {
                     {
                         "consumerType": "gui",
                         "url": "https://foo.com/foo.pdf",
-                        "mimeType": "application/pdf"
+                        "mediaType": "application/pdf"
                     }
                 ]
             }
@@ -121,7 +113,6 @@ export default function () {
         "activities": [
             {
                 "type": "Error",
-                "dialogElementId": dialogElementId,
                 "performedBy": "Politiet", 
                 "description": [
                     {

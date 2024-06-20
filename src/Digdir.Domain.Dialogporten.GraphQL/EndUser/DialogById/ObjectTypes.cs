@@ -51,7 +51,7 @@ public sealed class Dialog
     public DialogStatus Status { get; set; }
 
     public List<Content> Content { get; set; } = [];
-    public List<Element> Elements { get; set; } = [];
+    public List<Attachment> Attachments { get; set; } = [];
     public List<GuiAction> GuiActions { get; set; } = [];
     public List<ApiAction> ApiActions { get; set; } = [];
     public List<Activity> Activities { get; set; } = [];
@@ -64,8 +64,6 @@ public sealed class ApiAction
     public string Action { get; set; } = null!;
     public string? AuthorizationAttribute { get; set; }
     public bool IsAuthorized { get; set; }
-
-    public Guid? DialogElementId { get; set; }
 
     public List<ApiActionEndpoint> Endpoints { get; set; } = [];
 }
@@ -120,29 +118,23 @@ public enum GuiActionPriority
     Tertiary = 3
 }
 
-public sealed class Element
+public sealed class Attachment
 {
     public Guid Id { get; set; }
-    public Uri? Type { get; set; }
-    public string? ExternalReference { get; set; }
-    public string? AuthorizationAttribute { get; set; }
-    public bool IsAuthorized { get; set; }
-
-    public Guid? RelatedDialogElementId { get; set; }
 
     public List<Localization> DisplayName { get; set; } = [];
-    public List<ElementUrl> Urls { get; set; } = [];
+    public List<AttachmentUrl> Urls { get; set; } = [];
 }
 
-public sealed class ElementUrl
+public sealed class AttachmentUrl
 {
     public Guid Id { get; set; }
     public Uri Url { get; set; } = null!;
 
-    public ElementUrlConsumer ConsumerType { get; set; }
+    public AttachmentUrlConsumer ConsumerType { get; set; }
 }
 
-public enum ElementUrlConsumer
+public enum AttachmentUrlConsumer
 {
     Gui = 1,
     Api = 2

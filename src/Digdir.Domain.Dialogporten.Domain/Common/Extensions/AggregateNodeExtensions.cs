@@ -2,8 +2,8 @@
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Attachments;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements;
 using Digdir.Domain.Dialogporten.Domain.Localizations;
 using Digdir.Library.Entity.Abstractions.Features.Aggregate;
 using Digdir.Library.Entity.Abstractions.Features.Identifiable;
@@ -53,8 +53,8 @@ public static class AggregateNodeExtensions
     private static string ToName(this object obj) => obj switch
     {
         DialogEntity => "dialog",
-        DialogElement => "element",
-        DialogElementUrl => "url",
+        DialogAttachment => "attachment",
+        DialogAttachmentUrl => "url",
         DialogApiAction => "apiAction",
         DialogApiActionEndpoint => "endpoint",
         DialogGuiAction => "guiAction",
@@ -63,7 +63,7 @@ public static class AggregateNodeExtensions
 
         DialogContentValue => "contentValue",
         DialogActivityDescription => "description",
-        DialogElementDisplayName => "displayName",
+        AttachmentDisplayName => "displayName",
         DialogGuiActionTitle => "title",
 
         _ => obj.GetType().Name

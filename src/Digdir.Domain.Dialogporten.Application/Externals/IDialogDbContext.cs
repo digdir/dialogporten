@@ -1,11 +1,11 @@
 ﻿using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements;
 using Digdir.Domain.Dialogporten.Domain.Outboxes;
 using Digdir.Library.Entity.Abstractions.Features.Identifiable;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Attachments;
 
 namespace Digdir.Domain.Dialogporten.Application.Externals;
 
@@ -17,8 +17,8 @@ public interface IDialogDbContext
     DbSet<DialogApiAction> DialogApiActions { get; }
     DbSet<DialogApiActionEndpoint> DialogApiActionEndpoints { get; }
     DbSet<DialogGuiAction> DialogGuiActions { get; }
-    DbSet<DialogElement> DialogElements { get; }
-    DbSet<DialogElementUrl> DialogElementUrls { get; }
+    DbSet<DialogAttachment> DialogAttachments { get; }
+    DbSet<DialogAttachmentUrl> DialogAttachmentUrls { get; }
     DbSet<DialogGuiActionPriority> DialogGuiActionTypes { get; }
     DbSet<DialogActivityType> DialogActivityTypes { get; }
 

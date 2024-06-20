@@ -5,8 +5,8 @@ using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Co
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Attachments;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements;
 using Digdir.Domain.Dialogporten.Domain.Http;
 
 namespace Digdir.Tool.Dialogporten.GenerateFakeData;
@@ -28,7 +28,7 @@ public static class DialogGenerator
         DialogStatus.Values? status = null,
         List<CreateDialogContentDto>? content = null,
         List<CreateDialogSearchTagDto>? searchTags = null,
-        List<CreateDialogDialogElementDto>? elements = null,
+        List<CreateDialogDialogAttachmentDto>? attachments = null,
         List<CreateDialogDialogGuiActionDto>? guiActions = null,
         List<CreateDialogDialogApiActionDto>? apiActions = null,
         List<CreateDialogDialogActivityDto>? activities = null)
@@ -47,7 +47,7 @@ public static class DialogGenerator
             status,
             content,
             searchTags,
-            elements,
+            attachments,
             guiActions,
             apiActions,
             activities
@@ -68,7 +68,7 @@ public static class DialogGenerator
         DialogStatus.Values? status = null,
         List<CreateDialogContentDto>? content = null,
         List<CreateDialogSearchTagDto>? searchTags = null,
-        List<CreateDialogDialogElementDto>? elements = null,
+        List<CreateDialogDialogAttachmentDto>? attachments = null,
         List<CreateDialogDialogGuiActionDto>? guiActions = null,
         List<CreateDialogDialogApiActionDto>? apiActions = null,
         List<CreateDialogDialogActivityDto>? activities = null)
@@ -86,7 +86,7 @@ public static class DialogGenerator
             .RuleFor(o => o.Status, f => status ?? f.PickRandom<DialogStatus.Values>())
             .RuleFor(o => o.Content, _ => content ?? GenerateFakeDialogContent())
             .RuleFor(o => o.SearchTags, _ => searchTags ?? GenerateFakeSearchTags())
-            .RuleFor(o => o.Elements, _ => elements ?? GenerateFakeDialogElements())
+            .RuleFor(o => o.Attachments, _ => attachments ?? GenerateFakeDialogAttachments())
             .RuleFor(o => o.GuiActions, _ => guiActions ?? GenerateFakeDialogGuiActions())
             .RuleFor(o => o.ApiActions, _ => apiActions ?? GenerateFakeDialogApiActions())
             .RuleFor(o => o.Activities, _ => activities ?? GenerateFakeDialogActivities())
@@ -100,7 +100,7 @@ public static class DialogGenerator
         return GenerateFakeDialog(
             id: id,
             activities: [],
-            elements: [],
+            attachments: [],
             guiActions: [],
             apiActions: [],
             searchTags: []);
@@ -268,16 +268,15 @@ public static class DialogGenerator
             .Generate(new Randomizer().Number(min: 1, 4));
     }
 
-    public static CreateDialogDialogElementDto GenerateFakeDialogElement()
-        => GenerateFakeDialogElements(1)[0];
+    public static CreateDialogDialogAttachmentDto GenerateFakeDialogAttachment()
+        => GenerateFakeDialogAttachments(1)[0];
 
-    public static List<CreateDialogDialogElementDto> GenerateFakeDialogElements(int? count = null)
+    public static List<CreateDialogDialogAttachmentDto> GenerateFakeDialogAttachments(int? count = null)
     {
-        return new Faker<CreateDialogDialogElementDto>()
+        return new Faker<CreateDialogDialogAttachmentDto>()
             .RuleFor(o => o.Id, _ => Guid.NewGuid())
-            .RuleFor(o => o.Type, f => new Uri("urn:" + f.Random.AlphaNumeric(10)))
             .RuleFor(o => o.DisplayName, f => GenerateFakeLocalizations(f.Random.Number(2, 5)))
-            .RuleFor(o => o.Urls, _ => GenerateFakeDialogElementUrls())
+            .RuleFor(o => o.Urls, _ => GenerateFakeDialogAttachmentUrls())
             .Generate(count ?? new Randomizer().Number(1, 6));
     }
 
@@ -288,11 +287,11 @@ public static class DialogGenerator
         "application/pdf"
     ];
 
-    public static List<CreateDialogDialogElementUrlDto> GenerateFakeDialogElementUrls()
+    public static List<CreateDialogDialogAttachmentUrlDto> GenerateFakeDialogAttachmentUrls()
     {
-        return new Faker<CreateDialogDialogElementUrlDto>()
+        return new Faker<CreateDialogDialogAttachmentUrlDto>()
             .RuleFor(o => o.Url, f => new Uri(f.Internet.UrlWithPath()))
-            .RuleFor(o => o.ConsumerType, f => f.PickRandom<DialogElementUrlConsumerType.Values>())
+            .RuleFor(o => o.ConsumerType, f => f.PickRandom<DialogAttachmentUrlConsumerType.Values>())
             .Generate(new Randomizer().Number(1, 3));
     }
 

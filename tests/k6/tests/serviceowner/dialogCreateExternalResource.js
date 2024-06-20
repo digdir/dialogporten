@@ -9,12 +9,12 @@ export default function () {
         let r = postSO('dialogs', dialog);
         expectStatusFor(r).to.equal(expectedStatus);
         expect(r, 'response').to.have.validJsonBody();
-        
+
         if (expectedStatus === 201) {
             let r2 = purgeSO('dialogs/' + r.json());
             expectStatusFor(r2).to.equal(204);
         }
-        
+
         if (expectErrors) {
             expect(r.json(), 'response').to.have.property('errors');
         }
@@ -28,9 +28,10 @@ export default function () {
         testDialogCreate('guiActions', "urn:altinn:resource:super-simple-service", 201);
     });
 
-    describe('Attempt dialog create with dialog element referring available external resource', () => {
-        testDialogCreate('elements', "urn:altinn:resource:super-simple-service", 201);
-    });
+    // TODO: Re-enable when implementing https://github.com/digdir/dialogporten/issues/860
+    // describe('Attempt dialog create with dialog transmission referring available external resource', () => {
+    //     testDialogCreate('transmissions', "urn:altinn:resource:super-simple-service", 201);
+    // });
 
     describe('Attempt dialog create with API action referring unavailable resource', () => {
         testDialogCreate('apiActions', "urn:altinn:resource:notavailable", 403, true);
@@ -39,8 +40,9 @@ export default function () {
     describe('Attempt dialog create with GUI action referring unavailable resource', () => {
         testDialogCreate('guiActions', "urn:altinn:resource:notavailable", 403, true);
     });
-
-    describe('Attempt dialog create with dialog element referring unavailable resource', () => {
-        testDialogCreate('elements', "urn:altinn:resource:notavailable", 403, true);
-    });
+    
+    // TODO: Re-enable when implementing https://github.com/digdir/dialogporten/issues/860
+    // describe('Attempt dialog create with dialog transmission referring unavailable resource', () => {
+    //     testDialogCreate('transmissions', "urn:altinn:resource:notavailable", 403, true);
+    // });
 }

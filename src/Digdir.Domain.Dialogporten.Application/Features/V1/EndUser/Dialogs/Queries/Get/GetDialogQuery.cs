@@ -62,9 +62,9 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
         var dialog = await _db.Dialogs
             .Include(x => x.Content.OrderBy(x => x.Id).ThenBy(x => x.CreatedAt))
                 .ThenInclude(x => x.Value.Localizations.OrderBy(x => x.CreatedAt).ThenBy(x => x.CultureCode))
-            .Include(x => x.Elements.OrderBy(x => x.CreatedAt).ThenBy(x => x.Id))
+            .Include(x => x.Attachments.OrderBy(x => x.CreatedAt).ThenBy(x => x.Id))
                 .ThenInclude(x => x.DisplayName!.Localizations.OrderBy(x => x.CreatedAt).ThenBy(x => x.CultureCode))
-            .Include(x => x.Elements.OrderBy(x => x.CreatedAt).ThenBy(x => x.Id))
+            .Include(x => x.Attachments.OrderBy(x => x.CreatedAt).ThenBy(x => x.Id))
                 .ThenInclude(x => x.Urls.OrderBy(x => x.CreatedAt).ThenBy(x => x.Id))
             .Include(x => x.GuiActions.OrderBy(x => x.CreatedAt).ThenBy(x => x.Id))
                 .ThenInclude(x => x.Title!.Localizations.OrderBy(x => x.CreatedAt).ThenBy(x => x.CultureCode))
@@ -159,19 +159,20 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
                 }
             }
 
-            foreach (var element in dto.Elements)
-            {
-                if (authorizationResult.HasReadAccessToDialogElement(element))
-                {
-                    element.IsAuthorized = true;
-                }
-            }
+            // TODO: Rename in https://github.com/digdir/dialogporten/issues/860
+            // foreach (var transmission in dto.Transmissions)
+            // {
+            //     if (authorizationResult.HasReadAccessToDialogTransmission(transmission))
+            //     {
+            //         transmission.IsAuthorized = true;
+            //     }
+            // }
         }
     }
 
     private static void ReplaceUnauthorizedUrls(GetDialogDto dto)
     {
-        // For all API and GUI actions and dialogelements where isAuthorized is false, replace the URLs with Constants.UnauthorizedUrl
+        // For all API and GUI actions and transmissions where isAuthorized is false, replace the URLs with Constants.UnauthorizedUrl
         foreach (var guiAction in dto.GuiActions.Where(a => !a.IsAuthorized))
         {
             guiAction.Url = Constants.UnauthorizedUri;
@@ -185,12 +186,9 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
             }
         }
 
-        foreach (var dialogElement in dto.Elements.Where(e => !e.IsAuthorized))
-        {
-            foreach (var url in dialogElement.Urls)
-            {
-                url.Url = Constants.UnauthorizedUri;
-            }
-        }
+        // // Attachment URLs
+        // foreach (var dialogTransmission in dto.Transmissions.Where(e => !e.IsAuthorized))
+        // {
+        // }
     }
 }

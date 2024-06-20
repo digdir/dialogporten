@@ -25,7 +25,7 @@ internal sealed class UpdateDialogCommandValidator : AbstractValidator<UpdateDia
 internal sealed class UpdateDialogDtoValidator : AbstractValidator<UpdateDialogDto>
 {
     public UpdateDialogDtoValidator(
-        IValidator<UpdateDialogDialogElementDto> elementValidator,
+        IValidator<UpdateDialogDialogAttachmentDto> attachmentValidator,
         IValidator<UpdateDialogDialogGuiActionDto> guiActionValidator,
         IValidator<UpdateDialogDialogApiActionDto> apiActionValidator,
         IValidator<UpdateDialogDialogActivityDto> activityValidator,
@@ -90,25 +90,16 @@ internal sealed class UpdateDialogDtoValidator : AbstractValidator<UpdateDialogD
         RuleFor(x => x.ApiActions)
             .UniqueBy(x => x.Id);
         RuleForEach(x => x.ApiActions)
-            .IsIn(x => x.Elements,
-                dependentKeySelector: action => action.DialogElementId,
-                principalKeySelector: element => element.Id)
             .SetValidator(apiActionValidator);
 
-        RuleFor(x => x.Elements)
+        RuleFor(x => x.Attachments)
             .UniqueBy(x => x.Id);
-        RuleForEach(x => x.Elements)
-            .IsIn(x => x.Elements,
-                dependentKeySelector: element => element.RelatedDialogElementId,
-                principalKeySelector: element => element.Id)
-            .SetValidator(elementValidator);
+        RuleForEach(x => x.Attachments)
+            .SetValidator(attachmentValidator);
 
         RuleFor(x => x.Activities)
             .UniqueBy(x => x.Id);
         RuleForEach(x => x.Activities)
-            .IsIn(x => x.Elements,
-                dependentKeySelector: activity => activity.DialogElementId,
-                principalKeySelector: element => element.Id)
             .IsIn(x => x.Activities,
                 dependentKeySelector: activity => activity.RelatedActivityId,
                 principalKeySelector: activity => activity.Id)
@@ -149,24 +140,14 @@ internal sealed class UpdateDialogContentDtoValidator : AbstractValidator<Update
     }
 }
 
-internal sealed class UpdateDialogDialogElementDtoValidator : AbstractValidator<UpdateDialogDialogElementDto>
+internal sealed class UpdateDialogDialogAttachmentDtoValidator : AbstractValidator<UpdateDialogDialogAttachmentDto>
 {
-    public UpdateDialogDialogElementDtoValidator(
+    public UpdateDialogDialogAttachmentDtoValidator(
         IValidator<IEnumerable<LocalizationDto>> localizationsValidator,
-        IValidator<UpdateDialogDialogElementUrlDto> urlValidator)
+        IValidator<UpdateDialogDialogAttachmentUrlDto> urlValidator)
     {
         RuleFor(x => x.Id)
             .NotEqual(default(Guid));
-        RuleFor(x => x.Type)
-            .IsValidUri()
-            .MaximumLength(Constants.DefaultMaxUriLength);
-        RuleFor(x => x.ExternalReference)
-            .MaximumLength(Constants.DefaultMaxStringLength);
-        RuleFor(x => x.AuthorizationAttribute)
-            .MaximumLength(Constants.DefaultMaxStringLength);
-        RuleFor(x => x.RelatedDialogElementId)
-            .NotEqual(x => x.Id)
-            .When(x => x.RelatedDialogElementId.HasValue);
         RuleFor(x => x.DisplayName)
             .SetValidator(localizationsValidator);
         RuleFor(x => x.Urls)
@@ -177,9 +158,9 @@ internal sealed class UpdateDialogDialogElementDtoValidator : AbstractValidator<
     }
 }
 
-internal sealed class UpdateDialogDialogElementUrlDtoValidator : AbstractValidator<UpdateDialogDialogElementUrlDto>
+internal sealed class UpdateDialogDialogAttachmentUrlDtoValidator : AbstractValidator<UpdateDialogDialogAttachmentUrlDto>
 {
-    public UpdateDialogDialogElementUrlDtoValidator()
+    public UpdateDialogDialogAttachmentUrlDtoValidator()
     {
         RuleFor(x => x.Url)
             .NotNull()

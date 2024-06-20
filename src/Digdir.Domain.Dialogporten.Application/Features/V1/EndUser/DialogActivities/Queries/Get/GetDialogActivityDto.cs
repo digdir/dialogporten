@@ -12,7 +12,6 @@ public sealed class GetDialogActivityDto
     public DialogActivityType.Values Type { get; set; }
 
     public Guid? RelatedActivityId { get; set; }
-    public Guid? DialogElementId { get; set; }
 
     public string? PerformedBy { get; set; }
     public List<LocalizationDto> Description { get; set; } = [];

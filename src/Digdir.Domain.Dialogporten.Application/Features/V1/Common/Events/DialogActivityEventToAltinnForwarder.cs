@@ -45,16 +45,6 @@ internal sealed class DialogActivityEventToAltinnForwarder : DomainEventToAltinn
             data["relatedActivityId"] = domainEvent.RelatedActivityId.ToString()!;
         }
 
-        if (domainEvent.DialogElementId is not null)
-        {
-            data["dialogElementId"] = domainEvent.DialogElementId.ToString()!;
-        }
-
-        if (domainEvent.DialogElementType is not null)
-        {
-            data["dialogElementType"] = domainEvent.DialogElementType.ToString();
-        }
-
         return data;
     }
 }

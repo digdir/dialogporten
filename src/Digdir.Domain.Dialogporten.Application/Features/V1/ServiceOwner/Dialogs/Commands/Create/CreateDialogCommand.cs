@@ -6,7 +6,7 @@ using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Domain.Common;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Attachments;
 using FluentValidation.Results;
 using MediatR;
 using OneOf;
@@ -94,10 +94,10 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
             _domainContext.AddError(DomainFailure.EntityExists<DialogActivity>(existingActivityIds));
         }
 
-        var existingElementIds = await _db.GetExistingIds(dialog.Elements, cancellationToken);
-        if (existingElementIds.Count != 0)
+        var existingAttachmentIds = await _db.GetExistingIds(dialog.Attachments, cancellationToken);
+        if (existingAttachmentIds.Count != 0)
         {
-            _domainContext.AddError(DomainFailure.EntityExists<DialogElement>(existingElementIds));
+            _domainContext.AddError(DomainFailure.EntityExists<DialogAttachment>(existingAttachmentIds));
         }
 
         await _db.Dialogs.AddAsync(dialog, cancellationToken);
@@ -124,9 +124,6 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
         serviceResourceReferences.AddRange(request.GuiActions
             .Where(action => IsExternalResource(action.AuthorizationAttribute))
             .Select(action => action.AuthorizationAttribute!));
-        serviceResourceReferences.AddRange(request.Elements
-            .Where(element => IsExternalResource(element.AuthorizationAttribute))
-            .Select(element => element.AuthorizationAttribute!));
 
         return serviceResourceReferences.Distinct().ToList();
     }
