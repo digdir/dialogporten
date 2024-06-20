@@ -18,7 +18,7 @@ namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialog
 
 public sealed class SearchDialogQuery : SortablePaginationParameter<SearchDialogQueryOrderDefinition, SearchDialogDto>, IRequest<SearchDialogResult>
 {
-    private string? _searchCultureCode;
+    private string? _searchLanguageCode;
 
     /// <summary>
     /// Filter by one or more service resources
@@ -95,12 +95,12 @@ public sealed class SearchDialogQuery : SortablePaginationParameter<SearchDialog
     public string? Search { get; init; }
 
     /// <summary>
-    /// Limit free text search to texts with this culture code, e.g. \"nb-NO\". Default: search all culture codes
+    /// Limit free text search to texts with this language code, e.g. 'no', 'en'. Culture codes will be normalized to neutral language codes (ISO 639). Default: search all culture codes
     /// </summary>
-    public string? SearchCultureCode
+    public string? SearchLanguageCode
     {
-        get => _searchCultureCode;
-        init => _searchCultureCode = Localization.NormalizeCultureCode(value);
+        get => _searchLanguageCode;
+        init => _searchLanguageCode = Localization.NormalizeCultureCode(value);
     }
 }
 public sealed class SearchDialogQueryOrderDefinition : IOrderDefinition<SearchDialogDto>
@@ -141,7 +141,7 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
     public async Task<SearchDialogResult> Handle(SearchDialogQuery request, CancellationToken cancellationToken)
     {
         var resourceIds = await _userResourceRegistry.GetCurrentUserResourceIds(cancellationToken);
-        var searchExpression = Expressions.LocalizedSearchExpression(request.Search, request.SearchCultureCode);
+        var searchExpression = Expressions.LocalizedSearchExpression(request.Search, request.SearchLanguageCode);
 
         var query = _db.Dialogs
             .WhereIf(!request.ServiceResource.IsNullOrEmpty(),

@@ -353,17 +353,17 @@ public static class DialogGenerator
         [
             new()
             {
-                CultureCode = "nb_NO",
+                LanguageCode = "nb_NO",
                 Value = r.Words(wordCount)
             },
             new()
             {
-                CultureCode = "nn_NO",
+                LanguageCode = "nn_NO",
                 Value = r.Words(wordCount)
             },
             new()
             {
-                CultureCode = "en_US",
+                LanguageCode = "en_US",
                 Value = r.Words(wordCount)
             }
         ];

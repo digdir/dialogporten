@@ -34,10 +34,10 @@ Content-Type: application/json
   "ServiceResource": "urn:altinn:resource:super-simple-service",
   "Status": "InProgress",
   "Content": [
-      { "Type": "Title", "Value": [ { "CultureCode": "en-us", "Value": "Hello world!" } ]},
-      { "Type": "Summary", "Value": [ { "CultureCode": "NB_NO", "Value": "Dette er en oppsummering." } ]},
-      { "Type": "SenderName", "Value": [ { "CultureCode": "NB_NO", "Value": "Jeg er meg og jeg har sendt" } ]},
-      { "Type": "AdditionalInfo", "Value": [ { "CultureCode": "NB_NO", "Value": "Dette er en paragref <p/>" } ]}
+      { "Type": "Title", "Value": [ { "LanguageCode": "en-us", "Value": "Hello world!" } ]},
+      { "Type": "Summary", "Value": [ { "LanguageCode": "NB_NO", "Value": "Dette er en oppsummering." } ]},
+      { "Type": "SenderName", "Value": [ { "LanguageCode": "NB_NO", "Value": "Jeg er meg og jeg har sendt" } ]},
+      { "Type": "AdditionalInfo", "Value": [ { "LanguageCode": "NB_NO", "Value": "Dette er en paragref <p/>" } ]}
   ]
 }
 
@@ -52,10 +52,10 @@ Content-Type: application/json
   "ServiceResource": "urn:altinn:resource:super-simple-service",
   "Status": "InProgress",
   "Content": [
-      { "Type": "Title", "Value": [ { "CultureCode": "NB_NO", "Value": "Hei verden!" } ]},
-      { "Type": "Summary", "Value": [ { "CultureCode": "NB_NO", "Value": "Dette er en oppsummering." } ]},
-      { "Type": "SenderName", "Value": [ { "CultureCode": "NB_NO", "Value": "Jeg er meg og jeg har sendt" } ]},
-      { "Type": "AdditionalInfo", "Value": [ { "CultureCode": "NB_NO", "Value": "Dette er en paragref <p/>" } ]}
+      { "Type": "Title", "Value": [ { "LanguageCode": "NB_NO", "Value": "Hei verden!" } ]},
+      { "Type": "Summary", "Value": [ { "LanguageCode": "NB_NO", "Value": "Dette er en oppsummering." } ]},
+      { "Type": "SenderName", "Value": [ { "LanguageCode": "NB_NO", "Value": "Jeg er meg og jeg har sendt" } ]},
+      { "Type": "AdditionalInfo", "Value": [ { "LanguageCode": "NB_NO", "Value": "Dette er en paragref <p/>" } ]}
   ],
   "SearchTags": [
     { "value": "tag1" },
@@ -69,8 +69,19 @@ PATCH {{baseAdress}}/api/v1/serviceowner/dialogs/{{dialogId}}
 Content-Type: application/json
 
 [
-    { "op": "replace", "path": "/content/0/value/0", "value": { "CultureCode": "en_US", "Value": "Hello world!" } },
-    { "op": "replace", "path": "/content/1/value/0/value", "value": "Ny oppsummering." }
+    {
+        "op": "replace",
+        "path": "/content/0/value/0",
+        "value": {
+            "LanguageCode": "en_US",
+            "Value": "Hello world!"
+        }
+    },
+    {
+        "op": "replace",
+        "path": "/content/1/value/0/value",
+        "value": "Ny oppsummering."
+    }
 ]
 
 ###

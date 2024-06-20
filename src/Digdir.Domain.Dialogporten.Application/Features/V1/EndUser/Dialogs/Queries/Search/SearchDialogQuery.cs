@@ -19,7 +19,7 @@ namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Que
 
 public sealed class SearchDialogQuery : SortablePaginationParameter<SearchDialogQueryOrderDefinition, SearchDialogDto>, IRequest<SearchDialogResult>
 {
-    private readonly string? _searchCultureCode;
+    private readonly string? _searchLanguageCode;
 
     /// <summary>
     /// Filter by one or more service owner codes
@@ -87,12 +87,12 @@ public sealed class SearchDialogQuery : SortablePaginationParameter<SearchDialog
     public string? Search { get; init; }
 
     /// <summary>
-    /// Limit free text search to texts with this culture code, e.g. \"nb-NO\". Default: search all culture codes
+    /// Limit free text search to texts with this language code, e.g. 'no', 'en'. Culture codes will be normalized to neutral language codes (ISO 639). Default: search all culture codes
     /// </summary>
-    public string? SearchCultureCode
+    public string? SearchLanguageCode
     {
-        get => _searchCultureCode;
-        init => _searchCultureCode = Localization.NormalizeCultureCode(value);
+        get => _searchLanguageCode;
+        init => _searchLanguageCode = Localization.NormalizeCultureCode(value);
     }
 }
 
@@ -138,7 +138,7 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
     {
         var currentUserInfo = await _userRegistry.GetCurrentUserInformation(cancellationToken);
 
-        var searchExpression = Expressions.LocalizedSearchExpression(request.Search, request.SearchCultureCode);
+        var searchExpression = Expressions.LocalizedSearchExpression(request.Search, request.SearchLanguageCode);
         var authorizedResources = await _altinnAuthorization.GetAuthorizedResourcesForSearch(
             request.Party ?? [],
             request.ServiceResource ?? [],

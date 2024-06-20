@@ -12,10 +12,10 @@ internal static class Expressions
         return Expression.Lambda<Func<T, bool>>(Expression.OrElse(expr1.Body, invokedExpr), expr1.Parameters);
     }
 
-    internal static Expression<Func<Localization, bool>> LocalizedSearchExpression(string? search, string? cultureCode)
+    internal static Expression<Func<Localization, bool>> LocalizedSearchExpression(string? search, string? languageCode)
     {
         return localization =>
-            (cultureCode == null || localization.CultureCode == cultureCode) &&
+            (languageCode == null || localization.LanguageCode == languageCode) &&
             EF.Functions.ILike(localization.Value, $"%{search}%");
     }
 }
