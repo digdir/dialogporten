@@ -1,6 +1,8 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Diagnostics;
+using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
+using Microsoft.AspNetCore.Authentication;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Common.Authentication;
 
@@ -43,23 +45,45 @@ internal static class AuthenticationBuilderExtensions
 
                 options.Events = new JwtBearerEvents
                 {
-                    OnMessageReceived = async context =>
-                    {
-                        var expectedIssuer = await context.HttpContext
-                            .RequestServices
-                            .GetRequiredService<ITokenIssuerCache>()
-                            .GetIssuerForScheme(schema.Name);
-
-                        if (context.HttpContext.Items.TryGetValue(Constants.CurrentTokenIssuer, out var tokenIssuer)
-                            && (string?)tokenIssuer != expectedIssuer)
-                        {
-                            context.NoResult();
-                        }
-                    }
+                    OnMessageReceived = OnMessageReceived(schema)
                 };
             });
         }
 
         return services;
     }
+
+    private static Func<MessageReceivedContext, Task> OnMessageReceived(JwtBearerTokenSchemasOptions schema) =>
+        async context =>
+        {
+            string? expectedIssuer;
+
+            try
+            {
+                expectedIssuer = await context.HttpContext
+                    .RequestServices
+                    .GetRequiredService<ITokenIssuerCache>()
+                    .GetIssuerForScheme(schema.Name);
+            }
+            catch (Exception)
+            {
+                var problemDetails = context.HttpContext.ResponseBuilder(StatusCodes.Status502BadGateway);
+
+                // context.Response.OnStarting(async () =>
+                // {
+                //     context.Response.StatusCode = StatusCodes.Status502BadGateway;
+                //     await context.Response.WriteAsJsonAsync(problemDetails);
+                // });
+                context.Response.StatusCode = StatusCodes.Status502BadGateway;
+                await context.Response.WriteAsJsonAsync(problemDetails);
+                return;
+            }
+
+
+            if (context.HttpContext.Items.TryGetValue(Constants.CurrentTokenIssuer, out var tokenIssuer)
+                && (string?)tokenIssuer != expectedIssuer)
+            {
+                context.NoResult();
+            }
+        };
 }
