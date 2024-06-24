@@ -4,7 +4,6 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements;
 using Digdir.Domain.Dialogporten.Domain.Outboxes;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence.ValueConverters;
 using Digdir.Library.Entity.Abstractions.Features.Identifiable;
@@ -13,6 +12,7 @@ using Digdir.Library.Entity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System.Linq.Expressions;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Attachments;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence;
 
@@ -26,8 +26,8 @@ internal sealed class DialogDbContext : DbContext, IDialogDbContext
     public DbSet<DialogApiAction> DialogApiActions => Set<DialogApiAction>();
     public DbSet<DialogApiActionEndpoint> DialogApiActionEndpoints => Set<DialogApiActionEndpoint>();
     public DbSet<DialogGuiAction> DialogGuiActions => Set<DialogGuiAction>();
-    public DbSet<DialogElement> DialogElements => Set<DialogElement>();
-    public DbSet<DialogElementUrl> DialogElementUrls => Set<DialogElementUrl>();
+    public DbSet<DialogAttachment> DialogAttachments => Set<DialogAttachment>();
+    public DbSet<DialogAttachmentUrl> DialogAttachmentUrls => Set<DialogAttachmentUrl>();
     public DbSet<DialogGuiActionPriority> DialogGuiActionTypes => Set<DialogGuiActionPriority>();
     public DbSet<DialogActivityType> DialogActivityTypes => Set<DialogActivityType>();
     public DbSet<DialogSeenLog> DialogSeenLog => Set<DialogSeenLog>();

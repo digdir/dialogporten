@@ -16,7 +16,6 @@ type Activity {
   extendedType: URL
   type: ActivityType!
   relatedActivityId: UUID
-  dialogElementId: UUID
   performedBy: String
   description: [Localization!]!
 }
@@ -26,7 +25,6 @@ type ApiAction {
   action: String!
   authorizationAttribute: String
   isAuthorized: Boolean!
-  dialogElementId: UUID
   endpoints: [ApiActionEndpoint!]!
 }
 
@@ -40,6 +38,18 @@ type ApiActionEndpoint {
   responseSchema: URL
   deprecated: Boolean!
   sunsetAt: DateTime
+}
+
+type Attachment {
+  id: UUID!
+  displayName: [Localization!]!
+  urls: [AttachmentUrl!]!
+}
+
+type AttachmentUrl {
+  id: UUID!
+  url: URL!
+  consumerType: AttachmentUrlConsumer!
 }
 
 type AuthorizedParty {
@@ -78,7 +88,7 @@ type Dialog {
   dialogToken: String
   status: DialogStatus!
   content: [Content!]!
-  elements: [Element!]!
+  attachments: [Attachment!]!
   guiActions: [GuiAction!]!
   apiActions: [ApiAction!]!
   activities: [Activity!]!
@@ -100,23 +110,6 @@ type DialogByIdNotFound implements DialogByIdError {
 type DialogByIdPayload {
   dialog: Dialog
   errors: [DialogByIdError!]!
-}
-
-type Element {
-  id: UUID!
-  type: URL
-  externalReference: String
-  authorizationAttribute: String
-  isAuthorized: Boolean!
-  relatedDialogElementId: UUID
-  displayName: [Localization!]!
-  urls: [ElementUrl!]!
-}
-
-type ElementUrl {
-  id: UUID!
-  url: URL!
-  consumerType: ElementUrlConsumer!
 }
 
 type GuiAction {
@@ -237,6 +230,11 @@ enum ApplyPolicy {
   VALIDATION
 }
 
+enum AttachmentUrlConsumer {
+  GUI
+  API
+}
+
 enum ContentType {
   TITLE
   SENDER_NAME
@@ -258,11 +256,6 @@ enum DialogStatus {
   CANCELLED
   "The dialog was completed. This typically moves the dialog to a GUI archive or similar."
   COMPLETED
-}
-
-enum ElementUrlConsumer {
-  GUI
-  API
 }
 
 enum GuiActionPriority {

@@ -13,7 +13,7 @@ namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialog
 internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDialogCommand>
 {
     public CreateDialogCommandValidator(
-        IValidator<CreateDialogDialogElementDto> elementValidator,
+        IValidator<CreateDialogDialogAttachmentDto> attachmentValidator,
         IValidator<CreateDialogDialogGuiActionDto> guiActionValidator,
         IValidator<CreateDialogDialogApiActionDto> apiActionValidator,
         IValidator<CreateDialogDialogActivityDto> activityValidator,
@@ -95,25 +95,16 @@ internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDia
             .ForEach(x => x.SetValidator(guiActionValidator));
 
         RuleForEach(x => x.ApiActions)
-            .IsIn(x => x.Elements,
-                dependentKeySelector: action => action.DialogElementId,
-                principalKeySelector: element => element.Id)
             .SetValidator(apiActionValidator);
 
-        RuleFor(x => x.Elements)
+        RuleFor(x => x.Attachments)
             .UniqueBy(x => x.Id);
-        RuleForEach(x => x.Elements)
-            .IsIn(x => x.Elements,
-                dependentKeySelector: element => element.RelatedDialogElementId,
-                principalKeySelector: element => element.Id)
-            .SetValidator(elementValidator);
+        RuleForEach(x => x.Attachments)
+            .SetValidator(attachmentValidator);
 
         RuleFor(x => x.Activities)
             .UniqueBy(x => x.Id);
         RuleForEach(x => x.Activities)
-            .IsIn(x => x.Elements,
-                dependentKeySelector: activity => activity.DialogElementId,
-                principalKeySelector: element => element.Id)
             .IsIn(x => x.Activities,
                 dependentKeySelector: activity => activity.RelatedActivityId,
                 principalKeySelector: activity => activity.Id)
@@ -154,24 +145,14 @@ internal sealed class CreateDialogContentDtoValidator : AbstractValidator<Create
     }
 }
 
-internal sealed class CreateDialogDialogElementDtoValidator : AbstractValidator<CreateDialogDialogElementDto>
+internal sealed class CreateDialogDialogAttachmentDtoValidator : AbstractValidator<CreateDialogDialogAttachmentDto>
 {
-    public CreateDialogDialogElementDtoValidator(
+    public CreateDialogDialogAttachmentDtoValidator(
         IValidator<IEnumerable<LocalizationDto>> localizationsValidator,
-        IValidator<CreateDialogDialogElementUrlDto> urlValidator)
+        IValidator<CreateDialogDialogAttachmentUrlDto> urlValidator)
     {
         RuleFor(x => x.Id)
             .NotEqual(default(Guid));
-        RuleFor(x => x.Type)
-            .IsValidUri()
-            .MaximumLength(Constants.DefaultMaxUriLength);
-        RuleFor(x => x.AuthorizationAttribute)
-            .MaximumLength(Constants.DefaultMaxStringLength);
-        RuleFor(x => x.ExternalReference)
-            .MaximumLength(Constants.DefaultMaxStringLength);
-        RuleFor(x => x.RelatedDialogElementId)
-            .NotEqual(x => x.Id)
-            .When(x => x.RelatedDialogElementId.HasValue);
         RuleFor(x => x.DisplayName)
             .SetValidator(localizationsValidator);
         RuleFor(x => x.Urls)
@@ -180,9 +161,9 @@ internal sealed class CreateDialogDialogElementDtoValidator : AbstractValidator<
     }
 }
 
-internal sealed class CreateDialogDialogElementUrlDtoValidator : AbstractValidator<CreateDialogDialogElementUrlDto>
+internal sealed class CreateDialogDialogAttachmentUrlDtoValidator : AbstractValidator<CreateDialogDialogAttachmentUrlDto>
 {
-    public CreateDialogDialogElementUrlDtoValidator()
+    public CreateDialogDialogAttachmentUrlDtoValidator()
     {
         RuleFor(x => x.Url)
             .NotNull()

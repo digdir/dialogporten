@@ -4,8 +4,8 @@ using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Qu
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Attachments;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Update;
 
@@ -43,10 +43,10 @@ internal sealed class MappingProfile : Profile
             .ForMember(dest => dest.HttpMethod, opt => opt.Ignore())
             .ForMember(dest => dest.HttpMethodId, opt => opt.MapFrom(src => src.HttpMethod));
 
-        CreateMap<UpdateDialogDialogElementDto, DialogElement>()
+        CreateMap<UpdateDialogDialogAttachmentDto, DialogAttachment>()
             .IgnoreComplexDestinationProperties();
 
-        CreateMap<UpdateDialogDialogElementUrlDto, DialogElementUrl>()
+        CreateMap<UpdateDialogDialogAttachmentUrlDto, DialogAttachmentUrl>()
             .IgnoreComplexDestinationProperties()
             .ForMember(x => x.Id, opt => opt.Ignore())
             .ForMember(dest => dest.ConsumerType, opt => opt.Ignore())
@@ -75,8 +75,8 @@ internal sealed class MappingProfile : Profile
         CreateMap<GetDialogDialogApiActionDto, UpdateDialogDialogApiActionDto>();
         CreateMap<GetDialogDialogApiActionEndpointDto, UpdateDialogDialogApiActionEndpointDto>();
         CreateMap<GetDialogDialogGuiActionDto, UpdateDialogDialogGuiActionDto>();
-        CreateMap<GetDialogDialogElementDto, UpdateDialogDialogElementDto>();
-        CreateMap<GetDialogDialogElementUrlDto, UpdateDialogDialogElementUrlDto>();
+        CreateMap<GetDialogDialogAttachmentDto, UpdateDialogDialogAttachmentDto>();
+        CreateMap<GetDialogDialogAttachmentUrlDto, UpdateDialogDialogAttachmentUrlDto>();
         CreateMap<GetDialogContentDto, UpdateDialogContentDto>();
     }
 }

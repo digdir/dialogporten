@@ -94,7 +94,7 @@
             }
           },
           "404": {
-            "description": "The given dialog ID or dialog element ID was not found or was already deleted.",
+            "description": "Not Found",
             "content": {
               "application/problem+json": {
                 "schema": {
@@ -157,7 +157,7 @@
             }
           },
           "404": {
-            "description": "The given dialog ID or dialog element ID was not found or was already deleted.",
+            "description": "Not Found",
             "content": {
               "application/problem+json": {
                 "schema": {
@@ -251,13 +251,9 @@
                     "Value": "anotherSearchTag"
                   }
                 ],
-                "Elements": [
+                "Attachments": [
                   {
                     "Id": "02a72809-eddd-4192-864d-8f1755d72f4e",
-                    "Type": "https://example.com/some-type",
-                    "ExternalReference": null,
-                    "AuthorizationAttribute": null,
-                    "RelatedDialogElementId": null,
                     "DisplayName": [
                       {
                         "Value": "Some display name",
@@ -268,6 +264,7 @@
                       {
                         "Id": "858177cb-8584-4d10-a086-3a5defa7a6c3",
                         "Url": "https://example.com/some-url",
+                        "MediaType": null,
                         "ConsumerType": 0
                       }
                     ]
@@ -300,7 +297,6 @@
                     "Id": "948b07ba-1a82-403e-8eaa-2e5784af07a9",
                     "Action": "submit",
                     "AuthorizationAttribute": null,
-                    "DialogElementId": null,
                     "Endpoints": [
                       {
                         "Id": null,
@@ -323,7 +319,6 @@
                     "ExtendedType": null,
                     "Type": 3,
                     "RelatedActivityId": null,
-                    "DialogElementId": null,
                     "PerformedBy": "Some performed",
                     "Description": [
                       {
@@ -988,212 +983,6 @@
         ]
       }
     },
-    "/api/v1/serviceowner/dialogs/{dialogId}/elements": {
-      "get": {
-        "tags": [
-          "Serviceowner"
-        ],
-        "summary": "Gets a list of dialog elements",
-        "description": "Gets the list of elements belonging to a dialog",
-        "operationId": "GetDialogElementListSO",
-        "parameters": [
-          {
-            "name": "dialogId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "guid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successfully returned the dialog element list.",
-            "content": {
-              "text/plain": {
-                "schema": {}
-              },
-              "application/json": {
-                "schema": {}
-              }
-            }
-          },
-          "401": {
-            "description": "Missing or invalid authentication token. Requires a Maskinporten-token with the scope \"digdir:dialogporten.serviceprovider\"."
-          },
-          "403": {
-            "description": "Unauthorized to get the supplied dialog (not owned by authenticated organization or has additional scope requirements defined in policy)."
-          }
-        },
-        "security": [
-          {
-            "JWTBearerAuth": []
-          }
-        ]
-      },
-      "post": {
-        "tags": [
-          "Serviceowner"
-        ],
-        "summary": "Creates a new dialog element",
-        "description": "The dialog element is created with the given configuration. For more information see the documentation (link TBD).\n\nOptimistic concurrency control is implemented using the If-Match header. Supply the Revision value from the GetDialog endpoint to ensure that the dialog is not modified/deleted by another request in the meantime.",
-        "operationId": "CreateDialogElement",
-        "parameters": [
-          {
-            "name": "dialogId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "guid"
-            }
-          },
-          {
-            "name": "if-Match",
-            "in": "header",
-            "schema": {
-              "type": "string",
-              "format": "guid",
-              "nullable": true
-            }
-          }
-        ],
-        "requestBody": {
-          "x-name": "CreateDialogElementRequest",
-          "description": "",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateDialogElementRequest"
-              }
-            }
-          },
-          "required": true,
-          "x-position": 1
-        },
-        "responses": {
-          "401": {
-            "description": "Missing or invalid authentication token. Requires a Maskinporten-token with the scope \"digdir:dialogporten.serviceprovider\"."
-          },
-          "403": {
-            "description": "Unauthorized to create child entity for the given dialog (dialog not owned by authenticated organization or has additional scope requirements defined in service identifiers policy)."
-          },
-          "201": {
-            "description": "The UUID of the created the dialog element. A relative URL to the newly created activity is set in the \"Location\" header.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                },
-                "example": "b6dc8b01-1cd8-2777-b759-d84b0e384f47"
-              }
-            }
-          },
-          "400": {
-            "description": "Validation error occured. See problem details for a list of errors.",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "The given dialog ID was not found or is already deleted.",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          },
-          "412": {
-            "description": "The supplied If-Match header did not match the current Revision value for the dialog. The request was not applied.",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Domain error occured. See problem details for a list of errors.",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "JWTBearerAuth": []
-          }
-        ]
-      }
-    },
-    "/api/v1/serviceowner/dialogs/{dialogId}/elements/{elementId}": {
-      "get": {
-        "tags": [
-          "Serviceowner"
-        ],
-        "summary": "Gets a single dialog element",
-        "description": "Gets a single element belonging to a dialog. For more information see the documentation (link TBD).",
-        "operationId": "GetDialogElementSO",
-        "parameters": [
-          {
-            "name": "dialogId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "guid"
-            }
-          },
-          {
-            "name": "elementId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "guid"
-            }
-          }
-        ],
-        "responses": {
-          "401": {
-            "description": "Missing or invalid authentication token. Requires a Maskinporten-token with the scope \"digdir:dialogporten.serviceprovider\"."
-          },
-          "403": {
-            "description": "Unauthorized to get child entity for the given dialog (dialog not owned by authenticated organization or has additional scope requirements defined in service identifiers policy)."
-          },
-          "200": {
-            "description": "Successfully returned the dialog element."
-          },
-          "404": {
-            "description": "The given dialog ID or dialog element ID was not found or was already deleted.",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "JWTBearerAuth": []
-          }
-        ]
-      }
-    },
     "/api/v1/serviceowner/dialogs/{dialogId}/activities": {
       "get": {
         "tags": [
@@ -1476,7 +1265,7 @@
             }
           },
           "404": {
-            "description": "The given dialog ID or dialog element ID was not found or was already deleted.",
+            "description": "Not Found",
             "content": {
               "application/problem+json": {
                 "schema": {
@@ -1539,7 +1328,7 @@
             }
           },
           "404": {
-            "description": "The given dialog ID or dialog element ID was not found or was already deleted.",
+            "description": "Not Found",
             "content": {
               "application/problem+json": {
                 "schema": {
@@ -1818,107 +1607,6 @@
           },
           "404": {
             "description": "The given dialog ID was not found or is already deleted.",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "JWTBearerAuth": []
-          }
-        ]
-      }
-    },
-    "/api/v1/enduser/dialogs/{dialogId}/elements": {
-      "get": {
-        "tags": [
-          "Enduser"
-        ],
-        "summary": "Gets a list of dialog elements",
-        "description": "Gets the list of elements belonging to a dialog",
-        "operationId": "GetDialogElementList",
-        "parameters": [
-          {
-            "name": "dialogId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "guid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successfully returned the dialog element list.",
-            "content": {
-              "text/plain": {
-                "schema": {}
-              },
-              "application/json": {
-                "schema": {}
-              }
-            }
-          },
-          "401": {
-            "description": "Missing or invalid authentication token. Requires a Maskinporten-token with the scope \"digdir:dialogporten\"."
-          },
-          "403": {
-            "description": "Unauthorized to get the supplied dialog (not owned by authenticated organization or has additional scope requirements defined in policy)."
-          }
-        },
-        "security": [
-          {
-            "JWTBearerAuth": []
-          }
-        ]
-      }
-    },
-    "/api/v1/enduser/dialogs/{dialogId}/elements/{elementId}": {
-      "get": {
-        "tags": [
-          "Enduser"
-        ],
-        "summary": "Gets a single dialog element",
-        "description": "Gets a single element belonging to a dialog. For more information see the documentation (link TBD).",
-        "operationId": "GetDialogElement",
-        "parameters": [
-          {
-            "name": "dialogId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "guid"
-            }
-          },
-          {
-            "name": "elementId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "guid"
-            }
-          }
-        ],
-        "responses": {
-          "401": {
-            "description": "Missing or invalid authentication token. Requires a Maskinporten-token with the scope \"digdir:dialogporten\"."
-          },
-          "403": {
-            "description": "Unauthorized to get child entity for the given dialog (dialog not owned by authenticated organization or has additional scope requirements defined in service identifiers policy)."
-          },
-          "200": {
-            "description": "Successfully returned the dialog element."
-          },
-          "404": {
-            "description": "The given dialog ID or dialog element ID was not found or was already deleted.",
             "content": {
               "application/problem+json": {
                 "schema": {
@@ -2244,10 +1932,10 @@
               "$ref": "#/components/schemas/UpdateDialogSearchTagDto"
             }
           },
-          "elements": {
+          "attachments": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/UpdateDialogDialogElementDto"
+              "$ref": "#/components/schemas/UpdateDialogDialogAttachmentDto"
             }
           },
           "guiActions": {
@@ -2350,29 +2038,11 @@
           }
         }
       },
-      "UpdateDialogDialogElementDto": {
+      "UpdateDialogDialogAttachmentDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
           "id": {
-            "type": "string",
-            "format": "guid",
-            "nullable": true
-          },
-          "type": {
-            "type": "string",
-            "format": "uri",
-            "nullable": true
-          },
-          "externalReference": {
-            "type": "string",
-            "nullable": true
-          },
-          "authorizationAttribute": {
-            "type": "string",
-            "nullable": true
-          },
-          "relatedDialogElementId": {
             "type": "string",
             "format": "guid",
             "nullable": true
@@ -2386,12 +2056,12 @@
           "urls": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/UpdateDialogDialogElementUrlDto"
+              "$ref": "#/components/schemas/UpdateDialogDialogAttachmentUrlDto"
             }
           }
         }
       },
-      "UpdateDialogDialogElementUrlDto": {
+      "UpdateDialogDialogAttachmentUrlDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -2404,12 +2074,16 @@
             "type": "string",
             "format": "uri"
           },
+          "mediaType": {
+            "type": "string",
+            "nullable": true
+          },
           "consumerType": {
-            "$ref": "#/components/schemas/DialogElementUrlConsumerType_Values"
+            "$ref": "#/components/schemas/DialogAttachmentUrlConsumerType_Values"
           }
         }
       },
-      "DialogElementUrlConsumerType_Values": {
+      "DialogAttachmentUrlConsumerType_Values": {
         "type": "string",
         "description": "",
         "x-enumNames": [
@@ -2526,11 +2200,6 @@
             "type": "string",
             "nullable": true
           },
-          "dialogElementId": {
-            "type": "string",
-            "format": "guid",
-            "nullable": true
-          },
           "endpoints": {
             "type": "array",
             "items": {
@@ -2607,11 +2276,6 @@
             "$ref": "#/components/schemas/DialogActivityType_Values"
           },
           "relatedActivityId": {
-            "type": "string",
-            "format": "guid",
-            "nullable": true
-          },
-          "dialogElementId": {
             "type": "string",
             "format": "guid",
             "nullable": true
@@ -2859,10 +2523,10 @@
               "$ref": "#/components/schemas/GetDialogSearchTagDtoSO"
             }
           },
-          "elements": {
+          "attachments": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/GetDialogDialogElementDtoSO"
+              "$ref": "#/components/schemas/GetDialogDialogAttachmentDtoSO"
             }
           },
           "guiActions": {
@@ -2921,27 +2585,13 @@
           }
         }
       },
-      "GetDialogDialogElementDtoSO": {
+      "GetDialogDialogAttachmentDtoSO": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
           "id": {
             "type": "string",
             "format": "guid"
-          },
-          "type": {
-            "type": "string",
-            "format": "uri",
-            "nullable": true
-          },
-          "authorizationAttribute": {
-            "type": "string",
-            "nullable": true
-          },
-          "relatedDialogElementId": {
-            "type": "string",
-            "format": "guid",
-            "nullable": true
           },
           "displayName": {
             "type": "array",
@@ -2952,12 +2602,12 @@
           "urls": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/GetDialogDialogElementUrlDtoSO"
+              "$ref": "#/components/schemas/GetDialogDialogAttachmentUrlDtoSO"
             }
           }
         }
       },
-      "GetDialogDialogElementUrlDtoSO": {
+      "GetDialogDialogAttachmentUrlDtoSO": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -2969,8 +2619,12 @@
             "type": "string",
             "format": "uri"
           },
+          "mediaType": {
+            "type": "string",
+            "nullable": true
+          },
           "consumerType": {
-            "$ref": "#/components/schemas/DialogElementUrlConsumerType_Values"
+            "$ref": "#/components/schemas/DialogAttachmentUrlConsumerType_Values"
           }
         }
       },
@@ -3030,11 +2684,6 @@
           },
           "authorizationAttribute": {
             "type": "string",
-            "nullable": true
-          },
-          "dialogElementId": {
-            "type": "string",
-            "format": "guid",
             "nullable": true
           },
           "endpoints": {
@@ -3111,11 +2760,6 @@
             "$ref": "#/components/schemas/DialogActivityType_Values"
           },
           "relatedActivityId": {
-            "type": "string",
-            "format": "guid",
-            "nullable": true
-          },
-          "dialogElementId": {
             "type": "string",
             "format": "guid",
             "nullable": true
@@ -3215,10 +2859,10 @@
               "$ref": "#/components/schemas/CreateDialogSearchTagDto"
             }
           },
-          "elements": {
+          "attachments": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/CreateDialogDialogElementDto"
+              "$ref": "#/components/schemas/CreateDialogDialogAttachmentDto"
             }
           },
           "guiActions": {
@@ -3269,29 +2913,11 @@
           }
         }
       },
-      "CreateDialogDialogElementDto": {
+      "CreateDialogDialogAttachmentDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
           "id": {
-            "type": "string",
-            "format": "guid",
-            "nullable": true
-          },
-          "type": {
-            "type": "string",
-            "format": "uri",
-            "nullable": true
-          },
-          "externalReference": {
-            "type": "string",
-            "nullable": true
-          },
-          "authorizationAttribute": {
-            "type": "string",
-            "nullable": true
-          },
-          "relatedDialogElementId": {
             "type": "string",
             "format": "guid",
             "nullable": true
@@ -3305,12 +2931,12 @@
           "urls": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/CreateDialogDialogElementUrlDto"
+              "$ref": "#/components/schemas/CreateDialogDialogAttachmentUrlDto"
             }
           }
         }
       },
-      "CreateDialogDialogElementUrlDto": {
+      "CreateDialogDialogAttachmentUrlDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -3318,8 +2944,12 @@
             "type": "string",
             "format": "uri"
           },
+          "mediaType": {
+            "type": "string",
+            "nullable": true
+          },
           "consumerType": {
-            "$ref": "#/components/schemas/DialogElementUrlConsumerType_Values"
+            "$ref": "#/components/schemas/DialogAttachmentUrlConsumerType_Values"
           }
         }
       },
@@ -3376,11 +3006,6 @@
           },
           "authorizationAttribute": {
             "type": "string",
-            "nullable": true
-          },
-          "dialogElementId": {
-            "type": "string",
-            "format": "guid",
             "nullable": true
           },
           "endpoints": {
@@ -3458,11 +3083,6 @@
             "format": "guid",
             "nullable": true
           },
-          "dialogElementId": {
-            "type": "string",
-            "format": "guid",
-            "nullable": true
-          },
           "performedBy": {
             "type": "string",
             "nullable": true
@@ -3471,47 +3091,6 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/LocalizationDto"
-            }
-          }
-        }
-      },
-      "CreateDialogElementRequest": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "guid",
-            "nullable": true
-          },
-          "type": {
-            "type": "string",
-            "format": "uri",
-            "nullable": true
-          },
-          "externalReference": {
-            "type": "string",
-            "nullable": true
-          },
-          "authorizationAttribute": {
-            "type": "string",
-            "nullable": true
-          },
-          "relatedDialogElementId": {
-            "type": "string",
-            "format": "guid",
-            "nullable": true
-          },
-          "displayName": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/LocalizationDto"
-            }
-          },
-          "urls": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/UpdateDialogDialogElementUrlDto"
             }
           }
         }
@@ -3539,11 +3118,6 @@
             "$ref": "#/components/schemas/DialogActivityType_Values"
           },
           "relatedActivityId": {
-            "type": "string",
-            "format": "guid",
-            "nullable": true
-          },
-          "dialogElementId": {
             "type": "string",
             "format": "guid",
             "nullable": true
@@ -3777,11 +3351,6 @@
             "format": "guid",
             "nullable": true
           },
-          "dialogElementId": {
-            "type": "string",
-            "format": "guid",
-            "nullable": true
-          },
           "performedBy": {
             "type": "string",
             "nullable": true
@@ -3906,10 +3475,10 @@
             "type": "string",
             "nullable": true
           },
-          "elements": {
+          "attachments": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/GetDialogDialogElementDto"
+              "$ref": "#/components/schemas/GetDialogDialogAttachmentDto"
             }
           },
           "guiActions": {
@@ -3957,34 +3526,13 @@
           }
         }
       },
-      "GetDialogDialogElementDto": {
+      "GetDialogDialogAttachmentDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
           "id": {
             "type": "string",
             "format": "guid"
-          },
-          "type": {
-            "type": "string",
-            "format": "uri",
-            "nullable": true
-          },
-          "externalReference": {
-            "type": "string",
-            "nullable": true
-          },
-          "authorizationAttribute": {
-            "type": "string",
-            "nullable": true
-          },
-          "isAuthorized": {
-            "type": "boolean"
-          },
-          "relatedDialogElementId": {
-            "type": "string",
-            "format": "guid",
-            "nullable": true
           },
           "displayName": {
             "type": "array",
@@ -3995,12 +3543,12 @@
           "urls": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/GetDialogDialogElementUrlDto"
+              "$ref": "#/components/schemas/GetDialogDialogAttachmentUrlDto"
             }
           }
         }
       },
-      "GetDialogDialogElementUrlDto": {
+      "GetDialogDialogAttachmentUrlDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -4012,8 +3560,12 @@
             "type": "string",
             "format": "uri"
           },
+          "mediaType": {
+            "type": "string",
+            "nullable": true
+          },
           "consumerType": {
-            "$ref": "#/components/schemas/DialogElementUrlConsumerType_Values"
+            "$ref": "#/components/schemas/DialogAttachmentUrlConsumerType_Values"
           }
         }
       },
@@ -4080,11 +3632,6 @@
           },
           "isAuthorized": {
             "type": "boolean"
-          },
-          "dialogElementId": {
-            "type": "string",
-            "format": "guid",
-            "nullable": true
           },
           "endpoints": {
             "type": "array",
@@ -4160,11 +3707,6 @@
             "$ref": "#/components/schemas/DialogActivityType_Values"
           },
           "relatedActivityId": {
-            "type": "string",
-            "format": "guid",
-            "nullable": true
-          },
-          "dialogElementId": {
             "type": "string",
             "format": "guid",
             "nullable": true

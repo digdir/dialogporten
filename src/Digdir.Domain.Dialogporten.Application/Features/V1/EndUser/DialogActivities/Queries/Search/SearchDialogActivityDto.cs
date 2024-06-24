@@ -12,5 +12,4 @@ public sealed class SearchDialogActivityDto
     public DialogActivityType.Values Type { get; set; }
 
     public Guid? RelatedActivityId { get; set; }
-    public Guid? DialogElementId { get; set; }
 }
