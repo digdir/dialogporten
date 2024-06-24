@@ -26,13 +26,6 @@ public class QueryableExtensionsBenchmark
             DialogIds = Enumerable.Range(0, Outer)
                 .Select(x => Guid.NewGuid())
                 .ToList(),
-            PartiesByResources = Enumerable.Range(0, Outer)
-                .ToDictionary(
-                    keySelector: GenerateResource,
-                    elementSelector: outer => Enumerable.Range(0, Inner)
-                        .Select(GenerateParty)
-                        .ToList()
-                ),
             ResourcesByParties = Enumerable.Range(0, Outer)
                 .ToDictionary(
                     keySelector: GenerateParty,

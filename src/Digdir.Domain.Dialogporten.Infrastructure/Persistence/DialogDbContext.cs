@@ -13,6 +13,7 @@ using Digdir.Library.Entity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System.Linq.Expressions;
+using Digdir.Domain.Dialogporten.Domain.SubjectResources;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence;
 
@@ -36,6 +37,10 @@ internal sealed class DialogDbContext : DbContext, IDialogDbContext
 
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
     public DbSet<OutboxMessageConsumer> OutboxMessageConsumers => Set<OutboxMessageConsumer>();
+
+    public DbSet<Resource> Resources => Set<Resource>();
+    public DbSet<Subject> Subjects => Set<Subject>();
+    public DbSet<SubjectResource> SubjectResources => Set<SubjectResource>();
 
     //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) =>
     //    optionsBuilder.LogTo(Console.WriteLine);

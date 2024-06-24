@@ -1,13 +1,13 @@
-﻿using System.Security.Claims;
+﻿using System.Diagnostics;
+using System.Security.Claims;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Altinn.Authorization.ABAC.Xacml.JsonProfile;
-using Digdir.Domain.Dialogporten.Application.Externals;
+using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Parties.Abstractions;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using ZiggyCreatures.Caching.Fusion;
 
@@ -20,7 +20,6 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
     private readonly HttpClient _httpClient;
     private readonly IFusionCache _cache;
     private readonly IUser _user;
-    private readonly IDialogDbContext _db;
     private readonly ILogger _logger;
 
     private static readonly JsonSerializerOptions SerializerOptions = new()
@@ -33,13 +32,11 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
         HttpClient client,
         IFusionCacheProvider cacheProvider,
         IUser user,
-        IDialogDbContext db,
         ILogger<AltinnAuthorizationClient> logger)
     {
         _httpClient = client ?? throw new ArgumentNullException(nameof(client));
         _cache = cacheProvider.GetCache(nameof(Authorization)) ?? throw new ArgumentNullException(nameof(cacheProvider));
         _user = user ?? throw new ArgumentNullException(nameof(user));
-        _db = db ?? throw new ArgumentNullException(nameof(db));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
@@ -74,15 +71,45 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
         };
 
         return await _cache.GetOrSetAsync(request.GenerateCacheKey(), async token
-            => await PerformNonScalableDialogSearchAuthorization(request, token), token: cancellationToken);
+            => await PerformDialogSearchAuthorization(request, token), token: cancellationToken);
     }
 
-    public async Task<AuthorizedPartiesResult> GetAuthorizedParties(IPartyIdentifier authenticatedParty,
+    public async Task<AuthorizedPartiesResult> GetAuthorizedParties(IPartyIdentifier authenticatedParty, bool flatten = false,
         CancellationToken cancellationToken = default)
     {
         var authorizedPartiesRequest = new AuthorizedPartiesRequest(authenticatedParty);
-        return await _cache.GetOrSetAsync(authorizedPartiesRequest.GenerateCacheKey(), async token
+        var authorizedParties = await _cache.GetOrSetAsync(authorizedPartiesRequest.GenerateCacheKey(), async token
             => await PerformAuthorizedPartiesRequest(authorizedPartiesRequest, token), token: cancellationToken);
+
+        return flatten ? GetFlattenedAuthorizedParties(authorizedParties) : authorizedParties;
+    }
+
+    private static AuthorizedPartiesResult GetFlattenedAuthorizedParties(AuthorizedPartiesResult authorizedParties)
+    {
+        var flattenedAuthorizedParties = new AuthorizedPartiesResult();
+
+        foreach (var authorizedParty in authorizedParties.AuthorizedParties)
+        {
+            Flatten(authorizedParty);
+        }
+
+        return flattenedAuthorizedParties;
+
+        void Flatten(AuthorizedParty party, AuthorizedParty? parent = null)
+        {
+            if (party.SubParties is not null && party.SubParties.Count != 0)
+            {
+                foreach (var subParty in party.SubParties)
+                {
+                    Flatten(subParty, party);
+                }
+            }
+
+            if (parent != null) party.ParentParty = parent.Party;
+            party.SubParties = [];
+
+            flattenedAuthorizedParties.AuthorizedParties.Add(party);
+        }
     }
 
     private async Task<AuthorizedPartiesResult> PerformAuthorizedPartiesRequest(AuthorizedPartiesRequest authorizedPartiesRequest,
@@ -92,45 +119,29 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
         return AuthorizedPartiesHelper.CreateAuthorizedPartiesResult(authorizedPartiesDto);
     }
 
-    private async Task<DialogSearchAuthorizationResult> PerformNonScalableDialogSearchAuthorization(
-        DialogSearchAuthorizationRequest request, CancellationToken cancellationToken)
+    private async Task<DialogSearchAuthorizationResult> PerformDialogSearchAuthorization(DialogSearchAuthorizationRequest request, CancellationToken token)
     {
-        /*
-         * This is a preliminary implementation as per https://github.com/digdir/dialogporten/issues/249
-         *
-         * This scales pretty horribly, O(n*m), as it will depend on building a MultiDecisionRequest with all possible combinations of parties and resources, but given
-         * the small number of parties and resources during the PoC period, this is hopefully not a huge problem.
-         *
-         * The algorithm is as follows:
-         * - Get all distinct parties and resources from the database, except for the one of which that's constrained by the request
-         * - Build a MultiDecisionRequest with all resources, all parties and the action "read"
-         * - Send the request to the Altinn Decision API
-         * - Build a DialogSearchAuthorizationResult from the response
-         */
+        var partyIdentifier = request.Claims.GetEndUserPartyIdentifier() ?? throw new UnreachableException();
+        var authorizedParties = await GetAuthorizedParties(partyIdentifier, flatten: true, cancellationToken: token);
 
-        if (request.ConstraintParties.Count == 0)
+        if (request.ConstraintParties.Count > 0)
         {
-            request.ConstraintParties = await _db.Dialogs
-                .Where(dialog => request.ConstraintServiceResources.Contains(dialog.ServiceResource))
-                .Select(dialog => dialog.Party)
-                .Distinct()
-                .Take(20) // Limit to 20 parties to limit request size
-                .ToListAsync(cancellationToken: cancellationToken);
+            authorizedParties.AuthorizedParties = authorizedParties.AuthorizedParties
+                .Where(p => request.ConstraintParties.Contains(p.Party))
+                .ToList();
         }
 
-        if (request.ConstraintServiceResources.Count == 0)
+        var dialogSearchAuthorizationResult = new DialogSearchAuthorizationResult()
         {
-            request.ConstraintServiceResources = await _db.Dialogs
-                .Where(dialog => request.ConstraintParties.Contains(dialog.Party))
-                .Select(x => x.ServiceResource)
-                .Distinct()
-                .Take(20) // Limit to 20 resources to limit request size
-                .ToListAsync(cancellationToken: cancellationToken);
-        }
+            ResourcesByParties = authorizedParties.AuthorizedParties
+                .ToDictionary(p => p.Party, p => p.AuthorizedResources
+                    .Where(r => request.ConstraintServiceResources.Count == 0 || request.ConstraintServiceResources.Contains(r))
+                    .ToList()),
+            RolesByParties = authorizedParties.AuthorizedParties
+                .ToDictionary(p => p.Party, p => p.AuthorizedRoles)
+        };
 
-        var xacmlJsonRequest = DecisionRequestHelper.NonScalable.CreateDialogSearchRequest(request);
-        var xamlJsonResponse = await SendPdpRequest(xacmlJsonRequest, cancellationToken);
-        return DecisionRequestHelper.NonScalable.CreateDialogSearchResponse(xacmlJsonRequest, xamlJsonResponse);
+        return dialogSearchAuthorizationResult;
     }
 
     private async Task<DialogDetailsAuthorizationResult> PerformDialogDetailsAuthorization(

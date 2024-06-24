@@ -39,16 +39,16 @@ internal sealed class LocalDevelopmentAltinnAuthorization : IAltinnAuthorization
         var allParties = dialogData.Select(x => x.Party).Distinct().Take(1000).ToList();
         var allResources = dialogData.Select(x => x.ServiceResource).Distinct().Take(1000).ToList();
 
-        var hasMorePartiesThanResources = allParties.Count > allResources.Count;
         var authorizedResources = new DialogSearchAuthorizationResult
         {
-            PartiesByResources = hasMorePartiesThanResources ? allResources.ToDictionary(resource => resource, _ => allParties) : new(),
-            ResourcesByParties = hasMorePartiesThanResources ? new() : allParties.ToDictionary(party => party, _ => allResources)
+            ResourcesByParties = allParties.ToDictionary(party => party, _ => allResources)
         };
 
         return authorizedResources;
     }
 
-    public async Task<AuthorizedPartiesResult> GetAuthorizedParties(IPartyIdentifier authenticatedParty, CancellationToken cancellationToken = default)
+    [SuppressMessage("Performance", "CA1822:Mark members as static")]
+    [SuppressMessage("Style", "IDE0060:Remove unused parameter")]
+    public async Task<AuthorizedPartiesResult> GetAuthorizedParties(IPartyIdentifier authenticatedParty, bool flatten = false, CancellationToken cancellationToken = default)
         => await Task.FromResult(new AuthorizedPartiesResult { AuthorizedParties = [new() { Name = "Local Party", Party = authenticatedParty.FullId }] });
 }

@@ -100,17 +100,17 @@ public static class InfrastructureExtensions
             // the distributed cache.
             SkipMemoryCache = true,
             // In normal operations, 15 minutes delay is deemed acceptable for authorization data
-            Duration = TimeSpan.FromMinutes(15),
+            Duration = TimeSpan.FromSeconds(1),
             // In case Altinn Authorization is down/overloaded, we allow the re-usage of stale authorization data
             // for an additional 15 minutes. Using default FailSafeThrottleDuration.
             FailSafeMaxDuration = TimeSpan.FromMinutes(30),
             // If the request to Altinn Authorization takes too long, we allow the cache to return stale data
             // temporarily whilst updating the cache in the background. Note that we are also using eager refresh
             // and a backplane.
-            FactorySoftTimeout = TimeSpan.FromSeconds(2),
+            FactorySoftTimeout = TimeSpan.FromSeconds(2000),
             // Timeout for the cache to wait for the factory to complete, which when reached without fail-safe data
             // will cause an exception to be thrown
-            FactoryHardTimeout = TimeSpan.FromSeconds(10)
+            FactoryHardTimeout = TimeSpan.FromSeconds(10000)
         });
 
         services.AddDbContext<DialogDbContext>((services, options) =>
@@ -193,8 +193,8 @@ public static class InfrastructureExtensions
         public TimeSpan Duration { get; set; } = TimeSpan.FromMinutes(1);
         public TimeSpan FailSafeMaxDuration { get; set; } = TimeSpan.FromHours(2);
         public TimeSpan FailSafeThrottleDuration { get; set; } = TimeSpan.FromSeconds(30);
-        public TimeSpan FactorySoftTimeout { get; set; } = TimeSpan.FromSeconds(1);
-        public TimeSpan FactoryHardTimeout { get; set; } = TimeSpan.FromSeconds(5);
+        public TimeSpan FactorySoftTimeout { get; set; } = TimeSpan.FromSeconds(1000);
+        public TimeSpan FactoryHardTimeout { get; set; } = TimeSpan.FromSeconds(5000);
         public TimeSpan DistributedCacheSoftTimeout { get; set; } = TimeSpan.FromSeconds(1);
         public TimeSpan DistributedCacheHardTimeout { get; set; } = TimeSpan.FromSeconds(2);
         public bool AllowBackgroundDistributedCacheOperations { get; set; } = true;

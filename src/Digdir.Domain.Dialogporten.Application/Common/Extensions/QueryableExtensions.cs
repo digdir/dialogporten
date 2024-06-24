@@ -51,16 +51,6 @@ public static class QueryableExtensions
             partyResourceExpressions.Add(Expression.AndAlso(partyEquals, resourceContains));
         }
 
-        foreach (var item in authorizedResources.PartiesByResources)
-        {
-            var itemArg = Expression.Constant(item, KeyValueType);
-            var resourceAccess = Expression.MakeMemberAccess(itemArg, KeyPropertyInfo);
-            var partiesAccess = Expression.MakeMemberAccess(itemArg, ValuePropertyInfo);
-            var resourceEquals = Expression.Equal(resourceAccess, serviceResource);
-            var partiesContains = Expression.Call(partiesAccess, StringListContainsMethodInfo, party);
-            partyResourceExpressions.Add(Expression.AndAlso(resourceEquals, partiesContains));
-        }
-
         if (authorizedResources.DialogIds.Count > 0)
         {
             var itemArg = Expression.Constant(authorizedResources, DialogSearchAuthorizationResultType);

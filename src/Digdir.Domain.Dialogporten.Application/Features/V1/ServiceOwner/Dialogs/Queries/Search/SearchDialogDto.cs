@@ -11,7 +11,6 @@ public sealed class SearchDialogDto
     public string ServiceResource { get; set; } = null!;
     public string ServiceResourceType { get; set; } = null!;
     public string Party { get; set; } = null!;
-    public string? EndUserId { get; set; }
     public int? Progress { get; set; }
     public string? ExtendedStatus { get; set; }
     public DateTimeOffset CreatedAt { get; set; }

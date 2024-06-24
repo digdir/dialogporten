@@ -19,7 +19,6 @@ public sealed class GetDialogDto
     public int? Progress { get; set; }
     public string? ExtendedStatus { get; set; }
     public string? ExternalReference { get; set; }
-    public DateTimeOffset? VisibleFrom { get; set; }
     public DateTimeOffset? DueAt { get; set; }
     public DateTimeOffset? ExpiresAt { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
