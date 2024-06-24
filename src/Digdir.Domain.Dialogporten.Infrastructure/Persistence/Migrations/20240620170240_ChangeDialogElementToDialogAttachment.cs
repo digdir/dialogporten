@@ -42,6 +42,10 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                 name: "IX_DialogActivity_DialogElementId",
                 table: "DialogActivity");
 
+            migrationBuilder.DropIndex(
+                name: "IX_LocalizationSet_ElementId",
+                table: "LocalizationSet");
+
             migrationBuilder.DropColumn(
                 name: "DialogElementId",
                 table: "DialogApiAction");
@@ -50,15 +54,21 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                 name: "DialogElementId",
                 table: "DialogActivity");
 
-            migrationBuilder.RenameColumn(
+            migrationBuilder.DropColumn(
                 name: "ElementId",
-                table: "LocalizationSet",
-                newName: "AttachmentId");
+                table: "LocalizationSet");
 
-            migrationBuilder.RenameIndex(
-                name: "IX_LocalizationSet_ElementId",
+            migrationBuilder.AddColumn<Guid>(
+                name: "AttachmentId",
                 table: "LocalizationSet",
-                newName: "IX_LocalizationSet_AttachmentId");
+                type: "uuid",
+                nullable: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LocalizationSet_AttachmentId",
+                table: "LocalizationSet",
+                column: "AttachmentId",
+                unique: true);
 
             migrationBuilder.CreateTable(
                 name: "DialogAttachment",
