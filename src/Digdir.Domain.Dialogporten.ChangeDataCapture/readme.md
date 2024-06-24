@@ -5,6 +5,48 @@ This module will transfer `OutboxMessages` from postgres to azure service bus. I
 
 
 ## Get started
+1. Update your local Postgres database with EF migrations.
+2. Configure local user secrets with `Infrastructure:DialogDbConnectionString`.
+3. Run ChangeDataCapture.
+
+To enable debug logging add the following to the Serilog config in `Program.cs`:
+
+```csharp
+.MinimumLevel.Override("Digdir.Domain.Dialogporten.ChangeDataCapture", Serilog.Events.LogEventLevel.Debug)
+```
+
+## Testing
+Useful SQL commands to use during testing: 
+```SQL
+-- View CDC checkpoints
+SELECT * 
+FROM cdc_checkpoint;
+
+-- Delete all CDC checkpoints
+DELETE FROM cdc_checkpoint;
+
+-- View publications
+SELECT * 
+FROM pg_publication;
+
+-- View replication slots
+SELECT *
+FROM pg_replication_slots;
+
+-- Delete replication slot by name
+-- Will force CDC into recovery on next startup
+SELECT pg_drop_replication_slot('outboxmessage_cdc_replication_slot');
+
+-- Simulate creation of OutboxMessages
+-- Warning, these should not be published onto the service bus because
+-- Dialogporten Service don't understand the format.
+INSERT INTO public."OutboxMessage"(
+	"EventId", "EventType", "EventPayload")
+	VALUES 
+	(gen_random_uuid(), 'DialogCreated', '{"Number":2}'),
+	(gen_random_uuid(), 'DialogCreated', '{"Number":1}'),
+	(gen_random_uuid(), 'DialogCreated', '{"Number":3}');
+```
 
 ## How it works
 The CDC module acts as a postgres cluster slave by subscribing to logical WAL changes.
@@ -31,17 +73,6 @@ We can solve issue 2 by taking use of a postgres feature specifically designed t
 
 This image represents the worst case scenario where there exists no replication slot, CDC may have failed during the last recovery attempt, and messages are created during recovery. I say "may have failed during the last recovery attempt" because this may in fact be the first recovery attempt since the replication slot was dropped. All the synced messages was consumed from the dropped slot, and the checkpoint represents the point in time that the slot should have represented had it been there. In other words - our checkpoint does not only save us on recovery error, it also saves us when the replication slot is dropped. 
 
-## Known issues
-This is by no means fool proof. We won't lose messages with this approach, however we may still send the same message multiple times. There are two known ways this may occur:
-1. If we were unable to sync the checkpoint from the last run and then start a recovery process, we may end up sending the same messages multiple times. "May", because the service bus consumer may have deleted the `OutboxMessages` before CDC starts a recovery. However, this is highly unlikely and not a mechanism to rely on. 
-2. Consumption of the replication slot stops in the middle of a transaction with multiple `OutboxMessages`. Postgres logical replication slot will only traverse the WAL when the commit message is acknowledged by CDC. Say a transaction with 10 `OutboxMessages` is committed to the database, and CDC only manages to consume 6 of them before it shuts down for whatever reason. Postgres will resend the first 6 `OutboxMessages` to CDC when it starts up again, because the commit message was not acknowledged.
-
-CDC tries to mitigate issue 1 by reading from and writing to the `CheckpointRepository` on startup. If this fails for whatever reason, CDC will refuse to start consuming messages, and shuts down. However, if it succeeds during startup but are unable to during runtime it will log it as a warning, but won't shut down. Should CDC be allowed to run for a long time with these warnings, and the replication slot is dropped, we may end up consuming the entire `OutboxMessage` table. Or at least a good chunk of already synced messages. Although issue 1 cannot be completely solved, one way to further mitigate it is by introducing multiple checkpoint repositories. 
-
-One would think that we can use the checkpoint in conjunction with the replication slot to mitigate issue 2. However, the checkpoint relies on the `OutboxMessage.CreatedAt`, and there is no way to have a user defined order of the transaction messages through replication slot subscription. The order is determined by the SQL statements order used in the transaction. 
-
-NEI: Issue 2 can however be completely mitigated by forcing CDC into recovery by dropping the replication slot on CDC shut down. This works because our checkpoint is MER FINGRANNULERT than the replication slot. However, this solution relies heavily on the checkpoint sync being successful. By not dropping the replication slot we have both the slot as primary and the checkpoint as backup. 
-
 ### Logical WAL subscription details
 Earlier I stated:
 
@@ -51,10 +82,25 @@ More on this now. The replication slot pointer is traversed when a transactions 
 
 ![Logical WAL messages](doc/Logical%20WAL%20messages.svg "Logical WAL messages")
 
-This makes sense when there is an actual postgres slave acting as a subscriber. When the `CommitMessage` is consumed, the slave also commits, otherwise it rolls back. However, for CDC it presents us with two new issues:
+This makes sense when there is an actual postgres slave acting as a subscriber. When the `CommitMessage` is consumed, the slave also commits, otherwise it rolls back and the subscription resumes from the beginning of the transaction. However, for CDC it presents us with two new issues:
 
-1. The first two `InsertMessages` would be consumed two times in the example above, given that CDC manages to consume the transaction in its entirety when resuming the subscription. 
-2. If we create a recovery checkpoint for every `InsertMessage` we may end up with duplicate, or worse, lost `OutboxMessage` consumptions.
+1. The first two `InsertMessages` would be consumed two times in the example above. 
+2. If we create a recovery checkpoint for every `InsertMessage` we may end up with duplicate, or worse, lost `OutboxMessage` consumptions when transitioning from replication slot subscription to recovery.
 
-We cannot use our recovery checkpoint without some fiddling  We can't create a recovery checkpoint for every consumed `InsertMessage`.
+Issue 1 is somewhat easy to solve. Instead of the subscription interface returning `IAsyncEnumerable<OutboxMessage>`, it returns `IAsyncEnumerable<IReadOnlyCollection<OutboxMessage>>`. Or in other words - all the `OutboxMessages` for the transaction. Only when the consumer continues the async iteration will the `CommitMessage` be acknowledged. In truth this is only pushing the problem to the subscription consumer. However, returning a collection of `OutboxMessages` makes the intention clearer to the consumer - if you shut down while handling this list, you'll receive the same list when you resume your subscription. Also, many message busses has a concept of batching and transactions. So we can push the problem all the way out of CDC.
 
+Issue 2 is a bit convoluted. Say we have the following transaction where each box represents an `OutboxMessage` and the numbers represents the `CreatedAt` time. 
+
+![Transaction](doc/Transaction.svg "Transaction")
+
+During recovery `OutboxMessages` are read in ascending `CreatedAt` order. `CreatedAt` is also used when creating a checkpoint. Checkpoints actually consists of this time and an ID (to act as a tie-breaker when multiple `OutboxMessages` has the same timestamp), but we'll represent them with a single number during the example for simplicity. 
+
+Now say we are able to consume 4, 5 and 6 successfully, but CDC shuts down during the processing of 7. If the replication slot is still there on CDC startup there would be no issue. Or at least, that is the issue we've already dealt with during issue 1 further up. However, if the replication slot is not there during CDC startup, it goes into recovery and our checkpoint is used. Out checkpoint points to 6, as it's the last `OutboxMessage` successfully consumed. Recovery will consume 7, but 3, 2 and 1 is lost, as they are lower than our checkpoint 6. **The order in which we consume the WAL is the order in which the rows were inserted according to the SQL used to create them. There is no way to have a user defined order to WAL subscription.** If we were to rearrange the transaction, we could end up consuming multiple times when starting a recovery. 
+
+However, the issue does not stop there. What about concurrent transactions? 
+
+![ConcurrentTransactions](doc/ConcurrentTransactions.svg "ConcurrentTransactions")
+
+Here we have three concurrent transactions; T1, T2 and T3. The WAL subscription order is determined by the commit order. So in this example T3 would be sent first, then T1, and lastly T2. What if CDC succeeds to consume T3, then goes into recovery? Our checkpoint is now 21, which upon recovery would skip all the `OutboxMessages` from T1 and T2! How do we fix this issue? 
+
+We do this by introducing the configuration `ReplicationCheckpointTimeSkew` which is added to every checkpoint created during replication slot subscription. For example, say CDC is about to create a checkpoint with `ConfirmedAt = 12:00:00`, and the time skew is -2 seconds, the actual checkpoint created would have `ConfirmedAt = 11:59:58`. If CDC now were to go into recovery, and every `OutboxMessage.CreatedAt` in T1 and T2 is after `11:59:58` in our example, we won't lose them. However, we will repeat T3, and every other `OutboxMessage` with `CreatedAt` between `11:59:58` and `12:00:00`. This is a necessary evil we will have to accept, however it only occurs when traversing from replication slot subscription to recovery. During recovery we have full control of the order in which we read `OutboxMessages` from the database. Therefore we have no need to add the time skew to the checkpoints created during this time. So should CDC fail during recovery, it would pick up from exactly where it left of. The lower `ReplicationCheckpointTimeSkew`, the higher the chance to lose `OutboxMessages` on recovery. The higher it is, the more repetition will occur on recovery. Keep in mind that when I say "lost" that the `OutboxMessages` is never truly lost as it is saved in the table, but it will be "lost" to CDC.
