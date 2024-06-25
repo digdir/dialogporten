@@ -9,6 +9,7 @@ using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Parties.Abstractions;
 using Microsoft.Extensions.Logging;
+using NSec.Cryptography;
 using ZiggyCreatures.Caching.Fusion;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.Authorization;
@@ -134,11 +135,22 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
         var dialogSearchAuthorizationResult = new DialogSearchAuthorizationResult()
         {
             ResourcesByParties = authorizedParties.AuthorizedParties
-                .ToDictionary(p => p.Party, p => p.AuthorizedResources
-                    .Where(r => request.ConstraintServiceResources.Count == 0 || request.ConstraintServiceResources.Contains(r))
-                    .ToList()),
+                .ToDictionary(
+                    p => p.Party,
+                    p => p.AuthorizedResources
+                        .Where(r => request.ConstraintServiceResources.Count == 0 || request.ConstraintServiceResources.Contains(r))
+                        .ToList())
+                // Skip parties with no authorized resources
+                .Where(kv => kv.Value.Count != 0)
+                .ToDictionary(kv => kv.Key, kv => kv.Value),
+
             RolesByParties = authorizedParties.AuthorizedParties
-                .ToDictionary(p => p.Party, p => p.AuthorizedRoles)
+                .ToDictionary(
+                    p => p.Party,
+                    p => p.AuthorizedRoles)
+                // Skip parties with no authorized roles
+                .Where(kv => kv.Value.Count != 0)
+                .ToDictionary(kv => kv.Key, kv => kv.Value)
         };
 
         return dialogSearchAuthorizationResult;

@@ -39,7 +39,7 @@ public static class QueryableExtensions
         var party = Expression.MakeMemberAccess(dialogParameter, DialogPartyPropertyInfo);
         var serviceResource = Expression.MakeMemberAccess(dialogParameter, DialogServiceResourcePropertyInfo);
 
-        var partyResourceExpressions = new List<Expression>();
+        var combinedConditions = new List<Expression>();
 
         foreach (var item in authorizedResources.ResourcesByParties)
         {
@@ -48,18 +48,29 @@ public static class QueryableExtensions
             var resourcesAccess = Expression.MakeMemberAccess(itemArg, ValuePropertyInfo);
             var partyEquals = Expression.Equal(partyAccess, party);
             var resourceContains = Expression.Call(resourcesAccess, StringListContainsMethodInfo, serviceResource);
-            partyResourceExpressions.Add(Expression.AndAlso(partyEquals, resourceContains));
+            combinedConditions.Add(Expression.AndAlso(partyEquals, resourceContains));
         }
 
+        var partyRoleExpressions = new List<Expression>();
+        /*
+        foreach (var roleItem in authorizedResources.RolesByParties)
+        {
+            var roleParty = Expression.Constant(roleItem.Key);
+            var roles = Expression.Constant(roleItem.Value);
+
+
+            partyRoleExpressions.Add(fullRoleExpression);
+        }
+        */
         if (authorizedResources.DialogIds.Count > 0)
         {
             var itemArg = Expression.Constant(authorizedResources, DialogSearchAuthorizationResultType);
             var dialogIdsAccess = Expression.MakeMemberAccess(itemArg, DialogIdsPropertyInfo);
             var dialogIdsContains = Expression.Call(dialogIdsAccess, GuidListContainsMethodInfo, id);
-            partyResourceExpressions.Add(dialogIdsContains);
+            combinedConditions.Add(dialogIdsContains);
         }
 
-        var predicate = partyResourceExpressions
+        var predicate = combinedConditions
             .DefaultIfEmpty(Expression.Constant(false))
             .Aggregate(Expression.OrElse);
 

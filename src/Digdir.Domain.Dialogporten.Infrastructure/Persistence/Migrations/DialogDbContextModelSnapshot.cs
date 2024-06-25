@@ -932,63 +932,6 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.ToTable("OutboxMessageConsumer");
                 });
 
-            modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.SubjectResources.Resource", b =>
-                {
-                    b.Property<long>("ResourceId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("ResourceId"));
-
-                    b.Property<string>("ResourceUrn")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
-                    b.HasKey("ResourceId");
-
-                    b.HasIndex("ResourceUrn")
-                        .IsUnique();
-
-                    b.ToTable("Resource");
-                });
-
-            modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.SubjectResources.Subject", b =>
-                {
-                    b.Property<long>("SubjectId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("SubjectId"));
-
-                    b.Property<string>("SubjectUrn")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
-                    b.HasKey("SubjectId");
-
-                    b.HasIndex("SubjectUrn")
-                        .IsUnique();
-
-                    b.ToTable("Subject");
-                });
-
-            modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.SubjectResources.SubjectResource", b =>
-                {
-                    b.Property<long>("SubjectId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("ResourceId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("SubjectId", "ResourceId");
-
-                    b.HasIndex("ResourceId");
-
-                    b.ToTable("SubjectResource");
-                });
-
             modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions.DialogGuiActionPrompt", b =>
                 {
                     b.HasBaseType("Digdir.Domain.Dialogporten.Domain.Localizations.LocalizationSet");
@@ -1289,25 +1232,6 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.Navigation("OutboxMessage");
                 });
 
-            modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.SubjectResources.SubjectResource", b =>
-                {
-                    b.HasOne("Digdir.Domain.Dialogporten.Domain.SubjectResources.Resource", "Resource")
-                        .WithMany("SubjectResources")
-                        .HasForeignKey("ResourceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Digdir.Domain.Dialogporten.Domain.SubjectResources.Subject", "Subject")
-                        .WithMany("SubjectResources")
-                        .HasForeignKey("SubjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Resource");
-
-                    b.Navigation("Subject");
-                });
-
             modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions.DialogGuiActionPrompt", b =>
                 {
                     b.HasOne("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions.DialogGuiAction", "GuiAction")
@@ -1444,15 +1368,6 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.Navigation("OutboxMessageConsumers");
                 });
 
-            modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.SubjectResources.Resource", b =>
-                {
-                    b.Navigation("SubjectResources");
-                });
-
-            modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.SubjectResources.Subject", b =>
-                {
-                    b.Navigation("SubjectResources");
-                });
 #pragma warning restore 612, 618
         }
     }
