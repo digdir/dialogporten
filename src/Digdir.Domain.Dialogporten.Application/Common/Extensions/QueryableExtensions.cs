@@ -54,7 +54,29 @@ public static class QueryableExtensions
             combinedConditions.Add(Expression.AndAlso(partyEquals, resourceContains));
         }
 
-        /* INSERT ROLES BY PARTIES PREDICATE BUILDING HERE */
+        /* INSERT ROLES BY PARTIES PREDICATE BUILDING HERE
+
+        We need something akin to:
+
+        (
+            d."Party" = @authorizedResources.ResourcesByParties[i].Key
+            AND d."ServiceResource" = ANY(
+           		SELECT r."Resource" FROM public."RoleResource" r WHERE r."Role" = ANY(
+           		    @authorizedResources.ResourcesByParties[i].Value
+           		)
+            )
+        )
+        OR
+        (
+           d."Party" = 'urn:altinn:organization:identifier-no:912345678'
+           AND d."ServiceResource" = ANY(
+                SELECT r."Resource" FROM public."RoleResource" r WHERE r."Role" = ANY(
+                  	ARRAY['urn:altinn:rolecode:foo','urn:altinn:rolecode:bar']::varchar[]
+                )
+            )
+        )
+   
+        */
 
         if (authorizedResources.DialogIds.Count > 0)
         {
