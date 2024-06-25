@@ -1,5 +1,4 @@
-﻿using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Events.Activities;
+﻿using Digdir.Domain.Dialogporten.Domain.Dialogs.Events.Activities;
 using Digdir.Domain.Dialogporten.Domain.Localizations;
 using Digdir.Library.Entity.Abstractions.Features.Aggregate;
 using Digdir.Library.Entity.Abstractions.Features.EventPublisher;
@@ -23,9 +22,6 @@ public class DialogActivity : IImmutableEntity, IAggregateCreatedHandler, IEvent
     public Guid? RelatedActivityId { get; set; }
     public DialogActivity? RelatedActivity { get; set; }
 
-    public Guid? DialogElementId { get; set; }
-    public DialogElement? DialogElement { get; set; }
-
     // === Principal relationships ===
     [AggregateChild]
     public DialogActivityDescription? Description { get; set; }
@@ -40,7 +36,7 @@ public class DialogActivity : IImmutableEntity, IAggregateCreatedHandler, IEvent
         _domainEvents.Add(new DialogActivityCreatedDomainEvent(
             DialogId, Id, TypeId, Dialog.Party,
             Dialog.ServiceResource, ExtendedType,
-            RelatedActivityId, DialogElementId, DialogElement?.Type));
+            RelatedActivityId));
     }
 
     private readonly List<IDomainEvent> _domainEvents = [];

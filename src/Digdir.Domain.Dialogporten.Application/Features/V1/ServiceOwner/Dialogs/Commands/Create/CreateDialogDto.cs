@@ -2,8 +2,8 @@
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Attachments;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements;
 using Digdir.Domain.Dialogporten.Domain.Http;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Create;
@@ -25,7 +25,7 @@ public class CreateDialogDto
 
     public List<CreateDialogSearchTagDto> SearchTags { get; set; } = [];
 
-    public List<CreateDialogDialogElementDto> Elements { get; set; } = [];
+    public List<CreateDialogDialogAttachmentDto> Attachments { get; set; } = [];
     public List<CreateDialogDialogGuiActionDto> GuiActions { get; set; } = [];
     public List<CreateDialogDialogApiActionDto> ApiActions { get; set; } = [];
     public List<CreateDialogDialogActivityDto> Activities { get; set; } = [];
@@ -52,7 +52,6 @@ public sealed class CreateDialogDialogActivityDto
     public DialogActivityType.Values Type { get; set; }
 
     public Guid? RelatedActivityId { get; set; }
-    public Guid? DialogElementId { get; set; }
 
     public string? PerformedBy { get; set; }
     public List<LocalizationDto> Description { get; set; } = [];
@@ -62,8 +61,6 @@ public sealed class CreateDialogDialogApiActionDto
 {
     public string Action { get; set; } = null!;
     public string? AuthorizationAttribute { get; set; }
-
-    public Guid? DialogElementId { get; set; }
 
     public List<CreateDialogDialogApiActionEndpointDto> Endpoints { get; set; } = [];
 }
@@ -94,22 +91,17 @@ public sealed class CreateDialogDialogGuiActionDto
     public List<LocalizationDto>? Prompt { get; set; }
 }
 
-public sealed class CreateDialogDialogElementDto
+public sealed class CreateDialogDialogAttachmentDto
 {
     public Guid? Id { get; set; }
-    public Uri? Type { get; set; }
-    public string? ExternalReference { get; set; }
-    public string? AuthorizationAttribute { get; set; }
-
-    public Guid? RelatedDialogElementId { get; set; }
-
     public List<LocalizationDto> DisplayName { get; set; } = [];
-    public List<CreateDialogDialogElementUrlDto> Urls { get; set; } = [];
+    public List<CreateDialogDialogAttachmentUrlDto> Urls { get; set; } = [];
 }
 
-public sealed class CreateDialogDialogElementUrlDto
+public sealed class CreateDialogDialogAttachmentUrlDto
 {
     public Uri Url { get; set; } = null!;
+    public string? MediaType { get; set; } = null!;
 
-    public DialogElementUrlConsumerType.Values ConsumerType { get; set; }
+    public DialogAttachmentUrlConsumerType.Values ConsumerType { get; set; }
 }

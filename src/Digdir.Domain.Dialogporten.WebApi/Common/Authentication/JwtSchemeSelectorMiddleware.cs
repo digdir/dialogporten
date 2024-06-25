@@ -1,4 +1,6 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
+using FastEndpoints;
+using FluentValidation.Results;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Common.Authentication;
 
@@ -33,9 +35,16 @@ public class JwtSchemeSelectorMiddleware
             return _next(context);
         }
 
-        var jwtToken = handler.ReadJwtToken(token);
-        context.Items[Constants.CurrentTokenIssuer] = jwtToken.Issuer;
-        return _next(context);
+        try
+        {
+            var jwtToken = handler.ReadJwtToken(token);
+            context.Items[Constants.CurrentTokenIssuer] = jwtToken.Issuer;
+            return _next(context);
+        }
+        catch (Exception)
+        {
+            return context.Response.SendErrorsAsync([new ValidationFailure("BearerToken", "Malformed token")]);
+        }
     }
 }
 

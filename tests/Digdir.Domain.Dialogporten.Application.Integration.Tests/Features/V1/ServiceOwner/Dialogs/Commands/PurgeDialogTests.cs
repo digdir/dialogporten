@@ -2,7 +2,7 @@ using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Co
 using Digdir.Domain.Dialogporten.Application.Integration.Tests.Common;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Attachments;
 using Digdir.Tool.Dialogporten.GenerateFakeData;
 using FluentAssertions;
 
@@ -30,8 +30,8 @@ public class PurgeDialogTests(DialogApplication application) : ApplicationCollec
         var dialogEntities = await Application.GetDbEntities<DialogEntity>();
         dialogEntities.Should().BeEmpty();
 
-        var dialogElements = await Application.GetDbEntities<DialogElement>();
-        dialogElements.Should().BeEmpty();
+        var dialogAttachments = await Application.GetDbEntities<DialogAttachment>();
+        dialogAttachments.Should().BeEmpty();
 
         var dialogActivities = await Application.GetDbEntities<DialogActivity>();
         dialogActivities.Should().BeEmpty();

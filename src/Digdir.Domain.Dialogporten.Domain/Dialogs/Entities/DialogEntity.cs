@@ -1,7 +1,7 @@
 ﻿using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Attachments;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Events;
 using Digdir.Library.Entity.Abstractions;
 using Digdir.Library.Entity.Abstractions.Features.Aggregate;
@@ -47,7 +47,7 @@ public class DialogEntity :
     public List<DialogSearchTag> SearchTags { get; set; } = [];
 
     [AggregateChild]
-    public List<DialogElement> Elements { get; set; } = [];
+    public List<DialogAttachment> Attachments { get; set; } = [];
 
     [AggregateChild]
     public List<DialogGuiAction> GuiActions { get; set; } = [];
@@ -61,14 +61,6 @@ public class DialogEntity :
     [AggregateChild]
     public List<DialogSeenLog> SeenLog { get; set; } = [];
 
-    public void SoftDelete()
-    {
-        foreach (var dialogElement in Elements)
-        {
-            dialogElement.SoftDelete();
-        }
-    }
-
     public void OnCreate(AggregateNode self, DateTimeOffset utcNow)
         => _domainEvents.Add(new DialogCreatedDomainEvent(Id, ServiceResource, Party));
 
@@ -76,7 +68,6 @@ public class DialogEntity :
     {
         var changedChildren = self.Children.Where(x =>
             x.State != AggregateNodeState.Unchanged &&
-            x.Entity is not DialogElement &&
             x.Entity is not DialogSearchTag &&
             x.Entity is not DialogActivity);
 

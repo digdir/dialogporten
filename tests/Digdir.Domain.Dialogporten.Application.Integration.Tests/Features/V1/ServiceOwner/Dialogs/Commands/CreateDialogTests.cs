@@ -29,7 +29,6 @@ public class CreateDialogTests : ApplicationCollectionFixture
     {
         // Arrange
         var expectedDialogId = Guid.NewGuid();
-        // var elements = DialogGenerator.GenerateFakeDialogElement());
         var createDialogCommand = DialogGenerator.GenerateFakeDialog(id: expectedDialogId);
 
         // Act

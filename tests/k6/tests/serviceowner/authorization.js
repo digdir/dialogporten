@@ -7,8 +7,8 @@ export default function () {
     let invalidSo = { orgName: "other", orgNo: "310778737" };
 
     let dialog = dialogToInsert();
-    let dialogElementId = dialog.elements[0].id;
-    let dialogElement = dialog.elements[2]; // Use the one without a predefined ID or related ID
+    // TODO: Re-enable when implementing https://github.com/digdir/dialogporten/issues/860
+    // let transmissionId = dialog.transmissions[0].id;
     let dialogId = null; // known after successful insert
     let activity = dialog.activities[0];
     let activityId = null; // known after successful insert
@@ -69,20 +69,16 @@ export default function () {
         });
 
 
-        describe(`${logPrefix} getting dialog element list as ${logSuffix}`, () => {
-            let r = getSO('dialogs/' + dialogId + "/elements/", null, tokenOptions);
-            expectEither(200, 404, r, shouldSucceed);
-        });
+        // TODO: Re-enable when implementing https://github.com/digdir/dialogporten/issues/860
+        // describe(`${logPrefix} getting dialog transmission list as ${logSuffix}`, () => {
+        //     let r = getSO('dialogs/' + dialogId + "/transmissions/", null, tokenOptions);
+        //     expectEither(200, 404, r, shouldSucceed);
+        // });
 
-        describe(`${logPrefix} getting dialog element as ${logSuffix}`, () => {
-            let r = getSO('dialogs/' + dialogId + "/elements/" + dialogElementId, null, tokenOptions);
-            expectEither(200, 404, r, shouldSucceed);
-        });
-
-        describe(`${logPrefix} posting dialog element as ${logSuffix}`, () => {
-            let r = postSO('dialogs/' + dialogId + "/elements", dialogElement, null, tokenOptions);
-            expectEither(201, 404, r, shouldSucceed);
-        });
+        // describe(`${logPrefix} getting dialog transmission as ${logSuffix}`, () => {
+        //     let r = getSO('dialogs/' + dialogId + "/transmissions/" + transmissionId, null, tokenOptions);
+        //     expectEither(200, 404, r, shouldSucceed);
+        // });
 
         describe(`${logPrefix} getting activities as ${logSuffix}`, () => {
             let r = getSO('dialogs/' + dialogId + "/activities", null, tokenOptions);

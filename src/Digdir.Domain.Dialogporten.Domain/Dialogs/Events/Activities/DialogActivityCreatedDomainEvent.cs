@@ -10,6 +10,4 @@ public sealed record DialogActivityCreatedDomainEvent(
     string Party,
     string ServiceResource,
     Uri? ExtendedType,
-    Guid? RelatedActivityId,
-    Guid? DialogElementId,
-    Uri? DialogElementType) : DomainEvent;
+    Guid? RelatedActivityId) : DomainEvent;
