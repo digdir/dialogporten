@@ -2,6 +2,7 @@
 using System.Reflection;
 using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
+using Digdir.Domain.Dialogporten.Domain.RoleResources;
 
 namespace Digdir.Domain.Dialogporten.Application.Common.Extensions;
 
@@ -17,6 +18,8 @@ public static class QueryableExtensions
 
     private static readonly MethodInfo StringListContainsMethodInfo = typeof(List<string>).GetMethod(nameof(List<object>.Contains))!;
     private static readonly MethodInfo GuidListContainsMethodInfo = typeof(List<Guid>).GetMethod(nameof(List<object>.Contains))!;
+
+    private static readonly MethodInfo AnyMethod = typeof(Enumerable).GetMethods().First(m => m.Name == "Any" && m.GetParameters().Length == 2).MakeGenericMethod(typeof(RoleResource));
 
     private static readonly Type KeyValueType = typeof(KeyValuePair<string, List<string>>);
     private static readonly PropertyInfo KeyPropertyInfo = KeyValueType.GetProperty(nameof(KeyValuePair<object, object>.Key))!;
@@ -51,17 +54,8 @@ public static class QueryableExtensions
             combinedConditions.Add(Expression.AndAlso(partyEquals, resourceContains));
         }
 
-        var partyRoleExpressions = new List<Expression>();
-        /*
-        foreach (var roleItem in authorizedResources.RolesByParties)
-        {
-            var roleParty = Expression.Constant(roleItem.Key);
-            var roles = Expression.Constant(roleItem.Value);
+        /* INSERT ROLES BY PARTIES PREDICATE BUILDING HERE */
 
-
-            partyRoleExpressions.Add(fullRoleExpression);
-        }
-        */
         if (authorizedResources.DialogIds.Count > 0)
         {
             var itemArg = Expression.Constant(authorizedResources, DialogSearchAuthorizationResultType);

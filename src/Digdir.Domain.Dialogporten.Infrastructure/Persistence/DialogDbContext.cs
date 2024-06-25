@@ -13,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System.Linq.Expressions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Attachments;
+using Digdir.Domain.Dialogporten.Domain.RoleResources;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence;
 
@@ -33,6 +34,7 @@ internal sealed class DialogDbContext : DbContext, IDialogDbContext
     public DbSet<DialogSeenLog> DialogSeenLog => Set<DialogSeenLog>();
     public DbSet<DialogContentType> DialogContentTypes => Set<DialogContentType>();
     public DbSet<DialogContent> DialogContent => Set<DialogContent>();
+    public DbSet<RoleResource> RoleResource => Set<RoleResource>();
 
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
     public DbSet<OutboxMessageConsumer> OutboxMessageConsumers => Set<OutboxMessageConsumer>();
