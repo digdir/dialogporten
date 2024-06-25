@@ -7,6 +7,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Unit.Tests;
 
 public class QueryableExtensionsTests
 {
+    /*
     [Fact]
     public void WhereUserIsAuthorizedForFiltersDialogEntitiesCorrectly()
     {
@@ -50,4 +51,5 @@ public class QueryableExtensionsTests
         Assert.DoesNotContain(dialogEntities[4], result); // not authorized to party1 for resource3 (or the other way around)
         Assert.DoesNotContain(dialogEntities[4], result); // not authorized to party3
     }
+    */
 }

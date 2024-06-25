@@ -1,3 +1,4 @@
+using System.Text;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Digdir.Domain.Dialogporten.Application.Common;
@@ -11,6 +12,7 @@ using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Localizations;
+using Markdig.Helpers;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
@@ -150,8 +152,8 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
         }
 
         var paginatedList = await _db.Dialogs
+            .PrefilterAuthorizedDialogs(authorizedResources)
             .AsNoTracking()
-            .WhereUserIsAuthorizedFor(authorizedResources)
             .WhereIf(!request.Org.IsNullOrEmpty(), x => request.Org!.Contains(x.Org))
             .WhereIf(!request.ServiceResource.IsNullOrEmpty(), x => request.ServiceResource!.Contains(x.ServiceResource))
             .WhereIf(!request.Party.IsNullOrEmpty(), x => request.Party!.Contains(x.Party))

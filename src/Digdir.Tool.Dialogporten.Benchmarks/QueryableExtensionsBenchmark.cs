@@ -6,6 +6,7 @@ using Digdir.Domain.Dialogporten.Domain.Parties;
 
 namespace Digdir.Tool.Dialogporten.Benchmarks;
 
+/*
 [MemoryDiagnoser]
 public class QueryableExtensionsBenchmark
 {
@@ -42,3 +43,4 @@ public class QueryableExtensionsBenchmark
     [Benchmark]
     public void WhereUserIsAuthorizedFor() => _queryable.WhereUserIsAuthorizedFor(_authResult);
 }
+*/

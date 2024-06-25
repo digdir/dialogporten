@@ -143,7 +143,27 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
         var resourceIds = await _userResourceRegistry.GetCurrentUserResourceIds(cancellationToken);
         var searchExpression = Expressions.LocalizedSearchExpression(request.Search, request.SearchCultureCode);
 
+        if (request.EndUserId is not null)
+        {
+            var authorizedResources = await _altinnAuthorization.GetAuthorizedResourcesForSearch(
+                request.Party ?? [],
+                request.ServiceResource ?? [],
+                request.EndUserId,
+                cancellationToken);
+        }
+        else
+        {
+            var authorizedResources = new DialogSearchAuthorizationResult();
+        }
+
         var query = _db.Dialogs
+            .PrefilterAuthorizedDialogs(async () => request.EndUserId is null
+                ? null
+                : await _altinnAuthorization.GetAuthorizedResourcesForSearch(
+                    request.Party ?? [],
+                    request.ServiceResource ?? [],
+                    request.EndUserId,
+                    cancellationToken))
             .WhereIf(!request.ServiceResource.IsNullOrEmpty(),
                 x => request.ServiceResource!.Contains(x.ServiceResource))
             .WhereIf(!request.Party.IsNullOrEmpty(), x => request.Party!.Contains(x.Party))
@@ -165,16 +185,6 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
                 x.SearchTags.Any(x => EF.Functions.ILike(x.Value, request.Search!))
             )
             .Where(x => resourceIds.Contains(x.ServiceResource));
-
-        if (request.EndUserId is not null)
-        {
-            var authorizedResources = await _altinnAuthorization.GetAuthorizedResourcesForSearch(
-                request.Party ?? [],
-                request.ServiceResource ?? [],
-                request.EndUserId,
-                cancellationToken);
-            query = query.WhereUserIsAuthorizedFor(authorizedResources);
-        }
 
         var paginatedList = await query
             .ProjectTo<SearchDialogDto>(_mapper.ConfigurationProvider)
