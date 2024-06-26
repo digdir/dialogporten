@@ -14,22 +14,13 @@ namespace Digdir.Domain.Dialogporten.ChangeDataCapture.Outbox;
 
 internal sealed class OutboxCdcSubscription : ICdcSubscription<OutboxMessage>, IAsyncDisposable
 {
-    /// <summary>
-    /// This is to compensate for the fact that multiple transactions can be committed at the same time. 
-    /// If we continue to consume from the replication slot everything will be fine. However, if we 
-    /// need to recover from a dropped replication slot we need to make sure that we don't miss 
-    /// any messages from the other concurrent transactions that we may not have been able to consume.
-    /// We do this at the expense of messages being consumed multiple times at the beginning of the 
-    /// recovery process.
-    /// </summary>
-    private static readonly TimeSpan ReplicationCheckpointTimeSkew = -TimeSpan.FromSeconds(2);
-
     private bool _disposed;
     private bool _replicationSnapshotConsumed = true;
 
     private readonly LogicalReplicationConnection _replicationConnection;
 
-    private readonly OutboxCdcSSubscriptionOptions _options;
+    private readonly OutboxCdcSubscriptionOptions _startupOptions;
+    private readonly IOptionsMonitor<OutboxCdcSubscriptionOptions> _options;
     private readonly IReplicationMapper<OutboxMessage> _mapper;
     private readonly IOutboxReaderRepository _outboxRepository;
     private readonly ISubscriptionRepository _subscriptionRepository;
@@ -38,20 +29,21 @@ internal sealed class OutboxCdcSubscription : ICdcSubscription<OutboxMessage>, I
 
     public OutboxCdcSubscription(
         ILogger<OutboxCdcSubscription> logger,
-        IOptions<OutboxCdcSSubscriptionOptions> options,
+        IOptionsMonitor<OutboxCdcSubscriptionOptions> options,
         IReplicationMapper<OutboxMessage> mapper,
         IOutboxReaderRepository outboxRepository,
         ISubscriptionRepository subscriptionRepository,
         ICheckpointCache checkpointCache)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
+        _options = options ?? throw new ArgumentNullException(nameof(options));
+        _startupOptions = options.CurrentValue;
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _outboxRepository = outboxRepository ?? throw new ArgumentNullException(nameof(outboxRepository));
         _subscriptionRepository = subscriptionRepository ?? throw new ArgumentNullException(nameof(subscriptionRepository));
         _checkpointCache = checkpointCache ?? throw new ArgumentNullException(nameof(checkpointCache));
 
-        _replicationConnection = new LogicalReplicationConnection(_options.ConnectionString);
+        _replicationConnection = new LogicalReplicationConnection(_options.CurrentValue.ConnectionString);
     }
 
     public async IAsyncEnumerable<IReadOnlyCollection<OutboxMessage>> Subscribe([EnumeratorCancellation] CancellationToken ct = default)
@@ -81,12 +73,12 @@ internal sealed class OutboxCdcSubscription : ICdcSubscription<OutboxMessage>, I
     private async Task<SubscriptionResult> CreateSubscription(CancellationToken ct)
     {
         _logger.LogDebug("Creating subscription for table '{TableName}' with publication '{PublicationName}' and replication slot '{ReplicationSlot}'.",
-            _options.TableName, _options.PublicationName, _options.ReplicationSlotName);
+            _startupOptions.TableName, _startupOptions.PublicationName, _startupOptions.ReplicationSlotName);
 
-        await _subscriptionRepository.EnsureInsertPublicationForTable(_options.TableName, _options.PublicationName, ct);
-        if (await _subscriptionRepository.ReplicationSlotExists(_options.ReplicationSlotName, ct))
+        await _subscriptionRepository.EnsureInsertPublicationForTable(_startupOptions.TableName, _startupOptions.PublicationName, ct);
+        if (await _subscriptionRepository.ReplicationSlotExists(_startupOptions.ReplicationSlotName, ct))
         {
-            _logger.LogDebug("Subscription already exists for replication slot '{ReplicationSlot}'.", _options.ReplicationSlotName);
+            _logger.LogDebug("Subscription already exists for replication slot '{ReplicationSlot}'.", _startupOptions.ReplicationSlotName);
             return new SubscriptionResult.Exists();
         }
 
@@ -96,11 +88,11 @@ internal sealed class OutboxCdcSubscription : ICdcSubscription<OutboxMessage>, I
 
         _replicationSnapshotConsumed = false;
         var replicationSlot = await _replicationConnection.CreatePgOutputReplicationSlot(
-            _options.ReplicationSlotName,
+            _startupOptions.ReplicationSlotName,
             slotSnapshotInitMode: LogicalSlotSnapshotInitMode.Export,
             cancellationToken: ct);
 
-        _logger.LogDebug("Replication slot '{ReplicationSlot}' created.", _options.ReplicationSlotName);
+        _logger.LogDebug("Replication slot '{ReplicationSlot}' created.", _startupOptions.ReplicationSlotName);
         return new SubscriptionResult.Created(replicationSlot);
     }
 
@@ -108,40 +100,41 @@ internal sealed class OutboxCdcSubscription : ICdcSubscription<OutboxMessage>, I
         SubscriptionResult.Created created,
         [EnumeratorCancellation] CancellationToken ct)
     {
-        _logger.LogDebug("Consuming snapshot for replication slot '{ReplicationSlot}'.", _options.ReplicationSlotName);
-        var checkpoint = _checkpointCache.GetOrDefault(_options.ReplicationSlotName);
+        _logger.LogDebug("Consuming snapshot for replication slot '{ReplicationSlot}'.", _startupOptions.ReplicationSlotName);
+        var checkpoint = _checkpointCache.GetOrDefault(_startupOptions.ReplicationSlotName);
         var snapshotName = created.ReplicationSlot.SnapshotName!;
         var outboxMessages = new OutboxMessage[1];
         await foreach (var reader in _outboxRepository.ReadFromCheckpoint(checkpoint, snapshotName, ct))
         {
             outboxMessages[0] = await _mapper.ReadFromSnapshot(reader, ct);
             yield return outboxMessages;
-            _checkpointCache.Upsert(outboxMessages[0].ToCheckpoint(_options.ReplicationSlotName));
+            _checkpointCache.Upsert(outboxMessages[0].ToCheckpoint(_startupOptions.ReplicationSlotName));
         }
 
         _replicationSnapshotConsumed = true;
-        _logger.LogDebug("Snapshot consumed for replication slot '{ReplicationSlot}'.", _options.ReplicationSlotName);
+        _logger.LogDebug("Snapshot consumed for replication slot '{ReplicationSlot}'.", _startupOptions.ReplicationSlotName);
     }
 
     private async IAsyncEnumerable<IReadOnlyCollection<OutboxMessage>> ConsumeReplicationSlot(
         [EnumeratorCancellation] CancellationToken ct)
     {
-        _logger.LogDebug("Consuming replication slot '{ReplicationSlot}'.", _options.ReplicationSlotName);
-        var slot = new PgOutputReplicationSlot(_options.ReplicationSlotName);
-        var replicationOptions = new PgOutputReplicationOptions(_options.PublicationName, 1);
+        var options = _options.CurrentValue;
+        _logger.LogDebug("Consuming replication slot '{ReplicationSlot}'.", _startupOptions.ReplicationSlotName);
+        var slot = new PgOutputReplicationSlot(_startupOptions.ReplicationSlotName);
+        var replicationOptions = new PgOutputReplicationOptions(_startupOptions.PublicationName, 1);
         var transactionBatch = new List<OutboxMessage>();
         await foreach (var message in _replicationConnection.StartReplication(slot, replicationOptions, ct))
         {
             switch (message)
             {
-                case InsertMessage insertMessage when insertMessage.Relation.RelationName == _options.TableName:
+                case InsertMessage insertMessage when insertMessage.Relation.RelationName == _startupOptions.TableName:
                     transactionBatch.Add(await _mapper.ReadFromReplication(insertMessage, ct));
                     break;
                 case CommitMessage when transactionBatch.Count > 0:
                     yield return transactionBatch;
                     _checkpointCache.Upsert(transactionBatch
                         .MaxBy(x => x.CreatedAt)!
-                        .ToCheckpoint(_options.ReplicationSlotName, ReplicationCheckpointTimeSkew));
+                        .ToCheckpoint(_startupOptions.ReplicationSlotName, _options.CurrentValue.ReplicationCheckpointTimeSkew));
                     transactionBatch.Clear();
                     break;
                 default: break;
@@ -164,8 +157,8 @@ internal sealed class OutboxCdcSubscription : ICdcSubscription<OutboxMessage>, I
             // slot represents all changes that happons from that point on. If we fail to read the
             // snapshot in its entirety, we should start from scratch the next time the subscription
             // is started.
-            _logger.LogDebug("Replication slot '{ReplicationSlot}' was not fully consumed, dropping slot.", _options.ReplicationSlotName);
-            await _subscriptionRepository.DropReplicationSlot(_options.ReplicationSlotName);
+            _logger.LogDebug("Replication slot '{ReplicationSlot}' was not fully consumed, dropping slot.", _startupOptions.ReplicationSlotName);
+            await _subscriptionRepository.DropReplicationSlot(_startupOptions.ReplicationSlotName);
         }
 
         await _replicationConnection.DisposeAsync();

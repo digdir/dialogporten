@@ -11,7 +11,6 @@ using MassTransit.Configuration;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.Options;
 using Npgsql;
-using Npgsql.Replication;
 using Serilog;
 
 // Using two-stage initialization to catch startup errors.
@@ -60,12 +59,12 @@ static void BuildAndRun(string[] args)
 
     builder.Services
         // Options
-        .AddOptions<OutboxCdcSSubscriptionOptions>()
-            .BindConfiguration(OutboxCdcSSubscriptionOptions.SectionName)
+        .AddOptions<OutboxCdcSubscriptionOptions>()
+            .BindConfiguration(OutboxCdcSubscriptionOptions.SectionName)
             .Configure<IConfiguration>((option, conf) => option.ConnectionString ??= conf["Infrastructure:DialogDbConnectionString"]!)
             .Services
 
-        // Infrastrukture
+        // Infrastructure
         .AddAzureAppConfiguration()
         .AddApplicationInsightsTelemetry()
         .AddHostedService<CheckpointSyncronizer>()
@@ -90,7 +89,7 @@ static void BuildAndRun(string[] args)
             .Services
 
         // Singleton
-        .AddSingleton(x => NpgsqlDataSource.Create(x.GetRequiredService<IOptions<OutboxCdcSSubscriptionOptions>>().Value.ConnectionString))
+        .AddSingleton(x => NpgsqlDataSource.Create(x.GetRequiredService<IOptions<OutboxCdcSubscriptionOptions>>().Value.ConnectionString))
         .AddSingleton<ICheckpointCache, CheckpointCache>()
 
         // Scoped
@@ -102,7 +101,7 @@ static void BuildAndRun(string[] args)
         //.AddTransient(typeof(IReplicationDataMapper<>), typeof(DynamicReplicationDataMapper<>))
         .AddTransient<IReplicationMapper<OutboxMessage>, OutboxReplicationMapper>()
         .AddTransient<ICdcSubscription<OutboxMessage>, OutboxCdcSubscription>()
-        .AddTransient<ICdcSink<OutboxMessage>, ConcoleSink>();
+        .AddTransient<ICdcSink<OutboxMessage>, ConsoleSink>();
 
     var app = builder.Build();
     app.UseHttpsRedirection()

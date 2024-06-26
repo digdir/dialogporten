@@ -1,4 +1,6 @@
 ﻿using System.Collections.Concurrent;
+using Digdir.Domain.Dialogporten.ChangeDataCapture.Outbox;
+using Microsoft.Extensions.Options;
 using Npgsql.Replication;
 
 namespace Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture.Checkpoints;
@@ -7,21 +9,25 @@ internal sealed class CheckpointSyncronizer : BackgroundService, IAsyncDisposabl
 {
     private IReadOnlyCollection<Checkpoint> _syncedCheckpoints = new List<Checkpoint>().AsReadOnly();
 
-    private readonly PeriodicTimer _periodicTimer = new(TimeSpan.FromSeconds(10));
     private readonly SemaphoreSlim _semaphore = new(1, 1);
+    private readonly PeriodicTimer _periodicTimer;
 
     private readonly ICheckpointCache _snapshotCache;
     private readonly ICheckpointRepository _snapshotRepository;
     private readonly ILogger<CheckpointSyncronizer> _logger;
+    private readonly IDisposable _optionsChangeSubscription;
 
     public CheckpointSyncronizer(
         ICheckpointCache cache,
         ICheckpointRepository snapshotRepository,
-        ILogger<CheckpointSyncronizer> logger)
+        ILogger<CheckpointSyncronizer> logger,
+        IOptionsMonitor<OutboxCdcSubscriptionOptions> options)
     {
         _snapshotCache = cache ?? throw new ArgumentNullException(nameof(cache));
         _snapshotRepository = snapshotRepository ?? throw new ArgumentNullException(nameof(snapshotRepository));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _optionsChangeSubscription = options?.OnChange(UpdateOptions) ?? throw new ArgumentNullException(nameof(options));
+        _periodicTimer = new(options.CurrentValue.CheckpointSynchronizationInterval);
     }
 
     public override async Task StartAsync(CancellationToken cancellationToken)
@@ -50,7 +56,7 @@ internal sealed class CheckpointSyncronizer : BackgroundService, IAsyncDisposabl
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        _logger.LogDebug("Starting checkpoint syncronizer.");
+        _logger.LogDebug("Starting checkpoint synchronizer.");
         while (await _periodicTimer.WaitForNextTickAsync(stoppingToken))
         {
             if (!await _semaphore.WaitAsync(0, stoppingToken))
@@ -74,6 +80,7 @@ internal sealed class CheckpointSyncronizer : BackgroundService, IAsyncDisposabl
 
     public override void Dispose()
     {
+        _optionsChangeSubscription.Dispose();
         _periodicTimer.Dispose();
         _semaphore.Dispose();
         base.Dispose();
@@ -111,5 +118,17 @@ internal sealed class CheckpointSyncronizer : BackgroundService, IAsyncDisposabl
 
         _syncedCheckpoints = current;
         return true;
+    }
+
+    private void UpdateOptions(OutboxCdcSubscriptionOptions options)
+    {
+        try
+        {
+            _periodicTimer.Period = options.CheckpointSynchronizationInterval;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "An error occurred while updating the options for checkpoint synchronization.");
+        }
     }
 }

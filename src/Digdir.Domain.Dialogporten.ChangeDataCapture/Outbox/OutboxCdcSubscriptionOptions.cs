@@ -1,8 +1,8 @@
 ﻿namespace Digdir.Domain.Dialogporten.ChangeDataCapture.Outbox;
 
-public sealed class OutboxCdcSSubscriptionOptions
+public sealed class OutboxCdcSubscriptionOptions
 {
-    public const string SectionName = "CdcSubscriptionOption";
+    public const string SectionName = "OutboxSubscriptionOption";
 
     private string _tableName = null!;
 
@@ -20,6 +20,7 @@ public sealed class OutboxCdcSSubscriptionOptions
     }
     public string PublicationName { get; private set; } = null!;
     public string ReplicationSlotName { get; private set; } = null!;
-    public int SnapshotSyncThreshold { get; set; } = 1000;
     public int SnapshotBatchSize { get; set; } = 1000;
+    public TimeSpan CheckpointSynchronizationInterval { get; set; } = TimeSpan.FromSeconds(10);
+    public TimeSpan ReplicationCheckpointTimeSkew { get; set; } = TimeSpan.FromSeconds(-2);
 }

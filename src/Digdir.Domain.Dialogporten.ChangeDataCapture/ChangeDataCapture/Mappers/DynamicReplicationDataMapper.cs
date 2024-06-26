@@ -19,7 +19,7 @@ internal sealed class DynamicReplicationDataMapper<T> : IReplicationMapper<T>
     {
         var type = typeof(T);
         var result = (T)Activator.CreateInstance(type)!;
-        var infoConverterByPropName = _propInfoConvertersByType.GetOrAdd(type, GeneratePropInfoConvertionsByPropName);
+        var infoConverterByPropName = _propInfoConvertersByType.GetOrAdd(type, GeneratePropInfoConversionsByPropName);
         var columnNumber = 0;
         await foreach (var value in insertMessage.NewRow)
         {
@@ -35,7 +35,7 @@ internal sealed class DynamicReplicationDataMapper<T> : IReplicationMapper<T>
     {
         var type = typeof(T);
         var result = (T)Activator.CreateInstance(type)!;
-        var infoConverterByPropName = _propInfoConvertersByType.GetOrAdd(type, GeneratePropInfoConvertionsByPropName);
+        var infoConverterByPropName = _propInfoConvertersByType.GetOrAdd(type, GeneratePropInfoConversionsByPropName);
         for (var i = 0; i < reader.FieldCount; i++)
         {
             var propName = reader.GetName(i);
@@ -54,7 +54,7 @@ internal sealed class DynamicReplicationDataMapper<T> : IReplicationMapper<T>
         propInfoConverter.SetValue(value, propValue);
     }
 
-    private static Dictionary<string, PropertyInfoConverter> GeneratePropInfoConvertionsByPropName(Type type) =>
+    private static Dictionary<string, PropertyInfoConverter> GeneratePropInfoConversionsByPropName(Type type) =>
         type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
             .Select(x => new PropertyInfoConverter(x))
             .ToDictionary(x => x.PropertyName);

@@ -1,6 +1,5 @@
 ﻿using System.Data;
 using System.Data.Common;
-using System.Runtime.CompilerServices;
 using Npgsql;
 
 namespace Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture.Checkpoints;
@@ -72,7 +71,7 @@ internal sealed class CheckpointRepository : ICheckpointRepository
 
             try
             {
-                await UpsertCheckpoints_Private(checkpoints, ct);
+                await UpsertCheckpoints_Internal(checkpoints, ct);
                 return true;
             }
             catch (Exception ex)
@@ -87,7 +86,7 @@ internal sealed class CheckpointRepository : ICheckpointRepository
         return false;
     }
 
-    private async Task UpsertCheckpoints_Private(ICollection<Checkpoint> checkpoints, CancellationToken ct = default)
+    private async Task UpsertCheckpoints_Internal(ICollection<Checkpoint> checkpoints, CancellationToken ct = default)
     {
         const int numberOfParametersZeroIndexed = 2;
 

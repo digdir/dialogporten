@@ -8,11 +8,11 @@ public interface ICdcSink<T>
     Task Send(IReadOnlyCollection<T> outboxMessage, CancellationToken cancellationToken);
 }
 
-internal sealed class ConcoleSink : ICdcSink<OutboxMessage>
+internal sealed class ConsoleSink : ICdcSink<OutboxMessage>
 {
-    private readonly ILogger<ConcoleSink> _logger;
+    private readonly ILogger<ConsoleSink> _logger;
 
-    public ConcoleSink(ILogger<ConcoleSink> logger)
+    public ConsoleSink(ILogger<ConsoleSink> logger)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }

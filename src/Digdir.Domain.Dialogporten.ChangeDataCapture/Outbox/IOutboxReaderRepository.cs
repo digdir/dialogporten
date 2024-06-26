@@ -18,9 +18,9 @@ internal interface IOutboxReaderRepository
 internal sealed class OutboxReaderRepository : IOutboxReaderRepository
 {
     private readonly NpgsqlDataSource _dataSource;
-    private readonly OutboxCdcSSubscriptionOptions _options;
+    private readonly OutboxCdcSubscriptionOptions _options;
 
-    public OutboxReaderRepository(NpgsqlDataSource dataSource, IOptions<OutboxCdcSSubscriptionOptions> options)
+    public OutboxReaderRepository(NpgsqlDataSource dataSource, IOptions<OutboxCdcSubscriptionOptions> options)
     {
         _dataSource = dataSource ?? throw new ArgumentNullException(nameof(dataSource));
         _options = options.Value;
