@@ -1,18 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
-    
+
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
         <AzureFunctionsVersion>v4</AzureFunctionsVersion>
         <OutputType>Exe</OutputType>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
         <UserSecretsId>dd6841cd-1cfd-4f1c-a63e-edc687bff657</UserSecretsId>
     </PropertyGroup>
     <ItemGroup>
+        <PackageReference Include="Azure.Identity" Version="1.12.0" />
         <PackageReference Include="Microsoft.Azure.Functions.Worker" Version="1.22.0" />
         <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Http" Version="3.2.0" />
         <PackageReference Include="Microsoft.Azure.Functions.Worker.Sdk" Version="1.17.2" />
-        <PackageReference Include="Microsoft.Extensions.Azure" Version="1.7.3" />
+        <PackageReference Include="Microsoft.Extensions.Azure" Version="1.7.4" />
         <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="8.0.0" />
     </ItemGroup>
     <ItemGroup>

@@ -12,50 +12,59 @@ public class DialogContentType : AbstractLookupEntity<DialogContentType, DialogC
         SenderName = 2,
         Summary = 3,
         AdditionalInfo = 4,
-        ExtendedStatus = 5
+        ExtendedStatus = 5,
+        MainContentReference = 6
     }
 
     public bool Required { get; private init; }
-    public bool RenderAsHtml { get; private init; }
     public bool OutputInList { get; private init; }
     public int MaxLength { get; private init; }
+
+    public string[] AllowedMediaTypes { get; init; } = [];
 
     public override DialogContentType MapValue(Values id) => id switch
     {
         Values.Title => new(id)
         {
             Required = true,
-            RenderAsHtml = false,
             MaxLength = Constants.DefaultMaxStringLength,
-            OutputInList = true
+            OutputInList = true,
+            AllowedMediaTypes = []
         },
         Values.SenderName => new(id)
         {
             Required = false,
-            RenderAsHtml = false,
             MaxLength = Constants.DefaultMaxStringLength,
-            OutputInList = true
+            OutputInList = true,
+            AllowedMediaTypes = []
         },
         Values.Summary => new(id)
         {
             Required = true,
-            RenderAsHtml = false,
             MaxLength = Constants.DefaultMaxStringLength,
-            OutputInList = true
+            OutputInList = true,
+            AllowedMediaTypes = []
         },
         Values.AdditionalInfo => new(id)
         {
             Required = false,
-            RenderAsHtml = true,
             MaxLength = 1023,
-            OutputInList = false
+            OutputInList = false,
+            AllowedMediaTypes = [MediaTypes.Html, MediaTypes.PlainText, MediaTypes.Markdown]
         },
         Values.ExtendedStatus => new(id)
         {
             Required = false,
-            RenderAsHtml = false,
             MaxLength = 20,
-            OutputInList = true
+            OutputInList = true,
+            AllowedMediaTypes = []
+        },
+        Values.MainContentReference => new(id)
+        {
+            Required = false,
+            MaxLength = 1023,
+            OutputInList = false,
+            AllowedMediaTypes = [MediaTypes.EmbeddableMarkdown]
         },
         _ => throw new ArgumentOutOfRangeException(nameof(id), id, null)
     };

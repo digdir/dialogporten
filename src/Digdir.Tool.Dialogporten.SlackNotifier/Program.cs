@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-var builder = await new HostBuilder()
+await new HostBuilder()
     .ConfigureFunctionsWorkerDefaults()
     .ConfigureAppConfiguration(x => x.AddUserSecrets<Program>(optional: true, reloadOnChange: false))
     .ConfigureServices((hostContext, services) =>

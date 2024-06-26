@@ -19,6 +19,7 @@ public sealed class Content
 {
     public ContentType Type { get; set; }
     public List<Localization> Value { get; set; } = [];
+    public string? MediaType { get; set; }
 }
 
 public sealed class SeenLog
@@ -42,9 +43,8 @@ public sealed class Activity
     public ActivityType Type { get; set; }
 
     public Guid? RelatedActivityId { get; set; }
-    public Guid? DialogElementId { get; set; }
 
-    public List<Localization>? PerformedBy { get; set; } = [];
+    public string? PerformedBy { get; set; }
     public List<Localization> Description { get; set; } = [];
 }
 

@@ -12,6 +12,8 @@ public class DecisionRequestHelperTests
 {
     private const string ConsumerClaimValue = /*lang=json,strict*/ "{\"authority\":\"iso6523-actorid-upis\",\"ID\":\"0192:991825827\"}";
 
+    private const string AuthorizationDetailsClaimValue = /*lang=json,strict*/"[{\"type\":\"urn:altinn:systemuser\",\"systemuser_id\":[\"unique_systemuser_id\"]}]";
+
     [Fact]
     public void CreateDialogDetailsRequestShouldReturnCorrectRequest()
     {
@@ -44,34 +46,60 @@ public class DecisionRequestHelperTests
         Assert.Contains(accessSubject.Attribute, a => a.AttributeId == "urn:altinn:person:identifier-no" && a.Value == "12345678901");
         Assert.DoesNotContain(accessSubject.Attribute, a => a.AttributeId == "urn:altinn:organization:identifier-no");
 
-        // Check Action attributes
-        Assert.Contains(result.Request.Action, a => a.Id == "a1" && a.Attribute.Any(attr => attr.AttributeId == "urn:oasis:names:tc:xacml:1.0:action:action-id" && attr.Value == "read"));
-        Assert.Contains(result.Request.Action, a => a.Id == "a2" && a.Attribute.Any(attr => attr.AttributeId == "urn:oasis:names:tc:xacml:1.0:action:action-id" && attr.Value == "write"));
-        Assert.Contains(result.Request.Action, a => a.Id == "a3" && a.Attribute.Any(attr => attr.AttributeId == "urn:oasis:names:tc:xacml:1.0:action:action-id" && attr.Value == "sign"));
-        Assert.Contains(result.Request.Action, a => a.Id == "a4" && a.Attribute.Any(attr => attr.AttributeId == "urn:oasis:names:tc:xacml:1.0:action:action-id" && attr.Value == "elementread"));
+        // Check Action attributes.
+        var actionIdsByName = new Dictionary<string, string>();
+        Assert.Equal(request.AltinnActions.Select(x => x.Name).Distinct().Count(), result.Request.Action.Count);
+        foreach (var action in request.AltinnActions.Select(x => x.Name))
+        {
+            var actionElement = result.Request.Action.FirstOrDefault(a => a.Attribute.Any(attr => attr.AttributeId == "urn:oasis:names:tc:xacml:1.0:action:action-id" && attr.Value == action));
+            Assert.NotNull(actionElement);
+            actionIdsByName[action] = actionElement.Id;
+        }
 
         // Check Resource attributes
-        var resource1 = result.Request.Resource.FirstOrDefault(r => r.Id == "r1");
-        Assert.NotNull(resource1);
-        Assert.Contains(resource1.Attribute, a => a.AttributeId == "urn:altinn:resource" && a.Value == "some-service");
-        Assert.Contains(resource1.Attribute, a => a.AttributeId == "urn:altinn:resourceinstance" && a.Value == dialogId.ToString());
-        Assert.Contains(resource1.Attribute, a => a.AttributeId == "urn:altinn:organization:identifier-no" && a.Value == "713330310");
-
-        var resource2 = result.Request.Resource.FirstOrDefault(r => r.Id == "r2");
-        Assert.NotNull(resource2);
-        Assert.Contains(resource2.Attribute, a => a.AttributeId == "urn:altinn:subresource" && a.Value == "element1");
-
-        var resource3 = result.Request.Resource.FirstOrDefault(r => r.Id == "r3");
-        Assert.NotNull(resource3);
-        Assert.Contains(resource3.Attribute, a => a.AttributeId == "urn:altinn:subresource" && a.Value == "element2");
+        var resourceIdsBySubresource = new Dictionary<string, string>();
+        Assert.Equal(request.AltinnActions.Select(x => x.AuthorizationAttribute).Distinct().Count(), result.Request.Resource.Count);
+        foreach (var subresource in request.AltinnActions.Select(x => x.AuthorizationAttribute))
+        {
+            var resource = result.Request.Resource.FirstOrDefault(r => r.Attribute.Any(a => a.AttributeId == "urn:altinn:subresource" && a.Value == subresource));
+            Assert.NotNull(resource);
+            Assert.Contains(resource.Attribute, a => a.AttributeId == "urn:altinn:resource" && a.Value == "some-service");
+            Assert.Contains(resource.Attribute, a => a.AttributeId == "urn:altinn:organization:identifier-no" && a.Value == "713330310");
+            Assert.Contains(resource.Attribute, a => a.AttributeId == "urn:altinn:resourceinstance" && a.Value == dialogId.ToString());
+            resourceIdsBySubresource[subresource] = resource.Id;
+        }
 
         // Check MultiRequests
-        Assert.Equal(5, result.Request.MultiRequests.RequestReference.Count);
-        Assert.Contains(result.Request.MultiRequests.RequestReference, rr => ContainsSameElements(rr.ReferenceId, new List<string> { "s1", "r1", "a1" }));
-        Assert.Contains(result.Request.MultiRequests.RequestReference, rr => ContainsSameElements(rr.ReferenceId, new List<string> { "s1", "r1", "a2" }));
-        Assert.Contains(result.Request.MultiRequests.RequestReference, rr => ContainsSameElements(rr.ReferenceId, new List<string> { "s1", "r2", "a3" }));
-        Assert.Contains(result.Request.MultiRequests.RequestReference, rr => ContainsSameElements(rr.ReferenceId, new List<string> { "s1", "r3", "a4" }));
-        Assert.Contains(result.Request.MultiRequests.RequestReference, rr => ContainsSameElements(rr.ReferenceId, new List<string> { "s1", "r4", "a4" }));
+        Assert.Equal(request.AltinnActions.Count, result.Request.MultiRequests.RequestReference.Count);
+        foreach (var altinnAction in request.AltinnActions)
+        {
+            Assert.Contains(result.Request.MultiRequests.RequestReference, rr
+                => ContainsSameElements(rr.ReferenceId, new List<string> { "s1", resourceIdsBySubresource[altinnAction.AuthorizationAttribute], actionIdsByName[altinnAction.Name] }));
+        }
+    }
+
+    [Fact]
+    public void CreateDialogDetailsRequestShouldReturnCorrectRequestForLegacyEnterpriseUsers()
+    {
+        // Arrange
+        var request = CreateDialogDetailsAuthorizationRequest(
+            GetAsClaims(
+                ("urn:altinn:userid", "5678901"),
+
+                // This should not be copied as subject claim since there's a "urn:altinn:user-id"-claim
+                ("consumer", ConsumerClaimValue)
+            ),
+            $"{NorwegianOrganizationIdentifier.PrefixWithSeparator}713330310");
+        var dialogId = request.DialogId;
+
+        // Act
+        var result = DecisionRequestHelper.CreateDialogDetailsRequest(request);
+
+        // Check AccessSubject attributes
+        var accessSubject = result.Request.AccessSubject.First();
+        Assert.Equal("s1", accessSubject.Id);
+        Assert.Contains(accessSubject.Attribute, a => a.AttributeId == "urn:altinn:userid" && a.Value == "5678901");
+        Assert.DoesNotContain(accessSubject.Attribute, a => a.AttributeId == "urn:altinn:organization:identifier-no");
     }
 
     [Fact]
@@ -80,10 +108,7 @@ public class DecisionRequestHelperTests
         // Arrange
         var request = CreateDialogDetailsAuthorizationRequest(
             GetAsClaims(
-                ("pid", "12345678901"),
-
-                // This should not be copied as subject claim since there's a "pid"-claim
-                ("consumer", ConsumerClaimValue)
+                ("pid", "12345678901")
             ),
             $"{NorwegianOrganizationIdentifier.PrefixWithSeparator}713330310",
             isApp: true);
@@ -106,6 +131,31 @@ public class DecisionRequestHelperTests
 
         // We cannot support instance id for apps since we don't have a partyId
         // Assert.Contains(resource1.Attribute, a => a.AttributeId == "urn:altinn:instance-id" && a.Value == dialogId.ToString());
+    }
+
+    [Fact]
+    public void CreateDialogDetailsRequestShouldReturnCorrectRequestForSystemUser()
+    {
+        // Arrange
+        var request = CreateDialogDetailsAuthorizationRequest(
+            GetAsClaims(
+                ("authorization_details", AuthorizationDetailsClaimValue)
+            ),
+            $"{NorwegianOrganizationIdentifier.PrefixWithSeparator}713330310"
+            );
+
+        // Act
+        var result = DecisionRequestHelper.CreateDialogDetailsRequest(request);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.NotNull(result.Request);
+        Assert.NotNull(result.Request.Resource);
+
+        var accessSubject = result.Request.AccessSubject.First();
+        Assert.Equal("s1", accessSubject.Id);
+        Assert.Contains(accessSubject.Attribute, a => a.AttributeId == "urn:altinn:foo" && a.Value == "bar");
+        Assert.Contains(accessSubject.Attribute, a => a.AttributeId == "urn:altinn:systemuser" && a.Value == "unique_systemuser_id");
     }
 
     [Fact]
@@ -134,6 +184,82 @@ public class DecisionRequestHelperTests
     }
 
     [Fact]
+    public void CreateDialogDetailsRequestShouldReturnCorrectRequestForOverriddenResource()
+    {
+        // Arrange
+        var request = CreateDialogDetailsAuthorizationRequest(
+            GetAsClaims(
+                ("consumer", ConsumerClaimValue)
+            ),
+            $"{NorwegianPersonIdentifier.PrefixWithSeparator}16073422888");
+
+        // Add an action that has a resource override
+        request.AltinnActions.Add(new AltinnAction("read", "urn:altinn:resource:some-other-service"));
+
+        // Act
+        var result = DecisionRequestHelper.CreateDialogDetailsRequest(request);
+
+        // Assert
+        // Find the resource having an attribute set with value "some-other-service"
+        var resource = result.Request.Resource.FirstOrDefault(r => r.Attribute.Any(a => a.AttributeId == "urn:altinn:resource" && a.Value == "some-other-service"));
+        Assert.NotNull(resource);
+        // Check that there are no other resources with the same attribute and no resource instance attribute set
+        Assert.DoesNotContain(resource.Attribute, a => a.AttributeId == "urn:altinn:resource" && a.Value == "some-service");
+        Assert.DoesNotContain(resource.Attribute, a => a.AttributeId == "urn:altinn:resourceinstance");
+    }
+
+    [Fact]
+    public void CreateDialogDetailsRequestShouldReturnCorrectRequestForOverriddenResourceForApp()
+    {
+        // Arrange
+        var request = CreateDialogDetailsAuthorizationRequest(
+            GetAsClaims(
+                ("consumer", ConsumerClaimValue)
+            ),
+            $"{NorwegianPersonIdentifier.PrefixWithSeparator}16073422888");
+
+        // Add an action that has a resource override
+        request.AltinnActions.Add(new AltinnAction("read", "urn:altinn:resource:app_ttd_some-other-service"));
+
+        // Act
+        var result = DecisionRequestHelper.CreateDialogDetailsRequest(request);
+
+        // Assert
+        // Find the resource having an attribute set with value "some-other-service"
+        var resource = result.Request.Resource.FirstOrDefault(r => r.Attribute.Any(a => a.AttributeId == "urn:altinn:app" && a.Value == "some-other-service"));
+        Assert.NotNull(resource);
+        // Check that there are no other resources with the same attribute and no resource instance attribute set
+        Assert.DoesNotContain(resource.Attribute, a => a.AttributeId == "urn:altinn:resource" && a.Value == "some-service");
+        Assert.DoesNotContain(resource.Attribute, a => a.AttributeId == "urn:altinn:resourceinstance");
+        // Check that we have an org attribute
+        Assert.Contains(resource.Attribute, a => a.AttributeId == "urn:altinn:org" && a.Value == "ttd");
+    }
+
+    [Fact]
+    public void CreateDialogDetailsRequestShouldReturnCorrectRequestForFullyQualifiedSubresource()
+    {
+        // Arrange
+        var request = CreateDialogDetailsAuthorizationRequest(
+            GetAsClaims(
+                ("consumer", ConsumerClaimValue)
+            ),
+            $"{NorwegianPersonIdentifier.PrefixWithSeparator}16073422888");
+
+        // Add an action that has a resource override
+        request.AltinnActions.Add(new AltinnAction("read", "urn:altinn:task:Task_1"));
+
+        // Act
+        var result = DecisionRequestHelper.CreateDialogDetailsRequest(request);
+
+        // Assert
+        // Find the resource having an attribute set with value "some-other-service"
+        var resource = result.Request.Resource.FirstOrDefault(r => r.Attribute.Any(a => a.AttributeId == "urn:altinn:task" && a.Value == "Task_1"));
+        Assert.NotNull(resource);
+        // Check that there are implicit subresource attribute set
+        Assert.DoesNotContain(resource.Attribute, a => a.AttributeId == "urn:altinn:subresource");
+    }
+
+    [Fact]
     public void CreateDialogDetailsResponseShouldReturnCorrectResponse()
     {
         // Arrange
@@ -144,7 +270,7 @@ public class DecisionRequestHelperTests
             ),
             $"{NorwegianPersonIdentifier.PrefixWithSeparator}12345678901");
 
-        // Add an action to the request that the mocked response should give a non-permit response for
+        // Add an action to the request that the mocked response should give a non-permit response failaction
         request.AltinnActions.Add(new AltinnAction("failaction", Constants.MainResource));
 
         var jsonRequestRoot = DecisionRequestHelper.CreateDialogDetailsRequest(request);
@@ -155,12 +281,12 @@ public class DecisionRequestHelperTests
 
         // Assert
         Assert.NotNull(response);
-        Assert.Equal(request.AltinnActions.Count - 1, response.AuthorizedAltinnActions.Count);
+        Assert.Equal(request.AltinnActions.Count - 2, response.AuthorizedAltinnActions.Count);
         Assert.Contains(new AltinnAction("read", Constants.MainResource), response.AuthorizedAltinnActions);
         Assert.Contains(new AltinnAction("write", Constants.MainResource), response.AuthorizedAltinnActions);
         Assert.Contains(new AltinnAction("sign", "element1"), response.AuthorizedAltinnActions);
         Assert.Contains(new AltinnAction("elementread", "element2"), response.AuthorizedAltinnActions);
-        Assert.Contains(new AltinnAction("elementread", "element3"), response.AuthorizedAltinnActions);
+        Assert.DoesNotContain(new AltinnAction("elementread", "element3"), response.AuthorizedAltinnActions);
         Assert.DoesNotContain(new AltinnAction("failaction", Constants.MainResource), response.AuthorizedAltinnActions);
     }
 
@@ -183,10 +309,10 @@ public class DecisionRequestHelperTests
             AltinnActions =
             [
                 new("read", Constants.MainResource),
-                new("write", Constants.MainResource),
                 new("sign", "element1"),
+                new("write", Constants.MainResource),
+                new("elementread", "element3"),
                 new("elementread", "element2"),
-                new("elementread", "element3")
             ]
         };
     }
@@ -203,13 +329,15 @@ public class DecisionRequestHelperTests
             // Check if this request reference refers to the action with name "failaction", in which case we should return a non-permit response
             // We need to use the actionId since the action name is not included in the request reference
             var actionId = requestReference.ReferenceId.First(x => x.StartsWith('a'));
+            var resourceId = requestReference.ReferenceId.First(x => x.StartsWith('r'));
             var actionName = request.Request.Action.First(a => a.Id == actionId).Attribute.First().Value;
+            var resourceName = request.Request.Resource.First(r => r.Id == resourceId).Attribute.FirstOrDefault(x => x.AttributeId == "urn:altinn:subresource")?.Value;
 
-            var decision = actionName == "failaction" ? "Deny" : "Permit";
+            var shouldFail = actionName == "failaction" || resourceName == "element3";
 
             response.Response.Add(new XacmlJsonResult
             {
-                Decision = decision
+                Decision = shouldFail ? "Deny" : "Permit"
             });
         }
 

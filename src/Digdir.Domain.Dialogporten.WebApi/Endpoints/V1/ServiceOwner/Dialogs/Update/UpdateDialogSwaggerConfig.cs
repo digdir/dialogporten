@@ -78,12 +78,11 @@ internal abstract class UpdateDialogSwaggerConfig : ISwaggerConfig
             DateTimeOffset.Parse("2054-03-04T12:13:10.0134400+00:00", CultureInfo.InvariantCulture),
         ExpiresAt = DateTimeOffset.Parse("2095-05-04T12:13:10.0134400+00:00", CultureInfo.InvariantCulture),
         DueAt = DateTimeOffset.Parse("2084-04-04T12:13:10.0134400+00:00", CultureInfo.InvariantCulture),
-        Elements =
+        Attachments =
         [
-            new UpdateDialogDialogElementDto
+            new UpdateDialogDialogAttachmentDto
             {
                 Id = Guid.Parse("02a72809-eddd-4192-864d-8f1755d72f4e"),
-                Type = new Uri("http://example.com/some-type"),
                 DisplayName =
                 [
                     new LocalizationDto
@@ -94,11 +93,10 @@ internal abstract class UpdateDialogSwaggerConfig : ISwaggerConfig
                 ],
                 Urls =
                 [
-                    new UpdateDialogDialogElementUrlDto
+                    new UpdateDialogDialogAttachmentUrlDto
                     {
                         Id = Guid.Parse("858177cb-8584-4d10-a086-3a5defa7a6c3"),
-                        MimeType = "application/json",
-                        Url = new Uri("http://example.com/some-url")
+                        Url = new Uri("https://example.com/some-url")
                     }
                 ]
             }
@@ -111,8 +109,7 @@ internal abstract class UpdateDialogSwaggerConfig : ISwaggerConfig
                 Action = "submit",
                 Priority = DialogGuiActionPriority.Values.Primary,
                 Url = new Uri("https://example.com/some-url"),
-                IsBackChannel = false,
-                IsDeleteAction = false,
+                IsDeleteDialogAction = false,
                 Title =
                 [
                     new LocalizationDto
@@ -155,19 +152,7 @@ internal abstract class UpdateDialogSwaggerConfig : ISwaggerConfig
             {
                 Id = Guid.Parse("8b95d42d-d2b6-4c01-8ca0-a817a4b3c50d"),
                 Type = DialogActivityType.Values.Information,
-                PerformedBy =
-                [
-                    new LocalizationDto
-                    {
-                        CultureCode = "en-us",
-                        Value = "Some performer"
-                    },
-                    new LocalizationDto
-                    {
-                        CultureCode = "nb-no",
-                        Value = "En utfører"
-                    }
-                ],
+                PerformedBy = "Some performed",
                 Description =
                 [
                     new LocalizationDto

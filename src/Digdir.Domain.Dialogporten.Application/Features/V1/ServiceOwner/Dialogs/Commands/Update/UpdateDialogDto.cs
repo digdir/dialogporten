@@ -2,8 +2,8 @@
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Attachments;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements;
 using Digdir.Domain.Dialogporten.Domain.Http;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Update;
@@ -23,7 +23,7 @@ public sealed class UpdateDialogDto
 
     public List<UpdateDialogSearchTagDto> SearchTags { get; set; } = [];
 
-    public List<UpdateDialogDialogElementDto> Elements { get; set; } = [];
+    public List<UpdateDialogDialogAttachmentDto> Attachments { get; set; } = [];
     public List<UpdateDialogDialogGuiActionDto> GuiActions { get; set; } = [];
     public List<UpdateDialogDialogApiActionDto> ApiActions { get; set; } = [];
     public List<UpdateDialogDialogActivityDto> Activities { get; set; } = [];
@@ -33,6 +33,7 @@ public sealed class UpdateDialogContentDto
 {
     public DialogContentType.Values Type { get; set; }
     public List<LocalizationDto> Value { get; set; } = [];
+    public string? MediaType { get; set; }
 }
 
 public sealed class UpdateDialogSearchTagDto
@@ -49,9 +50,8 @@ public class UpdateDialogDialogActivityDto
     public DialogActivityType.Values Type { get; set; }
 
     public Guid? RelatedActivityId { get; set; }
-    public Guid? DialogElementId { get; set; }
 
-    public List<LocalizationDto> PerformedBy { get; set; } = [];
+    public string? PerformedBy { get; set; }
     public List<LocalizationDto> Description { get; set; } = [];
 }
 
@@ -60,8 +60,6 @@ public sealed class UpdateDialogDialogApiActionDto
     public Guid? Id { get; set; }
     public string Action { get; set; } = null!;
     public string? AuthorizationAttribute { get; set; }
-
-    public Guid? DialogElementId { get; set; }
 
     public List<UpdateDialogDialogApiActionEndpointDto> Endpoints { get; set; } = [];
 }
@@ -85,32 +83,28 @@ public sealed class UpdateDialogDialogGuiActionDto
     public string Action { get; set; } = null!;
     public Uri Url { get; set; } = null!;
     public string? AuthorizationAttribute { get; set; }
-    public bool IsBackChannel { get; set; }
-    public bool IsDeleteAction { get; set; }
+    public bool IsDeleteDialogAction { get; set; }
+
+    public HttpVerb.Values? HttpMethod { get; set; } = HttpVerb.Values.GET;
 
     public DialogGuiActionPriority.Values Priority { get; set; }
 
     public List<LocalizationDto> Title { get; set; } = [];
+    public List<LocalizationDto>? Prompt { get; set; }
 }
 
-public class UpdateDialogDialogElementDto
+public class UpdateDialogDialogAttachmentDto
 {
     public Guid? Id { get; set; }
-    public Uri? Type { get; set; }
-    public string? ExternalReference { get; set; }
-    public string? AuthorizationAttribute { get; set; }
-
-    public Guid? RelatedDialogElementId { get; set; }
-
     public List<LocalizationDto> DisplayName { get; set; } = [];
-    public List<UpdateDialogDialogElementUrlDto> Urls { get; set; } = [];
+    public List<UpdateDialogDialogAttachmentUrlDto> Urls { get; set; } = [];
 }
 
-public sealed class UpdateDialogDialogElementUrlDto
+public sealed class UpdateDialogDialogAttachmentUrlDto
 {
     public Guid? Id { get; set; }
     public Uri Url { get; set; } = null!;
-    public string? MimeType { get; set; }
+    public string? MediaType { get; set; } = null!;
 
-    public DialogElementUrlConsumerType.Values ConsumerType { get; set; }
+    public DialogAttachmentUrlConsumerType.Values ConsumerType { get; set; }
 }

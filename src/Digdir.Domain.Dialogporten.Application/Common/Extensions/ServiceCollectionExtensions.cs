@@ -24,7 +24,7 @@ public static class ServiceCollectionExtensions
         bool predicate = true)
         where TService : class
         where TImplementation : class, TService =>
-        services.Replace<TService, TImplementation>(ServiceLifetime.Scoped, predicate);
+        services.Replace<TService, TImplementation>(ServiceLifetime.Singleton, predicate);
 
     private static IServiceCollection Replace<TService, TImplementation>(
         this IServiceCollection services,

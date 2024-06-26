@@ -1,6 +1,5 @@
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Events;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Events.DialogElements;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.Common.Events;
 
@@ -13,11 +12,6 @@ internal static class CloudEventTypes
         nameof(DialogUpdatedDomainEvent) => "dialogporten.dialog.updated.v1",
         nameof(DialogDeletedDomainEvent) => "dialogporten.dialog.deleted.v1",
         nameof(DialogSeenDomainEvent) => "dialogporten.dialog.seen.v1",
-
-        // DialogElement
-        nameof(DialogElementDeletedDomainEvent) => "dialogporten.dialog.element.deleted.v1",
-        nameof(DialogElementCreatedDomainEvent) => "dialogporten.dialog.element.created.v1",
-        nameof(DialogElementUpdatedDomainEvent) => "dialogporten.dialog.element.updated.v1",
 
         // Dialog activity
         nameof(DialogActivityType.Values.Submission) => "dialogporten.dialog.activity.submission.v1",

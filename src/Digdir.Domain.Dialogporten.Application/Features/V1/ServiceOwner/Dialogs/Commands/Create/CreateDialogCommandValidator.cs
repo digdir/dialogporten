@@ -1,9 +1,11 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Common.Extensions.Enumerables;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.FluentValidation;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
+using Digdir.Domain.Dialogporten.Domain;
 using Digdir.Domain.Dialogporten.Domain.Common;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
+using Digdir.Domain.Dialogporten.Domain.Http;
 using FluentValidation;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Create;
@@ -11,7 +13,7 @@ namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialog
 internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDialogCommand>
 {
     public CreateDialogCommandValidator(
-        IValidator<CreateDialogDialogElementDto> elementValidator,
+        IValidator<CreateDialogDialogAttachmentDto> attachmentValidator,
         IValidator<CreateDialogDialogGuiActionDto> guiActionValidator,
         IValidator<CreateDialogDialogApiActionDto> apiActionValidator,
         IValidator<CreateDialogDialogActivityDto> activityValidator,
@@ -93,25 +95,16 @@ internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDia
             .ForEach(x => x.SetValidator(guiActionValidator));
 
         RuleForEach(x => x.ApiActions)
-            .IsIn(x => x.Elements,
-                dependentKeySelector: action => action.DialogElementId,
-                principalKeySelector: element => element.Id)
             .SetValidator(apiActionValidator);
 
-        RuleFor(x => x.Elements)
+        RuleFor(x => x.Attachments)
             .UniqueBy(x => x.Id);
-        RuleForEach(x => x.Elements)
-            .IsIn(x => x.Elements,
-                dependentKeySelector: element => element.RelatedDialogElementId,
-                principalKeySelector: element => element.Id)
-            .SetValidator(elementValidator);
+        RuleForEach(x => x.Attachments)
+            .SetValidator(attachmentValidator);
 
         RuleFor(x => x.Activities)
             .UniqueBy(x => x.Id);
         RuleForEach(x => x.Activities)
-            .IsIn(x => x.Elements,
-                dependentKeySelector: activity => activity.DialogElementId,
-                principalKeySelector: element => element.Id)
             .IsIn(x => x.Activities,
                 dependentKeySelector: activity => activity.RelatedActivityId,
                 principalKeySelector: activity => activity.Id)
@@ -126,33 +119,40 @@ internal sealed class CreateDialogContentDtoValidator : AbstractValidator<Create
         ClassLevelCascadeMode = CascadeMode.Stop;
         RuleFor(x => x.Type)
             .IsInEnum();
+        RuleFor(x => x.MediaType)
+            .Must((dto, value) =>
+            {
+                var type = DialogContentType.GetValue(dto.Type);
+                return value is null ? type.AllowedMediaTypes.Length == 0 : type.AllowedMediaTypes.Contains(value);
+            })
+            .WithMessage(x =>
+                $"{{PropertyName}} '{x.MediaType ?? "null"}' is not allowed for content type {DialogContentType.GetValue(x.Type).Name}. " +
+                $"Valid media types are: {(DialogContentType.GetValue(x.Type).AllowedMediaTypes.Length == 0 ? "None" :
+                    $"{string.Join(", ", DialogContentType.GetValue(x.Type).AllowedMediaTypes!)}")}");
         RuleForEach(x => x.Value)
             .ContainsValidHtml()
-            .When(x => DialogContentType.GetValue(x.Type).RenderAsHtml);
+            .When(x => x.MediaType is not null && (x.MediaType == MediaTypes.Html));
+        RuleForEach(x => x.Value)
+            .ContainsValidMarkdown()
+            .When(x => x.MediaType is not null && x.MediaType == MediaTypes.Markdown);
+        RuleForEach(x => x.Value)
+            .Must(x => Uri.TryCreate(x.Value, UriKind.Absolute, out var uri) && uri.Scheme == Uri.UriSchemeHttps)
+            .When(x => x.MediaType is not null && x.MediaType.StartsWith(MediaTypes.EmbeddablePrefix, StringComparison.InvariantCultureIgnoreCase))
+            .WithMessage("{PropertyName} must be a valid HTTPS URL for embeddable content types");
         RuleFor(x => x.Value)
             .NotEmpty()
             .SetValidator(x => new LocalizationDtosValidator(DialogContentType.GetValue(x.Type).MaxLength));
     }
 }
 
-internal sealed class CreateDialogDialogElementDtoValidator : AbstractValidator<CreateDialogDialogElementDto>
+internal sealed class CreateDialogDialogAttachmentDtoValidator : AbstractValidator<CreateDialogDialogAttachmentDto>
 {
-    public CreateDialogDialogElementDtoValidator(
+    public CreateDialogDialogAttachmentDtoValidator(
         IValidator<IEnumerable<LocalizationDto>> localizationsValidator,
-        IValidator<CreateDialogDialogElementUrlDto> urlValidator)
+        IValidator<CreateDialogDialogAttachmentUrlDto> urlValidator)
     {
         RuleFor(x => x.Id)
             .NotEqual(default(Guid));
-        RuleFor(x => x.Type)
-            .IsValidUri()
-            .MaximumLength(Constants.DefaultMaxUriLength);
-        RuleFor(x => x.AuthorizationAttribute)
-            .MaximumLength(Constants.DefaultMaxStringLength);
-        RuleFor(x => x.ExternalReference)
-            .MaximumLength(Constants.DefaultMaxStringLength);
-        RuleFor(x => x.RelatedDialogElementId)
-            .NotEqual(x => x.Id)
-            .When(x => x.RelatedDialogElementId.HasValue);
         RuleFor(x => x.DisplayName)
             .SetValidator(localizationsValidator);
         RuleFor(x => x.Urls)
@@ -161,16 +161,14 @@ internal sealed class CreateDialogDialogElementDtoValidator : AbstractValidator<
     }
 }
 
-internal sealed class CreateDialogDialogElementUrlDtoValidator : AbstractValidator<CreateDialogDialogElementUrlDto>
+internal sealed class CreateDialogDialogAttachmentUrlDtoValidator : AbstractValidator<CreateDialogDialogAttachmentUrlDto>
 {
-    public CreateDialogDialogElementUrlDtoValidator()
+    public CreateDialogDialogAttachmentUrlDtoValidator()
     {
         RuleFor(x => x.Url)
             .NotNull()
             .IsValidUri()
             .MaximumLength(Constants.DefaultMaxUriLength);
-        RuleFor(x => x.MimeType)
-            .MaximumLength(Constants.DefaultMaxStringLength);
         RuleFor(x => x.ConsumerType)
             .IsInEnum();
     }
@@ -202,9 +200,16 @@ internal sealed class CreateDialogDialogGuiActionDtoValidator : AbstractValidato
             .MaximumLength(Constants.DefaultMaxStringLength);
         RuleFor(x => x.Priority)
             .IsInEnum();
+        RuleFor(x => x.HttpMethod)
+            .Must(x => x is HttpVerb.Values.GET or HttpVerb.Values.POST or HttpVerb.Values.DELETE)
+            .WithMessage($"'{{PropertyName}}' for GUI actions must be one of the following: " +
+                         $"[{HttpVerb.Values.GET}, {HttpVerb.Values.POST}, {HttpVerb.Values.DELETE}].");
         RuleFor(x => x.Title)
             .NotEmpty()
             .SetValidator(localizationsValidator);
+        RuleFor(x => x.Prompt)
+            .SetValidator(localizationsValidator!)
+            .When(x => x.Prompt != null);
     }
 }
 
@@ -269,7 +274,7 @@ internal sealed class CreateDialogDialogActivityDtoValidator : AbstractValidator
             .NotEqual(x => x.Id)
             .When(x => x.RelatedActivityId.HasValue);
         RuleFor(x => x.PerformedBy)
-            .SetValidator(localizationsValidator);
+            .MaximumLength(Constants.DefaultMaxStringLength);
         RuleFor(x => x.Description)
             .NotEmpty()
             .SetValidator(localizationsValidator);

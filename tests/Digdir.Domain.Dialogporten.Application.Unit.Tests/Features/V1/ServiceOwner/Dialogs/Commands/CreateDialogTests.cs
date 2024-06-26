@@ -1,7 +1,6 @@
 using AutoMapper;
 using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Common.ResourceRegistry;
-using Digdir.Domain.Dialogporten.Application.Common.Services;
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Create;
 using Digdir.Tool.Dialogporten.GenerateFakeData;
 using NSubstitute;
@@ -26,7 +25,6 @@ public class CreateDialogTests
         var domainContextSub = Substitute.For<IDomainContext>();
         var userResourceRegistrySub = Substitute.For<IUserResourceRegistry>();
         var userOrganizationRegistrySub = Substitute.For<IUserOrganizationRegistry>();
-        var activityServiceSub = Substitute.For<IDialogActivityService>();
 
         var createCommand = DialogGenerator.GenerateSimpleFakeDialog();
 
@@ -39,7 +37,7 @@ public class CreateDialogTests
 
         var commandHandler = new CreateDialogCommandHandler(dialogDbContextSub,
             mapper, unitOfWorkSub, domainContextSub, userResourceRegistrySub,
-            userOrganizationRegistrySub, activityServiceSub);
+            userOrganizationRegistrySub);
 
         // Act
         var result = await commandHandler.Handle(createCommand, CancellationToken.None);
@@ -65,7 +63,6 @@ public class CreateDialogTests
         var domainContextSub = Substitute.For<IDomainContext>();
         var userResourceRegistrySub = Substitute.For<IUserResourceRegistry>();
         var userOrganizationRegistrySub = Substitute.For<IUserOrganizationRegistry>();
-        var activityServiceSub = Substitute.For<IDialogActivityService>();
 
         var createCommand = DialogGenerator.GenerateSimpleFakeDialog();
 
@@ -80,7 +77,7 @@ public class CreateDialogTests
 
         var commandHandler = new CreateDialogCommandHandler(dialogDbContextSub,
             mapper, unitOfWorkSub, domainContextSub, userResourceRegistrySub,
-            userOrganizationRegistrySub, activityServiceSub);
+            userOrganizationRegistrySub);
 
         // Act
         var result = await commandHandler.Handle(createCommand, CancellationToken.None);

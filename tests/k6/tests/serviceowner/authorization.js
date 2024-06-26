@@ -7,12 +7,12 @@ export default function () {
     let invalidSo = { orgName: "other", orgNo: "310778737" };
 
     let dialog = dialogToInsert();
-    let dialogElementId = dialog.elements[0].id;
-    let dialogElement = dialog.elements[2]; // Use the one without a predefined ID or related ID
+    // TODO: Re-enable when implementing https://github.com/digdir/dialogporten/issues/860
+    // let transmissionId = dialog.transmissions[0].id;
     let dialogId = null; // known after successful insert
     let activity = dialog.activities[0];
     let activityId = null; // known after successful insert
-   
+
     let expectEither = function (statusCodeSuccess, statusCodeFailure, r, shouldSucceed) {
         expectStatusFor(r).to.equal(shouldSucceed ? statusCodeSuccess : statusCodeFailure);
     }
@@ -33,7 +33,7 @@ export default function () {
                 dialogId = r.json();
             }
         });
-    
+
         describe(`${logPrefix} getting dialog as ${logSuffix}`, () => {
             let r = getSO('dialogs/' + dialogId, null, tokenOptions);
             expectEither(200, 404, r, shouldSucceed);
@@ -53,13 +53,13 @@ export default function () {
             let r = patchSO('dialogs/' + dialogId, patchDocument, null, tokenOptions);
             expectEither(204, 404, r, shouldSucceed);
         });
-    
+
         describe(`${logPrefix} updating dialog as ${logSuffix}`, () => {
             let r = putSO('dialogs/' + dialogId, dialog, null, tokenOptions);
             expectEither(204, 404, r, shouldSucceed);
         });
-    
-        
+
+
         describe(`${logPrefix} deleting dialog as ${logSuffix}`, () => {
             // Only check that we cannot delete is as invalid SO so
             // that the dialog still exists for subsequent tests
@@ -67,35 +67,18 @@ export default function () {
             let r = deleteSO('dialogs/' + dialogId, null, tokenOptions);
             expectEither(204, 404, r, shouldSucceed);
         });
-        
-    
-        describe(`${logPrefix} getting dialog element list as ${logSuffix}`, () => {
-            let r = getSO('dialogs/' + dialogId + "/elements/", null, tokenOptions);
-            expectEither(200, 404, r, shouldSucceed);
-        });
-    
-        describe(`${logPrefix} getting dialog element as ${logSuffix}`, () => {
-            let r = getSO('dialogs/' + dialogId + "/elements/" + dialogElementId, null, tokenOptions);
-            expectEither(200, 404, r, shouldSucceed);
-        });
-    
-        describe(`${logPrefix} posting dialog element as ${logSuffix}`, () => {            
-            let r = postSO('dialogs/' + dialogId + "/elements", dialogElement, null, tokenOptions);
-            expectEither(201, 404, r, shouldSucceed); 
-        });
-    
-        describe(`${logPrefix} putting dialog element as ${logSuffix}`, () => {
-            let r = putSO('dialogs/' + dialogId + "/elements/" + dialogElementId, dialogElement, null, tokenOptions);
-            expectEither(204, 404, r, shouldSucceed);
-        });
-    
-        describe(`${logPrefix} deleting dialog element as ${logSuffix}`, () => {
-            // Only check that we cannot delete is as invalid SO so
-            // that the dialog still exists for subsequent tests
-            if (shouldSucceed) return;
-            let r = deleteSO('dialogs/' + dialogId + "/elements/" + dialogElementId, null, tokenOptions);
-            expectEither(200, 404, r, shouldSucceed);
-        });
+
+
+        // TODO: Re-enable when implementing https://github.com/digdir/dialogporten/issues/860
+        // describe(`${logPrefix} getting dialog transmission list as ${logSuffix}`, () => {
+        //     let r = getSO('dialogs/' + dialogId + "/transmissions/", null, tokenOptions);
+        //     expectEither(200, 404, r, shouldSucceed);
+        // });
+
+        // describe(`${logPrefix} getting dialog transmission as ${logSuffix}`, () => {
+        //     let r = getSO('dialogs/' + dialogId + "/transmissions/" + transmissionId, null, tokenOptions);
+        //     expectEither(200, 404, r, shouldSucceed);
+        // });
 
         describe(`${logPrefix} getting activities as ${logSuffix}`, () => {
             let r = getSO('dialogs/' + dialogId + "/activities", null, tokenOptions);
@@ -111,7 +94,7 @@ export default function () {
             let r = postSO('dialogs/' + dialogId + "/activities", activity, null, tokenOptions);
             expectEither(201, 404, r, shouldSucceed);
         });
-    
+
     });
 
     // Finally, cleanup by deleting the dialog

@@ -10,6 +10,8 @@ public class DialogContent : IEntity
     public DateTimeOffset CreatedAt { get; set; }
     public DateTimeOffset UpdatedAt { get; set; }
 
+    public string? MediaType { get; set; }
+
     // === Dependent relationships ===
     public Guid DialogId { get; set; }
     public DialogEntity Dialog { get; set; } = null!;

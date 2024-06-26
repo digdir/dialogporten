@@ -54,8 +54,7 @@ public sealed class SearchDialogDialogActivityDto
     public DialogActivityType.Values Type { get; set; }
 
     public Guid? RelatedActivityId { get; set; }
-    public Guid? DialogElementId { get; set; }
 
-    public List<LocalizationDto>? PerformedBy { get; set; } = [];
+    public string? PerformedBy { get; set; }
     public List<LocalizationDto> Description { get; set; } = [];
 }

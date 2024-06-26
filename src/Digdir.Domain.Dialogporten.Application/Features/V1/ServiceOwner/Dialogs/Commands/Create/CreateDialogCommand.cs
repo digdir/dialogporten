@@ -2,12 +2,11 @@
 using AutoMapper;
 using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
-using Digdir.Domain.Dialogporten.Application.Common.Services;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Domain.Common;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Attachments;
 using FluentValidation.Results;
 using MediatR;
 using OneOf;
@@ -30,7 +29,6 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
     private readonly IDomainContext _domainContext;
     private readonly IUserResourceRegistry _userResourceRegistry;
     private readonly IUserOrganizationRegistry _userOrganizationRegistry;
-    private readonly IDialogActivityService _dialogActivityService;
 
     internal static readonly ValidationFailure ProgressValidationFailure = new(nameof(CreateDialogCommand.Progress), "Progress cannot be set for correspondence dialogs.");
 
@@ -40,8 +38,7 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
         IUnitOfWork unitOfWork,
         IDomainContext domainContext,
         IUserResourceRegistry userResourceRegistry,
-        IUserOrganizationRegistry userOrganizationRegistry,
-        IDialogActivityService dialogActivityService)
+        IUserOrganizationRegistry userOrganizationRegistry)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
@@ -49,14 +46,16 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
         _domainContext = domainContext ?? throw new ArgumentNullException(nameof(domainContext));
         _userResourceRegistry = userResourceRegistry ?? throw new ArgumentNullException(nameof(userResourceRegistry));
         _userOrganizationRegistry = userOrganizationRegistry ?? throw new ArgumentNullException(nameof(userOrganizationRegistry));
-        _dialogActivityService = dialogActivityService ?? throw new ArgumentNullException(nameof(dialogActivityService));
     }
 
     public async Task<CreateDialogResult> Handle(CreateDialogCommand request, CancellationToken cancellationToken)
     {
-        if (!await _userResourceRegistry.CurrentUserIsOwner(request.ServiceResource, cancellationToken))
+        foreach (var serviceResourceReference in GetServiceResourceReferences(request))
         {
-            return new Forbidden($"Not owner of {request.ServiceResource}.");
+            if (!await _userResourceRegistry.CurrentUserIsOwner(serviceResourceReference, cancellationToken))
+            {
+                return new Forbidden($"Not allowed to reference {serviceResourceReference}.");
+            }
         }
 
         var serviceResourceType = await _userResourceRegistry.GetResourceType(request.ServiceResource, cancellationToken);
@@ -95,13 +94,11 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
             _domainContext.AddError(DomainFailure.EntityExists<DialogActivity>(existingActivityIds));
         }
 
-        var existingElementIds = await _db.GetExistingIds(dialog.Elements, cancellationToken);
-        if (existingElementIds.Count != 0)
+        var existingAttachmentIds = await _db.GetExistingIds(dialog.Attachments, cancellationToken);
+        if (existingAttachmentIds.Count != 0)
         {
-            _domainContext.AddError(DomainFailure.EntityExists<DialogElement>(existingElementIds));
+            _domainContext.AddError(DomainFailure.EntityExists<DialogAttachment>(existingAttachmentIds));
         }
-
-        await _dialogActivityService.EnsurePerformedByIsSetForActivities(dialog.Activities, cancellationToken);
 
         await _db.Dialogs.AddAsync(dialog, cancellationToken);
 
@@ -110,5 +107,24 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
             success => new Success<Guid>(dialog.Id),
             domainError => domainError,
             concurrencyError => throw new UnreachableException("Should never get a concurrency error when creating a new dialog"));
+    }
+
+    private static List<string> GetServiceResourceReferences(CreateDialogDto request)
+    {
+        var serviceResourceReferences = new List<string> { request.ServiceResource };
+
+        static bool IsExternalResource(string? resource)
+        {
+            return resource is not null && resource.StartsWith(Constants.ServiceResourcePrefix, StringComparison.OrdinalIgnoreCase);
+        }
+
+        serviceResourceReferences.AddRange(request.ApiActions
+            .Where(action => IsExternalResource(action.AuthorizationAttribute))
+            .Select(action => action.AuthorizationAttribute!));
+        serviceResourceReferences.AddRange(request.GuiActions
+            .Where(action => IsExternalResource(action.AuthorizationAttribute))
+            .Select(action => action.AuthorizationAttribute!));
+
+        return serviceResourceReferences.Distinct().ToList();
     }
 }

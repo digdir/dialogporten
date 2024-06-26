@@ -11,12 +11,13 @@ public class MappingProfile : Profile
         CreateMap<GetDialogDto, Dialog>()
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status));
 
-        CreateMap<GetDialogDialogElementDto, Element>();
-        CreateMap<GetDialogDialogElementUrlDto, ElementUrl>()
+        CreateMap<GetDialogDialogAttachmentDto, Attachment>();
+        CreateMap<GetDialogDialogAttachmentUrlDto, AttachmentUrl>()
             .ForMember(dest => dest.ConsumerType, opt => opt.MapFrom(src => src.ConsumerType));
 
         CreateMap<GetDialogDialogGuiActionDto, GuiAction>()
-            .ForMember(dest => dest.Priority, opt => opt.MapFrom(src => src.Priority));
+            .ForMember(dest => dest.Priority, opt => opt.MapFrom(src => src.Priority))
+            .ForMember(dest => dest.HttpMethod, opt => opt.MapFrom(src => src.HttpMethod));
 
         CreateMap<GetDialogDialogApiActionDto, ApiAction>();
         CreateMap<GetDialogDialogApiActionEndpointDto, ApiActionEndpoint>()

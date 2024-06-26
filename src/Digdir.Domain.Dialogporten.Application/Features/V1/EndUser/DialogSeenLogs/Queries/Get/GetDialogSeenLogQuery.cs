@@ -25,29 +25,26 @@ internal sealed class GetDialogSeenLogQueryHandler : IRequestHandler<GetDialogSe
     private readonly IDialogDbContext _dbContext;
     private readonly IAltinnAuthorization _altinnAuthorization;
     private readonly IStringHasher _stringHasher;
-    private readonly IUserNameRegistry _userNameRegistry;
+    private readonly IUserRegistry _userRegistry;
 
     public GetDialogSeenLogQueryHandler(
         IMapper mapper,
         IDialogDbContext dbContext,
         IAltinnAuthorization altinnAuthorization,
         IStringHasher stringHasher,
-        IUserNameRegistry userNameRegistry)
+        IUserRegistry userRegistry)
     {
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         _altinnAuthorization = altinnAuthorization ?? throw new ArgumentNullException(nameof(altinnAuthorization));
         _stringHasher = stringHasher ?? throw new ArgumentNullException(nameof(stringHasher));
-        _userNameRegistry = userNameRegistry ?? throw new ArgumentNullException(nameof(userNameRegistry));
+        _userRegistry = userRegistry ?? throw new ArgumentNullException(nameof(userRegistry));
     }
 
     public async Task<GetDialogSeenLogResult> Handle(GetDialogSeenLogQuery request,
         CancellationToken cancellationToken)
     {
-        if (!_userNameRegistry.TryGetCurrentUserPid(out var userPid))
-        {
-            return new Forbidden("No valid user pid found.");
-        }
+        var currentUserInformation = await _userRegistry.GetCurrentUserInformation(cancellationToken);
 
         var dialog = await _dbContext.Dialogs
             .AsNoTracking()
@@ -83,7 +80,7 @@ internal sealed class GetDialogSeenLogQueryHandler : IRequestHandler<GetDialogSe
         }
 
         var dto = _mapper.Map<GetDialogSeenLogDto>(seenLog);
-        dto.IsCurrentEndUser = userPid == seenLog.EndUserId;
+        dto.IsCurrentEndUser = currentUserInformation.UserId.ExternalId == seenLog.EndUserId;
         dto.EndUserIdHash = _stringHasher.Hash(seenLog.EndUserId);
 
         return dto;

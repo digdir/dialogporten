@@ -2,8 +2,8 @@
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Attachments;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Elements;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Queries.Get;
 
@@ -28,11 +28,12 @@ internal sealed class MappingProfile : Profile
             .ForMember(dest => dest.HttpMethod, opt => opt.MapFrom(src => src.HttpMethodId));
 
         CreateMap<DialogGuiAction, GetDialogDialogGuiActionDto>()
-            .ForMember(dest => dest.Priority, opt => opt.MapFrom(src => src.PriorityId));
+            .ForMember(dest => dest.Priority, opt => opt.MapFrom(src => src.PriorityId))
+            .ForMember(dest => dest.HttpMethod, opt => opt.MapFrom(src => src.HttpMethodId));
 
-        CreateMap<DialogElement, GetDialogDialogElementDto>();
+        CreateMap<DialogAttachment, GetDialogDialogAttachmentDto>();
 
-        CreateMap<DialogElementUrl, GetDialogDialogElementUrlDto>()
+        CreateMap<DialogAttachmentUrl, GetDialogDialogAttachmentUrlDto>()
             .ForMember(dest => dest.ConsumerType, opt => opt.MapFrom(src => src.ConsumerTypeId));
 
         CreateMap<DialogContent, GetDialogContentDto>()
