@@ -38,6 +38,7 @@ internal sealed class DialogDbContext : DbContext, IDialogDbContext
 
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
     public DbSet<OutboxMessageConsumer> OutboxMessageConsumers => Set<OutboxMessageConsumer>();
+    public DbSet<RoleResource> RoleResources => Set<RoleResource>();
 
     //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) =>
     //    optionsBuilder.LogTo(Console.WriteLine);
