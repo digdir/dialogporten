@@ -51,31 +51,14 @@ public class UserRegistry : IUserRegistry
     public async Task<UserInformation> GetCurrentUserInformation(CancellationToken cancellationToken)
     {
         var userId = GetCurrentUserId();
-        string? name;
-
-        switch (userId.Type)
+        var name = userId.Type switch
         {
-            case UserIdType.Person:
-            case UserIdType.ServiceOwnerOnBehalfOfPerson:
-                name = await _personNameRegistry.GetName(userId.ExternalId, cancellationToken);
-                break;
-
-            case UserIdType.LegacySystemUser:
-                _user.TryGetLegacySystemUserName(out var legacyUserName);
-                name = legacyUserName;
-                break;
-
-            case UserIdType.SystemUser:
-                // TODO: Implement when SystemUsers are introduced?
-                name = "System User";
-                break;
-
-            case UserIdType.ServiceOwner:
-            case UserIdType.Unknown:
-            default:
-                throw new UnreachableException();
-        }
-
+            UserIdType.Person or UserIdType.ServiceOwnerOnBehalfOfPerson => await _personNameRegistry.GetName(userId.ExternalId, cancellationToken),
+            UserIdType.SystemUser => "System User",// TODO: Implement when SystemUsers are introduced?
+            UserIdType.Unknown => throw new UnreachableException(),
+            UserIdType.ServiceOwner => throw new UnreachableException(),
+            _ => throw new UnreachableException(),
+        };
         return new()
         {
             UserId = userId,

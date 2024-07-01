@@ -20,23 +20,18 @@ public class DialogUserType : AbstractLookupEntity<DialogUserType, DialogUserTyp
         Person = 1,
 
         /// <summary>
-        /// Altinn 2 legacy system user ("virksomhetsbruker")
-        /// </summary>
-        LegacySystemUser = 2,
-
-        /// <summary>
         /// Altinn 3 system user
         /// </summary>
-        SystemUser = 3,
+        SystemUser = 2,
 
         /// <summary>
         /// Maskinporten authenticated service owner
         /// </summary>
-        ServiceOwner = 4,
+        ServiceOwner = 3,
 
         /// <summary>
         /// Like "Person", but via a service owner system
         /// </summary>
-        ServiceOwnerOnBehalfOfPerson = 5
+        ServiceOwnerOnBehalfOfPerson = 4
     }
 }

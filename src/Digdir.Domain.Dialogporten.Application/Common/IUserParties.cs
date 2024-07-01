@@ -25,6 +25,6 @@ public class UserParties : IUserParties
         _user.TryGetPid(out var pid) &&
         NorwegianPersonIdentifier.TryParse(NorwegianPersonIdentifier.PrefixWithSeparator + pid,
             out var partyIdentifier)
-            ? _altinnAuthorization.GetAuthorizedParties(partyIdentifier, cancellationToken)
+            ? _altinnAuthorization.GetAuthorizedParties(partyIdentifier, cancellationToken: cancellationToken)
             : Task.FromResult(new AuthorizedPartiesResult());
 }

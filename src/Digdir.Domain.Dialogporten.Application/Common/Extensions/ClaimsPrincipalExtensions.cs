@@ -4,7 +4,9 @@ using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Parties;
+using Digdir.Domain.Dialogporten.Domain.Parties.Abstractions;
 using UserIdType = Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogUserType.Values;
 
 namespace Digdir.Domain.Dialogporten.Application.Common.Extensions;
@@ -140,33 +142,6 @@ public static class ClaimsPrincipalExtensions
         return systemUserId is not null;
     }
 
-    // This is used for legacy systems using Altinn 2 enterprise users with Maskinporten authentication + token exchange
-    // as described in https://altinn.github.io/docs/api/rest/kom-i-gang/virksomhet/#autentisering-med-virksomhetsbruker-og-maskinporten
-    public static bool TryGetLegacySystemUserId(this ClaimsPrincipal claimsPrincipal, [NotNullWhen(true)] out string? systemUserId)
-    {
-        systemUserId = null;
-        if (claimsPrincipal.TryGetClaimValue(AltinnAuthenticationMethodClaim, out var authMethod) &&
-            authMethod == AltinnAuthenticationEnterpriseUserMethod &&
-            claimsPrincipal.TryGetClaimValue(AltinnUserIdClaim, out var userId))
-        {
-            systemUserId = userId;
-        }
-
-        return systemUserId is not null;
-    }
-
-    public static bool TryGetLegacySystemUserName(this ClaimsPrincipal claimsPrincipal, [NotNullWhen(true)] out string? systemUserName)
-    {
-        systemUserName = null;
-        if (claimsPrincipal.TryGetLegacySystemUserId(out _) &&
-            claimsPrincipal.TryGetClaimValue(AltinnUserNameClaim, out var claimValue))
-        {
-            systemUserName = claimValue;
-        }
-
-        return systemUserName is not null;
-    }
-
     public static bool TryGetOrganizationNumber(this Claim? consumerClaim, [NotNullWhen(true)] out string? orgNumber)
     {
         orgNumber = null;
@@ -240,11 +215,6 @@ public static class ClaimsPrincipalExtensions
                 : UserIdType.Person, externalId);
         }
 
-        if (claimsPrincipal.TryGetLegacySystemUserId(out externalId))
-        {
-            return (UserIdType.LegacySystemUser, externalId);
-        }
-
         // https://docs.altinn.studio/authentication/systemauthentication/
         if (claimsPrincipal.TryGetSystemUserId(out externalId))
         {
@@ -260,15 +230,29 @@ public static class ClaimsPrincipalExtensions
         return (UserIdType.Unknown, string.Empty);
     }
 
+    public static IPartyIdentifier? GetEndUserPartyIdentifier(this List<Claim> claims)
+        => new ClaimsPrincipal(new ClaimsIdentity(claims)).GetEndUserPartyIdentifier();
+
+    public static IPartyIdentifier? GetEndUserPartyIdentifier(this ClaimsPrincipal claimsPrincipal)
+    {
+        var (userType, externalId) = claimsPrincipal.GetUserType();
+        return userType switch
+        {
+            UserIdType.ServiceOwnerOnBehalfOfPerson or UserIdType.Person => NorwegianPersonIdentifier.TryParse(externalId, out var personId)
+                                ? personId
+                                : null,
+            UserIdType.SystemUser => SystemUserIdentifier.TryParse(externalId, out var systemUserId)
+                                ? systemUserId
+                                : null,
+            UserIdType.Unknown => null,
+            UserIdType.ServiceOwner => null,
+            _ => null,
+        };
+    }
+
     internal static bool TryGetOrganizationNumber(this IUser user, [NotNullWhen(true)] out string? orgNumber) =>
         user.GetPrincipal().TryGetOrganizationNumber(out orgNumber);
 
     internal static bool TryGetPid(this IUser user, [NotNullWhen(true)] out string? pid) =>
         user.GetPrincipal().TryGetPid(out pid);
-
-    internal static bool TryGetLegacySystemUserId(this IUser user, [NotNullWhen(true)] out string? systemUserId) =>
-        user.GetPrincipal().TryGetLegacySystemUserId(out systemUserId);
-
-    internal static bool TryGetLegacySystemUserName(this IUser user, [NotNullWhen(true)] out string? systemUserName) =>
-        user.GetPrincipal().TryGetLegacySystemUserName(out systemUserName);
 }

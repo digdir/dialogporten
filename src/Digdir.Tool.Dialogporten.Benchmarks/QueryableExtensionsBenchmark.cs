@@ -6,6 +6,7 @@ using Digdir.Domain.Dialogporten.Domain.Parties;
 
 namespace Digdir.Tool.Dialogporten.Benchmarks;
 
+/*
 [MemoryDiagnoser]
 public class QueryableExtensionsBenchmark
 {
@@ -26,13 +27,6 @@ public class QueryableExtensionsBenchmark
             DialogIds = Enumerable.Range(0, Outer)
                 .Select(x => Guid.NewGuid())
                 .ToList(),
-            PartiesByResources = Enumerable.Range(0, Outer)
-                .ToDictionary(
-                    keySelector: GenerateResource,
-                    elementSelector: outer => Enumerable.Range(0, Inner)
-                        .Select(GenerateParty)
-                        .ToList()
-                ),
             ResourcesByParties = Enumerable.Range(0, Outer)
                 .ToDictionary(
                     keySelector: GenerateParty,
@@ -49,3 +43,4 @@ public class QueryableExtensionsBenchmark
     [Benchmark]
     public void WhereUserIsAuthorizedFor() => _queryable.WhereUserIsAuthorizedFor(_authResult);
 }
+*/

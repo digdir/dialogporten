@@ -15,6 +15,6 @@ public interface IAltinnAuthorization
         string? endUserId = null,
         CancellationToken cancellationToken = default);
 
-    public Task<AuthorizedPartiesResult> GetAuthorizedParties(IPartyIdentifier authenticatedParty,
+    public Task<AuthorizedPartiesResult> GetAuthorizedParties(IPartyIdentifier authenticatedParty, bool flatten = false,
         CancellationToken cancellationToken = default);
 }
