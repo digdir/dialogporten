@@ -2,7 +2,6 @@
 using System.Runtime.CompilerServices;
 using Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture.Checkpoints;
 using Digdir.Domain.Dialogporten.Domain.Outboxes;
-using MassTransit.Configuration;
 using Microsoft.Extensions.Options;
 using Npgsql;
 

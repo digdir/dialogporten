@@ -1,5 +1,4 @@
 ﻿using System.Data;
-using System.Data.Common;
 using Npgsql;
 
 namespace Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture.Checkpoints;

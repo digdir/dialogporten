@@ -5,7 +5,6 @@ using Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture.Subscriptio
 using Digdir.Domain.Dialogporten.ChangeDataCapture.Common.Extensions;
 using Digdir.Domain.Dialogporten.Domain.Outboxes;
 using Microsoft.Extensions.Options;
-using Npgsql;
 using Npgsql.Replication;
 using Npgsql.Replication.PgOutput;
 using Npgsql.Replication.PgOutput.Messages;
