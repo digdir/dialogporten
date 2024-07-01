@@ -48,7 +48,7 @@ public static class AggregateNodeExtensions
     }
 
     private static IEnumerable<string> ToLocalizationPathStrings(this LocalizationSet localizationSet, string parentPath) =>
-        localizationSet.Localizations.Select(x => $"{parentPath}/{x.CultureCode}");
+        localizationSet.Localizations.Select(x => $"{parentPath}/{x.LanguageCode}");
 
     private static string ToName(this object obj) => obj switch
     {

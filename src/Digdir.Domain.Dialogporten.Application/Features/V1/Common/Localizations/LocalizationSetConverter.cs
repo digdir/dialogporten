@@ -18,8 +18,8 @@ internal sealed class LocalizationSetConverter<TLocalizationSet> : ITypeConverte
         set ??= new TLocalizationSet();
         set.Localizations.Merge(
             sources: concreteDtos,
-            destinationKeySelector: x => x.CultureCode,
-            sourceKeySelector: x => x.CultureCode,
+            destinationKeySelector: x => x.LanguageCode,
+            sourceKeySelector: x => x.LanguageCode,
             create: context.Mapper.Map<List<Localization>>,
             update: context.Mapper.Update,
             delete: DeleteDelegate.NoOp,
