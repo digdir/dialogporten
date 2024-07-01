@@ -1,9 +1,4 @@
-﻿using System.Data;
-using System.Data.Common;
-using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
-using Npgsql;
-using Npgsql.Replication;
+﻿using Npgsql.Replication;
 using Npgsql.Replication.PgOutput.Messages;
 
 namespace Digdir.Domain.Dialogporten.ChangeDataCapture.Common.Extensions;

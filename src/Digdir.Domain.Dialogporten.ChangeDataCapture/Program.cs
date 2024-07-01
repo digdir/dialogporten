@@ -7,7 +7,6 @@ using Digdir.Domain.Dialogporten.ChangeDataCapture.Common.Extensions;
 using Digdir.Domain.Dialogporten.ChangeDataCapture.Outbox;
 using Digdir.Domain.Dialogporten.Domain.Outboxes;
 using MassTransit;
-using MassTransit.Configuration;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.Options;
 using Npgsql;

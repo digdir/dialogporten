@@ -1,7 +1,5 @@
-﻿using System.Collections.Concurrent;
-using Digdir.Domain.Dialogporten.ChangeDataCapture.Outbox;
+﻿using Digdir.Domain.Dialogporten.ChangeDataCapture.Outbox;
 using Microsoft.Extensions.Options;
-using Npgsql.Replication;
 
 namespace Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture.Checkpoints;
 
@@ -26,7 +24,7 @@ internal sealed class CheckpointSyncronizer : BackgroundService, IAsyncDisposabl
         _snapshotCache = cache ?? throw new ArgumentNullException(nameof(cache));
         _snapshotRepository = snapshotRepository ?? throw new ArgumentNullException(nameof(snapshotRepository));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _optionsChangeSubscription = options?.OnChange(UpdateOptions) ?? throw new ArgumentNullException(nameof(options));
+        _optionsChangeSubscription = options.OnChange(UpdateOptions) ?? throw new ArgumentNullException(nameof(options));
         _periodicTimer = new(options.CurrentValue.CheckpointSynchronizationInterval);
     }
 
