@@ -17,16 +17,16 @@ export function setContent(dialog, type, value, language = "nb_NO") {
     const title_index = dialog.content.findIndex(t => t.type === type);
 
     if (title_index !== -1) {
-        const lang_index = dialog.content[title_index].value.findIndex(t => t.cultureCode === language);
+        const lang_index = dialog.content[title_index].value.findIndex(t => t.languageCode === language);
         if (lang_index !== -1) {
             dialog.content[title_index].value[lang_index].value = value;
         }
         else {
-            dialog.content[title_index].value.push({ cultureCode: language, value: value });
+            dialog.content[title_index].value.push({ languageCode: language, value: value });
         }
     }
     else {
-        dialog.content.push({ "type": type, value: [ { cultureCode: language, value: value } ] });
+        dialog.content.push({ "type": type, value: [ { languageCode: language, value: value } ] });
     }
 }
 
@@ -42,7 +42,7 @@ export function setSearchTags(dialog, searchTags) {
     dialog.searchTags = tags;
 }
 
-export function setSenderName(dialog, senderName, language = "nb_NO") {
+export function setSenderName(dialog, senderName, language = "nb") {
     setContent(dialog, "SenderName", senderName, language);
 }
 

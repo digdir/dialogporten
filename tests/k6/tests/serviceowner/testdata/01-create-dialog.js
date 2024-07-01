@@ -15,11 +15,11 @@ export default function () {
             { "value": "something else searchable" }
         ],
         "content": [
-            { "type": "Title", "value": [ { "cultureCode": "nb_NO", "value": "Skjema for rapportering av et eller annet" } ] },
-            { "type": "SenderName", "value": [ { "cultureCode": "nb_NO", "value": "Avsendernavn" } ] },
-            { "type": "Summary", "value": [ { "cultureCode": "nb_NO", "value": "Et sammendrag her. Maks 200 tegn, ingen HTML-støtte. Påkrevd. Vises i liste." } ] },
-            { "type": "AdditionalInfo", "mediaType": "text/plain", "value": [ { "cultureCode": "nb_NO", "value": "Utvidet forklaring (enkel HTML-støtte, inntil 1023 tegn). Ikke påkrevd. Vises kun i detaljvisning." } ] },
-            { "type": "ExtendedStatus", "value": [ { "cultureCode": "nb_NO", "value": "Utvidet Status" } ] },
+            { "type": "Title", "value": [ { "languageCode": "nb", "value": "Skjema for rapportering av et eller annet" } ] },
+            { "type": "SenderName", "value": [ { "languageCode": "nb", "value": "Avsendernavn" } ] },
+            { "type": "Summary", "value": [ { "languageCode": "nb", "value": "Et sammendrag her. Maks 200 tegn, ingen HTML-støtte. Påkrevd. Vises i liste." } ] },
+            { "type": "AdditionalInfo", "mediaType": "text/plain", "value": [ { "languageCode": "nb", "value": "Utvidet forklaring (enkel HTML-støtte, inntil 1023 tegn). Ikke påkrevd. Vises kun i detaljvisning." } ] },
+            { "type": "ExtendedStatus", "value": [ { "languageCode": "nb", "value": "Utvidet Status" } ] },
         ],
         "guiActions": [
             {
@@ -29,7 +29,7 @@ export default function () {
                 "title": [
                     {
                         "value": "Gå til dialog",
-                        "cultureCode": "nb-no"
+                        "languageCode": "nb"
                     }
                 ]
             },
@@ -41,10 +41,10 @@ export default function () {
                 "title": [
                     {
                         "value": "Utfør handling uten navigasjon",
-                        "cultureCode": "nb-no"
+                        "languageCode": "nb"
                     }
                 ],
-                "prompt": [ { "value": "Er du sikker?", "cultureCode": "nb-no" } ]
+                "prompt": [ { "value": "Er du sikker?", "languageCode": "nb" } ]
             }
         ],
         "apiActions": [
@@ -67,7 +67,7 @@ export default function () {
             {
                 "displayName": [
                     {
-                        "cultureCode": "nb_NO",
+                        "languageCode": "nb",
                         "value": "Et vedlegg"
                     }
                 ],
@@ -82,7 +82,7 @@ export default function () {
             {
                 "displayName": [
                     {
-                        "cultureCode": "nb_NO",
+                        "languageCode": "nb",
                         "value": "Et annet vedlegg"
                     }
                 ],
@@ -97,7 +97,7 @@ export default function () {
             {
                 "displayName": [
                     {
-                        "cultureCode": "nb_NO",
+                        "languageCode": "nb",
                         "value": "Nok et vedlegg"
                     }
                 ],
@@ -113,15 +113,15 @@ export default function () {
         "activities": [
             {
                 "type": "Error",
-                "performedBy": "Politiet", 
+                "performedBy": "Politiet",
                 "description": [
                     {
                         "value": "Lovbrudd",
-                        "cultureCode": "nb_no"
+                        "languageCode": "nb"
                     },
                     {
                         "value": "Ofensa",
-                        "cultureCode": "es_es"
+                        "languageCode": "es"
                     }
                 ]
             },
@@ -131,7 +131,7 @@ export default function () {
                 "description": [
                     {
                         "value": "Brukeren har levert et viktig dokument.",
-                        "cultureCode": "nb_no"
+                        "languageCode": "nb"
                     }
                 ]
             },
@@ -141,11 +141,11 @@ export default function () {
                 "description": [
                     {
                         "value": "Brukeren har begått skattesvindel",
-                        "cultureCode": "nb_no"
+                        "languageCode": "nb"
                     },
                     {
                         "value": "Tax fraud",
-                        "cultureCode": "en_us"
+                        "languageCode": "en"
                     }
                 ]
             }
