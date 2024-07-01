@@ -1,0 +1,32 @@
+services:
+  reverse-proxy:
+    container_name: reverse-proxy
+    image: traefik:v2.3
+    command:
+      # Enables the Web UI
+      - "--api.dashboard=true"
+      # Enabling docker provider
+      - "--providers.docker"
+      # Do not expose containers unless explicitly told so
+      - "--providers.docker.exposedbydefault=false"
+    ports:
+      # Http
+      - 80:80
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dashboard.rule=Host(`dashboard.localhost`)"
+      - "traefik.http.routers.dashboard.service=api@internal"
+      - "dave.relativeSubdomain=dashboard"
+      - "dave.icon=simple-icons:traefikproxy"
+
+  dave:
+    image: theknarf/dave
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dave.rule=Host(`localhost`)"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+

@@ -1,17 +1,8 @@
 include:
-  - docker-compose-no-webapi.yml
+  - no-webapi.compose.yml
+  - ingress.compose.yml
 
 services:
-  dialogporten-webapi-ingress:
-    image: nginx:1.27.0
-    ports:
-      - "7214:80"
-    volumes:
-      - ./nginx-webapi.conf:/etc/nginx/nginx.conf
-    depends_on:
-      - dialogporten-webapi
-    restart: always
-
   dialogporten-webapi:
     scale: 2
     build:
@@ -28,29 +19,21 @@ services:
     environment:
       - Infrastructure:Redis:ConnectionString=dialogporten-redis:6379
       - Infrastructure:DialogDbConnectionString=${DB_CONNECTION_STRING}
-      - Application:Dialogporten:BaseUri=http://localhost:7214
+      - Application:Dialogporten:BaseUri=http://dialogporten-webapi.localhost
       - Serilog__WriteTo__0__Name=Console
       - Serilog__MinimumLevel__Default=Debug
       - ASPNETCORE_URLS=http://+:8080
       - ASPNETCORE_ENVIRONMENT=Development
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dialogporten-webapi.rule=Host(`dialogporten-webapi.localhost`)"
+      - "dave.url=https://dialogporten-webapi.localhost/swagger/index.html"
+      - "dave.icon=openmoji:dotnet"
     volumes:
       - ./.aspnet/https:/https
 
-  dialogporten-graphql-ingress:
-    image: nginx:1.27.0
-    ports:
-      - "7215:80"
-    volumes:
-      - ./nginx-graphql.conf:/etc/nginx/nginx.conf
-    depends_on:
-      - dialogporten-graphql
-    restart: always
-
   dialogporten-graphql:
     scale: 1
-    # todo: remove after the nginx ingress fixed
-    ports:
-      - "7220:8080"
     build:
       context: .
       dockerfile: src/Digdir.Domain.Dialogporten.GraphQL/Dockerfile
@@ -69,5 +52,10 @@ services:
       - Serilog__WriteTo__0__Name=Console
       - Serilog__MinimumLevel__Default=Debug
       - ASPNETCORE_ENVIRONMENT=Development
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dalogporten-graphql.rule=Host(`dialogporten-graphql.localhost`)"
+      - "dave.url=https://dialogporten-graphql.localhost/swagger/index.html"
+      - "dave.icon=mdi:graphql"
     volumes:
       - ./.aspnet/https:/https
