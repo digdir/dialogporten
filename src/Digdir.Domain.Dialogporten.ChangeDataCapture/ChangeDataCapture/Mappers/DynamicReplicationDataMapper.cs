@@ -90,7 +90,7 @@ internal sealed class DynamicReplicationDataMapper<T> : IReplicationMapper<T>
             var converter = _backupConverters.GetOrAdd(sourceType, FindImplExplConverter);
             if (converter is not null)
             {
-                value = converter.Invoke(null, new[] { value! });
+                value = converter.Invoke(null, [value!]);
                 _info.SetValue(obj, value);
                 return;
             }
