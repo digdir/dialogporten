@@ -14,8 +14,8 @@ resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
   name: keyVaultName
   location: location
   properties: {
-    // TODO: Remove, https://github.com/digdir/dialogporten/issues/229
-    enablePurgeProtection: null // Null is the same as false and false is invalid for some reason
+    tenantId: subscription().tenantId
+    enablePurgeProtection: true
     enabledForTemplateDeployment: false
     sku: sku
     tenantId: subscription().tenantId
