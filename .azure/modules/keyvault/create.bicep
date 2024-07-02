@@ -14,7 +14,6 @@ resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
   name: keyVaultName
   location: location
   properties: {
-    tenantId: subscription().tenantId
     enablePurgeProtection: true
     enabledForTemplateDeployment: false
     sku: sku
