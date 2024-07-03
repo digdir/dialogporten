@@ -1,4 +1,5 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
+using Digdir.Domain.Dialogporten.Domain;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
@@ -33,7 +34,7 @@ public sealed class UpdateDialogContentDto
 {
     public DialogContentType.Values Type { get; set; }
     public List<LocalizationDto> Value { get; set; } = [];
-    public string? MediaType { get; set; }
+    public string? MediaType { get; set; } = MediaTypes.PlainText;
 }
 
 public sealed class UpdateDialogSearchTagDto
