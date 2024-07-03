@@ -5,7 +5,6 @@ using Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture.Subscriptio
 using Digdir.Domain.Dialogporten.ChangeDataCapture.Common.Extensions;
 using Digdir.Domain.Dialogporten.Domain.Outboxes;
 using Microsoft.Extensions.Options;
-using Npgsql;
 using Npgsql.Replication;
 using Npgsql.Replication.PgOutput;
 using Npgsql.Replication.PgOutput.Messages;
@@ -118,7 +117,6 @@ internal sealed class OutboxCdcSubscription : ICdcSubscription<OutboxMessage>, I
     private async IAsyncEnumerable<IReadOnlyCollection<OutboxMessage>> ConsumeReplicationSlot(
         [EnumeratorCancellation] CancellationToken ct)
     {
-        var options = _options.CurrentValue;
         _logger.LogDebug("Consuming replication slot '{ReplicationSlot}'.", _startupOptions.ReplicationSlotName);
         var slot = new PgOutputReplicationSlot(_startupOptions.ReplicationSlotName);
         var replicationOptions = new PgOutputReplicationOptions(_startupOptions.PublicationName, 1);

@@ -20,7 +20,7 @@ internal sealed class OutboxReplicationMapper : IReplicationMapper<OutboxMessage
         return ToOutboxMessage(outboxMessageDictionary);
     }
 
-    public static async Task<Dictionary<string, object?>> ToDictionary(InsertMessage insertMessage, CancellationToken cancellationToken)
+    private static async Task<Dictionary<string, object?>> ToDictionary(InsertMessage insertMessage, CancellationToken cancellationToken)
     {
         var columnNumber = 0;
         var result = new Dictionary<string, object?>();
@@ -33,7 +33,7 @@ internal sealed class OutboxReplicationMapper : IReplicationMapper<OutboxMessage
         return result;
     }
 
-    public static Dictionary<string, object?> ToDictionary(NpgsqlDataReader reader)
+    private static Dictionary<string, object?> ToDictionary(NpgsqlDataReader reader)
     {
         var result = new Dictionary<string, object?>();
         for (var i = 0; i < reader.FieldCount; i++)
@@ -57,7 +57,7 @@ internal sealed class OutboxReplicationMapper : IReplicationMapper<OutboxMessage
             CreatedAt = dic[nameof(OutboxMessage.CreatedAt)] switch
             {
                 string s => DateTimeOffset.Parse(s, CultureInfo.InvariantCulture),
-                DateTime dateTime => (DateTimeOffset)dateTime,
+                DateTime dateTime => dateTime,
                 DateTimeOffset dateTimeOffset => dateTimeOffset,
                 _ => throw new InvalidOperationException($"{nameof(OutboxMessage.CreatedAt)} must be a Guid.")
             },

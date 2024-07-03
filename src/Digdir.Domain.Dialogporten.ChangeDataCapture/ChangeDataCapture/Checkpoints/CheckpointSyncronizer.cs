@@ -1,7 +1,5 @@
-﻿using System.Collections.Concurrent;
-using Digdir.Domain.Dialogporten.ChangeDataCapture.Outbox;
+﻿using Digdir.Domain.Dialogporten.ChangeDataCapture.Outbox;
 using Microsoft.Extensions.Options;
-using Npgsql.Replication;
 
 namespace Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture.Checkpoints;
 

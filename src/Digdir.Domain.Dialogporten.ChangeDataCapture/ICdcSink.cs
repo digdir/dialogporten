@@ -3,7 +3,7 @@ using MassTransit;
 
 namespace Digdir.Domain.Dialogporten.ChangeDataCapture;
 
-public interface ICdcSink<T>
+public interface ICdcSink<in T>
 {
     Task Send(IReadOnlyCollection<T> outboxMessage, CancellationToken cancellationToken);
 }

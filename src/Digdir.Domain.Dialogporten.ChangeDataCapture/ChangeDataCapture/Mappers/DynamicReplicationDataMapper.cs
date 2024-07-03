@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.ComponentModel;
-using System.Data;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Reflection;
 using Npgsql;
@@ -90,15 +87,10 @@ internal sealed class DynamicReplicationDataMapper<T> : IReplicationMapper<T>
                 return;
             }
 
-            var converter = _backupConverters.GetOrAdd(sourceType, FindImplExplConverter);
-            if (converter is not null)
-            {
-                value = converter.Invoke(null, new[] { value! });
-                _info.SetValue(obj, value);
-                return;
-            }
-
-            throw new InvalidCastException();
+            var converter = _backupConverters.GetOrAdd(sourceType, FindImplExplConverter) ?? throw new InvalidCastException();
+            value = converter.Invoke(null, [value!]);
+            _info.SetValue(obj, value);
+            return;
 
             MethodInfo? FindImplExplConverter(Type sourceType)
             {
