@@ -13,5 +13,9 @@ internal sealed class OutboxMessageConfiguration : IEntityTypeConfiguration<Outb
         builder.Property(x => x.EventPayload)
             .HasUnlimitedLength()
             .HasColumnType("jsonb");
+        builder.Property(x => x.CreatedAt)
+            .HasDefaultValueSql("current_timestamp at time zone 'utc'");
+        builder.Property(x => x.CorrelationId)
+            .HasDefaultValueSql("gen_random_uuid()");
     }
 }
