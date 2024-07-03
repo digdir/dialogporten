@@ -18,8 +18,9 @@ resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
     enabledForTemplateDeployment: false
     sku: sku
     tenantId: subscription().tenantId
-    // Should remain empty. Using RBAC instead
+    // RBAC authorization enabled, access policies not used
     accessPolicies: []
+    enableRbacAuthorization: true
   }
 }
 
