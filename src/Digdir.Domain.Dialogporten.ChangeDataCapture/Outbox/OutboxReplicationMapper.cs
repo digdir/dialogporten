@@ -57,7 +57,7 @@ internal sealed class OutboxReplicationMapper : IReplicationMapper<OutboxMessage
             CreatedAt = dic[nameof(OutboxMessage.CreatedAt)] switch
             {
                 string s => DateTimeOffset.Parse(s, CultureInfo.InvariantCulture),
-                DateTime dateTime => (DateTimeOffset)dateTime,
+                DateTime dateTime => dateTime,
                 DateTimeOffset dateTimeOffset => dateTimeOffset,
                 _ => throw new InvalidOperationException($"{nameof(OutboxMessage.CreatedAt)} must be a Guid.")
             },
