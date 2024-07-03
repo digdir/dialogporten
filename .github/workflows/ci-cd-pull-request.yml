@@ -37,6 +37,7 @@ jobs:
       environment: "test"
 
   dry-run-deploy-infra:
+    name: Dry run deploy infrastructure
     uses: ./.github/workflows/action-deploy-infra.yml
     needs:
       [
@@ -58,3 +59,33 @@ jobs:
       region: norwayeast
       dryRun: true
       version: ${{ needs.get-current-version.outputs.version }}-${{ needs.generate-git-short-sha.outputs.gitShortSha }}
+
+  
+  dry-run-deploy-apps:
+    name: Dry run deploy apps
+    needs:
+      [
+        get-current-version,
+        check-for-changes,
+        generate-git-short-sha,
+        dry-run-deploy-infra,
+      ]
+    # we want deployment of apps to be dependent on deployment of infrastructure, but if infrastructure is skipped, we still want to deploy the apps
+    if: ${{ always() && !failure() && !cancelled() && (needs.check-for-changes.outputs.hasBackendChanges == 'true') }}
+    uses: ./.github/workflows/action-deploy-apps.yml
+    secrets:
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      AZURE_RESOURCE_GROUP_NAME: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
+      AZURE_ENVIRONMENT_KEY_VAULT_NAME: ${{ secrets.AZURE_ENVIRONMENT_KEY_VAULT_NAME }}
+      AZURE_CONTAINER_APP_ENVIRONMENT_NAME: ${{ secrets.AZURE_CONTAINER_APP_ENVIRONMENT_NAME }}
+      AZURE_APP_INSIGHTS_CONNECTION_STRING: ${{ secrets.AZURE_APP_INSIGHTS_CONNECTION_STRING }}
+      AZURE_APP_CONFIGURATION_NAME: ${{ secrets.AZURE_APP_CONFIGURATION_NAME }}
+    with:
+      environment: test
+      region: norwayeast
+      version: ${{ needs.get-current-version.outputs.version }}-${{ needs.generate-git-short-sha.outputs.gitShortSha }}
+      runMigration: ${{ needs.check-for-changes.outputs.hasMigrationChanges == 'true' }}
+      dryRun: true
+    
