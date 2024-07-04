@@ -2,10 +2,10 @@ using Digdir.Library.Entity.Abstractions.Features.Lookup;
 
 namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 
-public class DialogUserType : AbstractLookupEntity<DialogUserType, DialogUserType.Values>
+public class ActorType : AbstractLookupEntity<ActorType, ActorType.Values>
 {
-    public DialogUserType(Values id) : base(id) { }
-    public override DialogUserType MapValue(Values id) => new(id);
+    public ActorType(Values id) : base(id) { }
+    public override ActorType MapValue(Values id) => new(id);
 
     public enum Values
     {
@@ -37,6 +37,6 @@ public class DialogUserType : AbstractLookupEntity<DialogUserType, DialogUserTyp
         /// <summary>
         /// Like "Person", but via a service owner system
         /// </summary>
-        ServiceOwnerOnBehalfOfPerson = 5
+        UserViaServiceOwner = 5
     }
 }

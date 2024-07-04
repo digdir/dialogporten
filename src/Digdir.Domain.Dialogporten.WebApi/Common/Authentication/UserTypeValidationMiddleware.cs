@@ -1,7 +1,7 @@
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
 using FluentValidation.Results;
-using UserIdType = Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogUserType.Values;
+using UserIdType = Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.ActorType.Values;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Common.Authentication;
 

@@ -26,8 +26,9 @@ public class DialogActivity : IImmutableEntity, IAggregateCreatedHandler, IEvent
     [AggregateChild]
     public DialogActivityDescription? Description { get; set; }
 
+    // todo: should PerformedBy still be nullable?
     [AggregateChild]
-    public string? PerformedBy { get; set; }
+    public DialogActor? PerformedBy { get; set; }
 
     public List<DialogActivity> RelatedActivities { get; set; } = [];
 

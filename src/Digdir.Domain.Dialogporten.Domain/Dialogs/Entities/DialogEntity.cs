@@ -59,7 +59,7 @@ public class DialogEntity :
     public List<DialogActivity> Activities { get; set; } = [];
 
     [AggregateChild]
-    public List<DialogSeenLog> SeenLog { get; set; } = [];
+    public List<DialogActor> SeenLog { get; set; } = [];
 
     public void OnCreate(AggregateNode self, DateTimeOffset utcNow)
         => _domainEvents.Add(new DialogCreatedDomainEvent(Id, ServiceResource, Party));
@@ -81,10 +81,10 @@ public class DialogEntity :
     public void OnDelete(AggregateNode self, DateTimeOffset utcNow)
         => _domainEvents.Add(new DialogDeletedDomainEvent(Id, ServiceResource, Party));
 
-    public void UpdateSeenAt(string endUserId, DialogUserType.Values userTypeId, string? endUserName)
+    public void UpdateSeenAt(string actorId, ActorType.Values actorTypeId, string? actorName)
     {
         var lastSeenAt = SeenLog
-            .Where(x => x.EndUserId == endUserId)
+            .Where(x => x.ActorId == actorId)
             .MaxBy(x => x.CreatedAt)
             ?.CreatedAt
             ?? DateTimeOffset.MinValue;
@@ -96,9 +96,9 @@ public class DialogEntity :
 
         SeenLog.Add(new()
         {
-            EndUserId = endUserId,
-            EndUserTypeId = userTypeId,
-            EndUserName = endUserName
+            ActorId = actorId,
+            ActorTypeId = actorTypeId,
+            ActorName = actorName
         });
 
         _domainEvents.Add(new DialogSeenDomainEvent(Id, ServiceResource, Party));

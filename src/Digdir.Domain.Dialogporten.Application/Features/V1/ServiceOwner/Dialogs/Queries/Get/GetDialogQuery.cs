@@ -75,6 +75,8 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
         // TODO: Add SeenLog if optional parameter pid on behalf of end user is present
         // https://github.com/digdir/dialogporten/issues/386
 
+        // todo: get current user information??
+
         var dialogDto = _mapper.Map<GetDialogDto>(dialog);
 
         dialogDto.SeenSinceLastUpdate = dialog.SeenLog
@@ -83,7 +85,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
                 var logDto = _mapper.Map<GetDialogDialogSeenLogDto>(log);
                 // TODO: Set when #386 is implemented
                 // logDto.IsAuthenticatedUser = log.EndUserId == userPid;
-                logDto.EndUserIdHash = _stringHasher.Hash(log.EndUserId);
+                logDto.EndUserIdHash = _stringHasher.Hash(log.ActorId!);
                 return logDto;
             })
             .ToList();

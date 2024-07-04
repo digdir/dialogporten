@@ -5,7 +5,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using Digdir.Domain.Dialogporten.Domain.Parties;
-using UserIdType = Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogUserType.Values;
+using UserIdType = Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.ActorType.Values;
 
 namespace Digdir.Domain.Dialogporten.Application.Common.Extensions;
 
@@ -236,7 +236,7 @@ public static class ClaimsPrincipalExtensions
             // TODO: This needs to be fixed when implementing https://github.com/digdir/dialogporten/issues/386
             // F.ex. a middleware that runs before UserTypeValidationMiddleware that adds the PID claim
             return (claimsPrincipal.HasScope(ServiceProviderScope)
-                ? UserIdType.ServiceOwnerOnBehalfOfPerson
+                ? UserIdType.UserViaServiceOwner
                 : UserIdType.Person, externalId);
         }
 

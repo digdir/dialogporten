@@ -101,7 +101,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
 
         // TODO: What if name lookup fails
         // https://github.com/digdir/dialogporten/issues/387
-        dialog.UpdateSeenAt(currentUserInformation.UserId.ExternalId, currentUserInformation.UserId.Type, currentUserInformation.Name);
+        dialog.UpdateSeenAt(currentUserInformation.UserId.URNId, currentUserInformation.UserId.Type, currentUserInformation.Name);
 
         var saveResult = await _unitOfWork
             .WithoutAuditableSideEffects()
@@ -118,8 +118,9 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
             .Select(log =>
             {
                 var logDto = _mapper.Map<GetDialogDialogSeenLogDto>(log);
-                logDto.IsCurrentEndUser = log.EndUserId == currentUserInformation.UserId.ExternalId;
-                logDto.EndUserIdHash = _stringHasher.Hash(log.EndUserId);
+                logDto.IsCurrentEndUser = log.ActorId == currentUserInformation.UserId.URNId;
+                // todo: actorId here has to be defined because it is a user. But seems harsh 
+                logDto.EndUserIdHash = _stringHasher.Hash(log.ActorId!);
                 return logDto;
             })
             .ToList();
