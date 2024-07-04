@@ -7,7 +7,7 @@ public class MappingProfile : Profile
 {
     public MappingProfile()
     {
-        CreateMap<DialogSeenLog, SearchDialogSeenLogDto>()
+        CreateMap<DialogActor, SearchDialogSeenLogDto>()
             .ForMember(dest => dest.SeenAt, opt => opt.MapFrom(src => src.CreatedAt));
     }
 }

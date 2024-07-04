@@ -47,7 +47,7 @@ internal sealed class SearchDialogSeenLogQueryHandler : IRequestHandler<SearchDi
         var dialog = await _db.Dialogs
             .AsNoTracking()
             .Include(x => x.SeenLog)
-                .ThenInclude(x => x.Via!.Localizations)
+            // todo: cannot use via here. That is interpreted through the DialogActor entity if type is UserViaServiceOwner(?).
             .IgnoreQueryFilters()
             .FirstOrDefaultAsync(x => x.Id == request.DialogId,
                 cancellationToken: cancellationToken);
@@ -76,8 +76,8 @@ internal sealed class SearchDialogSeenLogQueryHandler : IRequestHandler<SearchDi
             .Select(x =>
             {
                 var dto = _mapper.Map<SearchDialogSeenLogDto>(x);
-                dto.IsCurrentEndUser = x.EndUserId == currentUserInformation.UserId.ExternalId;
-                dto.EndUserIdHash = _stringHasher.Hash(x.EndUserId);
+                dto.IsCurrentEndUser = x.ActorId == currentUserInformation.UserId.URNId;
+                dto.EndUserIdHash = _stringHasher.Hash(x.ActorId!);
                 return dto;
             })
             .ToList();

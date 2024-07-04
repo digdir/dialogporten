@@ -76,12 +76,12 @@ internal sealed class GetDialogSeenLogQueryHandler : IRequestHandler<GetDialogSe
         var seenLog = dialog.SeenLog.FirstOrDefault();
         if (seenLog is null)
         {
-            return new EntityNotFound<DialogSeenLog>(request.SeenLogId);
+            return new EntityNotFound<DialogActor>(request.SeenLogId);
         }
 
         var dto = _mapper.Map<GetDialogSeenLogDto>(seenLog);
-        dto.IsCurrentEndUser = currentUserInformation.UserId.ExternalId == seenLog.EndUserId;
-        dto.EndUserIdHash = _stringHasher.Hash(seenLog.EndUserId);
+        dto.IsCurrentEndUser = currentUserInformation.UserId.URNId == seenLog.ActorId;
+        dto.EndUserIdHash = _stringHasher.Hash(seenLog.ActorId!);
 
         return dto;
     }

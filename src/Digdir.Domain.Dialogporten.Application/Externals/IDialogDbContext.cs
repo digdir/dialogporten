@@ -24,7 +24,7 @@ public interface IDialogDbContext
 
     DbSet<OutboxMessage> OutboxMessages { get; }
     DbSet<OutboxMessageConsumer> OutboxMessageConsumers { get; }
-    DbSet<DialogSeenLog> DialogSeenLog { get; }
+    DbSet<DialogActor> DialogSeenLog { get; }
 
     /// <summary>
     /// Validate a property on the <typeparamref name="TEntity"/> using a lambda 
