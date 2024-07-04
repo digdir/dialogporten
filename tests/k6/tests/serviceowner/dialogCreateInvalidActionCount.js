@@ -17,7 +17,7 @@ export default function () {
         while (numActions--) {
             let id = `foo${numActions}`;
             dialog.guiActions.push(
-                { action: id, title: [{ cultureCode: "nb_NO", value: id }], url: `foo:${id}`, priority: actionType }
+                { action: id, title: [{ languageCode: "nb", value: id }], url: `foo:${id}`, priority: actionType }
             )
         }
 

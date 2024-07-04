@@ -1,19 +1,21 @@
 ﻿using System.Globalization;
 using Digdir.Domain.Dialogporten.ChangeDataCapture;
-using Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture;
-using Digdir.Domain.Dialogporten.ChangeDataCapture.Common;
+using Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture.Checkpoints;
+using Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture.Mappers;
+using Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture.Subscriptions;
+using Digdir.Domain.Dialogporten.ChangeDataCapture.Common.Extensions;
+using Digdir.Domain.Dialogporten.ChangeDataCapture.Outbox;
 using Digdir.Domain.Dialogporten.Domain.Outboxes;
 using MassTransit;
 using Microsoft.ApplicationInsights.Extensibility;
+using Microsoft.Extensions.Options;
+using Npgsql;
 using Serilog;
-
-// TODO: Configure Azure Service Bus connection settings and endpoint exchange
-// TODO: Configure Postgres connection settings
-// TODO: Improve exceptions thrown in this assembly
 
 // Using two-stage initialization to catch startup errors.
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Warning()
+    //.MinimumLevel.Override("Digdir.Domain.Dialogporten.ChangeDataCapture", Serilog.Events.LogEventLevel.Debug)
     .Enrich.FromLogContext()
     .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture)
     .WriteTo.ApplicationInsights(
@@ -41,6 +43,7 @@ static void BuildAndRun(string[] args)
 
     builder.Host.UseSerilog((context, services, configuration) => configuration
         .MinimumLevel.Warning()
+        //.MinimumLevel.Override("Digdir.Domain.Dialogporten.ChangeDataCapture", Serilog.Events.LogEventLevel.Debug)
         .ReadFrom.Configuration(context.Configuration)
         .ReadFrom.Services(services)
         .Enrich.FromLogContext()
@@ -54,9 +57,17 @@ static void BuildAndRun(string[] args)
     builder.Configuration.AddAzureConfiguration(builder.Environment.EnvironmentName);
 
     builder.Services
+        // Options
+        .AddOptions<OutboxCdcSubscriptionOptions>()
+            .BindConfiguration(OutboxCdcSubscriptionOptions.SectionName)
+            .Configure<IConfiguration>((option, conf) => option.ConnectionString ??= conf["Infrastructure:DialogDbConnectionString"]!)
+            .Services
+
+        // Infrastructure
         .AddAzureAppConfiguration()
         .AddApplicationInsightsTelemetry()
-        .AddHostedService<CdcBackgroundHandler>()
+        .AddHostedService<CheckpointSyncronizer>()
+        .AddHostedService<OutboxCdcBackgroundHandler>()
         .AddMassTransit(x =>
         {
             var useInMemoryTransport = builder.Configuration.GetValue<bool>("MassTransit:UseInMemoryTransport");
@@ -73,23 +84,27 @@ static void BuildAndRun(string[] args)
                 // todo: Configure for using Azure Service Bus
             }
         })
-        .AddSingleton(_ => new PostgresCdcSSubscriptionOptions
-        (
-            ConnectionString: builder.Configuration["Infrastructure:DialogDbConnectionString"]!,
-            ReplicationSlotName: builder.Configuration["ReplicationSlotName"]!,
-            PublicationName: builder.Configuration["PublicationName"]!,
-            TableName: builder.Configuration["TableName"]!,
-            DataMapper: new OutboxReplicationDataMapper()
-        ))
-        .AddTransient<ICdcSubscription<OutboxMessage>, PostgresCdcSubscription>()
-        .AddTransient<ICdcSink<OutboxMessage>, MassTransitSink>()
-        .AddHealthChecks();
+        .AddHealthChecks()
+            .Services
+
+        // Singleton
+        .AddSingleton(x => NpgsqlDataSource.Create(x.GetRequiredService<IOptions<OutboxCdcSubscriptionOptions>>().Value.ConnectionString))
+        .AddSingleton<ICheckpointCache, CheckpointCache>()
+
+        // Scoped
+
+        // Transient
+        .AddTransient<IOutboxReaderRepository, OutboxReaderRepository>()
+        .AddTransient<ICheckpointRepository, CheckpointRepository>()
+        .AddTransient<ISubscriptionRepository, SubscriptionRepository>()
+        //.AddTransient(typeof(IReplicationDataMapper<>), typeof(DynamicReplicationDataMapper<>))
+        .AddTransient<IReplicationMapper<OutboxMessage>, OutboxReplicationMapper>()
+        .AddTransient<ICdcSubscription<OutboxMessage>, OutboxCdcSubscription>()
+        .AddTransient<ICdcSink<OutboxMessage>, ConsoleSink>();
 
     var app = builder.Build();
-
     app.UseHttpsRedirection()
-        .UseSerilogRequestLogging();
-
-    app.UseHealthChecks("/healthz");
+        .UseSerilogRequestLogging()
+        .UseHealthChecks("/healthz");
     app.Run();
 }

@@ -56,7 +56,7 @@ internal abstract class UpdateDialogSwaggerConfig : ISwaggerConfig
                 [
                     new LocalizationDto
                     {
-                        CultureCode = "en-us",
+                        LanguageCode = "en-us",
                         Value = "Some Title"
                     }
                 ]
@@ -68,7 +68,7 @@ internal abstract class UpdateDialogSwaggerConfig : ISwaggerConfig
                 [
                     new LocalizationDto
                     {
-                        CultureCode = "en-us",
+                        LanguageCode = "en-us",
                         Value = "Some Summary"
                     }
                 ]
@@ -87,7 +87,7 @@ internal abstract class UpdateDialogSwaggerConfig : ISwaggerConfig
                 [
                     new LocalizationDto
                     {
-                        CultureCode = "en-us",
+                        LanguageCode = "en-us",
                         Value = "Some display name"
                     }
                 ],
@@ -114,12 +114,12 @@ internal abstract class UpdateDialogSwaggerConfig : ISwaggerConfig
                 [
                     new LocalizationDto
                     {
-                        CultureCode = "en-us",
+                        LanguageCode = "en-us",
                         Value = "GUI action title"
                     },
                     new LocalizationDto
                     {
-                        CultureCode = "nb-no",
+                        LanguageCode = "nb-no",
                         Value = "GUI action-tittel"
                     }
                 ]
@@ -157,12 +157,12 @@ internal abstract class UpdateDialogSwaggerConfig : ISwaggerConfig
                 [
                     new LocalizationDto
                     {
-                        CultureCode = "en-us",
+                        LanguageCode = "en-us",
                         Value = "Some description"
                     },
                     new LocalizationDto
                     {
-                        CultureCode = "nb-no",
+                        LanguageCode = "nb-no",
                         Value = "En beskrivelse"
                     }
                 ]

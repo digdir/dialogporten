@@ -227,20 +227,20 @@
                     "Value": [
                       {
                         "Value": "Some Title",
-                        "CultureCode": "en-us"
+                        "LanguageCode": "en"
                       }
                     ],
-                    "MediaType": null
+                    "MediaType": "text/plain"
                   },
                   {
                     "Type": 3,
                     "Value": [
                       {
                         "Value": "Some Summary",
-                        "CultureCode": "en-us"
+                        "LanguageCode": "en"
                       }
                     ],
-                    "MediaType": null
+                    "MediaType": "text/plain"
                   }
                 ],
                 "SearchTags": [
@@ -257,7 +257,7 @@
                     "DisplayName": [
                       {
                         "Value": "Some display name",
-                        "CultureCode": "en-us"
+                        "LanguageCode": "en"
                       }
                     ],
                     "Urls": [
@@ -282,11 +282,11 @@
                     "Title": [
                       {
                         "Value": "GUI action title",
-                        "CultureCode": "en-us"
+                        "LanguageCode": "en"
                       },
                       {
                         "Value": "GUI action-tittel",
-                        "CultureCode": "nb-no"
+                        "LanguageCode": "nb"
                       }
                     ],
                     "Prompt": null
@@ -323,11 +323,11 @@
                     "Description": [
                       {
                         "Value": "Some description",
-                        "CultureCode": "en-us"
+                        "LanguageCode": "en"
                       },
                       {
                         "Value": "En beskrivelse",
-                        "CultureCode": "nb-no"
+                        "LanguageCode": "nb"
                       }
                     ]
                   }
@@ -786,9 +786,9 @@
             }
           },
           {
-            "name": "searchCultureCode",
+            "name": "searchLanguageCode",
             "in": "query",
-            "description": "Limit free text search to texts with this culture code, e.g. \\\"nb-NO\\\". Default: search all culture codes",
+            "description": "Limit free text search to texts with this language code, e.g. 'no', 'en'. Culture codes will be normalized to neutral language codes (ISO 639). Default: search all culture codes",
             "schema": {
               "type": "string",
               "nullable": true
@@ -1503,9 +1503,9 @@
             }
           },
           {
-            "name": "searchCultureCode",
+            "name": "searchLanguageCode",
             "in": "query",
-            "description": "Limit free text search to texts with this culture code, e.g. \\\"nb-NO\\\". Default: search all culture codes",
+            "description": "Limit free text search to texts with this language code, e.g. 'no', 'en'. Culture codes will be normalized to neutral language codes (ISO 639). Default: search all culture codes",
             "schema": {
               "type": "string",
               "nullable": true
@@ -2024,7 +2024,7 @@
           "value": {
             "type": "string"
           },
-          "cultureCode": {
+          "languageCode": {
             "type": "string"
           }
         }

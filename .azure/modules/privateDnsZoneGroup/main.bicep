@@ -3,11 +3,11 @@ param privateEndpointName string
 param name string
 param dnsZoneGroupName string
 
-resource privateEndpoint 'Microsoft.Network/privateEndpoints@2023-04-01' existing = {
+resource privateEndpoint 'Microsoft.Network/privateEndpoints@2023-11-01' existing = {
   name: privateEndpointName
 }
 
-resource pe_dns_zone_group 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2023-04-01' = {
+resource pe_dns_zone_group 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2023-11-01' = {
   name: name
   parent: privateEndpoint
   properties: {

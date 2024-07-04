@@ -453,7 +453,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         new
                         {
                             Id = 1,
-                            AllowedMediaTypes = new string[0],
+                            AllowedMediaTypes = new[] { "text/plain" },
                             MaxLength = 255,
                             Name = "Title",
                             OutputInList = true,
@@ -462,7 +462,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         new
                         {
                             Id = 2,
-                            AllowedMediaTypes = new string[0],
+                            AllowedMediaTypes = new[] { "text/plain" },
                             MaxLength = 255,
                             Name = "SenderName",
                             OutputInList = true,
@@ -471,7 +471,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         new
                         {
                             Id = 3,
-                            AllowedMediaTypes = new string[0],
+                            AllowedMediaTypes = new[] { "text/plain" },
                             MaxLength = 255,
                             Name = "Summary",
                             OutputInList = true,
@@ -489,7 +489,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         new
                         {
                             Id = 5,
-                            AllowedMediaTypes = new string[0],
+                            AllowedMediaTypes = new[] { "text/plain" },
                             MaxLength = 20,
                             Name = "ExtendedStatus",
                             OutputInList = true,
@@ -825,7 +825,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("LocalizationSetId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("CultureCode")
+                    b.Property<string>("LanguageCode")
                         .HasMaxLength(15)
                         .HasColumnType("character varying(15)");
 
@@ -844,7 +844,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         .HasMaxLength(4095)
                         .HasColumnType("character varying(4095)");
 
-                    b.HasKey("LocalizationSetId", "CultureCode");
+                    b.HasKey("LocalizationSetId", "LanguageCode");
 
                     b.ToTable("Localization");
                 });
@@ -880,6 +880,18 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("EventId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
+
+                    b.Property<string>("CorrelationId")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("current_timestamp at time zone 'utc'");
 
                     b.Property<string>("EventPayload")
                         .IsRequired()

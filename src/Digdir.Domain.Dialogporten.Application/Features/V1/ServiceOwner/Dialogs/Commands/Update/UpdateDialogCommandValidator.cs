@@ -118,12 +118,11 @@ internal sealed class UpdateDialogContentDtoValidator : AbstractValidator<Update
             .Must((dto, value) =>
             {
                 var type = DialogContentType.GetValue(dto.Type);
-                return value is null ? type.AllowedMediaTypes.Length == 0 : type.AllowedMediaTypes.Contains(value);
+                return value is not null && type.AllowedMediaTypes.Contains(value);
             })
             .WithMessage(x =>
                 $"{{PropertyName}} '{x.MediaType ?? "null"}' is not allowed for content type {DialogContentType.GetValue(x.Type).Name}. " +
-                $"Valid media types are: {(DialogContentType.GetValue(x.Type).AllowedMediaTypes.Length == 0 ? "None" :
-                    $"{string.Join(", ", DialogContentType.GetValue(x.Type).AllowedMediaTypes!)}")}");
+                $"Allowed media types are {string.Join(", ", DialogContentType.GetValue(x.Type).AllowedMediaTypes.Select(x => $"'{x}'"))}");
         RuleForEach(x => x.Value)
             .ContainsValidHtml()
             .When(x => x.MediaType is not null && (x.MediaType == MediaTypes.Html));

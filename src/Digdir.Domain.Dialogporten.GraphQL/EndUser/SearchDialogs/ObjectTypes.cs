@@ -90,6 +90,6 @@ public sealed class SearchDialogInput
     [GraphQLDescription("Search string for free text search. Will attempt to fuzzily match in all free text fields in the aggregate")]
     public string? Search { get; init; }
 
-    [GraphQLDescription("Limit free text search to texts with this culture code, e.g. \"nb-NO\". Default: search all culture codes")]
-    public string? SearchCultureCode { get; init; }
+    [GraphQLDescription("Limit free text search to texts with this language code, e.g. 'no', 'en'. Culture codes will be normalized to neutral language codes (ISO 639). Default: search all culture codes")]
+    public string? SearchLanguageCode { get; init; }
 }
