@@ -30,7 +30,8 @@ internal sealed class DialogDbContext : DbContext, IDialogDbContext
     public DbSet<DialogAttachmentUrl> DialogAttachmentUrls => Set<DialogAttachmentUrl>();
     public DbSet<DialogGuiActionPriority> DialogGuiActionTypes => Set<DialogGuiActionPriority>();
     public DbSet<DialogActivityType> DialogActivityTypes => Set<DialogActivityType>();
-    public DbSet<DialogSeenLog> DialogSeenLog => Set<DialogSeenLog>();
+    // todo: hmmm still feel like the type should be SeenLog..
+    public DbSet<DialogActor> DialogSeenLog => Set<DialogActor>();
     public DbSet<DialogContentType> DialogContentTypes => Set<DialogContentType>();
     public DbSet<DialogContent> DialogContent => Set<DialogContent>();
 

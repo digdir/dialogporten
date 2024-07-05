@@ -83,7 +83,7 @@ public class SeenLogTests(DialogApplication application) : ApplicationCollection
         response.TryPickT0(out var result, out _).Should().BeTrue();
         result.Should().NotBeNull();
 
-        result.ActorIdHash
+        result.ActorId
             .Should()
             .HaveLength(PersistentRandomSaltStringHasher.StringLength);
     }
