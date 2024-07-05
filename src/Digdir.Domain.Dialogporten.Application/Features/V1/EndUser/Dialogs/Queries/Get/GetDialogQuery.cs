@@ -6,6 +6,7 @@ using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
+using Digdir.Domain.Dialogporten.Domain.Parties;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
@@ -99,8 +100,8 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
             return new EntityDeleted<DialogEntity>(request.DialogId);
         }
 
-        // TODO: What if name lookup fails
-        // https://github.com/digdir/dialogporten/issues/387
+        // TODO: What if name lookup fails: https://github.com/digdir/dialogporten/issues/387 & https://github.com/digdir/dialogporten/issues/851
+        // todo: UpdateSeenAtByEndUser(?)
         dialog.UpdateSeenAt(currentUserInformation.UserId.URNId, currentUserInformation.UserId.Type, currentUserInformation.Name);
 
         var saveResult = await _unitOfWork
@@ -117,10 +118,14 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
         dialogDto.SeenSinceLastUpdate = dialog.SeenLog
             .Select(log =>
             {
-                var logDto = _mapper.Map<GetDialogDialogSeenLogDto>(log);
+                var logDto = _mapper.Map<GetDialogDialogActorDto>(log);
                 logDto.IsCurrentEndUser = log.ActorId == currentUserInformation.UserId.URNId;
                 // todo: actorId here has to be defined because it is a user. But seems harsh 
-                logDto.EndUserIdHash = _stringHasher.Hash(log.ActorId!);
+                // todo: hash the pid and use the ephemeral urn
+                // todo: We know that ActorId always has a value here, but 🤫🤫 dangerous. Consider separating the two by extending DialogActor? 🤔
+                var actorId = log.ActorId!.Split(':');
+                var pid = actorId.Last();
+                logDto.ActorId = NorwegianPersonIdentifier.HashPrefixWithSeparator + _stringHasher.Hash(pid);
                 return logDto;
             })
             .ToList();

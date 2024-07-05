@@ -34,20 +34,22 @@ public sealed class GetDialogDto
     public List<GetDialogDialogGuiActionDto> GuiActions { get; set; } = [];
     public List<GetDialogDialogApiActionDto> ApiActions { get; set; } = [];
     public List<GetDialogDialogActivityDto> Activities { get; set; } = [];
-    public List<GetDialogDialogSeenLogDto> SeenSinceLastUpdate { get; set; } = [];
+    // todo: SeenByEndUserSinceLastUpdate?
+    public List<GetDialogDialogActorDto> SeenSinceLastUpdate { get; set; } = [];
 
 }
 
-public class GetDialogDialogSeenLogDto
+public class GetDialogDialogActorDto
 {
     public Guid Id { get; set; }
     public DateTimeOffset SeenAt { get; set; }
 
-    public string EndUserIdHash { get; set; } = null!;
+    public string ActorId { get; set; } = null!; // ActorId
 
-    public string? EndUserName { get; set; }
+    public string? ActorName { get; set; } // ActorName
 
-    public bool IsCurrentEndUser { get; set; }
+    // todo: IsCurrentEndUser? If userViaSystemOwner, then we probably need to name it IsCurrentEndUser to avoid confusion?
+    public bool IsCurrentEndUser { get; set; } // IsCurrentActor(?)
 }
 
 public sealed class GetDialogContentDto

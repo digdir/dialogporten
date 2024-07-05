@@ -4,6 +4,7 @@ using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
+using Digdir.Domain.Dialogporten.Domain.Parties;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
@@ -17,7 +18,7 @@ public sealed class GetDialogSeenLogQuery : IRequest<GetDialogSeenLogResult>
 }
 
 [GenerateOneOf]
-public partial class GetDialogSeenLogResult : OneOfBase<GetDialogSeenLogDto, EntityNotFound, EntityDeleted, Forbidden>;
+public partial class GetDialogSeenLogResult : OneOfBase<GetDialogActorDto, EntityNotFound, EntityDeleted, Forbidden>;
 
 internal sealed class GetDialogSeenLogQueryHandler : IRequestHandler<GetDialogSeenLogQuery, GetDialogSeenLogResult>
 {
@@ -79,9 +80,12 @@ internal sealed class GetDialogSeenLogQueryHandler : IRequestHandler<GetDialogSe
             return new EntityNotFound<DialogActor>(request.SeenLogId);
         }
 
-        var dto = _mapper.Map<GetDialogSeenLogDto>(seenLog);
+        var dto = _mapper.Map<GetDialogActorDto>(seenLog);
         dto.IsCurrentEndUser = currentUserInformation.UserId.URNId == seenLog.ActorId;
-        dto.EndUserIdHash = _stringHasher.Hash(seenLog.ActorId!);
+
+        var actorId = dto.ActorId.Split(':');
+        var pid = actorId.Last();
+        dto.ActorId = NorwegianPersonIdentifier.HashPrefixWithSeparator + _stringHasher.Hash(pid);
 
         return dto;
     }

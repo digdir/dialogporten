@@ -14,6 +14,7 @@ public class ActorType : AbstractLookupEntity<ActorType, ActorType.Values>
         /// </summary>
         Unknown = 0,
 
+        // todo: User / Person / EndUser?
         /// <summary>
         /// ID-porten authenticated (has "pid" claim)
         /// </summary>
@@ -34,6 +35,7 @@ public class ActorType : AbstractLookupEntity<ActorType, ActorType.Values>
         /// </summary>
         ServiceOwner = 4,
 
+        // todo: User / Person / EndUser?
         /// <summary>
         /// Like "Person", but via a service owner system
         /// </summary>

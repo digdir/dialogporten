@@ -11,6 +11,7 @@ using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Localizations;
+using Digdir.Domain.Dialogporten.Domain.Parties;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
@@ -176,9 +177,12 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
 
         foreach (var seenLog in paginatedList.Items.SelectMany(x => x.SeenSinceLastUpdate))
         {
+            // todo: create generic method for this?
+            var actorId = seenLog.ActorId!.Split(':');
+            var pid = actorId.Last();
             // Before we hash the end user id, check if the seen log entry is for the current user
-            seenLog.IsCurrentEndUser = currentUserInfo.UserId.ExternalId == seenLog.EndUserIdHash;
-            seenLog.EndUserIdHash = _stringHasher.Hash(seenLog.EndUserIdHash);
+            seenLog.IsCurrentEndUser = currentUserInfo.UserId.URNId == seenLog.ActorId;
+            seenLog.ActorId = NorwegianPersonIdentifier.HashPrefixWithSeparator + _stringHasher.Hash(pid);
         }
 
         return paginatedList;

@@ -28,7 +28,7 @@ public class SeenLogTests(DialogApplication application) : ApplicationCollection
 
         result.SeenSinceLastUpdate
             .Single()
-            .EndUserIdHash
+            .ActorId
             .Should()
             .HaveLength(PersistentRandomSaltStringHasher.StringLength);
     }
@@ -57,7 +57,7 @@ public class SeenLogTests(DialogApplication application) : ApplicationCollection
             .Single()
             .SeenSinceLastUpdate
             .Single()
-            .EndUserIdHash
+            .ActorId
             .Should()
             .HaveLength(PersistentRandomSaltStringHasher.StringLength);
     }
@@ -83,7 +83,7 @@ public class SeenLogTests(DialogApplication application) : ApplicationCollection
         response.TryPickT0(out var result, out _).Should().BeTrue();
         result.Should().NotBeNull();
 
-        result.EndUserIdHash
+        result.ActorIdHash
             .Should()
             .HaveLength(PersistentRandomSaltStringHasher.StringLength);
     }
@@ -109,7 +109,7 @@ public class SeenLogTests(DialogApplication application) : ApplicationCollection
         result.Should().NotBeNull();
 
         result.Single()
-            .EndUserIdHash
+            .ActorId
             .Should()
             .HaveLength(PersistentRandomSaltStringHasher.StringLength);
     }

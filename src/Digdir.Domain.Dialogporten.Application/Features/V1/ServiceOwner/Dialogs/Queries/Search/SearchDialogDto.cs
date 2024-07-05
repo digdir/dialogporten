@@ -22,17 +22,16 @@ public sealed class SearchDialogDto
     public DialogStatus.Values Status { get; set; }
 
     public List<SearchDialogContentDto> Content { get; set; } = [];
-    public List<SearchDialogDialogSeenLogDto> SeenSinceLastUpdate { get; set; } = [];
+    public List<SearchDialogDialogActorDto> SeenSinceLastUpdate { get; set; } = [];
 }
 
-public class SearchDialogDialogSeenLogDto
+public class SearchDialogDialogActorDto
 {
     public Guid Id { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
 
-    public string EndUserIdHash { get; set; } = null!;
-
-    public string? EndUserName { get; set; }
+    public string ActorId { get; set; } = null!;
+    public string? ActorName { get; set; }
     public bool? IsCurrentEndUser { get; set; }
 }
 

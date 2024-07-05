@@ -73,7 +73,7 @@ public class UserRegistry : IUserRegistry
                 break;
 
             case ActorType.Values.SystemUser:
-                // TODO: Implement when SystemUsers are introduced?
+                // TODO: Implement when SystemUsers are introduced? https://docs.altinn.studio/nb/authentication/what-do-you-get/systemuser/
                 // TODO: What would be the URN of the system user?
                 name = "System User";
                 urnId = $"{NorwegianPersonIdentifier.PrefixWithSeparator}{userId.ExternalId}";

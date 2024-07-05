@@ -30,6 +30,7 @@ public sealed class SearchDialogQuery : SortablePaginationParameter<SearchDialog
     /// </summary>
     public List<string>? Party { get; init; }
 
+    // todo: will this be the URN id of the actor? 🤔
     /// <summary>
     /// Filter by end user id
     /// </summary>
@@ -184,10 +185,11 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
         {
             if (request.EndUserId is not null)
             {
-                seenRecord.IsCurrentEndUser = seenRecord.EndUserIdHash == request.EndUserId;
+                // todo: will EndUserId be the URN of the user here? 🤔
+                seenRecord.IsCurrentEndUser = seenRecord.ActorId == request.EndUserId;
             }
 
-            seenRecord.EndUserIdHash = _stringHasher.Hash(seenRecord.EndUserIdHash);
+            seenRecord.ActorId = _stringHasher.Hash(seenRecord.ActorId);
         }
 
         return paginatedList;

@@ -36,6 +36,7 @@ internal sealed class SearchDialogSeenLogQueryHandler : IRequestHandler<SearchDi
         _userResourceRegistry = userResourceRegistry;
     }
 
+    // this should probably still be SearchDialogSeenLog but with an actor object/actor properties?
     public async Task<SearchDialogSeenLogResult> Handle(SearchDialogSeenLogQuery request, CancellationToken cancellationToken)
     {
         var resourceIds = await _userResourceRegistry.GetCurrentUserResourceIds(cancellationToken);
@@ -58,7 +59,7 @@ internal sealed class SearchDialogSeenLogQueryHandler : IRequestHandler<SearchDi
             .Select(x =>
             {
                 var dto = _mapper.Map<SearchDialogSeenLogDto>(x);
-                dto.EndUserIdHash = _stringHasher.Hash(x.ActorId!);
+                dto.ActorId = _stringHasher.Hash(x.ActorId!);
                 return dto;
             })
             .ToList();

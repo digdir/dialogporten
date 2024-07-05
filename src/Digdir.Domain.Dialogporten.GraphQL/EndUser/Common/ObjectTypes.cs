@@ -22,7 +22,7 @@ public sealed class Content
     public string? MediaType { get; set; }
 }
 
-public sealed class SeenLog
+public sealed class DialogActor
 {
     public Guid Id { get; set; }
     public DateTimeOffset SeenAt { get; set; }

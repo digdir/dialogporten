@@ -11,8 +11,8 @@ public class MappingProfile : Profile
     {
         CreateMap<LocalizationDto, Localization>();
 
-        CreateMap<GetDialogDialogSeenLogDto, SeenLog>();
-        CreateMap<SearchDialogDialogSeenLogDto, SeenLog>();
+        CreateMap<GetDialogDialogActorDto, DialogActor>();
+        CreateMap<SearchDialogDialogActorDto, DialogActor>();
 
         CreateMap<GetDialogContentDto, Content>()
             .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type));

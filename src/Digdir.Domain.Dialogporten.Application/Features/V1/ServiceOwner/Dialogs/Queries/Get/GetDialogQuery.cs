@@ -3,6 +3,7 @@ using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
+using Digdir.Domain.Dialogporten.Domain.Parties;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
@@ -76,16 +77,19 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
         // https://github.com/digdir/dialogporten/issues/386
 
         // todo: get current user information??
+        // todo: Are: don't touch this yet:) Do in separate PR
 
         var dialogDto = _mapper.Map<GetDialogDto>(dialog);
 
         dialogDto.SeenSinceLastUpdate = dialog.SeenLog
             .Select(log =>
             {
-                var logDto = _mapper.Map<GetDialogDialogSeenLogDto>(log);
+                var logDto = _mapper.Map<GetDialogDialogActorDto>(log);
                 // TODO: Set when #386 is implemented
                 // logDto.IsAuthenticatedUser = log.EndUserId == userPid;
-                logDto.EndUserIdHash = _stringHasher.Hash(log.ActorId!);
+                var actorId = log.ActorId!.Split(':');
+                var pid = actorId.Last();
+                logDto.ActorId = NorwegianPersonIdentifier.HashPrefixWithSeparator + _stringHasher.Hash(pid);
                 return logDto;
             })
             .ToList();

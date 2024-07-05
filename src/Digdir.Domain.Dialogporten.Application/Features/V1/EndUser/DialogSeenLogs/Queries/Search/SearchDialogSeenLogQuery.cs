@@ -7,6 +7,7 @@ using MediatR;
 using OneOf;
 using Microsoft.EntityFrameworkCore;
 using Digdir.Domain.Dialogporten.Application.Common;
+using Digdir.Domain.Dialogporten.Domain.Parties;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogSeenLogs.Queries.Search;
 
@@ -16,7 +17,7 @@ public sealed class SearchDialogSeenLogQuery : IRequest<SearchDialogSeenLogResul
 }
 
 [GenerateOneOf]
-public partial class SearchDialogSeenLogResult : OneOfBase<List<SearchDialogSeenLogDto>, EntityNotFound, EntityDeleted, Forbidden>;
+public partial class SearchDialogSeenLogResult : OneOfBase<List<SearchDialogActorDto>, EntityNotFound, EntityDeleted, Forbidden>;
 
 internal sealed class SearchDialogSeenLogQueryHandler : IRequestHandler<SearchDialogSeenLogQuery, SearchDialogSeenLogResult>
 {
@@ -75,9 +76,11 @@ internal sealed class SearchDialogSeenLogQueryHandler : IRequestHandler<SearchDi
         return dialog.SeenLog
             .Select(x =>
             {
-                var dto = _mapper.Map<SearchDialogSeenLogDto>(x);
+                var dto = _mapper.Map<SearchDialogActorDto>(x);
                 dto.IsCurrentEndUser = x.ActorId == currentUserInformation.UserId.URNId;
-                dto.EndUserIdHash = _stringHasher.Hash(x.ActorId!);
+                var actorId = x.ActorId!.Split(':');
+                var pid = actorId.Last();
+                dto.ActorId = NorwegianPersonIdentifier.HashPrefixWithSeparator + _stringHasher.Hash(pid);
                 return dto;
             })
             .ToList();

@@ -3,6 +3,7 @@ using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
+using Digdir.Domain.Dialogporten.Domain.Parties;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
@@ -58,11 +59,14 @@ internal sealed class GetDialogSeenLogQueryHandler : IRequestHandler<GetDialogSe
         var seenLog = dialog.SeenLog.FirstOrDefault();
         if (seenLog is null)
         {
-            return new EntityNotFound<DialogSeenLog>(request.SeenLogId);
+            return new EntityNotFound<DialogActor>(request.SeenLogId);
         }
 
         var dto = _mapper.Map<GetDialogSeenLogDto>(seenLog);
-        dto.EndUserIdHash = _stringHasher.Hash(seenLog.EndUserId);
+        var actorId = seenLog.ActorId!.Split(':');
+        var pid = actorId.Last();
+        // todo: should this be hashed? 🤔
+        dto.ActorId = NorwegianPersonIdentifier.HashPrefixWithSeparator + _stringHasher.Hash(pid);
 
         return dto;
     }

@@ -24,17 +24,18 @@ public sealed class SearchDialogDto
     public SearchDialogDialogActivityDto? LatestActivity { get; set; }
 
     public List<SearchDialogContentDto> Content { get; set; } = [];
-    public List<SearchDialogDialogSeenLogDto> SeenSinceLastUpdate { get; set; } = [];
+    public List<SearchDialogDialogActorDto> SeenSinceLastUpdate { get; set; } = [];
 }
 
-public class SearchDialogDialogSeenLogDto
+// todo: maybe this should be named SearchDialogDialogSeenLogDto? And rather have an actor object?
+public class SearchDialogDialogActorDto
 {
     public Guid Id { get; set; }
     public DateTimeOffset SeenAt { get; set; }
 
-    public string EndUserIdHash { get; set; } = null!;
+    public string ActorId { get; set; } = null!;
 
-    public string? EndUserName { get; set; }
+    public string? ActorName { get; set; }
 
     public bool IsCurrentEndUser { get; set; }
 }

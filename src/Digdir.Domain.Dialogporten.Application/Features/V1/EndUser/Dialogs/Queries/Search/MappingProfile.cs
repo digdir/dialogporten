@@ -29,9 +29,9 @@ internal sealed class MappingProfile : Profile
         CreateMap<DialogContent, SearchDialogContentDto>()
             .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.TypeId));
 
-        CreateMap<DialogSeenLog, SearchDialogDialogSeenLogDto>()
+        CreateMap<DialogActor, SearchDialogDialogActorDto>()
             .ForMember(dest => dest.SeenAt, opt => opt.MapFrom(src => src.CreatedAt))
-            .ForMember(dest => dest.EndUserIdHash, opt => opt.MapFrom(src => src.EndUserId));
+            .ForMember(dest => dest.ActorId, opt => opt.MapFrom(src => src.ActorId));
 
         CreateMap<DialogActivity, SearchDialogDialogActivityDto>()
             .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.TypeId));

@@ -12,7 +12,7 @@ public class GetDialogSeenLogSwaggerConfig : ISwaggerConfig
     public static string OperationId => "GetDialogSeenLog";
     public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder)
         => builder.OperationId(OperationId)
-            .ProducesOneOf<GetDialogSeenLogDto>(
+            .ProducesOneOf<GetDialogActorDto>(
                 StatusCodes.Status200OK,
                 StatusCodes.Status404NotFound);
 
