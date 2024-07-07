@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Digdir.Domain.Dialogporten.Application.Common;
+using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Content;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actors;
@@ -12,7 +13,8 @@ internal sealed class MappingProfile : Profile
 {
     public MappingProfile()
     {
-        CreateMap<DialogEntity, SearchDialogDto>()
+        CreateMap<IntermediateSearchDialogDto, SearchDialogDto>();
+        CreateMap<DialogEntity, IntermediateSearchDialogDto>()
             .ForMember(dest => dest.LatestActivity, opt => opt.MapFrom(src => src.Activities
                 .Where(activity => activity.TypeId != DialogActivityType.Values.Forwarded)
                 .OrderByDescending(activity => activity.CreatedAt).ThenByDescending(activity => activity.Id)
@@ -28,9 +30,6 @@ internal sealed class MappingProfile : Profile
             .ForMember(dest => dest.Content, opt => opt.MapFrom(src => src.Content.Where(x => x.Type.OutputInList)))
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.StatusId));
 
-        CreateMap<DialogContent, SearchDialogContentDto>()
-            .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.TypeId));
-
         CreateMap<DialogSeenLog, SearchDialogDialogSeenLogDto>()
             .ForMember(dest => dest.SeenAt, opt => opt.MapFrom(src => src.CreatedAt));
 
@@ -43,5 +42,8 @@ internal sealed class MappingProfile : Profile
         CreateMap<DialogActor, SearchDialogDialogActivityActorDto>()
             .ForMember(dest => dest.ActorType, opt => opt.MapFrom(src => src.ActorTypeId))
             .ForMember(dest => dest.ActorId, opt => opt.MapFrom(src => IdentifierMasker.GetMaybeMaskedIdentifier(src.ActorId)));
+
+        CreateMap<List<DialogContent>?, SearchDialogContentDto?>()
+            .ConvertUsing<DialogContentOutputConverter<SearchDialogContentDto>>();
     }
 }

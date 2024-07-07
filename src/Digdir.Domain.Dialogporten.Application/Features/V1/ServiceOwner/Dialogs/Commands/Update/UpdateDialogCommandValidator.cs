@@ -1,7 +1,8 @@
-﻿using Digdir.Domain.Dialogporten.Application.Common.Extensions.Enumerables;
+﻿using System.Reflection;
+using Digdir.Domain.Dialogporten.Application.Common.Extensions.Enumerables;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.FluentValidation;
+using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Content;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
-using Digdir.Domain.Dialogporten.Domain;
 using Digdir.Domain.Dialogporten.Domain.Common;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actors;
@@ -58,15 +59,7 @@ internal sealed class UpdateDialogDtoValidator : AbstractValidator<UpdateDialogD
             .IsInEnum();
 
         RuleFor(x => x.Content)
-            .UniqueBy(x => x.Type)
-            .Must(content => DialogContentType.RequiredTypes
-                .All(requiredContent => content
-                    .EmptyIfNull()
-                    .Select(x => x.Type)
-                    .Contains(requiredContent)))
-            .WithMessage("Dialog must contain the following content: " +
-                         $"[{string.Join(", ", DialogContentType.RequiredTypes)}].")
-            .ForEach(x => x.SetValidator(contentValidator));
+            .SetValidator(contentValidator);
 
         RuleFor(x => x.SearchTags)
             .UniqueBy(x => x.Value, StringComparer.InvariantCultureIgnoreCase)
@@ -110,33 +103,37 @@ internal sealed class UpdateDialogDtoValidator : AbstractValidator<UpdateDialogD
 
 internal sealed class UpdateDialogContentDtoValidator : AbstractValidator<UpdateDialogContentDto>
 {
+    private static readonly Dictionary<string, PropertyInfo> SourcePropertyByName = typeof(UpdateDialogContentDto)
+        .GetProperties()
+        .ToDictionary(x => x.Name, StringComparer.InvariantCultureIgnoreCase);
+
     public UpdateDialogContentDtoValidator()
     {
-        ClassLevelCascadeMode = CascadeMode.Stop;
-        RuleFor(x => x.Type)
-            .IsInEnum();
-        RuleFor(x => x.MediaType)
-            .Must((dto, value) =>
+        foreach (var (propertyName, property) in SourcePropertyByName)
+        {
+            var context = new NullabilityInfoContext();
+            var nullabilityInfo = context.Create(property);
+
+            switch (nullabilityInfo.WriteState)
             {
-                var type = DialogContentType.GetValue(dto.Type);
-                return value is not null && type.AllowedMediaTypes.Contains(value);
-            })
-            .WithMessage(x =>
-                $"{{PropertyName}} '{x.MediaType ?? "null"}' is not allowed for content type {DialogContentType.GetValue(x.Type).Name}. " +
-                $"Allowed media types are {string.Join(", ", DialogContentType.GetValue(x.Type).AllowedMediaTypes.Select(x => $"'{x}'"))}");
-        RuleForEach(x => x.Value)
-            .ContainsValidHtml()
-            .When(x => x.MediaType is not null && (x.MediaType == MediaTypes.Html));
-        RuleForEach(x => x.Value)
-            .ContainsValidMarkdown()
-            .When(x => x.MediaType is not null && x.MediaType == MediaTypes.Markdown);
-        RuleForEach(x => x.Value)
-            .Must(x => Uri.TryCreate(x.Value, UriKind.Absolute, out var uri) && uri.Scheme == Uri.UriSchemeHttps)
-            .When(x => x.MediaType is not null && x.MediaType.StartsWith(MediaTypes.EmbeddablePrefix, StringComparison.InvariantCultureIgnoreCase))
-            .WithMessage("{PropertyName} must be a valid HTTPS URL for embeddable content types");
-        RuleFor(x => x.Value)
-            .NotEmpty()
-            .SetValidator(x => new LocalizationDtosValidator(DialogContentType.GetValue(x.Type).MaxLength));
+                case NullabilityState.NotNull:
+                    RuleFor(x => property.GetValue(x) as DialogContentValueDto)
+                        .NotNull()
+                        .SetValidator(new DialogContentValueDtoValidator(
+                            DialogContentType.GetContentType(propertyName))!);
+                    break;
+                case NullabilityState.Nullable:
+                    RuleFor(x => property.GetValue(x) as DialogContentValueDto)
+                        .SetValidator(new DialogContentValueDtoValidator(
+                            DialogContentType.GetContentType(propertyName))!)
+                        .When(x => property.GetValue(x) is not null);
+                    break;
+                case NullabilityState.Unknown:
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 }
 

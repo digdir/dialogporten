@@ -221,19 +221,17 @@
                 "DueAt": "2084-04-04T12:13:10.01344+00:00",
                 "ExpiresAt": "2095-05-04T12:13:10.01344+00:00",
                 "Status": 1,
-                "Content": [
-                  {
-                    "Type": 1,
+                "Content": {
+                  "Title": {
                     "Value": [
                       {
-                        "Value": "Some Title",
+                        "Value": "Some title",
                         "LanguageCode": "en"
                       }
                     ],
                     "MediaType": "text/plain"
                   },
-                  {
-                    "Type": 3,
+                  "Summary": {
                     "Value": [
                       {
                         "Value": "Some Summary",
@@ -241,8 +239,20 @@
                       }
                     ],
                     "MediaType": "text/plain"
-                  }
-                ],
+                  },
+                  "SenderName": null,
+                  "AdditionalInfo": {
+                    "Value": [
+                      {
+                        "Value": "Some description with *markdown* support",
+                        "LanguageCode": "en"
+                      }
+                    ],
+                    "MediaType": "text/markdown"
+                  },
+                  "ExtendedStatus": null,
+                  "MainContentReference": null
+                },
                 "SearchTags": [
                   {
                     "Value": "searchTag"
@@ -1949,10 +1959,7 @@
             "$ref": "#/components/schemas/DialogStatus_Values"
           },
           "content": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/UpdateDialogContentDto"
-            }
+            "$ref": "#/components/schemas/UpdateDialogContentDto"
           },
           "searchTags": {
             "type": "array",
@@ -2010,9 +2017,50 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "type": {
-            "$ref": "#/components/schemas/DialogContentType_Values"
+          "title": {
+            "$ref": "#/components/schemas/DialogContentValueDto"
           },
+          "summary": {
+            "$ref": "#/components/schemas/DialogContentValueDto"
+          },
+          "senderName": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DialogContentValueDto"
+              }
+            ]
+          },
+          "additionalInfo": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DialogContentValueDto"
+              }
+            ]
+          },
+          "extendedStatus": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DialogContentValueDto"
+              }
+            ]
+          },
+          "mainContentReference": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DialogContentValueDto"
+              }
+            ]
+          }
+        }
+      },
+      "DialogContentValueDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
           "value": {
             "type": "array",
             "items": {
@@ -2020,30 +2068,9 @@
             }
           },
           "mediaType": {
-            "type": "string",
-            "nullable": true
+            "type": "string"
           }
         }
-      },
-      "DialogContentType_Values": {
-        "type": "string",
-        "description": "",
-        "x-enumNames": [
-          "Title",
-          "SenderName",
-          "Summary",
-          "AdditionalInfo",
-          "ExtendedStatus",
-          "MainContentReference"
-        ],
-        "enum": [
-          "Title",
-          "SenderName",
-          "Summary",
-          "AdditionalInfo",
-          "ExtendedStatus",
-          "MainContentReference"
-        ]
       },
       "LocalizationDto": {
         "type": "object",
@@ -2457,17 +2484,14 @@
               }
             ]
           },
-          "content": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/SearchDialogContentDtoSO"
-            }
-          },
           "seenSinceLastUpdate": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/SearchDialogDialogSeenLogDtoSO"
             }
+          },
+          "content": {
+            "$ref": "#/components/schemas/SearchDialogContentDtoSO"
           }
         }
       },
@@ -2525,21 +2549,6 @@
           }
         }
       },
-      "SearchDialogContentDtoSO": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "type": {
-            "$ref": "#/components/schemas/DialogContentType_Values"
-          },
-          "value": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/LocalizationDto"
-            }
-          }
-        }
-      },
       "SearchDialogDialogSeenLogDtoSO": {
         "type": "object",
         "additionalProperties": false,
@@ -2573,6 +2582,34 @@
           },
           "actorId": {
             "type": "string"
+          }
+        }
+      },
+      "SearchDialogContentDtoSO": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "title": {
+            "$ref": "#/components/schemas/DialogContentValueDto"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/DialogContentValueDto"
+          },
+          "senderName": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DialogContentValueDto"
+              }
+            ]
+          },
+          "extendedStatus": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DialogContentValueDto"
+              }
+            ]
           }
         }
       },
@@ -2645,10 +2682,7 @@
             "$ref": "#/components/schemas/DialogStatus_Values"
           },
           "content": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/GetDialogContentDtoSO"
-            }
+            "$ref": "#/components/schemas/GetDialogContentDtoSO"
           },
           "searchTags": {
             "type": "array",
@@ -2695,18 +2729,43 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "type": {
-            "$ref": "#/components/schemas/DialogContentType_Values"
+          "title": {
+            "$ref": "#/components/schemas/DialogContentValueDto"
           },
-          "value": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/LocalizationDto"
-            }
+          "summary": {
+            "$ref": "#/components/schemas/DialogContentValueDto"
           },
-          "mediaType": {
-            "type": "string",
-            "nullable": true
+          "senderName": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DialogContentValueDto"
+              }
+            ]
+          },
+          "additionalInfo": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DialogContentValueDto"
+              }
+            ]
+          },
+          "extendedStatus": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DialogContentValueDto"
+              }
+            ]
+          },
+          "mainContentReference": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DialogContentValueDto"
+              }
+            ]
           }
         }
       },
@@ -3005,10 +3064,7 @@
             "$ref": "#/components/schemas/DialogStatus_Values"
           },
           "content": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/CreateDialogContentDto"
-            }
+            "$ref": "#/components/schemas/CreateDialogContentDto"
           },
           "searchTags": {
             "type": "array",
@@ -3046,18 +3102,43 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "type": {
-            "$ref": "#/components/schemas/DialogContentType_Values"
+          "title": {
+            "$ref": "#/components/schemas/DialogContentValueDto"
           },
-          "value": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/LocalizationDto"
-            }
+          "summary": {
+            "$ref": "#/components/schemas/DialogContentValueDto"
           },
-          "mediaType": {
-            "type": "string",
-            "nullable": true
+          "senderName": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DialogContentValueDto"
+              }
+            ]
+          },
+          "additionalInfo": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DialogContentValueDto"
+              }
+            ]
+          },
+          "extendedStatus": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DialogContentValueDto"
+              }
+            ]
+          },
+          "mainContentReference": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DialogContentValueDto"
+              }
+            ]
           }
         }
       },
@@ -3505,17 +3586,14 @@
               }
             ]
           },
-          "content": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/SearchDialogContentDto"
-            }
-          },
           "seenSinceLastUpdate": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/SearchDialogDialogSeenLogDto"
             }
+          },
+          "content": {
+            "$ref": "#/components/schemas/SearchDialogContentDto"
           }
         }
       },
@@ -3573,21 +3651,6 @@
           }
         }
       },
-      "SearchDialogContentDto": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "type": {
-            "$ref": "#/components/schemas/DialogContentType_Values"
-          },
-          "value": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/LocalizationDto"
-            }
-          }
-        }
-      },
       "SearchDialogDialogSeenLogDto": {
         "type": "object",
         "additionalProperties": false,
@@ -3621,6 +3684,34 @@
           },
           "actorId": {
             "type": "string"
+          }
+        }
+      },
+      "SearchDialogContentDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "title": {
+            "$ref": "#/components/schemas/DialogContentValueDto"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/DialogContentValueDto"
+          },
+          "senderName": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DialogContentValueDto"
+              }
+            ]
+          },
+          "extendedStatus": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DialogContentValueDto"
+              }
+            ]
           }
         }
       },
@@ -3688,10 +3779,7 @@
             "$ref": "#/components/schemas/DialogStatus_Values"
           },
           "content": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/GetDialogContentDto"
-            }
+            "$ref": "#/components/schemas/GetDialogContentDto"
           },
           "dialogToken": {
             "type": "string",
@@ -3733,18 +3821,43 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "type": {
-            "$ref": "#/components/schemas/DialogContentType_Values"
+          "title": {
+            "$ref": "#/components/schemas/DialogContentValueDto"
           },
-          "value": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/LocalizationDto"
-            }
+          "summary": {
+            "$ref": "#/components/schemas/DialogContentValueDto"
           },
-          "mediaType": {
-            "type": "string",
-            "nullable": true
+          "senderName": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DialogContentValueDto"
+              }
+            ]
+          },
+          "additionalInfo": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DialogContentValueDto"
+              }
+            ]
+          },
+          "extendedStatus": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DialogContentValueDto"
+              }
+            ]
+          },
+          "mainContentReference": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DialogContentValueDto"
+              }
+            ]
           }
         }
       },

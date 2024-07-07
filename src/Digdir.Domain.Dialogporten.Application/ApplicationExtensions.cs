@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Reflection;
+using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Content;
 
 namespace Digdir.Domain.Dialogporten.Application;
 
@@ -28,7 +29,8 @@ public static class ApplicationExtensions
             // Framework
             .AddAutoMapper(thisAssembly)
             .AddMediatR(x => x.RegisterServicesFromAssembly(thisAssembly))
-            .AddValidatorsFromAssembly(thisAssembly, ServiceLifetime.Transient, includeInternalTypes: true)
+            .AddValidatorsFromAssembly(thisAssembly, ServiceLifetime.Transient, includeInternalTypes: true,
+                filter: type => !type.ValidatorType.IsAssignableTo(typeof(IIgnoreOnAssemblyScan)))
 
             // Singleton
             .AddSingleton<ICompactJwsGenerator, Ed25519Generator>()

@@ -11,7 +11,7 @@ internal sealed class SearchDialogQueryValidator : AbstractValidator<SearchDialo
 {
     public SearchDialogQueryValidator()
     {
-        Include(new PaginationParameterValidator<SearchDialogQueryOrderDefinition, SearchDialogDto>());
+        Include(new PaginationParameterValidator<SearchDialogQueryOrderDefinition, IntermediateSearchDialogDto>());
         RuleFor(x => x.Search)
             .MinimumLength(3)
             .When(x => x.Search is not null);

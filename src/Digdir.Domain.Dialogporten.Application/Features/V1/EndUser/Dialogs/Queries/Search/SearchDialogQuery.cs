@@ -17,7 +17,7 @@ using OneOf;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Queries.Search;
 
-public sealed class SearchDialogQuery : SortablePaginationParameter<SearchDialogQueryOrderDefinition, SearchDialogDto>, IRequest<SearchDialogResult>
+public sealed class SearchDialogQuery : SortablePaginationParameter<SearchDialogQueryOrderDefinition, IntermediateSearchDialogDto>, IRequest<SearchDialogResult>
 {
     private readonly string? _searchLanguageCode;
 
@@ -96,9 +96,9 @@ public sealed class SearchDialogQuery : SortablePaginationParameter<SearchDialog
     }
 }
 
-public sealed class SearchDialogQueryOrderDefinition : IOrderDefinition<SearchDialogDto>
+public sealed class SearchDialogQueryOrderDefinition : IOrderDefinition<IntermediateSearchDialogDto>
 {
-    public static IOrderOptions<SearchDialogDto> Configure(IOrderOptionsBuilder<SearchDialogDto> options) =>
+    public static IOrderOptions<IntermediateSearchDialogDto> Configure(IOrderOptionsBuilder<IntermediateSearchDialogDto> options) =>
         options.AddId(x => x.Id)
             .AddDefault("createdAt", x => x.CreatedAt)
             .AddOption("updatedAt", x => x.UpdatedAt)
@@ -148,6 +148,8 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
 
         var paginatedList = await _db.Dialogs
             .AsNoTracking()
+            .Include(x => x.Content)
+                .ThenInclude(x => x.Value.Localizations)
             .WhereUserIsAuthorizedFor(authorizedResources)
             .WhereIf(!request.Org.IsNullOrEmpty(), x => request.Org!.Contains(x.Org))
             .WhereIf(!request.ServiceResource.IsNullOrEmpty(), x => request.ServiceResource!.Contains(x.ServiceResource))
@@ -168,7 +170,7 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
             )
             .Where(x => !x.VisibleFrom.HasValue || _clock.UtcNowOffset > x.VisibleFrom)
             .Where(x => !x.ExpiresAt.HasValue || x.ExpiresAt > _clock.UtcNowOffset)
-            .ProjectTo<SearchDialogDto>(_mapper.ConfigurationProvider)
+            .ProjectTo<IntermediateSearchDialogDto>(_mapper.ConfigurationProvider)
             .ToPaginatedListAsync(request, cancellationToken: cancellationToken);
 
         foreach (var seenLog in paginatedList.Items.SelectMany(x => x.SeenSinceLastUpdate))
@@ -176,6 +178,8 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
             seenLog.IsCurrentEndUser = IdentifierMasker.GetMaybeMaskedIdentifier(currentUserInfo.UserId.ExternalIdWithPrefix) == seenLog.SeenBy.ActorId;
         }
 
-        return paginatedList;
+        var mappedItems = paginatedList.Items.Select(_mapper.Map<SearchDialogDto>).ToList();
+        return new PaginatedList<SearchDialogDto>(mappedItems, paginatedList.HasNextPage,
+            paginatedList.ContinuationToken, paginatedList.OrderBy);
     }
 }
