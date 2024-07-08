@@ -4,7 +4,7 @@ param namePrefix string
 @description('The location where the resources will be deployed')
 param location string
 
-resource defaultNSG 'Microsoft.Network/networkSecurityGroups@2024-01-01' = {
+resource defaultNSG 'Microsoft.Network/networkSecurityGroups@2023-11-01' = {
   name: '${namePrefix}-default-nsg'
   location: location
   properties: {
@@ -43,7 +43,7 @@ resource defaultNSG 'Microsoft.Network/networkSecurityGroups@2024-01-01' = {
 }
 
 // https://learn.microsoft.com/en-us/azure/container-apps/firewall-integration?tabs=consumption-only
-resource containerAppEnvironmentNSG 'Microsoft.Network/networkSecurityGroups@2024-01-01' = {
+resource containerAppEnvironmentNSG 'Microsoft.Network/networkSecurityGroups@2023-11-01' = {
   name: '${namePrefix}-container-app-environment-nsg'
   location: location
   properties: {
@@ -141,7 +141,7 @@ resource containerAppEnvironmentNSG 'Microsoft.Network/networkSecurityGroups@202
   }
 }
 
-resource postgresqlNSG 'Microsoft.Network/networkSecurityGroups@2024-01-01' = {
+resource postgresqlNSG 'Microsoft.Network/networkSecurityGroups@2023-11-01' = {
   name: '${namePrefix}-postgresql-nsg'
   location: location
   properties: {
@@ -179,7 +179,7 @@ resource postgresqlNSG 'Microsoft.Network/networkSecurityGroups@2024-01-01' = {
   }
 }
 
-resource redisNSG 'Microsoft.Network/networkSecurityGroups@2024-01-01' = {
+resource redisNSG 'Microsoft.Network/networkSecurityGroups@2023-11-01' = {
   name: '${namePrefix}-redis-nsg'
   location: location
   properties: {
@@ -217,7 +217,7 @@ resource redisNSG 'Microsoft.Network/networkSecurityGroups@2024-01-01' = {
   }
 }
 
-resource serviceBusNSG 'Microsoft.Network/networkSecurityGroups@2024-01-01' = {
+resource serviceBusNSG 'Microsoft.Network/networkSecurityGroups@2023-11-01' = {
   name: '${namePrefix}-service-bus-nsg'
   location: location
   properties: {
