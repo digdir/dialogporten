@@ -46,7 +46,7 @@ public sealed class SearchDialog
     public Activity? LatestActivity { get; set; }
 
     public List<Content> Content { get; set; } = [];
-    public List<DialogActor> SeenSinceLastUpdate { get; set; } = [];
+    public List<DialogSeenLog> SeenSinceLastUpdate { get; set; } = [];
 }
 
 public sealed class SearchDialogInput

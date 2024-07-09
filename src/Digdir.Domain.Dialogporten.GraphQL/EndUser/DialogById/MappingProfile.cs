@@ -23,6 +23,6 @@ public class MappingProfile : Profile
         CreateMap<GetDialogDialogApiActionEndpointDto, ApiActionEndpoint>()
             .ForMember(dest => dest.HttpMethod, opt => opt.MapFrom(src => src.HttpMethod));
 
-        CreateMap<GetDialogDialogActorDto, DialogActor>();
+        CreateMap<GetDialogDialogActorDto, DialogSeenLog>();
     }
 }

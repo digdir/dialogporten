@@ -57,7 +57,7 @@ public sealed class Dialog
     public List<Activity> Activities { get; set; } = [];
     // todo: be more verbose to specify that this field is end users only? This goes for general naming of the seenlog. Should be for end users only so make that visible?
     // todo: Another thought: On the presentation layer, separate the actors into DTOs/graphql object types to make it possible to add additional properties and make it more visible to the FE what actor it is. 
-    public List<DialogActor> SeenByEndUsersSinceLastUpdate { get; set; } = [];
+    public List<DialogSeenLog> SeenByEndUsersSinceLastUpdate { get; set; } = [];
 }
 
 public sealed class ApiAction
