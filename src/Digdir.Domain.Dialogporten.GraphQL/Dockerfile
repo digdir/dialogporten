@@ -2,7 +2,7 @@
 WORKDIR /app
 EXPOSE 8080
 
-FROM mcr.microsoft.com/dotnet/sdk:8.0.302@sha256:02fdc848bbda5d57d9211a72c99bd665b421206002d66b8bc2cc0b2297c227fa AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0.303@sha256:35792ea4ad1db051981f62b313f1be3b46b1f45cadbaa3c288cd0d3056eefb83 AS build
 WORKDIR /src
 
 COPY [".editorconfig", "."]
