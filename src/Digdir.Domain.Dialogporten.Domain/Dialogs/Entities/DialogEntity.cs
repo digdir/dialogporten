@@ -59,7 +59,7 @@ public class DialogEntity :
     public List<DialogActivity> Activities { get; set; } = [];
 
     [AggregateChild]
-    public List<DialogActor> SeenLog { get; set; } = [];
+    public List<SeenLogEntry> SeenLog { get; set; } = [];
 
     public void OnCreate(AggregateNode self, DateTimeOffset utcNow)
         => _domainEvents.Add(new DialogCreatedDomainEvent(Id, ServiceResource, Party));
@@ -111,4 +111,9 @@ public class DialogEntity :
         _domainEvents.Clear();
         return events;
     }
+}
+
+public class SeenLogEntry : DialogActor
+{
+    // dialog id, nav prop.
 }

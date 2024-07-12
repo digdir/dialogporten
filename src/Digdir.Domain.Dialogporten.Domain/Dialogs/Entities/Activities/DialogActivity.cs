@@ -27,8 +27,9 @@ public class DialogActivity : IImmutableEntity, IAggregateCreatedHandler, IEvent
     public DialogActivityDescription? Description { get; set; }
 
     // todo: should PerformedBy still be nullable?
+    // owned property?
     [AggregateChild]
-    public DialogActor? PerformedBy { get; set; }
+    public DialogActivityActor? PerformedBy { get; set; }
 
     public List<DialogActivity> RelatedActivities { get; set; } = [];
 
@@ -48,6 +49,11 @@ public class DialogActivity : IImmutableEntity, IAggregateCreatedHandler, IEvent
         _domainEvents.Clear();
         return events;
     }
+}
+
+public class DialogActivityActor : DialogActor
+{
+    // dialog activity id, nav prop.
 }
 
 public class DialogActivityDescription : LocalizationSet
