@@ -12,7 +12,8 @@ public enum ContentType
     SenderName = 2,
     Summary = 3,
     AdditionalInfo = 4,
-    ExtendedStatus = 5
+    ExtendedStatus = 5,
+    MainContentReference = 6,
 }
 
 public sealed class Content

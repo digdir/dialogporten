@@ -241,6 +241,7 @@ enum ContentType {
   SUMMARY
   ADDITIONAL_INFO
   EXTENDED_STATUS
+  MAIN_CONTENT_REFERENCE
 }
 
 enum DialogStatus {
