@@ -4,8 +4,6 @@ using Digdir.Library.Entity.Abstractions;
 namespace Digdir.Domain.Dialogporten.Domain.Actors;
 
 // **********************************************************************************************************************
-// Rename to Actor
-// Move to same folder level as Dialog/Localization
 // Created derived types for PerformedBy, SeenLog, Sender(transmission) (and maybe dialog.party / dialog.org)
 // **********************************************************************************************************************
 
