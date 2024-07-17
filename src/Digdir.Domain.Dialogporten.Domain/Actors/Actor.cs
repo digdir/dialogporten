@@ -4,7 +4,7 @@ using Digdir.Library.Entity.Abstractions;
 namespace Digdir.Domain.Dialogporten.Domain.Actors;
 
 // **********************************************************************************************************************
-// Created derived types for PerformedBy, SeenLog, Sender(transmission) (and maybe dialog.party / dialog.org)
+// Created derived types for PerformedBy, SeenLog, Sender(transmission)
 // **********************************************************************************************************************
 
 public class Actor : IEntity
