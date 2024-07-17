@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Digdir.Domain.Dialogporten.Domain.Actors;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Attachments;
@@ -29,7 +30,7 @@ internal sealed class MappingProfile : Profile
         CreateMap<DialogContent, SearchDialogContentDto>()
             .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.TypeId));
 
-        CreateMap<DialogActor, SearchDialogDialogActorDto>()
+        CreateMap<Actor, SearchDialogDialogActorDto>()
             .ForMember(dest => dest.SeenAt, opt => opt.MapFrom(src => src.CreatedAt))
             .ForMember(dest => dest.ActorId, opt => opt.MapFrom(src => src.ActorId));
 

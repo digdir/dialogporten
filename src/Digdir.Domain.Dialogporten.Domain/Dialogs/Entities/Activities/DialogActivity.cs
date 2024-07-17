@@ -1,4 +1,5 @@
-﻿using Digdir.Domain.Dialogporten.Domain.Dialogs.Events.Activities;
+﻿using Digdir.Domain.Dialogporten.Domain.Actors;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Events.Activities;
 using Digdir.Domain.Dialogporten.Domain.Localizations;
 using Digdir.Library.Entity.Abstractions.Features.Aggregate;
 using Digdir.Library.Entity.Abstractions.Features.EventPublisher;
@@ -29,7 +30,7 @@ public class DialogActivity : IImmutableEntity, IAggregateCreatedHandler, IEvent
     // todo: should PerformedBy still be nullable?
     // owned property?
     [AggregateChild]
-    public DialogActivityActor? PerformedBy { get; set; }
+    public ActivityActor? PerformedBy { get; set; }
 
     public List<DialogActivity> RelatedActivities { get; set; } = [];
 
@@ -51,7 +52,7 @@ public class DialogActivity : IImmutableEntity, IAggregateCreatedHandler, IEvent
     }
 }
 
-public class DialogActivityActor : DialogActor
+public class ActivityActor : Actor
 {
     // dialog activity id, nav prop.
 }

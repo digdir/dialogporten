@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Digdir.Domain.Dialogporten.Domain.Actors;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
 
@@ -16,7 +17,7 @@ internal sealed class MappingProfile : Profile
             .ForMember(dest => dest.Content, opt => opt.MapFrom(src => src.Content.Where(x => x.Type.OutputInList)))
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.StatusId));
 
-        CreateMap<DialogActor, SearchDialogDialogActorDto>()
+        CreateMap<Actor, SearchDialogDialogActorDto>()
             .ForMember(dest => dest.ActorId, opt => opt.MapFrom(src => src.ActorId));
 
         CreateMap<DialogSearchTag, SearchDialogSearchTagDto>();

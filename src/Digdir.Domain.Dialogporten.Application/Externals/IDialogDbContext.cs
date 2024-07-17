@@ -5,6 +5,7 @@ using Digdir.Domain.Dialogporten.Domain.Outboxes;
 using Digdir.Library.Entity.Abstractions.Features.Identifiable;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
+using Digdir.Domain.Dialogporten.Domain.Actors;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Attachments;
 
 namespace Digdir.Domain.Dialogporten.Application.Externals;
@@ -24,7 +25,7 @@ public interface IDialogDbContext
 
     DbSet<OutboxMessage> OutboxMessages { get; }
     DbSet<OutboxMessageConsumer> OutboxMessageConsumers { get; }
-    DbSet<DialogActor> DialogSeenLog { get; }
+    DbSet<Actor> DialogSeenLog { get; }
 
     /// <summary>
     /// Validate a property on the <typeparamref name="TEntity"/> using a lambda 

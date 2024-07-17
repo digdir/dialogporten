@@ -3,6 +3,7 @@ using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
+using Digdir.Domain.Dialogporten.Domain.Actors;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Parties;
 using MediatR;
@@ -77,7 +78,7 @@ internal sealed class GetDialogSeenLogQueryHandler : IRequestHandler<GetDialogSe
         var seenLog = dialog.SeenLog.FirstOrDefault();
         if (seenLog is null)
         {
-            return new EntityNotFound<DialogActor>(request.SeenLogId);
+            return new EntityNotFound<Actor>(request.SeenLogId);
         }
 
         var dto = _mapper.Map<GetDialogActorDto>(seenLog);

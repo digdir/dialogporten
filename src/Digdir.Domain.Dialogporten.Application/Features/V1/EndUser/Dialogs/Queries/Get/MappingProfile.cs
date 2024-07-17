@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Digdir.Domain.Dialogporten.Domain.Actors;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
@@ -17,7 +18,7 @@ internal sealed class MappingProfile : Profile
             .ForMember(dest => dest.SeenSinceLastUpdate, opt => opt.Ignore());
 
         // todo: here we need to do additional mapping
-        CreateMap<DialogActor, GetDialogDialogActorDto>()
+        CreateMap<Actor, GetDialogDialogActorDto>()
             .ForMember(dest => dest.SeenAt, opt => opt.MapFrom(src => src.CreatedAt));
 
         CreateMap<DialogActivity, GetDialogDialogActivityDto>()

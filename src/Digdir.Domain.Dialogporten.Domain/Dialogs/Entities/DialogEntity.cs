@@ -1,4 +1,5 @@
-﻿using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
+﻿using Digdir.Domain.Dialogporten.Domain.Actors;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Attachments;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
@@ -113,7 +114,8 @@ public class DialogEntity :
     }
 }
 
-public class SeenLogEntry : DialogActor
+public class SeenLogEntry : Actor
 {
-    // dialog id, nav prop.
+    public Guid DialogId { get; set; }
+    public DialogEntity Dialog { get; set; } = null!;
 }

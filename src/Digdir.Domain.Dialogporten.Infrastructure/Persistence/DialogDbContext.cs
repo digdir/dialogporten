@@ -12,6 +12,7 @@ using Digdir.Library.Entity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System.Linq.Expressions;
+using Digdir.Domain.Dialogporten.Domain.Actors;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Attachments;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence;
@@ -31,7 +32,7 @@ internal sealed class DialogDbContext : DbContext, IDialogDbContext
     public DbSet<DialogGuiActionPriority> DialogGuiActionTypes => Set<DialogGuiActionPriority>();
     public DbSet<DialogActivityType> DialogActivityTypes => Set<DialogActivityType>();
     // todo: hmmm still feel like the type should be SeenLog..
-    public DbSet<DialogActor> DialogSeenLog => Set<DialogActor>();
+    public DbSet<Actor> DialogSeenLog => Set<Actor>();
     public DbSet<DialogContentType> DialogContentTypes => Set<DialogContentType>();
     public DbSet<DialogContent> DialogContent => Set<DialogContent>();
 
