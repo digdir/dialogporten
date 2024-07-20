@@ -39,6 +39,8 @@ public static class DialogGenerator
             id,
             serviceResource,
             party,
+            null,
+            null,
             progress,
             extendedStatus,
             externalReference,
@@ -60,6 +62,8 @@ public static class DialogGenerator
         Guid? id = null,
         string? serviceResource = null,
         string? party = null,
+        Func<string?>? serviceResourceGenerator = null,
+        Func<string?>? partyGenerator = null,
         int? progress = null,
         string? extendedStatus = null,
         string? externalReference = null,
@@ -75,9 +79,9 @@ public static class DialogGenerator
     {
         Randomizer.Seed = seed.HasValue ? new Random(seed.Value) : new Random();
         return new Faker<CreateDialogCommand>()
-            .RuleFor(o => o.Id, f => id)
-            .RuleFor(o => o.ServiceResource, _ => serviceResource ?? GenerateFakeResource())
-            .RuleFor(o => o.Party, _ => party ?? GenerateRandomParty())
+            .RuleFor(o => o.Id, _ => id)
+            .RuleFor(o => o.ServiceResource, _ => serviceResource ?? GenerateFakeResource(serviceResourceGenerator))
+            .RuleFor(o => o.Party, _ => party ?? GenerateRandomParty(partyGenerator))
             .RuleFor(o => o.Progress, f => progress ?? f.Random.Number(0, 100))
             .RuleFor(o => o.ExtendedStatus, f => extendedStatus ?? f.Random.AlphaNumeric(10))
             .RuleFor(o => o.ExternalReference, f => externalReference ?? f.Random.AlphaNumeric(10))
@@ -106,8 +110,11 @@ public static class DialogGenerator
             searchTags: []);
     }
 
-    public static string GenerateFakeResource()
+    public static string GenerateFakeResource(Func<string?>? generator = null)
     {
+        var generatedValue = generator?.Invoke();
+        if (generatedValue != null) return generatedValue;
+
         var r = new Randomizer();
         // Apply a power function to skew the distribution towards higher numbers
         // The exponent controls the shape of the distribution curve
@@ -120,8 +127,11 @@ public static class DialogGenerator
         return ResourcePrefix + result.ToString("D4", CultureInfo.InvariantCulture);
     }
 
-    public static string GenerateRandomParty()
+    public static string GenerateRandomParty(Func<string?>? generator = null)
     {
+        var generatedValue = generator?.Invoke();
+        if (generatedValue != null) return generatedValue;
+
         var r = new Randomizer();
         return r.Bool() ? $"urn:altinn:organization:identifier-no:{GenerateFakeOrgNo()}" : $"urn:altinn:person:identifier-no:{GenerateFakePid()}";
     }
@@ -279,13 +289,6 @@ public static class DialogGenerator
             .RuleFor(o => o.Urls, _ => GenerateFakeDialogAttachmentUrls())
             .Generate(count ?? new Randomizer().Number(1, 6));
     }
-
-    private static readonly string[] MediaTypes = [
-        "application/json",
-        "application/xml",
-        "text/html",
-        "application/pdf"
-    ];
 
     public static List<CreateDialogDialogAttachmentUrlDto> GenerateFakeDialogAttachmentUrls()
     {

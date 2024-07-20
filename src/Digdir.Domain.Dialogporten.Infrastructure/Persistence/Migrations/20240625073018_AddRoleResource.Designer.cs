@@ -3,6 +3,7 @@ using System;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(DialogDbContext))]
-    partial class DialogDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240625073018_AddRoleResource")]
+    partial class AddRoleResource
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -453,7 +456,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         new
                         {
                             Id = 1,
-                            AllowedMediaTypes = new[] { "text/plain" },
+                            AllowedMediaTypes = new string[0],
                             MaxLength = 255,
                             Name = "Title",
                             OutputInList = true,
@@ -462,7 +465,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         new
                         {
                             Id = 2,
-                            AllowedMediaTypes = new[] { "text/plain" },
+                            AllowedMediaTypes = new string[0],
                             MaxLength = 255,
                             Name = "SenderName",
                             OutputInList = true,
@@ -471,7 +474,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         new
                         {
                             Id = 3,
-                            AllowedMediaTypes = new[] { "text/plain" },
+                            AllowedMediaTypes = new string[0],
                             MaxLength = 255,
                             Name = "Summary",
                             OutputInList = true,
@@ -489,7 +492,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         new
                         {
                             Id = 5,
-                            AllowedMediaTypes = new[] { "text/plain" },
+                            AllowedMediaTypes = new string[0],
                             MaxLength = 20,
                             Name = "ExtendedStatus",
                             OutputInList = true,
@@ -820,7 +823,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("LocalizationSetId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("LanguageCode")
+                    b.Property<string>("CultureCode")
                         .HasMaxLength(15)
                         .HasColumnType("character varying(15)");
 
@@ -839,7 +842,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         .HasMaxLength(4095)
                         .HasColumnType("character varying(4095)");
 
-                    b.HasKey("LocalizationSetId", "LanguageCode");
+                    b.HasKey("LocalizationSetId", "CultureCode");
 
                     b.ToTable("Localization");
                 });
@@ -875,18 +878,6 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("EventId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
-
-                    b.Property<string>("CorrelationId")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)")
-                        .HasDefaultValueSql("gen_random_uuid()");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("current_timestamp at time zone 'utc'");
 
                     b.Property<string>("EventPayload")
                         .IsRequired()
