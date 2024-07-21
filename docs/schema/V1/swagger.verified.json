@@ -319,7 +319,11 @@
                     "ExtendedType": null,
                     "Type": 3,
                     "RelatedActivityId": null,
-                    "PerformedBy": "Some performed",
+                    "PerformedBy": {
+                      "ActorType": 2,
+                      "ActorName": null,
+                      "ActorId": null
+                    },
                     "Description": [
                       {
                         "Value": "Some description",
@@ -1787,12 +1791,24 @@
             "type": "string",
             "format": "date-time"
           },
-          "endUserIdHash": {
+          "seenBy": {
+            "$ref": "#/components/schemas/SearchDialogSeenLogActorDtoSO"
+          },
+          "isViaServiceOwner": {
+            "type": "boolean",
+            "nullable": true
+          }
+        }
+      },
+      "SearchDialogSeenLogActorDtoSO": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "actorName": {
             "type": "string"
           },
-          "endUserName": {
-            "type": "string",
-            "nullable": true
+          "actorId": {
+            "type": "string"
           }
         }
       },
@@ -1867,12 +1883,23 @@
             "type": "string",
             "format": "date-time"
           },
-          "endUserIdHash": {
+          "seenBy": {
+            "$ref": "#/components/schemas/GetDialogSeenLogActorDtoSO"
+          },
+          "isViaServiceOwner": {
+            "type": "boolean"
+          }
+        }
+      },
+      "GetDialogSeenLogActorDtoSO": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "actorName": {
             "type": "string"
           },
-          "endUserName": {
-            "type": "string",
-            "nullable": true
+          "actorId": {
+            "type": "string"
           }
         }
       },
@@ -2281,8 +2308,7 @@
             "nullable": true
           },
           "performedBy": {
-            "type": "string",
-            "nullable": true
+            "$ref": "#/components/schemas/UpdateDialogDialogActivityActorDto"
           },
           "description": {
             "type": "array",
@@ -2310,6 +2336,35 @@
           "Error",
           "Closed",
           "Forwarded"
+        ]
+      },
+      "UpdateDialogDialogActivityActorDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "actorType": {
+            "$ref": "#/components/schemas/DialogActorType_Values"
+          },
+          "actorName": {
+            "type": "string",
+            "nullable": true
+          },
+          "actorId": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "DialogActorType_Values": {
+        "type": "string",
+        "description": "",
+        "x-enumNames": [
+          "PartyRepresentative",
+          "ServiceOwner"
+        ],
+        "enum": [
+          "PartyRepresentative",
+          "ServiceOwner"
         ]
       },
       "PaginatedListOfSearchDialogDtoSO": {
@@ -2363,6 +2418,11 @@
             "format": "int32",
             "nullable": true
           },
+          "guiAttachmentCount": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
           "extendedStatus": {
             "type": "string",
             "nullable": true
@@ -2388,6 +2448,14 @@
           "status": {
             "$ref": "#/components/schemas/DialogStatus_Values"
           },
+          "latestActivity": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/SearchDialogDialogActivityDtoSO"
+              }
+            ]
+          },
           "content": {
             "type": "array",
             "items": {
@@ -2399,6 +2467,60 @@
             "items": {
               "$ref": "#/components/schemas/SearchDialogDialogSeenLogDtoSO"
             }
+          }
+        }
+      },
+      "SearchDialogDialogActivityDtoSO": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "extendedType": {
+            "type": "string",
+            "format": "uri",
+            "nullable": true
+          },
+          "type": {
+            "$ref": "#/components/schemas/DialogActivityType_Values"
+          },
+          "relatedActivityId": {
+            "type": "string",
+            "format": "guid",
+            "nullable": true
+          },
+          "performedBy": {
+            "$ref": "#/components/schemas/SearchDialogDialogActivityActorDtoSO"
+          },
+          "description": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LocalizationDto"
+            }
+          }
+        }
+      },
+      "SearchDialogDialogActivityActorDtoSO": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "actorType": {
+            "$ref": "#/components/schemas/DialogActorType_Values"
+          },
+          "actorName": {
+            "type": "string",
+            "nullable": true
+          },
+          "actorId": {
+            "type": "string",
+            "nullable": true
           }
         }
       },
@@ -2425,20 +2547,31 @@
             "type": "string",
             "format": "guid"
           },
-          "createdAt": {
+          "seenAt": {
             "type": "string",
             "format": "date-time"
           },
-          "endUserIdHash": {
-            "type": "string"
+          "seenBy": {
+            "$ref": "#/components/schemas/SearchDialogDialogSeenLogActorDtoSO"
           },
-          "endUserName": {
-            "type": "string",
+          "isViaServiceOwner": {
+            "type": "boolean",
             "nullable": true
           },
           "isCurrentEndUser": {
-            "type": "boolean",
-            "nullable": true
+            "type": "boolean"
+          }
+        }
+      },
+      "SearchDialogDialogSeenLogActorDtoSO": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "actorName": {
+            "type": "string"
+          },
+          "actorId": {
+            "type": "string"
           }
         }
       },
@@ -2765,14 +2898,30 @@
             "nullable": true
           },
           "performedBy": {
-            "type": "string",
-            "nullable": true
+            "$ref": "#/components/schemas/GetDialogDialogActivityActorDtoSO"
           },
           "description": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/LocalizationDto"
             }
+          }
+        }
+      },
+      "GetDialogDialogActivityActorDtoSO": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "actorType": {
+            "$ref": "#/components/schemas/DialogActorType_Values"
+          },
+          "actorName": {
+            "type": "string",
+            "nullable": true
+          },
+          "actorId": {
+            "type": "string",
+            "nullable": true
           }
         }
       },
@@ -2784,20 +2933,27 @@
             "type": "string",
             "format": "guid"
           },
-          "createdAt": {
+          "seenAt": {
             "type": "string",
             "format": "date-time"
           },
-          "endUserIdHash": {
+          "seenBy": {
+            "$ref": "#/components/schemas/GetDialogDialogSeenLogActorDtoSO"
+          },
+          "isViaServiceOwner": {
+            "type": "boolean"
+          }
+        }
+      },
+      "GetDialogDialogSeenLogActorDtoSO": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "actorName": {
             "type": "string"
           },
-          "endUserName": {
-            "type": "string",
-            "nullable": true
-          },
-          "isCurrentEndUser": {
-            "type": "boolean",
-            "nullable": true
+          "actorId": {
+            "type": "string"
           }
         }
       },
@@ -3084,14 +3240,30 @@
             "nullable": true
           },
           "performedBy": {
-            "type": "string",
-            "nullable": true
+            "$ref": "#/components/schemas/CreateDialogDialogActivityActorDto"
           },
           "description": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/LocalizationDto"
             }
+          }
+        }
+      },
+      "CreateDialogDialogActivityActorDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "actorType": {
+            "$ref": "#/components/schemas/DialogActorType_Values"
+          },
+          "actorName": {
+            "type": "string",
+            "nullable": true
+          },
+          "actorId": {
+            "type": "string",
+            "nullable": true
           }
         }
       },
@@ -3123,8 +3295,7 @@
             "nullable": true
           },
           "performedBy": {
-            "type": "string",
-            "nullable": true
+            "$ref": "#/components/schemas/UpdateDialogDialogActivityActorDto"
           },
           "description": {
             "type": "array",
@@ -3195,15 +3366,26 @@
             "type": "string",
             "format": "date-time"
           },
-          "endUserIdHash": {
-            "type": "string"
+          "seenBy": {
+            "$ref": "#/components/schemas/SearchDialogSeenLogSeenByDto"
           },
-          "endUserName": {
-            "type": "string",
-            "nullable": true
+          "isViaServiceOwner": {
+            "type": "boolean"
           },
           "isCurrentEndUser": {
             "type": "boolean"
+          }
+        }
+      },
+      "SearchDialogSeenLogSeenByDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "actorName": {
+            "type": "string"
+          },
+          "actorId": {
+            "type": "string"
           }
         }
       },
@@ -3219,15 +3401,26 @@
             "type": "string",
             "format": "date-time"
           },
-          "endUserIdHash": {
-            "type": "string"
+          "seenBy": {
+            "$ref": "#/components/schemas/GetDialogSeenLogActorDto"
           },
-          "endUserName": {
-            "type": "string",
-            "nullable": true
+          "isViaServiceOwner": {
+            "type": "boolean"
           },
           "isCurrentEndUser": {
             "type": "boolean"
+          }
+        }
+      },
+      "GetDialogSeenLogActorDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "actorName": {
+            "type": "string"
+          },
+          "actorId": {
+            "type": "string"
           }
         }
       },
@@ -3352,14 +3545,30 @@
             "nullable": true
           },
           "performedBy": {
-            "type": "string",
-            "nullable": true
+            "$ref": "#/components/schemas/SearchDialogDialogActivityActorDto"
           },
           "description": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/LocalizationDto"
             }
+          }
+        }
+      },
+      "SearchDialogDialogActivityActorDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "actorType": {
+            "$ref": "#/components/schemas/DialogActorType_Values"
+          },
+          "actorName": {
+            "type": "string",
+            "nullable": true
+          },
+          "actorId": {
+            "type": "string",
+            "nullable": true
           }
         }
       },
@@ -3390,15 +3599,27 @@
             "type": "string",
             "format": "date-time"
           },
-          "endUserIdHash": {
-            "type": "string"
+          "seenBy": {
+            "$ref": "#/components/schemas/SearchDialogDialogSeenLogActorDto"
           },
-          "endUserName": {
-            "type": "string",
+          "isViaServiceOwner": {
+            "type": "boolean",
             "nullable": true
           },
           "isCurrentEndUser": {
             "type": "boolean"
+          }
+        }
+      },
+      "SearchDialogDialogSeenLogActorDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "actorName": {
+            "type": "string"
+          },
+          "actorId": {
+            "type": "string"
           }
         }
       },
@@ -3712,14 +3933,30 @@
             "nullable": true
           },
           "performedBy": {
-            "type": "string",
-            "nullable": true
+            "$ref": "#/components/schemas/GetDialogDialogActivityActorDto"
           },
           "description": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/LocalizationDto"
             }
+          }
+        }
+      },
+      "GetDialogDialogActivityActorDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "actorType": {
+            "$ref": "#/components/schemas/DialogActorType_Values"
+          },
+          "actorName": {
+            "type": "string",
+            "nullable": true
+          },
+          "actorId": {
+            "type": "string",
+            "nullable": true
           }
         }
       },
@@ -3735,15 +3972,27 @@
             "type": "string",
             "format": "date-time"
           },
-          "endUserIdHash": {
-            "type": "string"
+          "seenBy": {
+            "$ref": "#/components/schemas/GetDialogDialogSeenLogActorDto"
           },
-          "endUserName": {
-            "type": "string",
+          "isViaServiceOwner": {
+            "type": "boolean",
             "nullable": true
           },
           "isCurrentEndUser": {
             "type": "boolean"
+          }
+        }
+      },
+      "GetDialogDialogSeenLogActorDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "actorName": {
+            "type": "string"
+          },
+          "actorId": {
+            "type": "string"
           }
         }
       },
