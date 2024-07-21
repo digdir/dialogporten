@@ -4,6 +4,7 @@ using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Qu
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actors;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Attachments;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
 
@@ -63,6 +64,10 @@ internal sealed class MappingProfile : Profile
             .ForMember(dest => dest.Type, opt => opt.Ignore())
             .ForMember(dest => dest.TypeId, opt => opt.MapFrom(src => src.Type));
 
+        CreateMap<UpdateDialogDialogActivityActorDto, DialogActor>()
+            .ForMember(dest => dest.ActorType, opt => opt.Ignore())
+            .ForMember(dest => dest.ActorTypeId, opt => opt.MapFrom(src => src.ActorType));
+
         // ===========================================
         // ================== Patch ==================
         // ===========================================
@@ -72,6 +77,7 @@ internal sealed class MappingProfile : Profile
             .ForMember(dest => dest.Activities, opt => opt.Ignore());
         CreateMap<GetDialogSearchTagDto, UpdateDialogSearchTagDto>();
         CreateMap<GetDialogDialogActivityDto, UpdateDialogDialogActivityDto>();
+        CreateMap<GetDialogDialogActivityActorDto, UpdateDialogDialogActivityActorDto>();
         CreateMap<GetDialogDialogApiActionDto, UpdateDialogDialogApiActionDto>();
         CreateMap<GetDialogDialogApiActionEndpointDto, UpdateDialogDialogApiActionEndpointDto>();
         CreateMap<GetDialogDialogGuiActionDto, UpdateDialogDialogGuiActionDto>();

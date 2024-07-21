@@ -2,6 +2,7 @@
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actors;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Attachments;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
 using Digdir.Domain.Dialogporten.Domain.Http;
@@ -38,16 +39,21 @@ public sealed class GetDialogDto
 
 }
 
-public class GetDialogDialogSeenLogDto
+public sealed class GetDialogDialogSeenLogDto
 {
     public Guid Id { get; set; }
     public DateTimeOffset SeenAt { get; set; }
 
-    public string EndUserIdHash { get; set; } = null!;
+    public GetDialogDialogSeenLogActorDto SeenBy { get; set; } = new();
 
-    public string? EndUserName { get; set; }
-
+    public bool? IsViaServiceOwner { get; set; }
     public bool IsCurrentEndUser { get; set; }
+}
+
+public sealed class GetDialogDialogSeenLogActorDto
+{
+    public string ActorName { get; set; } = null!;
+    public string ActorId { get; set; } = null!;
 }
 
 public sealed class GetDialogContentDto
@@ -67,8 +73,15 @@ public sealed class GetDialogDialogActivityDto
 
     public Guid? RelatedActivityId { get; set; }
 
-    public string? PerformedBy { get; set; }
+    public GetDialogDialogActivityActorDto PerformedBy { get; set; } = new();
     public List<LocalizationDto> Description { get; set; } = [];
+}
+
+public sealed class GetDialogDialogActivityActorDto
+{
+    public DialogActorType.Values ActorType { get; set; }
+    public string? ActorName { get; set; }
+    public string? ActorId { get; set; }
 }
 
 public sealed class GetDialogDialogApiActionDto

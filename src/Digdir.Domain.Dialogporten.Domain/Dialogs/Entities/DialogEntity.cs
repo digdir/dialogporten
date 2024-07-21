@@ -1,5 +1,6 @@
 ﻿using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actors;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Attachments;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Events;
@@ -84,7 +85,7 @@ public class DialogEntity :
     public void UpdateSeenAt(string endUserId, DialogUserType.Values userTypeId, string? endUserName)
     {
         var lastSeenAt = SeenLog
-            .Where(x => x.EndUserId == endUserId)
+            .Where(x => x.SeenBy.ActorId == endUserId)
             .MaxBy(x => x.CreatedAt)
             ?.CreatedAt
             ?? DateTimeOffset.MinValue;
@@ -96,9 +97,13 @@ public class DialogEntity :
 
         SeenLog.Add(new()
         {
-            EndUserId = endUserId,
             EndUserTypeId = userTypeId,
-            EndUserName = endUserName
+            SeenBy = new DialogActor
+            {
+                ActorTypeId = DialogActorType.Values.PartyRepresentative,
+                ActorId = endUserId,
+                ActorName = endUserName
+            }
         });
 
         _domainEvents.Add(new DialogSeenDomainEvent(Id, ServiceResource, Party));

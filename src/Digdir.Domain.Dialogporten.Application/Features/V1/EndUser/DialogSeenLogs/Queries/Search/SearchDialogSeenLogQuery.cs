@@ -24,20 +24,17 @@ internal sealed class SearchDialogSeenLogQueryHandler : IRequestHandler<SearchDi
     private readonly IMapper _mapper;
     private readonly IAltinnAuthorization _altinnAuthorization;
     private readonly IUserRegistry _userRegistry;
-    private readonly IStringHasher _stringHasher;
 
     public SearchDialogSeenLogQueryHandler(
         IDialogDbContext db,
         IMapper mapper,
         IAltinnAuthorization altinnAuthorization,
-        IUserRegistry userRegistry,
-        IStringHasher stringHasher)
+        IUserRegistry userRegistry)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _altinnAuthorization = altinnAuthorization ?? throw new ArgumentNullException(nameof(altinnAuthorization));
         _userRegistry = userRegistry ?? throw new ArgumentNullException(nameof(userRegistry));
-        _stringHasher = stringHasher ?? throw new ArgumentNullException(nameof(stringHasher));
     }
 
     public async Task<SearchDialogSeenLogResult> Handle(SearchDialogSeenLogQuery request, CancellationToken cancellationToken)
@@ -47,7 +44,7 @@ internal sealed class SearchDialogSeenLogQueryHandler : IRequestHandler<SearchDi
         var dialog = await _db.Dialogs
             .AsNoTracking()
             .Include(x => x.SeenLog)
-                .ThenInclude(x => x.Via!.Localizations)
+            .ThenInclude(x => x.SeenBy)
             .IgnoreQueryFilters()
             .FirstOrDefaultAsync(x => x.Id == request.DialogId,
                 cancellationToken: cancellationToken);
@@ -76,8 +73,7 @@ internal sealed class SearchDialogSeenLogQueryHandler : IRequestHandler<SearchDi
             .Select(x =>
             {
                 var dto = _mapper.Map<SearchDialogSeenLogDto>(x);
-                dto.IsCurrentEndUser = x.EndUserId == currentUserInformation.UserId.ExternalId;
-                dto.EndUserIdHash = _stringHasher.Hash(x.EndUserId);
+                dto.IsCurrentEndUser = currentUserInformation.UserId.ExternalId == x.SeenBy.ActorId;
                 return dto;
             })
             .ToList();

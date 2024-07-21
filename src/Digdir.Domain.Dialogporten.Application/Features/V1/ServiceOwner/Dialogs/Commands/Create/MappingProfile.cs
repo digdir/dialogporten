@@ -2,6 +2,7 @@
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actors;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Attachments;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
 
@@ -38,6 +39,10 @@ internal sealed class MappingProfile : Profile
         CreateMap<CreateDialogDialogActivityDto, DialogActivity>()
             .ForMember(dest => dest.Type, opt => opt.Ignore())
             .ForMember(dest => dest.TypeId, opt => opt.MapFrom(src => src.Type));
+
+        CreateMap<CreateDialogDialogActivityActorDto, DialogActor>()
+            .ForMember(dest => dest.ActorType, opt => opt.Ignore())
+            .ForMember(dest => dest.ActorTypeId, opt => opt.MapFrom(src => src.ActorType));
 
         CreateMap<CreateDialogContentDto, DialogContent>()
             .ForMember(dest => dest.Type, opt => opt.Ignore())

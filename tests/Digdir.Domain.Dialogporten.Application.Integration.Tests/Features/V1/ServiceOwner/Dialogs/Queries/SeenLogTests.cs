@@ -14,8 +14,9 @@ namespace Digdir.Domain.Dialogporten.Application.Integration.Tests.Features.V1.S
 public class SeenLogTests(DialogApplication application) : ApplicationCollectionFixture(application)
 {
     [Fact]
-    public async Task Get_Dialog_Should_Not_Return_User_Ids_Unhashed()
+    public Task Get_Dialog_Should_Not_Return_User_Ids_Unhashed()
     {
+        /*
         // Arrange
         var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog();
         var createCommandResponse = await Application.Send(createDialogCommand);
@@ -35,11 +36,14 @@ public class SeenLogTests(DialogApplication application) : ApplicationCollection
             .EndUserIdHash
             .Should()
             .HaveLength(PersistentRandomSaltStringHasher.StringLength);
+        */
+        throw new NotImplementedException();
     }
 
     [Fact]
-    public async Task Search_Dialog_Should_Not_Return_User_Ids_Unhashed()
+    public Task Search_Dialog_Should_Not_Return_User_Ids_Unhashed()
     {
+        /*
         // Arrange
         var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog();
         var createCommandResponse = await Application.Send(createDialogCommand);
@@ -64,11 +68,14 @@ public class SeenLogTests(DialogApplication application) : ApplicationCollection
             .EndUserIdHash
             .Should()
             .HaveLength(PersistentRandomSaltStringHasher.StringLength);
+        */
+        throw new NotImplementedException();
     }
 
     [Fact]
-    public async Task Get_SeenLog_Should_Not_Return_User_Ids_Unhashed()
+    public Task Get_SeenLog_Should_Not_Return_User_Ids_Unhashed()
     {
+        /*
         // Arrange
         var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog();
         var createCommandResponse = await Application.Send(createDialogCommand);
@@ -90,11 +97,14 @@ public class SeenLogTests(DialogApplication application) : ApplicationCollection
         result.EndUserIdHash
             .Should()
             .HaveLength(PersistentRandomSaltStringHasher.StringLength);
+        */
+        throw new NotImplementedException();
     }
 
     [Fact]
-    public async Task Search_SeenLog_Should_Not_Return_User_Ids_Unhashed()
+    public Task Search_SeenLog_Should_Not_Return_User_Ids_Unhashed()
     {
+        /*
         // Arrange
         var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog();
         var createCommandResponse = await Application.Send(createDialogCommand);
@@ -116,5 +126,7 @@ public class SeenLogTests(DialogApplication application) : ApplicationCollection
             .EndUserIdHash
             .Should()
             .HaveLength(PersistentRandomSaltStringHasher.StringLength);
+        */
+        throw new NotImplementedException();
     }
 }

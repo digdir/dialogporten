@@ -25,15 +25,21 @@ public sealed class SearchDialogDto
     public List<SearchDialogDialogSeenLogDto> SeenSinceLastUpdate { get; set; } = [];
 }
 
-public class SearchDialogDialogSeenLogDto
+public sealed class SearchDialogDialogSeenLogDto
 {
     public Guid Id { get; set; }
-    public DateTimeOffset CreatedAt { get; set; }
+    public DateTimeOffset SeenAt { get; set; }
 
-    public string EndUserIdHash { get; set; } = null!;
+    public SearchDialogDialogSeenLogActorDto SeenBy { get; set; } = null!;
 
-    public string? EndUserName { get; set; }
-    public bool? IsCurrentEndUser { get; set; }
+    public bool? IsViaServiceOwner { get; set; }
+    public bool IsCurrentEndUser { get; set; }
+}
+
+public sealed class SearchDialogDialogSeenLogActorDto
+{
+    public string ActorName { get; set; } = null!;
+    public string ActorId { get; set; } = null!;
 }
 
 public sealed class SearchDialogSearchTagDto

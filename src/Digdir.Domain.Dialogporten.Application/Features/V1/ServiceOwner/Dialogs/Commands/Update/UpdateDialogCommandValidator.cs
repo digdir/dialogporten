@@ -4,6 +4,7 @@ using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using Digdir.Domain.Dialogporten.Domain;
 using Digdir.Domain.Dialogporten.Domain.Common;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actors;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
 using Digdir.Domain.Dialogporten.Domain.Http;
 using FluentValidation;
@@ -257,7 +258,8 @@ internal sealed class UpdateDialogDialogApiActionEndpointDtoValidator : Abstract
 internal sealed class UpdateDialogDialogActivityDtoValidator : AbstractValidator<UpdateDialogDialogActivityDto>
 {
     public UpdateDialogDialogActivityDtoValidator(
-        IValidator<IEnumerable<LocalizationDto>> localizationsValidator)
+        IValidator<IEnumerable<LocalizationDto>> localizationsValidator,
+        IValidator<UpdateDialogDialogActivityActorDto> actorValidator)
     {
         RuleFor(x => x.Id)
             .NotEqual(default(Guid));
@@ -272,9 +274,31 @@ internal sealed class UpdateDialogDialogActivityDtoValidator : AbstractValidator
             .NotEqual(x => x.Id)
             .When(x => x.RelatedActivityId.HasValue);
         RuleFor(x => x.PerformedBy)
-            .MaximumLength(Constants.DefaultMaxStringLength);
+            .SetValidator(actorValidator);
         RuleFor(x => x.Description)
             .NotEmpty()
             .SetValidator(localizationsValidator);
+    }
+}
+
+internal sealed class UpdateDialogDialogActivityActorDtoValidator : AbstractValidator<UpdateDialogDialogActivityActorDto>
+{
+    public UpdateDialogDialogActivityActorDtoValidator()
+    {
+        RuleFor(x => x.ActorType)
+            .IsInEnum();
+
+        RuleFor(x => x.ActorId)
+            .Must((dto, value) => value is null || dto.ActorName is null)
+            .WithMessage("Only one of 'ActorId' or 'ActorName' can be set, but not both.");
+
+        RuleFor(x => x.ActorType)
+            .Must((dto, value) => (value == DialogActorType.Values.ServiceOwner && dto.ActorId is null && dto.ActorName is null) ||
+                                  (value != DialogActorType.Values.ServiceOwner && (dto.ActorId is not null || dto.ActorName is not null)))
+            .WithMessage("If 'ActorType' is 'ServiceOwner', both 'ActorId' and 'ActorName' must be null. Otherwise, one of them must be set.");
+
+        RuleFor(x => x.ActorId!)
+            .IsValidPartyIdentifier()
+            .When(x => x.ActorId is not null);
     }
 }

@@ -39,7 +39,6 @@ public static class ApplicationExtensions
             .AddScoped<IDialogTokenGenerator, DialogTokenGenerator>()
 
             // Transient
-            .AddTransient<IStringHasher, PersistentRandomSaltStringHasher>()
             .AddTransient<IUserOrganizationRegistry, UserOrganizationRegistry>()
             .AddTransient<IUserResourceRegistry, UserResourceRegistry>()
             .AddTransient<IUserRegistry, UserRegistry>()

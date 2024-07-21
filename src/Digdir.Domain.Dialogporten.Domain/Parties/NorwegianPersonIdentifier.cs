@@ -10,8 +10,11 @@ public class NorwegianPersonIdentifier : IPartyIdentifier
     private static readonly int[] SocialSecurityNumberWeights1 = [3, 7, 6, 1, 8, 9, 4, 5, 2, 1];
     private static readonly int[] SocialSecurityNumberWeights2 = [5, 4, 3, 2, 7, 6, 5, 4, 3, 2, 1];
 
-    public static string Prefix => "urn:altinn:person:identifier-no";
+    private static string PersonPrefix => "urn:altinn:person:identifier-";
+    public static string Prefix => PersonPrefix + "no";
     public static string PrefixWithSeparator => Prefix + PartyIdentifier.Separator;
+    public static string HashPrefix => PersonPrefix + "ephemeral";
+    public static string HashPrefixWithSeparator => HashPrefix + PartyIdentifier.Separator;
     public string FullId { get; }
     public string Id { get; }
 

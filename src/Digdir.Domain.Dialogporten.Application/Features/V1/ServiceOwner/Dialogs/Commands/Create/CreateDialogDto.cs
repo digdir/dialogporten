@@ -3,6 +3,7 @@ using Digdir.Domain.Dialogporten.Domain;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actors;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Attachments;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
 using Digdir.Domain.Dialogporten.Domain.Http;
@@ -54,8 +55,15 @@ public sealed class CreateDialogDialogActivityDto
 
     public Guid? RelatedActivityId { get; set; }
 
-    public string? PerformedBy { get; set; }
+    public CreateDialogDialogActivityActorDto PerformedBy { get; set; } = new();
     public List<LocalizationDto> Description { get; set; } = [];
+}
+
+public sealed class CreateDialogDialogActivityActorDto
+{
+    public DialogActorType.Values ActorType { get; set; }
+    public string? ActorName { get; set; }
+    public string? ActorId { get; set; }
 }
 
 public sealed class CreateDialogDialogApiActionDto
