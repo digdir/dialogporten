@@ -13,6 +13,13 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.Sql("""
+                                 DELETE FROM public."DialogActivity" 
+                                 """);
+            migrationBuilder.Sql("""
+                                 DELETE FROM public."DialogSeenLog" 
+                                 """);
+
             migrationBuilder.DropForeignKey(
                 name: "FK_LocalizationSet_DialogSeenLog_DialogSeenLogId",
                 table: "LocalizationSet");
