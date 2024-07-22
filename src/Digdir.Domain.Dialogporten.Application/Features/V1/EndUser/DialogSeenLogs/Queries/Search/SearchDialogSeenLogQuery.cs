@@ -73,7 +73,7 @@ internal sealed class SearchDialogSeenLogQueryHandler : IRequestHandler<SearchDi
             .Select(x =>
             {
                 var dto = _mapper.Map<SearchDialogSeenLogDto>(x);
-                dto.IsCurrentEndUser = currentUserInformation.UserId.ExternalId == x.SeenBy.ActorId;
+                dto.IsCurrentEndUser = currentUserInformation.UserId.ExternalIdWithPrefix == x.SeenBy.ActorId;
                 return dto;
             })
             .ToList();

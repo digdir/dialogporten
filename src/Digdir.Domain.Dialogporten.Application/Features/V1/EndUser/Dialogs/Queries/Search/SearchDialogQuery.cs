@@ -173,7 +173,7 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
 
         foreach (var seenLog in paginatedList.Items.SelectMany(x => x.SeenSinceLastUpdate))
         {
-            seenLog.IsCurrentEndUser = currentUserInfo.UserId.ExternalIdWithPrefix == seenLog.SeenBy.ActorId;
+            seenLog.IsCurrentEndUser = IdentifierMasker.GetMaybeMaskedIdentifier(currentUserInfo.UserId.ExternalIdWithPrefix) == seenLog.SeenBy.ActorId;
         }
 
         return paginatedList;
