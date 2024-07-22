@@ -182,7 +182,7 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
         {
             foreach (var seenRecord in paginatedList.Items.SelectMany(x => x.SeenSinceLastUpdate))
             {
-                seenRecord.IsCurrentEndUser = seenRecord.SeenBy.ActorId == NorwegianPersonIdentifier.PrefixWithSeparator + request.EndUserId;
+                seenRecord.IsCurrentEndUser = seenRecord.SeenBy.ActorId == request.EndUserId;
             }
         }
 
