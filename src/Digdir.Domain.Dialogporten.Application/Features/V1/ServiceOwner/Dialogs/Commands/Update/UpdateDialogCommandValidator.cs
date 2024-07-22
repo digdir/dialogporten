@@ -274,6 +274,7 @@ internal sealed class UpdateDialogDialogActivityDtoValidator : AbstractValidator
             .NotEqual(x => x.Id)
             .When(x => x.RelatedActivityId.HasValue);
         RuleFor(x => x.PerformedBy)
+            .NotNull()
             .SetValidator(actorValidator);
         RuleFor(x => x.Description)
             .NotEmpty()
