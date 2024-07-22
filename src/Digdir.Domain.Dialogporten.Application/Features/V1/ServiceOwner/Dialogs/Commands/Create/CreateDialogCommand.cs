@@ -76,13 +76,20 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
 
         foreach (var activity in request.Activities)
         {
-            if (activity.PerformedBy.ActorId is null) continue;
+            if (activity.PerformedBy.ActorId is null)
+            {
+                continue;
+            }
 
             activity.PerformedBy.ActorName = await _partyNameRegistry.GetName(activity.PerformedBy.ActorId, cancellationToken);
-            if (activity.PerformedBy.ActorName == null)
+
+            if (!string.IsNullOrWhiteSpace(activity.PerformedBy.ActorName))
             {
-                return new DomainError(new DomainFailure(nameof(activity.PerformedBy.ActorId), $"Unable to look up actor id: {activity.PerformedBy.ActorId}"));
+                continue;
             }
+
+            var domainFailure = new DomainFailure(nameof(activity.PerformedBy.ActorId), $"Unable to look up name for actor id: {activity.PerformedBy.ActorId}");
+            return new DomainError(domainFailure);
         }
 
         var dialog = _mapper.Map<DialogEntity>(request);

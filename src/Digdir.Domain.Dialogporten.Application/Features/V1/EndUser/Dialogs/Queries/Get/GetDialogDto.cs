@@ -44,7 +44,7 @@ public sealed class GetDialogDialogSeenLogDto
     public Guid Id { get; set; }
     public DateTimeOffset SeenAt { get; set; }
 
-    public GetDialogDialogSeenLogActorDto SeenBy { get; set; } = new();
+    public GetDialogDialogSeenLogActorDto SeenBy { get; set; } = null!;
 
     public bool? IsViaServiceOwner { get; set; }
     public bool IsCurrentEndUser { get; set; }
@@ -73,7 +73,7 @@ public sealed class GetDialogDialogActivityDto
 
     public Guid? RelatedActivityId { get; set; }
 
-    public GetDialogDialogActivityActorDto PerformedBy { get; set; } = new();
+    public GetDialogDialogActivityActorDto PerformedBy { get; set; } = null!;
     public List<LocalizationDto> Description { get; set; } = [];
 }
 

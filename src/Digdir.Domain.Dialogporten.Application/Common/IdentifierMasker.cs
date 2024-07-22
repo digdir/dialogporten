@@ -11,7 +11,7 @@ public static class IdentifierMasker
     private const int SaltSize = 16;
     private static readonly byte[] Salt = RandomNumberGenerator.GetBytes(SaltSize);
 
-    public static string? Hash(string? plaintext)
+    private static string? Hash(string? plaintext)
     {
         if (string.IsNullOrWhiteSpace(plaintext))
         {

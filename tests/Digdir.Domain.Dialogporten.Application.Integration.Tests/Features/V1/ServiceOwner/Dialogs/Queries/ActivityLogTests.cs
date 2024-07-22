@@ -3,6 +3,7 @@ using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Qu
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.DialogActivities.Queries.Get;
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Create;
 using Digdir.Domain.Dialogporten.Application.Integration.Tests.Common;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Parties;
 using Digdir.Tool.Dialogporten.GenerateFakeData;
 using FluentAssertions;
@@ -15,6 +16,7 @@ public class ActivityLogTests(DialogApplication application) : ApplicationCollec
     [Fact]
     public async Task Get_Dialog_ActivityLog_Should_Return_User_Ids_Unhashed()
     {
+        // Arrange
         var (_, createCommandResponse) = await GenerateDialogWithActivity();
 
         // Act
@@ -84,7 +86,7 @@ public class ActivityLogTests(DialogApplication application) : ApplicationCollec
     private async Task<(CreateDialogCommand, CreateDialogResult)> GenerateDialogWithActivity()
     {
         var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog();
-        var activity = DialogGenerator.GenerateFakeDialogActivity();
+        var activity = DialogGenerator.GenerateFakeDialogActivity(type: DialogActivityType.Values.Information);
         activity.PerformedBy.ActorId = DialogGenerator.GenerateRandomParty(forcePerson: true);
         activity.PerformedBy.ActorName = null;
         createDialogCommand.Activities.Add(activity);

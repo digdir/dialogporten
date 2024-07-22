@@ -53,7 +53,7 @@ public class UpdateDialogDialogActivityDto
 
     public Guid? RelatedActivityId { get; set; }
 
-    public UpdateDialogDialogActivityActorDto PerformedBy { get; set; } = new();
+    public UpdateDialogDialogActivityActorDto PerformedBy { get; set; } = null!;
     public List<LocalizationDto> Description { get; set; } = [];
 }
 

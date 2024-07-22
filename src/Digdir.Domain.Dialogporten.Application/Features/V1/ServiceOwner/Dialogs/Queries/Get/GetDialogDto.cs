@@ -77,7 +77,7 @@ public sealed class GetDialogDialogActivityDto
 
     public Guid? RelatedActivityId { get; set; }
 
-    public GetDialogDialogActivityActorDto PerformedBy { get; set; } = new();
+    public GetDialogDialogActivityActorDto PerformedBy { get; set; } = null!;
     public List<LocalizationDto> Description { get; set; } = [];
 }
 

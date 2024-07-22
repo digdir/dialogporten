@@ -40,7 +40,7 @@ internal sealed class SearchDialogSeenLogQueryHandler : IRequestHandler<SearchDi
         var dialog = await _db.Dialogs
             .AsNoTracking()
             .Include(x => x.SeenLog)
-            .ThenInclude(x => x.SeenBy)
+                .ThenInclude(x => x.SeenBy)
             .IgnoreQueryFilters()
             .Where(x => resourceIds.Contains(x.ServiceResource))
             .FirstOrDefaultAsync(x => x.Id == request.DialogId,
