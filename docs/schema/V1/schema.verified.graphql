@@ -16,8 +16,14 @@ type Activity {
   extendedType: URL
   type: ActivityType!
   relatedActivityId: UUID
-  performedBy: String
+  performedBy: Actor!
   description: [Localization!]!
+}
+
+type Actor {
+  actorType: ActorType
+  actorId: String
+  actorName: String
 }
 
 type ApiAction {
@@ -173,8 +179,7 @@ type SearchDialogsPayload {
 type SeenLog {
   id: UUID!
   seenAt: DateTime!
-  endUserIdHash: String!
-  endUserName: String
+  seenBy: Actor!
   isCurrentEndUser: Boolean!
 }
 
@@ -222,6 +227,11 @@ enum ActivityType {
   CLOSED
   "When the dialog is forwarded (delegated access) by someone with access to others."
   FORWARDED
+}
+
+enum ActorType {
+  PARTY_REPRESENTATIVE
+  SERVICE_OWNER
 }
 
 enum ApplyPolicy {
