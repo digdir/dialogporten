@@ -61,7 +61,7 @@ public class DialogApplication : IAsyncLifetime
             .AddScoped<IUser, IntegrationTestUser>()
             .AddScoped<IResourceRegistry, LocalDevelopmentResourceRegistry>()
             .AddScoped<IServiceOwnerNameRegistry>(_ => CreateServiceOwnerNameRegistrySubstitute())
-            .AddScoped<IPersonNameRegistry>(_ => CreateNameRegistrySubstitute())
+            .AddScoped<IPartyNameRegistry>(_ => CreateNameRegistrySubstitute())
             .AddScoped<IOptions<ApplicationSettings>>(_ => CreateApplicationSettingsSubstitute())
             .AddScoped<IUnitOfWork, UnitOfWork>()
             .AddScoped<IAltinnAuthorization, LocalDevelopmentAltinnAuthorization>()
@@ -75,9 +75,9 @@ public class DialogApplication : IAsyncLifetime
         await BuildRespawnState();
     }
 
-    private static IPersonNameRegistry CreateNameRegistrySubstitute()
+    private static IPartyNameRegistry CreateNameRegistrySubstitute()
     {
-        var nameRegistrySubstitute = Substitute.For<IPersonNameRegistry>();
+        var nameRegistrySubstitute = Substitute.For<IPartyNameRegistry>();
 
         nameRegistrySubstitute
             .GetName(Arg.Any<string>(), Arg.Any<CancellationToken>())

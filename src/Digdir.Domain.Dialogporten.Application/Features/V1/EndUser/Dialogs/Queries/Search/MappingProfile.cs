@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
+using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actors;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Attachments;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
 
@@ -30,10 +32,16 @@ internal sealed class MappingProfile : Profile
             .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.TypeId));
 
         CreateMap<DialogSeenLog, SearchDialogDialogSeenLogDto>()
-            .ForMember(dest => dest.SeenAt, opt => opt.MapFrom(src => src.CreatedAt))
-            .ForMember(dest => dest.EndUserIdHash, opt => opt.MapFrom(src => src.EndUserId));
+            .ForMember(dest => dest.SeenAt, opt => opt.MapFrom(src => src.CreatedAt));
+
+        CreateMap<DialogActor, SearchDialogDialogSeenLogActorDto>()
+            .ForMember(dest => dest.ActorId, opt => opt.MapFrom(src => IdentifierMasker.GetMaybeMaskedIdentifier(src.ActorId)));
 
         CreateMap<DialogActivity, SearchDialogDialogActivityDto>()
             .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.TypeId));
+
+        CreateMap<DialogActor, SearchDialogDialogActivityActorDto>()
+            .ForMember(dest => dest.ActorType, opt => opt.MapFrom(src => src.ActorTypeId))
+            .ForMember(dest => dest.ActorId, opt => opt.MapFrom(src => IdentifierMasker.GetMaybeMaskedIdentifier(src.ActorId)));
     }
 }

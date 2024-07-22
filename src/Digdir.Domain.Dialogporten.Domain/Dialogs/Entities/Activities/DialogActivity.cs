@@ -1,4 +1,5 @@
-﻿using Digdir.Domain.Dialogporten.Domain.Dialogs.Events.Activities;
+﻿using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actors;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Events.Activities;
 using Digdir.Domain.Dialogporten.Domain.Localizations;
 using Digdir.Library.Entity.Abstractions.Features.Aggregate;
 using Digdir.Library.Entity.Abstractions.Features.EventPublisher;
@@ -27,7 +28,7 @@ public class DialogActivity : IImmutableEntity, IAggregateCreatedHandler, IEvent
     public DialogActivityDescription? Description { get; set; }
 
     [AggregateChild]
-    public string? PerformedBy { get; set; }
+    public DialogActor PerformedBy { get; set; } = null!;
 
     public List<DialogActivity> RelatedActivities { get; set; } = [];
 

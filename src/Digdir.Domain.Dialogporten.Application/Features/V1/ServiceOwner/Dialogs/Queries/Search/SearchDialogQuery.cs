@@ -10,6 +10,7 @@ using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Localizations;
+using Digdir.Domain.Dialogporten.Domain.Parties;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
@@ -122,20 +123,17 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
     private readonly IMapper _mapper;
     private readonly IUserResourceRegistry _userResourceRegistry;
     private readonly IAltinnAuthorization _altinnAuthorization;
-    private readonly IStringHasher _stringHasher;
 
     public SearchDialogQueryHandler(
         IDialogDbContext db,
         IMapper mapper,
         IUserResourceRegistry userResourceRegistry,
-        IAltinnAuthorization altinnAuthorization,
-        IStringHasher stringHasher)
+        IAltinnAuthorization altinnAuthorization)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _userResourceRegistry = userResourceRegistry ?? throw new ArgumentNullException(nameof(userResourceRegistry));
         _altinnAuthorization = altinnAuthorization;
-        _stringHasher = stringHasher;
     }
 
     public async Task<SearchDialogResult> Handle(SearchDialogQuery request, CancellationToken cancellationToken)
@@ -180,14 +178,12 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
             .ProjectTo<SearchDialogDto>(_mapper.ConfigurationProvider)
             .ToPaginatedListAsync(request, cancellationToken: cancellationToken);
 
-        foreach (var seenRecord in paginatedList.Items.SelectMany(x => x.SeenSinceLastUpdate))
+        if (request.EndUserId is not null)
         {
-            if (request.EndUserId is not null)
+            foreach (var seenRecord in paginatedList.Items.SelectMany(x => x.SeenSinceLastUpdate))
             {
-                seenRecord.IsCurrentEndUser = seenRecord.EndUserIdHash == request.EndUserId;
+                seenRecord.IsCurrentEndUser = seenRecord.SeenBy.ActorId == request.EndUserId;
             }
-
-            seenRecord.EndUserIdHash = _stringHasher.Hash(seenRecord.EndUserIdHash);
         }
 
         return paginatedList;

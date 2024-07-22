@@ -22,18 +22,15 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
     private readonly IDialogDbContext _db;
     private readonly IMapper _mapper;
     private readonly IUserResourceRegistry _userResourceRegistry;
-    private readonly IStringHasher _stringHasher;
 
     public GetDialogQueryHandler(
         IDialogDbContext db,
         IMapper mapper,
-        IUserResourceRegistry userResourceRegistry,
-        IStringHasher stringHasher)
+        IUserResourceRegistry userResourceRegistry)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _userResourceRegistry = userResourceRegistry ?? throw new ArgumentNullException(nameof(userResourceRegistry));
-        _stringHasher = stringHasher;
     }
 
     public async Task<GetDialogResult> Handle(GetDialogQuery request, CancellationToken cancellationToken)
@@ -59,9 +56,11 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
             .Include(x => x.ApiActions.OrderBy(x => x.CreatedAt).ThenBy(x => x.Id))
                 .ThenInclude(x => x.Endpoints.OrderBy(x => x.CreatedAt).ThenBy(x => x.Id))
             .Include(x => x.Activities).ThenInclude(x => x.Description!.Localizations)
+            .Include(x => x.Activities).ThenInclude(x => x.PerformedBy)
             .Include(x => x.SeenLog
                 .Where(x => x.CreatedAt >= x.Dialog.UpdatedAt)
                 .OrderBy(x => x.CreatedAt))
+                .ThenInclude(x => x.SeenBy)
             .IgnoreQueryFilters()
             .AsNoTracking() // TODO: Remove when #386 is implemented
             .Where(x => resourceIds.Contains(x.ServiceResource))
@@ -82,8 +81,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
             {
                 var logDto = _mapper.Map<GetDialogDialogSeenLogDto>(log);
                 // TODO: Set when #386 is implemented
-                // logDto.IsAuthenticatedUser = log.EndUserId == userPid;
-                logDto.EndUserIdHash = _stringHasher.Hash(log.EndUserId);
+                // logDto.IsCurrentEndUser = log.EndUserId == userPid;
                 return logDto;
             })
             .ToList();

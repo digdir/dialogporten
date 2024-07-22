@@ -5,6 +5,7 @@ using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Co
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actors;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Attachments;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
 using Digdir.Domain.Dialogporten.Domain.Http;
@@ -120,10 +121,10 @@ public static class DialogGenerator
         return ResourcePrefix + result.ToString("D4", CultureInfo.InvariantCulture);
     }
 
-    public static string GenerateRandomParty()
+    public static string GenerateRandomParty(bool forcePerson = false)
     {
         var r = new Randomizer();
-        return r.Bool() ? $"urn:altinn:organization:identifier-no:{GenerateFakeOrgNo()}" : $"urn:altinn:person:identifier-no:{GenerateFakePid()}";
+        return r.Bool() && !forcePerson ? $"urn:altinn:organization:identifier-no:{GenerateFakeOrgNo()}" : $"urn:altinn:person:identifier-no:{GenerateFakePid()}";
     }
 
     private static readonly int[] SocialSecurityNumberWeights1 = [3, 7, 6, 1, 8, 9, 4, 5, 2];
@@ -215,7 +216,7 @@ public static class DialogGenerator
             .RuleFor(o => o.CreatedAt, f => f.Date.Past())
             .RuleFor(o => o.ExtendedType, f => new Uri(f.Internet.UrlWithPath()))
             .RuleFor(o => o.Type, f => type ?? f.PickRandom<DialogActivityType.Values>())
-            .RuleFor(o => o.PerformedBy, f => f.Name.FullName())
+            .RuleFor(o => o.PerformedBy, f => new CreateDialogDialogActivityActorDto { ActorType = DialogActorType.Values.PartyRepresentative, ActorName = f.Name.FullName() })
             .RuleFor(o => o.Description, f => GenerateFakeLocalizations(f.Random.Number(4, 8)))
             .Generate(count ?? new Randomizer().Number(1, 4));
     }

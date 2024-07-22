@@ -29,7 +29,6 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
     private readonly IUserRegistry _userRegistry;
     private readonly IAltinnAuthorization _altinnAuthorization;
     private readonly IDialogTokenGenerator _dialogTokenGenerator;
-    private readonly IStringHasher _stringHasher;
 
     public GetDialogQueryHandler(
         IDialogDbContext db,
@@ -38,8 +37,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
         IClock clock,
         IUserRegistry userRegistry,
         IAltinnAuthorization altinnAuthorization,
-        IDialogTokenGenerator dialogTokenGenerator,
-        IStringHasher stringHasher)
+        IDialogTokenGenerator dialogTokenGenerator)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
@@ -48,7 +46,6 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
         _userRegistry = userRegistry ?? throw new ArgumentNullException(nameof(userRegistry));
         _altinnAuthorization = altinnAuthorization ?? throw new ArgumentNullException(nameof(altinnAuthorization));
         _dialogTokenGenerator = dialogTokenGenerator ?? throw new ArgumentNullException(nameof(dialogTokenGenerator));
-        _stringHasher = stringHasher;
     }
 
     public async Task<GetDialogResult> Handle(GetDialogQuery request, CancellationToken cancellationToken)
@@ -73,9 +70,11 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
             .Include(x => x.ApiActions.OrderBy(x => x.CreatedAt).ThenBy(x => x.Id))
                 .ThenInclude(x => x.Endpoints.OrderBy(x => x.CreatedAt).ThenBy(x => x.Id))
             .Include(x => x.Activities).ThenInclude(x => x.Description!.Localizations)
+            .Include(x => x.Activities).ThenInclude(x => x.PerformedBy)
             .Include(x => x.SeenLog
                 .Where(x => x.CreatedAt >= x.Dialog.UpdatedAt)
                 .OrderBy(x => x.CreatedAt))
+                .ThenInclude(x => x.SeenBy)
             .Where(x => !x.VisibleFrom.HasValue || x.VisibleFrom < _clock.UtcNowOffset)
             .IgnoreQueryFilters()
             .FirstOrDefaultAsync(x => x.Id == request.DialogId, cancellationToken);
@@ -101,7 +100,10 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
 
         // TODO: What if name lookup fails
         // https://github.com/digdir/dialogporten/issues/387
-        dialog.UpdateSeenAt(currentUserInformation.UserId.ExternalId, currentUserInformation.UserId.Type, currentUserInformation.Name);
+        dialog.UpdateSeenAt(
+            currentUserInformation.UserId.ExternalIdWithPrefix,
+            currentUserInformation.UserId.Type,
+            currentUserInformation.Name);
 
         var saveResult = await _unitOfWork
             .WithoutAuditableSideEffects()
@@ -118,8 +120,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
             .Select(log =>
             {
                 var logDto = _mapper.Map<GetDialogDialogSeenLogDto>(log);
-                logDto.IsCurrentEndUser = log.EndUserId == currentUserInformation.UserId.ExternalId;
-                logDto.EndUserIdHash = _stringHasher.Hash(log.EndUserId);
+                logDto.IsCurrentEndUser = currentUserInformation.UserId.ExternalIdWithPrefix == log.SeenBy.ActorId;
                 return logDto;
             })
             .ToList();

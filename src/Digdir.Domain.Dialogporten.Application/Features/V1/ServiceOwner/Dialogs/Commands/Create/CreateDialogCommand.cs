@@ -29,6 +29,7 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
     private readonly IDomainContext _domainContext;
     private readonly IUserResourceRegistry _userResourceRegistry;
     private readonly IUserOrganizationRegistry _userOrganizationRegistry;
+    private readonly IPartyNameRegistry _partyNameRegistry;
 
     internal static readonly ValidationFailure ProgressValidationFailure = new(nameof(CreateDialogCommand.Progress), "Progress cannot be set for correspondence dialogs.");
 
@@ -38,7 +39,8 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
         IUnitOfWork unitOfWork,
         IDomainContext domainContext,
         IUserResourceRegistry userResourceRegistry,
-        IUserOrganizationRegistry userOrganizationRegistry)
+        IUserOrganizationRegistry userOrganizationRegistry,
+        IPartyNameRegistry partyNameRegistry)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
@@ -46,6 +48,7 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
         _domainContext = domainContext ?? throw new ArgumentNullException(nameof(domainContext));
         _userResourceRegistry = userResourceRegistry ?? throw new ArgumentNullException(nameof(userResourceRegistry));
         _userOrganizationRegistry = userOrganizationRegistry ?? throw new ArgumentNullException(nameof(userOrganizationRegistry));
+        _partyNameRegistry = partyNameRegistry ?? throw new ArgumentNullException(nameof(partyNameRegistry));
     }
 
     public async Task<CreateDialogResult> Handle(CreateDialogCommand request, CancellationToken cancellationToken)
@@ -69,6 +72,24 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
         {
             if (request.Progress is not null)
                 return new ValidationError(ProgressValidationFailure);
+        }
+
+        foreach (var activity in request.Activities)
+        {
+            if (activity.PerformedBy.ActorId is null)
+            {
+                continue;
+            }
+
+            activity.PerformedBy.ActorName = await _partyNameRegistry.GetName(activity.PerformedBy.ActorId, cancellationToken);
+
+            if (!string.IsNullOrWhiteSpace(activity.PerformedBy.ActorName))
+            {
+                continue;
+            }
+
+            var domainFailure = new DomainFailure(nameof(activity.PerformedBy.ActorId), $"Unable to look up name for actor id: {activity.PerformedBy.ActorId}");
+            return new DomainError(domainFailure);
         }
 
         var dialog = _mapper.Map<DialogEntity>(request);
