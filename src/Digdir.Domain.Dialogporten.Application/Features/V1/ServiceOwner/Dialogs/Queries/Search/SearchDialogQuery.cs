@@ -10,6 +10,7 @@ using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Localizations;
+using Digdir.Domain.Dialogporten.Domain.Parties;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
@@ -182,7 +183,6 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
             foreach (var seenRecord in paginatedList.Items.SelectMany(x => x.SeenSinceLastUpdate))
             {
                 seenRecord.IsCurrentEndUser = seenRecord.SeenBy.ActorId == request.EndUserId;
-
             }
         }
 

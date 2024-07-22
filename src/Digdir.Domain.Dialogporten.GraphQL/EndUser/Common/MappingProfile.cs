@@ -12,7 +12,10 @@ public class MappingProfile : Profile
         CreateMap<LocalizationDto, Localization>();
 
         CreateMap<GetDialogDialogSeenLogDto, SeenLog>();
+        CreateMap<GetDialogDialogSeenLogActorDto, Actor>();
+
         CreateMap<SearchDialogDialogSeenLogDto, SeenLog>();
+        CreateMap<SearchDialogDialogSeenLogActorDto, Actor>();
 
         CreateMap<GetDialogContentDto, Content>()
             .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type));
@@ -21,7 +24,12 @@ public class MappingProfile : Profile
 
         CreateMap<GetDialogDialogActivityDto, Activity>()
             .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type));
+        CreateMap<GetDialogDialogActivityActorDto, Actor>()
+            .ForMember(dest => dest.ActorType, opt => opt.MapFrom(src => src.ActorType));
+
         CreateMap<SearchDialogDialogActivityDto, Activity>()
             .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type));
+        CreateMap<SearchDialogDialogActivityActorDto, Actor>()
+            .ForMember(dest => dest.ActorType, opt => opt.MapFrom(src => src.ActorType));
     }
 }

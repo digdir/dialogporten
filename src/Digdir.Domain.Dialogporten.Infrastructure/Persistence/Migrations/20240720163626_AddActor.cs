@@ -13,6 +13,13 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.Sql("""
+                                 DELETE FROM public."DialogActivity" 
+                                 """);
+            migrationBuilder.Sql("""
+                                 DELETE FROM public."DialogSeenLog" 
+                                 """);
+
             migrationBuilder.DropForeignKey(
                 name: "FK_LocalizationSet_DialogSeenLog_DialogSeenLogId",
                 table: "LocalizationSet");
@@ -47,15 +54,13 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                 name: "SeenById",
                 table: "DialogSeenLog",
                 type: "uuid",
-                nullable: false,
-                defaultValue: new Guid("00000000-0000-0000-0000-000000000000"));
+                nullable: false);
 
             migrationBuilder.AddColumn<Guid>(
                 name: "PerformedById",
                 table: "DialogActivity",
                 type: "uuid",
-                nullable: false,
-                defaultValue: new Guid("00000000-0000-0000-0000-000000000000"));
+                nullable: false);
 
             migrationBuilder.CreateTable(
                 name: "DialogActorType",

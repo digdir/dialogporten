@@ -7,7 +7,7 @@ public sealed class GetDialogSeenLogDto
 
     public GetDialogSeenLogActorDto SeenBy { get; set; } = null!;
 
-    public bool IsViaServiceOwner { get; set; }
+    public bool? IsViaServiceOwner { get; set; }
 }
 
 public sealed class GetDialogSeenLogActorDto

@@ -28,9 +28,7 @@ public sealed class SeenLog
     public Guid Id { get; set; }
     public DateTimeOffset SeenAt { get; set; }
 
-    public string EndUserIdHash { get; set; } = null!;
-
-    public string? EndUserName { get; set; }
+    public Actor SeenBy { get; set; } = null!;
 
     public bool IsCurrentEndUser { get; set; }
 }
@@ -45,8 +43,22 @@ public sealed class Activity
 
     public Guid? RelatedActivityId { get; set; }
 
-    public string? PerformedBy { get; set; }
+    public Actor PerformedBy { get; set; } = null!;
+
     public List<Localization> Description { get; set; } = [];
+}
+
+public sealed class Actor
+{
+    public ActorType? ActorType { get; set; }
+    public string? ActorId { get; set; }
+    public string? ActorName { get; set; }
+}
+
+public enum ActorType
+{
+    PartyRepresentative = 1,
+    ServiceOwner = 2
 }
 
 public enum ActivityType

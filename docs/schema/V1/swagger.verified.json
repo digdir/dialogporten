@@ -1887,7 +1887,8 @@
             "$ref": "#/components/schemas/GetDialogSeenLogActorDtoSO"
           },
           "isViaServiceOwner": {
-            "type": "boolean"
+            "type": "boolean",
+            "nullable": true
           }
         }
       },

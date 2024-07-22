@@ -61,7 +61,7 @@ public sealed class SearchDialogDialogActivityDto
 
     public Guid? RelatedActivityId { get; set; }
 
-    public SearchDialogDialogActivityActorDto PerformedBy { get; set; } = new();
+    public SearchDialogDialogActivityActorDto PerformedBy { get; set; } = null!;
     public List<LocalizationDto> Description { get; set; } = [];
 }
 

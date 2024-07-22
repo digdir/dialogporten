@@ -17,7 +17,9 @@ internal sealed class MappingProfile : Profile
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.StatusId))
             .ForMember(dest => dest.SeenSinceLastUpdate, opt => opt.Ignore());
 
-        CreateMap<DialogSeenLog, GetDialogDialogSeenLogDto>();
+        CreateMap<DialogSeenLog, GetDialogDialogSeenLogDto>()
+            .ForMember(dest => dest.SeenAt, opt => opt.MapFrom(src => src.CreatedAt));
+
         CreateMap<DialogActor, GetDialogDialogSeenLogActorDto>();
 
         CreateMap<DialogActivity, GetDialogDialogActivityDto>()
