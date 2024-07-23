@@ -10,35 +10,33 @@ public class DialogStatus : AbstractLookupEntity<DialogStatus, DialogStatus.Valu
     public enum Values
     {
         /// <summary>
-        /// Dialogen er å regne som ny. Brukes typisk for enkle meldinger som ikke krever noe
-        /// interaksjon, eller som et initielt steg for dialoger. Dette er default.
+        /// The dialogue is considered new. Typically used for simple messages that do not require any interaction,
+        /// or as an initial step for dialogues. This is the default.
         /// </summary>
         New = 1,
 
         /// <summary>
-        /// Under arbeid. Generell status som brukes for dialogtjenester der ytterligere bruker-input er
-        /// forventet.
+        /// Started. In a serial process, this is used to indicate that, for example, a form filling is ongoing.
         /// </summary>
         InProgress = 2,
 
         /// <summary>
-        /// Venter på tilbakemelding fra tjenesteeier
+        /// Equivalent to "InProgress", but will be used by the workspace/frontend for display purposes.
         /// </summary>
-        Waiting = 3,
+        Signing = 3,
 
         /// <summary>
-        /// Dialogen er i en tilstand hvor den venter på signering. Typisk siste steg etter at all
-        /// utfylling er gjennomført og validert.
+        /// For processing by the service owner. In a serial process, this is used after a submission is made.
         /// </summary>
-        Signing = 4,
+        Processing = 4,
 
         /// <summary>
-        /// Dialogen ble avbrutt. Dette gjør at dialogen typisk fjernes fra normale GUI-visninger.
+        /// Used to indicate that the dialogue is in progress/under work, but is in a state where the user must do something - for example, correct an error, or other conditions that hinder further processing.
         /// </summary>
-        Cancelled = 5,
+        RequiresAttention = 5,
 
         /// <summary>
-        /// Dialigen ble fullført. Dette gjør at dialogen typisk flyttes til et GUI-arkiv eller lignende.
+        /// The dialogue was completed. This typically means that the dialogue is moved to a GUI archive or similar.
         /// </summary>
         Completed = 6
     }
