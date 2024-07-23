@@ -20,19 +20,24 @@ public class DialogActivityType : AbstractLookupEntity<DialogActivityType, Dialo
         DialogCompleted = 2,
 
         /// <summary>
-        /// Refererer en forsendelse som er åpnet.
+        /// Refererer en dialog som er lukket.
         /// </summary>
-        TransmissionOpened = 3,
+        DialogClosed = 3,
 
         /// <summary>
-        /// TODO: (?) eksempel: Startet utfylling av oppgaver.
+        /// Informasjon fra tjenestetilbyder, ikke (direkte) relatert til noen innsending.
         /// </summary>
         Information = 4,
 
         /// <summary>
+        /// Refererer en forsendelse som er åpnet.
+        /// </summary>
+        TransmissionOpened = 5,
+
+        /// <summary>
         /// Indikerer at betaling har blitt utført.
         /// </summary>
-        PaymentMade = 5,
+        PaymentMade = 6,
 
         /// <summary>
         /// Indikerer at signatur er utført.

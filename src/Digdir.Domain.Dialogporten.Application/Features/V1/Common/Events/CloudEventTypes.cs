@@ -14,12 +14,12 @@ internal static class CloudEventTypes
         nameof(DialogSeenDomainEvent) => "dialogporten.dialog.seen.v1",
 
         // Dialog activity
-        nameof(DialogActivityType.Values.Submission) => "dialogporten.dialog.activity.submission.v1",
-        nameof(DialogActivityType.Values.Feedback) => "dialogporten.dialog.activity.feedback.v1",
+        nameof(DialogActivityType.Values.DialogCreated) => "dialogporten.dialog.activity.created.v1",
+        nameof(DialogActivityType.Values.DialogCompleted) => "dialogporten.dialog.activity.completed.v1",
         nameof(DialogActivityType.Values.Information) => "dialogporten.dialog.activity.information.v1",
-        nameof(DialogActivityType.Values.Error) => "dialogporten.dialog.activity.error.v1",
-        nameof(DialogActivityType.Values.Closed) => "dialogporten.dialog.activity.closed.v1",
-        nameof(DialogActivityType.Values.Forwarded) => "dialogporten.dialog.activity.forwarded.v1",
+        nameof(DialogActivityType.Values.TransmissionOpened) => "dialogporten.dialog.activity.transmission-opened.v1",
+        nameof(DialogActivityType.Values.PaymentMade) => "dialogporten.dialog.activity.payment-made.v1",
+        nameof(DialogActivityType.Values.SignatureProvided) => "dialogporten.dialog.activity.signature-provided.v1",
 
         _ => throw new ArgumentOutOfRangeException(nameof(eventName), eventName, null)
     };

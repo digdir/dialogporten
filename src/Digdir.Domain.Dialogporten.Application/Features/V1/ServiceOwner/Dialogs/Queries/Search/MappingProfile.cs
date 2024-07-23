@@ -13,7 +13,6 @@ internal sealed class MappingProfile : Profile
     {
         CreateMap<DialogEntity, SearchDialogDto>()
             .ForMember(dest => dest.LatestActivity, opt => opt.MapFrom(src => src.Activities
-                .Where(activity => activity.TypeId != DialogActivityType.Values.Forwarded)
                 .OrderByDescending(activity => activity.CreatedAt).ThenByDescending(activity => activity.Id)
                 .FirstOrDefault()
             ))
