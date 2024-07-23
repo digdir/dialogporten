@@ -5,7 +5,7 @@ import { defaultEndUserSsn, defaultServiceOwnerOrgNo } from "./config.js";
 
 let defaultTokenOptions = {
   scopes: "digdir:dialogporten digdir:dialogporten.serviceprovider digdir:dialogporten.serviceprovider.search",
-  orgName: "ttd",
+  orgName: "digdir",
   orgNo: defaultServiceOwnerOrgNo,
   ssn: defaultEndUserSsn
 };

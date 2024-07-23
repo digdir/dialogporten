@@ -19,7 +19,7 @@ export default function () {
         let promises = [];
 
         for (let i=0; i<10; i++) {
-            let activity = { type: "Information", description: [ { value: i.toString(), languageCode: "nb"}]};
+            let activity = { type: "Information", performedBy: { actorType: "serviceOwner" }, description: [ { value: i.toString(), languageCode: "nb"}]};
             promises.push(postSOAsync('dialogs/' + dialogId + '/activities?' + i, activity))
         }
 
