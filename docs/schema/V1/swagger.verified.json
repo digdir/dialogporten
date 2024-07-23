@@ -1992,17 +1992,17 @@
         "x-enumNames": [
           "New",
           "InProgress",
-          "Waiting",
           "Signing",
-          "Cancelled",
+          "Processing",
+          "RequiresAttention",
           "Completed"
         ],
         "enum": [
           "New",
           "InProgress",
-          "Waiting",
           "Signing",
-          "Cancelled",
+          "Processing",
+          "RequiresAttention",
           "Completed"
         ]
       },
