@@ -10,37 +10,37 @@ public class DialogActivityType : AbstractLookupEntity<DialogActivityType, Dialo
     public enum Values
     {
         /// <summary>
-        /// Refererer en dialog som er opprettet.
+        /// Refers to a dialog that has been created.
         /// </summary>
         DialogCreated = 1,
 
         /// <summary>
-        /// Refererer en dialog som er fullført.
+        /// Refers to a dialog that has been completed.
         /// </summary>
         DialogCompleted = 2,
 
         /// <summary>
-        /// Refererer en dialog som er lukket.
+        /// Refers to a dialog that has been closed.
         /// </summary>
         DialogClosed = 3,
 
         /// <summary>
-        /// Informasjon fra tjenestetilbyder, ikke (direkte) relatert til noen innsending.
+        /// Information from the service provider, not (directly) related to any transmission.
         /// </summary>
         Information = 4,
 
         /// <summary>
-        /// Refererer en forsendelse som er åpnet.
+        /// Refers to a transmission that has been opened.
         /// </summary>
         TransmissionOpened = 5,
 
         /// <summary>
-        /// Indikerer at betaling har blitt utført.
+        /// Indicates that payment has been made.
         /// </summary>
         PaymentMade = 6,
 
         /// <summary>
-        /// Indikerer at signatur er utført.
+        /// Indicates that a signature has been provided.
         /// </summary>
         SignatureProvided = 7
     }
