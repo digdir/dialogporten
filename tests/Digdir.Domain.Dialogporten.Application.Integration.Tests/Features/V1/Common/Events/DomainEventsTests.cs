@@ -207,4 +207,6 @@ public class DomainEventsTests(DialogApplication application) : ApplicationColle
         cloudEvents.Should().ContainSingle(cloudEvent =>
             cloudEvent.Type == CloudEventTypes.Get(nameof(DialogDeletedDomainEvent)));
     }
+
+    // todo: create test and implement for when activity type is DialogClosed/Completed etc?
 }

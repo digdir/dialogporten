@@ -16,6 +16,7 @@ internal static class CloudEventTypes
         // Dialog activity
         nameof(DialogActivityType.Values.DialogCreated) => "dialogporten.dialog.activity.created.v1",
         nameof(DialogActivityType.Values.DialogCompleted) => "dialogporten.dialog.activity.completed.v1",
+        nameof(DialogActivityType.Values.DialogClosed) => "dialogporten.dialog.activity.closed.v1",
         nameof(DialogActivityType.Values.Information) => "dialogporten.dialog.activity.information.v1",
         nameof(DialogActivityType.Values.TransmissionOpened) => "dialogporten.dialog.activity.transmission-opened.v1",
         nameof(DialogActivityType.Values.PaymentMade) => "dialogporten.dialog.activity.payment-made.v1",
