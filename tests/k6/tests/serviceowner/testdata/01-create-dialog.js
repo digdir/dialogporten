@@ -130,7 +130,8 @@ export default function () {
             {
                 "type": "Submission",
                 "performedBy": {
-                    "actorType": "serviceOwner"
+                   "actorType": "partyRepresentative",
+                    "actorName": "Some custom name"
                 },
                 "description": [
                     {
@@ -142,7 +143,8 @@ export default function () {
             {
                 "type": "Submission",
                 "performedBy": {
-                    "actorType": "serviceOwner"
+                    "actorType": "partyRepresentative",
+                    "actorId": "urn:altinn:organization:identifier-no:991825827"
                 },
                 "description": [
                     {
