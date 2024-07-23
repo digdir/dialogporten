@@ -84,21 +84,21 @@ public enum ActivityType
 
 public enum DialogStatus
 {
-    [GraphQLDescription("New")]
+    [GraphQLDescription("The dialogue is considered new. Typically used for simple messages that do not require any interaction, or as an initial step for dialogues. This is the default.")]
     New = 1,
 
-    [GraphQLDescription("In progress. General status used for dialog services where further user input is expected.")]
+    [GraphQLDescription("Started. In a serial process, this is used to indicate that, for example, a form filling is ongoing.")]
     InProgress = 2,
 
-    [GraphQLDescription("Waiting for feedback from the service provider")]
-    Waiting = 3,
+    [GraphQLDescription("Equivalent to \"InProgress\", but will be used by the workspace/frontend for display purposes.")]
+    Signing = 3,
 
-    [GraphQLDescription("The dialog is in a state where it is waiting for signing. Typically the last step after all completion is carried out and validated.")]
-    Signing = 4,
+    [GraphQLDescription("For processing by the service owner. In a serial process, this is used after a submission is made.")]
+    Processing = 4,
 
-    [GraphQLDescription("The dialog was cancelled. This typically removes the dialog from normal GUI views.")]
-    Cancelled = 5,
+    [GraphQLDescription("Used to indicate that the dialogue is in progress/under work, but is in a state where the user must do something - for example, correct an error, or other conditions that hinder further processing.")]
+    RequiresAttention = 5,
 
-    [GraphQLDescription("The dialog was completed. This typically moves the dialog to a GUI archive or similar.")]
+    [GraphQLDescription("The dialogue was completed. This typically means that the dialogue is moved to a GUI archive or similar.")]
     Completed = 6
 }
