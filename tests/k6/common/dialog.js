@@ -1,14 +1,14 @@
 import { customConsole as console } from './console.js';
 
-export function setTitle(dialog, title, language = "nb_NO") {
+export function setTitle(dialog, title, language = "nb") {
     setContent(dialog, "Title", title, language);
 }
 
-export function setAdditionalInfo(dialog, additionalInfo, language = "nb_NO") {
+export function setAdditionalInfo(dialog, additionalInfo, language = "nb") {
     setContent(dialog, "AdditionalInfo", additionalInfo, language);
 }
 
-export function setContent(dialog, type, value, language = "nb_NO") {
+export function setContent(dialog, type, value, language = "nb") {
     if (typeof value !== "string") {
         throw new Error("Invalid value provided.");
     }

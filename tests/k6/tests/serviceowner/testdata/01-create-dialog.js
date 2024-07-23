@@ -113,7 +113,10 @@ export default function () {
         "activities": [
             {
                 "type": "Error",
-                "performedBy": "Politiet",
+                "performedBy": {
+                    "actorType": "partyRepresentative",
+                    "actorName": "Politiet"
+                },
                 "description": [
                     {
                         "value": "Lovbrudd",
@@ -127,7 +130,10 @@ export default function () {
             },
             {
                 "type": "Submission",
-                "performedBy": "NAV",
+                "performedBy": {
+                    "actorType": "partyRepresentative",
+                    "actorName": "NAV"
+                },
                 "description": [
                     {
                         "value": "Brukeren har levert et viktig dokument.",
@@ -137,7 +143,10 @@ export default function () {
             },
             {
                 "type": "Submission",
-                "performedBy": "Skatteetaten",
+                "performedBy": {
+                    "actorType": "partyRepresentative",
+                    "actorName": "Skatteetaten"
+                },
                 "description": [
                     {
                         "value": "Brukeren har begått skattesvindel",
