@@ -63,23 +63,26 @@ public enum ActorType
 
 public enum ActivityType
 {
-    [GraphQLDescription("Refers to a submission made by a party that has been received by the service provider.")]
-    Submission = 1,
+    [GraphQLDescription("Refers to a dialog that has been created.")]
+    DialogCreated = 1,
 
-    [GraphQLDescription("Indicates feedback from the service provider on a submission. Contains a reference to the current submission.")]
-    Feedback = 2,
+    [GraphQLDescription("Refers to a dialog that has been completed.")]
+    DialogCompleted = 2,
 
-    [GraphQLDescription("Information from the service provider, not (directly) related to any submission.")]
-    Information = 3,
+    [GraphQLDescription("Refers to a dialog that has been closed.")]
+    DialogClosed = 3,
 
-    [GraphQLDescription("Used to indicate an error situation, typically on a submission. Contains a service-specific activityErrorCode.")]
-    Error = 4,
+    [GraphQLDescription("Information from the service provider, not (directly) related to any transmission.")]
+    Information = 4,
 
-    [GraphQLDescription("Indicates that the dialog is closed for further changes. This typically happens when the dialog is completed or deleted.")]
-    Closed = 5,
+    [GraphQLDescription("Refers to a transmission that has been opened.")]
+    TransmissionOpened = 5,
 
-    [GraphQLDescription("When the dialog is forwarded (delegated access) by someone with access to others.")]
-    Forwarded = 7
+    [GraphQLDescription("Indicates that payment has been made.")]
+    PaymentMade = 6,
+
+    [GraphQLDescription("Indicates that a signature has been provided.")]
+    SignatureProvided = 7
 }
 
 public enum DialogStatus

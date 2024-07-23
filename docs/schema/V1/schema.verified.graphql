@@ -215,18 +215,20 @@ input SearchDialogInput {
 }
 
 enum ActivityType {
-  "Refers to a submission made by a party that has been received by the service provider."
-  SUBMISSION
-  "Indicates feedback from the service provider on a submission. Contains a reference to the current submission."
-  FEEDBACK
-  "Information from the service provider, not (directly) related to any submission."
+  "Refers to a dialog that has been created."
+  DIALOG_CREATED
+  "Refers to a dialog that has been completed."
+  DIALOG_COMPLETED
+  "Refers to a dialog that has been closed."
+  DIALOG_CLOSED
+  "Information from the service provider, not (directly) related to any transmission."
   INFORMATION
-  "Used to indicate an error situation, typically on a submission. Contains a service-specific activityErrorCode."
-  ERROR
-  "Indicates that the dialog is closed for further changes. This typically happens when the dialog is completed or deleted."
-  CLOSED
-  "When the dialog is forwarded (delegated access) by someone with access to others."
-  FORWARDED
+  "Refers to a transmission that has been opened."
+  TRANSMISSION_OPENED
+  "Indicates that payment has been made."
+  PAYMENT_MADE
+  "Indicates that a signature has been provided."
+  SIGNATURE_PROVIDED
 }
 
 enum ActorType {
