@@ -26,11 +26,13 @@ internal sealed class SearchDialogQueryValidator : AbstractValidator<SearchDialo
                     : LocalizationValidatorContants.InvalidCultureCodeErrorMessage) +
                 LocalizationValidatorContants.NormalizationErrorMessage);
 
-        RuleFor(x => x)
-            .Must(x => PartyIdentifier.TryParse(x.EndUserId, out var id) && id is NorwegianPersonIdentifier or SystemUserIdentifier)
-            .WithMessage($"'{nameof(SearchDialogQuery.EndUserId)}' must be a valid end user identifier. It should match the format '{NorwegianPersonIdentifier.Prefix}{{norwegian f-nr/d-nr}}' or '{SystemUserIdentifier.Prefix}{{uuid}}'.")
-            .Must(x => !x.ServiceResource.IsNullOrEmpty() || !x.Party.IsNullOrEmpty())
-            .WithMessage($"Either '{nameof(SearchDialogQuery.ServiceResource)}' or '{nameof(SearchDialogQuery.Party)}' must be specified if '{nameof(SearchDialogQuery.EndUserId)}' is provided.")
+        RuleFor(x => x.EndUserId)
+            .Must(x => PartyIdentifier.TryParse(x, out var id) && id is NorwegianPersonIdentifier or SystemUserIdentifier)
+            .WithMessage($"{{PropertyName}} must be a valid end user identifier. It must match the format " +
+                         $"'{NorwegianPersonIdentifier.PrefixWithSeparator}{{norwegian f-nr/d-nr}}' or '{SystemUserIdentifier.PrefixWithSeparator}{{uuid}}'.")
+            .Must((x, _) => !x.ServiceResource.IsNullOrEmpty() || !x.Party.IsNullOrEmpty())
+            .WithMessage($"Either '{nameof(SearchDialogQuery.ServiceResource)}' or '{nameof(SearchDialogQuery.Party)}' " +
+                         $"must be specified if '{nameof(SearchDialogQuery.EndUserId)}' is provided.")
             .When(x => x.EndUserId is not null);
 
         RuleForEach(x => x.Party)
