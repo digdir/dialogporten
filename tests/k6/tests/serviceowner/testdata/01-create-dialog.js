@@ -114,8 +114,7 @@ export default function () {
             {
                 "type": "Error",
                 "performedBy": {
-                    "actorType": "partyRepresentative",
-                    "actorName": "Politiet"
+                    "actorType": "serviceOwner"
                 },
                 "description": [
                     {
@@ -131,8 +130,8 @@ export default function () {
             {
                 "type": "Submission",
                 "performedBy": {
-                    "actorType": "partyRepresentative",
-                    "actorName": "NAV"
+                   "actorType": "partyRepresentative",
+                    "actorName": "Some custom name"
                 },
                 "description": [
                     {
@@ -145,7 +144,7 @@ export default function () {
                 "type": "Submission",
                 "performedBy": {
                     "actorType": "partyRepresentative",
-                    "actorName": "Skatteetaten"
+                    "actorId": "urn:altinn:organization:identifier-no:991825827"
                 },
                 "description": [
                     {

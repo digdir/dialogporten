@@ -40,7 +40,7 @@ export default function () {
     describe('Check that seen log has been populated', () => {
         if (dialog == null) return;
         expect(dialog.seenSinceLastUpdate, 'seenSinceLastUpdate').to.have.lengthOf(1);
-        expect(dialog.seenSinceLastUpdate[0].endUserIdHash, 'endUserIdHash').to.have.lengthOf(10);
+        expect(dialog.seenSinceLastUpdate[0].seenBy.actorId, 'actorId').to.match(/urn:altinn:person:identifier-ephemeral/);
         expect(dialog.seenSinceLastUpdate[0].isCurrentEndUser, 'isCurrentEndUser').to.equal(true);
     });
 

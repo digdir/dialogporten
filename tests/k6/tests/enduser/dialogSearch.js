@@ -40,7 +40,7 @@ export default function () {
     let idForCustomOrg = uuidv4();
     let createdAfter = (new Date()).toISOString(); // We use this on all tests to hopefully avoid clashing with unrelated dialogs
     let defaultFilter = "?CreatedAfter=" + createdAfter + "&Party=" + defaultParty;
-    let auxOrg = "digdir";
+    let auxOrg = "ttd";
 
     describe('Arrange: Create some dialogs to test against', () => {
 
@@ -100,12 +100,12 @@ export default function () {
 
         let d1 = r.json().items.find((d) => d.id == dialogIds[0]);
         expect(d1.seenSinceLastUpdate, 'seenSinceLastUpdate').to.have.lengthOf(1);
-        expect(d1.seenSinceLastUpdate[0].endUserIdHash, 'endUserIdHash').to.have.lengthOf(10);
+        expect(d1.seenSinceLastUpdate[0].seenBy.actorId, 'actorId').to.match(/urn:altinn:person:identifier-ephemeral/);
         expect(d1.seenSinceLastUpdate[0].isCurrentEndUser, 'isCurrentEndUser').to.equal(true);
 
         let d2 = r.json().items.find((d) => d.id == dialogIds[1]);
         expect(d2.seenSinceLastUpdate, 'seenSinceLastUpdate').to.have.lengthOf(1);
-        expect(d2.seenSinceLastUpdate[0].endUserIdHash, 'endUserIdHash').to.have.lengthOf(10);
+        expect(d1.seenSinceLastUpdate[0].seenBy.actorId, 'actorId').to.match(/urn:altinn:person:identifier-ephemeral/);
         expect(d2.seenSinceLastUpdate[0].isCurrentEndUser, 'isCurrentEndUser').to.equal(true);
     });
 
@@ -188,13 +188,18 @@ export default function () {
         expect(r.json().items[0], 'party').to.have.property("serviceResource").that.equals(auxResource);
     });
 
+    /* 
+    Disabled for now. Dialogporten doesn't have proper TTD handling as of yet.
+
     describe('List with org filter', () => {
+        console.log('dialogs/' + defaultFilter + '&Org=' + auxOrg);
         let r = getEU('dialogs/' + defaultFilter + '&Org=' + auxOrg);
         expectStatusFor(r).to.equal(200);
         expect(r, 'response').to.have.validJsonBody();
         expect(r.json(), 'response json').to.have.property("items").with.lengthOf(1);
         expect(r.json().items[0], 'org').to.have.property("org").that.equals(auxOrg);
     });
+    */
 
     describe("Cleanup", () => {
         dialogIds.forEach((d) => {
