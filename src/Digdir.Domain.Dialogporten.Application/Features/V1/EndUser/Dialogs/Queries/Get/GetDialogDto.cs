@@ -1,10 +1,10 @@
-﻿using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
+﻿using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Content;
+using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actors;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Attachments;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
 using Digdir.Domain.Dialogporten.Domain.Http;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Queries.Get;
@@ -28,7 +28,7 @@ public sealed class GetDialogDto
 
     public DialogStatus.Values Status { get; set; }
 
-    public List<GetDialogContentDto> Content { get; set; } = [];
+    public GetDialogContentDto Content { get; set; } = null!;
     public string? DialogToken { get; set; }
 
     public List<GetDialogDialogAttachmentDto> Attachments { get; set; } = [];
@@ -58,9 +58,12 @@ public sealed class GetDialogDialogSeenLogActorDto
 
 public sealed class GetDialogContentDto
 {
-    public DialogContentType.Values Type { get; set; }
-    public List<LocalizationDto> Value { get; set; } = [];
-    public string? MediaType { get; set; }
+    public DialogContentValueDto Title { get; set; } = null!;
+    public DialogContentValueDto Summary { get; set; } = null!;
+    public DialogContentValueDto? SenderName { get; set; }
+    public DialogContentValueDto? AdditionalInfo { get; set; }
+    public DialogContentValueDto? ExtendedStatus { get; set; }
+    public DialogContentValueDto? MainContentReference { get; set; }
 }
 
 public sealed class GetDialogDialogActivityDto

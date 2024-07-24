@@ -1,4 +1,5 @@
 using AutoMapper;
+using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Content;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Queries.Get;
 using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Queries.Search;
@@ -11,16 +12,13 @@ public class MappingProfile : Profile
     {
         CreateMap<LocalizationDto, Localization>();
 
+        CreateMap<DialogContentValueDto, ContentValue>();
+
         CreateMap<GetDialogDialogSeenLogDto, SeenLog>();
         CreateMap<GetDialogDialogSeenLogActorDto, Actor>();
 
         CreateMap<SearchDialogDialogSeenLogDto, SeenLog>();
         CreateMap<SearchDialogDialogSeenLogActorDto, Actor>();
-
-        CreateMap<GetDialogContentDto, Content>()
-            .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type));
-        CreateMap<SearchDialogContentDto, Content>()
-            .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type));
 
         CreateMap<GetDialogDialogActivityDto, Activity>()
             .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type));

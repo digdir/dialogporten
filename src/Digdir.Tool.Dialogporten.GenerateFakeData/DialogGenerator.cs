@@ -7,7 +7,6 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actors;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Attachments;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
 using Digdir.Domain.Dialogporten.Domain.Http;
 
 namespace Digdir.Tool.Dialogporten.GenerateFakeData;
@@ -27,7 +26,7 @@ public static class DialogGenerator
         DateTimeOffset? dueAt = null,
         DateTimeOffset? expiresAt = null,
         DialogStatus.Values? status = null,
-        List<CreateDialogContentDto>? content = null,
+        CreateDialogContentDto? content = null,
         List<CreateDialogSearchTagDto>? searchTags = null,
         List<CreateDialogDialogAttachmentDto>? attachments = null,
         List<CreateDialogDialogGuiActionDto>? guiActions = null,
@@ -67,7 +66,7 @@ public static class DialogGenerator
         DateTimeOffset? dueAt = null,
         DateTimeOffset? expiresAt = null,
         DialogStatus.Values? status = null,
-        List<CreateDialogContentDto>? content = null,
+        CreateDialogContentDto? content = null,
         List<CreateDialogSearchTagDto>? searchTags = null,
         List<CreateDialogDialogAttachmentDto>? attachments = null,
         List<CreateDialogDialogGuiActionDto>? guiActions = null,
@@ -303,45 +302,40 @@ public static class DialogGenerator
             .Generate(new Randomizer().Number(1, 6));
     }
 
-    public static List<CreateDialogContentDto> GenerateFakeDialogContent()
+    public static CreateDialogContentDto GenerateFakeDialogContent()
     {
         // We always need Title and Summary. Coin flip to determine to include AdditionalInfo
         // and/or SendersName
         var r = new Randomizer();
-        var content = new List<CreateDialogContentDto> {
-            new()
+        var content = new CreateDialogContentDto
+        {
+            Title = new()
             {
-                Type = DialogContentType.Values.Title,
-                Value =  GenerateFakeLocalizations(r.Number(1, 4))
+                Value = GenerateFakeLocalizations(r.Number(1, 4))
             },
-            new()
+            Summary = new()
             {
-                Type = DialogContentType.Values.Summary,
                 Value = GenerateFakeLocalizations(r.Number(7, 10))
             }
         };
 
         if (r.Bool())
         {
-            content.Add(
+            content.SenderName =
                 new()
                 {
-                    Type = DialogContentType.Values.SenderName,
                     Value = GenerateFakeLocalizations(r.Number(1, 3))
-                }
-            );
+                };
         }
 
         if (r.Bool())
         {
-            content.Add(
+            content.AdditionalInfo =
                 new()
                 {
                     MediaType = Domain.Dialogporten.Domain.MediaTypes.PlainText,
-                    Type = DialogContentType.Values.AdditionalInfo,
                     Value = GenerateFakeLocalizations(r.Number(10, 20))
-                }
-            );
+                };
         }
 
         return content;

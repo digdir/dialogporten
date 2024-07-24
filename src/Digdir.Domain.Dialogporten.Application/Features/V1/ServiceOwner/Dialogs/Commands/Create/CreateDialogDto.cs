@@ -1,11 +1,10 @@
-﻿using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
-using Digdir.Domain.Dialogporten.Domain;
+﻿using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Content;
+using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actors;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Attachments;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
 using Digdir.Domain.Dialogporten.Domain.Http;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Create;
@@ -23,7 +22,7 @@ public class CreateDialogDto
     public DateTimeOffset? ExpiresAt { get; set; }
 
     public DialogStatus.Values Status { get; set; }
-    public List<CreateDialogContentDto> Content { get; set; } = [];
+    public CreateDialogContentDto Content { get; set; } = null!;
 
     public List<CreateDialogSearchTagDto> SearchTags { get; set; } = [];
 
@@ -35,9 +34,12 @@ public class CreateDialogDto
 
 public sealed class CreateDialogContentDto
 {
-    public DialogContentType.Values Type { get; set; }
-    public List<LocalizationDto> Value { get; set; } = [];
-    public string? MediaType { get; set; } = MediaTypes.PlainText;
+    public DialogContentValueDto Title { get; set; } = null!;
+    public DialogContentValueDto Summary { get; set; } = null!;
+    public DialogContentValueDto? SenderName { get; set; }
+    public DialogContentValueDto? AdditionalInfo { get; set; }
+    public DialogContentValueDto? ExtendedStatus { get; set; }
+    public DialogContentValueDto? MainContentReference { get; set; }
 }
 
 public sealed class CreateDialogSearchTagDto

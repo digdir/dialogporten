@@ -1,11 +1,10 @@
-﻿using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
-using Digdir.Domain.Dialogporten.Domain;
+﻿using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Content;
+using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actors;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Attachments;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
 using Digdir.Domain.Dialogporten.Domain.Http;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Update;
@@ -21,7 +20,7 @@ public sealed class UpdateDialogDto
 
     public DialogStatus.Values Status { get; set; }
 
-    public List<UpdateDialogContentDto> Content { get; set; } = [];
+    public UpdateDialogContentDto Content { get; set; } = null!;
 
     public List<UpdateDialogSearchTagDto> SearchTags { get; set; } = [];
 
@@ -33,9 +32,12 @@ public sealed class UpdateDialogDto
 
 public sealed class UpdateDialogContentDto
 {
-    public DialogContentType.Values Type { get; set; }
-    public List<LocalizationDto> Value { get; set; } = [];
-    public string? MediaType { get; set; } = MediaTypes.PlainText;
+    public DialogContentValueDto Title { get; set; } = null!;
+    public DialogContentValueDto Summary { get; set; } = null!;
+    public DialogContentValueDto? SenderName { get; set; }
+    public DialogContentValueDto? AdditionalInfo { get; set; }
+    public DialogContentValueDto? ExtendedStatus { get; set; }
+    public DialogContentValueDto? MainContentReference { get; set; }
 }
 
 public sealed class UpdateDialogSearchTagDto

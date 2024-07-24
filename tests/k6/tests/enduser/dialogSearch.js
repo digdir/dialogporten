@@ -188,7 +188,7 @@ export default function () {
         expect(r.json().items[0], 'party').to.have.property("serviceResource").that.equals(auxResource);
     });
 
-    /* 
+    /*
     Disabled for now. Dialogporten doesn't have proper TTD handling as of yet.
 
     describe('List with org filter', () => {
