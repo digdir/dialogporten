@@ -14,13 +14,24 @@ export default function () {
             { "value": "something searchable" },
             { "value": "something else searchable" }
         ],
-        "content": [
-            { "type": "Title", "value": [ { "languageCode": "nb", "value": "Skjema for rapportering av et eller annet" } ] },
-            { "type": "SenderName", "value": [ { "languageCode": "nb", "value": "Avsendernavn" } ] },
-            { "type": "Summary", "value": [ { "languageCode": "nb", "value": "Et sammendrag her. Maks 200 tegn, ingen HTML-støtte. Påkrevd. Vises i liste." } ] },
-            { "type": "AdditionalInfo", "mediaType": "text/plain", "value": [ { "languageCode": "nb", "value": "Utvidet forklaring (enkel HTML-støtte, inntil 1023 tegn). Ikke påkrevd. Vises kun i detaljvisning." } ] },
-            { "type": "ExtendedStatus", "value": [ { "languageCode": "nb", "value": "Utvidet Status" } ] },
-        ],
+        "content": {
+            "Title": {
+                "value": [ { "languageCode": "nb", "value": "Skjema for rapportering av et eller annet" } ] 
+            },
+            "SenderName": {
+                "value": [ { "languageCode": "nb", "value": "Avsendernavn" } ] 
+            },
+            "Summary": {
+                "value": [ { "languageCode": "nb", "value": "Et sammendrag her. Maks 200 tegn, ingen HTML-støtte. Påkrevd. Vises i liste." } ]
+            },
+            "AdditionalInfo": {
+                "mediaType": "text/plain",
+                "value": [ { "languageCode": "nb", "value": "Utvidet forklaring (enkel HTML-støtte, inntil 1023 tegn). Ikke påkrevd. Vises kun i detaljvisning." } ]
+            },
+            "ExtendedStatus": {
+                "value": [ { "languageCode": "nb", "value": "Utvidet Status" } ] 
+            },
+        },
         "guiActions": [
             {
                 "action": "read",

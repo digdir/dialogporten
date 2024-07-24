@@ -13,20 +13,21 @@ export function setContent(dialog, type, value, language = "nb") {
         throw new Error("Invalid value provided.");
     }
 
-    dialog.content = dialog.content || [];
-    const title_index = dialog.content.findIndex(t => t.type === type);
+    dialog.content = dialog.content || {};
 
-    if (title_index !== -1) {
-        const lang_index = dialog.content[title_index].value.findIndex(t => t.languageCode === language);
+    if(dialog.content[`${type}`]) {
+        const lang_index = dialog.content[`${type}`].value.findIndex(t => t.languageCode === language);
         if (lang_index !== -1) {
-            dialog.content[title_index].value[lang_index].value = value;
+            dialog.content[`${type}`].value[lang_index].value = value;
         }
         else {
-            dialog.content[title_index].value.push({ languageCode: language, value: value });
+            dialog.content[`${type}`].value.push({ languageCode: language, value: value });
         }
     }
     else {
-        dialog.content.push({ "type": type, value: [ { languageCode: language, value: value } ] });
+        dialog.content[`${type}`] = {
+            value: [ { languageCode: language, value: value } ]
+        }
     }
 }
 
