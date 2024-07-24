@@ -28,7 +28,6 @@ function expectStatusFor(response) {
     };
 }
 
-
 chai.use(function(chai, utils) {
     chai.Assertion.addMethod('hasLocalizedText', function(expectedValue, languageCode) {
       const obj = this._obj; // current object under assertion
@@ -56,14 +55,14 @@ chai.use(function(chai, utils) {
     chai.Assertion.addMethod('haveContentOfType', function(type) {
       const obj = this._obj; // current object under assertion
 
-      // Ensure the current object has a 'content' property which is an array
-      new chai.Assertion(obj).to.have.property('content').that.is.an('array');
+      // Ensure the current object has a 'content' property which is an object
+      new chai.Assertion(obj).to.have.property('content').that.is.an('object');
 
-      // Filter content for the specified type
-      const filteredContent = obj.content.filter(item => item.type === type);
+      // Fetch the specified content property
+      const contentProperty = obj.content[`${type}`];
 
-      // Pass the filtered content for further assertions
-      utils.flag(this, 'object', filteredContent[0].value);
+      // Pass the specified content property value array for further assertions
+      utils.flag(this, 'object', contentProperty.value);
     });
 
   });
