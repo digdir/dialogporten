@@ -13,6 +13,7 @@ internal sealed class MappingProfile : Profile
 {
     public MappingProfile()
     {
+        // See IntermediateSearchDialogDto
         CreateMap<IntermediateSearchDialogDto, SearchDialogDto>();
         CreateMap<DialogEntity, IntermediateSearchDialogDto>()
             .ForMember(dest => dest.LatestActivity, opt => opt.MapFrom(src => src.Activities

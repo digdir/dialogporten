@@ -103,30 +103,35 @@ internal sealed class UpdateDialogDtoValidator : AbstractValidator<UpdateDialogD
 
 internal sealed class UpdateDialogContentDtoValidator : AbstractValidator<UpdateDialogContentDto>
 {
-    private static readonly Dictionary<string, PropertyInfo> SourcePropertyByName = typeof(UpdateDialogContentDto)
-        .GetProperties()
-        .ToDictionary(x => x.Name, StringComparer.InvariantCultureIgnoreCase);
+    private static readonly Dictionary<string, PropertyInfoWithNullability> SourcePropertyMetaDataByName =
+        typeof(UpdateDialogContentDto).GetProperties()
+            .Select(x =>
+            {
+                var context = new NullabilityInfoContext();
+                var nullabilityInfo = context.Create(x);
+
+                return new PropertyInfoWithNullability(x, nullabilityInfo);
+            })
+            .ToDictionary(x => x.Property.Name, StringComparer.InvariantCultureIgnoreCase);
 
     public UpdateDialogContentDtoValidator()
     {
-        foreach (var (propertyName, property) in SourcePropertyByName)
+        foreach (var (propertyName, propMetadata) in SourcePropertyMetaDataByName)
         {
-            var context = new NullabilityInfoContext();
-            var nullabilityInfo = context.Create(property);
-
-            switch (nullabilityInfo.WriteState)
+            switch (propMetadata.NullabilityInfo.WriteState)
             {
                 case NullabilityState.NotNull:
-                    RuleFor(x => property.GetValue(x) as DialogContentValueDto)
+                    RuleFor(x => propMetadata.Property.GetValue(x) as DialogContentValueDto)
                         .NotNull()
-                        .SetValidator(new DialogContentValueDtoValidator(
-                            DialogContentType.GetContentType(propertyName))!);
+                        .WithMessage($"{propertyName} must not be empty.")
+                        .SetValidator(
+                            new DialogContentValueDtoValidator(DialogContentType.GetContentType(propertyName))!);
                     break;
                 case NullabilityState.Nullable:
-                    RuleFor(x => property.GetValue(x) as DialogContentValueDto)
-                        .SetValidator(new DialogContentValueDtoValidator(
-                            DialogContentType.GetContentType(propertyName))!)
-                        .When(x => property.GetValue(x) is not null);
+                    RuleFor(x => propMetadata.Property.GetValue(x) as DialogContentValueDto)
+                        .SetValidator(
+                            new DialogContentValueDtoValidator(DialogContentType.GetContentType(propertyName))!)
+                        .When(x => propMetadata.Property.GetValue(x) is not null);
                     break;
                 case NullabilityState.Unknown:
                     break;
