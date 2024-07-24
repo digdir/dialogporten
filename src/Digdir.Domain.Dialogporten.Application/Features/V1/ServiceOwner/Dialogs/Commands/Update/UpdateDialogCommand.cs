@@ -8,7 +8,6 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Attachments;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
 using FluentValidation.Results;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -108,14 +107,6 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         _mapper.Map(request.Dto, dialog);
         ValidateTimeFields(dialog);
         await AppendActivity(dialog, request.Dto, cancellationToken);
-
-        dialog.Content
-            .Merge(request.Dto.Content,
-                destinationKeySelector: x => x.TypeId,
-                sourceKeySelector: x => x.Type,
-                create: _mapper.Map<List<DialogContent>>,
-                update: _mapper.Update,
-                delete: DeleteDelegate.NoOp);
 
         dialog.SearchTags
             .Merge(request.Dto.SearchTags,

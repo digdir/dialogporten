@@ -71,9 +71,17 @@ type AuthorizedParty {
 }
 
 type Content {
-  type: ContentType!
+  title: ContentValue!
+  summary: ContentValue!
+  senderName: ContentValue
+  additionalInfo: ContentValue
+  extendedStatus: ContentValue
+  mainContentReference: ContentValue
+}
+
+type ContentValue {
   value: [Localization!]!
-  mediaType: String
+  mediaType: String!
 }
 
 type Dialog {
@@ -93,7 +101,7 @@ type Dialog {
   updatedAt: DateTime!
   dialogToken: String
   status: DialogStatus!
-  content: [Content!]!
+  content: Content!
   attachments: [Attachment!]!
   guiActions: [GuiAction!]!
   apiActions: [ApiAction!]!
@@ -142,6 +150,13 @@ type Queries @authorize(policy: "enduser") {
   parties: [AuthorizedParty!]!
 }
 
+type SearchContent {
+  title: ContentValue!
+  summary: ContentValue!
+  senderName: ContentValue
+  extendedStatus: ContentValue
+}
+
 type SearchDialog {
   id: UUID!
   org: String!
@@ -156,7 +171,7 @@ type SearchDialog {
   dueAt: DateTime
   status: DialogStatus!
   latestActivity: Activity
-  content: [Content!]!
+  content: SearchContent!
   seenSinceLastUpdate: [SeenLog!]!
 }
 
@@ -243,15 +258,6 @@ enum ApplyPolicy {
 enum AttachmentUrlConsumer {
   GUI
   API
-}
-
-enum ContentType {
-  TITLE
-  SENDER_NAME
-  SUMMARY
-  ADDITIONAL_INFO
-  EXTENDED_STATUS
-  MAIN_CONTENT_REFERENCE
 }
 
 enum DialogStatus {

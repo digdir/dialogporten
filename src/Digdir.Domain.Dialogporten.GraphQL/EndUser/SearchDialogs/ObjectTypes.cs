@@ -45,8 +45,16 @@ public sealed class SearchDialog
 
     public Activity? LatestActivity { get; set; }
 
-    public List<Content> Content { get; set; } = [];
+    public SearchContent Content { get; set; } = null!;
     public List<SeenLog> SeenSinceLastUpdate { get; set; } = [];
+}
+
+public sealed class SearchContent
+{
+    public ContentValue Title { get; set; } = null!;
+    public ContentValue Summary { get; set; } = null!;
+    public ContentValue? SenderName { get; set; }
+    public ContentValue? ExtendedStatus { get; set; }
 }
 
 public sealed class SearchDialogInput

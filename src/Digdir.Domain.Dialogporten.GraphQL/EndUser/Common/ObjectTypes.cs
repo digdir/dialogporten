@@ -6,21 +6,10 @@ public sealed class Localization
     public string LanguageCode { get; set; } = null!;
 }
 
-public enum ContentType
+public sealed class ContentValue
 {
-    Title = 1,
-    SenderName = 2,
-    Summary = 3,
-    AdditionalInfo = 4,
-    ExtendedStatus = 5,
-    MainContentReference = 6,
-}
-
-public sealed class Content
-{
-    public ContentType Type { get; set; }
     public List<Localization> Value { get; set; } = [];
-    public string? MediaType { get; set; }
+    public string MediaType { get; set; } = null!;
 }
 
 public sealed class SeenLog

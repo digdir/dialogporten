@@ -50,12 +50,22 @@ public sealed class Dialog
 
     public DialogStatus Status { get; set; }
 
-    public List<Content> Content { get; set; } = [];
+    public Content Content { get; set; } = null!;
     public List<Attachment> Attachments { get; set; } = [];
     public List<GuiAction> GuiActions { get; set; } = [];
     public List<ApiAction> ApiActions { get; set; } = [];
     public List<Activity> Activities { get; set; } = [];
     public List<SeenLog> SeenSinceLastUpdate { get; set; } = [];
+}
+
+public sealed class Content
+{
+    public ContentValue Title { get; set; } = null!;
+    public ContentValue Summary { get; set; } = null!;
+    public ContentValue? SenderName { get; set; }
+    public ContentValue? AdditionalInfo { get; set; }
+    public ContentValue? ExtendedStatus { get; set; }
+    public ContentValue? MainContentReference { get; set; }
 }
 
 public sealed class ApiAction

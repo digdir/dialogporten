@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Content;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
@@ -44,8 +45,7 @@ internal sealed class MappingProfile : Profile
             .ForMember(dest => dest.ActorType, opt => opt.Ignore())
             .ForMember(dest => dest.ActorTypeId, opt => opt.MapFrom(src => src.ActorType));
 
-        CreateMap<CreateDialogContentDto, DialogContent>()
-            .ForMember(dest => dest.Type, opt => opt.Ignore())
-            .ForMember(dest => dest.TypeId, opt => opt.MapFrom(src => src.Type));
+        CreateMap<CreateDialogContentDto?, List<DialogContent>?>()
+            .ConvertUsing<DialogContentInputConverter<CreateDialogContentDto>>();
     }
 }

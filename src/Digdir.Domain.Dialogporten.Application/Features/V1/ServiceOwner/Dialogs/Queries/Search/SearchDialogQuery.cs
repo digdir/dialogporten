@@ -10,14 +10,13 @@ using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Localizations;
-using Digdir.Domain.Dialogporten.Domain.Parties;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Queries.Search;
 
-public sealed class SearchDialogQuery : SortablePaginationParameter<SearchDialogQueryOrderDefinition, SearchDialogDto>, IRequest<SearchDialogResult>
+public sealed class SearchDialogQuery : SortablePaginationParameter<SearchDialogQueryOrderDefinition, IntermediateSearchDialogDto>, IRequest<SearchDialogResult>
 {
     private string? _searchLanguageCode;
 
@@ -104,9 +103,9 @@ public sealed class SearchDialogQuery : SortablePaginationParameter<SearchDialog
         init => _searchLanguageCode = Localization.NormalizeCultureCode(value);
     }
 }
-public sealed class SearchDialogQueryOrderDefinition : IOrderDefinition<SearchDialogDto>
+public sealed class SearchDialogQueryOrderDefinition : IOrderDefinition<IntermediateSearchDialogDto>
 {
-    public static IOrderOptions<SearchDialogDto> Configure(IOrderOptionsBuilder<SearchDialogDto> options) =>
+    public static IOrderOptions<IntermediateSearchDialogDto> Configure(IOrderOptionsBuilder<IntermediateSearchDialogDto> options) =>
         options.AddId(x => x.Id)
             .AddDefault("createdAt", x => x.CreatedAt)
             .AddOption("updatedAt", x => x.UpdatedAt)
@@ -142,6 +141,8 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
         var searchExpression = Expressions.LocalizedSearchExpression(request.Search, request.SearchLanguageCode);
 
         var query = _db.Dialogs
+            .Include(x => x.Content)
+                .ThenInclude(x => x.Value.Localizations)
             .WhereIf(!request.ServiceResource.IsNullOrEmpty(),
                 x => request.ServiceResource!.Contains(x.ServiceResource))
             .WhereIf(!request.Party.IsNullOrEmpty(), x => request.Party!.Contains(x.Party))
@@ -175,7 +176,7 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
         }
 
         var paginatedList = await query
-            .ProjectTo<SearchDialogDto>(_mapper.ConfigurationProvider)
+            .ProjectTo<IntermediateSearchDialogDto>(_mapper.ConfigurationProvider)
             .ToPaginatedListAsync(request, cancellationToken: cancellationToken);
 
         if (request.EndUserId is not null)
@@ -186,6 +187,8 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
             }
         }
 
-        return paginatedList;
+        var mappedItems = _mapper.Map<List<SearchDialogDto>>(paginatedList.Items).ToList();
+        return new PaginatedList<SearchDialogDto>(mappedItems, paginatedList.HasNextPage,
+            paginatedList.ContinuationToken, paginatedList.OrderBy);
     }
 }

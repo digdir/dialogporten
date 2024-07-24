@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
+using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Content;
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Queries.Get;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
@@ -20,7 +21,8 @@ internal sealed class MappingProfile : Profile
         CreateMap<UpdateDialogDto, DialogEntity>()
             .IgnoreComplexDestinationProperties()
             .ForMember(dest => dest.Status, opt => opt.Ignore())
-            .ForMember(dest => dest.StatusId, opt => opt.MapFrom(src => src.Status));
+            .ForMember(dest => dest.StatusId, opt => opt.MapFrom(src => src.Status))
+            .ForMember(dest => dest.Content, opt => opt.MapFrom(src => src.Content));
 
         CreateMap<UpdateDialogSearchTagDto, DialogSearchTag>()
             .IgnoreComplexDestinationProperties()
@@ -53,10 +55,8 @@ internal sealed class MappingProfile : Profile
             .ForMember(dest => dest.ConsumerType, opt => opt.Ignore())
             .ForMember(dest => dest.ConsumerTypeId, opt => opt.MapFrom(src => src.ConsumerType));
 
-        CreateMap<UpdateDialogContentDto, DialogContent>()
-            .IgnoreComplexDestinationProperties()
-            .ForMember(dest => dest.Type, opt => opt.Ignore())
-            .ForMember(dest => dest.TypeId, opt => opt.MapFrom(src => src.Type));
+        CreateMap<UpdateDialogContentDto?, List<DialogContent>?>()
+            .ConvertUsing<DialogContentInputConverter<UpdateDialogContentDto>>();
 
         // Since this is append only, we don't need to merge with existing
         // activity records and thus can map complex properties
