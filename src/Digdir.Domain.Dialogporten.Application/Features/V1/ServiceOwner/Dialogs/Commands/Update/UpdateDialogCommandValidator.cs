@@ -281,11 +281,11 @@ internal sealed class UpdateDialogDialogActivityDtoValidator : AbstractValidator
             .NotEmpty()
             .SetValidator(localizationsValidator)
             .When(x => x.Type == DialogActivityType.Values.Information)
-            .WithMessage("Description is required when the type is 'information'.");
+            .WithMessage("Description is required when the type is '" + nameof(DialogActivityType.Values.Information) + "'.");
         RuleFor(x => x.Description)
             .Empty()
             .When(x => x.Type != DialogActivityType.Values.Information)
-            .WithMessage("Description is only allowed when the type is 'information'.");
+            .WithMessage("Description is only allowed when the type is '" + nameof(DialogActivityType.Values.Information) + "'.");
     }
 }
 
