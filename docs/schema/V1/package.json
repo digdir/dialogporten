@@ -13,7 +13,7 @@
     "test": "npm run build && vitest run --test-timeout=10000"
   },
   "devDependencies": {
-    "vitest": "^1.2.2",
+    "vitest": "^2.0.0",
     "glob": "^10.3.12",
     "graphql-tag": "^2.12.6"
   },
