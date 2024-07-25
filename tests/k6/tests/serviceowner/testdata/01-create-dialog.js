@@ -16,20 +16,20 @@ export default function () {
         ],
         "content": {
             "Title": {
-                "value": [ { "languageCode": "nb", "value": "Skjema for rapportering av et eller annet" } ] 
+                "value": [{ "languageCode": "nb", "value": "Skjema for rapportering av et eller annet" }]
             },
             "SenderName": {
-                "value": [ { "languageCode": "nb", "value": "Avsendernavn" } ] 
+                "value": [{ "languageCode": "nb", "value": "Avsendernavn" }]
             },
             "Summary": {
-                "value": [ { "languageCode": "nb", "value": "Et sammendrag her. Maks 200 tegn, ingen HTML-støtte. Påkrevd. Vises i liste." } ]
+                "value": [{ "languageCode": "nb", "value": "Et sammendrag her. Maks 200 tegn, ingen HTML-støtte. Påkrevd. Vises i liste." }]
             },
             "AdditionalInfo": {
                 "mediaType": "text/plain",
-                "value": [ { "languageCode": "nb", "value": "Utvidet forklaring (enkel HTML-støtte, inntil 1023 tegn). Ikke påkrevd. Vises kun i detaljvisning." } ]
+                "value": [{ "languageCode": "nb", "value": "Utvidet forklaring (enkel HTML-støtte, inntil 1023 tegn). Ikke påkrevd. Vises kun i detaljvisning." }]
             },
             "ExtendedStatus": {
-                "value": [ { "languageCode": "nb", "value": "Utvidet Status" } ] 
+                "value": [{ "languageCode": "nb", "value": "Utvidet Status" }]
             },
         },
         "guiActions": [
@@ -55,7 +55,7 @@ export default function () {
                         "languageCode": "nb"
                     }
                 ],
-                "prompt": [ { "value": "Er du sikker?", "languageCode": "nb" } ]
+                "prompt": [{ "value": "Er du sikker?", "languageCode": "nb" }]
             }
         ],
         "apiActions": [
@@ -66,7 +66,7 @@ export default function () {
                         "url": "https://digdir.no",
                         "httpMethod": "GET"
                     },
-                                    {
+                    {
                         "url": "https://digdir.no/deprecated",
                         "httpMethod": "GET",
                         "deprecated": true
@@ -123,36 +123,20 @@ export default function () {
         ],
         "activities": [
             {
-                "type": "Error",
+                "type": "DialogCreated",
+                "performedBy": {
+                    "actorType": "partyRepresentative",
+                    "actorName": "Some custom name"
+                }
+            },
+            {
+                "type": "PaymentMade",
                 "performedBy": {
                     "actorType": "serviceOwner"
-                },
-                "description": [
-                    {
-                        "value": "Lovbrudd",
-                        "languageCode": "nb"
-                    },
-                    {
-                        "value": "Ofensa",
-                        "languageCode": "es"
-                    }
-                ]
+                }
             },
             {
-                "type": "Submission",
-                "performedBy": {
-                   "actorType": "partyRepresentative",
-                    "actorName": "Some custom name"
-                },
-                "description": [
-                    {
-                        "value": "Brukeren har levert et viktig dokument.",
-                        "languageCode": "nb"
-                    }
-                ]
-            },
-            {
-                "type": "Submission",
+                "type": "Information",
                 "performedBy": {
                     "actorType": "partyRepresentative",
                     "actorId": "urn:altinn:organization:identifier-no:991825827"

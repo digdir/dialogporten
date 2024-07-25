@@ -10,36 +10,33 @@ public class DialogActivityType : AbstractLookupEntity<DialogActivityType, Dialo
     public enum Values
     {
         /// <summary>
-        /// Refererer en innsending utført av party som er mottatt hos tjenestetilbyder.
+        /// Refers to a dialog that has been created.
         /// </summary>
-        Submission = 1,
+        DialogCreated = 1,
 
         /// <summary>
-        /// Indikerer en tilbakemelding fra tjenestetilbyder på en innsending. Inneholder
-        /// referanse til den aktuelle innsendingen.
+        /// Refers to a dialog that has been closed.
         /// </summary>
-        Feedback = 2,
+        DialogClosed = 2,
 
         /// <summary>
-        /// Informasjon fra tjenestetilbyder, ikke (direkte) relatert til noen innsending.
+        /// Information from the service provider, not (directly) related to any transmission.
         /// </summary>
         Information = 3,
 
         /// <summary>
-        /// Brukes for å indikere en feilsituasjon, typisk på en innsending. Inneholder en
-        /// tjenestespesifikk activityErrorCode.
+        /// Refers to a transmission that has been opened.
         /// </summary>
-        Error = 4,
+        TransmissionOpened = 4,
 
         /// <summary>
-        /// Indikerer at dialogen er lukket for videre endring. Dette skjer typisk ved fullføring
-        /// av dialogen, eller sletting.
+        /// Indicates that payment has been made.
         /// </summary>
-        Closed = 5,
+        PaymentMade = 5,
 
         /// <summary>
-        /// Når dialogen blir videresendt (tilgang delegert) av noen med tilgang til andre.
+        /// Indicates that a signature has been provided.
         /// </summary>
-        Forwarded = 7
+        SignatureProvided = 6
     }
 }

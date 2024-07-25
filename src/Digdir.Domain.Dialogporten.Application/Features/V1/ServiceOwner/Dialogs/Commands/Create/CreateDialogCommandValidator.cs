@@ -5,6 +5,7 @@ using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Content;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using Digdir.Domain.Dialogporten.Domain.Common;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actors;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
 using Digdir.Domain.Dialogporten.Domain.Http;
@@ -281,7 +282,13 @@ internal sealed class CreateDialogDialogActivityDtoValidator : AbstractValidator
             .SetValidator(actorValidator);
         RuleFor(x => x.Description)
             .NotEmpty()
-            .SetValidator(localizationsValidator);
+            .WithMessage("Description is required when the type is '" + nameof(DialogActivityType.Values.Information) + "'.")
+            .SetValidator(localizationsValidator)
+            .When(x => x.Type == DialogActivityType.Values.Information);
+        RuleFor(x => x.Description)
+            .Empty()
+            .WithMessage("Description is only allowed when the type is '" + nameof(DialogActivityType.Values.Information) + "'.")
+            .When(x => x.Type != DialogActivityType.Values.Information);
     }
 }
 

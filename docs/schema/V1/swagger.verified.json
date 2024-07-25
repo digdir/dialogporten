@@ -2350,20 +2350,20 @@
         "type": "string",
         "description": "",
         "x-enumNames": [
-          "Submission",
-          "Feedback",
+          "DialogCreated",
+          "DialogClosed",
           "Information",
-          "Error",
-          "Closed",
-          "Forwarded"
+          "TransmissionOpened",
+          "PaymentMade",
+          "SignatureProvided"
         ],
         "enum": [
-          "Submission",
-          "Feedback",
+          "DialogCreated",
+          "DialogClosed",
           "Information",
-          "Error",
-          "Closed",
-          "Forwarded"
+          "TransmissionOpened",
+          "PaymentMade",
+          "SignatureProvided"
         ]
       },
       "UpdateDialogDialogActivityActorDto": {
