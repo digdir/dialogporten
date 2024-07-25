@@ -3,7 +3,20 @@
   "extends": [
     "config:base"
   ],
-  "schedule": ["before 7am on Sunday", "before 7am on Wednesday"],
+  "schedule": [
+    "before 7am on Sunday",
+    "before 7am on Wednesday"
+  ],
   "updateNotScheduled": false,
-  "minimumReleaseAge": "7 days"
+  "minimumReleaseAge": "7 days",
+  "packageRules": [
+    {
+      "matchPaths": [
+        "docs/**"
+      ],
+      "schedule": [
+        "every 3 months"
+      ]
+    }
+  ]
 }
