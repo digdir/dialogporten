@@ -262,37 +262,32 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         new
                         {
                             Id = 1,
-                            Name = "DialogCreated"
+                            Name = "Submission"
                         },
                         new
                         {
                             Id = 2,
-                            Name = "DialogCompleted"
+                            Name = "Feedback"
                         },
                         new
                         {
                             Id = 3,
-                            Name = "DialogClosed"
-                        },
-                        new
-                        {
-                            Id = 4,
                             Name = "Information"
                         },
                         new
                         {
-                            Id = 5,
-                            Name = "TransmissionOpened"
+                            Id = 4,
+                            Name = "Error"
                         },
                         new
                         {
-                            Id = 6,
-                            Name = "PaymentMade"
+                            Id = 5,
+                            Name = "Closed"
                         },
                         new
                         {
                             Id = 7,
-                            Name = "SignatureProvided"
+                            Name = "Forwarded"
                         });
                 });
 
