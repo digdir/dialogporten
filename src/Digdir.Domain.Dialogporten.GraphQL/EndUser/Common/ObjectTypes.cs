@@ -55,23 +55,20 @@ public enum ActivityType
     [GraphQLDescription("Refers to a dialog that has been created.")]
     DialogCreated = 1,
 
-    [GraphQLDescription("Refers to a dialog that has been completed.")]
-    DialogCompleted = 2,
-
     [GraphQLDescription("Refers to a dialog that has been closed.")]
-    DialogClosed = 3,
+    DialogClosed = 2,
 
     [GraphQLDescription("Information from the service provider, not (directly) related to any transmission.")]
-    Information = 4,
+    Information = 3,
 
     [GraphQLDescription("Refers to a transmission that has been opened.")]
-    TransmissionOpened = 5,
+    TransmissionOpened = 4,
 
     [GraphQLDescription("Indicates that payment has been made.")]
-    PaymentMade = 6,
+    PaymentMade = 5,
 
     [GraphQLDescription("Indicates that a signature has been provided.")]
-    SignatureProvided = 7
+    SignatureProvided = 6
 }
 
 public enum DialogStatus

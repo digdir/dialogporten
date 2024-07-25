@@ -232,8 +232,6 @@ input SearchDialogInput {
 enum ActivityType {
   "Refers to a dialog that has been created."
   DIALOG_CREATED
-  "Refers to a dialog that has been completed."
-  DIALOG_COMPLETED
   "Refers to a dialog that has been closed."
   DIALOG_CLOSED
   "Information from the service provider, not (directly) related to any transmission."

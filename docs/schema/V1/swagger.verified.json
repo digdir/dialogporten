@@ -2351,7 +2351,6 @@
         "description": "",
         "x-enumNames": [
           "DialogCreated",
-          "DialogCompleted",
           "DialogClosed",
           "Information",
           "TransmissionOpened",
@@ -2360,7 +2359,6 @@
         ],
         "enum": [
           "DialogCreated",
-          "DialogCompleted",
           "DialogClosed",
           "Information",
           "TransmissionOpened",
