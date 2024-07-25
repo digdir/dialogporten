@@ -327,7 +327,7 @@
                     "Id": "8b95d42d-d2b6-4c01-8ca0-a817a4b3c50d",
                     "CreatedAt": null,
                     "ExtendedType": null,
-                    "Type": 4,
+                    "Type": 3,
                     "RelatedActivityId": null,
                     "PerformedBy": {
                       "ActorType": 2,
