@@ -49,7 +49,10 @@ param sku Sku
 // todo: add name of function as param and turn this into a reusable module
 // We use uniqueStringBySubscriptionAndResourceGroup directly here to avoid having too short storage account name.
 // This should be refactored to use one common storage account. Or one storage account for all app functions.
-var storageAccountName = take('${'${namePrefix}-sn'}-${uniqueStringBySubscriptionAndResourceGroup()}', 24)
+var storageAccountName = take(
+  replace('${'${namePrefix}-sn'}-${uniqueStringBySubscriptionAndResourceGroup()}', '-', ''),
+  24
+)
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2023-04-01' = {
   name: storageAccountName
