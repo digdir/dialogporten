@@ -1,5 +1,6 @@
 include:
-  - docker-compose-no-webapi.yml
+  - docker-compose-db-redis.yml
+  - docker-compose-cdc.yml
 
 services:
   dialogporten-webapi-ingress:
