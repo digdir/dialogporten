@@ -22,8 +22,8 @@ param administratorLoginPassword string
 
 var administratorLogin = 'dialogportenPgAdmin'
 var databaseName = 'dialogporten'
-// postgresql max characters is 63
-var postgresqlName = uniqueResourceName('${namePrefix}-postgres', 63)
+var postgresServerNameMaxLength = 63
+var postgresServerName = uniqueResourceName('${namePrefix}-postgres', postgresServerNameMaxLength)
 
 // Uncomment the following lines to add logical replication.
 // see https://learn.microsoft.com/en-us/azure/postgresql/flexible-server/concepts-logical#pre-requisites-for-logical-replication-and-logical-decoding
@@ -58,7 +58,7 @@ module privateDnsZone '../privateDnsZone/main.bicep' = {
 }
 
 resource postgres 'Microsoft.DBforPostgreSQL/flexibleServers@2022-12-01' = {
-  name: postgresqlName
+  name: postgresServerName
   location: location
   properties: {
     version: '15'
