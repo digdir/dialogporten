@@ -1,4 +1,4 @@
-import { uniqueResourceName } from '../../functions/resourcePostFix.bicep'
+import { uniqueResourceName } from '../../functions/resourceName.bicep'
 
 param namePrefix string
 param location string
