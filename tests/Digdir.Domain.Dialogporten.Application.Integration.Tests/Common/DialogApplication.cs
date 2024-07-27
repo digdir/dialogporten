@@ -1,5 +1,7 @@
 ﻿using System.Collections.ObjectModel;
+using System.Reflection;
 using System.Text.Json;
+using AutoMapper;
 using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
@@ -29,6 +31,7 @@ namespace Digdir.Domain.Dialogporten.Application.Integration.Tests.Common;
 
 public class DialogApplication : IAsyncLifetime
 {
+    private IMapper? _mapper;
     private Respawner _respawner = null!;
     private ServiceProvider _rootProvider = null!;
     private readonly PostgreSqlContainer _dbContainer = new PostgreSqlBuilder()
@@ -37,6 +40,12 @@ public class DialogApplication : IAsyncLifetime
 
     public async Task InitializeAsync()
     {
+        var config = new MapperConfiguration(cfg =>
+        {
+            cfg.AddMaps(Assembly.GetAssembly(typeof(ApplicationSettings)));
+        });
+        _mapper = config.CreateMapper();
+
         AssertionOptions.AssertEquivalencyUsing(options =>
         {
             //options.ExcludingMissingMembers();
@@ -143,6 +152,8 @@ public class DialogApplication : IAsyncLifetime
 
         return organizationRegistrySubstitute;
     }
+
+    public IMapper GetMapper() => _mapper!;
 
     public async Task DisposeAsync()
     {
