@@ -43,6 +43,7 @@ internal sealed class PurgeDialogCommandHandler : IRequestHandler<PurgeDialogCom
             .Include(x => x.Attachments)
             .Include(x => x.Activities)
             .Where(x => resourceIds.Contains(x.ServiceResource))
+            .IgnoreQueryFilters()
             .FirstOrDefaultAsync(x => x.Id == request.DialogId, cancellationToken);
 
         if (dialog is null)
