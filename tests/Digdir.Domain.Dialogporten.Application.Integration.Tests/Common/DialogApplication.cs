@@ -35,7 +35,7 @@ public class DialogApplication : IAsyncLifetime
     private Respawner _respawner = null!;
     private ServiceProvider _rootProvider = null!;
     private readonly PostgreSqlContainer _dbContainer = new PostgreSqlBuilder()
-        .WithImage("postgres:15.4")
+        .WithImage("postgres:15.7")
         .Build();
 
     public async Task InitializeAsync()
