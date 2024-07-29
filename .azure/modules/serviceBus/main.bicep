@@ -7,6 +7,7 @@ param namePrefix string
 param location string
 param subnetId string
 param vnetId string
+param tags object
 
 @export()
 type Sku = {
@@ -30,6 +31,7 @@ resource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2022-10-01-preview
   properties: {
     publicNetworkAccess: 'Disabled'
   }
+  tags: tags
 }
 
 resource privateEndpoint 'Microsoft.Network/privateEndpoints@2023-11-01' = {
@@ -63,6 +65,7 @@ resource privateEndpoint 'Microsoft.Network/privateEndpoints@2023-11-01' = {
       }
     ]
   }
+  tags: tags
 }
 
 var serviceBusDomainName = '${serviceBusName}.servicebus.windows.net'
@@ -80,5 +83,6 @@ module privateDnsZone '../privateDnsZone/main.bicep' = {
         ip: privateEndpoint.properties.ipConfigurations[0].properties.privateIPAddress
       }
     ]
+    tags: tags
   }
 }

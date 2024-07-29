@@ -6,6 +6,7 @@ param environmentKeyVaultName string
 param srcSecretName string
 param subnetId string
 param vnetId string
+param tags object
 
 @export()
 type Sku = {
@@ -45,6 +46,7 @@ module saveAdmPassword '../keyvault/upsertSecret.bicep' = {
     destKeyVaultName: srcKeyVault.name
     secretName: srcSecretName
     secretValue: administratorLoginPassword
+    tags: tags
   }
 }
 
@@ -54,6 +56,7 @@ module privateDnsZone '../privateDnsZone/main.bicep' = {
     namePrefix: namePrefix
     defaultDomain: '${namePrefix}.postgres.database.azure.com'
     vnetId: vnetId
+    tags: tags
   }
 }
 
@@ -82,6 +85,7 @@ resource postgres 'Microsoft.DBforPostgreSQL/flexibleServers@2022-12-01' = {
       collation: 'en_US.utf8'
     }
   }
+  tags: tags
 }
 
 module adoConnectionString '../keyvault/upsertSecret.bicep' = {
@@ -90,6 +94,7 @@ module adoConnectionString '../keyvault/upsertSecret.bicep' = {
     destKeyVaultName: environmentKeyVaultName
     secretName: 'dialogportenAdoConnectionString'
     secretValue: 'Server=${postgres.properties.fullyQualifiedDomainName};Database=${databaseName};Port=5432;User Id=${administratorLogin};Password=${administratorLoginPassword};Ssl Mode=Require;Trust Server Certificate=true;'
+    tags: tags
   }
 }
 
@@ -99,6 +104,7 @@ module psqlConnectionString '../keyvault/upsertSecret.bicep' = {
     destKeyVaultName: environmentKeyVaultName
     secretName: 'dialogportenPsqlConnectionString'
     secretValue: 'psql \'host=${postgres.properties.fullyQualifiedDomainName} port=5432 dbname=${databaseName} user=${administratorLogin} password=${administratorLoginPassword} sslmode=require\''
+    tags: tags
   }
 }
 

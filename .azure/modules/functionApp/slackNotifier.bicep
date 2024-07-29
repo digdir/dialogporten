@@ -4,6 +4,7 @@ param location string
 param applicationInsightsName string
 param namePrefix string
 param keyVaultName string
+param tags object
 
 @export()
 type Sku = {
@@ -66,6 +67,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-04-01' = {
     defaultToOAuthAuthentication: true
     minimumTlsVersion: 'TLS1_2'
   }
+  tags: tags
 }
 
 resource applicationServicePlan 'Microsoft.Web/serverfarms@2023-12-01' = {
@@ -76,6 +78,7 @@ resource applicationServicePlan 'Microsoft.Web/serverfarms@2023-12-01' = {
     tier: sku.applicationServicePlanTier
   }
   properties: {}
+  tags: tags
 }
 
 resource applicationInsights 'Microsoft.Insights/components@2020-02-02' existing = {
@@ -99,6 +102,7 @@ resource functionApp 'Microsoft.Web/sites@2023-12-01' = {
     }
     httpsOnly: true
   }
+  tags: tags
 }
 
 var appSettings = {
@@ -138,6 +142,7 @@ resource notifyDevTeam 'Microsoft.Insights/actionGroups@2023-01-01' = {
       }
     ]
   }
+  tags: tags
 }
 
 resource exceptionOccuredAlertRule 'Microsoft.Insights/scheduledQueryRules@2023-03-15-preview' = {
@@ -173,6 +178,7 @@ resource exceptionOccuredAlertRule 'Microsoft.Insights/scheduledQueryRules@2023-
       ]
     }
   }
+  tags: tags
 }
 
 output functionAppPrincipalId string = functionApp.identity.principalId

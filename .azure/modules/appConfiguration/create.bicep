@@ -2,6 +2,7 @@ import { uniqueResourceName } from '../../functions/resourceName.bicep'
 
 param namePrefix string
 param location string
+param tags object
 
 @export()
 type Sku = {
@@ -26,6 +27,7 @@ resource appConfig 'Microsoft.AppConfiguration/configurationStores@2023-03-01' =
       value: '1'
     }
   }
+  tags: tags
 }
 
 output endpoint string = appConfig.properties.endpoint

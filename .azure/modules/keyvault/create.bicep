@@ -1,5 +1,6 @@
 param namePrefix string
 param location string
+param tags object
 
 @export()
 type Sku = {
@@ -21,6 +22,7 @@ resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
     accessPolicies: []
     enableRbacAuthorization: true
   }
+  tags: tags
 }
 
 output name string = keyVault.name

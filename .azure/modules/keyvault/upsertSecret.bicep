@@ -1,5 +1,6 @@
 param destKeyVaultName string
 param secretName string
+param tags object
 @secure()
 param secretValue string
 
@@ -8,6 +9,7 @@ resource secret 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
   properties: {
     value: secretValue
   }
+  tags: tags
 }
 
 output secretUri string = secret.properties.secretUri

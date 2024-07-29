@@ -5,6 +5,7 @@ import {
 param namePrefix string
 param location string
 param subnetId string
+param tags object
 param vnetId string
 @minLength(1)
 param environmentKeyVaultName string
@@ -40,6 +41,7 @@ resource redis 'Microsoft.Cache/Redis@2023-08-01' = {
     redisVersion: version
     publicNetworkAccess: 'Disabled'
   }
+  tags: tags
 }
 
 // private endpoint name max characters is 80
@@ -65,6 +67,7 @@ resource redisPrivateEndpoint 'Microsoft.Network/privateEndpoints@2023-11-01' = 
       id: subnetId
     }
   }
+  tags: tags
 }
 
 module privateDnsZone '../privateDnsZone/main.bicep' = {
@@ -73,6 +76,7 @@ module privateDnsZone '../privateDnsZone/main.bicep' = {
     namePrefix: namePrefix
     defaultDomain: 'privatelink.redis.cache.windows.net'
     vnetId: vnetId
+    tags: tags
   }
 }
 
@@ -97,6 +101,7 @@ module redisConnectionString '../keyvault/upsertSecret.bicep' = {
     destKeyVaultName: environmentKeyVaultName
     secretName: 'dialogportenRedisConnectionString'
     secretValue: '${redis.properties.hostName}:${redis.properties.sslPort},password=${redis.properties.accessKeys.primaryKey},ssl=True,abortConnect=False'
+    tags: tags
   }
 }
 

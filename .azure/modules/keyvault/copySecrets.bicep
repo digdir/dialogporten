@@ -11,6 +11,7 @@ param destKeyVaultSubId string = subscription().subscriptionId
 
 // App configuration
 param appConfigurationName string
+param tags object
 
 // Secret
 #disable-next-line secure-secrets-in-params
@@ -18,14 +19,11 @@ param secretPrefix string
 
 var filteredKeysBySecretPrefix = filter(srcKeyVaultKeys, key => startsWith(key, secretPrefix))
 
-var keys = map(
-  filteredKeysBySecretPrefix,
-  key => {
-    secretNameWithoutPrefix: replace(key, secretPrefix, '')
-    secretName: key
-    appConfigKey: replace(replace(key, secretPrefix, ''), '--', ':')
-  }
-)
+var keys = map(filteredKeysBySecretPrefix, key => {
+  secretNameWithoutPrefix: replace(key, secretPrefix, '')
+  secretName: key
+  appConfigKey: replace(replace(key, secretPrefix, ''), '--', ':')
+})
 
 resource srcKeyVaultResource 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
   name: srcKeyVaultName
@@ -44,6 +42,7 @@ module secrets 'upsertSecret.bicep' = [
       destKeyVaultName: destKeyVaultName
       secretName: key.secretNameWithoutPrefix
       secretValue: srcKeyVaultResource.getSecret(key.secretName)
+      tags: tags
     }
   }
 ]
@@ -57,6 +56,7 @@ module appConfiguration '../appConfiguration/upsertKeyValue.bicep' = [
       key: key.appConfigKey
       value: 'https://${destKeyVaultName}${az.environment().suffixes.keyvaultDns}/secrets/${key.secretNameWithoutPrefix}'
       keyValueType: 'keyVaultReference'
+      tags: tags
     }
   }
 ]

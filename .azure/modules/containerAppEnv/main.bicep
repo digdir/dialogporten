@@ -1,6 +1,7 @@
 param location string
 param namePrefix string
 param subnetId string
+param tags object
 
 param appInsightWorkspaceName string
 
@@ -24,6 +25,7 @@ resource containerAppEnv 'Microsoft.App/managedEnvironments@2024-03-01' = {
       internal: false
     }
   }
+  tags: tags
 }
 
 output containerAppEnvId string = containerAppEnv.id
