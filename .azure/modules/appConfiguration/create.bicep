@@ -1,3 +1,5 @@
+import { uniqueResourceName } from '../../functions/resourceName.bicep'
+
 param namePrefix string
 param location string
 
@@ -7,8 +9,11 @@ type Sku = {
 }
 param sku Sku
 
+var appConfigNameMaxLength = 63
+var appConfigName = uniqueResourceName('${namePrefix}-appConfiguration', appConfigNameMaxLength)
+
 resource appConfig 'Microsoft.AppConfiguration/configurationStores@2023-03-01' = {
-  name: '${namePrefix}-appConfiguration'
+  name: appConfigName
   location: location
   sku: sku
   properties: {

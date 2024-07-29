@@ -1,3 +1,7 @@
+import {
+  uniqueResourceName
+} from '../../functions/resourceName.bicep'
+
 param namePrefix string
 param location string
 param subnetId string
@@ -16,9 +20,12 @@ type Sku = {
 }
 param sku Sku
 
+var redisNameMaxLength = 63
+var redisName = uniqueResourceName('${namePrefix}-redis', redisNameMaxLength)
+
 // https://learn.microsoft.com/en-us/azure/templates/microsoft.cache/redis?pivots=deployment-language-bicep
 resource redis 'Microsoft.Cache/Redis@2023-08-01' = {
-  name: '${namePrefix}-redis'
+  name: redisName
   location: location
   identity: {
     type: 'SystemAssigned'
@@ -35,13 +42,16 @@ resource redis 'Microsoft.Cache/Redis@2023-08-01' = {
   }
 }
 
+// private endpoint name max characters is 80
+var redisPrivateEndpointName = uniqueResourceName('${namePrefix}-redis-pe', 80)
+
 resource redisPrivateEndpoint 'Microsoft.Network/privateEndpoints@2023-11-01' = {
-  name: '${namePrefix}-redis-pe'
+  name: redisPrivateEndpointName
   location: location
   properties: {
     privateLinkServiceConnections: [
       {
-        name: '${namePrefix}-redis-pe'
+        name: redisPrivateEndpointName
         properties: {
           privateLinkServiceId: redis.id
           groupIds: [
@@ -50,7 +60,7 @@ resource redisPrivateEndpoint 'Microsoft.Network/privateEndpoints@2023-11-01' = 
         }
       }
     ]
-    customNetworkInterfaceName: '${namePrefix}-redis-pe-nic'
+    customNetworkInterfaceName: uniqueResourceName('${namePrefix}-redis-pe-nic', 80)
     subnet: {
       id: subnetId
     }
