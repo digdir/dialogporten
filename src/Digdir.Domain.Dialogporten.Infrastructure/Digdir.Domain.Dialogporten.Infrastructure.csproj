@@ -32,4 +32,6 @@
         <InternalsVisibleTo Include="Digdir.Domain.Dialogporten.GraphQL"/>
     </ItemGroup>
 
+
+
 </Project>

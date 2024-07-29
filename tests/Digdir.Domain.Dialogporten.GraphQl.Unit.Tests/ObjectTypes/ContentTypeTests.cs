@@ -1,6 +1,6 @@
 using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Queries.Search;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
-using Digdir.Domain.Dialogporten.GraphQL.EndUser.DialogById;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Contents;
+using Content = Digdir.Domain.Dialogporten.GraphQL.EndUser.DialogById.Content;
 
 namespace Digdir.Domain.Dialogporten.GraphQl.Unit.Tests.ObjectTypes;
 

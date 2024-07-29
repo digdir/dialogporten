@@ -1967,6 +1967,12 @@
               "$ref": "#/components/schemas/UpdateDialogSearchTagDto"
             }
           },
+          "transmissions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UpdateDialogDialogTransmissionDto"
+            }
+          },
           "attachments": {
             "type": "array",
             "items": {
@@ -2018,16 +2024,16 @@
         "additionalProperties": false,
         "properties": {
           "title": {
-            "$ref": "#/components/schemas/DialogContentValueDto"
+            "$ref": "#/components/schemas/ContentValueDto"
           },
           "summary": {
-            "$ref": "#/components/schemas/DialogContentValueDto"
+            "$ref": "#/components/schemas/ContentValueDto"
           },
           "senderName": {
             "nullable": true,
             "oneOf": [
               {
-                "$ref": "#/components/schemas/DialogContentValueDto"
+                "$ref": "#/components/schemas/ContentValueDto"
               }
             ]
           },
@@ -2035,7 +2041,7 @@
             "nullable": true,
             "oneOf": [
               {
-                "$ref": "#/components/schemas/DialogContentValueDto"
+                "$ref": "#/components/schemas/ContentValueDto"
               }
             ]
           },
@@ -2043,7 +2049,7 @@
             "nullable": true,
             "oneOf": [
               {
-                "$ref": "#/components/schemas/DialogContentValueDto"
+                "$ref": "#/components/schemas/ContentValueDto"
               }
             ]
           },
@@ -2051,13 +2057,13 @@
             "nullable": true,
             "oneOf": [
               {
-                "$ref": "#/components/schemas/DialogContentValueDto"
+                "$ref": "#/components/schemas/ContentValueDto"
               }
             ]
           }
         }
       },
-      "DialogContentValueDto": {
+      "ContentValueDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -2092,6 +2098,169 @@
             "type": "string"
           }
         }
+      },
+      "UpdateDialogDialogTransmissionDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "authorizationAttribute": {
+            "type": "string",
+            "nullable": true
+          },
+          "extendedType": {
+            "type": "string",
+            "nullable": true
+          },
+          "relatedTransmissionId": {
+            "type": "string",
+            "format": "guid",
+            "nullable": true
+          },
+          "type": {
+            "$ref": "#/components/schemas/DialogTransmissionType_Values"
+          },
+          "sender": {
+            "$ref": "#/components/schemas/UpdateDialogDialogTransmissionActorDto"
+          },
+          "content": {
+            "$ref": "#/components/schemas/UpdateDialogDialogTransmissionContentDto"
+          },
+          "attachments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UpdateDialogTransmissionAttachmentDto"
+            }
+          }
+        }
+      },
+      "DialogTransmissionType_Values": {
+        "type": "string",
+        "description": "",
+        "x-enumNames": [
+          "Information",
+          "Acceptance",
+          "Rejection",
+          "Request",
+          "Alert",
+          "Decision",
+          "Submission",
+          "Correction"
+        ],
+        "enum": [
+          "Information",
+          "Acceptance",
+          "Rejection",
+          "Request",
+          "Alert",
+          "Decision",
+          "Submission",
+          "Correction"
+        ]
+      },
+      "UpdateDialogDialogTransmissionActorDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "actorType": {
+            "$ref": "#/components/schemas/DialogActorType_Values"
+          },
+          "actorName": {
+            "type": "string"
+          },
+          "actorId": {
+            "type": "string"
+          }
+        }
+      },
+      "DialogActorType_Values": {
+        "type": "string",
+        "description": "",
+        "x-enumNames": [
+          "PartyRepresentative",
+          "ServiceOwner"
+        ],
+        "enum": [
+          "PartyRepresentative",
+          "ServiceOwner"
+        ]
+      },
+      "UpdateDialogDialogTransmissionContentDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "title": {
+            "$ref": "#/components/schemas/ContentValueDto"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/ContentValueDto"
+          }
+        }
+      },
+      "UpdateDialogTransmissionAttachmentDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid",
+            "nullable": true
+          },
+          "displayName": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LocalizationDto"
+            }
+          },
+          "urls": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UpdateDialogTransmissionAttachmentUrlDto"
+            }
+          }
+        }
+      },
+      "UpdateDialogTransmissionAttachmentUrlDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid",
+            "nullable": true
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "mediaType": {
+            "type": "string",
+            "nullable": true
+          },
+          "consumerType": {
+            "$ref": "#/components/schemas/AttachmentUrlConsumerType_Values"
+          }
+        }
+      },
+      "AttachmentUrlConsumerType_Values": {
+        "type": "string",
+        "description": "",
+        "x-enumNames": [
+          "Gui",
+          "Api"
+        ],
+        "enum": [
+          "Gui",
+          "Api"
+        ]
       },
       "UpdateDialogDialogAttachmentDto": {
         "type": "object",
@@ -2134,21 +2303,9 @@
             "nullable": true
           },
           "consumerType": {
-            "$ref": "#/components/schemas/DialogAttachmentUrlConsumerType_Values"
+            "$ref": "#/components/schemas/AttachmentUrlConsumerType_Values"
           }
         }
-      },
-      "DialogAttachmentUrlConsumerType_Values": {
-        "type": "string",
-        "description": "",
-        "x-enumNames": [
-          "Gui",
-          "Api"
-        ],
-        "enum": [
-          "Gui",
-          "Api"
-        ]
       },
       "UpdateDialogDialogGuiActionDto": {
         "type": "object",
@@ -2383,18 +2540,6 @@
           }
         }
       },
-      "DialogActorType_Values": {
-        "type": "string",
-        "description": "",
-        "x-enumNames": [
-          "PartyRepresentative",
-          "ServiceOwner"
-        ],
-        "enum": [
-          "PartyRepresentative",
-          "ServiceOwner"
-        ]
-      },
       "PaginatedListOfSearchDialogDtoSO": {
         "type": "object",
         "additionalProperties": false,
@@ -2590,16 +2735,16 @@
         "additionalProperties": false,
         "properties": {
           "title": {
-            "$ref": "#/components/schemas/DialogContentValueDto"
+            "$ref": "#/components/schemas/ContentValueDto"
           },
           "summary": {
-            "$ref": "#/components/schemas/DialogContentValueDto"
+            "$ref": "#/components/schemas/ContentValueDto"
           },
           "senderName": {
             "nullable": true,
             "oneOf": [
               {
-                "$ref": "#/components/schemas/DialogContentValueDto"
+                "$ref": "#/components/schemas/ContentValueDto"
               }
             ]
           },
@@ -2607,7 +2752,7 @@
             "nullable": true,
             "oneOf": [
               {
-                "$ref": "#/components/schemas/DialogContentValueDto"
+                "$ref": "#/components/schemas/ContentValueDto"
               }
             ]
           }
@@ -2697,6 +2842,12 @@
               "$ref": "#/components/schemas/GetDialogDialogAttachmentDtoSO"
             }
           },
+          "transmissions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GetDialogDialogTransmissionDtoSO"
+            }
+          },
           "guiActions": {
             "type": "array",
             "items": {
@@ -2730,16 +2881,16 @@
         "additionalProperties": false,
         "properties": {
           "title": {
-            "$ref": "#/components/schemas/DialogContentValueDto"
+            "$ref": "#/components/schemas/ContentValueDto"
           },
           "summary": {
-            "$ref": "#/components/schemas/DialogContentValueDto"
+            "$ref": "#/components/schemas/ContentValueDto"
           },
           "senderName": {
             "nullable": true,
             "oneOf": [
               {
-                "$ref": "#/components/schemas/DialogContentValueDto"
+                "$ref": "#/components/schemas/ContentValueDto"
               }
             ]
           },
@@ -2747,7 +2898,7 @@
             "nullable": true,
             "oneOf": [
               {
-                "$ref": "#/components/schemas/DialogContentValueDto"
+                "$ref": "#/components/schemas/ContentValueDto"
               }
             ]
           },
@@ -2755,7 +2906,7 @@
             "nullable": true,
             "oneOf": [
               {
-                "$ref": "#/components/schemas/DialogContentValueDto"
+                "$ref": "#/components/schemas/ContentValueDto"
               }
             ]
           },
@@ -2763,7 +2914,7 @@
             "nullable": true,
             "oneOf": [
               {
-                "$ref": "#/components/schemas/DialogContentValueDto"
+                "$ref": "#/components/schemas/ContentValueDto"
               }
             ]
           }
@@ -2817,7 +2968,122 @@
             "nullable": true
           },
           "consumerType": {
-            "$ref": "#/components/schemas/DialogAttachmentUrlConsumerType_Values"
+            "$ref": "#/components/schemas/AttachmentUrlConsumerType_Values"
+          }
+        }
+      },
+      "GetDialogDialogTransmissionDtoSO": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "authorizationAttribute": {
+            "type": "string",
+            "nullable": true
+          },
+          "isAuthorized": {
+            "type": "boolean"
+          },
+          "extendedType": {
+            "type": "string",
+            "nullable": true
+          },
+          "relatedTransmissionId": {
+            "type": "string",
+            "format": "guid",
+            "nullable": true
+          },
+          "type": {
+            "$ref": "#/components/schemas/DialogTransmissionType_Values"
+          },
+          "sender": {
+            "$ref": "#/components/schemas/GetDialogDialogTransmissionActorDtoSO"
+          },
+          "content": {
+            "$ref": "#/components/schemas/GetDialogDialogTransmissionContentDtoSO"
+          },
+          "attachments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GetDialogTransmissionAttachmentDtoSO"
+            }
+          }
+        }
+      },
+      "GetDialogDialogTransmissionActorDtoSO": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "actorType": {
+            "$ref": "#/components/schemas/DialogActorType_Values"
+          },
+          "actorName": {
+            "type": "string"
+          },
+          "actorId": {
+            "type": "string"
+          }
+        }
+      },
+      "GetDialogDialogTransmissionContentDtoSO": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "title": {
+            "$ref": "#/components/schemas/ContentValueDto"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/ContentValueDto"
+          }
+        }
+      },
+      "GetDialogTransmissionAttachmentDtoSO": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "displayName": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LocalizationDto"
+            }
+          },
+          "urls": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GetDialogTransmissionAttachmentUrlDtoSO"
+            }
+          }
+        }
+      },
+      "GetDialogTransmissionAttachmentUrlDtoSO": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "mediaType": {
+            "type": "string",
+            "nullable": true
+          },
+          "consumerType": {
+            "$ref": "#/components/schemas/AttachmentUrlConsumerType_Values"
           }
         }
       },
@@ -3078,6 +3344,12 @@
               "$ref": "#/components/schemas/CreateDialogDialogAttachmentDto"
             }
           },
+          "transmissions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CreateDialogDialogTransmissionDto"
+            }
+          },
           "guiActions": {
             "type": "array",
             "items": {
@@ -3103,16 +3375,16 @@
         "additionalProperties": false,
         "properties": {
           "title": {
-            "$ref": "#/components/schemas/DialogContentValueDto"
+            "$ref": "#/components/schemas/ContentValueDto"
           },
           "summary": {
-            "$ref": "#/components/schemas/DialogContentValueDto"
+            "$ref": "#/components/schemas/ContentValueDto"
           },
           "senderName": {
             "nullable": true,
             "oneOf": [
               {
-                "$ref": "#/components/schemas/DialogContentValueDto"
+                "$ref": "#/components/schemas/ContentValueDto"
               }
             ]
           },
@@ -3120,7 +3392,7 @@
             "nullable": true,
             "oneOf": [
               {
-                "$ref": "#/components/schemas/DialogContentValueDto"
+                "$ref": "#/components/schemas/ContentValueDto"
               }
             ]
           },
@@ -3128,7 +3400,7 @@
             "nullable": true,
             "oneOf": [
               {
-                "$ref": "#/components/schemas/DialogContentValueDto"
+                "$ref": "#/components/schemas/ContentValueDto"
               }
             ]
           },
@@ -3136,7 +3408,7 @@
             "nullable": true,
             "oneOf": [
               {
-                "$ref": "#/components/schemas/DialogContentValueDto"
+                "$ref": "#/components/schemas/ContentValueDto"
               }
             ]
           }
@@ -3187,7 +3459,118 @@
             "nullable": true
           },
           "consumerType": {
-            "$ref": "#/components/schemas/DialogAttachmentUrlConsumerType_Values"
+            "$ref": "#/components/schemas/AttachmentUrlConsumerType_Values"
+          }
+        }
+      },
+      "CreateDialogDialogTransmissionDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "authorizationAttribute": {
+            "type": "string",
+            "nullable": true
+          },
+          "extendedType": {
+            "type": "string",
+            "format": "uri",
+            "nullable": true
+          },
+          "relatedTransmissionId": {
+            "type": "string",
+            "format": "guid",
+            "nullable": true
+          },
+          "type": {
+            "$ref": "#/components/schemas/DialogTransmissionType_Values"
+          },
+          "sender": {
+            "$ref": "#/components/schemas/CreateDialogDialogTransmissionActorDto"
+          },
+          "content": {
+            "$ref": "#/components/schemas/CreateDialogDialogTransmissionContentDto"
+          },
+          "attachments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CreateDialogTransmissionAttachmentDto"
+            }
+          }
+        }
+      },
+      "CreateDialogDialogTransmissionActorDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "actorType": {
+            "$ref": "#/components/schemas/DialogActorType_Values"
+          },
+          "actorName": {
+            "type": "string"
+          },
+          "actorId": {
+            "type": "string"
+          }
+        }
+      },
+      "CreateDialogDialogTransmissionContentDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "title": {
+            "$ref": "#/components/schemas/ContentValueDto"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/ContentValueDto"
+          }
+        }
+      },
+      "CreateDialogTransmissionAttachmentDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid",
+            "nullable": true
+          },
+          "displayName": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LocalizationDto"
+            }
+          },
+          "urls": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CreateDialogTransmissionAttachmentUrlDto"
+            }
+          }
+        }
+      },
+      "CreateDialogTransmissionAttachmentUrlDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "mediaType": {
+            "type": "string",
+            "nullable": true
+          },
+          "consumerType": {
+            "$ref": "#/components/schemas/AttachmentUrlConsumerType_Values"
           }
         }
       },
@@ -3692,16 +4075,16 @@
         "additionalProperties": false,
         "properties": {
           "title": {
-            "$ref": "#/components/schemas/DialogContentValueDto"
+            "$ref": "#/components/schemas/ContentValueDto"
           },
           "summary": {
-            "$ref": "#/components/schemas/DialogContentValueDto"
+            "$ref": "#/components/schemas/ContentValueDto"
           },
           "senderName": {
             "nullable": true,
             "oneOf": [
               {
-                "$ref": "#/components/schemas/DialogContentValueDto"
+                "$ref": "#/components/schemas/ContentValueDto"
               }
             ]
           },
@@ -3709,7 +4092,7 @@
             "nullable": true,
             "oneOf": [
               {
-                "$ref": "#/components/schemas/DialogContentValueDto"
+                "$ref": "#/components/schemas/ContentValueDto"
               }
             ]
           }
@@ -3791,6 +4174,12 @@
               "$ref": "#/components/schemas/GetDialogDialogAttachmentDto"
             }
           },
+          "transmissions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GetDialogDialogTransmissionDto"
+            }
+          },
           "guiActions": {
             "type": "array",
             "items": {
@@ -3822,16 +4211,16 @@
         "additionalProperties": false,
         "properties": {
           "title": {
-            "$ref": "#/components/schemas/DialogContentValueDto"
+            "$ref": "#/components/schemas/ContentValueDto"
           },
           "summary": {
-            "$ref": "#/components/schemas/DialogContentValueDto"
+            "$ref": "#/components/schemas/ContentValueDto"
           },
           "senderName": {
             "nullable": true,
             "oneOf": [
               {
-                "$ref": "#/components/schemas/DialogContentValueDto"
+                "$ref": "#/components/schemas/ContentValueDto"
               }
             ]
           },
@@ -3839,7 +4228,7 @@
             "nullable": true,
             "oneOf": [
               {
-                "$ref": "#/components/schemas/DialogContentValueDto"
+                "$ref": "#/components/schemas/ContentValueDto"
               }
             ]
           },
@@ -3847,7 +4236,7 @@
             "nullable": true,
             "oneOf": [
               {
-                "$ref": "#/components/schemas/DialogContentValueDto"
+                "$ref": "#/components/schemas/ContentValueDto"
               }
             ]
           },
@@ -3855,7 +4244,7 @@
             "nullable": true,
             "oneOf": [
               {
-                "$ref": "#/components/schemas/DialogContentValueDto"
+                "$ref": "#/components/schemas/ContentValueDto"
               }
             ]
           }
@@ -3900,7 +4289,122 @@
             "nullable": true
           },
           "consumerType": {
-            "$ref": "#/components/schemas/DialogAttachmentUrlConsumerType_Values"
+            "$ref": "#/components/schemas/AttachmentUrlConsumerType_Values"
+          }
+        }
+      },
+      "GetDialogDialogTransmissionDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "authorizationAttribute": {
+            "type": "string",
+            "nullable": true
+          },
+          "isAuthorized": {
+            "type": "boolean"
+          },
+          "extendedType": {
+            "type": "string",
+            "nullable": true
+          },
+          "relatedTransmissionId": {
+            "type": "string",
+            "format": "guid",
+            "nullable": true
+          },
+          "type": {
+            "$ref": "#/components/schemas/DialogTransmissionType_Values"
+          },
+          "sender": {
+            "$ref": "#/components/schemas/GetDialogDialogTransmissionActorDto"
+          },
+          "content": {
+            "$ref": "#/components/schemas/GetDialogDialogTransmissionContentDto"
+          },
+          "attachments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GetDialogTransmissionAttachmentDto"
+            }
+          }
+        }
+      },
+      "GetDialogDialogTransmissionActorDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "actorType": {
+            "$ref": "#/components/schemas/DialogActorType_Values"
+          },
+          "actorName": {
+            "type": "string"
+          },
+          "actorId": {
+            "type": "string"
+          }
+        }
+      },
+      "GetDialogDialogTransmissionContentDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "title": {
+            "$ref": "#/components/schemas/ContentValueDto"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/ContentValueDto"
+          }
+        }
+      },
+      "GetDialogTransmissionAttachmentDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "displayName": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LocalizationDto"
+            }
+          },
+          "urls": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GetDialogTransmissionAttachmentUrlDto"
+            }
+          }
+        }
+      },
+      "GetDialogTransmissionAttachmentUrlDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "mediaType": {
+            "type": "string",
+            "nullable": true
+          },
+          "consumerType": {
+            "$ref": "#/components/schemas/AttachmentUrlConsumerType_Values"
           }
         }
       },

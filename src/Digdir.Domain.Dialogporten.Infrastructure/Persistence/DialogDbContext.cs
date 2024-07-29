@@ -3,7 +3,6 @@ using Digdir.Domain.Dialogporten.Domain.Common;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
 using Digdir.Domain.Dialogporten.Domain.Outboxes;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence.ValueConverters;
 using Digdir.Library.Entity.Abstractions.Features.Identifiable;
@@ -14,6 +13,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System.Linq.Expressions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actors;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Attachments;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Contents;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence;
 
@@ -24,15 +25,16 @@ internal sealed class DialogDbContext : DbContext, IDialogDbContext
     public DbSet<DialogEntity> Dialogs => Set<DialogEntity>();
     public DbSet<DialogStatus> DialogStatuses => Set<DialogStatus>();
     public DbSet<DialogActivity> DialogActivities => Set<DialogActivity>();
+    public DbSet<DialogActivityType> DialogActivityTypes => Set<DialogActivityType>();
     public DbSet<DialogApiAction> DialogApiActions => Set<DialogApiAction>();
     public DbSet<DialogApiActionEndpoint> DialogApiActionEndpoints => Set<DialogApiActionEndpoint>();
     public DbSet<DialogGuiAction> DialogGuiActions => Set<DialogGuiAction>();
     public DbSet<DialogAttachment> DialogAttachments => Set<DialogAttachment>();
-    public DbSet<DialogAttachmentUrl> DialogAttachmentUrls => Set<DialogAttachmentUrl>();
+    public DbSet<AttachmentUrl> AttachmentUrls => Set<AttachmentUrl>();
     public DbSet<DialogGuiActionPriority> DialogGuiActionTypes => Set<DialogGuiActionPriority>();
-    public DbSet<DialogActivityType> DialogActivityTypes => Set<DialogActivityType>();
+    public DbSet<DialogTransmission> DialogTransmissions => Set<DialogTransmission>();
     public DbSet<DialogSeenLog> DialogSeenLog => Set<DialogSeenLog>();
-    public DbSet<DialogContentType> DialogContentTypes => Set<DialogContentType>();
+    public DbSet<DialogContentType> ContentTypes => Set<DialogContentType>();
     public DbSet<DialogContent> DialogContent => Set<DialogContent>();
     public DbSet<DialogActor> DialogActors => Set<DialogActor>();
 

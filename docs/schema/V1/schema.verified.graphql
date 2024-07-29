@@ -107,6 +107,7 @@ type Dialog {
   apiActions: [ApiAction!]!
   activities: [Activity!]!
   seenSinceLastUpdate: [SeenLog!]!
+  transmissions: [Transmission!]!
 }
 
 type DialogByIdDeleted implements DialogByIdError {
@@ -196,6 +197,24 @@ type SeenLog {
   seenAt: DateTime!
   seenBy: Actor!
   isCurrentEndUser: Boolean!
+}
+
+type Transmission {
+  id: UUID!
+  createdAt: DateTime!
+  authorizationAttribute: String
+  isAuthorized: Boolean!
+  extendedType: String
+  relatedTransmissionId: UUID
+  type: TransmissionType!
+  sender: Actor!
+  content: TransmissionContent!
+  attachments: [Attachment!]!
+}
+
+type TransmissionContent {
+  title: ContentValue!
+  summary: ContentValue!
 }
 
 input SearchDialogInput {
@@ -291,6 +310,25 @@ enum HttpVerb {
   OPTIONS
   TRACE
   CONNECT
+}
+
+enum TransmissionType {
+  "For general information, not related to any submissions"
+  INFORMATION
+  "Feedback\/receipt accepting a previous submission"
+  ACCEPTANCE
+  "Feedback\/error message rejecting a previous submission"
+  REJECTION
+  "Question\/request for more information"
+  REQUEST
+  "Critical information about the process"
+  ALERT
+  "Information about a formal decision (\"resolution\")"
+  DECISION
+  "A normal submission of some information\/form"
+  SUBMISSION
+  "A submission correcting\/overriding some previously submitted information"
+  CORRECTION
 }
 
 directive @authorize("The name of the authorization policy that determines access to the annotated resource." policy: String "Roles that are allowed to access the annotated resource." roles: [String!] "Defines when when the authorize directive shall be applied.By default the authorize directives are applied during the validation phase." apply: ApplyPolicy! = BEFORE_RESOLVER) repeatable on OBJECT | FIELD_DEFINITION

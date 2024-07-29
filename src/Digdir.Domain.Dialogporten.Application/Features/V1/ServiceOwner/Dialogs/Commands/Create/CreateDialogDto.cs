@@ -5,6 +5,7 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actors;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Attachments;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 using Digdir.Domain.Dialogporten.Domain.Http;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Create;
@@ -27,19 +28,42 @@ public class CreateDialogDto
     public List<CreateDialogSearchTagDto> SearchTags { get; set; } = [];
 
     public List<CreateDialogDialogAttachmentDto> Attachments { get; set; } = [];
+    public List<CreateDialogDialogTransmissionDto> Transmissions { get; set; } = [];
     public List<CreateDialogDialogGuiActionDto> GuiActions { get; set; } = [];
     public List<CreateDialogDialogApiActionDto> ApiActions { get; set; } = [];
     public List<CreateDialogDialogActivityDto> Activities { get; set; } = [];
 }
 
+public class CreateDialogDialogTransmissionDto
+{
+    public Guid? Id { get; set; }
+    public DateTimeOffset CreatedAt { get; set; }
+    public string? AuthorizationAttribute { get; set; }
+    public Uri? ExtendedType { get; set; }
+    public Guid? RelatedTransmissionId { get; set; }
+
+    public DialogTransmissionType.Values Type { get; set; }
+
+    public CreateDialogDialogTransmissionActorDto Sender { get; set; } = null!;
+
+    public CreateDialogDialogTransmissionContentDto Content { get; set; } = null!;
+    public List<CreateDialogTransmissionAttachmentDto> Attachments { get; set; } = [];
+}
+
 public sealed class CreateDialogContentDto
 {
-    public DialogContentValueDto Title { get; set; } = null!;
-    public DialogContentValueDto Summary { get; set; } = null!;
-    public DialogContentValueDto? SenderName { get; set; }
-    public DialogContentValueDto? AdditionalInfo { get; set; }
-    public DialogContentValueDto? ExtendedStatus { get; set; }
-    public DialogContentValueDto? MainContentReference { get; set; }
+    public ContentValueDto Title { get; set; } = null!;
+    public ContentValueDto Summary { get; set; } = null!;
+    public ContentValueDto? SenderName { get; set; }
+    public ContentValueDto? AdditionalInfo { get; set; }
+    public ContentValueDto? ExtendedStatus { get; set; }
+    public ContentValueDto? MainContentReference { get; set; }
+}
+
+public sealed class CreateDialogDialogTransmissionContentDto
+{
+    public ContentValueDto Title { get; set; } = null!;
+    public ContentValueDto Summary { get; set; } = null!;
 }
 
 public sealed class CreateDialogSearchTagDto
@@ -66,6 +90,13 @@ public sealed class CreateDialogDialogActivityActorDto
     public DialogActorType.Values ActorType { get; set; }
     public string? ActorName { get; set; }
     public string? ActorId { get; set; }
+}
+
+public sealed class CreateDialogDialogTransmissionActorDto
+{
+    public DialogActorType.Values ActorType { get; set; }
+    public string ActorName { get; set; } = null!;
+    public string ActorId { get; set; } = null!;
 }
 
 public sealed class CreateDialogDialogApiActionDto
@@ -114,5 +145,20 @@ public sealed class CreateDialogDialogAttachmentUrlDto
     public Uri Url { get; set; } = null!;
     public string? MediaType { get; set; } = null!;
 
-    public DialogAttachmentUrlConsumerType.Values ConsumerType { get; set; }
+    public AttachmentUrlConsumerType.Values ConsumerType { get; set; }
+}
+
+public sealed class CreateDialogTransmissionAttachmentDto
+{
+    public Guid? Id { get; set; }
+    public List<LocalizationDto> DisplayName { get; set; } = [];
+    public List<CreateDialogTransmissionAttachmentUrlDto> Urls { get; set; } = [];
+}
+
+public sealed class CreateDialogTransmissionAttachmentUrlDto
+{
+    public Uri Url { get; set; } = null!;
+    public string? MediaType { get; set; } = null!;
+
+    public AttachmentUrlConsumerType.Values ConsumerType { get; set; }
 }

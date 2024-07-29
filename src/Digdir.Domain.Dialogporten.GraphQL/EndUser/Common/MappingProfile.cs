@@ -12,7 +12,7 @@ public class MappingProfile : Profile
     {
         CreateMap<LocalizationDto, Localization>();
 
-        CreateMap<DialogContentValueDto, ContentValue>();
+        CreateMap<ContentValueDto, ContentValue>();
 
         CreateMap<GetDialogDialogSeenLogDto, SeenLog>();
         CreateMap<GetDialogDialogSeenLogActorDto, Actor>();

@@ -1,41 +1,45 @@
-using System.Reflection;
 using AutoMapper;
+using System.Reflection;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Contents;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.Enumerables;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using Digdir.Domain.Dialogporten.Domain;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Contents;
+
 // ReSharper disable ClassNeverInstantiated.Global
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.Common.Content;
 
 /// <summary>
 /// TODO: Discuss this with the team later. It works for now
-/// This class is used to map bewteen the incoming dto object and the internal dialog content structure.
+/// This class is used to map bewteen the incoming dto object and the internal transmission content structure.
 /// Value needs to be mapped from a list of LocalizationDto in order for merging to work.
+///
+/// We might want to consider combining this class with DialogContentInputConverter later.
 /// </summary>
-internal class IntermediateDialogContent
+
+internal class IntermediateTransmissionContent
 {
-    public DialogContentType.Values TypeId { get; set; }
+    public TransmissionContentType.Values TypeId { get; set; }
     public List<LocalizationDto> Value { get; set; } = null!;
     public string MediaType { get; set; } = MediaTypes.PlainText;
 }
 
-internal class DialogContentInputConverter<TDialogContent> :
-    ITypeConverter<TDialogContent?, List<DialogContent>?>
-    where TDialogContent : class, new()
+internal class TransmissionContentInputConverter<TTransmissionContent> :
+    ITypeConverter<TTransmissionContent?, List<TransmissionContent>?>
+    where TTransmissionContent : class, new()
 {
-    public List<DialogContent>? Convert(TDialogContent? source, List<DialogContent>? destinations, ResolutionContext context)
+    public List<TransmissionContent>? Convert(TTransmissionContent? source, List<TransmissionContent>? destinations, ResolutionContext context)
     {
         if (source is null)
         {
             return null;
         }
 
-        var sources = new List<IntermediateDialogContent>();
+        var sources = new List<IntermediateTransmissionContent>();
 
-        foreach (var dialogContentType in DialogContentType.GetValues())
+        foreach (var transmissionContentType in TransmissionContentType.GetValues())
         {
-            if (!PropertyCache<TDialogContent>.PropertyByName.TryGetValue(dialogContentType.Name, out var sourceProperty))
+            if (!PropertyCache<TTransmissionContent>.PropertyByName.TryGetValue(transmissionContentType.Name, out var sourceProperty))
             {
                 continue;
             }
@@ -45,9 +49,9 @@ internal class DialogContentInputConverter<TDialogContent> :
                 continue;
             }
 
-            sources.Add(new IntermediateDialogContent
+            sources.Add(new IntermediateTransmissionContent
             {
-                TypeId = dialogContentType.Id,
+                TypeId = transmissionContentType.Id,
                 Value = sourceValue.Value,
                 MediaType = sourceValue.MediaType
             });
@@ -58,7 +62,7 @@ internal class DialogContentInputConverter<TDialogContent> :
             .Merge(sources,
                 destinationKeySelector: x => x.TypeId,
                 sourceKeySelector: x => x.TypeId,
-                create: context.Mapper.Map<List<DialogContent>>,
+                create: context.Mapper.Map<List<TransmissionContent>>,
                 update: context.Mapper.Update,
                 delete: DeleteDelegate.NoOp);
 
@@ -66,22 +70,22 @@ internal class DialogContentInputConverter<TDialogContent> :
     }
 }
 
-internal class DialogContentOutputConverter<TDialogContent> :
-    ITypeConverter<List<DialogContent>?, TDialogContent?>
-    where TDialogContent : class, new()
+internal class TransmissionContentOutputConverter<TTransmissionContent> :
+    ITypeConverter<List<TransmissionContent>?, TTransmissionContent?>
+    where TTransmissionContent : class, new()
 {
-    public TDialogContent? Convert(List<DialogContent>? sources, TDialogContent? destination, ResolutionContext context)
+    public TTransmissionContent? Convert(List<TransmissionContent>? sources, TTransmissionContent? destination, ResolutionContext context)
     {
         if (sources is null)
         {
             return null;
         }
 
-        destination ??= new TDialogContent();
+        destination ??= new TTransmissionContent();
 
         foreach (var source in sources)
         {
-            if (!PropertyCache<TDialogContent>.PropertyByName.TryGetValue(source.TypeId.ToString(), out var property))
+            if (!PropertyCache<TTransmissionContent>.PropertyByName.TryGetValue(source.TypeId.ToString(), out var property))
             {
                 continue;
             }
