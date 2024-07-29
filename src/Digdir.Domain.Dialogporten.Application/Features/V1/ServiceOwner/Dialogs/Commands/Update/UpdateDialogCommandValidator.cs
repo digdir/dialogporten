@@ -95,9 +95,6 @@ internal sealed class UpdateDialogDtoValidator : AbstractValidator<UpdateDialogD
         RuleFor(x => x.Activities)
             .UniqueBy(x => x.Id);
         RuleForEach(x => x.Activities)
-            .IsIn(x => x.Activities,
-                dependentKeySelector: activity => activity.RelatedActivityId,
-                principalKeySelector: activity => activity.Id)
             .SetValidator(activityValidator);
     }
 }
