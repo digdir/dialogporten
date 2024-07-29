@@ -55,6 +55,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         var resourceIds = await _userResourceRegistry.GetCurrentUserResourceIds(cancellationToken);
 
         var dialog = await _db.Dialogs
+            .Include(x => x.Activities)
             .Include(x => x.Content)
                 .ThenInclude(x => x.Value.Localizations)
             .Include(x => x.SearchTags)
@@ -106,7 +107,8 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         // Update primitive properties
         _mapper.Map(request.Dto, dialog);
         ValidateTimeFields(dialog);
-        await AppendActivity(dialog, request.Dto, cancellationToken);
+        AppendActivity(dialog, request.Dto);
+        VerifyActivityRelations(dialog);
 
         dialog.SearchTags
             .Merge(request.Dto.SearchTags,
@@ -196,22 +198,52 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         }
     }
 
-    private async Task AppendActivity(DialogEntity dialog, UpdateDialogDto dto, CancellationToken cancellationToken)
+    private void AppendActivity(DialogEntity dialog, UpdateDialogDto dto)
     {
         var newDialogActivities = _mapper.Map<List<DialogActivity>>(dto.Activities);
 
-        var existingIds = await _db.GetExistingIds(newDialogActivities, cancellationToken);
+        var existingIds = dialog.Activities.Select(x => x.Id).ToList();
+
+        existingIds = existingIds.Intersect(newDialogActivities.Select(x => x.Id)).ToList();
         if (existingIds.Count != 0)
         {
             _domainContext.AddError(
                 nameof(UpdateDialogDto.Activities),
                 $"Entity '{nameof(DialogActivity)}' with the following key(s) already exists: ({string.Join(", ", existingIds)}).");
+            return;
         }
 
         dialog.Activities.AddRange(newDialogActivities);
 
         // Tell ef explicitly to add activities as new to the database.
         _db.DialogActivities.AddRange(newDialogActivities);
+    }
+
+    private void VerifyActivityRelations(DialogEntity dialog)
+    {
+        var relatedActivityIds = dialog.Activities
+            .Where(x => x.RelatedActivityId is not null)
+            .Select(x => x.RelatedActivityId)
+            .ToList();
+
+        if (relatedActivityIds.Count == 0)
+        {
+            return;
+        }
+
+        var activityIds = dialog.Activities.Select(x => x.Id).ToList();
+
+        var invalidRelatedActivityIds = relatedActivityIds
+            .Where(id => !activityIds.Contains(id!.Value))
+            .ToList();
+
+        if (invalidRelatedActivityIds.Count != 0)
+        {
+            _domainContext.AddError(
+                nameof(UpdateDialogDto.Activities),
+                $"Invalid '{nameof(DialogActivity.RelatedActivityId)}, entity '{nameof(DialogActivity)}'" +
+                $" with the following key(s) does not exist: ({string.Join(", ", invalidRelatedActivityIds)}) in '{nameof(dialog.Activities)}'");
+        }
     }
 
     private IEnumerable<DialogApiAction> CreateApiActions(IEnumerable<UpdateDialogDialogApiActionDto> creatables)

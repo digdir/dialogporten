@@ -95,9 +95,6 @@ internal sealed class UpdateDialogDtoValidator : AbstractValidator<UpdateDialogD
         RuleFor(x => x.Activities)
             .UniqueBy(x => x.Id);
         RuleForEach(x => x.Activities)
-            .IsIn(x => x.Activities,
-                dependentKeySelector: activity => activity.RelatedActivityId,
-                principalKeySelector: activity => activity.Id)
             .SetValidator(activityValidator);
     }
 }
@@ -275,6 +272,7 @@ internal sealed class UpdateDialogDialogActivityDtoValidator : AbstractValidator
             .IsInEnum();
         RuleFor(x => x.RelatedActivityId)
             .NotEqual(x => x.Id)
+            .WithMessage(x => $"An activity cannot reference itself ({nameof(x.RelatedActivityId)} is equal to {nameof(x.Id)}, '{x.Id}').")
             .When(x => x.RelatedActivityId.HasValue);
         RuleFor(x => x.PerformedBy)
             .NotNull()
