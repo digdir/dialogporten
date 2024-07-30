@@ -1,5 +1,10 @@
+@description('The prefix used for naming resources to ensure unique names')
 param namePrefix string
+
+@description('The location where the resources will be deployed')
 param location string
+
+@description('Tags to apply to resources')
 param tags object
 
 @export()
@@ -15,6 +20,8 @@ type Sku = {
     | 'Standalone'
     | 'Standard'
 }
+
+@description('The SKU of the Application Insights')
 param sku Sku
 
 resource appInsightsWorkspace 'Microsoft.OperationalInsights/workspaces@2023-09-01' = {

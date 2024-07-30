@@ -3,10 +3,19 @@
 // It also configures a private DNS zone for the Service Bus namespace to facilitate network resolution within the virtual network.
 import { uniqueResourceName } from '../../functions/resourceName.bicep'
 
+@description('The prefix used for naming resources to ensure unique names')
 param namePrefix string
+
+@description('The location where the resources will be deployed')
 param location string
+
+@description('The ID of the subnet where the Service Bus will be deployed')
 param subnetId string
+
+@description('The ID of the virtual network for the private DNS zone')
 param vnetId string
+
+@description('Tags to apply to resources')
 param tags object
 
 @export()
@@ -16,6 +25,8 @@ type Sku = {
   @minValue(1)
   capacity: int
 }
+
+@description('The SKU of the Service Bus')
 param sku Sku
 
 var serviceBusNameMaxLength = 50

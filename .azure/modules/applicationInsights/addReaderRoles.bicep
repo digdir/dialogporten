@@ -1,4 +1,7 @@
+@description('The name of the Application Insights resource')
 param appInsightsName string
+
+@description('Array of principal IDs to assign the Reader role to')
 param principalIds array
 
 resource appInsights 'Microsoft.Insights/components@2020-02-02' existing = {

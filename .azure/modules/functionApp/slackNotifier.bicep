@@ -1,9 +1,18 @@
 import { uniqueStringBySubscriptionAndResourceGroup, uniqueResourceName } from '../../functions/resourceName.bicep'
 
+@description('The location where the resources will be deployed')
 param location string
+
+@description('The name of the Application Insights resource')
 param applicationInsightsName string
+
+@description('The prefix used for naming resources to ensure unique names')
 param namePrefix string
+
+@description('The name of the Key Vault')
 param keyVaultName string
+
+@description('Tags to apply to resources')
 param tags object
 
 @export()
@@ -44,6 +53,7 @@ type Sku = {
     | 'Y3v2Isolated'
   applicationServicePlanTier: 'Free' | 'Shared' | 'Basic' | 'Dynamic' | 'Standard' | 'Premium' | 'Isolated'
 }
+@description('The SKU of the Slack Notifier')
 param sku Sku
 
 // Storage account names only supports lower case and numbers

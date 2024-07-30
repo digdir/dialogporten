@@ -1,20 +1,32 @@
 targetScope = 'subscription'
+
+@description('The environment for the deployment')
 @minLength(3)
 param environment string
+
+@description('The location where the resources will be deployed')
 @minLength(3)
 param location string
 
+@description('Array of all keys in the source Key Vault')
 param keyVaultSourceKeys array
 
+@description('Password for postgres admin')
 @secure()
 @minLength(3)
 param dialogportenPgAdminPassword string
+
+@description('Subscription ID for the source Key Vault')
 @secure()
 @minLength(3)
 param sourceKeyVaultSubscriptionId string
+
+@description('Resource group for the source Key Vault')
 @secure()
 @minLength(3)
 param sourceKeyVaultResourceGroup string
+
+@description('Name of the source Key Vault')
 @secure()
 @minLength(3)
 param sourceKeyVaultName string
@@ -145,7 +157,7 @@ module postgresql '../modules/postgreSql/create.bicep' = {
     location: location
     environmentKeyVaultName: environmentKeyVault.outputs.name
     srcKeyVault: srcKeyVault
-    srcSecretName: 'dialogportenPgAdminPassword${environment}'
+    srcKeyVaultAdministratorLoginPasswordKey: 'dialogportenPgAdminPassword${environment}'
     administratorLoginPassword: contains(keyVaultSourceKeys, 'dialogportenPgAdminPassword${environment}')
       ? srcKeyVaultResource.getSecret('dialogportenPgAdminPassword${environment}')
       : secrets.dialogportenPgAdminPassword

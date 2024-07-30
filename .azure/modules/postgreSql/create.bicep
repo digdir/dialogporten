@@ -1,11 +1,25 @@
 import { uniqueResourceName } from '../../functions/resourceName.bicep'
 
+@description('The prefix used for naming resources to ensure unique names')
 param namePrefix string
+
+@description('The location where the resources will be deployed')
 param location string
+
+@description('The name of the environment Key Vault')
 param environmentKeyVaultName string
-param srcSecretName string
+
+@description('The name of the secret name(key) in the source key vault to store the PostgreSQL administrator login password')
+#disable-next-line secure-secrets-in-params
+param srcKeyVaultAdministratorLoginPasswordKey string
+
+@description('The ID of the subnet where the PostgreSQL server will be deployed')
 param subnetId string
+
+@description('The ID of the virtual network for the private DNS zone')
 param vnetId string
+
+@description('Tags to apply to resources')
 param tags object
 
 @export()
@@ -13,11 +27,15 @@ type Sku = {
   name: 'Standard_B1ms'
   tier: 'Burstable' | 'GeneralPurpose' | 'MemoryOptimized'
 }
+
+@description('The SKU of the PostgreSQL server')
 param sku Sku
 
+@description('The Key Vault to store the PostgreSQL administrator login password')
 @secure()
 param srcKeyVault object
 
+@description('The password for the PostgreSQL administrator login')
 @secure()
 param administratorLoginPassword string
 
@@ -40,11 +58,11 @@ var postgresServerName = uniqueResourceName('${namePrefix}-postgres', postgresSe
 //}
 
 module saveAdmPassword '../keyvault/upsertSecret.bicep' = {
-  name: 'Save_${srcSecretName}'
+  name: 'Save_${srcKeyVaultAdministratorLoginPasswordKey}'
   scope: resourceGroup(srcKeyVault.subscriptionId, srcKeyVault.resourceGroupName)
   params: {
     destKeyVaultName: srcKeyVault.name
-    secretName: srcSecretName
+    secretName: srcKeyVaultAdministratorLoginPasswordKey
     secretValue: administratorLoginPassword
     tags: tags
   }
