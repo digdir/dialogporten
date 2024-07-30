@@ -11,7 +11,7 @@ param location string
 @description('Array of all keys in the source Key Vault')
 param keyVaultSourceKeys array
 
-@description('Password for postgres admin')
+@description('Password for PostgreSQL admin')
 @secure()
 @minLength(3)
 param dialogportenPgAdminPassword string
