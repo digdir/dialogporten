@@ -25,6 +25,7 @@ public sealed class SearchDialogTransmissionDto
 
 public sealed class SearchDialogTransmissionSenderActorDto
 {
+    public Guid Id { get; set; }
     public DialogActorType.Values ActorType { get; set; }
     public string ActorName { get; set; } = null!;
     public string ActorId { get; set; } = null!;
