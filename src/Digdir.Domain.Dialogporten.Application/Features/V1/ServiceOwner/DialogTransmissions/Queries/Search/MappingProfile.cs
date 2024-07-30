@@ -22,7 +22,7 @@ public class MappingProfile : Profile
             .ConvertUsing<TransmissionContentOutputConverter<SearchDialogTransmissionContentDto>>();
 
         CreateMap<TransmissionAttachment, SearchDialogTransmissionAttachmentDto>();
-        CreateMap<TransmissionAttachmentUrl, SearchDialogTransmissionAttachmentUrlDto>()
+        CreateMap<AttachmentUrl, SearchDialogTransmissionAttachmentUrlDto>()
             .ForMember(dest => dest.ConsumerType, opt => opt.MapFrom(src => src.ConsumerTypeId));
     }
 }
