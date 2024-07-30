@@ -5,14 +5,15 @@ public sealed class SearchDialogSeenLogDto
     public Guid Id { get; set; }
     public DateTimeOffset SeenAt { get; set; }
 
-    public SearchDialogSeenLogSeenByDto SeenBy { get; set; } = null!;
+    public SearchDialogSeenLogSeenByActorDto SeenBy { get; set; } = null!;
 
     public bool IsViaServiceOwner { get; set; }
     public bool IsCurrentEndUser { get; set; }
 }
 
-public sealed class SearchDialogSeenLogSeenByDto
+public sealed class SearchDialogSeenLogSeenByActorDto
 {
+    public Guid Id { get; set; }
     public string ActorName { get; set; } = null!;
     public string ActorId { get; set; } = null!;
 }

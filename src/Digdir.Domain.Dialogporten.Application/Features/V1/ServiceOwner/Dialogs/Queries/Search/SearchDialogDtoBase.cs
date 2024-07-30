@@ -30,14 +30,15 @@ public sealed class SearchDialogDialogSeenLogDto
     public Guid Id { get; set; }
     public DateTimeOffset SeenAt { get; set; }
 
-    public SearchDialogDialogSeenLogActorDto SeenBy { get; set; } = null!;
+    public SearchDialogDialogSeenLogSeenByActorDto SeenBy { get; set; } = null!;
 
     public bool? IsViaServiceOwner { get; set; }
     public bool IsCurrentEndUser { get; set; }
 }
 
-public sealed class SearchDialogDialogSeenLogActorDto
+public sealed class SearchDialogDialogSeenLogSeenByActorDto
 {
+    public Guid Id { get; set; }
     public string ActorName { get; set; } = null!;
     public string ActorId { get; set; } = null!;
 }
@@ -52,12 +53,13 @@ public sealed class SearchDialogDialogActivityDto
 
     public Guid? RelatedActivityId { get; set; }
 
-    public SearchDialogDialogActivityActorDto PerformedBy { get; set; } = null!;
+    public SearchDialogDialogActivityPerformedByActorDto PerformedBy { get; set; } = null!;
     public List<LocalizationDto> Description { get; set; } = [];
 }
 
-public sealed class SearchDialogDialogActivityActorDto
+public sealed class SearchDialogDialogActivityPerformedByActorDto
 {
+    public Guid Id { get; set; }
     public DialogActorType.Values ActorType { get; set; }
     public string? ActorName { get; set; }
     public string? ActorId { get; set; }

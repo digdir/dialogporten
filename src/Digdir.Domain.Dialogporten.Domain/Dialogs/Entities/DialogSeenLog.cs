@@ -8,7 +8,7 @@ public class DialogSeenLog : IImmutableEntity
     public Guid Id { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
 
-    public DialogActor SeenBy { get; set; } = null!;
+    public DialogSeenLogSeenByActor SeenBy { get; set; } = null!;
 
     public bool? IsViaServiceOwner { get; set; }
 

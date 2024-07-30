@@ -1,5 +1,30 @@
 # Changelog
 
+## [1.9.0](https://github.com/digdir/dialogporten/compare/v1.8.1...v1.9.0) (2024-07-30)
+
+
+### Features
+
+* **breaking:** Move front channel embeds to content ([#862](https://github.com/digdir/dialogporten/issues/862)) ([c9b50e9](https://github.com/digdir/dialogporten/commit/c9b50e9ea7022c5bf22b472cf8859fd6faf66df6))
+* **breaking:** Remove DialogElements, add Attachments ([#867](https://github.com/digdir/dialogporten/issues/867)) ([dbe296a](https://github.com/digdir/dialogporten/commit/dbe296aa3f25e88227109ca604efd81616f2b4ab))
+* **breaking:** Remove PUT/DELETE endpoints for DialogElements ([#844](https://github.com/digdir/dialogporten/issues/844)) ([51eb898](https://github.com/digdir/dialogporten/commit/51eb89832f56081aa4b3eb2d30b7d19b1fb8f217))
+* **breaking:** Rename CultureCode to LanguageCode ([#871](https://github.com/digdir/dialogporten/issues/871)) ([96d50fc](https://github.com/digdir/dialogporten/commit/96d50fc40b075b31d342b8dc27e82924c30e9b83))
+* **breaking:** Renaming dialog activity types ([#919](https://github.com/digdir/dialogporten/issues/919)) ([af262b1](https://github.com/digdir/dialogporten/commit/af262b146ce78cd7eed6325d0a3ac8d662000107))
+* Change content array to object with properties for each content type ([#905](https://github.com/digdir/dialogporten/issues/905)) ([d549f19](https://github.com/digdir/dialogporten/commit/d549f194903d5a48e0563c1ceb942db2d333dd59))
+* Implement actor entity ([#912](https://github.com/digdir/dialogporten/issues/912)) ([a635fcb](https://github.com/digdir/dialogporten/commit/a635fcb04e988c416ae98928af05934ddd187de1))
+* Introduce Transmissions ([#932](https://github.com/digdir/dialogporten/issues/932)) ([3ca495f](https://github.com/digdir/dialogporten/commit/3ca495f0c900862c1a0bbf4b7acd8350f7649347))
+* Rename DialogStatus enum values ([#915](https://github.com/digdir/dialogporten/issues/915)) ([5aea32b](https://github.com/digdir/dialogporten/commit/5aea32b7299bd459fa529ada197fe42817d3aed7))
+* **WebAPI:** Add Transmission endpoints  ([#943](https://github.com/digdir/dialogporten/issues/943)) ([d608ade](https://github.com/digdir/dialogporten/commit/d608adebadc12d099c04c4b174569392837603e6))
+
+
+### Bug Fixes
+
+* Allow new activities to reference old activities ([#935](https://github.com/digdir/dialogporten/issues/935)) ([bbc443e](https://github.com/digdir/dialogporten/commit/bbc443e121ee5121bac6b9fe92ee3296bb45218f))
+* **auth:** Malformed JWTs no longer results in InternalServerError  ([#870](https://github.com/digdir/dialogporten/issues/870)) ([5f2f386](https://github.com/digdir/dialogporten/commit/5f2f386dabfa3b25cc56370f7e99a02fa566d5e3))
+* **slackNotifier:** Add missing deployment of Slack notifier function in staging environment  ([#861](https://github.com/digdir/dialogporten/issues/861)) ([59091f7](https://github.com/digdir/dialogporten/commit/59091f790c52fc7cae9b66f98b71c6db8e4bd9d3))
+* Update e2e tests for actor model ([#918](https://github.com/digdir/dialogporten/issues/918)) ([ec1fcb1](https://github.com/digdir/dialogporten/commit/ec1fcb1c094b16a5a13b90350b7e2a58feaf9b82))
+* **WebAPI:** Allow purging of softly deleted dialogs ([#940](https://github.com/digdir/dialogporten/issues/940)) ([c527c9f](https://github.com/digdir/dialogporten/commit/c527c9f0db7a5ad2136302de69aaec55b860fcc6))
+
 ## [1.8.1](https://github.com/digdir/dialogporten/compare/v1.8.0...v1.8.1) (2024-06-12)
 
 

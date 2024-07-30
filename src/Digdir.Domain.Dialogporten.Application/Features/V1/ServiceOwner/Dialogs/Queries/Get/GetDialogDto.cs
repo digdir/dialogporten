@@ -47,13 +47,12 @@ public sealed class GetDialogDialogTransmissionDto
     public Guid Id { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
     public string? AuthorizationAttribute { get; set; }
-    public bool IsAuthorized { get; set; }
     public string? ExtendedType { get; set; }
     public Guid? RelatedTransmissionId { get; set; }
 
     public DialogTransmissionType.Values Type { get; set; }
 
-    public GetDialogDialogTransmissionActorDto Sender { get; set; } = null!;
+    public GetDialogDialogTransmissionSenderActorDto Sender { get; set; } = null!;
 
     public GetDialogDialogTransmissionContentDto Content { get; set; } = null!;
     public List<GetDialogTransmissionAttachmentDto> Attachments { get; set; } = [];
@@ -64,19 +63,21 @@ public sealed class GetDialogDialogSeenLogDto
     public Guid Id { get; set; }
     public DateTimeOffset SeenAt { get; set; }
 
-    public GetDialogDialogSeenLogActorDto SeenBy { get; set; } = null!;
+    public GetDialogDialogSeenLogSeenByActorDto SeenBy { get; set; } = null!;
 
     public bool IsViaServiceOwner { get; set; }
 }
 
-public sealed class GetDialogDialogSeenLogActorDto
+public sealed class GetDialogDialogSeenLogSeenByActorDto
 {
+    public Guid Id { get; set; }
     public string ActorName { get; set; } = null!;
     public string ActorId { get; set; } = null!;
 }
 
-public sealed class GetDialogDialogTransmissionActorDto
+public sealed class GetDialogDialogTransmissionSenderActorDto
 {
+    public Guid Id { get; set; }
     public DialogActorType.Values ActorType { get; set; }
     public string ActorName { get; set; } = null!;
     public string ActorId { get; set; } = null!;
@@ -112,12 +113,13 @@ public sealed class GetDialogDialogActivityDto
 
     public Guid? RelatedActivityId { get; set; }
 
-    public GetDialogDialogActivityActorDto PerformedBy { get; set; } = null!;
+    public GetDialogDialogActivityPerformedByActorDto PerformedBy { get; set; } = null!;
     public List<LocalizationDto> Description { get; set; } = [];
 }
 
-public sealed class GetDialogDialogActivityActorDto
+public sealed class GetDialogDialogActivityPerformedByActorDto
 {
+    public Guid Id { get; set; }
     public DialogActorType.Values ActorType { get; set; }
     public string? ActorName { get; set; }
     public string? ActorId { get; set; }

@@ -28,7 +28,7 @@ public class UpdateDialogTests(DialogApplication application) : ApplicationColle
         {
             Type = DialogActivityType.Values.DialogClosed,
             RelatedActivityId = getDialogDto.AsT0.Activities.First().Id,
-            PerformedBy = new UpdateDialogDialogActivityActorDto
+            PerformedBy = new UpdateDialogDialogActivityPerformedByActorDto
             {
                 ActorType = DialogActorType.Values.ServiceOwner
             }

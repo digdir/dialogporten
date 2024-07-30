@@ -215,7 +215,7 @@ public static class DialogGenerator
             .RuleFor(o => o.CreatedAt, f => f.Date.Past())
             .RuleFor(o => o.ExtendedType, f => new Uri(f.Internet.UrlWithPath()))
             .RuleFor(o => o.Type, f => type ?? f.PickRandom<DialogActivityType.Values>())
-            .RuleFor(o => o.PerformedBy, f => new CreateDialogDialogActivityActorDto { ActorType = DialogActorType.Values.PartyRepresentative, ActorName = f.Name.FullName() })
+            .RuleFor(o => o.PerformedBy, f => new CreateDialogDialogActivityPerformedByActorDto { ActorType = DialogActorType.Values.PartyRepresentative, ActorName = f.Name.FullName() })
             .RuleFor(o => o.Description, (f, o) => o.Type == DialogActivityType.Values.Information ? GenerateFakeLocalizations(f.Random.Number(4, 8)) : null)
             .Generate(count ?? new Randomizer().Number(1, 4));
     }

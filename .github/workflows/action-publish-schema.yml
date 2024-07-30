@@ -12,6 +12,9 @@ on:
 env:
   WORKING_DIRECTORY: docs/schema/V1
 
+permissions:
+  id-token: write
+
 jobs:
   publish-schema-to-npm:
     runs-on: ubuntu-latest
