@@ -44,6 +44,8 @@ internal sealed class SearchDialogTransmissionQueryHandler : IRequestHandler<Sea
             .Include(x => x.Transmissions)
                 .ThenInclude(x => x.Attachments.OrderBy(x => x.CreatedAt).ThenBy(x => x.Id))
                 .ThenInclude(x => x.Urls.OrderBy(x => x.CreatedAt).ThenBy(x => x.Id))
+            .Include(x => x.Transmissions)
+                .ThenInclude(x => x.Sender)
             .IgnoreQueryFilters()
             .Where(x => resourceIds.Contains(x.ServiceResource))
             .FirstOrDefaultAsync(x => x.Id == request.DialogId,
