@@ -44,7 +44,7 @@ public class CreateDialogDialogTransmissionDto
 
     public DialogTransmissionType.Values Type { get; set; }
 
-    public CreateDialogDialogTransmissionActorDto Sender { get; set; } = null!;
+    public CreateDialogDialogTransmissionSenderActorDto Sender { get; set; } = null!;
 
     public CreateDialogDialogTransmissionContentDto Content { get; set; } = null!;
     public List<CreateDialogTransmissionAttachmentDto> Attachments { get; set; } = [];
@@ -81,18 +81,18 @@ public sealed class CreateDialogDialogActivityDto
 
     public Guid? RelatedActivityId { get; set; }
 
-    public CreateDialogDialogActivityActorDto PerformedBy { get; set; } = null!;
+    public CreateDialogDialogActivityPerformedByActorDto PerformedBy { get; set; } = null!;
     public List<LocalizationDto> Description { get; set; } = [];
 }
 
-public sealed class CreateDialogDialogActivityActorDto
+public sealed class CreateDialogDialogActivityPerformedByActorDto
 {
     public DialogActorType.Values ActorType { get; set; }
     public string? ActorName { get; set; }
     public string? ActorId { get; set; }
 }
 
-public sealed class CreateDialogDialogTransmissionActorDto
+public sealed class CreateDialogDialogTransmissionSenderActorDto
 {
     public DialogActorType.Values ActorType { get; set; }
     public string ActorName { get; set; } = null!;

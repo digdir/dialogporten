@@ -1802,7 +1802,7 @@
             "format": "date-time"
           },
           "seenBy": {
-            "$ref": "#/components/schemas/SearchDialogSeenLogActorDtoSO"
+            "$ref": "#/components/schemas/SearchDialogDialogSeenLogSeenByActorDtoSO"
           },
           "isViaServiceOwner": {
             "type": "boolean",
@@ -1810,10 +1810,14 @@
           }
         }
       },
-      "SearchDialogSeenLogActorDtoSO": {
+      "SearchDialogDialogSeenLogSeenByActorDtoSO": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
           "actorName": {
             "type": "string"
           },
@@ -1894,7 +1898,7 @@
             "format": "date-time"
           },
           "seenBy": {
-            "$ref": "#/components/schemas/GetDialogSeenLogActorDtoSO"
+            "$ref": "#/components/schemas/GetDialogSeenLogSeenByActorDtoSO"
           },
           "isViaServiceOwner": {
             "type": "boolean",
@@ -1902,10 +1906,14 @@
           }
         }
       },
-      "GetDialogSeenLogActorDtoSO": {
+      "GetDialogSeenLogSeenByActorDtoSO": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
           "actorName": {
             "type": "string"
           },
@@ -2129,7 +2137,7 @@
             "$ref": "#/components/schemas/DialogTransmissionType_Values"
           },
           "sender": {
-            "$ref": "#/components/schemas/UpdateDialogDialogTransmissionActorDto"
+            "$ref": "#/components/schemas/UpdateDialogDialogTransmissionSenderActorDto"
           },
           "content": {
             "$ref": "#/components/schemas/UpdateDialogDialogTransmissionContentDto"
@@ -2166,7 +2174,7 @@
           "Correction"
         ]
       },
-      "UpdateDialogDialogTransmissionActorDto": {
+      "UpdateDialogDialogTransmissionSenderActorDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -2493,7 +2501,7 @@
             "nullable": true
           },
           "performedBy": {
-            "$ref": "#/components/schemas/UpdateDialogDialogActivityActorDto"
+            "$ref": "#/components/schemas/UpdateDialogDialogActivityPerformedByActorDto"
           },
           "description": {
             "type": "array",
@@ -2523,7 +2531,7 @@
           "SignatureProvided"
         ]
       },
-      "UpdateDialogDialogActivityActorDto": {
+      "UpdateDialogDialogActivityPerformedByActorDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -2667,7 +2675,7 @@
             "nullable": true
           },
           "performedBy": {
-            "$ref": "#/components/schemas/SearchDialogDialogActivityActorDtoSO"
+            "$ref": "#/components/schemas/SearchDialogDialogActivityPerformedByActorDtoSO"
           },
           "description": {
             "type": "array",
@@ -2677,10 +2685,14 @@
           }
         }
       },
-      "SearchDialogDialogActivityActorDtoSO": {
+      "SearchDialogDialogActivityPerformedByActorDtoSO": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
           "actorType": {
             "$ref": "#/components/schemas/DialogActorType_Values"
           },
@@ -2707,7 +2719,7 @@
             "format": "date-time"
           },
           "seenBy": {
-            "$ref": "#/components/schemas/SearchDialogDialogSeenLogActorDtoSO"
+            "$ref": "#/components/schemas/SearchDialogDialogSeenLogSeenByActorDtoSO2"
           },
           "isViaServiceOwner": {
             "type": "boolean",
@@ -2718,10 +2730,14 @@
           }
         }
       },
-      "SearchDialogDialogSeenLogActorDtoSO": {
+      "SearchDialogDialogSeenLogSeenByActorDtoSO2": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
           "actorName": {
             "type": "string"
           },
@@ -3004,7 +3020,7 @@
             "$ref": "#/components/schemas/DialogTransmissionType_Values"
           },
           "sender": {
-            "$ref": "#/components/schemas/GetDialogDialogTransmissionActorDtoSO"
+            "$ref": "#/components/schemas/GetDialogDialogTransmissionSenderActorDtoSO"
           },
           "content": {
             "$ref": "#/components/schemas/GetDialogDialogTransmissionContentDtoSO"
@@ -3017,10 +3033,14 @@
           }
         }
       },
-      "GetDialogDialogTransmissionActorDtoSO": {
+      "GetDialogDialogTransmissionSenderActorDtoSO": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
           "actorType": {
             "$ref": "#/components/schemas/DialogActorType_Values"
           },
@@ -3224,7 +3244,7 @@
             "nullable": true
           },
           "performedBy": {
-            "$ref": "#/components/schemas/GetDialogDialogActivityActorDtoSO"
+            "$ref": "#/components/schemas/GetDialogDialogActivityPerformedByActorDtoSO"
           },
           "description": {
             "type": "array",
@@ -3234,10 +3254,14 @@
           }
         }
       },
-      "GetDialogDialogActivityActorDtoSO": {
+      "GetDialogDialogActivityPerformedByActorDtoSO": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
           "actorType": {
             "$ref": "#/components/schemas/DialogActorType_Values"
           },
@@ -3264,17 +3288,21 @@
             "format": "date-time"
           },
           "seenBy": {
-            "$ref": "#/components/schemas/GetDialogDialogSeenLogActorDtoSO"
+            "$ref": "#/components/schemas/GetDialogDialogSeenLogSeenByActorDtoSO"
           },
           "isViaServiceOwner": {
             "type": "boolean"
           }
         }
       },
-      "GetDialogDialogSeenLogActorDtoSO": {
+      "GetDialogDialogSeenLogSeenByActorDtoSO": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
           "actorName": {
             "type": "string"
           },
@@ -3494,7 +3522,7 @@
             "$ref": "#/components/schemas/DialogTransmissionType_Values"
           },
           "sender": {
-            "$ref": "#/components/schemas/CreateDialogDialogTransmissionActorDto"
+            "$ref": "#/components/schemas/CreateDialogDialogTransmissionSenderActorDto"
           },
           "content": {
             "$ref": "#/components/schemas/CreateDialogDialogTransmissionContentDto"
@@ -3507,7 +3535,7 @@
           }
         }
       },
-      "CreateDialogDialogTransmissionActorDto": {
+      "CreateDialogDialogTransmissionSenderActorDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -3705,7 +3733,7 @@
             "nullable": true
           },
           "performedBy": {
-            "$ref": "#/components/schemas/CreateDialogDialogActivityActorDto"
+            "$ref": "#/components/schemas/CreateDialogDialogActivityPerformedByActorDto"
           },
           "description": {
             "type": "array",
@@ -3715,7 +3743,7 @@
           }
         }
       },
-      "CreateDialogDialogActivityActorDto": {
+      "CreateDialogDialogActivityPerformedByActorDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -3760,7 +3788,7 @@
             "nullable": true
           },
           "performedBy": {
-            "$ref": "#/components/schemas/UpdateDialogDialogActivityActorDto"
+            "$ref": "#/components/schemas/UpdateDialogDialogActivityPerformedByActorDto"
           },
           "description": {
             "type": "array",
@@ -3832,7 +3860,7 @@
             "format": "date-time"
           },
           "seenBy": {
-            "$ref": "#/components/schemas/SearchDialogSeenLogSeenByDto"
+            "$ref": "#/components/schemas/SearchDialogSeenLogSeenByActorDto"
           },
           "isViaServiceOwner": {
             "type": "boolean"
@@ -3842,10 +3870,14 @@
           }
         }
       },
-      "SearchDialogSeenLogSeenByDto": {
+      "SearchDialogSeenLogSeenByActorDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
           "actorName": {
             "type": "string"
           },
@@ -3867,7 +3899,7 @@
             "format": "date-time"
           },
           "seenBy": {
-            "$ref": "#/components/schemas/GetDialogSeenLogActorDto"
+            "$ref": "#/components/schemas/GetDialogSeenLogSeenByActorDto"
           },
           "isViaServiceOwner": {
             "type": "boolean"
@@ -3877,10 +3909,14 @@
           }
         }
       },
-      "GetDialogSeenLogActorDto": {
+      "GetDialogSeenLogSeenByActorDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
           "actorName": {
             "type": "string"
           },
@@ -4007,7 +4043,7 @@
             "nullable": true
           },
           "performedBy": {
-            "$ref": "#/components/schemas/SearchDialogDialogActivityActorDto"
+            "$ref": "#/components/schemas/SearchDialogDialogActivityPerformedByActorDto"
           },
           "description": {
             "type": "array",
@@ -4017,10 +4053,14 @@
           }
         }
       },
-      "SearchDialogDialogActivityActorDto": {
+      "SearchDialogDialogActivityPerformedByActorDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
           "actorType": {
             "$ref": "#/components/schemas/DialogActorType_Values"
           },
@@ -4047,7 +4087,7 @@
             "format": "date-time"
           },
           "seenBy": {
-            "$ref": "#/components/schemas/SearchDialogDialogSeenLogActorDto"
+            "$ref": "#/components/schemas/SearchDialogDialogSeenLogSeenByActorDto"
           },
           "isViaServiceOwner": {
             "type": "boolean",
@@ -4058,10 +4098,14 @@
           }
         }
       },
-      "SearchDialogDialogSeenLogActorDto": {
+      "SearchDialogDialogSeenLogSeenByActorDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
           "actorName": {
             "type": "string"
           },
@@ -4325,7 +4369,7 @@
             "$ref": "#/components/schemas/DialogTransmissionType_Values"
           },
           "sender": {
-            "$ref": "#/components/schemas/GetDialogDialogTransmissionActorDto"
+            "$ref": "#/components/schemas/GetDialogDialogTransmissionSenderActorDto"
           },
           "content": {
             "$ref": "#/components/schemas/GetDialogDialogTransmissionContentDto"
@@ -4338,10 +4382,14 @@
           }
         }
       },
-      "GetDialogDialogTransmissionActorDto": {
+      "GetDialogDialogTransmissionSenderActorDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
           "actorType": {
             "$ref": "#/components/schemas/DialogActorType_Values"
           },
@@ -4551,7 +4599,7 @@
             "nullable": true
           },
           "performedBy": {
-            "$ref": "#/components/schemas/GetDialogDialogActivityActorDto"
+            "$ref": "#/components/schemas/GetDialogDialogActivityPerformedByActorDto"
           },
           "description": {
             "type": "array",
@@ -4561,10 +4609,14 @@
           }
         }
       },
-      "GetDialogDialogActivityActorDto": {
+      "GetDialogDialogActivityPerformedByActorDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
           "actorType": {
             "$ref": "#/components/schemas/DialogActorType_Values"
           },
@@ -4591,7 +4643,7 @@
             "format": "date-time"
           },
           "seenBy": {
-            "$ref": "#/components/schemas/GetDialogDialogSeenLogActorDto"
+            "$ref": "#/components/schemas/GetDialogDialogSeenLogSeenByActorDto"
           },
           "isViaServiceOwner": {
             "type": "boolean",
@@ -4602,10 +4654,14 @@
           }
         }
       },
-      "GetDialogDialogSeenLogActorDto": {
+      "GetDialogDialogSeenLogSeenByActorDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
           "actorName": {
             "type": "string"
           },

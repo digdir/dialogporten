@@ -103,7 +103,7 @@ public class DialogEntity :
         SeenLog.Add(new()
         {
             EndUserTypeId = userTypeId,
-            SeenBy = new DialogActor
+            SeenBy = new DialogSeenLogSeenByActor
             {
                 ActorTypeId = DialogActorType.Values.PartyRepresentative,
                 ActorId = endUserId,

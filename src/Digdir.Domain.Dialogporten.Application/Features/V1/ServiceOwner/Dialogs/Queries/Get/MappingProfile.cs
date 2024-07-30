@@ -19,13 +19,13 @@ internal sealed class MappingProfile : Profile
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.StatusId))
             .ForMember(dest => dest.SeenSinceLastUpdate, opt => opt.Ignore());
 
-        CreateMap<DialogActor, GetDialogDialogSeenLogActorDto>();
+        CreateMap<DialogSeenLogSeenByActor, GetDialogDialogSeenLogSeenByActorDto>();
         CreateMap<DialogSeenLog, GetDialogDialogSeenLogDto>()
             .ForMember(dest => dest.SeenAt, opt => opt.MapFrom(src => src.CreatedAt));
 
         CreateMap<DialogActivity, GetDialogDialogActivityDto>()
             .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.TypeId));
-        CreateMap<DialogActor, GetDialogDialogActivityActorDto>()
+        CreateMap<DialogActivityPerformedByActor, GetDialogDialogActivityPerformedByActorDto>()
             .ForMember(dest => dest.ActorType, opt => opt.MapFrom(src => src.ActorTypeId));
 
         CreateMap<DialogApiAction, GetDialogDialogApiActionDto>();
@@ -45,7 +45,7 @@ internal sealed class MappingProfile : Profile
         CreateMap<List<DialogContent>?, GetDialogContentDto?>()
             .ConvertUsing<DialogContentOutputConverter<GetDialogContentDto>>();
 
-        CreateMap<DialogActor, GetDialogDialogTransmissionActorDto>()
+        CreateMap<DialogTransmissionSenderActor, GetDialogDialogTransmissionSenderActorDto>()
             .ForMember(dest => dest.ActorType, opt => opt.MapFrom(src => src.ActorTypeId));
 
         CreateMap<List<TransmissionContent>?, GetDialogDialogTransmissionContentDto?>()
