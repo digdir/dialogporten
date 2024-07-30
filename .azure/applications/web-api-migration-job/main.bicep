@@ -1,15 +1,23 @@
 targetScope = 'resourceGroup'
 
+@description('The tag of the image to be used')
 @minLength(3)
 param imageTag string
+
+@description('The environment for the deployment')
 @minLength(3)
 param environment string
+
+@description('The location where the resources will be deployed')
 @minLength(3)
 param location string
 
+@description('The name of the container app environment')
 @minLength(3)
 @secure()
 param containerAppEnvironmentName string
+
+@description('The name of the Key Vault for the environment')
 @minLength(3)
 @secure()
 param environmentKeyVaultName string

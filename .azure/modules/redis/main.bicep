@@ -2,12 +2,26 @@ import {
   uniqueResourceName
 } from '../../functions/resourceName.bicep'
 
+@description('The prefix used for naming resources to ensure unique names')
 param namePrefix string
+
+@description('The location where the resources will be deployed')
 param location string
+
+@description('The ID of the subnet for the Private Link')
 param subnetId string
+
+@description('Tags to apply to resources')
+param tags object
+
+@description('The ID of the virtual network for the private DNS zone')
 param vnetId string
+
+@description('The name of the environment Key Vault')
 @minLength(1)
 param environmentKeyVaultName string
+
+@description('The version of the Redis instance')
 @minLength(1)
 param version string
 
@@ -18,6 +32,8 @@ type Sku = {
   @minValue(1)
   capacity: int
 }
+
+@description('The SKU of the Redis instance')
 param sku Sku
 
 var redisNameMaxLength = 63
@@ -40,6 +56,7 @@ resource redis 'Microsoft.Cache/Redis@2023-08-01' = {
     redisVersion: version
     publicNetworkAccess: 'Disabled'
   }
+  tags: tags
 }
 
 // private endpoint name max characters is 80
@@ -65,6 +82,7 @@ resource redisPrivateEndpoint 'Microsoft.Network/privateEndpoints@2023-11-01' = 
       id: subnetId
     }
   }
+  tags: tags
 }
 
 module privateDnsZone '../privateDnsZone/main.bicep' = {
@@ -73,6 +91,7 @@ module privateDnsZone '../privateDnsZone/main.bicep' = {
     namePrefix: namePrefix
     defaultDomain: 'privatelink.redis.cache.windows.net'
     vnetId: vnetId
+    tags: tags
   }
 }
 
@@ -97,6 +116,7 @@ module redisConnectionString '../keyvault/upsertSecret.bicep' = {
     destKeyVaultName: environmentKeyVaultName
     secretName: 'dialogportenRedisConnectionString'
     secretValue: '${redis.properties.hostName}:${redis.properties.sslPort},password=${redis.properties.accessKeys.primaryKey},ssl=True,abortConnect=False'
+    tags: tags
   }
 }
 

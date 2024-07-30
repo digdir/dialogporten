@@ -1,12 +1,20 @@
 import { uniqueResourceName } from '../../functions/resourceName.bicep'
 
+@description('The prefix used for naming resources to ensure unique names')
 param namePrefix string
+
+@description('The location where the resources will be deployed')
 param location string
+
+@description('Tags to apply to resources')
+param tags object
 
 @export()
 type Sku = {
   name: 'standard'
 }
+
+@description('The SKU of the App Configuration')
 param sku Sku
 
 var appConfigNameMaxLength = 63
@@ -26,6 +34,7 @@ resource appConfig 'Microsoft.AppConfiguration/configurationStores@2023-03-01' =
       value: '1'
     }
   }
+  tags: tags
 }
 
 output endpoint string = appConfig.properties.endpoint

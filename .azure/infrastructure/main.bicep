@@ -1,20 +1,32 @@
 targetScope = 'subscription'
+
+@description('The environment for the deployment')
 @minLength(3)
 param environment string
+
+@description('The location where the resources will be deployed')
 @minLength(3)
 param location string
 
+@description('Array of all keys in the source Key Vault')
 param keyVaultSourceKeys array
 
+@description('Password for PostgreSQL admin')
 @secure()
 @minLength(3)
 param dialogportenPgAdminPassword string
+
+@description('Subscription ID for the source Key Vault')
 @secure()
 @minLength(3)
 param sourceKeyVaultSubscriptionId string
+
+@description('Resource group for the source Key Vault')
 @secure()
 @minLength(3)
 param sourceKeyVaultResourceGroup string
+
+@description('Name of the source Key Vault')
 @secure()
 @minLength(3)
 param sourceKeyVaultName string
@@ -51,10 +63,15 @@ var secrets = {
 
 var namePrefix = 'dp-be-${environment}'
 
+var tags = {
+  Environment: environment
+}
+
 // Create resource groups
 resource resourceGroup 'Microsoft.Resources/resourceGroups@2024-03-01' = {
   name: '${namePrefix}-rg'
   location: location
+  tags: tags
 }
 
 module environmentKeyVault '../modules/keyvault/create.bicep' = {
@@ -64,6 +81,7 @@ module environmentKeyVault '../modules/keyvault/create.bicep' = {
     namePrefix: namePrefix
     location: location
     sku: keyVaultSku
+    tags: tags
   }
 }
 
@@ -74,6 +92,7 @@ module appConfiguration '../modules/appConfiguration/create.bicep' = {
     namePrefix: namePrefix
     location: location
     sku: appConfigurationSku
+    tags: tags
   }
 }
 
@@ -84,6 +103,7 @@ module appInsights '../modules/applicationInsights/create.bicep' = {
     namePrefix: namePrefix
     location: location
     sku: appInsightsSku
+    tags: tags
   }
 }
 
@@ -96,6 +116,7 @@ module serviceBus '../modules/serviceBus/main.bicep' = {
     sku: serviceBusSku
     subnetId: vnet.outputs.serviceBusSubnetId
     vnetId: vnet.outputs.virtualNetworkId
+    tags: tags
   }
 }
 
@@ -105,6 +126,7 @@ module vnet '../modules/vnet/main.bicep' = {
   params: {
     namePrefix: namePrefix
     location: location
+    tags: tags
   }
 }
 
@@ -135,13 +157,14 @@ module postgresql '../modules/postgreSql/create.bicep' = {
     location: location
     environmentKeyVaultName: environmentKeyVault.outputs.name
     srcKeyVault: srcKeyVault
-    srcSecretName: 'dialogportenPgAdminPassword${environment}'
+    srcKeyVaultAdministratorLoginPasswordKey: 'dialogportenPgAdminPassword${environment}'
     administratorLoginPassword: contains(keyVaultSourceKeys, 'dialogportenPgAdminPassword${environment}')
       ? srcKeyVaultResource.getSecret('dialogportenPgAdminPassword${environment}')
       : secrets.dialogportenPgAdminPassword
     sku: postgresSku
     subnetId: vnet.outputs.postgresqlSubnetId
     vnetId: vnet.outputs.virtualNetworkId
+    tags: tags
   }
 }
 
@@ -156,6 +179,7 @@ module redis '../modules/redis/main.bicep' = {
     version: redisVersion
     subnetId: vnet.outputs.redisSubnetId
     vnetId: vnet.outputs.virtualNetworkId
+    tags: tags
   }
 }
 
@@ -170,6 +194,7 @@ module copyCrossEnvironmentSecrets '../modules/keyvault/copySecrets.bicep' = {
     srcKeyVaultSubId: secrets.sourceKeyVaultSubscriptionId
     destKeyVaultName: environmentKeyVault.outputs.name
     secretPrefix: 'dialogporten--any--'
+    tags: tags
   }
 }
 
@@ -184,6 +209,7 @@ module copyEnvironmentSecrets '../modules/keyvault/copySecrets.bicep' = {
     srcKeyVaultSubId: secrets.sourceKeyVaultSubscriptionId
     destKeyVaultName: environmentKeyVault.outputs.name
     secretPrefix: 'dialogporten--${environment}--'
+    tags: tags
   }
 }
 
@@ -196,6 +222,7 @@ module slackNotifier '../modules/functionApp/slackNotifier.bicep' = {
     namePrefix: namePrefix
     applicationInsightsName: appInsights.outputs.appInsightsName
     sku: slackNotifierSku
+    tags: tags
   }
 }
 
@@ -207,6 +234,7 @@ module containerAppEnv '../modules/containerAppEnv/main.bicep' = {
     location: location
     appInsightWorkspaceName: appInsights.outputs.appInsightsWorkspaceName
     subnetId: vnet.outputs.containerAppEnvironmentSubnetId
+    tags: tags
   }
 }
 
@@ -227,6 +255,7 @@ module postgresConnectionStringAppConfig '../modules/appConfiguration/upsertKeyV
     key: 'Infrastructure:DialogDbConnectionString'
     value: postgresql.outputs.adoConnectionStringSecretUri
     keyValueType: 'keyVaultReference'
+    tags: tags
   }
 }
 
@@ -238,6 +267,7 @@ module redisConnectionStringAppConfig '../modules/appConfiguration/upsertKeyValu
     key: 'Infrastructure:Redis:ConnectionString'
     value: redis.outputs.connectionStringSecretUri
     keyValueType: 'keyVaultReference'
+    tags: tags
   }
 }
 

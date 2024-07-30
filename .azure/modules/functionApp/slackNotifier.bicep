@@ -1,9 +1,19 @@
 import { uniqueStringBySubscriptionAndResourceGroup, uniqueResourceName } from '../../functions/resourceName.bicep'
 
+@description('The location where the resources will be deployed')
 param location string
+
+@description('The name of the Application Insights resource')
 param applicationInsightsName string
+
+@description('The prefix used for naming resources to ensure unique names')
 param namePrefix string
+
+@description('The name of the Key Vault')
 param keyVaultName string
+
+@description('Tags to apply to resources')
+param tags object
 
 @export()
 type Sku = {
@@ -43,6 +53,7 @@ type Sku = {
     | 'Y3v2Isolated'
   applicationServicePlanTier: 'Free' | 'Shared' | 'Basic' | 'Dynamic' | 'Standard' | 'Premium' | 'Isolated'
 }
+@description('The SKU of the Slack Notifier')
 param sku Sku
 
 // Storage account names only supports lower case and numbers
@@ -66,6 +77,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-04-01' = {
     defaultToOAuthAuthentication: true
     minimumTlsVersion: 'TLS1_2'
   }
+  tags: tags
 }
 
 resource applicationServicePlan 'Microsoft.Web/serverfarms@2023-12-01' = {
@@ -76,6 +88,7 @@ resource applicationServicePlan 'Microsoft.Web/serverfarms@2023-12-01' = {
     tier: sku.applicationServicePlanTier
   }
   properties: {}
+  tags: tags
 }
 
 resource applicationInsights 'Microsoft.Insights/components@2020-02-02' existing = {
@@ -99,6 +112,7 @@ resource functionApp 'Microsoft.Web/sites@2023-12-01' = {
     }
     httpsOnly: true
   }
+  tags: tags
 }
 
 var appSettings = {
@@ -138,6 +152,7 @@ resource notifyDevTeam 'Microsoft.Insights/actionGroups@2023-01-01' = {
       }
     ]
   }
+  tags: tags
 }
 
 resource exceptionOccuredAlertRule 'Microsoft.Insights/scheduledQueryRules@2023-03-15-preview' = {
@@ -173,6 +188,7 @@ resource exceptionOccuredAlertRule 'Microsoft.Insights/scheduledQueryRules@2023-
       ]
     }
   }
+  tags: tags
 }
 
 output functionAppPrincipalId string = functionApp.identity.principalId
