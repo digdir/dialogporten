@@ -47,7 +47,6 @@ public sealed class GetDialogDialogTransmissionDto
     public Guid Id { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
     public string? AuthorizationAttribute { get; set; }
-    public bool IsAuthorized { get; set; }
     public string? ExtendedType { get; set; }
     public Guid? RelatedTransmissionId { get; set; }
 
