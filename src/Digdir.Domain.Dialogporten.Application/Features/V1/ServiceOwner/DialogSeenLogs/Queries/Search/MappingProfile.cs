@@ -11,6 +11,6 @@ public class MappingProfile : Profile
         CreateMap<DialogSeenLog, SearchDialogSeenLogDto>()
             .ForMember(dest => dest.SeenAt, opt => opt.MapFrom(src => src.CreatedAt));
 
-        CreateMap<DialogActor, SearchDialogSeenLogActorDto>();
+        CreateMap<DialogSeenLogSeenByActor, SearchDialogDialogSeenLogSeenByActorDto>();
     }
 }

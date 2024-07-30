@@ -5,13 +5,14 @@ public sealed class GetDialogSeenLogDto
     public Guid Id { get; set; }
     public DateTimeOffset SeenAt { get; set; }
 
-    public GetDialogSeenLogActorDto SeenBy { get; set; } = null!;
+    public GetDialogSeenLogSeenByActorDto SeenBy { get; set; } = null!;
 
     public bool? IsViaServiceOwner { get; set; }
 }
 
-public sealed class GetDialogSeenLogActorDto
+public sealed class GetDialogSeenLogSeenByActorDto
 {
+    public Guid Id { get; set; }
     public string ActorName { get; set; } = null!;
     public string ActorId { get; set; } = null!;
 }

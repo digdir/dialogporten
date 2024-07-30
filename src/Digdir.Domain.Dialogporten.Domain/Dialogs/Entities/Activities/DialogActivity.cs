@@ -28,7 +28,7 @@ public class DialogActivity : IImmutableEntity, IAggregateCreatedHandler, IEvent
     public DialogActivityDescription? Description { get; set; }
 
     [AggregateChild]
-    public DialogActor PerformedBy { get; set; } = null!;
+    public DialogActivityPerformedByActor PerformedBy { get; set; } = null!;
 
     public List<DialogActivity> RelatedActivities { get; set; } = [];
 

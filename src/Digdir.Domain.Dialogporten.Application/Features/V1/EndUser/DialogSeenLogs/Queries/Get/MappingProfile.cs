@@ -12,7 +12,7 @@ public class MappingProfile : Profile
         CreateMap<DialogSeenLog, GetDialogSeenLogDto>()
             .ForMember(dest => dest.SeenAt, opt => opt.MapFrom(src => src.CreatedAt));
 
-        CreateMap<DialogActor, GetDialogSeenLogActorDto>()
+        CreateMap<DialogSeenLogSeenByActor, GetDialogSeenLogSeenByActorDto>()
             .ForMember(dest => dest.ActorId,
                 opt => opt.MapFrom(src => IdentifierMasker.GetMaybeMaskedIdentifier(src.ActorId)));
     }

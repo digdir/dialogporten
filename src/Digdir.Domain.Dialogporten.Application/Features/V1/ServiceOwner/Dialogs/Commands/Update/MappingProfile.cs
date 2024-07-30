@@ -65,14 +65,14 @@ internal sealed class MappingProfile : Profile
             .ForMember(dest => dest.Type, opt => opt.Ignore())
             .ForMember(dest => dest.TypeId, opt => opt.MapFrom(src => src.Type));
 
-        CreateMap<UpdateDialogDialogActivityActorDto, DialogActor>()
+        CreateMap<UpdateDialogDialogActivityPerformedByActorDto, DialogActivityPerformedByActor>()
             .ForMember(dest => dest.ActorType, opt => opt.Ignore())
             .ForMember(dest => dest.ActorTypeId, opt => opt.MapFrom(src => src.ActorType));
 
         CreateMap<UpdateDialogDialogTransmissionContentDto?, List<TransmissionContent>?>()
             .ConvertUsing<TransmissionContentInputConverter<UpdateDialogDialogTransmissionContentDto>>();
 
-        CreateMap<UpdateDialogDialogTransmissionActorDto, DialogActor>()
+        CreateMap<UpdateDialogDialogTransmissionSenderActorDto, DialogTransmissionSenderActor>()
             .ForMember(dest => dest.ActorType, opt => opt.Ignore())
             .ForMember(dest => dest.ActorTypeId, opt => opt.MapFrom(src => src.ActorType));
 
@@ -99,7 +99,7 @@ internal sealed class MappingProfile : Profile
             .ForMember(dest => dest.Transmissions, opt => opt.Ignore());
         CreateMap<GetDialogSearchTagDto, UpdateDialogSearchTagDto>();
         CreateMap<GetDialogDialogActivityDto, UpdateDialogDialogActivityDto>();
-        CreateMap<GetDialogDialogActivityActorDto, UpdateDialogDialogActivityActorDto>();
+        CreateMap<GetDialogDialogActivityPerformedByActorDto, UpdateDialogDialogActivityPerformedByActorDto>();
         CreateMap<GetDialogDialogApiActionDto, UpdateDialogDialogApiActionDto>();
         CreateMap<GetDialogDialogApiActionEndpointDto, UpdateDialogDialogApiActionEndpointDto>();
         CreateMap<GetDialogDialogGuiActionDto, UpdateDialogDialogGuiActionDto>();

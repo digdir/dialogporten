@@ -42,7 +42,7 @@ public class UpdateDialogDialogTransmissionDto
 
     public DialogTransmissionType.Values Type { get; set; }
 
-    public UpdateDialogDialogTransmissionActorDto Sender { get; set; } = null!;
+    public UpdateDialogDialogTransmissionSenderActorDto Sender { get; set; } = null!;
 
     public UpdateDialogDialogTransmissionContentDto Content { get; set; } = null!;
 
@@ -55,7 +55,7 @@ public class UpdateDialogDialogTransmissionContentDto
     public ContentValueDto Summary { get; set; } = null!;
 }
 
-public class UpdateDialogDialogTransmissionActorDto
+public class UpdateDialogDialogTransmissionSenderActorDto
 {
     public DialogActorType.Values ActorType { get; set; }
     public string ActorName { get; set; } = null!;
@@ -87,11 +87,11 @@ public class UpdateDialogDialogActivityDto
 
     public Guid? RelatedActivityId { get; set; }
 
-    public UpdateDialogDialogActivityActorDto PerformedBy { get; set; } = null!;
+    public UpdateDialogDialogActivityPerformedByActorDto PerformedBy { get; set; } = null!;
     public List<LocalizationDto> Description { get; set; } = [];
 }
 
-public sealed class UpdateDialogDialogActivityActorDto
+public sealed class UpdateDialogDialogActivityPerformedByActorDto
 {
     public DialogActorType.Values ActorType { get; set; }
     public string? ActorName { get; set; }

@@ -12,7 +12,7 @@ public class DialogTransmission : IImmutableEntity
 
     public string? AuthorizationAttribute { get; set; }
 
-    public DialogActor Sender { get; set; } = null!;
+    public DialogTransmissionSenderActor Sender { get; set; } = null!;
 
     public Uri? ExtendedType { get; set; }
 

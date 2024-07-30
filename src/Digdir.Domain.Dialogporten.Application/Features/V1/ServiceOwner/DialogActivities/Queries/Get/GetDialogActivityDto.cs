@@ -16,12 +16,13 @@ public sealed class GetDialogActivityDto
 
     public Guid? RelatedActivityId { get; set; }
 
-    public GetDialogActivityActorDto PerformedBy { get; set; } = null!;
+    public GetDialogActivityPerformedByActorDto PerformedBy { get; set; } = null!;
     public List<LocalizationDto> Description { get; set; } = [];
 }
 
-public sealed class GetDialogActivityActorDto
+public sealed class GetDialogActivityPerformedByActorDto
 {
+    public Guid Id { get; set; }
     public DialogActorType.Values ActorType { get; set; }
     public string? ActorName { get; set; }
     public string? ActorId { get; set; }
