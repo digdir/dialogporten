@@ -128,7 +128,7 @@ public class DomainEventsTests(DialogApplication application) : ApplicationColle
             DisplayName = DialogGenerator.GenerateFakeLocalizations(3),
             Urls = [new()
             {
-                ConsumerType = DialogAttachmentUrlConsumerType.Values.Gui,
+                ConsumerType = AttachmentUrlConsumerType.Values.Gui,
                 Url = new Uri("https://example.com")
             }]
         }];

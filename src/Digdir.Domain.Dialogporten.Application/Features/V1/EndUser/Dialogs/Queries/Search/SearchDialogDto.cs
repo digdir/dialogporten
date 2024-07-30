@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Content;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Contents;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Queries.Search;
 
@@ -12,10 +12,10 @@ public sealed class SearchDialogDto : SearchDialogDtoBase
 
 public sealed class SearchDialogContentDto
 {
-    public DialogContentValueDto Title { get; set; } = null!;
-    public DialogContentValueDto Summary { get; set; } = null!;
-    public DialogContentValueDto? SenderName { get; set; }
-    public DialogContentValueDto? ExtendedStatus { get; set; }
+    public ContentValueDto Title { get; set; } = null!;
+    public ContentValueDto Summary { get; set; } = null!;
+    public ContentValueDto? SenderName { get; set; }
+    public ContentValueDto? ExtendedStatus { get; set; }
 }
 
 /// <summary>

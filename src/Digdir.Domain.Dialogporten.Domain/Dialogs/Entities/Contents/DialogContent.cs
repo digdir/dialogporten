@@ -2,9 +2,9 @@
 using Digdir.Library.Entity.Abstractions;
 using Digdir.Library.Entity.Abstractions.Features.Aggregate;
 
-namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
+namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Contents;
 
-public class DialogContent : IEntity
+public sealed class DialogContent : IEntity
 {
     public Guid Id { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
@@ -12,7 +12,6 @@ public class DialogContent : IEntity
 
     public string? MediaType { get; set; }
 
-    // === Dependent relationships ===
     public Guid DialogId { get; set; }
     public DialogEntity Dialog { get; set; } = null!;
 
@@ -24,7 +23,7 @@ public class DialogContent : IEntity
     public DialogContentValue Value { get; set; } = null!;
 }
 
-public class DialogContentValue : LocalizationSet
+public sealed class DialogContentValue : LocalizationSet
 {
     public Guid DialogContentId { get; set; }
     public DialogContent DialogContent { get; set; } = null!;

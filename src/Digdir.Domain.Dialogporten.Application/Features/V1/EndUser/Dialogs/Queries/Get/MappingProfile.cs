@@ -6,7 +6,8 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actors;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Attachments;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Contents;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Queries.Get;
 
@@ -43,11 +44,25 @@ internal sealed class MappingProfile : Profile
 
         CreateMap<DialogAttachment, GetDialogDialogAttachmentDto>();
 
-        CreateMap<DialogAttachmentUrl, GetDialogDialogAttachmentUrlDto>()
+        CreateMap<AttachmentUrl, GetDialogDialogAttachmentUrlDto>()
             .ForMember(dest => dest.ConsumerType, opt => opt.MapFrom(src => src.ConsumerTypeId));
 
         CreateMap<List<DialogContent>?, GetDialogContentDto?>()
             .ConvertUsing<DialogContentOutputConverter<GetDialogContentDto>>();
+
+        CreateMap<DialogActor, GetDialogDialogTransmissionActorDto>()
+            .ForMember(dest => dest.ActorType, opt => opt.MapFrom(src => src.ActorTypeId))
+            .ForMember(dest => dest.ActorId, opt => opt.MapFrom(src => IdentifierMasker.GetMaybeMaskedIdentifier(src.ActorId)));
+
+        CreateMap<List<TransmissionContent>?, GetDialogDialogTransmissionContentDto?>()
+            .ConvertUsing<TransmissionContentOutputConverter<GetDialogDialogTransmissionContentDto>>();
+
+        CreateMap<DialogTransmission, GetDialogDialogTransmissionDto>()
+            .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.TypeId));
+
+        CreateMap<TransmissionAttachment, GetDialogTransmissionAttachmentDto>();
+        CreateMap<AttachmentUrl, GetDialogTransmissionAttachmentUrlDto>()
+            .ForMember(dest => dest.ConsumerType, opt => opt.MapFrom(src => src.ConsumerTypeId));
     }
 
 }
