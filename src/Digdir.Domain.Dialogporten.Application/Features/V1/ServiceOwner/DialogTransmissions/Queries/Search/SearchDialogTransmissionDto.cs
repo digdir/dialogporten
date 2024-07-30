@@ -17,13 +17,13 @@ public sealed class SearchDialogTransmissionDto
 
     public DialogTransmissionType.Values Type { get; set; }
 
-    public SearchDialogTransmissionActorDto Sender { get; set; } = null!;
+    public SearchDialogTransmissionSenderActorDto Sender { get; set; } = null!;
 
     public SearchDialogTransmissionContentDto Content { get; set; } = null!;
     public List<SearchDialogTransmissionAttachmentDto> Attachments { get; set; } = [];
 }
 
-public sealed class SearchDialogTransmissionActorDto
+public sealed class SearchDialogTransmissionSenderActorDto
 {
     public DialogActorType.Values ActorType { get; set; }
     public string ActorName { get; set; } = null!;

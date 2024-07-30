@@ -18,13 +18,13 @@ public sealed class GetDialogTransmissionDto
 
     public DialogTransmissionType.Values Type { get; set; }
 
-    public GetDialogTransmissionActorDto Sender { get; set; } = null!;
+    public GetDialogTransmissionSenderActorDto Sender { get; set; } = null!;
 
     public GetDialogTransmissionContentDto Content { get; set; } = null!;
     public List<GetDialogTransmissionAttachmentDto> Attachments { get; set; } = [];
 }
 
-public sealed class GetDialogTransmissionActorDto
+public sealed class GetDialogTransmissionSenderActorDto
 {
     public DialogActorType.Values ActorType { get; set; }
     public string ActorName { get; set; } = null!;
