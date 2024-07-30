@@ -1,7 +1,7 @@
 using Digdir.Domain.Dialogporten.Domain.Common;
 using Digdir.Library.Entity.Abstractions.Features.Lookup;
 
-namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
+namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Contents;
 
 public class DialogContentType : AbstractLookupEntity<DialogContentType, DialogContentType.Values>
 {
@@ -18,6 +18,7 @@ public class DialogContentType : AbstractLookupEntity<DialogContentType, DialogC
 
     public bool Required { get; private init; }
     public bool OutputInList { get; private init; }
+
     public int MaxLength { get; private init; }
 
     public string[] AllowedMediaTypes { get; init; } = [];

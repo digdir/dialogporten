@@ -291,7 +291,7 @@ public static class DialogGenerator
     {
         return new Faker<CreateDialogDialogAttachmentUrlDto>()
             .RuleFor(o => o.Url, f => new Uri(f.Internet.UrlWithPath()))
-            .RuleFor(o => o.ConsumerType, f => f.PickRandom<DialogAttachmentUrlConsumerType.Values>())
+            .RuleFor(o => o.ConsumerType, f => f.PickRandom<AttachmentUrlConsumerType.Values>())
             .Generate(new Randomizer().Number(1, 3));
     }
 

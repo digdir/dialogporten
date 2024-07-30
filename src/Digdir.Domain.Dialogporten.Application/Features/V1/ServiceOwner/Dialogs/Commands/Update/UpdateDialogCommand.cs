@@ -8,6 +8,7 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Attachments;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 using FluentValidation.Results;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -69,6 +70,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
                 .ThenInclude(x => x!.Prompt!.Localizations)
             .Include(x => x.ApiActions)
                 .ThenInclude(x => x.Endpoints)
+            .Include(x => x.Transmissions)
             .IgnoreQueryFilters()
             .Where(x => resourceIds.Contains(x.ServiceResource))
             .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
@@ -107,8 +109,12 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         // Update primitive properties
         _mapper.Map(request.Dto, dialog);
         ValidateTimeFields(dialog);
+
         AppendActivity(dialog, request.Dto);
         VerifyActivityRelations(dialog);
+
+        AppendTransmission(dialog, request.Dto);
+        VerifyTransmissionRelations(dialog);
 
         dialog.SearchTags
             .Merge(request.Dto.SearchTags,
@@ -246,6 +252,49 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         }
     }
 
+    private void AppendTransmission(DialogEntity dialog, UpdateDialogDto dto)
+    {
+        var newDialogTransmissions = _mapper.Map<List<DialogTransmission>>(dto.Transmissions);
+
+        var existingIds = dialog.Transmissions.Select(x => x.Id).ToList();
+
+        existingIds = existingIds.Intersect(newDialogTransmissions.Select(x => x.Id)).ToList();
+        if (existingIds.Count != 0)
+        {
+            _domainContext.AddError(
+                nameof(UpdateDialogDto.Transmissions),
+                $"Entity '{nameof(DialogTransmission)}' with the following key(s) already exists: ({string.Join(", ", existingIds)}).");
+            return;
+        }
+
+        dialog.Transmissions.AddRange(newDialogTransmissions);
+
+        // Tell ef explicitly to add transmissions as new to the database.
+        _db.DialogTransmissions.AddRange(newDialogTransmissions);
+    }
+
+    private void VerifyTransmissionRelations(DialogEntity dialog)
+    {
+        var relatedTransmissionIds = dialog.Transmissions.Where(x => x.RelatedTransmissionId is not null).Select(x => x.RelatedTransmissionId).ToList();
+        if (relatedTransmissionIds.Count == 0)
+        {
+            return;
+        }
+
+        var transmissionIds = dialog.Transmissions.Select(x => x.Id).ToList();
+
+        var invalidRelatedTransmissionIds = relatedTransmissionIds
+            .Where(id => !transmissionIds.Contains(id!.Value))
+            .ToList();
+
+        if (invalidRelatedTransmissionIds.Count != 0)
+        {
+            _domainContext.AddError(
+                nameof(UpdateDialogDto.Transmissions),
+                $"Invalid '{nameof(DialogTransmission.RelatedTransmissionId)}, entity '{nameof(DialogTransmission)}' with the following key(s) does not exist: ({string.Join(", ", invalidRelatedTransmissionIds)}).");
+        }
+    }
+
     private IEnumerable<DialogApiAction> CreateApiActions(IEnumerable<UpdateDialogDialogApiActionDto> creatables)
     {
         return creatables.Select(x =>
@@ -278,7 +327,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         foreach (var atttachmentDto in creatables)
         {
             var attachment = _mapper.Map<DialogAttachment>(atttachmentDto);
-            attachment.Urls = _mapper.Map<List<DialogAttachmentUrl>>(atttachmentDto.Urls);
+            attachment.Urls = _mapper.Map<List<AttachmentUrl>>(atttachmentDto.Urls);
             attachments.Add(attachment);
         }
 
@@ -301,7 +350,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
                 .Merge(updateSet.Source.Urls,
                     destinationKeySelector: x => x.Id,
                     sourceKeySelector: x => x.Id,
-                    create: _mapper.Map<List<DialogAttachmentUrl>>,
+                    create: _mapper.Map<List<AttachmentUrl>>,
                     update: _mapper.Update,
                     delete: DeleteDelegate.NoOp);
         }

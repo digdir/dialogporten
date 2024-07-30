@@ -3,7 +3,7 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Attachments;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Contents;
 using Digdir.Domain.Dialogporten.Domain.Localizations;
 using Digdir.Library.Entity.Abstractions.Features.Aggregate;
 using Digdir.Library.Entity.Abstractions.Features.Identifiable;
@@ -54,14 +54,13 @@ public static class AggregateNodeExtensions
     {
         DialogEntity => "dialog",
         DialogAttachment => "attachment",
-        DialogAttachmentUrl => "url",
+        AttachmentUrl => "url",
         DialogApiAction => "apiAction",
         DialogApiActionEndpoint => "endpoint",
         DialogGuiAction => "guiAction",
         DialogActivity => "activity",
-        DialogContent => "content",
-
         DialogContentValue => "contentValue",
+        DialogContent => "content",
         DialogActivityDescription => "description",
         AttachmentDisplayName => "displayName",
         DialogGuiActionTitle => "title",

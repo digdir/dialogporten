@@ -7,7 +7,8 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actors;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Attachments;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Contents;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Update;
 
@@ -49,7 +50,7 @@ internal sealed class MappingProfile : Profile
         CreateMap<UpdateDialogDialogAttachmentDto, DialogAttachment>()
             .IgnoreComplexDestinationProperties();
 
-        CreateMap<UpdateDialogDialogAttachmentUrlDto, DialogAttachmentUrl>()
+        CreateMap<UpdateDialogDialogAttachmentUrlDto, AttachmentUrl>()
             .IgnoreComplexDestinationProperties()
             .ForMember(x => x.Id, opt => opt.Ignore())
             .ForMember(dest => dest.ConsumerType, opt => opt.Ignore())
@@ -58,8 +59,8 @@ internal sealed class MappingProfile : Profile
         CreateMap<UpdateDialogContentDto?, List<DialogContent>?>()
             .ConvertUsing<DialogContentInputConverter<UpdateDialogContentDto>>();
 
-        // Since this is append only, we don't need to merge with existing
-        // activity records and thus can map complex properties
+        // Since these are append only, we don't need to merge with existing
+        // activity/transmission records and thus can map complex properties
         CreateMap<UpdateDialogDialogActivityDto, DialogActivity>()
             .ForMember(dest => dest.Type, opt => opt.Ignore())
             .ForMember(dest => dest.TypeId, opt => opt.MapFrom(src => src.Type));
@@ -68,13 +69,34 @@ internal sealed class MappingProfile : Profile
             .ForMember(dest => dest.ActorType, opt => opt.Ignore())
             .ForMember(dest => dest.ActorTypeId, opt => opt.MapFrom(src => src.ActorType));
 
+        CreateMap<UpdateDialogDialogTransmissionContentDto?, List<TransmissionContent>?>()
+            .ConvertUsing<TransmissionContentInputConverter<UpdateDialogDialogTransmissionContentDto>>();
+
+        CreateMap<UpdateDialogDialogTransmissionActorDto, DialogActor>()
+            .ForMember(dest => dest.ActorType, opt => opt.Ignore())
+            .ForMember(dest => dest.ActorTypeId, opt => opt.MapFrom(src => src.ActorType));
+
+        CreateMap<UpdateDialogDialogTransmissionDto, DialogTransmission>()
+            .ForMember(dest => dest.Type, opt => opt.Ignore())
+            .ForMember(dest => dest.TypeId, opt => opt.MapFrom(src => src.Type));
+
+        CreateMap<UpdateDialogTransmissionAttachmentDto, TransmissionAttachment>()
+            .IgnoreComplexDestinationProperties();
+
+        CreateMap<UpdateDialogTransmissionAttachmentUrlDto, AttachmentUrl>()
+            .IgnoreComplexDestinationProperties()
+            .ForMember(x => x.Id, opt => opt.Ignore())
+            .ForMember(dest => dest.ConsumerType, opt => opt.Ignore())
+            .ForMember(dest => dest.ConsumerTypeId, opt => opt.MapFrom(src => src.ConsumerType));
+
         // ===========================================
         // ================== Patch ==================
         // ===========================================
         CreateMap<GetDialogDto, UpdateDialogDto>()
-            // Remove all existing activities, since this list is append only and
-            // existing activities should not be considered in the update request.
-            .ForMember(dest => dest.Activities, opt => opt.Ignore());
+            // Remove all existing activities and transmissions, since these lists are append only and
+            // existing activities/transmissions should not be considered in the update request.
+            .ForMember(dest => dest.Activities, opt => opt.Ignore())
+            .ForMember(dest => dest.Transmissions, opt => opt.Ignore());
         CreateMap<GetDialogSearchTagDto, UpdateDialogSearchTagDto>();
         CreateMap<GetDialogDialogActivityDto, UpdateDialogDialogActivityDto>();
         CreateMap<GetDialogDialogActivityActorDto, UpdateDialogDialogActivityActorDto>();
