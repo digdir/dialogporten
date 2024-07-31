@@ -16,13 +16,10 @@ public class DialogTransmission : IImmutableEntity
 
     public Uri? ExtendedType { get; set; }
 
-    public DialogTransmissionType.Values TypeId { get; set; }
-    public DialogTransmissionType Type { get; set; } = null!;
-
     // === Principal relationships ===
     public List<TransmissionContent> Content { get; set; } = [];
-
     public List<TransmissionAttachment> Attachments { get; set; } = [];
+    public List<DialogTransmission> RelatedTransmissions { get; set; } = [];
 
     // === Dependent relationships ===
     public Guid DialogId { get; set; }
@@ -30,4 +27,7 @@ public class DialogTransmission : IImmutableEntity
 
     public Guid? RelatedTransmissionId { get; set; }
     public DialogTransmission? RelatedTransmission { get; set; }
+
+    public DialogTransmissionType.Values TypeId { get; set; }
+    public DialogTransmissionType Type { get; set; } = null!;
 }
