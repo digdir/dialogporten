@@ -9,6 +9,8 @@ on:
         required: true
       AZURE_SUBSCRIPTION_ID:
         required: true
+      AZURE_FUNCTION_APP_NAME:
+        required: true
 
     inputs:
       function-app-name:
@@ -60,6 +62,6 @@ jobs:
         uses: Azure/functions-action@v1
         id: fa
         with:
-          app-name: ${{ inputs.function-app-name }}
+          app-name: ${{ secrets.AZURE_FUNCTION_APP_NAME }}
           package: "${{ inputs.function-project-path }}/output"
           publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
