@@ -1,4 +1,5 @@
 ﻿using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actors;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Events.Activities;
 using Digdir.Domain.Dialogporten.Domain.Localizations;
 using Digdir.Library.Entity.Abstractions.Features.Aggregate;
@@ -22,6 +23,9 @@ public class DialogActivity : IImmutableEntity, IAggregateCreatedHandler, IEvent
 
     public Guid? RelatedActivityId { get; set; }
     public DialogActivity? RelatedActivity { get; set; }
+
+    public Guid? TransmissionId { get; set; }
+    public DialogTransmission? Transmission { get; set; }
 
     // === Principal relationships ===
     [AggregateChild]
