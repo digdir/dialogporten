@@ -68,7 +68,7 @@ jobs:
       environment: staging
       region: norwayeast
       version: ${{ needs.get-current-version.outputs.version }}
-      runMigration: ${{ needs.check-for-changes.outputs.hasMigrationChanges == 'true' }}
+      runMigration: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasMigrationChanges == 'true' }}
 
   deploy-slack-notifier-staging:
     name: Deploy slack notifier (staging)

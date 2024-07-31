@@ -106,7 +106,7 @@ jobs:
       environment: test
       region: norwayeast
       version: ${{ needs.get-current-version.outputs.version }}-${{ needs.generate-git-short-sha.outputs.gitShortSha }}
-      runMigration: ${{ needs.check-for-changes.outputs.hasMigrationChanges == 'true' }}
+      runMigration: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasMigrationChanges == 'true' }}
 
   deploy-slack-notifier-test:
     name: Deploy slack notifier (test)
