@@ -16,8 +16,34 @@ permissions:
   id-token: write
 
 jobs:
+  check-published-version:
+    runs-on: ubuntu-latest
+    outputs:
+      version-exists: ${{ steps.check-published-version.outputs.version-exists }}
+    steps:
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org/'
+
+      - name: Check if version exists on NPM
+        id: check-published-version
+        run: |
+          if npm view "@digdir/dialogporten-schema@${{ inputs.version }}" > /dev/null 2>&1; then
+            echo "version-exists=true" >> $GITHUB_OUTPUT
+            echo "Version ${{ inputs.version }} already exists"
+          else
+            echo "version-exists=false" >> $GITHUB_OUTPUT
+            echo "Version ${{ inputs.version }} does not exist"
+          fi
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
   publish-schema-to-npm:
     runs-on: ubuntu-latest
+    needs: check-published-version
+    if: needs.check-published-version.outputs.version-exists == 'false'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
