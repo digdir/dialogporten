@@ -166,14 +166,11 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
                 }
             }
 
-            // TODO: Rename in https://github.com/digdir/dialogporten/issues/860
-            // foreach (var transmission in dto.Transmissions)
-            // {
-            //     if (authorizationResult.HasReadAccessToDialogTransmission(transmission))
-            //     {
-            //         transmission.IsAuthorized = true;
-            //     }
-            // }
+            var authoridedTransmissions = dto.Transmissions.Where(authorizationResult.HasReadAccessToDialogTransmission);
+            foreach (var transmission in authoridedTransmissions)
+            {
+                transmission.IsAuthorized = true;
+            }
         }
     }
 
@@ -193,9 +190,13 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
             }
         }
 
-        // // Attachment URLs
-        // foreach (var dialogTransmission in dto.Transmissions.Where(e => !e.IsAuthorized))
-        // {
-        // }
+        foreach (var dialogTransmission in dto.Transmissions.Where(e => !e.IsAuthorized))
+        {
+            var urls = dialogTransmission.Attachments.SelectMany(a => a.Urls).ToList();
+            foreach (var url in urls)
+            {
+                url.Url = Constants.UnauthorizedUri;
+            }
+        }
     }
 }
