@@ -118,7 +118,8 @@ jobs:
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
       AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
     with:
-      function-app-name: "dp-be-test-slacknotifier-fa"
+      # todo: resolve this automatically, or use tags
+      function-app-name: "dp-be-test-slacknotifier-f-i7se3jtjey3lo"
       function-project-path: "./src/Digdir.Tool.Dialogporten.SlackNotifier"
       environment: test
 
