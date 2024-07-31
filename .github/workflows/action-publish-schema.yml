@@ -21,16 +21,24 @@ jobs:
     outputs:
       version-exists: ${{ steps.check-published-version.outputs.version-exists }}
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           registry-url: 'https://registry.npmjs.org/'
 
+      - name: Fetch package name
+        id: fetch-package-name
+        run: echo "PACKAGE_NAME=$(jq -r '.name' package.json)" >> $GITHUB_ENV
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+
       - name: Check if version exists on NPM
         id: check-published-version
         run: |
-          if npm view "@digdir/dialogporten-schema@${{ inputs.version }}" > /dev/null 2>&1; then
+          if npm view "${{ env.PACKAGE_NAME }}@${{ inputs.version }}" > /dev/null 2>&1; then
             echo "version-exists=true" >> $GITHUB_OUTPUT
             echo "Version ${{ inputs.version }} already exists"
           else
