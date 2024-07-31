@@ -109,6 +109,9 @@ internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDia
         RuleFor(x => x.Activities)
             .UniqueBy(x => x.Id);
         RuleForEach(x => x.Activities)
+            .IsIn(x => x.Transmissions,
+                dependentKeySelector: activity => activity.TransmissionId,
+                principalKeySelector: transmission => transmission.Id)
             .IsIn(x => x.Activities,
                 dependentKeySelector: activity => activity.RelatedActivityId,
                 principalKeySelector: activity => activity.Id)

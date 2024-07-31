@@ -11,5 +11,9 @@ internal sealed class DialogActivityConfiguration : IEntityTypeConfiguration<Dia
         builder.HasOne(x => x.RelatedActivity)
             .WithMany(x => x.RelatedActivities)
             .OnDelete(DeleteBehavior.SetNull);
+
+        builder.HasOne(x => x.Transmission)
+            .WithMany(x => x.Activities)
+            .OnDelete(DeleteBehavior.SetNull);
     }
 }

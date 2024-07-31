@@ -114,6 +114,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         VerifyActivityRelations(dialog);
 
         AppendTransmission(dialog, request.Dto);
+        VerifyActivityTransmissionRelations(dialog);
         VerifyTransmissionRelations(dialog);
 
         dialog.SearchTags
@@ -223,6 +224,33 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
 
         // Tell ef explicitly to add activities as new to the database.
         _db.DialogActivities.AddRange(newDialogActivities);
+    }
+
+    private void VerifyActivityTransmissionRelations(DialogEntity dialog)
+    {
+        var relatedTransmissionIds = dialog.Activities
+            .Where(x => x.TransmissionId is not null)
+            .Select(x => x.TransmissionId)
+            .ToList();
+
+        if (relatedTransmissionIds.Count == 0)
+        {
+            return;
+        }
+
+        var transmissionIds = dialog.Transmissions.Select(x => x.Id).ToList();
+
+        var invalidTransmissionIds = relatedTransmissionIds
+            .Where(id => !transmissionIds.Contains(id!.Value))
+            .ToList();
+
+        if (invalidTransmissionIds.Count != 0)
+        {
+            _domainContext.AddError(
+                nameof(UpdateDialogDto.Activities),
+                $"Invalid '{nameof(DialogActivity.TransmissionId)}, entity '{nameof(DialogTransmission)}'" +
+                $" with the following key(s) does not exist: ({string.Join(", ", invalidTransmissionIds)}) in '{nameof(dialog.Transmissions)}'");
+        }
     }
 
     private void VerifyActivityRelations(DialogEntity dialog)

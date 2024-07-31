@@ -1,3 +1,4 @@
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actors;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Attachments;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Contents;
@@ -19,6 +20,7 @@ public class DialogTransmission : IImmutableEntity
     // === Principal relationships ===
     public List<TransmissionContent> Content { get; set; } = [];
     public List<TransmissionAttachment> Attachments { get; set; } = [];
+    public List<DialogActivity> Activities { get; set; } = [];
     public List<DialogTransmission> RelatedTransmissions { get; set; } = [];
 
     // === Dependent relationships ===
