@@ -166,8 +166,8 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
                 }
             }
 
-            var authoridedTransmissions = dto.Transmissions.Where(authorizationResult.HasReadAccessToDialogTransmission);
-            foreach (var transmission in authoridedTransmissions)
+            var authorizedTransmissions = dto.Transmissions.Where(authorizationResult.HasReadAccessToDialogTransmission);
+            foreach (var transmission in authorizedTransmissions)
             {
                 transmission.IsAuthorized = true;
             }
