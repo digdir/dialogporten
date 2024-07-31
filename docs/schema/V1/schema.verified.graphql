@@ -16,6 +16,7 @@ type Activity {
   extendedType: URL
   type: ActivityType!
   relatedActivityId: UUID
+  transmissionId: UUID
   performedBy: Actor!
   description: [Localization!]!
 }

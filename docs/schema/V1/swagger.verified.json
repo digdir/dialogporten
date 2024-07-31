@@ -535,6 +535,7 @@
                     "ExtendedType": null,
                     "Type": 3,
                     "RelatedActivityId": null,
+                    "TransmissionId": null,
                     "PerformedBy": {
                       "ActorType": 2,
                       "ActorName": null,
@@ -2850,6 +2851,11 @@
             "format": "guid",
             "nullable": true
           },
+          "transmissionId": {
+            "type": "string",
+            "format": "guid",
+            "nullable": true
+          },
           "performedBy": {
             "$ref": "#/components/schemas/UpdateDialogDialogActivityPerformedByActorDto"
           },
@@ -3020,6 +3026,11 @@
             "$ref": "#/components/schemas/DialogActivityType_Values"
           },
           "relatedActivityId": {
+            "type": "string",
+            "format": "guid",
+            "nullable": true
+          },
+          "transmissionId": {
             "type": "string",
             "format": "guid",
             "nullable": true
@@ -3590,6 +3601,11 @@
             "format": "guid",
             "nullable": true
           },
+          "transmissionId": {
+            "type": "string",
+            "format": "guid",
+            "nullable": true
+          },
           "performedBy": {
             "$ref": "#/components/schemas/GetDialogDialogActivityPerformedByActorDtoSO"
           },
@@ -4079,6 +4095,11 @@
             "format": "guid",
             "nullable": true
           },
+          "transmissionId": {
+            "type": "string",
+            "format": "guid",
+            "nullable": true
+          },
           "performedBy": {
             "$ref": "#/components/schemas/CreateDialogDialogActivityPerformedByActorDto"
           },
@@ -4130,6 +4151,11 @@
             "$ref": "#/components/schemas/DialogActivityType_Values"
           },
           "relatedActivityId": {
+            "type": "string",
+            "format": "guid",
+            "nullable": true
+          },
+          "transmissionId": {
             "type": "string",
             "format": "guid",
             "nullable": true
@@ -4385,6 +4411,11 @@
             "$ref": "#/components/schemas/DialogActivityType_Values"
           },
           "relatedActivityId": {
+            "type": "string",
+            "format": "guid",
+            "nullable": true
+          },
+          "transmissionId": {
             "type": "string",
             "format": "guid",
             "nullable": true
@@ -4941,6 +4972,11 @@
             "$ref": "#/components/schemas/DialogActivityType_Values"
           },
           "relatedActivityId": {
+            "type": "string",
+            "format": "guid",
+            "nullable": true
+          },
+          "transmissionId": {
             "type": "string",
             "format": "guid",
             "nullable": true
