@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.10.0](https://github.com/digdir/dialogporten/compare/v1.9.0...v1.10.0) (2024-08-01)
+
+
+### Features
+
+* **azure:** add tags on azure applications ([#957](https://github.com/digdir/dialogporten/issues/957)) ([4081922](https://github.com/digdir/dialogporten/commit/4081922c47aa83fc95b6583f1d50ebf941d7e020))
+
+
+### Bug Fixes
+
+* **azure:** add product tag on all resources ([#955](https://github.com/digdir/dialogporten/issues/955)) ([6c76576](https://github.com/digdir/dialogporten/commit/6c76576397424e12feafa694b69a1a2e8bbd4d1f))
+
 ## [1.9.0](https://github.com/digdir/dialogporten/compare/v1.8.1...v1.9.0) (2024-07-30)
 
 
