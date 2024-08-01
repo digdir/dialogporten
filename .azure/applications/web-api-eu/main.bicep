@@ -38,6 +38,10 @@ param environmentKeyVaultName string
 
 var namePrefix = 'dp-be-${environment}'
 var baseImageUrl = 'ghcr.io/digdir/dialogporten-'
+var tags = {
+  Environment: environment
+  Product: 'Dialogporten'
+}
 
 resource appConfiguration 'Microsoft.AppConfiguration/configurationStores@2023-03-01' existing = {
   name: appConfigurationName
@@ -81,6 +85,7 @@ module containerApp '../../modules/containerApp/main.bicep' = {
     envVariables: containerAppEnvVars
     containerAppEnvId: containerAppEnvironment.id
     apimIp: apimIp
+    tags: tags
   }
 }
 

@@ -24,7 +24,10 @@ param environmentKeyVaultName string
 
 var namePrefix = 'dp-be-${environment}'
 var baseImageUrl = 'ghcr.io/digdir/dialogporten-'
-
+var tags = {
+  Environment: environment
+  Product: 'Dialogporten'
+}
 var name = '${namePrefix}-db-migration-job'
 
 resource containerAppEnvironment 'Microsoft.App/managedEnvironments@2024-03-01' existing = {
@@ -58,6 +61,7 @@ module migrationJob '../../modules/containerAppJob/main.bicep' = {
     containerAppEnvId: containerAppEnvironment.id
     environmentVariables: containerAppEnvVars
     secrets: secrets
+    tags: tags
   }
 }
 
