@@ -16,6 +16,9 @@ param environmentVariables { name: string, value: string?, secretRef: string? }[
 @description('The secrets to be used in the job')
 param secrets { name: string, keyVaultUrl: string, identity: 'System' }[] = []
 
+@description('The tags to be applied to the job')
+param tags object
+
 resource job 'Microsoft.App/jobs@2024-03-01' = {
   name: name
   location: location
@@ -44,6 +47,7 @@ resource job 'Microsoft.App/jobs@2024-03-01' = {
       ]
     }
   }
+  tags: tags
 }
 
 output identityPrincipalId string = job.identity.principalId

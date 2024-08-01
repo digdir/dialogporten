@@ -19,6 +19,9 @@ param apimIp string?
 @description('The ID of the container app environment')
 param containerAppEnvId string
 
+@description('The tags to be applied to the container app')
+param tags object
+
 var probes = [
   {
     periodSeconds: 5
@@ -83,6 +86,7 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
       ]
     }
   }
+  tags: tags
 }
 
 output identityPrincipalId string = containerApp.identity.principalId
