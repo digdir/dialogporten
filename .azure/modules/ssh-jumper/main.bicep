@@ -86,7 +86,8 @@ module virtualMachine '../../modules/virtualMachine/main.bicep' = {
   name: name
   params: {
     name: name
-    sshKeyData: srcKeyVaultResource.getSecret('sshPublicKey')
+    // todo: remove hardcoded environment, use naming convention here. 
+    sshKeyData: srcKeyVaultResource.getSecret('dialogportenJumperTestSSH')
     location: location
     tags: tags
     hardwareProfile: {
