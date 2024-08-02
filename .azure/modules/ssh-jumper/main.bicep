@@ -10,7 +10,21 @@ param subnetId string
 @description('Tags to be applied to the resource')
 param tags object
 
+@description('The name of the source Key Vault')
+param srcKeyVaultName string
+
+@description('The subscription ID of the source Key Vault')
+param srcKeyVaultSubId string
+
+@description('The resource group name of the source Key Vault')
+param srcKeyVaultRGNName string
+
 var name = '${namePrefix}-jumper'
+
+resource srcKeyVaultResource 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
+  name: srcKeyVaultName
+  scope: resourceGroup(srcKeyVaultSubId, srcKeyVaultRGNName)
+}
 
 resource publicIp 'Microsoft.Network/publicIPAddresses@2023-11-01' = {
   name: '${name}-ip'
@@ -68,63 +82,13 @@ resource networkInterface 'Microsoft.Network/networkInterfaces@2023-11-01' = {
   }
 }
 
-resource imageReference 'Microsoft.Compute/images@2024-03-01' existing = {
-  id: '/Subscriptions/8a353de8-d81d-468d-a40d-f3574b6bb3f4/Providers/Microsoft.Compute/Locations/NorwayEast/Publishers/canonical/ArtifactTypes/VMImage/Offers/0001-com-ubuntu-server-focal/Skus/20_04-lts-gen2/Versions/20.04.202407150'
-}
-
-resource osDisk 'Microsoft.Compute/disks@2023-10-02' = {
-  name: '${name}-osdisk'
-  location: location
-  sku: {
-    name: 'Premium_LRS'
-  }
-  zones: [
-    '1'
-  ]
-  properties: {
-    osType: 'Linux'
-    hyperVGeneration: 'V2'
-    supportsHibernation: true
-    supportedCapabilities: {
-      diskControllerTypes: 'SCSI, NVMe'
-      acceleratedNetwork: true
-      architecture: 'x64'
-    }
-    creationData: {
-      createOption: 'FromImage'
-      imageReference: {
-        id: '/Subscriptions/8a353de8-d81d-468d-a40d-f3574b6bb3f4/Providers/Microsoft.Compute/Locations/NorwayEast/Publishers/canonical/ArtifactTypes/VMImage/Offers/0001-com-ubuntu-server-focal/Skus/20_04-lts-gen2/Versions/20.04.202407150'
-      }
-    }
-    diskSizeGB: 30
-    diskIOPSReadWrite: 120
-    diskMBpsReadWrite: 25
-    encryption: {
-      type: 'EncryptionAtRestWithPlatformKey'
-    }
-    networkAccessPolicy: 'AllowAll'
-    securityProfile: {
-      securityType: 'TrustedLaunch'
-    }
-    publicNetworkAccess: 'Enabled'
-    tier: 'P4'
-  }
-}
-
-resource sshPublicKey 'Microsoft.Compute/sshPublicKeys@2023-09-01' = {
-  name: '${name}-ssh'
-  location: location
-  properties: {}
-  tags: tags
-}
-
-resource virtualMachine 'Microsoft.Compute/virtualMachines@2024-03-01' = {
+module virtualMachine '../../modules/virtualMachine/main.bicep' = {
   name: name
-  location: location
-  zones: [
-    '1'
-  ]
-  properties: {
+  params: {
+    name: name
+    sshKeyData: srcKeyVaultResource.getSecret('sshPublicKey')
+    location: location
+    tags: tags
     hardwareProfile: {
       vmSize: 'Standard_B1s'
     }
@@ -145,40 +109,12 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@2024-03-01' = {
         caching: 'ReadWrite'
         managedDisk: {
           storageAccountType: 'Premium_LRS'
-          id: osDisk.id
         }
         deleteOption: 'Delete'
         diskSizeGB: 30
       }
       dataDisks: []
       diskControllerType: 'SCSI'
-    }
-    osProfile: {
-      computerName: name
-      adminUsername: name
-      linuxConfiguration: {
-        disablePasswordAuthentication: true
-        ssh: {
-          publicKeys: [
-            {
-              path: '/home/${name}/.ssh/authorized_keys'
-              keyData: sshPublicKey.properties.publicKey
-            }
-          ]
-        }
-        provisionVMAgent: true
-        patchSettings: {
-          patchMode: 'AutomaticByPlatform'
-          automaticByPlatformSettings: {
-            rebootSetting: 'IfRequired'
-            bypassPlatformSafetyChecksOnUserSchedule: false
-          }
-          assessmentMode: 'ImageDefault'
-        }
-      }
-      secrets: []
-      allowExtensionOperations: true
-      requireGuestProvisionSignal: true
     }
     securityProfile: {
       uefiSettings: {

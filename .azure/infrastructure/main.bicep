@@ -150,6 +150,20 @@ var srcKeyVault = {
   resourceGroupName: secrets.sourceKeyVaultResourceGroup
 }
 
+module sshJumper '../modules/ssh-jumper/main.bicep' = {
+  scope: resourceGroup
+  name: 'sshJumper'
+  params: {
+    namePrefix: namePrefix
+    location: location
+    subnetId: vnet.outputs.defaultSubnetId
+    tags: tags
+    srcKeyVaultName: secrets.sourceKeyVaultName
+    srcKeyVaultSubId: secrets.sourceKeyVaultSubscriptionId
+    srcKeyVaultRGNName: secrets.sourceKeyVaultResourceGroup
+  }
+}
+
 module postgresql '../modules/postgreSql/create.bicep' = {
   scope: resourceGroup
   name: 'postgresql'
