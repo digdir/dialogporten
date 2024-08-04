@@ -113,9 +113,10 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         await AppendActivity(dialog, request.Dto, cancellationToken);
         VerifyActivityRelations(dialog);
 
-        AppendTransmission(dialog, request.Dto);
-        VerifyActivityTransmissionRelations(dialog);
+        await AppendTransmission(dialog, request.Dto, cancellationToken);
         VerifyTransmissionRelations(dialog);
+
+        VerifyActivityTransmissionRelations(dialog);
 
         dialog.SearchTags
             .Merge(request.Dto.SearchTags,
@@ -277,19 +278,16 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         }
     }
 
-    private void AppendTransmission(DialogEntity dialog, UpdateDialogDto dto)
+    private async Task AppendTransmission(DialogEntity dialog, UpdateDialogDto dto, CancellationToken cancellationToken)
     {
         var newDialogTransmissions = _mapper.Map<List<DialogTransmission>>(dto.Transmissions);
 
-        var existingIds = dialog.Transmissions.Select(x => x.Id).ToList();
-
-        existingIds = existingIds.Intersect(newDialogTransmissions.Select(x => x.Id)).ToList();
+        var existingIds = await _db.GetExistingIds(newDialogTransmissions, cancellationToken);
         if (existingIds.Count != 0)
         {
             _domainContext.AddError(
                 nameof(UpdateDialogDto.Transmissions),
                 $"Entity '{nameof(DialogTransmission)}' with the following key(s) already exists: ({string.Join(", ", existingIds)}).");
-            return;
         }
 
         dialog.Transmissions.AddRange(newDialogTransmissions);
@@ -300,7 +298,11 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
 
     private void VerifyTransmissionRelations(DialogEntity dialog)
     {
-        var relatedTransmissionIds = dialog.Transmissions.Where(x => x.RelatedTransmissionId is not null).Select(x => x.RelatedTransmissionId).ToList();
+        var relatedTransmissionIds = dialog.Transmissions
+            .Where(x => x.RelatedTransmissionId is not null)
+            .Select(x => x.RelatedTransmissionId)
+            .ToList();
+
         if (relatedTransmissionIds.Count == 0)
         {
             return;
