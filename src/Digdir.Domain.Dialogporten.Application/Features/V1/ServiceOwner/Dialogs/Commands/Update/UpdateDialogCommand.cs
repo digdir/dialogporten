@@ -110,7 +110,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         _mapper.Map(request.Dto, dialog);
         ValidateTimeFields(dialog);
 
-        AppendActivity(dialog, request.Dto);
+        await AppendActivity(dialog, request.Dto, cancellationToken);
         VerifyActivityRelations(dialog);
 
         AppendTransmission(dialog, request.Dto);
@@ -205,19 +205,16 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         }
     }
 
-    private void AppendActivity(DialogEntity dialog, UpdateDialogDto dto)
+    private async Task AppendActivity(DialogEntity dialog, UpdateDialogDto dto, CancellationToken cancellationToken)
     {
         var newDialogActivities = _mapper.Map<List<DialogActivity>>(dto.Activities);
 
-        var existingIds = dialog.Activities.Select(x => x.Id).ToList();
-
-        existingIds = existingIds.Intersect(newDialogActivities.Select(x => x.Id)).ToList();
+        var existingIds = await _db.GetExistingIds(newDialogActivities, cancellationToken);
         if (existingIds.Count != 0)
         {
             _domainContext.AddError(
                 nameof(UpdateDialogDto.Activities),
                 $"Entity '{nameof(DialogActivity)}' with the following key(s) already exists: ({string.Join(", ", existingIds)}).");
-            return;
         }
 
         dialog.Activities.AddRange(newDialogActivities);
