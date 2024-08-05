@@ -65,6 +65,7 @@ var namePrefix = 'dp-be-${environment}'
 
 var tags = {
   Environment: environment
+  Product: 'Dialogporten'
 }
 
 // Create resource groups
