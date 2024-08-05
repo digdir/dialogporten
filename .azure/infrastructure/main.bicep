@@ -31,6 +31,11 @@ param sourceKeyVaultResourceGroup string
 @minLength(3)
 param sourceKeyVaultName string
 
+@description('SSH secret key for the ssh jumper')
+@secure()
+@minLength(3)
+param sourceKeyVaultSshJumperSshSecretKey string
+
 import { Sku as KeyVaultSku } from '../modules/keyvault/create.bicep'
 param keyVaultSku KeyVaultSku
 
@@ -59,6 +64,7 @@ var secrets = {
   sourceKeyVaultSubscriptionId: sourceKeyVaultSubscriptionId
   sourceKeyVaultResourceGroup: sourceKeyVaultResourceGroup
   sourceKeyVaultName: sourceKeyVaultName
+  sourceKeyVaultSshSecretKey: sourceKeyVaultSshJumperSshSecretKey
 }
 
 var namePrefix = 'dp-be-${environment}'
@@ -148,6 +154,21 @@ var srcKeyVault = {
   name: secrets.sourceKeyVaultName
   subscriptionId: secrets.sourceKeyVaultSubscriptionId
   resourceGroupName: secrets.sourceKeyVaultResourceGroup
+}
+
+module sshJumper '../modules/ssh-jumper/main.bicep' = {
+  scope: resourceGroup
+  name: 'sshJumper'
+  params: {
+    namePrefix: namePrefix
+    location: location
+    subnetId: vnet.outputs.defaultSubnetId
+    tags: tags
+    srcKeyVaultName: secrets.sourceKeyVaultName
+    srcKeyVaultSubId: secrets.sourceKeyVaultSubscriptionId
+    srcKeyVaultRGNName: secrets.sourceKeyVaultResourceGroup
+    srcKeyVaultSshSecretKey: secrets.sourceKeyVaultSshSecretKey
+  }
 }
 
 module postgresql '../modules/postgreSql/create.bicep' = {

@@ -230,6 +230,24 @@ For example, to add a new storage account, you would:
 
 Refer to the existing infrastructure definitions as templates for creating new components.
 
+#### Connecting to resources in Azure
+
+There is a `ssh-jumper` virtual machine deployed with the infrastructure. This can be used to create a `ssh`-tunnel into the `vnet`. Use one of the following methods to gain access to resources within the `vnet`:
+
+Ensure you log into the azure CLI using the relevant user and subscription using `az login`.
+
+- Connect to the VNet using the following command:
+   ```
+   az ssh vm --resource-group dp-be-<env>-rg --vm-name dp-be-<env>-ssh-jumper
+   ```
+   (You may be prompted to install the ssh extension for the azure cli)
+
+- To create an SSH tunnel for accessing specific resources (e.g., PostgreSQL database), use:
+   ```
+   az ssh vm -g dp-be-<env>-rg -n dp-be-<env>-ssh-jumper -- -L 5432:<database-host-name>:5432
+   ```
+   This example forwards the PostgreSQL default port (5432) to your localhost. Adjust the ports and hostnames as needed for other resources.
+
 ### Applications
 
 All application Bicep definitions are located in the `.azure/applications` folder. To add a new application, follow the existing pattern found within this directory. This involves creating a new folder for your application under `.azure/applications` and adding the necessary Bicep files (`main.bicep` and environment-specific parameter files, e.g., `test.bicepparam`, `staging.bicepparam`).
