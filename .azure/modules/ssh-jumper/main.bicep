@@ -19,6 +19,10 @@ param srcKeyVaultSubId string
 @description('The resource group name of the source Key Vault')
 param srcKeyVaultRGNName string
 
+@description('The SSH secret key to be used to get the ssh key for the virtual machine')
+@secure()
+param srcKeyVaultSshSecretKey string
+
 var name = '${namePrefix}-jumper'
 
 resource srcKeyVaultResource 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
@@ -86,8 +90,7 @@ module virtualMachine '../../modules/virtualMachine/main.bicep' = {
   name: name
   params: {
     name: name
-    // todo: remove hardcoded environment, use naming convention here. 
-    sshKeyData: srcKeyVaultResource.getSecret('dialogportenJumperTestSSH')
+    sshKeyData: srcKeyVaultResource.getSecret(srcKeyVaultSshSecretKey)
     location: location
     tags: tags
     hardwareProfile: {
