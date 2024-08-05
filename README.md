@@ -238,13 +238,13 @@ Ensure you log into the azure CLI using the relevant user and subscription using
 
 - Connect to the VNet using the following command:
    ```
-   az ssh vm --resource-group dp-be-<env>-rg --vm-name dp-be-<env>-jumper
+   az ssh vm --resource-group dp-be-<env>-rg --vm-name dp-be-<env>-ssh-jumper
    ```
    (You may be prompted to install the ssh extension for the azure cli)
 
 - To create an SSH tunnel for accessing specific resources (e.g., PostgreSQL database), use:
    ```
-   az ssh vm -g dp-be-<env>-rg -n dp-be-<env>-jumper -- -L 5432:<database-host-name>:5432
+   az ssh vm -g dp-be-<env>-rg -n dp-be-<env>-ssh-jumper -- -L 5432:<database-host-name>:5432
    ```
    This example forwards the PostgreSQL default port (5432) to your localhost. Adjust the ports and hostnames as needed for other resources.
 

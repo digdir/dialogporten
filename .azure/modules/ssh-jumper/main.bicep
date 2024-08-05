@@ -23,7 +23,7 @@ param srcKeyVaultRGNName string
 @secure()
 param srcKeyVaultSshSecretKey string
 
-var name = '${namePrefix}-jumper'
+var name = '${namePrefix}-ssh-jumper'
 
 resource srcKeyVaultResource 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
   name: srcKeyVaultName
