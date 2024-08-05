@@ -234,6 +234,8 @@ Refer to the existing infrastructure definitions as templates for creating new c
 
 There is a `ssh-jumper` virtual machine deployed with the infrastructure. This can be used to create a `ssh`-tunnel into the `vnet`. Use one of the following methods to gain access to resources within the `vnet`:
 
+Ensure you log into the azure CLI using the relevant user and subscription using `az login`.
+
 - Connect to the VNet using the following command:
    ```
    az ssh vm --resource-group dp-be-<env>-rg --vm-name dp-be-<env>-jumper
