@@ -118,3 +118,15 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@2024-03-01' = {
   }
   tags: tags
 }
+
+resource aadLoginExtension 'Microsoft.Compute/virtualMachines/extensions@2023-03-01' = {
+  parent: virtualMachine
+  name: 'AADSSHLoginForLinux'
+  location: location
+  properties: {
+    publisher: 'Microsoft.Azure.ActiveDirectory'
+    type: 'AADSSHLoginForLinux'
+    typeHandlerVersion: '1.0'
+    autoUpgradeMinorVersion: true
+  }
+}
