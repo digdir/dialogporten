@@ -113,5 +113,8 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@2024-03-01' = {
     networkProfile: networkProfile
     diagnosticsProfile: diagnosticsProfile
   }
+  identity: {
+    type: 'SystemAssigned'
+  }
   tags: tags
 }
