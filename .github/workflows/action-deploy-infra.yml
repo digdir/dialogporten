@@ -1,4 +1,4 @@
-﻿name: Deploy infrastructure
+name: Deploy infrastructure
 
 env:
   AZ_CLI_VERSION: 2.61.0
