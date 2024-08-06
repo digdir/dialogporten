@@ -2,7 +2,7 @@ using './main.bicep'
 
 param environment = 'staging'
 param location = 'norwayeast'
-param keyVaultSourceKeys = json(readEnvironmentVariable('KEY_VAULT_SOURCE_KEYS'))
+param keyVaultSourceKeys = json(readEnvironmentVariable('AZURE_KEY_VAULT_SOURCE_KEYS'))
 
 param redisVersion = '6.0'
 
