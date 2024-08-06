@@ -124,6 +124,7 @@ jobs:
           SOURCE_KEY_VAULT_SUBSCRIPTION_ID: ${{ secrets.AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID }}
           SOURCE_KEY_VAULT_RESOURCE_GROUP: ${{ secrets.AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP }}
           SOURCE_KEY_VAULT_NAME: ${{ secrets.AZURE_SOURCE_KEY_VAULT_NAME }}
+          SOURCE_KEY_VAULT_SSH_JUMPER_SSH_SECRET_KEY: ${{ secrets.AZURE_SOURCE_KEY_VAULT_SSH_JUMPER_SSH_SECRET_KEY }}
         with:
           scope: subscription
           template: ./.azure/infrastructure/main.bicep
