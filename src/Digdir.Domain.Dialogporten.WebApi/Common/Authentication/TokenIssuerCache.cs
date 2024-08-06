@@ -9,6 +9,12 @@ public interface ITokenIssuerCache
     public Task<string?> GetIssuerForScheme(string schemeName);
 }
 
+// ReSharper disable once ClassNeverInstantiated.Global
+public sealed class DevelopmentTokenIssuerCache : ITokenIssuerCache
+{
+    public Task<string?> GetIssuerForScheme(string schemeName) => Task.FromResult<string?>(null);
+}
+
 public sealed class TokenIssuerCache : ITokenIssuerCache, IDisposable
 {
     private readonly Dictionary<string, string> _issuerMappings = new();
