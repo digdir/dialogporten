@@ -31,7 +31,7 @@ param sourceKeyVaultResourceGroup string
 @minLength(3)
 param sourceKeyVaultName string
 
-@description('Admin password for the ssh jumper')
+@description('SSH public key for the ssh jumper')
 @secure()
 @minLength(3)
 param sourceKeyVaultSshJumperSshPublicKey string
