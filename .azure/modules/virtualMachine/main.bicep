@@ -68,9 +68,9 @@ type StorageProfile = {
 @description('Specifies the storage profile for the virtual machine')
 param storageProfile StorageProfile
 
-@description('Specifies the SSH key data for the virtual machine')
+@description('Specifies the SSH public key for the virtual machine')
 @secure()
-param sshKeyData string
+param sshPublicKey string
 
 resource virtualMachine 'Microsoft.Compute/virtualMachines@2024-03-01' = {
   name: name
@@ -91,7 +91,7 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@2024-03-01' = {
           publicKeys: [
             {
               path: '/home/${name}/.ssh/authorized_keys'
-              keyData: sshKeyData
+              keyData: sshPublicKey
             }
           ]
         }
@@ -107,7 +107,6 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@2024-03-01' = {
       }
       secrets: []
       allowExtensionOperations: true
-      requireGuestProvisionSignal: true
     }
     securityProfile: securityProfile
     networkProfile: networkProfile

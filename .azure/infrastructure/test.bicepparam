@@ -11,7 +11,7 @@ param dialogportenPgAdminPassword = readEnvironmentVariable('PG_ADMIN_PASSWORD')
 param sourceKeyVaultSubscriptionId = readEnvironmentVariable('SOURCE_KEY_VAULT_SUBSCRIPTION_ID')
 param sourceKeyVaultResourceGroup = readEnvironmentVariable('SOURCE_KEY_VAULT_RESOURCE_GROUP')
 param sourceKeyVaultName = readEnvironmentVariable('SOURCE_KEY_VAULT_NAME')
-param sourceKeyVaultSshJumperSshSecretKey = readEnvironmentVariable('SOURCE_KEY_VAULT_SSH_JUMPER_SSH_SECRET_KEY')
+param sourceKeyVaultSshJumperSshPublicKey = readEnvironmentVariable('SOURCE_KEY_VAULT_SSH_JUMPER_SSH_PUBLIC_KEY')
 
 // SKUs
 param keyVaultSku = {
