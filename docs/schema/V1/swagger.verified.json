@@ -413,11 +413,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "oneOf": [
-                  {
-                    "$ref": "#/components/schemas/UpdateDialogDto"
-                  }
-                ]
+                "$ref": "#/components/schemas/UpdateDialogDto"
               },
               "example": {
                 "Progress": 42,
