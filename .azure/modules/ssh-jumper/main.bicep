@@ -16,7 +16,7 @@ param sshPublicKey string
 
 var name = '${namePrefix}-ssh-jumper'
 
-resource publicIp 'Microsoft.Network/publicIPAddresses@2023-11-01' = {
+resource publicIp 'Microsoft.Network/publicIPAddresses@2024-01-01' = {
   name: '${name}-ip'
   location: location
   sku: {
