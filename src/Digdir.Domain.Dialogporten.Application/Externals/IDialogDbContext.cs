@@ -47,8 +47,13 @@ public interface IDialogDbContext
         Expression<Func<TEntity, TProperty>> propertyExpression,
         Func<TProperty, bool> predicate)
         where TEntity : class;
+
     Task<List<Guid>> GetExistingIds<TEntity>(
         IEnumerable<TEntity> entities,
         CancellationToken cancellationToken)
+        where TEntity : class, IIdentifiableEntity;
+
+    Task<List<Guid>> GetExistingIdsTask<TEntity>(
+        IEnumerable<TEntity> entities)
         where TEntity : class, IIdentifiableEntity;
 }

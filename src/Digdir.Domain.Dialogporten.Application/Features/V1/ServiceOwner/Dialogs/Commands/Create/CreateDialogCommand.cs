@@ -104,29 +104,7 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
                 "Cannot find service owner organization shortname for current user. Please ensure that you are logged in as a service owner."));
         }
 
-        var existingDialogIds = await _db.GetExistingIds(new[] { dialog }, cancellationToken);
-        if (existingDialogIds.Count != 0)
-        {
-            _domainContext.AddError(DomainFailure.EntityExists<DialogEntity>(existingDialogIds));
-        }
-
-        var existingActivityIds = await _db.GetExistingIds(dialog.Activities, cancellationToken);
-        if (existingActivityIds.Count != 0)
-        {
-            _domainContext.AddError(DomainFailure.EntityExists<DialogActivity>(existingActivityIds));
-        }
-
-        var existingAttachmentIds = await _db.GetExistingIds(dialog.Attachments, cancellationToken);
-        if (existingAttachmentIds.Count != 0)
-        {
-            _domainContext.AddError(DomainFailure.EntityExists<DialogAttachment>(existingAttachmentIds));
-        }
-
-        var existingTransmissionIds = await _db.GetExistingIds(dialog.Transmissions, cancellationToken);
-        if (existingTransmissionIds.Count != 0)
-        {
-            _domainContext.AddError(DomainFailure.EntityExists<DialogTransmission>(existingTransmissionIds));
-        }
+        await CheckForExistingIds(dialog);
 
         await _db.Dialogs.AddAsync(dialog, cancellationToken);
 
@@ -135,6 +113,37 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
             success => new Success<Guid>(dialog.Id),
             domainError => domainError,
             concurrencyError => throw new UnreachableException("Should never get a concurrency error when creating a new dialog"));
+    }
+
+    private async Task CheckForExistingIds(DialogEntity dialog)
+    {
+        var existingDialogIdsTask = _db.GetExistingIdsTask(new[] { dialog });
+        var existingActivityIdsTask = _db.GetExistingIdsTask(dialog.Activities);
+        var existingAttachmentIdsTask = _db.GetExistingIdsTask(dialog.Attachments);
+        var existingTransmissionIdsTask = _db.GetExistingIdsTask(dialog.Transmissions);
+
+        await Task.WhenAll(existingDialogIdsTask, existingActivityIdsTask, existingAttachmentIdsTask,
+            existingTransmissionIdsTask);
+
+        if (existingDialogIdsTask.Result.Count != 0)
+        {
+            _domainContext.AddError(DomainFailure.EntityExists<DialogEntity>(existingDialogIdsTask.Result));
+        }
+
+        if (existingActivityIdsTask.Result.Count != 0)
+        {
+            _domainContext.AddError(DomainFailure.EntityExists<DialogActivity>(existingActivityIdsTask.Result));
+        }
+
+        if (existingAttachmentIdsTask.Result.Count != 0)
+        {
+            _domainContext.AddError(DomainFailure.EntityExists<DialogAttachment>(existingAttachmentIdsTask.Result));
+        }
+
+        if (existingTransmissionIdsTask.Result.Count != 0)
+        {
+            _domainContext.AddError(DomainFailure.EntityExists<DialogTransmission>(existingTransmissionIdsTask.Result));
+        }
     }
 
     private static List<string> GetServiceResourceReferences(CreateDialogDto request)

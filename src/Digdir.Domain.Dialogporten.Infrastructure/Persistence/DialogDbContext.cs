@@ -71,6 +71,25 @@ internal sealed class DialogDbContext : DbContext, IDialogDbContext
         return !property.IsModified || predicate(property.CurrentValue);
     }
 
+    public Task<List<Guid>> GetExistingIdsTask<TEntity>(
+        IEnumerable<TEntity> entities)
+        where TEntity : class, IIdentifiableEntity
+    {
+        var ids = entities
+            .Select(x => x.Id)
+            .Where(x => x != default)
+            .ToList();
+
+        return ids.Count == 0
+            ? Task.FromResult(new List<Guid>())
+            : Set<TEntity>()
+                .AsNoTracking()
+                .IgnoreQueryFilters()
+                .Select(x => x.Id)
+                .Where(x => ids.Contains(x))
+                .ToListAsync();
+    }
+
     public async Task<List<Guid>> GetExistingIds<TEntity>(
         IEnumerable<TEntity> entities,
         CancellationToken cancellationToken)
