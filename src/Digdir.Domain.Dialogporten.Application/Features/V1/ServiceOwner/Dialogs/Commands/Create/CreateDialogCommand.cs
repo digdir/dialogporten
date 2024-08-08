@@ -104,7 +104,7 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
                 "Cannot find service owner organization shortname for current user. Please ensure that you are logged in as a service owner."));
         }
 
-        await CheckForExistingIds(dialog);
+        await CheckForExistingIds(dialog, cancellationToken);
 
         await _db.Dialogs.AddAsync(dialog, cancellationToken);
 
@@ -115,12 +115,12 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
             concurrencyError => throw new UnreachableException("Should never get a concurrency error when creating a new dialog"));
     }
 
-    private async Task CheckForExistingIds(DialogEntity dialog)
+    private async Task CheckForExistingIds(DialogEntity dialog, CancellationToken cancellationToken)
     {
-        var existingDialogIdsTask = _db.GetExistingIdsTask(new[] { dialog });
-        var existingActivityIdsTask = _db.GetExistingIdsTask(dialog.Activities);
-        var existingAttachmentIdsTask = _db.GetExistingIdsTask(dialog.Attachments);
-        var existingTransmissionIdsTask = _db.GetExistingIdsTask(dialog.Transmissions);
+        var existingDialogIdsTask = _db.GetExistingIdsTask(new[] { dialog }, cancellationToken);
+        var existingActivityIdsTask = _db.GetExistingIdsTask(dialog.Activities, cancellationToken);
+        var existingAttachmentIdsTask = _db.GetExistingIdsTask(dialog.Attachments, cancellationToken);
+        var existingTransmissionIdsTask = _db.GetExistingIdsTask(dialog.Transmissions, cancellationToken);
 
         await Task.WhenAll(existingDialogIdsTask, existingActivityIdsTask, existingAttachmentIdsTask,
             existingTransmissionIdsTask);

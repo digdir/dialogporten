@@ -72,7 +72,8 @@ internal sealed class DialogDbContext : DbContext, IDialogDbContext
     }
 
     public Task<List<Guid>> GetExistingIdsTask<TEntity>(
-        IEnumerable<TEntity> entities)
+        IEnumerable<TEntity> entities,
+        CancellationToken cancellationToken)
         where TEntity : class, IIdentifiableEntity
     {
         var ids = entities
@@ -87,7 +88,7 @@ internal sealed class DialogDbContext : DbContext, IDialogDbContext
                 .IgnoreQueryFilters()
                 .Select(x => x.Id)
                 .Where(x => ids.Contains(x))
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
     }
 
     public async Task<List<Guid>> GetExistingIds<TEntity>(

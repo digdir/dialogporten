@@ -54,6 +54,7 @@ public interface IDialogDbContext
         where TEntity : class, IIdentifiableEntity;
 
     Task<List<Guid>> GetExistingIdsTask<TEntity>(
-        IEnumerable<TEntity> entities)
+        IEnumerable<TEntity> entities,
+        CancellationToken cancellationToken)
         where TEntity : class, IIdentifiableEntity;
 }
