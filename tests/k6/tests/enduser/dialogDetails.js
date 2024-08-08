@@ -17,10 +17,9 @@ export default function () {
 
     describe('Arrange: Create a dialog to test against', () => {
         let d = dialogToInsert();
-        // TODO: Re-enable when implementing transmissions https://github.com/digdir/dialogporten/issues/860
-        // d.transmissions[0].authorizationAttribute = availableExternalResource;
-        // d.transmissions[1].authorizationAttribute = unavailableExternalResource;
-        // d.transmissions[2].authorizationAttribute = unavailableSubresource;
+        d.transmissions[0].authorizationAttribute = availableExternalResource;
+        d.transmissions[1].authorizationAttribute = unavailableExternalResource;
+        d.transmissions[2].authorizationAttribute = unavailableSubresource;
         setVisibleFrom(d, null);
         let r = postSO("dialogs", d);
         expectStatusFor(r).to.equal(201);
@@ -65,14 +64,13 @@ export default function () {
         }
     });
 
-    // TODO: Re-enable when implementing https://github.com/digdir/dialogporten/issues/860
-    // describe('Check that we are authorized for the dialog transmission referring an external resource', () => {
-    //     if (dialog == null) return;
-    //     expect(dialog, 'dialog').to.have.property("transmissions");
-    //     expect(dialog.transmissions.find(x => x.authorizationAttribute == unavailableExternalResource), 'transmission with unavaiable external resource').to.have.property("isAuthorized").to.equal(false);
-    //     expect(dialog.transmissions.find(x => x.authorizationAttribute == unavailableSubresource), 'transmission with unavaiable subresource').to.have.property("isAuthorized").to.equal(false);
-    //     expect(dialog.transmissions.find(x => x.authorizationAttribute == availableExternalResource), 'transmission with avaiable external resource').to.have.property("isAuthorized").to.equal(true);
-    // });
+    describe('Check that we are authorized for the dialog transmission referring an external resource', () => {
+        if (dialog == null) return;
+        expect(dialog, 'dialog').to.have.property("transmissions");
+        expect(dialog.transmissions.find(x => x.authorizationAttribute == unavailableExternalResource), 'transmission with unavaiable external resource').to.have.property("isAuthorized").to.equal(false);
+        expect(dialog.transmissions.find(x => x.authorizationAttribute == unavailableSubresource), 'transmission with unavaiable subresource').to.have.property("isAuthorized").to.equal(false);
+        expect(dialog.transmissions.find(x => x.authorizationAttribute == availableExternalResource), 'transmission with avaiable external resource').to.have.property("isAuthorized").to.equal(true);
+    });
 
     describe("Cleanup", () => {
         if (dialog == null) return;

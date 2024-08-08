@@ -1,7 +1,9 @@
 using AutoMapper;
 using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
+using Digdir.Domain.Dialogporten.Application.Common.Authorization;
 using Digdir.Domain.Dialogporten.Application.Externals;
+using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 using MediatR;
@@ -23,13 +25,13 @@ internal sealed class GetDialogTransmissionQueryHandler : IRequestHandler<GetDia
 {
     private readonly IMapper _mapper;
     private readonly IDialogDbContext _dbContext;
-    private readonly IUserResourceRegistry _userResourceRegistry;
+    private readonly IAltinnAuthorization _altinnAuthorization;
 
-    public GetDialogTransmissionQueryHandler(IMapper mapper, IDialogDbContext dbContext, IUserResourceRegistry userResourceRegistry)
+    public GetDialogTransmissionQueryHandler(IMapper mapper, IDialogDbContext dbContext, IAltinnAuthorization altinnAuthorization)
     {
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
-        _userResourceRegistry = userResourceRegistry ?? throw new ArgumentNullException(nameof(userResourceRegistry));
+        _altinnAuthorization = altinnAuthorization ?? throw new ArgumentNullException(nameof(altinnAuthorization));
     }
 
     public async Task<GetDialogTransmissionResult> Handle(GetDialogTransmissionQuery request,
@@ -56,16 +58,38 @@ internal sealed class GetDialogTransmissionQueryHandler : IRequestHandler<GetDia
             return new EntityNotFound<DialogEntity>(request.DialogId);
         }
 
+        var authorizationResult = await _altinnAuthorization.GetDialogDetailsAuthorization(
+            dialog,
+            cancellationToken);
+
+        // If we cannot read the dialog at all, we don't allow access to any of the dialog transmissions.
+        if (!authorizationResult.HasReadAccessToMainResource())
+        {
+            return new EntityNotFound<DialogEntity>(request.DialogId);
+        }
+
         if (dialog.Deleted)
         {
             return new EntityDeleted<DialogEntity>(request.DialogId);
         }
 
         var transmission = dialog.Transmissions.FirstOrDefault();
+        if (transmission is null)
+        {
+            return new EntityNotFound<DialogTransmission>(request.TransmissionId);
+        }
 
-        // TODO: Check auth
-        return transmission is null
-            ? (GetDialogTransmissionResult)new EntityNotFound<DialogTransmission>(request.TransmissionId)
-            : _mapper.Map<GetDialogTransmissionDto>(transmission);
+        var dto = _mapper.Map<GetDialogTransmissionDto>(transmission);
+        dto.IsAuthorized = authorizationResult.HasReadAccessToDialogTransmission(transmission);
+
+        if (dto.IsAuthorized) return dto;
+
+        var urls = transmission.Attachments.SelectMany(a => a.Urls).ToList();
+        foreach (var url in urls)
+        {
+            url.Url = Constants.UnauthorizedUri;
+        }
+
+        return dto;
     }
 }

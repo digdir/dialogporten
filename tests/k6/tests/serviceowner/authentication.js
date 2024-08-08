@@ -66,11 +66,10 @@ export default function () {
             expectation(r);
         });
 
-        // TODO: Re-enable in https://github.com/digdir/dialogporten/issues/860
-        // describe(`Attempt dialog transmission get ${message} token`, () => {
-        //     let r = getSO("dialogs/" + uuidv4() + "/transmissions/" + uuidv4(), params);
-        //     expectation(r);
-        // });
+        describe(`Attempt dialog transmission get ${message} token`, () => {
+            let r = getSO("dialogs/" + uuidv4() + "/transmissions/" + uuidv4(), params);
+            expectation(r);
+        });
 
         describe(`Attempt activity history get ${message} token`, () => {
             let r = getSO("dialogs/" + uuidv4() + "/activities/" + uuidv4(), params);
