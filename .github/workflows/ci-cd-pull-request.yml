@@ -61,7 +61,7 @@ jobs:
       dryRun: true
       version: ${{ needs.get-current-version.outputs.version }}-${{ needs.generate-git-short-sha.outputs.gitShortSha }}
 
-  
+
   dry-run-deploy-apps:
     name: Dry run deploy apps
     needs:
@@ -89,4 +89,6 @@ jobs:
       version: ${{ needs.get-current-version.outputs.version }}-${{ needs.generate-git-short-sha.outputs.gitShortSha }}
       runMigration: ${{ needs.check-for-changes.outputs.hasMigrationChanges == 'true' }}
       dryRun: true
-    
+
+
+    // DISPATCH DELETE WORKFLOW
