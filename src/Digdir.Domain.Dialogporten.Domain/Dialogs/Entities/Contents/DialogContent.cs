@@ -12,6 +12,7 @@ public sealed class DialogContent : IEntity
 
     public string? MediaType { get; set; }
 
+    // === Dependent relationships ===
     public Guid DialogId { get; set; }
     public DialogEntity Dialog { get; set; } = null!;
 

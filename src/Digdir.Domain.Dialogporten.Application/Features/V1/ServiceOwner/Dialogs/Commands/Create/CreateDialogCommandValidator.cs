@@ -179,12 +179,12 @@ internal sealed class CreateDialogContentDtoValidator : AbstractValidator<Create
                         .NotNull()
                         .WithMessage($"{propertyName} must not be empty.")
                         .SetValidator(new ContentValueDtoValidator(
-                            DialogContentType.GetContentType(propertyName))!);
+                            DialogContentType.Parse(propertyName))!);
                     break;
                 case NullabilityState.Nullable:
                     RuleFor(x => propMetadata.Property.GetValue(x) as ContentValueDto)
                         .SetValidator(new ContentValueDtoValidator(
-                            DialogContentType.GetContentType(propertyName))!)
+                            DialogContentType.Parse(propertyName))!)
                         .When(x => propMetadata.Property.GetValue(x) is not null);
                     break;
                 case NullabilityState.Unknown:
@@ -209,7 +209,7 @@ internal sealed class CreateDialogDialogTransmissionContentDtoValidator : Abstra
             RuleFor(x => propMetadata.GetValue(x) as ContentValueDto)
                 .NotNull()
                 .WithMessage($"{propertyName} must not be empty.")
-                .SetValidator(new ContentValueDtoValidator(TransmissionContentType.GetContentType(propertyName))!);
+                .SetValidator(new ContentValueDtoValidator(TransmissionContentType.Parse(propertyName))!);
         }
     }
 }

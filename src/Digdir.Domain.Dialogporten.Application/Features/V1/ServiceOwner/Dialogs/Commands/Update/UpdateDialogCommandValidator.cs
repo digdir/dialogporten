@@ -171,7 +171,7 @@ internal sealed class UpdateDialogDialogTransmissionContentDtoValidator : Abstra
             RuleFor(x => propMetadata.GetValue(x) as ContentValueDto)
                 .NotNull()
                 .WithMessage($"{propertyName} must not be empty.")
-                .SetValidator(new ContentValueDtoValidator(TransmissionContentType.GetContentType(propertyName))!);
+                .SetValidator(new ContentValueDtoValidator(TransmissionContentType.Parse(propertyName))!);
         }
     }
 }
@@ -236,12 +236,12 @@ internal sealed class UpdateDialogContentDtoValidator : AbstractValidator<Update
                         .NotNull()
                         .WithMessage($"{propertyName} must not be empty.")
                         .SetValidator(
-                            new ContentValueDtoValidator(DialogContentType.GetContentType(propertyName))!);
+                            new ContentValueDtoValidator(DialogContentType.Parse(propertyName))!);
                     break;
                 case NullabilityState.Nullable:
                     RuleFor(x => propMetadata.Property.GetValue(x) as ContentValueDto)
                         .SetValidator(
-                            new ContentValueDtoValidator(DialogContentType.GetContentType(propertyName))!)
+                            new ContentValueDtoValidator(DialogContentType.Parse(propertyName))!)
                         .When(x => propMetadata.Property.GetValue(x) is not null);
                     break;
                 case NullabilityState.Unknown:

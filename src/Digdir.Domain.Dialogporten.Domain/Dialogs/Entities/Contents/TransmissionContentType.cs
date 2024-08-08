@@ -17,13 +17,6 @@ public class TransmissionContentType : AbstractLookupEntity<TransmissionContentT
 
     public string[] AllowedMediaTypes { get; init; } = [];
 
-    public static TransmissionContentType GetContentType(string contentType) => contentType switch
-    {
-        nameof(Values.Title) => GetValue(Values.Title),
-        nameof(Values.Summary) => GetValue(Values.Summary),
-        _ => throw new ArgumentOutOfRangeException(nameof(contentType), contentType, null)
-    };
-
     public override TransmissionContentType MapValue(Values id) => id switch
     {
         Values.Title => new(id)

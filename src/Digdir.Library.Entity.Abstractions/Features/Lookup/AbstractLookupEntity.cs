@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
 namespace Digdir.Library.Entity.Abstractions.Features.Lookup;
@@ -6,7 +7,7 @@ namespace Digdir.Library.Entity.Abstractions.Features.Lookup;
 /// <inheritdoc cref="ILookupEntity{TSelf, TEnum}"/>
 public abstract class AbstractLookupEntity<TSelf, TEnum> : ILookupEntity<TSelf, TEnum>
     where TSelf : AbstractLookupEntity<TSelf, TEnum>
-    where TEnum : Enum
+    where TEnum : struct, Enum
 {
     /// <inheritdoc/>
     public TEnum Id { get; private set; }
@@ -57,6 +58,33 @@ public abstract class AbstractLookupEntity<TSelf, TEnum> : ILookupEntity<TSelf, 
     /// <param name="id">The entity identification.</param>
     /// <returns>A new instance of <typeparamref name="TSelf"/>.</returns>
     public static TSelf GetValue(TEnum id) => (TSelf)id;
+
+    /// <summary>
+    /// Tries to parse the string representation of an enum value to a <typeparamref name="TSelf"/> instance.
+    /// </summary>
+    /// <param name="enumId">The string representation of the enum value.</param>
+    /// <param name="self">The resulting <typeparamref name="TSelf"/> instance if parsing is successful.</param>
+    /// <returns>True if parsing is successful; otherwise, false.</returns>
+    public static bool TryParse(string enumId, [NotNullWhen(true)] out TSelf? self)
+    {
+        self = Enum.TryParse<TEnum>(enumId, ignoreCase: true, out var @enum)
+            ? GetValue(@enum)
+            : null;
+        return self is not null;
+    }
+
+    /// <summary>
+    /// Parses the string representation of an enum value to a <typeparamref name="TSelf"/> instance.
+    /// </summary>
+    /// <param name="enumId">The string representation of the enum value.</param>
+    /// <returns>A new instance of <typeparamref name="TSelf"/>.</returns>
+    /// <exception cref="ArgumentException">Thrown when the string cannot be parsed to a valid <typeparamref name="TEnum"/> value.</exception>
+    public static TSelf Parse(string enumId)
+    {
+        return TryParse(enumId, out var self)
+            ? self
+            : throw new ArgumentException($"The value '{enumId}' is not a valid {typeof(TEnum).Name}.");
+    }
 
     /// <summary>
     /// Gets all the values of <typeparamref name="TSelf"/>.
