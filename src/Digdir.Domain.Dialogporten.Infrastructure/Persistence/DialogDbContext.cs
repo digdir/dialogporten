@@ -36,7 +36,7 @@ internal sealed class DialogDbContext : DbContext, IDialogDbContext
     public DbSet<DialogSeenLog> DialogSeenLog => Set<DialogSeenLog>();
     public DbSet<DialogContentType> ContentTypes => Set<DialogContentType>();
     public DbSet<DialogContent> DialogContent => Set<DialogContent>();
-    public DbSet<Actor> DialogActors => Set<Actor>();
+    public DbSet<DialogActor> DialogActors => Set<DialogActor>();
 
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
     public DbSet<OutboxMessageConsumer> OutboxMessageConsumers => Set<OutboxMessageConsumer>();
