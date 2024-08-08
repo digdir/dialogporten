@@ -21,7 +21,7 @@ public class DialogContentType : AbstractLookupEntity<DialogContentType, DialogC
 
     public int MaxLength { get; private init; }
 
-    public string[] AllowedMediaTypes { get; init; } = [];
+    public string[] AllowedMediaTypes { get; private init; } = [];
 
     public override DialogContentType MapValue(Values id) => id switch
     {
