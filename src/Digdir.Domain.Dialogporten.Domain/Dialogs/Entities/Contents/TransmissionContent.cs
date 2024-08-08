@@ -11,9 +11,9 @@ public sealed class TransmissionContent : IEntity
     public DateTimeOffset CreatedAt { get; set; }
     public DateTimeOffset UpdatedAt { get; set; }
 
-    public string? MediaType { get; set; }
+    public string MediaType { get; set; } = null!;
 
-    // === Principal relationships ===
+    // === Dependent relationships ===
     public Guid TransmissionId { get; set; }
     public DialogTransmission Transmission { get; set; } = null!;
 

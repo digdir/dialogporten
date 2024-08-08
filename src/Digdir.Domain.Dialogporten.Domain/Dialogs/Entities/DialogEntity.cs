@@ -122,3 +122,9 @@ public class DialogEntity :
         return events;
     }
 }
+
+public sealed class DialogAttachment : Attachment
+{
+    public Guid DialogId { get; set; }
+    public DialogEntity Dialog { get; set; } = null!;
+}

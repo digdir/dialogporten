@@ -15,7 +15,7 @@ public class TransmissionContentType : AbstractLookupEntity<TransmissionContentT
     public bool Required { get; private init; }
     public int MaxLength { get; private init; }
 
-    public string[] AllowedMediaTypes { get; init; } = [];
+    public string[] AllowedMediaTypes { get; private init; } = [];
 
     public override TransmissionContentType MapValue(Values id) => id switch
     {

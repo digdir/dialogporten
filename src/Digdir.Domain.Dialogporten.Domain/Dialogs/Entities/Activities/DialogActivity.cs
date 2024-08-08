@@ -59,3 +59,9 @@ public class DialogActivityDescription : LocalizationSet
     public DialogActivity Activity { get; set; } = null!;
     public Guid ActivityId { get; set; }
 }
+
+public sealed class DialogActivityPerformedByActor : DialogActor
+{
+    public Guid ActivityId { get; set; }
+    public DialogActivity Activity { get; set; } = null!;
+}
