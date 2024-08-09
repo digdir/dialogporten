@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.11.1](https://github.com/digdir/dialogporten/compare/v1.11.0...v1.11.1) (2024-08-09)
+
+
+### Bug Fixes
+
+* Using existing Transmission or Activity IDs should no longer result in internal server error on updates ([#980](https://github.com/digdir/dialogporten/issues/980)) ([0757b33](https://github.com/digdir/dialogporten/commit/0757b332e1194aee399b6a0ab7c6c66d5fbf037e))
+
 ## [1.11.0](https://github.com/digdir/dialogporten/compare/v1.10.0...v1.11.0) (2024-08-08)
 
 
