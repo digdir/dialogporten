@@ -1359,8 +1359,8 @@
         "tags": [
           "Serviceowner"
         ],
-        "summary": "Returns boolean value based on conditions used to determine if a notification is to sent.",
-        "description": "Used by Altinn Notification only. Takes a dialogId and returns a boolean value based on conditions used to determine if a notification is to sent.",
+        "summary": "Returns a boolean value based on conditions used to determine if a notification is to be sent.",
+        "description": "Used by Altinn Notification only. Takes a dialogId and returns a boolean value based on conditions used to determine if a notification is to be sent.",
         "operationId": "GetDialogActivityNotificationConditionSO",
         "parameters": [
           {
