@@ -1,4 +1,5 @@
 ﻿using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Contents;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions.Contents;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -9,8 +10,8 @@ internal class DialogContentConfiguration : IEntityTypeConfiguration<DialogConte
         => builder.HasIndex(x => new { x.DialogId, x.TypeId }).IsUnique();
 }
 
-internal class TransmissionContentConfiguration : IEntityTypeConfiguration<TransmissionContent>
+internal class TransmissionContentConfiguration : IEntityTypeConfiguration<DialogTransmissionContent>
 {
-    public void Configure(EntityTypeBuilder<TransmissionContent> builder)
+    public void Configure(EntityTypeBuilder<DialogTransmissionContent> builder)
         => builder.HasIndex(x => new { x.TransmissionId, x.TypeId }).IsUnique();
 }

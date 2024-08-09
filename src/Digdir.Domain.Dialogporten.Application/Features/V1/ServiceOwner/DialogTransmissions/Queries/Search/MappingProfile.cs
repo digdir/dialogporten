@@ -1,9 +1,8 @@
 using AutoMapper;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Content;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actors;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Attachments;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Contents;
+using Digdir.Domain.Dialogporten.Domain.Attachments;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions.Contents;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.DialogTransmissions.Queries.Search;
 
@@ -18,10 +17,10 @@ public class MappingProfile : Profile
         CreateMap<DialogTransmissionSenderActor, SearchDialogTransmissionSenderActorDto>()
             .ForMember(dest => dest.ActorType, opt => opt.MapFrom(src => src.ActorTypeId));
 
-        CreateMap<List<TransmissionContent>?, SearchDialogTransmissionContentDto?>()
+        CreateMap<List<DialogTransmissionContent>?, SearchDialogTransmissionContentDto?>()
             .ConvertUsing<TransmissionContentOutputConverter<SearchDialogTransmissionContentDto>>();
 
-        CreateMap<TransmissionAttachment, SearchDialogTransmissionAttachmentDto>();
+        CreateMap<DialogTransmissionAttachment, SearchDialogTransmissionAttachmentDto>();
         CreateMap<AttachmentUrl, SearchDialogTransmissionAttachmentUrlDto>()
             .ForMember(dest => dest.ConsumerType, opt => opt.MapFrom(src => src.ConsumerTypeId));
     }

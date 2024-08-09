@@ -1,4 +1,4 @@
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actors;
+using Digdir.Domain.Dialogporten.Domain.Actors;
 using Digdir.Library.Entity.Abstractions.Features.Aggregate;
 using Digdir.Library.Entity.Abstractions.Features.Immutable;
 
@@ -22,7 +22,7 @@ public class DialogSeenLog : IImmutableEntity
     public DialogUserType EndUserType { get; set; } = null!;
 }
 
-public sealed class DialogSeenLogSeenByActor : DialogActor
+public sealed class DialogSeenLogSeenByActor : Actor, IImmutableEntity
 {
     public Guid DialogSeenLogId { get; set; }
     public DialogSeenLog DialogSeenLog { get; set; } = null!;

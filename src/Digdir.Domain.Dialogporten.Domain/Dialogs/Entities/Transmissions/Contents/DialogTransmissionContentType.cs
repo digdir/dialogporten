@@ -1,11 +1,11 @@
 using Digdir.Domain.Dialogporten.Domain.Common;
 using Digdir.Library.Entity.Abstractions.Features.Lookup;
 
-namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Contents;
+namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions.Contents;
 
-public class TransmissionContentType : AbstractLookupEntity<TransmissionContentType, TransmissionContentType.Values>
+public class DialogTransmissionContentType : AbstractLookupEntity<DialogTransmissionContentType, DialogTransmissionContentType.Values>
 {
-    public TransmissionContentType(Values id) : base(id) { }
+    public DialogTransmissionContentType(Values id) : base(id) { }
     public enum Values
     {
         Title = 1,
@@ -17,7 +17,7 @@ public class TransmissionContentType : AbstractLookupEntity<TransmissionContentT
 
     public string[] AllowedMediaTypes { get; private init; } = [];
 
-    public override TransmissionContentType MapValue(Values id) => id switch
+    public override DialogTransmissionContentType MapValue(Values id) => id switch
     {
         Values.Title => new(id)
         {

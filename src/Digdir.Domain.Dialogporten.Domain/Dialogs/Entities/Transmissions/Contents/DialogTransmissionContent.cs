@@ -1,11 +1,10 @@
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 using Digdir.Domain.Dialogporten.Domain.Localizations;
 using Digdir.Library.Entity.Abstractions;
 using Digdir.Library.Entity.Abstractions.Features.Aggregate;
 
-namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Contents;
+namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions.Contents;
 
-public sealed class TransmissionContent : IEntity
+public sealed class DialogTransmissionContent : IEntity
 {
     public Guid Id { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
@@ -17,16 +16,16 @@ public sealed class TransmissionContent : IEntity
     public Guid TransmissionId { get; set; }
     public DialogTransmission Transmission { get; set; } = null!;
 
-    public TransmissionContentType.Values TypeId { get; set; }
-    public TransmissionContentType Type { get; set; } = null!;
+    public DialogTransmissionContentType.Values TypeId { get; set; }
+    public DialogTransmissionContentType Type { get; set; } = null!;
 
     // === Principal relationships ===
     [AggregateChild]
-    public TransmissionContentValue Value { get; set; } = null!;
+    public DialogTransmissionContentValue Value { get; set; } = null!;
 }
 
-public sealed class TransmissionContentValue : LocalizationSet
+public sealed class DialogTransmissionContentValue : LocalizationSet
 {
     public Guid TransmissionContentId { get; set; }
-    public TransmissionContent TransmissionContent { get; set; } = null!;
+    public DialogTransmissionContent TransmissionContent { get; set; } = null!;
 }

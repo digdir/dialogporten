@@ -1,5 +1,6 @@
 using AutoMapper;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Contents;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions.Contents;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.Common.Content;
 
@@ -8,9 +9,9 @@ public class MappingProfile : Profile
     public MappingProfile()
     {
         // See IntermediateDialogContent
-        CreateMap<IntermediateTransmissionContent, TransmissionContent>();
+        CreateMap<IntermediateTransmissionContent, DialogTransmissionContent>();
         CreateMap<IntermediateDialogContent, DialogContent>();
-        CreateMap<TransmissionContent, ContentValueDto>();
+        CreateMap<DialogTransmissionContent, ContentValueDto>();
         CreateMap<DialogContent, ContentValueDto>();
     }
 }

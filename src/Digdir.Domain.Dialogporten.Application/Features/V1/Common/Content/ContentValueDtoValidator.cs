@@ -2,6 +2,7 @@ using Digdir.Domain.Dialogporten.Application.Common.Extensions.FluentValidation;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using Digdir.Domain.Dialogporten.Domain;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Contents;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions.Contents;
 using FluentValidation;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.Common.Content;
@@ -13,7 +14,7 @@ internal interface IIgnoreOnAssemblyScan;
 
 internal sealed class ContentValueDtoValidator : AbstractValidator<ContentValueDto>, IIgnoreOnAssemblyScan
 {
-    public ContentValueDtoValidator(TransmissionContentType contentType)
+    public ContentValueDtoValidator(DialogTransmissionContentType contentType)
     {
         RuleFor(x => x.MediaType)
             .NotEmpty()

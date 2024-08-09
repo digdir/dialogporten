@@ -1,7 +1,7 @@
+using Digdir.Domain.Dialogporten.Domain.Actors;
+using Digdir.Domain.Dialogporten.Domain.Attachments;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actors;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Attachments;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Contents;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions.Contents;
 using Digdir.Library.Entity.Abstractions.Features.Aggregate;
 using Digdir.Library.Entity.Abstractions.Features.Immutable;
 
@@ -16,10 +16,10 @@ public class DialogTransmission : IImmutableEntity
 
     // === Principal relationships ===
     [AggregateChild]
-    public List<TransmissionContent> Content { get; set; } = [];
+    public List<DialogTransmissionContent> Content { get; set; } = [];
 
     [AggregateChild]
-    public List<TransmissionAttachment> Attachments { get; set; } = [];
+    public List<DialogTransmissionAttachment> Attachments { get; set; } = [];
 
     [AggregateChild]
     public DialogTransmissionSenderActor Sender { get; set; } = null!;
@@ -39,13 +39,13 @@ public class DialogTransmission : IImmutableEntity
     public DialogTransmissionType Type { get; set; } = null!;
 }
 
-public sealed class DialogTransmissionSenderActor : DialogActor
+public sealed class DialogTransmissionSenderActor : Actor, IImmutableEntity
 {
     public Guid TransmissionId { get; set; }
     public DialogTransmission Transmission { get; set; } = null!;
 }
 
-public sealed class TransmissionAttachment : Attachment
+public sealed class DialogTransmissionAttachment : Attachment, IImmutableEntity
 {
     public Guid TransmissionId { get; set; }
     public DialogTransmission Transmission { get; set; } = null!;

@@ -1,9 +1,8 @@
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 using Digdir.Domain.Dialogporten.Domain.Localizations;
 using Digdir.Library.Entity.Abstractions;
 using Digdir.Library.Entity.Abstractions.Features.Aggregate;
 
-namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Attachments;
+namespace Digdir.Domain.Dialogporten.Domain.Attachments;
 
 public abstract class Attachment : IEntity
 {

@@ -4,6 +4,7 @@ using Digdir.Domain.Dialogporten.Application.Common.Extensions.Enumerables;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using Digdir.Domain.Dialogporten.Domain;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Contents;
+
 // ReSharper disable ClassNeverInstantiated.Global
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.Common.Content;

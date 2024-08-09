@@ -1,4 +1,4 @@
-﻿using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actors;
+﻿using Digdir.Domain.Dialogporten.Domain.Actors;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Events.Activities;
 using Digdir.Domain.Dialogporten.Domain.Localizations;
@@ -60,7 +60,7 @@ public class DialogActivityDescription : LocalizationSet
     public Guid ActivityId { get; set; }
 }
 
-public sealed class DialogActivityPerformedByActor : DialogActor
+public sealed class DialogActivityPerformedByActor : Actor, IImmutableEntity
 {
     public Guid ActivityId { get; set; }
     public DialogActivity Activity { get; set; } = null!;

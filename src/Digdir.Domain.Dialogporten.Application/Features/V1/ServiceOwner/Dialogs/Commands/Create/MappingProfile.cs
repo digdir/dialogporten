@@ -1,12 +1,12 @@
 ﻿using AutoMapper;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Content;
+using Digdir.Domain.Dialogporten.Domain.Attachments;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actors;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Attachments;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Contents;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions.Contents;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Create;
 
@@ -47,7 +47,7 @@ internal sealed class MappingProfile : Profile
         CreateMap<CreateDialogContentDto?, List<DialogContent>?>()
             .ConvertUsing<DialogContentInputConverter<CreateDialogContentDto>>();
 
-        CreateMap<CreateDialogDialogTransmissionContentDto?, List<TransmissionContent>?>()
+        CreateMap<CreateDialogDialogTransmissionContentDto?, List<DialogTransmissionContent>?>()
             .ConvertUsing<TransmissionContentInputConverter<CreateDialogDialogTransmissionContentDto>>();
 
         CreateMap<CreateDialogDialogTransmissionSenderActorDto, DialogTransmissionSenderActor>()
@@ -58,7 +58,7 @@ internal sealed class MappingProfile : Profile
             .ForMember(dest => dest.Type, opt => opt.Ignore())
             .ForMember(dest => dest.TypeId, opt => opt.MapFrom(src => src.Type));
 
-        CreateMap<CreateDialogTransmissionAttachmentDto, TransmissionAttachment>();
+        CreateMap<CreateDialogTransmissionAttachmentDto, DialogTransmissionAttachment>();
         CreateMap<CreateDialogTransmissionAttachmentUrlDto, AttachmentUrl>()
             .ForMember(dest => dest.ConsumerType, opt => opt.Ignore())
             .ForMember(dest => dest.ConsumerTypeId, opt => opt.MapFrom(src => src.ConsumerType));

@@ -65,7 +65,7 @@ public abstract class AbstractLookupEntity<TSelf, TEnum> : ILookupEntity<TSelf, 
     /// <param name="enumId">The string representation of the enum value.</param>
     /// <param name="self">The resulting <typeparamref name="TSelf"/> instance if parsing is successful.</param>
     /// <returns>True if parsing is successful; otherwise, false.</returns>
-    public static bool TryParse(string enumId, [NotNullWhen(true)] out TSelf? self)
+    public static bool TryParse(ReadOnlySpan<char> enumId, [NotNullWhen(true)] out TSelf? self)
     {
         self = Enum.TryParse<TEnum>(enumId, ignoreCase: true, out var @enum)
             ? GetValue(@enum)
@@ -79,7 +79,7 @@ public abstract class AbstractLookupEntity<TSelf, TEnum> : ILookupEntity<TSelf, 
     /// <param name="enumId">The string representation of the enum value.</param>
     /// <returns>A new instance of <typeparamref name="TSelf"/>.</returns>
     /// <exception cref="ArgumentException">Thrown when the string cannot be parsed to a valid <typeparamref name="TEnum"/> value.</exception>
-    public static TSelf Parse(string enumId)
+    public static TSelf Parse(ReadOnlySpan<char> enumId)
     {
         return TryParse(enumId, out var self)
             ? self
