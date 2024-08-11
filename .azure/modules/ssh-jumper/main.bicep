@@ -35,7 +35,7 @@ resource publicIp 'Microsoft.Network/publicIPAddresses@2023-11-01' = {
   tags: tags
 }
 
-resource networkInterface 'Microsoft.Network/networkInterfaces@2023-11-01' = {
+resource networkInterface 'Microsoft.Network/networkInterfaces@2024-01-01' = {
   name: name
   location: location
   properties: {
