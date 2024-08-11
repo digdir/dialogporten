@@ -265,8 +265,8 @@
         "tags": [
           "Serviceowner"
         ],
-        "summary": "Gets a single dialog seen log record",
-        "description": "Gets a single dialog seen log record. For more information see the documentation (link TBD).",
+        "summary": "Gets all seen log records for a dialog",
+        "description": "Gets all seen log records for a dialog. For more information see the documentation (link TBD).",
         "operationId": "SearchDialogSeenLogSO",
         "parameters": [
           {
@@ -287,7 +287,7 @@
             "description": "Forbidden"
           },
           "200": {
-            "description": "Successfully returned the dialog seen log record.",
+            "description": "Successfully returned the dialog seen log records.",
             "content": {
               "application/json": {
                 "schema": {
@@ -413,11 +413,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "oneOf": [
-                  {
-                    "$ref": "#/components/schemas/UpdateDialogDto"
-                  }
-                ]
+                "$ref": "#/components/schemas/UpdateDialogDto"
               },
               "example": {
                 "Progress": 42,
@@ -1630,8 +1626,8 @@
         "tags": [
           "Enduser"
         ],
-        "summary": "Gets a single dialog seen log record",
-        "description": "Gets a single dialog seen log record. For more information see the documentation (link TBD).",
+        "summary": "Gets all seen log records for a dialog",
+        "description": "Gets all seen log records for a dialog. For more information see the documentation (link TBD).",
         "operationId": "SearchDialogSeenLog",
         "parameters": [
           {
@@ -1652,7 +1648,7 @@
             "description": "Forbidden"
           },
           "200": {
-            "description": "Successfully returned the dialog seen log record.",
+            "description": "Successfully returned the dialog seen log records.",
             "content": {
               "application/json": {
                 "schema": {

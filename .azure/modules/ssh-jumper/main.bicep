@@ -10,25 +10,11 @@ param subnetId string
 @description('Tags to be applied to the resource')
 param tags object
 
-@description('The name of the source Key Vault')
-param srcKeyVaultName string
-
-@description('The subscription ID of the source Key Vault')
-param srcKeyVaultSubId string
-
-@description('The resource group name of the source Key Vault')
-param srcKeyVaultRGNName string
-
-@description('The SSH secret key to be used to get the ssh key for the virtual machine')
+@description('The SSH public key to be used for the virtual machine')
 @secure()
-param srcKeyVaultSshSecretKey string
+param sshPublicKey string
 
 var name = '${namePrefix}-ssh-jumper'
-
-resource srcKeyVaultResource 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
-  name: srcKeyVaultName
-  scope: resourceGroup(srcKeyVaultSubId, srcKeyVaultRGNName)
-}
 
 resource publicIp 'Microsoft.Network/publicIPAddresses@2023-11-01' = {
   name: '${name}-ip'
@@ -90,7 +76,7 @@ module virtualMachine '../../modules/virtualMachine/main.bicep' = {
   name: name
   params: {
     name: name
-    sshKeyData: srcKeyVaultResource.getSecret(srcKeyVaultSshSecretKey)
+    sshPublicKey: sshPublicKey
     location: location
     tags: tags
     hardwareProfile: {
