@@ -118,7 +118,7 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@2024-03-01' = {
   tags: tags
 }
 
-resource aadLoginExtension 'Microsoft.Compute/virtualMachines/extensions@2023-03-01' = {
+resource aadLoginExtension 'Microsoft.Compute/virtualMachines/extensions@2024-03-01' = {
   parent: virtualMachine
   name: 'AADSSHLoginForLinux'
   location: location
