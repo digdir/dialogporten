@@ -21,10 +21,7 @@ using FastEndpoints.Swagger;
 using FluentValidation;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Authorization;
-using NJsonSchema;
 using NSwag;
-using NSwag.Generation.Processors;
-using NSwag.Generation.Processors.Contexts;
 using Serilog;
 
 // Using two-stage initialization to catch startup errors.
