@@ -13,7 +13,7 @@ namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Que
 public sealed class GetDialogDto
 {
     /// <summary>
-    /// The unique identifier for the in UUID format. This may be either v4 or v7 UUID.
+    /// The unique identifier for the in UUIDv7 format.
     /// </summary>
     /// <example>01913cd5-784f-7d3b-abef-4c77b1f0972d</example>
     public Guid Id { get; set; }
@@ -96,49 +96,154 @@ public sealed class GetDialogDto
     /// <example>2022-12-31T23:59:59Z</example>
     public DateTimeOffset UpdatedAt { get; set; }
 
+    /// <summary>
+    /// The aggregated status of the dialog.
+    /// </summary>
     public DialogStatus.Values Status { get; set; }
 
+    /// <summary>
+    /// The dialog unstructured text content
+    /// </summary>
     public GetDialogContentDto Content { get; set; } = null!;
+
+    /// <summary>
+    /// The dialog token. May be used (if supported) against external URLs referred to in this dialogs apiActions,
+    /// transmissions or attachments. Should also be used for front-channel embeds.
+    /// </summary>
     public string? DialogToken { get; set; }
 
+    /// <summary>
+    /// The attachments associated with the dialog (on an aggregate level)
+    /// </summary>
     public List<GetDialogDialogAttachmentDto> Attachments { get; set; } = [];
+
+    /// <summary>
+    /// The immutable list of transmissions associated with the dialog
+    /// </summary>
     public List<GetDialogDialogTransmissionDto> Transmissions { get; set; } = [];
+
+    /// <summary>
+    /// The GUI actions associated with the dialog. Should be used in browser based interactive front-ends.
+    /// </summary>
     public List<GetDialogDialogGuiActionDto> GuiActions { get; set; } = [];
+
+    /// <summary>
+    /// The API actions associated with the dialog. Should be used in specialized, non-browser based integrations.
+    /// </summary>
     public List<GetDialogDialogApiActionDto> ApiActions { get; set; } = [];
+
+    /// <summary>
+    /// An immutable list of activities associated with the dialog.
+    /// </summary>
     public List<GetDialogDialogActivityDto> Activities { get; set; } = [];
+
+    /// <summary>
+    /// The list of seen log entries for the dialog newer than the dialog ChangedAt date.
+    /// </summary>
     public List<GetDialogDialogSeenLogDto> SeenSinceLastUpdate { get; set; } = [];
 }
 
 public sealed class GetDialogDialogTransmissionDto
 {
+    /// <summary>
+    /// The unique identifier for the transmission in UUIDv7 format.
+    /// </summary>
     public Guid Id { get; set; }
+
+    /// <summary>
+    /// The date and time when the transmission was created.
+    /// </summary>
     public DateTimeOffset CreatedAt { get; set; }
+
+    /// <summary>
+    /// Authorization attribute specifying the required authorization in order to access the embedded content or
+    /// attachments for the transmission.
+    /// </summary>
     public string? AuthorizationAttribute { get; set; }
+
+    /// <summary>
+    /// Flag indicating if the authenticated user is authorized for this transmission. If not, embedded content and
+    /// the attachments will not be available
+    /// </summary>
     public bool IsAuthorized { get; set; }
+
+    /// <summary>
+    /// Arbitrary string with a service specific transmission type.
+    ///
+    /// Refer to the service specific documentation provided by the service owner for details (if in use).
+    /// </summary>
     public string? ExtendedType { get; set; }
+
+    /// <summary>
+    /// Reference to any other transmission that this transmission is related to.
+    /// </summary>
     public Guid? RelatedTransmissionId { get; set; }
 
+    /// <summary>
+    /// The type of transmission.
+    /// </summary>
     public DialogTransmissionType.Values Type { get; set; }
+
+    /// <summary>
+    /// The actor that sent the transmission.
+    /// </summary>
     public GetDialogDialogTransmissionSenderActorDto Sender { get; set; } = null!;
+
+    /// <summary>
+    /// The transmission unstructured text content
+    /// </summary>
     public GetDialogDialogTransmissionContentDto Content { get; set; } = null!;
+
+    /// <summary>
+    /// The transmission-level attachments
+    /// </summary>
     public List<GetDialogTransmissionAttachmentDto> Attachments { get; set; } = [];
 }
 
 public sealed class GetDialogDialogSeenLogDto
 {
+    /// <summary>
+    /// The unique identifier for the seen log entry in UUIDv7 format.
+    /// </summary>
     public Guid Id { get; set; }
+
+    /// <summary>
+    /// The timestamp when the dialog revision was seen
+    /// </summary>
     public DateTimeOffset SeenAt { get; set; }
 
+    /// <summary>
+    /// The actor that saw the dialog revision
+    /// </summary>
     public GetDialogDialogSeenLogSeenByActorDto SeenBy { get; set; } = null!;
 
+    /// <summary>
+    /// Flag indicating whether the seen log entry was created via the service owner.
+    ///
+    /// This is used when the service owner uses the service owner API to implement its own frontend.
+    /// </summary>
     public bool? IsViaServiceOwner { get; set; }
+
+    /// <summary>
+    /// Flag indicating whether the seen log entry was created by the current end user.
+    /// </summary>
     public bool IsCurrentEndUser { get; set; }
 }
 
 public sealed class GetDialogDialogSeenLogSeenByActorDto
 {
-    public Guid Id { get; set; }
+    /// <summary>
+    /// The natural name of the person/business that saw the dialog revision.
+    /// </summary>
     public string ActorName { get; set; } = null!;
+
+    /// <summary>
+    /// The identifier of the person/business that saw the dialog revision.
+    /// </summary>
+    /// <example>
+    /// urn:altinn:person:identifier-no:01125512345
+    /// urn:altinn:organization:identifier-no:912345678
+    /// </example>
     public string ActorId { get; set; } = null!;
 }
 
@@ -152,17 +257,47 @@ public sealed class GetDialogDialogTransmissionSenderActorDto
 
 public sealed class GetDialogContentDto
 {
+    /// <summary>
+    /// The title of the dialog. Always text/plain.
+    /// </summary>
     public ContentValueDto Title { get; set; } = null!;
+
+    /// <summary>
+    /// A short summary of the dialog and its current state. Always text/plain.
+    /// </summary>
     public ContentValueDto Summary { get; set; } = null!;
+
+    /// <summary>
+    /// Overridden sender name. If not supplied, assume "org" as the sender name. Always text/plain.
+    /// </summary>
     public ContentValueDto? SenderName { get; set; }
+
+    /// <summary>
+    /// Additional information about the dialog, might contain markdown or HTML.
+    /// </summary>
     public ContentValueDto? AdditionalInfo { get; set; }
+
+    /// <summary>
+    /// Used as the human-readable label used to describe the "ExtendedStatus" field. Always text/plain.
+    /// </summary>
     public ContentValueDto? ExtendedStatus { get; set; }
+
+    /// <summary>
+    /// Front-channel embedded content. Used to dynamically embed content in the front-end from a external URL.
+    /// </summary>
     public ContentValueDto? MainContentReference { get; set; }
 }
 
 public sealed class GetDialogDialogTransmissionContentDto
 {
+    /// <summary>
+    /// The transmission title. Always text/plain.
+    /// </summary>
     public ContentValueDto Title { get; set; } = null!;
+
+    /// <summary>
+    /// The transmission summary. Always text/plain.
+    /// </summary>
     public ContentValueDto Summary { get; set; } = null!;
 }
 
