@@ -177,6 +177,9 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         serviceResourceReferences.AddRange(request.GuiActions
             .Where(action => IsExternalResource(action.AuthorizationAttribute))
             .Select(action => action.AuthorizationAttribute!));
+        serviceResourceReferences.AddRange(request.Transmissions
+            .Where(transmission => IsExternalResource(transmission.AuthorizationAttribute))
+            .Select(transmission => transmission.AuthorizationAttribute!));
 
         return serviceResourceReferences.Distinct().ToList();
     }

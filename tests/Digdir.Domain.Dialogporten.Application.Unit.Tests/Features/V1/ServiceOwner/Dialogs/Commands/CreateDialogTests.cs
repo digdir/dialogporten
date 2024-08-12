@@ -15,14 +15,14 @@ public class CreateDialogTests
     public async Task CreateDialogCommand_Should_Return_Forbidden_When_Scope_Is_Missing()
     {
         // Arrange
-        var dialogDbContextSub = Substitute.For<Externals.IDialogDbContext>();
+        var dialogDbContextSub = Substitute.For<IDialogDbContext>();
 
         var mapper = new MapperConfiguration(cfg =>
         {
             cfg.AddMaps(typeof(CreateDialogCommandHandler).Assembly);
         }).CreateMapper();
 
-        var unitOfWorkSub = Substitute.For<Externals.IUnitOfWork>();
+        var unitOfWorkSub = Substitute.For<IUnitOfWork>();
         var domainContextSub = Substitute.For<IDomainContext>();
         var userResourceRegistrySub = Substitute.For<IUserResourceRegistry>();
         var userOrganizationRegistrySub = Substitute.For<IUserOrganizationRegistry>();
@@ -54,14 +54,14 @@ public class CreateDialogTests
     public async Task CreateDialogCommand_Should_Return_ValidationError_When_Progress_Set_On_Correspondence()
     {
         // Arrange
-        var dialogDbContextSub = Substitute.For<Externals.IDialogDbContext>();
+        var dialogDbContextSub = Substitute.For<IDialogDbContext>();
 
         var mapper = new MapperConfiguration(cfg =>
         {
             cfg.AddMaps(typeof(CreateDialogCommandHandler).Assembly);
         }).CreateMapper();
 
-        var unitOfWorkSub = Substitute.For<Externals.IUnitOfWork>();
+        var unitOfWorkSub = Substitute.For<IUnitOfWork>();
         var domainContextSub = Substitute.For<IDomainContext>();
         var userResourceRegistrySub = Substitute.For<IUserResourceRegistry>();
         var userOrganizationRegistrySub = Substitute.For<IUserOrganizationRegistry>();
@@ -89,5 +89,39 @@ public class CreateDialogTests
         Assert.True(result.IsT2); // ValidationError
         Assert.Equal(CreateDialogCommandHandler.ProgressValidationFailure.ErrorMessage,
             result.AsT2.Errors.First().ErrorMessage);
+    }
+
+    [Fact]
+    public async Task CreateDialogCommand_Should_Return_Forbidden_When_User_Is_Not_Owner()
+    {
+        // Arrange
+        var dialogDbContextSub = Substitute.For<IDialogDbContext>();
+
+        var mapper = new MapperConfiguration(cfg =>
+        {
+            cfg.AddMaps(typeof(CreateDialogCommandHandler).Assembly);
+        }).CreateMapper();
+
+        var unitOfWorkSub = Substitute.For<IUnitOfWork>();
+        var domainContextSub = Substitute.For<IDomainContext>();
+        var userResourceRegistrySub = Substitute.For<IUserResourceRegistry>();
+        var userOrganizationRegistrySub = Substitute.For<IUserOrganizationRegistry>();
+        var partyNameRegistrySub = Substitute.For<IPartyNameRegistry>();
+
+        var createCommand = DialogGenerator.GenerateSimpleFakeDialog();
+
+        userResourceRegistrySub
+            .CurrentUserIsOwner(createCommand.ServiceResource, Arg.Any<CancellationToken>())
+            .Returns(false);
+
+        var commandHandler = new CreateDialogCommandHandler(dialogDbContextSub,
+            mapper, unitOfWorkSub, domainContextSub, userResourceRegistrySub,
+            userOrganizationRegistrySub, partyNameRegistrySub);
+
+        // Act
+        var result = await commandHandler.Handle(createCommand, CancellationToken.None);
+
+        // Assert
+        Assert.True(result.IsT3); // Forbidden
     }
 }
