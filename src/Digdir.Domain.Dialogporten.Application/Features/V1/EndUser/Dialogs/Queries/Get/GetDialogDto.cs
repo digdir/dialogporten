@@ -123,12 +123,12 @@ public sealed class GetDialogDto
     public List<GetDialogDialogTransmissionDto> Transmissions { get; set; } = [];
 
     /// <summary>
-    /// The GUI actions associated with the dialog. Should be used in browser based interactive front-ends.
+    /// The GUI actions associated with the dialog. Should be used in browser-based interactive front-ends.
     /// </summary>
     public List<GetDialogDialogGuiActionDto> GuiActions { get; set; } = [];
 
     /// <summary>
-    /// The API actions associated with the dialog. Should be used in specialized, non-browser based integrations.
+    /// The API actions associated with the dialog. Should be used in specialized, non-browser-based integrations.
     /// </summary>
     public List<GetDialogDialogApiActionDto> ApiActions { get; set; } = [];
 
