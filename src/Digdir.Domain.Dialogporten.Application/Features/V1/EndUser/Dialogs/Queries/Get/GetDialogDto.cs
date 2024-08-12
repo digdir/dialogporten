@@ -53,18 +53,18 @@ public sealed class GetDialogDto
     public int? Progress { get; set; }
 
     /// <summary>
-    /// Arbitrary string with a service specific indicator of status, typically used to indicate a fine-grained state of
+    /// Arbitrary string with a service-specific indicator of status, typically used to indicate a fine-grained state of
     /// the dialog to further specify the "status" enum.
     ///
-    /// Refer to the service specific documentation provided by the service owner for details on the possible values (if
+    /// Refer to the service-specific documentation provided by the service owner for details on the possible values (if
     /// in use).
     /// </summary>
     public string? ExtendedStatus { get; set; }
 
     /// <summary>
-    /// Arbitrary string with a service specific reference to an external system or service.
+    /// Arbitrary string with a service-specific reference to an external system or service.
     ///
-    /// Refer to the service specific documentation provided by the service owner for details (if in use).
+    /// Refer to the service-specific documentation provided by the service owner for details (if in use).
     /// </summary>
     public string? ExternalReference { get; set; }
 
@@ -107,7 +107,7 @@ public sealed class GetDialogDto
     public GetDialogContentDto Content { get; set; } = null!;
 
     /// <summary>
-    /// The dialog token. May be used (if supported) against external URLs referred to in this dialogs apiActions,
+    /// The dialog token. May be used (if supported) against external URLs referred to in this dialog's apiActions,
     /// transmissions or attachments. Should also be used for front-channel embeds.
     /// </summary>
     public string? DialogToken { get; set; }
@@ -123,12 +123,12 @@ public sealed class GetDialogDto
     public List<GetDialogDialogTransmissionDto> Transmissions { get; set; } = [];
 
     /// <summary>
-    /// The GUI actions associated with the dialog. Should be used in browser based interactive front-ends.
+    /// The GUI actions associated with the dialog. Should be used in browser-based interactive front-ends.
     /// </summary>
     public List<GetDialogDialogGuiActionDto> GuiActions { get; set; } = [];
 
     /// <summary>
-    /// The API actions associated with the dialog. Should be used in specialized, non-browser based integrations.
+    /// The API actions associated with the dialog. Should be used in specialized, non-browser-based integrations.
     /// </summary>
     public List<GetDialogDialogApiActionDto> ApiActions { get; set; } = [];
 
@@ -168,9 +168,9 @@ public sealed class GetDialogDialogTransmissionDto
     public bool IsAuthorized { get; set; }
 
     /// <summary>
-    /// Arbitrary string with a service specific transmission type.
+    /// Arbitrary string with a service-specific transmission type.
     ///
-    /// Refer to the service specific documentation provided by the service owner for details (if in use).
+    /// Refer to the service-specific documentation provided by the service owner for details (if in use).
     /// </summary>
     public string? ExtendedType { get; set; }
 
@@ -273,7 +273,7 @@ public sealed class GetDialogContentDto
     public ContentValueDto? SenderName { get; set; }
 
     /// <summary>
-    /// Additional information about the dialog, might contain markdown or HTML.
+    /// Additional information about the dialog, this may contain Markdown.
     /// </summary>
     public ContentValueDto? AdditionalInfo { get; set; }
 
@@ -283,7 +283,7 @@ public sealed class GetDialogContentDto
     public ContentValueDto? ExtendedStatus { get; set; }
 
     /// <summary>
-    /// Front-channel embedded content. Used to dynamically embed content in the front-end from a external URL.
+    /// Front-channel embedded content. Used to dynamically embed content in the front-end from an external URL.
     /// </summary>
     public ContentValueDto? MainContentReference { get; set; }
 }
