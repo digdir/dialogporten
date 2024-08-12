@@ -273,7 +273,7 @@ public sealed class GetDialogContentDto
     public ContentValueDto? SenderName { get; set; }
 
     /// <summary>
-    /// Additional information about the dialog, might contain markdown or HTML.
+    /// Additional information about the dialog, this may contain Markdown.
     /// </summary>
     public ContentValueDto? AdditionalInfo { get; set; }
 

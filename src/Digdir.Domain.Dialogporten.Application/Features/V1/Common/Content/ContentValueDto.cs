@@ -11,7 +11,7 @@ public class ContentValueDto
     public List<LocalizationDto> Value { get; set; } = [];
 
     /// <summary>
-    /// Media type of the content (plaintext, markdown, html). Can also indicate that the content is embeddable.
+    /// Media type of the content (plaintext, markdown). Can also indicate that the content is embeddable.
     /// </summary>
     /// <example>
     /// text/plain
