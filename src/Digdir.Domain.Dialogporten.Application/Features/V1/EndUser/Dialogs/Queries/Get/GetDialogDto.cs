@@ -156,9 +156,19 @@ public sealed class GetDialogDialogTransmissionDto
     public DateTimeOffset CreatedAt { get; set; }
 
     /// <summary>
-    /// Authorization attribute specifying the required authorization in order to access the embedded content or
-    /// attachments for the transmission.
+    /// Contains a authorization resource attributeId, that can used in custom authorization rules in the XACML service
+    /// policy, which by default is the policy belonging to the service referred to by "serviceResource" in the dialog.
+    ///
+    /// Can also be used to refer other service policies.
     /// </summary>
+    /// <example>
+    /// mycustomresource
+    /// /* equivalent to the above */
+    /// urn:altinn:subresource:mycustomresource
+    /// urn:altinn:task:Task_1
+    /// /* refer to another service */
+    /// urn:altinn:resource:some-other-service-identifier
+    /// </example>
     public string? AuthorizationAttribute { get; set; }
 
     /// <summary>
@@ -249,9 +259,21 @@ public sealed class GetDialogDialogSeenLogSeenByActorDto
 
 public sealed class GetDialogDialogTransmissionSenderActorDto
 {
-    public Guid Id { get; set; }
+    /// <summary>
+    /// The type of actor that sent the transmission.
+    /// </summary>
     public DialogActorType.Values ActorType { get; set; }
+
+    /// <summary>
+    /// The name of the person or organization that sent the transmission.
+    /// </summary>
+    /// <example>Ola Nordmann</example>
     public string ActorName { get; set; } = null!;
+
+    /// <summary>
+    /// The identifier of the person or organization that sent the transmission.
+    /// </summary>
+    /// <example>urn:altinn:person:identifier-no:12018212345</example>
     public string ActorId { get; set; } = null!;
 }
 
@@ -303,96 +325,336 @@ public sealed class GetDialogDialogTransmissionContentDto
 
 public sealed class GetDialogDialogActivityDto
 {
+    /// <summary>
+    /// The unique identifier for the activity in UUIDv7 format.
+    /// </summary>
     public Guid Id { get; set; }
+
+    /// <summary>
+    /// The date and time when the activity was created.
+    /// </summary>
     public DateTimeOffset? CreatedAt { get; set; }
+
+    /// <summary>
+    /// An arbitrary string with a service-specific activity type.
+    ///
+    /// Consult the service-specific documentation provided by the service owner for details (if in use).
+    /// </summary>
     public Uri? ExtendedType { get; set; }
 
+    /// <summary>
+    /// The type of activity.
+    /// </summary>
     public DialogActivityType.Values Type { get; set; }
 
+    /// <summary>
+    /// The related activity identifier, if applicable. Must be present in current dialog.
+    /// </summary>
     public Guid? RelatedActivityId { get; set; }
+
+    /// <summary>
+    /// If the activity is related to a particular transmission, this field will contain the transmission identifier.
+    /// </summary>
     public Guid? TransmissionId { get; set; }
 
+    /// <summary>
+    /// The actor that performed the activity.
+    /// </summary>
     public GetDialogDialogActivityPerformedByActorDto PerformedBy { get; set; } = null!;
+
+    /// <summary>
+    /// Unstructured text describing the activity. Only set if the activity type is "Information".
+    /// </summary>
     public List<LocalizationDto> Description { get; set; } = [];
 }
 
 public sealed class GetDialogDialogActivityPerformedByActorDto
 {
-    public Guid Id { get; set; }
+    /// <summary>
+    /// What type of actor performed the activity.
+    /// </summary>
     public DialogActorType.Values ActorType { get; set; }
+
+    /// <summary>
+    /// The name of the person or organization that performed the activity.
+    /// Only set if the actor type is "PartyRepresentative".
+    /// </summary>
     public string? ActorName { get; set; }
+
+    /// <summary>
+    /// The identifier of the person or organization that performed the activity.
+    /// May be omitted if ActorType is "ServiceOwner".
+    /// </summary>
     public string? ActorId { get; set; }
 }
 
 public sealed class GetDialogDialogApiActionDto
 {
+    /// <summary>
+    /// The unique identifier for the action in UUIDv7 format.
+    /// </summary>
     public Guid Id { get; set; }
+
+    /// <summary>
+    /// String identifier for the action, corresponding to the "action" attributeId used in the XACML service policy,
+    /// which by default is the policy belonging to the service referred to by "serviceResource" in the dialog
+    /// </summary>
+    /// <example>write</example>
     public string Action { get; set; } = null!;
+
+    /// <summary>
+    /// Contains a authorization resource attributeId, that can used in custom authorization rules in the XACML service
+    /// policy, which by default is the policy belonging to the service referred to by "serviceResource" in the dialog.
+    ///
+    /// Can also be used to refer other service policies.
+    /// </summary>
+    /// <example>
+    /// mycustomresource
+    /// /* equivalent to the above */
+    /// urn:altinn:subresource:mycustomresource
+    /// urn:altinn:task:Task_1
+    /// /* refer to another service */
+    /// urn:altinn:resource:some-other-service-identifier
+    /// </example>
     public string? AuthorizationAttribute { get; set; }
+
+    /// <summary>
+    /// True if the authenticated user is authorized for this action. If not, the action will not be available
+    /// and all endpoints will be replaced with a fixed placeholder.
+    /// </summary>
     public bool IsAuthorized { get; set; }
 
+    /// <summary>
+    /// The endpoints associated with the action.
+    /// </summary>
     public List<GetDialogDialogApiActionEndpointDto> Endpoints { get; set; } = [];
 }
 
 public sealed class GetDialogDialogApiActionEndpointDto
 {
+    /// <summary>
+    /// The unique identifier for the endpoint in UUIDv7 format.
+    /// </summary>
     public Guid Id { get; set; }
+
+    /// <summary>
+    /// Arbitrary string indicating the version of the endpoint.
+    ///
+    /// Consult the service-specific documentation provided by the service owner for details (if in use).
+    /// </summary>
     public string? Version { get; set; }
+
+    /// <summary>
+    /// The fully qualified HTTPS URL of the API endpoint. Will be set to "urn:dialogporten:unauthorized" if the user is
+    /// not authorized to perform the action.
+    /// </summary>
+    /// <example>
+    /// https://someendpoint.com/api/v1/someaction
+    /// urn:dialogporten:unauthorized
+    /// </example>
     public Uri Url { get; set; } = null!;
+
+    /// <summary>
+    /// The HTTP method that the endpoint expects for this action.
+    /// </summary>
     public HttpVerb.Values HttpMethod { get; set; }
+
+    /// <summary>
+    /// Link to service provider documentation for the endpoint. Used for service owners to provide documentation for
+    /// integrators. Should be a URL to a human-readable page.
+    /// </summary>
     public Uri? DocumentationUrl { get; set; }
+
+    /// <summary>
+    /// Link to the request schema for the endpoint. Used for service owners to provide documentation for integrators.
+    /// Dialogporten will not validate information on this endpoint.
+    /// </summary>
     public Uri? RequestSchema { get; set; }
+
+    /// <summary>
+    /// Link to the response schema for the endpoint. Used for service owners to provide documentation for integrators.
+    /// Dialogporten will not validate information on this endpoint.
+    /// </summary>
     public Uri? ResponseSchema { get; set; }
+
+    /// <summary>
+    /// Boolean indicating if the endpoint is deprecated. Integrators should migrate to endpoints with a higher version.
+    /// </summary>
     public bool Deprecated { get; set; }
+
+    /// <summary>
+    /// Date and time when the service owner has indicated that endpoint will no longer function. Only set if the endpoint
+    /// is deprecated. Dialogporten will not enforce this date.
+    /// </summary>
     public DateTimeOffset? SunsetAt { get; set; }
 }
 
 public sealed class GetDialogDialogGuiActionDto
 {
+    /// <summary>
+    /// The unique identifier for the action in UUIDv7 format.
+    /// </summary>
     public Guid Id { get; set; }
+
+    /// <summary>
+    /// The action identifier for the action, corresponding to the "action" attributeId used in the XACML service policy,
+    /// </summary>
     public string Action { get; set; } = null!;
+
+    /// <summary>
+    /// The fully qualified HTTPS URL of the action, to which the user will be redirected when the action is triggered. Will be set to
+    /// "urn:dialogporten:unauthorized" if the user is not authorized to perform the action.
+    /// </summary>
+    /// <example>
+    /// urn:dialogporten:unauthorized
+    /// https://someendpoint.com/gui/some-service-instance-id
+    /// </example>
     public Uri Url { get; set; } = null!;
+
+    /// <summary>
+    /// Contains a authorization resource attributeId, that can used in custom authorization rules in the XACML service
+    /// policy, which by default is the policy belonging to the service referred to by "serviceResource" in the dialog.
+    ///
+    /// Can also be used to refer other service policies.
+    /// </summary>
+    /// <example>
+    /// mycustomresource
+    /// /* equivalent to the above */
+    /// urn:altinn:subresource:mycustomresource
+    /// urn:altinn:task:Task_1
+    /// /* refer to another service */
+    /// urn:altinn:resource:some-other-service-identifier
+    /// </example>
     public string? AuthorizationAttribute { get; set; }
+
+    /// <summary>
+    /// Whether the user is authorized to perform the action.
+    /// </summary>
     public bool IsAuthorized { get; set; }
+
+    /// <summary>
+    /// Indicates wheter the action results in the dialog being deleted. Used by frontends to implement custom UX
+    /// for delete actions.
+    /// </summary>
     public bool IsDeleteDialogAction { get; set; }
 
+    /// <summary>
+    /// Indicates a priority for the action, making it possible for frontends to adapt GUI elements based on action
+    /// priority.
+    /// </summary>
     public DialogGuiActionPriority.Values Priority { get; set; }
+
+    /// <summary>
+    /// The HTTP method that the frontend should use when redirecting the user.
+    /// </summary>
     public HttpVerb.Values HttpMethod { get; set; }
 
+    /// <summary>
+    /// The title of the action, should be short and in verb form. Always text/plain.
+    /// </summary>
     public List<LocalizationDto> Title { get; set; } = [];
+
+    /// <summary>
+    /// If there should be a prompt asking the user for confirmation before the action is executed,
+    /// this field should contain the prompt text.
+    /// </summary>
     public List<LocalizationDto>? Prompt { get; set; } = [];
 }
 
 public sealed class GetDialogDialogAttachmentDto
 {
+    /// <summary>
+    /// The unique identifier for the attachment in UUIDv7 format.
+    /// </summary>
     public Guid Id { get; set; }
 
+    /// <summary>
+    /// The display name of the attachment that should be used in GUIs.
+    /// </summary>
     public List<LocalizationDto> DisplayName { get; set; } = [];
+
+    /// <summary>
+    /// The URLs associated with the attachment, each referring a different representation of the attachment.
+    /// </summary>
     public List<GetDialogDialogAttachmentUrlDto> Urls { get; set; } = [];
 }
 
 public sealed class GetDialogDialogAttachmentUrlDto
 {
+    /// <summary>
+    /// The unique identifier for the attachment URL in UUIDv7 format.
+    /// </summary>
     public Guid Id { get; set; }
+
+    /// <summary>
+    /// The fully qualified HTTPS URL of the attachment.
+    /// </summary>
+    /// <example>
+    /// https://someendpoint.com/someattachment.pdf
+    /// </example>
     public Uri Url { get; set; } = null!;
+
+    /// <summary>
+    /// The media type of the attachment.
+    /// </summary>
+    /// <example>
+    /// application/pdf
+    /// application/zip
+    /// </example>
     public string? MediaType { get; set; } = null!;
 
+    /// <summary>
+    /// What type of consumer the URL is intended for.
+    /// </summary>
     public AttachmentUrlConsumerType.Values ConsumerType { get; set; }
 }
 
 public sealed class GetDialogTransmissionAttachmentDto
 {
+    /// <summary>
+    /// The unique identifier for the attachment in UUIDv7 format.
+    /// </summary>
     public Guid Id { get; set; }
 
+    /// <summary>
+    /// The display name of the attachment that should be used in GUIs.
+    /// </summary>
     public List<LocalizationDto> DisplayName { get; set; } = [];
+
+    /// <summary>
+    /// The URLs associated with the attachment, each referring a different representation of the attachment.
+    /// </summary>
     public List<GetDialogTransmissionAttachmentUrlDto> Urls { get; set; } = [];
 }
 
 public sealed class GetDialogTransmissionAttachmentUrlDto
 {
+    /// <summary>
+    /// The unique identifier for the attachment URL in UUIDv7 format.
+    /// </summary>
     public Guid Id { get; set; }
+
+    /// <summary>
+    /// The fully qualified HTTPS URL of the attachment. Will be set to "urn:dialogporten:unauthorized" if the user is
+    /// not authorized to access the transmission.
+    /// </summary>
+    /// <example>
+    /// https://someendpoint.com/someattachment.pdf
+    /// urn:dialogporten:unauthorized
+    /// </example>
     public Uri Url { get; set; } = null!;
+
+    /// <summary>
+    /// The media type of the attachment.
+    /// </summary>
+    /// <example>
+    /// application/pdf
+    /// application/zip
+    /// </example>
     public string? MediaType { get; set; } = null!;
 
+    /// <summary>
+    /// The type of consumer the URL is intended for.
+    /// </summary>
     public AttachmentUrlConsumerType.Values ConsumerType { get; set; }
 }
