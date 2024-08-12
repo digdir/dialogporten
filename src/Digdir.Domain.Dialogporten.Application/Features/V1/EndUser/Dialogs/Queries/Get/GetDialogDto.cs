@@ -283,7 +283,7 @@ public sealed class GetDialogContentDto
     public ContentValueDto? ExtendedStatus { get; set; }
 
     /// <summary>
-    /// Front-channel embedded content. Used to dynamically embed content in the front-end from a external URL.
+    /// Front-channel embedded content. Used to dynamically embed content in the front-end from an external URL.
     /// </summary>
     public ContentValueDto? MainContentReference { get; set; }
 }
