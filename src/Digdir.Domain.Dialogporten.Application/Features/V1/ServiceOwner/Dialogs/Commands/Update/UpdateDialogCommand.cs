@@ -292,6 +292,16 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
             return;
         }
 
+        var transmissionAttachments = newDialogTransmissions.SelectMany(x => x.Attachments);
+        var existingTransmissionAttachmentIds = await _db.GetExistingIds(transmissionAttachments, cancellationToken);
+        if (existingTransmissionAttachmentIds.Count != 0)
+        {
+            _domainContext.AddError(
+                nameof(UpdateDialogDialogTransmissionDto.Attachments),
+                $"Entity '{nameof(TransmissionAttachment)}' with the following key(s) already exists: ({string.Join(", ", existingTransmissionAttachmentIds)}).");
+            return;
+        }
+
         dialog.Transmissions.AddRange(newDialogTransmissions);
 
         // Tell ef explicitly to add transmissions as new to the database.

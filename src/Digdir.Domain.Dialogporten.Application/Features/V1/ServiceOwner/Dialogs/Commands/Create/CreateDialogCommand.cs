@@ -128,6 +128,13 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
             _domainContext.AddError(DomainFailure.EntityExists<DialogTransmission>(existingTransmissionIds));
         }
 
+        var transmissionAttachements = dialog.Transmissions.SelectMany(x => x.Attachments);
+        var existingTransmissionAttachmentIds = await _db.GetExistingIds(transmissionAttachements, cancellationToken);
+        if (existingTransmissionAttachmentIds.Count != 0)
+        {
+            _domainContext.AddError(DomainFailure.EntityExists<TransmissionAttachment>(existingTransmissionAttachmentIds));
+        }
+
         await _db.Dialogs.AddAsync(dialog, cancellationToken);
 
         var saveResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
