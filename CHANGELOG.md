@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.11.0](https://github.com/digdir/dialogporten/compare/v1.10.0...v1.11.0) (2024-08-08)
+
+
+### Features
+
+* **azure:** scaffold ssh jumper ([#958](https://github.com/digdir/dialogporten/issues/958)) ([6228aa2](https://github.com/digdir/dialogporten/commit/6228aa2e543bb319ae8d8d0d097b19717b526896))
+
+
+### Bug Fixes
+
+* Correct the SeenLog list endpoints OpenAPI description ([#976](https://github.com/digdir/dialogporten/issues/976)) ([f6ebd19](https://github.com/digdir/dialogporten/commit/f6ebd19ee8ab790b3a7892776fc9e0be01004121))
+* Using existing transmission/activity IDs should return HTTP 422 ([#960](https://github.com/digdir/dialogporten/issues/960)) ([01789b1](https://github.com/digdir/dialogporten/commit/01789b1f256b17445379194f3cf781a0d70fc1af)), closes [#959](https://github.com/digdir/dialogporten/issues/959)
+
 ## [1.10.0](https://github.com/digdir/dialogporten/compare/v1.9.0...v1.10.0) (2024-08-01)
 
 

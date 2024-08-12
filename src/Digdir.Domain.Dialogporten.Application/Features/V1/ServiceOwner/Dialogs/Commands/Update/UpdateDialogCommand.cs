@@ -219,6 +219,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
             _domainContext.AddError(
                 nameof(UpdateDialogDto.Activities),
                 $"Entity '{nameof(DialogActivity)}' with the following key(s) already exists: ({string.Join(", ", existingIds)}).");
+            return;
         }
 
         dialog.Activities.AddRange(newDialogActivities);
@@ -291,6 +292,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
             _domainContext.AddError(
                 nameof(UpdateDialogDto.Transmissions),
                 $"Entity '{nameof(DialogTransmission)}' with the following key(s) already exists: ({string.Join(", ", existingIds)}).");
+            return;
         }
 
         dialog.Transmissions.AddRange(newDialogTransmissions);
