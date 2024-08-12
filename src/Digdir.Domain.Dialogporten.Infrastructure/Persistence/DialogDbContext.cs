@@ -11,6 +11,7 @@ using Digdir.Library.Entity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System.Linq.Expressions;
+using Digdir.Domain.Dialogporten.Domain.Actors;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Contents;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions.Contents;
@@ -100,6 +101,9 @@ internal sealed class DialogDbContext : DbContext, IDialogDbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        // Explicitly configure the Actor entity so that it will register as TPH in the database
+        modelBuilder.Entity<Actor>();
+
         modelBuilder
             .RemovePluralizingTableNameConvention()
             .AddAuditableEntities()

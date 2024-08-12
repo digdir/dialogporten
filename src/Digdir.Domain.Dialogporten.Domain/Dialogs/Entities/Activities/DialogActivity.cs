@@ -54,7 +54,7 @@ public class DialogActivity : IImmutableEntity, IAggregateCreatedHandler, IEvent
     }
 }
 
-public class DialogActivityDescription : LocalizationSet
+public sealed class DialogActivityDescription : LocalizationSet
 {
     public DialogActivity Activity { get; set; } = null!;
     public Guid ActivityId { get; set; }
