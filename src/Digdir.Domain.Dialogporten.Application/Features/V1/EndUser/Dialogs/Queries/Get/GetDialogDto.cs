@@ -107,7 +107,7 @@ public sealed class GetDialogDto
     public GetDialogContentDto Content { get; set; } = null!;
 
     /// <summary>
-    /// The dialog token. May be used (if supported) against external URLs referred to in this dialogs apiActions,
+    /// The dialog token. May be used (if supported) against external URLs referred to in this dialog's apiActions,
     /// transmissions or attachments. Should also be used for front-channel embeds.
     /// </summary>
     public string? DialogToken { get; set; }
