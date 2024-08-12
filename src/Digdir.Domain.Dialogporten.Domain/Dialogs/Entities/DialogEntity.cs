@@ -1,4 +1,5 @@
-﻿using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
+﻿using System.ComponentModel;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actors;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Attachments;
@@ -20,6 +21,7 @@ public class DialogEntity :
     IAggregateChangedHandler,
     IEventPublisher
 {
+    [Description("The unique UUIDv7")]
     public Guid Id { get; set; }
     public Guid Revision { get; set; }
     public DateTimeOffset CreatedAt { get; set; }

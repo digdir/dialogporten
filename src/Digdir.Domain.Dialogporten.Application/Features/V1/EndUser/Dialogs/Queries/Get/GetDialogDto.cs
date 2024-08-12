@@ -12,19 +12,88 @@ namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Que
 
 public sealed class GetDialogDto
 {
+    /// <summary>
+    /// The unique identifier for the in UUID format. This may be either v4 or v7 UUID.
+    /// </summary>
+    /// <example>01913cd5-784f-7d3b-abef-4c77b1f0972d</example>
     public Guid Id { get; set; }
+
+    /// <summary>
+    /// The unique identifier for the revision in UUIDv4 format.
+    /// </summary>
+    /// <example>a312cb9c-7632-43c2-aa38-69b06aed56ca</example>
     public Guid Revision { get; set; }
+
+    /// <summary>
+    /// The service owner code representing the organization (service owner) related to this dialog.
+    /// </summary>
+    /// <example>ske</example>
     public string Org { get; set; } = null!;
+
+    /// <summary>
+    /// The service identifier for the service that the dialog is related to in URN-format.
+    /// This corresponds to a service resource in the Altinn Resource Registry.
+    /// </summary>
+    /// <example>urn:altinn:resource:some-service-identifier</example>
     public string ServiceResource { get; set; } = null!;
-    public string ServiceResourceType { get; set; } = null!;
+
+    /// <summary>
+    /// The party code representing the organization or person that the dialog belongs to in URN format
+    /// </summary>
+    /// <example>
+    /// urn:altinn:person:identifier-no:01125512345
+    /// urn:altinn:organization:identifier-no:912345678
+    /// </example>
     public string Party { get; set; } = null!;
+
+    /// <summary>
+    /// Advisory indicator of progress, represented as 1-100 percentage value. 100% representing a dialog that has come
+    /// to a natural completion (successful or not).
+    /// </summary>
     public int? Progress { get; set; }
+
+    /// <summary>
+    /// Arbitrary string with a service specific indicator of status, typically used to indicate a fine-grained state of
+    /// the dialog to further specify the "status" enum.
+    ///
+    /// Refer to the service specific documentation provided by the service owner for details on the possible values (if
+    /// in use).
+    /// </summary>
     public string? ExtendedStatus { get; set; }
+
+    /// <summary>
+    /// Arbitrary string with a service specific reference to an external system or service.
+    ///
+    /// Refer to the service specific documentation provided by the service owner for details (if in use).
+    /// </summary>
     public string? ExternalReference { get; set; }
-    public DateTimeOffset? VisibleFrom { get; set; }
+
+    /// <summary>
+    /// The due date for the dialog. This is the last date when the dialog is expected to be completed.
+    /// </summary>
+    /// <example>2022-12-31T23:59:59Z</example>
     public DateTimeOffset? DueAt { get; set; }
+
+    /// <summary>
+    /// The expiration date for the dialog. This is the last date when the dialog is available for the end user.
+    ///
+    /// After this date is passed, the dialog will be considered expired and no longer available for the end user in any
+    /// API. If not supplied, the dialog will be considered to never expire. This field can be changed by the service
+    /// owner after the dialog has been created.
+    /// </summary>
+    /// <example>2022-12-31T23:59:59Z</example>
     public DateTimeOffset? ExpiresAt { get; set; }
+
+    /// <summary>
+    /// The date and time when the dialog was created.
+    /// </summary>
+    /// <example>2022-12-31T23:59:59Z</example>
     public DateTimeOffset CreatedAt { get; set; }
+
+    /// <summary>
+    /// The date and time when the dialog was last updated.
+    /// </summary>
+    /// <example>2022-12-31T23:59:59Z</example>
     public DateTimeOffset UpdatedAt { get; set; }
 
     public DialogStatus.Values Status { get; set; }

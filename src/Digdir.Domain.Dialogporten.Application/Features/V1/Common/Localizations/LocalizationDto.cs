@@ -6,7 +6,15 @@ public sealed class LocalizationDto
 {
     private readonly string _languageCode = null!;
 
+    /// <summary>
+    /// The localized text
+    /// </summary>
     public required string Value { get; init; }
+
+    /// <summary>
+    /// The language code of the localization in ISO 639-1 format
+    /// </summary>
+    /// <example>nb</example>
     public required string LanguageCode
     {
         get => _languageCode;

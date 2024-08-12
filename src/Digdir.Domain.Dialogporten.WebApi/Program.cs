@@ -15,12 +15,16 @@ using Digdir.Domain.Dialogporten.WebApi.Common.Authentication;
 using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
 using Digdir.Domain.Dialogporten.WebApi.Common.Json;
+using Digdir.Domain.Dialogporten.WebApi.Common.Swagger;
 using FastEndpoints;
 using FastEndpoints.Swagger;
 using FluentValidation;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Authorization;
+using NJsonSchema;
 using NSwag;
+using NSwag.Generation.Processors;
+using NSwag.Generation.Processors.Contexts;
 using Serilog;
 
 // Using two-stage initialization to catch startup errors.
@@ -54,7 +58,7 @@ static void BuildAndRun(string[] args)
     builder.Host.UseSerilog((context, services, configuration) => configuration
         .MinimumLevel.Warning()
         .MinimumLevel.Override("Microsoft.EntityFrameworkCore", Serilog.Events.LogEventLevel.Fatal)
-        .MinimumLevel.Override("ZiggyCreatures.Caching.Fusion", builder.Environment.EnvironmentName == "test" ?
+        .MinimumLevel.Override("ZiggyCreatures.Caching.Fusion", builder.Environment.IsDevelopment() ?
             Serilog.Events.LogEventLevel.Debug : Serilog.Events.LogEventLevel.Warning)
         .ReadFrom.Configuration(context.Configuration)
         .ReadFrom.Services(services)
@@ -168,6 +172,7 @@ static void BuildAndRun(string[] args)
             x.Serializer.Options.Converters.Add(new DateTimeNotSupportedConverter());
             x.Errors.ResponseBuilder = ErrorResponseBuilderExtensions.ResponseBuilder;
         })
+        .UseAddSwaggerCorsHeader()
         .UseSwaggerGen(config =>
         {
             config.PostProcess = (document, _) =>
