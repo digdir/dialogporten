@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
 using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.Enumerables;
-using Digdir.Domain.Dialogporten.Application.Common.ResourceRegistry;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
+using Digdir.Domain.Dialogporten.Domain.Common;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
@@ -14,6 +14,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
 using OneOf.Types;
+using ResourceRegistryConstants = Digdir.Domain.Dialogporten.Application.Common.ResourceRegistry.Constants;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Update;
 
@@ -93,7 +94,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
             return new Forbidden($"User cannot modify resource type {dialog.ServiceResourceType}.");
         }
 
-        if (dialog.ServiceResourceType == Constants.Correspondence)
+        if (dialog.ServiceResourceType == ResourceRegistryConstants.Correspondence)
         {
             if (request.Dto.Progress is not null)
                 return new ValidationError(_progressValidationFailure);
@@ -286,22 +287,20 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         var existingIds = await _db.GetExistingIds(newDialogTransmissions, cancellationToken);
         if (existingIds.Count != 0)
         {
-            _domainContext.AddError(
-                nameof(UpdateDialogDto.Transmissions),
-                $"Entity '{nameof(DialogTransmission)}' with the following key(s) already exists: ({string.Join(", ", existingIds)}).");
-            return;
+            _domainContext.AddError(DomainFailure.EntityExists<DialogTransmission>(existingIds));
         }
 
         var transmissionAttachments = newDialogTransmissions.SelectMany(x => x.Attachments);
         var existingTransmissionAttachmentIds = await _db.GetExistingIds(transmissionAttachments, cancellationToken);
         if (existingTransmissionAttachmentIds.Count != 0)
         {
-            _domainContext.AddError(
-                nameof(UpdateDialogDialogTransmissionDto.Attachments),
-                $"Entity '{nameof(TransmissionAttachment)}' with the following key(s) already exists: ({string.Join(", ", existingTransmissionAttachmentIds)}).");
-            return;
+            _domainContext.AddError(DomainFailure.EntityExists<TransmissionAttachment>(existingTransmissionAttachmentIds));
         }
 
+        if (_domainContext.Errors.Count != 0)
+        {
+            return;
+        }
         dialog.Transmissions.AddRange(newDialogTransmissions);
 
         // Tell ef explicitly to add transmissions as new to the database.
