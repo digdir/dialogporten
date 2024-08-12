@@ -50,7 +50,8 @@ public sealed class UpdateDialogRequest
 {
     public Guid DialogId { get; set; }
 
-    [FromBody] public UpdateDialogDto Dto { get; set; } = null!;
+    [FromBody]
+    public UpdateDialogDto Dto { get; set; } = null!;
 
     [FromHeader(headerName: Constants.IfMatch, isRequired: false, removeFromSchema: true)]
     public Guid? IfMatchDialogRevision { get; set; }

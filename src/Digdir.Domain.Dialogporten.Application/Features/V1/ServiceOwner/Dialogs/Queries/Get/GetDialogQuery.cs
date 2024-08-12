@@ -12,6 +12,7 @@ namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialog
 public sealed class GetDialogQuery : IRequest<GetDialogResult>
 {
     public Guid DialogId { get; set; }
+    // query param
 }
 
 [GenerateOneOf]
@@ -68,7 +69,9 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
                 .OrderBy(x => x.CreatedAt))
                 .ThenInclude(x => x.SeenBy)
             .IgnoreQueryFilters()
-            .AsNoTracking() // TODO: Remove when #386 is implemented
+            .AsNoTracking() // TODO: Remove when #386 is implemented,
+            // this is because we need to add a seen log entry if the enduserId is supplied
+            // can't be no track
             .Where(x => resourceIds.Contains(x.ServiceResource))
             .FirstOrDefaultAsync(x => x.Id == request.DialogId, cancellationToken);
 
@@ -79,6 +82,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
 
         // TODO: Add SeenLog if optional parameter pid on behalf of end user is present
         // https://github.com/digdir/dialogporten/issues/386
+        // HERRRR
 
         var dialogDto = _mapper.Map<GetDialogDto>(dialog);
 
@@ -87,6 +91,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
             {
                 var logDto = _mapper.Map<GetDialogDialogSeenLogDto>(log);
                 // TODO: Set when #386 is implemented
+                // HERRR
                 // logDto.IsCurrentEndUser = log.EndUserId == userPid;
                 return logDto;
             })
