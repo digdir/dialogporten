@@ -53,18 +53,18 @@ public sealed class GetDialogDto
     public int? Progress { get; set; }
 
     /// <summary>
-    /// Arbitrary string with a service specific indicator of status, typically used to indicate a fine-grained state of
+    /// Arbitrary string with a service-specific indicator of status, typically used to indicate a fine-grained state of
     /// the dialog to further specify the "status" enum.
     ///
-    /// Refer to the service specific documentation provided by the service owner for details on the possible values (if
+    /// Refer to the service-specific documentation provided by the service owner for details on the possible values (if
     /// in use).
     /// </summary>
     public string? ExtendedStatus { get; set; }
 
     /// <summary>
-    /// Arbitrary string with a service specific reference to an external system or service.
+    /// Arbitrary string with a service-specific reference to an external system or service.
     ///
-    /// Refer to the service specific documentation provided by the service owner for details (if in use).
+    /// Refer to the service-specific documentation provided by the service owner for details (if in use).
     /// </summary>
     public string? ExternalReference { get; set; }
 
@@ -168,9 +168,9 @@ public sealed class GetDialogDialogTransmissionDto
     public bool IsAuthorized { get; set; }
 
     /// <summary>
-    /// Arbitrary string with a service specific transmission type.
+    /// Arbitrary string with a service-specific transmission type.
     ///
-    /// Refer to the service specific documentation provided by the service owner for details (if in use).
+    /// Refer to the service-specific documentation provided by the service owner for details (if in use).
     /// </summary>
     public string? ExtendedType { get; set; }
 
