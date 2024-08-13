@@ -260,6 +260,126 @@
         ]
       }
     },
+    "/api/v1/serviceowner/dialogs/{dialogId}/seenlog": {
+      "get": {
+        "tags": [
+          "Serviceowner"
+        ],
+        "summary": "Gets all seen log records for a dialog",
+        "description": "Gets all seen log records for a dialog. For more information see the documentation (link TBD).",
+        "operationId": "SearchDialogSeenLogSO",
+        "parameters": [
+          {
+            "name": "dialogId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "200": {
+            "description": "Successfully returned the dialog seen log records.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SearchDialogSeenLogDtoSO"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWTBearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/serviceowner/dialogs/{dialogId}/seenlog/{seenLogId}": {
+      "get": {
+        "tags": [
+          "Serviceowner"
+        ],
+        "summary": "Gets a single dialog seen log record",
+        "description": "Gets a single dialog seen log record. For more information see the documentation (link TBD).",
+        "operationId": "GetDialogSeenLogSO",
+        "parameters": [
+          {
+            "name": "dialogId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            }
+          },
+          {
+            "name": "seenLogId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "200": {
+            "description": "Successfully returned the dialog seen log record.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetDialogSeenLogDtoSO"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWTBearerAuth": []
+          }
+        ]
+      }
+    },
     "/api/v1/serviceowner/dialogs/{dialogId}": {
       "put": {
         "tags": [
@@ -1080,126 +1200,6 @@
         ]
       }
     },
-    "/api/v1/serviceowner/dialogs/{dialogId}/seenlog": {
-      "get": {
-        "tags": [
-          "Serviceowner"
-        ],
-        "summary": "Gets all seen log records for a dialog",
-        "description": "Gets all seen log records for a dialog. For more information see the documentation (link TBD).",
-        "operationId": "SearchDialogSeenLogSO",
-        "parameters": [
-          {
-            "name": "dialogId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "guid"
-            }
-          }
-        ],
-        "responses": {
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "200": {
-            "description": "Successfully returned the dialog seen log records.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/SearchDialogSeenLogDtoSO"
-                  }
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "JWTBearerAuth": []
-          }
-        ]
-      }
-    },
-    "/api/v1/serviceowner/dialogs/{dialogId}/seenlog/{seenLogId}": {
-      "get": {
-        "tags": [
-          "Serviceowner"
-        ],
-        "summary": "Gets a single dialog seen log record",
-        "description": "Gets a single dialog seen log record. For more information see the documentation (link TBD).",
-        "operationId": "GetDialogSeenLogSO",
-        "parameters": [
-          {
-            "name": "dialogId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "guid"
-            }
-          },
-          {
-            "name": "seenLogId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "guid"
-            }
-          }
-        ],
-        "responses": {
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "200": {
-            "description": "Successfully returned the dialog seen log record.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/GetDialogSeenLogDtoSO"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "JWTBearerAuth": []
-          }
-        ]
-      }
-    },
     "/api/v1/serviceowner/dialogs/{dialogId}/activities": {
       "get": {
         "tags": [
@@ -1621,6 +1621,126 @@
         ]
       }
     },
+    "/api/v1/enduser/dialogs/{dialogId}/seenlog": {
+      "get": {
+        "tags": [
+          "Enduser"
+        ],
+        "summary": "Gets all seen log records for a dialog",
+        "description": "Gets all seen log records for a dialog. For more information see the documentation (link TBD).",
+        "operationId": "SearchDialogSeenLog",
+        "parameters": [
+          {
+            "name": "dialogId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Missing or invalid authentication token. Requires a Maskinporten-token with the scope \"digdir:dialogporten\"."
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "200": {
+            "description": "Successfully returned the dialog seen log records.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SearchDialogSeenLogDto"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWTBearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/enduser/dialogs/{dialogId}/seenlog/{seenLogId}": {
+      "get": {
+        "tags": [
+          "Enduser"
+        ],
+        "summary": "Gets a single dialog seen log record",
+        "description": "Gets a single dialog seen log record. For more information see the documentation (link TBD).",
+        "operationId": "GetDialogSeenLog",
+        "parameters": [
+          {
+            "name": "dialogId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            }
+          },
+          {
+            "name": "seenLogId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Missing or invalid authentication token. Requires a Maskinporten-token with the scope \"digdir:dialogporten\"."
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "200": {
+            "description": "Successfully returned the dialog seen log record.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetDialogSeenLogDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWTBearerAuth": []
+          }
+        ]
+      }
+    },
     "/api/v1/enduser/dialogs": {
       "get": {
         "tags": [
@@ -1883,126 +2003,6 @@
           },
           "404": {
             "description": "The given dialog ID was not found or is already deleted.",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "JWTBearerAuth": []
-          }
-        ]
-      }
-    },
-    "/api/v1/enduser/dialogs/{dialogId}/seenlog": {
-      "get": {
-        "tags": [
-          "Enduser"
-        ],
-        "summary": "Gets all seen log records for a dialog",
-        "description": "Gets all seen log records for a dialog. For more information see the documentation (link TBD).",
-        "operationId": "SearchDialogSeenLog",
-        "parameters": [
-          {
-            "name": "dialogId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "guid"
-            }
-          }
-        ],
-        "responses": {
-          "401": {
-            "description": "Missing or invalid authentication token. Requires a Maskinporten-token with the scope \"digdir:dialogporten\"."
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "200": {
-            "description": "Successfully returned the dialog seen log records.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/SearchDialogSeenLogDto"
-                  }
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "JWTBearerAuth": []
-          }
-        ]
-      }
-    },
-    "/api/v1/enduser/dialogs/{dialogId}/seenlog/{seenLogId}": {
-      "get": {
-        "tags": [
-          "Enduser"
-        ],
-        "summary": "Gets a single dialog seen log record",
-        "description": "Gets a single dialog seen log record. For more information see the documentation (link TBD).",
-        "operationId": "GetDialogSeenLog",
-        "parameters": [
-          {
-            "name": "dialogId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "guid"
-            }
-          },
-          {
-            "name": "seenLogId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "guid"
-            }
-          }
-        ],
-        "responses": {
-          "401": {
-            "description": "Missing or invalid authentication token. Requires a Maskinporten-token with the scope \"digdir:dialogporten\"."
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "200": {
-            "description": "Successfully returned the dialog seen log record.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/GetDialogSeenLogDto"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
             "content": {
               "application/problem+json": {
                 "schema": {
@@ -2419,6 +2419,80 @@
           "Gui",
           "Api"
         ]
+      },
+      "SearchDialogSeenLogDtoSO": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "seenAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "seenBy": {
+            "$ref": "#/components/schemas/SearchDialogDialogSeenLogSeenByActorDtoSO"
+          },
+          "isViaServiceOwner": {
+            "type": "boolean",
+            "nullable": true
+          }
+        }
+      },
+      "SearchDialogDialogSeenLogSeenByActorDtoSO": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "actorName": {
+            "type": "string"
+          },
+          "actorId": {
+            "type": "string"
+          }
+        }
+      },
+      "GetDialogSeenLogDtoSO": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "seenAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "seenBy": {
+            "$ref": "#/components/schemas/GetDialogSeenLogSeenByActorDtoSO"
+          },
+          "isViaServiceOwner": {
+            "type": "boolean",
+            "nullable": true
+          }
+        }
+      },
+      "GetDialogSeenLogSeenByActorDtoSO": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "actorName": {
+            "type": "string"
+          },
+          "actorId": {
+            "type": "string"
+          }
+        }
       },
       "UpdateDialogRequest": {
         "type": "object",
@@ -3080,7 +3154,7 @@
             "format": "date-time"
           },
           "seenBy": {
-            "$ref": "#/components/schemas/SearchDialogDialogSeenLogSeenByActorDtoSO"
+            "$ref": "#/components/schemas/SearchDialogDialogSeenLogSeenByActorDtoSO2"
           },
           "isViaServiceOwner": {
             "type": "boolean",
@@ -3091,7 +3165,7 @@
           }
         }
       },
-      "SearchDialogDialogSeenLogSeenByActorDtoSO": {
+      "SearchDialogDialogSeenLogSeenByActorDtoSO2": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -4128,80 +4202,6 @@
           }
         }
       },
-      "SearchDialogSeenLogDtoSO": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "guid"
-          },
-          "seenAt": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "seenBy": {
-            "$ref": "#/components/schemas/SearchDialogDialogSeenLogSeenByActorDtoSO2"
-          },
-          "isViaServiceOwner": {
-            "type": "boolean",
-            "nullable": true
-          }
-        }
-      },
-      "SearchDialogDialogSeenLogSeenByActorDtoSO2": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "guid"
-          },
-          "actorName": {
-            "type": "string"
-          },
-          "actorId": {
-            "type": "string"
-          }
-        }
-      },
-      "GetDialogSeenLogDtoSO": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "guid"
-          },
-          "seenAt": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "seenBy": {
-            "$ref": "#/components/schemas/GetDialogSeenLogSeenByActorDtoSO"
-          },
-          "isViaServiceOwner": {
-            "type": "boolean",
-            "nullable": true
-          }
-        }
-      },
-      "GetDialogSeenLogSeenByActorDtoSO": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "guid"
-          },
-          "actorName": {
-            "type": "string"
-          },
-          "actorId": {
-            "type": "string"
-          }
-        }
-      },
       "CreateDialogActivityRequest": {
         "type": "object",
         "additionalProperties": false,
@@ -4306,6 +4306,84 @@
             "items": {
               "$ref": "#/components/schemas/AuthorizedPartyDto"
             }
+          }
+        }
+      },
+      "SearchDialogSeenLogDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "seenAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "seenBy": {
+            "$ref": "#/components/schemas/SearchDialogSeenLogSeenByActorDto"
+          },
+          "isViaServiceOwner": {
+            "type": "boolean"
+          },
+          "isCurrentEndUser": {
+            "type": "boolean"
+          }
+        }
+      },
+      "SearchDialogSeenLogSeenByActorDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "actorName": {
+            "type": "string"
+          },
+          "actorId": {
+            "type": "string"
+          }
+        }
+      },
+      "GetDialogSeenLogDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "seenAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "seenBy": {
+            "$ref": "#/components/schemas/GetDialogSeenLogSeenByActorDto"
+          },
+          "isViaServiceOwner": {
+            "type": "boolean"
+          },
+          "isCurrentEndUser": {
+            "type": "boolean"
+          }
+        }
+      },
+      "GetDialogSeenLogSeenByActorDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "actorName": {
+            "type": "string"
+          },
+          "actorId": {
+            "type": "string"
           }
         }
       },
@@ -5049,84 +5127,6 @@
         }
       },
       "GetDialogDialogSeenLogSeenByActorDto": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "guid"
-          },
-          "actorName": {
-            "type": "string"
-          },
-          "actorId": {
-            "type": "string"
-          }
-        }
-      },
-      "SearchDialogSeenLogDto": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "guid"
-          },
-          "seenAt": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "seenBy": {
-            "$ref": "#/components/schemas/SearchDialogSeenLogSeenByActorDto"
-          },
-          "isViaServiceOwner": {
-            "type": "boolean"
-          },
-          "isCurrentEndUser": {
-            "type": "boolean"
-          }
-        }
-      },
-      "SearchDialogSeenLogSeenByActorDto": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "guid"
-          },
-          "actorName": {
-            "type": "string"
-          },
-          "actorId": {
-            "type": "string"
-          }
-        }
-      },
-      "GetDialogSeenLogDto": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "guid"
-          },
-          "seenAt": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "seenBy": {
-            "$ref": "#/components/schemas/GetDialogSeenLogSeenByActorDto"
-          },
-          "isViaServiceOwner": {
-            "type": "boolean"
-          },
-          "isCurrentEndUser": {
-            "type": "boolean"
-          }
-        }
-      },
-      "GetDialogSeenLogSeenByActorDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
