@@ -93,8 +93,6 @@ internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDia
         RuleForEach(x => x.ApiActions)
             .SetValidator(apiActionValidator);
 
-        RuleFor(x => x.Attachments)
-            .UniqueBy(x => x.Id);
         RuleForEach(x => x.Attachments)
             .SetValidator(attachmentValidator);
 
@@ -145,8 +143,7 @@ internal sealed class CreateDialogDialogTransmissionDtoValidator : AbstractValid
             .SetValidator(actorValidator);
         RuleFor(x => x.AuthorizationAttribute)
             .MaximumLength(Constants.DefaultMaxStringLength);
-        RuleFor(x => x.Attachments)
-            .UniqueBy(x => x.Id);
+        RuleFor(x => x.Attachments);
         RuleForEach(x => x.Attachments)
             .SetValidator(attachmentValidator);
         RuleFor(x => x.Content)
@@ -220,8 +217,6 @@ internal sealed class CreateDialogDialogAttachmentDtoValidator : AbstractValidat
         IValidator<IEnumerable<LocalizationDto>> localizationsValidator,
         IValidator<CreateDialogDialogAttachmentUrlDto> urlValidator)
     {
-        RuleFor(x => x.Id)
-            .NotEqual(default(Guid));
         RuleFor(x => x.DisplayName)
             .SetValidator(localizationsValidator);
         RuleFor(x => x.Urls)
@@ -249,8 +244,6 @@ internal sealed class CreateDialogTransmissionAttachmentDtoValidator : AbstractV
         IValidator<IEnumerable<LocalizationDto>> localizationsValidator,
         IValidator<CreateDialogTransmissionAttachmentUrlDto> urlValidator)
     {
-        RuleFor(x => x.Id)
-            .NotEqual(default(Guid));
         RuleFor(x => x.DisplayName)
             .SetValidator(localizationsValidator);
         RuleFor(x => x.Urls)

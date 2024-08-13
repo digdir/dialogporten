@@ -69,7 +69,7 @@ public sealed class GetDialogDto
     public string? ExternalReference { get; set; }
 
     /// <summary>
-    /// The due date for the dialog. This is the last date when the dialog is expected to be completed.
+    /// The due date for the dialog. Dialogs past due date might be marked as such in frontends, but will still be available.
     /// </summary>
     /// <example>2022-12-31T23:59:59Z</example>
     public DateTimeOffset? DueAt { get; set; }
@@ -156,7 +156,7 @@ public sealed class GetDialogDialogTransmissionDto
     public DateTimeOffset CreatedAt { get; set; }
 
     /// <summary>
-    /// Contains a authorization resource attributeId, that can used in custom authorization rules in the XACML service
+    /// Contains an authorization resource attributeId, that can used in custom authorization rules in the XACML service
     /// policy, which by default is the policy belonging to the service referred to by "serviceResource" in the dialog.
     ///
     /// Can also be used to refer other service policies.
@@ -178,11 +178,11 @@ public sealed class GetDialogDialogTransmissionDto
     public bool IsAuthorized { get; set; }
 
     /// <summary>
-    /// Arbitrary string with a service-specific transmission type.
+    /// Arbitrary URI/URN describing a service-specific transmission type.
     ///
     /// Refer to the service-specific documentation provided by the service owner for details (if in use).
     /// </summary>
-    public string? ExtendedType { get; set; }
+    public Uri? ExtendedType { get; set; }
 
     /// <summary>
     /// Reference to any other transmission that this transmission is related to.
@@ -336,7 +336,7 @@ public sealed class GetDialogDialogActivityDto
     public DateTimeOffset? CreatedAt { get; set; }
 
     /// <summary>
-    /// An arbitrary string with a service-specific activity type.
+    /// An arbitrary URI/URN with a service-specific activity type.
     ///
     /// Consult the service-specific documentation provided by the service owner for details (if in use).
     /// </summary>
@@ -403,7 +403,7 @@ public sealed class GetDialogDialogApiActionDto
     public string Action { get; set; } = null!;
 
     /// <summary>
-    /// Contains a authorization resource attributeId, that can used in custom authorization rules in the XACML service
+    /// Contains an authorization resource attributeId, that can used in custom authorization rules in the XACML service
     /// policy, which by default is the policy belonging to the service referred to by "serviceResource" in the dialog.
     ///
     /// Can also be used to refer other service policies.
@@ -466,7 +466,7 @@ public sealed class GetDialogDialogApiActionEndpointDto
     public Uri? DocumentationUrl { get; set; }
 
     /// <summary>
-    /// Link to the request schema for the endpoint. Used for service owners to provide documentation for integrators.
+    /// Link to the request schema for the endpoint. Used by service owners to provide documentation for integrators.
     /// Dialogporten will not validate information on this endpoint.
     /// </summary>
     public Uri? RequestSchema { get; set; }
@@ -512,7 +512,7 @@ public sealed class GetDialogDialogGuiActionDto
     public Uri Url { get; set; } = null!;
 
     /// <summary>
-    /// Contains a authorization resource attributeId, that can used in custom authorization rules in the XACML service
+    /// Contains an authorization resource attributeId, that can used in custom authorization rules in the XACML service
     /// policy, which by default is the policy belonging to the service referred to by "serviceResource" in the dialog.
     ///
     /// Can also be used to refer other service policies.
@@ -533,7 +533,7 @@ public sealed class GetDialogDialogGuiActionDto
     public bool IsAuthorized { get; set; }
 
     /// <summary>
-    /// Indicates wheter the action results in the dialog being deleted. Used by frontends to implement custom UX
+    /// Indicates whether the action results in the dialog being deleted. Used by frontends to implement custom UX
     /// for delete actions.
     /// </summary>
     public bool IsDeleteDialogAction { get; set; }
@@ -629,11 +629,6 @@ public sealed class GetDialogTransmissionAttachmentDto
 
 public sealed class GetDialogTransmissionAttachmentUrlDto
 {
-    /// <summary>
-    /// The unique identifier for the attachment URL in UUIDv7 format.
-    /// </summary>
-    public Guid Id { get; set; }
-
     /// <summary>
     /// The fully qualified HTTPS URL of the attachment. Will be set to "urn:dialogporten:unauthorized" if the user is
     /// not authorized to access the transmission.

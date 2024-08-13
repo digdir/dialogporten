@@ -274,7 +274,6 @@ public static class DialogGenerator
     public static List<CreateDialogDialogAttachmentDto> GenerateFakeDialogAttachments(int? count = null)
     {
         return new Faker<CreateDialogDialogAttachmentDto>()
-            .RuleFor(o => o.Id, _ => Guid.NewGuid())
             .RuleFor(o => o.DisplayName, f => GenerateFakeLocalizations(f.Random.Number(2, 5)))
             .RuleFor(o => o.Urls, _ => GenerateFakeDialogAttachmentUrls())
             .Generate(count ?? new Randomizer().Number(1, 6));
