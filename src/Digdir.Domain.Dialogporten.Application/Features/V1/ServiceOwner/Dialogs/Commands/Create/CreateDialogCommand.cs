@@ -6,7 +6,6 @@ using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Domain.Common;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Attachments;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 using FluentValidation.Results;
 using MediatR;
@@ -132,7 +131,7 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
         var existingTransmissionAttachmentIds = await _db.GetExistingIds(transmissionAttachments, cancellationToken);
         if (existingTransmissionAttachmentIds.Count != 0)
         {
-            _domainContext.AddError(DomainFailure.EntityExists<TransmissionAttachment>(existingTransmissionAttachmentIds));
+            _domainContext.AddError(DomainFailure.EntityExists<DialogTransmissionAttachment>(existingTransmissionAttachmentIds));
         }
 
         await _db.Dialogs.AddAsync(dialog, cancellationToken);

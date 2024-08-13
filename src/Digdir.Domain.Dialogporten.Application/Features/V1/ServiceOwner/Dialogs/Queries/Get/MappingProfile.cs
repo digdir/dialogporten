@@ -1,12 +1,12 @@
 ﻿using AutoMapper;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Content;
+using Digdir.Domain.Dialogporten.Domain.Attachments;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actors;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Attachments;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Contents;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions.Contents;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Queries.Get;
 
@@ -48,13 +48,13 @@ internal sealed class MappingProfile : Profile
         CreateMap<DialogTransmissionSenderActor, GetDialogDialogTransmissionSenderActorDto>()
             .ForMember(dest => dest.ActorType, opt => opt.MapFrom(src => src.ActorTypeId));
 
-        CreateMap<List<TransmissionContent>?, GetDialogDialogTransmissionContentDto?>()
+        CreateMap<List<DialogTransmissionContent>?, GetDialogDialogTransmissionContentDto?>()
             .ConvertUsing<TransmissionContentOutputConverter<GetDialogDialogTransmissionContentDto>>();
 
         CreateMap<DialogTransmission, GetDialogDialogTransmissionDto>()
             .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.TypeId));
 
-        CreateMap<TransmissionAttachment, GetDialogTransmissionAttachmentDto>();
+        CreateMap<DialogTransmissionAttachment, GetDialogTransmissionAttachmentDto>();
         CreateMap<AttachmentUrl, GetDialogTransmissionAttachmentUrlDto>()
             .ForMember(dest => dest.ConsumerType, opt => opt.MapFrom(src => src.ConsumerTypeId));
     }

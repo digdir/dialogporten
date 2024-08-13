@@ -1,10 +1,10 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Content;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
+using Digdir.Domain.Dialogporten.Domain.Actors;
+using Digdir.Domain.Dialogporten.Domain.Attachments;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actors;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Attachments;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 using Digdir.Domain.Dialogporten.Domain.Http;
 
@@ -78,7 +78,7 @@ public sealed class GetDialogDialogSeenLogSeenByActorDto
 public sealed class GetDialogDialogTransmissionSenderActorDto
 {
     public Guid Id { get; set; }
-    public DialogActorType.Values ActorType { get; set; }
+    public ActorType.Values ActorType { get; set; }
     public string ActorName { get; set; } = null!;
     public string ActorId { get; set; } = null!;
 }
@@ -121,7 +121,7 @@ public sealed class GetDialogDialogActivityDto
 public sealed class GetDialogDialogActivityPerformedByActorDto
 {
     public Guid Id { get; set; }
-    public DialogActorType.Values ActorType { get; set; }
+    public ActorType.Values ActorType { get; set; }
     public string? ActorName { get; set; }
     public string? ActorId { get; set; }
 }

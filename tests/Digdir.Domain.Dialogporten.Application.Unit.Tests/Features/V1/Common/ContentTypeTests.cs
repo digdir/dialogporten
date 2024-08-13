@@ -1,7 +1,7 @@
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Create;
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Update;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Contents;
-
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions.Contents;
 using GetDialogContentDtoEU = Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Queries.Get.GetDialogContentDto;
 using GetDialogContentDtoSO = Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Queries.Get.GetDialogContentDto;
 
@@ -78,7 +78,7 @@ public class ContentTypeTests
     public void TransmissionContentType_Names_Should_Match_Props_On_All_DTOs()
     {
         // Arrange
-        var transmissionContentTypeNames = TransmissionContentType.GetValues()
+        var transmissionContentTypeNames = DialogTransmissionContentType.GetValues()
             .Select(x => x.Name)
             .ToList();
 

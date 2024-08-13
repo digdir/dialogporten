@@ -4,10 +4,10 @@ using Digdir.Domain.Dialogporten.Application.Common.Extensions.Enumerables;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Domain.Common;
+using Digdir.Domain.Dialogporten.Domain.Attachments;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Attachments;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 using FluentValidation.Results;
 using MediatR;
@@ -68,7 +68,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
             .Include(x => x.GuiActions)
                 .ThenInclude(x => x.Title!.Localizations)
             .Include(x => x.GuiActions)
-                .ThenInclude(x => x!.Prompt!.Localizations)
+                .ThenInclude(x => x.Prompt!.Localizations)
             .Include(x => x.ApiActions)
                 .ThenInclude(x => x.Endpoints)
             .Include(x => x.Transmissions)
@@ -297,7 +297,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         var existingTransmissionAttachmentIds = await _db.GetExistingIds(transmissionAttachments, cancellationToken);
         if (existingTransmissionAttachmentIds.Count != 0)
         {
-            _domainContext.AddError(DomainFailure.EntityExists<TransmissionAttachment>(existingTransmissionAttachmentIds));
+            _domainContext.AddError(DomainFailure.EntityExists<DialogTransmissionAttachment>(existingTransmissionAttachmentIds));
         }
 
         if (_domainContext.Errors.Count != 0)
@@ -378,7 +378,6 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
             _domainContext.AddError(nameof(UpdateDialogDto.Attachments), $"Entity '{nameof(DialogAttachment)}' with the following key(s) already exists: ({string.Join(", ", existingIds)}).");
         }
 
-        _db.DialogAttachments.AddRange(attachments);
         return attachments;
     }
 

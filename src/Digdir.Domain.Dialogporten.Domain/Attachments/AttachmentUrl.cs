@@ -1,6 +1,6 @@
 using Digdir.Library.Entity.Abstractions;
 
-namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Attachments;
+namespace Digdir.Domain.Dialogporten.Domain.Attachments;
 
 public sealed class AttachmentUrl : IEntity
 {

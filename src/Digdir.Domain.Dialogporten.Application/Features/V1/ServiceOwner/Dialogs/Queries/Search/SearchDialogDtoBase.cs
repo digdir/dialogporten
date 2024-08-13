@@ -1,7 +1,7 @@
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
+using Digdir.Domain.Dialogporten.Domain.Actors;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actors;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Queries.Search;
 
@@ -61,7 +61,7 @@ public sealed class SearchDialogDialogActivityDto
 public sealed class SearchDialogDialogActivityPerformedByActorDto
 {
     public Guid Id { get; set; }
-    public DialogActorType.Values ActorType { get; set; }
+    public ActorType.Values ActorType { get; set; }
     public string? ActorName { get; set; }
     public string? ActorId { get; set; }
 }

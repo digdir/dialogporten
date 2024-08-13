@@ -5,8 +5,9 @@ using Digdir.Domain.Dialogporten.Domain.Outboxes;
 using Digdir.Library.Entity.Abstractions.Features.Identifiable;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Attachments;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Contents;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions.Contents;
 
 namespace Digdir.Domain.Dialogporten.Application.Externals;
 
@@ -14,20 +15,31 @@ public interface IDialogDbContext
 {
     DbSet<DialogEntity> Dialogs { get; }
     DbSet<DialogStatus> DialogStatuses { get; }
+
     DbSet<DialogActivity> DialogActivities { get; }
+    DbSet<DialogActivityType> DialogActivityTypes { get; }
+
     DbSet<DialogTransmission> DialogTransmissions { get; }
+    DbSet<DialogTransmissionType> DialogTransmissionTypes { get; }
+    DbSet<DialogTransmissionContent> DialogTransmissionContents { get; }
+    DbSet<DialogTransmissionContentType> DialogTransmissionContentTypes { get; }
 
     DbSet<DialogApiAction> DialogApiActions { get; }
     DbSet<DialogApiActionEndpoint> DialogApiActionEndpoints { get; }
+
     DbSet<DialogGuiAction> DialogGuiActions { get; }
-    DbSet<DialogAttachment> DialogAttachments { get; }
-    DbSet<AttachmentUrl> AttachmentUrls { get; }
-    DbSet<DialogGuiActionPriority> DialogGuiActionTypes { get; }
-    DbSet<DialogActivityType> DialogActivityTypes { get; }
+    DbSet<DialogGuiActionPriority> DialogGuiActionPriority { get; }
+
+    DbSet<DialogSeenLog> DialogSeenLog { get; }
+    DbSet<DialogUserType> DialogUserTypes { get; }
+
+    DbSet<DialogSearchTag> DialogSearchTags { get; }
+
+    DbSet<DialogContent> DialogContents { get; }
+    DbSet<DialogContentType> DialogContentTypes { get; }
 
     DbSet<OutboxMessage> OutboxMessages { get; }
     DbSet<OutboxMessageConsumer> OutboxMessageConsumers { get; }
-    DbSet<DialogSeenLog> DialogSeenLog { get; }
 
     /// <summary>
     /// Validate a property on the <typeparamref name="TEntity"/> using a lambda
