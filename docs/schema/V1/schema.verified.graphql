@@ -65,6 +65,7 @@ type AuthorizedParty {
   partyType: String!
   isDeleted: Boolean!
   hasKeyRole: Boolean!
+  isCurrentUser: Boolean!
   isMainAdministrator: Boolean!
   isAccessManager: Boolean!
   hasOnlyAccessToSubParties: Boolean!
