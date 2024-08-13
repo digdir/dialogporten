@@ -161,7 +161,7 @@ public sealed class SearchDialogDialogActivityDto
     public DialogActivityType.Values Type { get; set; }
 
     /// <summary>
-    /// The related activity identifier, if applicable. Must be present in current dialog.
+    /// The related activity identifier, if applicable. Must be present in the current dialog.
     /// </summary>
     public Guid? RelatedActivityId { get; set; }
 

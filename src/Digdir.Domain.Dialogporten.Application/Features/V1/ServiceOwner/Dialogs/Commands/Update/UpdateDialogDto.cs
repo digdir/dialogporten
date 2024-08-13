@@ -37,7 +37,7 @@ public sealed class UpdateDialogDto
     public DateTimeOffset? VisibleFrom { get; set; }
 
     /// <summary>
-    /// The due date for the dialog. Dialogs past due date might be marked as such in frontends, but will still be available.
+    /// The due date for the dialog. Dialogs past due date might be marked as such in frontends but will still be available.
     /// </summary>
     /// <example>2022-12-31T23:59:59Z</example>
     public DateTimeOffset? DueAt { get; set; }
@@ -98,13 +98,14 @@ public class UpdateDialogDialogTransmissionDto
 {
     /// <summary>
     /// The UUDIv7 of the action may be provided to support idempotent additions to the list of transmissions.
-    /// If not supplied a new UUIDv7 will be generated.
+    /// If not supplied, a new UUIDv7 will be generated.
     /// </summary>
     /// <example>01913cd5-784f-7d3b-abef-4c77b1f0972d</example>
     public Guid? Id { get; set; }
 
     /// <summary>
-    /// If supplied, overrides the creating date and time for the transmission. If not supplied, current date/time will be used.
+    /// If supplied, overrides the creating date and time for the transmission.
+    /// If not supplied, the current date /time will be used.
     /// </summary>
     public DateTimeOffset CreatedAt { get; set; }
 
@@ -112,7 +113,7 @@ public class UpdateDialogDialogTransmissionDto
     /// Contains an authorization resource attributeId, that can used in custom authorization rules in the XACML service
     /// policy, which by default is the policy belonging to the service referred to by "serviceResource" in the dialog.
     ///
-    /// Can also be used to refer other service policies.
+    /// Can also be used to refer to other service policies.
     /// </summary>
     /// <example>
     /// mycustomresource
@@ -237,13 +238,14 @@ public class UpdateDialogDialogActivityDto
 {
     /// <summary>
     /// The UUDIv7 of the action may be provided to support idempotent additions to the list of activities.
-    /// If not supplied a new UUIDv7 will be generated.
+    /// If not supplied, a new UUIDv7 will be generated.
     /// </summary>
     /// <example>01913cd5-784f-7d3b-abef-4c77b1f0972d</example>
     public Guid? Id { get; set; }
 
     /// <summary>
-    /// If supplied, overrides the creating date and time for the transmission. If not supplied, current date/time will be used.
+    /// If supplied, overrides the creating date and time for the transmission.
+    /// If not supplied, the current date /time will be used.
     /// </summary>
     public DateTimeOffset? CreatedAt { get; set; }
 
@@ -305,7 +307,7 @@ public sealed class UpdateDialogDialogApiActionDto
 {
     /// <summary>
     /// The UUDIv7 of the action may be provided to support idempotent additions to the list of API actions.
-    /// If not supplied a new UUIDv7 will be generated.
+    /// If not supplied, a new UUIDv7 will be generated.
     /// </summary>
     /// <example>01913cd5-784f-7d3b-abef-4c77b1f0972d</example>
     public Guid? Id { get; set; }
@@ -321,7 +323,7 @@ public sealed class UpdateDialogDialogApiActionDto
     /// Contains an authorization resource attributeId, that can used in custom authorization rules in the XACML service
     /// policy, which by default is the policy belonging to the service referred to by "serviceResource" in the dialog.
     ///
-    /// Can also be used to refer other service policies.
+    /// Can also be used to refer to other service policies.
     /// </summary>
     /// <example>
     /// mycustomresource
@@ -343,7 +345,7 @@ public sealed class UpdateDialogDialogApiActionEndpointDto
 {
     /// <summary>
     /// The UUDIv7 of the action may be provided to support idempotent additions to the list of API action endpoints.
-    /// If not supplied a new UUIDv7 will be generated.
+    /// If not supplied, a new UUIDv7 will be generated.
     /// </summary>
     /// <example>01913cd5-784f-7d3b-abef-4c77b1f0972d</example>
     public Guid? Id { get; set; }
@@ -421,7 +423,7 @@ public sealed class UpdateDialogDialogGuiActionDto
     /// Contains an authorization resource attributeId, that can used in custom authorization rules in the XACML service
     /// policy, which by default is the policy belonging to the service referred to by "serviceResource" in the dialog.
     ///
-    /// Can also be used to refer other service policies.
+    /// Can also be used to refer to other service policies.
     /// </summary>
     /// <example>
     /// mycustomresource
@@ -451,7 +453,7 @@ public sealed class UpdateDialogDialogGuiActionDto
     public DialogGuiActionPriority.Values Priority { get; set; }
 
     /// <summary>
-    /// The title of the action, should be short and in verb form. Must be text/plain.
+    /// The title of the action, this should be short and in verb form. Must be text/plain.
     /// </summary>
     public List<LocalizationDto> Title { get; set; } = [];
 
@@ -477,7 +479,7 @@ public class UpdateDialogDialogAttachmentDto
     public List<LocalizationDto> DisplayName { get; set; } = [];
 
     /// <summary>
-    /// The URLs associated with the attachment, each referring a different representation of the attachment.
+    /// The URLs associated with the attachment, each referring to a different representation of the attachment.
     /// </summary>
     public List<UpdateDialogDialogAttachmentUrlDto> Urls { get; set; } = [];
 }
@@ -526,7 +528,7 @@ public class UpdateDialogTransmissionAttachmentDto
     public List<LocalizationDto> DisplayName { get; set; } = [];
 
     /// <summary>
-    /// The URLs associated with the attachment, each referring a different representation of the attachment.
+    /// The URLs associated with the attachment, each referring to a different representation of the attachment.
     /// </summary>
     public List<UpdateDialogTransmissionAttachmentUrlDto> Urls { get; set; } = [];
 }

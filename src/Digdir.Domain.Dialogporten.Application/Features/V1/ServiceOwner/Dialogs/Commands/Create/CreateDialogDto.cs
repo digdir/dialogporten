@@ -21,7 +21,7 @@ public class CreateDialogDto
     /// <summary>
     /// The service identifier for the service that the dialog is related to in URN-format.
     /// This corresponds to a resource in the Altinn Resource Registry, which the authenticated organization
-    /// must own, ie. be listed as the "competent authority" in the Resource Registry entry.
+    /// must own, i.e., be listed as the "competent authority" in the Resource Registry entry.
     /// </summary>
     /// <example>urn:altinn:resource:some-service-identifier</example>
     public string ServiceResource { get; set; } = null!;
@@ -60,7 +60,7 @@ public class CreateDialogDto
     public DateTimeOffset? VisibleFrom { get; set; }
 
     /// <summary>
-    /// The due date for the dialog. Dialogs past due date might be marked as such in frontends, but will still be available.
+    /// The due date for the dialog. Dialogs past due date might be marked as such in frontends but will still be available.
     /// </summary>
     /// <example>2022-12-31T23:59:59Z</example>
     public DateTimeOffset? DueAt { get; set; }
@@ -75,15 +75,15 @@ public class CreateDialogDto
     public DateTimeOffset? ExpiresAt { get; set; }
 
     /// <summary>
-    /// If set, will override the date and time when the dialog is set as created. If not supplied, current date/time
-    /// will be used.
+    /// If set, will override the date and time when the dialog is set as created
+    /// If not supplied, the current date /time will be used.
     /// </summary>
     /// <example>2022-12-31T23:59:59Z</example>
     public DateTimeOffset CreatedAt { get; set; }
 
     /// <summary>
-    /// If set, will override the date and time when the dialog is set as last updated. If not supplied, current date/time
-    /// will be used.
+    /// If set, will override the date and time when the dialog is set as last updated
+    /// If not supplied, the current date /time will be used.
     /// </summary>
     /// <example>2022-12-31T23:59:59Z</example>
     public DateTimeOffset UpdatedAt { get; set; } // TODO: This does not work, as UpdatedAt is always overwritten
@@ -138,7 +138,8 @@ public class CreateDialogDialogTransmissionDto
     public Guid? Id { get; set; }
 
     /// <summary>
-    /// If supplied, overrides the creating date and time for the transmission. If not supplied, current date/time will be used.
+    /// If supplied, overrides the creating date and time for the transmission
+    /// If not supplied, the current date /time will be used.
     /// </summary>
     public DateTimeOffset CreatedAt { get; set; }
 
@@ -146,7 +147,7 @@ public class CreateDialogDialogTransmissionDto
     /// Contains an authorization resource attributeId, that can used in custom authorization rules in the XACML service
     /// policy, which by default is the policy belonging to the service referred to by "serviceResource" in the dialog.
     ///
-    /// Can also be used to refer other service policies.
+    /// Can also be used to refer to other service policies.
     /// </summary>
     /// <example>
     /// mycustomresource
@@ -254,7 +255,8 @@ public sealed class CreateDialogDialogActivityDto
     public Guid? Id { get; set; }
 
     /// <summary>
-    /// If supplied, overrides the creating date and time for the transmission. If not supplied, current date/time will be used.
+    /// If supplied, overrides the creating date and time for the transmission.
+    /// If not supplied, the current date /time will be used.
     /// </summary>
     public DateTimeOffset? CreatedAt { get; set; }
 
@@ -347,7 +349,7 @@ public sealed class CreateDialogDialogApiActionDto
     /// Contains an authorization resource attributeId, that can used in custom authorization rules in the XACML service
     /// policy, which by default is the policy belonging to the service referred to by "serviceResource" in the dialog.
     ///
-    /// Can also be used to refer other service policies.
+    /// Can also be used to refer to other service policies.
     /// </summary>
     /// <example>
     /// mycustomresource
@@ -433,7 +435,7 @@ public sealed class CreateDialogDialogGuiActionDto
     /// Contains an authorization resource attributeId, that can used in custom authorization rules in the XACML service
     /// policy, which by default is the policy belonging to the service referred to by "serviceResource" in the dialog.
     ///
-    /// Can also be used to refer other service policies.
+    /// Can also be used to refer to other service policies.
     /// </summary>
     /// <example>
     /// mycustomresource
@@ -463,7 +465,7 @@ public sealed class CreateDialogDialogGuiActionDto
     public DialogGuiActionPriority.Values Priority { get; set; }
 
     /// <summary>
-    /// The title of the action, should be short and in verb form. Must be text/plain.
+    /// The title of the action, this should be short and in verb form. Must be text/plain.
     /// </summary>
     public List<LocalizationDto> Title { get; set; } = [];
 
@@ -482,7 +484,7 @@ public sealed class CreateDialogDialogAttachmentDto
     public List<LocalizationDto> DisplayName { get; set; } = [];
 
     /// <summary>
-    /// The URLs associated with the attachment, each referring a different representation of the attachment.
+    /// The URLs associated with the attachment, each referring to a different representation of the attachment.
     /// </summary>
     public List<CreateDialogDialogAttachmentUrlDto> Urls { get; set; } = [];
 }
@@ -517,7 +519,7 @@ public sealed class CreateDialogTransmissionAttachmentDto
     public List<LocalizationDto> DisplayName { get; set; } = [];
 
     /// <summary>
-    /// The URLs associated with the attachment, each referring a different representation of the attachment.
+    /// The URLs associated with the attachment, each referring to a different representation of the attachment.
     /// </summary>
     public List<CreateDialogTransmissionAttachmentUrlDto> Urls { get; set; } = [];
 }

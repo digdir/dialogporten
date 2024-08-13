@@ -80,7 +80,7 @@ public sealed class GetDialogDto
     public DateTimeOffset? VisibleFrom { get; set; }
 
     /// <summary>
-    /// The due date for the dialog. Dialogs past due date might be marked as such in frontends, but will still be available.
+    /// The due date for the dialog. Dialogs past due date might be marked as such in frontends but will still be available.
     /// </summary>
     /// <example>2022-12-31T23:59:59Z</example>
     public DateTimeOffset? DueAt { get; set; }
@@ -133,7 +133,7 @@ public sealed class GetDialogDto
     public List<GetDialogDialogTransmissionDto> Transmissions { get; set; } = [];
 
     /// <summary>
-    /// The GUI actions associated with the dialog. Should be used in browser-based interactive front-ends.
+    /// The GUI actions associated with the dialog. Should be used in browser-based interactive frontends.
     /// </summary>
     public List<GetDialogDialogGuiActionDto> GuiActions { get; set; } = [];
 
@@ -169,7 +169,7 @@ public sealed class GetDialogDialogTransmissionDto
     /// Contains an authorization resource attributeId, that can used in custom authorization rules in the XACML service
     /// policy, which by default is the policy belonging to the service referred to by "serviceResource" in the dialog.
     ///
-    /// Can also be used to refer other service policies.
+    /// Can also be used to refer to other service policies.
     /// </summary>
     /// <example>
     /// mycustomresource
@@ -182,7 +182,7 @@ public sealed class GetDialogDialogTransmissionDto
     public string? AuthorizationAttribute { get; set; }
 
     /// <summary>
-    /// Flag indicating if the authenticated user supplied in query is authorized for this transmission.
+    /// Flag indicating if the authenticated user supplied in the query is authorized for this transmission.
     /// </summary>
     public bool? IsAuthorized { get; set; }
 
@@ -244,7 +244,7 @@ public sealed class GetDialogDialogSeenLogDto
     public bool? IsViaServiceOwner { get; set; }
 
     /// <summary>
-    /// Flag indicating whether the seen log entry was created by the current end user, if provided in query
+    /// Flag indicating whether the seen log entry was created by the current end user, if provided in the query
     /// </summary>
     public bool IsCurrentEndUser { get; set; }
 }
@@ -314,7 +314,7 @@ public sealed class GetDialogContentDto
     public ContentValueDto? ExtendedStatus { get; set; }
 
     /// <summary>
-    /// Front-channel embedded content. Used to dynamically embed content in the front-end from an external URL.
+    /// Front-channel embedded content. Used to dynamically embed content in the frontend from an external URL.
     /// </summary>
     public ContentValueDto? MainContentReference { get; set; }
 }
@@ -365,7 +365,7 @@ public sealed class GetDialogDialogActivityDto
     public DialogActivityType.Values Type { get; set; }
 
     /// <summary>
-    /// The related activity identifier, if applicable. Must be present in current dialog.
+    /// The related activity identifier, if applicable. Must be present in the current dialog.
     /// </summary>
     public Guid? RelatedActivityId { get; set; }
 
@@ -423,7 +423,7 @@ public sealed class GetDialogDialogApiActionDto
     /// Contains an authorization resource attributeId, that can used in custom authorization rules in the XACML service
     /// policy, which by default is the policy belonging to the service referred to by "serviceResource" in the dialog.
     ///
-    /// Can also be used to refer other service policies.
+    /// Can also be used to refer to other service policies.
     /// </summary>
     /// <example>
     /// mycustomresource
@@ -436,7 +436,7 @@ public sealed class GetDialogDialogApiActionDto
     public string? AuthorizationAttribute { get; set; }
 
     /// <summary>
-    /// True if the authenticated user (set in query) is authorized for this action.
+    /// True if the authenticated user (set in the query) is authorized for this action.
     /// </summary>
     public bool? IsAuthorized { get; set; }
 
@@ -521,7 +521,7 @@ public sealed class GetDialogDialogGuiActionDto
     /// Contains an authorization resource attributeId, that can used in custom authorization rules in the XACML service
     /// policy, which by default is the policy belonging to the service referred to by "serviceResource" in the dialog.
     ///
-    /// Can also be used to refer other service policies.
+    /// Can also be used to refer to other service policies.
     /// </summary>
     /// <example>
     /// mycustomresource
@@ -534,7 +534,7 @@ public sealed class GetDialogDialogGuiActionDto
     public string? AuthorizationAttribute { get; set; }
 
     /// <summary>
-    /// Whether the user, if supplied in query, is authorized to perform the action.
+    /// Whether the user, if supplied in the query, is authorized to perform the action.
     /// </summary>
     public bool? IsAuthorized { get; set; }
 
@@ -556,7 +556,7 @@ public sealed class GetDialogDialogGuiActionDto
     public HttpVerb.Values HttpMethod { get; set; }
 
     /// <summary>
-    /// The title of the action, should be short and in verb form. Always text/plain.
+    /// The title of the action, this should be short and in verb form. Always text/plain.
     /// </summary>
     public List<LocalizationDto> Title { get; set; } = [];
 
@@ -580,7 +580,7 @@ public sealed class GetDialogDialogAttachmentDto
     public List<LocalizationDto> DisplayName { get; set; } = [];
 
     /// <summary>
-    /// The URLs associated with the attachment, each referring a different representation of the attachment.
+    /// The URLs associated with the attachment, each referring to a different representation of the attachment.
     /// </summary>
     public List<GetDialogDialogAttachmentUrlDto> Urls { get; set; } = [];
 }
@@ -628,7 +628,7 @@ public sealed class GetDialogTransmissionAttachmentDto
     public List<LocalizationDto> DisplayName { get; set; } = [];
 
     /// <summary>
-    /// The URLs associated with the attachment, each referring a different representation of the attachment.
+    /// The URLs associated with the attachment, each referring to a different representation of the attachment.
     /// </summary>
     public List<GetDialogTransmissionAttachmentUrlDto> Urls { get; set; } = [];
 }
