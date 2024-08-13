@@ -89,7 +89,7 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
         CancellationToken token)
     {
         var authorizedPartiesDto = await SendAuthorizedPartiesRequest(authorizedPartiesRequest, token);
-        return AuthorizedPartiesHelper.CreateAuthorizedPartiesResult(authorizedPartiesDto);
+        return AuthorizedPartiesHelper.CreateAuthorizedPartiesResult(authorizedPartiesDto, authorizedPartiesRequest);
     }
 
     private async Task<DialogSearchAuthorizationResult> PerformNonScalableDialogSearchAuthorization(

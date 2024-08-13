@@ -4288,6 +4288,9 @@
           "hasKeyRole": {
             "type": "boolean"
           },
+          "isCurrentUser": {
+            "type": "boolean"
+          },
           "isMainAdministrator": {
             "type": "boolean"
           },
