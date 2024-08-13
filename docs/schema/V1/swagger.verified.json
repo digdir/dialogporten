@@ -2330,7 +2330,7 @@
             "type": "string"
           },
           "seenBy": {
-            "$ref": "#/components/schemas/SearchDialogDialogSeenLogSeenByActorDtoSO2"
+            "$ref": "#/components/schemas/SearchDialogDialogSeenLogSeenByActorDtoSO"
           }
         },
         "type": "object"
@@ -2352,22 +2352,6 @@
         "type": "object"
       },
       "SearchDialogDialogSeenLogSeenByActorDtoSO": {
-        "additionalProperties": false,
-        "properties": {
-          "actorId": {
-            "type": "string"
-          },
-          "actorName": {
-            "type": "string"
-          },
-          "id": {
-            "format": "guid",
-            "type": "string"
-          }
-        },
-        "type": "object"
-      },
-      "SearchDialogDialogSeenLogSeenByActorDtoSO2": {
         "additionalProperties": false,
         "properties": {
           "actorId": {
@@ -2553,7 +2537,23 @@
         },
         "type": "object"
       },
-      "SearchDialogSeenLogDtoSO": {
+      "SearchDialogSeenLogSeenByActorDto": {
+        "additionalProperties": false,
+        "properties": {
+          "actorId": {
+            "type": "string"
+          },
+          "actorName": {
+            "type": "string"
+          },
+          "id": {
+            "format": "guid",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "SearchSeenLogDto": {
         "additionalProperties": false,
         "properties": {
           "id": {
@@ -2569,12 +2569,12 @@
             "type": "string"
           },
           "seenBy": {
-            "$ref": "#/components/schemas/SearchDialogDialogSeenLogSeenByActorDtoSO"
+            "$ref": "#/components/schemas/SearchSeenLogSeenByActorDto"
           }
         },
         "type": "object"
       },
-      "SearchDialogSeenLogSeenByActorDto": {
+      "SearchSeenLogSeenByActorDto": {
         "additionalProperties": false,
         "properties": {
           "actorId": {
@@ -4887,7 +4887,7 @@
               "application/json": {
                 "schema": {
                   "items": {
-                    "$ref": "#/components/schemas/SearchDialogSeenLogDtoSO"
+                    "$ref": "#/components/schemas/SearchSeenLogDto"
                   },
                   "type": "array"
                 }
