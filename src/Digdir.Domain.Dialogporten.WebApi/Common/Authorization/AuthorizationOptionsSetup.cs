@@ -41,5 +41,9 @@ internal sealed class AuthorizationOptionsSetup : IConfigureOptions<Authorizatio
         options.AddPolicy(AuthorizationPolicy.Testing, builder => builder
             .Combine(options.DefaultPolicy)
             .RequireScope(AuthorizationScope.Testing));
+
+        options.AddPolicy(AuthorizationPolicy.NotificationConditionCheck, builder => builder
+            .Combine(options.DefaultPolicy)
+            .RequireScope(AuthorizationScope.NotificationConditionCheck));
     }
 }

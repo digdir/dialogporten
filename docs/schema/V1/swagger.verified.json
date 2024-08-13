@@ -265,8 +265,8 @@
         "tags": [
           "Serviceowner"
         ],
-        "summary": "Gets a single dialog seen log record",
-        "description": "Gets a single dialog seen log record. For more information see the documentation (link TBD).",
+        "summary": "Gets all seen log records for a dialog",
+        "description": "Gets all seen log records for a dialog. For more information see the documentation (link TBD).",
         "operationId": "SearchDialogSeenLogSO",
         "parameters": [
           {
@@ -287,7 +287,7 @@
             "description": "Forbidden"
           },
           "200": {
-            "description": "Successfully returned the dialog seen log record.",
+            "description": "Successfully returned the dialog seen log records.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1350,6 +1350,84 @@
         ]
       }
     },
+    "/api/v1/serviceowner/dialogs/{dialogId}/notification-condition": {
+      "get": {
+        "tags": [
+          "Serviceowner"
+        ],
+        "summary": "Returns a boolean value based on conditions used to determine if a notification is to be sent.",
+        "description": "Used by Altinn Notification only. Takes a dialogId and returns a boolean value based on conditions used to determine if a notification is to be sent.",
+        "operationId": "GetDialogActivityNotificationConditionSO",
+        "parameters": [
+          {
+            "name": "dialogId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            }
+          },
+          {
+            "name": "conditionType",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/NotificationConditionType"
+                }
+              ]
+            }
+          },
+          {
+            "name": "activityType",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/DialogActivityType_Values"
+                }
+              ]
+            }
+          },
+          {
+            "name": "transmissionId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "guid",
+              "nullable": true
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully returned the notification determination.",
+            "content": {
+              "text/plain": {
+                "schema": {}
+              },
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication token. Requires a Maskinporten-token with the scope \"altinn:system/notifications.condition.check\"."
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "JWTBearerAuth": []
+          }
+        ]
+      }
+    },
     "/api/v1/serviceowner/dialogs/{dialogId}/activities/{activityId}": {
       "get": {
         "tags": [
@@ -1548,8 +1626,8 @@
         "tags": [
           "Enduser"
         ],
-        "summary": "Gets a single dialog seen log record",
-        "description": "Gets a single dialog seen log record. For more information see the documentation (link TBD).",
+        "summary": "Gets all seen log records for a dialog",
+        "description": "Gets all seen log records for a dialog. For more information see the documentation (link TBD).",
         "operationId": "SearchDialogSeenLog",
         "parameters": [
           {
@@ -1570,7 +1648,7 @@
             "description": "Forbidden"
           },
           "200": {
-            "description": "Successfully returned the dialog seen log record.",
+            "description": "Successfully returned the dialog seen log records.",
             "content": {
               "application/json": {
                 "schema": {
@@ -4167,6 +4245,18 @@
           }
         }
       },
+      "NotificationConditionType": {
+        "type": "string",
+        "description": "",
+        "x-enumNames": [
+          "NotExists",
+          "Exists"
+        ],
+        "enum": [
+          "NotExists",
+          "Exists"
+        ]
+      },
       "GetPartiesDto": {
         "type": "object",
         "additionalProperties": false,
@@ -4196,6 +4286,9 @@
             "type": "boolean"
           },
           "hasKeyRole": {
+            "type": "boolean"
+          },
+          "isCurrentEndUser": {
             "type": "boolean"
           },
           "isMainAdministrator": {

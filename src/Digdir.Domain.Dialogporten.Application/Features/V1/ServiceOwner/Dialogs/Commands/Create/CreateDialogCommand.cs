@@ -127,6 +127,13 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
             _domainContext.AddError(DomainFailure.EntityExists<DialogTransmission>(existingTransmissionIds));
         }
 
+        var transmissionAttachments = dialog.Transmissions.SelectMany(x => x.Attachments);
+        var existingTransmissionAttachmentIds = await _db.GetExistingIds(transmissionAttachments, cancellationToken);
+        if (existingTransmissionAttachmentIds.Count != 0)
+        {
+            _domainContext.AddError(DomainFailure.EntityExists<DialogTransmissionAttachment>(existingTransmissionAttachmentIds));
+        }
+
         await _db.Dialogs.AddAsync(dialog, cancellationToken);
 
         var saveResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
@@ -151,6 +158,9 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
         serviceResourceReferences.AddRange(request.GuiActions
             .Where(action => IsExternalResource(action.AuthorizationAttribute))
             .Select(action => action.AuthorizationAttribute!));
+        serviceResourceReferences.AddRange(request.Transmissions
+            .Where(transmission => IsExternalResource(transmission.AuthorizationAttribute))
+            .Select(transmission => transmission.AuthorizationAttribute!));
 
         return serviceResourceReferences.Distinct().ToList();
     }
