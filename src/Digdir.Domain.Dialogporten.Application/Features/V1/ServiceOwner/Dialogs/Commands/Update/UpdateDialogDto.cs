@@ -78,7 +78,7 @@ public sealed class UpdateDialogDto
     public List<UpdateDialogDialogTransmissionDto> Transmissions { get; set; } = [];
 
     /// <summary>
-    /// The GUI actions associated with the dialog. Should be used in browser-based interactive front-ends.
+    /// The GUI actions associated with the dialog. Should be used in browser-based interactive frontends.
     /// </summary>
     public List<UpdateDialogDialogGuiActionDto> GuiActions { get; set; } = [];
 
@@ -221,7 +221,7 @@ public sealed class UpdateDialogContentDto
     public ContentValueDto? ExtendedStatus { get; set; }
 
     /// <summary>
-    /// Front-channel embedded content. Used to dynamically embed content in the front-end from an external URL.
+    /// Front-channel embedded content. Used to dynamically embed content in the frontend from an external URL.
     /// </summary>
     public ContentValueDto? MainContentReference { get; set; }
 }
