@@ -43,7 +43,7 @@ jobs:
     name: Build and test backend
     uses: ./.github/workflows/action-build-and-test.yml
     needs: [check-for-changes]
-    if: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasBackendChanges == 'true' }}
+    if: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasBackendChanges == 'true' || needs.check-for-changes.outputs.hasTestChanges == 'true' }}
 
   publish:
     name: Build and publish docker images
