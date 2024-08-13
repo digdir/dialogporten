@@ -9,6 +9,9 @@ on:
       hasBackendChanges:
         description: "Backend related files changed"
         value: ${{ jobs.check-for-changes.outputs.hasBackendChanges }}
+      hasTestChanges:
+        description: "Test related files changed"
+        value: ${{ jobs.check-for-changes.outputs.hasTestChanges }}
       hasSlackNotifierChanges:
         description: "Slack Notifier function related files changed"
         value: ${{ jobs.check-for-changes.outputs.hasSlackNotifierChanges }}
@@ -24,6 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       hasBackendChanges: ${{ steps.filter.outputs.backend_any_modified == 'true' }}
+      hasTestChanges: ${{ steps.filter.outputs.tests_any_modified == 'true' }}
       hasAzureChanges: ${{ steps.filter.outputs.azure_any_modified == 'true' }}
       hasSlackNotifierChanges: ${{ steps.filter.outputs.slackNotifier_any_modified == 'true'}}
       hasSchemaChanges: ${{ steps.filter.outputs.schema_any_modified == 'true'}}
@@ -43,6 +47,8 @@ jobs:
               - '.github/**/*'
               - 'src/**/*'
               - '.azure/applications/**/*'
+            tests:
+              - 'tests/**/*'
             azure:
               - '.github/**/*'
               - '.azure/infrastructure/**/*'
