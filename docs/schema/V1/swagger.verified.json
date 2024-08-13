@@ -2330,7 +2330,7 @@
             "type": "string"
           },
           "seenBy": {
-            "$ref": "#/components/schemas/SearchDialogDialogSeenLogSeenByActorDtoSO"
+            "$ref": "#/components/schemas/SearchDialogDialogSeenLogSeenByActorDtoSO2"
           }
         },
         "type": "object"
@@ -2569,7 +2569,7 @@
             "type": "string"
           },
           "seenBy": {
-            "$ref": "#/components/schemas/SearchDialogDialogSeenLogSeenByActorDtoSO2"
+            "$ref": "#/components/schemas/SearchDialogDialogSeenLogSeenByActorDtoSO"
           }
         },
         "type": "object"
