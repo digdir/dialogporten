@@ -23,7 +23,7 @@ jobs:
   build:
     uses: ./.github/workflows/action-build-and-test.yml
     needs: [check-for-changes]
-    if: ${{ needs.check-for-changes.outputs.hasBackendChanges == 'true' }}
+    if: ${{ needs.check-for-changes.outputs.hasBackendChanges == 'true' || needs.check-for-changes.outputs.hasTestChanges == 'true' }}
 
   build-infrastructure:
     uses: ./.github/workflows/action-build-infrastructure.yml
