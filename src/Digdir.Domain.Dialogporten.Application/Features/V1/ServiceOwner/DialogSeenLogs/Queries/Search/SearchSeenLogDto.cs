@@ -1,16 +1,16 @@
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.DialogSeenLogs.Queries.Search;
 
-public sealed class SearchDialogSeenLogDto
+public sealed class SearchSeenLogDto
 {
     public Guid Id { get; set; }
     public DateTimeOffset SeenAt { get; set; }
 
-    public SearchDialogDialogSeenLogSeenByActorDto SeenBy { get; set; } = null!;
+    public SearchSeenLogSeenByActorDto SeenBy { get; set; } = null!;
 
     public bool? IsViaServiceOwner { get; set; }
 }
 
-public sealed class SearchDialogDialogSeenLogSeenByActorDto
+public sealed class SearchSeenLogSeenByActorDto
 {
     public Guid Id { get; set; }
     public string ActorName { get; set; } = null!;

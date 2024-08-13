@@ -22,7 +22,7 @@ public sealed class SearchDialogActivityEndpointSummary : Summary<NotificationCo
 {
     public SearchDialogActivityEndpointSummary()
     {
-        Summary = "Returns a boolean value based on conditions used to determine if a notification is to be sent.";
+        Summary = "Returns a boolean value based on conditions used to determine if a notification is to be sent";
         Description = """
                       Used by Altinn Notification only. Takes a dialogId and returns a boolean value based on conditions used to determine if a notification is to be sent.
                       """;

@@ -119,7 +119,7 @@ public sealed class SearchDialogDialogSeenLogDto
     public bool? IsViaServiceOwner { get; set; }
 
     /// <summary>
-    /// Flag indicating whether the seen log entry was created by the end user supplied in query.
+    /// Flag indicating whether the seen log entry was created by the end user supplied in the query.
     /// </summary>
     public bool IsCurrentEndUser { get; set; }
 }
@@ -166,7 +166,7 @@ public sealed class SearchDialogDialogActivityDto
     public DialogActivityType.Values Type { get; set; }
 
     /// <summary>
-    /// The related activity identifier, if applicable. Must be present in current dialog.
+    /// The related activity identifier, if applicable. Must be present in the current dialog.
     /// </summary>
     public Guid? RelatedActivityId { get; set; }
 

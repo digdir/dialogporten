@@ -6,7 +6,7 @@ using MediatR;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.DialogSeenLogs.Search;
 
-public class SearchDialogSeenLogEndpoint : Endpoint<SearchDialogSeenLogQuery, List<SearchDialogSeenLogDto>>
+public class SearchDialogSeenLogEndpoint : Endpoint<SearchDialogSeenLogQuery, List<SearchSeenLogDto>>
 {
     private readonly ISender _sender;
 
