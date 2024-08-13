@@ -1,8 +1,7 @@
-﻿using System.ComponentModel;
+using Digdir.Domain.Dialogporten.Domain.Actors;
+using Digdir.Domain.Dialogporten.Domain.Attachments;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actors;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Attachments;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Contents;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Events;
@@ -21,7 +20,6 @@ public class DialogEntity :
     IAggregateChangedHandler,
     IEventPublisher
 {
-    [Description("The unique UUIDv7")]
     public Guid Id { get; set; }
     public Guid Revision { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
@@ -107,7 +105,7 @@ public class DialogEntity :
             EndUserTypeId = userTypeId,
             SeenBy = new DialogSeenLogSeenByActor
             {
-                ActorTypeId = DialogActorType.Values.PartyRepresentative,
+                ActorTypeId = ActorType.Values.PartyRepresentative,
                 ActorId = endUserId,
                 ActorName = endUserName
             }
@@ -123,4 +121,10 @@ public class DialogEntity :
         _domainEvents.Clear();
         return events;
     }
+}
+
+public sealed class DialogAttachment : Attachment
+{
+    public Guid DialogId { get; set; }
+    public DialogEntity Dialog { get; set; } = null!;
 }

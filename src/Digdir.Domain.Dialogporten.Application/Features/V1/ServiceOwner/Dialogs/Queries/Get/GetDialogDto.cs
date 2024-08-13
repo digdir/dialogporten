@@ -1,5 +1,7 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Content;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
+using Digdir.Domain.Dialogporten.Domain.Actors;
+using Digdir.Domain.Dialogporten.Domain.Attachments;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
@@ -271,7 +273,7 @@ public sealed class GetDialogDialogTransmissionSenderActorDto
     /// <summary>
     /// The type of actor that sent the transmission.
     /// </summary>
-    public DialogActorType.Values ActorType { get; set; }
+    public ActorType.Values ActorType { get; set; }
 
     /// <summary>
     /// The name of the person or organization that sent the transmission.
@@ -390,7 +392,7 @@ public sealed class GetDialogDialogActivityPerformedByActorDto
     /// <summary>
     /// What type of actor performed the activity.
     /// </summary>
-    public DialogActorType.Values ActorType { get; set; }
+    public ActorType.Values ActorType { get; set; }
 
     /// <summary>
     /// The name of the person or organization that performed the activity.

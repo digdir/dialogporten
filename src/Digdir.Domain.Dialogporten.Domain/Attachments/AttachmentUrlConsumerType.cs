@@ -1,6 +1,6 @@
 ﻿using Digdir.Library.Entity.Abstractions.Features.Lookup;
 
-namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Attachments;
+namespace Digdir.Domain.Dialogporten.Domain.Attachments;
 
 public class AttachmentUrlConsumerType : AbstractLookupEntity<AttachmentUrlConsumerType, AttachmentUrlConsumerType.Values>
 {

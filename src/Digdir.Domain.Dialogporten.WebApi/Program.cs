@@ -138,6 +138,8 @@ static void BuildAndRun(string[] args)
             .ReplaceSingleton<IUser, LocalDevelopmentUser>(predicate: localDevelopmentSettings.UseLocalDevelopmentUser)
             .ReplaceSingleton<IAuthorizationHandler, AllowAnonymousHandler>(
                 predicate: localDevelopmentSettings.DisableAuth)
+            .ReplaceSingleton<ITokenIssuerCache, DevelopmentTokenIssuerCache>(
+                predicate: localDevelopmentSettings.DisableAuth)
             .AddHostedService<
                 OutboxScheduler>(predicate: !localDevelopmentSettings.DisableShortCircuitOutboxDispatcher);
     }

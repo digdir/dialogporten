@@ -9,7 +9,7 @@ using Digdir.Tool.Dialogporten.GenerateFakeData;
 using AutoMapper;
 using FluentAssertions;
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Delete;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Attachments;
+using Digdir.Domain.Dialogporten.Domain.Attachments;
 
 namespace Digdir.Domain.Dialogporten.Application.Integration.Tests.Features.V1.Common.Events;
 

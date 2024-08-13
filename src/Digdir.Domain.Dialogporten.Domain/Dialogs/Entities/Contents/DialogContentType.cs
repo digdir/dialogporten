@@ -21,18 +21,7 @@ public class DialogContentType : AbstractLookupEntity<DialogContentType, DialogC
 
     public int MaxLength { get; private init; }
 
-    public string[] AllowedMediaTypes { get; init; } = [];
-
-    public static DialogContentType GetContentType(string contentType) => contentType switch
-    {
-        nameof(Values.Title) => GetValue(Values.Title),
-        nameof(Values.SenderName) => GetValue(Values.SenderName),
-        nameof(Values.Summary) => GetValue(Values.Summary),
-        nameof(Values.AdditionalInfo) => GetValue(Values.AdditionalInfo),
-        nameof(Values.ExtendedStatus) => GetValue(Values.ExtendedStatus),
-        nameof(Values.MainContentReference) => GetValue(Values.MainContentReference),
-        _ => throw new ArgumentOutOfRangeException(nameof(contentType), contentType, null)
-    };
+    public string[] AllowedMediaTypes { get; private init; } = [];
 
     public override DialogContentType MapValue(Values id) => id switch
     {

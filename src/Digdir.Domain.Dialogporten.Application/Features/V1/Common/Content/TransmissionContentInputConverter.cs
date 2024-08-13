@@ -1,9 +1,9 @@
 using AutoMapper;
 using System.Reflection;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Contents;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.Enumerables;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using Digdir.Domain.Dialogporten.Domain;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions.Contents;
 
 // ReSharper disable ClassNeverInstantiated.Global
 
@@ -19,16 +19,16 @@ namespace Digdir.Domain.Dialogporten.Application.Features.V1.Common.Content;
 
 internal class IntermediateTransmissionContent
 {
-    public TransmissionContentType.Values TypeId { get; set; }
+    public DialogTransmissionContentType.Values TypeId { get; set; }
     public List<LocalizationDto> Value { get; set; } = null!;
     public string MediaType { get; set; } = MediaTypes.PlainText;
 }
 
 internal class TransmissionContentInputConverter<TTransmissionContent> :
-    ITypeConverter<TTransmissionContent?, List<TransmissionContent>?>
+    ITypeConverter<TTransmissionContent?, List<DialogTransmissionContent>?>
     where TTransmissionContent : class, new()
 {
-    public List<TransmissionContent>? Convert(TTransmissionContent? source, List<TransmissionContent>? destinations, ResolutionContext context)
+    public List<DialogTransmissionContent>? Convert(TTransmissionContent? source, List<DialogTransmissionContent>? destinations, ResolutionContext context)
     {
         if (source is null)
         {
@@ -37,7 +37,7 @@ internal class TransmissionContentInputConverter<TTransmissionContent> :
 
         var sources = new List<IntermediateTransmissionContent>();
 
-        foreach (var transmissionContentType in TransmissionContentType.GetValues())
+        foreach (var transmissionContentType in DialogTransmissionContentType.GetValues())
         {
             if (!PropertyCache<TTransmissionContent>.PropertyByName.TryGetValue(transmissionContentType.Name, out var sourceProperty))
             {
@@ -62,7 +62,7 @@ internal class TransmissionContentInputConverter<TTransmissionContent> :
             .Merge(sources,
                 destinationKeySelector: x => x.TypeId,
                 sourceKeySelector: x => x.TypeId,
-                create: context.Mapper.Map<List<TransmissionContent>>,
+                create: context.Mapper.Map<List<DialogTransmissionContent>>,
                 update: context.Mapper.Update,
                 delete: DeleteDelegate.NoOp);
 
@@ -71,10 +71,10 @@ internal class TransmissionContentInputConverter<TTransmissionContent> :
 }
 
 internal class TransmissionContentOutputConverter<TTransmissionContent> :
-    ITypeConverter<List<TransmissionContent>?, TTransmissionContent?>
+    ITypeConverter<List<DialogTransmissionContent>?, TTransmissionContent?>
     where TTransmissionContent : class, new()
 {
-    public TTransmissionContent? Convert(List<TransmissionContent>? sources, TTransmissionContent? destination, ResolutionContext context)
+    public TTransmissionContent? Convert(List<DialogTransmissionContent>? sources, TTransmissionContent? destination, ResolutionContext context)
     {
         if (sources is null)
         {

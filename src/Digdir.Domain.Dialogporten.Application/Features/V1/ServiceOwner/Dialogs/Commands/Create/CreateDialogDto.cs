@@ -1,10 +1,10 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Content;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
+using Digdir.Domain.Dialogporten.Domain.Actors;
+using Digdir.Domain.Dialogporten.Domain.Attachments;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actors;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Attachments;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 using Digdir.Domain.Dialogporten.Domain.Http;
 
@@ -295,7 +295,7 @@ public sealed class CreateDialogDialogActivityPerformedByActorDto
     /// <summary>
     /// What type of actor performed the activity.
     /// </summary>
-    public DialogActorType.Values ActorType { get; set; }
+    public ActorType.Values ActorType { get; set; }
 
     /// <summary>
     /// Specifies the name of the entity that performed the activity. Mutually exclusive with ActorId. If ActorId
@@ -317,7 +317,7 @@ public sealed class CreateDialogDialogTransmissionSenderActorDto
     /// <summary>
     /// The type of actor that sent the transmission.
     /// </summary>
-    public DialogActorType.Values ActorType { get; set; }
+    public ActorType.Values ActorType { get; set; }
 
     /// <summary>
     /// Specifies the name of the entity that sent the transmission. Mutually exclusive with ActorId. If ActorId

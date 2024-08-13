@@ -2,6 +2,7 @@ using Digdir.Domain.Dialogporten.Application.Common.Extensions.FluentValidation;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using Digdir.Domain.Dialogporten.Domain;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Contents;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions.Contents;
 using FluentValidation;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.Common.Content;
@@ -13,7 +14,7 @@ internal interface IIgnoreOnAssemblyScan;
 
 internal sealed class ContentValueDtoValidator : AbstractValidator<ContentValueDto>, IIgnoreOnAssemblyScan
 {
-    public ContentValueDtoValidator(TransmissionContentType contentType)
+    public ContentValueDtoValidator(DialogTransmissionContentType contentType)
     {
         RuleFor(x => x.MediaType)
             .NotEmpty()
@@ -22,10 +23,10 @@ internal sealed class ContentValueDtoValidator : AbstractValidator<ContentValueD
                          $"Allowed media types are {string.Join(", ", contentType.AllowedMediaTypes.Select(x => $"'{x}'"))}");
         RuleForEach(x => x.Value)
             .ContainsValidHtml()
-            .When(x => x.MediaType is not null && x.MediaType == MediaTypes.Html);
+            .When(x => x.MediaType is not null and MediaTypes.Html);
         RuleForEach(x => x.Value)
             .ContainsValidMarkdown()
-            .When(x => x.MediaType is not null && x.MediaType == MediaTypes.Markdown);
+            .When(x => x.MediaType is not null and MediaTypes.Markdown);
         RuleForEach(x => x.Value)
             .Must(x => Uri.TryCreate(x.Value, UriKind.Absolute, out var uri) && uri.Scheme == Uri.UriSchemeHttps)
             .When(x => x.MediaType is not null && x.MediaType.StartsWith(MediaTypes.EmbeddablePrefix, StringComparison.InvariantCultureIgnoreCase))
@@ -44,10 +45,10 @@ internal sealed class ContentValueDtoValidator : AbstractValidator<ContentValueD
                          $"Allowed media types are {string.Join(", ", contentType.AllowedMediaTypes.Select(x => $"'{x}'"))}");
         RuleForEach(x => x.Value)
             .ContainsValidHtml()
-            .When(x => x.MediaType is not null && x.MediaType == MediaTypes.Html);
+            .When(x => x.MediaType is not null and MediaTypes.Html);
         RuleForEach(x => x.Value)
             .ContainsValidMarkdown()
-            .When(x => x.MediaType is not null && x.MediaType == MediaTypes.Markdown);
+            .When(x => x.MediaType is not null and MediaTypes.Markdown);
         RuleForEach(x => x.Value)
             .Must(x => Uri.TryCreate(x.Value, UriKind.Absolute, out var uri) && uri.Scheme == Uri.UriSchemeHttps)
             .When(x => x.MediaType is not null && x.MediaType.StartsWith(MediaTypes.EmbeddablePrefix, StringComparison.InvariantCultureIgnoreCase))

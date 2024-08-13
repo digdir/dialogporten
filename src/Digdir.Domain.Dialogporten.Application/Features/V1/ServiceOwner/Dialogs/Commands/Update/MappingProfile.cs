@@ -2,13 +2,13 @@
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Content;
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Queries.Get;
+using Digdir.Domain.Dialogporten.Domain.Attachments;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actors;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Attachments;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Contents;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions.Contents;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Update;
 
@@ -69,7 +69,7 @@ internal sealed class MappingProfile : Profile
             .ForMember(dest => dest.ActorType, opt => opt.Ignore())
             .ForMember(dest => dest.ActorTypeId, opt => opt.MapFrom(src => src.ActorType));
 
-        CreateMap<UpdateDialogDialogTransmissionContentDto?, List<TransmissionContent>?>()
+        CreateMap<UpdateDialogDialogTransmissionContentDto?, List<DialogTransmissionContent>?>()
             .ConvertUsing<TransmissionContentInputConverter<UpdateDialogDialogTransmissionContentDto>>();
 
         CreateMap<UpdateDialogDialogTransmissionSenderActorDto, DialogTransmissionSenderActor>()
@@ -80,7 +80,7 @@ internal sealed class MappingProfile : Profile
             .ForMember(dest => dest.Type, opt => opt.Ignore())
             .ForMember(dest => dest.TypeId, opt => opt.MapFrom(src => src.Type));
 
-        CreateMap<UpdateDialogTransmissionAttachmentDto, TransmissionAttachment>()
+        CreateMap<UpdateDialogTransmissionAttachmentDto, DialogTransmissionAttachment>()
             .IgnoreComplexDestinationProperties();
 
         CreateMap<UpdateDialogTransmissionAttachmentUrlDto, AttachmentUrl>()
