@@ -53,11 +53,14 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
 
     public async Task<CreateDialogResult> Handle(CreateDialogCommand request, CancellationToken cancellationToken)
     {
-        foreach (var serviceResourceReference in GetServiceResourceReferences(request))
+        if (!_userResourceRegistry.IsCurrentUserServiceOwnerAdmin())
         {
-            if (!await _userResourceRegistry.CurrentUserIsOwner(serviceResourceReference, cancellationToken))
+            foreach (var serviceResourceReference in GetServiceResourceReferences(request))
             {
-                return new Forbidden($"Not allowed to reference {serviceResourceReference}.");
+                if (!await _userResourceRegistry.CurrentUserIsOwner(serviceResourceReference, cancellationToken))
+                {
+                    return new Forbidden($"Not allowed to reference {serviceResourceReference}.");
+                }
             }
         }
 

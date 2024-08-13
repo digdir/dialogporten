@@ -12,6 +12,7 @@ public interface IUserResourceRegistry
     Task<IReadOnlyCollection<string>> GetCurrentUserResourceIds(CancellationToken cancellationToken);
     Task<string> GetResourceType(string serviceResourceId, CancellationToken cancellationToken);
     bool UserCanModifyResourceType(string serviceResourceType);
+    bool IsCurrentUserServiceOwnerAdmin();
 }
 
 public class UserResourceRegistry : IUserResourceRegistry
@@ -46,6 +47,8 @@ public class UserResourceRegistry : IUserResourceRegistry
         ResourceRegistry.Constants.Correspondence => _user.GetPrincipal().HasScope(Constants.CorrespondenceScope),
         _ => true
     };
+
+    public bool IsCurrentUserServiceOwnerAdmin() => _user.GetPrincipal().HasScope(Constants.ServiceOwnerAdminScope);
 }
 
 internal sealed class LocalDevelopmentUserResourceRegistryDecorator : IUserResourceRegistry
@@ -67,4 +70,5 @@ internal sealed class LocalDevelopmentUserResourceRegistryDecorator : IUserResou
         Task.FromResult("LocalResourceType");
 
     public bool UserCanModifyResourceType(string serviceResourceType) => true;
+    public bool IsCurrentUserServiceOwnerAdmin() => true;
 }

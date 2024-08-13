@@ -7,4 +7,5 @@ public static class Constants
     public const string TransmissionReadAction = "transmissionread";
     public static readonly Uri UnauthorizedUri = new("urn:dialogporten:unauthorized");
     public const string CorrespondenceScope = "digdir:dialogporten.correspondence";
+    public const string ServiceOwnerAdminScope = "digdir:dialogporten.serviceprovider.admin";
 }
