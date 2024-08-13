@@ -2162,37 +2162,61 @@
         "properties": {
           "id": {
             "type": "string",
+            "description": "The UUDIv7 of the action may be provided to support idempotent additions to the list of transmissions.\nIf not supplied a new UUIDv7 will be generated.",
             "format": "guid",
-            "nullable": true
+            "nullable": true,
+            "example": "01913cd5-784f-7d3b-abef-4c77b1f0972d"
           },
           "createdAt": {
             "type": "string",
+            "description": "If supplied, overrides the creating date and time for the transmission. If not supplied, current date/time will be used.",
             "format": "date-time"
           },
           "authorizationAttribute": {
             "type": "string",
-            "nullable": true
+            "description": "Contains an authorization resource attributeId, that can used in custom authorization rules in the XACML service\npolicy, which by default is the policy belonging to the service referred to by \"serviceResource\" in the dialog.\n            \nCan also be used to refer other service policies.",
+            "nullable": true,
+            "example": "mycustomresource\n/* equivalent to the above */\nurn:altinn:subresource:mycustomresource\nurn:altinn:task:Task_1\n/* refer to another service */\nurn:altinn:resource:some-other-service-identifier"
           },
           "extendedType": {
             "type": "string",
+            "description": "Arbitrary URI/URN describing a service-specific transmission type.\n            \nRefer to the service-specific documentation provided by the service owner for details (if in use).",
+            "format": "uri",
             "nullable": true
           },
           "relatedTransmissionId": {
             "type": "string",
+            "description": "Reference to any other transmission that this transmission is related to.",
             "format": "guid",
             "nullable": true
           },
           "type": {
-            "$ref": "#/components/schemas/DialogTransmissionType_Values"
+            "description": "The type of transmission.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DialogTransmissionType_Values"
+              }
+            ]
           },
           "sender": {
-            "$ref": "#/components/schemas/UpdateDialogDialogTransmissionSenderActorDto"
+            "description": "The actor that sent the transmission.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/UpdateDialogDialogTransmissionSenderActorDto"
+              }
+            ]
           },
           "content": {
-            "$ref": "#/components/schemas/UpdateDialogDialogTransmissionContentDto"
+            "description": "The transmission unstructured text content",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/UpdateDialogDialogTransmissionContentDto"
+              }
+            ]
           },
           "attachments": {
             "type": "array",
+            "description": "The transmission-level attachments",
             "items": {
               "$ref": "#/components/schemas/UpdateDialogTransmissionAttachmentDto"
             }
@@ -2228,13 +2252,24 @@
         "additionalProperties": false,
         "properties": {
           "actorType": {
-            "$ref": "#/components/schemas/DialogActorType_Values"
+            "description": "The type of actor that sent the transmission.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DialogActorType_Values"
+              }
+            ]
           },
           "actorName": {
-            "type": "string"
+            "type": "string",
+            "description": "Specifies the name of the entity that sent the transmission. Mutually exclusive with ActorId. If ActorId\nis supplied, the name will be automatically populated from the name registries.",
+            "nullable": true,
+            "example": "Ola Nordmann"
           },
           "actorId": {
-            "type": "string"
+            "type": "string",
+            "description": "The identifier of the person or organization that sent the transmission. Mutually exclusive with ActorName.\nMight be omitted if ActorType is \"ServiceOwner\".",
+            "nullable": true,
+            "example": "urn:altinn:person:identifier-no:12018212345"
           }
         }
       },
@@ -2255,10 +2290,20 @@
         "additionalProperties": false,
         "properties": {
           "title": {
-            "$ref": "#/components/schemas/ContentValueDto"
+            "description": "The transmission title. Must be text/plain.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ContentValueDto"
+              }
+            ]
           },
           "summary": {
-            "$ref": "#/components/schemas/ContentValueDto"
+            "description": "The transmission summary. Always text/plain.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ContentValueDto"
+              }
+            ]
           }
         }
       },
@@ -2268,12 +2313,15 @@
         "properties": {
           "value": {
             "type": "array",
+            "description": "A list of localizations for the content",
             "items": {
               "$ref": "#/components/schemas/LocalizationDto"
             }
           },
           "mediaType": {
-            "type": "string"
+            "type": "string",
+            "description": "Media type of the content (plaintext, Markdown). Can also indicate that the content is embeddable.",
+            "example": "text/plain\ntext/markdown\napplication/vnd.dialogporten.frontchannelembed"
           }
         }
       },
@@ -2282,10 +2330,13 @@
         "additionalProperties": false,
         "properties": {
           "value": {
-            "type": "string"
+            "type": "string",
+            "description": "The localized text or URI reference"
           },
           "languageCode": {
-            "type": "string"
+            "type": "string",
+            "description": "The language code of the localization in ISO 639-1 format",
+            "example": "nb"
           }
         }
       },
@@ -2295,17 +2346,21 @@
         "properties": {
           "id": {
             "type": "string",
+            "description": "A self-defined UUIDv7 may be provided in order to support idempotent updates of attachments. If not supplied,\na new UUIDv7 will be generated.",
             "format": "guid",
-            "nullable": true
+            "nullable": true,
+            "example": "01913cd5-784f-7d3b-abef-4c77b1f0972d"
           },
           "displayName": {
             "type": "array",
+            "description": "The display name of the attachment that should be used in GUIs.",
             "items": {
               "$ref": "#/components/schemas/LocalizationDto"
             }
           },
           "urls": {
             "type": "array",
+            "description": "The URLs associated with the attachment, each referring a different representation of the attachment.",
             "items": {
               "$ref": "#/components/schemas/UpdateDialogTransmissionAttachmentUrlDto"
             }
@@ -2318,19 +2373,29 @@
         "properties": {
           "id": {
             "type": "string",
+            "description": "A self-defined UUIDv7 may be provided in order to support idempotent updates of attachment URLs. If not supplied,\na new UUIDv7 will be generated.",
             "format": "guid",
-            "nullable": true
+            "nullable": true,
+            "example": "01913cd5-784f-7d3b-abef-4c77b1f0972d"
           },
           "url": {
             "type": "string",
+            "description": "The fully qualified HTTPS URL of the attachment.",
             "format": "uri"
           },
           "mediaType": {
             "type": "string",
-            "nullable": true
+            "description": "The media type of the attachment.",
+            "nullable": true,
+            "example": "application/pdf\napplication/zip"
           },
           "consumerType": {
-            "$ref": "#/components/schemas/AttachmentUrlConsumerType_Values"
+            "description": "The type of consumer the URL is intended for.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/AttachmentUrlConsumerType_Values"
+              }
+            ]
           }
         }
       },
@@ -2435,70 +2500,95 @@
         "properties": {
           "progress": {
             "type": "integer",
+            "description": "Advisory indicator of progress, represented as 1-100 percentage value. 100% representing a dialog that has come\nto a natural completion (successful or not).",
             "format": "int32",
             "nullable": true
           },
           "extendedStatus": {
             "type": "string",
+            "description": "Arbitrary string with a service-specific indicator of status, typically used to indicate a fine-grained state of\nthe dialog to further specify the \"status\" enum.",
             "nullable": true
           },
           "externalReference": {
             "type": "string",
+            "description": "Arbitrary string with a service-specific reference to an external system or service.",
             "nullable": true
           },
           "visibleFrom": {
             "type": "string",
+            "description": "The timestamp when the dialog should be made visible for authorized end users. If not provided, the dialog will be\nimmediately available.",
             "format": "date-time",
-            "nullable": true
+            "nullable": true,
+            "example": "2022-12-31T23:59:59Z"
           },
           "dueAt": {
             "type": "string",
+            "description": "The due date for the dialog. Dialogs past due date might be marked as such in frontends, but will still be available.",
             "format": "date-time",
-            "nullable": true
+            "nullable": true,
+            "example": "2022-12-31T23:59:59Z"
           },
           "expiresAt": {
             "type": "string",
+            "description": "The expiration date for the dialog. This is the last date when the dialog is available for the end user.\n            \nAfter this date is passed, the dialog will be considered expired and no longer available for the end user in any\nAPI. If not supplied, the dialog will be considered to never expire. This field can be changed after creation.",
             "format": "date-time",
-            "nullable": true
+            "nullable": true,
+            "example": "2022-12-31T23:59:59Z"
           },
           "status": {
-            "$ref": "#/components/schemas/DialogStatus_Values"
+            "description": "The aggregated status of the dialog.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DialogStatus_Values"
+              }
+            ]
           },
           "content": {
-            "$ref": "#/components/schemas/UpdateDialogContentDto"
+            "description": "The dialog unstructured text content",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/UpdateDialogContentDto"
+              }
+            ]
           },
           "searchTags": {
             "type": "array",
+            "description": "A list of words (tags) that will be used in dialog search queries. Not visible in end-user DTO.",
             "items": {
               "$ref": "#/components/schemas/UpdateDialogSearchTagDto"
             }
           },
-          "transmissions": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/UpdateDialogDialogTransmissionDto"
-            }
-          },
           "attachments": {
             "type": "array",
+            "description": "The attachments associated with the dialog (on an aggregate level)",
             "items": {
               "$ref": "#/components/schemas/UpdateDialogDialogAttachmentDto"
             }
           },
+          "transmissions": {
+            "type": "array",
+            "description": "The immutable list of transmissions associated with the dialog. When updating via PUT, any transmissions\nadded here will be appended to the existing list of transmissions.",
+            "items": {
+              "$ref": "#/components/schemas/UpdateDialogDialogTransmissionDto"
+            }
+          },
           "guiActions": {
             "type": "array",
+            "description": "The GUI actions associated with the dialog. Should be used in browser-based interactive front-ends.",
             "items": {
               "$ref": "#/components/schemas/UpdateDialogDialogGuiActionDto"
             }
           },
           "apiActions": {
             "type": "array",
+            "description": "The API actions associated with the dialog. Should be used in specialized, non-browser-based integrations.",
             "items": {
               "$ref": "#/components/schemas/UpdateDialogDialogApiActionDto"
             }
           },
           "activities": {
             "type": "array",
+            "description": "An immutable list of activities associated with the dialog. When updating via PUT, any activities added here\nwill be appended to the existing list of activities.",
             "items": {
               "$ref": "#/components/schemas/UpdateDialogDialogActivityDto"
             }
@@ -2530,12 +2620,23 @@
         "additionalProperties": false,
         "properties": {
           "title": {
-            "$ref": "#/components/schemas/ContentValueDto"
+            "description": "The title of the dialog. Must be text/plain.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ContentValueDto"
+              }
+            ]
           },
           "summary": {
-            "$ref": "#/components/schemas/ContentValueDto"
+            "description": "A short summary of the dialog and its current state. Must be text/plain.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ContentValueDto"
+              }
+            ]
           },
           "senderName": {
+            "description": "Overridden sender name. If not supplied, assume \"org\" as the sender name. Must be text/plain if supplied.",
             "nullable": true,
             "oneOf": [
               {
@@ -2544,6 +2645,7 @@
             ]
           },
           "additionalInfo": {
+            "description": "Additional information about the dialog, this may contain Markdown.",
             "nullable": true,
             "oneOf": [
               {
@@ -2552,6 +2654,7 @@
             ]
           },
           "extendedStatus": {
+            "description": "Used as the human-readable label used to describe the \"ExtendedStatus\" field. Must be text/plain.",
             "nullable": true,
             "oneOf": [
               {
@@ -2560,6 +2663,7 @@
             ]
           },
           "mainContentReference": {
+            "description": "Front-channel embedded content. Used to dynamically embed content in the front-end from an external URL.",
             "nullable": true,
             "oneOf": [
               {
@@ -2574,50 +2678,8 @@
         "additionalProperties": false,
         "properties": {
           "value": {
-            "type": "string"
-          }
-        }
-      },
-      "UpdateDialogDialogTransmissionDto": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "id": {
             "type": "string",
-            "format": "guid",
-            "nullable": true
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "authorizationAttribute": {
-            "type": "string",
-            "nullable": true
-          },
-          "extendedType": {
-            "type": "string",
-            "nullable": true
-          },
-          "relatedTransmissionId": {
-            "type": "string",
-            "format": "guid",
-            "nullable": true
-          },
-          "type": {
-            "$ref": "#/components/schemas/DialogTransmissionType_Values"
-          },
-          "sender": {
-            "$ref": "#/components/schemas/UpdateDialogDialogTransmissionSenderActorDto"
-          },
-          "content": {
-            "$ref": "#/components/schemas/UpdateDialogDialogTransmissionContentDto"
-          },
-          "attachments": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/UpdateDialogTransmissionAttachmentDto"
-            }
+            "description": "A search tag value."
           }
         }
       },
@@ -2627,17 +2689,21 @@
         "properties": {
           "id": {
             "type": "string",
+            "description": "A self-defined UUIDv7 may be provided in order to support idempotent updates of attachments. If not supplied,\na new UUIDv7 will be generated.",
             "format": "guid",
-            "nullable": true
+            "nullable": true,
+            "example": "01913cd5-784f-7d3b-abef-4c77b1f0972d"
           },
           "displayName": {
             "type": "array",
+            "description": "The display name of the attachment that should be used in GUIs.",
             "items": {
               "$ref": "#/components/schemas/LocalizationDto"
             }
           },
           "urls": {
             "type": "array",
+            "description": "The URLs associated with the attachment, each referring a different representation of the attachment.",
             "items": {
               "$ref": "#/components/schemas/UpdateDialogDialogAttachmentUrlDto"
             }
@@ -2650,19 +2716,96 @@
         "properties": {
           "id": {
             "type": "string",
+            "description": "A self-defined UUIDv7 may be provided in order to support idempotent updates of attachment URLs. If not supplied,\na new UUIDv7 will be generated.",
             "format": "guid",
-            "nullable": true
+            "nullable": true,
+            "example": "01913cd5-784f-7d3b-abef-4c77b1f0972d"
           },
           "url": {
             "type": "string",
+            "description": "The fully qualified HTTPS URL of the attachment.",
             "format": "uri"
           },
           "mediaType": {
             "type": "string",
-            "nullable": true
+            "description": "The media type of the attachment.",
+            "nullable": true,
+            "example": "application/pdf\napplication/zip"
           },
           "consumerType": {
-            "$ref": "#/components/schemas/AttachmentUrlConsumerType_Values"
+            "description": "The type of consumer the URL is intended for.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/AttachmentUrlConsumerType_Values"
+              }
+            ]
+          }
+        }
+      },
+      "UpdateDialogDialogTransmissionDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The UUDIv7 of the action may be provided to support idempotent additions to the list of transmissions.\nIf not supplied a new UUIDv7 will be generated.",
+            "format": "guid",
+            "nullable": true,
+            "example": "01913cd5-784f-7d3b-abef-4c77b1f0972d"
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "If supplied, overrides the creating date and time for the transmission. If not supplied, current date/time will be used.",
+            "format": "date-time"
+          },
+          "authorizationAttribute": {
+            "type": "string",
+            "description": "Contains an authorization resource attributeId, that can used in custom authorization rules in the XACML service\npolicy, which by default is the policy belonging to the service referred to by \"serviceResource\" in the dialog.\n            \nCan also be used to refer other service policies.",
+            "nullable": true,
+            "example": "mycustomresource\n/* equivalent to the above */\nurn:altinn:subresource:mycustomresource\nurn:altinn:task:Task_1\n/* refer to another service */\nurn:altinn:resource:some-other-service-identifier"
+          },
+          "extendedType": {
+            "type": "string",
+            "description": "Arbitrary URI/URN describing a service-specific transmission type.\n            \nRefer to the service-specific documentation provided by the service owner for details (if in use).",
+            "format": "uri",
+            "nullable": true
+          },
+          "relatedTransmissionId": {
+            "type": "string",
+            "description": "Reference to any other transmission that this transmission is related to.",
+            "format": "guid",
+            "nullable": true
+          },
+          "type": {
+            "description": "The type of transmission.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DialogTransmissionType_Values"
+              }
+            ]
+          },
+          "sender": {
+            "description": "The actor that sent the transmission.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/UpdateDialogDialogTransmissionSenderActorDto"
+              }
+            ]
+          },
+          "content": {
+            "description": "The transmission unstructured text content",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/UpdateDialogDialogTransmissionContentDto"
+              }
+            ]
+          },
+          "attachments": {
+            "type": "array",
+            "description": "The transmission-level attachments",
+            "items": {
+              "$ref": "#/components/schemas/UpdateDialogTransmissionAttachmentDto"
+            }
           }
         }
       },
@@ -2672,24 +2815,33 @@
         "properties": {
           "id": {
             "type": "string",
+            "description": "The UUDIv7 of the action may be provided to support idempotent additions to the list of actions. If not supplied,\na new UUIDv7 will be generated.",
             "format": "guid",
-            "nullable": true
+            "nullable": true,
+            "example": "01913cd5-784f-7d3b-abef-4c77b1f0972d"
           },
           "action": {
-            "type": "string"
+            "type": "string",
+            "description": "The action identifier for the action, corresponding to the \"action\" attributeId used in the XACML service policy,"
           },
           "url": {
             "type": "string",
-            "format": "uri"
+            "description": "The fully qualified HTTPS URL of the action, to which the user will be redirected when the action is triggered. Will be set to\n\"urn:dialogporten:unauthorized\" if the user is not authorized to perform the action.",
+            "format": "uri",
+            "example": "urn:dialogporten:unauthorized\nhttps://someendpoint.com/gui/some-service-instance-id"
           },
           "authorizationAttribute": {
             "type": "string",
-            "nullable": true
+            "description": "Contains an authorization resource attributeId, that can used in custom authorization rules in the XACML service\npolicy, which by default is the policy belonging to the service referred to by \"serviceResource\" in the dialog.\n            \nCan also be used to refer other service policies.",
+            "nullable": true,
+            "example": "mycustomresource\n/* equivalent to the above */\nurn:altinn:subresource:mycustomresource\nurn:altinn:task:Task_1\n/* refer to another service */\nurn:altinn:resource:some-other-service-identifier"
           },
           "isDeleteDialogAction": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Indicates whether the action results in the dialog being deleted. Used by frontends to implement custom UX\nfor delete actions."
           },
           "httpMethod": {
+            "description": "The HTTP method that the frontend should use when redirecting the user.",
             "nullable": true,
             "oneOf": [
               {
@@ -2698,16 +2850,23 @@
             ]
           },
           "priority": {
-            "$ref": "#/components/schemas/DialogGuiActionPriority_Values"
+            "description": "Indicates a priority for the action, making it possible for frontends to adapt GUI elements based on action\npriority.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DialogGuiActionPriority_Values"
+              }
+            ]
           },
           "title": {
             "type": "array",
+            "description": "The title of the action, should be short and in verb form. Must be text/plain.",
             "items": {
               "$ref": "#/components/schemas/LocalizationDto"
             }
           },
           "prompt": {
             "type": "array",
+            "description": "If there should be a prompt asking the user for confirmation before the action is executed,\nthis field should contain the prompt text.",
             "nullable": true,
             "items": {
               "$ref": "#/components/schemas/LocalizationDto"
@@ -2761,18 +2920,25 @@
         "properties": {
           "id": {
             "type": "string",
+            "description": "The UUDIv7 of the action may be provided to support idempotent additions to the list of API actions.\nIf not supplied a new UUIDv7 will be generated.",
             "format": "guid",
-            "nullable": true
+            "nullable": true,
+            "example": "01913cd5-784f-7d3b-abef-4c77b1f0972d"
           },
           "action": {
-            "type": "string"
+            "type": "string",
+            "description": "String identifier for the action, corresponding to the \"action\" attributeId used in the XACML service policy,\nwhich by default is the policy belonging to the service referred to by \"serviceResource\" in the dialog",
+            "example": "write"
           },
           "authorizationAttribute": {
             "type": "string",
-            "nullable": true
+            "description": "Contains an authorization resource attributeId, that can used in custom authorization rules in the XACML service\npolicy, which by default is the policy belonging to the service referred to by \"serviceResource\" in the dialog.\n            \nCan also be used to refer other service policies.",
+            "nullable": true,
+            "example": "mycustomresource\n/* equivalent to the above */\nurn:altinn:subresource:mycustomresource\nurn:altinn:task:Task_1\n/* refer to another service */\nurn:altinn:resource:some-other-service-identifier"
           },
           "endpoints": {
             "type": "array",
+            "description": "The endpoints associated with the action.",
             "items": {
               "$ref": "#/components/schemas/UpdateDialogDialogApiActionEndpointDto"
             }
@@ -2785,40 +2951,54 @@
         "properties": {
           "id": {
             "type": "string",
+            "description": "The UUDIv7 of the action may be provided to support idempotent additions to the list of API action endpoints.\nIf not supplied a new UUIDv7 will be generated.",
             "format": "guid",
-            "nullable": true
+            "nullable": true,
+            "example": "01913cd5-784f-7d3b-abef-4c77b1f0972d"
           },
           "version": {
             "type": "string",
+            "description": "Arbitrary string indicating the version of the endpoint.",
             "nullable": true
           },
           "url": {
             "type": "string",
+            "description": "The fully qualified HTTPS URL of the API endpoint.",
             "format": "uri"
           },
           "httpMethod": {
-            "$ref": "#/components/schemas/HttpVerb_Values"
+            "description": "The HTTP method that the endpoint expects for this action.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/HttpVerb_Values"
+              }
+            ]
           },
           "documentationUrl": {
             "type": "string",
+            "description": "Link to documentation for the endpoint, providing documentation for integrators. Should be a URL to a\nhuman-readable page.",
             "format": "uri",
             "nullable": true
           },
           "requestSchema": {
             "type": "string",
+            "description": "Link to the request schema for the endpoint. Used to provide documentation for integrators.\nDialogporten will not validate information on this endpoint.",
             "format": "uri",
             "nullable": true
           },
           "responseSchema": {
             "type": "string",
+            "description": "Link to the response schema for the endpoint. Used to provide documentation for integrators.\nDialogporten will not validate information on this endpoint.",
             "format": "uri",
             "nullable": true
           },
           "deprecated": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Boolean indicating if the endpoint is deprecated."
           },
           "sunsetAt": {
             "type": "string",
+            "description": "Date and time when the endpoint will no longer function. Only set if the endpoint is deprecated. Dialogporten\nwill not enforce this date.",
             "format": "date-time",
             "nullable": true
           }
@@ -2830,37 +3010,54 @@
         "properties": {
           "id": {
             "type": "string",
+            "description": "The UUDIv7 of the action may be provided to support idempotent additions to the list of activities.\nIf not supplied a new UUIDv7 will be generated.",
             "format": "guid",
-            "nullable": true
+            "nullable": true,
+            "example": "01913cd5-784f-7d3b-abef-4c77b1f0972d"
           },
           "createdAt": {
             "type": "string",
+            "description": "If supplied, overrides the creating date and time for the transmission. If not supplied, current date/time will be used.",
             "format": "date-time",
             "nullable": true
           },
           "extendedType": {
             "type": "string",
+            "description": "Arbitrary URI/URN describing a service-specific transmission type.",
             "format": "uri",
             "nullable": true
           },
           "type": {
-            "$ref": "#/components/schemas/DialogActivityType_Values"
+            "description": "The type of transmission.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DialogActivityType_Values"
+              }
+            ]
           },
           "relatedActivityId": {
             "type": "string",
+            "description": "The related activity identifier, if applicable. Must be present in the request body.",
             "format": "guid",
             "nullable": true
           },
           "transmissionId": {
             "type": "string",
+            "description": "If the activity is related to a particular transmission, this field will contain the transmission identifier.\nMust be present in the request body.",
             "format": "guid",
             "nullable": true
           },
           "performedBy": {
-            "$ref": "#/components/schemas/UpdateDialogDialogActivityPerformedByActorDto"
+            "description": "The actor that performed the activity.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/UpdateDialogDialogActivityPerformedByActorDto"
+              }
+            ]
           },
           "description": {
             "type": "array",
+            "description": "Unstructured text describing the activity. Only set if the activity type is \"Information\".",
             "items": {
               "$ref": "#/components/schemas/LocalizationDto"
             }
@@ -2892,15 +3089,24 @@
         "additionalProperties": false,
         "properties": {
           "actorType": {
-            "$ref": "#/components/schemas/DialogActorType_Values"
+            "description": "What type of actor performed the activity.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DialogActorType_Values"
+              }
+            ]
           },
           "actorName": {
             "type": "string",
-            "nullable": true
+            "description": "Specifies the name of the entity that performed the activity. Mutually exclusive with ActorId. If ActorId\nis supplied, the name will be automatically populated from the name registries.",
+            "nullable": true,
+            "example": "Ola Nordmann"
           },
           "actorId": {
             "type": "string",
-            "nullable": true
+            "description": "The identifier of the person or organization that performed the activity. Mutually exclusive with ActorName.\nMight be omitted if ActorType is \"ServiceOwner\".",
+            "nullable": true,
+            "example": "urn:altinn:person:identifier-no:12018212345"
           }
         }
       },
@@ -2910,19 +3116,25 @@
         "properties": {
           "items": {
             "type": "array",
+            "description": "The paginated list of items",
             "items": {
               "$ref": "#/components/schemas/SearchDialogDtoSO"
             }
           },
           "hasNextPage": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Whether there are more items available that can be fetched by supplying the continuation token"
           },
           "continuationToken": {
             "type": "string",
-            "nullable": true
+            "description": "The continuation token to be used to fetch the next page of items",
+            "nullable": true,
+            "example": "createdat_2024-07-31T09:09:03.0257090Z,id_0c089101-b7cf-a476-955c-f00a78d74a4e"
           },
           "orderBy": {
-            "type": "string"
+            "type": "string",
+            "description": "The current sorting order of the items",
+            "example": "createdat_desc,id_desc"
           }
         }
       },
@@ -2932,60 +3144,77 @@
         "properties": {
           "id": {
             "type": "string",
-            "format": "guid"
+            "description": "The unique identifier for the in UUIDv7 format.",
+            "format": "guid",
+            "example": "01913cd5-784f-7d3b-abef-4c77b1f0972d"
           },
           "org": {
-            "type": "string"
+            "type": "string",
+            "description": "The service owner code representing the organization (service owner) related to this dialog.",
+            "example": "ske"
           },
           "serviceResource": {
-            "type": "string"
-          },
-          "serviceResourceType": {
-            "type": "string"
+            "type": "string",
+            "description": "The service identifier for the service that the dialog is related to in URN-format.\nThis corresponds to a service resource in the Altinn Resource Registry.",
+            "example": "urn:altinn:resource:some-service-identifier"
           },
           "party": {
-            "type": "string"
-          },
-          "endUserId": {
             "type": "string",
-            "nullable": true
+            "description": "The party code representing the organization or person that the dialog belongs to in URN format",
+            "example": "urn:altinn:person:identifier-no:01125512345\nurn:altinn:organization:identifier-no:912345678"
           },
           "progress": {
             "type": "integer",
+            "description": "Advisory indicator of progress, represented as 1-100 percentage value. 100% representing a dialog that has come\nto a natural completion (successful or not).",
             "format": "int32",
             "nullable": true
           },
           "guiAttachmentCount": {
             "type": "integer",
+            "description": "The number of attachments in the dialog made available for browser-based frontends.",
             "format": "int32",
             "nullable": true
           },
           "extendedStatus": {
             "type": "string",
+            "description": "Arbitrary string with a service-specific indicator of status, typically used to indicate a fine-grained state of\nthe dialog to further specify the \"status\" enum.\n            \nRefer to the service-specific documentation provided by the service owner for details on the possible values (if\nin use).",
             "nullable": true
           },
           "createdAt": {
             "type": "string",
-            "format": "date-time"
+            "description": "The date and time when the dialog was created.",
+            "format": "date-time",
+            "example": "2022-12-31T23:59:59Z"
           },
           "updatedAt": {
             "type": "string",
-            "format": "date-time"
+            "description": "The date and time when the dialog was last updated.",
+            "format": "date-time",
+            "example": "2022-12-31T23:59:59Z"
           },
           "dueAt": {
             "type": "string",
+            "description": "The due date for the dialog. This is the last date when the dialog is expected to be completed.",
             "format": "date-time",
-            "nullable": true
+            "nullable": true,
+            "example": "2022-12-31T23:59:59Z"
           },
           "visibleFrom": {
             "type": "string",
+            "description": "The timestamp when the dialog will be made visible for authorized end users.",
             "format": "date-time",
             "nullable": true
           },
           "status": {
-            "$ref": "#/components/schemas/DialogStatus_Values"
+            "description": "The aggregated status of the dialog.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DialogStatus_Values"
+              }
+            ]
           },
           "latestActivity": {
+            "description": "The latest entry in the dialog's activity log.",
             "nullable": true,
             "oneOf": [
               {
@@ -2995,12 +3224,18 @@
           },
           "seenSinceLastUpdate": {
             "type": "array",
+            "description": "The list of seen log entries for the dialog newer than the dialog ChangedAt date.",
             "items": {
               "$ref": "#/components/schemas/SearchDialogDialogSeenLogDtoSO"
             }
           },
           "content": {
-            "$ref": "#/components/schemas/SearchDialogContentDtoSO"
+            "description": "The content of the dialog in search results",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/SearchDialogContentDtoSO"
+              }
+            ]
           }
         }
       },
@@ -3010,36 +3245,52 @@
         "properties": {
           "id": {
             "type": "string",
+            "description": "The unique identifier for the activity in UUIDv7 format.",
             "format": "guid"
           },
           "createdAt": {
             "type": "string",
+            "description": "The date and time when the activity was created.",
             "format": "date-time",
             "nullable": true
           },
           "extendedType": {
             "type": "string",
+            "description": "An arbitrary string with a service-specific activity type.\n            \nConsult the service-specific documentation provided by the service owner for details (if in use).",
             "format": "uri",
             "nullable": true
           },
           "type": {
-            "$ref": "#/components/schemas/DialogActivityType_Values"
+            "description": "The type of activity.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DialogActivityType_Values"
+              }
+            ]
           },
           "relatedActivityId": {
             "type": "string",
+            "description": "The related activity identifier, if applicable. Must be present in current dialog.",
             "format": "guid",
             "nullable": true
           },
           "transmissionId": {
             "type": "string",
+            "description": "If the activity is related to a particular transmission, this field will contain the transmission identifier.",
             "format": "guid",
             "nullable": true
           },
           "performedBy": {
-            "$ref": "#/components/schemas/SearchDialogDialogActivityPerformedByActorDtoSO"
+            "description": "The actor that performed the activity.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/SearchDialogDialogActivityPerformedByActorDtoSO"
+              }
+            ]
           },
           "description": {
             "type": "array",
+            "description": "Unstructured text describing the activity. Only set if the activity type is \"Information\".",
             "items": {
               "$ref": "#/components/schemas/LocalizationDto"
             }
@@ -3050,19 +3301,22 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "id": {
-            "type": "string",
-            "format": "guid"
-          },
           "actorType": {
-            "$ref": "#/components/schemas/DialogActorType_Values"
+            "description": "What type of actor performed the activity.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DialogActorType_Values"
+              }
+            ]
           },
           "actorName": {
             "type": "string",
+            "description": "The name of the person or organization that performed the activity.\nOnly set if the actor type is \"PartyRepresentative\".",
             "nullable": true
           },
           "actorId": {
             "type": "string",
+            "description": "The identifier of the person or organization that performed the activity.\nMay be omitted if ActorType is \"ServiceOwner\".",
             "nullable": true
           }
         }
@@ -3073,21 +3327,30 @@
         "properties": {
           "id": {
             "type": "string",
+            "description": "The unique identifier for the seen log entry in UUIDv7 format.",
             "format": "guid"
           },
           "seenAt": {
             "type": "string",
+            "description": "The timestamp when the dialog revision was seen",
             "format": "date-time"
           },
           "seenBy": {
-            "$ref": "#/components/schemas/SearchDialogDialogSeenLogSeenByActorDtoSO2"
+            "description": "The actor that saw the dialog revision",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/SearchDialogDialogSeenLogSeenByActorDtoSO2"
+              }
+            ]
           },
           "isViaServiceOwner": {
             "type": "boolean",
+            "description": "Flag indicating whether the seen log entry was created via the service owner.\n            \nThis is used when the service owner uses the service owner API to implement its own frontend.",
             "nullable": true
           },
           "isCurrentEndUser": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Flag indicating whether the seen log entry was created by the end user supplied in query."
           }
         }
       },
@@ -3095,15 +3358,14 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "id": {
-            "type": "string",
-            "format": "guid"
-          },
           "actorName": {
-            "type": "string"
+            "type": "string",
+            "description": "The natural name of the person/business that saw the dialog revision."
           },
           "actorId": {
-            "type": "string"
+            "type": "string",
+            "description": "The identifier of the person/business that saw the dialog revision.",
+            "example": "urn:altinn:person:identifier-no:01125512345\nurn:altinn:organization:identifier-no:912345678"
           }
         }
       },
@@ -3112,12 +3374,23 @@
         "additionalProperties": false,
         "properties": {
           "title": {
-            "$ref": "#/components/schemas/ContentValueDto"
+            "description": "The title of the dialog. Always text/plain.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ContentValueDto"
+              }
+            ]
           },
           "summary": {
-            "$ref": "#/components/schemas/ContentValueDto"
+            "description": "A short summary of the dialog and its current state. Always text/plain.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ContentValueDto"
+              }
+            ]
           },
           "senderName": {
+            "description": "Overridden sender name. If not supplied, assume \"org\" as the sender name. Always text/plain.",
             "nullable": true,
             "oneOf": [
               {
@@ -3126,6 +3399,7 @@
             ]
           },
           "extendedStatus": {
+            "description": "Used as the human-readable label used to describe the \"ExtendedStatus\" field. Always text/plain.",
             "nullable": true,
             "oneOf": [
               {
@@ -3141,73 +3415,105 @@
         "properties": {
           "id": {
             "type": "string",
-            "format": "guid"
+            "description": "The unique identifier for the in UUIDv7 format.",
+            "format": "guid",
+            "example": "01913cd5-784f-7d3b-abef-4c77b1f0972d"
           },
           "revision": {
             "type": "string",
-            "format": "guid"
+            "description": "The unique identifier for the revision in UUIDv4 format.",
+            "format": "guid",
+            "example": "a312cb9c-7632-43c2-aa38-69b06aed56ca"
           },
           "org": {
-            "type": "string"
+            "type": "string",
+            "description": "The service owner code representing the organization (service owner) related to this dialog.",
+            "example": "ske"
           },
           "serviceResource": {
-            "type": "string"
-          },
-          "serviceResourceType": {
-            "type": "string"
+            "type": "string",
+            "description": "The service identifier for the service that the dialog is related to in URN-format.\nThis corresponds to a service resource in the Altinn Resource Registry.",
+            "example": "urn:altinn:resource:some-service-identifier"
           },
           "party": {
-            "type": "string"
+            "type": "string",
+            "description": "The party code representing the organization or person that the dialog belongs to in URN format",
+            "example": "urn:altinn:person:identifier-no:01125512345\nurn:altinn:organization:identifier-no:912345678"
           },
           "progress": {
             "type": "integer",
+            "description": "Advisory indicator of progress, represented as 1-100 percentage value. 100% representing a dialog that has come\nto a natural completion (successful or not).",
             "format": "int32",
             "nullable": true
           },
           "extendedStatus": {
             "type": "string",
+            "description": "Arbitrary string with a service-specific indicator of status, typically used to indicate a fine-grained state of\nthe dialog to further specify the \"status\" enum.\n            \nRefer to the service-specific documentation provided by the service owner for details on the possible values (if\nin use).",
             "nullable": true
           },
           "externalReference": {
             "type": "string",
+            "description": "Arbitrary string with a service-specific reference to an external system or service.\n            \nRefer to the service-specific documentation provided by the service owner for details (if in use).",
             "nullable": true
           },
           "deletedAt": {
             "type": "string",
+            "description": "If deleted, the date and time when the deletion was performed.",
             "format": "date-time",
             "nullable": true
           },
           "visibleFrom": {
             "type": "string",
+            "description": "The timestamp when the dialog will be made visible for authorized end users.",
             "format": "date-time",
-            "nullable": true
+            "nullable": true,
+            "example": "2022-12-31T23:59:59Z"
           },
           "dueAt": {
             "type": "string",
+            "description": "The due date for the dialog. Dialogs past due date might be marked as such in frontends, but will still be available.",
             "format": "date-time",
-            "nullable": true
+            "nullable": true,
+            "example": "2022-12-31T23:59:59Z"
           },
           "expiresAt": {
             "type": "string",
+            "description": "The expiration date for the dialog. This is the last date when the dialog is available for the end user.\n            \nAfter this date is passed, the dialog will be considered expired and no longer available for the end user in any\nAPI. If not supplied, the dialog will be considered to never expire. This field can be changed by the service\nowner after the dialog has been created.",
             "format": "date-time",
-            "nullable": true
+            "nullable": true,
+            "example": "2022-12-31T23:59:59Z"
           },
           "createdAt": {
             "type": "string",
-            "format": "date-time"
+            "description": "The date and time when the dialog was created.",
+            "format": "date-time",
+            "example": "2022-12-31T23:59:59Z"
           },
           "updatedAt": {
             "type": "string",
-            "format": "date-time"
+            "description": "The date and time when the dialog was last updated.",
+            "format": "date-time",
+            "example": "2022-12-31T23:59:59Z"
           },
           "status": {
-            "$ref": "#/components/schemas/DialogStatus_Values"
+            "description": "The aggregated status of the dialog.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DialogStatus_Values"
+              }
+            ]
           },
           "content": {
-            "$ref": "#/components/schemas/GetDialogContentDtoSO"
+            "description": "The dialog unstructured text content",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/GetDialogContentDtoSO"
+              }
+            ]
           },
           "searchTags": {
             "type": "array",
+            "description": "The list of words (tags) that will be used in dialog search queries. Not visible in end-user DTO.",
             "nullable": true,
             "items": {
               "$ref": "#/components/schemas/GetDialogSearchTagDtoSO"
@@ -3215,36 +3521,42 @@
           },
           "attachments": {
             "type": "array",
+            "description": "The attachments associated with the dialog (on an aggregate level)",
             "items": {
               "$ref": "#/components/schemas/GetDialogDialogAttachmentDtoSO"
             }
           },
           "transmissions": {
             "type": "array",
+            "description": "The immutable list of transmissions associated with the dialog",
             "items": {
               "$ref": "#/components/schemas/GetDialogDialogTransmissionDtoSO"
             }
           },
           "guiActions": {
             "type": "array",
+            "description": "The GUI actions associated with the dialog. Should be used in browser-based interactive front-ends.",
             "items": {
               "$ref": "#/components/schemas/GetDialogDialogGuiActionDtoSO"
             }
           },
           "apiActions": {
             "type": "array",
+            "description": "The API actions associated with the dialog. Should be used in specialized, non-browser-based integrations.",
             "items": {
               "$ref": "#/components/schemas/GetDialogDialogApiActionDtoSO"
             }
           },
           "activities": {
             "type": "array",
+            "description": "An immutable list of activities associated with the dialog.",
             "items": {
               "$ref": "#/components/schemas/GetDialogDialogActivityDtoSO"
             }
           },
           "seenSinceLastUpdate": {
             "type": "array",
+            "description": "The list of seen log entries for the dialog newer than the dialog ChangedAt date.",
             "items": {
               "$ref": "#/components/schemas/GetDialogDialogSeenLogDtoSO"
             }
@@ -3258,12 +3570,23 @@
         "additionalProperties": false,
         "properties": {
           "title": {
-            "$ref": "#/components/schemas/ContentValueDto"
+            "description": "The title of the dialog. Always text/plain.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ContentValueDto"
+              }
+            ]
           },
           "summary": {
-            "$ref": "#/components/schemas/ContentValueDto"
+            "description": "A short summary of the dialog and its current state. Always text/plain.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ContentValueDto"
+              }
+            ]
           },
           "senderName": {
+            "description": "Overridden sender name. If not supplied, assume \"org\" as the sender name. Always text/plain.",
             "nullable": true,
             "oneOf": [
               {
@@ -3272,6 +3595,7 @@
             ]
           },
           "additionalInfo": {
+            "description": "Additional information about the dialog, this may contain Markdown.",
             "nullable": true,
             "oneOf": [
               {
@@ -3280,6 +3604,7 @@
             ]
           },
           "extendedStatus": {
+            "description": "Used as the human-readable label used to describe the \"ExtendedStatus\" field. Always text/plain.",
             "nullable": true,
             "oneOf": [
               {
@@ -3288,6 +3613,7 @@
             ]
           },
           "mainContentReference": {
+            "description": "Front-channel embedded content. Used to dynamically embed content in the front-end from an external URL.",
             "nullable": true,
             "oneOf": [
               {
@@ -3302,7 +3628,8 @@
         "additionalProperties": false,
         "properties": {
           "value": {
-            "type": "string"
+            "type": "string",
+            "description": "A search tag value."
           }
         }
       },
@@ -3312,16 +3639,19 @@
         "properties": {
           "id": {
             "type": "string",
+            "description": "The unique identifier for the attachment in UUIDv7 format.",
             "format": "guid"
           },
           "displayName": {
             "type": "array",
+            "description": "The display name of the attachment that should be used in GUIs.",
             "items": {
               "$ref": "#/components/schemas/LocalizationDto"
             }
           },
           "urls": {
             "type": "array",
+            "description": "The URLs associated with the attachment, each referring a different representation of the attachment.",
             "items": {
               "$ref": "#/components/schemas/GetDialogDialogAttachmentUrlDtoSO"
             }
@@ -3334,18 +3664,28 @@
         "properties": {
           "id": {
             "type": "string",
+            "description": "The unique identifier for the attachment URL in UUIDv7 format.",
             "format": "guid"
           },
           "url": {
             "type": "string",
-            "format": "uri"
+            "description": "The fully qualified HTTPS URL of the attachment.",
+            "format": "uri",
+            "example": "https://someendpoint.com/someattachment.pdf"
           },
           "mediaType": {
             "type": "string",
-            "nullable": true
+            "description": "The media type of the attachment.",
+            "nullable": true,
+            "example": "application/pdf\napplication/zip"
           },
           "consumerType": {
-            "$ref": "#/components/schemas/AttachmentUrlConsumerType_Values"
+            "description": "What type of consumer the URL is intended for.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/AttachmentUrlConsumerType_Values"
+              }
+            ]
           }
         }
       },
@@ -3355,36 +3695,64 @@
         "properties": {
           "id": {
             "type": "string",
+            "description": "The unique identifier for the transmission in UUIDv7 format.",
             "format": "guid"
           },
           "createdAt": {
             "type": "string",
+            "description": "The date and time when the transmission was created.",
             "format": "date-time"
           },
           "authorizationAttribute": {
             "type": "string",
+            "description": "Contains an authorization resource attributeId, that can used in custom authorization rules in the XACML service\npolicy, which by default is the policy belonging to the service referred to by \"serviceResource\" in the dialog.\n            \nCan also be used to refer other service policies.",
+            "nullable": true,
+            "example": "mycustomresource\n/* equivalent to the above */\nurn:altinn:subresource:mycustomresource\nurn:altinn:task:Task_1\n/* refer to another service */\nurn:altinn:resource:some-other-service-identifier"
+          },
+          "isAuthorized": {
+            "type": "boolean",
+            "description": "Flag indicating if the authenticated user supplied in query is authorized for this transmission.",
             "nullable": true
           },
           "extendedType": {
             "type": "string",
+            "description": "Arbitrary URI/URN describing a service-specific transmission type.\n            \nRefer to the service-specific documentation provided by the service owner for details (if in use).",
+            "format": "uri",
             "nullable": true
           },
           "relatedTransmissionId": {
             "type": "string",
+            "description": "Reference to any other transmission that this transmission is related to.",
             "format": "guid",
             "nullable": true
           },
           "type": {
-            "$ref": "#/components/schemas/DialogTransmissionType_Values"
+            "description": "The type of transmission.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DialogTransmissionType_Values"
+              }
+            ]
           },
           "sender": {
-            "$ref": "#/components/schemas/GetDialogDialogTransmissionSenderActorDtoSO"
+            "description": "The actor that sent the transmission.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/GetDialogDialogTransmissionSenderActorDtoSO"
+              }
+            ]
           },
           "content": {
-            "$ref": "#/components/schemas/GetDialogDialogTransmissionContentDtoSO"
+            "description": "The transmission unstructured text content",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/GetDialogDialogTransmissionContentDtoSO"
+              }
+            ]
           },
           "attachments": {
             "type": "array",
+            "description": "The transmission-level attachments",
             "items": {
               "$ref": "#/components/schemas/GetDialogTransmissionAttachmentDtoSO"
             }
@@ -3395,18 +3763,23 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "id": {
-            "type": "string",
-            "format": "guid"
-          },
           "actorType": {
-            "$ref": "#/components/schemas/DialogActorType_Values"
+            "description": "The type of actor that sent the transmission.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DialogActorType_Values"
+              }
+            ]
           },
           "actorName": {
-            "type": "string"
+            "type": "string",
+            "description": "The name of the person or organization that sent the transmission.",
+            "example": "Ola Nordmann"
           },
           "actorId": {
-            "type": "string"
+            "type": "string",
+            "description": "The identifier of the person or organization that sent the transmission.",
+            "example": "urn:altinn:person:identifier-no:12018212345"
           }
         }
       },
@@ -3415,10 +3788,20 @@
         "additionalProperties": false,
         "properties": {
           "title": {
-            "$ref": "#/components/schemas/ContentValueDto"
+            "description": "The transmission title. Always text/plain.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ContentValueDto"
+              }
+            ]
           },
           "summary": {
-            "$ref": "#/components/schemas/ContentValueDto"
+            "description": "The transmission summary. Always text/plain.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ContentValueDto"
+              }
+            ]
           }
         }
       },
@@ -3428,16 +3811,19 @@
         "properties": {
           "id": {
             "type": "string",
+            "description": "The unique identifier for the attachment in UUIDv7 format.",
             "format": "guid"
           },
           "displayName": {
             "type": "array",
+            "description": "The display name of the attachment that should be used in GUIs.",
             "items": {
               "$ref": "#/components/schemas/LocalizationDto"
             }
           },
           "urls": {
             "type": "array",
+            "description": "The URLs associated with the attachment, each referring a different representation of the attachment.",
             "items": {
               "$ref": "#/components/schemas/GetDialogTransmissionAttachmentUrlDtoSO"
             }
@@ -3448,20 +3834,25 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "id": {
-            "type": "string",
-            "format": "guid"
-          },
           "url": {
             "type": "string",
-            "format": "uri"
+            "description": "The fully qualified HTTPS URL of the attachment. Will be set to \"urn:dialogporten:unauthorized\" if the user is\nnot authorized to access the transmission.",
+            "format": "uri",
+            "example": "https://someendpoint.com/someattachment.pdf\nurn:dialogporten:unauthorized"
           },
           "mediaType": {
             "type": "string",
-            "nullable": true
+            "description": "The media type of the attachment.",
+            "nullable": true,
+            "example": "application/pdf\napplication/zip"
           },
           "consumerType": {
-            "$ref": "#/components/schemas/AttachmentUrlConsumerType_Values"
+            "description": "The type of consumer the URL is intended for.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/AttachmentUrlConsumerType_Values"
+              }
+            ]
           }
         }
       },
@@ -3471,36 +3862,59 @@
         "properties": {
           "id": {
             "type": "string",
+            "description": "The unique identifier for the action in UUIDv7 format.",
             "format": "guid"
           },
           "action": {
-            "type": "string"
+            "type": "string",
+            "description": "The action identifier for the action, corresponding to the \"action\" attributeId used in the XACML service policy,"
           },
           "url": {
             "type": "string",
+            "description": "The fully qualified HTTPS URL of the action, to which the user will be redirected when the action is triggered.",
             "format": "uri"
           },
           "authorizationAttribute": {
             "type": "string",
+            "description": "Contains an authorization resource attributeId, that can used in custom authorization rules in the XACML service\npolicy, which by default is the policy belonging to the service referred to by \"serviceResource\" in the dialog.\n            \nCan also be used to refer other service policies.",
+            "nullable": true,
+            "example": "mycustomresource\n/* equivalent to the above */\nurn:altinn:subresource:mycustomresource\nurn:altinn:task:Task_1\n/* refer to another service */\nurn:altinn:resource:some-other-service-identifier"
+          },
+          "isAuthorized": {
+            "type": "boolean",
+            "description": "Whether the user, if supplied in query, is authorized to perform the action.",
             "nullable": true
           },
           "isDeleteDialogAction": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Indicates whether the action results in the dialog being deleted. Used by frontends to implement custom UX\nfor delete actions."
           },
           "priority": {
-            "$ref": "#/components/schemas/DialogGuiActionPriority_Values"
+            "description": "Indicates a priority for the action, making it possible for frontends to adapt GUI elements based on action\npriority.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DialogGuiActionPriority_Values"
+              }
+            ]
           },
           "httpMethod": {
-            "$ref": "#/components/schemas/HttpVerb_Values"
+            "description": "The HTTP method that the frontend should use when redirecting the user.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/HttpVerb_Values"
+              }
+            ]
           },
           "title": {
             "type": "array",
+            "description": "The title of the action, should be short and in verb form. Always text/plain.",
             "items": {
               "$ref": "#/components/schemas/LocalizationDto"
             }
           },
           "prompt": {
             "type": "array",
+            "description": "If there should be a prompt asking the user for confirmation before the action is executed,\nthis field should contain the prompt text.",
             "nullable": true,
             "items": {
               "$ref": "#/components/schemas/LocalizationDto"
@@ -3514,17 +3928,28 @@
         "properties": {
           "id": {
             "type": "string",
+            "description": "The unique identifier for the action in UUIDv7 format.",
             "format": "guid"
           },
           "action": {
-            "type": "string"
+            "type": "string",
+            "description": "String identifier for the action, corresponding to the \"action\" attributeId used in the XACML service policy,\nwhich by default is the policy belonging to the service referred to by \"serviceResource\" in the dialog",
+            "example": "write"
           },
           "authorizationAttribute": {
             "type": "string",
+            "description": "Contains an authorization resource attributeId, that can used in custom authorization rules in the XACML service\npolicy, which by default is the policy belonging to the service referred to by \"serviceResource\" in the dialog.\n            \nCan also be used to refer other service policies.",
+            "nullable": true,
+            "example": "mycustomresource\n/* equivalent to the above */\nurn:altinn:subresource:mycustomresource\nurn:altinn:task:Task_1\n/* refer to another service */\nurn:altinn:resource:some-other-service-identifier"
+          },
+          "isAuthorized": {
+            "type": "boolean",
+            "description": "True if the authenticated user (set in query) is authorized for this action.",
             "nullable": true
           },
           "endpoints": {
             "type": "array",
+            "description": "The endpoints associated with the action.",
             "items": {
               "$ref": "#/components/schemas/GetDialogDialogApiActionEndpointDtoSO"
             }
@@ -3537,39 +3962,52 @@
         "properties": {
           "id": {
             "type": "string",
+            "description": "The unique identifier for the endpoint in UUIDv7 format.",
             "format": "guid"
           },
           "version": {
             "type": "string",
+            "description": "Arbitrary string indicating the version of the endpoint.\n            \nConsult the service-specific documentation provided by the service owner for details (if in use).",
             "nullable": true
           },
           "url": {
             "type": "string",
+            "description": "The fully qualified HTTPS URL of the API endpoint.",
             "format": "uri"
           },
           "httpMethod": {
-            "$ref": "#/components/schemas/HttpVerb_Values"
+            "description": "The HTTP method that the endpoint expects for this action.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/HttpVerb_Values"
+              }
+            ]
           },
           "documentationUrl": {
             "type": "string",
+            "description": "Link to service provider documentation for the endpoint. Used for service owners to provide documentation for\nintegrators. Should be a URL to a human-readable page.",
             "format": "uri",
             "nullable": true
           },
           "requestSchema": {
             "type": "string",
+            "description": "Link to the request schema for the endpoint. Used by service owners to provide documentation for integrators.\nDialogporten will not validate information on this endpoint.",
             "format": "uri",
             "nullable": true
           },
           "responseSchema": {
             "type": "string",
+            "description": "Link to the response schema for the endpoint. Used for service owners to provide documentation for integrators.\nDialogporten will not validate information on this endpoint.",
             "format": "uri",
             "nullable": true
           },
           "deprecated": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Boolean indicating if the endpoint is deprecated. Integrators should migrate to endpoints with a higher version."
           },
           "sunsetAt": {
             "type": "string",
+            "description": "Date and time when the service owner has indicated that endpoint will no longer function. Only set if the endpoint\nis deprecated. Dialogporten will not enforce this date.",
             "format": "date-time",
             "nullable": true
           }
@@ -3581,36 +4019,52 @@
         "properties": {
           "id": {
             "type": "string",
+            "description": "The unique identifier for the activity in UUIDv7 format.",
             "format": "guid"
           },
           "createdAt": {
             "type": "string",
+            "description": "The date and time when the activity was created.",
             "format": "date-time",
             "nullable": true
           },
           "extendedType": {
             "type": "string",
+            "description": "An arbitrary URI/URN with a service-specific activity type.\n            \nConsult the service-specific documentation provided by the service owner for details (if in use).",
             "format": "uri",
             "nullable": true
           },
           "type": {
-            "$ref": "#/components/schemas/DialogActivityType_Values"
+            "description": "The type of activity.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DialogActivityType_Values"
+              }
+            ]
           },
           "relatedActivityId": {
             "type": "string",
+            "description": "The related activity identifier, if applicable. Must be present in current dialog.",
             "format": "guid",
             "nullable": true
           },
           "transmissionId": {
             "type": "string",
+            "description": "If the activity is related to a particular transmission, this field will contain the transmission identifier.",
             "format": "guid",
             "nullable": true
           },
           "performedBy": {
-            "$ref": "#/components/schemas/GetDialogDialogActivityPerformedByActorDtoSO"
+            "description": "The actor that performed the activity.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/GetDialogDialogActivityPerformedByActorDtoSO"
+              }
+            ]
           },
           "description": {
             "type": "array",
+            "description": "Unstructured text describing the activity. Only set if the activity type is \"Information\".",
             "items": {
               "$ref": "#/components/schemas/LocalizationDto"
             }
@@ -3621,19 +4075,22 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "id": {
-            "type": "string",
-            "format": "guid"
-          },
           "actorType": {
-            "$ref": "#/components/schemas/DialogActorType_Values"
+            "description": "What type of actor performed the activity.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DialogActorType_Values"
+              }
+            ]
           },
           "actorName": {
             "type": "string",
+            "description": "The name of the person or organization that performed the activity.\nOnly set if the actor type is \"PartyRepresentative\".",
             "nullable": true
           },
           "actorId": {
             "type": "string",
+            "description": "The identifier of the person or organization that performed the activity.\nMay be omitted if ActorType is \"ServiceOwner\".",
             "nullable": true
           }
         }
@@ -3644,17 +4101,30 @@
         "properties": {
           "id": {
             "type": "string",
+            "description": "The unique identifier for the seen log entry in UUIDv7 format.",
             "format": "guid"
           },
           "seenAt": {
             "type": "string",
+            "description": "The timestamp when the dialog revision was seen",
             "format": "date-time"
           },
           "seenBy": {
-            "$ref": "#/components/schemas/GetDialogDialogSeenLogSeenByActorDtoSO"
+            "description": "The actor that saw the dialog revision",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/GetDialogDialogSeenLogSeenByActorDtoSO"
+              }
+            ]
           },
           "isViaServiceOwner": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Flag indicating whether the seen log entry was created via the service owner.\n            \nThis is used when the service owner uses the service owner API to implement its own frontend.",
+            "nullable": true
+          },
+          "isCurrentEndUser": {
+            "type": "boolean",
+            "description": "Flag indicating whether the seen log entry was created by the current end user, if provided in query"
           }
         }
       },
@@ -3662,15 +4132,14 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "id": {
-            "type": "string",
-            "format": "guid"
-          },
           "actorName": {
-            "type": "string"
+            "type": "string",
+            "description": "The natural name of the person/business that saw the dialog revision."
           },
           "actorId": {
-            "type": "string"
+            "type": "string",
+            "description": "The identifier of the person/business that saw the dialog revision.",
+            "example": "urn:altinn:person:identifier-no:01125512345\nurn:altinn:organization:identifier-no:912345678"
           }
         }
       },
@@ -3680,81 +4149,124 @@
         "properties": {
           "id": {
             "type": "string",
+            "description": "A self-defined UUIDv7 may be provided in order to support idempotent creation of dialogs. If not provided, a new UUIDv7 will be generated.",
             "format": "guid",
-            "nullable": true
+            "nullable": true,
+            "example": "01913cd5-784f-7d3b-abef-4c77b1f0972d"
           },
           "serviceResource": {
-            "type": "string"
+            "type": "string",
+            "description": "The service identifier for the service that the dialog is related to in URN-format.\nThis corresponds to a resource in the Altinn Resource Registry, which the authenticated organization\nmust own, ie. be listed as the \"competent authority\" in the Resource Registry entry.",
+            "example": "urn:altinn:resource:some-service-identifier"
           },
           "party": {
-            "type": "string"
+            "type": "string",
+            "description": "The party code representing the organization or person that the dialog belongs to in URN format",
+            "example": "urn:altinn:person:identifier-no:01125512345\nurn:altinn:organization:identifier-no:912345678"
           },
           "progress": {
             "type": "integer",
+            "description": "Advisory indicator of progress, represented as 1-100 percentage value. 100% representing a dialog that has come\nto a natural completion (successful or not).",
             "format": "int32",
             "nullable": true
           },
           "extendedStatus": {
             "type": "string",
+            "description": "Arbitrary string with a service-specific indicator of status, typically used to indicate a fine-grained state of\nthe dialog to further specify the \"status\" enum.",
             "nullable": true
           },
           "externalReference": {
             "type": "string",
+            "description": "Arbitrary string with a service-specific reference to an external system or service.",
             "nullable": true
           },
           "visibleFrom": {
             "type": "string",
+            "description": "The timestamp when the dialog should be made visible for authorized end users. If not provided, the dialog will be\nimmediately available.",
             "format": "date-time",
-            "nullable": true
+            "nullable": true,
+            "example": "2022-12-31T23:59:59Z"
           },
           "dueAt": {
             "type": "string",
+            "description": "The due date for the dialog. Dialogs past due date might be marked as such in frontends, but will still be available.",
             "format": "date-time",
-            "nullable": true
+            "nullable": true,
+            "example": "2022-12-31T23:59:59Z"
           },
           "expiresAt": {
             "type": "string",
+            "description": "The expiration date for the dialog. This is the last date when the dialog is available for the end user.\n            \nAfter this date is passed, the dialog will be considered expired and no longer available for the end user in any\nAPI. If not supplied, the dialog will be considered to never expire. This field can be changed after creation.",
             "format": "date-time",
-            "nullable": true
+            "nullable": true,
+            "example": "2022-12-31T23:59:59Z"
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "If set, will override the date and time when the dialog is set as created. If not supplied, current date/time\nwill be used.",
+            "format": "date-time",
+            "example": "2022-12-31T23:59:59Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "description": "If set, will override the date and time when the dialog is set as last updated. If not supplied, current date/time\nwill be used.",
+            "format": "date-time",
+            "example": "2022-12-31T23:59:59Z"
           },
           "status": {
-            "$ref": "#/components/schemas/DialogStatus_Values"
+            "description": "The aggregated status of the dialog.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DialogStatus_Values"
+              }
+            ]
           },
           "content": {
-            "$ref": "#/components/schemas/CreateDialogContentDto"
+            "description": "The dialog unstructured text content",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/CreateDialogContentDto"
+              }
+            ]
           },
           "searchTags": {
             "type": "array",
+            "description": "A list of words (tags) that will be used in dialog search queries. Not visible in end-user DTO.",
             "items": {
               "$ref": "#/components/schemas/CreateDialogSearchTagDto"
             }
           },
           "attachments": {
             "type": "array",
+            "description": "The attachments associated with the dialog (on an aggregate level)",
             "items": {
               "$ref": "#/components/schemas/CreateDialogDialogAttachmentDto"
             }
           },
           "transmissions": {
             "type": "array",
+            "description": "The immutable list of transmissions associated with the dialog",
             "items": {
               "$ref": "#/components/schemas/CreateDialogDialogTransmissionDto"
             }
           },
           "guiActions": {
             "type": "array",
+            "description": "The GUI actions associated with the dialog. Should be used in browser-based interactive front-ends.",
             "items": {
               "$ref": "#/components/schemas/CreateDialogDialogGuiActionDto"
             }
           },
           "apiActions": {
             "type": "array",
+            "description": "The API actions associated with the dialog. Should be used in specialized, non-browser-based integrations.",
             "items": {
               "$ref": "#/components/schemas/CreateDialogDialogApiActionDto"
             }
           },
           "activities": {
             "type": "array",
+            "description": "An immutable list of activities associated with the dialog.",
             "items": {
               "$ref": "#/components/schemas/CreateDialogDialogActivityDto"
             }
@@ -3766,12 +4278,23 @@
         "additionalProperties": false,
         "properties": {
           "title": {
-            "$ref": "#/components/schemas/ContentValueDto"
+            "description": "The title of the dialog. Must be text/plain.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ContentValueDto"
+              }
+            ]
           },
           "summary": {
-            "$ref": "#/components/schemas/ContentValueDto"
+            "description": "A short summary of the dialog and its current state. Must be text/plain.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ContentValueDto"
+              }
+            ]
           },
           "senderName": {
+            "description": "Overridden sender name. If not supplied, assume \"org\" as the sender name. Must be text/plain if supplied.",
             "nullable": true,
             "oneOf": [
               {
@@ -3780,6 +4303,7 @@
             ]
           },
           "additionalInfo": {
+            "description": "Additional information about the dialog, this may contain Markdown.",
             "nullable": true,
             "oneOf": [
               {
@@ -3788,6 +4312,7 @@
             ]
           },
           "extendedStatus": {
+            "description": "Used as the human-readable label used to describe the \"ExtendedStatus\" field. Must be text/plain.",
             "nullable": true,
             "oneOf": [
               {
@@ -3796,6 +4321,7 @@
             ]
           },
           "mainContentReference": {
+            "description": "Front-channel embedded content. Used to dynamically embed content in the front-end from an external URL.",
             "nullable": true,
             "oneOf": [
               {
@@ -3810,7 +4336,8 @@
         "additionalProperties": false,
         "properties": {
           "value": {
-            "type": "string"
+            "type": "string",
+            "description": "A search tag value."
           }
         }
       },
@@ -3818,19 +4345,16 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "id": {
-            "type": "string",
-            "format": "guid",
-            "nullable": true
-          },
           "displayName": {
             "type": "array",
+            "description": "The display name of the attachment that should be used in GUIs.",
             "items": {
               "$ref": "#/components/schemas/LocalizationDto"
             }
           },
           "urls": {
             "type": "array",
+            "description": "The URLs associated with the attachment, each referring a different representation of the attachment.",
             "items": {
               "$ref": "#/components/schemas/CreateDialogDialogAttachmentUrlDto"
             }
@@ -3843,14 +4367,22 @@
         "properties": {
           "url": {
             "type": "string",
+            "description": "The fully qualified HTTPS URL of the attachment.",
             "format": "uri"
           },
           "mediaType": {
             "type": "string",
-            "nullable": true
+            "description": "The media type of the attachment.",
+            "nullable": true,
+            "example": "application/pdf\napplication/zip"
           },
           "consumerType": {
-            "$ref": "#/components/schemas/AttachmentUrlConsumerType_Values"
+            "description": "The type of consumer the URL is intended for.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/AttachmentUrlConsumerType_Values"
+              }
+            ]
           }
         }
       },
@@ -3860,38 +4392,61 @@
         "properties": {
           "id": {
             "type": "string",
+            "description": "A self-defined UUIDv7 may be provided in order to support idempotent creation of transmissions. If not provided, a new UUIDv7 will be generated.",
             "format": "guid",
-            "nullable": true
+            "nullable": true,
+            "example": "01913cd5-784f-7d3b-abef-4c77b1f0972d"
           },
           "createdAt": {
             "type": "string",
+            "description": "If supplied, overrides the creating date and time for the transmission. If not supplied, current date/time will be used.",
             "format": "date-time"
           },
           "authorizationAttribute": {
             "type": "string",
-            "nullable": true
+            "description": "Contains an authorization resource attributeId, that can used in custom authorization rules in the XACML service\npolicy, which by default is the policy belonging to the service referred to by \"serviceResource\" in the dialog.\n            \nCan also be used to refer other service policies.",
+            "nullable": true,
+            "example": "mycustomresource\n/* equivalent to the above */\nurn:altinn:subresource:mycustomresource\nurn:altinn:task:Task_1\n/* refer to another service */\nurn:altinn:resource:some-other-service-identifier"
           },
           "extendedType": {
             "type": "string",
+            "description": "Arbitrary URI/URN describing a service-specific transmission type.\n            \nRefer to the service-specific documentation provided by the service owner for details (if in use).",
             "format": "uri",
             "nullable": true
           },
           "relatedTransmissionId": {
             "type": "string",
+            "description": "Reference to any other transmission that this transmission is related to.",
             "format": "guid",
             "nullable": true
           },
           "type": {
-            "$ref": "#/components/schemas/DialogTransmissionType_Values"
+            "description": "The type of transmission.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DialogTransmissionType_Values"
+              }
+            ]
           },
           "sender": {
-            "$ref": "#/components/schemas/CreateDialogDialogTransmissionSenderActorDto"
+            "description": "The actor that sent the transmission.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/CreateDialogDialogTransmissionSenderActorDto"
+              }
+            ]
           },
           "content": {
-            "$ref": "#/components/schemas/CreateDialogDialogTransmissionContentDto"
+            "description": "The transmission unstructured text content",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/CreateDialogDialogTransmissionContentDto"
+              }
+            ]
           },
           "attachments": {
             "type": "array",
+            "description": "The transmission-level attachments",
             "items": {
               "$ref": "#/components/schemas/CreateDialogTransmissionAttachmentDto"
             }
@@ -3903,13 +4458,24 @@
         "additionalProperties": false,
         "properties": {
           "actorType": {
-            "$ref": "#/components/schemas/DialogActorType_Values"
+            "description": "The type of actor that sent the transmission.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DialogActorType_Values"
+              }
+            ]
           },
           "actorName": {
-            "type": "string"
+            "type": "string",
+            "description": "Specifies the name of the entity that sent the transmission. Mutually exclusive with ActorId. If ActorId\nis supplied, the name will be automatically populated from the name registries.",
+            "nullable": true,
+            "example": "Ola Nordmann"
           },
           "actorId": {
-            "type": "string"
+            "type": "string",
+            "description": "The identifier of the person or organization that sent the transmission. Mutually exclusive with ActorName.\nMight be omitted if ActorType is \"ServiceOwner\".",
+            "nullable": true,
+            "example": "urn:altinn:person:identifier-no:12018212345"
           }
         }
       },
@@ -3918,10 +4484,20 @@
         "additionalProperties": false,
         "properties": {
           "title": {
-            "$ref": "#/components/schemas/ContentValueDto"
+            "description": "The transmission title. Must be text/plain.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ContentValueDto"
+              }
+            ]
           },
           "summary": {
-            "$ref": "#/components/schemas/ContentValueDto"
+            "description": "The transmission summary. Always text/plain.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ContentValueDto"
+              }
+            ]
           }
         }
       },
@@ -3929,19 +4505,16 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "id": {
-            "type": "string",
-            "format": "guid",
-            "nullable": true
-          },
           "displayName": {
             "type": "array",
+            "description": "The display name of the attachment that should be used in GUIs.",
             "items": {
               "$ref": "#/components/schemas/LocalizationDto"
             }
           },
           "urls": {
             "type": "array",
+            "description": "The URLs associated with the attachment, each referring a different representation of the attachment.",
             "items": {
               "$ref": "#/components/schemas/CreateDialogTransmissionAttachmentUrlDto"
             }
@@ -3954,14 +4527,22 @@
         "properties": {
           "url": {
             "type": "string",
+            "description": "The fully qualified HTTPS URL of the attachment.",
             "format": "uri"
           },
           "mediaType": {
             "type": "string",
-            "nullable": true
+            "description": "The media type of the attachment.",
+            "nullable": true,
+            "example": "application/pdf\napplication/zip"
           },
           "consumerType": {
-            "$ref": "#/components/schemas/AttachmentUrlConsumerType_Values"
+            "description": "The type of consumer the URL is intended for.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/AttachmentUrlConsumerType_Values"
+              }
+            ]
           }
         }
       },
@@ -3970,20 +4551,27 @@
         "additionalProperties": false,
         "properties": {
           "action": {
-            "type": "string"
+            "type": "string",
+            "description": "The action identifier for the action, corresponding to the \"action\" attributeId used in the XACML service policy,"
           },
           "url": {
             "type": "string",
-            "format": "uri"
+            "description": "The fully qualified HTTPS URL of the action, to which the user will be redirected when the action is triggered. Will be set to\n\"urn:dialogporten:unauthorized\" if the user is not authorized to perform the action.",
+            "format": "uri",
+            "example": "urn:dialogporten:unauthorized\nhttps://someendpoint.com/gui/some-service-instance-id"
           },
           "authorizationAttribute": {
             "type": "string",
-            "nullable": true
+            "description": "Contains an authorization resource attributeId, that can used in custom authorization rules in the XACML service\npolicy, which by default is the policy belonging to the service referred to by \"serviceResource\" in the dialog.\n            \nCan also be used to refer other service policies.",
+            "nullable": true,
+            "example": "mycustomresource\n/* equivalent to the above */\nurn:altinn:subresource:mycustomresource\nurn:altinn:task:Task_1\n/* refer to another service */\nurn:altinn:resource:some-other-service-identifier"
           },
           "isDeleteDialogAction": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Indicates whether the action results in the dialog being deleted. Used by frontends to implement custom UX\nfor delete actions."
           },
           "httpMethod": {
+            "description": "The HTTP method that the frontend should use when redirecting the user.",
             "nullable": true,
             "oneOf": [
               {
@@ -3992,16 +4580,23 @@
             ]
           },
           "priority": {
-            "$ref": "#/components/schemas/DialogGuiActionPriority_Values"
+            "description": "Indicates a priority for the action, making it possible for frontends to adapt GUI elements based on action\npriority.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DialogGuiActionPriority_Values"
+              }
+            ]
           },
           "title": {
             "type": "array",
+            "description": "The title of the action, should be short and in verb form. Must be text/plain.",
             "items": {
               "$ref": "#/components/schemas/LocalizationDto"
             }
           },
           "prompt": {
             "type": "array",
+            "description": "If there should be a prompt asking the user for confirmation before the action is executed,\nthis field should contain the prompt text.",
             "nullable": true,
             "items": {
               "$ref": "#/components/schemas/LocalizationDto"
@@ -4014,14 +4609,19 @@
         "additionalProperties": false,
         "properties": {
           "action": {
-            "type": "string"
+            "type": "string",
+            "description": "String identifier for the action, corresponding to the \"action\" attributeId used in the XACML service policy,\nwhich by default is the policy belonging to the service referred to by \"serviceResource\" in the dialog",
+            "example": "write"
           },
           "authorizationAttribute": {
             "type": "string",
-            "nullable": true
+            "description": "Contains an authorization resource attributeId, that can used in custom authorization rules in the XACML service\npolicy, which by default is the policy belonging to the service referred to by \"serviceResource\" in the dialog.\n            \nCan also be used to refer other service policies.",
+            "nullable": true,
+            "example": "mycustomresource\n/* equivalent to the above */\nurn:altinn:subresource:mycustomresource\nurn:altinn:task:Task_1\n/* refer to another service */\nurn:altinn:resource:some-other-service-identifier"
           },
           "endpoints": {
             "type": "array",
+            "description": "The endpoints associated with the action.",
             "items": {
               "$ref": "#/components/schemas/CreateDialogDialogApiActionEndpointDto"
             }
@@ -4034,35 +4634,47 @@
         "properties": {
           "version": {
             "type": "string",
+            "description": "Arbitrary string indicating the version of the endpoint.",
             "nullable": true
           },
           "url": {
             "type": "string",
+            "description": "The fully qualified HTTPS URL of the API endpoint.",
             "format": "uri"
           },
           "httpMethod": {
-            "$ref": "#/components/schemas/HttpVerb_Values"
+            "description": "The HTTP method that the endpoint expects for this action.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/HttpVerb_Values"
+              }
+            ]
           },
           "documentationUrl": {
             "type": "string",
+            "description": "Link to documentation for the endpoint, providing documentation for integrators. Should be a URL to a\nhuman-readable page.",
             "format": "uri",
             "nullable": true
           },
           "requestSchema": {
             "type": "string",
+            "description": "Link to the request schema for the endpoint. Used to provide documentation for integrators.\nDialogporten will not validate information on this endpoint.",
             "format": "uri",
             "nullable": true
           },
           "responseSchema": {
             "type": "string",
+            "description": "Link to the response schema for the endpoint. Used to provide documentation for integrators.\nDialogporten will not validate information on this endpoint.",
             "format": "uri",
             "nullable": true
           },
           "deprecated": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Boolean indicating if the endpoint is deprecated."
           },
           "sunsetAt": {
             "type": "string",
+            "description": "Date and time when the endpoint will no longer function. Only set if the endpoint is deprecated. Dialogporten\nwill not enforce this date.",
             "format": "date-time",
             "nullable": true
           }
@@ -4074,37 +4686,54 @@
         "properties": {
           "id": {
             "type": "string",
+            "description": "A self-defined UUIDv7 may be provided in order to support idempotent creation of activities. If not provided, a new UUIDv7 will be generated.",
             "format": "guid",
-            "nullable": true
+            "nullable": true,
+            "example": "01913cd5-784f-7d3b-abef-4c77b1f0972d"
           },
           "createdAt": {
             "type": "string",
+            "description": "If supplied, overrides the creating date and time for the transmission. If not supplied, current date/time will be used.",
             "format": "date-time",
             "nullable": true
           },
           "extendedType": {
             "type": "string",
+            "description": "Arbitrary URI/URN describing a service-specific transmission type.",
             "format": "uri",
             "nullable": true
           },
           "type": {
-            "$ref": "#/components/schemas/DialogActivityType_Values"
+            "description": "The type of transmission.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DialogActivityType_Values"
+              }
+            ]
           },
           "relatedActivityId": {
             "type": "string",
+            "description": "The related activity identifier, if applicable. Must be present in the request body.",
             "format": "guid",
             "nullable": true
           },
           "transmissionId": {
             "type": "string",
+            "description": "If the activity is related to a particular transmission, this field will contain the transmission identifier.\nMust be present in the request body.",
             "format": "guid",
             "nullable": true
           },
           "performedBy": {
-            "$ref": "#/components/schemas/CreateDialogDialogActivityPerformedByActorDto"
+            "description": "The actor that performed the activity.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/CreateDialogDialogActivityPerformedByActorDto"
+              }
+            ]
           },
           "description": {
             "type": "array",
+            "description": "Unstructured text describing the activity. Only set if the activity type is \"Information\".",
             "items": {
               "$ref": "#/components/schemas/LocalizationDto"
             }
@@ -4116,15 +4745,24 @@
         "additionalProperties": false,
         "properties": {
           "actorType": {
-            "$ref": "#/components/schemas/DialogActorType_Values"
+            "description": "What type of actor performed the activity.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DialogActorType_Values"
+              }
+            ]
           },
           "actorName": {
             "type": "string",
-            "nullable": true
+            "description": "Specifies the name of the entity that performed the activity. Mutually exclusive with ActorId. If ActorId\nis supplied, the name will be automatically populated from the name registries.",
+            "nullable": true,
+            "example": "Ola Nordmann"
           },
           "actorId": {
             "type": "string",
-            "nullable": true
+            "description": "The identifier of the person or organization that performed the activity. Mutually exclusive with ActorName.\nMight be omitted if ActorType is \"ServiceOwner\".",
+            "nullable": true,
+            "example": "urn:altinn:person:identifier-no:12018212345"
           }
         }
       },
@@ -4134,37 +4772,54 @@
         "properties": {
           "id": {
             "type": "string",
+            "description": "The UUDIv7 of the action may be provided to support idempotent additions to the list of activities.\nIf not supplied a new UUIDv7 will be generated.",
             "format": "guid",
-            "nullable": true
+            "nullable": true,
+            "example": "01913cd5-784f-7d3b-abef-4c77b1f0972d"
           },
           "createdAt": {
             "type": "string",
+            "description": "If supplied, overrides the creating date and time for the transmission. If not supplied, current date/time will be used.",
             "format": "date-time",
             "nullable": true
           },
           "extendedType": {
             "type": "string",
+            "description": "Arbitrary URI/URN describing a service-specific transmission type.",
             "format": "uri",
             "nullable": true
           },
           "type": {
-            "$ref": "#/components/schemas/DialogActivityType_Values"
+            "description": "The type of transmission.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DialogActivityType_Values"
+              }
+            ]
           },
           "relatedActivityId": {
             "type": "string",
+            "description": "The related activity identifier, if applicable. Must be present in the request body.",
             "format": "guid",
             "nullable": true
           },
           "transmissionId": {
             "type": "string",
+            "description": "If the activity is related to a particular transmission, this field will contain the transmission identifier.\nMust be present in the request body.",
             "format": "guid",
             "nullable": true
           },
           "performedBy": {
-            "$ref": "#/components/schemas/UpdateDialogDialogActivityPerformedByActorDto"
+            "description": "The actor that performed the activity.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/UpdateDialogDialogActivityPerformedByActorDto"
+              }
+            ]
           },
           "description": {
             "type": "array",
+            "description": "Unstructured text describing the activity. Only set if the activity type is \"Information\".",
             "items": {
               "$ref": "#/components/schemas/LocalizationDto"
             }
@@ -4304,19 +4959,25 @@
         "properties": {
           "items": {
             "type": "array",
+            "description": "The paginated list of items",
             "items": {
               "$ref": "#/components/schemas/SearchDialogDto"
             }
           },
           "hasNextPage": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Whether there are more items available that can be fetched by supplying the continuation token"
           },
           "continuationToken": {
             "type": "string",
-            "nullable": true
+            "description": "The continuation token to be used to fetch the next page of items",
+            "nullable": true,
+            "example": "createdat_2024-07-31T09:09:03.0257090Z,id_0c089101-b7cf-a476-955c-f00a78d74a4e"
           },
           "orderBy": {
-            "type": "string"
+            "type": "string",
+            "description": "The current sorting order of the items",
+            "example": "createdat_desc,id_desc"
           }
         }
       },
@@ -4326,51 +4987,71 @@
         "properties": {
           "id": {
             "type": "string",
-            "format": "guid"
+            "description": "The unique identifier for the in UUIDv7 format.",
+            "format": "guid",
+            "example": "01913cd5-784f-7d3b-abef-4c77b1f0972d"
           },
           "org": {
-            "type": "string"
+            "type": "string",
+            "description": "The service owner code representing the organization (service owner) related to this dialog.",
+            "example": "ske"
           },
           "serviceResource": {
-            "type": "string"
-          },
-          "serviceResourceType": {
-            "type": "string"
+            "type": "string",
+            "description": "The service identifier for the service that the dialog is related to in URN-format.\nThis corresponds to a service resource in the Altinn Resource Registry.",
+            "example": "urn:altinn:resource:some-service-identifier"
           },
           "party": {
-            "type": "string"
+            "type": "string",
+            "description": "The party code representing the organization or person that the dialog belongs to in URN format",
+            "example": "urn:altinn:person:identifier-no:01125512345\nurn:altinn:organization:identifier-no:912345678"
           },
           "progress": {
             "type": "integer",
+            "description": "Advisory indicator of progress, represented as 1-100 percentage value. 100% representing a dialog that has come\nto a natural completion (successful or not).",
             "format": "int32",
             "nullable": true
           },
           "guiAttachmentCount": {
             "type": "integer",
+            "description": "The number of attachments in the dialog made available for browser-based frontends.",
             "format": "int32",
             "nullable": true
           },
           "extendedStatus": {
             "type": "string",
+            "description": "Arbitrary string with a service-specific indicator of status, typically used to indicate a fine-grained state of\nthe dialog to further specify the \"status\" enum.\n            \nRefer to the service-specific documentation provided by the service owner for details on the possible values (if\nin use).",
             "nullable": true
           },
           "createdAt": {
             "type": "string",
-            "format": "date-time"
+            "description": "The date and time when the dialog was created.",
+            "format": "date-time",
+            "example": "2022-12-31T23:59:59Z"
           },
           "updatedAt": {
             "type": "string",
-            "format": "date-time"
+            "description": "The date and time when the dialog was last updated.",
+            "format": "date-time",
+            "example": "2022-12-31T23:59:59Z"
           },
           "dueAt": {
             "type": "string",
+            "description": "The due date for the dialog. This is the last date when the dialog is expected to be completed.",
             "format": "date-time",
-            "nullable": true
+            "nullable": true,
+            "example": "2022-12-31T23:59:59Z"
           },
           "status": {
-            "$ref": "#/components/schemas/DialogStatus_Values"
+            "description": "The aggregated status of the dialog.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DialogStatus_Values"
+              }
+            ]
           },
           "latestActivity": {
+            "description": "The latest entry in the dialog's activity log.",
             "nullable": true,
             "oneOf": [
               {
@@ -4380,12 +5061,18 @@
           },
           "seenSinceLastUpdate": {
             "type": "array",
+            "description": "The list of seen log entries for the dialog newer than the dialog ChangedAt date.",
             "items": {
               "$ref": "#/components/schemas/SearchDialogDialogSeenLogDto"
             }
           },
           "content": {
-            "$ref": "#/components/schemas/SearchDialogContentDto"
+            "description": "The content of the dialog in search results",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/SearchDialogContentDto"
+              }
+            ]
           }
         }
       },
@@ -4395,36 +5082,52 @@
         "properties": {
           "id": {
             "type": "string",
+            "description": "The unique identifier for the activity in UUIDv7 format.",
             "format": "guid"
           },
           "createdAt": {
             "type": "string",
+            "description": "The date and time when the activity was created.",
             "format": "date-time",
             "nullable": true
           },
           "extendedType": {
             "type": "string",
+            "description": "An arbitrary string with a service-specific activity type.\n            \nConsult the service-specific documentation provided by the service owner for details (if in use).",
             "format": "uri",
             "nullable": true
           },
           "type": {
-            "$ref": "#/components/schemas/DialogActivityType_Values"
+            "description": "The type of activity.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DialogActivityType_Values"
+              }
+            ]
           },
           "relatedActivityId": {
             "type": "string",
+            "description": "The related activity identifier, if applicable. Must be present in current dialog.",
             "format": "guid",
             "nullable": true
           },
           "transmissionId": {
             "type": "string",
+            "description": "If the activity is related to a particular transmission, this field will contain the transmission identifier.",
             "format": "guid",
             "nullable": true
           },
           "performedBy": {
-            "$ref": "#/components/schemas/SearchDialogDialogActivityPerformedByActorDto"
+            "description": "The actor that performed the activity.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/SearchDialogDialogActivityPerformedByActorDto"
+              }
+            ]
           },
           "description": {
             "type": "array",
+            "description": "Unstructured text describing the activity. Only set if the activity type is \"Information\".",
             "items": {
               "$ref": "#/components/schemas/LocalizationDto"
             }
@@ -4435,19 +5138,22 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "id": {
-            "type": "string",
-            "format": "guid"
-          },
           "actorType": {
-            "$ref": "#/components/schemas/DialogActorType_Values"
+            "description": "What type of actor performed the activity.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DialogActorType_Values"
+              }
+            ]
           },
           "actorName": {
             "type": "string",
+            "description": "The name of the person or organization that performed the activity.\nOnly set if the actor type is \"PartyRepresentative\".",
             "nullable": true
           },
           "actorId": {
             "type": "string",
+            "description": "The identifier of the person or organization that performed the activity.\nMay be omitted if ActorType is \"ServiceOwner\".",
             "nullable": true
           }
         }
@@ -4458,21 +5164,30 @@
         "properties": {
           "id": {
             "type": "string",
+            "description": "The unique identifier for the seen log entry in UUIDv7 format.",
             "format": "guid"
           },
           "seenAt": {
             "type": "string",
+            "description": "The timestamp when the dialog revision was seen",
             "format": "date-time"
           },
           "seenBy": {
-            "$ref": "#/components/schemas/SearchDialogDialogSeenLogSeenByActorDto"
+            "description": "The actor that saw the dialog revision",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/SearchDialogDialogSeenLogSeenByActorDto"
+              }
+            ]
           },
           "isViaServiceOwner": {
             "type": "boolean",
+            "description": "Flag indicating whether the seen log entry was created via the service owner.\n            \nThis is used when the service owner uses the service owner API to implement its own frontend.",
             "nullable": true
           },
           "isCurrentEndUser": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Flag indicating whether the seen log entry was created by the current end user."
           }
         }
       },
@@ -4480,15 +5195,14 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "id": {
-            "type": "string",
-            "format": "guid"
-          },
           "actorName": {
-            "type": "string"
+            "type": "string",
+            "description": "The natural name of the person/business that saw the dialog revision."
           },
           "actorId": {
-            "type": "string"
+            "type": "string",
+            "description": "The identifier of the person/business that saw the dialog revision.",
+            "example": "urn:altinn:person:identifier-no:01125512345\nurn:altinn:organization:identifier-no:912345678"
           }
         }
       },
@@ -4497,12 +5211,23 @@
         "additionalProperties": false,
         "properties": {
           "title": {
-            "$ref": "#/components/schemas/ContentValueDto"
+            "description": "The title of the dialog. Always text/plain.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ContentValueDto"
+              }
+            ]
           },
           "summary": {
-            "$ref": "#/components/schemas/ContentValueDto"
+            "description": "A short summary of the dialog and its current state. Always text/plain.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ContentValueDto"
+              }
+            ]
           },
           "senderName": {
+            "description": "Overridden sender name. If not supplied, assume \"org\" as the sender name. Always text/plain.",
             "nullable": true,
             "oneOf": [
               {
@@ -4511,6 +5236,7 @@
             ]
           },
           "extendedStatus": {
+            "description": "Used as the human-readable label used to describe the \"ExtendedStatus\" field. Always text/plain.",
             "nullable": true,
             "oneOf": [
               {
@@ -4526,102 +5252,132 @@
         "properties": {
           "id": {
             "type": "string",
-            "format": "guid"
+            "description": "The unique identifier for the in UUIDv7 format.",
+            "format": "guid",
+            "example": "01913cd5-784f-7d3b-abef-4c77b1f0972d"
           },
           "revision": {
             "type": "string",
-            "format": "guid"
+            "description": "The unique identifier for the revision in UUIDv4 format.",
+            "format": "guid",
+            "example": "a312cb9c-7632-43c2-aa38-69b06aed56ca"
           },
           "org": {
-            "type": "string"
+            "type": "string",
+            "description": "The service owner code representing the organization (service owner) related to this dialog.",
+            "example": "ske"
           },
           "serviceResource": {
-            "type": "string"
-          },
-          "serviceResourceType": {
-            "type": "string"
+            "type": "string",
+            "description": "The service identifier for the service that the dialog is related to in URN-format.\nThis corresponds to a service resource in the Altinn Resource Registry.",
+            "example": "urn:altinn:resource:some-service-identifier"
           },
           "party": {
-            "type": "string"
+            "type": "string",
+            "description": "The party code representing the organization or person that the dialog belongs to in URN format",
+            "example": "urn:altinn:person:identifier-no:01125512345\nurn:altinn:organization:identifier-no:912345678"
           },
           "progress": {
             "type": "integer",
+            "description": "Advisory indicator of progress, represented as 1-100 percentage value. 100% representing a dialog that has come\nto a natural completion (successful or not).",
             "format": "int32",
             "nullable": true
           },
           "extendedStatus": {
             "type": "string",
+            "description": "Arbitrary string with a service-specific indicator of status, typically used to indicate a fine-grained state of\nthe dialog to further specify the \"status\" enum.\n            \nRefer to the service-specific documentation provided by the service owner for details on the possible values (if\nin use).",
             "nullable": true
           },
           "externalReference": {
             "type": "string",
-            "nullable": true
-          },
-          "visibleFrom": {
-            "type": "string",
-            "format": "date-time",
+            "description": "Arbitrary string with a service-specific reference to an external system or service.\n            \nRefer to the service-specific documentation provided by the service owner for details (if in use).",
             "nullable": true
           },
           "dueAt": {
             "type": "string",
+            "description": "The due date for the dialog. Dialogs past due date might be marked as such in frontends, but will still be available.",
             "format": "date-time",
-            "nullable": true
+            "nullable": true,
+            "example": "2022-12-31T23:59:59Z"
           },
           "expiresAt": {
             "type": "string",
+            "description": "The expiration date for the dialog. This is the last date when the dialog is available for the end user.\n            \nAfter this date is passed, the dialog will be considered expired and no longer available for the end user in any\nAPI. If not supplied, the dialog will be considered to never expire. This field can be changed by the service\nowner after the dialog has been created.",
             "format": "date-time",
-            "nullable": true
+            "nullable": true,
+            "example": "2022-12-31T23:59:59Z"
           },
           "createdAt": {
             "type": "string",
-            "format": "date-time"
+            "description": "The date and time when the dialog was created.",
+            "format": "date-time",
+            "example": "2022-12-31T23:59:59Z"
           },
           "updatedAt": {
             "type": "string",
-            "format": "date-time"
+            "description": "The date and time when the dialog was last updated.",
+            "format": "date-time",
+            "example": "2022-12-31T23:59:59Z"
           },
           "status": {
-            "$ref": "#/components/schemas/DialogStatus_Values"
+            "description": "The aggregated status of the dialog.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DialogStatus_Values"
+              }
+            ]
           },
           "content": {
-            "$ref": "#/components/schemas/GetDialogContentDto"
+            "description": "The dialog unstructured text content",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/GetDialogContentDto"
+              }
+            ]
           },
           "dialogToken": {
             "type": "string",
+            "description": "The dialog token. May be used (if supported) against external URLs referred to in this dialog's apiActions,\ntransmissions or attachments. Should also be used for front-channel embeds.",
             "nullable": true
           },
           "attachments": {
             "type": "array",
+            "description": "The attachments associated with the dialog (on an aggregate level)",
             "items": {
               "$ref": "#/components/schemas/GetDialogDialogAttachmentDto"
             }
           },
           "transmissions": {
             "type": "array",
+            "description": "The immutable list of transmissions associated with the dialog",
             "items": {
               "$ref": "#/components/schemas/GetDialogDialogTransmissionDto"
             }
           },
           "guiActions": {
             "type": "array",
+            "description": "The GUI actions associated with the dialog. Should be used in browser-based interactive front-ends.",
             "items": {
               "$ref": "#/components/schemas/GetDialogDialogGuiActionDto"
             }
           },
           "apiActions": {
             "type": "array",
+            "description": "The API actions associated with the dialog. Should be used in specialized, non-browser-based integrations.",
             "items": {
               "$ref": "#/components/schemas/GetDialogDialogApiActionDto"
             }
           },
           "activities": {
             "type": "array",
+            "description": "An immutable list of activities associated with the dialog.",
             "items": {
               "$ref": "#/components/schemas/GetDialogDialogActivityDto"
             }
           },
           "seenSinceLastUpdate": {
             "type": "array",
+            "description": "The list of seen log entries for the dialog newer than the dialog ChangedAt date.",
             "items": {
               "$ref": "#/components/schemas/GetDialogDialogSeenLogDto"
             }
@@ -4633,12 +5389,23 @@
         "additionalProperties": false,
         "properties": {
           "title": {
-            "$ref": "#/components/schemas/ContentValueDto"
+            "description": "The title of the dialog. Always text/plain.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ContentValueDto"
+              }
+            ]
           },
           "summary": {
-            "$ref": "#/components/schemas/ContentValueDto"
+            "description": "A short summary of the dialog and its current state. Always text/plain.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ContentValueDto"
+              }
+            ]
           },
           "senderName": {
+            "description": "Overridden sender name. If not supplied, assume \"org\" as the sender name. Always text/plain.",
             "nullable": true,
             "oneOf": [
               {
@@ -4647,6 +5414,7 @@
             ]
           },
           "additionalInfo": {
+            "description": "Additional information about the dialog, this may contain Markdown.",
             "nullable": true,
             "oneOf": [
               {
@@ -4655,6 +5423,7 @@
             ]
           },
           "extendedStatus": {
+            "description": "Used as the human-readable label used to describe the \"ExtendedStatus\" field. Always text/plain.",
             "nullable": true,
             "oneOf": [
               {
@@ -4663,6 +5432,7 @@
             ]
           },
           "mainContentReference": {
+            "description": "Front-channel embedded content. Used to dynamically embed content in the front-end from an external URL.",
             "nullable": true,
             "oneOf": [
               {
@@ -4678,16 +5448,19 @@
         "properties": {
           "id": {
             "type": "string",
+            "description": "The unique identifier for the attachment in UUIDv7 format.",
             "format": "guid"
           },
           "displayName": {
             "type": "array",
+            "description": "The display name of the attachment that should be used in GUIs.",
             "items": {
               "$ref": "#/components/schemas/LocalizationDto"
             }
           },
           "urls": {
             "type": "array",
+            "description": "The URLs associated with the attachment, each referring a different representation of the attachment.",
             "items": {
               "$ref": "#/components/schemas/GetDialogDialogAttachmentUrlDto"
             }
@@ -4700,18 +5473,28 @@
         "properties": {
           "id": {
             "type": "string",
+            "description": "The unique identifier for the attachment URL in UUIDv7 format.",
             "format": "guid"
           },
           "url": {
             "type": "string",
-            "format": "uri"
+            "description": "The fully qualified HTTPS URL of the attachment.",
+            "format": "uri",
+            "example": "https://someendpoint.com/someattachment.pdf"
           },
           "mediaType": {
             "type": "string",
-            "nullable": true
+            "description": "The media type of the attachment.",
+            "nullable": true,
+            "example": "application/pdf\napplication/zip"
           },
           "consumerType": {
-            "$ref": "#/components/schemas/AttachmentUrlConsumerType_Values"
+            "description": "What type of consumer the URL is intended for.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/AttachmentUrlConsumerType_Values"
+              }
+            ]
           }
         }
       },
@@ -4721,39 +5504,63 @@
         "properties": {
           "id": {
             "type": "string",
+            "description": "The unique identifier for the transmission in UUIDv7 format.",
             "format": "guid"
           },
           "createdAt": {
             "type": "string",
+            "description": "The date and time when the transmission was created.",
             "format": "date-time"
           },
           "authorizationAttribute": {
             "type": "string",
-            "nullable": true
+            "description": "Contains an authorization resource attributeId, that can used in custom authorization rules in the XACML service\npolicy, which by default is the policy belonging to the service referred to by \"serviceResource\" in the dialog.\n            \nCan also be used to refer other service policies.",
+            "nullable": true,
+            "example": "mycustomresource\n/* equivalent to the above */\nurn:altinn:subresource:mycustomresource\nurn:altinn:task:Task_1\n/* refer to another service */\nurn:altinn:resource:some-other-service-identifier"
           },
           "isAuthorized": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Flag indicating if the authenticated user is authorized for this transmission. If not, embedded content and\nthe attachments will not be available"
           },
           "extendedType": {
             "type": "string",
+            "description": "Arbitrary URI/URN describing a service-specific transmission type.\n            \nRefer to the service-specific documentation provided by the service owner for details (if in use).",
+            "format": "uri",
             "nullable": true
           },
           "relatedTransmissionId": {
             "type": "string",
+            "description": "Reference to any other transmission that this transmission is related to.",
             "format": "guid",
             "nullable": true
           },
           "type": {
-            "$ref": "#/components/schemas/DialogTransmissionType_Values"
+            "description": "The type of transmission.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DialogTransmissionType_Values"
+              }
+            ]
           },
           "sender": {
-            "$ref": "#/components/schemas/GetDialogDialogTransmissionSenderActorDto"
+            "description": "The actor that sent the transmission.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/GetDialogDialogTransmissionSenderActorDto"
+              }
+            ]
           },
           "content": {
-            "$ref": "#/components/schemas/GetDialogDialogTransmissionContentDto"
+            "description": "The transmission unstructured text content",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/GetDialogDialogTransmissionContentDto"
+              }
+            ]
           },
           "attachments": {
             "type": "array",
+            "description": "The transmission-level attachments",
             "items": {
               "$ref": "#/components/schemas/GetDialogTransmissionAttachmentDto"
             }
@@ -4764,18 +5571,23 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "id": {
-            "type": "string",
-            "format": "guid"
-          },
           "actorType": {
-            "$ref": "#/components/schemas/DialogActorType_Values"
+            "description": "The type of actor that sent the transmission.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DialogActorType_Values"
+              }
+            ]
           },
           "actorName": {
-            "type": "string"
+            "type": "string",
+            "description": "The name of the person or organization that sent the transmission.",
+            "example": "Ola Nordmann"
           },
           "actorId": {
-            "type": "string"
+            "type": "string",
+            "description": "The identifier of the person or organization that sent the transmission.",
+            "example": "urn:altinn:person:identifier-no:12018212345"
           }
         }
       },
@@ -4784,10 +5596,20 @@
         "additionalProperties": false,
         "properties": {
           "title": {
-            "$ref": "#/components/schemas/ContentValueDto"
+            "description": "The transmission title. Always text/plain.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ContentValueDto"
+              }
+            ]
           },
           "summary": {
-            "$ref": "#/components/schemas/ContentValueDto"
+            "description": "The transmission summary. Always text/plain.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ContentValueDto"
+              }
+            ]
           }
         }
       },
@@ -4797,16 +5619,19 @@
         "properties": {
           "id": {
             "type": "string",
+            "description": "The unique identifier for the attachment in UUIDv7 format.",
             "format": "guid"
           },
           "displayName": {
             "type": "array",
+            "description": "The display name of the attachment that should be used in GUIs.",
             "items": {
               "$ref": "#/components/schemas/LocalizationDto"
             }
           },
           "urls": {
             "type": "array",
+            "description": "The URLs associated with the attachment, each referring a different representation of the attachment.",
             "items": {
               "$ref": "#/components/schemas/GetDialogTransmissionAttachmentUrlDto"
             }
@@ -4817,20 +5642,25 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "id": {
-            "type": "string",
-            "format": "guid"
-          },
           "url": {
             "type": "string",
-            "format": "uri"
+            "description": "The fully qualified HTTPS URL of the attachment. Will be set to \"urn:dialogporten:unauthorized\" if the user is\nnot authorized to access the transmission.",
+            "format": "uri",
+            "example": "https://someendpoint.com/someattachment.pdf\nurn:dialogporten:unauthorized"
           },
           "mediaType": {
             "type": "string",
-            "nullable": true
+            "description": "The media type of the attachment.",
+            "nullable": true,
+            "example": "application/pdf\napplication/zip"
           },
           "consumerType": {
-            "$ref": "#/components/schemas/AttachmentUrlConsumerType_Values"
+            "description": "The type of consumer the URL is intended for.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/AttachmentUrlConsumerType_Values"
+              }
+            ]
           }
         }
       },
@@ -4840,39 +5670,59 @@
         "properties": {
           "id": {
             "type": "string",
+            "description": "The unique identifier for the action in UUIDv7 format.",
             "format": "guid"
           },
           "action": {
-            "type": "string"
+            "type": "string",
+            "description": "The action identifier for the action, corresponding to the \"action\" attributeId used in the XACML service policy,"
           },
           "url": {
             "type": "string",
-            "format": "uri"
+            "description": "The fully qualified HTTPS URL of the action, to which the user will be redirected when the action is triggered. Will be set to\n\"urn:dialogporten:unauthorized\" if the user is not authorized to perform the action.",
+            "format": "uri",
+            "example": "urn:dialogporten:unauthorized\nhttps://someendpoint.com/gui/some-service-instance-id"
           },
           "authorizationAttribute": {
             "type": "string",
-            "nullable": true
+            "description": "Contains an authorization resource attributeId, that can used in custom authorization rules in the XACML service\npolicy, which by default is the policy belonging to the service referred to by \"serviceResource\" in the dialog.\n            \nCan also be used to refer other service policies.",
+            "nullable": true,
+            "example": "mycustomresource\n/* equivalent to the above */\nurn:altinn:subresource:mycustomresource\nurn:altinn:task:Task_1\n/* refer to another service */\nurn:altinn:resource:some-other-service-identifier"
           },
           "isAuthorized": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Whether the user is authorized to perform the action."
           },
           "isDeleteDialogAction": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Indicates whether the action results in the dialog being deleted. Used by frontends to implement custom UX\nfor delete actions."
           },
           "priority": {
-            "$ref": "#/components/schemas/DialogGuiActionPriority_Values"
+            "description": "Indicates a priority for the action, making it possible for frontends to adapt GUI elements based on action\npriority.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DialogGuiActionPriority_Values"
+              }
+            ]
           },
           "httpMethod": {
-            "$ref": "#/components/schemas/HttpVerb_Values"
+            "description": "The HTTP method that the frontend should use when redirecting the user.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/HttpVerb_Values"
+              }
+            ]
           },
           "title": {
             "type": "array",
+            "description": "The title of the action, should be short and in verb form. Always text/plain.",
             "items": {
               "$ref": "#/components/schemas/LocalizationDto"
             }
           },
           "prompt": {
             "type": "array",
+            "description": "If there should be a prompt asking the user for confirmation before the action is executed,\nthis field should contain the prompt text.",
             "nullable": true,
             "items": {
               "$ref": "#/components/schemas/LocalizationDto"
@@ -4886,20 +5736,27 @@
         "properties": {
           "id": {
             "type": "string",
+            "description": "The unique identifier for the action in UUIDv7 format.",
             "format": "guid"
           },
           "action": {
-            "type": "string"
+            "type": "string",
+            "description": "String identifier for the action, corresponding to the \"action\" attributeId used in the XACML service policy,\nwhich by default is the policy belonging to the service referred to by \"serviceResource\" in the dialog",
+            "example": "write"
           },
           "authorizationAttribute": {
             "type": "string",
-            "nullable": true
+            "description": "Contains an authorization resource attributeId, that can used in custom authorization rules in the XACML service\npolicy, which by default is the policy belonging to the service referred to by \"serviceResource\" in the dialog.\n            \nCan also be used to refer other service policies.",
+            "nullable": true,
+            "example": "mycustomresource\n/* equivalent to the above */\nurn:altinn:subresource:mycustomresource\nurn:altinn:task:Task_1\n/* refer to another service */\nurn:altinn:resource:some-other-service-identifier"
           },
           "isAuthorized": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "True if the authenticated user is authorized for this action. If not, the action will not be available\nand all endpoints will be replaced with a fixed placeholder."
           },
           "endpoints": {
             "type": "array",
+            "description": "The endpoints associated with the action.",
             "items": {
               "$ref": "#/components/schemas/GetDialogDialogApiActionEndpointDto"
             }
@@ -4912,39 +5769,53 @@
         "properties": {
           "id": {
             "type": "string",
+            "description": "The unique identifier for the endpoint in UUIDv7 format.",
             "format": "guid"
           },
           "version": {
             "type": "string",
+            "description": "Arbitrary string indicating the version of the endpoint.\n            \nConsult the service-specific documentation provided by the service owner for details (if in use).",
             "nullable": true
           },
           "url": {
             "type": "string",
-            "format": "uri"
+            "description": "The fully qualified HTTPS URL of the API endpoint. Will be set to \"urn:dialogporten:unauthorized\" if the user is\nnot authorized to perform the action.",
+            "format": "uri",
+            "example": "https://someendpoint.com/api/v1/someaction\nurn:dialogporten:unauthorized"
           },
           "httpMethod": {
-            "$ref": "#/components/schemas/HttpVerb_Values"
+            "description": "The HTTP method that the endpoint expects for this action.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/HttpVerb_Values"
+              }
+            ]
           },
           "documentationUrl": {
             "type": "string",
+            "description": "Link to service provider documentation for the endpoint. Used for service owners to provide documentation for\nintegrators. Should be a URL to a human-readable page.",
             "format": "uri",
             "nullable": true
           },
           "requestSchema": {
             "type": "string",
+            "description": "Link to the request schema for the endpoint. Used by service owners to provide documentation for integrators.\nDialogporten will not validate information on this endpoint.",
             "format": "uri",
             "nullable": true
           },
           "responseSchema": {
             "type": "string",
+            "description": "Link to the response schema for the endpoint. Used for service owners to provide documentation for integrators.\nDialogporten will not validate information on this endpoint.",
             "format": "uri",
             "nullable": true
           },
           "deprecated": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Boolean indicating if the endpoint is deprecated. Integrators should migrate to endpoints with a higher version."
           },
           "sunsetAt": {
             "type": "string",
+            "description": "Date and time when the service owner has indicated that endpoint will no longer function. Only set if the endpoint\nis deprecated. Dialogporten will not enforce this date.",
             "format": "date-time",
             "nullable": true
           }
@@ -4956,36 +5827,52 @@
         "properties": {
           "id": {
             "type": "string",
+            "description": "The unique identifier for the activity in UUIDv7 format.",
             "format": "guid"
           },
           "createdAt": {
             "type": "string",
+            "description": "The date and time when the activity was created.",
             "format": "date-time",
             "nullable": true
           },
           "extendedType": {
             "type": "string",
+            "description": "An arbitrary URI/URN with a service-specific activity type.\n            \nConsult the service-specific documentation provided by the service owner for details (if in use).",
             "format": "uri",
             "nullable": true
           },
           "type": {
-            "$ref": "#/components/schemas/DialogActivityType_Values"
+            "description": "The type of activity.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DialogActivityType_Values"
+              }
+            ]
           },
           "relatedActivityId": {
             "type": "string",
+            "description": "The related activity identifier, if applicable. Must be present in current dialog.",
             "format": "guid",
             "nullable": true
           },
           "transmissionId": {
             "type": "string",
+            "description": "If the activity is related to a particular transmission, this field will contain the transmission identifier.",
             "format": "guid",
             "nullable": true
           },
           "performedBy": {
-            "$ref": "#/components/schemas/GetDialogDialogActivityPerformedByActorDto"
+            "description": "The actor that performed the activity.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/GetDialogDialogActivityPerformedByActorDto"
+              }
+            ]
           },
           "description": {
             "type": "array",
+            "description": "Unstructured text describing the activity. Only set if the activity type is \"Information\".",
             "items": {
               "$ref": "#/components/schemas/LocalizationDto"
             }
@@ -4996,19 +5883,22 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "id": {
-            "type": "string",
-            "format": "guid"
-          },
           "actorType": {
-            "$ref": "#/components/schemas/DialogActorType_Values"
+            "description": "What type of actor performed the activity.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DialogActorType_Values"
+              }
+            ]
           },
           "actorName": {
             "type": "string",
+            "description": "The name of the person or organization that performed the activity.\nOnly set if the actor type is \"PartyRepresentative\".",
             "nullable": true
           },
           "actorId": {
             "type": "string",
+            "description": "The identifier of the person or organization that performed the activity.\nMay be omitted if ActorType is \"ServiceOwner\".",
             "nullable": true
           }
         }
@@ -5019,21 +5909,30 @@
         "properties": {
           "id": {
             "type": "string",
+            "description": "The unique identifier for the seen log entry in UUIDv7 format.",
             "format": "guid"
           },
           "seenAt": {
             "type": "string",
+            "description": "The timestamp when the dialog revision was seen",
             "format": "date-time"
           },
           "seenBy": {
-            "$ref": "#/components/schemas/GetDialogDialogSeenLogSeenByActorDto"
+            "description": "The actor that saw the dialog revision",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/GetDialogDialogSeenLogSeenByActorDto"
+              }
+            ]
           },
           "isViaServiceOwner": {
             "type": "boolean",
+            "description": "Flag indicating whether the seen log entry was created via the service owner.\n            \nThis is used when the service owner uses the service owner API to implement its own frontend.",
             "nullable": true
           },
           "isCurrentEndUser": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Flag indicating whether the seen log entry was created by the current end user."
           }
         }
       },
@@ -5041,15 +5940,14 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "id": {
-            "type": "string",
-            "format": "guid"
-          },
           "actorName": {
-            "type": "string"
+            "type": "string",
+            "description": "The natural name of the person/business that saw the dialog revision."
           },
           "actorId": {
-            "type": "string"
+            "type": "string",
+            "description": "The identifier of the person/business that saw the dialog revision.",
+            "example": "urn:altinn:person:identifier-no:01125512345\nurn:altinn:organization:identifier-no:912345678"
           }
         }
       },

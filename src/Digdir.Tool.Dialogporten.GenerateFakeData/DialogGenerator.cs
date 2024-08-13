@@ -23,6 +23,8 @@ public static class DialogGenerator
         int? progress = null,
         string? extendedStatus = null,
         string? externalReference = null,
+        DateTimeOffset? createdAt = null,
+        DateTimeOffset? updatedAt = null,
         DateTimeOffset? dueAt = null,
         DateTimeOffset? expiresAt = null,
         DialogStatus.Values? status = null,
@@ -42,6 +44,8 @@ public static class DialogGenerator
             progress,
             extendedStatus,
             externalReference,
+            createdAt,
+            updatedAt,
             dueAt,
             expiresAt,
             status,
@@ -63,6 +67,8 @@ public static class DialogGenerator
         int? progress = null,
         string? extendedStatus = null,
         string? externalReference = null,
+        DateTimeOffset? createdAt = null,
+        DateTimeOffset? updatedAt = null,
         DateTimeOffset? dueAt = null,
         DateTimeOffset? expiresAt = null,
         DialogStatus.Values? status = null,
@@ -81,6 +87,8 @@ public static class DialogGenerator
             .RuleFor(o => o.Progress, f => progress ?? f.Random.Number(0, 100))
             .RuleFor(o => o.ExtendedStatus, f => extendedStatus ?? f.Random.AlphaNumeric(10))
             .RuleFor(o => o.ExternalReference, f => externalReference ?? f.Random.AlphaNumeric(10))
+            .RuleFor(o => o.CreatedAt, f => createdAt ?? default)
+            .RuleFor(o => o.UpdatedAt, f => updatedAt ?? default)
             .RuleFor(o => o.DueAt, f => dueAt ?? f.Date.Future(10, RefTime))
             .RuleFor(o => o.ExpiresAt, f => expiresAt ?? f.Date.Future(20, RefTime.AddYears(11)))
             .RuleFor(o => o.Status, f => status ?? f.PickRandom<DialogStatus.Values>())
