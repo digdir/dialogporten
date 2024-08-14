@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.12.1](https://github.com/digdir/dialogporten/compare/v1.12.0...v1.12.1) (2024-08-14)
+
+
+### Bug Fixes
+
+* **azure:** ensure environment parameter for production is correct ([#1014](https://github.com/digdir/dialogporten/issues/1014)) ([1612f9d](https://github.com/digdir/dialogporten/commit/1612f9dab192831b5214a8f2a3180b10100e24f5))
+
 ## [1.12.0](https://github.com/digdir/dialogporten/compare/v1.11.0...v1.12.0) (2024-08-14)
 
 
