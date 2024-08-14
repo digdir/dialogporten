@@ -7,6 +7,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.ResourceRegistry;
 internal sealed class ResourceRegistryClient : IResourceRegistry
 {
     private const string OrgResourceReferenceCacheKey = "OrgResourceReference";
+    private const string ResourceIdReferenceCacheKey = "ResourceIdReference";
     private const string ResourceTypeGenericAccess = "GenericAccessResource";
     private const string ResourceTypeAltinnApp = "AltinnApp";
     private const string ResourceTypeCorrespondence = "Correspondence";
@@ -42,6 +43,25 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
             .FirstOrDefault(x => x.ResourceId == serviceResourceId)?
             .ResourceType ??
                throw new KeyNotFoundException();
+    }
+
+    public async Task<bool> ResourceExists(string resource, CancellationToken cancellationToken)
+    {
+        var hashSet = await _cache.GetOrSetAsync(
+            ResourceIdReferenceCacheKey,
+            GetResourceIds,
+            token: cancellationToken);
+        return hashSet.Contains(resource);
+    }
+
+    private async Task<HashSet<string>> GetResourceIds(CancellationToken cancellationToken)
+    {
+        var resourceIdsByOrg = await GetResourceInfoByOrg(cancellationToken);
+        var hashSet = resourceIdsByOrg.Values
+            .SelectMany(x => x)
+            .Select(x => x.ResourceId)
+            .ToHashSet(comparer: StringComparer.OrdinalIgnoreCase);
+        return hashSet;
     }
 
     private async Task<Dictionary<string, AltinnResourceInformation[]>> GetResourceInfoByOrgFromAltinn(CancellationToken cancellationToken)

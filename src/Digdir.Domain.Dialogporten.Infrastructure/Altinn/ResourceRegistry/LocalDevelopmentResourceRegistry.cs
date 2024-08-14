@@ -33,4 +33,6 @@ internal sealed class LocalDevelopmentResourceRegistry : IResourceRegistry
     // TODO: Local testing of correspondence?
     public Task<string> GetResourceType(string _, string __, CancellationToken ___)
         => Task.FromResult(_localResourceType);
+
+    public Task<bool> ResourceExists(string serviceResource, CancellationToken cancellationToken) => Task.FromResult(true);
 }

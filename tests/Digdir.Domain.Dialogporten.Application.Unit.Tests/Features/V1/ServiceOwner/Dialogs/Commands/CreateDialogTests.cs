@@ -27,6 +27,7 @@ public class CreateDialogTests
         var userResourceRegistrySub = Substitute.For<IUserResourceRegistry>();
         var userOrganizationRegistrySub = Substitute.For<IUserOrganizationRegistry>();
         var partyNameRegistrySub = Substitute.For<IPartyNameRegistry>();
+        var resourceRegistrySub = Substitute.For<IResourceRegistry>();
 
         var createCommand = DialogGenerator.GenerateSimpleFakeDialog();
 
@@ -39,7 +40,7 @@ public class CreateDialogTests
 
         var commandHandler = new CreateDialogCommandHandler(dialogDbContextSub,
             mapper, unitOfWorkSub, domainContextSub, userResourceRegistrySub,
-            userOrganizationRegistrySub, partyNameRegistrySub);
+            userOrganizationRegistrySub, partyNameRegistrySub, resourceRegistrySub);
 
         // Act
         var result = await commandHandler.Handle(createCommand, CancellationToken.None);
@@ -66,6 +67,7 @@ public class CreateDialogTests
         var userResourceRegistrySub = Substitute.For<IUserResourceRegistry>();
         var userOrganizationRegistrySub = Substitute.For<IUserOrganizationRegistry>();
         var partyNameRegistrySub = Substitute.For<IPartyNameRegistry>();
+        var resourceRegistrySub = Substitute.For<IResourceRegistry>();
 
         var createCommand = DialogGenerator.GenerateSimpleFakeDialog();
 
@@ -80,7 +82,7 @@ public class CreateDialogTests
 
         var commandHandler = new CreateDialogCommandHandler(dialogDbContextSub,
             mapper, unitOfWorkSub, domainContextSub, userResourceRegistrySub,
-            userOrganizationRegistrySub, partyNameRegistrySub);
+            userOrganizationRegistrySub, partyNameRegistrySub, resourceRegistrySub);
 
         // Act
         var result = await commandHandler.Handle(createCommand, CancellationToken.None);
@@ -107,6 +109,7 @@ public class CreateDialogTests
         var userResourceRegistrySub = Substitute.For<IUserResourceRegistry>();
         var userOrganizationRegistrySub = Substitute.For<IUserOrganizationRegistry>();
         var partyNameRegistrySub = Substitute.For<IPartyNameRegistry>();
+        var resourceRegistrySub = Substitute.For<IResourceRegistry>();
 
         var createCommand = DialogGenerator.GenerateSimpleFakeDialog();
 
@@ -116,7 +119,7 @@ public class CreateDialogTests
 
         var commandHandler = new CreateDialogCommandHandler(dialogDbContextSub,
             mapper, unitOfWorkSub, domainContextSub, userResourceRegistrySub,
-            userOrganizationRegistrySub, partyNameRegistrySub);
+            userOrganizationRegistrySub, partyNameRegistrySub, resourceRegistrySub);
 
         // Act
         var result = await commandHandler.Handle(createCommand, CancellationToken.None);

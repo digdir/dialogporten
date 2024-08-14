@@ -68,7 +68,8 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
         }
         else
         {
-            if (!_resourceRegistry.ServiceResourceExists())
+            var resourceExists = await _resourceRegistry.ResourceExists(request.ServiceResource, cancellationToken);
+            if (!resourceExists)
             {
                 return new ValidationError(new ValidationFailure(nameof(CreateDialogCommand.ServiceResource),
                     $"Could not find service resource '{request.ServiceResource}' in resource registry"));
