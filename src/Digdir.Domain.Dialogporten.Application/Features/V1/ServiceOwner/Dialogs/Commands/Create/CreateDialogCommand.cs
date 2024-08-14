@@ -30,6 +30,7 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
     private readonly IUserResourceRegistry _userResourceRegistry;
     private readonly IUserOrganizationRegistry _userOrganizationRegistry;
     private readonly IPartyNameRegistry _partyNameRegistry;
+    private readonly IResourceRegistry _resourceRegistry;
 
     internal static readonly ValidationFailure ProgressValidationFailure = new(nameof(CreateDialogCommand.Progress), "Progress cannot be set for correspondence dialogs.");
 
@@ -40,7 +41,8 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
         IDomainContext domainContext,
         IUserResourceRegistry userResourceRegistry,
         IUserOrganizationRegistry userOrganizationRegistry,
-        IPartyNameRegistry partyNameRegistry)
+        IPartyNameRegistry partyNameRegistry,
+        IResourceRegistry resourceRegistry)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
@@ -49,6 +51,7 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
         _userResourceRegistry = userResourceRegistry ?? throw new ArgumentNullException(nameof(userResourceRegistry));
         _userOrganizationRegistry = userOrganizationRegistry ?? throw new ArgumentNullException(nameof(userOrganizationRegistry));
         _partyNameRegistry = partyNameRegistry ?? throw new ArgumentNullException(nameof(partyNameRegistry));
+        _resourceRegistry = resourceRegistry ?? throw new ArgumentNullException(nameof(resourceRegistry));
     }
 
     public async Task<CreateDialogResult> Handle(CreateDialogCommand request, CancellationToken cancellationToken)
@@ -61,6 +64,14 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
                 {
                     return new Forbidden($"Not allowed to reference {serviceResourceReference}.");
                 }
+            }
+        }
+        else
+        {
+            if (!_resourceRegistry.ServiceResourceExists())
+            {
+                return new ValidationError(new ValidationFailure(nameof(CreateDialogCommand.ServiceResource),
+                    $"Could not find service resource '{request.ServiceResource}' in resource registry"));
             }
         }
 
