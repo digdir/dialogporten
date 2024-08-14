@@ -482,7 +482,7 @@
             "type": "string"
           },
           "url": {
-            "description": "The fully qualified HTTPS URL of the API endpoint.",
+            "description": "The fully qualified URL of the API endpoint.",
             "format": "uri",
             "type": "string"
           },
@@ -532,7 +532,7 @@
             "type": "string"
           },
           "url": {
-            "description": "The fully qualified HTTPS URL of the attachment.",
+            "description": "The fully qualified URL of the attachment.",
             "format": "uri",
             "type": "string"
           }
@@ -589,7 +589,7 @@
             "type": "array"
           },
           "url": {
-            "description": "The fully qualified HTTPS URL of the action, to which the user will be redirected when the action is triggered. Will be set to\n\u0022urn:dialogporten:unauthorized\u0022 if the user is not authorized to perform the action.",
+            "description": "The fully qualified URL of the action, to which the user will be redirected when the action is triggered. Will be set to\n\u0022urn:dialogporten:unauthorized\u0022 if the user is not authorized to perform the action.",
             "example": "urn:dialogporten:unauthorized\nhttps://someendpoint.com/gui/some-service-instance-id",
             "format": "uri",
             "type": "string"
@@ -601,7 +601,7 @@
         "additionalProperties": false,
         "properties": {
           "summary": {
-            "description": "The transmission summary. Always text/plain.",
+            "description": "The transmission summary.",
             "oneOf": [
               {
                 "$ref": "#/components/schemas/ContentValueDto"
@@ -760,7 +760,7 @@
             "type": "string"
           },
           "url": {
-            "description": "The fully qualified HTTPS URL of the attachment.",
+            "description": "The fully qualified URL of the attachment.",
             "format": "uri",
             "type": "string"
           }
@@ -925,7 +925,7 @@
             ]
           },
           "extendedStatus": {
-            "description": "Used as the human-readable label used to describe the \u0022ExtendedStatus\u0022 field. Always text/plain.",
+            "description": "Used as the human-readable label used to describe the \u0022ExtendedStatus\u0022 field.",
             "nullable": true,
             "oneOf": [
               {
@@ -943,7 +943,7 @@
             ]
           },
           "senderName": {
-            "description": "Overridden sender name. If not supplied, assume \u0022org\u0022 as the sender name. Always text/plain.",
+            "description": "Overridden sender name. If not supplied, assume \u0022org\u0022 as the sender name.",
             "nullable": true,
             "oneOf": [
               {
@@ -952,7 +952,7 @@
             ]
           },
           "summary": {
-            "description": "A short summary of the dialog and its current state. Always text/plain.",
+            "description": "A short summary of the dialog and its current state.",
             "oneOf": [
               {
                 "$ref": "#/components/schemas/ContentValueDto"
@@ -960,7 +960,7 @@
             ]
           },
           "title": {
-            "description": "The title of the dialog. Always text/plain.",
+            "description": "The title of the dialog.",
             "oneOf": [
               {
                 "$ref": "#/components/schemas/ContentValueDto"
@@ -983,7 +983,7 @@
             ]
           },
           "extendedStatus": {
-            "description": "Used as the human-readable label used to describe the \u0022ExtendedStatus\u0022 field. Always text/plain.",
+            "description": "Used as the human-readable label used to describe the \u0022ExtendedStatus\u0022 field.",
             "nullable": true,
             "oneOf": [
               {
@@ -1001,7 +1001,7 @@
             ]
           },
           "senderName": {
-            "description": "Overridden sender name. If not supplied, assume \u0022org\u0022 as the sender name. Always text/plain.",
+            "description": "Overridden sender name. If not supplied, assume \u0022org\u0022 as the sender name.",
             "nullable": true,
             "oneOf": [
               {
@@ -1010,7 +1010,7 @@
             ]
           },
           "summary": {
-            "description": "A short summary of the dialog and its current state. Always text/plain.",
+            "description": "A short summary of the dialog and its current state.",
             "oneOf": [
               {
                 "$ref": "#/components/schemas/ContentValueDto"
@@ -1018,7 +1018,7 @@
             ]
           },
           "title": {
-            "description": "The title of the dialog. Always text/plain.",
+            "description": "The title of the dialog.",
             "oneOf": [
               {
                 "$ref": "#/components/schemas/ContentValueDto"
@@ -1158,7 +1158,7 @@
             "type": "string"
           },
           "actorType": {
-            "description": "What type of actor performed the activity.",
+            "description": "The type of actor that performed the activity.",
             "oneOf": [
               {
                 "$ref": "#/components/schemas/ActorType_Values"
@@ -1304,7 +1304,7 @@
             "type": "string"
           },
           "url": {
-            "description": "The fully qualified HTTPS URL of the API endpoint. Will be set to \u0022urn:dialogporten:unauthorized\u0022 if the user is\nnot authorized to perform the action.",
+            "description": "The fully qualified URL of the API endpoint. Will be set to \u0022urn:dialogporten:unauthorized\u0022 if the user is\nnot authorized to perform the action.",
             "example": "https://someendpoint.com/api/v1/someaction\nurn:dialogporten:unauthorized",
             "format": "uri",
             "type": "string"
@@ -1362,7 +1362,7 @@
             "type": "string"
           },
           "url": {
-            "description": "The fully qualified HTTPS URL of the API endpoint.",
+            "description": "The fully qualified URL of the API endpoint.",
             "format": "uri",
             "type": "string"
           },
@@ -1447,7 +1447,7 @@
             "type": "string"
           },
           "url": {
-            "description": "The fully qualified HTTPS URL of the attachment.",
+            "description": "The fully qualified URL of the attachment.",
             "example": "https://someendpoint.com/someattachment.pdf",
             "format": "uri",
             "type": "string"
@@ -1478,7 +1478,7 @@
             "type": "string"
           },
           "url": {
-            "description": "The fully qualified HTTPS URL of the attachment.",
+            "description": "The fully qualified URL of the attachment.",
             "example": "https://someendpoint.com/someattachment.pdf",
             "format": "uri",
             "type": "string"
@@ -1537,14 +1537,14 @@
             "type": "array"
           },
           "title": {
-            "description": "The title of the action, this should be short and in verb form. Always text/plain.",
+            "description": "The title of the action, this should be short and in verb form.",
             "items": {
               "$ref": "#/components/schemas/LocalizationDto"
             },
             "type": "array"
           },
           "url": {
-            "description": "The fully qualified HTTPS URL of the action, to which the user will be redirected when the action is triggered. Will be set to\n\u0022urn:dialogporten:unauthorized\u0022 if the user is not authorized to perform the action.",
+            "description": "The fully qualified URL of the action, to which the user will be redirected when the action is triggered. Will be set to\n\u0022urn:dialogporten:unauthorized\u0022 if the user is not authorized to perform the action.",
             "example": "urn:dialogporten:unauthorized\nhttps://someendpoint.com/gui/some-service-instance-id",
             "format": "uri",
             "type": "string"
@@ -1604,14 +1604,14 @@
             "type": "array"
           },
           "title": {
-            "description": "The title of the action, this should be short and in verb form. Always text/plain.",
+            "description": "The title of the action, this should be short and in verb form.",
             "items": {
               "$ref": "#/components/schemas/LocalizationDto"
             },
             "type": "array"
           },
           "url": {
-            "description": "The fully qualified HTTPS URL of the action, to which the user will be redirected when the action is triggered.",
+            "description": "The fully qualified URL of the action, to which the user will be redirected when the action is triggered.",
             "format": "uri",
             "type": "string"
           }
@@ -1718,7 +1718,7 @@
         "additionalProperties": false,
         "properties": {
           "summary": {
-            "description": "The transmission summary. Always text/plain.",
+            "description": "The transmission summary.",
             "oneOf": [
               {
                 "$ref": "#/components/schemas/ContentValueDto"
@@ -1726,7 +1726,7 @@
             ]
           },
           "title": {
-            "description": "The transmission title. Always text/plain.",
+            "description": "The transmission title.",
             "oneOf": [
               {
                 "$ref": "#/components/schemas/ContentValueDto"
@@ -1740,7 +1740,7 @@
         "additionalProperties": false,
         "properties": {
           "summary": {
-            "description": "The transmission summary. Always text/plain.",
+            "description": "The transmission summary.",
             "oneOf": [
               {
                 "$ref": "#/components/schemas/ContentValueDto"
@@ -1748,7 +1748,7 @@
             ]
           },
           "title": {
-            "description": "The transmission title. Always text/plain.",
+            "description": "The transmission title.",
             "oneOf": [
               {
                 "$ref": "#/components/schemas/ContentValueDto"
@@ -2020,7 +2020,7 @@
             "type": "array"
           },
           "id": {
-            "description": "The unique identifier for the in UUIDv7 format.",
+            "description": "The unique identifier for the dialog in UUIDv7 format.",
             "example": "01913cd5-784f-7d3b-abef-4c77b1f0972d",
             "format": "guid",
             "type": "string"
@@ -2057,6 +2057,10 @@
           "serviceResource": {
             "description": "The service identifier for the service that the dialog is related to in URN-format.\nThis corresponds to a service resource in the Altinn Resource Registry.",
             "example": "urn:altinn:resource:some-service-identifier",
+            "type": "string"
+          },
+          "serviceResourceType": {
+            "description": "The ServiceResource type, as defined in Altinn Resource Registry (see ResourceType)",
             "type": "string"
           },
           "status": {
@@ -2204,6 +2208,10 @@
           "serviceResource": {
             "description": "The service identifier for the service that the dialog is related to in URN-format.\nThis corresponds to a service resource in the Altinn Resource Registry.",
             "example": "urn:altinn:resource:some-service-identifier",
+            "type": "string"
+          },
+          "serviceResourceType": {
+            "description": "The ServiceResource type, as defined in Altinn Resource Registry (see ResourceType)",
             "type": "string"
           },
           "status": {
@@ -2391,7 +2399,7 @@
             "type": "string"
           },
           "url": {
-            "description": "The fully qualified HTTPS URL of the attachment. Will be set to \u0022urn:dialogporten:unauthorized\u0022 if the user is\nnot authorized to access the transmission.",
+            "description": "The fully qualified URL of the attachment. Will be set to \u0022urn:dialogporten:unauthorized\u0022 if the user is\nnot authorized to access the transmission.",
             "example": "https://someendpoint.com/someattachment.pdf\nurn:dialogporten:unauthorized",
             "format": "uri",
             "type": "string"
@@ -2417,7 +2425,7 @@
             "type": "string"
           },
           "url": {
-            "description": "The fully qualified HTTPS URL of the attachment. Will be set to \u0022urn:dialogporten:unauthorized\u0022 if the user is\nnot authorized to access the transmission.",
+            "description": "The fully qualified URL of the attachment. Will be set to \u0022urn:dialogporten:unauthorized\u0022 if the user is\nnot authorized to access the transmission.",
             "example": "https://someendpoint.com/someattachment.pdf\nurn:dialogporten:unauthorized",
             "format": "uri",
             "type": "string"
@@ -2704,7 +2712,7 @@
         "additionalProperties": false,
         "properties": {
           "extendedStatus": {
-            "description": "Used as the human-readable label used to describe the \u0022ExtendedStatus\u0022 field. Always text/plain.",
+            "description": "Used as the human-readable label used to describe the \u0022ExtendedStatus\u0022 field.",
             "nullable": true,
             "oneOf": [
               {
@@ -2713,7 +2721,7 @@
             ]
           },
           "senderName": {
-            "description": "Overridden sender name. If not supplied, assume \u0022org\u0022 as the sender name. Always text/plain.",
+            "description": "Overridden sender name. If not supplied, assume \u0022org\u0022 as the sender name.",
             "nullable": true,
             "oneOf": [
               {
@@ -2722,7 +2730,7 @@
             ]
           },
           "summary": {
-            "description": "A short summary of the dialog and its current state. Always text/plain.",
+            "description": "A short summary of the dialog and its current state.",
             "oneOf": [
               {
                 "$ref": "#/components/schemas/ContentValueDto"
@@ -2730,7 +2738,7 @@
             ]
           },
           "title": {
-            "description": "The title of the dialog. Always text/plain.",
+            "description": "The title of the dialog.",
             "oneOf": [
               {
                 "$ref": "#/components/schemas/ContentValueDto"
@@ -2744,7 +2752,7 @@
         "additionalProperties": false,
         "properties": {
           "extendedStatus": {
-            "description": "Used as the human-readable label used to describe the \u0022ExtendedStatus\u0022 field. Always text/plain.",
+            "description": "Used as the human-readable label used to describe the \u0022ExtendedStatus\u0022 field.",
             "nullable": true,
             "oneOf": [
               {
@@ -2753,7 +2761,7 @@
             ]
           },
           "senderName": {
-            "description": "Overridden sender name. If not supplied, assume \u0022org\u0022 as the sender name. Always text/plain.",
+            "description": "Overridden sender name. If not supplied, assume \u0022org\u0022 as the sender name.",
             "nullable": true,
             "oneOf": [
               {
@@ -2762,7 +2770,7 @@
             ]
           },
           "summary": {
-            "description": "A short summary of the dialog and its current state. Always text/plain.",
+            "description": "A short summary of the dialog and its current state.",
             "oneOf": [
               {
                 "$ref": "#/components/schemas/ContentValueDto"
@@ -2770,7 +2778,7 @@
             ]
           },
           "title": {
-            "description": "The title of the dialog. Always text/plain.",
+            "description": "The title of the dialog.",
             "oneOf": [
               {
                 "$ref": "#/components/schemas/ContentValueDto"
@@ -3118,6 +3126,10 @@
             "example": "urn:altinn:resource:some-service-identifier",
             "type": "string"
           },
+          "serviceResourceType": {
+            "description": "The ServiceResource type, as defined in Altinn Resource Registry (see ResourceType)",
+            "type": "string"
+          },
           "status": {
             "description": "The aggregated status of the dialog.",
             "oneOf": [
@@ -3211,6 +3223,10 @@
           "serviceResource": {
             "description": "The service identifier for the service that the dialog is related to in URN-format.\nThis corresponds to a service resource in the Altinn Resource Registry.",
             "example": "urn:altinn:resource:some-service-identifier",
+            "type": "string"
+          },
+          "serviceResourceType": {
+            "description": "The ServiceResource type, as defined in Altinn Resource Registry (see ResourceType)",
             "type": "string"
           },
           "status": {
@@ -3534,7 +3550,7 @@
             "type": "string"
           },
           "url": {
-            "description": "The fully qualified HTTPS URL of the API endpoint.",
+            "description": "The fully qualified URL of the API endpoint.",
             "format": "uri",
             "type": "string"
           },
@@ -3598,7 +3614,7 @@
             "type": "string"
           },
           "url": {
-            "description": "The fully qualified HTTPS URL of the attachment.",
+            "description": "The fully qualified URL of the attachment.",
             "format": "uri",
             "type": "string"
           }
@@ -3662,7 +3678,7 @@
             "type": "array"
           },
           "url": {
-            "description": "The fully qualified HTTPS URL of the action, to which the user will be redirected when the action is triggered. Will be set to\n\u0022urn:dialogporten:unauthorized\u0022 if the user is not authorized to perform the action.",
+            "description": "The fully qualified URL of the action, to which the user will be redirected when the action is triggered. Will be set to\n\u0022urn:dialogporten:unauthorized\u0022 if the user is not authorized to perform the action.",
             "example": "urn:dialogporten:unauthorized\nhttps://someendpoint.com/gui/some-service-instance-id",
             "format": "uri",
             "type": "string"
@@ -3674,7 +3690,7 @@
         "additionalProperties": false,
         "properties": {
           "summary": {
-            "description": "The transmission summary. Always text/plain.",
+            "description": "The transmission summary.",
             "oneOf": [
               {
                 "$ref": "#/components/schemas/ContentValueDto"
@@ -3957,7 +3973,7 @@
             "type": "string"
           },
           "url": {
-            "description": "The fully qualified HTTPS URL of the attachment.",
+            "description": "The fully qualified URL of the attachment.",
             "format": "uri",
             "type": "string"
           }
