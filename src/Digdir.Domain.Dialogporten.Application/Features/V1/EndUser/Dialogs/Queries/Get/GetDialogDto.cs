@@ -285,17 +285,17 @@ public sealed class GetDialogDialogTransmissionSenderActorDto
 public sealed class GetDialogContentDto
 {
     /// <summary>
-    /// The title of the dialog. Always text/plain.
+    /// The title of the dialog.
     /// </summary>
     public ContentValueDto Title { get; set; } = null!;
 
     /// <summary>
-    /// A short summary of the dialog and its current state. Always text/plain.
+    /// A short summary of the dialog and its current state.
     /// </summary>
     public ContentValueDto Summary { get; set; } = null!;
 
     /// <summary>
-    /// Overridden sender name. If not supplied, assume "org" as the sender name. Always text/plain.
+    /// Overridden sender name. If not supplied, assume "org" as the sender name.
     /// </summary>
     public ContentValueDto? SenderName { get; set; }
 
@@ -305,7 +305,7 @@ public sealed class GetDialogContentDto
     public ContentValueDto? AdditionalInfo { get; set; }
 
     /// <summary>
-    /// Used as the human-readable label used to describe the "ExtendedStatus" field. Always text/plain.
+    /// Used as the human-readable label used to describe the "ExtendedStatus" field.
     /// </summary>
     public ContentValueDto? ExtendedStatus { get; set; }
 
@@ -318,12 +318,12 @@ public sealed class GetDialogContentDto
 public sealed class GetDialogDialogTransmissionContentDto
 {
     /// <summary>
-    /// The transmission title. Always text/plain.
+    /// The transmission title.
     /// </summary>
     public ContentValueDto Title { get; set; } = null!;
 
     /// <summary>
-    /// The transmission summary. Always text/plain.
+    /// The transmission summary.
     /// </summary>
     public ContentValueDto Summary { get; set; } = null!;
 }
@@ -555,7 +555,7 @@ public sealed class GetDialogDialogGuiActionDto
     public HttpVerb.Values HttpMethod { get; set; }
 
     /// <summary>
-    /// The title of the action, this should be short and in verb form. Always text/plain.
+    /// The title of the action, this should be short and in verb form.
     /// </summary>
     public List<LocalizationDto> Title { get; set; } = [];
 

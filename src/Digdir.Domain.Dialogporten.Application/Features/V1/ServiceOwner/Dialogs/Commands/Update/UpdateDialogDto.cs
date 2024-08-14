@@ -166,7 +166,7 @@ public class UpdateDialogDialogTransmissionContentDto
     public ContentValueDto Title { get; set; } = null!;
 
     /// <summary>
-    /// The transmission summary. Always text/plain.
+    /// The transmission summary.
     /// </summary>
     public ContentValueDto Summary { get; set; } = null!;
 }

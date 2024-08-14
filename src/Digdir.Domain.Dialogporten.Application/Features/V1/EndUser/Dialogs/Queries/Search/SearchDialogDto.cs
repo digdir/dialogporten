@@ -17,22 +17,22 @@ public sealed class SearchDialogDto : SearchDialogDtoBase
 public sealed class SearchDialogContentDto
 {
     /// <summary>
-    /// The title of the dialog. Always text/plain.
+    /// The title of the dialog.
     /// </summary>
     public ContentValueDto Title { get; set; } = null!;
 
     /// <summary>
-    /// A short summary of the dialog and its current state. Always text/plain.
+    /// A short summary of the dialog and its current state.
     /// </summary>
     public ContentValueDto Summary { get; set; } = null!;
 
     /// <summary>
-    /// Overridden sender name. If not supplied, assume "org" as the sender name. Always text/plain.
+    /// Overridden sender name. If not supplied, assume "org" as the sender name.
     /// </summary>
     public ContentValueDto? SenderName { get; set; }
 
     /// <summary>
-    /// Used as the human-readable label used to describe the "ExtendedStatus" field. Always text/plain.
+    /// Used as the human-readable label used to describe the "ExtendedStatus" field.
     /// </summary>
     public ContentValueDto? ExtendedStatus { get; set; }
 }
