@@ -38,6 +38,11 @@ public sealed class GetDialogDto
     public string ServiceResource { get; set; } = null!;
 
     /// <summary>
+    /// The ServiceResource type, as defined in Altinn Resource Registry (see ResourceType)
+    /// </summary>
+    public string ServiceResourceType { get; set; } = null!;
+
+    /// <summary>
     /// The party code representing the organization or person that the dialog belongs to in URN format
     /// </summary>
     /// <example>
