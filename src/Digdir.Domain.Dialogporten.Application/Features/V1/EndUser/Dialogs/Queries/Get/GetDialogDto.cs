@@ -450,7 +450,7 @@ public sealed class GetDialogDialogApiActionEndpointDto
     public string? Version { get; set; }
 
     /// <summary>
-    /// The fully qualified HTTPS URL of the API endpoint. Will be set to "urn:dialogporten:unauthorized" if the user is
+    /// The fully qualified URL of the API endpoint. Will be set to "urn:dialogporten:unauthorized" if the user is
     /// not authorized to perform the action.
     /// </summary>
     /// <example>
@@ -507,7 +507,7 @@ public sealed class GetDialogDialogGuiActionDto
     public string Action { get; set; } = null!;
 
     /// <summary>
-    /// The fully qualified HTTPS URL of the action, to which the user will be redirected when the action is triggered. Will be set to
+    /// The fully qualified URL of the action, to which the user will be redirected when the action is triggered. Will be set to
     /// "urn:dialogporten:unauthorized" if the user is not authorized to perform the action.
     /// </summary>
     /// <example>
@@ -592,7 +592,7 @@ public sealed class GetDialogDialogAttachmentUrlDto
     public Guid Id { get; set; }
 
     /// <summary>
-    /// The fully qualified HTTPS URL of the attachment.
+    /// The fully qualified URL of the attachment.
     /// </summary>
     /// <example>
     /// https://someendpoint.com/someattachment.pdf
@@ -635,7 +635,7 @@ public sealed class GetDialogTransmissionAttachmentDto
 public sealed class GetDialogTransmissionAttachmentUrlDto
 {
     /// <summary>
-    /// The fully qualified HTTPS URL of the attachment. Will be set to "urn:dialogporten:unauthorized" if the user is
+    /// The fully qualified URL of the attachment. Will be set to "urn:dialogporten:unauthorized" if the user is
     /// not authorized to access the transmission.
     /// </summary>
     /// <example>

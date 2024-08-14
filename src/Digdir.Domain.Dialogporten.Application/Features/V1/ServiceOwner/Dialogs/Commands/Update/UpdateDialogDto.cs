@@ -356,7 +356,7 @@ public sealed class UpdateDialogDialogApiActionEndpointDto
     public string? Version { get; set; }
 
     /// <summary>
-    /// The fully qualified HTTPS URL of the API endpoint.
+    /// The fully qualified URL of the API endpoint.
     /// </summary>
     public Uri Url { get; set; } = null!;
 
@@ -410,7 +410,7 @@ public sealed class UpdateDialogDialogGuiActionDto
     public string Action { get; set; } = null!;
 
     /// <summary>
-    /// The fully qualified HTTPS URL of the action, to which the user will be redirected when the action is triggered. Will be set to
+    /// The fully qualified URL of the action, to which the user will be redirected when the action is triggered. Will be set to
     /// "urn:dialogporten:unauthorized" if the user is not authorized to perform the action.
     /// </summary>
     /// <example>
@@ -494,7 +494,7 @@ public sealed class UpdateDialogDialogAttachmentUrlDto
     public Guid? Id { get; set; }
 
     /// <summary>
-    /// The fully qualified HTTPS URL of the attachment.
+    /// The fully qualified URL of the attachment.
     /// </summary>
     public Uri Url { get; set; } = null!;
 
@@ -543,7 +543,7 @@ public sealed class UpdateDialogTransmissionAttachmentUrlDto
     public Guid? Id { get; set; }
 
     /// <summary>
-    /// The fully qualified HTTPS URL of the attachment.
+    /// The fully qualified URL of the attachment.
     /// </summary>
     public Uri Url { get; set; } = null!;
 
