@@ -25,8 +25,8 @@ jobs:
     name: Generate git short sha
     uses: ./.github/workflows/action-generate-git-short-sha.yml
 
-  deploy-infra-test:
-    name: Deploy infra to test
+  deploy-infra:
+    name: Deploy infra to ${{ inputs.environment }}
     needs: [generate-git-short-sha]
     uses: ./.github/workflows/action-deploy-infra.yml
     secrets:
