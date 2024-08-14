@@ -15,7 +15,7 @@ public sealed class SearchDialogSeenLogQuery : IRequest<SearchDialogSeenLogResul
 }
 
 [GenerateOneOf]
-public partial class SearchDialogSeenLogResult : OneOfBase<List<SearchDialogSeenLogDto>, EntityNotFound>;
+public partial class SearchDialogSeenLogResult : OneOfBase<List<SearchSeenLogDto>, EntityNotFound>;
 
 internal sealed class SearchDialogSeenLogQueryHandler : IRequestHandler<SearchDialogSeenLogQuery, SearchDialogSeenLogResult>
 {
@@ -54,7 +54,7 @@ internal sealed class SearchDialogSeenLogQueryHandler : IRequestHandler<SearchDi
         return dialog.SeenLog
             .Select(x =>
             {
-                var dto = _mapper.Map<SearchDialogSeenLogDto>(x);
+                var dto = _mapper.Map<SearchSeenLogDto>(x);
                 return dto;
             })
             .ToList();
