@@ -563,7 +563,7 @@ public sealed class GetDialogDialogGuiActionDto
     /// If there should be a prompt asking the user for confirmation before the action is executed,
     /// this field should contain the prompt text.
     /// </summary>
-    public List<LocalizationDto>? Prompt { get; set; } = [];
+    public List<LocalizationDto>? Prompt { get; set; }
 }
 
 public sealed class GetDialogDialogAttachmentDto
