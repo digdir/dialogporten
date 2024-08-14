@@ -376,7 +376,7 @@ public sealed class GetDialogDialogActivityDto
 public sealed class GetDialogDialogActivityPerformedByActorDto
 {
     /// <summary>
-    /// What type of actor performed the activity.
+    /// The type of actor that performed the activity.
     /// </summary>
     public ActorType.Values ActorType { get; set; }
 
