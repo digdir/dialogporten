@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.12.0](https://github.com/digdir/dialogporten/compare/v1.11.0...v1.12.0) (2024-08-14)
+
+
+### Features
+
+* Add current user flag to parties dto ([#993](https://github.com/digdir/dialogporten/issues/993)) ([e096743](https://github.com/digdir/dialogporten/commit/e0967436cea9f1efa8dca503e511dc66cf830591))
+* Add notification condition check endpoint ([#965](https://github.com/digdir/dialogporten/issues/965)) ([f480ce0](https://github.com/digdir/dialogporten/commit/f480ce0733453864ce3bb2aa28d1fb4bba2655d2))
+
+
+### Bug Fixes
+
+* Using existing Transmission or Activity IDs should no longer result in internal server error on updates ([#980](https://github.com/digdir/dialogporten/issues/980)) ([0757b33](https://github.com/digdir/dialogporten/commit/0757b332e1194aee399b6a0ab7c6c66d5fbf037e))
+
 ## [1.11.0](https://github.com/digdir/dialogporten/compare/v1.10.0...v1.11.0) (2024-08-08)
 
 
