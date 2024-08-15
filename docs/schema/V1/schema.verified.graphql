@@ -206,7 +206,7 @@ type Transmission {
   createdAt: DateTime!
   authorizationAttribute: String
   isAuthorized: Boolean!
-  extendedType: String
+  extendedType: URL
   relatedTransmissionId: UUID
   type: TransmissionType!
   sender: Actor!
