@@ -55,8 +55,8 @@ static void BuildAndRun(string[] args)
     builder.Host.UseSerilog((context, services, configuration) => configuration
         .MinimumLevel.Warning()
         .MinimumLevel.Override("Microsoft.EntityFrameworkCore", Serilog.Events.LogEventLevel.Fatal)
-        //.MinimumLevel.Override("ZiggyCreatures.Caching.Fusion", builder.Environment.IsDevelopment() ?
-        //    Serilog.Events.LogEventLevel.Debug : Serilog.Events.LogEventLevel.Warning)
+        .MinimumLevel.Override("ZiggyCreatures.Caching.Fusion", builder.Environment.EnvironmentName == "test" ?
+            Serilog.Events.LogEventLevel.Debug : Serilog.Events.LogEventLevel.Warning)
         .ReadFrom.Configuration(context.Configuration)
         .ReadFrom.Services(services)
         .Enrich.FromLogContext()
