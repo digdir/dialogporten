@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.13.0](https://github.com/digdir/dialogporten/compare/v1.12.1...v1.13.0) (2024-08-15)
+
+
+### Features
+
+* Add doc blocks on DTOs for OAS generation, CORS headers ([#987](https://github.com/digdir/dialogporten/issues/987)) ([01c34b8](https://github.com/digdir/dialogporten/commit/01c34b841c82b58fe96e0c0831c2dcb49902804e))
+* **azure:** add bicep parameter files for production ([#1016](https://github.com/digdir/dialogporten/issues/1016)) ([7a7198a](https://github.com/digdir/dialogporten/commit/7a7198a6579ab2143a0a0250039f3ebbac6bf7b3))
+
 ## [1.12.1](https://github.com/digdir/dialogporten/compare/v1.12.0...v1.12.1) (2024-08-14)
 
 
