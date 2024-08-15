@@ -6,7 +6,19 @@ layout: page
 topmenu: false
 ---
 
-Versjon 0.92 - Bjørn Dybvik Langfors, sist endret: {{ page.last_modified_at  | date: '%d. %b %Y, kl. %H:%M:%S' }} [(se git-historikk)](https://github.com/digdir/dialogporten/commits/docs/index.md)
+Versjon 1.0 - Bjørn Dybvik Langfors, sist endret: {{ page.last_modified_at  | date: '%d. %b %Y, kl. %H:%M:%S' }} [(se git-historikk)](https://github.com/digdir/dialogporten/commits/docs/index.md)
+
+<div id="cover">
+    <div class="alert alert-danger" role="alert">
+        <h3>Viktig!</h3>
+        <p>All offentlig tilgjengelig dokumentasjon for Dialogporten kan finnes på <a href="https://docs.altinn.studio/dialogporten">https://docs.altinn.studio/dialogporten</a></p>
+        
+        <p>Denne siden vil ikke bli oppdatert, og alt som står her må regnes som historisk, og ikke nødvendigvis lenger gjeldende.</p>
+
+        <center><button onclick="document.getElementById('cover').style.display = 'none'">Lukk</button></center>
+    </div>
+</div>
+
 
 # Introduksjon
 

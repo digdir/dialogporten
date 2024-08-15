@@ -235,4 +235,32 @@ article.home {
     }
 }
 
+#cover {
+    position: fixed;    
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9999999;
+    background-color: rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-content: space-around;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
 
+    .alert {
+        padding: 1em;
+        font-size: 120%;
+        max-width: 600px;
+        margin: 0 2rem;
+    }
+
+    h3 {
+        margin: 1rem 0;
+    }
+
+    button {
+        font-size: 100%
+    }
+}
