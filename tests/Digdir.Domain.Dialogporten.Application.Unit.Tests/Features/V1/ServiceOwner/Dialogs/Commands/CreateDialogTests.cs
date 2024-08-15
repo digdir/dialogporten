@@ -1,11 +1,12 @@
 using AutoMapper;
 using Digdir.Domain.Dialogporten.Application.Common;
-using Digdir.Domain.Dialogporten.Application.Common.ResourceRegistry;
+using Digdir.Domain.Dialogporten.Application.Common.Authorization;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Create;
 using Digdir.Tool.Dialogporten.GenerateFakeData;
 using NSubstitute;
 using AuthorizationConstants = Digdir.Domain.Dialogporten.Application.Common.Authorization.Constants;
+using Constants = Digdir.Domain.Dialogporten.Application.Common.ResourceRegistry.Constants;
 
 namespace Digdir.Domain.Dialogporten.Application.Unit.Tests.Features.V1.ServiceOwner.Dialogs.Commands;
 
@@ -26,8 +27,7 @@ public class CreateDialogTests
         var domainContextSub = Substitute.For<IDomainContext>();
         var userResourceRegistrySub = Substitute.For<IUserResourceRegistry>();
         var userOrganizationRegistrySub = Substitute.For<IUserOrganizationRegistry>();
-        var partyNameRegistrySub = Substitute.For<IPartyNameRegistry>();
-        var resourceRegistrySub = Substitute.For<IResourceRegistry>();
+        var serviceAuthorizationSub = Substitute.For<IServiceResourceAuthorizer>();
 
         var createCommand = DialogGenerator.GenerateSimpleFakeDialog();
 
@@ -39,8 +39,8 @@ public class CreateDialogTests
             .Returns(Constants.Correspondence);
 
         var commandHandler = new CreateDialogCommandHandler(dialogDbContextSub,
-            mapper, unitOfWorkSub, domainContextSub, userResourceRegistrySub,
-            userOrganizationRegistrySub, partyNameRegistrySub, resourceRegistrySub);
+            mapper, unitOfWorkSub, domainContextSub,
+            userOrganizationRegistrySub, serviceAuthorizationSub);
 
         // Act
         var result = await commandHandler.Handle(createCommand, CancellationToken.None);
@@ -66,8 +66,7 @@ public class CreateDialogTests
         var domainContextSub = Substitute.For<IDomainContext>();
         var userResourceRegistrySub = Substitute.For<IUserResourceRegistry>();
         var userOrganizationRegistrySub = Substitute.For<IUserOrganizationRegistry>();
-        var partyNameRegistrySub = Substitute.For<IPartyNameRegistry>();
-        var resourceRegistrySub = Substitute.For<IResourceRegistry>();
+        var serviceAuthorizationSub = Substitute.For<IServiceResourceAuthorizer>();
 
         var createCommand = DialogGenerator.GenerateSimpleFakeDialog();
 
@@ -81,8 +80,8 @@ public class CreateDialogTests
             .Returns(Constants.Correspondence);
 
         var commandHandler = new CreateDialogCommandHandler(dialogDbContextSub,
-            mapper, unitOfWorkSub, domainContextSub, userResourceRegistrySub,
-            userOrganizationRegistrySub, partyNameRegistrySub, resourceRegistrySub);
+            mapper, unitOfWorkSub, domainContextSub,
+            userOrganizationRegistrySub, serviceAuthorizationSub);
 
         // Act
         var result = await commandHandler.Handle(createCommand, CancellationToken.None);
@@ -109,8 +108,7 @@ public class CreateDialogTests
         var domainContextSub = Substitute.For<IDomainContext>();
         var userResourceRegistrySub = Substitute.For<IUserResourceRegistry>();
         var userOrganizationRegistrySub = Substitute.For<IUserOrganizationRegistry>();
-        var partyNameRegistrySub = Substitute.For<IPartyNameRegistry>();
-        var resourceRegistrySub = Substitute.For<IResourceRegistry>();
+        var serviceAuthorizationSub = Substitute.For<IServiceResourceAuthorizer>();
 
         var createCommand = DialogGenerator.GenerateSimpleFakeDialog();
 
@@ -119,8 +117,8 @@ public class CreateDialogTests
             .Returns(false);
 
         var commandHandler = new CreateDialogCommandHandler(dialogDbContextSub,
-            mapper, unitOfWorkSub, domainContextSub, userResourceRegistrySub,
-            userOrganizationRegistrySub, partyNameRegistrySub, resourceRegistrySub);
+            mapper, unitOfWorkSub, domainContextSub,
+            userOrganizationRegistrySub, serviceAuthorizationSub);
 
         // Act
         var result = await commandHandler.Handle(createCommand, CancellationToken.None);
