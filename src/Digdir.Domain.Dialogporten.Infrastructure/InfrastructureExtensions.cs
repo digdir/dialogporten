@@ -121,7 +121,10 @@ public static class InfrastructureExtensions
                     {
                         o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
                     })
-                    .AddInterceptors(services.GetRequiredService<ConvertDomainEventsToOutboxMessagesInterceptor>());
+                    .AddInterceptors([
+                        services.GetRequiredService<PopulateActorNameInterceptor>(),
+                        services.GetRequiredService<ConvertDomainEventsToOutboxMessagesInterceptor>()
+                    ]);
             })
             .AddHostedService<DevelopmentMigratorHostedService>()
 
@@ -132,6 +135,7 @@ public static class InfrastructureExtensions
             // Transient
             .AddTransient<OutboxDispatcher>()
             .AddTransient<ConvertDomainEventsToOutboxMessagesInterceptor>()
+            .AddTransient<PopulateActorNameInterceptor>()
 
             // Decorate
             .Decorate(typeof(INotificationHandler<>), typeof(IdempotentDomainEventHandler<>));

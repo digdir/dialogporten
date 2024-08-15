@@ -2,7 +2,8 @@
 
 public interface IResourceRegistry
 {
-    Task<IReadOnlyCollection<string>> GetResourceIds(string orgNumber, CancellationToken cancellationToken);
-    Task<string> GetResourceType(string orgNumber, string serviceResourceId, CancellationToken cancellationToken);
-    Task<bool> ResourceExists(string serviceResource, CancellationToken cancellationToken);
+    Task<IReadOnlyCollection<ServiceResourceInformation>> GetResourceInformationForOrg(string orgNumber, CancellationToken cancellationToken);
+    Task<ServiceResourceInformation?> GetResourceInformation(string serviceResourceId, CancellationToken cancellationToken);
 }
+
+public sealed record ServiceResourceInformation(string ResourceId, string ResourceType, string OwnerOrgNumber);

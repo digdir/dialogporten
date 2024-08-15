@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Reflection;
+using Digdir.Domain.Dialogporten.Application.Common.Authorization;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Content;
 
 namespace Digdir.Domain.Dialogporten.Application;
@@ -41,6 +42,7 @@ public static class ApplicationExtensions
             .AddScoped<IDialogTokenGenerator, DialogTokenGenerator>()
 
             // Transient
+            .AddTransient<IServiceResourceAuthorizer, ServiceResourceAuthorizer>()
             .AddTransient<IUserOrganizationRegistry, UserOrganizationRegistry>()
             .AddTransient<IUserResourceRegistry, UserResourceRegistry>()
             .AddTransient<IUserRegistry, UserRegistry>()

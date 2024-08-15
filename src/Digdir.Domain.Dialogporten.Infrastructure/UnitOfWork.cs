@@ -16,7 +16,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure;
 
 internal sealed class UnitOfWork : IUnitOfWork
 {
-    private static readonly AsyncPolicyWrap ConcurrencyRetryPolicy;
+    private static readonly AsyncPolicy ConcurrencyRetryPolicy;
 
     private readonly DialogDbContext _dialogDbContext;
     private readonly ITransactionTime _transactionTime;
@@ -54,7 +54,9 @@ internal sealed class UnitOfWork : IUnitOfWork
                     retryCount: int.MaxValue),
                 onRetryAsync: FetchCurrentRevision);
 
-        ConcurrencyRetryPolicy = timeoutPolicy.WrapAsync(retryPolicy);
+        // Magnus: Legg på timeout igjen - eller ta den bort? 
+        // ConcurrencyRetryPolicy = timeoutPolicy.WrapAsync(retryPolicy);
+        ConcurrencyRetryPolicy = retryPolicy;
     }
 
     public IUnitOfWork EnableConcurrencyCheck<TEntity>(
@@ -108,6 +110,12 @@ internal sealed class UnitOfWork : IUnitOfWork
         catch (DbUpdateConcurrencyException)
         {
             return new ConcurrencyError();
+        }
+
+        // Interceptors can add domain errors, so check again
+        if (!_domainContext.IsValid)
+        {
+            return new DomainError(_domainContext.Pop());
         }
 
         return new Success();
