@@ -2163,7 +2163,7 @@
             "type": "array"
           },
           "id": {
-            "description": "The unique identifier for the in UUIDv7 format.",
+            "description": "The unique identifier for the dialog in UUIDv7 format.",
             "example": "01913cd5-784f-7d3b-abef-4c77b1f0972d",
             "format": "guid",
             "type": "string"
@@ -3084,7 +3084,7 @@
             "type": "integer"
           },
           "id": {
-            "description": "The unique identifier for the in UUIDv7 format.",
+            "description": "The unique identifier for the dialog in UUIDv7 format.",
             "example": "01913cd5-784f-7d3b-abef-4c77b1f0972d",
             "format": "guid",
             "type": "string"
@@ -3183,7 +3183,7 @@
             "type": "integer"
           },
           "id": {
-            "description": "The unique identifier for the in UUIDv7 format.",
+            "description": "The unique identifier for the dialog in UUIDv7 format.",
             "example": "01913cd5-784f-7d3b-abef-4c77b1f0972d",
             "format": "guid",
             "type": "string"

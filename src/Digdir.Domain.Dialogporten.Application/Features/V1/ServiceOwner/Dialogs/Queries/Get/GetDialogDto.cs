@@ -13,7 +13,7 @@ namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialog
 public sealed class GetDialogDto
 {
     /// <summary>
-    /// The unique identifier for the in UUIDv7 format.
+    /// The unique identifier for the dialog in UUIDv7 format.
     /// </summary>
     /// <example>01913cd5-784f-7d3b-abef-4c77b1f0972d</example>
     public Guid Id { get; set; }
