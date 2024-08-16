@@ -230,6 +230,30 @@ For example, to add a new storage account, you would:
 
 Refer to the existing infrastructure definitions as templates for creating new components.
 
+#### Deploying a new infrastructure environment
+
+A few resources need to be created before we can apply the Bicep to create the main resources. 
+
+The resources refer to a `source key vault` in order to fetch necessary secrets and store them in the key vault for the environment. An `ssh`-key is also needed for the `ssh-jumper` used to access the resources in Azure within the `vnet`. 
+
+Use the following steps:
+
+- Ensure a `source key vault` exist for the new environment. Either create a new key vault or use an existing key vault. Currently, two key vaults exist for our environments. One in the test subscription used by Test and Staging, and one in our Production subscription which Production uses. Ensure you add the necessary secrets that should be used by the new environment. Read here to learn about secret convention [Configuration Guide](docs/Configuration.md). Ensure also that the key vault has the following enabled: `Azure Resource Manager for template deployment`.
+
+- Ensure that a role assignment `Key Vault Secrets User` and `Contributer`(should be inherited) is added for the service principal used by the Github Entra Application.
+
+- Create an SSH key in Azure and discard of the private key. We will use the `az cli` to access the virtual machine so storing the `ssh key` is only a security risk. 
+
+- Create a new environment in Github and add the following secrets: `AZURE_CLIENT_ID`, `AZURE_SOURCE_KEY_VAULT_NAME`, `AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP`, `AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID`, `AZURE_SUBSCRIPTION_ID`, `AZURE_TENANT_ID` and `AZURE_SOURCE_KEY_VAULT_SSH_JUMPER_SSH_PUBLIC_KEY`
+
+- Add a new file for the environment `.azure/infrastructure/<env>.bicepparam`. `<env>` must match the environment created in Github.
+
+- Add the new environment in the `dispatch-infrastructure.yml` list of environments. 
+
+- Run the github action `Dispatch infrastructure` with the `version` you want to deploy and `environment`. All the resources in `.azure/infrastructure/main.bicep` should now be created. 
+
+- (The github action might need to restart because of a timeout when creating Redis).
+
 #### Connecting to resources in Azure
 
 There is a `ssh-jumper` virtual machine deployed with the infrastructure. This can be used to create a `ssh`-tunnel into the `vnet`. Use one of the following methods to gain access to resources within the `vnet`:
@@ -259,3 +283,17 @@ For example, to add a new application named `web-api-new`, you would:
 - Add parameter files for each environment (e.g., `test.bicepparam`, `staging.bicepparam`) to specify environment-specific values.
 
 Refer to the existing applications like `web-api-so` and `web-api-eu` as templates.
+
+#### Deploying applications in a new infrastructure environment
+
+Ensure you have followed the steps in [Deploying a new infrastructure environment](#deploying-a-new-infrastructure-environment) in order to have the resources required for the applications.
+
+Use the following steps:
+
+- From the infrastructure resources created, add the following github secrets in the new environment (this will not be necessary in the future as secrets would be added directly from infrastructure deployment): `AZURE_APP_CONFIGURATION_NAME`, `AZURE_APP_INSIGHTS_CONNECTION_STRING`, `AZURE_CONTAINER_APP_ENVIRONMENT_NAME`, `AZURE_ENVIRONMENT_KEY_VAULT_NAME`, `AZURE_REDIS_NAME`, `AZURE_RESOURCE_GROUP_NAME` and `AZURE_SLACK_NOTIFIER_FUNCTION_APP_NAME`
+
+- Add new parameter files for the environment in all applications `.azure/applications/*/<env>.bicepparam`
+
+- Run the github action `Dispatch applications` in order to deploy all applications to the new environment.
+
+- In order to expose the applications through APIM, see [Common APIM Guide](docs/CommonAPIM.md)
