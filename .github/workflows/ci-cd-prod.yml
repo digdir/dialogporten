@@ -19,6 +19,7 @@ jobs:
     name: Get current version
     uses: ./.github/workflows/action-get-current-version.yml
 
+  # todo: should not need to re-build and re-publish the image here. Use existing image instead
   publish:
     name: Build and publish docker images
     uses: ./.github/workflows/action-publish.yml
