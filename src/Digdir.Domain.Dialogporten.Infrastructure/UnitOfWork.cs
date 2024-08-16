@@ -98,26 +98,23 @@ internal sealed class UnitOfWork : IUnitOfWork
         {
             // Attempt to save changes without concurrency check
             await ConcurrencyRetryPolicy.ExecuteAsync(_dialogDbContext.SaveChangesAsync, cancellationToken);
-
-            return new Success();
         }
-
-        try
+        else
         {
-            await _dialogDbContext.SaveChangesAsync(cancellationToken);
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            return new ConcurrencyError();
+            try
+            {
+                await _dialogDbContext.SaveChangesAsync(cancellationToken);
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return new ConcurrencyError();
+            }
         }
 
         // Interceptors can add domain errors, so check again
-        if (!_domainContext.IsValid)
-        {
-            return new DomainError(_domainContext.Pop());
-        }
-
-        return new Success();
+        return !_domainContext.IsValid
+            ? new DomainError(_domainContext.Pop())
+            : new Success();
     }
 
     private static async Task FetchCurrentRevision(Exception exception, TimeSpan _)
