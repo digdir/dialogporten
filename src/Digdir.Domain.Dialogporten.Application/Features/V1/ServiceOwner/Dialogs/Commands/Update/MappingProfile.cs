@@ -48,7 +48,8 @@ internal sealed class MappingProfile : Profile
             .ForMember(dest => dest.HttpMethodId, opt => opt.MapFrom(src => src.HttpMethod));
 
         CreateMap<UpdateDialogDialogAttachmentDto, DialogAttachment>()
-            .IgnoreComplexDestinationProperties();
+            .IgnoreComplexDestinationProperties()
+            .ForMember(x => x.Id, opt => opt.Ignore());
 
         CreateMap<UpdateDialogDialogAttachmentUrlDto, AttachmentUrl>()
             .IgnoreComplexDestinationProperties()
@@ -81,7 +82,8 @@ internal sealed class MappingProfile : Profile
             .ForMember(dest => dest.TypeId, opt => opt.MapFrom(src => src.Type));
 
         CreateMap<UpdateDialogTransmissionAttachmentDto, DialogTransmissionAttachment>()
-            .IgnoreComplexDestinationProperties();
+            .IgnoreComplexDestinationProperties()
+            .ForMember(x => x.Id, opt => opt.Ignore());
 
         CreateMap<UpdateDialogTransmissionAttachmentUrlDto, AttachmentUrl>()
             .IgnoreComplexDestinationProperties()

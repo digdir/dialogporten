@@ -108,14 +108,13 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
                 delete: DeleteDelegate.NoOp,
                 comparer: StringComparer.InvariantCultureIgnoreCase);
 
-        await dialog.Attachments
-            .MergeAsync(request.Dto.Attachments,
+        dialog.Attachments
+            .Merge(request.Dto.Attachments,
                 destinationKeySelector: x => x.Id,
                 sourceKeySelector: x => x.Id,
                 create: CreateAttachments,
                 update: UpdateAttachments,
-                delete: DeleteDelegate.NoOp,
-                cancellationToken: cancellationToken);
+                delete: DeleteDelegate.NoOp);
 
         dialog.GuiActions
             .Merge(request.Dto.GuiActions,
@@ -260,19 +259,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
             _domainContext.AddError(DomainFailure.EntityExists<DialogTransmission>(existingIds));
         }
 
-        var transmissionAttachments = newDialogTransmissions.SelectMany(x => x.Attachments);
-        var existingTransmissionAttachmentIds = await _db.GetExistingIds(transmissionAttachments, cancellationToken);
-        if (existingTransmissionAttachmentIds.Count != 0)
-        {
-            _domainContext.AddError(DomainFailure.EntityExists<DialogTransmissionAttachment>(existingTransmissionAttachmentIds));
-        }
-
-        if (_domainContext.Errors.Count != 0)
-        {
-            return;
-        }
         dialog.Transmissions.AddRange(newDialogTransmissions);
-
         // Tell ef explicitly to add transmissions as new to the database.
         _db.DialogTransmissions.AddRange(newDialogTransmissions);
     }
@@ -329,27 +316,17 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         }
     }
 
-    private async Task<IEnumerable<DialogAttachment>> CreateAttachments(IEnumerable<UpdateDialogDialogAttachmentDto> creatables, CancellationToken cancellationToken)
+    private IEnumerable<DialogAttachment> CreateAttachments(IEnumerable<UpdateDialogDialogAttachmentDto> creatables)
     {
-        var attachments = new List<DialogAttachment>();
-        foreach (var atttachmentDto in creatables)
-        {
-            var attachment = _mapper.Map<DialogAttachment>(atttachmentDto);
-            attachment.Urls = _mapper.Map<List<AttachmentUrl>>(atttachmentDto.Urls);
-            attachments.Add(attachment);
-        }
-
-        // Magnus: Sjekk denne etter master merge
-        var existingIds = await _db.GetExistingIds(attachments, cancellationToken);
-        if (existingIds.Count != 0)
-        {
-            _domainContext.AddError(nameof(UpdateDialogDto.Attachments), $"Entity '{nameof(DialogAttachment)}' with the following key(s) already exists: ({string.Join(", ", existingIds)}).");
-        }
-
-        return attachments;
+        return creatables.Select(attachmentDto =>
+            {
+                var attachment = _mapper.Map<DialogAttachment>(attachmentDto);
+                attachment.Urls = _mapper.Map<List<AttachmentUrl>>(attachmentDto.Urls);
+                return attachment;
+            });
     }
 
-    private Task UpdateAttachments(IEnumerable<UpdateSet<DialogAttachment, UpdateDialogDialogAttachmentDto>> updateSets, CancellationToken _)
+    private void UpdateAttachments(IEnumerable<UpdateSet<DialogAttachment, UpdateDialogDialogAttachmentDto>> updateSets)
     {
         foreach (var updateSet in updateSets)
         {
@@ -362,7 +339,5 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
                     update: _mapper.Update,
                     delete: DeleteDelegate.NoOp);
         }
-
-        return Task.CompletedTask;
     }
 }
