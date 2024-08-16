@@ -59,7 +59,7 @@ internal sealed class GetDialogTransmissionQueryHandler : IRequestHandler<GetDia
 
         var authorizationResult = await _altinnAuthorization.GetDialogDetailsAuthorization(
             dialog,
-            cancellationToken);
+            cancellationToken: cancellationToken);
 
         // If we cannot read the dialog at all, we don't allow access to any of the dialog transmissions.
         if (!authorizationResult.HasReadAccessToMainResource())
@@ -79,7 +79,7 @@ internal sealed class GetDialogTransmissionQueryHandler : IRequestHandler<GetDia
         }
 
         var dto = _mapper.Map<GetDialogTransmissionDto>(transmission);
-        dto.IsAuthorized = authorizationResult.HasReadAccessToDialogTransmission(transmission);
+        dto.IsAuthorized = authorizationResult.HasReadAccessToDialogTransmission(transmission.AuthorizationAttribute);
 
         if (dto.IsAuthorized) return dto;
 
