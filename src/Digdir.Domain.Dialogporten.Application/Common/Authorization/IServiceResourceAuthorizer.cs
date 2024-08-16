@@ -9,8 +9,13 @@ namespace Digdir.Domain.Dialogporten.Application.Common.Authorization;
 
 public interface IServiceResourceAuthorizer
 {
-    Task<AuthorizeServiceResourcesResult> AuthorizeServiceResources(DialogEntity dialog, CancellationToken cancellationToken);
-    Task<SetResourceTypeResult> SetResourceType(DialogEntity dialog, CancellationToken cancellationToken);
+    Task<AuthorizeServiceResourcesResult> AuthorizeServiceResources(
+        DialogEntity dialog,
+        CancellationToken cancellationToken);
+
+    Task<SetResourceTypeResult> SetResourceType(
+        DialogEntity dialog,
+        CancellationToken cancellationToken);
 }
 
 [GenerateOneOf]
@@ -37,7 +42,9 @@ internal sealed class ServiceResourceAuthorizer : IServiceResourceAuthorizer
         _domainContext = domainContext ?? throw new ArgumentNullException(nameof(domainContext));
     }
 
-    public async Task<AuthorizeServiceResourcesResult> AuthorizeServiceResources(DialogEntity dialog, CancellationToken cancellationToken)
+    public async Task<AuthorizeServiceResourcesResult> AuthorizeServiceResources(
+        DialogEntity dialog,
+        CancellationToken cancellationToken)
     {
         if (_userResourceRegistry.IsCurrentUserServiceOwnerAdmin())
         {
@@ -45,7 +52,7 @@ internal sealed class ServiceResourceAuthorizer : IServiceResourceAuthorizer
         }
 
         var ownedResources = await _userResourceRegistry.GetCurrentUserResourceIds(cancellationToken);
-        var notOwnedResources = GetServiceResourceReferences(dialog)
+        var notOwnedResources = GetPrimaryServiceResourceReferences(dialog)
             .Except(ownedResources)
             .ToList();
 
@@ -56,7 +63,7 @@ internal sealed class ServiceResourceAuthorizer : IServiceResourceAuthorizer
 
         if (!_userResourceRegistry.UserCanModifyResourceType(dialog.ServiceResourceType))
         {
-            return new Forbidden($"User cannot create or modify resource type {dialog.ServiceResourceType}.");
+            return new Forbidden($"User cannot create or modify a dialog with resource type {dialog.ServiceResourceType}.");
         }
 
         return new Success();
@@ -76,7 +83,7 @@ internal sealed class ServiceResourceAuthorizer : IServiceResourceAuthorizer
         return new Success();
     }
 
-    private static IEnumerable<string> GetServiceResourceReferences(DialogEntity dialog) =>
+    private static IEnumerable<string> GetPrimaryServiceResourceReferences(DialogEntity dialog) =>
         Enumerable.Empty<string>()
             .Append(dialog.ServiceResource)
             .Concat(dialog.ApiActions.Select(action => action.AuthorizationAttribute!))
