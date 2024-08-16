@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Domain.Actors;
@@ -5,7 +6,7 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
-namespace Digdir.Domain.Dialogporten.Infrastructure.DomainEvents.Outbox;
+namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Configurations.Actors;
 
 internal sealed class PopulateActorNameInterceptor : SaveChangesInterceptor
 {
@@ -43,7 +44,7 @@ internal sealed class PopulateActorNameInterceptor : SaveChangesInterceptor
                 actor.ActorId = actor.ActorId?.ToLowerInvariant();
                 return actor;
             })
-            .Where(x => !string.IsNullOrWhiteSpace(x.ActorId))
+            .Where(x => x.ActorId is not null)
             .ToList();
 
         var actorNameById = new Dictionary<string, string?>();
@@ -56,7 +57,15 @@ internal sealed class PopulateActorNameInterceptor : SaveChangesInterceptor
 
         foreach (var actor in actors)
         {
-            if (!actorNameById.TryGetValue(actor.ActorId!, out var actorName) || string.IsNullOrWhiteSpace(actorName))
+            if (!actorNameById.TryGetValue(actor.ActorId!, out var actorName))
+            {
+                throw new UnreachableException(
+                    $"Expected {nameof(actorNameById)} to contain a record for every " +
+                    $"actor id. Missing record for actor id: {actor.ActorId}. Is " +
+                    $"the lookup method implemented correctly?");
+            }
+
+            if (string.IsNullOrWhiteSpace(actorName))
             {
                 // We don't want to fail the save operation if we are unable to look up the
                 // name for this particular actor, as it is used on enduser get operations.

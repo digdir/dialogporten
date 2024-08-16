@@ -14,7 +14,7 @@ public interface IUserResourceRegistry
     bool IsCurrentUserServiceOwnerAdmin();
 }
 
-public class UserResourceRegistry : IUserResourceRegistry
+internal sealed class UserResourceRegistry : IUserResourceRegistry
 {
     private readonly IUser _user;
     private readonly IResourceRegistry _resourceRegistry;

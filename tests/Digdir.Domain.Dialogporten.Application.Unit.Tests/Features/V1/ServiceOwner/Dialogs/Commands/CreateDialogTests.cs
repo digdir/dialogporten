@@ -1,12 +1,12 @@
 using AutoMapper;
 using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Common.Authorization;
+using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Create;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Tool.Dialogporten.GenerateFakeData;
 using NSubstitute;
-using AuthorizationConstants = Digdir.Domain.Dialogporten.Application.Common.Authorization.Constants;
-using Constants = Digdir.Domain.Dialogporten.Application.Common.ResourceRegistry.Constants;
 
 namespace Digdir.Domain.Dialogporten.Application.Unit.Tests.Features.V1.ServiceOwner.Dialogs.Commands;
 
@@ -31,12 +31,13 @@ public class CreateDialogTests
 
         var createCommand = DialogGenerator.GenerateSimpleFakeDialog();
 
+        serviceAuthorizationSub
+            .AuthorizeServiceResources(Arg.Any<DialogEntity>(), Arg.Any<CancellationToken>())
+            .Returns(new Forbidden());
+
         userResourceRegistrySub
             .CurrentUserIsOwner(createCommand.ServiceResource, Arg.Any<CancellationToken>())
             .Returns(true);
-
-        userResourceRegistrySub.GetResourceType(createCommand.ServiceResource, Arg.Any<CancellationToken>())
-            .Returns(Constants.Correspondence);
 
         var commandHandler = new CreateDialogCommandHandler(dialogDbContextSub,
             mapper, unitOfWorkSub, domainContextSub,
@@ -47,50 +48,6 @@ public class CreateDialogTests
 
         // Assert
         Assert.True(result.IsT3);
-        Assert.Contains(AuthorizationConstants.CorrespondenceScope, result.AsT3.Reasons[0]);
-    }
-
-
-    [Fact]
-    public async Task CreateDialogCommand_Should_Return_ValidationError_When_Progress_Set_On_Correspondence()
-    {
-        // Arrange
-        var dialogDbContextSub = Substitute.For<IDialogDbContext>();
-
-        var mapper = new MapperConfiguration(cfg =>
-        {
-            cfg.AddMaps(typeof(CreateDialogCommandHandler).Assembly);
-        }).CreateMapper();
-
-        var unitOfWorkSub = Substitute.For<IUnitOfWork>();
-        var domainContextSub = Substitute.For<IDomainContext>();
-        var userResourceRegistrySub = Substitute.For<IUserResourceRegistry>();
-        var userOrganizationRegistrySub = Substitute.For<IUserOrganizationRegistry>();
-        var serviceAuthorizationSub = Substitute.For<IServiceResourceAuthorizer>();
-
-        var createCommand = DialogGenerator.GenerateSimpleFakeDialog();
-
-        userResourceRegistrySub
-            .CurrentUserIsOwner(createCommand.ServiceResource, Arg.Any<CancellationToken>())
-            .Returns(true);
-
-        userResourceRegistrySub.UserCanModifyResourceType(Arg.Any<string>()).Returns(true);
-
-        userResourceRegistrySub.GetResourceType(createCommand.ServiceResource, Arg.Any<CancellationToken>())
-            .Returns(Constants.Correspondence);
-
-        var commandHandler = new CreateDialogCommandHandler(dialogDbContextSub,
-            mapper, unitOfWorkSub, domainContextSub,
-            userOrganizationRegistrySub, serviceAuthorizationSub);
-
-        // Act
-        var result = await commandHandler.Handle(createCommand, CancellationToken.None);
-
-        // Assert
-        Assert.True(result.IsT2); // ValidationError
-        // Magnus: Fiks dette
-        // Assert.Equal(CreateDialogCommandHandler.ProgressValidationFailure.ErrorMessage,
-        //     result.AsT2.Errors.First().ErrorMessage);
     }
 
     [Fact]
@@ -111,6 +68,10 @@ public class CreateDialogTests
         var serviceAuthorizationSub = Substitute.For<IServiceResourceAuthorizer>();
 
         var createCommand = DialogGenerator.GenerateSimpleFakeDialog();
+
+        serviceAuthorizationSub
+            .AuthorizeServiceResources(Arg.Any<DialogEntity>(), Arg.Any<CancellationToken>())
+            .Returns(new Forbidden());
 
         userResourceRegistrySub
             .CurrentUserIsOwner(createCommand.ServiceResource, Arg.Any<CancellationToken>())

@@ -6,6 +6,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.ResourceRegistry;
 internal sealed class LocalDevelopmentResourceRegistry : IResourceRegistry
 {
     private const string LocalResourceType = "LocalResourceType";
+    private const string LocalOrgId = "742859274";
     private static readonly HashSet<ServiceResourceInformation> CachedResourceIds = new(new ServiceResourceInformationEqualityComparer());
     private readonly IDialogDbContext _db;
 
@@ -29,13 +30,10 @@ internal sealed class LocalDevelopmentResourceRegistry : IResourceRegistry
         return CachedResourceIds;
     }
 
-    // TODO: Local testing of correspondence?
-    public Task<string> GetResourceType(string _, string __, CancellationToken ___)
-        => Task.FromResult(LocalResourceType);
-
     public Task<ServiceResourceInformation?> GetResourceInformation(string serviceResourceId, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        return Task.FromResult<ServiceResourceInformation?>(
+            new ServiceResourceInformation(serviceResourceId, LocalResourceType, LocalOrgId));
     }
 
     private sealed class ServiceResourceInformationEqualityComparer : IEqualityComparer<ServiceResourceInformation>

@@ -7,19 +7,19 @@ using OneOf.Types;
 
 namespace Digdir.Domain.Dialogporten.Application.Common.Authorization;
 
-internal interface IServiceResourceAuthorizer
+public interface IServiceResourceAuthorizer
 {
     Task<AuthorizeServiceResourcesResult> AuthorizeServiceResources(DialogEntity dialog, CancellationToken cancellationToken);
     Task<SetResourceTypeResult> SetResourceType(DialogEntity dialog, CancellationToken cancellationToken);
 }
 
 [GenerateOneOf]
-internal partial class AuthorizeServiceResourcesResult : OneOfBase<Success, Forbidden, DomainContextInvalidated>;
+public partial class AuthorizeServiceResourcesResult : OneOfBase<Success, Forbidden>;
 
 [GenerateOneOf]
-internal partial class SetResourceTypeResult : OneOfBase<Success, DomainContextInvalidated>;
+public partial class SetResourceTypeResult : OneOfBase<Success, DomainContextInvalidated>;
 
-internal struct DomainContextInvalidated;
+public struct DomainContextInvalidated;
 
 internal sealed class ServiceResourceAuthorizer : IServiceResourceAuthorizer
 {
@@ -52,13 +52,6 @@ internal sealed class ServiceResourceAuthorizer : IServiceResourceAuthorizer
         if (notOwnedResources.Count != 0)
         {
             return new Forbidden($"Not allowed to reference the following unowned resources: [{string.Join(", ", notOwnedResources)}].");
-        }
-
-        if (dialog.ServiceResourceType == ResourceRegistry.Constants.Correspondence
-            && dialog.Progress is not null)
-        {
-            _domainContext.AddError(nameof(CreateDialogCommand.Progress), "Progress cannot be set for correspondence dialogs.");
-            return new DomainContextInvalidated();
         }
 
         if (!_userResourceRegistry.UserCanModifyResourceType(dialog.ServiceResourceType))

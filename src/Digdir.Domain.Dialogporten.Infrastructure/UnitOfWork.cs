@@ -10,7 +10,6 @@ using OneOf.Types;
 using Polly;
 using Polly.Contrib.WaitAndRetry;
 using Polly.Timeout;
-using Polly.Wrap;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure;
 
