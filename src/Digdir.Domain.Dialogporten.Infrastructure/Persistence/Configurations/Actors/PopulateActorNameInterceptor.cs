@@ -14,6 +14,7 @@ internal sealed class PopulateActorNameInterceptor : SaveChangesInterceptor
 
     private readonly IDomainContext _domainContext;
     private readonly IPartyNameRegistry _partyNameRegistry;
+    private bool _hasBeenExecuted;
 
     public PopulateActorNameInterceptor(
         IDomainContext domainContext,
@@ -28,6 +29,13 @@ internal sealed class PopulateActorNameInterceptor : SaveChangesInterceptor
         InterceptionResult<int> result,
         CancellationToken cancellationToken = default)
     {
+        // If the interceptor has already run during this transaction, we don't want to run it again.
+        // This is to avoid doing the same work over multiple retries.
+        if (_hasBeenExecuted)
+        {
+            return await base.SavingChangesAsync(eventData, result, cancellationToken);
+        }
+
         var dbContext = eventData.Context;
 
         if (dbContext is null)
@@ -81,6 +89,7 @@ internal sealed class PopulateActorNameInterceptor : SaveChangesInterceptor
             actor.ActorName = actorName;
         }
 
+        _hasBeenExecuted = true;
         return !_domainContext.IsValid
             ? InterceptionResult<int>.SuppressWithResult(0)
             : await base.SavingChangesAsync(eventData, result, cancellationToken);
