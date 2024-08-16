@@ -65,7 +65,7 @@ public sealed class Transmission
     public DateTimeOffset CreatedAt { get; set; }
     public string? AuthorizationAttribute { get; set; }
     public bool IsAuthorized { get; set; }
-    public string? ExtendedType { get; set; }
+    public Uri? ExtendedType { get; set; }
     public Guid? RelatedTransmissionId { get; set; }
 
     public TransmissionType Type { get; set; }

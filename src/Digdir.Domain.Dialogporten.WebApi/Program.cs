@@ -15,6 +15,7 @@ using Digdir.Domain.Dialogporten.WebApi.Common.Authentication;
 using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
 using Digdir.Domain.Dialogporten.WebApi.Common.Json;
+using Digdir.Domain.Dialogporten.WebApi.Common.Swagger;
 using FastEndpoints;
 using FastEndpoints.Swagger;
 using FluentValidation;
@@ -170,6 +171,7 @@ static void BuildAndRun(string[] args)
             x.Serializer.Options.Converters.Add(new DateTimeNotSupportedConverter());
             x.Errors.ResponseBuilder = ErrorResponseBuilderExtensions.ResponseBuilder;
         })
+        .UseAddSwaggerCorsHeader()
         .UseSwaggerGen(config =>
         {
             config.PostProcess = (document, _) =>

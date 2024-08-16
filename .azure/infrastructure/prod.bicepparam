@@ -1,6 +1,6 @@
 using './main.bicep'
 
-param environment = 'production'
+param environment = 'prod'
 param location = 'norwayeast'
 param keyVaultSourceKeys = json(readEnvironmentVariable('AZURE_KEY_VAULT_SOURCE_KEYS'))
 

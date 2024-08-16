@@ -1,5 +1,33 @@
 # Changelog
 
+## [1.13.0](https://github.com/digdir/dialogporten/compare/v1.12.1...v1.13.0) (2024-08-15)
+
+
+### Features
+
+* Add doc blocks on DTOs for OAS generation, CORS headers ([#987](https://github.com/digdir/dialogporten/issues/987)) ([01c34b8](https://github.com/digdir/dialogporten/commit/01c34b841c82b58fe96e0c0831c2dcb49902804e))
+* **azure:** add bicep parameter files for production ([#1016](https://github.com/digdir/dialogporten/issues/1016)) ([7a7198a](https://github.com/digdir/dialogporten/commit/7a7198a6579ab2143a0a0250039f3ebbac6bf7b3))
+
+## [1.12.1](https://github.com/digdir/dialogporten/compare/v1.12.0...v1.12.1) (2024-08-14)
+
+
+### Bug Fixes
+
+* **azure:** ensure environment parameter for production is correct ([#1014](https://github.com/digdir/dialogporten/issues/1014)) ([1612f9d](https://github.com/digdir/dialogporten/commit/1612f9dab192831b5214a8f2a3180b10100e24f5))
+
+## [1.12.0](https://github.com/digdir/dialogporten/compare/v1.11.0...v1.12.0) (2024-08-14)
+
+
+### Features
+
+* Add current user flag to parties dto ([#993](https://github.com/digdir/dialogporten/issues/993)) ([e096743](https://github.com/digdir/dialogporten/commit/e0967436cea9f1efa8dca503e511dc66cf830591))
+* Add notification condition check endpoint ([#965](https://github.com/digdir/dialogporten/issues/965)) ([f480ce0](https://github.com/digdir/dialogporten/commit/f480ce0733453864ce3bb2aa28d1fb4bba2655d2))
+
+
+### Bug Fixes
+
+* Using existing Transmission or Activity IDs should no longer result in internal server error on updates ([#980](https://github.com/digdir/dialogporten/issues/980)) ([0757b33](https://github.com/digdir/dialogporten/commit/0757b332e1194aee399b6a0ab7c6c66d5fbf037e))
+
 ## [1.11.0](https://github.com/digdir/dialogporten/compare/v1.10.0...v1.11.0) (2024-08-08)
 
 
