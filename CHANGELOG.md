@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.14.0](https://github.com/digdir/dialogporten/compare/v1.13.0...v1.14.0) (2024-08-19)
+
+
+### Features
+
+* **web-api:** add production config ([#1018](https://github.com/digdir/dialogporten/issues/1018)) ([689e7fe](https://github.com/digdir/dialogporten/commit/689e7fe2b087aac5609efddf146cf3b7f280a6fa))
+
 ## [1.13.0](https://github.com/digdir/dialogporten/compare/v1.12.1...v1.13.0) (2024-08-15)
 
 
