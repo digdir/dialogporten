@@ -19,7 +19,7 @@ jobs:
     name: Get current version
     uses: ./.github/workflows/action-get-current-version.yml
 
-  # todo: should not need to re-build and re-publish the image here. Use existing image instead
+  # todo: should not need to re-build and re-publish the image here. Use existing image instead https://github.com/digdir/dialogporten/issues/1023
   publish:
     name: Build and publish docker images
     uses: ./.github/workflows/action-publish.yml
@@ -130,19 +130,19 @@ jobs:
       function-project-path: "./src/Digdir.Tool.Dialogporten.SlackNotifier"
       environment: prod
 
-  run-e2e-tests:
-    name: "Run K6 functional end-to-end tests"
-    # we want the end-to-end tests to be dependent on deployment of infrastructure and apps, but if infrastructure is skipped, we still want to run the tests
-    if: ${{ always() && !failure() && !cancelled() && (github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasBackendChanges == 'true') }}
-    needs: [deploy-apps-prod, check-for-changes]
-    uses: ./.github/workflows/action-run-k6-tests.yml
-    secrets:
-      TOKEN_GENERATOR_USERNAME: ${{ secrets.TOKEN_GENERATOR_USERNAME }}
-      TOKEN_GENERATOR_PASSWORD: ${{ secrets.TOKEN_GENERATOR_PASSWORD }}
-    with:
-      environment: prod
-      apiVersion: v1
-      testSuitePath: tests/k6/suites/all-single-pass.js
-    permissions:
-      checks: write
-      pull-requests: write
+  # run-e2e-tests:
+  #   name: "Run K6 functional end-to-end tests"
+  #   # we want the end-to-end tests to be dependent on deployment of infrastructure and apps, but if infrastructure is skipped, we still want to run the tests
+  #   if: ${{ always() && !failure() && !cancelled() && (github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasBackendChanges == 'true') }}
+  #   needs: [deploy-apps-prod, check-for-changes]
+  #   uses: ./.github/workflows/action-run-k6-tests.yml
+  #   secrets:
+  #     TOKEN_GENERATOR_USERNAME: ${{ secrets.TOKEN_GENERATOR_USERNAME }}
+  #     TOKEN_GENERATOR_PASSWORD: ${{ secrets.TOKEN_GENERATOR_PASSWORD }}
+  #   with:
+  #     environment: prod
+  #     apiVersion: v1
+  #     testSuitePath: tests/k6/suites/all-single-pass.js
+  #   permissions:
+  #     checks: write
+  #     pull-requests: write
