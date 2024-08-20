@@ -89,7 +89,7 @@ internal sealed class ServiceResourceAuthorizer : IServiceResourceAuthorizer
             .Concat(dialog.ApiActions.Select(action => action.AuthorizationAttribute!))
             .Concat(dialog.GuiActions.Select(action => action.AuthorizationAttribute!))
             .Concat(dialog.Transmissions.Select(transmission => transmission.AuthorizationAttribute!))
-            .Select(authorizationAttribute => authorizationAttribute?.ToLowerInvariant())
+            .Select(x => x?.ToLowerInvariant())
             .Distinct()
             .Where(IsPrimaryResource)
             .Cast<string>();
