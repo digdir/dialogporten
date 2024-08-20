@@ -1,13 +1,13 @@
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.DialogActivities.Queries.Get;
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Update;
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Queries.Get;
-using Digdir.Domain.Dialogporten.WebApi.Common;
+using Digdir.Domain.Dialogporten.Domain.Common;
 using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
 using Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.DialogActivities.Get;
 using FastEndpoints;
 using MediatR;
-using Medo;
+using Constants = Digdir.Domain.Dialogporten.WebApi.Common.Constants;
 using IMapper = AutoMapper.IMapper;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.DialogActivities.Create;
@@ -49,9 +49,7 @@ public sealed class CreateDialogActivityEndpoint : Endpoint<CreateDialogActivity
 
         var updateDialogDto = _mapper.Map<UpdateDialogDto>(dialog);
 
-        req.Id = !req.Id.HasValue || req.Id.Value == default
-            ? Uuid7.NewUuid7().ToGuid()
-            : req.Id;
+        req.Id = req.Id.GenerateBigEndianUuidV7IfEmpty();
 
         updateDialogDto.Activities.Add(req);
 

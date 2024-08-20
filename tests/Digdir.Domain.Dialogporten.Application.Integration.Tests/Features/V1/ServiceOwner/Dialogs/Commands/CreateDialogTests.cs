@@ -1,6 +1,7 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Integration.Tests.Common;
 using Digdir.Tool.Dialogporten.GenerateFakeData;
 using FluentAssertions;
+using static Digdir.Domain.Dialogporten.Application.Integration.Tests.UuiDv7Utils;
 
 namespace Digdir.Domain.Dialogporten.Application.Integration.Tests.Features.V1.ServiceOwner.Dialogs.Commands;
 
@@ -10,10 +11,45 @@ public class CreateDialogTests : ApplicationCollectionFixture
     public CreateDialogTests(DialogApplication application) : base(application) { }
 
     [Fact]
+    public async Task Cant_Create_Dialog_With_ID_With_Timestamp_In_The_Future()
+    {
+        // Arrange
+        var timestamp = DateTime.UtcNow.AddSeconds(1);
+        var invalidDialogId = GenerateBigEndianUuidV7(timestamp);
+
+        var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog(id: invalidDialogId);
+
+        // Act
+        var response = await Application.Send(createDialogCommand);
+
+        // Assert
+        response.TryPickT2(out var validationError, out _).Should().BeTrue();
+        validationError.Should().NotBeNull();
+    }
+
+    [Fact]
+    public async Task Create_Dialog_With_ID_With_Timestamp_In_The_Past()
+    {
+        // Arrange
+        var timestamp = DateTime.UtcNow.AddSeconds(-1);
+        var validDialogId = GenerateBigEndianUuidV7(timestamp);
+
+        var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog(id: validDialogId);
+
+        // Act
+        var response = await Application.Send(createDialogCommand);
+
+        // Assert
+        response.TryPickT0(out var success, out _).Should().BeTrue();
+        success.Should().NotBeNull();
+        success.Value.Should().Be(validDialogId);
+    }
+
+    [Fact]
     public async Task Create_CreatesDialog_WhenDialogIsSimple()
     {
         // Arrange
-        var expectedDialogId = Guid.NewGuid();
+        var expectedDialogId = GenerateBigEndianUuidV7();
         var createCommand = DialogGenerator.GenerateSimpleFakeDialog(id: expectedDialogId);
 
         // Act
@@ -28,7 +64,7 @@ public class CreateDialogTests : ApplicationCollectionFixture
     public async Task Create_CreateDialog_WhenDialogIsComplex()
     {
         // Arrange
-        var expectedDialogId = Guid.NewGuid();
+        var expectedDialogId = GenerateBigEndianUuidV7();
         var createDialogCommand = DialogGenerator.GenerateFakeDialog(id: expectedDialogId);
 
         // Act
