@@ -84,14 +84,15 @@ internal sealed class ServiceResourceAuthorizer : IServiceResourceAuthorizer
     }
 
     private static IEnumerable<string> GetPrimaryServiceResourceReferences(DialogEntity dialog) =>
-        Enumerable.Empty<string>()
+        Enumerable.Empty<string?>()
             .Append(dialog.ServiceResource)
             .Concat(dialog.ApiActions.Select(action => action.AuthorizationAttribute!))
             .Concat(dialog.GuiActions.Select(action => action.AuthorizationAttribute!))
             .Concat(dialog.Transmissions.Select(transmission => transmission.AuthorizationAttribute!))
-            .Select(x => x.ToLowerInvariant())
+            .Select(x => x?.ToLowerInvariant())
             .Distinct()
-            .Where(IsPrimaryResource);
+            .Where(IsPrimaryResource)
+            .Cast<string>();
 
     private static bool IsPrimaryResource(string? resource) =>
         resource is not null
