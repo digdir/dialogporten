@@ -36,7 +36,7 @@ brew install docker-compose
 - [Git](https://git-scm.com/download/win)
 - [.NET 8 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
 - [WSL2](https://docs.microsoft.com/en-us/windows/wsl/install) (To install, open a PowerShell admin window and run `wsl --install`)
-- [Virtual Machine Platform](https://support.microsoft.com/en-us/windows/enable-virtualization-on-windows-11-pcs-c5578302-6e43-4b4b-a449-8ced115f58e1) (Installs with WSL2, see link above)
+- [Virtual Machine Platform](https://support.microsoft.com/en-us/windows/enable-virtualization-on-windows-11-pcs-c5578302-6e43-4b4b-a449-8ced115f58e1) (Installs with WSL2, see the link above)
 
 #### Installing Podman (Windows)
 
@@ -65,7 +65,7 @@ The WebAPI and GraphQl services are behind a nginx proxy, and you can change the
 
 ### Running the WebApi/GraphQl in an IDE
 If you need do debug the WebApi/GraphQl projects in an IDE, you can alternatively run `podman compose` without the WebAPI/GraphQl.  
-First create a dotnet user secret for the DB connection string.
+First, create a dotnet user secret for the DB connection string.
 
 ```powershell
 dotnet user-secrets set -p .\src\Digdir.Domain.Dialogporten.WebApi\ "Infrastructure:DialogDbConnectionString" "Server=localhost;Port=5432;Database=Dialogporten;User ID=postgres;Password=supersecret;Include Error Detail=True;"
@@ -77,10 +77,11 @@ podman compose -f docker-compose-no-webapi.yml up
 ```
 
 ## DB development
-This project uses Entity Framework core to manage DB migrations. DB development can ether be done through Visual Studios Package Manager Console (PMC), or through the CLI. 
+This project uses Entity Framework core to manage DB migrations. DB development can either be done through Visual Studios Package Manager Console (PMC) or through the CLI. 
 
 ### DB development through PMC
-Set Digdir.Domain.Dialogporten.Infrastructure as startup project in Visual Studios solution explorer, and as default project in PMC. You are now ready to use [EF core tools through PMC](https://learn.microsoft.com/en-us/ef/core/cli/powershell). Run the following command for more information:
+Set Digdir.Domain.Dialogporten.Infrastructure as the startup project in Visual Studio's solution explorer, and as the default project in PMC. You are now ready to use [EF core tools through PMC](https://learn.microsoft.com/en-us/ef/core/cli/powershell). 
+Run the following command for more information:
 ```powershell
 Get-Help about_EntityFrameworkCore
 ```
@@ -101,7 +102,7 @@ Remember to target `Digdir.Domain.Dialogporten.Infrastructure` project when runn
 dotnet ef migrations add -p .\src\Digdir.Domain.Dialogporten.Infrastructure\ TestMigration
 ```
 
-or change your directory to the infrastructure project, and then run the command.
+Or change your directory to the infrastructure project, and then run the command.
 ```powershell
 cd .\src\Digdir.Domain.Dialogporten.Infrastructure\
 dotnet ef migrations add TestMigration
@@ -117,7 +118,7 @@ When RenovateBot updates `global.json` or base image versions in Dockerfiles, re
 `global.json` is used when building the solution in CI/CD.
 
 ## Development in local and test environments
-To generate test tokens see, https://github.com/Altinn/AltinnTestTools. There is a request in the Postman collection for this.
+To generate test tokens, see https://github.com/Altinn/AltinnTestTools. There is a request in the Postman collection for this.
 
 ### Local development settings
 We are able to toggle some external resources in local development. This is done through the `appsettings.Development.json` file. The following settings are available:
@@ -137,7 +138,7 @@ Toggling these flags will enable/disable the external resources. The `DisableAut
 
 ## Deployment
 
-This repository contains code for both infrastructure and applications. Configurations for infrastructure is located in `.azure/infrastructure`. Application configuration is in `.azure/applications`. 
+This repository contains code for both infrastructure and applications. Configurations for infrastructure are located in `.azure/infrastructure`. Application configuration is in `.azure/applications`. 
 
 ### Deployment process
 
@@ -176,13 +177,13 @@ Deployments are done using `GitHub Actions` with the following steps:
 
 ![Deployment process](docs/deploy-process.png)
 
-[Release Please](https://github.com/google-github-actions/release-please-action) is used in order to create releases, generate changelog and bumping version numbers.
+[Release Please](https://github.com/google-github-actions/release-please-action) is used to create releases, generate changelog and bumping version numbers.
 
 `CHANGELOG.md` and `version.txt` are automatically updated and should not be changed manually.
 
 ### Manual deployment (⚠️ handle with care)
 
-This project utilizes two GitHub dispatch workflows to manage manual deployments: `dispatch-apps.yml` and `dispatch-infrastructure.yml`. These workflows allow for manual triggers of deployments through GitHub Actions, providing flexibility for deploying specific versions to designated environments.
+This project uses two GitHub dispatch workflows to manage manual deployments: `dispatch-apps.yml` and `dispatch-infrastructure.yml`. These workflows allow for manual triggers of deployments through GitHub Actions, providing flexibility for deploying specific versions to designated environments.
 
 #### Using `dispatch-apps.yml`
 
@@ -234,25 +235,25 @@ Refer to the existing infrastructure definitions as templates for creating new c
 
 A few resources need to be created before we can apply the Bicep to create the main resources. 
 
-The resources refer to a `source key vault` in order to fetch necessary secrets and store them in the key vault for the environment. An `ssh`-key is also needed for the `ssh-jumper` used to access the resources in Azure within the `vnet`. 
+The resources refer to a `source key vault` in order to fetch the necessary secrets and store them in the key vault for the environment. An `ssh`-key is also necessary for the `ssh-jumper` used to access the resources in Azure within the `vnet`. 
 
 Use the following steps:
 
-- Ensure a `source key vault` exist for the new environment. Either create a new key vault or use an existing key vault. Currently, two key vaults exist for our environments. One in the test subscription used by Test and Staging, and one in our Production subscription which Production uses. Ensure you add the necessary secrets that should be used by the new environment. Read here to learn about secret convention [Configuration Guide](docs/Configuration.md). Ensure also that the key vault has the following enabled: `Azure Resource Manager for template deployment`.
+- Ensure a `source key vault` exist for the new environment. Either create a new key vault or use an existing key vault. Currently, two key vaults exist for our environments. One in the test subscription used by Test and Staging, and one in our Production subscription, which Production uses. Ensure you add the necessary secrets that should be used by the new environment. Read here to learn about secret convention [Configuration Guide](docs/Configuration.md). Ensure also that the key vault has the following enabled: `Azure Resource Manager for template deployment`.
 
-- Ensure that a role assignment `Key Vault Secrets User` and `Contributer`(should be inherited) is added for the service principal used by the Github Entra Application.
+- Ensure that a role assignment `Key Vault Secrets User` and `Contributer`(should be inherited) is added for the service principal used by the GitHub Entra Application.
 
-- Create an SSH key in Azure and discard of the private key. We will use the `az cli` to access the virtual machine so storing the `ssh key` is only a security risk. 
+- Create an SSH key in Azure and discard the private key. We will use the `az cli` to access the virtual machine so storing the `ssh key` is only a security risk. 
 
-- Create a new environment in Github and add the following secrets: `AZURE_CLIENT_ID`, `AZURE_SOURCE_KEY_VAULT_NAME`, `AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP`, `AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID`, `AZURE_SUBSCRIPTION_ID`, `AZURE_TENANT_ID` and `AZURE_SOURCE_KEY_VAULT_SSH_JUMPER_SSH_PUBLIC_KEY`
+- Create a new environment in GitHub and add the following secrets: `AZURE_CLIENT_ID`, `AZURE_SOURCE_KEY_VAULT_NAME`, `AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP`, `AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID`, `AZURE_SUBSCRIPTION_ID`, `AZURE_TENANT_ID` and `AZURE_SOURCE_KEY_VAULT_SSH_JUMPER_SSH_PUBLIC_KEY`
 
-- Add a new file for the environment `.azure/infrastructure/<env>.bicepparam`. `<env>` must match the environment created in Github.
+- Add a new file for the environment `.azure/infrastructure/<env>.bicepparam`. `<env>` must match the environment created in GitHub.
 
 - Add the new environment in the `dispatch-infrastructure.yml` list of environments. 
 
-- Run the github action `Dispatch infrastructure` with the `version` you want to deploy and `environment`. All the resources in `.azure/infrastructure/main.bicep` should now be created. 
+- Run the GitHub action `Dispatch infrastructure` with the `version` you want to deploy and `environment`. All the resources in `.azure/infrastructure/main.bicep` should now be created. 
 
-- (The github action might need to restart because of a timeout when creating Redis).
+- (The GitHub action might need to restart because of a timeout when creating Redis).
 
 #### Connecting to resources in Azure
 
@@ -286,14 +287,14 @@ Refer to the existing applications like `web-api-so` and `web-api-eu` as templat
 
 #### Deploying applications in a new infrastructure environment
 
-Ensure you have followed the steps in [Deploying a new infrastructure environment](#deploying-a-new-infrastructure-environment) in order to have the resources required for the applications.
+Ensure you have followed the steps in [Deploying a new infrastructure environment](#deploying-a-new-infrastructure-environment) to have the resources required for the applications.
 
 Use the following steps:
 
-- From the infrastructure resources created, add the following github secrets in the new environment (this will not be necessary in the future as secrets would be added directly from infrastructure deployment): `AZURE_APP_CONFIGURATION_NAME`, `AZURE_APP_INSIGHTS_CONNECTION_STRING`, `AZURE_CONTAINER_APP_ENVIRONMENT_NAME`, `AZURE_ENVIRONMENT_KEY_VAULT_NAME`, `AZURE_REDIS_NAME`, `AZURE_RESOURCE_GROUP_NAME` and `AZURE_SLACK_NOTIFIER_FUNCTION_APP_NAME`
+- From the infrastructure resources created, add the following GitHub secrets in the new environment (this will not be necessary in the future as secrets would be added directly from infrastructure deployment): `AZURE_APP_CONFIGURATION_NAME`, `AZURE_APP_INSIGHTS_CONNECTION_STRING`, `AZURE_CONTAINER_APP_ENVIRONMENT_NAME`, `AZURE_ENVIRONMENT_KEY_VAULT_NAME`, `AZURE_REDIS_NAME`, `AZURE_RESOURCE_GROUP_NAME` and `AZURE_SLACK_NOTIFIER_FUNCTION_APP_NAME`
 
 - Add new parameter files for the environment in all applications `.azure/applications/*/<env>.bicepparam`
 
-- Run the github action `Dispatch applications` in order to deploy all applications to the new environment.
+- Run the GitHub action `Dispatch applications` in order to deploy all applications to the new environment.
 
-- In order to expose the applications through APIM, see [Common APIM Guide](docs/CommonAPIM.md)
+- To expose the applications through APIM, see [Common APIM Guide](docs/CommonAPIM.md)
