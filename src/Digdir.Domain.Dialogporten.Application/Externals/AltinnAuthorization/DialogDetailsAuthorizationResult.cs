@@ -1,7 +1,4 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Common.Authorization;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
-using EndUserGetDialogQuery = Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Queries.Get;
-using ServiceOwnerGetDialogQuery = Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Queries.Get;
 
 namespace Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 
