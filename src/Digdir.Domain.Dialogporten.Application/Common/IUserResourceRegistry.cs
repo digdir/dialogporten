@@ -10,11 +10,11 @@ public interface IUserResourceRegistry
 {
     Task<bool> CurrentUserIsOwner(string serviceResource, CancellationToken cancellationToken);
     Task<IReadOnlyCollection<string>> GetCurrentUserResourceIds(CancellationToken cancellationToken);
-    Task<string> GetResourceType(string serviceResourceId, CancellationToken cancellationToken);
     bool UserCanModifyResourceType(string serviceResourceType);
+    bool IsCurrentUserServiceOwnerAdmin();
 }
 
-public class UserResourceRegistry : IUserResourceRegistry
+internal sealed class UserResourceRegistry : IUserResourceRegistry
 {
     private readonly IUser _user;
     private readonly IResourceRegistry _resourceRegistry;
@@ -31,21 +31,25 @@ public class UserResourceRegistry : IUserResourceRegistry
         return resourceIds.Contains(serviceResource);
     }
 
-    public Task<IReadOnlyCollection<string>> GetCurrentUserResourceIds(CancellationToken cancellationToken) =>
-        !_user.TryGetOrganizationNumber(out var orgNumber)
-            ? throw new UnreachableException()
-            : _resourceRegistry.GetResourceIds(orgNumber, cancellationToken);
+    public async Task<IReadOnlyCollection<string>> GetCurrentUserResourceIds(CancellationToken cancellationToken)
+    {
+        if (!_user.TryGetOrganizationNumber(out var orgNumber))
+        {
+            throw new UnreachableException();
+        }
 
-    public Task<string> GetResourceType(string serviceResourceId, CancellationToken cancellationToken) =>
-        !_user.TryGetOrganizationNumber(out var orgNumber)
-            ? throw new UnreachableException()
-            : _resourceRegistry.GetResourceType(orgNumber, serviceResourceId, cancellationToken);
+        var dic = await _resourceRegistry.GetResourceInformationForOrg(orgNumber, cancellationToken);
+        return dic.Select(x => x.ResourceId).ToList();
+    }
 
     public bool UserCanModifyResourceType(string serviceResourceType) => serviceResourceType switch
     {
         ResourceRegistry.Constants.Correspondence => _user.GetPrincipal().HasScope(Constants.CorrespondenceScope),
+        null => false,
         _ => true
     };
+
+    public bool IsCurrentUserServiceOwnerAdmin() => _user.GetPrincipal().HasScope(Constants.ServiceOwnerAdminScope);
 }
 
 internal sealed class LocalDevelopmentUserResourceRegistryDecorator : IUserResourceRegistry
@@ -63,8 +67,6 @@ internal sealed class LocalDevelopmentUserResourceRegistryDecorator : IUserResou
     public Task<IReadOnlyCollection<string>> GetCurrentUserResourceIds(CancellationToken cancellationToken) =>
         _userResourceRegistry.GetCurrentUserResourceIds(cancellationToken);
 
-    public Task<string> GetResourceType(string serviceResourceId, CancellationToken cancellationToken) =>
-        Task.FromResult("LocalResourceType");
-
     public bool UserCanModifyResourceType(string serviceResourceType) => true;
+    public bool IsCurrentUserServiceOwnerAdmin() => true;
 }

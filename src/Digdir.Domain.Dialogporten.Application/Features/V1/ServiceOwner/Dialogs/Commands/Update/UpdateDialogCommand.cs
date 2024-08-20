@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Digdir.Domain.Dialogporten.Application.Common;
+using Digdir.Domain.Dialogporten.Application.Common.Authorization;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.Enumerables;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
@@ -9,12 +10,10 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
-using FluentValidation.Results;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
 using OneOf.Types;
-using ResourceRegistryConstants = Digdir.Domain.Dialogporten.Application.Common.ResourceRegistry.Constants;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Update;
 
@@ -35,21 +34,22 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
     private readonly IUnitOfWork _unitOfWork;
     private readonly IDomainContext _domainContext;
     private readonly IUserResourceRegistry _userResourceRegistry;
-
-    private readonly ValidationFailure _progressValidationFailure = new(nameof(UpdateDialogDto.Progress), "Progress cannot be set for correspondence dialogs.");
+    private readonly IServiceResourceAuthorizer _serviceResourceAuthorizer;
 
     public UpdateDialogCommandHandler(
         IDialogDbContext db,
         IMapper mapper,
         IUnitOfWork unitOfWork,
         IDomainContext domainContext,
-        IUserResourceRegistry userResourceRegistry)
+        IUserResourceRegistry userResourceRegistry,
+        IServiceResourceAuthorizer serviceResourceAuthorizer)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _domainContext = domainContext ?? throw new ArgumentNullException(nameof(domainContext));
         _userResourceRegistry = userResourceRegistry ?? throw new ArgumentNullException(nameof(userResourceRegistry));
+        _serviceResourceAuthorizer = serviceResourceAuthorizer ?? throw new ArgumentNullException(nameof(serviceResourceAuthorizer));
     }
 
     public async Task<UpdateDialogResult> Handle(UpdateDialogCommand request, CancellationToken cancellationToken)
@@ -81,25 +81,6 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
             return new EntityNotFound<DialogEntity>(request.Id);
         }
 
-        foreach (var serviceResourceReference in GetServiceResourceReferences(request.Dto))
-        {
-            if (!await _userResourceRegistry.CurrentUserIsOwner(serviceResourceReference, cancellationToken))
-            {
-                return new Forbidden($"Not allowed to reference {serviceResourceReference}.");
-            }
-        }
-
-        if (!_userResourceRegistry.UserCanModifyResourceType(dialog.ServiceResourceType))
-        {
-            return new Forbidden($"User cannot modify resource type {dialog.ServiceResourceType}.");
-        }
-
-        if (dialog.ServiceResourceType == ResourceRegistryConstants.Correspondence)
-        {
-            if (request.Dto.Progress is not null)
-                return new ValidationError(_progressValidationFailure);
-        }
-
         if (dialog.Deleted)
         {
             // TODO: When restoration is implemented, add a hint to the error message.
@@ -127,14 +108,13 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
                 delete: DeleteDelegate.NoOp,
                 comparer: StringComparer.InvariantCultureIgnoreCase);
 
-        await dialog.Attachments
-            .MergeAsync(request.Dto.Attachments,
+        dialog.Attachments
+            .Merge(request.Dto.Attachments,
                 destinationKeySelector: x => x.Id,
                 sourceKeySelector: x => x.Id,
                 create: CreateAttachments,
                 update: UpdateAttachments,
-                delete: DeleteDelegate.NoOp,
-                cancellationToken: cancellationToken);
+                delete: DeleteDelegate.NoOp);
 
         dialog.GuiActions
             .Merge(request.Dto.GuiActions,
@@ -152,6 +132,14 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
                 update: UpdateApiActions,
                 delete: DeleteDelegate.NoOp);
 
+        var serviceResourceAuthorizationResult = await _serviceResourceAuthorizer.AuthorizeServiceResources(dialog, cancellationToken);
+        if (serviceResourceAuthorizationResult.Value is Forbidden forbiddenResult)
+        {
+            // Ignore the domain context errors, as they are not relevant when returning Forbidden.
+            _domainContext.Pop();
+            return forbiddenResult;
+        }
+
         var saveResult = await _unitOfWork
             .EnableConcurrencyCheck(dialog, request.IfMatchDialogRevision)
             .SaveChangesAsync(cancellationToken);
@@ -160,28 +148,6 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
             success => success,
             domainError => domainError,
             concurrencyError => concurrencyError);
-    }
-
-    private static List<string> GetServiceResourceReferences(UpdateDialogDto request)
-    {
-        var serviceResourceReferences = new List<string>();
-
-        static bool IsExternalResource(string? resource)
-        {
-            return resource is not null && resource.StartsWith(Domain.Common.Constants.ServiceResourcePrefix, StringComparison.OrdinalIgnoreCase);
-        }
-
-        serviceResourceReferences.AddRange(request.ApiActions
-            .Where(action => IsExternalResource(action.AuthorizationAttribute))
-            .Select(action => action.AuthorizationAttribute!));
-        serviceResourceReferences.AddRange(request.GuiActions
-            .Where(action => IsExternalResource(action.AuthorizationAttribute))
-            .Select(action => action.AuthorizationAttribute!));
-        serviceResourceReferences.AddRange(request.Transmissions
-            .Where(transmission => IsExternalResource(transmission.AuthorizationAttribute))
-            .Select(transmission => transmission.AuthorizationAttribute!));
-
-        return serviceResourceReferences.Distinct().ToList();
     }
 
     private void ValidateTimeFields(DialogEntity dialog)
@@ -293,19 +259,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
             _domainContext.AddError(DomainFailure.EntityExists<DialogTransmission>(existingIds));
         }
 
-        var transmissionAttachments = newDialogTransmissions.SelectMany(x => x.Attachments);
-        var existingTransmissionAttachmentIds = await _db.GetExistingIds(transmissionAttachments, cancellationToken);
-        if (existingTransmissionAttachmentIds.Count != 0)
-        {
-            _domainContext.AddError(DomainFailure.EntityExists<DialogTransmissionAttachment>(existingTransmissionAttachmentIds));
-        }
-
-        if (_domainContext.Errors.Count != 0)
-        {
-            return;
-        }
         dialog.Transmissions.AddRange(newDialogTransmissions);
-
         // Tell ef explicitly to add transmissions as new to the database.
         _db.DialogTransmissions.AddRange(newDialogTransmissions);
     }
@@ -362,26 +316,17 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         }
     }
 
-    private async Task<IEnumerable<DialogAttachment>> CreateAttachments(IEnumerable<UpdateDialogDialogAttachmentDto> creatables, CancellationToken cancellationToken)
+    private IEnumerable<DialogAttachment> CreateAttachments(IEnumerable<UpdateDialogDialogAttachmentDto> creatables)
     {
-        var attachments = new List<DialogAttachment>();
-        foreach (var atttachmentDto in creatables)
-        {
-            var attachment = _mapper.Map<DialogAttachment>(atttachmentDto);
-            attachment.Urls = _mapper.Map<List<AttachmentUrl>>(atttachmentDto.Urls);
-            attachments.Add(attachment);
-        }
-
-        var existingIds = await _db.GetExistingIds(attachments, cancellationToken);
-        if (existingIds.Count != 0)
-        {
-            _domainContext.AddError(nameof(UpdateDialogDto.Attachments), $"Entity '{nameof(DialogAttachment)}' with the following key(s) already exists: ({string.Join(", ", existingIds)}).");
-        }
-
-        return attachments;
+        return creatables.Select(attachmentDto =>
+            {
+                var attachment = _mapper.Map<DialogAttachment>(attachmentDto);
+                attachment.Urls = _mapper.Map<List<AttachmentUrl>>(attachmentDto.Urls);
+                return attachment;
+            });
     }
 
-    private Task UpdateAttachments(IEnumerable<UpdateSet<DialogAttachment, UpdateDialogDialogAttachmentDto>> updateSets, CancellationToken _)
+    private void UpdateAttachments(IEnumerable<UpdateSet<DialogAttachment, UpdateDialogDialogAttachmentDto>> updateSets)
     {
         foreach (var updateSet in updateSets)
         {
@@ -394,7 +339,5 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
                     update: _mapper.Update,
                     delete: DeleteDelegate.NoOp);
         }
-
-        return Task.CompletedTask;
     }
 }

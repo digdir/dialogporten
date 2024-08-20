@@ -1,7 +1,9 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Domain.Parties;
+using Digdir.Domain.Dialogporten.Domain.Parties.Abstractions;
 using ZiggyCreatures.Caching.Fusion;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.NameRegistry;
@@ -35,24 +37,10 @@ internal class PartyNameRegistryClient : IPartyNameRegistry
     {
         const string apiUrl = "register/api/v1/parties/nameslookup";
 
-        var nameLookupParty = new NameLookupParty();
-        if (NorwegianPersonIdentifier.TryParse(externalIdWithPrefix, out var personIdentifier))
-        {
-            nameLookupParty.Ssn = personIdentifier.Id;
-        }
-        else if (NorwegianOrganizationIdentifier.TryParse(externalIdWithPrefix, out var organizationIdentifier))
-        {
-            nameLookupParty.OrgNo = organizationIdentifier.Id;
-        }
-        else
+        if (!TryParse(externalIdWithPrefix, out var nameLookup))
         {
             return null;
         }
-
-        var nameLookup = new NameLookup
-        {
-            Parties = [nameLookupParty]
-        };
 
         var nameLookupResult = await _client.PostAsJsonEnsuredAsync<NameLookupResult>(
             apiUrl,
@@ -61,6 +49,24 @@ internal class PartyNameRegistryClient : IPartyNameRegistry
             cancellationToken: cancellationToken);
 
         return nameLookupResult.PartyNames.FirstOrDefault()?.Name;
+    }
+
+    private static bool TryParse(string externalIdWithPrefix, [NotNullWhen(true)] out NameLookup? nameLookup)
+    {
+        if (!PartyIdentifier.TryParse(externalIdWithPrefix, out var partyIdentifier))
+        {
+            nameLookup = null;
+            return false;
+        }
+
+        nameLookup = partyIdentifier switch
+        {
+            NorwegianPersonIdentifier personIdentifier => new() { Parties = [new() { Ssn = personIdentifier.Id }] },
+            NorwegianOrganizationIdentifier organizationIdentifier => new() { Parties = [new() { OrgNo = organizationIdentifier.Id }] },
+            _ => null
+        };
+
+        return nameLookup is not null;
     }
 
     private sealed class NameLookup
