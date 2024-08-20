@@ -18,18 +18,6 @@ jobs:
   get-current-version:
     name: Get current version
     uses: ./.github/workflows/action-get-current-version.yml
-
-  # todo: should not need to re-build and re-publish the image here. Use existing image instead https://github.com/digdir/dialogporten/issues/1023
-  publish:
-    name: Build and publish docker images
-    uses: ./.github/workflows/action-publish.yml
-    if: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasBackendChanges == 'true' }}
-    needs: [get-current-version, check-for-changes]
-    secrets:
-      GCR_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
-    with:
-      dockerImageBaseName: ghcr.io/digdir/dialogporten-
-      version: ${{ needs.get-current-version.outputs.version }}
   
   dry-run-deploy-infra-prod:
     name: Dry run deploy infra to prod
@@ -71,7 +59,7 @@ jobs:
   dry-run-deploy-apps-prod:
     name: Dry run deploy apps to prod
     needs:
-      [get-current-version, check-for-changes, deploy-infra-prod, publish]
+      [get-current-version, check-for-changes, deploy-infra-prod]
     # we want deployment of apps to be dependent on deployment of infrastructure, but if infrastructure is skipped, we still want to dry-run deploy the apps
     if: ${{ always() && !failure() && !cancelled() && (github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasBackendChanges == 'true') }}
     uses: ./.github/workflows/action-deploy-apps.yml
@@ -95,7 +83,7 @@ jobs:
   deploy-apps-prod:
     name: Deploy apps to prod
     needs:
-      [get-current-version, check-for-changes, dry-run-deploy-apps-prod, publish]
+      [get-current-version, check-for-changes, dry-run-deploy-apps-prod]
     if: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasBackendChanges == 'true' }}
     uses: ./.github/workflows/action-deploy-apps.yml
     secrets:
