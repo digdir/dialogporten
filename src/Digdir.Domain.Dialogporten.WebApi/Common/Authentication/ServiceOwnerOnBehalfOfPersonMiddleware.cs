@@ -1,5 +1,7 @@
 using System.Security.Claims;
+using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Domain.Parties;
+using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Common.Authentication;
@@ -18,6 +20,11 @@ public class ServiceOwnerOnBehalfOfPersonMiddleware
     public Task InvokeAsync(HttpContext context)
     {
         if (context.User.Identity is not { IsAuthenticated: true })
+        {
+            return _next(context);
+        }
+
+        if (!context.User.HasScope(AuthorizationScope.ServiceProvider))
         {
             return _next(context);
         }
@@ -53,21 +60,13 @@ public class ServiceOwnerOnBehalfOfPersonMiddleware
         {
             throw new InvalidOperationException("ClaimsPrincipal does not have a ClaimsIdentity.");
         }
-
-        if (!claimsPrincipal.HasClaim(claim => claim.Type == claimType))
+        var existingPidClaims = claimsPrincipal
+            .FindAll(c => c.Type == claimType)
+            .ToList();
+        foreach (var pidClaim in existingPidClaims)
         {
-            identity.AddClaim(new Claim(claimType, newClaimValue));
-            return;
+            pidClaim.Subject?.RemoveClaim(pidClaim);
         }
-
-        foreach (var ident in claimsPrincipal.Identities)
-        {
-            foreach (var claim in ident.FindAll(c => c.Type == claimType))
-            {
-                ident.RemoveClaim(claim);
-            }
-        }
-
         identity.AddClaim(new Claim(claimType, newClaimValue));
     }
 }
