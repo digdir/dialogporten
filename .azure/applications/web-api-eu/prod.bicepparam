@@ -2,8 +2,7 @@ using './main.bicep'
 
 param environment = 'prod'
 param location = 'norwayeast'
-// todo: replace with prod ip
-param apimIp = '51.13.86.131'
+param apimIp = '51.120.88.54'
 param imageTag = readEnvironmentVariable('IMAGE_TAG')
 
 // secrets
