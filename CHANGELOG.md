@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.15.0](https://github.com/digdir/dialogporten/compare/v1.14.0...v1.15.0) (2024-08-21)
+
+
+### Features
+
+* add support for serviceowner admin scope ([#1002](https://github.com/digdir/dialogporten/issues/1002)) ([2638b48](https://github.com/digdir/dialogporten/commit/2638b485f50ec7973aaf2fbdfb02ab07cb913f99))
+* **web-api:** Add optional EndUserId param to ServiceOwner Get Dialog details API ([#1020](https://github.com/digdir/dialogporten/issues/1020)) ([1380b33](https://github.com/digdir/dialogporten/commit/1380b33f4b80cb25146a9785a174091a2db8465a))
+
+
+### Bug Fixes
+
+* **azure:** use correct ip for APIM in prod ([#1036](https://github.com/digdir/dialogporten/issues/1036)) ([fecc4c0](https://github.com/digdir/dialogporten/commit/fecc4c0b38d8c97413b10f5201749b9817ad6e31))
+
 ## [1.14.0](https://github.com/digdir/dialogporten/compare/v1.13.0...v1.14.0) (2024-08-19)
 
 
