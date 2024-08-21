@@ -65,9 +65,14 @@ public sealed class PatchDialogsController : ControllerBase
         CancellationToken ct)
     {
         var dialogQueryResult = await _sender.Send(new GetDialogQuery { DialogId = dialogId }, ct);
-        if (dialogQueryResult.TryPickT1(out var entityNotFound, out var dialog))
+        if (!dialogQueryResult.TryPickT0(out var dialog, out var errors))
         {
-            return NotFound(HttpContext.ResponseBuilder(StatusCodes.Status404NotFound, entityNotFound.ToValidationResults()));
+            return errors.Match<IActionResult>(
+                notFound => NotFound(HttpContext.ResponseBuilder(StatusCodes.Status404NotFound,
+                    notFound.ToValidationResults())),
+                validationFailed =>
+                    BadRequest(HttpContext.ResponseBuilder(StatusCodes.Status400BadRequest,
+                        validationFailed.Errors.ToList())));
         }
 
         var updateDialogDto = _mapper.Map<UpdateDialogDto>(dialog);
