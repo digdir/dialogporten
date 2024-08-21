@@ -3,7 +3,7 @@ export { uuidv4 } from './uuid.js';
 export { describe } from './describe.js';
 export { customConsole  } from './console.js';
 export { getServiceOwnerTokenFromGenerator, getEnduserTokenFromGenerator } from './token.js';
-export { 
+export {
     getEU,
     getSO,
     postSO,
