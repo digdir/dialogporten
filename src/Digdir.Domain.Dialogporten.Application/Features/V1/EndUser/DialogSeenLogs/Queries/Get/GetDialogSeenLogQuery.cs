@@ -58,7 +58,7 @@ internal sealed class GetDialogSeenLogQueryHandler : IRequestHandler<GetDialogSe
 
         var authorizationResult = await _altinnAuthorization.GetDialogDetailsAuthorization(
             dialog,
-            cancellationToken);
+            cancellationToken: cancellationToken);
 
         // If we cannot read the dialog at all, we don't allow access to the seen log
         if (!authorizationResult.HasReadAccessToMainResource())

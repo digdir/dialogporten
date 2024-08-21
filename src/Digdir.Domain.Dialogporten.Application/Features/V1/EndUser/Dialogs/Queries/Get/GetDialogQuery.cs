@@ -92,7 +92,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
 
         var authorizationResult = await _altinnAuthorization.GetDialogDetailsAuthorization(
             dialog,
-            cancellationToken);
+            cancellationToken: cancellationToken);
 
         if (!authorizationResult.HasReadAccessToMainResource())
         {
@@ -166,7 +166,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
                 }
             }
 
-            var authorizedTransmissions = dto.Transmissions.Where(authorizationResult.HasReadAccessToDialogTransmission);
+            var authorizedTransmissions = dto.Transmissions.Where(t => authorizationResult.HasReadAccessToDialogTransmission(t.AuthorizationAttribute));
             foreach (var transmission in authorizedTransmissions)
             {
                 transmission.IsAuthorized = true;

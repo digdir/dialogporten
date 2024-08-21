@@ -5057,6 +5057,15 @@
               "format": "guid",
               "type": "string"
             }
+          },
+          {
+            "description": "Filter by end user id",
+            "in": "query",
+            "name": "endUserId",
+            "schema": {
+              "nullable": true,
+              "type": "string"
+            }
           }
         ],
         "responses": {

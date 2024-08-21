@@ -1,7 +1,6 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
-using Digdir.Domain.Dialogporten.Infrastructure.Common.Exceptions;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence;
 using Digdir.Library.Entity.Abstractions.Features.Versionable;
 using Digdir.Library.Entity.EntityFrameworkCore;
@@ -9,7 +8,6 @@ using Microsoft.EntityFrameworkCore;
 using OneOf.Types;
 using Polly;
 using Polly.Contrib.WaitAndRetry;
-using Polly.Timeout;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure;
 

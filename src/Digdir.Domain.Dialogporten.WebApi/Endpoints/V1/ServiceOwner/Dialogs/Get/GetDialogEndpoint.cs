@@ -33,6 +33,7 @@ public class GetDialogEndpoint : Endpoint<GetDialogQuery, GetDialogDto>
                 HttpContext.Response.Headers.ETag = dto.Revision.ToString();
                 return SendOkAsync(dto, ct);
             },
-            notFound => this.NotFoundAsync(notFound, ct));
+            notFound => this.NotFoundAsync(notFound, ct),
+            validationError => this.BadRequestAsync(validationError, ct));
     }
 }

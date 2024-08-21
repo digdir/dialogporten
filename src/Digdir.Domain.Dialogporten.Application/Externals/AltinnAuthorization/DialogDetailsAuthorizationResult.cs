@@ -1,26 +1,18 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Common.Authorization;
-using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Queries.Get;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 
 namespace Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 
 public sealed class DialogDetailsAuthorizationResult
 {
     // Each action applies to a resource. This is the main resource, another subresource indicated by a authorization attribute
-    // eg. "urn:altinn:subresource:some-sub-resource" or "urn:altinn:task:task_1", or another resource (ie. policy)
-    // eg. urn:altinn:resource:some-other-resource
+    // e.g. "urn:altinn:subresource:some-sub-resource" or "urn:altinn:task:task_1", or another resource (i.e. policy)
+    // e.g. urn:altinn:resource:some-other-resource
     public List<AltinnAction> AuthorizedAltinnActions { get; init; } = [];
 
     public bool HasReadAccessToMainResource() =>
         AuthorizedAltinnActions.Contains(new(Constants.ReadAction, Constants.MainResource));
 
-    public bool HasReadAccessToDialogTransmission(DialogTransmission dialogTransmission) =>
-        HasReadAccessToDialogTransmission(dialogTransmission.AuthorizationAttribute);
-
-    public bool HasReadAccessToDialogTransmission(GetDialogDialogTransmissionDto dialogTransmission) =>
-        HasReadAccessToDialogTransmission(dialogTransmission.AuthorizationAttribute);
-
-    private bool HasReadAccessToDialogTransmission(string? authorizationAttribute)
+    public bool HasReadAccessToDialogTransmission(string? authorizationAttribute)
     {
         return authorizationAttribute is not null
             ? ( // Dialog transmissions are authorized by either the read or read action, depending on the authorization attribute type

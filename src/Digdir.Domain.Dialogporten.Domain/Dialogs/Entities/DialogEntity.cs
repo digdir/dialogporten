@@ -1,4 +1,4 @@
-using Digdir.Domain.Dialogporten.Domain.Actors;
+﻿using Digdir.Domain.Dialogporten.Domain.Actors;
 using Digdir.Domain.Dialogporten.Domain.Attachments;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
@@ -103,6 +103,7 @@ public class DialogEntity :
         SeenLog.Add(new()
         {
             EndUserTypeId = userTypeId,
+            IsViaServiceOwner = userTypeId == DialogUserType.Values.ServiceOwnerOnBehalfOfPerson,
             SeenBy = new DialogSeenLogSeenByActor
             {
                 ActorTypeId = ActorType.Values.PartyRepresentative,
