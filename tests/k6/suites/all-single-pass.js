@@ -10,6 +10,7 @@ export default function () {
         runAllTests();
     } catch (error) {
         describe('Exception during test suite', () => {
+            console.log(error.stack);
             chai.assert(true == false, 'See the full stack trace at the top of the log');
         });
     }
