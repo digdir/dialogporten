@@ -26,7 +26,6 @@ jobs:
           });
           await Promise.all(
             deployments.data.map(async (deployment) => {
-              // might not need to set this? They all seem to be inactive in the PR GUI 
               await github.rest.repos.createDeploymentStatus({ 
                 owner: context.repo.owner, 
                 repo: context.repo.repo, 
