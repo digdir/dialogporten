@@ -1,7 +1,6 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
-using Digdir.Domain.Dialogporten.Infrastructure.Common.Exceptions;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence;
 using Digdir.Library.Entity.Abstractions.Features.Versionable;
 using Digdir.Library.Entity.EntityFrameworkCore;
@@ -9,14 +8,18 @@ using Microsoft.EntityFrameworkCore;
 using OneOf.Types;
 using Polly;
 using Polly.Contrib.WaitAndRetry;
-using Polly.Timeout;
-using Polly.Wrap;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure;
 
 internal sealed class UnitOfWork : IUnitOfWork
 {
-    private static readonly AsyncPolicyWrap ConcurrencyRetryPolicy;
+    // Fetch the db revision and retry
+    // https://learn.microsoft.com/en-us/ef/core/saving/concurrency?tabs=data-annotations#resolving-concurrency-conflicts
+    private static readonly AsyncPolicy ConcurrencyRetryPolicy = Policy
+        .Handle<DbUpdateConcurrencyException>()
+        .WaitAndRetryAsync(
+            sleepDurations: Backoff.ConstantBackoff(TimeSpan.FromMilliseconds(200), 25),
+            onRetryAsync: FetchCurrentRevision);
 
     private readonly DialogDbContext _dialogDbContext;
     private readonly ITransactionTime _transactionTime;
@@ -30,31 +33,6 @@ internal sealed class UnitOfWork : IUnitOfWork
         _dialogDbContext = dialogDbContext ?? throw new ArgumentNullException(nameof(dialogDbContext));
         _transactionTime = transactionTime ?? throw new ArgumentNullException(nameof(transactionTime));
         _domainContext = domainContext ?? throw new ArgumentNullException(nameof(domainContext));
-    }
-
-    static UnitOfWork()
-    {
-        // Backoff strategy with jitter for retry policy, starting at ~5ms
-        const int medianFirstDelayInMs = 5;
-        // Total timeout for optimistic concurrency handling
-        const int timeoutInSeconds = 10;
-
-        var timeoutPolicy =
-            Policy.TimeoutAsync(timeoutInSeconds,
-                TimeoutStrategy.Pessimistic,
-                (_, _, _) => throw new OptimisticConcurrencyTimeoutException());
-
-        // Fetch the db revision and retry
-        // https://learn.microsoft.com/en-us/ef/core/saving/concurrency?tabs=data-annotations#resolving-concurrency-conflicts
-        var retryPolicy = Policy
-            .Handle<DbUpdateConcurrencyException>()
-            .WaitAndRetryAsync(
-                sleepDurations: Backoff.DecorrelatedJitterBackoffV2(
-                    medianFirstRetryDelay: TimeSpan.FromMilliseconds(medianFirstDelayInMs),
-                    retryCount: int.MaxValue),
-                onRetryAsync: FetchCurrentRevision);
-
-        ConcurrencyRetryPolicy = timeoutPolicy.WrapAsync(retryPolicy);
     }
 
     public IUnitOfWork EnableConcurrencyCheck<TEntity>(
@@ -97,20 +75,23 @@ internal sealed class UnitOfWork : IUnitOfWork
         {
             // Attempt to save changes without concurrency check
             await ConcurrencyRetryPolicy.ExecuteAsync(_dialogDbContext.SaveChangesAsync, cancellationToken);
-
-            return new Success();
         }
-
-        try
+        else
         {
-            await _dialogDbContext.SaveChangesAsync(cancellationToken);
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            return new ConcurrencyError();
+            try
+            {
+                await _dialogDbContext.SaveChangesAsync(cancellationToken);
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return new ConcurrencyError();
+            }
         }
 
-        return new Success();
+        // Interceptors can add domain errors, so check again
+        return !_domainContext.IsValid
+            ? new DomainError(_domainContext.Pop())
+            : new Success();
     }
 
     private static async Task FetchCurrentRevision(Exception exception, TimeSpan _)

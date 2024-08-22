@@ -13,7 +13,7 @@ public class SearchDialogSeenLogSwaggerConfig : ISwaggerConfig
 
     public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder)
         => builder.OperationId(OperationId)
-            .ProducesOneOf<List<SearchDialogSeenLogDto>>(
+            .ProducesOneOf<List<SearchSeenLogDto>>(
                 StatusCodes.Status200OK,
                 StatusCodes.Status404NotFound);
 
@@ -24,11 +24,12 @@ public sealed class SearchDialogSeenLogEndpointSummary : Summary<SearchDialogSee
 {
     public SearchDialogSeenLogEndpointSummary()
     {
-        Summary = "Gets a single dialog seen log record";
-        Description = """
-                      Gets a single dialog seen log record. For more information see the documentation (link TBD).
+        const string summary = "Gets all seen log records for a dialog";
+        Summary = summary;
+        Description = $"""
+                      {summary}. For more information see the documentation (link TBD).
                       """;
 
-        Responses[StatusCodes.Status200OK] = Constants.SwaggerSummary.ReturnedResult.FormatInvariant("seen log record");
+        Responses[StatusCodes.Status200OK] = Constants.SwaggerSummary.ReturnedResult.FormatInvariant("seen log records");
     }
 }

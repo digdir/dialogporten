@@ -25,7 +25,10 @@ public class GetDialogTests : ApplicationCollectionFixture
         // Assert
         response.TryPickT0(out var result, out _).Should().BeTrue();
         result.Should().NotBeNull();
-        result.Should().BeEquivalentTo(createDialogCommand, options => options.ExcludingMissingMembers());
+        result.Should().BeEquivalentTo(createDialogCommand, options => options
+            .ExcludingMissingMembers()
+            .Excluding(x => x.UpdatedAt)
+            .Excluding(x => x.CreatedAt));
     }
 
     [Fact]
@@ -42,7 +45,10 @@ public class GetDialogTests : ApplicationCollectionFixture
         // Assert
         response.TryPickT0(out var result, out _).Should().BeTrue();
         result.Should().NotBeNull();
-        result.Should().BeEquivalentTo(createCommand, options => options.ExcludingMissingMembers());
+        result.Should().BeEquivalentTo(createCommand, options => options
+            .ExcludingMissingMembers()
+            .Excluding(x => x.UpdatedAt)
+            .Excluding(x => x.CreatedAt));
     }
     // TODO: Add tests
 }

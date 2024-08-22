@@ -13,20 +13,20 @@ on:
           - staging
           - prod
       version:
-        description: "Version to deploy. Needs to be a git tag"
+        description: "Version to deploy. Needs to be a git tag (exclude the v prefix)"
         required: true
         type: string
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref_name }}
+  group: ${{ github.workflow }}-${{ github.ref_name }}-${{ inputs.environment }}
 
 jobs:
   generate-git-short-sha:
     name: Generate git short sha
     uses: ./.github/workflows/action-generate-git-short-sha.yml
 
-  deploy-infra-test:
-    name: Deploy infra to test
+  deploy-infra:
+    name: Deploy infra to ${{ inputs.environment }}
     needs: [generate-git-short-sha]
     uses: ./.github/workflows/action-deploy-infra.yml
     secrets:
@@ -36,8 +36,9 @@ jobs:
       AZURE_SOURCE_KEY_VAULT_NAME: ${{ secrets.AZURE_SOURCE_KEY_VAULT_NAME }}
       AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID: ${{ secrets.AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID }}
       AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP: ${{ secrets.AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP }}
+      AZURE_SOURCE_KEY_VAULT_SSH_JUMPER_SSH_PUBLIC_KEY: ${{ secrets.AZURE_SOURCE_KEY_VAULT_SSH_JUMPER_SSH_PUBLIC_KEY }}
     with:
       environment: ${{ inputs.environment }}
       region: norwayeast
       version: ${{ inputs.version }}
-      ref: "refs/tags/${{ inputs.version }}"
+      ref: "refs/tags/v${{ inputs.version }}"

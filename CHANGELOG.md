@@ -1,5 +1,103 @@
 # Changelog
 
+## [1.15.0](https://github.com/digdir/dialogporten/compare/v1.14.0...v1.15.0) (2024-08-21)
+
+
+### Features
+
+* add support for serviceowner admin scope ([#1002](https://github.com/digdir/dialogporten/issues/1002)) ([2638b48](https://github.com/digdir/dialogporten/commit/2638b485f50ec7973aaf2fbdfb02ab07cb913f99))
+* **web-api:** Add optional EndUserId param to ServiceOwner Get Dialog details API ([#1020](https://github.com/digdir/dialogporten/issues/1020)) ([1380b33](https://github.com/digdir/dialogporten/commit/1380b33f4b80cb25146a9785a174091a2db8465a))
+
+
+### Bug Fixes
+
+* **azure:** use correct ip for APIM in prod ([#1036](https://github.com/digdir/dialogporten/issues/1036)) ([fecc4c0](https://github.com/digdir/dialogporten/commit/fecc4c0b38d8c97413b10f5201749b9817ad6e31))
+
+## [1.14.0](https://github.com/digdir/dialogporten/compare/v1.13.0...v1.14.0) (2024-08-19)
+
+
+### Features
+
+* **web-api:** add production config ([#1018](https://github.com/digdir/dialogporten/issues/1018)) ([689e7fe](https://github.com/digdir/dialogporten/commit/689e7fe2b087aac5609efddf146cf3b7f280a6fa))
+
+## [1.13.0](https://github.com/digdir/dialogporten/compare/v1.12.1...v1.13.0) (2024-08-15)
+
+
+### Features
+
+* Add doc blocks on DTOs for OAS generation, CORS headers ([#987](https://github.com/digdir/dialogporten/issues/987)) ([01c34b8](https://github.com/digdir/dialogporten/commit/01c34b841c82b58fe96e0c0831c2dcb49902804e))
+* **azure:** add bicep parameter files for production ([#1016](https://github.com/digdir/dialogporten/issues/1016)) ([7a7198a](https://github.com/digdir/dialogporten/commit/7a7198a6579ab2143a0a0250039f3ebbac6bf7b3))
+
+## [1.12.1](https://github.com/digdir/dialogporten/compare/v1.12.0...v1.12.1) (2024-08-14)
+
+
+### Bug Fixes
+
+* **azure:** ensure environment parameter for production is correct ([#1014](https://github.com/digdir/dialogporten/issues/1014)) ([1612f9d](https://github.com/digdir/dialogporten/commit/1612f9dab192831b5214a8f2a3180b10100e24f5))
+
+## [1.12.0](https://github.com/digdir/dialogporten/compare/v1.11.0...v1.12.0) (2024-08-14)
+
+
+### Features
+
+* Add current user flag to parties dto ([#993](https://github.com/digdir/dialogporten/issues/993)) ([e096743](https://github.com/digdir/dialogporten/commit/e0967436cea9f1efa8dca503e511dc66cf830591))
+* Add notification condition check endpoint ([#965](https://github.com/digdir/dialogporten/issues/965)) ([f480ce0](https://github.com/digdir/dialogporten/commit/f480ce0733453864ce3bb2aa28d1fb4bba2655d2))
+
+
+### Bug Fixes
+
+* Using existing Transmission or Activity IDs should no longer result in internal server error on updates ([#980](https://github.com/digdir/dialogporten/issues/980)) ([0757b33](https://github.com/digdir/dialogporten/commit/0757b332e1194aee399b6a0ab7c6c66d5fbf037e))
+
+## [1.11.0](https://github.com/digdir/dialogporten/compare/v1.10.0...v1.11.0) (2024-08-08)
+
+
+### Features
+
+* **azure:** scaffold ssh jumper ([#958](https://github.com/digdir/dialogporten/issues/958)) ([6228aa2](https://github.com/digdir/dialogporten/commit/6228aa2e543bb319ae8d8d0d097b19717b526896))
+
+
+### Bug Fixes
+
+* Correct the SeenLog list endpoints OpenAPI description ([#976](https://github.com/digdir/dialogporten/issues/976)) ([f6ebd19](https://github.com/digdir/dialogporten/commit/f6ebd19ee8ab790b3a7892776fc9e0be01004121))
+* Using existing transmission/activity IDs should return HTTP 422 ([#960](https://github.com/digdir/dialogporten/issues/960)) ([01789b1](https://github.com/digdir/dialogporten/commit/01789b1f256b17445379194f3cf781a0d70fc1af)), closes [#959](https://github.com/digdir/dialogporten/issues/959)
+
+## [1.10.0](https://github.com/digdir/dialogporten/compare/v1.9.0...v1.10.0) (2024-08-01)
+
+
+### Features
+
+* **azure:** add tags on azure applications ([#957](https://github.com/digdir/dialogporten/issues/957)) ([4081922](https://github.com/digdir/dialogporten/commit/4081922c47aa83fc95b6583f1d50ebf941d7e020))
+
+
+### Bug Fixes
+
+* **azure:** add product tag on all resources ([#955](https://github.com/digdir/dialogporten/issues/955)) ([6c76576](https://github.com/digdir/dialogporten/commit/6c76576397424e12feafa694b69a1a2e8bbd4d1f))
+
+## [1.9.0](https://github.com/digdir/dialogporten/compare/v1.8.1...v1.9.0) (2024-07-30)
+
+
+### Features
+
+* **breaking:** Move front channel embeds to content ([#862](https://github.com/digdir/dialogporten/issues/862)) ([c9b50e9](https://github.com/digdir/dialogporten/commit/c9b50e9ea7022c5bf22b472cf8859fd6faf66df6))
+* **breaking:** Remove DialogElements, add Attachments ([#867](https://github.com/digdir/dialogporten/issues/867)) ([dbe296a](https://github.com/digdir/dialogporten/commit/dbe296aa3f25e88227109ca604efd81616f2b4ab))
+* **breaking:** Remove PUT/DELETE endpoints for DialogElements ([#844](https://github.com/digdir/dialogporten/issues/844)) ([51eb898](https://github.com/digdir/dialogporten/commit/51eb89832f56081aa4b3eb2d30b7d19b1fb8f217))
+* **breaking:** Rename CultureCode to LanguageCode ([#871](https://github.com/digdir/dialogporten/issues/871)) ([96d50fc](https://github.com/digdir/dialogporten/commit/96d50fc40b075b31d342b8dc27e82924c30e9b83))
+* **breaking:** Renaming dialog activity types ([#919](https://github.com/digdir/dialogporten/issues/919)) ([af262b1](https://github.com/digdir/dialogporten/commit/af262b146ce78cd7eed6325d0a3ac8d662000107))
+* Change content array to object with properties for each content type ([#905](https://github.com/digdir/dialogporten/issues/905)) ([d549f19](https://github.com/digdir/dialogporten/commit/d549f194903d5a48e0563c1ceb942db2d333dd59))
+* Implement actor entity ([#912](https://github.com/digdir/dialogporten/issues/912)) ([a635fcb](https://github.com/digdir/dialogporten/commit/a635fcb04e988c416ae98928af05934ddd187de1))
+* Introduce Transmissions ([#932](https://github.com/digdir/dialogporten/issues/932)) ([3ca495f](https://github.com/digdir/dialogporten/commit/3ca495f0c900862c1a0bbf4b7acd8350f7649347))
+* Rename DialogStatus enum values ([#915](https://github.com/digdir/dialogporten/issues/915)) ([5aea32b](https://github.com/digdir/dialogporten/commit/5aea32b7299bd459fa529ada197fe42817d3aed7))
+* **WebAPI:** Add Transmission endpoints  ([#943](https://github.com/digdir/dialogporten/issues/943)) ([d608ade](https://github.com/digdir/dialogporten/commit/d608adebadc12d099c04c4b174569392837603e6))
+
+
+### Bug Fixes
+
+* Allow new activities to reference old activities ([#935](https://github.com/digdir/dialogporten/issues/935)) ([bbc443e](https://github.com/digdir/dialogporten/commit/bbc443e121ee5121bac6b9fe92ee3296bb45218f))
+* **auth:** Malformed JWTs no longer results in InternalServerError  ([#870](https://github.com/digdir/dialogporten/issues/870)) ([5f2f386](https://github.com/digdir/dialogporten/commit/5f2f386dabfa3b25cc56370f7e99a02fa566d5e3))
+* **slackNotifier:** Add missing deployment of Slack notifier function in staging environment  ([#861](https://github.com/digdir/dialogporten/issues/861)) ([59091f7](https://github.com/digdir/dialogporten/commit/59091f790c52fc7cae9b66f98b71c6db8e4bd9d3))
+* Update e2e tests for actor model ([#918](https://github.com/digdir/dialogporten/issues/918)) ([ec1fcb1](https://github.com/digdir/dialogporten/commit/ec1fcb1c094b16a5a13b90350b7e2a58feaf9b82))
+* **WebAPI:** Allow purging of softly deleted dialogs ([#940](https://github.com/digdir/dialogporten/issues/940)) ([c527c9f](https://github.com/digdir/dialogporten/commit/c527c9f0db7a5ad2136302de69aaec55b860fcc6))
+
 ## [1.8.1](https://github.com/digdir/dialogporten/compare/v1.8.0...v1.8.1) (2024-06-12)
 
 

@@ -1,6 +1,6 @@
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
+using Digdir.Domain.Dialogporten.Domain.Actors;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actors;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogActivities.Queries.Get;
 
@@ -13,14 +13,16 @@ public sealed class GetDialogActivityDto
     public DialogActivityType.Values Type { get; set; }
 
     public Guid? RelatedActivityId { get; set; }
+    public Guid? TransmissionId { get; set; }
 
-    public GetDialogActivityActorDto PerformedBy { get; set; } = null!;
+    public GetDialogActivityPerformedByActorDto PerformedBy { get; set; } = null!;
     public List<LocalizationDto> Description { get; set; } = [];
 }
 
-public sealed class GetDialogActivityActorDto
+public sealed class GetDialogActivityPerformedByActorDto
 {
-    public DialogActorType.Values ActorType { get; set; }
+    public Guid Id { get; set; }
+    public ActorType.Values ActorType { get; set; }
     public string? ActorName { get; set; }
     public string? ActorId { get; set; }
 }

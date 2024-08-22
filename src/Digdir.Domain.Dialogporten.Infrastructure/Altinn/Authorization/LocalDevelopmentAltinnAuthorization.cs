@@ -18,10 +18,14 @@ internal sealed class LocalDevelopmentAltinnAuthorization : IAltinnAuthorization
     }
 
     [SuppressMessage("Performance", "CA1822:Mark members as static")]
-    public Task<DialogDetailsAuthorizationResult> GetDialogDetailsAuthorization(DialogEntity dialogEntity,
-        CancellationToken cancellationToken = default) =>
+    public Task<DialogDetailsAuthorizationResult> GetDialogDetailsAuthorization(
+        DialogEntity dialogEntity,
+        string? _,
+        CancellationToken __)
+    {
         // Just allow everything
-        Task.FromResult(new DialogDetailsAuthorizationResult { AuthorizedAltinnActions = dialogEntity.GetAltinnActions() });
+        return Task.FromResult(new DialogDetailsAuthorizationResult { AuthorizedAltinnActions = dialogEntity.GetAltinnActions() });
+    }
 
     public async Task<DialogSearchAuthorizationResult> GetAuthorizedResourcesForSearch(List<string> constraintParties, List<string> serviceResources, string? endUserId,
         CancellationToken cancellationToken = default)
@@ -50,5 +54,5 @@ internal sealed class LocalDevelopmentAltinnAuthorization : IAltinnAuthorization
     }
 
     public async Task<AuthorizedPartiesResult> GetAuthorizedParties(IPartyIdentifier authenticatedParty, CancellationToken cancellationToken = default)
-        => await Task.FromResult(new AuthorizedPartiesResult { AuthorizedParties = [new() { Name = "Local Party", Party = authenticatedParty.FullId }] });
+        => await Task.FromResult(new AuthorizedPartiesResult { AuthorizedParties = [new() { Name = "Local Party", Party = authenticatedParty.FullId, IsCurrentEndUser = true }] });
 }

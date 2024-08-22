@@ -32,6 +32,166 @@ export default function () {
                 "value": [{ "languageCode": "nb", "value": "Utvidet Status" }]
             },
         },
+        "transmissions": [
+            {
+                "type": "Information",
+                "authorizationAttribute": "element1",
+                "sender": {
+                    "actorType": "serviceOwner",
+                },
+                "attachments": [
+                    {
+                        "displayName": [
+                            {
+                                "languageCode": "nb",
+                                "value": "Forsendelse visningsnavn"
+                            },
+                            {
+                                "languageCode": "en",
+                                "value": "Transmission attachment display name"
+                            }
+                        ],
+                        "urls": [
+                            {
+                                "url": "https://digdir.apps.tt02.altinn.no/some-other-url",
+                                "consumerType": "Gui"
+                            }
+                        ]
+                    }
+                ],
+                "content": {
+                    "title": {
+                        "value": [
+                            {
+                                "languageCode": "nb",
+                                "value": "Forsendelsestittel"
+                            },
+                            {
+                                "languageCode": "en",
+                                "value": "Transmission title"
+                            }
+                        ]
+                    },
+                    "summary": {
+                        "value": [
+                            {
+                                "languageCode": "nb",
+                                "value": "Forsendelse oppsummering"
+                            },
+                            {
+                                "languageCode": "en",
+                                "value": "Transmission summary"
+                            }
+                        ]
+                    }
+                }
+            },
+            {
+                "type": "Information",
+                "sender": {
+                    "actorType": "serviceOwner"
+                },
+                "attachments": [
+                    {
+                        "displayName": [
+                            {
+                                "languageCode": "nb",
+                                "value": "Visningsnavn for forsendelsesvedlegg "
+                            },
+                            {
+                                "languageCode": "en",
+                                "value": "Transmission attachment display name"
+                            }
+                        ],
+                        "urls": [
+                            {
+                                "url": "https://digdir.apps.tt02.altinn.no/some-other-url",
+                                "consumerType": "Gui"
+                            }
+                        ]
+                    }
+                ],
+                "content": {
+                    "title": {
+                        "value": [
+                            {
+                                "languageCode": "nb",
+                                "value": "Forsendelsesstittel"
+                            },
+                            {
+                                "languageCode": "en",
+                                "value": "Transmission title"
+                            }
+                        ]
+                    },
+                    "summary": {
+                        "value": [
+                            {
+                                "languageCode": "nb",
+                                "value": "Transmisjon oppsummering"
+                            },
+                            {
+                                "languageCode": "en",
+                                "value": "Transmission summary"
+                            }
+                        ]
+                    }
+                }
+            },
+            {
+                "type": "Information",
+                "authorizationAttribute": "elementius",
+                "sender": {
+                    "actorType": "serviceOwner"
+                },
+                "attachments": [
+                    {
+                        "displayName": [
+                            {
+                                "languageCode": "nb",
+                                "value": "Visningsnavn for forsendelsesvedlegg"
+                            },
+                            {
+                                "languageCode": "en",
+                                "value": "Transmission attachment display name"
+                            }
+                        ],
+                        "urls": [
+                            {
+                                "url": "https://digdir.apps.tt02.altinn.no/some-other-url",
+                                "consumerType": "Gui"
+                            }
+                        ]
+                    }
+                ],
+                "content": {
+                    "title": {
+                        "value": [
+                            {
+                                "languageCode": "nb",
+                                "value": "Forsendelsetittel"
+                            },
+                            {
+                                "languageCode": "en",
+                                "value": "Transmission title"
+                            }
+                        ]
+                    },
+                    "summary": {
+                        "value": [
+                            {
+                                "languageCode": "nb",
+                                "value": "Forsendelsesoppsummering"
+                            },
+                            {
+                                "languageCode": "en",
+                                "value": "Transmission summary"
+                            }
+                        ]
+                    }
+                }
+            }
+        ],
         "guiActions": [
             {
                 "action": "read",

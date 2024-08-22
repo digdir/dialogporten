@@ -2,11 +2,11 @@ using System.Globalization;
 using Bogus;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Create;
+using Digdir.Domain.Dialogporten.Domain.Actors;
+using Digdir.Domain.Dialogporten.Domain.Attachments;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actors;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Attachments;
 using Digdir.Domain.Dialogporten.Domain.Http;
 
 namespace Digdir.Tool.Dialogporten.GenerateFakeData;
@@ -23,6 +23,8 @@ public static class DialogGenerator
         int? progress = null,
         string? extendedStatus = null,
         string? externalReference = null,
+        DateTimeOffset? createdAt = null,
+        DateTimeOffset? updatedAt = null,
         DateTimeOffset? dueAt = null,
         DateTimeOffset? expiresAt = null,
         DialogStatus.Values? status = null,
@@ -42,6 +44,8 @@ public static class DialogGenerator
             progress,
             extendedStatus,
             externalReference,
+            createdAt,
+            updatedAt,
             dueAt,
             expiresAt,
             status,
@@ -63,6 +67,8 @@ public static class DialogGenerator
         int? progress = null,
         string? extendedStatus = null,
         string? externalReference = null,
+        DateTimeOffset? createdAt = null,
+        DateTimeOffset? updatedAt = null,
         DateTimeOffset? dueAt = null,
         DateTimeOffset? expiresAt = null,
         DialogStatus.Values? status = null,
@@ -81,6 +87,8 @@ public static class DialogGenerator
             .RuleFor(o => o.Progress, f => progress ?? f.Random.Number(0, 100))
             .RuleFor(o => o.ExtendedStatus, f => extendedStatus ?? f.Random.AlphaNumeric(10))
             .RuleFor(o => o.ExternalReference, f => externalReference ?? f.Random.AlphaNumeric(10))
+            .RuleFor(o => o.CreatedAt, f => createdAt ?? default)
+            .RuleFor(o => o.UpdatedAt, f => updatedAt ?? default)
             .RuleFor(o => o.DueAt, f => dueAt ?? f.Date.Future(10, RefTime))
             .RuleFor(o => o.ExpiresAt, f => expiresAt ?? f.Date.Future(20, RefTime.AddYears(11)))
             .RuleFor(o => o.Status, f => status ?? f.PickRandom<DialogStatus.Values>())
@@ -215,7 +223,7 @@ public static class DialogGenerator
             .RuleFor(o => o.CreatedAt, f => f.Date.Past())
             .RuleFor(o => o.ExtendedType, f => new Uri(f.Internet.UrlWithPath()))
             .RuleFor(o => o.Type, f => type ?? f.PickRandom<DialogActivityType.Values>())
-            .RuleFor(o => o.PerformedBy, f => new CreateDialogDialogActivityActorDto { ActorType = DialogActorType.Values.PartyRepresentative, ActorName = f.Name.FullName() })
+            .RuleFor(o => o.PerformedBy, f => new CreateDialogDialogActivityPerformedByActorDto { ActorType = ActorType.Values.PartyRepresentative, ActorName = f.Name.FullName() })
             .RuleFor(o => o.Description, (f, o) => o.Type == DialogActivityType.Values.Information ? GenerateFakeLocalizations(f.Random.Number(4, 8)) : null)
             .Generate(count ?? new Randomizer().Number(1, 4));
     }
@@ -274,7 +282,6 @@ public static class DialogGenerator
     public static List<CreateDialogDialogAttachmentDto> GenerateFakeDialogAttachments(int? count = null)
     {
         return new Faker<CreateDialogDialogAttachmentDto>()
-            .RuleFor(o => o.Id, _ => Guid.NewGuid())
             .RuleFor(o => o.DisplayName, f => GenerateFakeLocalizations(f.Random.Number(2, 5)))
             .RuleFor(o => o.Urls, _ => GenerateFakeDialogAttachmentUrls())
             .Generate(count ?? new Randomizer().Number(1, 6));
@@ -291,7 +298,7 @@ public static class DialogGenerator
     {
         return new Faker<CreateDialogDialogAttachmentUrlDto>()
             .RuleFor(o => o.Url, f => new Uri(f.Internet.UrlWithPath()))
-            .RuleFor(o => o.ConsumerType, f => f.PickRandom<DialogAttachmentUrlConsumerType.Values>())
+            .RuleFor(o => o.ConsumerType, f => f.PickRandom<AttachmentUrlConsumerType.Values>())
             .Generate(new Randomizer().Number(1, 3));
     }
 

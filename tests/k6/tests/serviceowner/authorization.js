@@ -7,8 +7,7 @@ export default function () {
     let invalidSo = { orgName: "other", orgNo: "310778737" };
 
     let dialog = dialogToInsert();
-    // TODO: Re-enable when implementing https://github.com/digdir/dialogporten/issues/860
-    // let transmissionId = dialog.transmissions[0].id;
+    let transmissionId = null; // known after successful insert
     let dialogId = null; // known after successful insert
     let activity = dialog.activities[0];
     let activityId = null; // known after successful insert
@@ -38,7 +37,9 @@ export default function () {
             let r = getSO('dialogs/' + dialogId, null, tokenOptions);
             expectEither(200, 404, r, shouldSucceed);
             if (r.status == 200) {
-                activityId = r.json().activities[0].id;
+                let d = r.json();
+                activityId = d.activities[0].id;
+                transmissionId = d.transmissions[0].id;
             }
         });
 
@@ -69,16 +70,15 @@ export default function () {
         });
 
 
-        // TODO: Re-enable when implementing https://github.com/digdir/dialogporten/issues/860
-        // describe(`${logPrefix} getting dialog transmission list as ${logSuffix}`, () => {
-        //     let r = getSO('dialogs/' + dialogId + "/transmissions/", null, tokenOptions);
-        //     expectEither(200, 404, r, shouldSucceed);
-        // });
+        describe(`${logPrefix} getting dialog transmission list as ${logSuffix}`, () => {
+            let r = getSO('dialogs/' + dialogId + "/transmissions/", null, tokenOptions);
+            expectEither(200, 404, r, shouldSucceed);
+        });
 
-        // describe(`${logPrefix} getting dialog transmission as ${logSuffix}`, () => {
-        //     let r = getSO('dialogs/' + dialogId + "/transmissions/" + transmissionId, null, tokenOptions);
-        //     expectEither(200, 404, r, shouldSucceed);
-        // });
+        describe(`${logPrefix} getting dialog transmission as ${logSuffix}`, () => {
+            let r = getSO('dialogs/' + dialogId + "/transmissions/" + transmissionId, null, tokenOptions);
+            expectEither(200, 404, r, shouldSucceed);
+        });
 
         describe(`${logPrefix} getting activities as ${logSuffix}`, () => {
             let r = getSO('dialogs/' + dialogId + "/activities", null, tokenOptions);

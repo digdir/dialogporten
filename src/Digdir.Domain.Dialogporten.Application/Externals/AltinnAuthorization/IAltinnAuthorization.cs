@@ -7,6 +7,7 @@ public interface IAltinnAuthorization
 {
     public Task<DialogDetailsAuthorizationResult> GetDialogDetailsAuthorization(
         DialogEntity dialogEntity,
+        string? endUserId = null,
         CancellationToken cancellationToken = default);
 
     public Task<DialogSearchAuthorizationResult> GetAuthorizedResourcesForSearch(

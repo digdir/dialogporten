@@ -12,6 +12,7 @@ public class AuthorizedParty
     public AuthorizedPartyType PartyType { get; init; }
     public bool IsDeleted { get; init; }
     public bool HasKeyRole { get; init; }
+    public bool IsCurrentEndUser { get; set; }
     public bool IsMainAdministrator { get; init; }
     public bool IsAccessManager { get; init; }
     public bool HasOnlyAccessToSubParties { get; init; }

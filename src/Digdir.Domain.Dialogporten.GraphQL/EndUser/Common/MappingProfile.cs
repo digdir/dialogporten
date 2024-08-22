@@ -12,22 +12,22 @@ public class MappingProfile : Profile
     {
         CreateMap<LocalizationDto, Localization>();
 
-        CreateMap<DialogContentValueDto, ContentValue>();
+        CreateMap<ContentValueDto, ContentValue>();
 
         CreateMap<GetDialogDialogSeenLogDto, SeenLog>();
-        CreateMap<GetDialogDialogSeenLogActorDto, Actor>();
+        CreateMap<GetDialogDialogSeenLogSeenByActorDto, Actor>();
 
         CreateMap<SearchDialogDialogSeenLogDto, SeenLog>();
-        CreateMap<SearchDialogDialogSeenLogActorDto, Actor>();
+        CreateMap<SearchDialogDialogSeenLogSeenByActorDto, Actor>();
 
         CreateMap<GetDialogDialogActivityDto, Activity>()
             .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type));
-        CreateMap<GetDialogDialogActivityActorDto, Actor>()
+        CreateMap<GetDialogDialogActivityPerformedByActorDto, Actor>()
             .ForMember(dest => dest.ActorType, opt => opt.MapFrom(src => src.ActorType));
 
         CreateMap<SearchDialogDialogActivityDto, Activity>()
             .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type));
-        CreateMap<SearchDialogDialogActivityActorDto, Actor>()
+        CreateMap<SearchDialogDialogActivityPerformedByActorDto, Actor>()
             .ForMember(dest => dest.ActorType, opt => opt.MapFrom(src => src.ActorType));
     }
 }

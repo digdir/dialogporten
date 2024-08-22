@@ -3,11 +3,12 @@ using Digdir.Domain.Dialogporten.Application.Common.Extensions.Enumerables;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.FluentValidation;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Content;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
+using Digdir.Domain.Dialogporten.Domain.Actors;
 using Digdir.Domain.Dialogporten.Domain.Common;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actors;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Contents;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions.Contents;
 using Digdir.Domain.Dialogporten.Domain.Http;
 using FluentValidation;
 
@@ -16,6 +17,7 @@ namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialog
 internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDialogCommand>
 {
     public CreateDialogCommandValidator(
+        IValidator<CreateDialogDialogTransmissionDto> transmissionValidator,
         IValidator<CreateDialogDialogAttachmentDto> attachmentValidator,
         IValidator<CreateDialogDialogGuiActionDto> guiActionValidator,
         IValidator<CreateDialogDialogApiActionDto> apiActionValidator,
@@ -92,18 +94,61 @@ internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDia
         RuleForEach(x => x.ApiActions)
             .SetValidator(apiActionValidator);
 
-        RuleFor(x => x.Attachments)
-            .UniqueBy(x => x.Id);
         RuleForEach(x => x.Attachments)
             .SetValidator(attachmentValidator);
+
+        RuleFor(x => x.Transmissions)
+            .UniqueBy(x => x.Id);
+        RuleForEach(x => x.Transmissions)
+            .IsIn(x => x.Transmissions,
+                dependentKeySelector: transmission => transmission.RelatedTransmissionId,
+                principalKeySelector: transmission => transmission.Id)
+            .SetValidator(transmissionValidator);
 
         RuleFor(x => x.Activities)
             .UniqueBy(x => x.Id);
         RuleForEach(x => x.Activities)
+            .IsIn(x => x.Transmissions,
+                dependentKeySelector: activity => activity.TransmissionId,
+                principalKeySelector: transmission => transmission.Id)
             .IsIn(x => x.Activities,
                 dependentKeySelector: activity => activity.RelatedActivityId,
                 principalKeySelector: activity => activity.Id)
             .SetValidator(activityValidator);
+    }
+}
+
+internal sealed class CreateDialogDialogTransmissionDtoValidator : AbstractValidator<CreateDialogDialogTransmissionDto>
+{
+    public CreateDialogDialogTransmissionDtoValidator(
+        IValidator<CreateDialogDialogTransmissionSenderActorDto> actorValidator,
+        IValidator<CreateDialogDialogTransmissionContentDto> contentValidator,
+        IValidator<CreateDialogTransmissionAttachmentDto> attachmentValidator)
+    {
+        RuleFor(x => x.Id)
+            .NotEqual(default(Guid));
+        RuleFor(x => x.CreatedAt)
+            .IsInPast();
+        RuleFor(x => x.ExtendedType)
+            .IsValidUri()
+            .MaximumLength(Constants.DefaultMaxUriLength)
+            .When(x => x.ExtendedType is not null);
+        RuleFor(x => x.Type)
+            .IsInEnum();
+        RuleFor(x => x.RelatedTransmissionId)
+            .NotEqual(x => x.Id)
+            .WithMessage(x => $"A transmission cannot reference itself ({nameof(x.RelatedTransmissionId)} is equal to {nameof(x.Id)}, '{x.Id}').")
+            .When(x => x.RelatedTransmissionId.HasValue);
+        RuleFor(x => x.Sender)
+            .NotNull()
+            .SetValidator(actorValidator);
+        RuleFor(x => x.AuthorizationAttribute)
+            .MaximumLength(Constants.DefaultMaxStringLength);
+        RuleForEach(x => x.Attachments)
+            .SetValidator(attachmentValidator);
+        RuleFor(x => x.Content)
+            .NotEmpty()
+            .SetValidator(contentValidator);
     }
 }
 
@@ -127,16 +172,16 @@ internal sealed class CreateDialogContentDtoValidator : AbstractValidator<Create
             switch (propMetadata.NullabilityInfo.WriteState)
             {
                 case NullabilityState.NotNull:
-                    RuleFor(x => propMetadata.Property.GetValue(x) as DialogContentValueDto)
+                    RuleFor(x => propMetadata.Property.GetValue(x) as ContentValueDto)
                         .NotNull()
                         .WithMessage($"{propertyName} must not be empty.")
-                        .SetValidator(new DialogContentValueDtoValidator(
-                            DialogContentType.GetContentType(propertyName))!);
+                        .SetValidator(new ContentValueDtoValidator(
+                            DialogContentType.Parse(propertyName))!);
                     break;
                 case NullabilityState.Nullable:
-                    RuleFor(x => propMetadata.Property.GetValue(x) as DialogContentValueDto)
-                        .SetValidator(new DialogContentValueDtoValidator(
-                            DialogContentType.GetContentType(propertyName))!)
+                    RuleFor(x => propMetadata.Property.GetValue(x) as ContentValueDto)
+                        .SetValidator(new ContentValueDtoValidator(
+                            DialogContentType.Parse(propertyName))!)
                         .When(x => propMetadata.Property.GetValue(x) is not null);
                     break;
                 case NullabilityState.Unknown:
@@ -148,14 +193,30 @@ internal sealed class CreateDialogContentDtoValidator : AbstractValidator<Create
     }
 }
 
+internal sealed class CreateDialogDialogTransmissionContentDtoValidator : AbstractValidator<CreateDialogDialogTransmissionContentDto>
+{
+    private static readonly Dictionary<string, PropertyInfo> SourcePropertyMetaDataByName = typeof(CreateDialogDialogTransmissionContentDto)
+        .GetProperties()
+        .ToDictionary(x => x.Name, StringComparer.InvariantCultureIgnoreCase);
+
+    public CreateDialogDialogTransmissionContentDtoValidator()
+    {
+        foreach (var (propertyName, propMetadata) in SourcePropertyMetaDataByName)
+        {
+            RuleFor(x => propMetadata.GetValue(x) as ContentValueDto)
+                .NotNull()
+                .WithMessage($"{propertyName} must not be empty.")
+                .SetValidator(new ContentValueDtoValidator(DialogTransmissionContentType.Parse(propertyName))!);
+        }
+    }
+}
+
 internal sealed class CreateDialogDialogAttachmentDtoValidator : AbstractValidator<CreateDialogDialogAttachmentDto>
 {
     public CreateDialogDialogAttachmentDtoValidator(
         IValidator<IEnumerable<LocalizationDto>> localizationsValidator,
         IValidator<CreateDialogDialogAttachmentUrlDto> urlValidator)
     {
-        RuleFor(x => x.Id)
-            .NotEqual(default(Guid));
         RuleFor(x => x.DisplayName)
             .SetValidator(localizationsValidator);
         RuleFor(x => x.Urls)
@@ -167,6 +228,33 @@ internal sealed class CreateDialogDialogAttachmentDtoValidator : AbstractValidat
 internal sealed class CreateDialogDialogAttachmentUrlDtoValidator : AbstractValidator<CreateDialogDialogAttachmentUrlDto>
 {
     public CreateDialogDialogAttachmentUrlDtoValidator()
+    {
+        RuleFor(x => x.Url)
+            .NotNull()
+            .IsValidUri()
+            .MaximumLength(Constants.DefaultMaxUriLength);
+        RuleFor(x => x.ConsumerType)
+            .IsInEnum();
+    }
+}
+
+internal sealed class CreateDialogTransmissionAttachmentDtoValidator : AbstractValidator<CreateDialogTransmissionAttachmentDto>
+{
+    public CreateDialogTransmissionAttachmentDtoValidator(
+        IValidator<IEnumerable<LocalizationDto>> localizationsValidator,
+        IValidator<CreateDialogTransmissionAttachmentUrlDto> urlValidator)
+    {
+        RuleFor(x => x.DisplayName)
+            .SetValidator(localizationsValidator);
+        RuleFor(x => x.Urls)
+            .NotEmpty()
+            .ForEach(x => x.SetValidator(urlValidator));
+    }
+}
+
+internal sealed class CreateDialogTransmissionAttachmentUrlDtoValidator : AbstractValidator<CreateDialogTransmissionAttachmentUrlDto>
+{
+    public CreateDialogTransmissionAttachmentUrlDtoValidator()
     {
         RuleFor(x => x.Url)
             .NotNull()
@@ -263,7 +351,7 @@ internal sealed class CreateDialogDialogActivityDtoValidator : AbstractValidator
 {
     public CreateDialogDialogActivityDtoValidator(
         IValidator<IEnumerable<LocalizationDto>> localizationsValidator,
-        IValidator<CreateDialogDialogActivityActorDto> actorValidator)
+        IValidator<CreateDialogDialogActivityPerformedByActorDto> actorValidator)
     {
         RuleFor(x => x.Id)
             .NotEqual(default(Guid));
@@ -293,7 +381,29 @@ internal sealed class CreateDialogDialogActivityDtoValidator : AbstractValidator
     }
 }
 
-internal sealed class CreateDialogDialogActivityActorDtoValidator : AbstractValidator<CreateDialogDialogActivityActorDto>
+internal sealed class CreateDialogDialogTransmissionActorDtoValidator : AbstractValidator<CreateDialogDialogTransmissionSenderActorDto>
+{
+    public CreateDialogDialogTransmissionActorDtoValidator()
+    {
+        RuleFor(x => x.ActorType)
+            .IsInEnum();
+
+        RuleFor(x => x.ActorId)
+            .Must((dto, value) => value is null || dto.ActorName is null)
+            .WithMessage("Only one of 'ActorId' or 'ActorName' can be set, but not both.");
+
+        RuleFor(x => x.ActorType)
+            .Must((dto, value) => (value == ActorType.Values.ServiceOwner && dto.ActorId is null && dto.ActorName is null) ||
+                                  (value != ActorType.Values.ServiceOwner && (dto.ActorId is not null || dto.ActorName is not null)))
+            .WithMessage("If 'ActorType' is 'ServiceOwner', both 'ActorId' and 'ActorName' must be null. Otherwise, one of them must be set.");
+
+        RuleFor(x => x.ActorId!)
+            .IsValidPartyIdentifier()
+            .When(x => x.ActorId is not null);
+    }
+}
+
+internal sealed class CreateDialogDialogActivityActorDtoValidator : AbstractValidator<CreateDialogDialogActivityPerformedByActorDto>
 {
     public CreateDialogDialogActivityActorDtoValidator()
     {
@@ -305,8 +415,8 @@ internal sealed class CreateDialogDialogActivityActorDtoValidator : AbstractVali
             .WithMessage("Only one of 'ActorId' or 'ActorName' can be set, but not both.");
 
         RuleFor(x => x.ActorType)
-            .Must((dto, value) => (value == DialogActorType.Values.ServiceOwner && dto.ActorId is null && dto.ActorName is null) ||
-                                  (value != DialogActorType.Values.ServiceOwner && (dto.ActorId is not null || dto.ActorName is not null)))
+            .Must((dto, value) => (value == ActorType.Values.ServiceOwner && dto.ActorId is null && dto.ActorName is null) ||
+                                  (value != ActorType.Values.ServiceOwner && (dto.ActorId is not null || dto.ActorName is not null)))
             .WithMessage("If 'ActorType' is 'ServiceOwner', both 'ActorId' and 'ActorName' must be null. Otherwise, one of them must be set.");
 
         RuleFor(x => x.ActorId!)

@@ -9,7 +9,7 @@ using Digdir.Tool.Dialogporten.GenerateFakeData;
 using AutoMapper;
 using FluentAssertions;
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Delete;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Attachments;
+using Digdir.Domain.Dialogporten.Domain.Attachments;
 
 namespace Digdir.Domain.Dialogporten.Application.Integration.Tests.Features.V1.Common.Events;
 
@@ -128,7 +128,7 @@ public class DomainEventsTests(DialogApplication application) : ApplicationColle
             DisplayName = DialogGenerator.GenerateFakeLocalizations(3),
             Urls = [new()
             {
-                ConsumerType = DialogAttachmentUrlConsumerType.Values.Gui,
+                ConsumerType = AttachmentUrlConsumerType.Values.Gui,
                 Url = new Uri("https://example.com")
             }]
         }];

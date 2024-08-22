@@ -69,6 +69,12 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
                 .ThenInclude(x => x!.Prompt!.Localizations.OrderBy(x => x.CreatedAt).ThenBy(x => x.LanguageCode))
             .Include(x => x.ApiActions.OrderBy(x => x.CreatedAt).ThenBy(x => x.Id))
                 .ThenInclude(x => x.Endpoints.OrderBy(x => x.CreatedAt).ThenBy(x => x.Id))
+            .Include(x => x.Transmissions)
+                .ThenInclude(x => x.Content)
+                .ThenInclude(x => x.Value.Localizations)
+            .Include(x => x.Transmissions).ThenInclude(x => x.Sender)
+            .Include(x => x.Transmissions).ThenInclude(x => x.Attachments).ThenInclude(x => x.Urls)
+            .Include(x => x.Transmissions).ThenInclude(x => x.Attachments).ThenInclude(x => x.DisplayName!.Localizations)
             .Include(x => x.Activities).ThenInclude(x => x.Description!.Localizations)
             .Include(x => x.Activities).ThenInclude(x => x.PerformedBy)
             .Include(x => x.SeenLog
@@ -86,7 +92,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
 
         var authorizationResult = await _altinnAuthorization.GetDialogDetailsAuthorization(
             dialog,
-            cancellationToken);
+            cancellationToken: cancellationToken);
 
         if (!authorizationResult.HasReadAccessToMainResource())
         {
@@ -160,14 +166,11 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
                 }
             }
 
-            // TODO: Rename in https://github.com/digdir/dialogporten/issues/860
-            // foreach (var transmission in dto.Transmissions)
-            // {
-            //     if (authorizationResult.HasReadAccessToDialogTransmission(transmission))
-            //     {
-            //         transmission.IsAuthorized = true;
-            //     }
-            // }
+            var authorizedTransmissions = dto.Transmissions.Where(t => authorizationResult.HasReadAccessToDialogTransmission(t.AuthorizationAttribute));
+            foreach (var transmission in authorizedTransmissions)
+            {
+                transmission.IsAuthorized = true;
+            }
         }
     }
 
@@ -187,9 +190,13 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
             }
         }
 
-        // // Attachment URLs
-        // foreach (var dialogTransmission in dto.Transmissions.Where(e => !e.IsAuthorized))
-        // {
-        // }
+        foreach (var dialogTransmission in dto.Transmissions.Where(e => !e.IsAuthorized))
+        {
+            var urls = dialogTransmission.Attachments.SelectMany(a => a.Urls).ToList();
+            foreach (var url in urls)
+            {
+                url.Url = Constants.UnauthorizedUri;
+            }
+        }
     }
 }

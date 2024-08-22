@@ -2,10 +2,10 @@ using System.Globalization;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Update;
 using Digdir.Domain.Dialogporten.Domain;
+using Digdir.Domain.Dialogporten.Domain.Actors;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actors;
 using Digdir.Domain.Dialogporten.Domain.Http;
 using Digdir.Domain.Dialogporten.WebApi.Common;
 using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
@@ -162,9 +162,9 @@ internal abstract class UpdateDialogSwaggerConfig : ISwaggerConfig
             {
                 Id = Guid.Parse("8b95d42d-d2b6-4c01-8ca0-a817a4b3c50d"),
                 Type = DialogActivityType.Values.Information,
-                PerformedBy = new UpdateDialogDialogActivityActorDto
+                PerformedBy = new UpdateDialogDialogActivityPerformedByActorDto
                 {
-                    ActorType = DialogActorType.Values.ServiceOwner
+                    ActorType = ActorType.Values.ServiceOwner
                 },
                 Description =
                 [

@@ -1,25 +1,48 @@
+import { uniqueResourceName } from '../../functions/resourceName.bicep'
+
+@description('The prefix used for naming resources to ensure unique names')
 param namePrefix string
+
+@description('The location where the resources will be deployed')
 param location string
+
+@description('The name of the environment Key Vault')
 param environmentKeyVaultName string
-param srcSecretName string
+
+@description('The name of the secret name(key) in the source key vault to store the PostgreSQL administrator login password')
+#disable-next-line secure-secrets-in-params
+param srcKeyVaultAdministratorLoginPasswordKey string
+
+@description('The ID of the subnet where the PostgreSQL server will be deployed')
 param subnetId string
+
+@description('The ID of the virtual network for the private DNS zone')
 param vnetId string
+
+@description('Tags to apply to resources')
+param tags object
 
 @export()
 type Sku = {
   name: 'Standard_B1ms'
   tier: 'Burstable' | 'GeneralPurpose' | 'MemoryOptimized'
 }
+
+@description('The SKU of the PostgreSQL server')
 param sku Sku
 
+@description('The Key Vault to store the PostgreSQL administrator login password')
 @secure()
 param srcKeyVault object
 
+@description('The password for the PostgreSQL administrator login')
 @secure()
 param administratorLoginPassword string
 
 var administratorLogin = 'dialogportenPgAdmin'
 var databaseName = 'dialogporten'
+var postgresServerNameMaxLength = 63
+var postgresServerName = uniqueResourceName('${namePrefix}-postgres', postgresServerNameMaxLength)
 
 // Uncomment the following lines to add logical replication.
 // see https://learn.microsoft.com/en-us/azure/postgresql/flexible-server/concepts-logical#pre-requisites-for-logical-replication-and-logical-decoding
@@ -35,12 +58,13 @@ var databaseName = 'dialogporten'
 //}
 
 module saveAdmPassword '../keyvault/upsertSecret.bicep' = {
-  name: 'Save_${srcSecretName}'
+  name: 'Save_${srcKeyVaultAdministratorLoginPasswordKey}'
   scope: resourceGroup(srcKeyVault.subscriptionId, srcKeyVault.resourceGroupName)
   params: {
     destKeyVaultName: srcKeyVault.name
-    secretName: srcSecretName
+    secretName: srcKeyVaultAdministratorLoginPasswordKey
     secretValue: administratorLoginPassword
+    tags: tags
   }
 }
 
@@ -50,11 +74,12 @@ module privateDnsZone '../privateDnsZone/main.bicep' = {
     namePrefix: namePrefix
     defaultDomain: '${namePrefix}.postgres.database.azure.com'
     vnetId: vnetId
+    tags: tags
   }
 }
 
 resource postgres 'Microsoft.DBforPostgreSQL/flexibleServers@2022-12-01' = {
-  name: '${namePrefix}-postgres'
+  name: postgresServerName
   location: location
   properties: {
     version: '15'
@@ -78,6 +103,7 @@ resource postgres 'Microsoft.DBforPostgreSQL/flexibleServers@2022-12-01' = {
       collation: 'en_US.utf8'
     }
   }
+  tags: tags
 }
 
 module adoConnectionString '../keyvault/upsertSecret.bicep' = {
@@ -86,6 +112,7 @@ module adoConnectionString '../keyvault/upsertSecret.bicep' = {
     destKeyVaultName: environmentKeyVaultName
     secretName: 'dialogportenAdoConnectionString'
     secretValue: 'Server=${postgres.properties.fullyQualifiedDomainName};Database=${databaseName};Port=5432;User Id=${administratorLogin};Password=${administratorLoginPassword};Ssl Mode=Require;Trust Server Certificate=true;'
+    tags: tags
   }
 }
 
@@ -95,6 +122,7 @@ module psqlConnectionString '../keyvault/upsertSecret.bicep' = {
     destKeyVaultName: environmentKeyVaultName
     secretName: 'dialogportenPsqlConnectionString'
     secretValue: 'psql \'host=${postgres.properties.fullyQualifiedDomainName} port=5432 dbname=${databaseName} user=${administratorLogin} password=${administratorLoginPassword} sslmode=require\''
+    tags: tags
   }
 }
 

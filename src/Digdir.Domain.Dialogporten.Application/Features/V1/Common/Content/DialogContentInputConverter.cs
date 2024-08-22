@@ -3,7 +3,9 @@ using AutoMapper;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.Enumerables;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using Digdir.Domain.Dialogporten.Domain;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Contents;
+
+// ReSharper disable ClassNeverInstantiated.Global
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.Common.Content;
 
@@ -39,7 +41,7 @@ internal class DialogContentInputConverter<TDialogContent> :
                 continue;
             }
 
-            if (sourceProperty.GetValue(source) is not DialogContentValueDto sourceValue)
+            if (sourceProperty.GetValue(source) is not ContentValueDto sourceValue)
             {
                 continue;
             }
@@ -85,13 +87,14 @@ internal class DialogContentOutputConverter<TDialogContent> :
                 continue;
             }
 
-            property.SetValue(destination, context.Mapper.Map<DialogContentValueDto>(source));
+            property.SetValue(destination, context.Mapper.Map<ContentValueDto>(source));
         }
 
         return destination;
     }
 }
 
+// ReSharper disable once ClassNeverInstantiated.Local
 file class PropertyCache<T>
 {
     public static readonly Dictionary<string, PropertyInfo> PropertyByName = typeof(T)
