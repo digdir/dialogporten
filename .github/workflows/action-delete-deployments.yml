@@ -3,15 +3,14 @@ name: Delete temporary GitHub deployments
 on:
   workflow_call:
     inputs:
-      gitSha: // Set git sha here? Or use the `${{ github.event.pull_request.head.sha }}` on line 19?
+      gitSha:
         required: true
         type: string
 
 jobs:
   delete_github_deployments:
+    name: Delete GitHub deployments
     runs-on: ubuntu-latest
-    if: ${{ always() }}
-
     steps:
     - name: Delete Previous deployments
       uses: actions/github-script@v6

@@ -90,4 +90,10 @@ jobs:
       dryRun: true
 
 
-    // DISPATCH DELETE WORKFLOW
+  delete-github-deployments:
+    name: Delete GitHub deployments
+    uses: ./.github/workflows/action-delete-deployments.yml
+    needs: [dry-run-deploy-apps, dry-run-deploy-infra]
+    if: ${{ always() && !failure() && !cancelled() }}
+    with:
+      gitSha: ${{ github.event.pull_request.head.sha }}
