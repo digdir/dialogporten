@@ -146,16 +146,16 @@ export default function () {
         expectStatusFor(r).to.equal(200);
         expect(r, 'response').to.have.validJsonBody();
         expect(r.json(), 'response json').to.have.property("items").with.lengthOf(3);
-        expect(r.json().items[0], 'first dialog title').to.haveContentOfType("Title").that.hasLocalizedText(titleForDueAtItem);
-        expect(r.json().items[1], 'second dialog title').to.haveContentOfType("Title").that.hasLocalizedText(titleForUpdatedItem);
-        expect(r.json().items[2], 'third dialog title').to.haveContentOfType("Title").that.hasLocalizedText(titleForLastItem);
+        expect(r.json().items[0], 'first dialog title').to.haveContentOfType("title").that.hasLocalizedText(titleForDueAtItem);
+        expect(r.json().items[1], 'second dialog title').to.haveContentOfType("title").that.hasLocalizedText(titleForUpdatedItem);
+        expect(r.json().items[2], 'third dialog title').to.haveContentOfType("title").that.hasLocalizedText(titleForLastItem);
 
         r = getSO('dialogs/?CreatedAfter=' + createdAfter + '&Limit=3&OrderBy=dueAt_asc,updatedAt_desc');
         expectStatusFor(r).to.equal(200);
         expect(r, 'response').to.have.validJsonBody();
         expect(r.json(), 'response json').to.have.property("items").with.lengthOf(3);
-        expect(r.json().items[0], 'first dialog reversed title').to.haveContentOfType("Title").that.hasLocalizedText(titleForUpdatedItem);
-        expect(r.json().items[1], 'second dialog reversed title').to.haveContentOfType("Title").that.hasLocalizedText(titleForLastItem);
+        expect(r.json().items[0], 'first dialog reversed title').to.haveContentOfType("title").that.hasLocalizedText(titleForUpdatedItem);
+        expect(r.json().items[1], 'second dialog reversed title').to.haveContentOfType("title").that.hasLocalizedText(titleForLastItem);
     });
 
     describe('List with party filter', () => {
