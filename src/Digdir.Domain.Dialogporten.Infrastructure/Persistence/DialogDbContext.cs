@@ -15,6 +15,7 @@ using Digdir.Domain.Dialogporten.Domain.Actors;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Contents;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions.Contents;
+using Digdir.Domain.Dialogporten.Domain.SubjectResources;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence;
 
@@ -41,6 +42,8 @@ internal sealed class DialogDbContext : DbContext, IDialogDbContext
     public DbSet<DialogContentType> DialogContentTypes => Set<DialogContentType>();
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
     public DbSet<OutboxMessageConsumer> OutboxMessageConsumers => Set<OutboxMessageConsumer>();
+    public DbSet<SubjectResource> SubjectResources => Set<SubjectResource>();
+
 
     //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) =>
     //    optionsBuilder.LogTo(Console.WriteLine);

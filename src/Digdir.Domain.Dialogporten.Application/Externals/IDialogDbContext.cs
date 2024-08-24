@@ -8,6 +8,7 @@ using System.Linq.Expressions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Contents;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions.Contents;
+using Digdir.Domain.Dialogporten.Domain.SubjectResources;
 
 namespace Digdir.Domain.Dialogporten.Application.Externals;
 
@@ -40,6 +41,7 @@ public interface IDialogDbContext
 
     DbSet<OutboxMessage> OutboxMessages { get; }
     DbSet<OutboxMessageConsumer> OutboxMessageConsumers { get; }
+    DbSet<SubjectResource> SubjectResources { get; }
 
     /// <summary>
     /// Validate a property on the <typeparamref name="TEntity"/> using a lambda
