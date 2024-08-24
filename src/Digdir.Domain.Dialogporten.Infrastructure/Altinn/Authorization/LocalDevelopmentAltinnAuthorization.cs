@@ -43,7 +43,7 @@ internal sealed class LocalDevelopmentAltinnAuthorization : IAltinnAuthorization
         // Keep the number of parties and resources reasonable
         var allParties = dialogData.Select(x => x.Party).Distinct().Take(1000).ToList();
         var allResources = dialogData.Select(x => x.ServiceResource).Distinct().Take(1000).ToList();
-        var allRoles = await _db.RoleResources.Select(x => x.Role).Distinct().Take(30).ToListAsync(cancellationToken);
+        var allRoles = await _db.SubjectResources.Select(x => x.Role).Distinct().Take(30).ToListAsync(cancellationToken);
 
         var authorizedResources = new DialogSearchAuthorizationResult
         {
@@ -54,7 +54,7 @@ internal sealed class LocalDevelopmentAltinnAuthorization : IAltinnAuthorization
 
         if (_allRolesCache.Count == 0)
         {
-            _allRolesCache = await _db.RoleResources.Select(x => x.Role).Distinct().ToListAsync(cancellationToken);
+            _allRolesCache = await _db.SubjectResources.Select(x => x.Role).Distinct().ToListAsync(cancellationToken);
             _allPartiesCache = await _db.Dialogs.Select(x => x.Party).Distinct().ToListAsync(cancellationToken);
             _allResourcesCache = await _db.Dialogs.Select(x => x.ServiceResource).Distinct().ToListAsync(cancellationToken);
         }

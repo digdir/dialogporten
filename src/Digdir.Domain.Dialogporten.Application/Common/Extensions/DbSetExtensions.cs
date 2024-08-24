@@ -33,7 +33,7 @@ public static class DbSetExtensions
         {
             sb.Append(" OR (\"Party\" = @p")
                 .Append(parameters.Count)
-                .Append(" AND \"ServiceResource\" = ANY(SELECT r.\"Resource\" FROM \"RoleResource\" r WHERE r.\"Role\" = ANY(@p")
+                .Append(" AND \"ServiceResource\" = ANY(SELECT r.\"Resource\" FROM \"SubjectResource\" r WHERE r.\"Role\" = ANY(@p")
                 .Append(parameters.Count + 1).Append(")))");
             parameters.Add(item.Key);
             parameters.Add(item.Value);

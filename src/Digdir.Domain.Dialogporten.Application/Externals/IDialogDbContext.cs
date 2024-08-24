@@ -6,7 +6,7 @@ using Digdir.Library.Entity.Abstractions.Features.Identifiable;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Attachments;
-using Digdir.Domain.Dialogporten.Domain.RoleResources;
+using Digdir.Domain.Dialogporten.Domain.SubjectResources;
 
 namespace Digdir.Domain.Dialogporten.Application.Externals;
 
@@ -26,7 +26,6 @@ public interface IDialogDbContext
     DbSet<OutboxMessage> OutboxMessages { get; }
     DbSet<OutboxMessageConsumer> OutboxMessageConsumers { get; }
     DbSet<DialogSeenLog> DialogSeenLog { get; }
-    DbSet<RoleResource> RoleResources { get; }
 
     /// <summary>
     /// Validate a property on the <typeparamref name="TEntity"/> using a lambda 

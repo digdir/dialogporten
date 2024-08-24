@@ -904,21 +904,6 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.ToTable("OutboxMessageConsumer");
                 });
 
-            modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.RoleResources.RoleResource", b =>
-                {
-                    b.Property<string>("Resource")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
-                    b.Property<string>("Role")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
-                    b.ToTable("RoleResource", (string)null);
-                });
-
             modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions.DialogGuiActionPrompt", b =>
                 {
                     b.HasBaseType("Digdir.Domain.Dialogporten.Domain.Localizations.LocalizationSet");
