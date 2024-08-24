@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "Digdir_Tool_Dialogporten_SubjectResourceSync": {
+      "commandName": "Project",
+      "commandLineArgs": "--port 7102",
+      "launchBrowser": false
+    }
+  }
+}
