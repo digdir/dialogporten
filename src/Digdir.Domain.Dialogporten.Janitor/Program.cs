@@ -1,16 +1,17 @@
+using Cocona;
 using Digdir.Domain.Dialogporten.Application;
+using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
 using Digdir.Domain.Dialogporten.Infrastructure;
+using Digdir.Domain.Dialogporten.Janitor;
 using Digdir.Domain.Dialogporten.Janitor.Features.UpdateSubjectResources;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
-await Host.CreateDefaultBuilder(args)
+var builder = CoconaApp.CreateHostBuilder()
     .ConfigureAppConfiguration((context, configurationBuilder) =>
     {
         var env = context.HostingEnvironment;
 
-        configurationBuilder.SetBasePath(env.ContentRootPath);
         configurationBuilder.AddJsonFile("appsettings.json", optional: false);
         configurationBuilder.AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
         configurationBuilder.AddEnvironmentVariables();
@@ -18,20 +19,21 @@ await Host.CreateDefaultBuilder(args)
     })
     .ConfigureServices((context, services) =>
     {
-        services.AddApplication(context.Configuration, context.HostingEnvironment);
-        services.AddInfrastructure(context.Configuration, context.HostingEnvironment);
+        services
+            .AddApplication(context.Configuration, context.HostingEnvironment)
+            .AddInfrastructure(context.Configuration, context.HostingEnvironment)
+            .AddScoped<IUser, ConsoleUser>()
+            .AddTransient<UpdateSubjectResources>();
+    });
 
-        services.AddTransient<UpdateSubjectResources>();
-    })
-    .ConfigureCocona(args, new[] { typeof(Program) })
-    .Build()
-    .RunAsync();
+await builder.RunAsync<Commands>(args);
 
-#pragma warning disable CS8321 // Local function is declared but never used
-static async Task UpdateSubjectResources(UpdateSubjectResources updateSubjectResources)
+#pragma warning disable CA1822
+internal sealed class Commands
 {
-    await updateSubjectResources.RunAsync(default);
+    public async Task UpdateSubjectResources([FromService] UpdateSubjectResources updateSubjectResources)
+    {
+        await updateSubjectResources.RunAsync(default);
+    }
 }
-
-
-#pragma warning restore CS8321 // Local function is declared but never used
+#pragma warning restore CA1822

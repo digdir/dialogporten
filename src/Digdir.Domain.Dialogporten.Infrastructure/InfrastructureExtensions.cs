@@ -252,11 +252,11 @@ public static class InfrastructureExtensions
                 JitterMaxDuration = settings.JitterMaxDuration,
                 EagerRefreshThreshold = settings.EagerRefreshThreshold,
 
-                SkipMemoryCache = settings.SkipMemoryCache
+                SkipMemoryCache = settings.SkipMemoryCache,
             })
             .WithRegisteredSerializer()
-            .WithRegisteredDistributedCache()
-            .WithRegisteredBackplane();
+            .WithRegisteredDistributedCache(ignoreMemoryDistributedCache: false)
+            .TryWithRegisteredBackplane();
 
         return services;
     }
