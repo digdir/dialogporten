@@ -12,9 +12,26 @@ public class CreateDialogTests : ApplicationCollectionFixture
     public CreateDialogTests(DialogApplication application) : base(application) { }
 
     [Fact]
-    public async Task Cant_Create_Dialog_With_ID_In_Little_Endian_Format()
+    public async Task Cant_Create_Dialog_With_UUIDv4_format()
     {
         // Arrange
+        var invalidDialogId = Guid.NewGuid();
+
+        var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog(id: invalidDialogId);
+
+        // Act
+        var response = await Application.Send(createDialogCommand);
+
+        // Assert
+        response.TryPickT2(out var validationError, out _).Should().BeTrue();
+        validationError.Should().NotBeNull();
+    }
+
+    [Fact]
+    public async Task Cant_Create_Dialog_With_UUIDv7_In_Little_Endian_Format()
+    {
+        // Arrange
+        // Guid created with Medo, Uuid7.NewUuid7().ToGuid()
         var invalidDialogId = Guid.Parse("638e9101-6bc7-7975-b392-ba5c5a528c23");
 
         var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog(id: invalidDialogId);
