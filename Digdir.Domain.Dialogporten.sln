@@ -59,7 +59,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Digdir.Domain.Dialogporten.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Digdir.Domain.Dialogporten.GraphQl.Unit.Tests", "tests\Digdir.Domain.Dialogporten.GraphQl.Unit.Tests\Digdir.Domain.Dialogporten.GraphQl.Unit.Tests.csproj", "{AF35FFCA-1206-4C08-A003-DA4A1344CCD5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Digdir.Domain.Dialogporten.SubjectResourceSync", "src\Digdir.Domain.Dialogporten.SubjectResourceSync\Digdir.Domain.Dialogporten.SubjectResourceSync.csproj", "{0900E3CF-F9D8-4B29-957F-484B3B028D6D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Digdir.Domain.Dialogporten.Janitor", "src\Digdir.Domain.Dialogporten.Janitor\Digdir.Domain.Dialogporten.Janitor.csproj", "{0900E3CF-F9D8-4B29-957F-484B3B028D6D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

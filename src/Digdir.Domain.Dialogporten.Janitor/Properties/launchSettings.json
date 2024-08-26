@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "Digdir.Domain.Dialogporten.Janitor": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      },
+      "commandLineArgs": ""
+    }
+  }
+}

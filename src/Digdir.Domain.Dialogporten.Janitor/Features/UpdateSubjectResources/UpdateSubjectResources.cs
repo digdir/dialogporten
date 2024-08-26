@@ -1,28 +1,29 @@
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Domain.SubjectResources;
-using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 
-namespace Digdir.Domain.Dialogporten.SubjectResourceSync.Features.UpdateSubjectResources;
+namespace Digdir.Domain.Dialogporten.Janitor.Features.UpdateSubjectResources;
 
 internal sealed class UpdateSubjectResources
 {
-    private readonly IDialogDbContext _dialogDbContext;
+    private readonly IDialogDbContext _db;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly IResourceRegistry _resourceRegistry;
-    private readonly ILogger _logger;
+    private readonly ILogger<UpdateSubjectResources> _logger;
 
     public UpdateSubjectResources(
-        ILoggerFactory loggerFactory,
+        ILogger<UpdateSubjectResources> logger,
         IResourceRegistry resourceRegistry,
-        IDialogDbContext dialogDbContext)
+        IDialogDbContext db,
+        IUnitOfWork unitOfWork)
     {
-        _dialogDbContext = dialogDbContext;
-        _resourceRegistry = resourceRegistry;
-        _logger = loggerFactory.CreateLogger<UpdateSubjectResources>();
+        _db = db ?? throw new ArgumentNullException(nameof(db));
+        _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+        _resourceRegistry = resourceRegistry ?? throw new ArgumentNullException(nameof(resourceRegistry));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    [Function("UpdateSubjectResources")]
-    public async Task RunAsync([TimerTrigger("0 */1 * * * *")] CancellationToken cancellationToken)
+    public async Task RunAsync(CancellationToken cancellationToken)
     {
         await SyncResourceSubjects(cancellationToken);
     }
@@ -30,7 +31,7 @@ internal sealed class UpdateSubjectResources
     private async Task SyncResourceSubjects(CancellationToken cancellationToken)
     {
         // 1. Get the last updated timestamp from the database
-        var lastUpdated = _dialogDbContext.SubjectResourceLastUpdates
+        var lastUpdated = _db.SubjectResourceLastUpdates
             .FirstOrDefault()?.LastUpdate ?? DateTime.MinValue;
 
         // 2. Get the resources from the resource registry, supplying the last updated as since
@@ -49,13 +50,13 @@ internal sealed class UpdateSubjectResources
 
         if (resourcesToDelete.Count != 0)
         {
-            var subjectResourcesToDelete = _dialogDbContext.SubjectResources
+            var subjectResourcesToDelete = _db.SubjectResources
                 .Where(x => resourcesToDelete
                     .Any(deletedResource =>
                         x.Resource == deletedResource.Resource.ToString() &&
                         x.Subject == deletedResource.Subject.ToString()));
 
-            _dialogDbContext.SubjectResources.RemoveRange(subjectResourcesToDelete);
+            _db.SubjectResources.RemoveRange(subjectResourcesToDelete);
         }
 
         // 4. Add the ones that are new (handle duplicates)
@@ -68,7 +69,7 @@ internal sealed class UpdateSubjectResources
             })
             .ToList();
 
-        var existingResources = _dialogDbContext.SubjectResources
+        var existingResources = _db.SubjectResources
             .Select(x => new { x.Resource, x.Subject })
             .ToHashSet();
 
@@ -78,29 +79,29 @@ internal sealed class UpdateSubjectResources
 
         if (resourcesToAdd.Count != 0)
         {
-            await _dialogDbContext.SubjectResources.AddRangeAsync(resourcesToAdd, cancellationToken);
+            await _db.SubjectResources.AddRangeAsync(resourcesToAdd, cancellationToken);
         }
 
         // 5. Update the last updated timestamp in the database
         var latestUpdatedSubjectResource = updatedSubjectResources.MaxBy(resource => resource.UpdatedAt);
         if (latestUpdatedSubjectResource is not null)
         {
-            var lastUpdateRecord = _dialogDbContext.SubjectResourceLastUpdates.FirstOrDefault();
+            var lastUpdateRecord = _db.SubjectResourceLastUpdates.FirstOrDefault();
             if (lastUpdateRecord is null)
             {
-                _dialogDbContext.SubjectResourceLastUpdates.Add(new SubjectResourceLastUpdate
+                await _db.SubjectResourceLastUpdates.AddAsync(new SubjectResourceLastUpdate
                 {
                     LastUpdate = latestUpdatedSubjectResource.UpdatedAt
-                });
+                }, cancellationToken);
             }
             else
             {
                 lastUpdateRecord.LastUpdate = latestUpdatedSubjectResource.UpdatedAt;
-                _dialogDbContext.SubjectResourceLastUpdates.Update(lastUpdateRecord);
+                _db.SubjectResourceLastUpdates.Update(lastUpdateRecord);
             }
         }
 
         // 6. Save changes to the database
-        //await _dialogDbContext.SaveChangesAsync(cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
 }

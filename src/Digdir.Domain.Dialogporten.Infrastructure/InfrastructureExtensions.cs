@@ -123,8 +123,8 @@ public static class InfrastructureExtensions
                         o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
                     })
                     .AddInterceptors([
-                        //services.GetRequiredService<PopulateActorNameInterceptor>(),
-                        //services.GetRequiredService<ConvertDomainEventsToOutboxMessagesInterceptor>()
+                        services.GetRequiredService<PopulateActorNameInterceptor>(),
+                        services.GetRequiredService<ConvertDomainEventsToOutboxMessagesInterceptor>()
                     ]);
             })
             .AddHostedService<DevelopmentMigratorHostedService>()
@@ -135,11 +135,11 @@ public static class InfrastructureExtensions
 
             // Transient
             .AddTransient<OutboxDispatcher>()
-            .AddTransient<ConvertDomainEventsToOutboxMessagesInterceptor>();
-        //.AddTransient<PopulateActorNameInterceptor>()
+            .AddTransient<ConvertDomainEventsToOutboxMessagesInterceptor>()
+            .AddTransient<PopulateActorNameInterceptor>()
 
-        // Decorate
-        //.Decorate(typeof(INotificationHandler<>), typeof(IdempotentDomainEventHandler<>));
+            // Decorate
+            .Decorate(typeof(INotificationHandler<>), typeof(IdempotentDomainEventHandler<>));
 
         // HttpClient
         services.
