@@ -36,6 +36,13 @@ internal sealed class LocalDevelopmentResourceRegistry : IResourceRegistry
             new ServiceResourceInformation(serviceResourceId, LocalResourceType, LocalOrgId));
     }
 
+#pragma warning disable CA1822
+    public async Task<List<UpdatedSubjectResource>> GetUpdatedSubjectResources(DateTimeOffset _, CancellationToken __)
+#pragma warning restore CA1822
+    {
+        return await Task.FromResult(new List<UpdatedSubjectResource>());
+    }
+
     private sealed class ServiceResourceInformationEqualityComparer : IEqualityComparer<ServiceResourceInformation>
     {
         public bool Equals(ServiceResourceInformation? x, ServiceResourceInformation? y)

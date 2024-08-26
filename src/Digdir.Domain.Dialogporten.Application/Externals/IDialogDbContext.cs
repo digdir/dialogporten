@@ -42,6 +42,7 @@ public interface IDialogDbContext
     DbSet<OutboxMessage> OutboxMessages { get; }
     DbSet<OutboxMessageConsumer> OutboxMessageConsumers { get; }
     DbSet<SubjectResource> SubjectResources { get; }
+    DbSet<SubjectResourceLastUpdate> SubjectResourceLastUpdates { get; }
 
     /// <summary>
     /// Validate a property on the <typeparamref name="TEntity"/> using a lambda
