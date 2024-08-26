@@ -14,7 +14,7 @@ public class CreateDialogTests : ApplicationCollectionFixture
     public async Task Cant_Create_Dialog_With_ID_With_Timestamp_In_The_Future()
     {
         // Arrange
-        var timestamp = DateTime.UtcNow.AddSeconds(1);
+        var timestamp = DateTimeOffset.UtcNow.AddSeconds(1);
         var invalidDialogId = GenerateBigEndianUuidV7(timestamp);
 
         var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog(id: invalidDialogId);
@@ -31,7 +31,7 @@ public class CreateDialogTests : ApplicationCollectionFixture
     public async Task Create_Dialog_With_ID_With_Timestamp_In_The_Past()
     {
         // Arrange
-        var timestamp = DateTime.UtcNow.AddSeconds(-1);
+        var timestamp = DateTimeOffset.UtcNow.AddSeconds(-1);
         var validDialogId = GenerateBigEndianUuidV7(timestamp);
 
         var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog(id: validDialogId);
