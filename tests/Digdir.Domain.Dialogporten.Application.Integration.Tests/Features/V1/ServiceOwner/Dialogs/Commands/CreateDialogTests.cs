@@ -1,6 +1,7 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Integration.Tests.Common;
 using Digdir.Tool.Dialogporten.GenerateFakeData;
 using FluentAssertions;
+using Medo;
 using static Digdir.Domain.Dialogporten.Application.Integration.Tests.UuiDv7Utils;
 
 namespace Digdir.Domain.Dialogporten.Application.Integration.Tests.Features.V1.ServiceOwner.Dialogs.Commands;
@@ -9,6 +10,22 @@ namespace Digdir.Domain.Dialogporten.Application.Integration.Tests.Features.V1.S
 public class CreateDialogTests : ApplicationCollectionFixture
 {
     public CreateDialogTests(DialogApplication application) : base(application) { }
+
+    [Fact]
+    public async Task Cant_Create_Dialog_With_ID_In_Little_Endian_Format()
+    {
+        // Arrange
+        var invalidDialogId = Guid.Parse("638e9101-6bc7-7975-b392-ba5c5a528c23");
+
+        var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog(id: invalidDialogId);
+
+        // Act
+        var response = await Application.Send(createDialogCommand);
+
+        // Assert
+        response.TryPickT2(out var validationError, out _).Should().BeTrue();
+        validationError.Should().NotBeNull();
+    }
 
     [Fact]
     public async Task Cant_Create_Dialog_With_ID_With_Timestamp_In_The_Future()
