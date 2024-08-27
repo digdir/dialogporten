@@ -15,6 +15,7 @@ using Digdir.Domain.Dialogporten.Domain.Actors;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Contents;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions.Contents;
+using MassTransit;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence;
 
@@ -107,6 +108,7 @@ internal sealed class DialogDbContext : DbContext, IDialogDbContext
         modelBuilder
             .RemovePluralizingTableNameConvention()
             .AddAuditableEntities()
-            .ApplyConfigurationsFromAssembly(typeof(DialogDbContext).Assembly);
+            .ApplyConfigurationsFromAssembly(typeof(DialogDbContext).Assembly)
+            .AddTransactionalOutboxEntities(x => x.ToTable("MassTransit" + x.Metadata.GetTableName()));
     }
 }
