@@ -155,6 +155,31 @@ resource notifyDevTeam 'Microsoft.Insights/actionGroups@2023-01-01' = {
   tags: tags
 }
 
+var query = '''
+            union
+                 (exceptions
+                 | where problemId != "ClientConnectionFailure at forward-request" and problemId != "ClientConnectionFailure at transfer-response"),
+                 (traces
+                 | where severityLevel >= 3 or (severityLevel >= 2 and customDimensions.SourceContext startswith "Digdir"))
+             | summarize Count = count()
+                 by
+                 Environment = tostring(customDimensions.AspNetCoreEnvironment),
+                 Type = itemType,
+                 problemId,
+                 message,
+                 severityLevel
+             | extend SeverityLevel = case(
+                 severityLevel == 0, "Verbose",
+                 severityLevel == 1, "Information",
+                 severityLevel == 2, "Warning",
+                 severityLevel == 3, "Error",
+                 severityLevel == 4, "Critical",
+                 tostring(severityLevel)
+                                      )
+             | extend Details = coalesce(message, problemId)
+             | extend Details = replace_string(Details, "Digdir.Domain.Dialogporten.", "")
+             | project Environment, Type, SeverityLevel, Count, Details
+             '''
 resource exceptionOccuredAlertRule 'Microsoft.Insights/scheduledQueryRules@2023-03-15-preview' = {
   name: '${namePrefix}-exception-occured-sqr'
   location: location
@@ -171,7 +196,7 @@ resource exceptionOccuredAlertRule 'Microsoft.Insights/scheduledQueryRules@2023-
     criteria: {
       allOf: [
         {
-          query: 'exceptions | summarize count = count() by environment = tostring(customDimensions.AspNetCoreEnvironment), problemId'
+          query: query
           operator: 'GreaterThan'
           threshold: 0
           timeAggregation: 'Count'
