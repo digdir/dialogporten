@@ -155,7 +155,8 @@ resource notifyDevTeam 'Microsoft.Insights/actionGroups@2023-01-01' = {
   tags: tags
 }
 
-var query = 'union
+var query = '''
+            union
                  (exceptions
                  | where problemId != "ClientConnectionFailure at forward-request" and problemId != "ClientConnectionFailure at transfer-response"),
                  (traces
@@ -176,7 +177,8 @@ var query = 'union
                                           tostring(severityLevel)
                                       )
              | extend Details = coalesce(message, problemId)
-             | project Environment, Type, SeverityLevel, Count, Details'
+             | project Environment, Type, SeverityLevel, Count, Details
+             '''
 resource exceptionOccuredAlertRule 'Microsoft.Insights/scheduledQueryRules@2023-03-15-preview' = {
   name: '${namePrefix}-exception-occured-sqr'
   location: location
