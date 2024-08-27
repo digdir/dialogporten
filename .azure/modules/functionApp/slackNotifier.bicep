@@ -169,12 +169,12 @@ var query = '''
                  message,
                  severityLevel
              | extend SeverityLevel = case(
-                                          severityLevel == 0, "Verbose",
-                                          severityLevel == 1, "Information",
-                                          severityLevel == 2, "Warning",
-                                          severityLevel == 3, "Error",
-                                          severityLevel == 4, "Critical",
-                                          tostring(severityLevel)
+                 severityLevel == 0, "Verbose",
+                 severityLevel == 1, "Information",
+                 severityLevel == 2, "Warning",
+                 severityLevel == 3, "Error",
+                 severityLevel == 4, "Critical",
+                 tostring(severityLevel)
                                       )
              | extend Details = coalesce(message, problemId)
              | extend Details = replace_string(Details, "Digdir.Domain.Dialogporten.", "")
