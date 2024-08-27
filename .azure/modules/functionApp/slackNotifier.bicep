@@ -177,6 +177,7 @@ var query = '''
                                           tostring(severityLevel)
                                       )
              | extend Details = coalesce(message, problemId)
+             | extend Details = replace_string(Details, "Digdir.Domain.Dialogporten.", "")
              | project Environment, Type, SeverityLevel, Count, Details
              '''
 resource exceptionOccuredAlertRule 'Microsoft.Insights/scheduledQueryRules@2023-03-15-preview' = {
