@@ -54,9 +54,6 @@ static void BuildAndRun(string[] args)
 
     builder.Host.UseSerilog((context, services, configuration) => configuration
         .MinimumLevel.Warning()
-        .MinimumLevel.Override("Microsoft.EntityFrameworkCore", Serilog.Events.LogEventLevel.Fatal)
-        .MinimumLevel.Override("ZiggyCreatures.Caching.Fusion", builder.Environment.EnvironmentName == "test" ?
-            Serilog.Events.LogEventLevel.Debug : Serilog.Events.LogEventLevel.Warning)
         .ReadFrom.Configuration(context.Configuration)
         .ReadFrom.Services(services)
         .Enrich.FromLogContext()
@@ -93,6 +90,7 @@ static void BuildAndRun(string[] args)
         .AddInfrastructure(builder.Configuration, builder.Environment)
 
         // Asp infrastructure
+        .AddExceptionHandler<GlobalExceptionHandler>()
         .AddAutoMapper(Assembly.GetExecutingAssembly())
         .AddScoped<IUser, ApplicationUser>()
         .AddHttpContextAccessor()
@@ -126,6 +124,7 @@ static void BuildAndRun(string[] args)
             .AddNewtonsoftJson()
             .Services
 
+
         // Auth
         .AddDialogportenAuthentication(builder.Configuration)
         .AddAuthorization()
@@ -148,7 +147,7 @@ static void BuildAndRun(string[] args)
 
     app.UseHttpsRedirection()
         .UseSerilogRequestLogging()
-        .UseProblemDetailsExceptionHandler()
+        .UseDefaultExceptionHandler()
         .UseJwtSchemeSelector()
         .UseAuthentication()
         .UseAuthorization()
