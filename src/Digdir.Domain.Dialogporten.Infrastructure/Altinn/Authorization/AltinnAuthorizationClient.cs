@@ -151,7 +151,7 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
     {
         if (response?.Response != null && response.Response.Any(result => result.Decision == "Indeterminate"))
         {
-            DecisionRequestHelper.XacmlRequestRemoveSensitiveInfo(request);
+            DecisionRequestHelper.XacmlRequestRemoveSensitiveInfo(request.Request);
 
             _logger.LogError(
                 "Authorization request to {Url} returned decision Indeterminate. Request: {@RequestJson}",

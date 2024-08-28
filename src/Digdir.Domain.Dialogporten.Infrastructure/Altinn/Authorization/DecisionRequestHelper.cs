@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using Altinn.Authorization.ABAC.Xacml.JsonProfile;
+﻿using Altinn.Authorization.ABAC.Xacml.JsonProfile;
 using System.Security.Claims;
 using Digdir.Domain.Dialogporten.Application.Common.Authorization;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
@@ -298,35 +297,34 @@ internal static class DecisionRequestHelper
     private static List<AltinnAction> SortForXacml(this List<AltinnAction> altinnActions) =>
         altinnActions.OrderBy(x => x.Name).ThenBy(x => x.AuthorizationAttribute).ToList();
 
-    internal static void XacmlRequestRemoveSensitiveInfo(object obj)
+    internal static void XacmlRequestRemoveSensitiveInfo(XacmlJsonRequest xacmlJsonRequest)
     {
-        var type = obj.GetType();
-        var properties = type.GetProperties()
-            .Where(p => p.GetIndexParameters().Length == 0)
-            .Select(p => new { Property = p, Value = p.GetValue(obj) })
-            .Where(x => x.Value != null);
+        var attributes = xacmlJsonRequest
+            .GetAllXacmlJsonAttributes()
+            .Where(x => x.AttributeId == NorwegianPersonIdentifier.Prefix)
+            .ToList();
 
-        foreach (var x in properties)
+        foreach (var attr in attributes)
         {
-            if (obj is XacmlJsonAttribute { AttributeId: "urn:altinn:person:identifier-no" } attr)
-            {
-                attr.Value = string.Empty;
-                continue;
-            }
-            if (x.Value is IEnumerable enumerable and not string)
-            {
-                foreach (var item in enumerable)
-                {
-                    XacmlRequestRemoveSensitiveInfo(item);
-                }
-                continue;
-            }
-            if (x.Value!.GetType().IsClass)
-            {
-                XacmlRequestRemoveSensitiveInfo(x.Value);
-            }
+            attr.Value = "Anonymized";
         }
     }
+
+    private static IEnumerable<XacmlJsonAttribute> GetAllXacmlJsonAttributes(this XacmlJsonRequest request)
+    {
+        return Enumerable.Empty<XacmlJsonAttribute?>()
+            .Concat(request.Category.EmptyIfNull().SelectMany(category => category.Attribute))
+            .Concat(request.Resource.EmptyIfNull().SelectMany(category => category.Attribute))
+            .Concat(request.Action.EmptyIfNull().SelectMany(category => category.Attribute))
+            .Concat(request.AccessSubject.EmptyIfNull().SelectMany(category => category.Attribute))
+            .Concat(request.RecipientSubject.EmptyIfNull().SelectMany(category => category.Attribute))
+            .Concat(request.IntermediarySubject.EmptyIfNull().SelectMany(category => category.Attribute))
+            .Concat(request.RequestingMachine.EmptyIfNull().SelectMany(category => category.Attribute))
+            .Where(attribute => attribute is not null)
+            .Cast<XacmlJsonAttribute>();
+    }
+
+    private static IEnumerable<T> EmptyIfNull<T>(this IEnumerable<T>? source) => source ?? [];
 
     public static class NonScalable
     {
