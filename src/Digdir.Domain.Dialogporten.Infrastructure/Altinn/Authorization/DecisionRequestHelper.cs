@@ -1,4 +1,5 @@
-﻿using Altinn.Authorization.ABAC.Xacml.JsonProfile;
+﻿using System.Collections;
+using Altinn.Authorization.ABAC.Xacml.JsonProfile;
 using System.Security.Claims;
 using Digdir.Domain.Dialogporten.Application.Common.Authorization;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
@@ -296,6 +297,36 @@ internal static class DecisionRequestHelper
 
     private static List<AltinnAction> SortForXacml(this List<AltinnAction> altinnActions) =>
         altinnActions.OrderBy(x => x.Name).ThenBy(x => x.AuthorizationAttribute).ToList();
+
+    internal static void XacmlRequestRemoveSensitiveInfo(object obj)
+    {
+        var type = obj.GetType();
+        var properties = type.GetProperties()
+            .Where(p => p.GetIndexParameters().Length == 0)
+            .Select(p => new { Property = p, Value = p.GetValue(obj) })
+            .Where(x => x.Value != null);
+
+        foreach (var x in properties)
+        {
+            if (obj is XacmlJsonAttribute { AttributeId: "urn:altinn:person:identifier-no" } attr)
+            {
+                attr.Value = string.Empty;
+                continue;
+            }
+            if (x.Value is IEnumerable enumerable and not string)
+            {
+                foreach (var item in enumerable)
+                {
+                    XacmlRequestRemoveSensitiveInfo(item);
+                }
+                continue;
+            }
+            if (x.Value!.GetType().IsClass)
+            {
+                XacmlRequestRemoveSensitiveInfo(x.Value);
+            }
+        }
+    }
 
     public static class NonScalable
     {
