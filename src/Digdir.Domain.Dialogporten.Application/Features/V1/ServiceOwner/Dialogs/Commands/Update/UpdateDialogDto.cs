@@ -306,8 +306,7 @@ public sealed class UpdateDialogDialogActivityPerformedByActorDto
 public sealed class UpdateDialogDialogApiActionDto
 {
     /// <summary>
-    /// The UUDIv7 of the action may be provided to support idempotent additions to the list of API actions.
-    /// If not supplied, a new UUIDv7 will be generated.
+    /// A UUIDv7 used for merging existing data, unknown IDs will be ignored as this entity does not support user-defined IDs.
     /// </summary>
     /// <example>01913cd5-784f-7d3b-abef-4c77b1f0972d</example>
     public Guid? Id { get; set; }
@@ -344,8 +343,7 @@ public sealed class UpdateDialogDialogApiActionDto
 public sealed class UpdateDialogDialogApiActionEndpointDto
 {
     /// <summary>
-    /// The UUDIv7 of the action may be provided to support idempotent additions to the list of API action endpoints.
-    /// If not supplied, a new UUIDv7 will be generated.
+    /// A UUIDv7 used for merging existing data, unknown IDs will be ignored as this entity does not support user-defined IDs.
     /// </summary>
     /// <example>01913cd5-784f-7d3b-abef-4c77b1f0972d</example>
     public Guid? Id { get; set; }
@@ -398,8 +396,7 @@ public sealed class UpdateDialogDialogApiActionEndpointDto
 public sealed class UpdateDialogDialogGuiActionDto
 {
     /// <summary>
-    /// The UUDIv7 of the action may be provided to support idempotent additions to the list of actions. If not supplied,
-    /// a new UUIDv7 will be generated.
+    /// A UUIDv7 used for merging existing data, unknown IDs will be ignored as this entity does not support user-defined IDs.
     /// </summary>
     /// <example>01913cd5-784f-7d3b-abef-4c77b1f0972d</example>
     public Guid? Id { get; set; }
@@ -467,8 +464,7 @@ public sealed class UpdateDialogDialogGuiActionDto
 public class UpdateDialogDialogAttachmentDto
 {
     /// <summary>
-    /// A self-defined UUIDv7 may be provided in order to support idempotent updates of attachments. If not supplied,
-    /// a new UUIDv7 will be generated.
+    /// A UUIDv7 used for merging existing data, unknown IDs will be ignored as this entity does not support user-defined IDs.
     /// </summary>
     /// <example>01913cd5-784f-7d3b-abef-4c77b1f0972d</example>
     public Guid? Id { get; set; }
@@ -487,8 +483,7 @@ public class UpdateDialogDialogAttachmentDto
 public sealed class UpdateDialogDialogAttachmentUrlDto
 {
     /// <summary>
-    /// A self-defined UUIDv7 may be provided in order to support idempotent updates of attachment URLs. If not supplied,
-    /// a new UUIDv7 will be generated.
+    /// A UUIDv7 used for merging existing data, unknown IDs will be ignored as this entity does not support user-defined IDs.
     /// </summary>
     /// <example>01913cd5-784f-7d3b-abef-4c77b1f0972d</example>
     public Guid? Id { get; set; }
@@ -516,13 +511,6 @@ public sealed class UpdateDialogDialogAttachmentUrlDto
 public class UpdateDialogTransmissionAttachmentDto
 {
     /// <summary>
-    /// A self-defined UUIDv7 may be provided in order to support idempotent updates of attachments. If not supplied,
-    /// a new UUIDv7 will be generated.
-    /// </summary>
-    /// <example>01913cd5-784f-7d3b-abef-4c77b1f0972d</example>
-    public Guid? Id { get; set; }
-
-    /// <summary>
     /// The display name of the attachment that should be used in GUIs.
     /// </summary>
     public List<LocalizationDto> DisplayName { get; set; } = [];
@@ -535,13 +523,6 @@ public class UpdateDialogTransmissionAttachmentDto
 
 public sealed class UpdateDialogTransmissionAttachmentUrlDto
 {
-    /// <summary>
-    /// A self-defined UUIDv7 may be provided in order to support idempotent updates of attachment URLs. If not supplied,
-    /// a new UUIDv7 will be generated.
-    /// </summary>
-    /// <example>01913cd5-784f-7d3b-abef-4c77b1f0972d</example>
-    public Guid? Id { get; set; }
-
     /// <summary>
     /// The fully qualified URL of the attachment.
     /// </summary>

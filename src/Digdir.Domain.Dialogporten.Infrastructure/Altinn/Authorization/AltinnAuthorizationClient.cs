@@ -132,6 +132,8 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
 
         var xacmlJsonRequest = DecisionRequestHelper.NonScalable.CreateDialogSearchRequest(request);
         var xamlJsonResponse = await SendPdpRequest(xacmlJsonRequest, cancellationToken);
+        LogIfIndeterminate(xamlJsonResponse, xacmlJsonRequest);
+
         return DecisionRequestHelper.NonScalable.CreateDialogSearchResponse(xacmlJsonRequest, xamlJsonResponse);
     }
 
@@ -140,7 +142,21 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
     {
         var xacmlJsonRequest = DecisionRequestHelper.CreateDialogDetailsRequest(request);
         var xamlJsonResponse = await SendPdpRequest(xacmlJsonRequest, cancellationToken);
+        LogIfIndeterminate(xamlJsonResponse, xacmlJsonRequest);
+
         return DecisionRequestHelper.CreateDialogDetailsResponse(request.AltinnActions, xamlJsonResponse);
+    }
+
+    private void LogIfIndeterminate(XacmlJsonResponse? response, XacmlJsonRequestRoot request)
+    {
+        if (response?.Response != null && response.Response.Any(result => result.Decision == "Indeterminate"))
+        {
+            DecisionRequestHelper.XacmlRequestRemoveSensitiveInfo(request.Request);
+
+            _logger.LogError(
+                "Authorization request to {Url} returned decision Indeterminate. Request: {@RequestJson}",
+                AuthorizeUrl, request);
+        }
     }
 
     private List<Claim> GetOrCreateClaimsBasedOnEndUserId(string? endUserId)
