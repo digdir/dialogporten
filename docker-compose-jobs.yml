@@ -3,7 +3,7 @@ include:
   - docker-compose-db-redis.yml
 
 services:
-  dialogporten-resource-registry-syncer:
+  dialogporten-update-subject-resources-job:
     build:
       context: .
       dockerfile: src/Digdir.Domain.Dialogporten.Janitor/Dockerfile

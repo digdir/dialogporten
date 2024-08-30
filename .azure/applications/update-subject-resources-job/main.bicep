@@ -32,7 +32,7 @@ var tags = {
   Environment: environment
   Product: 'Dialogporten'
 }
-var name = '${namePrefix}-resource-registry-syncer-job'
+var name = '${namePrefix}-update-subject-resources-job'
 
 resource containerAppEnvironment 'Microsoft.App/managedEnvironments@2024-03-01' existing = {
   name: containerAppEnvironmentName
