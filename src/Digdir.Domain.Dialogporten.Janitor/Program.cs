@@ -1,5 +1,6 @@
 using Cocona;
 using Digdir.Domain.Dialogporten.Application;
+using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
 using Digdir.Domain.Dialogporten.Infrastructure;
 using Digdir.Domain.Dialogporten.Janitor;
@@ -27,7 +28,16 @@ await Host.CreateDefaultBuilder()
             .AddApplication(context.Configuration, context.HostingEnvironment)
             .AddInfrastructure(context.Configuration, context.HostingEnvironment)
             .AddScoped<IUser, ConsoleUser>()
-            .AddTransient<UpdateSubjectResources>();
+            .AddTransient<UpdateSubjectResources>(sp =>
+            {
+                var scope = sp.CreateScope();
+                return new UpdateSubjectResources(
+                    scope.ServiceProvider.GetRequiredService<ILogger<UpdateSubjectResources>>(),
+                    scope.ServiceProvider.GetRequiredService<IResourceRegistry>(),
+                    scope.ServiceProvider.GetRequiredService<IDialogDbContext>(),
+                    scope.ServiceProvider.GetRequiredService<IUnitOfWork>()
+                );
+            });
     })
     .ConfigureLogging((context, logging) =>
     {
@@ -35,7 +45,7 @@ await Host.CreateDefaultBuilder()
         logging.AddFilter("Microsoft.EntityFrameworkCore", LogLevel.Critical);
         logging.AddFilter("System.Net.Http.HttpClient.IResourceRegistry.ClientHandler", LogLevel.Warning);
     })
-    .ConfigureCocona(args, new[] { typeof(Commands) })
+    .ConfigureCocona(args, [typeof(Commands)])
     .Build()
     .RunAsync(cts.Token);
 

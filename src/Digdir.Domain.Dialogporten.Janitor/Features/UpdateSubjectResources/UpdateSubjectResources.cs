@@ -1,9 +1,7 @@
-using System.Text;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Domain.SubjectResources;
 using Medo;
 using Microsoft.Extensions.Logging;
-using Npgsql;
 
 namespace Digdir.Domain.Dialogporten.Janitor.Features.UpdateSubjectResources;
 
@@ -90,7 +88,7 @@ internal sealed class UpdateSubjectResources
 
         if (remoteNewSubjectResources.Count != 0)
         {
-            // FIXME! This is obviously horribly inefficient as the table grows
+            // FIXME! This is horribly inefficient as the table grows
             var localExistingResources = _db.SubjectResources
                 .Select(x => new { x.Resource, x.Subject })
                 .ToHashSet();
@@ -109,7 +107,7 @@ internal sealed class UpdateSubjectResources
         // 5. Update the last updated timestamp in the database if we have any changes
         if (remoteUpdatedSubjectResources.Count != 0)
         {
-            _logger.LogInformation("Updating last updated timestamp to {LastUpdated}", newLastUpdated);
+            _logger.LogInformation("Updating the last updated timestamp to {LastUpdated}", newLastUpdated);
             var lastUpdateRecord = _db.SubjectResourceLastUpdates.FirstOrDefault();
             if (lastUpdateRecord is null)
             {

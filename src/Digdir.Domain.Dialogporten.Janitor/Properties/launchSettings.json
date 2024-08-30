@@ -5,7 +5,7 @@
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Development"
       },
-      "commandLineArgs": ""
+      "commandLineArgs": "update-subject-resources"
     }
   }
 }
