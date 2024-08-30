@@ -5,6 +5,7 @@ using Digdir.Domain.Dialogporten.Domain.Common;
 using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
 using Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.DialogTransmissions.Get;
+using Digdir.Library.Entity.Abstractions.Features.Identifiable;
 using FastEndpoints;
 using MediatR;
 using Constants = Digdir.Domain.Dialogporten.WebApi.Common.Constants;
@@ -49,7 +50,7 @@ public sealed class CreateDialogTransmissionEndpoint : Endpoint<CreateDialogTran
 
         var updateDialogDto = _mapper.Map<UpdateDialogDto>(dialog);
 
-        req.Id = req.Id.GenerateBigEndianUuidV7IfEmpty();
+        req.Id = req.Id.CreateVersion7IfDefault();
 
         updateDialogDto.Transmissions.Add(req);
 
