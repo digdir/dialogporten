@@ -219,3 +219,73 @@ jobs:
         if: ${{failure() || success()}}
         continue-on-error: true
         run: az logout
+
+  deploy-jobs:
+    name: Deploy jobs to ${{ inputs.environment }}
+    runs-on: ubuntu-latest
+    needs: [deploy-migration-job, deploy-apps]
+    environment: ${{ inputs.environment }}
+    permissions:
+      id-token: write
+      contents: read
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - name: resource-registry-syncer-job
+    steps:
+      - name: "Checkout GitHub Action"
+        uses: actions/checkout@v4
+
+      - name: OIDC Login to Azure Public Cloud
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Dryrun Deploy job ${{ matrix.name }}(${{ inputs.environment }})
+        uses: azure/arm-deploy@v2
+        if: ${{ inputs.dryRun }}
+        id: deploy-dry-run
+        env:
+          # parameters
+          IMAGE_TAG: ${{ inputs.version }}
+          # secrets
+          AZURE_CONTAINER_APP_ENVIRONMENT_NAME: ${{ secrets.AZURE_CONTAINER_APP_ENVIRONMENT_NAME }}
+          AZURE_ENVIRONMENT_KEY_VAULT_NAME: ${{ secrets.AZURE_ENVIRONMENT_KEY_VAULT_NAME }}
+        with:
+          scope: resourcegroup
+          template: ./.azure/applications/${{ matrix.name }}/main.bicep
+          resourceGroupName: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
+          deploymentMode: Incremental
+          deploymentName: dp-be-${{ inputs.environment }}-${{ matrix.name }}-${{ inputs.version }}
+          region: ${{ inputs.region }}
+          failOnStdErr: false
+          additionalArguments: '--what-if'
+          parameters: ./.azure/applications/${{ matrix.name }}/${{ inputs.environment }}.bicepparam
+      
+      - name: Deploy job ${{ matrix.name }}(${{ inputs.environment }})
+        uses: azure/arm-deploy@v2
+        if: ${{!inputs.dryRun}}
+        id: deploy
+        env:
+          # parameters
+          IMAGE_TAG: ${{ inputs.version }}
+          # secrets
+          AZURE_CONTAINER_APP_ENVIRONMENT_NAME: ${{ secrets.AZURE_CONTAINER_APP_ENVIRONMENT_NAME }}
+          AZURE_ENVIRONMENT_KEY_VAULT_NAME: ${{ secrets.AZURE_ENVIRONMENT_KEY_VAULT_NAME }}
+        with:
+          scope: resourcegroup
+          template: ./.azure/applications/${{ matrix.name }}/main.bicep
+          resourceGroupName: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
+          deploymentMode: Incremental
+          deploymentName: dp-be-${{ inputs.environment }}-${{ matrix.name }}-${{ inputs.version }}
+          region: ${{ inputs.region }}
+          failOnStdErr: false
+          parameters: ./.azure/applications/${{ matrix.name }}/${{ inputs.environment }}.bicepparam
+
+      - name: Logout from azure
+        if: ${{failure() || success()}}
+        continue-on-error: true
+        run: az logout

@@ -1,0 +1,18 @@
+version: '3.9'
+include:
+  - docker-compose-db-redis.yml
+
+services:
+  dialogporten-resource-registry-syncer:
+    build:
+      context: .
+      dockerfile: src/Digdir.Domain.Dialogporten.Janitor/Dockerfile
+    environment:
+      - Infrastructure:DialogDbConnectionString=${DB_CONNECTION_STRING}
+      - ASPNETCORE_ENVIRONMENT=Development
+    command: [ "update-subject-resources" ]
+    depends_on:
+      dialogporten-postgres:
+        condition: service_healthy
+      dialogporten-migrations:
+        condition: service_completed_successfully
