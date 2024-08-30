@@ -22,7 +22,7 @@ param tags object
 @description('The cron expression for the job schedule (optional)')
 param cronExpression string = ''
 
-@description('The command for the job')
+@description('The command for the job (optional)')
 param command string = ''
 
 var isScheduled = !empty(cronExpression)
