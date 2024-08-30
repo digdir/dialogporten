@@ -182,12 +182,12 @@ public static class InfrastructureExtensions
 
         if (environment.IsDevelopment())
         {
-            /*var localDeveloperSettings = configuration.GetLocalDevelopmentSettings();
+            var localDeveloperSettings = configuration.GetLocalDevelopmentSettings();
             services
                 .ReplaceTransient<ICloudEventBus, ConsoleLogEventBus>(predicate: localDeveloperSettings.UseLocalDevelopmentCloudEventBus)
                 .ReplaceTransient<IResourceRegistry, LocalDevelopmentResourceRegistry>(predicate: localDeveloperSettings.UseLocalDevelopmentResourceRegister)
                 .ReplaceTransient<IAltinnAuthorization, LocalDevelopmentAltinnAuthorization>(predicate: localDeveloperSettings.UseLocalDevelopmentAltinnAuthorization)
-                .ReplaceSingleton<IFusionCache, NullFusionCache>(predicate: localDeveloperSettings.DisableCache);*/
+                .ReplaceSingleton<IFusionCache, NullFusionCache>(predicate: localDeveloperSettings.DisableCache);
         }
 
         return services;
@@ -252,9 +252,12 @@ public static class InfrastructureExtensions
                 JitterMaxDuration = settings.JitterMaxDuration,
                 EagerRefreshThreshold = settings.EagerRefreshThreshold,
 
-                SkipMemoryCache = settings.SkipMemoryCache,
+                SkipMemoryCache = settings.SkipMemoryCache
             })
             .WithRegisteredSerializer()
+            // If Redis is disabled (eg. in local development or non-web runtimes), we must instruct FusionCache to
+            // allow the use of InMemoryDistributedCache (it is by default ignored as a IDistributedCache implementation)
+            // TryWithRegisteredBackplane is used to ensure that we can continue without Redis as backplane
             .WithRegisteredDistributedCache(ignoreMemoryDistributedCache: false)
             .TryWithRegisteredBackplane();
 
