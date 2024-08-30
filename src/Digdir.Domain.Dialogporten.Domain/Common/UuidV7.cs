@@ -39,7 +39,7 @@ public static class UuidV7
 
     private static bool IsValid(ReadOnlySpan<byte> bytes)
     {
-        // The version is stored in the 7th byte, but the nibbles are reversed so version is actually in the higher 4 bits.
+        // The version is stored in the 7th byte, but the nibbles are reversed, so the version is actually in the higher 4 bits.
         var version = bytes[7] >> 4;
 
         // The variant is stored in the 9th byte, in the higher bits.
