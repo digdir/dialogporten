@@ -6,14 +6,18 @@ using Digdir.Domain.Dialogporten.Janitor;
 using Digdir.Domain.Dialogporten.Janitor.Features.UpdateSubjectResources;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
-var builder = CoconaApp.CreateHostBuilder()
+var cts = new CancellationTokenSource();
+await Host.CreateDefaultBuilder()
     .ConfigureAppConfiguration((context, configurationBuilder) =>
     {
-        var env = context.HostingEnvironment;
+        var environmentName = context.HostingEnvironment.EnvironmentName.Replace("Production", "prod");
+        Console.WriteLine($"Running in environment: {environmentName}");
 
         configurationBuilder.AddJsonFile("appsettings.json", optional: false);
-        configurationBuilder.AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
+        configurationBuilder.AddJsonFile($"appsettings.{environmentName}.json", optional: true);
         configurationBuilder.AddEnvironmentVariables();
         configurationBuilder.AddUserSecrets<Program>(optional: true);
     })
@@ -24,16 +28,29 @@ var builder = CoconaApp.CreateHostBuilder()
             .AddInfrastructure(context.Configuration, context.HostingEnvironment)
             .AddScoped<IUser, ConsoleUser>()
             .AddTransient<UpdateSubjectResources>();
-    });
+    })
+    .ConfigureLogging((context, logging) =>
+    {
+        logging.AddConsole();
+        logging.AddFilter("Microsoft.EntityFrameworkCore", LogLevel.Critical);
+        logging.AddFilter("System.Net.Http.HttpClient.IResourceRegistry.ClientHandler", LogLevel.Warning);
+    })
+    .ConfigureCocona(args, new[] { typeof(Commands) })
+    .Build()
+    .RunAsync(cts.Token);
 
-await builder.RunAsync<Commands>(args);
 
-#pragma warning disable CA1822
+#pragma warning disable CA1822 // Disable member can be static inspection (breaks Cocona)
 internal sealed class Commands
 {
-    public async Task UpdateSubjectResources([FromService] UpdateSubjectResources updateSubjectResources)
+    public async Task UpdateSubjectResources([FromService] UpdateSubjectResources updateSubjectResources, DateTimeOffset? since = null, CancellationToken cancellationToken = default)
     {
-        await updateSubjectResources.RunAsync(default);
+        await updateSubjectResources.RunAsync(since, cancellationToken);
+    }
+
+    public void Hello()
+    {
+        Console.WriteLine("Hello, World!");
     }
 }
 #pragma warning restore CA1822

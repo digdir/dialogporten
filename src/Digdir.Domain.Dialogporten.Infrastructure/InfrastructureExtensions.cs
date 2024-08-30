@@ -182,12 +182,12 @@ public static class InfrastructureExtensions
 
         if (environment.IsDevelopment())
         {
-            var localDeveloperSettings = configuration.GetLocalDevelopmentSettings();
+            /*var localDeveloperSettings = configuration.GetLocalDevelopmentSettings();
             services
                 .ReplaceTransient<ICloudEventBus, ConsoleLogEventBus>(predicate: localDeveloperSettings.UseLocalDevelopmentCloudEventBus)
                 .ReplaceTransient<IResourceRegistry, LocalDevelopmentResourceRegistry>(predicate: localDeveloperSettings.UseLocalDevelopmentResourceRegister)
                 .ReplaceTransient<IAltinnAuthorization, LocalDevelopmentAltinnAuthorization>(predicate: localDeveloperSettings.UseLocalDevelopmentAltinnAuthorization)
-                .ReplaceSingleton<IFusionCache, NullFusionCache>(predicate: localDeveloperSettings.DisableCache);
+                .ReplaceSingleton<IFusionCache, NullFusionCache>(predicate: localDeveloperSettings.DisableCache);*/
         }
 
         return services;

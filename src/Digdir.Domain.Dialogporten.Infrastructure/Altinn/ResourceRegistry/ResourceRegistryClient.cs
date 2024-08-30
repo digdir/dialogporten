@@ -47,7 +47,7 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
     {
         const string searchEndpoint = "resourceregistry/api/v1/resource/updated";
         var resources = new List<UpdatedSubjectResource>();
-        var nextUrl = searchEndpoint + "?since=" + since.ToString("O");
+        var nextUrl = searchEndpoint + "?since=" + Uri.EscapeDataString(since.ToString("O"));
         do
         {
             var response = await _client

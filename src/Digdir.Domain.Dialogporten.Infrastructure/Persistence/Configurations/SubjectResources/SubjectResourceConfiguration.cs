@@ -11,6 +11,5 @@ internal sealed class SubjectResourceConfiguration : IEntityTypeConfiguration<Su
         builder.ToTable("SubjectResource");
         builder.HasIndex("Subject");
         builder.HasIndex("Resource");
-        builder.HasNoKey();
     }
 }

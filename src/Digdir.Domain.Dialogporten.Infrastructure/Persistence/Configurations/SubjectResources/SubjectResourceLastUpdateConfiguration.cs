@@ -9,6 +9,5 @@ internal sealed class SubjectResourceLastUpdateConfiguration : IEntityTypeConfig
     public void Configure(EntityTypeBuilder<SubjectResourceLastUpdate> builder)
     {
         builder.ToTable("SubjectResourceLastUpdate");
-        builder.HasNoKey();
     }
 }
