@@ -2,6 +2,7 @@ import {
     describe, expect, expectStatusFor,
     getEU,
     uuidv4,
+    uuidv7,
     setTitle,
     setAdditionalInfo,
     setSearchTags,
@@ -37,7 +38,7 @@ export default function () {
     let titleForExpiresAtItem = "expires_" + uuidv4();
     let titleForUpdatedItem = "updated_" + uuidv4();
     let titleForLastItem = "last_" + uuidv4();
-    let idForCustomOrg = uuidv4();
+    let idForCustomOrg = uuidv7();
     let createdAfter = (new Date()).toISOString(); // We use this on all tests to hopefully avoid clashing with unrelated dialogs
     let defaultFilter = "?CreatedAfter=" + createdAfter + "&Party=" + defaultParty;
     let auxOrg = "ttd";
