@@ -21,6 +21,7 @@ public static class ServiceCollectionExtensions
             .AddType<DialogByIdForbidden>()
             .AddType<SearchDialogValidationError>()
             .AddType<SearchDialogForbidden>()
+            .InitializeOnStartup()
             .Services;
     }
 }

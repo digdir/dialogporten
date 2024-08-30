@@ -134,7 +134,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
         dialogDto.DialogToken = _dialogTokenGenerator.GetDialogToken(
             dialog,
             authorizationResult,
-            "api/v1"
+            "/api/v1"
         );
 
         DecorateWithAuthorization(dialogDto, authorizationResult);

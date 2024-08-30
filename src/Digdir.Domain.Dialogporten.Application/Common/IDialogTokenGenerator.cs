@@ -58,7 +58,7 @@ internal class DialogTokenGenerator : IDialogTokenGenerator
             { DialogTokenClaimTypes.ServiceResource, dialog.ServiceResource },
             { DialogTokenClaimTypes.DialogId, dialog.Id },
             { DialogTokenClaimTypes.Actions, GetAuthorizedActions(authorizationResult) },
-            { DialogTokenClaimTypes.Issuer, _applicationSettings.Dialogporten.BaseUri + issuerVersion },
+            { DialogTokenClaimTypes.Issuer, _applicationSettings.Dialogporten.BaseUri.AbsoluteUri.TrimEnd('/') + issuerVersion },
             { DialogTokenClaimTypes.IssuedAt, now },
             { DialogTokenClaimTypes.NotBefore, now },
             { DialogTokenClaimTypes.Expires, now + (long)_tokenLifetime.TotalSeconds }
