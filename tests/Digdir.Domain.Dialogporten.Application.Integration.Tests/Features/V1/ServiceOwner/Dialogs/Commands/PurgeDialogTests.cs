@@ -4,6 +4,7 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Tool.Dialogporten.GenerateFakeData;
 using FluentAssertions;
+using static Digdir.Domain.Dialogporten.Application.Integration.Tests.UuiDv7Utils;
 
 namespace Digdir.Domain.Dialogporten.Application.Integration.Tests.Features.V1.ServiceOwner.Dialogs.Commands;
 
@@ -14,7 +15,7 @@ public class PurgeDialogTests(DialogApplication application) : ApplicationCollec
     public async Task Purge_RemovesDialog_FromDatabase()
     {
         // Arrange
-        var expectedDialogId = Guid.NewGuid();
+        var expectedDialogId = GenerateBigEndianUuidV7();
         var createCommand = DialogGenerator.GenerateFakeDialog(id: expectedDialogId);
         var createResponse = await Application.Send(createCommand);
         createResponse.TryPickT0(out _, out _).Should().BeTrue();
@@ -40,7 +41,7 @@ public class PurgeDialogTests(DialogApplication application) : ApplicationCollec
     public async Task Purge_ReturnsConcurrencyError_OnIfMatchDialogRevisionMismatch()
     {
         // Arrange
-        var expectedDialogId = Guid.NewGuid();
+        var expectedDialogId = GenerateBigEndianUuidV7();
         var createCommand = DialogGenerator.GenerateFakeDialog(id: expectedDialogId);
         var createResponse = await Application.Send(createCommand);
         createResponse.TryPickT0(out _, out _).Should().BeTrue();
@@ -57,7 +58,7 @@ public class PurgeDialogTests(DialogApplication application) : ApplicationCollec
     public async Task Purge_ReturnsNotFound_OnNonExistingDialog()
     {
         // Arrange
-        var expectedDialogId = Guid.NewGuid();
+        var expectedDialogId = GenerateBigEndianUuidV7();
         var createCommand = DialogGenerator.GenerateFakeDialog(id: expectedDialogId);
         await Application.Send(createCommand);
         var purgeCommand = new PurgeDialogCommand { DialogId = expectedDialogId };
