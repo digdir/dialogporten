@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.Enumerables;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.FluentValidation;
+using Digdir.Domain.Dialogporten.Application.Features.V1.Common;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Content;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using Digdir.Domain.Dialogporten.Domain.Actors;
@@ -112,12 +113,8 @@ internal sealed class UpdateDialogTransmissionAttachmentDtoValidator : AbstractV
         IValidator<IEnumerable<LocalizationDto>> localizationsValidator,
         IValidator<UpdateDialogTransmissionAttachmentUrlDto> urlValidator)
     {
-        RuleFor(x => x.Id)
-            .NotEqual(default(Guid));
         RuleFor(x => x.DisplayName)
             .SetValidator(localizationsValidator);
-        RuleFor(x => x.Urls)
-            .UniqueBy(x => x.Id);
         RuleFor(x => x.Urls)
             .NotEmpty()
             .ForEach(x => x.SetValidator(urlValidator));
@@ -185,7 +182,8 @@ internal sealed class UpdateDialogDialogTransmissionDtoValidator : AbstractValid
         IValidator<UpdateDialogTransmissionAttachmentDto> attachmentValidator)
     {
         RuleFor(x => x.Id)
-            .NotEqual(default(Guid));
+            .IsValidUuidV7()
+            .UuidV7TimestampIsInPast();
         RuleFor(x => x.CreatedAt)
             .IsInPast();
         RuleFor(x => x.ExtendedType)
@@ -203,8 +201,6 @@ internal sealed class UpdateDialogDialogTransmissionDtoValidator : AbstractValid
             .SetValidator(actorValidator);
         RuleFor(x => x.AuthorizationAttribute)
             .MaximumLength(Constants.DefaultMaxStringLength);
-        RuleFor(x => x.Attachments)
-            .UniqueBy(x => x.Id);
         RuleForEach(x => x.Attachments)
             .SetValidator(attachmentValidator);
         RuleFor(x => x.Content)
@@ -261,7 +257,8 @@ internal sealed class UpdateDialogDialogAttachmentDtoValidator : AbstractValidat
         IValidator<UpdateDialogDialogAttachmentUrlDto> urlValidator)
     {
         RuleFor(x => x.Id)
-            .NotEqual(default(Guid));
+            .IsValidUuidV7()
+            .UuidV7TimestampIsInPast();
         RuleFor(x => x.DisplayName)
             .SetValidator(localizationsValidator);
         RuleFor(x => x.Urls)
@@ -376,7 +373,8 @@ internal sealed class UpdateDialogDialogActivityDtoValidator : AbstractValidator
         IValidator<UpdateDialogDialogActivityPerformedByActorDto> actorValidator)
     {
         RuleFor(x => x.Id)
-            .NotEqual(default(Guid));
+            .IsValidUuidV7()
+            .UuidV7TimestampIsInPast();
         RuleFor(x => x.CreatedAt)
             .IsInPast();
         RuleFor(x => x.ExtendedType)
