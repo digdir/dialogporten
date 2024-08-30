@@ -8,6 +8,7 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Http;
+using Medo;
 
 namespace Digdir.Tool.Dialogporten.GenerateFakeData;
 
@@ -219,7 +220,7 @@ public static class DialogGenerator
     public static List<CreateDialogDialogActivityDto> GenerateFakeDialogActivities(int? count = null, DialogActivityType.Values? type = null)
     {
         return new Faker<CreateDialogDialogActivityDto>()
-            .RuleFor(o => o.Id, f => f.Random.Guid())
+            .RuleFor(o => o.Id, f => Uuid7.NewUuid7().ToGuid(true))
             .RuleFor(o => o.CreatedAt, f => f.Date.Past())
             .RuleFor(o => o.ExtendedType, f => new Uri(f.Internet.UrlWithPath()))
             .RuleFor(o => o.Type, f => type ?? f.PickRandom<DialogActivityType.Values>())

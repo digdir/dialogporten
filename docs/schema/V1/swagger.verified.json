@@ -3494,7 +3494,7 @@
             "type": "array"
           },
           "id": {
-            "description": "The UUDIv7 of the action may be provided to support idempotent additions to the list of API actions.\nIf not supplied, a new UUIDv7 will be generated.",
+            "description": "A UUIDv7 used for merging existing data, unknown IDs will be ignored as this entity does not support user-defined IDs.",
             "example": "01913cd5-784f-7d3b-abef-4c77b1f0972d",
             "format": "guid",
             "nullable": true,
@@ -3525,7 +3525,7 @@
             ]
           },
           "id": {
-            "description": "The UUDIv7 of the action may be provided to support idempotent additions to the list of API action endpoints.\nIf not supplied, a new UUIDv7 will be generated.",
+            "description": "A UUIDv7 used for merging existing data, unknown IDs will be ignored as this entity does not support user-defined IDs.",
             "example": "01913cd5-784f-7d3b-abef-4c77b1f0972d",
             "format": "guid",
             "nullable": true,
@@ -3573,7 +3573,7 @@
             "type": "array"
           },
           "id": {
-            "description": "A self-defined UUIDv7 may be provided in order to support idempotent updates of attachments. If not supplied,\na new UUIDv7 will be generated.",
+            "description": "A UUIDv7 used for merging existing data, unknown IDs will be ignored as this entity does not support user-defined IDs.",
             "example": "01913cd5-784f-7d3b-abef-4c77b1f0972d",
             "format": "guid",
             "nullable": true,
@@ -3601,7 +3601,7 @@
             ]
           },
           "id": {
-            "description": "A self-defined UUIDv7 may be provided in order to support idempotent updates of attachment URLs. If not supplied,\na new UUIDv7 will be generated.",
+            "description": "A UUIDv7 used for merging existing data, unknown IDs will be ignored as this entity does not support user-defined IDs.",
             "example": "01913cd5-784f-7d3b-abef-4c77b1f0972d",
             "format": "guid",
             "nullable": true,
@@ -3644,7 +3644,7 @@
             ]
           },
           "id": {
-            "description": "The UUDIv7 of the action may be provided to support idempotent additions to the list of actions. If not supplied,\na new UUIDv7 will be generated.",
+            "description": "A UUIDv7 used for merging existing data, unknown IDs will be ignored as this entity does not support user-defined IDs.",
             "example": "01913cd5-784f-7d3b-abef-4c77b1f0972d",
             "format": "guid",
             "nullable": true,
@@ -3931,13 +3931,6 @@
             },
             "type": "array"
           },
-          "id": {
-            "description": "A self-defined UUIDv7 may be provided in order to support idempotent updates of attachments. If not supplied,\na new UUIDv7 will be generated.",
-            "example": "01913cd5-784f-7d3b-abef-4c77b1f0972d",
-            "format": "guid",
-            "nullable": true,
-            "type": "string"
-          },
           "urls": {
             "description": "The URLs associated with the attachment, each referring to a different representation of the attachment.",
             "items": {
@@ -3958,13 +3951,6 @@
                 "$ref": "#/components/schemas/AttachmentUrlConsumerType_Values"
               }
             ]
-          },
-          "id": {
-            "description": "A self-defined UUIDv7 may be provided in order to support idempotent updates of attachment URLs. If not supplied,\na new UUIDv7 will be generated.",
-            "example": "01913cd5-784f-7d3b-abef-4c77b1f0972d",
-            "format": "guid",
-            "nullable": true,
-            "type": "string"
           },
           "mediaType": {
             "description": "The media type of the attachment.",

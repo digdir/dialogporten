@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.Enumerables;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.FluentValidation;
+using Digdir.Domain.Dialogporten.Application.Features.V1.Common;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Content;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using Digdir.Domain.Dialogporten.Domain.Actors;
@@ -26,7 +27,8 @@ internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDia
         IValidator<CreateDialogContentDto> contentValidator)
     {
         RuleFor(x => x.Id)
-            .NotEqual(default(Guid));
+            .IsValidUuidV7()
+            .UuidV7TimestampIsInPast();
 
         RuleFor(x => x.ServiceResource)
             .NotNull()
@@ -126,7 +128,8 @@ internal sealed class CreateDialogDialogTransmissionDtoValidator : AbstractValid
         IValidator<CreateDialogTransmissionAttachmentDto> attachmentValidator)
     {
         RuleFor(x => x.Id)
-            .NotEqual(default(Guid));
+            .IsValidUuidV7()
+            .UuidV7TimestampIsInPast();
         RuleFor(x => x.CreatedAt)
             .IsInPast();
         RuleFor(x => x.ExtendedType)
@@ -354,7 +357,8 @@ internal sealed class CreateDialogDialogActivityDtoValidator : AbstractValidator
         IValidator<CreateDialogDialogActivityPerformedByActorDto> actorValidator)
     {
         RuleFor(x => x.Id)
-            .NotEqual(default(Guid));
+            .IsValidUuidV7()
+            .UuidV7TimestampIsInPast();
         RuleFor(x => x.CreatedAt)
             .IsInPast();
         RuleFor(x => x.ExtendedType)
