@@ -67,7 +67,7 @@ module migrationJob '../../modules/containerAppJob/main.bicep' = {
     secrets: secrets
     tags: tags
     cronExpression: jobSchedule
-    entrypoint: 'update-subject-resources'
+    command: 'update-subject-resources'
   }
 }
 

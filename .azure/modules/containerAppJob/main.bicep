@@ -22,8 +22,8 @@ param tags object
 @description('The cron expression for the job schedule (optional)')
 param cronExpression string = ''
 
-@description('The entrypoint command for the job')
-param entrypoint string = ''
+@description('The command for the job')
+param command string = ''
 
 var isScheduled = !empty(cronExpression)
 
@@ -64,7 +64,7 @@ resource job 'Microsoft.App/jobs@2024-03-01' = {
           env: environmentVariables
           image: image
           name: name
-          command: empty(entrypoint) ? null : [entrypoint]
+          command: empty(command) ? null : [command]
         }
       ]
     }
