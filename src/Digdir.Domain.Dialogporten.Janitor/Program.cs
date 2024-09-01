@@ -20,8 +20,6 @@ Log.Logger = new LoggerConfiguration()
         TelemetryConverter.Traces)
     .CreateBootstrapLogger();
 
-args = ["update-subject-resources", "2022-01-01T00:00:00Z"];
-
 try
 {
     BuildAndRun(args);
