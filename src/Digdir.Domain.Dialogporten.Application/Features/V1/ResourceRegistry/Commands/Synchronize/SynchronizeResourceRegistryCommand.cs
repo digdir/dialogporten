@@ -1,41 +1,50 @@
-using System.Text;
+using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Domain.SubjectResources;
+using MediatR;
 using Medo;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Npgsql;
+using OneOf;
+using OneOf.Types;
 
-namespace Digdir.Domain.Dialogporten.Janitor.Features.UpdateSubjectResources;
+namespace Digdir.Domain.Dialogporten.Application.Features.V1.ResourceRegistry.Commands.Synchronize;
 
-internal sealed class UpdateSubjectResources
+public class SynchronizeResourceRegistryCommand : IRequest<SynchronizeResourceRegistryResult>
+{
+    public DateTimeOffset? Since { get; set; }
+}
+
+[GenerateOneOf]
+public partial class SynchronizeResourceRegistryResult : OneOfBase<Success, ValidationError>;
+
+internal sealed class SynchronizeResourceRegistryCommandHandler : IRequestHandler<SynchronizeResourceRegistryCommand, SynchronizeResourceRegistryResult>
 {
     private readonly IDialogDbContext _db;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IResourceRegistry _resourceRegistry;
-    private readonly ILogger<UpdateSubjectResources> _logger;
+    private readonly ILogger<SynchronizeResourceRegistryCommandHandler> _logger;
 
-    public UpdateSubjectResources(
-        ILogger<UpdateSubjectResources> logger,
-        IResourceRegistry resourceRegistry,
+    public SynchronizeResourceRegistryCommandHandler(
         IDialogDbContext db,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        IResourceRegistry resourceRegistry,
+        ILogger<SynchronizeResourceRegistryCommandHandler> logger)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _resourceRegistry = resourceRegistry ?? throw new ArgumentNullException(nameof(resourceRegistry));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
-
-    public async Task RunAsync(DateTimeOffset? since = null, CancellationToken cancellationToken = default)
-    {
-        await SyncResourceSubjects(since, cancellationToken);
-    }
-
-    private async Task SyncResourceSubjects(DateTimeOffset? since = null, CancellationToken cancellationToken = default)
+    public async Task<SynchronizeResourceRegistryResult> Handle(SynchronizeResourceRegistryCommand request, CancellationToken cancellationToken)
     {
         // 1. Get the last updated timestamp from parameter, or the database, or use a default
-        var lastUpdated = since ?? _db.SubjectResourceLastUpdates.OrderByDescending(x => x.LastUpdate)
-            .FirstOrDefault()?.LastUpdate ?? DateTimeOffset.MinValue;
+        var lastUpdated = request.Since
+            ?? (await _db.SubjectResourceLastUpdates
+                .OrderByDescending(x => x.LastUpdate)
+                .FirstOrDefaultAsync(cancellationToken))
+                ?.LastUpdate
+            ?? DateTimeOffset.MinValue;
 
         // Allow for a few seconds of drift between server clocks
         var newLastUpdated = DateTimeOffset.Now.Subtract(TimeSpan.FromSeconds(3));
@@ -63,9 +72,9 @@ internal sealed class UpdateSubjectResources
             var resourceStrings = remoteDeletedSubjectResources.Select(r => r.Resource.ToString()).ToList();
             var subjectStrings = remoteDeletedSubjectResources.Select(r => r.Subject.ToString()).ToList();
 
-            var localSubjectResourcesToDelete = _db.SubjectResources
+            var localSubjectResourcesToDelete = await _db.SubjectResources
                 .Where(x => resourceStrings.Contains(x.Resource) && subjectStrings.Contains(x.Subject))
-                .ToList();
+                .ToListAsync(cancellationToken);
 
             if (localSubjectResourcesToDelete.Count != 0)
             {
@@ -128,5 +137,6 @@ internal sealed class UpdateSubjectResources
         // 6. Save changes to the database
         await _unitOfWork.SaveChangesAsync(cancellationToken);
         _logger.LogInformation("Subject resources synced successfully");
+        return new Success();
     }
 }
