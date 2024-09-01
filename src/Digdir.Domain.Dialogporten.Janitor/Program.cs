@@ -1,56 +1,73 @@
+using System.Globalization;
 using Cocona;
 using Digdir.Domain.Dialogporten.Application;
 using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
 using Digdir.Domain.Dialogporten.Infrastructure;
 using Digdir.Domain.Dialogporten.Janitor;
-using Digdir.Domain.Dialogporten.Janitor.Features.UpdateSubjectResources;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using Serilog;
 
-var cts = new CancellationTokenSource();
-await Host.CreateDefaultBuilder()
-    .ConfigureAppConfiguration((context, configurationBuilder) =>
-    {
-        var environmentName = context.HostingEnvironment.EnvironmentName.Replace("Production", "prod");
-        Console.WriteLine($"Running in environment: {environmentName}");
+// Using two-stage initialization to catch startup errors.
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Warning()
+    .Enrich.FromLogContext()
+    .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture)
+    .WriteTo.ApplicationInsights(
+        TelemetryConfiguration.CreateDefault(),
+        TelemetryConverter.Traces)
+    .CreateBootstrapLogger();
 
-        configurationBuilder.AddJsonFile("appsettings.json", optional: false);
-        configurationBuilder.AddJsonFile($"appsettings.{environmentName}.json", optional: true);
-        configurationBuilder.AddEnvironmentVariables();
-        configurationBuilder.AddUserSecrets<Program>(optional: true);
-    })
-    .ConfigureServices((context, services) =>
-    {
-        services
-            .AddApplication(context.Configuration, context.HostingEnvironment)
-            .AddInfrastructure(context.Configuration, context.HostingEnvironment)
-            .AddScoped<IUser, ConsoleUser>()
-            .AddTransient<UpdateSubjectResources>();
-    })
-    .ConfigureLogging((context, logging) =>
-    {
-        logging.AddConsole();
-        logging.AddFilter("Microsoft.EntityFrameworkCore", LogLevel.Critical);
-        logging.AddFilter("System.Net.Http.HttpClient.IResourceRegistry.ClientHandler", LogLevel.Warning);
-    })
-    .ConfigureCocona(args, new[] { typeof(Commands) })
-    .Build()
-    .RunAsync(cts.Token);
-
-
-#pragma warning disable CA1822 // Disable member can be static inspection (breaks Cocona)
-internal sealed class Commands
+try
 {
-    public async Task UpdateSubjectResources([FromService] UpdateSubjectResources updateSubjectResources, DateTimeOffset? since = null, CancellationToken cancellationToken = default)
-    {
-        await updateSubjectResources.RunAsync(since, cancellationToken);
-    }
-
-    public void Hello()
-    {
-        Console.WriteLine("Hello, World!");
-    }
+    BuildAndRun(args);
 }
-#pragma warning restore CA1822
+catch (Exception ex) when (ex is not OperationCanceledException)
+{
+    Log.Fatal(ex, "Application terminated unexpectedly");
+    throw;
+}
+finally
+{
+    Log.CloseAndFlush();
+}
+
+static void BuildAndRun(string[] args)
+{
+    var builder = CoconaApp.CreateBuilder(args);
+
+    // Disable scope validation because cocona does not create a scope for the commands.
+    // This makes sense because console applications are short-lived, and the scope of
+    // a command is the scope of the application.   
+    builder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = false);
+
+    builder.Configuration.AddUserSecrets<Program>();
+    builder.Host.UseSerilog((context, services, configuration) => configuration
+        .ReadFrom.Configuration(context.Configuration)
+        .ReadFrom.Services(services)
+        .Enrich.FromLogContext()
+        .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture)
+        .WriteTo.ApplicationInsights(
+            services.GetRequiredService<TelemetryConfiguration>(),
+            TelemetryConverter.Traces));
+
+    builder.Services
+        .AddApplication(builder.Configuration, builder.Environment)
+        .AddInfrastructure(builder.Configuration, builder.Environment)
+        .AddScoped<IUser, ConsoleUser>()
+        .AddSingleton(TelemetryConfiguration.CreateDefault());
+
+    var app = builder.Build();
+
+    app.AddJanitorCommands();
+
+    app.Run();
+}
+
+internal sealed class MahInputs
+{
+    // [Option('s', "since", Description = "The date to start updating from.")]
+    public DateTimeOffset? Since { get; set; }
+}
