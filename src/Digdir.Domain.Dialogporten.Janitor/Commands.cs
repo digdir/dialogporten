@@ -11,8 +11,10 @@ internal static class Commands
         app.AddCommand("UpdateSubjectResources", (
                 [FromService] CoconaAppContext ctx,
                 [FromService] ISender application,
-                [Argument] SynchronizeResourceRegistryCommand command)
-            => application.Send(command, ctx.CancellationToken));
+                [Argument] DateTimeOffset? since)
+            => application.Send(
+                new SynchronizeResourceRegistryCommand { Since = since },
+                ctx.CancellationToken));
 
         // app.AddCommand("test", ([Argument] MahInputs inputs) => Console.WriteLine("Hello, World!"));
 
