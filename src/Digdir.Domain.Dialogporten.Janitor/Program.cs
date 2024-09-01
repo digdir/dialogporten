@@ -65,9 +65,3 @@ static void BuildAndRun(string[] args)
 
     app.Run();
 }
-
-internal sealed class MahInputs
-{
-    // [Option('s', "since", Description = "The date to start updating from.")]
-    public DateTimeOffset? Since { get; set; }
-}
