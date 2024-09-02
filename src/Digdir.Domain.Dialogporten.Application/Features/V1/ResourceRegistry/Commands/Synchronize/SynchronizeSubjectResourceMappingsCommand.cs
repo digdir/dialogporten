@@ -13,7 +13,7 @@ using OneOf.Types;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.ResourceRegistry.Commands.Synchronize;
 
-public class SynchronizeResourceRegistryCommand : IRequest<SynchronizeResourceRegistryResult>
+public class SynchronizeSubjectResourceMappingsCommand : IRequest<SynchronizeResourceRegistryResult>
 {
     public DateTimeOffset? Since { get; set; }
 }
@@ -21,7 +21,7 @@ public class SynchronizeResourceRegistryCommand : IRequest<SynchronizeResourceRe
 [GenerateOneOf]
 public partial class SynchronizeResourceRegistryResult : OneOfBase<Success, ValidationError>;
 
-internal sealed class SynchronizeResourceRegistryCommandHandler : IRequestHandler<SynchronizeResourceRegistryCommand, SynchronizeResourceRegistryResult>
+internal sealed class SynchronizeResourceRegistryCommandHandler : IRequestHandler<SynchronizeSubjectResourceMappingsCommand, SynchronizeResourceRegistryResult>
 {
     private const int DatabaseMaxBatchSize = 200;
     private const string Schema = "public";
@@ -48,7 +48,7 @@ internal sealed class SynchronizeResourceRegistryCommandHandler : IRequestHandle
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public async Task<SynchronizeResourceRegistryResult> Handle(SynchronizeResourceRegistryCommand request, CancellationToken cancellationToken)
+    public async Task<SynchronizeResourceRegistryResult> Handle(SynchronizeSubjectResourceMappingsCommand request, CancellationToken cancellationToken)
     {
         await using var conn = new NpgsqlConnection(_dialogDbContext.Database.GetConnectionString());
         await conn.OpenAsync(cancellationToken);

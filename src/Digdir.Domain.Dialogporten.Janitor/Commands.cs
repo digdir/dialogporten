@@ -13,7 +13,7 @@ internal static class Commands
                 [FromService] ISender application,
                 [Argument] DateTimeOffset? since)
             => application.Send(
-                new SynchronizeSubjectResourceMappingsCommand { Since = since },
+                new SynchronizeResourceRegistryCommand { Since = since },
                 ctx.CancellationToken));
 
         // app.AddCommand("test", ([Argument] MahInputs inputs) => Console.WriteLine("Hello, World!"));
