@@ -3,14 +3,14 @@ include:
   - docker-compose-db-redis.yml
 
 services:
-  dialogporten-update-subject-resources-job:
+  dialogporten-synchronize-subject-resource-mappings-job:
     build:
       context: .
       dockerfile: src/Digdir.Domain.Dialogporten.Janitor/Dockerfile
     environment:
       - Infrastructure:DialogDbConnectionString=${DB_CONNECTION_STRING}
       - ASPNETCORE_ENVIRONMENT=Development
-    command: [ "update-subject-resources" ]
+    command: [ "synchronize-subject-resource-mappings" ]
     depends_on:
       dialogporten-postgres:
         condition: service_healthy
