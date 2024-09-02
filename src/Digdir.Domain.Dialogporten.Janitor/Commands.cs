@@ -8,7 +8,7 @@ internal static class Commands
 {
     internal static CoconaApp AddJanitorCommands(this CoconaApp app)
     {
-        app.AddCommand("synchronize-subject-resource-mappings", (
+        app.AddCommand("sync-subject-resource-mappings", (
                 [FromService] CoconaAppContext ctx,
                 [FromService] ISender application,
                 [Argument] DateTimeOffset? since)

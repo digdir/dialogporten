@@ -6,7 +6,7 @@ A console application for container app jobs or performing various synchronizati
 
 Below are the available commands (commands are always the first argument):
 
-### synchronize-subject-resource-mappings
+### sync-subject-resource-mappings
 
 - **Description:**  
   Synchronizes the mappings of subjects (i.e., roles) and resources (i.e., apps) from the Altinn Resource Registry to Dialogporten's local copy used for authorization.

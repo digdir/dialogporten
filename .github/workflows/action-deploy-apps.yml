@@ -232,7 +232,7 @@ jobs:
       fail-fast: true
       matrix:
         include:
-          - name: synchronize-subject-resource-mappings-job
+          - name: sync-subject-resource-mappings-job
     steps:
       - name: "Checkout GitHub Action"
         uses: actions/checkout@v4

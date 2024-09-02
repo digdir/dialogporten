@@ -5,7 +5,7 @@
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Development"
       },
-      "commandLineArgs": "synchronize-subject-resource-mappings 2022-01-01T00:00:00Z"
+      "commandLineArgs": "sync-subject-resource-mappings 2022-01-01T00:00:00Z"
     }
   }
 }

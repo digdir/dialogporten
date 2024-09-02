@@ -32,7 +32,7 @@ var tags = {
   Environment: environment
   Product: 'Dialogporten'
 }
-var name = '${namePrefix}-synchronize-subject-resource-mappings-job'
+var name = '${namePrefix}-sync-subject-resource-mappings-job'
 
 resource containerAppEnvironment 'Microsoft.App/managedEnvironments@2024-03-01' existing = {
   name: containerAppEnvironmentName
@@ -67,7 +67,7 @@ module migrationJob '../../modules/containerAppJob/main.bicep' = {
     secrets: secrets
     tags: tags
     cronExpression: jobSchedule
-    command: 'synchronize-subject-resource-mappings'
+    command: 'sync-subject-resource-mappings'
   }
 }
 
