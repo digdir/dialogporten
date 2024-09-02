@@ -1,4 +1,5 @@
-﻿using Digdir.Domain.Dialogporten.Application.Externals;
+﻿using System.Runtime.CompilerServices;
+using Digdir.Domain.Dialogporten.Application.Externals;
 using Microsoft.EntityFrameworkCore;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.ResourceRegistry;
@@ -37,10 +38,11 @@ internal sealed class LocalDevelopmentResourceRegistry : IResourceRegistry
     }
 
 #pragma warning disable CA1822
-    public async Task<List<UpdatedSubjectResource>> GetUpdatedSubjectResources(DateTimeOffset _, CancellationToken __)
+    public async IAsyncEnumerable<UpdatedSubjectResource> GetUpdatedSubjectResources(DateTimeOffset _, [EnumeratorCancellation] CancellationToken __)
 #pragma warning restore CA1822
     {
-        return await Task.FromResult(new List<UpdatedSubjectResource>());
+        await Task.CompletedTask;
+        yield break;
     }
 
     private sealed class ServiceResourceInformationEqualityComparer : IEqualityComparer<ServiceResourceInformation>

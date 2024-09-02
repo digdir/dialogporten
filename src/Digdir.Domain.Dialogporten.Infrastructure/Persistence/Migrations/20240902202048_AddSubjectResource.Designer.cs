@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(DialogDbContext))]
-    [Migration("20240827081128_AddSubjectResource")]
+    [Migration("20240902202048_AddSubjectResource")]
     partial class AddSubjectResource
     {
         /// <inheritdoc />
@@ -1202,9 +1202,8 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Resource");
-
-                    b.HasIndex("Subject");
+                    b.HasIndex("Resource", "Subject")
+                        .IsUnique();
 
                     b.ToTable("SubjectResource", (string)null);
                 });

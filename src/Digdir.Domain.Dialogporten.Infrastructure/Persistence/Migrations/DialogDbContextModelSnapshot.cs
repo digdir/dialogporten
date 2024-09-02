@@ -1199,9 +1199,8 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Resource");
-
-                    b.HasIndex("Subject");
+                    b.HasIndex("Resource", "Subject")
+                        .IsUnique();
 
                     b.ToTable("SubjectResource", (string)null);
                 });

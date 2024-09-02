@@ -4,7 +4,7 @@ public interface IResourceRegistry
 {
     Task<IReadOnlyCollection<ServiceResourceInformation>> GetResourceInformationForOrg(string orgNumber, CancellationToken cancellationToken);
     Task<ServiceResourceInformation?> GetResourceInformation(string serviceResourceId, CancellationToken cancellationToken);
-    Task<List<UpdatedSubjectResource>> GetUpdatedSubjectResources(DateTimeOffset since, CancellationToken cancellationToken);
+    IAsyncEnumerable<UpdatedSubjectResource> GetUpdatedSubjectResources(DateTimeOffset since, CancellationToken cancellationToken);
 }
 
 public sealed record ServiceResourceInformation

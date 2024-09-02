@@ -1,4 +1,5 @@
-﻿using Digdir.Domain.Dialogporten.Application.Externals;
+﻿using System.Runtime.CompilerServices;
+using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Domain.Common;
 using ZiggyCreatures.Caching.Fusion;
 
@@ -43,32 +44,33 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
         return resource;
     }
 
-    public async Task<List<UpdatedSubjectResource>> GetUpdatedSubjectResources(DateTimeOffset since, CancellationToken cancellationToken)
+    public async IAsyncEnumerable<UpdatedSubjectResource> GetUpdatedSubjectResources(DateTimeOffset since, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         const string searchEndpoint = "resourceregistry/api/v1/resource/updated";
-        var resources = new List<UpdatedSubjectResource>();
         var nextUrl = searchEndpoint + "?since=" + Uri.EscapeDataString(since.ToString("O"));
+
         do
         {
             var response = await _client
                 .GetFromJsonEnsuredAsync<UpdatedResponse>(nextUrl,
                     cancellationToken: cancellationToken);
 
-            resources.AddRange(response.Data.Select(item =>
-                new UpdatedSubjectResource
+            foreach (var item in response.Data)
+            {
+                yield return new UpdatedSubjectResource
                 {
                     Resource = item.ResourceUrn,
                     Subject = item.SubjectUrn,
                     UpdatedAt = item.UpdatedAt,
                     Deleted = item.Deleted
-                }));
+                };
+            }
 
             nextUrl = response.Links.Next?.ToString();
 
         } while (nextUrl is not null);
-
-        return resources;
     }
+
 
     private async Task<Dictionary<string, ServiceResourceInformation[]>> GetOrSetResourceInformationByOrg(
         CancellationToken cancellationToken)

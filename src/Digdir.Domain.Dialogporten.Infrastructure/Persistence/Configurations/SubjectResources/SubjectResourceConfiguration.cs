@@ -8,8 +8,8 @@ internal sealed class SubjectResourceConfiguration : IEntityTypeConfiguration<Su
 {
     public void Configure(EntityTypeBuilder<SubjectResource> builder)
     {
-        builder.ToTable("SubjectResource");
-        builder.HasIndex("Subject");
-        builder.HasIndex("Resource");
+        builder
+            .HasIndex(sr => new { sr.Resource, sr.Subject })
+            .IsUnique();
     }
 }

@@ -1,5 +1,4 @@
 using Digdir.Library.Entity.Abstractions;
-using Digdir.Library.Entity.Abstractions.Features.Updatable;
 
 namespace Digdir.Domain.Dialogporten.Domain.SubjectResources;
 

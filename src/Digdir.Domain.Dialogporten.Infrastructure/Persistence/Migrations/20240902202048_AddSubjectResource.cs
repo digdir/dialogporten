@@ -39,14 +39,10 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_SubjectResource_Resource",
+                name: "IX_SubjectResource_Resource_Subject",
                 table: "SubjectResource",
-                column: "Resource");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_SubjectResource_Subject",
-                table: "SubjectResource",
-                column: "Subject");
+                columns: new[] { "Resource", "Subject" },
+                unique: true);
         }
 
         /// <inheritdoc />
