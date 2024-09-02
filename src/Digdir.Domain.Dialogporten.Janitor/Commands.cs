@@ -8,12 +8,12 @@ internal static class Commands
 {
     internal static CoconaApp AddJanitorCommands(this CoconaApp app)
     {
-        app.AddCommand("SynchronizeSubjectResourceMappings", (
+        app.AddCommand("synchronize-subject-resource-mappings", (
                 [FromService] CoconaAppContext ctx,
                 [FromService] ISender application,
                 [Argument] DateTimeOffset? since)
             => application.Send(
-                new SynchronizeResourceRegistryCommand { Since = since },
+                new SynchronizeSubjectResourceMappingsCommand { Since = since },
                 ctx.CancellationToken));
 
         // app.AddCommand("test", ([Argument] MahInputs inputs) => Console.WriteLine("Hello, World!"));
