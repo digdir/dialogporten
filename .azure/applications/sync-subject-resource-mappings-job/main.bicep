@@ -31,8 +31,9 @@ var baseImageUrl = 'ghcr.io/digdir/dialogporten-'
 var tags = {
   Environment: environment
   Product: 'Dialogporten'
+  Description: 'Synchronizes subject resource mappings'
 }
-var name = '${namePrefix}-sync-subject-resource-mappings-job'
+var name = '${namePrefix}-sr-sync'
 
 resource containerAppEnvironment 'Microsoft.App/managedEnvironments@2024-03-01' existing = {
   name: containerAppEnvironmentName
