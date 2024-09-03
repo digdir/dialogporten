@@ -27,6 +27,7 @@ using Digdir.Domain.Dialogporten.Infrastructure.Altinn.NameRegistry;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.OrganizationRegistry;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.ResourceRegistry;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence.Configurations.Actors;
+using Digdir.Domain.Dialogporten.Infrastructure.Persistence.Repositories;
 using ZiggyCreatures.Caching.Fusion;
 using ZiggyCreatures.Caching.Fusion.NullObjects;
 
@@ -134,6 +135,7 @@ public static class InfrastructureExtensions
             .AddScoped<IUnitOfWork, UnitOfWork>()
 
             // Transient
+            .AddTransient<ISubjectResourceRepository, SubjectResourceRepository>()
             .AddTransient<OutboxDispatcher>()
             .AddTransient<ConvertDomainEventsToOutboxMessagesInterceptor>()
             .AddTransient<PopulateActorNameInterceptor>()

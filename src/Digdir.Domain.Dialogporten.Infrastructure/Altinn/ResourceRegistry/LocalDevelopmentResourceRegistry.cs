@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Diagnostics.CodeAnalysis;
+using Digdir.Domain.Dialogporten.Application.Common.Extensions.Enumerables;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Microsoft.EntityFrameworkCore;
 
@@ -37,13 +38,9 @@ internal sealed class LocalDevelopmentResourceRegistry : IResourceRegistry
             new ServiceResourceInformation(serviceResourceId, LocalResourceType, LocalOrgId));
     }
 
-#pragma warning disable CA1822
-    public async IAsyncEnumerable<UpdatedSubjectResource> GetUpdatedSubjectResources(DateTimeOffset _, [EnumeratorCancellation] CancellationToken __)
-#pragma warning restore CA1822
-    {
-        await Task.CompletedTask;
-        yield break;
-    }
+    [SuppressMessage("Performance", "CA1822:Mark members as static")]
+    public IAsyncEnumerable<List<UpdatedSubjectResource>> GetUpdatedSubjectResources(DateTimeOffset _, int __, CancellationToken ___)
+        => AsyncEnumerableExtensions.Empty<List<UpdatedSubjectResource>>();
 
     private sealed class ServiceResourceInformationEqualityComparer : IEqualityComparer<ServiceResourceInformation>
     {

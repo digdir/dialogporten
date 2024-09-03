@@ -44,10 +44,10 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
         return resource;
     }
 
-    public async IAsyncEnumerable<UpdatedSubjectResource> GetUpdatedSubjectResources(DateTimeOffset since, [EnumeratorCancellation] CancellationToken cancellationToken)
+    public async IAsyncEnumerable<List<UpdatedSubjectResource>> GetUpdatedSubjectResources(DateTimeOffset since, int batchSize, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         const string searchEndpoint = "resourceregistry/api/v1/resource/updated";
-        var nextUrl = searchEndpoint + "?since=" + Uri.EscapeDataString(since.ToString("O"));
+        var nextUrl = searchEndpoint + $"?since={Uri.EscapeDataString(since.ToString("O"))}&limit={batchSize}";
 
         do
         {
@@ -55,19 +55,14 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
                 .GetFromJsonEnsuredAsync<UpdatedResponse>(nextUrl,
                     cancellationToken: cancellationToken);
 
-            foreach (var item in response.Data)
+            if (response.Data.Count == 0)
             {
-                yield return new UpdatedSubjectResource
-                {
-                    Resource = item.ResourceUrn,
-                    Subject = item.SubjectUrn,
-                    UpdatedAt = item.UpdatedAt,
-                    Deleted = item.Deleted
-                };
+                yield break;
             }
 
-            nextUrl = response.Links.Next?.ToString();
+            yield return response.Data;
 
+            nextUrl = response.Links.Next?.ToString();
         } while (nextUrl is not null);
     }
 
@@ -136,22 +131,6 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
         public required string OrgCode { get; init; }
     }
 
-    private sealed class UpdatedResponse
-    {
-        public required UpdatedResponseLinks Links { get; init; }
-        public required List<UpdatedResponseItem> Data { get; init; }
-    }
-
-    private sealed class UpdatedResponseLinks
-    {
-        public Uri? Next { get; init; }
-    }
-
-    private sealed class UpdatedResponseItem
-    {
-        public required Uri SubjectUrn { get; init; }
-        public required Uri ResourceUrn { get; init; }
-        public required DateTimeOffset UpdatedAt { get; init; }
-        public required bool Deleted { get; init; }
-    }
+    private sealed record UpdatedResponse(UpdatedResponseLinks Links, List<UpdatedSubjectResource> Data);
+    private sealed record UpdatedResponseLinks(Uri? Next);
 }
