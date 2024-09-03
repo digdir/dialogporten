@@ -1,4 +1,7 @@
+using Digdir.Domain.Dialogporten.Application.Common.Authorization;
+using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.FluentValidation;
+using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using Digdir.Domain.Dialogporten.Domain;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Contents;
@@ -14,6 +17,8 @@ internal interface IIgnoreOnAssemblyScan;
 
 internal sealed class ContentValueDtoValidator : AbstractValidator<ContentValueDto>, IIgnoreOnAssemblyScan
 {
+    private const string LegacyHtmlMediaType = "text/html";
+
     public ContentValueDtoValidator(DialogTransmissionContentType contentType)
     {
         RuleFor(x => x.MediaType)
@@ -21,12 +26,10 @@ internal sealed class ContentValueDtoValidator : AbstractValidator<ContentValueD
             .Must(value => value is not null && contentType.AllowedMediaTypes.Contains(value))
             .WithMessage($"{{PropertyName}} '{{PropertyValue}}' is not allowed for content type {contentType.Name}. " +
                          $"Allowed media types are {string.Join(", ", contentType.AllowedMediaTypes.Select(x => $"'{x}'"))}");
-        RuleForEach(x => x.Value)
-            .ContainsValidHtml()
-            .When(x => x.MediaType is not null and MediaTypes.Html);
+
         RuleForEach(x => x.Value)
             .ContainsValidMarkdown()
-            .When(x => x.MediaType is not null and MediaTypes.Markdown);
+            .When(x => x.MediaType is MediaTypes.Markdown);
         RuleForEach(x => x.Value)
             .Must(x => Uri.TryCreate(x.Value, UriKind.Absolute, out var uri) && uri.Scheme == Uri.UriSchemeHttps)
             .When(x => x.MediaType is not null && x.MediaType.StartsWith(MediaTypes.EmbeddablePrefix, StringComparison.InvariantCultureIgnoreCase))
@@ -36,19 +39,20 @@ internal sealed class ContentValueDtoValidator : AbstractValidator<ContentValueD
             .SetValidator(_ => new LocalizationDtosValidator(contentType.MaxLength));
     }
 
-    public ContentValueDtoValidator(DialogContentType contentType)
+    public ContentValueDtoValidator(DialogContentType contentType, IUser? user = null)
     {
+        var allowedMediaTypes = GetAllowedMediaTypes(contentType, user);
         RuleFor(x => x.MediaType)
             .NotEmpty()
-            .Must(value => value is not null && contentType.AllowedMediaTypes.Contains(value))
+            .Must(value => value is not null && allowedMediaTypes.Contains(value))
             .WithMessage($"{{PropertyName}} '{{PropertyValue}}' is not allowed for content type {contentType.Name}. " +
-                         $"Allowed media types are {string.Join(", ", contentType.AllowedMediaTypes.Select(x => $"'{x}'"))}");
+                         $"Allowed media types are {string.Join(", ", allowedMediaTypes.Select(x => $"'{x}'"))}");
         RuleForEach(x => x.Value)
             .ContainsValidHtml()
-            .When(x => x.MediaType is not null and MediaTypes.Html);
+            .When(x => x.MediaType.Equals(LegacyHtmlMediaType, StringComparison.OrdinalIgnoreCase));
         RuleForEach(x => x.Value)
             .ContainsValidMarkdown()
-            .When(x => x.MediaType is not null and MediaTypes.Markdown);
+            .When(x => x.MediaType is MediaTypes.Markdown);
         RuleForEach(x => x.Value)
             .Must(x => Uri.TryCreate(x.Value, UriKind.Absolute, out var uri) && uri.Scheme == Uri.UriSchemeHttps)
             .When(x => x.MediaType is not null && x.MediaType.StartsWith(MediaTypes.EmbeddablePrefix, StringComparison.InvariantCultureIgnoreCase))
@@ -56,5 +60,19 @@ internal sealed class ContentValueDtoValidator : AbstractValidator<ContentValueD
         RuleFor(x => x.Value)
             .NotEmpty()
             .SetValidator(_ => new LocalizationDtosValidator(contentType.MaxLength));
+    }
+
+    private static string[] GetAllowedMediaTypes(DialogContentType contentType, IUser? user)
+    {
+        if (user == null)
+        {
+            return contentType.AllowedMediaTypes;
+        }
+
+        var allowHtmlSupport = user.GetPrincipal().HasScope(Constants.LegacyHtmlScope);
+
+        return allowHtmlSupport
+            ? contentType.AllowedMediaTypes.Append(LegacyHtmlMediaType).ToArray()
+            : contentType.AllowedMediaTypes;
     }
 }

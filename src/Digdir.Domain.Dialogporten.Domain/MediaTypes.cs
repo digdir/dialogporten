@@ -7,5 +7,4 @@ public static class MediaTypes
 
     public const string Markdown = "text/markdown";
     public const string PlainText = "text/plain";
-    public const string Html = "text/html";
 }
