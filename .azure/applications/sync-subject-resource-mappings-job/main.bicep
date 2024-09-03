@@ -29,11 +29,13 @@ param jobSchedule string
 var namePrefix = 'dp-be-${environment}'
 var baseImageUrl = 'ghcr.io/digdir/dialogporten-'
 var tags = {
+  FullName: '${namePrefix}-sync-subject-resource-mappings'
   Environment: environment
   Product: 'Dialogporten'
   Description: 'Synchronizes subject resource mappings'
+  JobType: 'Scheduled'
 }
-var name = '${namePrefix}-sr-sync'
+var name = '${namePrefix}-sync-sr-mappings'
 
 resource containerAppEnvironment 'Microsoft.App/managedEnvironments@2024-03-01' existing = {
   name: containerAppEnvironmentName
