@@ -5,8 +5,8 @@ namespace Digdir.Domain.Dialogporten.Application.Externals;
 
 public interface ISubjectResourceRepository
 {
-    Task<int> Merge(List<MergableSubjectResource> subjectResource, CancellationToken cancellationToken);
-    Task<DateTimeOffset> GetLastUpdatedAt(CancellationToken cancellationToken);
+    Task<int> Merge(List<MergableSubjectResource> subjectResource, CancellationToken cancellationToken = default);
+    Task<DateTimeOffset> GetLastUpdatedAt(TimeSpan? timeSkew = null, CancellationToken cancellationToken = default);
 }
 
 public class MergableSubjectResource : SubjectResource

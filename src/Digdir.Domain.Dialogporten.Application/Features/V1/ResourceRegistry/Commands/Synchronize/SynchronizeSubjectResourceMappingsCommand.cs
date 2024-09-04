@@ -38,15 +38,18 @@ internal sealed class SynchronizeResourceRegistryCommandHandler : IRequestHandle
 
     public async Task<SynchronizeResourceRegistryResult> Handle(SynchronizeSubjectResourceMappingsCommand request, CancellationToken cancellationToken)
     {
-        // 1. Get the last updated timestamp from parameter, or the database, or use a default
-        var lastUpdated = request.Since ?? await _subjectResourceRepository.GetLastUpdatedAt(cancellationToken);
+        // 1. Get the last updated timestamp from parameter, or the database (with a time skew), or use a default
+        var lastUpdated = request.Since
+            ?? await _subjectResourceRepository.GetLastUpdatedAt(
+                timeSkew: TimeSpan.FromMicroseconds(1),
+                cancellationToken: cancellationToken);
 
-        _logger.LogInformation("Fetching updated subject resources since {LastUpdated:O}.", lastUpdated);
+        _logger.LogInformation("Fetching updated subject-resources since {LastUpdated:O}.", lastUpdated);
 
-        var syncTime = DateTimeOffset.Now;
-        var mergeCount = 0;
         try
         {
+            var mergeCount = 0;
+            var syncTime = DateTimeOffset.Now;
             await _unitOfWork.BeginTransactionAsync(cancellationToken);
             await foreach (var resourceBatch in _resourceRegistry
                 .GetUpdatedSubjectResources(lastUpdated, request.BatchSize ?? DefaultBatchSize, cancellationToken))
@@ -54,23 +57,27 @@ internal sealed class SynchronizeResourceRegistryCommandHandler : IRequestHandle
                 var mergeableSubjectResources = resourceBatch
                     .Select(x => x.ToMergableSubjectResource(syncTime))
                     .ToList();
-                mergeCount += await _subjectResourceRepository.Merge(mergeableSubjectResources, cancellationToken);
+                var batchMergeCount = await _subjectResourceRepository.Merge(mergeableSubjectResources, cancellationToken);
+                _logger.LogInformation("{BatchMergeCount} subject-resources added to transaction.", batchMergeCount);
+                mergeCount += batchMergeCount;
             }
+
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            if (mergeCount > 0)
+            {
+                _logger.LogInformation("Successfully synced {UpdatedAmount} total subject-resources. Changes committed.", mergeCount);
+            }
+            else
+            {
+                _logger.LogInformation("Subject-resources are already up-to-date.");
+            }
+
+            return new Success();
         }
         catch (Exception e)
         {
-            _logger.LogError(e,
-                "Failed to sync subject-resources. {UpdatedAmount} subject-resources were synced before the error occurred.",
-                mergeCount);
+            _logger.LogError(e, "Failed to sync subject-resources. Rolling back transaction.");
             throw;
         }
-
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
-        if (mergeCount > 0)
-        {
-            _logger.LogInformation("Successfully synced {UpdatedAmount} subject resources.", mergeCount);
-        }
-
-        return new Success();
     }
 }
