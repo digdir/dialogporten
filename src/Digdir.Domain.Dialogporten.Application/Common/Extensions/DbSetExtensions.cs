@@ -29,7 +29,7 @@ public static class DbSetExtensions
             parameters.Add(item.Value);
         }
 
-        foreach (var item in authorizedResources.RolesByParties)
+        foreach (var item in authorizedResources.SubjectsByParties)
         {
             sb.Append(" OR (\"Party\" = @p")
                 .Append(parameters.Count)

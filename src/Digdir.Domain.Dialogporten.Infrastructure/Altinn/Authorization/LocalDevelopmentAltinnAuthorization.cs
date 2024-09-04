@@ -26,7 +26,7 @@ internal sealed class LocalDevelopmentAltinnAuthorization : IAltinnAuthorization
         return Task.FromResult(new DialogDetailsAuthorizationResult { AuthorizedAltinnActions = dialogEntity.GetAltinnActions() });
     }
 
-    private static List<string> _allRolesCache = new();
+    private static List<string> _allSubjectsCache = new();
     private static List<string> _allPartiesCache = new();
     private static List<string> _allResourcesCache = new();
     private static readonly Random Rnd = new();
@@ -56,9 +56,9 @@ internal sealed class LocalDevelopmentAltinnAuthorization : IAltinnAuthorization
         };
         */
 
-        if (_allRolesCache.Count == 0)
+        if (_allSubjectsCache.Count == 0)
         {
-            _allRolesCache = await _db.SubjectResources.Select(x => x.Role).Distinct().ToListAsync(cancellationToken);
+            _allSubjectsCache = await _db.SubjectResources.Select(x => x.Subject).Distinct().ToListAsync(cancellationToken);
             _allPartiesCache = await _db.Dialogs.Select(x => x.Party).Distinct().ToListAsync(cancellationToken);
             _allResourcesCache = await _db.Dialogs.Select(x => x.ServiceResource).Distinct().ToListAsync(cancellationToken);
         }
@@ -66,7 +66,7 @@ internal sealed class LocalDevelopmentAltinnAuthorization : IAltinnAuthorization
         var authorizedResources = new DialogSearchAuthorizationResult
         {
             ResourcesByParties = new(),
-            RolesByParties = new()
+            SubjectsByParties = new()
         };
 
         // Get 10-30 random parties
@@ -98,23 +98,24 @@ internal sealed class LocalDevelopmentAltinnAuthorization : IAltinnAuthorization
             do
             {
                 party = _allPartiesCache[Rnd.Next(0, _allPartiesCache.Count - 1)];
-            } while (authorizedResources.RolesByParties.ContainsKey(party));
+            } while (authorizedResources.SubjectsByParties.ContainsKey(party));
 
-            // Get 10-30 random roles
-            var roles = new List<string>();
-            var numRoles = Rnd.Next(10, 30);
-            for (var j = 0; j < numRoles; j++)
+            // Get 10-30 random subjects (roles, access packages)
+            var subjects = new List<string>();
+            var numSubjects = Rnd.Next(10, 30);
+            for (var j = 0; j < numSubjects; j++)
             {
-                var role = _allRolesCache[Rnd.Next(0, _allRolesCache.Count - 1)];
-                roles.Add(role);
+                var subject = _allSubjectsCache[Rnd.Next(0, _allSubjectsCache.Count - 1)];
+                subjects.Add(subject);
             }
 
-            authorizedResources.RolesByParties.Add(party, roles);
+            authorizedResources.SubjectsByParties.Add(party, subjects);
         }
 
         return authorizedResources;
     }
 
-    public async Task<AuthorizedPartiesResult> GetAuthorizedParties(IPartyIdentifier authenticatedParty, CancellationToken cancellationToken = default)
+    [SuppressMessage("Performance", "CA1822:Mark members as static")]
+    public async Task<AuthorizedPartiesResult> GetAuthorizedParties(IPartyIdentifier authenticatedParty, bool _ = false, CancellationToken __ = default)
         => await Task.FromResult(new AuthorizedPartiesResult { AuthorizedParties = [new() { Name = "Local Party", Party = authenticatedParty.FullId, IsCurrentEndUser = true }] });
 }

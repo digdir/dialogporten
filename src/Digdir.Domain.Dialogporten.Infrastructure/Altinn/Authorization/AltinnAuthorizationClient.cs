@@ -145,7 +145,7 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
                 .Where(kv => kv.Value.Count != 0)
                 .ToDictionary(kv => kv.Key, kv => kv.Value),
 
-            RolesByParties = authorizedParties.AuthorizedParties
+            SubjectsByParties = authorizedParties.AuthorizedParties
                 .ToDictionary(
                     p => p.Party,
                     p => p.AuthorizedRoles)

@@ -129,6 +129,7 @@ public static class InfrastructureExtensions
                     ]);
             })
             .AddHostedService<DevelopmentMigratorHostedService>()
+            .AddHostedService<DevelopmentSubjectResourceSyncHostedService>()
 
             // Scoped
             .AddScoped<IDialogDbContext>(x => x.GetRequiredService<DialogDbContext>())

@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(DialogDbContext))]
-    [Migration("20240731072132_RemoveLegacyUserType")]
+    [Migration("20240904072132_RemoveLegacyUserType")]
     partial class RemoveLegacyUserType
     {
         /// <inheritdoc />
