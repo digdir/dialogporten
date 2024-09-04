@@ -26,6 +26,8 @@ using Digdir.Domain.Dialogporten.Infrastructure.Altinn.Events;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.NameRegistry;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.OrganizationRegistry;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.ResourceRegistry;
+using Digdir.Domain.Dialogporten.Infrastructure.Persistence.Configurations.Actors;
+using Digdir.Domain.Dialogporten.Infrastructure.Persistence.Repositories;
 using ZiggyCreatures.Caching.Fusion;
 using ZiggyCreatures.Caching.Fusion.NullObjects;
 
@@ -121,7 +123,10 @@ public static class InfrastructureExtensions
                     {
                         o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
                     })
-                    .AddInterceptors(services.GetRequiredService<ConvertDomainEventsToOutboxMessagesInterceptor>());
+                    .AddInterceptors([
+                        services.GetRequiredService<PopulateActorNameInterceptor>(),
+                        services.GetRequiredService<ConvertDomainEventsToOutboxMessagesInterceptor>()
+                    ]);
             })
             .AddHostedService<DevelopmentMigratorHostedService>()
 
@@ -130,8 +135,10 @@ public static class InfrastructureExtensions
             .AddScoped<IUnitOfWork, UnitOfWork>()
 
             // Transient
+            .AddTransient<ISubjectResourceRepository, SubjectResourceRepository>()
             .AddTransient<OutboxDispatcher>()
             .AddTransient<ConvertDomainEventsToOutboxMessagesInterceptor>()
+            .AddTransient<PopulateActorNameInterceptor>()
 
             // Decorate
             .Decorate(typeof(INotificationHandler<>), typeof(IdempotentDomainEventHandler<>));
@@ -153,7 +160,7 @@ public static class InfrastructureExtensions
                 client.BaseAddress = services.GetRequiredService<IOptions<InfrastructureSettings>>().Value.AltinnCdn.BaseUri)
             .AddPolicyHandlerFromRegistry(PollyPolicy.DefaultHttpRetryPolicy);
 
-        services.AddMaskinportenHttpClient<IPersonNameRegistry, PersonNameRegistryClient, SettingsJwkClientDefinition>(
+        services.AddMaskinportenHttpClient<IPartyNameRegistry, PartyNameRegistryClient, SettingsJwkClientDefinition>(
                 infrastructureConfigurationSection,
                 x => x.ClientSettings.ExhangeToAltinnToken = true)
             .ConfigureHttpClient((services, client) =>
@@ -250,8 +257,11 @@ public static class InfrastructureExtensions
                 SkipMemoryCache = settings.SkipMemoryCache
             })
             .WithRegisteredSerializer()
-            .WithRegisteredDistributedCache()
-            .WithRegisteredBackplane();
+            // If Redis is disabled (eg. in local development or non-web runtimes), we must instruct FusionCache to
+            // allow the use of InMemoryDistributedCache (it is by default ignored as a IDistributedCache implementation)
+            // TryWithRegisteredBackplane is used to ensure that we can continue without Redis as backplane
+            .WithRegisteredDistributedCache(ignoreMemoryDistributedCache: false)
+            .TryWithRegisteredBackplane();
 
         return services;
     }

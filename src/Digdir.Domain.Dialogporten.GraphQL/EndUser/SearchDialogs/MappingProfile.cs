@@ -13,6 +13,8 @@ public class MappingProfile : Profile
 
         CreateMap<PaginatedList<SearchDialogDto>, SearchDialogsPayload>();
 
+        CreateMap<SearchDialogContentDto, SearchContent>();
+
         CreateMap<SearchDialogDto, SearchDialog>();
     }
 }

@@ -5,8 +5,11 @@ using Digdir.Domain.Dialogporten.Domain.Outboxes;
 using Digdir.Library.Entity.Abstractions.Features.Identifiable;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Attachments;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Contents;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions.Contents;
 using Digdir.Domain.Dialogporten.Domain.SubjectResources;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace Digdir.Domain.Dialogporten.Application.Externals;
 
@@ -14,21 +17,35 @@ public interface IDialogDbContext
 {
     DbSet<DialogEntity> Dialogs { get; }
     DbSet<DialogStatus> DialogStatuses { get; }
+
     DbSet<DialogActivity> DialogActivities { get; }
+    DbSet<DialogActivityType> DialogActivityTypes { get; }
+
+    DbSet<DialogTransmission> DialogTransmissions { get; }
+    DbSet<DialogTransmissionType> DialogTransmissionTypes { get; }
+    DbSet<DialogTransmissionContent> DialogTransmissionContents { get; }
+    DbSet<DialogTransmissionContentType> DialogTransmissionContentTypes { get; }
+
     DbSet<DialogApiAction> DialogApiActions { get; }
     DbSet<DialogApiActionEndpoint> DialogApiActionEndpoints { get; }
+
     DbSet<DialogGuiAction> DialogGuiActions { get; }
-    DbSet<DialogAttachment> DialogAttachments { get; }
-    DbSet<DialogAttachmentUrl> DialogAttachmentUrls { get; }
-    DbSet<DialogGuiActionPriority> DialogGuiActionTypes { get; }
-    DbSet<DialogActivityType> DialogActivityTypes { get; }
+    DbSet<DialogGuiActionPriority> DialogGuiActionPriority { get; }
+
+    DbSet<DialogSeenLog> DialogSeenLog { get; }
+    DbSet<DialogUserType> DialogUserTypes { get; }
+
+    DbSet<DialogSearchTag> DialogSearchTags { get; }
+
+    DbSet<DialogContent> DialogContents { get; }
+    DbSet<DialogContentType> DialogContentTypes { get; }
 
     DbSet<OutboxMessage> OutboxMessages { get; }
     DbSet<OutboxMessageConsumer> OutboxMessageConsumers { get; }
-    DbSet<DialogSeenLog> DialogSeenLog { get; }
+    DbSet<SubjectResource> SubjectResources { get; }
 
     /// <summary>
-    /// Validate a property on the <typeparamref name="TEntity"/> using a lambda 
+    /// Validate a property on the <typeparamref name="TEntity"/> using a lambda
     /// expression to specify the predicate only when the property is modified.
     /// </summary>
     /// <typeparam name="TEntity"></typeparam>

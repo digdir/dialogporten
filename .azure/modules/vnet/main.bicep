@@ -4,6 +4,9 @@ param namePrefix string
 @description('The location where the resources will be deployed')
 param location string
 
+@description('Tags to apply to resources')
+param tags object
+
 resource defaultNSG 'Microsoft.Network/networkSecurityGroups@2023-11-01' = {
   name: '${namePrefix}-default-nsg'
   location: location
@@ -40,6 +43,7 @@ resource defaultNSG 'Microsoft.Network/networkSecurityGroups@2023-11-01' = {
       }
     ]
   }
+  tags: tags
 }
 
 // https://learn.microsoft.com/en-us/azure/container-apps/firewall-integration?tabs=consumption-only
@@ -139,6 +143,7 @@ resource containerAppEnvironmentNSG 'Microsoft.Network/networkSecurityGroups@202
       }
     ]
   }
+  tags: tags
 }
 
 resource postgresqlNSG 'Microsoft.Network/networkSecurityGroups@2023-11-01' = {
@@ -177,9 +182,10 @@ resource postgresqlNSG 'Microsoft.Network/networkSecurityGroups@2023-11-01' = {
       }
     ]
   }
+  tags: tags
 }
 
-resource redisNSG 'Microsoft.Network/networkSecurityGroups@2023-09-01' = {
+resource redisNSG 'Microsoft.Network/networkSecurityGroups@2023-11-01' = {
   name: '${namePrefix}-redis-nsg'
   location: location
   properties: {
@@ -215,6 +221,7 @@ resource redisNSG 'Microsoft.Network/networkSecurityGroups@2023-09-01' = {
       }
     ]
   }
+  tags: tags
 }
 
 resource serviceBusNSG 'Microsoft.Network/networkSecurityGroups@2023-11-01' = {
@@ -253,6 +260,7 @@ resource serviceBusNSG 'Microsoft.Network/networkSecurityGroups@2023-11-01' = {
       }
     ]
   }
+  tags: tags
 }
 
 resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-11-01' = {
@@ -328,6 +336,7 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-11-01' = {
       }
     ]
   }
+  tags: tags
 }
 
 output virtualNetworkName string = virtualNetwork.name

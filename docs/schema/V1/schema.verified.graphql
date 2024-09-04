@@ -16,8 +16,15 @@ type Activity {
   extendedType: URL
   type: ActivityType!
   relatedActivityId: UUID
-  performedBy: String
+  transmissionId: UUID
+  performedBy: Actor!
   description: [Localization!]!
+}
+
+type Actor {
+  actorType: ActorType
+  actorId: String
+  actorName: String
 }
 
 type ApiAction {
@@ -58,6 +65,7 @@ type AuthorizedParty {
   partyType: String!
   isDeleted: Boolean!
   hasKeyRole: Boolean!
+  isCurrentEndUser: Boolean!
   isMainAdministrator: Boolean!
   isAccessManager: Boolean!
   hasOnlyAccessToSubParties: Boolean!
@@ -65,9 +73,17 @@ type AuthorizedParty {
 }
 
 type Content {
-  type: ContentType!
+  title: ContentValue!
+  summary: ContentValue!
+  senderName: ContentValue
+  additionalInfo: ContentValue
+  extendedStatus: ContentValue
+  mainContentReference: ContentValue
+}
+
+type ContentValue {
   value: [Localization!]!
-  mediaType: String
+  mediaType: String!
 }
 
 type Dialog {
@@ -87,12 +103,13 @@ type Dialog {
   updatedAt: DateTime!
   dialogToken: String
   status: DialogStatus!
-  content: [Content!]!
+  content: Content!
   attachments: [Attachment!]!
   guiActions: [GuiAction!]!
   apiActions: [ApiAction!]!
   activities: [Activity!]!
   seenSinceLastUpdate: [SeenLog!]!
+  transmissions: [Transmission!]!
 }
 
 type DialogByIdDeleted implements DialogByIdError {
@@ -127,13 +144,20 @@ type GuiAction {
 
 type Localization {
   value: String!
-  cultureCode: String!
+  languageCode: String!
 }
 
 type Queries @authorize(policy: "enduser") {
   dialogById(dialogId: UUID!): DialogByIdPayload!
   searchDialogs(input: SearchDialogInput!): SearchDialogsPayload!
   parties: [AuthorizedParty!]!
+}
+
+type SearchContent {
+  title: ContentValue!
+  summary: ContentValue!
+  senderName: ContentValue
+  extendedStatus: ContentValue
 }
 
 type SearchDialog {
@@ -150,7 +174,7 @@ type SearchDialog {
   dueAt: DateTime
   status: DialogStatus!
   latestActivity: Activity
-  content: [Content!]!
+  content: SearchContent!
   seenSinceLastUpdate: [SeenLog!]!
 }
 
@@ -173,9 +197,26 @@ type SearchDialogsPayload {
 type SeenLog {
   id: UUID!
   seenAt: DateTime!
-  endUserIdHash: String!
-  endUserName: String
+  seenBy: Actor!
   isCurrentEndUser: Boolean!
+}
+
+type Transmission {
+  id: UUID!
+  createdAt: DateTime!
+  authorizationAttribute: String
+  isAuthorized: Boolean!
+  extendedType: URL
+  relatedTransmissionId: UUID
+  type: TransmissionType!
+  sender: Actor!
+  content: TransmissionContent!
+  attachments: [Attachment!]!
+}
+
+type TransmissionContent {
+  title: ContentValue!
+  summary: ContentValue!
 }
 
 input SearchDialogInput {
@@ -205,23 +246,28 @@ input SearchDialogInput {
   dueBefore: DateTime
   "Search string for free text search. Will attempt to fuzzily match in all free text fields in the aggregate"
   search: String
-  "Limit free text search to texts with this culture code, e.g. \"nb-NO\". Default: search all culture codes"
-  searchCultureCode: String
+  "Limit free text search to texts with this language code, e.g. 'no', 'en'. Culture codes will be normalized to neutral language codes (ISO 639). Default: search all culture codes"
+  searchLanguageCode: String
 }
 
 enum ActivityType {
-  "Refers to a submission made by a party that has been received by the service provider."
-  SUBMISSION
-  "Indicates feedback from the service provider on a submission. Contains a reference to the current submission."
-  FEEDBACK
-  "Information from the service provider, not (directly) related to any submission."
+  "Refers to a dialog that has been created."
+  DIALOG_CREATED
+  "Refers to a dialog that has been closed."
+  DIALOG_CLOSED
+  "Information from the service provider, not (directly) related to any transmission."
   INFORMATION
-  "Used to indicate an error situation, typically on a submission. Contains a service-specific activityErrorCode."
-  ERROR
-  "Indicates that the dialog is closed for further changes. This typically happens when the dialog is completed or deleted."
-  CLOSED
-  "When the dialog is forwarded (delegated access) by someone with access to others."
-  FORWARDED
+  "Refers to a transmission that has been opened."
+  TRANSMISSION_OPENED
+  "Indicates that payment has been made."
+  PAYMENT_MADE
+  "Indicates that a signature has been provided."
+  SIGNATURE_PROVIDED
+}
+
+enum ActorType {
+  PARTY_REPRESENTATIVE
+  SERVICE_OWNER
 }
 
 enum ApplyPolicy {
@@ -235,26 +281,18 @@ enum AttachmentUrlConsumer {
   API
 }
 
-enum ContentType {
-  TITLE
-  SENDER_NAME
-  SUMMARY
-  ADDITIONAL_INFO
-  EXTENDED_STATUS
-}
-
 enum DialogStatus {
-  "New"
+  "The dialogue is considered new. Typically used for simple messages that do not require any interaction, or as an initial step for dialogues. This is the default."
   NEW
-  "In progress. General status used for dialog services where further user input is expected."
+  "Started. In a serial process, this is used to indicate that, for example, a form filling is ongoing."
   IN_PROGRESS
-  "Waiting for feedback from the service provider"
-  WAITING
-  "The dialog is in a state where it is waiting for signing. Typically the last step after all completion is carried out and validated."
+  "Equivalent to \"InProgress\", but will be used by the workspace\/frontend for display purposes."
   SIGNING
-  "The dialog was cancelled. This typically removes the dialog from normal GUI views."
-  CANCELLED
-  "The dialog was completed. This typically moves the dialog to a GUI archive or similar."
+  "For processing by the service owner. In a serial process, this is used after a submission is made."
+  PROCESSING
+  "Used to indicate that the dialogue is in progress\/under work, but is in a state where the user must do something - for example, correct an error, or other conditions that hinder further processing."
+  REQUIRES_ATTENTION
+  "The dialogue was completed. This typically means that the dialogue is moved to a GUI archive or similar."
   COMPLETED
 }
 
@@ -274,6 +312,25 @@ enum HttpVerb {
   OPTIONS
   TRACE
   CONNECT
+}
+
+enum TransmissionType {
+  "For general information, not related to any submissions"
+  INFORMATION
+  "Feedback\/receipt accepting a previous submission"
+  ACCEPTANCE
+  "Feedback\/error message rejecting a previous submission"
+  REJECTION
+  "Question\/request for more information"
+  REQUEST
+  "Critical information about the process"
+  ALERT
+  "Information about a formal decision (\"resolution\")"
+  DECISION
+  "A normal submission of some information\/form"
+  SUBMISSION
+  "A submission correcting\/overriding some previously submitted information"
+  CORRECTION
 }
 
 directive @authorize("The name of the authorization policy that determines access to the annotated resource." policy: String "Roles that are allowed to access the annotated resource." roles: [String!] "Defines when when the authorize directive shall be applied.By default the authorize directives are applied during the validation phase." apply: ApplyPolicy! = BEFORE_RESOLVER) repeatable on OBJECT | FIELD_DEFINITION

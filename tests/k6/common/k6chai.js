@@ -1,6 +1,8 @@
 
 import { default as chai, expect } from 'https://jslib.k6.io/k6chaijs/4.3.4.3/index.js';
 
+chai.config.aggregateChecks = false;
+
 function expectStatusFor(response) {
     return {
         to: {
@@ -28,42 +30,41 @@ function expectStatusFor(response) {
     };
 }
 
-
 chai.use(function(chai, utils) {
-    chai.Assertion.addMethod('hasLocalizedText', function(expectedValue, cultureCode) {
+    chai.Assertion.addMethod('hasLocalizedText', function(expectedValue, languageCode) {
       const obj = this._obj; // current object under assertion
-  
+
       // Ensure the current object is an array (i.e., the 'name' property in your case)
       new chai.Assertion(obj).to.be.an('array');
-  
+
       let foundItem;
-      if (cultureCode) {
-        // Check if an item with the specified cultureCode and value exists
-        foundItem = obj.find(item => item.cultureCode.toLowerCase() === cultureCode.toLowerCase() && item.value === expectedValue);
+      if (languageCode) {
+        // Check if an item with the specified languageCode and value exists
+        foundItem = obj.find(item => item.languageCode.toLowerCase() === languageCode.toLowerCase() && item.value === expectedValue);
       } else {
         // Check if any item with the specified value exists
         foundItem = obj.find(item => item.value === expectedValue);
       }
-  
+
       // Assertion
       this.assert(
         foundItem !== undefined,
-        `expected #{this} to have a localized text of ${expectedValue}${cultureCode ? ` with culture code ${cultureCode}` : ''}`,
-        `expected #{this} not to have a localized text of ${expectedValue}${cultureCode ? ` with culture code ${cultureCode}` : ''}`
+        `expected #{this} to have a localized text of ${expectedValue}${languageCode ? ` with language code ${languageCode}` : ''}`,
+        `expected #{this} not to have a localized text of ${expectedValue}${languageCode ? ` with language code ${languageCode}` : ''}`
       );
     });
 
     chai.Assertion.addMethod('haveContentOfType', function(type) {
       const obj = this._obj; // current object under assertion
 
-      // Ensure the current object has a 'content' property which is an array
-      new chai.Assertion(obj).to.have.property('content').that.is.an('array');
+      // Ensure the current object has a 'content' property which is an object
+      new chai.Assertion(obj).to.have.property('content').that.is.an('object');
 
-      // Filter content for the specified type
-      const filteredContent = obj.content.filter(item => item.type === type);
+      // Fetch the specified content property
+      const contentProperty = obj.content[`${type}`];
 
-      // Pass the filtered content for further assertions
-      utils.flag(this, 'object', filteredContent[0].value);
+      // Pass the specified content property value array for further assertions
+      utils.flag(this, 'object', contentProperty.value);
     });
 
   });

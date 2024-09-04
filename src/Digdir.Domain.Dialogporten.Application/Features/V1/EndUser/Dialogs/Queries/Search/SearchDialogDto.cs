@@ -1,60 +1,49 @@
-﻿using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
+﻿using System.Text.Json.Serialization;
+using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Content;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Contents;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Queries.Search;
 
-public sealed class SearchDialogDto
+public sealed class SearchDialogDto : SearchDialogDtoBase
 {
-    public Guid Id { get; set; }
-    public string Org { get; set; } = null!;
-    public string ServiceResource { get; set; } = null!;
-    public string ServiceResourceType { get; set; } = null!;
-    public string Party { get; set; } = null!;
-    public int? Progress { get; set; }
-    public int? GuiAttachmentCount { get; set; }
-    public string? ExtendedStatus { get; set; }
-    public DateTimeOffset CreatedAt { get; set; }
-    public DateTimeOffset UpdatedAt { get; set; }
-    public DateTimeOffset? DueAt { get; set; }
-
-    public DialogStatus.Values Status { get; set; }
-
-    public SearchDialogDialogActivityDto? LatestActivity { get; set; }
-
-    public List<SearchDialogContentDto> Content { get; set; } = [];
-    public List<SearchDialogDialogSeenLogDto> SeenSinceLastUpdate { get; set; } = [];
-}
-
-public class SearchDialogDialogSeenLogDto
-{
-    public Guid Id { get; set; }
-    public DateTimeOffset SeenAt { get; set; }
-
-    public string EndUserIdHash { get; set; } = null!;
-
-    public string? EndUserName { get; set; }
-
-    public bool IsCurrentEndUser { get; set; }
+    /// <summary>
+    /// The content of the dialog in search results
+    /// </summary>
+    [JsonPropertyOrder(100)] // ILU MAGNUS
+    public SearchDialogContentDto Content { get; set; } = null!;
 }
 
 public sealed class SearchDialogContentDto
 {
-    public DialogContentType.Values Type { get; set; }
-    public List<LocalizationDto> Value { get; set; } = [];
+    /// <summary>
+    /// The title of the dialog.
+    /// </summary>
+    public ContentValueDto Title { get; set; } = null!;
+
+    /// <summary>
+    /// A short summary of the dialog and its current state.
+    /// </summary>
+    public ContentValueDto Summary { get; set; } = null!;
+
+    /// <summary>
+    /// Overridden sender name. If not supplied, assume "org" as the sender name.
+    /// </summary>
+    public ContentValueDto? SenderName { get; set; }
+
+    /// <summary>
+    /// Used as the human-readable label used to describe the "ExtendedStatus" field.
+    /// </summary>
+    public ContentValueDto? ExtendedStatus { get; set; }
 }
 
-public sealed class SearchDialogDialogActivityDto
+/// <summary>
+/// TOOD: Discuss this with the team later. It works for now
+/// This class is used in order to keep using ProjectTo and existing PaginationList code.
+/// We first map to this using ProjectTo, then map to the new DialogContent structure
+/// in the SearchDialog handlers, after EF core is done loading the data.
+/// Then we create a new PaginatedList with the outwards facing dto
+/// </summary>
+public sealed class IntermediateSearchDialogDto : SearchDialogDtoBase
 {
-    public Guid Id { get; set; }
-    public DateTimeOffset? CreatedAt { get; set; }
-    public Uri? ExtendedType { get; set; }
-
-    public DialogActivityType.Values Type { get; set; }
-
-    public Guid? RelatedActivityId { get; set; }
-
-    public string? PerformedBy { get; set; }
-    public List<LocalizationDto> Description { get; set; } = [];
+    public List<DialogContent> Content { get; set; } = [];
 }

@@ -1,5 +1,7 @@
 ﻿using System.Collections.ObjectModel;
+using System.Reflection;
 using System.Text.Json;
+using AutoMapper;
 using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
@@ -29,14 +31,21 @@ namespace Digdir.Domain.Dialogporten.Application.Integration.Tests.Common;
 
 public class DialogApplication : IAsyncLifetime
 {
+    private IMapper? _mapper;
     private Respawner _respawner = null!;
     private ServiceProvider _rootProvider = null!;
     private readonly PostgreSqlContainer _dbContainer = new PostgreSqlBuilder()
-        .WithImage("postgres:15.4")
+        .WithImage("postgres:15.7")
         .Build();
 
     public async Task InitializeAsync()
     {
+        var config = new MapperConfiguration(cfg =>
+        {
+            cfg.AddMaps(Assembly.GetAssembly(typeof(ApplicationSettings)));
+        });
+        _mapper = config.CreateMapper();
+
         AssertionOptions.AssertEquivalencyUsing(options =>
         {
             //options.ExcludingMissingMembers();
@@ -61,7 +70,7 @@ public class DialogApplication : IAsyncLifetime
             .AddScoped<IUser, IntegrationTestUser>()
             .AddScoped<IResourceRegistry, LocalDevelopmentResourceRegistry>()
             .AddScoped<IServiceOwnerNameRegistry>(_ => CreateServiceOwnerNameRegistrySubstitute())
-            .AddScoped<IPersonNameRegistry>(_ => CreateNameRegistrySubstitute())
+            .AddScoped<IPartyNameRegistry>(_ => CreateNameRegistrySubstitute())
             .AddScoped<IOptions<ApplicationSettings>>(_ => CreateApplicationSettingsSubstitute())
             .AddScoped<IUnitOfWork, UnitOfWork>()
             .AddScoped<IAltinnAuthorization, LocalDevelopmentAltinnAuthorization>()
@@ -75,9 +84,9 @@ public class DialogApplication : IAsyncLifetime
         await BuildRespawnState();
     }
 
-    private static IPersonNameRegistry CreateNameRegistrySubstitute()
+    private static IPartyNameRegistry CreateNameRegistrySubstitute()
     {
-        var nameRegistrySubstitute = Substitute.For<IPersonNameRegistry>();
+        var nameRegistrySubstitute = Substitute.For<IPartyNameRegistry>();
 
         nameRegistrySubstitute
             .GetName(Arg.Any<string>(), Arg.Any<CancellationToken>())
@@ -143,6 +152,8 @@ public class DialogApplication : IAsyncLifetime
 
         return organizationRegistrySubstitute;
     }
+
+    public IMapper GetMapper() => _mapper!;
 
     public async Task DisposeAsync()
     {

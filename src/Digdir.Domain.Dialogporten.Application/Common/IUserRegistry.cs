@@ -2,6 +2,7 @@ using System.Diagnostics;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
+using Digdir.Domain.Dialogporten.Domain.Parties;
 using UserIdType = Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogUserType.Values;
 
 namespace Digdir.Domain.Dialogporten.Application.Common;
@@ -16,6 +17,14 @@ public sealed class UserId
 {
     public required UserIdType Type { get; set; }
     public required string ExternalId { get; init; }
+    public string ExternalIdWithPrefix => (Type switch
+    {
+        UserIdType.Person or UserIdType.ServiceOwnerOnBehalfOfPerson => NorwegianPersonIdentifier.PrefixWithSeparator,
+        UserIdType.SystemUser => SystemUserIdentifier.PrefixWithSeparator,
+        UserIdType.ServiceOwner => NorwegianOrganizationIdentifier.PrefixWithSeparator,
+        UserIdType.Unknown => string.Empty,
+        _ => throw new UnreachableException("Unknown UserIdType")
+    }) + ExternalId;
 }
 
 public sealed class UserInformation
@@ -27,14 +36,14 @@ public sealed class UserInformation
 public class UserRegistry : IUserRegistry
 {
     private readonly IUser _user;
-    private readonly IPersonNameRegistry _personNameRegistry;
+    private readonly IPartyNameRegistry _partyNameRegistry;
 
     public UserRegistry(
         IUser user,
-        IPersonNameRegistry personNameRegistry)
+        IPartyNameRegistry partyNameRegistry)
     {
         _user = user ?? throw new ArgumentNullException(nameof(user));
-        _personNameRegistry = personNameRegistry ?? throw new ArgumentNullException(nameof(personNameRegistry));
+        _partyNameRegistry = partyNameRegistry ?? throw new ArgumentNullException(nameof(partyNameRegistry));
     }
 
     public UserId GetCurrentUserId()
@@ -53,7 +62,7 @@ public class UserRegistry : IUserRegistry
         var userId = GetCurrentUserId();
         var name = userId.Type switch
         {
-            UserIdType.Person or UserIdType.ServiceOwnerOnBehalfOfPerson => await _personNameRegistry.GetName(userId.ExternalId, cancellationToken),
+            UserIdType.Person or UserIdType.ServiceOwnerOnBehalfOfPerson => await _partyNameRegistry.GetName(userId.ExternalIdWithPrefix, cancellationToken),
             UserIdType.SystemUser => "System User",// TODO: Implement when SystemUsers are introduced?
             UserIdType.Unknown => throw new UnreachableException(),
             UserIdType.ServiceOwner => throw new UnreachableException(),

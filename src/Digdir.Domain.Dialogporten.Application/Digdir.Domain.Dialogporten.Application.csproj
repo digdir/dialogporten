@@ -4,32 +4,32 @@
         <!-- In order to support doc blocks for Swagger generation in PatchDialogsController.cs -->
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <NoWarn>1591</NoWarn> <!-- Disable warnings for missing XML comments -->
-  </PropertyGroup>
+    </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="AutoMapper" Version="13.0.1" />
-        <PackageReference Include="HtmlAgilityPack" Version="1.11.61" />
-        <PackageReference Include="Markdig.Signed" Version="0.37.0" />
-        <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="8.0.0" />
-        <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.9.2" />
-        <PackageReference Include="MediatR" Version="12.3.0" />
-        <PackageReference Include="Npgsql" Version="8.0.3" />
-        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.4" />
-        <PackageReference Include="NSec.Cryptography" Version="24.4.0" />
-        <PackageReference Include="OneOf" Version="3.0.271" />
-        <PackageReference Include="OneOf.SourceGenerator" Version="3.0.271" />
-        <PackageReference Include="Scrutor" Version="4.2.2" />
+        <PackageReference Include="AutoMapper" Version="13.0.1"/>
+        <PackageReference Include="HtmlAgilityPack" Version="1.11.64"/>
+        <PackageReference Include="Markdig.Signed" Version="0.37.0"/>
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0"/>
+        <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="8.0.0"/>
+        <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.9.2"/>
+        <PackageReference Include="MediatR" Version="12.4.0"/>
+        <PackageReference Include="Npgsql" Version="8.0.3"/>
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.4"/>
+        <PackageReference Include="NSec.Cryptography" Version="24.4.0"/>
+        <PackageReference Include="OneOf" Version="3.0.271"/>
+        <PackageReference Include="OneOf.SourceGenerator" Version="3.0.271"/>
+        <PackageReference Include="Scrutor" Version="4.2.2"/>
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Digdir.Domain.Dialogporten.Domain\Digdir.Domain.Dialogporten.Domain.csproj" />
-        <ProjectReference Include="..\Digdir.Library.Entity.EntityFrameworkCore\Digdir.Library.Entity.EntityFrameworkCore.csproj" />
+        <ProjectReference Include="..\Digdir.Domain.Dialogporten.Domain\Digdir.Domain.Dialogporten.Domain.csproj"/>
+        <ProjectReference Include="..\Digdir.Library.Entity.EntityFrameworkCore\Digdir.Library.Entity.EntityFrameworkCore.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-        <InternalsVisibleTo Include="Digdir.Domain.Dialogporten.Application.Integration.Tests" />
-        <InternalsVisibleTo Include="Digdir.Domain.Dialogporten.Application.Unit.Tests" />
+        <InternalsVisibleTo Include="Digdir.Domain.Dialogporten.Application.Integration.Tests"/>
+        <InternalsVisibleTo Include="Digdir.Domain.Dialogporten.Application.Unit.Tests"/>
     </ItemGroup>
 
 </Project>

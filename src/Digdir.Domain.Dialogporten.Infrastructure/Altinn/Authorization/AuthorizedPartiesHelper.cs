@@ -12,21 +12,23 @@ internal static class AuthorizedPartiesHelper
     private const string MainAdministratorRoleCode = "HADM";
     private const string AccessManagerRoleCode = "ADMAI";
     private static readonly string[] KeyRoleCodes = ["DAGL", "LEDE", "INNH", "DTPR", "DTSO", "BEST"];
-    public static AuthorizedPartiesResult CreateAuthorizedPartiesResult(List<AuthorizedPartiesResultDto>? authorizedPartiesDto)
+    public static AuthorizedPartiesResult CreateAuthorizedPartiesResult(
+        List<AuthorizedPartiesResultDto>? authorizedPartiesDto,
+        AuthorizedPartiesRequest authorizedPartiesRequest)
     {
         var result = new AuthorizedPartiesResult();
         if (authorizedPartiesDto is not null)
         {
             foreach (var authorizedPartyDto in authorizedPartiesDto)
             {
-                result.AuthorizedParties.Add(MapFromDto(authorizedPartyDto));
+                result.AuthorizedParties.Add(MapFromDto(authorizedPartyDto, authorizedPartiesRequest.Value));
             }
         }
 
         return result;
     }
 
-    private static AuthorizedParty MapFromDto(AuthorizedPartiesResultDto dto)
+    private static AuthorizedParty MapFromDto(AuthorizedPartiesResultDto dto, string currentUserValue)
     {
         var party = dto.Type switch
         {
@@ -47,12 +49,13 @@ internal static class AuthorizedPartiesHelper
             },
             IsDeleted = dto.IsDeleted,
             HasKeyRole = dto.AuthorizedRoles.Exists(role => KeyRoleCodes.Contains(role)),
+            IsCurrentEndUser = dto.PersonId == currentUserValue,
             IsMainAdministrator = dto.AuthorizedRoles.Contains(MainAdministratorRoleCode),
             IsAccessManager = dto.AuthorizedRoles.Contains(AccessManagerRoleCode),
             HasOnlyAccessToSubParties = dto.OnlyHierarchyElementWithNoAccess,
             AuthorizedResources = GetPrefixedResources(dto.AuthorizedResources),
             AuthorizedRoles = GetPrefixedRoles(dto.AuthorizedRoles),
-            SubParties = dto.Subunits.Count > 0 ? dto.Subunits.Select(MapFromDto).ToList() : null
+            SubParties = dto.Subunits.Count > 0 ? dto.Subunits.Select(x => MapFromDto(x, currentUserValue)).ToList() : null
         };
     }
 

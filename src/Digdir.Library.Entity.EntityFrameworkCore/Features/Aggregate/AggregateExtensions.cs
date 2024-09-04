@@ -158,7 +158,10 @@ internal static class AggregateExtensions
 
         nodeByEntry[entry] = node = entry.ToAggregateNode();
         await nodeByEntry.AddAggregateParentChain(entry, cancellationToken);
-        await nodeByEntry.AddAggregateChildChain(entry, cancellationToken);
+
+        // This is not needed for now, as we don't need to send Deleted events for
+        // any aggregate children (as we did for the old DialogElement consept
+        // await nodeByEntry.AddAggregateChildChain(entry, cancellationToken);
         return node;
     }
 
@@ -216,12 +219,12 @@ internal static class AggregateExtensions
         foreach (var childForeignKey in parentEntry.Metadata.FindAggregateChildren())
         {
             var childNav = parentEntry.Navigation(childForeignKey.PrincipalToDependent!.Name);
-            // if (!childNav.IsLoaded)
-            // {
-            //     // Alternative 1: Throw!
-            //     // Alternative 2: Log Warning!
-            // }
-            await childNav.LoadAsync(cancellationToken);
+            if (!childNav.IsLoaded)
+            {
+                throw new InvalidOperationException(
+                    $"Aggregate child navigation property {childNav.Metadata.Name} on {parentEntry.Metadata.Name} is not loaded. " +
+                    $"The whole aggregate tree must be loaded before saving.");
+            }
             var currentValues = childNav.Metadata.IsCollection
                 ? childNav.CurrentValue as IEnumerable<object> ?? []
                 : Enumerable.Empty<object>()

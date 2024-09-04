@@ -29,7 +29,6 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
     private readonly IUserRegistry _userRegistry;
     private readonly IAltinnAuthorization _altinnAuthorization;
     private readonly IDialogTokenGenerator _dialogTokenGenerator;
-    private readonly IStringHasher _stringHasher;
 
     public GetDialogQueryHandler(
         IDialogDbContext db,
@@ -38,8 +37,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
         IClock clock,
         IUserRegistry userRegistry,
         IAltinnAuthorization altinnAuthorization,
-        IDialogTokenGenerator dialogTokenGenerator,
-        IStringHasher stringHasher)
+        IDialogTokenGenerator dialogTokenGenerator)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
@@ -48,7 +46,6 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
         _userRegistry = userRegistry ?? throw new ArgumentNullException(nameof(userRegistry));
         _altinnAuthorization = altinnAuthorization ?? throw new ArgumentNullException(nameof(altinnAuthorization));
         _dialogTokenGenerator = dialogTokenGenerator ?? throw new ArgumentNullException(nameof(dialogTokenGenerator));
-        _stringHasher = stringHasher;
     }
 
     public async Task<GetDialogResult> Handle(GetDialogQuery request, CancellationToken cancellationToken)
@@ -61,21 +58,29 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
         // layer behaviours in an expected manner. Therefore, we need to be a bit more verbose about it.
         var dialog = await _db.Dialogs
             .Include(x => x.Content.OrderBy(x => x.Id).ThenBy(x => x.CreatedAt))
-                .ThenInclude(x => x.Value.Localizations.OrderBy(x => x.CreatedAt).ThenBy(x => x.CultureCode))
+                .ThenInclude(x => x.Value.Localizations.OrderBy(x => x.CreatedAt).ThenBy(x => x.LanguageCode))
             .Include(x => x.Attachments.OrderBy(x => x.CreatedAt).ThenBy(x => x.Id))
-                .ThenInclude(x => x.DisplayName!.Localizations.OrderBy(x => x.CreatedAt).ThenBy(x => x.CultureCode))
+                .ThenInclude(x => x.DisplayName!.Localizations.OrderBy(x => x.CreatedAt).ThenBy(x => x.LanguageCode))
             .Include(x => x.Attachments.OrderBy(x => x.CreatedAt).ThenBy(x => x.Id))
                 .ThenInclude(x => x.Urls.OrderBy(x => x.CreatedAt).ThenBy(x => x.Id))
             .Include(x => x.GuiActions.OrderBy(x => x.CreatedAt).ThenBy(x => x.Id))
-                .ThenInclude(x => x.Title!.Localizations.OrderBy(x => x.CreatedAt).ThenBy(x => x.CultureCode))
+                .ThenInclude(x => x.Title!.Localizations.OrderBy(x => x.CreatedAt).ThenBy(x => x.LanguageCode))
             .Include(x => x.GuiActions.OrderBy(x => x.CreatedAt).ThenBy(x => x.Id))
-                .ThenInclude(x => x!.Prompt!.Localizations.OrderBy(x => x.CreatedAt).ThenBy(x => x.CultureCode))
+                .ThenInclude(x => x!.Prompt!.Localizations.OrderBy(x => x.CreatedAt).ThenBy(x => x.LanguageCode))
             .Include(x => x.ApiActions.OrderBy(x => x.CreatedAt).ThenBy(x => x.Id))
                 .ThenInclude(x => x.Endpoints.OrderBy(x => x.CreatedAt).ThenBy(x => x.Id))
+            .Include(x => x.Transmissions)
+                .ThenInclude(x => x.Content)
+                .ThenInclude(x => x.Value.Localizations)
+            .Include(x => x.Transmissions).ThenInclude(x => x.Sender)
+            .Include(x => x.Transmissions).ThenInclude(x => x.Attachments).ThenInclude(x => x.Urls)
+            .Include(x => x.Transmissions).ThenInclude(x => x.Attachments).ThenInclude(x => x.DisplayName!.Localizations)
             .Include(x => x.Activities).ThenInclude(x => x.Description!.Localizations)
+            .Include(x => x.Activities).ThenInclude(x => x.PerformedBy)
             .Include(x => x.SeenLog
                 .Where(x => x.CreatedAt >= x.Dialog.UpdatedAt)
                 .OrderBy(x => x.CreatedAt))
+                .ThenInclude(x => x.SeenBy)
             .Where(x => !x.VisibleFrom.HasValue || x.VisibleFrom < _clock.UtcNowOffset)
             .IgnoreQueryFilters()
             .FirstOrDefaultAsync(x => x.Id == request.DialogId, cancellationToken);
@@ -87,7 +92,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
 
         var authorizationResult = await _altinnAuthorization.GetDialogDetailsAuthorization(
             dialog,
-            cancellationToken);
+            cancellationToken: cancellationToken);
 
         if (!authorizationResult.HasReadAccessToMainResource())
         {
@@ -101,7 +106,10 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
 
         // TODO: What if name lookup fails
         // https://github.com/digdir/dialogporten/issues/387
-        dialog.UpdateSeenAt(currentUserInformation.UserId.ExternalId, currentUserInformation.UserId.Type, currentUserInformation.Name);
+        dialog.UpdateSeenAt(
+            currentUserInformation.UserId.ExternalIdWithPrefix,
+            currentUserInformation.UserId.Type,
+            currentUserInformation.Name);
 
         var saveResult = await _unitOfWork
             .WithoutAuditableSideEffects()
@@ -118,8 +126,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
             .Select(log =>
             {
                 var logDto = _mapper.Map<GetDialogDialogSeenLogDto>(log);
-                logDto.IsCurrentEndUser = log.EndUserId == currentUserInformation.UserId.ExternalId;
-                logDto.EndUserIdHash = _stringHasher.Hash(log.EndUserId);
+                logDto.IsCurrentEndUser = currentUserInformation.UserId.ExternalIdWithPrefix == log.SeenBy.ActorId;
                 return logDto;
             })
             .ToList();
@@ -127,7 +134,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
         dialogDto.DialogToken = _dialogTokenGenerator.GetDialogToken(
             dialog,
             authorizationResult,
-            "api/v1"
+            "/api/v1"
         );
 
         DecorateWithAuthorization(dialogDto, authorizationResult);
@@ -159,14 +166,11 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
                 }
             }
 
-            // TODO: Rename in https://github.com/digdir/dialogporten/issues/860
-            // foreach (var transmission in dto.Transmissions)
-            // {
-            //     if (authorizationResult.HasReadAccessToDialogTransmission(transmission))
-            //     {
-            //         transmission.IsAuthorized = true;
-            //     }
-            // }
+            var authorizedTransmissions = dto.Transmissions.Where(t => authorizationResult.HasReadAccessToDialogTransmission(t.AuthorizationAttribute));
+            foreach (var transmission in authorizedTransmissions)
+            {
+                transmission.IsAuthorized = true;
+            }
         }
     }
 
@@ -186,9 +190,13 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
             }
         }
 
-        // // Attachment URLs
-        // foreach (var dialogTransmission in dto.Transmissions.Where(e => !e.IsAuthorized))
-        // {
-        // }
+        foreach (var dialogTransmission in dto.Transmissions.Where(e => !e.IsAuthorized))
+        {
+            var urls = dialogTransmission.Attachments.SelectMany(a => a.Urls).ToList();
+            foreach (var url in urls)
+            {
+                url.Url = Constants.UnauthorizedUri;
+            }
+        }
     }
 }

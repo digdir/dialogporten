@@ -24,12 +24,13 @@ public sealed class SearchDialogSeenLogEndpointSummary : Summary<SearchDialogSee
 {
     public SearchDialogSeenLogEndpointSummary()
     {
-        Summary = "Gets a single dialog seen log record";
-        Description = """
-                      Gets a single dialog seen log record. For more information see the documentation (link TBD).
+        const string summary = "Gets all seen log records for a dialog";
+        Summary = summary;
+        Description = $"""
+                      {summary}. For more information see the documentation (link TBD).
                       """;
 
-        Responses[StatusCodes.Status200OK] = Constants.SwaggerSummary.ReturnedResult.FormatInvariant("seen log record");
+        Responses[StatusCodes.Status200OK] = Constants.SwaggerSummary.ReturnedResult.FormatInvariant("seen log records");
         Responses[StatusCodes.Status401Unauthorized] = Constants.SwaggerSummary.EndUserAuthenticationFailure;
     }
 }

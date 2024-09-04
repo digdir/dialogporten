@@ -9,5 +9,7 @@ public class MappingProfile : Profile
     {
         CreateMap<DialogSeenLog, GetDialogSeenLogDto>()
             .ForMember(dest => dest.SeenAt, opt => opt.MapFrom(src => src.CreatedAt));
+
+        CreateMap<DialogSeenLogSeenByActor, GetDialogSeenLogSeenByActorDto>();
     }
 }

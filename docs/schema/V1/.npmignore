@@ -1,2 +1,5 @@
 swagger.received.json
 schema.received.graphql
+.gitkeep
+gql-to-js.js
+tests/

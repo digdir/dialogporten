@@ -22,18 +22,15 @@ internal sealed class GetDialogSeenLogQueryHandler : IRequestHandler<GetDialogSe
 {
     private readonly IMapper _mapper;
     private readonly IDialogDbContext _dbContext;
-    private readonly IStringHasher _stringHasher;
     private readonly IUserResourceRegistry _userResourceRegistry;
 
     public GetDialogSeenLogQueryHandler(
         IMapper mapper,
         IDialogDbContext dbContext,
-        IStringHasher stringHasher,
         IUserResourceRegistry userResourceRegistry)
     {
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
-        _stringHasher = stringHasher ?? throw new ArgumentNullException(nameof(stringHasher));
         _userResourceRegistry = userResourceRegistry ?? throw new ArgumentNullException(nameof(userResourceRegistry));
     }
 
@@ -45,6 +42,7 @@ internal sealed class GetDialogSeenLogQueryHandler : IRequestHandler<GetDialogSe
         var dialog = await _dbContext.Dialogs
             .AsNoTracking()
             .Include(x => x.SeenLog.Where(x => x.Id == request.SeenLogId))
+                .ThenInclude(x => x.SeenBy)
             .IgnoreQueryFilters()
             .Where(x => resourceIds.Contains(x.ServiceResource))
             .FirstOrDefaultAsync(x => x.Id == request.DialogId,
@@ -62,7 +60,6 @@ internal sealed class GetDialogSeenLogQueryHandler : IRequestHandler<GetDialogSe
         }
 
         var dto = _mapper.Map<GetDialogSeenLogDto>(seenLog);
-        dto.EndUserIdHash = _stringHasher.Hash(seenLog.EndUserId);
 
         return dto;
     }

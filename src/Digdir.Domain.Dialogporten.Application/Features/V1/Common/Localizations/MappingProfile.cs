@@ -11,7 +11,7 @@ internal sealed class MappingProfile : Profile
         CreateMap<LocalizationSet?, List<LocalizationDto>?>()
             .ConvertUsing(src => src == null ? null :
                 src.Localizations
-                    .Select(x => new LocalizationDto { CultureCode = x.CultureCode, Value = x.Value })
+                    .Select(x => new LocalizationDto { LanguageCode = x.LanguageCode, Value = x.Value })
                     .ToList());
 
         // In

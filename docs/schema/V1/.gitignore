@@ -1,0 +1,7 @@
+# in `npm prepublishOnly` we'll genenrate files for src/
+# So here we gitignore all of the files since they're generated
+# But we add an exception for `src/.gitkeep` so that we can keep
+# the folder around. (Git only commits files, not folders, so
+# `.gitkeep` is just an empty file to force git to commit the folder)
+src/*
+!src/.gitkeep

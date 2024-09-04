@@ -1,6 +1,7 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Common.Extensions.Enumerables;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.FluentValidation;
 using Digdir.Domain.Dialogporten.Application.Common.Pagination;
+using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using Digdir.Domain.Dialogporten.Domain.Localizations;
 using FluentValidation;
 
@@ -10,14 +11,18 @@ internal sealed class SearchDialogQueryValidator : AbstractValidator<SearchDialo
 {
     public SearchDialogQueryValidator()
     {
-        Include(new PaginationParameterValidator<SearchDialogQueryOrderDefinition, SearchDialogDto>());
+        Include(new PaginationParameterValidator<SearchDialogQueryOrderDefinition, IntermediateSearchDialogDto>());
         RuleFor(x => x.Search)
             .MinimumLength(3)
             .When(x => x.Search is not null);
 
-        RuleFor(x => x.SearchCultureCode)
+        RuleFor(x => x.SearchLanguageCode)
             .Must(x => x is null || Localization.IsValidCultureCode(x))
-            .WithMessage("'{PropertyName}' must be a valid culture code.");
+            .WithMessage(searchQuery =>
+                (searchQuery.SearchLanguageCode == "no"
+                    ? LocalizationValidatorContants.InvalidCultureCodeErrorMessageWithNorwegianHint
+                    : LocalizationValidatorContants.InvalidCultureCodeErrorMessage) +
+                LocalizationValidatorContants.NormalizationErrorMessage);
 
         RuleFor(x => x)
             .Must(x => !x.ServiceResource.IsNullOrEmpty() || !x.Party.IsNullOrEmpty())

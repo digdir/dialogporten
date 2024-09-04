@@ -9,7 +9,6 @@ using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Parties.Abstractions;
 using Microsoft.Extensions.Logging;
-using NSec.Cryptography;
 using ZiggyCreatures.Caching.Fusion;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.Authorization;
@@ -41,12 +40,14 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public async Task<DialogDetailsAuthorizationResult> GetDialogDetailsAuthorization(DialogEntity dialogEntity,
+    public async Task<DialogDetailsAuthorizationResult> GetDialogDetailsAuthorization(
+        DialogEntity dialogEntity,
+        string? endUserId,
         CancellationToken cancellationToken = default)
     {
         var request = new DialogDetailsAuthorizationRequest
         {
-            Claims = _user.GetPrincipal().Claims.ToList(),
+            Claims = GetOrCreateClaimsBasedOnEndUserId(endUserId),
             ServiceResource = dialogEntity.ServiceResource,
             DialogId = dialogEntity.Id,
             Party = dialogEntity.Party,
@@ -117,7 +118,7 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
         CancellationToken token)
     {
         var authorizedPartiesDto = await SendAuthorizedPartiesRequest(authorizedPartiesRequest, token);
-        return AuthorizedPartiesHelper.CreateAuthorizedPartiesResult(authorizedPartiesDto);
+        return AuthorizedPartiesHelper.CreateAuthorizedPartiesResult(authorizedPartiesDto, authorizedPartiesRequest);
     }
 
     private async Task<DialogSearchAuthorizationResult> PerformDialogSearchAuthorization(DialogSearchAuthorizationRequest request, CancellationToken token)
@@ -161,7 +162,21 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
     {
         var xacmlJsonRequest = DecisionRequestHelper.CreateDialogDetailsRequest(request);
         var xamlJsonResponse = await SendPdpRequest(xacmlJsonRequest, cancellationToken);
+        LogIfIndeterminate(xamlJsonResponse, xacmlJsonRequest);
+
         return DecisionRequestHelper.CreateDialogDetailsResponse(request.AltinnActions, xamlJsonResponse);
+    }
+
+    private void LogIfIndeterminate(XacmlJsonResponse? response, XacmlJsonRequestRoot request)
+    {
+        if (response?.Response != null && response.Response.Any(result => result.Decision == "Indeterminate"))
+        {
+            DecisionRequestHelper.XacmlRequestRemoveSensitiveInfo(request.Request);
+
+            _logger.LogError(
+                "Authorization request to {Url} returned decision Indeterminate. Request: {@RequestJson}",
+                AuthorizeUrl, request);
+        }
     }
 
     private List<Claim> GetOrCreateClaimsBasedOnEndUserId(string? endUserId)

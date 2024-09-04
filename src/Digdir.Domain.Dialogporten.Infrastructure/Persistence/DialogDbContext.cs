@@ -3,7 +3,6 @@ using Digdir.Domain.Dialogporten.Domain.Common;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
 using Digdir.Domain.Dialogporten.Domain.Outboxes;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence.ValueConverters;
 using Digdir.Library.Entity.Abstractions.Features.Identifiable;
@@ -12,7 +11,10 @@ using Digdir.Library.Entity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System.Linq.Expressions;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Attachments;
+using Digdir.Domain.Dialogporten.Domain.Actors;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Contents;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions.Contents;
 using Digdir.Domain.Dialogporten.Domain.SubjectResources;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence;
@@ -24,18 +26,23 @@ internal sealed class DialogDbContext : DbContext, IDialogDbContext
     public DbSet<DialogEntity> Dialogs => Set<DialogEntity>();
     public DbSet<DialogStatus> DialogStatuses => Set<DialogStatus>();
     public DbSet<DialogActivity> DialogActivities => Set<DialogActivity>();
+    public DbSet<DialogActivityType> DialogActivityTypes => Set<DialogActivityType>();
+    public DbSet<DialogTransmission> DialogTransmissions => Set<DialogTransmission>();
+    public DbSet<DialogTransmissionType> DialogTransmissionTypes => Set<DialogTransmissionType>();
+    public DbSet<DialogTransmissionContent> DialogTransmissionContents => Set<DialogTransmissionContent>();
+    public DbSet<DialogTransmissionContentType> DialogTransmissionContentTypes => Set<DialogTransmissionContentType>();
     public DbSet<DialogApiAction> DialogApiActions => Set<DialogApiAction>();
     public DbSet<DialogApiActionEndpoint> DialogApiActionEndpoints => Set<DialogApiActionEndpoint>();
     public DbSet<DialogGuiAction> DialogGuiActions => Set<DialogGuiAction>();
-    public DbSet<DialogAttachment> DialogAttachments => Set<DialogAttachment>();
-    public DbSet<DialogAttachmentUrl> DialogAttachmentUrls => Set<DialogAttachmentUrl>();
-    public DbSet<DialogGuiActionPriority> DialogGuiActionTypes => Set<DialogGuiActionPriority>();
-    public DbSet<DialogActivityType> DialogActivityTypes => Set<DialogActivityType>();
+    public DbSet<DialogGuiActionPriority> DialogGuiActionPriority => Set<DialogGuiActionPriority>();
     public DbSet<DialogSeenLog> DialogSeenLog => Set<DialogSeenLog>();
+    public DbSet<DialogUserType> DialogUserTypes => Set<DialogUserType>();
+    public DbSet<DialogSearchTag> DialogSearchTags => Set<DialogSearchTag>();
+    public DbSet<DialogContent> DialogContents => Set<DialogContent>();
     public DbSet<DialogContentType> DialogContentTypes => Set<DialogContentType>();
-    public DbSet<DialogContent> DialogContent => Set<DialogContent>();
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
     public DbSet<OutboxMessageConsumer> OutboxMessageConsumers => Set<OutboxMessageConsumer>();
+    public DbSet<SubjectResource> SubjectResources => Set<SubjectResource>();
 
     //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) =>
     //    optionsBuilder.LogTo(Console.WriteLine);
@@ -96,6 +103,9 @@ internal sealed class DialogDbContext : DbContext, IDialogDbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        // Explicitly configure the Actor entity so that it will register as TPH in the database
+        modelBuilder.Entity<Actor>();
+
         modelBuilder
             .RemovePluralizingTableNameConvention()
             .AddAuditableEntities()

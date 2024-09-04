@@ -2,12 +2,13 @@ using System.Globalization;
 using Bogus;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Create;
+using Digdir.Domain.Dialogporten.Domain.Actors;
+using Digdir.Domain.Dialogporten.Domain.Attachments;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Attachments;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
 using Digdir.Domain.Dialogporten.Domain.Http;
+using Medo;
 
 namespace Digdir.Tool.Dialogporten.GenerateFakeData;
 
@@ -23,10 +24,12 @@ public static class DialogGenerator
         int? progress = null,
         string? extendedStatus = null,
         string? externalReference = null,
+        DateTimeOffset? createdAt = null,
+        DateTimeOffset? updatedAt = null,
         DateTimeOffset? dueAt = null,
         DateTimeOffset? expiresAt = null,
         DialogStatus.Values? status = null,
-        List<CreateDialogContentDto>? content = null,
+        CreateDialogContentDto? content = null,
         List<CreateDialogSearchTagDto>? searchTags = null,
         List<CreateDialogDialogAttachmentDto>? attachments = null,
         List<CreateDialogDialogGuiActionDto>? guiActions = null,
@@ -44,6 +47,8 @@ public static class DialogGenerator
             progress,
             extendedStatus,
             externalReference,
+            createdAt,
+            updatedAt,
             dueAt,
             expiresAt,
             status,
@@ -67,10 +72,12 @@ public static class DialogGenerator
         int? progress = null,
         string? extendedStatus = null,
         string? externalReference = null,
+        DateTimeOffset? createdAt = null,
+        DateTimeOffset? updatedAt = null,
         DateTimeOffset? dueAt = null,
         DateTimeOffset? expiresAt = null,
         DialogStatus.Values? status = null,
-        List<CreateDialogContentDto>? content = null,
+        CreateDialogContentDto? content = null,
         List<CreateDialogSearchTagDto>? searchTags = null,
         List<CreateDialogDialogAttachmentDto>? attachments = null,
         List<CreateDialogDialogGuiActionDto>? guiActions = null,
@@ -85,6 +92,8 @@ public static class DialogGenerator
             .RuleFor(o => o.Progress, f => progress ?? f.Random.Number(0, 100))
             .RuleFor(o => o.ExtendedStatus, f => extendedStatus ?? f.Random.AlphaNumeric(10))
             .RuleFor(o => o.ExternalReference, f => externalReference ?? f.Random.AlphaNumeric(10))
+            .RuleFor(o => o.CreatedAt, f => createdAt ?? default)
+            .RuleFor(o => o.UpdatedAt, f => updatedAt ?? default)
             .RuleFor(o => o.DueAt, f => dueAt ?? f.Date.Future(10, RefTime))
             .RuleFor(o => o.ExpiresAt, f => expiresAt ?? f.Date.Future(20, RefTime.AddYears(11)))
             .RuleFor(o => o.Status, f => status ?? f.PickRandom<DialogStatus.Values>())
@@ -127,13 +136,13 @@ public static class DialogGenerator
         return ResourcePrefix + result.ToString("D4", CultureInfo.InvariantCulture);
     }
 
-    public static string GenerateRandomParty(Func<string?>? generator = null)
+    public static string GenerateRandomParty(Func<string?>? generator = null, bool forcePerson = false)
     {
         var generatedValue = generator?.Invoke();
         if (generatedValue != null) return generatedValue;
 
         var r = new Randomizer();
-        return r.Bool() ? $"urn:altinn:organization:identifier-no:{GenerateFakeOrgNo()}" : $"urn:altinn:person:identifier-no:{GenerateFakePid()}";
+        return r.Bool() && !forcePerson ? $"urn:altinn:organization:identifier-no:{GenerateFakeOrgNo()}" : $"urn:altinn:person:identifier-no:{GenerateFakePid()}";
     }
 
     private static readonly int[] SocialSecurityNumberWeights1 = [3, 7, 6, 1, 8, 9, 4, 5, 2];
@@ -221,12 +230,12 @@ public static class DialogGenerator
     public static List<CreateDialogDialogActivityDto> GenerateFakeDialogActivities(int? count = null, DialogActivityType.Values? type = null)
     {
         return new Faker<CreateDialogDialogActivityDto>()
-            .RuleFor(o => o.Id, f => f.Random.Guid())
+            .RuleFor(o => o.Id, f => Uuid7.NewUuid7().ToGuid(true))
             .RuleFor(o => o.CreatedAt, f => f.Date.Past())
             .RuleFor(o => o.ExtendedType, f => new Uri(f.Internet.UrlWithPath()))
             .RuleFor(o => o.Type, f => type ?? f.PickRandom<DialogActivityType.Values>())
-            .RuleFor(o => o.PerformedBy, f => f.Name.FullName())
-            .RuleFor(o => o.Description, f => GenerateFakeLocalizations(f.Random.Number(4, 8)))
+            .RuleFor(o => o.PerformedBy, f => new CreateDialogDialogActivityPerformedByActorDto { ActorType = ActorType.Values.PartyRepresentative, ActorName = f.Name.FullName() })
+            .RuleFor(o => o.Description, (f, o) => o.Type == DialogActivityType.Values.Information ? GenerateFakeLocalizations(f.Random.Number(4, 8)) : null)
             .Generate(count ?? new Randomizer().Number(1, 4));
     }
 
@@ -284,7 +293,6 @@ public static class DialogGenerator
     public static List<CreateDialogDialogAttachmentDto> GenerateFakeDialogAttachments(int? count = null)
     {
         return new Faker<CreateDialogDialogAttachmentDto>()
-            .RuleFor(o => o.Id, _ => Guid.NewGuid())
             .RuleFor(o => o.DisplayName, f => GenerateFakeLocalizations(f.Random.Number(2, 5)))
             .RuleFor(o => o.Urls, _ => GenerateFakeDialogAttachmentUrls())
             .Generate(count ?? new Randomizer().Number(1, 6));
@@ -294,7 +302,7 @@ public static class DialogGenerator
     {
         return new Faker<CreateDialogDialogAttachmentUrlDto>()
             .RuleFor(o => o.Url, f => new Uri(f.Internet.UrlWithPath()))
-            .RuleFor(o => o.ConsumerType, f => f.PickRandom<DialogAttachmentUrlConsumerType.Values>())
+            .RuleFor(o => o.ConsumerType, f => f.PickRandom<AttachmentUrlConsumerType.Values>())
             .Generate(new Randomizer().Number(1, 3));
     }
 
@@ -305,45 +313,40 @@ public static class DialogGenerator
             .Generate(new Randomizer().Number(1, 6));
     }
 
-    public static List<CreateDialogContentDto> GenerateFakeDialogContent()
+    public static CreateDialogContentDto GenerateFakeDialogContent()
     {
         // We always need Title and Summary. Coin flip to determine to include AdditionalInfo
         // and/or SendersName
         var r = new Randomizer();
-        var content = new List<CreateDialogContentDto> {
-            new()
+        var content = new CreateDialogContentDto
+        {
+            Title = new()
             {
-                Type = DialogContentType.Values.Title,
-                Value =  GenerateFakeLocalizations(r.Number(1, 4))
+                Value = GenerateFakeLocalizations(r.Number(1, 4))
             },
-            new()
+            Summary = new()
             {
-                Type = DialogContentType.Values.Summary,
                 Value = GenerateFakeLocalizations(r.Number(7, 10))
             }
         };
 
         if (r.Bool())
         {
-            content.Add(
+            content.SenderName =
                 new()
                 {
-                    Type = DialogContentType.Values.SenderName,
                     Value = GenerateFakeLocalizations(r.Number(1, 3))
-                }
-            );
+                };
         }
 
         if (r.Bool())
         {
-            content.Add(
+            content.AdditionalInfo =
                 new()
                 {
                     MediaType = Domain.Dialogporten.Domain.MediaTypes.PlainText,
-                    Type = DialogContentType.Values.AdditionalInfo,
                     Value = GenerateFakeLocalizations(r.Number(10, 20))
-                }
-            );
+                };
         }
 
         return content;
@@ -356,17 +359,17 @@ public static class DialogGenerator
         [
             new()
             {
-                CultureCode = "nb_NO",
+                LanguageCode = "nb",
                 Value = r.Words(wordCount)
             },
             new()
             {
-                CultureCode = "nn_NO",
+                LanguageCode = "nn",
                 Value = r.Words(wordCount)
             },
             new()
             {
-                CultureCode = "en_US",
+                LanguageCode = "en",
                 Value = r.Words(wordCount)
             }
         ];

@@ -8,6 +8,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Reflection;
+using Digdir.Domain.Dialogporten.Application.Common.Authorization;
+using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Content;
 
 namespace Digdir.Domain.Dialogporten.Application;
 
@@ -28,7 +30,8 @@ public static class ApplicationExtensions
             // Framework
             .AddAutoMapper(thisAssembly)
             .AddMediatR(x => x.RegisterServicesFromAssembly(thisAssembly))
-            .AddValidatorsFromAssembly(thisAssembly, ServiceLifetime.Transient, includeInternalTypes: true)
+            .AddValidatorsFromAssembly(thisAssembly, ServiceLifetime.Transient, includeInternalTypes: true,
+                filter: type => !type.ValidatorType.IsAssignableTo(typeof(IIgnoreOnAssemblyScan)))
 
             // Singleton
             .AddSingleton<ICompactJwsGenerator, Ed25519Generator>()
@@ -39,7 +42,7 @@ public static class ApplicationExtensions
             .AddScoped<IDialogTokenGenerator, DialogTokenGenerator>()
 
             // Transient
-            .AddTransient<IStringHasher, PersistentRandomSaltStringHasher>()
+            .AddTransient<IServiceResourceAuthorizer, ServiceResourceAuthorizer>()
             .AddTransient<IUserOrganizationRegistry, UserOrganizationRegistry>()
             .AddTransient<IUserResourceRegistry, UserResourceRegistry>()
             .AddTransient<IUserRegistry, UserRegistry>()

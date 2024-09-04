@@ -11,9 +11,9 @@ internal sealed class DialogActivityConfiguration : IEntityTypeConfiguration<Dia
         builder.HasOne(x => x.RelatedActivity)
             .WithMany(x => x.RelatedActivities)
             .OnDelete(DeleteBehavior.SetNull);
-        // TODO: Rename in https://github.com/digdir/dialogporten/issues/860
-        // builder.HasOne(x => x.Transmission)
-        //     .WithMany(x => x.Activities)
-        //     .OnDelete(DeleteBehavior.SetNull);
+
+        builder.HasOne(x => x.Transmission)
+            .WithMany(x => x.Activities)
+            .OnDelete(DeleteBehavior.SetNull);
     }
 }

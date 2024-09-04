@@ -8,8 +8,8 @@ internal sealed class LocalizationConfiguration : IEntityTypeConfiguration<Local
 {
     public void Configure(EntityTypeBuilder<Localization> builder)
     {
-        builder.HasKey(x => new { x.LocalizationSetId, x.CultureCode });
-        builder.Property(x => x.CultureCode).HasMaxLength(15);
+        builder.HasKey(x => new { x.LocalizationSetId, CultureCode = x.LanguageCode });
+        builder.Property(x => x.LanguageCode).HasMaxLength(15);
         // TODO: Can value have smaller max length?
         builder.Property(x => x.Value).HasMaxLength(4095);
     }

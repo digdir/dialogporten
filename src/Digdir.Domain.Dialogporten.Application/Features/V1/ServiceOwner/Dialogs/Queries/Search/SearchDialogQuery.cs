@@ -16,9 +16,9 @@ using OneOf;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Queries.Search;
 
-public sealed class SearchDialogQuery : SortablePaginationParameter<SearchDialogQueryOrderDefinition, SearchDialogDto>, IRequest<SearchDialogResult>
+public sealed class SearchDialogQuery : SortablePaginationParameter<SearchDialogQueryOrderDefinition, IntermediateSearchDialogDto>, IRequest<SearchDialogResult>
 {
-    private string? _searchCultureCode;
+    private string? _searchLanguageCode;
 
     /// <summary>
     /// Filter by one or more service resources
@@ -95,17 +95,17 @@ public sealed class SearchDialogQuery : SortablePaginationParameter<SearchDialog
     public string? Search { get; init; }
 
     /// <summary>
-    /// Limit free text search to texts with this culture code, e.g. \"nb-NO\". Default: search all culture codes
+    /// Limit free text search to texts with this language code, e.g. 'no', 'en'. Culture codes will be normalized to neutral language codes (ISO 639). Default: search all culture codes
     /// </summary>
-    public string? SearchCultureCode
+    public string? SearchLanguageCode
     {
-        get => _searchCultureCode;
-        init => _searchCultureCode = Localization.NormalizeCultureCode(value);
+        get => _searchLanguageCode;
+        init => _searchLanguageCode = Localization.NormalizeCultureCode(value);
     }
 }
-public sealed class SearchDialogQueryOrderDefinition : IOrderDefinition<SearchDialogDto>
+public sealed class SearchDialogQueryOrderDefinition : IOrderDefinition<IntermediateSearchDialogDto>
 {
-    public static IOrderOptions<SearchDialogDto> Configure(IOrderOptionsBuilder<SearchDialogDto> options) =>
+    public static IOrderOptions<IntermediateSearchDialogDto> Configure(IOrderOptionsBuilder<IntermediateSearchDialogDto> options) =>
         options.AddId(x => x.Id)
             .AddDefault("createdAt", x => x.CreatedAt)
             .AddOption("updatedAt", x => x.UpdatedAt)
@@ -122,26 +122,23 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
     private readonly IMapper _mapper;
     private readonly IUserResourceRegistry _userResourceRegistry;
     private readonly IAltinnAuthorization _altinnAuthorization;
-    private readonly IStringHasher _stringHasher;
 
     public SearchDialogQueryHandler(
         IDialogDbContext db,
         IMapper mapper,
         IUserResourceRegistry userResourceRegistry,
-        IAltinnAuthorization altinnAuthorization,
-        IStringHasher stringHasher)
+        IAltinnAuthorization altinnAuthorization)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _userResourceRegistry = userResourceRegistry ?? throw new ArgumentNullException(nameof(userResourceRegistry));
         _altinnAuthorization = altinnAuthorization;
-        _stringHasher = stringHasher;
     }
 
     public async Task<SearchDialogResult> Handle(SearchDialogQuery request, CancellationToken cancellationToken)
     {
         var resourceIds = await _userResourceRegistry.GetCurrentUserResourceIds(cancellationToken);
-        var searchExpression = Expressions.LocalizedSearchExpression(request.Search, request.SearchCultureCode);
+        var searchExpression = Expressions.LocalizedSearchExpression(request.Search, request.SearchLanguageCode);
 
         if (request.EndUserId is not null)
         {
@@ -164,6 +161,8 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
                     request.ServiceResource ?? [],
                     request.EndUserId,
                     cancellationToken))
+            .Include(x => x.Content)
+            .ThenInclude(x => x.Value.Localizations)
             .WhereIf(!request.ServiceResource.IsNullOrEmpty(),
                 x => request.ServiceResource!.Contains(x.ServiceResource))
             .WhereIf(!request.Party.IsNullOrEmpty(), x => request.Party!.Contains(x.Party))
@@ -187,19 +186,19 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
             .Where(x => resourceIds.Contains(x.ServiceResource));
 
         var paginatedList = await query
-            .ProjectTo<SearchDialogDto>(_mapper.ConfigurationProvider)
+            .ProjectTo<IntermediateSearchDialogDto>(_mapper.ConfigurationProvider)
             .ToPaginatedListAsync(request, cancellationToken: cancellationToken);
 
-        foreach (var seenRecord in paginatedList.Items.SelectMany(x => x.SeenSinceLastUpdate))
+        if (request.EndUserId is not null)
         {
-            if (request.EndUserId is not null)
+            foreach (var seenRecord in paginatedList.Items.SelectMany(x => x.SeenSinceLastUpdate))
             {
-                seenRecord.IsCurrentEndUser = seenRecord.EndUserIdHash == request.EndUserId;
+                seenRecord.IsCurrentEndUser = seenRecord.SeenBy.ActorId == request.EndUserId;
             }
-
-            seenRecord.EndUserIdHash = _stringHasher.Hash(seenRecord.EndUserIdHash);
         }
 
-        return paginatedList;
+        var mappedItems = _mapper.Map<List<SearchDialogDto>>(paginatedList.Items).ToList();
+        return new PaginatedList<SearchDialogDto>(mappedItems, paginatedList.HasNextPage,
+            paginatedList.ContinuationToken, paginatedList.OrderBy);
     }
 }

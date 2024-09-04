@@ -1,6 +1,7 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Common.Extensions.Enumerables;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.FluentValidation;
 using Digdir.Domain.Dialogporten.Application.Common.Pagination;
+using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using Digdir.Domain.Dialogporten.Domain.Localizations;
 using Digdir.Domain.Dialogporten.Domain.Parties;
 using Digdir.Domain.Dialogporten.Domain.Parties.Abstractions;
@@ -12,20 +13,26 @@ internal sealed class SearchDialogQueryValidator : AbstractValidator<SearchDialo
 {
     public SearchDialogQueryValidator()
     {
-        Include(new PaginationParameterValidator<SearchDialogQueryOrderDefinition, SearchDialogDto>());
+        Include(new PaginationParameterValidator<SearchDialogQueryOrderDefinition, IntermediateSearchDialogDto>());
         RuleFor(x => x.Search)
             .MinimumLength(3)
             .When(x => x.Search is not null);
 
-        RuleFor(x => x.SearchCultureCode)
+        RuleFor(x => x.SearchLanguageCode)
             .Must(x => x is null || Localization.IsValidCultureCode(x))
-            .WithMessage("'{PropertyName}' must be a valid culture code.");
+            .WithMessage(searchQuery =>
+                (searchQuery.SearchLanguageCode == "no"
+                    ? LocalizationValidatorContants.InvalidCultureCodeErrorMessageWithNorwegianHint
+                    : LocalizationValidatorContants.InvalidCultureCodeErrorMessage) +
+                LocalizationValidatorContants.NormalizationErrorMessage);
 
-        RuleFor(x => x)
-            .Must(x => PartyIdentifier.TryParse(x.EndUserId, out var id) && id is NorwegianPersonIdentifier or SystemUserIdentifier)
-            .WithMessage($"'{nameof(SearchDialogQuery.EndUserId)}' must be a valid end user identifier. It should match the format '{NorwegianPersonIdentifier.Prefix}{{norwegian f-nr/d-nr}}' or '{SystemUserIdentifier.Prefix}{{uuid}}'.")
-            .Must(x => !x.ServiceResource.IsNullOrEmpty() || !x.Party.IsNullOrEmpty())
-            .WithMessage($"Either '{nameof(SearchDialogQuery.ServiceResource)}' or '{nameof(SearchDialogQuery.Party)}' must be specified if '{nameof(SearchDialogQuery.EndUserId)}' is provided.")
+        RuleFor(x => x.EndUserId)
+            .Must(x => PartyIdentifier.TryParse(x, out var id) && id is NorwegianPersonIdentifier or SystemUserIdentifier)
+            .WithMessage($"{{PropertyName}} must be a valid end user identifier. It must match the format " +
+                         $"'{NorwegianPersonIdentifier.PrefixWithSeparator}{{norwegian f-nr/d-nr}}' or '{SystemUserIdentifier.PrefixWithSeparator}{{uuid}}'.")
+            .Must((x, _) => !x.ServiceResource.IsNullOrEmpty() || !x.Party.IsNullOrEmpty())
+            .WithMessage($"Either '{nameof(SearchDialogQuery.ServiceResource)}' or '{nameof(SearchDialogQuery.Party)}' " +
+                         $"must be specified if '{nameof(SearchDialogQuery.EndUserId)}' is provided.")
             .When(x => x.EndUserId is not null);
 
         RuleForEach(x => x.Party)

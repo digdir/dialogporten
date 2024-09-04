@@ -24,20 +24,17 @@ internal sealed class GetDialogSeenLogQueryHandler : IRequestHandler<GetDialogSe
     private readonly IMapper _mapper;
     private readonly IDialogDbContext _dbContext;
     private readonly IAltinnAuthorization _altinnAuthorization;
-    private readonly IStringHasher _stringHasher;
     private readonly IUserRegistry _userRegistry;
 
     public GetDialogSeenLogQueryHandler(
         IMapper mapper,
         IDialogDbContext dbContext,
         IAltinnAuthorization altinnAuthorization,
-        IStringHasher stringHasher,
         IUserRegistry userRegistry)
     {
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         _altinnAuthorization = altinnAuthorization ?? throw new ArgumentNullException(nameof(altinnAuthorization));
-        _stringHasher = stringHasher ?? throw new ArgumentNullException(nameof(stringHasher));
         _userRegistry = userRegistry ?? throw new ArgumentNullException(nameof(userRegistry));
     }
 
@@ -49,6 +46,7 @@ internal sealed class GetDialogSeenLogQueryHandler : IRequestHandler<GetDialogSe
         var dialog = await _dbContext.Dialogs
             .AsNoTracking()
             .Include(x => x.SeenLog.Where(x => x.Id == request.SeenLogId))
+                .ThenInclude(x => x.SeenBy)
             .IgnoreQueryFilters()
             .FirstOrDefaultAsync(x => x.Id == request.DialogId,
                 cancellationToken: cancellationToken);
@@ -60,7 +58,7 @@ internal sealed class GetDialogSeenLogQueryHandler : IRequestHandler<GetDialogSe
 
         var authorizationResult = await _altinnAuthorization.GetDialogDetailsAuthorization(
             dialog,
-            cancellationToken);
+            cancellationToken: cancellationToken);
 
         // If we cannot read the dialog at all, we don't allow access to the seen log
         if (!authorizationResult.HasReadAccessToMainResource())
@@ -80,8 +78,7 @@ internal sealed class GetDialogSeenLogQueryHandler : IRequestHandler<GetDialogSe
         }
 
         var dto = _mapper.Map<GetDialogSeenLogDto>(seenLog);
-        dto.IsCurrentEndUser = currentUserInformation.UserId.ExternalId == seenLog.EndUserId;
-        dto.EndUserIdHash = _stringHasher.Hash(seenLog.EndUserId);
+        dto.IsCurrentEndUser = currentUserInformation.UserId.ExternalIdWithPrefix == seenLog.SeenBy.ActorId;
 
         return dto;
     }

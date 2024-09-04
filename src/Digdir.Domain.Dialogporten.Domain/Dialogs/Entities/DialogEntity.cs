@@ -1,7 +1,9 @@
-﻿using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
+﻿using Digdir.Domain.Dialogporten.Domain.Actors;
+using Digdir.Domain.Dialogporten.Domain.Attachments;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Attachments;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Contents;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Events;
 using Digdir.Library.Entity.Abstractions;
 using Digdir.Library.Entity.Abstractions.Features.Aggregate;
@@ -40,6 +42,10 @@ public class DialogEntity :
     public DialogStatus Status { get; set; } = null!;
 
     // === Principal relationships ===
+
+    [AggregateChild]
+    public List<DialogTransmission> Transmissions { get; set; } = [];
+
     [AggregateChild]
     public List<DialogContent> Content { get; set; } = [];
 
@@ -84,7 +90,7 @@ public class DialogEntity :
     public void UpdateSeenAt(string endUserId, DialogUserType.Values userTypeId, string? endUserName)
     {
         var lastSeenAt = SeenLog
-            .Where(x => x.EndUserId == endUserId)
+            .Where(x => x.SeenBy.ActorId == endUserId)
             .MaxBy(x => x.CreatedAt)
             ?.CreatedAt
             ?? DateTimeOffset.MinValue;
@@ -96,9 +102,14 @@ public class DialogEntity :
 
         SeenLog.Add(new()
         {
-            EndUserId = endUserId,
             EndUserTypeId = userTypeId,
-            EndUserName = endUserName
+            IsViaServiceOwner = userTypeId == DialogUserType.Values.ServiceOwnerOnBehalfOfPerson,
+            SeenBy = new DialogSeenLogSeenByActor
+            {
+                ActorTypeId = ActorType.Values.PartyRepresentative,
+                ActorId = endUserId,
+                ActorName = endUserName
+            }
         });
 
         _domainEvents.Add(new DialogSeenDomainEvent(Id, ServiceResource, Party));
@@ -111,4 +122,10 @@ public class DialogEntity :
         _domainEvents.Clear();
         return events;
     }
+}
+
+public sealed class DialogAttachment : Attachment
+{
+    public Guid DialogId { get; set; }
+    public DialogEntity Dialog { get; set; } = null!;
 }

@@ -1,9 +1,27 @@
+import {
+  uniqueResourceName
+} from '../../functions/resourceName.bicep'
+
+@description('The prefix used for naming resources to ensure unique names')
 param namePrefix string
+
+@description('The location where the resources will be deployed')
 param location string
+
+@description('The ID of the subnet for the Private Link')
 param subnetId string
+
+@description('Tags to apply to resources')
+param tags object
+
+@description('The ID of the virtual network for the private DNS zone')
 param vnetId string
+
+@description('The name of the environment Key Vault')
 @minLength(1)
 param environmentKeyVaultName string
+
+@description('The version of the Redis instance')
 @minLength(1)
 param version string
 
@@ -14,11 +32,16 @@ type Sku = {
   @minValue(1)
   capacity: int
 }
+
+@description('The SKU of the Redis instance')
 param sku Sku
+
+var redisNameMaxLength = 63
+var redisName = uniqueResourceName('${namePrefix}-redis', redisNameMaxLength)
 
 // https://learn.microsoft.com/en-us/azure/templates/microsoft.cache/redis?pivots=deployment-language-bicep
 resource redis 'Microsoft.Cache/Redis@2023-08-01' = {
-  name: '${namePrefix}-redis'
+  name: redisName
   location: location
   identity: {
     type: 'SystemAssigned'
@@ -33,15 +56,19 @@ resource redis 'Microsoft.Cache/Redis@2023-08-01' = {
     redisVersion: version
     publicNetworkAccess: 'Disabled'
   }
+  tags: tags
 }
 
-resource redisPrivateEndpoint 'Microsoft.Network/privateEndpoints@2022-01-01' = {
-  name: '${namePrefix}-redis-pe'
+// private endpoint name max characters is 80
+var redisPrivateEndpointName = uniqueResourceName('${namePrefix}-redis-pe', 80)
+
+resource redisPrivateEndpoint 'Microsoft.Network/privateEndpoints@2023-11-01' = {
+  name: redisPrivateEndpointName
   location: location
   properties: {
     privateLinkServiceConnections: [
       {
-        name: '${namePrefix}-redis-pe'
+        name: redisPrivateEndpointName
         properties: {
           privateLinkServiceId: redis.id
           groupIds: [
@@ -50,11 +77,12 @@ resource redisPrivateEndpoint 'Microsoft.Network/privateEndpoints@2022-01-01' = 
         }
       }
     ]
-    customNetworkInterfaceName: '${namePrefix}-redis-pe-nic'
+    customNetworkInterfaceName: uniqueResourceName('${namePrefix}-redis-pe-nic', 80)
     subnet: {
       id: subnetId
     }
   }
+  tags: tags
 }
 
 module privateDnsZone '../privateDnsZone/main.bicep' = {
@@ -63,6 +91,7 @@ module privateDnsZone '../privateDnsZone/main.bicep' = {
     namePrefix: namePrefix
     defaultDomain: 'privatelink.redis.cache.windows.net'
     vnetId: vnetId
+    tags: tags
   }
 }
 
@@ -87,6 +116,7 @@ module redisConnectionString '../keyvault/upsertSecret.bicep' = {
     destKeyVaultName: environmentKeyVaultName
     secretName: 'dialogportenRedisConnectionString'
     secretValue: '${redis.properties.hostName}:${redis.properties.sslPort},password=${redis.properties.accessKeys.primaryKey},ssl=True,abortConnect=False'
+    tags: tags
   }
 }
 

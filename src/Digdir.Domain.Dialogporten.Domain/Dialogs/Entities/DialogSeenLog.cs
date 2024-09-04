@@ -1,4 +1,4 @@
-using Digdir.Domain.Dialogporten.Domain.Localizations;
+using Digdir.Domain.Dialogporten.Domain.Actors;
 using Digdir.Library.Entity.Abstractions.Features.Aggregate;
 using Digdir.Library.Entity.Abstractions.Features.Immutable;
 
@@ -8,13 +8,11 @@ public class DialogSeenLog : IImmutableEntity
 {
     public Guid Id { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
+    public bool IsViaServiceOwner { get; set; }
 
-    public string EndUserId { get; set; } = null!;
-
-    public string? EndUserName { get; set; }
-
+    // === Principal relationships ===
     [AggregateChild]
-    public DialogSeenLogVia? Via { get; set; }
+    public DialogSeenLogSeenByActor SeenBy { get; set; } = null!;
 
     // === Dependent relationships ===
     public Guid DialogId { get; set; }
@@ -24,8 +22,8 @@ public class DialogSeenLog : IImmutableEntity
     public DialogUserType EndUserType { get; set; } = null!;
 }
 
-public class DialogSeenLogVia : LocalizationSet
+public sealed class DialogSeenLogSeenByActor : Actor, IImmutableEntity
 {
-    public DialogSeenLog DialogSeenLog { get; set; } = null!;
     public Guid DialogSeenLogId { get; set; }
+    public DialogSeenLog DialogSeenLog { get; set; } = null!;
 }

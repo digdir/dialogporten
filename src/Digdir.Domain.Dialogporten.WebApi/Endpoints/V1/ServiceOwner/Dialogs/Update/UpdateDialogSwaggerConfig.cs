@@ -1,10 +1,11 @@
 using System.Globalization;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Update;
+using Digdir.Domain.Dialogporten.Domain;
+using Digdir.Domain.Dialogporten.Domain.Actors;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Content;
 using Digdir.Domain.Dialogporten.Domain.Http;
 using Digdir.Domain.Dialogporten.WebApi.Common;
 using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
@@ -47,35 +48,44 @@ internal abstract class UpdateDialogSwaggerConfig : ISwaggerConfig
                 Value = "anotherSearchTag"
             }
         ],
-        Content =
-        [
-            new UpdateDialogContentDto
+        Content = new()
+        {
+            Title = new()
             {
-                Type = DialogContentType.Values.Title,
                 Value =
                 [
                     new LocalizationDto
                     {
-                        CultureCode = "en-us",
-                        Value = "Some Title"
+                        LanguageCode = "en-us",
+                        Value = "Some title"
                     }
-                ]
+                ],
             },
-            new UpdateDialogContentDto
+            Summary = new()
             {
-                Type = DialogContentType.Values.Summary,
                 Value =
                 [
                     new LocalizationDto
                     {
-                        CultureCode = "en-us",
+                        LanguageCode = "en-us",
                         Value = "Some Summary"
                     }
-                ]
+                ],
+            },
+            AdditionalInfo = new()
+            {
+                MediaType = MediaTypes.Markdown,
+                Value =
+                [
+                    new LocalizationDto
+                    {
+                        LanguageCode = "en-us",
+                        Value = "Some description with *markdown* support"
+                    }
+                ],
             }
-        ],
-        VisibleFrom =
-            DateTimeOffset.Parse("2054-03-04T12:13:10.0134400+00:00", CultureInfo.InvariantCulture),
+        },
+        VisibleFrom = DateTimeOffset.Parse("2054-03-04T12:13:10.0134400+00:00", CultureInfo.InvariantCulture),
         ExpiresAt = DateTimeOffset.Parse("2095-05-04T12:13:10.0134400+00:00", CultureInfo.InvariantCulture),
         DueAt = DateTimeOffset.Parse("2084-04-04T12:13:10.0134400+00:00", CultureInfo.InvariantCulture),
         Attachments =
@@ -87,7 +97,7 @@ internal abstract class UpdateDialogSwaggerConfig : ISwaggerConfig
                 [
                     new LocalizationDto
                     {
-                        CultureCode = "en-us",
+                        LanguageCode = "en-us",
                         Value = "Some display name"
                     }
                 ],
@@ -114,12 +124,12 @@ internal abstract class UpdateDialogSwaggerConfig : ISwaggerConfig
                 [
                     new LocalizationDto
                     {
-                        CultureCode = "en-us",
+                        LanguageCode = "en-us",
                         Value = "GUI action title"
                     },
                     new LocalizationDto
                     {
-                        CultureCode = "nb-no",
+                        LanguageCode = "nb-no",
                         Value = "GUI action-tittel"
                     }
                 ]
@@ -152,17 +162,20 @@ internal abstract class UpdateDialogSwaggerConfig : ISwaggerConfig
             {
                 Id = Guid.Parse("8b95d42d-d2b6-4c01-8ca0-a817a4b3c50d"),
                 Type = DialogActivityType.Values.Information,
-                PerformedBy = "Some performed",
+                PerformedBy = new UpdateDialogDialogActivityPerformedByActorDto
+                {
+                    ActorType = ActorType.Values.ServiceOwner
+                },
                 Description =
                 [
                     new LocalizationDto
                     {
-                        CultureCode = "en-us",
+                        LanguageCode = "en-us",
                         Value = "Some description"
                     },
                     new LocalizationDto
                     {
-                        CultureCode = "nb-no",
+                        LanguageCode = "nb-no",
                         Value = "En beskrivelse"
                     }
                 ]

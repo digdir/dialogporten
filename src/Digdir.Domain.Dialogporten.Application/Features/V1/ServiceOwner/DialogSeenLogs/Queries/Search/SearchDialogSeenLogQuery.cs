@@ -15,24 +15,21 @@ public sealed class SearchDialogSeenLogQuery : IRequest<SearchDialogSeenLogResul
 }
 
 [GenerateOneOf]
-public partial class SearchDialogSeenLogResult : OneOfBase<List<SearchDialogSeenLogDto>, EntityNotFound>;
+public partial class SearchDialogSeenLogResult : OneOfBase<List<SearchSeenLogDto>, EntityNotFound>;
 
 internal sealed class SearchDialogSeenLogQueryHandler : IRequestHandler<SearchDialogSeenLogQuery, SearchDialogSeenLogResult>
 {
     private readonly IDialogDbContext _db;
     private readonly IMapper _mapper;
-    private readonly IStringHasher _stringHasher;
     private readonly IUserResourceRegistry _userResourceRegistry;
 
     public SearchDialogSeenLogQueryHandler(
         IDialogDbContext db,
         IMapper mapper,
-        IStringHasher stringHasher,
         IUserResourceRegistry userResourceRegistry)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-        _stringHasher = stringHasher ?? throw new ArgumentNullException(nameof(stringHasher));
         _userResourceRegistry = userResourceRegistry;
     }
 
@@ -43,7 +40,7 @@ internal sealed class SearchDialogSeenLogQueryHandler : IRequestHandler<SearchDi
         var dialog = await _db.Dialogs
             .AsNoTracking()
             .Include(x => x.SeenLog)
-                .ThenInclude(x => x.Via!.Localizations)
+                .ThenInclude(x => x.SeenBy)
             .IgnoreQueryFilters()
             .Where(x => resourceIds.Contains(x.ServiceResource))
             .FirstOrDefaultAsync(x => x.Id == request.DialogId,
@@ -57,8 +54,7 @@ internal sealed class SearchDialogSeenLogQueryHandler : IRequestHandler<SearchDi
         return dialog.SeenLog
             .Select(x =>
             {
-                var dto = _mapper.Map<SearchDialogSeenLogDto>(x);
-                dto.EndUserIdHash = _stringHasher.Hash(x.EndUserId);
+                var dto = _mapper.Map<SearchSeenLogDto>(x);
                 return dto;
             })
             .ToList();

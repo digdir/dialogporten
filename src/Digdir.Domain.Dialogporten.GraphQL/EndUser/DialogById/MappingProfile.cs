@@ -23,6 +23,15 @@ public class MappingProfile : Profile
         CreateMap<GetDialogDialogApiActionEndpointDto, ApiActionEndpoint>()
             .ForMember(dest => dest.HttpMethod, opt => opt.MapFrom(src => src.HttpMethod));
 
+        CreateMap<GetDialogContentDto, Content>();
         CreateMap<GetDialogDialogSeenLogDto, SeenLog>();
+
+        CreateMap<GetDialogDialogTransmissionDto, Transmission>()
+            .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type));
+        CreateMap<GetDialogDialogTransmissionSenderActorDto, Actor>();
+        CreateMap<GetDialogTransmissionAttachmentDto, Attachment>();
+        CreateMap<GetDialogTransmissionAttachmentUrlDto, AttachmentUrl>()
+            .ForMember(dest => dest.ConsumerType, opt => opt.MapFrom(src => src.ConsumerType));
+        CreateMap<GetDialogDialogTransmissionContentDto, TransmissionContent>();
     }
 }

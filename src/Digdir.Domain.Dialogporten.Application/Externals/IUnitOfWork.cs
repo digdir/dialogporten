@@ -14,6 +14,8 @@ public interface IUnitOfWork
         TEntity? entity,
         Guid? revision)
         where TEntity : class, IVersionableEntity;
+
+    Task BeginTransactionAsync(CancellationToken cancellationToken = default);
 }
 
 [GenerateOneOf]

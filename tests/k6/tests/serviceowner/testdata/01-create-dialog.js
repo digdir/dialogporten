@@ -14,12 +14,183 @@ export default function () {
             { "value": "something searchable" },
             { "value": "something else searchable" }
         ],
-        "content": [
-            { "type": "Title", "value": [ { "cultureCode": "nb_NO", "value": "Skjema for rapportering av et eller annet" } ] },
-            { "type": "SenderName", "value": [ { "cultureCode": "nb_NO", "value": "Avsendernavn" } ] },
-            { "type": "Summary", "value": [ { "cultureCode": "nb_NO", "value": "Et sammendrag her. Maks 200 tegn, ingen HTML-støtte. Påkrevd. Vises i liste." } ] },
-            { "type": "AdditionalInfo", "mediaType": "text/plain", "value": [ { "cultureCode": "nb_NO", "value": "Utvidet forklaring (enkel HTML-støtte, inntil 1023 tegn). Ikke påkrevd. Vises kun i detaljvisning." } ] },
-            { "type": "ExtendedStatus", "value": [ { "cultureCode": "nb_NO", "value": "Utvidet Status" } ] },
+        "content": {
+            "Title": {
+                "value": [{ "languageCode": "nb", "value": "Skjema for rapportering av et eller annet" }]
+            },
+            "SenderName": {
+                "value": [{ "languageCode": "nb", "value": "Avsendernavn" }]
+            },
+            "Summary": {
+                "value": [{ "languageCode": "nb", "value": "Et sammendrag her. Maks 200 tegn, ingen HTML-støtte. Påkrevd. Vises i liste." }]
+            },
+            "AdditionalInfo": {
+                "mediaType": "text/plain",
+                "value": [{ "languageCode": "nb", "value": "Utvidet forklaring (enkel HTML-støtte, inntil 1023 tegn). Ikke påkrevd. Vises kun i detaljvisning." }]
+            },
+            "ExtendedStatus": {
+                "value": [{ "languageCode": "nb", "value": "Utvidet Status" }]
+            },
+        },
+        "transmissions": [
+            {
+                "type": "Information",
+                "authorizationAttribute": "element1",
+                "sender": {
+                    "actorType": "serviceOwner",
+                },
+                "attachments": [
+                    {
+                        "displayName": [
+                            {
+                                "languageCode": "nb",
+                                "value": "Forsendelse visningsnavn"
+                            },
+                            {
+                                "languageCode": "en",
+                                "value": "Transmission attachment display name"
+                            }
+                        ],
+                        "urls": [
+                            {
+                                "url": "https://digdir.apps.tt02.altinn.no/some-other-url",
+                                "consumerType": "Gui"
+                            }
+                        ]
+                    }
+                ],
+                "content": {
+                    "title": {
+                        "value": [
+                            {
+                                "languageCode": "nb",
+                                "value": "Forsendelsestittel"
+                            },
+                            {
+                                "languageCode": "en",
+                                "value": "Transmission title"
+                            }
+                        ]
+                    },
+                    "summary": {
+                        "value": [
+                            {
+                                "languageCode": "nb",
+                                "value": "Forsendelse oppsummering"
+                            },
+                            {
+                                "languageCode": "en",
+                                "value": "Transmission summary"
+                            }
+                        ]
+                    }
+                }
+            },
+            {
+                "type": "Information",
+                "sender": {
+                    "actorType": "serviceOwner"
+                },
+                "attachments": [
+                    {
+                        "displayName": [
+                            {
+                                "languageCode": "nb",
+                                "value": "Visningsnavn for forsendelsesvedlegg "
+                            },
+                            {
+                                "languageCode": "en",
+                                "value": "Transmission attachment display name"
+                            }
+                        ],
+                        "urls": [
+                            {
+                                "url": "https://digdir.apps.tt02.altinn.no/some-other-url",
+                                "consumerType": "Gui"
+                            }
+                        ]
+                    }
+                ],
+                "content": {
+                    "title": {
+                        "value": [
+                            {
+                                "languageCode": "nb",
+                                "value": "Forsendelsesstittel"
+                            },
+                            {
+                                "languageCode": "en",
+                                "value": "Transmission title"
+                            }
+                        ]
+                    },
+                    "summary": {
+                        "value": [
+                            {
+                                "languageCode": "nb",
+                                "value": "Transmisjon oppsummering"
+                            },
+                            {
+                                "languageCode": "en",
+                                "value": "Transmission summary"
+                            }
+                        ]
+                    }
+                }
+            },
+            {
+                "type": "Information",
+                "authorizationAttribute": "elementius",
+                "sender": {
+                    "actorType": "serviceOwner"
+                },
+                "attachments": [
+                    {
+                        "displayName": [
+                            {
+                                "languageCode": "nb",
+                                "value": "Visningsnavn for forsendelsesvedlegg"
+                            },
+                            {
+                                "languageCode": "en",
+                                "value": "Transmission attachment display name"
+                            }
+                        ],
+                        "urls": [
+                            {
+                                "url": "https://digdir.apps.tt02.altinn.no/some-other-url",
+                                "consumerType": "Gui"
+                            }
+                        ]
+                    }
+                ],
+                "content": {
+                    "title": {
+                        "value": [
+                            {
+                                "languageCode": "nb",
+                                "value": "Forsendelsetittel"
+                            },
+                            {
+                                "languageCode": "en",
+                                "value": "Transmission title"
+                            }
+                        ]
+                    },
+                    "summary": {
+                        "value": [
+                            {
+                                "languageCode": "nb",
+                                "value": "Forsendelsesoppsummering"
+                            },
+                            {
+                                "languageCode": "en",
+                                "value": "Transmission summary"
+                            }
+                        ]
+                    }
+                }
+            }
         ],
         "guiActions": [
             {
@@ -29,7 +200,7 @@ export default function () {
                 "title": [
                     {
                         "value": "Gå til dialog",
-                        "cultureCode": "nb-no"
+                        "languageCode": "nb"
                     }
                 ]
             },
@@ -41,10 +212,10 @@ export default function () {
                 "title": [
                     {
                         "value": "Utfør handling uten navigasjon",
-                        "cultureCode": "nb-no"
+                        "languageCode": "nb"
                     }
                 ],
-                "prompt": [ { "value": "Er du sikker?", "cultureCode": "nb-no" } ]
+                "prompt": [{ "value": "Er du sikker?", "languageCode": "nb" }]
             }
         ],
         "apiActions": [
@@ -55,7 +226,7 @@ export default function () {
                         "url": "https://digdir.no",
                         "httpMethod": "GET"
                     },
-                                    {
+                    {
                         "url": "https://digdir.no/deprecated",
                         "httpMethod": "GET",
                         "deprecated": true
@@ -67,7 +238,7 @@ export default function () {
             {
                 "displayName": [
                     {
-                        "cultureCode": "nb_NO",
+                        "languageCode": "nb",
                         "value": "Et vedlegg"
                     }
                 ],
@@ -82,7 +253,7 @@ export default function () {
             {
                 "displayName": [
                     {
-                        "cultureCode": "nb_NO",
+                        "languageCode": "nb",
                         "value": "Et annet vedlegg"
                     }
                 ],
@@ -97,7 +268,7 @@ export default function () {
             {
                 "displayName": [
                     {
-                        "cultureCode": "nb_NO",
+                        "languageCode": "nb",
                         "value": "Nok et vedlegg"
                     }
                 ],
@@ -112,40 +283,32 @@ export default function () {
         ],
         "activities": [
             {
-                "type": "Error",
-                "performedBy": "Politiet", 
-                "description": [
-                    {
-                        "value": "Lovbrudd",
-                        "cultureCode": "nb_no"
-                    },
-                    {
-                        "value": "Ofensa",
-                        "cultureCode": "es_es"
-                    }
-                ]
+                "type": "DialogCreated",
+                "performedBy": {
+                    "actorType": "partyRepresentative",
+                    "actorName": "Some custom name"
+                }
             },
             {
-                "type": "Submission",
-                "performedBy": "NAV",
-                "description": [
-                    {
-                        "value": "Brukeren har levert et viktig dokument.",
-                        "cultureCode": "nb_no"
-                    }
-                ]
+                "type": "PaymentMade",
+                "performedBy": {
+                    "actorType": "serviceOwner"
+                }
             },
             {
-                "type": "Submission",
-                "performedBy": "Skatteetaten",
+                "type": "Information",
+                "performedBy": {
+                    "actorType": "partyRepresentative",
+                    "actorId": "urn:altinn:organization:identifier-no:991825827"
+                },
                 "description": [
                     {
                         "value": "Brukeren har begått skattesvindel",
-                        "cultureCode": "nb_no"
+                        "languageCode": "nb"
                     },
                     {
                         "value": "Tax fraud",
-                        "cultureCode": "en_us"
+                        "languageCode": "en"
                     }
                 ]
             }

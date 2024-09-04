@@ -1,9 +1,9 @@
-using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Queries.Get;
 using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Queries.Search;
 using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogSeenLogs.Queries.Get;
 using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogSeenLogs.Queries.Search;
 using Digdir.Domain.Dialogporten.Application.Integration.Tests.Common;
+using Digdir.Domain.Dialogporten.Domain.Parties;
 using Digdir.Tool.Dialogporten.GenerateFakeData;
 using FluentAssertions;
 
@@ -13,9 +13,9 @@ namespace Digdir.Domain.Dialogporten.Application.Integration.Tests.Features.V1.E
 public class SeenLogTests(DialogApplication application) : ApplicationCollectionFixture(application)
 {
     [Fact]
-    public async Task Get_Dialog_Should_Not_Return_User_Ids_Unhashed()
+    public async Task Get_Dialog_SeenLog_Should_Not_Return_User_Ids_Unhashed()
     {
-        // Arrange
+
         var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog();
         var createCommandResponse = await Application.Send(createDialogCommand);
 
@@ -28,13 +28,14 @@ public class SeenLogTests(DialogApplication application) : ApplicationCollection
 
         result.SeenSinceLastUpdate
             .Single()
-            .EndUserIdHash
+            .SeenBy.ActorId
             .Should()
-            .HaveLength(PersistentRandomSaltStringHasher.StringLength);
+            .StartWith(NorwegianPersonIdentifier.HashPrefixWithSeparator);
+
     }
 
     [Fact]
-    public async Task Search_Dialog_Should_Not_Return_User_Ids_Unhashed()
+    public async Task Search_Dialog_SeenLog_Should_Not_Return_User_Ids_Unhashed()
     {
         // Arrange
         var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog();
@@ -57,9 +58,9 @@ public class SeenLogTests(DialogApplication application) : ApplicationCollection
             .Single()
             .SeenSinceLastUpdate
             .Single()
-            .EndUserIdHash
+            .SeenBy.ActorId
             .Should()
-            .HaveLength(PersistentRandomSaltStringHasher.StringLength);
+            .StartWith(NorwegianPersonIdentifier.HashPrefixWithSeparator);
     }
 
     [Fact]
@@ -83,9 +84,9 @@ public class SeenLogTests(DialogApplication application) : ApplicationCollection
         response.TryPickT0(out var result, out _).Should().BeTrue();
         result.Should().NotBeNull();
 
-        result.EndUserIdHash
+        result.SeenBy.ActorId
             .Should()
-            .HaveLength(PersistentRandomSaltStringHasher.StringLength);
+            .StartWith(NorwegianPersonIdentifier.HashPrefixWithSeparator);
     }
 
     [Fact]
@@ -109,8 +110,8 @@ public class SeenLogTests(DialogApplication application) : ApplicationCollection
         result.Should().NotBeNull();
 
         result.Single()
-            .EndUserIdHash
+            .SeenBy.ActorId
             .Should()
-            .HaveLength(PersistentRandomSaltStringHasher.StringLength);
+            .StartWith(NorwegianPersonIdentifier.HashPrefixWithSeparator);
     }
 }

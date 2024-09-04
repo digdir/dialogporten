@@ -1,32 +1,33 @@
 import { customConsole as console } from './console.js';
 
-export function setTitle(dialog, title, language = "nb_NO") {
+export function setTitle(dialog, title, language = "nb") {
     setContent(dialog, "Title", title, language);
 }
 
-export function setAdditionalInfo(dialog, additionalInfo, language = "nb_NO") {
+export function setAdditionalInfo(dialog, additionalInfo, language = "nb") {
     setContent(dialog, "AdditionalInfo", additionalInfo, language);
 }
 
-export function setContent(dialog, type, value, language = "nb_NO") {
+export function setContent(dialog, type, value, language = "nb") {
     if (typeof value !== "string") {
         throw new Error("Invalid value provided.");
     }
 
-    dialog.content = dialog.content || [];
-    const title_index = dialog.content.findIndex(t => t.type === type);
+    dialog.content = dialog.content || {};
 
-    if (title_index !== -1) {
-        const lang_index = dialog.content[title_index].value.findIndex(t => t.cultureCode === language);
+    if(dialog.content[`${type}`]) {
+        const lang_index = dialog.content[`${type}`].value.findIndex(t => t.languageCode === language);
         if (lang_index !== -1) {
-            dialog.content[title_index].value[lang_index].value = value;
+            dialog.content[`${type}`].value[lang_index].value = value;
         }
         else {
-            dialog.content[title_index].value.push({ cultureCode: language, value: value });
+            dialog.content[`${type}`].value.push({ languageCode: language, value: value });
         }
     }
     else {
-        dialog.content.push({ "type": type, value: [ { cultureCode: language, value: value } ] });
+        dialog.content[`${type}`] = {
+            value: [ { languageCode: language, value: value } ]
+        }
     }
 }
 
@@ -42,7 +43,7 @@ export function setSearchTags(dialog, searchTags) {
     dialog.searchTags = tags;
 }
 
-export function setSenderName(dialog, senderName, language = "nb_NO") {
+export function setSenderName(dialog, senderName, language = "nb") {
     setContent(dialog, "SenderName", senderName, language);
 }
 

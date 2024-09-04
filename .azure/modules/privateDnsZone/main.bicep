@@ -7,6 +7,9 @@ param defaultDomain string
 @description('The ID of the virtual network linked to the private DNS zone')
 param vnetId string
 
+@description('Tags to apply to resources')
+param tags object
+
 type ARecord = {
   name: string
   ip: string
@@ -19,6 +22,7 @@ resource privateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = {
   name: defaultDomain
   location: 'global'
   properties: {}
+  tags: tags
 }
 
 resource aRecordResources 'Microsoft.Network/privateDnsZones/A@2020-06-01' = [
@@ -46,6 +50,7 @@ resource virtualNetworkLink 'Microsoft.Network/privateDnsZones/virtualNetworkLin
       id: vnetId
     }
   }
+  tags: tags
 }
 
 output id string = privateDnsZone.id

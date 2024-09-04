@@ -3,23 +3,13 @@ namespace Digdir.Domain.Dialogporten.GraphQL.EndUser.Common;
 public sealed class Localization
 {
     public string Value { get; set; } = null!;
-    public string CultureCode { get; set; } = null!;
+    public string LanguageCode { get; set; } = null!;
 }
 
-public enum ContentType
+public sealed class ContentValue
 {
-    Title = 1,
-    SenderName = 2,
-    Summary = 3,
-    AdditionalInfo = 4,
-    ExtendedStatus = 5
-}
-
-public sealed class Content
-{
-    public ContentType Type { get; set; }
     public List<Localization> Value { get; set; } = [];
-    public string? MediaType { get; set; }
+    public string MediaType { get; set; } = null!;
 }
 
 public sealed class SeenLog
@@ -27,9 +17,7 @@ public sealed class SeenLog
     public Guid Id { get; set; }
     public DateTimeOffset SeenAt { get; set; }
 
-    public string EndUserIdHash { get; set; } = null!;
-
-    public string? EndUserName { get; set; }
+    public Actor SeenBy { get; set; } = null!;
 
     public bool IsCurrentEndUser { get; set; }
 }
@@ -43,49 +31,64 @@ public sealed class Activity
     public ActivityType Type { get; set; }
 
     public Guid? RelatedActivityId { get; set; }
+    public Guid? TransmissionId { get; set; }
 
-    public string? PerformedBy { get; set; }
+    public Actor PerformedBy { get; set; } = null!;
+
     public List<Localization> Description { get; set; } = [];
+}
+
+public sealed class Actor
+{
+    public ActorType? ActorType { get; set; }
+    public string? ActorId { get; set; }
+    public string? ActorName { get; set; }
+}
+
+public enum ActorType
+{
+    PartyRepresentative = 1,
+    ServiceOwner = 2
 }
 
 public enum ActivityType
 {
-    [GraphQLDescription("Refers to a submission made by a party that has been received by the service provider.")]
-    Submission = 1,
+    [GraphQLDescription("Refers to a dialog that has been created.")]
+    DialogCreated = 1,
 
-    [GraphQLDescription("Indicates feedback from the service provider on a submission. Contains a reference to the current submission.")]
-    Feedback = 2,
+    [GraphQLDescription("Refers to a dialog that has been closed.")]
+    DialogClosed = 2,
 
-    [GraphQLDescription("Information from the service provider, not (directly) related to any submission.")]
+    [GraphQLDescription("Information from the service provider, not (directly) related to any transmission.")]
     Information = 3,
 
-    [GraphQLDescription("Used to indicate an error situation, typically on a submission. Contains a service-specific activityErrorCode.")]
-    Error = 4,
+    [GraphQLDescription("Refers to a transmission that has been opened.")]
+    TransmissionOpened = 4,
 
-    [GraphQLDescription("Indicates that the dialog is closed for further changes. This typically happens when the dialog is completed or deleted.")]
-    Closed = 5,
+    [GraphQLDescription("Indicates that payment has been made.")]
+    PaymentMade = 5,
 
-    [GraphQLDescription("When the dialog is forwarded (delegated access) by someone with access to others.")]
-    Forwarded = 7
+    [GraphQLDescription("Indicates that a signature has been provided.")]
+    SignatureProvided = 6
 }
 
 public enum DialogStatus
 {
-    [GraphQLDescription("New")]
+    [GraphQLDescription("The dialogue is considered new. Typically used for simple messages that do not require any interaction, or as an initial step for dialogues. This is the default.")]
     New = 1,
 
-    [GraphQLDescription("In progress. General status used for dialog services where further user input is expected.")]
+    [GraphQLDescription("Started. In a serial process, this is used to indicate that, for example, a form filling is ongoing.")]
     InProgress = 2,
 
-    [GraphQLDescription("Waiting for feedback from the service provider")]
-    Waiting = 3,
+    [GraphQLDescription("Equivalent to \"InProgress\", but will be used by the workspace/frontend for display purposes.")]
+    Signing = 3,
 
-    [GraphQLDescription("The dialog is in a state where it is waiting for signing. Typically the last step after all completion is carried out and validated.")]
-    Signing = 4,
+    [GraphQLDescription("For processing by the service owner. In a serial process, this is used after a submission is made.")]
+    Processing = 4,
 
-    [GraphQLDescription("The dialog was cancelled. This typically removes the dialog from normal GUI views.")]
-    Cancelled = 5,
+    [GraphQLDescription("Used to indicate that the dialogue is in progress/under work, but is in a state where the user must do something - for example, correct an error, or other conditions that hinder further processing.")]
+    RequiresAttention = 5,
 
-    [GraphQLDescription("The dialog was completed. This typically moves the dialog to a GUI archive or similar.")]
+    [GraphQLDescription("The dialogue was completed. This typically means that the dialogue is moved to a GUI archive or similar.")]
     Completed = 6
 }

@@ -1,13 +1,14 @@
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.DialogActivities.Queries.Get;
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Update;
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Queries.Get;
-using Digdir.Domain.Dialogporten.WebApi.Common;
+using Digdir.Domain.Dialogporten.Domain.Common;
 using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
 using Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.DialogActivities.Get;
+using Digdir.Library.Entity.Abstractions.Features.Identifiable;
 using FastEndpoints;
 using MediatR;
-using Medo;
+using Constants = Digdir.Domain.Dialogporten.WebApi.Common.Constants;
 using IMapper = AutoMapper.IMapper;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.DialogActivities.Create;
@@ -35,9 +36,11 @@ public sealed class CreateDialogActivityEndpoint : Endpoint<CreateDialogActivity
     public override async Task HandleAsync(CreateDialogActivityRequest req, CancellationToken ct)
     {
         var dialogQueryResult = await _sender.Send(new GetDialogQuery { DialogId = req.DialogId }, ct);
-        if (dialogQueryResult.TryPickT1(out var entityNotFound, out var dialog))
+        if (!dialogQueryResult.TryPickT0(out var dialog, out var errors))
         {
-            await this.NotFoundAsync(entityNotFound, cancellationToken: ct);
+            await errors.Match(
+                notFound => this.NotFoundAsync(notFound, cancellationToken: ct),
+                validationError => this.BadRequestAsync(validationError, ct));
             return;
         }
 
@@ -47,9 +50,7 @@ public sealed class CreateDialogActivityEndpoint : Endpoint<CreateDialogActivity
 
         var updateDialogDto = _mapper.Map<UpdateDialogDto>(dialog);
 
-        req.Id = !req.Id.HasValue || req.Id.Value == default
-            ? Uuid7.NewUuid7().ToGuid()
-            : req.Id;
+        req.Id = req.Id.CreateVersion7IfDefault();
 
         updateDialogDto.Activities.Add(req);
 

@@ -4,12 +4,20 @@ namespace Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localization
 
 public sealed class LocalizationDto
 {
-    private readonly string _cultureCode = null!;
+    private readonly string _languageCode = null!;
 
+    /// <summary>
+    /// The localized text or URI reference
+    /// </summary>
     public required string Value { get; init; }
-    public required string CultureCode
+
+    /// <summary>
+    /// The language code of the localization in ISO 639-1 format
+    /// </summary>
+    /// <example>nb</example>
+    public required string LanguageCode
     {
-        get => _cultureCode;
-        init => _cultureCode = Localization.NormalizeCultureCode(value)!;
+        get => _languageCode;
+        init => _languageCode = Localization.NormalizeCultureCode(value)!;
     }
 }

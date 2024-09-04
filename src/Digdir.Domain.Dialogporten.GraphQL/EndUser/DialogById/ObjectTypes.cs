@@ -50,12 +50,71 @@ public sealed class Dialog
 
     public DialogStatus Status { get; set; }
 
-    public List<Content> Content { get; set; } = [];
+    public Content Content { get; set; } = null!;
     public List<Attachment> Attachments { get; set; } = [];
     public List<GuiAction> GuiActions { get; set; } = [];
     public List<ApiAction> ApiActions { get; set; } = [];
     public List<Activity> Activities { get; set; } = [];
     public List<SeenLog> SeenSinceLastUpdate { get; set; } = [];
+    public List<Transmission> Transmissions { get; set; } = [];
+}
+
+public sealed class Transmission
+{
+    public Guid Id { get; set; }
+    public DateTimeOffset CreatedAt { get; set; }
+    public string? AuthorizationAttribute { get; set; }
+    public bool IsAuthorized { get; set; }
+    public Uri? ExtendedType { get; set; }
+    public Guid? RelatedTransmissionId { get; set; }
+
+    public TransmissionType Type { get; set; }
+    public Actor Sender { get; set; } = null!;
+    public TransmissionContent Content { get; set; } = null!;
+    public List<Attachment> Attachments { get; set; } = [];
+}
+
+public enum TransmissionType
+{
+    [GraphQLDescription("For general information, not related to any submissions")]
+    Information = 1,
+
+    [GraphQLDescription("Feedback/receipt accepting a previous submission")]
+    Acceptance = 2,
+
+    [GraphQLDescription("Feedback/error message rejecting a previous submission")]
+    Rejection = 3,
+
+    [GraphQLDescription("Question/request for more information")]
+    Request = 4,
+
+    [GraphQLDescription("Critical information about the process")]
+    Alert = 5,
+
+    [GraphQLDescription("Information about a formal decision (\"resolution\")")]
+    Decision = 6,
+
+    [GraphQLDescription("A normal submission of some information/form")]
+    Submission = 7,
+
+    [GraphQLDescription("A submission correcting/overriding some previously submitted information")]
+    Correction = 8,
+}
+
+public sealed class Content
+{
+    public ContentValue Title { get; set; } = null!;
+    public ContentValue Summary { get; set; } = null!;
+    public ContentValue? SenderName { get; set; }
+    public ContentValue? AdditionalInfo { get; set; }
+    public ContentValue? ExtendedStatus { get; set; }
+    public ContentValue? MainContentReference { get; set; }
+}
+
+public sealed class TransmissionContent
+{
+    public ContentValue Title { get; set; } = null!;
+    public ContentValue Summary { get; set; } = null!;
 }
 
 public sealed class ApiAction

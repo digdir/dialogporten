@@ -207,9 +207,6 @@ public static class ClaimsPrincipalExtensions
     {
         if (claimsPrincipal.TryGetPid(out var externalId))
         {
-            // ServiceOwnerOnHelfOfPerson does not work atm., since there will be no PID claim on service owner calls
-            // TODO: This needs to be fixed when implementing https://github.com/digdir/dialogporten/issues/386
-            // F.ex. a middleware that runs before UserTypeValidationMiddleware that adds the PID claim
             return (claimsPrincipal.HasScope(ServiceProviderScope)
                 ? UserIdType.ServiceOwnerOnBehalfOfPerson
                 : UserIdType.Person, externalId);
