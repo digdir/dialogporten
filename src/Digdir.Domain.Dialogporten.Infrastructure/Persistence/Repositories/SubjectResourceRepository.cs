@@ -14,6 +14,26 @@ internal class SubjectResourceRepository : ISubjectResourceRepository
         _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
     }
 
+    public async Task<DateTimeOffset> GetLastUpdatedAt(
+        TimeSpan? timeSkew = null,
+        CancellationToken cancellationToken = default)
+    {
+        var lastUpdatedAt = await _dbContext.SubjectResources
+            .Select(x => x.UpdatedAt)
+            .DefaultIfEmpty()
+            .MaxAsync(cancellationToken);
+
+        return timeSkew.HasValue
+            ? lastUpdatedAt.Add(timeSkew.Value)
+            : lastUpdatedAt;
+    }
+
+    public Task<DateTimeOffset> GetLastUpdatedAt(CancellationToken cancellationToken) =>
+        _dbContext.SubjectResources
+            .Select(x => x.UpdatedAt)
+            .DefaultIfEmpty()
+            .MaxAsync(cancellationToken);
+
     public async Task<int> Merge(List<MergableSubjectResource> subjectResource, CancellationToken cancellationToken)
     {
         const string sql =
