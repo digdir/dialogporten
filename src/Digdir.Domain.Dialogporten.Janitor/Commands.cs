@@ -23,8 +23,6 @@ internal static class Commands
                     validationError => -1);
             });
 
-        // app.AddCommand("test", ([Argument] MahInputs inputs) => Console.WriteLine("Hello, World!"));
-
         return app;
     }
 }
