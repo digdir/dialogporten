@@ -43,7 +43,6 @@ internal sealed class DialogDbContext : DbContext, IDialogDbContext
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
     public DbSet<OutboxMessageConsumer> OutboxMessageConsumers => Set<OutboxMessageConsumer>();
     public DbSet<SubjectResource> SubjectResources => Set<SubjectResource>();
-    public DbSet<SubjectResourceLastUpdate> SubjectResourceLastUpdates => Set<SubjectResourceLastUpdate>();
 
     //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) =>
     //    optionsBuilder.LogTo(Console.WriteLine);

@@ -38,10 +38,10 @@ internal sealed class SynchronizeResourceRegistryCommandHandler : IRequestHandle
 
     public async Task<SynchronizeResourceRegistryResult> Handle(SynchronizeSubjectResourceMappingsCommand request, CancellationToken cancellationToken)
     {
-        // 1. Get the last updated timestamp from parameter, or the database (with a time skew), or use a default
+        // Get the last updated timestamp from parameter, or the database (with a time skew), or use a default
         var lastUpdated = request.Since
             ?? await _subjectResourceRepository.GetLastUpdatedAt(
-                timeSkew: TimeSpan.FromMicroseconds(1),
+                timeSkew: TimeSpan.FromTicks(1),
                 cancellationToken: cancellationToken);
 
         _logger.LogInformation("Fetching updated subject-resources since {LastUpdated:O}.", lastUpdated);

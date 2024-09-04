@@ -26,18 +26,6 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     table.PrimaryKey("PK_SubjectResource", x => x.Id);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "SubjectResourceLastUpdate",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
-                    LastUpdate = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_SubjectResourceLastUpdate", x => x.Id);
-                });
-
             migrationBuilder.CreateIndex(
                 name: "IX_SubjectResource_Resource_Subject",
                 table: "SubjectResource",
@@ -50,9 +38,6 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
         {
             migrationBuilder.DropTable(
                 name: "SubjectResource");
-
-            migrationBuilder.DropTable(
-                name: "SubjectResourceLastUpdate");
         }
     }
 }

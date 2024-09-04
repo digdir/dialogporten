@@ -1205,21 +1205,6 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.ToTable("SubjectResource", (string)null);
                 });
 
-            modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.SubjectResources.SubjectResourceLastUpdate", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasDefaultValueSql("gen_random_uuid()");
-
-                    b.Property<DateTimeOffset>("LastUpdate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("SubjectResourceLastUpdate", (string)null);
-                });
-
             modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities.DialogActivityPerformedByActor", b =>
                 {
                     b.HasBaseType("Digdir.Domain.Dialogporten.Domain.Actors.Actor");
