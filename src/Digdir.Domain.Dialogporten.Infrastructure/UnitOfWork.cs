@@ -12,7 +12,7 @@ using Polly.Contrib.WaitAndRetry;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure;
 
-internal sealed class UnitOfWork : IUnitOfWork, IAsyncDisposable
+internal sealed class UnitOfWork : IUnitOfWork, IAsyncDisposable, IDisposable
 {
     // Fetch the db revision and retry
     // https://learn.microsoft.com/en-us/ef/core/saving/concurrency?tabs=data-annotations#resolving-concurrency-conflicts
@@ -178,5 +178,11 @@ internal sealed class UnitOfWork : IUnitOfWork, IAsyncDisposable
             await _transaction.DisposeAsync();
             _transaction = null;
         }
+    }
+
+    public void Dispose()
+    {
+        _transaction?.Dispose();
+        _transaction = null;
     }
 }
