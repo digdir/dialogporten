@@ -2,7 +2,7 @@
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.Enumerables;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.FluentValidation;
 using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
-using Digdir.Domain.Dialogporten.Application.Features.V1.Common;
+using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Actors;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Content;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using Digdir.Domain.Dialogporten.Domain.Actors;
@@ -142,14 +142,11 @@ internal sealed class UpdateDialogDialogTransmissionActorDtoValidator : Abstract
         RuleFor(x => x.ActorType)
             .IsInEnum();
 
-        RuleFor(x => x.ActorId)
-            .Must((dto, value) => value is null || dto.ActorName is null)
-            .WithMessage("Only one of 'ActorId' or 'ActorName' can be set, but not both.");
-
-        RuleFor(x => x.ActorType)
-            .Must((dto, value) => (value == ActorType.Values.ServiceOwner && dto.ActorId is null && dto.ActorName is null) ||
-                                  (value != ActorType.Values.ServiceOwner && (dto.ActorId is not null || dto.ActorName is not null)))
-            .WithMessage("If 'ActorType' is 'ServiceOwner', both 'ActorId' and 'ActorName' must be null. Otherwise, one of them must be set.");
+        RuleFor(x => x)
+            .Must(dto => (dto.ActorId is null || dto.ActorName is null) &&
+                         ((dto.ActorType == ActorType.Values.ServiceOwner && dto.ActorId is null && dto.ActorName is null) ||
+                          (dto.ActorType != ActorType.Values.ServiceOwner && (dto.ActorId is not null || dto.ActorName is not null))))
+            .WithMessage(ActorValidationErrorMessages.ActorIdActorNameExclusiveOr);
 
         RuleFor(x => x.ActorId!)
             .IsValidPartyIdentifier()
@@ -409,14 +406,11 @@ internal sealed class UpdateDialogDialogActivityActorDtoValidator : AbstractVali
         RuleFor(x => x.ActorType)
             .IsInEnum();
 
-        RuleFor(x => x.ActorId)
-            .Must((dto, value) => value is null || dto.ActorName is null)
-            .WithMessage("Only one of 'ActorId' or 'ActorName' can be set, but not both.");
-
-        RuleFor(x => x.ActorType)
-            .Must((dto, value) => (value == ActorType.Values.ServiceOwner && dto.ActorId is null && dto.ActorName is null) ||
-                                  (value != ActorType.Values.ServiceOwner && (dto.ActorId is not null || dto.ActorName is not null)))
-            .WithMessage("If 'ActorType' is 'ServiceOwner', both 'ActorId' and 'ActorName' must be null. Otherwise, one of them must be set.");
+        RuleFor(x => x)
+            .Must(dto => (dto.ActorId is null || dto.ActorName is null) &&
+                         ((dto.ActorType == ActorType.Values.ServiceOwner && dto.ActorId is null && dto.ActorName is null) ||
+                          (dto.ActorType != ActorType.Values.ServiceOwner && (dto.ActorId is not null || dto.ActorName is not null))))
+            .WithMessage(ActorValidationErrorMessages.ActorIdActorNameExclusiveOr);
 
         RuleFor(x => x.ActorId!)
             .IsValidPartyIdentifier()
