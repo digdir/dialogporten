@@ -41,7 +41,7 @@ internal sealed class SynchronizeResourceRegistryCommandHandler : IRequestHandle
         // Get the last updated timestamp from parameter, or the database (with a time skew), or use a default
         var lastUpdated = request.Since
             ?? await _subjectResourceRepository.GetLastUpdatedAt(
-                timeSkew: TimeSpan.FromTicks(1),
+                timeSkew: TimeSpan.FromMicroseconds(1),
                 cancellationToken: cancellationToken);
 
         _logger.LogInformation("Fetching updated subject-resources since {LastUpdated:O}.", lastUpdated);
