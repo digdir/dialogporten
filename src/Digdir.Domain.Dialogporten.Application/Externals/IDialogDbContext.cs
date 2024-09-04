@@ -15,8 +15,6 @@ namespace Digdir.Domain.Dialogporten.Application.Externals;
 
 public interface IDialogDbContext
 {
-    DatabaseFacade Database { get; }
-
     DbSet<DialogEntity> Dialogs { get; }
     DbSet<DialogStatus> DialogStatuses { get; }
 

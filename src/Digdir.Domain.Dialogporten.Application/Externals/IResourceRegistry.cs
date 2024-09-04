@@ -4,7 +4,8 @@ public interface IResourceRegistry
 {
     Task<IReadOnlyCollection<ServiceResourceInformation>> GetResourceInformationForOrg(string orgNumber, CancellationToken cancellationToken);
     Task<ServiceResourceInformation?> GetResourceInformation(string serviceResourceId, CancellationToken cancellationToken);
-    IAsyncEnumerable<UpdatedSubjectResource> GetUpdatedSubjectResources(DateTimeOffset since, CancellationToken cancellationToken);
+    IAsyncEnumerable<List<UpdatedSubjectResource>> GetUpdatedSubjectResources(DateTimeOffset since, int batchSize,
+        CancellationToken cancellationToken);
 }
 
 public sealed record ServiceResourceInformation
@@ -21,10 +22,5 @@ public sealed record ServiceResourceInformation
     }
 }
 
-public sealed record UpdatedSubjectResource
-{
-    public Uri Subject { get; set; } = null!;
-    public Uri Resource { get; set; } = null!;
-    public DateTimeOffset UpdatedAt { get; set; }
-    public bool Deleted { get; set; }
-}
+
+public sealed record UpdatedSubjectResource(Uri SubjectUrn, Uri ResourceUrn, DateTimeOffset UpdatedAt, bool Deleted);
