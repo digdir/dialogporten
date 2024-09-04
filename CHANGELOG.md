@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.16.0](https://github.com/digdir/dialogporten/compare/v1.15.0...v1.16.0) (2024-09-04)
+
+
+### Features
+
+* **webapi:** Require legacy scope for HTML support ([#1073](https://github.com/digdir/dialogporten/issues/1073)) ([03237cc](https://github.com/digdir/dialogporten/commit/03237cc29d05f34dce3f683368117f546de40762))
+* **webAPI:** Require UUIDv7  ([#1032](https://github.com/digdir/dialogporten/issues/1032)) ([e9b844f](https://github.com/digdir/dialogporten/commit/e9b844f8092bbb28c0ec1d63676593d78719954b))
+
+
+### Bug Fixes
+
+* Fix iss claim in dialog token ([#1047](https://github.com/digdir/dialogporten/issues/1047)) ([9ab4a85](https://github.com/digdir/dialogporten/commit/9ab4a85eea321fd80215616580785f4c99fa85bb))
+
 ## [1.15.0](https://github.com/digdir/dialogporten/compare/v1.14.0...v1.15.0) (2024-08-21)
 
 
