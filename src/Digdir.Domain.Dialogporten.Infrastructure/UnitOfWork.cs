@@ -5,13 +5,14 @@ using Digdir.Domain.Dialogporten.Infrastructure.Persistence;
 using Digdir.Library.Entity.Abstractions.Features.Versionable;
 using Digdir.Library.Entity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using OneOf.Types;
 using Polly;
 using Polly.Contrib.WaitAndRetry;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure;
 
-internal sealed class UnitOfWork : IUnitOfWork
+internal sealed class UnitOfWork : IUnitOfWork, IAsyncDisposable
 {
     // Fetch the db revision and retry
     // https://learn.microsoft.com/en-us/ef/core/saving/concurrency?tabs=data-annotations#resolving-concurrency-conflicts
@@ -24,6 +25,8 @@ internal sealed class UnitOfWork : IUnitOfWork
     private readonly DialogDbContext _dialogDbContext;
     private readonly ITransactionTime _transactionTime;
     private readonly IDomainContext _domainContext;
+
+    private IDbContextTransaction? _transaction;
 
     private bool _auditableSideEffects = true;
     private bool _enableConcurrencyCheck;
@@ -54,7 +57,32 @@ internal sealed class UnitOfWork : IUnitOfWork
         return this;
     }
 
+    public async Task BeginTransactionAsync(CancellationToken cancellationToken = default)
+    {
+        _transaction ??= await _dialogDbContext.Database.BeginTransactionAsync(cancellationToken);
+    }
+
     public async Task<SaveChangesResult> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var result = await SaveChangesAsync_Internal(cancellationToken);
+
+            // If it is not a success, rollback the transaction
+            await (result.IsT0
+                ? CommitTransactionAsync(cancellationToken)
+                : RollbackTransactionAsync(cancellationToken));
+
+            return result;
+        }
+        catch (Exception)
+        {
+            await RollbackTransactionAsync(cancellationToken);
+            throw;
+        }
+    }
+
+    private async Task<SaveChangesResult> SaveChangesAsync_Internal(CancellationToken cancellationToken)
     {
         if (!_domainContext.IsValid)
         {
@@ -94,6 +122,30 @@ internal sealed class UnitOfWork : IUnitOfWork
             : new Success();
     }
 
+    private async Task CommitTransactionAsync(CancellationToken cancellationToken)
+    {
+        if (_transaction is null)
+        {
+            return;
+        }
+
+        await _transaction.CommitAsync(cancellationToken);
+        await _transaction.DisposeAsync();
+        _transaction = null;
+    }
+
+    private async Task RollbackTransactionAsync(CancellationToken cancellationToken)
+    {
+        if (_transaction is null)
+        {
+            return;
+        }
+
+        await _transaction.RollbackAsync(cancellationToken);
+        await _transaction.DisposeAsync();
+        _transaction = null;
+    }
+
     private static async Task FetchCurrentRevision(Exception exception, TimeSpan _)
     {
         if (exception is not DbUpdateConcurrencyException concurrencyException)
@@ -116,6 +168,15 @@ internal sealed class UnitOfWork : IUnitOfWork
 
             var currentRevision = dbValues[nameof(IVersionableEntity.Revision)]!;
             entry.Property(nameof(IVersionableEntity.Revision)).OriginalValue = currentRevision;
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_transaction is not null)
+        {
+            await _transaction.DisposeAsync();
+            _transaction = null;
         }
     }
 }
