@@ -47,6 +47,7 @@ static void BuildAndRun(string[] args)
     builder.Configuration
         .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
         .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
+        .AddUserSecrets<Program>()
         .AddEnvironmentVariables();
 
     builder.Host.UseSerilog((context, services, configuration) => configuration
