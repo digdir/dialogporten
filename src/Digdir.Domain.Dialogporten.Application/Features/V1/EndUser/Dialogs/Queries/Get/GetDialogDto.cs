@@ -57,6 +57,10 @@ public sealed class GetDialogDto
     /// </summary>
     public int? Progress { get; set; }
 
+    public string? Process { get; set; }
+
+    public string? PrecedingProcess { get; set; }
+
     /// <summary>
     /// Optional process identifier used to indicate a business process this dialog belongs to
     /// </summary>
