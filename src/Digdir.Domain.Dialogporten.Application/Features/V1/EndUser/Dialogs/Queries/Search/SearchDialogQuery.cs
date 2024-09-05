@@ -143,7 +143,7 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
 
         if (authorizedResources.HasNoAuthorizations)
         {
-            return new PaginatedList<SearchDialogDto>([], false, null, request.OrderBy.DefaultIfNull().GetOrderString());
+            return PaginatedList<SearchDialogDto>.CreateEmpty(request);
         }
 
         var paginatedList = await _db.Dialogs
