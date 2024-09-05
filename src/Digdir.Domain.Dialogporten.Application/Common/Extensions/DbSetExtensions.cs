@@ -9,13 +9,6 @@ namespace Digdir.Domain.Dialogporten.Application.Common.Extensions;
 
 public static class DbSetExtensions
 {
-    public static IQueryable<DialogEntity> PrefilterAuthorizedDialogs(this DbSet<DialogEntity> dialogs,
-        Func<Task<DialogSearchAuthorizationResult?>> authorizedResourcesProvider)
-    {
-        var authorizedResources = authorizedResourcesProvider().GetAwaiter().GetResult();
-        return authorizedResources is null ? dialogs : dialogs.PrefilterAuthorizedDialogs(authorizedResources);
-    }
-
     public static IQueryable<DialogEntity> PrefilterAuthorizedDialogs(this DbSet<DialogEntity> dialogs, DialogSearchAuthorizationResult authorizedResources)
     {
         var parameters = new List<object>();
@@ -58,7 +51,6 @@ public static class DbSetExtensions
             parameters.Add(party);
             parameters.Add(subjects);
         }
-
 
         return dialogs.FromSqlRaw(sb.ToString(), parameters.ToArray());
     }

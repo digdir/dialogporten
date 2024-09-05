@@ -31,4 +31,19 @@ public sealed class PaginatedList<T>
         OrderBy = orderBy;
         Items = items?.ToList() ?? throw new ArgumentNullException(nameof(items));
     }
+
+    /// <summary>
+    /// Converts the items in the paginated list to a different type.
+    /// </summary>
+    /// <typeparam name="TDestination">The type to convert the items to.</typeparam>
+    /// <param name="map">A function to convert each item to the new type.</param>
+    /// <returns>A new <see cref="PaginatedList{TDestination}"/> with the converted items.</returns>
+    public PaginatedList<TDestination> ConvertTo<TDestination>(Func<T, TDestination> map)
+    {
+        return new PaginatedList<TDestination>(
+            Items.Select(map),
+            HasNextPage,
+            ContinuationToken,
+            OrderBy);
+    }
 }
