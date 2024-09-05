@@ -26,6 +26,11 @@ param environmentKeyVaultName string
 @minLength(9)
 param jobSchedule string
 
+@description('The connection string for Application Insights')
+@minLength(3)
+@secure()
+param appInsightConnectionString string
+
 var namePrefix = 'dp-be-${environment}'
 var baseImageUrl = 'ghcr.io/digdir/dialogporten-'
 var tags = {
@@ -45,6 +50,14 @@ var containerAppEnvVars = [
   {
     name: 'Infrastructure__DialogDbConnectionString'
     secretRef: 'dbconnectionstring'
+  }
+  {
+    name: 'ASPNETCORE_ENVIRONMENT'
+    value: environment
+  }
+  {
+    name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
+    value: appInsightConnectionString
   }
 ]
 
@@ -70,7 +83,7 @@ module migrationJob '../../modules/containerAppJob/main.bicep' = {
     secrets: secrets
     tags: tags
     cronExpression: jobSchedule
-    command: 'sync-subject-resource-mappings'
+    args: 'sync-subject-resource-mappings'
   }
 }
 
