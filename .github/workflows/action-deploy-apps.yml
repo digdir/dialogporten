@@ -223,7 +223,9 @@ jobs:
   deploy-jobs:
     name: Deploy jobs to ${{ inputs.environment }}
     runs-on: ubuntu-latest
-    needs: [deploy-apps]
+    # Should run even though the migration job was skipped
+    if: ${{ always() && !failure() && !cancelled() }}
+    needs: deploy-apps
     environment: ${{ inputs.environment }}
     permissions:
       id-token: write
