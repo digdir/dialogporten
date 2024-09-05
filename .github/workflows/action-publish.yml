@@ -35,6 +35,8 @@ jobs:
             imageName: cdc
           - dockerfile: ./src/Digdir.Domain.Dialogporten.Infrastructure/MigrationBundle.dockerfile
             imageName: migration-bundle
+          - dockerfile: ./src/Digdir.Domain.Dialogporten.Janitor/Dockerfile
+            imageName: janitor
 
     permissions:
       contents: read
