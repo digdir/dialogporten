@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Diagnostics;
+using System.Reflection;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.Enumerables;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.FluentValidation;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common;
@@ -36,7 +37,7 @@ internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDia
             .MaximumLength(Constants.DefaultMaxUriLength)
             .Must(x =>
                 x?.StartsWith(Constants.ServiceResourcePrefix, StringComparison.InvariantCulture) ?? false)
-                .WithMessage($"'{{PropertyName}}' must start with '{Constants.ServiceResourcePrefix}'.");
+            .WithMessage($"'{{PropertyName}}' must start with '{Constants.ServiceResourcePrefix}'.");
 
         RuleFor(x => x.Party)
             .IsValidPartyIdentifier()
@@ -55,16 +56,16 @@ internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDia
         RuleFor(x => x.ExpiresAt)
             .IsInFuture()
             .GreaterThanOrEqualTo(x => x.DueAt)
-                .WithMessage(FluentValidationDateTimeOffsetExtensions.InFutureOfMessage)
-                .When(x => x.DueAt.HasValue, ApplyConditionTo.CurrentValidator)
+            .WithMessage(FluentValidationDateTimeOffsetExtensions.InFutureOfMessage)
+            .When(x => x.DueAt.HasValue, ApplyConditionTo.CurrentValidator)
             .GreaterThanOrEqualTo(x => x.VisibleFrom)
-                .WithMessage(FluentValidationDateTimeOffsetExtensions.InFutureOfMessage)
-                .When(x => x.VisibleFrom.HasValue, ApplyConditionTo.CurrentValidator);
+            .WithMessage(FluentValidationDateTimeOffsetExtensions.InFutureOfMessage)
+            .When(x => x.VisibleFrom.HasValue, ApplyConditionTo.CurrentValidator);
         RuleFor(x => x.DueAt)
             .IsInFuture()
             .GreaterThanOrEqualTo(x => x.VisibleFrom)
-                .WithMessage(FluentValidationDateTimeOffsetExtensions.InFutureOfMessage)
-                .When(x => x.VisibleFrom.HasValue, ApplyConditionTo.CurrentValidator);
+            .WithMessage(FluentValidationDateTimeOffsetExtensions.InFutureOfMessage)
+            .When(x => x.VisibleFrom.HasValue, ApplyConditionTo.CurrentValidator);
         RuleFor(x => x.VisibleFrom)
             .IsInFuture();
 
@@ -82,15 +83,15 @@ internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDia
             .Must(x => x
                 .EmptyIfNull()
                 .Count(x => x.Priority == DialogGuiActionPriority.Values.Primary) <= 1)
-                .WithMessage("Only one primary GUI action is allowed.")
+            .WithMessage("Only one primary GUI action is allowed.")
             .Must(x => x
                 .EmptyIfNull()
                 .Count(x => x.Priority == DialogGuiActionPriority.Values.Secondary) <= 1)
-                .WithMessage("Only one secondary GUI action is allowed.")
+            .WithMessage("Only one secondary GUI action is allowed.")
             .Must(x => x
                 .EmptyIfNull()
                 .Count(x => x.Priority == DialogGuiActionPriority.Values.Tertiary) <= 5)
-                .WithMessage("Only five tertiary GUI actions are allowed.")
+            .WithMessage("Only five tertiary GUI actions are allowed.")
             .ForEach(x => x.SetValidator(guiActionValidator));
 
         RuleForEach(x => x.ApiActions)
@@ -117,6 +118,10 @@ internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDia
                 dependentKeySelector: activity => activity.RelatedActivityId,
                 principalKeySelector: activity => activity.Id)
             .SetValidator(activityValidator);
+
+
+        RuleFor(x => x)
+            .Must(x => x.Process is null || Uri.IsWellFormedUriString(x.Process, UriKind.Absolute)).WithMessage("Process must be a valid absolute URI.");
     }
 }
 

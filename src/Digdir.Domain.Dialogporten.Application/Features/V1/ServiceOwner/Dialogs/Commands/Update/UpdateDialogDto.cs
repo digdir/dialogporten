@@ -42,6 +42,8 @@ public sealed class UpdateDialogDto
     /// <example>2022-12-31T23:59:59Z</example>
     public DateTimeOffset? DueAt { get; set; }
 
+
+    public string? Process { get; set; }
     /// <summary>
     /// The expiration date for the dialog. This is the last date when the dialog is available for the end user.
     ///

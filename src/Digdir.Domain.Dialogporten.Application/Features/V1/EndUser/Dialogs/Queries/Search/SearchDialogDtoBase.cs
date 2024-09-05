@@ -46,6 +46,10 @@ public class SearchDialogDtoBase
     /// </summary>
     public int? Progress { get; set; }
 
+    public string? Process { get; set; }
+
+    public string? PrecedingProcess { get; set; }
+
     /// <summary>
     /// The number of attachments in the dialog made available for browser-based frontends.
     /// </summary>

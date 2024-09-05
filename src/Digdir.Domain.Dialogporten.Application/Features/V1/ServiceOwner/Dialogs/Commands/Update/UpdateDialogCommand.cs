@@ -89,6 +89,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         }
 
         // Update primitive properties
+        // Alle? inc string?
         _mapper.Map(request.Dto, dialog);
         ValidateTimeFields(dialog);
 

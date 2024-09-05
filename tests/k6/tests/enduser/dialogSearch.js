@@ -14,6 +14,7 @@ import {
     setDueAt,
     setExpiresAt,
     setVisibleFrom,
+    setProcess,
     postSO,
     putSO,
     purgeSO } from '../../common/testimports.js'
@@ -26,6 +27,7 @@ export default function () {
     let dialogIds = [];
 
     let titleToSearchFor = uuidv4();
+    let processToSearchFor = "urn:test:process:1"
     let additionalInfoToSearchFor = uuidv4();
     let searchTagsToSearchFor = [ uuidv4(), uuidv4() ];
     let extendedStatusToSearchFor = "status:" + uuidv4();
@@ -48,6 +50,7 @@ export default function () {
         for (let i = 0; i < 15; i++) {
             let d = dialogToInsert();
             setTitle(d, "e2e-test-dialog eu #" + (i+1), "nn_NO");
+            setProcess(d, "urn:test:process:" + (i+1));
             setParty(d, defaultParty);
             setVisibleFrom(d, null);
             dialogs.push(d);
@@ -191,7 +194,20 @@ export default function () {
         expect(r.json(), 'response json').to.have.property("items").with.lengthOf(1);
         expect(r.json().items[0], 'party').to.have.property("serviceResource").that.equals(auxResource);
     });
+    
+    describe('List with invalid process filter', () => {
+            let r = getEU('dialogs/' + defaultFilter + '&process=.,.');
+            expectStatusFor(r).to.equal(400);
+            expect(r, 'response').to.have.validJsonBody();
+        })
 
+        describe('List with process filter', () => {
+            let r = getEU('dialogs/' + defaultFilter + '&process=' + processToSearchFor );
+            expectStatusFor(r).to.equal(200);
+            expect(r, 'response').to.have.validJsonBody();
+            expect(r.json(), 'response json').to.have.property("items").with.lengthOf(1);
+            expect(r.json().items[0], 'process').to.have.property("process").that.equals(processToSearchFor);
+        })
     /*
     Disabled for now. Dialogporten doesn't have proper TTD handling as of yet.
 

@@ -57,6 +57,10 @@ public sealed class GetDialogDto
     /// </summary>
     public int? Progress { get; set; }
 
+    public string? Process { get; set; }
+
+    public string? PrecedingProcess { get; set; }
+
     /// <summary>
     /// Arbitrary string with a service-specific indicator of status, typically used to indicate a fine-grained state of
     /// the dialog to further specify the "status" enum.
