@@ -25,10 +25,6 @@ public static class ClaimsPrincipalExtensions
     private const string AltinnAutorizationDetailsClaim = "authorization_details";
     private const string AttributeIdSystemUser = "urn:altinn:systemuser";
     private const string AltinnAuthLevelClaim = "urn:altinn:authlevel";
-    private const string AltinnAuthenticationMethodClaim = "urn:altinn:authenticatemethod";
-    private const string AltinnAuthenticationEnterpriseUserMethod = "virksomhetsbruker";
-    private const string AltinnUserIdClaim = "urn:altinn:userid";
-    private const string AltinnUserNameClaim = "urn:altinn:username";
     private const string ScopeClaim = "scope";
     private const char ScopeClaimSeparator = ' ';
     private const string PidClaim = "pid";
