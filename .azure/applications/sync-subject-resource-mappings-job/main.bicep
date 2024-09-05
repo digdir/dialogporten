@@ -70,7 +70,7 @@ module migrationJob '../../modules/containerAppJob/main.bicep' = {
     secrets: secrets
     tags: tags
     cronExpression: jobSchedule
-    command: 'sync-subject-resource-mappings'
+    args: 'sync-subject-resource-mappings'
   }
 }
 
