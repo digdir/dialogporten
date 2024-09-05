@@ -50,6 +50,13 @@ public sealed class PaginatedList<T>
             OrderBy);
     }
 
+    /// <summary>
+    /// Creates an empty paginated list based on the provided pagination parameters.
+    /// </summary>
+    /// <typeparam name="TOrderDefinition">The type of the order definition.</typeparam>
+    /// <typeparam name="TTarget">The type of the target.</typeparam>
+    /// <param name="parameter">The sortable pagination parameter.</param>
+    /// <returns>An empty <see cref="PaginatedList{T}"/>.</returns>
     public static PaginatedList<T> CreateEmpty<TOrderDefinition, TTarget>(SortablePaginationParameter<TOrderDefinition, TTarget> parameter)
         where TOrderDefinition : IOrderDefinition<TTarget> =>
         new(

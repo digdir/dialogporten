@@ -179,8 +179,6 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
             seenLog.IsCurrentEndUser = IdentifierMasker.GetMaybeMaskedIdentifier(currentUserInfo.UserId.ExternalIdWithPrefix) == seenLog.SeenBy.ActorId;
         }
 
-        var mappedItems = paginatedList.Items.Select(_mapper.Map<SearchDialogDto>).ToList();
-        return new PaginatedList<SearchDialogDto>(mappedItems, paginatedList.HasNextPage,
-            paginatedList.ContinuationToken, paginatedList.OrderBy);
+        return paginatedList.ConvertTo(_mapper.Map<SearchDialogDto>);
     }
 }
