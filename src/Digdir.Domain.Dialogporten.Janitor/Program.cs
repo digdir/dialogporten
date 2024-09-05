@@ -66,7 +66,7 @@ static void BuildAndRun(string[] args)
 
     var app = builder.Build();
 
-    app.Logger.LogInformation("Current environment: {Environment}", app.Environment.EnvironmentName);
+    Log.Information("Current environment: {Environment}", app.Environment.EnvironmentName);
 
     app.AddJanitorCommands();
 

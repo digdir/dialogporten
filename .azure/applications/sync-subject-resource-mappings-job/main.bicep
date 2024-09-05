@@ -52,7 +52,7 @@ var containerAppEnvVars = [
     secretRef: 'dbconnectionstring'
   }
   {
-    name: 'ASPNETCORE_ENVIRONMENT'
+    name: 'DOTNET_ENVIRONMENT'
     value: environment
   }
   {
