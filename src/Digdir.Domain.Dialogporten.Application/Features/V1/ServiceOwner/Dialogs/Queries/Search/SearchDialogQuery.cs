@@ -140,19 +140,6 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
         var resourceIds = await _userResourceRegistry.GetCurrentUserResourceIds(cancellationToken);
         var searchExpression = Expressions.LocalizedSearchExpression(request.Search, request.SearchLanguageCode);
 
-        if (request.EndUserId is not null)
-        {
-            var authorizedResources = await _altinnAuthorization.GetAuthorizedResourcesForSearch(
-                request.Party ?? [],
-                request.ServiceResource ?? [],
-                request.EndUserId,
-                cancellationToken);
-        }
-        else
-        {
-            var authorizedResources = new DialogSearchAuthorizationResult();
-        }
-
         var query = _db.Dialogs
             .PrefilterAuthorizedDialogs(async () => request.EndUserId is null
                 ? null
