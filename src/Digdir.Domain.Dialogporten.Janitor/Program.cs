@@ -8,6 +8,7 @@ using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Serilog;
 
 // Using two-stage initialization to catch startup errors.
@@ -43,7 +44,11 @@ static void BuildAndRun(string[] args)
     // a command is the scope of the application.   
     builder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = false);
 
-    builder.Configuration.AddUserSecrets<Program>();
+    builder.Configuration
+        .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+        .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
+        .AddEnvironmentVariables();
+
     builder.Host.UseSerilog((context, services, configuration) => configuration
         .ReadFrom.Configuration(context.Configuration)
         .ReadFrom.Services(services)
@@ -60,6 +65,8 @@ static void BuildAndRun(string[] args)
         .AddSingleton(TelemetryConfiguration.CreateDefault());
 
     var app = builder.Build();
+
+    app.Logger.LogInformation("Current environment: {Environment}", app.Environment.EnvironmentName);
 
     app.AddJanitorCommands();
 
