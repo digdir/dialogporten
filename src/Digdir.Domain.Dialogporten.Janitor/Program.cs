@@ -45,10 +45,10 @@ static void BuildAndRun(string[] args)
     builder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = false);
 
     builder.Configuration
-        .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-        .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
         .AddUserSecrets<Program>()
         .AddEnvironmentVariables();
+
+    Console.WriteLine($"Current environment: {builder.Environment.EnvironmentName}");
 
     builder.Host.UseSerilog((context, services, configuration) => configuration
         .ReadFrom.Configuration(context.Configuration)
