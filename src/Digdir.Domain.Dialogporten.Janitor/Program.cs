@@ -8,7 +8,6 @@ using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Serilog;
 
 // Using two-stage initialization to catch startup errors.
@@ -44,10 +43,7 @@ static void BuildAndRun(string[] args)
     // a command is the scope of the application.   
     builder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = false);
 
-    builder.Configuration
-        .AddUserSecrets<Program>()
-        .AddEnvironmentVariables();
-
+    builder.Configuration.AddUserSecrets<Program>();
     builder.Host.UseSerilog((context, services, configuration) => configuration
         .ReadFrom.Configuration(context.Configuration)
         .ReadFrom.Services(services)
