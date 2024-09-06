@@ -48,8 +48,6 @@ static void BuildAndRun(string[] args)
         .AddUserSecrets<Program>()
         .AddEnvironmentVariables();
 
-    Console.WriteLine($"Current environment: {builder.Environment.EnvironmentName}");
-
     builder.Host.UseSerilog((context, services, configuration) => configuration
         .ReadFrom.Configuration(context.Configuration)
         .ReadFrom.Services(services)
@@ -66,8 +64,6 @@ static void BuildAndRun(string[] args)
         .AddSingleton(TelemetryConfiguration.CreateDefault());
 
     var app = builder.Build();
-
-    Log.Information("Current environment: {Environment}", app.Environment.EnvironmentName);
 
     app.AddJanitorCommands();
 
