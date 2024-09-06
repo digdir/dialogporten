@@ -28,6 +28,7 @@ public static class DialogGenerator
         DateTimeOffset? updatedAt = null,
         DateTimeOffset? dueAt = null,
         DateTimeOffset? expiresAt = null,
+        string? process = null,
         DialogStatus.Values? status = null,
         CreateDialogContentDto? content = null,
         List<CreateDialogSearchTagDto>? searchTags = null,
@@ -49,6 +50,7 @@ public static class DialogGenerator
             updatedAt,
             dueAt,
             expiresAt,
+            process,
             status,
             content,
             searchTags,
@@ -72,6 +74,7 @@ public static class DialogGenerator
         DateTimeOffset? updatedAt = null,
         DateTimeOffset? dueAt = null,
         DateTimeOffset? expiresAt = null,
+        string? process = null,
         DialogStatus.Values? status = null,
         CreateDialogContentDto? content = null,
         List<CreateDialogSearchTagDto>? searchTags = null,
@@ -99,6 +102,7 @@ public static class DialogGenerator
             .RuleFor(o => o.GuiActions, _ => guiActions ?? GenerateFakeDialogGuiActions())
             .RuleFor(o => o.ApiActions, _ => apiActions ?? GenerateFakeDialogApiActions())
             .RuleFor(o => o.Activities, _ => activities ?? GenerateFakeDialogActivities())
+            .RuleFor(o => o.Process, f => process ?? GenerateFakeProcessUri())
             .Generate(count);
     }
 
@@ -224,7 +228,11 @@ public static class DialogGenerator
             .RuleFor(o => o.CreatedAt, f => f.Date.Past())
             .RuleFor(o => o.ExtendedType, f => new Uri(f.Internet.UrlWithPath()))
             .RuleFor(o => o.Type, f => type ?? f.PickRandom<DialogActivityType.Values>())
-            .RuleFor(o => o.PerformedBy, f => new CreateDialogDialogActivityPerformedByActorDto { ActorType = ActorType.Values.PartyRepresentative, ActorName = f.Name.FullName() })
+            .RuleFor(o => o.PerformedBy, f => new CreateDialogDialogActivityPerformedByActorDto
+            {
+                ActorType = ActorType.Values.PartyRepresentative,
+                ActorName = f.Name.FullName()
+            })
             .RuleFor(o => o.Description, (f, o) => o.Type == DialogActivityType.Values.Information ? GenerateFakeLocalizations(f.Random.Number(4, 8)) : null)
             .Generate(count ?? new Randomizer().Number(1, 4));
     }
@@ -250,6 +258,10 @@ public static class DialogGenerator
             .Generate(new Randomizer().Number(min: 1, 4));
     }
 
+    public static string GenerateFakeProcessUri()
+    {
+        return new Faker().Internet.UrlWithPath();
+    }
     public static List<CreateDialogDialogGuiActionDto> GenerateFakeDialogGuiActions()
     {
         var hasPrimary = false;
@@ -288,7 +300,8 @@ public static class DialogGenerator
             .Generate(count ?? new Randomizer().Number(1, 6));
     }
 
-    private static readonly string[] MediaTypes = [
+    private static readonly string[] MediaTypes =
+    [
         "application/json",
         "application/xml",
         "text/html",

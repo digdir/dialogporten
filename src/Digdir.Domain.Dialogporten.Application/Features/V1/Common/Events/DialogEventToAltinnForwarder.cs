@@ -92,6 +92,6 @@ internal sealed class DialogEventToAltinnForwarder : DomainEventToAltinnForwarde
         {
             data["precedingProcess"] = domainEvent.PrecedingProcess;
         }
-        return data;
+        return data.Count == 0 ? null : data;
     }
 }
