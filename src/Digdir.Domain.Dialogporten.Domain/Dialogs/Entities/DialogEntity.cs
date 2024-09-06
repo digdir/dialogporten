@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using Digdir.Domain.Dialogporten.Domain.Actors;
+﻿using Digdir.Domain.Dialogporten.Domain.Actors;
 using Digdir.Domain.Dialogporten.Domain.Attachments;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
