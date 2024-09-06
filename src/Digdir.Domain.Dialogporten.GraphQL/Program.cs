@@ -53,7 +53,9 @@ static void BuildAndRun(string[] args)
             services.GetRequiredService<TelemetryConfiguration>(),
             TelemetryConverter.Traces));
 
-    builder.Configuration.AddAzureConfiguration(builder.Environment.EnvironmentName);
+    builder.Configuration
+        .AddAzureConfiguration(builder.Environment.EnvironmentName)
+        .AddLocalConfiguration(builder.Environment);
 
     builder.Services
         .AddOptions<GraphQlSettings>()

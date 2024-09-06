@@ -16,9 +16,7 @@
       "launchUrl": "swagger",
       "applicationUrl": "http://localhost:5123",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "Serilog__WriteTo__0__Name": "Console",
-        "Serilog__MinimumLevel__Default": "Debug"
+        "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
     "https": {
@@ -30,6 +28,7 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "Serilog__WriteTo__0__Name": "Console",
+        "Serilog__WriteTo__0__Args__outputTemplate": "[{Timestamp:HH:mm:ss.fff} {Level:u3}] {Message:lj}{NewLine}{Exception}",
         "Serilog__MinimumLevel__Default": "Debug"
       }
     },

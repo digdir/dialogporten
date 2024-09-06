@@ -16,6 +16,9 @@ param location string
 @minLength(3)
 param apimIp string
 
+@description('CPU and memory resources for the container app')
+param resources object?
+
 @description('The name of the container app environment')
 @minLength(3)
 @secure()
@@ -86,6 +89,7 @@ module containerApp '../../modules/containerApp/main.bicep' = {
     containerAppEnvId: containerAppEnvironment.id
     apimIp: apimIp
     tags: tags
+    resources: resources
   }
 }
 

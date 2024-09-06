@@ -557,7 +557,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         new
                         {
                             Id = 4,
-                            AllowedMediaTypes = new[] { "text/html", "text/plain", "text/markdown" },
+                            AllowedMediaTypes = new[] { "text/plain", "text/markdown" },
                             MaxLength = 1023,
                             Name = "AdditionalInfo",
                             OutputInList = false,
@@ -627,14 +627,6 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(255)")
                         .UseCollation("C");
 
-                    b.Property<string>("PrecedingProcess")
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
-                    b.Property<string>("Process")
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
                     b.Property<int?>("Progress")
                         .HasColumnType("integer");
 
@@ -675,8 +667,6 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.HasIndex("Org");
 
                     b.HasIndex("Party");
-
-                    b.HasIndex("Process");
 
                     b.HasIndex("ServiceResource");
 
@@ -820,21 +810,16 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         new
                         {
                             Id = 2,
-                            Name = "LegacySystemUser"
-                        },
-                        new
-                        {
-                            Id = 3,
                             Name = "SystemUser"
                         },
                         new
                         {
-                            Id = 4,
+                            Id = 3,
                             Name = "ServiceOwner"
                         },
                         new
                         {
-                            Id = 5,
+                            Id = 4,
                             Name = "ServiceOwnerOnBehalfOfPerson"
                         });
                 });
@@ -1178,6 +1163,41 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.HasKey("EventId", "ConsumerName");
 
                     b.ToTable("OutboxMessageConsumer");
+                });
+
+            modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.SubjectResources.SubjectResource", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("current_timestamp at time zone 'utc'");
+
+                    b.Property<string>("Resource")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<string>("Subject")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("current_timestamp at time zone 'utc'");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Resource", "Subject")
+                        .IsUnique();
+
+                    b.ToTable("SubjectResource", (string)null);
                 });
 
             modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities.DialogActivityPerformedByActor", b =>
