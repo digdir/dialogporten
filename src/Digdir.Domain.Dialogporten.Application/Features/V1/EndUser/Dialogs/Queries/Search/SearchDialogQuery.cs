@@ -143,7 +143,7 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
 
         if (authorizedResources.HasNoAuthorizations)
         {
-            return new PaginatedList<SearchDialogDto>([], false, null, request.OrderBy.DefaultIfNull().GetOrderString());
+            return PaginatedList<SearchDialogDto>.CreateEmpty(request);
         }
 
         var paginatedList = await _db.Dialogs
@@ -179,8 +179,6 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
             seenLog.IsCurrentEndUser = IdentifierMasker.GetMaybeMaskedIdentifier(currentUserInfo.UserId.ExternalIdWithPrefix) == seenLog.SeenBy.ActorId;
         }
 
-        var mappedItems = paginatedList.Items.Select(_mapper.Map<SearchDialogDto>).ToList();
-        return new PaginatedList<SearchDialogDto>(mappedItems, paginatedList.HasNextPage,
-            paginatedList.ContinuationToken, paginatedList.OrderBy);
+        return paginatedList.ConvertTo(_mapper.Map<SearchDialogDto>);
     }
 }

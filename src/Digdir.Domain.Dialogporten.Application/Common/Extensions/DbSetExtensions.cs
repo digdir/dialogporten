@@ -1,48 +1,56 @@
+using System.Globalization;
 using System.Text;
 using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
+using Digdir.Domain.Dialogporten.Domain.SubjectResources;
 using Microsoft.EntityFrameworkCore;
 
 namespace Digdir.Domain.Dialogporten.Application.Common.Extensions;
 
 public static class DbSetExtensions
 {
-    public static IQueryable<DialogEntity> PrefilterAuthorizedDialogs(this DbSet<DialogEntity> dialogs,
-        Func<Task<DialogSearchAuthorizationResult?>> authorizedResourcesProvider)
-    {
-        var authorizedResources = authorizedResourcesProvider().GetAwaiter().GetResult();
-        return authorizedResources is null ? dialogs : dialogs.PrefilterAuthorizedDialogs(authorizedResources);
-    }
-
     public static IQueryable<DialogEntity> PrefilterAuthorizedDialogs(this DbSet<DialogEntity> dialogs, DialogSearchAuthorizationResult authorizedResources)
     {
         var parameters = new List<object>();
-        var sb = new StringBuilder().Append("SELECT * FROM \"Dialog\" WHERE 1=1");
 
-        foreach (var item in authorizedResources.ResourcesByParties)
-        {
-            sb.Append(" OR (\"Party\" = @p")
-                .Append(parameters.Count)
-                .Append(" AND \"ServiceResource\" = ANY(@p")
-                .Append(parameters.Count + 1).Append("))");
-            parameters.Add(item.Key);
-            parameters.Add(item.Value);
-        }
-
-        foreach (var item in authorizedResources.SubjectsByParties)
-        {
-            sb.Append(" OR (\"Party\" = @p")
-                .Append(parameters.Count)
-                .Append(" AND \"ServiceResource\" = ANY(SELECT r.\"Resource\" FROM \"SubjectResource\" r WHERE r.\"Subject\" = ANY(@p")
-                .Append(parameters.Count + 1).Append(")))");
-            parameters.Add(item.Key);
-            parameters.Add(item.Value);
-        }
-
-        sb.Append(" OR \"Id\" = ANY(@p")
-            .Append(parameters.Count)
-            .Append(')');
+        // lang=sql
+        var sb = new StringBuilder()
+            .AppendLine(CultureInfo.InvariantCulture, $"""
+                SELECT *
+                FROM "Dialog"
+                WHERE "Id" = ANY(@p{parameters.Count})
+                """);
         parameters.Add(authorizedResources.DialogIds);
+
+        foreach (var (party, resources) in authorizedResources.ResourcesByParties)
+        {
+            // lang=sql
+            sb.AppendLine(CultureInfo.InvariantCulture, $"""
+                 OR (
+                    "{nameof(DialogEntity.Party)}" = @p{parameters.Count} 
+                    AND "{nameof(DialogEntity.ServiceResource)}" = ANY(@p{parameters.Count + 1})
+                 )
+                 """);
+            parameters.Add(party);
+            parameters.Add(resources);
+        }
+
+        foreach (var (party, subjects) in authorizedResources.SubjectsByParties)
+        {
+            // lang=sql
+            sb.AppendLine(CultureInfo.InvariantCulture, $"""
+                 OR (
+                    "{nameof(DialogEntity.Party)}" = @p{parameters.Count} 
+                    AND "{nameof(DialogEntity.ServiceResource)}" = ANY(
+                        SELECT "{nameof(SubjectResource.Resource)}" 
+                        FROM "{nameof(SubjectResource)}" 
+                        WHERE "{nameof(SubjectResource.Subject)}" = ANY(@p{parameters.Count + 1})
+                    )
+                 )
+                 """);
+            parameters.Add(party);
+            parameters.Add(subjects);
+        }
 
         return dialogs.FromSqlRaw(sb.ToString(), parameters.ToArray());
     }
