@@ -1,6 +1,7 @@
 using System.Globalization;
 using Cocona;
 using Digdir.Domain.Dialogporten.Application;
+using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
 using Digdir.Domain.Dialogporten.Infrastructure;
 using Digdir.Domain.Dialogporten.Janitor;
@@ -43,7 +44,9 @@ static void BuildAndRun(string[] args)
     // a command is the scope of the application.   
     builder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = false);
 
-    builder.Configuration.AddUserSecrets<Program>();
+    builder.Configuration
+        .AddUserSecrets<Program>()
+        .AddLocalConfiguration(builder.Environment);
     builder.Host.UseSerilog((context, services, configuration) => configuration
         .ReadFrom.Configuration(context.Configuration)
         .ReadFrom.Services(services)
