@@ -204,10 +204,12 @@ export default function () {
         let r = getEU('dialogs/' + defaultFilter + '&process=.,.');
         expectStatusFor(r).to.equal(400);
         expect(r, 'response').to.have.validJsonBody();
+        expect(r.json(), 'response json').to.have.property("errors");
+        expect(r.json().errors[""], 'errors').with.lengthOf(1);
     })
 
     describe('List with process filter', () => {
-        let r = getEU('dialogs/' + defaultFilter + '&process=' + 'urn:test:process:1');
+        let r = getEU('dialogs/' + defaultFilter + '&process=' + processToSearchFor);
         // let r = getEU('dialogs/' + defaultFilter );
         expectStatusFor(r).to.equal(200);
         expect(r, 'response').to.have.validJsonBody();
