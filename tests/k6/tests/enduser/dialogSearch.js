@@ -48,16 +48,12 @@ export default function () {
     let auxOrg = "ttd";
 
     describe('Arrange: Create some dialogs to test against', () => {
-        console.log(setProcess.name);
         for (let i = 0; i < 15; i++) {
             let d = dialogToInsert();
             setTitle(d, "e2e-test-dialog eu #" + (i + 1), "nn_NO");
-                                  
             setProcess(d, ("urn:test:process:" + (i + 1)));
             setParty(d, defaultParty);
             setVisibleFrom(d, null);
-            console.log("Process skal vare her!");
-            console.log(d.process);
             dialogs.push(d);
         }
 
@@ -210,12 +206,8 @@ export default function () {
 
     describe('List with process filter', () => {
         let r = getEU('dialogs/' + defaultFilter + '&process=' + processToSearchFor);
-        // let r = getEU('dialogs/' + defaultFilter );
         expectStatusFor(r).to.equal(200);
         expect(r, 'response').to.have.validJsonBody();
-        console.log(r.json());
-        console.log(dialogs.length)
-        console.log("FREDIK");
         expect(r.json(), 'response json').to.have.property("items").with.lengthOf(1);
         expect(r.json().items[0], 'process').to.have.property("process").that.equals(processToSearchFor);
     })
