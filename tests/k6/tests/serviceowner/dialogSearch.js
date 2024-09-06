@@ -12,6 +12,7 @@ import {
     setServiceResource,
     setParty,
     setDueAt,
+    setProcess,
     setExpiresAt,
     setVisibleFrom,
     postSO,
@@ -28,6 +29,7 @@ export default function () {
     let dialogIds = [];
 
     let titleToSearchFor = uuidv4();
+    let processToSeachFor = "urn:test:process:1";
     let additionalInfoToSearchFor = uuidv4();
     let searchTagsToSearchFor = [ uuidv4(), uuidv4() ];
     let extendedStatusToSearchFor = "status:" + uuidv4();
@@ -47,6 +49,7 @@ export default function () {
         for (let i = 0; i < 20; i++) {
             let d = dialogToInsert();
             setTitle(d, "e2e-test-dialog #" + (i+1), "nn_NO");
+            setProcess(d, "urn:test:process:" + (i+1))
             dialogs.push(d);
         }
 
@@ -173,7 +176,23 @@ export default function () {
         expect(r.json(), 'response json').to.have.property("items").with.lengthOf(1);
         expect(r.json().items[0], 'party').to.have.property("serviceResource").that.equals(auxResource);
     });
+    
+    describe('List with invalid process', () => {
+        let r = getSO('dialogs/?CreatedAfter=' + createdAfter + '&process=.,.');
+        expectStatusFor(r).to.equal(400);
+        expect(r, 'response').to.have.validJsonBody();
+        expect(r.json(), 'response json').to.have.property("errors");
+        expect(r.json().errors["'"], 'errors').with.lengthOf(1);
+    })
 
+    describe('List with process', () => {
+        let r = getSO('dialogs/?CreatedAfter=' + createdAfter + '&process=' + processToSeachFor);
+        expectStatusFor(r).to.equal(200);
+        expect(r, 'response').to.have.validJsonBody();
+        expect(r.json(), 'response json').to.have.property("items").with.lengthOf(1);
+        // expect(r.json().process).to.equal(processToSeachFor);   
+        expect(r.json().items[0], 'process').to.have.property("process").that.equals(processToSeachFor);
+    })
     describe("Cleanup", () => {
         dialogIds.forEach((d) => {
             let r = purgeSO("dialogs/" + d);
