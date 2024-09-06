@@ -107,6 +107,9 @@ internal sealed class UpdateDialogDtoValidator : AbstractValidator<UpdateDialogD
 
         RuleFor(x => x)
             .Must(x => x.Process is null || Uri.IsWellFormedUriString(x.Process, UriKind.Absolute)).WithMessage("Process must be a valid absolute URI.");
+
+        RuleFor(x => x)
+            .Must(x => x.PrecedingProcess is null || (x.Process is not null && Uri.IsWellFormedUriString(x.Process, UriKind.Absolute))).WithMessage("Process must be a valid absolute URI.");
     }
 }
 
