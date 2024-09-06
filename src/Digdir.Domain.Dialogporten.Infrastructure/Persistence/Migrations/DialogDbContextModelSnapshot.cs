@@ -627,6 +627,14 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(255)")
                         .UseCollation("C");
 
+                    b.Property<string>("PrecedingProcess")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<string>("Process")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
                     b.Property<int?>("Progress")
                         .HasColumnType("integer");
 
@@ -667,6 +675,8 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.HasIndex("Org");
 
                     b.HasIndex("Party");
+
+                    b.HasIndex("Process");
 
                     b.HasIndex("ServiceResource");
 
@@ -1197,7 +1207,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.HasIndex("Resource", "Subject")
                         .IsUnique();
 
-                    b.ToTable("SubjectResource", (string)null);
+                    b.ToTable("SubjectResource");
                 });
 
             modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities.DialogActivityPerformedByActor", b =>
