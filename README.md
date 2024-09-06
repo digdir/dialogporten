@@ -138,6 +138,51 @@ We are able to toggle some external resources in local development. This is done
 ```
 Toggling these flags will enable/disable the external resources. The `DisableAuth` flag, for example, will disable authentication in the WebAPI project. This is useful when debugging the WebAPI project in an IDE. These settings will only be respected in the `Development` environment.
 
+### Using `appsettings.local.json`
+
+During local development, it is natural to tweak configurations. Some of these configurations are _meant_ to be shared through git, such as the endpoint for a new integration that may be used during local development. Other configurations are only meant for a specific debug session or a developer's personal preferences, which _should not be shared_ through git, such as lowering the log level below warning.
+
+The configuration in the `appsettings.local.json` file takes precedence over **all** other configurations and is only loaded in the **Development environment**. Additionally, it is ignored by git through the `.gitignore` file.
+
+If developers need to add configuration that should be shared, they should use `appsettings.Development.json`. If the configuration is not meant to be shared, they can create an `appsettings.local.json` file to override the desired settings.
+
+Here is an example of enabling debug logging only locally:
+```json5
+// appsettings.local.json
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Debug"
+    }
+  },
+  "Serilog": {
+    "MinimumLevel": {
+      "Default": "Debug"
+    }
+  }
+}
+```
+
+#### Adding `appsettings.local.json` to new projects
+Add the following to the `Program.cs` file to load the `appsettings.local.json` file:
+```csharp
+
+Example usage:
+```csharp
+var builder = WebApplication.CreateBuilder(args);
+// or var builder = CoconaApp.CreateBuilder(args);
+// or var builder = Host.CreateApplicationBuilder(args);
+// or some other builder implementing IHostApplicationBuilder
+
+// Left out for brevity
+builder.Configuration
+    // Add local configuration as the last configuration source to override other configurations
+    //.AddSomeOtherConfiguration()
+    .AddLocalConfiguration(builder.Environment);
+
+// Left out for brevity
+```
+
 ## Deployment
 
 This repository contains code for both infrastructure and applications. Configurations for infrastructure are located in `.azure/infrastructure`. Application configuration is in `.azure/applications`. 
