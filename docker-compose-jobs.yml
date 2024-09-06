@@ -9,7 +9,7 @@ services:
       dockerfile: src/Digdir.Domain.Dialogporten.Janitor/Dockerfile
     environment:
       - Infrastructure:DialogDbConnectionString=${DB_CONNECTION_STRING}
-      - ASPNETCORE_ENVIRONMENT=Development
+      - DOTNET_ENVIRONMENT=Development
     command: [ "sync-subject-resource-mappings" ]
     depends_on:
       dialogporten-postgres:
