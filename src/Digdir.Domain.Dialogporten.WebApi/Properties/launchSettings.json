@@ -16,9 +16,7 @@
       "launchUrl": "swagger",
       "applicationUrl": "http://localhost:5123",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "Serilog__WriteTo__0__Name": "Console",
-        "Serilog__MinimumLevel__Default": "Debug"
+        "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
     "https": {
@@ -28,9 +26,7 @@
       "launchUrl": "swagger",
       "applicationUrl": "https://localhost:7214;http://localhost:5123",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "Serilog__WriteTo__0__Name": "Console",
-        "Serilog__MinimumLevel__Default": "Debug"
+        "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
     "IIS Express": {
