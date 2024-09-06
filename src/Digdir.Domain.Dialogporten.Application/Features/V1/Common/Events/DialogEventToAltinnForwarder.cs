@@ -24,7 +24,8 @@ internal sealed class DialogEventToAltinnForwarder : DomainEventToAltinnForwarde
             Resource = domainEvent.ServiceResource,
             ResourceInstance = domainEvent.DialogId.ToString(),
             Subject = domainEvent.Party,
-            Source = $"{SourceBaseUrl()}{domainEvent.DialogId}"
+            Source = $"{SourceBaseUrl()}{domainEvent.DialogId}",
+            Data = GetCloudEventData(domainEvent)
         };
         await CloudEventBus.Publish(cloudEvent, cancellationToken);
     }
@@ -39,7 +40,8 @@ internal sealed class DialogEventToAltinnForwarder : DomainEventToAltinnForwarde
             Resource = domainEvent.ServiceResource,
             ResourceInstance = domainEvent.DialogId.ToString(),
             Subject = domainEvent.Party,
-            Source = $"{SourceBaseUrl()}{domainEvent.DialogId}"
+            Source = $"{SourceBaseUrl()}{domainEvent.DialogId}",
+            Data = GetCloudEventData(domainEvent)
         };
 
         await CloudEventBus.Publish(cloudEvent, cancellationToken);
@@ -55,7 +57,8 @@ internal sealed class DialogEventToAltinnForwarder : DomainEventToAltinnForwarde
             Resource = domainEvent.ServiceResource,
             ResourceInstance = domainEvent.DialogId.ToString(),
             Subject = domainEvent.Party,
-            Source = $"{SourceBaseUrl()}{domainEvent.DialogId}"
+            Source = $"{SourceBaseUrl()}{domainEvent.DialogId}",
+            Data = GetCloudEventData(domainEvent)
         };
 
         await CloudEventBus.Publish(cloudEvent, cancellationToken);
@@ -71,9 +74,24 @@ internal sealed class DialogEventToAltinnForwarder : DomainEventToAltinnForwarde
             Resource = domainEvent.ServiceResource,
             ResourceInstance = domainEvent.DialogId.ToString(),
             Subject = domainEvent.Party,
-            Source = $"{SourceBaseUrl()}{domainEvent.DialogId}"
+            Source = $"{SourceBaseUrl()}{domainEvent.DialogId}",
+            Data = GetCloudEventData(domainEvent)
         };
 
         await CloudEventBus.Publish(cloudEvent, cancellationToken);
+    }
+
+    private static Dictionary<string, object>? GetCloudEventData(DialogDomainEventBase domainEvent)
+    {
+        var data = new Dictionary<string, object>();
+        if (domainEvent.Process is not null)
+        {
+            data["process"] = domainEvent.Process;
+        }
+        if (domainEvent.PrecedingProcess is not null)
+        {
+            data["precedingProcess"] = domainEvent.PrecedingProcess;
+        }
+        return data;
     }
 }

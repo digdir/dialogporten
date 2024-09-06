@@ -7,5 +7,4 @@ public sealed record DialogDeletedDomainEvent(
     string ServiceResource,
     string Party,
     string? Process,
-    string? PrecedingProcess) :
-    DomainEvent;
+    string? PrecedingProcess) : DialogDomainEventBase(Process, PrecedingProcess);
