@@ -106,11 +106,20 @@ internal sealed class UpdateDialogDtoValidator : AbstractValidator<UpdateDialogD
         RuleForEach(x => x.Activities)
             .SetValidator(activityValidator);
 
-        RuleFor(x => x)
-            .Must(x => x.Process is null || Uri.IsWellFormedUriString(x.Process, UriKind.Absolute)).WithMessage("Process must be a valid absolute URI.");
+        RuleFor(x => x.Process)
+            .Must(x => Uri.IsWellFormedUriString(x, UriKind.Absolute))
+            .WithMessage("{PropertyName} must be a valid absolute URI.")
+            .When(x => x.Process is not null);
 
-        RuleFor(x => x)
-            .Must(x => x.PrecedingProcess is null || (x.Process is not null && Uri.IsWellFormedUriString(x.Process, UriKind.Absolute))).WithMessage("Process must be a valid absolute URI.");
+        RuleFor(x => x.Process)
+            .NotEmpty()
+            .WithMessage(dto => $"{{PropertyName}} must not be empty when {nameof(dto.PrecedingProcess)} is set.")
+            .When(x => x.PrecedingProcess is not null);
+
+        RuleFor(x => x.PrecedingProcess)
+            .Must(x => Uri.IsWellFormedUriString(x, UriKind.Absolute))
+            .WithMessage("{PropertyName} must be a valid absolute URI.")
+            .When(x => x.PrecedingProcess is not null);
     }
 }
 

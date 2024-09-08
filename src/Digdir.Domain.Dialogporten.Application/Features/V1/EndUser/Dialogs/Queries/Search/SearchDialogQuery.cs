@@ -81,8 +81,10 @@ public sealed class SearchDialogQuery : SortablePaginationParameter<SearchDialog
     /// </summary>
     public DateTimeOffset? DueBefore { get; init; }
 
+    /// <summary>
+    /// Filter by process
+    /// </summary>
     public string? Process { get; init; }
-
 
     /// <summary>
     /// Search string for free text search. Will attempt to fuzzily match in all free text fields in the aggregate
