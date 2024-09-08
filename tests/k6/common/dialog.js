@@ -87,7 +87,6 @@ export function setProcess(dialog, process) {
     if (!isValidURI(process)) {
         throw new Error("Invalid process provided. " + process); 
     }
-    // setContent(dialog, "Process", process);
     dialog.process = process;
 }
 export function setDueAt(dialog, dueAt) {

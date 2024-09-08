@@ -52,8 +52,9 @@ internal sealed class SearchDialogQueryValidator : AbstractValidator<SearchDialo
 
         RuleForEach(x => x.Status).IsInEnum();
 
-        RuleFor(x => x)
-            .Must(x => x.Process is null || Uri.IsWellFormedUriString(x.Process, UriKind.Absolute))
-            .WithMessage($"{nameof(SearchDialogQuery.Process)} must be a valid URI");
+        RuleFor(x => x.Process)
+            .Must(x => Uri.IsWellFormedUriString(x, UriKind.Absolute))
+            .WithMessage("{PropertyName} must be a valid URI")
+            .When(x => x.Process is not null);
     }
 }

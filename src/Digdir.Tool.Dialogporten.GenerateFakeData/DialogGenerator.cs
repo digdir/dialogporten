@@ -268,6 +268,7 @@ public static class DialogGenerator
     {
         return new Faker().Internet.UrlWithPath();
     }
+
     public static List<CreateDialogDialogGuiActionDto> GenerateFakeDialogGuiActions()
     {
         var hasPrimary = false;
