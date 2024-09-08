@@ -7,7 +7,6 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 using Digdir.Tool.Dialogporten.GenerateFakeData;
 using FluentAssertions;
-using Microsoft.IdentityModel.Tokens;
 
 namespace Digdir.Domain.Dialogporten.Application.Integration.Tests.Features.V1.ServiceOwner.Dialogs.Commands;
 
@@ -72,6 +71,7 @@ public class UpdateDialogTests(DialogApplication application) : ApplicationColle
         // Assert
         updateResponse.TryPickT5(out var domainError, out _).Should().BeTrue();
         domainError.Should().NotBeNull();
+        domainError.Errors.Should().Contain(e => e.ErrorMessage.Contains("already exists"));
     }
 
     [Fact]
@@ -108,6 +108,7 @@ public class UpdateDialogTests(DialogApplication application) : ApplicationColle
         // Assert
         updateResponse.TryPickT5(out var domainError, out _).Should().BeTrue();
         domainError.Should().NotBeNull();
+        domainError.Errors.Should().Contain(e => e.ErrorMessage.Contains("already exists"));
     }
 
     private async Task<(CreateDialogCommand, CreateDialogResult)> GenerateDialogWithActivity()
