@@ -183,6 +183,13 @@ builder.Configuration
 // Left out for brevity
 ```
 
+## Pull requests
+For pull requests, the title must follow [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/).
+The title of the PR will be used as the commit message when squashing/merging the pull request, and the body of the PR will be used as the description.
+
+This title will be used to generate the changelog (using [Release Please](https://github.com/google-github-actions/release-please-action))
+Using `fix` will add to "Bug Fixes", `feat` will add to "Features". All the others,`chore`, `ci`, etc., will be ignored. ([Example release](https://github.com/digdir/dialogporten/releases/tag/v1.12.0))
+
 ## Deployment
 
 This repository contains code for both infrastructure and applications. Configurations for infrastructure are located in `.azure/infrastructure`. Application configuration is in `.azure/applications`. 
