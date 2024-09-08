@@ -4231,6 +4231,7 @@
             }
           },
           {
+            "description": "Filter by process",
             "in": "query",
             "name": "process",
             "schema": {
