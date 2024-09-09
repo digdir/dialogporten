@@ -312,7 +312,7 @@ public class DecisionRequestHelperTests
                 new("sign", "element1"),
                 new("write", Constants.MainResource),
                 new("elementread", "element3"),
-                new("elementread", "element2"),
+                new("elementread", "element2")
             ]
         };
     }

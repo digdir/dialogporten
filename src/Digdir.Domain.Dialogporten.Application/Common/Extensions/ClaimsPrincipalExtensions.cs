@@ -239,7 +239,7 @@ public static class ClaimsPrincipalExtensions
                                 : null,
             UserIdType.Unknown => null,
             UserIdType.ServiceOwner => null,
-            _ => null,
+            _ => null
         };
     }
 
