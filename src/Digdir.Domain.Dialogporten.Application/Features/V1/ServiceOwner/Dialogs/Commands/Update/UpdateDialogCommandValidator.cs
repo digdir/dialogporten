@@ -113,7 +113,7 @@ internal sealed class UpdateDialogDtoValidator : AbstractValidator<UpdateDialogD
 
         RuleFor(x => x.Process)
             .NotEmpty()
-            .WithMessage($"{{PropertyName}} must not be empty when {nameof(UpdateDialogCommand.PrecedingProcess)} is set.")
+            .WithMessage($"{{PropertyName}} must not be empty when {nameof(UpdateDialogDto.PrecedingProcess)} is set.")
             .When(x => x.PrecedingProcess is not null);
 
         RuleFor(x => x.PrecedingProcess)
