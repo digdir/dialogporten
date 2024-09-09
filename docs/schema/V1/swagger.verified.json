@@ -873,8 +873,8 @@
         "enum": [
           "New",
           "InProgress",
-          "Signing",
-          "Processing",
+          "Draft",
+          "Sent",
           "RequiresAttention",
           "Completed"
         ],
@@ -882,8 +882,8 @@
         "x-enumNames": [
           "New",
           "InProgress",
-          "Signing",
-          "Processing",
+          "Draft",
+          "Sent",
           "RequiresAttention",
           "Completed"
         ]
