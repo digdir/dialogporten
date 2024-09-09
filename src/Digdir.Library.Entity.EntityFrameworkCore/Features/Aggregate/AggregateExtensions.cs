@@ -44,9 +44,17 @@ internal static class AggregateExtensions
                 restored.OnRestore(aggregateNode, utcNow);
             }
 
-            if (aggregateNode.Entity is IUpdateableEntity updatable)
+            if (aggregateNode.Entity is IUpdateableEntity updatable && aggregateNode.State is AggregateNodeState.Modified)
             {
                 updatable.Update(utcNow);
+            }
+
+            if (aggregateNode.Entity is IUpdateableEntity createdUpdatable && aggregateNode.State is AggregateNodeState.Added)
+            {
+                if (createdUpdatable.UpdatedAt == default)
+                {
+                    createdUpdatable.Update(utcNow);
+                }
             }
 
             if (aggregateNode.Entity is IVersionableEntity versionable)
