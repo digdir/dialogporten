@@ -24,7 +24,7 @@ internal sealed class ConvertDomainEventsToOutboxMessagesInterceptor : SaveChang
     {
         _transactionTime = transactionTime ?? throw new ArgumentNullException(nameof(transactionTime));
         _topicEventSender = topicEventSender ?? throw new ArgumentNullException(nameof(topicEventSender));
-        _logger = logger;
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     public override ValueTask<InterceptionResult<int>> SavingChangesAsync(

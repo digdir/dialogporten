@@ -60,6 +60,7 @@ public class DialogApplication : IAsyncLifetime
         _rootProvider = serviceCollection
             .AddApplication(Substitute.For<IConfiguration>(), Substitute.For<IHostEnvironment>())
             .AddDistributedMemoryCache()
+            .AddLogging()
             .AddTransient<ConvertDomainEventsToOutboxMessagesInterceptor>()
             .AddDbContext<DialogDbContext>((services, options) =>
                 options.UseNpgsql(_dbContainer.GetConnectionString(), o =>
