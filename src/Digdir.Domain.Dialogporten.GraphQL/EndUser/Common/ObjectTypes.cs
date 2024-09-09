@@ -80,7 +80,7 @@ public enum DialogStatus
     [GraphQLDescription("Started. In a serial process, this is used to indicate that, for example, a form filling is ongoing.")]
     InProgress = 2,
 
-    [GraphQLDescription("Used to user-initiated dialogs not yet sent.")]
+    [GraphQLDescription("Used to indicate user-initiated dialogs not yet sent.")]
     Draft = 3,
 
     [GraphQLDescription("Sent by the service owner. In a serial process, this is used after a submission is made.")]
