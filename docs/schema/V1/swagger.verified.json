@@ -3914,11 +3914,6 @@
             },
             "type": "array"
           },
-          "precedingProcess": {
-            "description": "Optional preceding process identifier to indicate the business process that preceded the process indicated in the \u0022Process\u0022 field. Cannot be set without also \u0022Process\u0022 being set.",
-            "nullable": true,
-            "type": "string"
-          },
           "process": {
             "description": "Optional process identifier used to indicate a business process this dialog belongs to",
             "nullable": true,
@@ -5421,7 +5416,6 @@
                     "Url": "https://example.com/some-url"
                   }
                 ],
-                "PrecedingProcess": null,
                 "Process": null,
                 "Progress": 42,
                 "SearchTags": [

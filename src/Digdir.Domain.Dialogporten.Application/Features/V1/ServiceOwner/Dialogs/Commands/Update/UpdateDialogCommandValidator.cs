@@ -111,15 +111,6 @@ internal sealed class UpdateDialogDtoValidator : AbstractValidator<UpdateDialogD
             .WithMessage("{PropertyName} must be a valid absolute URI.")
             .When(x => x.Process is not null);
 
-        RuleFor(x => x.Process)
-            .NotEmpty()
-            .WithMessage($"{{PropertyName}} must not be empty when {nameof(UpdateDialogDto.PrecedingProcess)} is set.")
-            .When(x => x.PrecedingProcess is not null);
-
-        RuleFor(x => x.PrecedingProcess)
-            .Must(x => Uri.IsWellFormedUriString(x, UriKind.Absolute))
-            .WithMessage("{PropertyName} must be a valid absolute URI.")
-            .When(x => x.PrecedingProcess is not null);
     }
 }
 
