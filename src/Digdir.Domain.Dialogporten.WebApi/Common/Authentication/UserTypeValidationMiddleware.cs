@@ -24,7 +24,7 @@ public class UserTypeValidationMiddleware
                 context.Response.StatusCode = StatusCodes.Status403Forbidden;
                 await context.Response.WriteAsJsonAsync(context.ResponseBuilder(
                     context.Response.StatusCode,
-                    new List<ValidationFailure>()
+                    new List<ValidationFailure>
                     {
                         new("Type",
                             "The request was authenticated, but we were unable to determine valid user type (person or system user) in order to authorize the request.")
