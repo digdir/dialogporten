@@ -78,19 +78,9 @@ static void BuildAndRun(string[] args)
         .AddValidatorsFromAssembly(thisAssembly, ServiceLifetime.Transient, includeInternalTypes: true)
         .AddAzureAppConfiguration();
 
-    var infrastructureConfigurationSection =
-        builder.Configuration.GetSection(InfrastructureSettings.ConfigurationSectionName);
-
-    builder.Services.AddOptions<InfrastructureSettings>()
-        .Bind(infrastructureConfigurationSection)
-        .ValidateFluently()
-        .ValidateOnStart();
-
-    var infrastructureSettings = infrastructureConfigurationSection.Get<InfrastructureSettings>() ?? throw new InvalidOperationException("Infrastructure settings must not be null.");
-
     // Graph QL
     builder.Services
-        .AddDialogportenGraphQl(infrastructureSettings.Redis.ConnectionString)
+        .AddDialogportenGraphQl()
 
         // Auth
         .AddDialogportenAuthentication(builder.Configuration)

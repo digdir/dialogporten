@@ -11,10 +11,10 @@ public sealed class Subscriptions
 {
     [Subscribe]
     [Topic($"{Constants.DialogUpdatedTopic}{{{nameof(dialogId)}}}")]
-    public Guid DialogUpdated(Guid dialogId,
+    public DialogUpdatedPayload DialogUpdated(Guid dialogId,
         [EventMessage] Guid eventMessage)
     {
         ArgumentNullException.ThrowIfNull(eventMessage);
-        return dialogId;
+        return new DialogUpdatedPayload { Id = dialogId };
     }
 }

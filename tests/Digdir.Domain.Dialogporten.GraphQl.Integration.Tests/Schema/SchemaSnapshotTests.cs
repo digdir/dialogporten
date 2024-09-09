@@ -33,7 +33,7 @@ public class SchemaSnapshotTests
         var builder = WebApplication.CreateBuilder([]);
         builder.Services
             .AddSingleton(new TelemetryClient(telemetryConfig))
-            .AddDialogportenGraphQl(string.Empty);
+            .AddDialogportenGraphQl();
 
         var app = builder.Build();
         var requestExecutor =
