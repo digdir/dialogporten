@@ -26,6 +26,11 @@ public static class ApplicationExtensions
             .ValidateFluently()
             .ValidateOnStart();
 
+        // Configures FluentValidation to use property names as
+        // display names without an added space.
+        // 'CreatedAt', not 'Created At'.
+        ValidatorOptions.Global.DisplayNameResolver = (_, member, _) => member?.Name;
+
         services
             // Framework
             .AddAutoMapper(thisAssembly)
