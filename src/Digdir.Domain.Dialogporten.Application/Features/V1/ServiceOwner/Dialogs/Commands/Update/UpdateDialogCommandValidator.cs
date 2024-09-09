@@ -105,12 +105,6 @@ internal sealed class UpdateDialogDtoValidator : AbstractValidator<UpdateDialogD
             .UniqueBy(x => x.Id);
         RuleForEach(x => x.Activities)
             .SetValidator(activityValidator);
-
-        RuleFor(x => x.Process)
-            .Must(x => Uri.IsWellFormedUriString(x, UriKind.Absolute))
-            .WithMessage("{PropertyName} must be a valid absolute URI.")
-            .When(x => x.Process is not null);
-
     }
 }
 

@@ -3914,11 +3914,6 @@
             },
             "type": "array"
           },
-          "process": {
-            "description": "Optional process identifier used to indicate a business process this dialog belongs to",
-            "nullable": true,
-            "type": "string"
-          },
           "progress": {
             "description": "Advisory indicator of progress, represented as 1-100 percentage value. 100% representing a dialog that has come\nto a natural completion (successful or not).",
             "format": "int32",
@@ -5416,7 +5411,6 @@
                     "Url": "https://example.com/some-url"
                   }
                 ],
-                "Process": null,
                 "Progress": 42,
                 "SearchTags": [
                   {
