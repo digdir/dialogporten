@@ -43,7 +43,6 @@ public sealed class UpdateDialogDto
     public DateTimeOffset? DueAt { get; set; }
 
 
-    public string? Process { get; set; }
     /// <summary>
     /// Optional process identifier used to indicate a business process this dialog belongs to
     /// </summary>

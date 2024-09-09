@@ -64,7 +64,6 @@ public class CreateDialogDto
     /// </summary>
     /// <example>2022-12-31T23:59:59Z</example>
     public DateTimeOffset? DueAt { get; set; }
-    public string? Process { get; set; }
 
     /// <summary>
     /// Optional process identifier used to indicate a business process this dialog belongs to 
