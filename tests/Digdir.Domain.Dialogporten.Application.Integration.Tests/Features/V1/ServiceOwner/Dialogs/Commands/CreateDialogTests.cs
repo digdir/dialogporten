@@ -142,9 +142,8 @@ public class CreateDialogTests : ApplicationCollectionFixture
     public async Task Cant_Create_Dialog_With_UpdatedAt_Supplied_Without_CreatedAt_Supplied()
     {
         // Arrange
-        var dialogId = GenerateBigEndianUuidV7();
         var updatedAt = DateTimeOffset.UtcNow.AddYears(-15);
-        var createDialogCommand = DialogGenerator.GenerateFakeDialog(id: dialogId, updatedAt: updatedAt);
+        var createDialogCommand = DialogGenerator.GenerateFakeDialog(updatedAt: updatedAt);
 
         // Act
         var response = await Application.Send(createDialogCommand);
@@ -159,10 +158,9 @@ public class CreateDialogTests : ApplicationCollectionFixture
     public async Task Cant_Create_Dialog_With_UpdatedAt_Date_Earlier_Than_CreatedAt_Date()
     {
         // Arrange
-        var dialogId = GenerateBigEndianUuidV7();
         var createdAt = DateTimeOffset.UtcNow.AddYears(-10);
         var updatedAt = DateTimeOffset.UtcNow.AddYears(-15);
-        var createDialogCommand = DialogGenerator.GenerateFakeDialog(id: dialogId, updatedAt: updatedAt, createdAt: createdAt);
+        var createDialogCommand = DialogGenerator.GenerateFakeDialog(updatedAt: updatedAt, createdAt: createdAt);
 
         // Act
         var response = await Application.Send(createDialogCommand);
@@ -177,11 +175,10 @@ public class CreateDialogTests : ApplicationCollectionFixture
     public async Task Cant_Create_Dialog_With_UpdatedAt_Or_CreatedAt_In_The_Future()
     {
         // Arrange
-        var dialogId = GenerateBigEndianUuidV7();
         var now = DateTimeOffset.UtcNow;
         var createdAt = now.AddYears(1);
         var updatedAt = now.AddYears(1);
-        var createDialogCommand = DialogGenerator.GenerateFakeDialog(id: dialogId, updatedAt: updatedAt, createdAt: createdAt);
+        var createDialogCommand = DialogGenerator.GenerateFakeDialog(updatedAt: updatedAt, createdAt: createdAt);
 
         // Act
         var response = await Application.Send(createDialogCommand);
@@ -196,11 +193,10 @@ public class CreateDialogTests : ApplicationCollectionFixture
     public async Task Can_Create_Dialog_With_UpdatedAt_And_CreatedAt_Being_Equal()
     {
         // Arrange
-        var dialogId = GenerateBigEndianUuidV7();
         var now = DateTimeOffset.UtcNow;
         var createdAt = now.AddYears(-1);
         var updatedAt = now.AddYears(-1);
-        var createDialogCommand = DialogGenerator.GenerateFakeDialog(id: dialogId, updatedAt: updatedAt, createdAt: createdAt);
+        var createDialogCommand = DialogGenerator.GenerateFakeDialog(updatedAt: updatedAt, createdAt: createdAt);
 
         // Act
         var response = await Application.Send(createDialogCommand);
@@ -208,6 +204,5 @@ public class CreateDialogTests : ApplicationCollectionFixture
         // Assert
         response.TryPickT0(out var success, out _).Should().BeTrue();
         success.Should().NotBeNull();
-        success.Value.Should().Be(dialogId);
     }
 }
