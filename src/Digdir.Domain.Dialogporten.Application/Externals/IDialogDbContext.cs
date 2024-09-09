@@ -9,7 +9,6 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Contents;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions.Contents;
 using Digdir.Domain.Dialogporten.Domain.SubjectResources;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace Digdir.Domain.Dialogporten.Application.Externals;
 
