@@ -125,7 +125,7 @@ internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDia
 
         RuleFor(x => x.Process)
             .NotEmpty()
-            .WithMessage(dto => $"{{PropertyName}} must not be empty when {nameof(dto.PrecedingProcess)} is set.")
+            .WithMessage($"{{PropertyName}} must not be empty when {nameof(CreateDialogCommand.PrecedingProcess)} is set.")
             .When(x => x.PrecedingProcess is not null);
 
         RuleFor(x => x.PrecedingProcess)
