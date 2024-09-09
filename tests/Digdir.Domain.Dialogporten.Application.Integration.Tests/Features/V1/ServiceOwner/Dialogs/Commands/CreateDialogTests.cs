@@ -175,10 +175,9 @@ public class CreateDialogTests : ApplicationCollectionFixture
     public async Task Cant_Create_Dialog_With_UpdatedAt_Or_CreatedAt_In_The_Future()
     {
         // Arrange
-        var now = DateTimeOffset.UtcNow;
-        var createdAt = now.AddYears(1);
-        var updatedAt = now.AddYears(1);
-        var createDialogCommand = DialogGenerator.GenerateFakeDialog(updatedAt: updatedAt, createdAt: createdAt);
+        var aYearFromNow = DateTimeOffset.UtcNow.AddYears(1);
+        var createDialogCommand = DialogGenerator
+            .GenerateFakeDialog(updatedAt: aYearFromNow, createdAt: aYearFromNow);
 
         // Act
         var response = await Application.Send(createDialogCommand);
@@ -193,10 +192,9 @@ public class CreateDialogTests : ApplicationCollectionFixture
     public async Task Can_Create_Dialog_With_UpdatedAt_And_CreatedAt_Being_Equal()
     {
         // Arrange
-        var now = DateTimeOffset.UtcNow;
-        var createdAt = now.AddYears(-1);
-        var updatedAt = now.AddYears(-1);
-        var createDialogCommand = DialogGenerator.GenerateFakeDialog(updatedAt: updatedAt, createdAt: createdAt);
+        var aYearAgo = DateTimeOffset.UtcNow.AddYears(-1);
+        var createDialogCommand = DialogGenerator
+            .GenerateFakeDialog(updatedAt: aYearAgo, createdAt: aYearAgo);
 
         // Act
         var response = await Application.Send(createDialogCommand);
