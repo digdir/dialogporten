@@ -286,7 +286,7 @@ enum DialogStatus {
   NEW
   "Started. In a serial process, this is used to indicate that, for example, a form filling is ongoing."
   IN_PROGRESS
-  "Used to user-initiated dialogs not yet sent."
+  "Used to indicate user-initiated dialogs not yet sent."
   DRAFT
   "Sent by the service owner. In a serial process, this is used after a submission is made."
   SENT
