@@ -6,8 +6,8 @@ namespace Digdir.Domain.Dialogporten.GraphQL.Common.Authentication;
 
 internal sealed class LocalDevelopmentUser : IUser
 {
-    private readonly ClaimsPrincipal _principal = new(new ClaimsIdentity(new[]
-    {
+    private readonly ClaimsPrincipal _principal = new(new ClaimsIdentity(
+    [
         new Claim(ClaimTypes.Name, "Local Development User"),
         new Claim(ClaimTypes.NameIdentifier, "local-development-user"),
         new Claim("pid", "03886595947"),
@@ -19,7 +19,7 @@ internal sealed class LocalDevelopmentUser : IUser
                 "ID": "0192:991825827"
             }
             """)
-    }));
+    ]));
 
     public ClaimsPrincipal GetPrincipal() => _principal;
 }

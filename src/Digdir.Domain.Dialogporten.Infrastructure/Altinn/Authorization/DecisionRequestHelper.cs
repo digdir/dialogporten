@@ -101,7 +101,7 @@ internal static class DecisionRequestHelper
 
     private static string GetSystemUserId(Claim claim)
     {
-        var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new[] { claim }));
+        var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity([claim]));
         claimsPrincipal.TryGetSystemUserId(out var systemUserId);
         return systemUserId!;
     }
