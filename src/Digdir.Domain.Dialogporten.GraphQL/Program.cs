@@ -76,10 +76,9 @@ static void BuildAndRun(string[] args)
         .AddApplicationInsightsTelemetry()
         .AddScoped<IUser, ApplicationUser>()
         .AddValidatorsFromAssembly(thisAssembly, ServiceLifetime.Transient, includeInternalTypes: true)
-        .AddAzureAppConfiguration();
+        .AddAzureAppConfiguration()
 
-    // Graph QL
-    builder.Services
+        // Graph QL
         .AddDialogportenGraphQl()
 
         // Auth
