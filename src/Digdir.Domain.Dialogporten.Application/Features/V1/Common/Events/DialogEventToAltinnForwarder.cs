@@ -81,7 +81,7 @@ internal sealed class DialogEventToAltinnForwarder : DomainEventToAltinnForwarde
         await CloudEventBus.Publish(cloudEvent, cancellationToken);
     }
 
-    private static Dictionary<string, object>? GetCloudEventData(DialogDomainEventBase domainEvent)
+    private static Dictionary<string, object>? GetCloudEventData(IProcessEvent domainEvent)
     {
         var data = new Dictionary<string, object>();
         if (domainEvent.Process is not null)

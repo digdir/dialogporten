@@ -177,7 +177,7 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
             .WhereIf(request.UpdatedBefore.HasValue, x => x.UpdatedAt <= request.UpdatedBefore)
             .WhereIf(request.DueAfter.HasValue, x => request.DueAfter <= x.DueAt)
             .WhereIf(request.DueBefore.HasValue, x => x.DueAt <= request.DueBefore)
-            .WhereIf(request.Process is not null, x => x.Process == request.Process)
+            .WhereIf(request.Process is not null, x => x.Process != null && EF.Functions.ILike(x.Process, request.Process!))
             .WhereIf(request.VisibleAfter.HasValue, x => request.VisibleAfter <= x.VisibleFrom)
             .WhereIf(request.VisibleBefore.HasValue, x => x.VisibleFrom <= request.VisibleBefore)
             .WhereIf(request.Search is not null, x =>

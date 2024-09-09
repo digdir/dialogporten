@@ -2,4 +2,4 @@
 
 namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Events;
 
-public sealed record DialogUpdatedDomainEvent(Guid DialogId, string ServiceResource, string Party, string? Process, string? PrecedingProcess) : DialogDomainEventBase(Process, PrecedingProcess);
+public sealed record DialogUpdatedDomainEvent(Guid DialogId, string ServiceResource, string Party, string? Process, string? PrecedingProcess) : DomainEvent, IProcessEvent;
