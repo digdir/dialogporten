@@ -54,7 +54,7 @@ export default function () {
         setTitle(dialogs[++d], titleToSearchFor);
         setAdditionalInfo(dialogs[++d], additionalInfoToSearchFor);
         setSearchTags(dialogs[++d], searchTagsToSearchFor);
-        setStatus(dialogs[++d], "signing");
+        setStatus(dialogs[++d], "draft");
         setExtendedStatus(dialogs[++d], extendedStatusToSearchFor);
 
         setSenderName(dialogs[++d], senderNameToSearchFor);
