@@ -24,7 +24,7 @@ brew install docker-compose
 
 4. Finish setup in Podman Desktop
 
-5. Check that `Docker Compatility mode` is enabled, see bottom left corner
+5. Check that `Docker Compatility mode` is enabled, see the bottom left corner
 
 6. Enable privileged [testcontainers-dotnet](https://github.com/testcontainers/testcontainers-dotnet/issues/876#issuecomment-1930397928)  
 `echo "ryuk.container.privileged = true" >> $HOME/.testcontainers.properties`
@@ -46,7 +46,7 @@ brew install docker-compose
 
 3. Follow instructions in Podman Desktop to create and start a Podman machine.
 
-4. In Podman Desktop, go to Settings -> Resources and run setup for the Compose Extension. This will install docker-compose.
+4. In Podman Desktop, go to Settings → Resources and run setup for the Compose Extension. This will install docker-compose.
 
 ### Running the project
 
@@ -102,7 +102,7 @@ Remember to target `Digdir.Domain.Dialogporten.Infrastructure` project when runn
 dotnet ef migrations add -p .\src\Digdir.Domain.Dialogporten.Infrastructure\ TestMigration
 ```
 
-Or change your directory to the infrastructure project, and then run the command.
+Or change your directory to the infrastructure project and then run the command.
 ```powershell
 cd .\src\Digdir.Domain.Dialogporten.Infrastructure\
 dotnet ef migrations add TestMigration
@@ -114,7 +114,9 @@ Besides ordinary unit and integration tests, there are test suites for both func
 See `tests/k6/README.md` for more information.
 
 ## Updating the SDK in global.json
-When RenovateBot updates `global.json` or base image versions in Dockerfiles, remember that these two must match.  
+When RenovateBot updates `global.json` or base image versions in Dockerfiles, make sure they match. 
+The `global.json` file should always have the same SDK version as the base image in the Dockerfiles. 
+This is to ensure that the SDK version used in the local development environment matches the SDK version used in the CI/CD pipeline. 
 `global.json` is used when building the solution in CI/CD.
 
 ## Development in local and test environments
