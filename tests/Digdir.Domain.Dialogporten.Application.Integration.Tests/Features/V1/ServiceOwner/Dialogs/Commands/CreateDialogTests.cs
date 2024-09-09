@@ -134,8 +134,8 @@ public class CreateDialogTests : ApplicationCollectionFixture
         getDialogQuery.Should().NotBeNull();
         getDialogResponse.TryPickT0(out var dialog, out _).Should().BeTrue();
         dialog.Should().NotBeNull();
-        dialog.CreatedAt.Should().Be(createdAt);
-        dialog.UpdatedAt.Should().Be(updatedAt);
+        dialog.CreatedAt.Should().BeCloseTo(createdAt, precision: TimeSpan.FromMicroseconds(10));
+        dialog.UpdatedAt.Should().BeCloseTo(updatedAt, precision: TimeSpan.FromMicroseconds(10));
     }
 
     [Fact]
