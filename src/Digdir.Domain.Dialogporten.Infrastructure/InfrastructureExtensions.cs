@@ -120,10 +120,10 @@ public static class InfrastructureExtensions
                     {
                         o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
                     })
-                    .AddInterceptors([
+                    .AddInterceptors(
                         services.GetRequiredService<PopulateActorNameInterceptor>(),
                         services.GetRequiredService<ConvertDomainEventsToOutboxMessagesInterceptor>()
-                    ]);
+                    );
             })
             .AddHostedService<DevelopmentMigratorHostedService>()
             .AddHostedService<DevelopmentSubjectResourceSyncHostedService>()
