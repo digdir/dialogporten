@@ -2,7 +2,7 @@ using Medo;
 
 namespace Digdir.Domain.Dialogporten.Application.Integration.Tests;
 
-public class UuiDv7Utils
+public static class UuiDv7Utils
 {
     public static Guid GenerateBigEndianUuidV7(DateTimeOffset? timeStamp = null) => timeStamp is null ?
         Uuid7.NewUuid7().ToGuid(matchGuidEndianness: true)
