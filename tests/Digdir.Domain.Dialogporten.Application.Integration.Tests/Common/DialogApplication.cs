@@ -14,6 +14,7 @@ using Digdir.Domain.Dialogporten.Infrastructure.DomainEvents.Outbox;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence;
 using Digdir.Library.Entity.Abstractions.Features.Lookup;
 using FluentAssertions;
+using HotChocolate.Subscriptions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -59,6 +60,7 @@ public class DialogApplication : IAsyncLifetime
         _rootProvider = serviceCollection
             .AddApplication(Substitute.For<IConfiguration>(), Substitute.For<IHostEnvironment>())
             .AddDistributedMemoryCache()
+            .AddLogging()
             .AddTransient<ConvertDomainEventsToOutboxMessagesInterceptor>()
             .AddDbContext<DialogDbContext>((services, options) =>
                 options.UseNpgsql(_dbContainer.GetConnectionString(), o =>
@@ -72,6 +74,7 @@ public class DialogApplication : IAsyncLifetime
             .AddScoped<IServiceOwnerNameRegistry>(_ => CreateServiceOwnerNameRegistrySubstitute())
             .AddScoped<IPartyNameRegistry>(_ => CreateNameRegistrySubstitute())
             .AddScoped<IOptions<ApplicationSettings>>(_ => CreateApplicationSettingsSubstitute())
+            .AddScoped<ITopicEventSender>(_ => Substitute.For<ITopicEventSender>())
             .AddScoped<IUnitOfWork, UnitOfWork>()
             .AddScoped<IAltinnAuthorization, LocalDevelopmentAltinnAuthorization>()
             .AddSingleton<ICloudEventBus, IntegrationTestCloudBus>()

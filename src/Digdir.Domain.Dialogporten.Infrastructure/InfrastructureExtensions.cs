@@ -26,6 +26,7 @@ using Digdir.Domain.Dialogporten.Infrastructure.Altinn.Events;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.NameRegistry;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.OrganizationRegistry;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.ResourceRegistry;
+using Digdir.Domain.Dialogporten.Infrastructure.GraphQl;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence.Configurations.Actors;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence.Repositories;
 using ZiggyCreatures.Caching.Fusion;
@@ -65,15 +66,11 @@ public static class InfrastructureExtensions
 
         services.AddFusionCacheNeueccMessagePackSerializer();
 
-        if (infrastructureSettings.Redis.Enabled == true)
-        {
-            services.AddStackExchangeRedisCache(opt => opt.Configuration = infrastructureSettings.Redis.ConnectionString);
-            services.AddFusionCacheStackExchangeRedisBackplane(opt => opt.Configuration = infrastructureSettings.Redis.ConnectionString);
-        }
-        else
-        {
-            services.AddDistributedMemoryCache();
-        }
+
+        services.AddStackExchangeRedisCache(opt => opt.Configuration = infrastructureSettings.Redis.ConnectionString);
+        services.AddFusionCacheStackExchangeRedisBackplane(opt => opt.Configuration = infrastructureSettings.Redis.ConnectionString);
+
+        services.AddGraphQlRedisSubscriptions(infrastructureSettings.Redis.ConnectionString);
 
         services.ConfigureFusionCache(nameof(Altinn.NameRegistry), new()
         {

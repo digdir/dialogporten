@@ -200,3 +200,8 @@ public enum AttachmentUrlConsumer
     Gui = 1,
     Api = 2
 }
+
+public sealed class DialogUpdatedPayload
+{
+    public Guid Id { get; set; }
+}
