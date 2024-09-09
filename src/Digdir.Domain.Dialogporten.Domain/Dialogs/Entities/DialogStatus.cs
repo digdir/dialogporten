@@ -21,14 +21,14 @@ public class DialogStatus : AbstractLookupEntity<DialogStatus, DialogStatus.Valu
         InProgress = 2,
 
         /// <summary>
-        /// Equivalent to "InProgress", but will be used by the workspace/frontend for display purposes.
+        /// Used to indicate user-initiated dialogs not yet sent.
         /// </summary>
-        Signing = 3,
+        Draft = 3,
 
         /// <summary>
-        /// For processing by the service owner. In a serial process, this is used after a submission is made.
+        /// Sent by the service owner. In a serial process, this is used after a submission is made.
         /// </summary>
-        Processing = 4,
+        Sent = 4,
 
         /// <summary>
         /// Used to indicate that the dialogue is in progress/under work, but is in a state where the user must do something - for example, correct an error, or other conditions that hinder further processing.
