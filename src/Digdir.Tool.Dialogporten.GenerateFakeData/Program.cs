@@ -134,7 +134,7 @@ public static class Program
         dialogQueue.CompleteAdding();
     }
 
-    private static List<string> _resourceList = new();
+    private static List<string> _resourceList = [];
     private static string? MaybeGetRandomResource(Options options)
     {
         if (options.ResourceListPath == string.Empty) return null;
@@ -156,7 +156,7 @@ public static class Program
         return _resourceList[new Randomizer().Number(_resourceList.Count - 1)];
     }
 
-    private static List<string> _partyList = new();
+    private static List<string> _partyList = [];
     private static string? MaybeGetRandomParty(Options options)
     {
         if (options.PartyListPath == string.Empty) return null;
