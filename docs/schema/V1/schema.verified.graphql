@@ -1,5 +1,6 @@
 ﻿schema {
   query: Queries
+  subscription: Subscriptions
 }
 
 interface DialogByIdError {
@@ -199,6 +200,10 @@ type SeenLog {
   seenAt: DateTime!
   seenBy: Actor!
   isCurrentEndUser: Boolean!
+}
+
+type Subscriptions @authorize(policy: "enduser") {
+  dialogUpdated(dialogId: UUID!): UUID!
 }
 
 type Transmission {
