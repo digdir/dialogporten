@@ -66,17 +66,11 @@ public static class InfrastructureExtensions
 
         services.AddFusionCacheNeueccMessagePackSerializer();
 
-        if (infrastructureSettings.Redis.Enabled == true)
-        {
-            services.AddStackExchangeRedisCache(opt => opt.Configuration = infrastructureSettings.Redis.ConnectionString);
-            services.AddFusionCacheStackExchangeRedisBackplane(opt => opt.Configuration = infrastructureSettings.Redis.ConnectionString);
 
-            services.AddGraphQlRedisSubscriptions(infrastructureSettings.Redis.ConnectionString);
-        }
-        else
-        {
-            services.AddDistributedMemoryCache();
-        }
+        services.AddStackExchangeRedisCache(opt => opt.Configuration = infrastructureSettings.Redis.ConnectionString);
+        services.AddFusionCacheStackExchangeRedisBackplane(opt => opt.Configuration = infrastructureSettings.Redis.ConnectionString);
+
+        services.AddGraphQlRedisSubscriptions(infrastructureSettings.Redis.ConnectionString);
 
         services.ConfigureFusionCache(nameof(Altinn.NameRegistry), new()
         {
