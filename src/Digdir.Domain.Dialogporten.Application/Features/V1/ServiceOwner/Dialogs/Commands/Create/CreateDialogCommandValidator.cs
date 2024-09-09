@@ -42,7 +42,7 @@ internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDia
         RuleFor(x => x.UpdatedAt)
             .IsInPast()
             .GreaterThanOrEqualTo(x => x.CreatedAt)
-                .WithMessage($"{{PropertyName}} must be greater than or equal to '{nameof(CreateDialogCommand.CreatedAt)}'.")
+                .WithMessage($"'{{PropertyName}}' must be greater than or equal to '{nameof(CreateDialogCommand.CreatedAt)}'.")
                 .When(x => x.CreatedAt != default && x.UpdatedAt != default);
 
         RuleFor(x => x.ServiceResource)
