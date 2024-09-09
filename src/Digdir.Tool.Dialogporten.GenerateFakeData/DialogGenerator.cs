@@ -7,6 +7,7 @@ using Digdir.Domain.Dialogporten.Domain.Attachments;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 using Digdir.Domain.Dialogporten.Domain.Http;
 using Medo;
 
@@ -230,6 +231,22 @@ public static class DialogGenerator
 
     public static CreateDialogDialogActivityDto GenerateFakeDialogActivity(DialogActivityType.Values? type = null)
         => GenerateFakeDialogActivities(1, type)[0];
+
+    public static List<CreateDialogDialogTransmissionDto> GenerateFakeDialogTransmissions(int? count = null,
+        DialogTransmissionType.Values? type = null)
+    {
+        return new Faker<CreateDialogDialogTransmissionDto>()
+            .RuleFor(o => o.Id, _ => Uuid7.NewUuid7().ToGuid(true))
+            .RuleFor(o => o.CreatedAt, f => f.Date.Past())
+            .RuleFor(o => o.Type, f => type ?? f.PickRandom<DialogTransmissionType.Values>())
+            .RuleFor(o => o.Sender, _ => new() { ActorType = ActorType.Values.ServiceOwner })
+            .RuleFor(o => o.Content, _ => new()
+            {
+                Title = new() { Value = GenerateFakeLocalizations(1) },
+                Summary = new() { Value = GenerateFakeLocalizations(3) }
+            })
+            .Generate(count ?? new Randomizer().Number(1, 4));
+    }
 
     public static List<CreateDialogDialogActivityDto> GenerateFakeDialogActivities(int? count = null, DialogActivityType.Values? type = null)
     {
