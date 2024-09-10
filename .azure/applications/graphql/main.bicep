@@ -12,9 +12,10 @@ param environment string
 @minLength(3)
 param location string
 
-@description('The IP address of the API Management instance')
-@minLength(3)
-param apimIp string
+// todo: enable once we have APIM working with subcsription
+// @description('The IP address of the API Management instance')
+// @minLength(3)
+// param apimIp string
 
 @description('CPU and memory resources for the container app')
 param resources object?
@@ -84,7 +85,8 @@ module containerApp '../../modules/containerApp/main.bicep' = {
     location: location
     envVariables: containerAppEnvVars
     containerAppEnvId: containerAppEnvironment.id
-    apimIp: apimIp
+    // todo: enable once we have APIM working with subcsription
+    // apimIp: apimIp
     tags: tags
     resources: resources
   }
