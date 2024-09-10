@@ -49,11 +49,11 @@ var probes = [
 var ipSecurityRestrictions = empty(apimIp)
   ? []
   : [
-      {
-        name: 'apim'
-        action: 'Allow'
-        ipAddressRange: apimIp!
-      }
+    //   {
+    //     name: 'apim'
+    //     action: 'Allow'
+    //     ipAddressRange: apimIp!
+    //   }
     ]
 
 var ingress = {
