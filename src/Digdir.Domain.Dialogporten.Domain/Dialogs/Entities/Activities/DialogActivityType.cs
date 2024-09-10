@@ -37,6 +37,11 @@ public class DialogActivityType : AbstractLookupEntity<DialogActivityType, Dialo
         /// <summary>
         /// Indicates that a signature has been provided.
         /// </summary>
-        SignatureProvided = 6
+        SignatureProvided = 6,
+
+        /// <summary>
+        /// Refers to a dialog that has been opened.
+        /// </summary>
+        DialogOpened = 7,
     }
 }

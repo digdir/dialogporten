@@ -852,7 +852,8 @@
           "Information",
           "TransmissionOpened",
           "PaymentMade",
-          "SignatureProvided"
+          "SignatureProvided",
+          "DialogOpened"
         ],
         "type": "string",
         "x-enumNames": [
@@ -861,7 +862,8 @@
           "Information",
           "TransmissionOpened",
           "PaymentMade",
-          "SignatureProvided"
+          "SignatureProvided",
+          "DialogOpened"
         ]
       },
       "DialogGuiActionPriority_Values": {
