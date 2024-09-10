@@ -34,6 +34,31 @@ internal static class AggregateExtensions
                 updated.OnUpdate(aggregateNode, utcNow);
             }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             if (aggregateNode.Entity is IAggregateDeletedHandler deleted && aggregateNode.State is AggregateNodeState.Deleted)
             {
                 deleted.OnDelete(aggregateNode, utcNow);
