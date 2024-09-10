@@ -251,12 +251,12 @@ public static class DialogGenerator
     public static List<CreateDialogDialogActivityDto> GenerateFakeDialogActivities(int? count = null, DialogActivityType.Values? type = null)
     {
         return new Faker<CreateDialogDialogActivityDto>()
-            .RuleFor(o => o.Id, f => Uuid7.NewUuid7().ToGuid(true))
             .RuleFor(o => o.CreatedAt, f => f.Date.Past())
             .RuleFor(o => o.ExtendedType, f => new Uri(f.Internet.UrlWithPath()))
             .RuleFor(o => o.Type, f => type ?? f.PickRandom<DialogActivityType.Values>())
             .RuleFor(o => o.PerformedBy, f => new CreateDialogDialogActivityPerformedByActorDto { ActorType = ActorType.Values.PartyRepresentative, ActorName = f.Name.FullName() })
             .RuleFor(o => o.Description, (f, o) => o.Type == DialogActivityType.Values.Information ? GenerateFakeLocalizations(f.Random.Number(4, 8)) : null)
+            .RuleFor(o => o.Id, () => type == DialogActivityType.Values.DialogOpened ? null : Uuid7.NewUuid7().ToGuid(true))
             .Generate(count ?? new Randomizer().Number(1, 4));
     }
 

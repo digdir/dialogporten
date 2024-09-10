@@ -428,10 +428,22 @@ internal sealed class CreateDialogDialogActivityDtoValidator : AbstractValidator
             // .WithMessage($"{nameof(DialogActivityType.Values.DialogOpened)} is not allowed on a transmission.")
             .WithMessage($"A {nameof(DialogActivityType.Values.DialogOpened)} activity cannot reference a transmission.")  // er det dette "rett" feilmelding?
             .When(x => x.Type == DialogActivityType.Values.DialogOpened);
-        RuleFor(x => x.TransmissionId)
-            .NotNull()
-            .WithMessage($"A {nameof(DialogActivityType.Values.TransmissionOpened)} needs to reference a transmission.")
-            .When(x => x.Type == DialogActivityType.Values.TransmissionOpened);
+        // Testene feilet av denne. var den for streng?
+        // Sier jeg her at når transmissionId != null MÅ Type == TransmissionOpened?
+        // Sier ikke den fra notification det samme?
+        // RuleFor(x => x.TransmissionId)
+        //     .NotNull()
+        //     .WithMessage($"A {nameof(DialogActivityType.Values.TransmissionOpened)} needs to reference a transmission.")
+        //     .When(x => x.Type == DialogActivityType.Values.TransmissionOpened);
+        // ====================== REF FRA NOTIFI =========
+        // RuleFor(x => x.TransmissionId)
+        //             .NotNull()
+        //             .NotEqual(default(Guid))
+        //             .When(x => x.ActivityType == DialogActivityType.Values.TransmissionOpened);
+        // ===================== END REF ===================
+        RuleFor(x => x.Type)
+            .Equal(DialogActivityType.Values.TransmissionOpened)
+            .When(x => x.TransmissionId != null);
     }
 }
 
