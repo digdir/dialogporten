@@ -57,7 +57,7 @@ public class ContentTypeTests
         var dtoTypes = new[]
         {
             typeof(SearchDialogContentDtoEU),
-            typeof(SearchDialogDtoContentSO),
+            typeof(SearchDialogDtoContentSO)
         };
 
         foreach (var dtoType in dtoTypes)
@@ -87,7 +87,7 @@ public class ContentTypeTests
             typeof(CreateDialogDialogTransmissionContentDto),
             typeof(UpdateDialogDialogTransmissionContentDto),
             typeof(GetDialogDialogTransmissionContentDtoSO),
-            typeof(GetDialogDialogTransmissionContentDtoEU),
+            typeof(GetDialogDialogTransmissionContentDtoEU)
         };
 
         foreach (var dtoType in dtoTypes)

@@ -188,7 +188,7 @@ public class DomainEventsTests(DialogApplication application) : ApplicationColle
         var dialogId = GenerateBigEndianUuidV7();
         var createDialogCommand = DialogGenerator.GenerateFakeDialog(id: dialogId, attachments: [], activities: []);
 
-        var foo = await Application.Send(createDialogCommand);
+        await Application.Send(createDialogCommand);
 
         // Act
         var purgeCommand = new PurgeDialogCommand

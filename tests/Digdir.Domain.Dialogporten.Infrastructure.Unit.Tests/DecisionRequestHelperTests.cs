@@ -90,7 +90,6 @@ public class DecisionRequestHelperTests
                 ("consumer", ConsumerClaimValue)
             ),
             $"{NorwegianOrganizationIdentifier.PrefixWithSeparator}713330310");
-        var dialogId = request.DialogId;
 
         // Act
         var result = DecisionRequestHelper.CreateDialogDetailsRequest(request);
@@ -112,8 +111,6 @@ public class DecisionRequestHelperTests
             ),
             $"{NorwegianOrganizationIdentifier.PrefixWithSeparator}713330310",
             isApp: true);
-
-        var dialogId = request.DialogId;
 
         // Act
         var result = DecisionRequestHelper.CreateDialogDetailsRequest(request);
@@ -312,7 +309,7 @@ public class DecisionRequestHelperTests
                 new("sign", "element1"),
                 new("write", Constants.MainResource),
                 new("elementread", "element3"),
-                new("elementread", "element2"),
+                new("elementread", "element2")
             ]
         };
     }
