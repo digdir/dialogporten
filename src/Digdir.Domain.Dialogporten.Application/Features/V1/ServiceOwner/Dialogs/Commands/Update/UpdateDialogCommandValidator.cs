@@ -396,6 +396,13 @@ internal sealed class UpdateDialogDialogActivityDtoValidator : AbstractValidator
             .Empty()
             .WithMessage("Description is only allowed when the type is '" + nameof(DialogActivityType.Values.Information) + "'.")
             .When(x => x.Type != DialogActivityType.Values.Information);
+        RuleFor(x => x.TransmissionId)
+            .Null()
+            .WithMessage($"A {nameof(DialogActivityType.Values.DialogOpened)} activity cannot reference a transmission.")
+            .When(x => x.Type == DialogActivityType.Values.DialogOpened);
+        RuleFor(x => x.Type)
+            .Equal(DialogActivityType.Values.TransmissionOpened)
+            .When(x => x.TransmissionId != null);
     }
 }
 
