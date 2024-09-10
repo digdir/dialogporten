@@ -132,6 +132,17 @@ internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDia
                 dependentKeySelector: activity => activity.RelatedActivityId,
                 principalKeySelector: activity => activity.Id)
             .SetValidator(activityValidator);
+
+        // HUSK Å FJERN! Notes
+        // RuleFor Type? eller Transmission?
+        // Skal jeg henge meg på de andre 'RuleFor' lenger opp?
+        // Er dette egt rett plass?!
+        // FluentValidation
+        // Ta her e ikkje rett plass!
+        // DET E FOR NOTIFIKAJSONA!
+        // RuleFor(x => x.Type).
+        // RuleFor(x => x.Transmissions)
+        // RuleForEach(x => x.Transmissions).Must(x => x).     
         RuleFor(x => x.Process)
             .Must(x => Uri.IsWellFormedUriString(x, UriKind.Absolute))
             .WithMessage("{PropertyName} must be a valid absolute URI.")
