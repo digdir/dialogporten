@@ -423,6 +423,15 @@ internal sealed class CreateDialogDialogActivityDtoValidator : AbstractValidator
             .Empty()
             .WithMessage("Description is only allowed when the type is '" + nameof(DialogActivityType.Values.Information) + "'.")
             .When(x => x.Type != DialogActivityType.Values.Information);
+        RuleFor(x => x.TransmissionId)
+            .Null()
+            // .WithMessage($"{nameof(DialogActivityType.Values.DialogOpened)} is not allowed on a transmission.")
+            .WithMessage($"A {nameof(DialogActivityType.Values.DialogOpened)} activity cannot reference a transmission.")  // er det dette "rett" feilmelding?
+            .When(x => x.Type == DialogActivityType.Values.DialogOpened);
+        RuleFor(x => x.TransmissionId)
+            .NotNull()
+            .WithMessage($"A {nameof(DialogActivityType.Values.TransmissionOpened)} needs to reference a transmission.")
+            .When(x => x.Type == DialogActivityType.Values.TransmissionOpened);
     }
 }
 
