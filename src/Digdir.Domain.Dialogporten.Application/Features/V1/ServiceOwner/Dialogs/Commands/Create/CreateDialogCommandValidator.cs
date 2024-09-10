@@ -140,6 +140,7 @@ internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDia
         // FluentValidation
         // Ta her e ikkje rett plass!
         // DET E FOR NOTIFIKAJSONA!
+        // Eller er det her også
         // RuleFor(x => x.Type).
         // RuleFor(x => x.Transmissions)
         // RuleForEach(x => x.Transmissions).Must(x => x).     
