@@ -58,7 +58,7 @@ internal sealed class SearchDialogTransmissionQueryHandler : IRequestHandler<Sea
             cancellationToken: cancellationToken);
 
         // If we cannot read the dialog at all, we don't allow access to any of the activity history
-        if (!authorizationResult.HasReadAccessToMainResource())
+        if (!authorizationResult.HasAccessToMainResource())
         {
             return new EntityNotFound<DialogEntity>(request.DialogId);
         }
