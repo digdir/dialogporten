@@ -61,8 +61,8 @@ internal sealed class GetDialogTransmissionQueryHandler : IRequestHandler<GetDia
             dialog,
             cancellationToken: cancellationToken);
 
-        // If we cannot read the dialog at all, we don't allow access to any of the dialog transmissions.
-        if (!authorizationResult.HasReadAccessToMainResource())
+        // If we cannot access the dialog at all, we don't allow access to any of the dialog transmissions.
+        if (!authorizationResult.HasAccessToMainResource())
         {
             return new EntityNotFound<DialogEntity>(request.DialogId);
         }

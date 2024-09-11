@@ -56,8 +56,8 @@ internal sealed class GetDialogActivityQueryHandler : IRequestHandler<GetDialogA
             dialog,
             cancellationToken: cancellationToken);
 
-        // If we cannot read the dialog at all, we don't allow access to any of the activity history
-        if (!authorizationResult.HasReadAccessToMainResource())
+        // If we cannot access the dialog at all, we don't allow access to any of the activity history
+        if (!authorizationResult.HasAccessToMainResource())
         {
             return new EntityNotFound<DialogEntity>(request.DialogId);
         }

@@ -103,7 +103,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
                 request.EndUserId,
                 cancellationToken);
 
-            if (!authorizationResult.HasReadAccessToMainResource())
+            if (!authorizationResult.HasAccessToMainResource())
             {
                 return new EntityNotFound<DialogEntity>(request.DialogId);
             }
