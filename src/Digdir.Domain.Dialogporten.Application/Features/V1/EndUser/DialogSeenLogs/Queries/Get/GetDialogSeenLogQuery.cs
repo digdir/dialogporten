@@ -60,7 +60,7 @@ internal sealed class GetDialogSeenLogQueryHandler : IRequestHandler<GetDialogSe
             dialog,
             cancellationToken: cancellationToken);
 
-        // If we cannot read the dialog at all, we don't allow access to the seen log
+        // If we cannot access the dialog at all, we don't allow access to the seen log
         if (!authorizationResult.HasAccessToMainResource())
         {
             return new EntityNotFound<DialogEntity>(request.DialogId);
