@@ -63,7 +63,7 @@ internal sealed class OutboxReplicationMapper : IReplicationMapper<OutboxMessage
             },
             EventType = (string)dic[nameof(OutboxMessage.EventType)]!,
             EventPayload = (string)dic[nameof(OutboxMessage.EventPayload)]!,
-            CorrelationId = (string)dic[nameof(OutboxMessage.CorrelationId)]!,
+            CorrelationId = (string)dic[nameof(OutboxMessage.CorrelationId)]!
         };
     }
 }

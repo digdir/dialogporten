@@ -15,11 +15,11 @@ public sealed class OrderSet<TOrderDefinition, TTarget> : IOrderSet<TTarget>
 {
     private static readonly OrderComparer _orderComparer = new();
 
-    public static readonly OrderSet<TOrderDefinition, TTarget> Default = new(new[]
-    {
+    public static readonly OrderSet<TOrderDefinition, TTarget> Default = new(
+    [
         OrderOptions<TOrderDefinition, TTarget>.Value.DefaultOrder,
         OrderOptions<TOrderDefinition, TTarget>.Value.IdOrder
-    });
+    ]);
 
     public IReadOnlyCollection<Order<TTarget>> Orders { get; }
 

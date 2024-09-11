@@ -1,7 +1,6 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Integration.Tests.Common;
 using Digdir.Tool.Dialogporten.GenerateFakeData;
 using FluentAssertions;
-using Medo;
 using static Digdir.Domain.Dialogporten.Application.Integration.Tests.UuiDv7Utils;
 
 namespace Digdir.Domain.Dialogporten.Application.Integration.Tests.Features.V1.ServiceOwner.Dialogs.Commands;

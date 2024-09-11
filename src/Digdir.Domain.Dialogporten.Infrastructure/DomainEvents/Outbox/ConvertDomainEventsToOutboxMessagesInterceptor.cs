@@ -75,7 +75,7 @@ internal sealed class ConvertDomainEventsToOutboxMessagesInterceptor : SaveChang
                         $"{Constants.DialogUpdatedTopic}{dialogUpdatedDomainEvent.DialogId}",
                         dialogUpdatedDomainEvent.DialogId,
                         cancellationToken),
-                    _ => ValueTask.CompletedTask,
+                    _ => ValueTask.CompletedTask
                 };
 
                 await task;

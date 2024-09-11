@@ -47,6 +47,6 @@ public class DialogTransmissionType : AbstractLookupEntity<DialogTransmissionTyp
         /// <summary>
         /// A submission correcting/overriding some previously submitted information
         /// </summary>
-        Correction = 8,
+        Correction = 8
     }
 }

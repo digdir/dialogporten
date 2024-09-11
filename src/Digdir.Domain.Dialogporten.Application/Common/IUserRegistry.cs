@@ -66,12 +66,12 @@ public class UserRegistry : IUserRegistry
             UserIdType.SystemUser => "System User",// TODO: Implement when SystemUsers are introduced?
             UserIdType.Unknown => throw new UnreachableException(),
             UserIdType.ServiceOwner => throw new UnreachableException(),
-            _ => throw new UnreachableException(),
+            _ => throw new UnreachableException()
         };
         return new()
         {
             UserId = userId,
-            Name = name,
+            Name = name
         };
     }
 }

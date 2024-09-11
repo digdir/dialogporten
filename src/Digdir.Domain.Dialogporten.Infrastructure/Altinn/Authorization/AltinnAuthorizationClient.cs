@@ -133,7 +133,7 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
                 .ToList();
         }
 
-        var dialogSearchAuthorizationResult = new DialogSearchAuthorizationResult()
+        var dialogSearchAuthorizationResult = new DialogSearchAuthorizationResult
         {
             ResourcesByParties = authorizedParties.AuthorizedParties
                 .ToDictionary(

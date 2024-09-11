@@ -5,8 +5,8 @@ namespace Digdir.Domain.Dialogporten.Application.Integration.Tests.Common;
 
 internal sealed class IntegrationTestUser : IUser
 {
-    private readonly ClaimsPrincipal _principal = new(new ClaimsIdentity(new[]
-    {
+    private readonly ClaimsPrincipal _principal = new(new ClaimsIdentity(
+    [
         new Claim(ClaimTypes.Name, "Integration Test User"),
         new Claim(ClaimTypes.NameIdentifier, "integration-test-user"),
         new Claim("pid", "22834498646"),
@@ -17,7 +17,7 @@ internal sealed class IntegrationTestUser : IUser
                 "ID": "0192:991825827"
             }
             """)
-    }));
+    ]));
 
     public ClaimsPrincipal GetPrincipal() => _principal;
 }

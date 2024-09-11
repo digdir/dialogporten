@@ -1,6 +1,5 @@
 ﻿using Altinn.Authorization.ABAC.Xacml.JsonProfile;
 using System.Security.Claims;
-using Digdir.Domain.Dialogporten.Application.Common.Authorization;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 using Digdir.Domain.Dialogporten.Domain.Parties;
@@ -101,7 +100,7 @@ internal static class DecisionRequestHelper
 
     private static string GetSystemUserId(Claim claim)
     {
-        var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new[] { claim }));
+        var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity([claim]));
         claimsPrincipal.TryGetSystemUserId(out var systemUserId);
         return systemUserId!;
     }
