@@ -59,7 +59,7 @@ internal abstract class UpdateDialogSwaggerConfig : ISwaggerConfig
                         LanguageCode = "en-us",
                         Value = "Some title"
                     }
-                ],
+                ]
             },
             Summary = new()
             {
@@ -70,7 +70,7 @@ internal abstract class UpdateDialogSwaggerConfig : ISwaggerConfig
                         LanguageCode = "en-us",
                         Value = "Some Summary"
                     }
-                ],
+                ]
             },
             AdditionalInfo = new()
             {
@@ -82,7 +82,7 @@ internal abstract class UpdateDialogSwaggerConfig : ISwaggerConfig
                         LanguageCode = "en-us",
                         Value = "Some description with *markdown* support"
                     }
-                ],
+                ]
             }
         },
         VisibleFrom = DateTimeOffset.Parse("2054-03-04T12:13:10.0134400+00:00", CultureInfo.InvariantCulture),

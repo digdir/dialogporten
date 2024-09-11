@@ -66,7 +66,7 @@ static void BuildAndRun(string[] args)
         // Infrastructure
         .AddAzureAppConfiguration()
         .AddApplicationInsightsTelemetry()
-        .AddHostedService<CheckpointSyncronizer>()
+        .AddHostedService<CheckpointSynchronizer>()
         .AddHostedService<OutboxCdcBackgroundHandler>()
         .AddMassTransit(x =>
         {

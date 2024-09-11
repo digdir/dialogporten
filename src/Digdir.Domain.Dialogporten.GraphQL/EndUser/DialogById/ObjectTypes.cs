@@ -98,7 +98,7 @@ public enum TransmissionType
     Submission = 7,
 
     [GraphQLDescription("A submission correcting/overriding some previously submitted information")]
-    Correction = 8,
+    Correction = 8
 }
 
 public sealed class Content
