@@ -90,6 +90,11 @@ public sealed class SearchDialogQuery : SortablePaginationParameter<SearchDialog
     public DateTimeOffset? VisibleBefore { get; init; }
 
     /// <summary>
+    /// Filter by process
+    /// </summary>
+    public string? Process { get; init; }
+
+    /// <summary>
     /// Search string for free text search. Will attempt to fuzzily match in all free text fields in the aggregate
     /// </summary>
     public string? Search { get; init; }
@@ -172,6 +177,7 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
             .WhereIf(request.UpdatedBefore.HasValue, x => x.UpdatedAt <= request.UpdatedBefore)
             .WhereIf(request.DueAfter.HasValue, x => request.DueAfter <= x.DueAt)
             .WhereIf(request.DueBefore.HasValue, x => x.DueAt <= request.DueBefore)
+           .WhereIf(request.Process is not null, x => EF.Functions.ILike(x.Process!, request.Process!))
             .WhereIf(request.VisibleAfter.HasValue, x => request.VisibleAfter <= x.VisibleFrom)
             .WhereIf(request.VisibleBefore.HasValue, x => x.VisibleFrom <= request.VisibleBefore)
             .WhereIf(request.Search is not null, x =>

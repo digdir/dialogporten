@@ -66,6 +66,15 @@ public class CreateDialogDto
     public DateTimeOffset? DueAt { get; set; }
 
     /// <summary>
+    /// Optional process identifier used to indicate a business process this dialog belongs to 
+    /// </summary>
+    public string? Process { get; set; }
+    /// <summary>
+    /// Optional preceding process identifier to indicate the business process that preceded the process indicated in the "Process" field. Cannot be set without also "Process" being set.
+    /// </summary>
+    public string? PrecedingProcess { get; set; }
+
+    /// <summary>
     /// The expiration date for the dialog. This is the last date when the dialog is available for the end user.
     ///
     /// After this date is passed, the dialog will be considered expired and no longer available for the end user in any

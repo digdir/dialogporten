@@ -83,6 +83,12 @@ export function setParty(dialog, party) {
     dialog.party = party;
 }
 
+export function setProcess(dialog, process) {
+    if (!isValidURI(process)) {
+        throw new Error("Invalid process provided. " + process); 
+    }
+    dialog.process = process;
+}
 export function setDueAt(dialog, dueAt) {
     if (dueAt == null) {
         delete dialog.dueAt;

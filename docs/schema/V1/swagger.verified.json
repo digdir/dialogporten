@@ -225,6 +225,16 @@
             "example": "urn:altinn:person:identifier-no:01125512345\nurn:altinn:organization:identifier-no:912345678",
             "type": "string"
           },
+          "precedingProcess": {
+            "description": "Optional preceding process identifier to indicate the business process that preceded the process indicated in the \u0022Process\u0022 field. Cannot be set without also \u0022Process\u0022 being set.",
+            "nullable": true,
+            "type": "string"
+          },
+          "process": {
+            "description": "Optional process identifier used to indicate a business process this dialog belongs to ",
+            "nullable": true,
+            "type": "string"
+          },
           "progress": {
             "description": "Advisory indicator of progress, represented as 1-100 percentage value. 100% representing a dialog that has come\nto a natural completion (successful or not).",
             "format": "int32",
@@ -2035,6 +2045,16 @@
             "example": "urn:altinn:person:identifier-no:01125512345\nurn:altinn:organization:identifier-no:912345678",
             "type": "string"
           },
+          "precedingProcess": {
+            "description": "Optional preceding process identifier to indicate the business process that preceded the process indicated in the \u0022Process\u0022 field. Cannot be set without also \u0022Process\u0022 being set.",
+            "nullable": true,
+            "type": "string"
+          },
+          "process": {
+            "description": "Optional process identifier used to indicate a business process this dialog belongs to",
+            "nullable": true,
+            "type": "string"
+          },
           "progress": {
             "description": "Advisory indicator of progress, represented as 1-100 percentage value. 100% representing a dialog that has come\nto a natural completion (successful or not).",
             "format": "int32",
@@ -2176,6 +2196,16 @@
           "party": {
             "description": "The party code representing the organization or person that the dialog belongs to in URN format",
             "example": "urn:altinn:person:identifier-no:01125512345\nurn:altinn:organization:identifier-no:912345678",
+            "type": "string"
+          },
+          "precedingProcess": {
+            "description": "Optional preceding process identifier to indicate the business process that preceded the process indicated in the \u0022Process\u0022 field. Cannot be set without also \u0022Process\u0022 being set. ",
+            "nullable": true,
+            "type": "string"
+          },
+          "process": {
+            "description": "Optional process identifier used to indicate a business process this dialog belongs to ",
+            "nullable": true,
             "type": "string"
           },
           "progress": {
@@ -3108,6 +3138,16 @@
             "example": "urn:altinn:person:identifier-no:01125512345\nurn:altinn:organization:identifier-no:912345678",
             "type": "string"
           },
+          "precedingProcess": {
+            "description": "Optional preceding process identifier to indicate the business process that preceded the process indicated in the \u0022Process\u0022 field. Cannot be set without also \u0022Process\u0022 being set. ",
+            "nullable": true,
+            "type": "string"
+          },
+          "process": {
+            "description": "Optional process identifier used to indicate a business process this dialog belongs to ",
+            "nullable": true,
+            "type": "string"
+          },
           "progress": {
             "description": "Advisory indicator of progress, represented as 1-100 percentage value. 100% representing a dialog that has come\nto a natural completion (successful or not).",
             "format": "int32",
@@ -3205,6 +3245,16 @@
           "party": {
             "description": "The party code representing the organization or person that the dialog belongs to in URN format",
             "example": "urn:altinn:person:identifier-no:01125512345\nurn:altinn:organization:identifier-no:912345678",
+            "type": "string"
+          },
+          "precedingProcess": {
+            "description": "Optional preceding process identifier to indicate the business process that preceded the process indicated in the \u0022Process\u0022 field. Cannot be set without also \u0022Process\u0022 being set.",
+            "nullable": true,
+            "type": "string"
+          },
+          "process": {
+            "description": "Optional process identifier used to indicate a business process this dialog belongs to",
+            "nullable": true,
             "type": "string"
           },
           "progress": {
@@ -4171,6 +4221,15 @@
             }
           },
           {
+            "description": "Filter by process",
+            "in": "query",
+            "name": "process",
+            "schema": {
+              "nullable": true,
+              "type": "string"
+            }
+          },
+          {
             "description": "Search string for free text search. Will attempt to fuzzily match in all free text fields in the aggregate",
             "in": "query",
             "name": "search",
@@ -4817,6 +4876,15 @@
             "name": "visibleBefore",
             "schema": {
               "format": "date-time",
+              "nullable": true,
+              "type": "string"
+            }
+          },
+          {
+            "description": "Filter by process",
+            "in": "query",
+            "name": "process",
+            "schema": {
               "nullable": true,
               "type": "string"
             }

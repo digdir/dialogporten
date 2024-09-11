@@ -29,6 +29,7 @@ public static class DialogGenerator
         DateTimeOffset? updatedAt = null,
         DateTimeOffset? dueAt = null,
         DateTimeOffset? expiresAt = null,
+        string? process = null,
         DialogStatus.Values? status = null,
         CreateDialogContentDto? content = null,
         List<CreateDialogSearchTagDto>? searchTags = null,
@@ -52,6 +53,7 @@ public static class DialogGenerator
             updatedAt,
             dueAt,
             expiresAt,
+            process,
             status,
             content,
             searchTags,
@@ -77,6 +79,7 @@ public static class DialogGenerator
         DateTimeOffset? updatedAt = null,
         DateTimeOffset? dueAt = null,
         DateTimeOffset? expiresAt = null,
+        string? process = null,
         DialogStatus.Values? status = null,
         CreateDialogContentDto? content = null,
         List<CreateDialogSearchTagDto>? searchTags = null,
@@ -104,6 +107,7 @@ public static class DialogGenerator
             .RuleFor(o => o.GuiActions, _ => guiActions ?? GenerateFakeDialogGuiActions())
             .RuleFor(o => o.ApiActions, _ => apiActions ?? GenerateFakeDialogApiActions())
             .RuleFor(o => o.Activities, _ => activities ?? GenerateFakeDialogActivities())
+            .RuleFor(o => o.Process, f => process ?? GenerateFakeProcessUri())
             .Generate(count);
     }
 
@@ -275,6 +279,11 @@ public static class DialogGenerator
             .RuleFor(o => o.ResponseSchema, f => new Uri(f.Internet.UrlWithPath()))
             .RuleFor(o => o.DocumentationUrl, f => new Uri(f.Internet.UrlWithPath()))
             .Generate(new Randomizer().Number(min: 1, 4));
+    }
+
+    public static string GenerateFakeProcessUri()
+    {
+        return new Faker().Internet.UrlWithPath();
     }
 
     public static List<CreateDialogDialogGuiActionDto> GenerateFakeDialogGuiActions()

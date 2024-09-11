@@ -81,6 +81,11 @@ public sealed class SearchDialogQuery : SortablePaginationParameter<SearchDialog
     public DateTimeOffset? DueBefore { get; init; }
 
     /// <summary>
+    /// Filter by process
+    /// </summary>
+    public string? Process { get; init; }
+
+    /// <summary>
     /// Search string for free text search. Will attempt to fuzzily match in all free text fields in the aggregate
     /// </summary>
     public string? Search { get; init; }
@@ -150,7 +155,7 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
             .AsSingleQuery()
             .AsNoTracking()
             .Include(x => x.Content)
-                .ThenInclude(x => x.Value.Localizations)
+            .ThenInclude(x => x.Value.Localizations)
             .WhereIf(!request.Org.IsNullOrEmpty(), x => request.Org!.Contains(x.Org))
             .WhereIf(!request.ServiceResource.IsNullOrEmpty(), x => request.ServiceResource!.Contains(x.ServiceResource))
             .WhereIf(!request.Party.IsNullOrEmpty(), x => request.Party!.Contains(x.Party))
@@ -164,6 +169,7 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
             .WhereIf(request.UpdatedBefore.HasValue, x => x.UpdatedAt <= request.UpdatedBefore)
             .WhereIf(request.DueAfter.HasValue, x => request.DueAfter <= x.DueAt)
             .WhereIf(request.DueBefore.HasValue, x => x.DueAt <= request.DueBefore)
+            .WhereIf(request.Process is not null, x => EF.Functions.ILike(x.Process!, request.Process!))
             .WhereIf(request.Search is not null, x =>
                 x.Content.Any(x => x.Value.Localizations.AsQueryable().Any(searchExpression)) ||
                 x.SearchTags.Any(x => EF.Functions.ILike(x.Value, request.Search!))

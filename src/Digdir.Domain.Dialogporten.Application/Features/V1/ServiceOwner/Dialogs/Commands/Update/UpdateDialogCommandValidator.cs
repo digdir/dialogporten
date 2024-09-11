@@ -50,15 +50,15 @@ internal sealed class UpdateDialogDtoValidator : AbstractValidator<UpdateDialogD
 
         RuleFor(x => x.ExpiresAt)
             .GreaterThanOrEqualTo(x => x.DueAt)
-                .WithMessage(FluentValidationDateTimeOffsetExtensions.InFutureOfMessage)
-                .When(x => x.DueAt.HasValue, ApplyConditionTo.CurrentValidator)
+            .WithMessage(FluentValidationDateTimeOffsetExtensions.InFutureOfMessage)
+            .When(x => x.DueAt.HasValue, ApplyConditionTo.CurrentValidator)
             .GreaterThanOrEqualTo(x => x.VisibleFrom)
-                .WithMessage(FluentValidationDateTimeOffsetExtensions.InFutureOfMessage)
-                .When(x => x.VisibleFrom.HasValue, ApplyConditionTo.CurrentValidator);
+            .WithMessage(FluentValidationDateTimeOffsetExtensions.InFutureOfMessage)
+            .When(x => x.VisibleFrom.HasValue, ApplyConditionTo.CurrentValidator);
         RuleFor(x => x.DueAt)
             .GreaterThanOrEqualTo(x => x.VisibleFrom)
-                .WithMessage(FluentValidationDateTimeOffsetExtensions.InFutureOfMessage)
-                .When(x => x.VisibleFrom.HasValue, ApplyConditionTo.CurrentValidator);
+            .WithMessage(FluentValidationDateTimeOffsetExtensions.InFutureOfMessage)
+            .When(x => x.VisibleFrom.HasValue, ApplyConditionTo.CurrentValidator);
 
         RuleFor(x => x.Status)
             .IsInEnum();
@@ -74,15 +74,15 @@ internal sealed class UpdateDialogDtoValidator : AbstractValidator<UpdateDialogD
             .Must(x => x
                 .EmptyIfNull()
                 .Count(x => x.Priority == DialogGuiActionPriority.Values.Primary) <= 1)
-                .WithMessage("Only one primary GUI action is allowed.")
+            .WithMessage("Only one primary GUI action is allowed.")
             .Must(x => x
                 .EmptyIfNull()
                 .Count(x => x.Priority == DialogGuiActionPriority.Values.Secondary) <= 1)
-                .WithMessage("Only one secondary GUI action is allowed.")
+            .WithMessage("Only one secondary GUI action is allowed.")
             .Must(x => x
                 .EmptyIfNull()
                 .Count(x => x.Priority == DialogGuiActionPriority.Values.Tertiary) <= 5)
-                .WithMessage("Only five tertiary GUI actions are allowed.")
+            .WithMessage("Only five tertiary GUI actions are allowed.")
             .UniqueBy(x => x.Id)
             .ForEach(x => x.SetValidator(guiActionValidator));
 

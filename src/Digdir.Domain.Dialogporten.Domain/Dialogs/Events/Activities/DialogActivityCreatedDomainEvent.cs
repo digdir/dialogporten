@@ -9,5 +9,7 @@ public sealed record DialogActivityCreatedDomainEvent(
     DialogActivityType.Values TypeId,
     string Party,
     string ServiceResource,
+    string? Process,
+    string? PrecedingProcess,
     Uri? ExtendedType,
     Guid? RelatedActivityId) : DomainEvent;

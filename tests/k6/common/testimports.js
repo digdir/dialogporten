@@ -24,5 +24,6 @@ export {
     setParty,
     setDueAt,
     setExpiresAt,
-    setVisibleFrom
+    setVisibleFrom,
+    setProcess
 } from './dialog.js';

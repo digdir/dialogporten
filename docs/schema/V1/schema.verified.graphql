@@ -95,6 +95,8 @@ type Dialog {
   serviceResourceType: String!
   party: String!
   progress: Int
+  process: String
+  precedingProcess: String
   extendedStatus: String
   externalReference: String
   visibleFrom: DateTime
@@ -172,6 +174,8 @@ type SearchDialog {
   serviceResourceType: String!
   party: String!
   progress: Int
+  process: String
+  precedingProcess: String
   guiAttachmentCount: Int
   extendedStatus: String
   createdAt: DateTime!
