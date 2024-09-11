@@ -37,11 +37,17 @@ public class DomainEventsTests(DialogApplication application) : ApplicationColle
         var activities = allActivityTypes.Select(activityType =>
             DialogGenerator.GenerateFakeDialogActivity(activityType)).ToList();
 
+        var transmissionOpenedActivity = activities.Single(x => x.Type == DialogActivityType.Values.TransmissionOpened);
+        var transmission = DialogGenerator.GenerateFakeDialogTransmissions(1).First();
+        transmissionOpenedActivity.TransmissionId = transmission.Id;
+
         var dialogId = GenerateBigEndianUuidV7();
         var createDialogCommand = DialogGenerator.GenerateFakeDialog(
             id: dialogId,
             activities: activities,
             attachments: DialogGenerator.GenerateFakeDialogAttachments(3));
+
+        createDialogCommand.Transmissions.Add(transmission);
 
         // Act
         _ = await Application.Send(createDialogCommand);
