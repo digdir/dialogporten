@@ -24,61 +24,31 @@ internal static class AggregateExtensions
 
         foreach (var (_, aggregateNode) in aggregateNodeByEntry)
         {
-            if (aggregateNode.Entity is IAggregateCreatedHandler created && aggregateNode.State is AggregateNodeState.Added)
+            if (aggregateNode.Entity is IAggregateCreatedHandler created && aggregateNode.IsAdded())
             {
                 created.OnCreate(aggregateNode, utcNow);
             }
 
-            if (aggregateNode.Entity is IAggregateUpdatedHandler updated && aggregateNode.State is AggregateNodeState.Modified)
+            if (aggregateNode.Entity is IAggregateUpdatedHandler updated && aggregateNode.IsModified())
             {
                 updated.OnUpdate(aggregateNode, utcNow);
             }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            if (aggregateNode.Entity is IAggregateDeletedHandler deleted && aggregateNode.State is AggregateNodeState.Deleted)
+            if (aggregateNode.Entity is IAggregateDeletedHandler deleted && aggregateNode.IsDeleted())
             {
                 deleted.OnDelete(aggregateNode, utcNow);
             }
 
-            if (aggregateNode.Entity is IAggregateRestoredHandler restored && aggregateNode.State is AggregateNodeState.Restored)
+            if (aggregateNode.Entity is IAggregateRestoredHandler restored && aggregateNode.IsRestored())
             {
                 restored.OnRestore(aggregateNode, utcNow);
             }
 
-            if (aggregateNode.Entity is IUpdateableEntity updatable && aggregateNode.State is AggregateNodeState.Modified)
+            if (aggregateNode.Entity is IUpdateableEntity updatable)
             {
-                updatable.Update(utcNow);
-            }
-
-            if (aggregateNode.Entity is IUpdateableEntity createdUpdatable && aggregateNode.State is AggregateNodeState.Added)
-            {
-                if (createdUpdatable.UpdatedAt == default)
+                if (aggregateNode.IsModified() || (aggregateNode.IsAdded() && updatable.UpdatedAt == default))
                 {
-                    createdUpdatable.Update(utcNow);
+                    updatable.Update(utcNow);
                 }
             }
 
@@ -88,6 +58,7 @@ internal static class AggregateExtensions
             }
         }
     }
+
 
     internal static ModelBuilder AddAggregateEntities(this ModelBuilder modelBuilder)
     {
