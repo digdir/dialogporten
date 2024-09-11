@@ -46,7 +46,7 @@ internal static class AggregateExtensions
 
             if (aggregateNode.Entity is IUpdateableEntity updatable)
             {
-                if (aggregateNode.IsModified() || (aggregateNode.IsAdded() && updatable.UpdatedAt == default))
+                if (aggregateNode.IsModified() || aggregateNode.IsAddedWithDefaultUpdatedAt(updatable))
                 {
                     updatable.Update(utcNow);
                 }
@@ -58,7 +58,6 @@ internal static class AggregateExtensions
             }
         }
     }
-
 
     internal static ModelBuilder AddAggregateEntities(this ModelBuilder modelBuilder)
     {
