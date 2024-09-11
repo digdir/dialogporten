@@ -26,4 +26,7 @@ export {
     setExpiresAt,
     setVisibleFrom,
     setProcess
+    setVisibleFrom,
+    setActivities,
+    addActivity
 } from './dialog.js';

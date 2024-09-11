@@ -1,4 +1,4 @@
-import { describe, expect, expectStatusFor, getSO, postSO, purgeSO, patchSO, uuidv4 } from '../../common/testimports.js'
+import { describe, expect, expectStatusFor, getSO, postSO, purgeSO, patchSO, uuidv4, uuidv7,setActivities, addActivity } from '../../common/testimports.js'
 import { default as dialogToInsert } from './testdata/01-create-dialog.js';
 
 export default function () {
@@ -72,5 +72,42 @@ export default function () {
     describe('Perform dialog purge', () => {
         let r = purgeSO('dialogs/' + dialogId);
         expectStatusFor(r).to.equal(204);
+    });
+
+    describe('Perform dialog create with invalid activity', () => {
+        let dialog = dialogToInsert();
+        let r = postSO('dialogs', dialog);
+        expectStatusFor(r).to.equal(201);
+        expect(r, 'response').to.have.validJsonBody();
+        expect(r.json(), 'response json').to.match(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/)
+        dialogId = r.json();
+        
+        r = getSO('dialogs/' + dialogId + '/transmissions');
+        expectStatusFor(r).to.equal(200);
+        expect(r, 'response').to.have.validJsonBody();
+        expect(r.json()[0], 'response json').to.have.property('id');
+        let transmissionId = r.json()[0].id;
+        // let transmission =  {
+        //     'type': 'Information',
+        //     'sender': {
+        //         "actor"
+        //     }
+        // }                     
+        let activities =  [{
+            'id': uuidv7(),
+            'type': 'DialogOpened',
+            'transmissionId': uuidv7(),
+            'performedBy': {
+                'actorType': 'ServiceOwner'
+            }
+        }]
+        console.log(activities);
+        setActivities(dialog, activities);
+        r = postSO('dialogs', dialog);
+        expectStatusFor(r).to.equal(201);
+        expect(r, 'response').to.have.validJsonBody();
+        expect(r.json(), 'response json').to.match(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/)
+
+        dialogId = r.json();
     });
 }

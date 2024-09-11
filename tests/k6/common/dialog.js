@@ -140,6 +140,21 @@ export function setVisibleFrom(dialog, visibleFrom) {
     dialog.visibleFrom = visibleFrom;
 }
 
+export function setActivities(dialog, activities) {
+    if (activities == null) {
+        delete dialog.activities;
+        return;
+    }
+    dialog.activities = activities;
+}
+
+export function addActivity(dialog, activity) {
+   if (activity == null) return;
+   if (dialog.activities == null) {
+        dialog.activities = []; 
+   } 
+}
+
 function dateToUTCString(date) {
     let dateStr = date.toISOString();
     const ms = ('000' + date.getUTCMilliseconds()).slice(-3);
