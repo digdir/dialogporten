@@ -24,8 +24,7 @@ export {
     setParty,
     setDueAt,
     setExpiresAt,
-    setVisibleFrom,
-    setProcess
+    setProcess,
     setVisibleFrom,
     setActivities,
     addActivity
