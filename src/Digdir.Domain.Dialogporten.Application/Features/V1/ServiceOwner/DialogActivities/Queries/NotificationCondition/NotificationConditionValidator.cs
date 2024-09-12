@@ -25,6 +25,7 @@ internal sealed class NotificationConditionQueryValidator : AbstractValidator<No
 
         RuleFor(x => x.TransmissionId)
             .Null()
-            .When(x => x.ActivityType == DialogActivityType.Values.DialogOpened);
+            .When(x => x.ActivityType == DialogActivityType.Values.DialogOpened)
+            .WithMessage($"{{PropertyName}} must be empty when {nameof(NotificationConditionQuery.ActivityType)} is {DialogActivityType.Values.DialogOpened}.");
     }
 }
