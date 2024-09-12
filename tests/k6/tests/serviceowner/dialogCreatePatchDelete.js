@@ -1,5 +1,17 @@
-import { describe, expect, expectStatusFor, getSO, postSO, purgeSO, patchSO, uuidv4, uuidv7,setActivities, addActivity } from '../../common/testimports.js'
-import { default as dialogToInsert } from './testdata/01-create-dialog.js';
+import {
+    describe,
+    expect,
+    expectStatusFor,
+    getSO,
+    postSO,
+    purgeSO,
+    patchSO,
+    uuidv4,
+    uuidv7,
+    setActivities,
+    addActivity
+} from '../../common/testimports.js'
+import {default as dialogToInsert} from './testdata/01-create-dialog.js';
 
 export default function () {
 
@@ -39,7 +51,7 @@ export default function () {
                 "value": newApiActionEndpointUrl
             }
         ];
-        let r = patchSO('dialogs/' + dialogId, patchDocument, { "headers": { "If-Match": uuidv4() } });
+        let r = patchSO('dialogs/' + dialogId, patchDocument, {"headers": {"If-Match": uuidv4()}});
         expectStatusFor(r).to.equal(412); // Precondition failed
     });
 
@@ -52,7 +64,7 @@ export default function () {
                 "value": newApiActionEndpointUrl
             }
         ];
-        let r = patchSO('dialogs/' + dialogId, patchDocument, { "headers": { "If-Match": eTag } });
+        let r = patchSO('dialogs/' + dialogId, patchDocument, {"headers": {"If-Match": eTag}});
         expectStatusFor(r).to.equal(204);
     });
 
@@ -74,28 +86,58 @@ export default function () {
         expectStatusFor(r).to.equal(204);
     });
 
-    describe('Perform dialog create with invalid activity', () => {
+    describe('Perform dialog create with activity type (dialogOpened)', () => {
+        // Setup
         let dialog = dialogToInsert();
+        let activities = [{
+            'id': uuidv7(),
+            'type': 'dialogOpened',
+            'performedBy': {
+                'actorType': 'ServiceOwner'
+            }
+        }]
 
-        // Gir det mening å lage dialog med TransmissionOpened?
-        // TransmissionOpened tregner Id -> transmission trenger en dialog -> kan da en transmissionId finnes uten en dialog fra før?
+        setActivities(dialog, activities);
 
-        // let r = postSO('dialogs', dialog);
-        // expectStatusFor(r).to.equal(201);
-        // expect(r, 'response').to.have.validJsonBody();
-        // expect(r.json(), 'response json').to.match(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/)
-        // dialogId = r.json();
+        // Act
+        let r = postSO('dialogs', dialog);
 
-        // r = getSO('dialogs/' + dialogId + '/transmissions');
-        // expectStatusFor(r).to.equal(200);
-        // expect(r, 'response').to.have.validJsonBody();
-        // expect(r.json()[0], 'response json').to.have.property('id');
-        // let transmissionId = r.json()[0].id;
+        // Assert
+        expectStatusFor(r).to.equal(201);
+        expect(r, 'response').to.have.validJsonBody();
+        expect(r.json(), 'response json').to.match(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/)
+    });
 
+    describe('Perform dialog create with invalid activity type (transmissionOpened)', () => {
+        // Setup
+        let dialog = dialogToInsert();
+        let activities = [{
+            'id': uuidv7(),
+            'type': 'transmissionOpened',
+            'performedBy': {
+                'actorType': 'ServiceOwner'
+            }
+        }]
+
+        setActivities(dialog, activities);
+
+        // Act
+        let r = postSO('dialogs', dialog);
+
+        // Assert
+        expectStatusFor(r).to.equal(400);
+        expect(r, 'response').to.have.validJsonBody();
+        expect(r.json(), 'response json').to.have.property('errors');
+    });
+
+
+    describe('Perform dialog create with activity type (transmissionOpened)', () => {
+        // Setup
+        let dialog = dialogToInsert();
         let transmissionId = uuidv7();
         dialog.transmissions[0].id = transmissionId;
-        //
-        let activities =  [{
+
+        let activities = [{
             'id': uuidv7(),
             'type': 'transmissionOpened',
             'transmissionId': transmissionId,
@@ -104,14 +146,40 @@ export default function () {
             }
         }]
 
-        console.log(activities);
         setActivities(dialog, activities);
+
+        // Act
         let r = postSO('dialogs', dialog);
+
+        // Assert
+        expectStatusFor(r).to.equal(201);
+        expect(r, 'response').to.have.validJsonBody();
+
+        expect(r.json(), 'response json').to.match(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/)
+    });
+    describe('Perform dialog create with invalid activity type (dialogOpened)', () => {
+        // Setup
+        let dialog = dialogToInsert();
+        let transmissionId = uuidv7();
+        dialog.transmissions[0].id = transmissionId;
+
+        let activities = [{
+            'id': uuidv7(),
+            'type': 'DialogOpened',
+            'transmissionId': transmissionId,
+            'performedBy': {
+                'actorType': 'ServiceOwner'
+            }
+        }]
+
+        setActivities(dialog, activities);
+
+        // Act
+        let r = postSO('dialogs', dialog);
+
+        // Assert
         expectStatusFor(r).to.equal(400);
         expect(r, 'response').to.have.validJsonBody();
         expect(r.json(), 'response json').to.have.property('errors');
-        console.log(r.json());
-
-        dialogId = r.json();
     });
 }
