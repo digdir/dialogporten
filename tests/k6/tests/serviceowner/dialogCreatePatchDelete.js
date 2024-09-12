@@ -12,7 +12,7 @@ export default function () {
         expectStatusFor(r).to.equal(201);
         expect(r, 'response').to.have.validJsonBody();
         expect(r.json(), 'response json').to.match(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/)
-        
+
         dialogId = r.json();
     });
 
@@ -21,12 +21,12 @@ export default function () {
         expectStatusFor(r).to.equal(200);
         expect(r, 'response').to.have.validJsonBody();
         expect(r.json(), 'dialog').to.have.property("id").to.equal(dialogId);
-        expect(r.json(), 'dialog').to.have.property("createdAt");        
+        expect(r.json(), 'dialog').to.have.property("createdAt");
         expect(r.json().createdAt, 'createdAt').to.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{7}Z$/);
         expect(r.json(), 'dialog').to.have.property("updatedAt");
         expect(r.json().updatedAt, 'updatedAt').to.equal(r.json().createdAt);
         expect(r.json(), 'dialog').to.have.property('revision');
-        
+
         eTag = r.json()["revision"];
     });
 
@@ -60,7 +60,7 @@ export default function () {
         let r = getSO('dialogs/' + dialogId);
         expectStatusFor(r).to.equal(200);
         expect(r, 'response').to.have.validJsonBody();
-        expect(r.json(), 'dialog').to.have.property("updatedAt");        
+        expect(r.json(), 'dialog').to.have.property("updatedAt");
         expect(r.json().updatedAt, 'updatedAt').to.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{7}Z$/);
         expect(r.json(), 'dialog').to.have.property("createdAt");
         expect(r.json().updatedAt, 'updatedAt').to.not.equal(r.json().createdAt);
@@ -76,29 +76,34 @@ export default function () {
 
     describe('Perform dialog create with invalid activity', () => {
         let dialog = dialogToInsert();
-        
+
         // Gir det mening å lage dialog med TransmissionOpened?
         // TransmissionOpened tregner Id -> transmission trenger en dialog -> kan da en transmissionId finnes uten en dialog fra før?
-        
+
         // let r = postSO('dialogs', dialog);
         // expectStatusFor(r).to.equal(201);
         // expect(r, 'response').to.have.validJsonBody();
         // expect(r.json(), 'response json').to.match(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/)
         // dialogId = r.json();
-        
+
         // r = getSO('dialogs/' + dialogId + '/transmissions');
         // expectStatusFor(r).to.equal(200);
         // expect(r, 'response').to.have.validJsonBody();
         // expect(r.json()[0], 'response json').to.have.property('id');
         // let transmissionId = r.json()[0].id;
+
+        let transmissionId = uuidv7();
+        dialog.transmissions[0].id = transmissionId;
+        //
         let activities =  [{
             'id': uuidv7(),
-            'type': 'TransmissionOpened',
-            // 'transmissionId': transmissionId, 
+            'type': 'transmissionOpened',
+            'transmissionId': transmissionId,
             'performedBy': {
                 'actorType': 'ServiceOwner'
             }
         }]
+
         console.log(activities);
         setActivities(dialog, activities);
         let r = postSO('dialogs', dialog);
