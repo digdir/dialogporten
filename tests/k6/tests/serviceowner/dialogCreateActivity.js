@@ -4,7 +4,6 @@ import {
     expectStatusFor,
     postSO,
     purgeSO,
-    uuidv4,
     uuidv7,
     setActivities,
     addActivity
@@ -18,9 +17,9 @@ export default function () {
         let dialog = dialogToInsert();
         let activities = [{
             'id': uuidv7(),
-            'type': 'dialogOpened',
-            'performedBy': {
-                'actorType': 'ServiceOwner'
+            'type': 'dialogopened',
+            'performedby': {
+                'actortype': 'serviceowner'
             }
         }]
 

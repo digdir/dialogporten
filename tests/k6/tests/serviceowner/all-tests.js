@@ -8,6 +8,7 @@ import { default as dialogCreateInvalidActionCount } from './dialogCreateInvalid
 import { default as dialogCreateInvalidProcess } from './dialogCreateInvalidProcess.js';
 import { default as dialogCreatePatchDelete } from './dialogCreatePatchDelete.js';
 import { default as dialogSearch } from './dialogSearch.js';
+import { default as dialogUpdateActivity } from './dialogUpdateActivity.js';
 
 export default function() {
   authentication();
@@ -19,4 +20,5 @@ export default function() {
   dialogCreateInvalidProcess();
   dialogCreatePatchDelete();
   dialogSearch();
+  dialogUpdateActivity();
 }
