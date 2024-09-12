@@ -400,9 +400,10 @@ internal sealed class UpdateDialogDialogActivityDtoValidator : AbstractValidator
             .Null()
             .WithMessage($"A {nameof(DialogActivityType.Values.DialogOpened)} activity cannot reference a transmission.")
             .When(x => x.Type == DialogActivityType.Values.DialogOpened);
-        RuleFor(x => x.Type)
-            .Equal(DialogActivityType.Values.TransmissionOpened)
-            .When(x => x.TransmissionId != null);
+        RuleFor(x => x.TransmissionId)
+            .NotEmpty()
+            .WithMessage($"A {nameof(DialogActivityType.Values.TransmissionOpened)} needs to reference a transmission.")
+            .When(x => x.Type == DialogActivityType.Values.TransmissionOpened);
     }
 }
 
