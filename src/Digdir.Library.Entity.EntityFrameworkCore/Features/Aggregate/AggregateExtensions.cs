@@ -24,29 +24,32 @@ internal static class AggregateExtensions
 
         foreach (var (_, aggregateNode) in aggregateNodeByEntry)
         {
-            if (aggregateNode.Entity is IAggregateCreatedHandler created && aggregateNode.State is AggregateNodeState.Added)
+            if (aggregateNode.Entity is IAggregateCreatedHandler created && aggregateNode.IsAdded())
             {
                 created.OnCreate(aggregateNode, utcNow);
             }
 
-            if (aggregateNode.Entity is IAggregateUpdatedHandler updated && aggregateNode.State is AggregateNodeState.Modified)
+            if (aggregateNode.Entity is IAggregateUpdatedHandler updated && aggregateNode.IsModified())
             {
                 updated.OnUpdate(aggregateNode, utcNow);
             }
 
-            if (aggregateNode.Entity is IAggregateDeletedHandler deleted && aggregateNode.State is AggregateNodeState.Deleted)
+            if (aggregateNode.Entity is IAggregateDeletedHandler deleted && aggregateNode.IsDeleted())
             {
                 deleted.OnDelete(aggregateNode, utcNow);
             }
 
-            if (aggregateNode.Entity is IAggregateRestoredHandler restored && aggregateNode.State is AggregateNodeState.Restored)
+            if (aggregateNode.Entity is IAggregateRestoredHandler restored && aggregateNode.IsRestored())
             {
                 restored.OnRestore(aggregateNode, utcNow);
             }
 
             if (aggregateNode.Entity is IUpdateableEntity updatable)
             {
-                updatable.Update(utcNow);
+                if (aggregateNode.IsModified() || aggregateNode.IsAddedWithDefaultUpdatedAt(updatable))
+                {
+                    updatable.Update(utcNow);
+                }
             }
 
             if (aggregateNode.Entity is IVersionableEntity versionable)

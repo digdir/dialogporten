@@ -95,7 +95,7 @@ public class CreateDialogDto
     /// If not supplied, the current date /time will be used.
     /// </summary>
     /// <example>2022-12-31T23:59:59Z</example>
-    public DateTimeOffset UpdatedAt { get; set; } // TODO: This does not work, as UpdatedAt is always overwritten
+    public DateTimeOffset UpdatedAt { get; set; }
 
     /// <summary>
     /// The aggregated status of the dialog.

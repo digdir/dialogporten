@@ -31,6 +31,20 @@ internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDia
             .IsValidUuidV7()
             .UuidV7TimestampIsInPast();
 
+        RuleFor(x => x.CreatedAt)
+            .IsInPast();
+
+        RuleFor(x => x.CreatedAt)
+            .NotEmpty()
+                .WithMessage($"{{PropertyName}} must not be empty when '{nameof(CreateDialogCommand.UpdatedAt)} is set.")
+                .When(x => x.UpdatedAt != default);
+
+        RuleFor(x => x.UpdatedAt)
+            .IsInPast()
+            .GreaterThanOrEqualTo(x => x.CreatedAt)
+                .WithMessage($"'{{PropertyName}}' must be greater than or equal to '{nameof(CreateDialogCommand.CreatedAt)}'.")
+                .When(x => x.CreatedAt != default && x.UpdatedAt != default);
+
         RuleFor(x => x.ServiceResource)
             .NotNull()
             .IsValidUri()
