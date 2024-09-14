@@ -8,31 +8,34 @@ using Digdir.Domain.Dialogporten.Janitor;
 using Digdir.Domain.Dialogporten.Service.Consumers.OutboxMessages;
 using Digdir.Domain.Dialogporten.WebApi.Endpoints.V1;
 using Digdir.Library.Entity.Abstractions;
+using Digdir.Library.Entity.EntityFrameworkCore;
 
 namespace Digdir.Domain.Dialogporten.Architecture.Tests;
 
 public static class DialogportenAssemblies
 {
-    private static readonly Assembly ApplicationAssembly = typeof(GetDialogDto).Assembly;
-    private static readonly Assembly CdcAssembly = typeof(ICdcSink<>).Assembly;
-    private static readonly Assembly DomainAssembly = typeof(DialogEntity).Assembly;
-    private static readonly Assembly GraphQlAssembly = typeof(ApplicationInsightEventListener).Assembly;
-    private static readonly Assembly InfrastructureAssembly = typeof(IUnitOfWork).Assembly;
-    private static readonly Assembly JanitorAssembly = typeof(ConsoleUser).Assembly;
-    private static readonly Assembly ServiceAssembly = typeof(OutboxMessageConsumer).Assembly;
-    private static readonly Assembly WebApiAssembly = typeof(MetadataGroup).Assembly;
-    private static readonly Assembly EntityAbstractionsAssembly = typeof(IEntity).Assembly;
+    private static readonly Assembly Application = typeof(GetDialogDto).Assembly;
+    private static readonly Assembly Cdc = typeof(ICdcSink<>).Assembly;
+    private static readonly Assembly Domain = typeof(DialogEntity).Assembly;
+    private static readonly Assembly GraphQl = typeof(ApplicationInsightEventListener).Assembly;
+    private static readonly Assembly Infrastructure = typeof(IUnitOfWork).Assembly;
+    private static readonly Assembly Janitor = typeof(ConsoleUser).Assembly;
+    private static readonly Assembly Service = typeof(OutboxMessageConsumer).Assembly;
+    private static readonly Assembly WebApi = typeof(MetadataGroup).Assembly;
+    private static readonly Assembly EntityAbstractions = typeof(IEntity).Assembly;
+    private static readonly Assembly EntityFrameworkCore = typeof(EntityLibraryEfCoreExtensions).Assembly;
 
     internal static readonly List<Assembly> All =
     [
-        ApplicationAssembly,
-        CdcAssembly,
-        DomainAssembly,
-        GraphQlAssembly,
-        InfrastructureAssembly,
-        JanitorAssembly,
-        ServiceAssembly,
-        WebApiAssembly,
-        EntityAbstractionsAssembly
+        Application,
+        Cdc,
+        Domain,
+        GraphQl,
+        Infrastructure,
+        Janitor,
+        Service,
+        WebApi,
+        EntityAbstractions,
+        EntityFrameworkCore
     ];
 }
