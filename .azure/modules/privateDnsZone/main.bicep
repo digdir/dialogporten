@@ -40,7 +40,7 @@ resource aRecordResources 'Microsoft.Network/privateDnsZones/A@2020-06-01' = [
   }
 ]
 
-resource virtualNetworkLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2020-06-01' = {
+resource virtualNetworkLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2024-06-01' = {
   parent: privateDnsZone
   name: '${namePrefix}-pdns-link'
   location: 'global'
