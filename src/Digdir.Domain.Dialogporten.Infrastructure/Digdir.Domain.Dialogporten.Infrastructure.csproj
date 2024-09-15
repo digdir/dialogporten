@@ -2,7 +2,7 @@
 
     <ItemGroup>
         <PackageReference Include="Altinn.ApiClients.Maskinporten" Version="9.1.0"/>
-        <PackageReference Include="HotChocolate.Subscriptions.Redis" Version="13.9.11" />
+        <PackageReference Include="HotChocolate.Subscriptions.Redis" Version="13.9.12" />
         <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.8" />
         <PackageReference Include="Altinn.Authorization.ABAC" Version="0.0.8"/>
         <PackageReference Include="Bogus" Version="35.6.1"/>
