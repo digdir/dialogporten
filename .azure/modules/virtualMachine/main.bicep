@@ -72,7 +72,7 @@ param storageProfile StorageProfile
 @secure()
 param sshPublicKey string
 
-resource virtualMachine 'Microsoft.Compute/virtualMachines@2024-03-01' = {
+resource virtualMachine 'Microsoft.Compute/virtualMachines@2024-07-01' = {
   name: name
   location: location
   zones: [
