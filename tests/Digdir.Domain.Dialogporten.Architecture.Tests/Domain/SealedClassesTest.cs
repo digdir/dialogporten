@@ -4,7 +4,6 @@ namespace Digdir.Domain.Dialogporten.Architecture.Tests.Domain;
 
 public class SealedClassesTest
 {
-    // todo: same for records
     [Fact]
     public void All_Classes_Without_Inheritors_Should_Be_Sealed()
     {
