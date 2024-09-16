@@ -44,7 +44,7 @@ internal sealed class UserResourceRegistry : IUserResourceRegistry
 
     public bool UserCanModifyResourceType(string serviceResourceType) => serviceResourceType switch
     {
-        ResourceRegistry.Constants.Correspondence => _user.GetPrincipal().HasScope(Constants.CorrespondenceScope),
+        ResourceRegistry.Constants.CorrespondenceService => _user.GetPrincipal().HasScope(Constants.CorrespondenceScope),
         null => false,
         _ => true
     };

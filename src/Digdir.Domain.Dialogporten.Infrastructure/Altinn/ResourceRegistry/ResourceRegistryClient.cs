@@ -11,7 +11,7 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
     private const string ServiceResourceInformationByResourceIdCacheKey = "ServiceResourceInformationByResourceIdCacheKey";
     private const string ResourceTypeGenericAccess = "GenericAccessResource";
     private const string ResourceTypeAltinnApp = "AltinnApp";
-    private const string ResourceTypeCorrespondence = "Correspondence";
+    private const string ResourceTypeCorrespondence = "CorrespondenceService";
 
     private readonly IFusionCache _cache;
     private readonly HttpClient _client;
