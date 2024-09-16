@@ -1,6 +1,6 @@
 ﻿namespace Digdir.Domain.Dialogporten.Domain.Common.Exceptions;
 
-public class DomainException : ApplicationException
+public sealed class DomainException : ApplicationException
 {
     private readonly IEnumerable<DomainFailure> _errors;
 

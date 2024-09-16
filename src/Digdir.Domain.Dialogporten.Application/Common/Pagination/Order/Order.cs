@@ -2,7 +2,7 @@
 
 namespace Digdir.Domain.Dialogporten.Application.Common.Pagination.Order;
 
-public class Order<TTarget>
+public sealed class Order<TTarget>
 {
     private readonly OrderSelector<TTarget> _selector;
     public string Key { get; }

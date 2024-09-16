@@ -216,4 +216,4 @@ static void IgnoreEmptyCollections(JsonTypeInfo typeInfo)
 }
 
 // ReSharper disable once ClassNeverInstantiated.Global
-public partial class Program;
+public sealed partial class Program;

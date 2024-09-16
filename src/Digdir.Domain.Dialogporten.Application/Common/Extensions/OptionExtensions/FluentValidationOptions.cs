@@ -3,7 +3,7 @@ using Microsoft.Extensions.Options;
 
 namespace Digdir.Domain.Dialogporten.Application.Common.Extensions.OptionExtensions;
 
-public class FluentValidationOptions<TOptions> : IValidateOptions<TOptions>
+public sealed class FluentValidationOptions<TOptions> : IValidateOptions<TOptions>
     where TOptions : class
 {
     private readonly IEnumerable<IValidator<TOptions>> _validators;

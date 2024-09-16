@@ -1,6 +1,6 @@
 namespace Digdir.Domain.Dialogporten.WebApi.Common.Swagger;
 
-public class AddSwaggerCorsHeaderMiddleware
+public sealed class AddSwaggerCorsHeaderMiddleware
 {
     private readonly RequestDelegate _next;
 

@@ -7,14 +7,14 @@ using OneOf.Types;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.ResourceRegistry.Commands.Synchronize;
 
-public class SynchronizeSubjectResourceMappingsCommand : IRequest<SynchronizeResourceRegistryResult>
+public sealed class SynchronizeSubjectResourceMappingsCommand : IRequest<SynchronizeResourceRegistryResult>
 {
     public DateTimeOffset? Since { get; set; }
     public int? BatchSize { get; set; }
 }
 
 [GenerateOneOf]
-public partial class SynchronizeResourceRegistryResult : OneOfBase<Success, ValidationError>;
+public sealed partial class SynchronizeResourceRegistryResult : OneOfBase<Success, ValidationError>;
 
 internal sealed class SynchronizeResourceRegistryCommandHandler : IRequestHandler<SynchronizeSubjectResourceMappingsCommand, SynchronizeResourceRegistryResult>
 {

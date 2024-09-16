@@ -14,14 +14,14 @@ namespace Digdir.Domain.Dialogporten.Application.Features.V1.Common.Content;
 /// This class is used to map bewteen the incoming dto object and the internal dialog content structure.
 /// Value needs to be mapped from a list of LocalizationDto in order for merging to work.
 /// </summary>
-internal class IntermediateDialogContent
+internal sealed class IntermediateDialogContent
 {
     public DialogContentType.Values TypeId { get; set; }
     public List<LocalizationDto> Value { get; set; } = null!;
     public string MediaType { get; set; } = MediaTypes.PlainText;
 }
 
-internal class DialogContentInputConverter<TDialogContent> :
+internal sealed class DialogContentInputConverter<TDialogContent> :
     ITypeConverter<TDialogContent?, List<DialogContent>?>
     where TDialogContent : class, new()
 {
@@ -67,7 +67,7 @@ internal class DialogContentInputConverter<TDialogContent> :
     }
 }
 
-internal class DialogContentOutputConverter<TDialogContent> :
+internal sealed class DialogContentOutputConverter<TDialogContent> :
     ITypeConverter<List<DialogContent>?, TDialogContent?>
     where TDialogContent : class, new()
 {
@@ -95,7 +95,7 @@ internal class DialogContentOutputConverter<TDialogContent> :
 }
 
 // ReSharper disable once ClassNeverInstantiated.Local
-file class PropertyCache<T>
+file sealed class PropertyCache<T>
 {
     public static readonly Dictionary<string, PropertyInfo> PropertyByName = typeof(T)
         .GetProperties()

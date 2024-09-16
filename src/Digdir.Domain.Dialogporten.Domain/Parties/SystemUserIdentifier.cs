@@ -3,7 +3,7 @@ using Digdir.Domain.Dialogporten.Domain.Parties.Abstractions;
 
 namespace Digdir.Domain.Dialogporten.Domain.Parties;
 
-public record SystemUserIdentifier : IPartyIdentifier
+public sealed record SystemUserIdentifier : IPartyIdentifier
 {
     public static string Prefix => "urn:altinn:systemuser";
     public static string PrefixWithSeparator => Prefix + PartyIdentifier.Separator;

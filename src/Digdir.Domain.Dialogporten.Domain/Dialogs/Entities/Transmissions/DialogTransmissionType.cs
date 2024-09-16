@@ -2,7 +2,7 @@ using Digdir.Library.Entity.Abstractions.Features.Lookup;
 
 namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 
-public class DialogTransmissionType : AbstractLookupEntity<DialogTransmissionType, DialogTransmissionType.Values>
+public sealed class DialogTransmissionType : AbstractLookupEntity<DialogTransmissionType, DialogTransmissionType.Values>
 {
     public DialogTransmissionType(Values id) : base(id) { }
     public override DialogTransmissionType MapValue(Values id) => new(id);

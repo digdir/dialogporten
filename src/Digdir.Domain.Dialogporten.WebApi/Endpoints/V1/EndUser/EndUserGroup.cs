@@ -2,7 +2,7 @@
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.EndUser;
 
-public class EndUserGroup : Group
+public sealed class EndUserGroup : Group
 {
     public const string RoutePrefix = "enduser";
     public EndUserGroup()

@@ -71,7 +71,7 @@ public static class ClaimsPrincipalExtensions
     }
 
     // https://docs.altinn.studio/authentication/systemauthentication/
-    private class SystemUserAuthorizationDetails
+    private sealed class SystemUserAuthorizationDetails
     {
         [JsonPropertyName("type")]
         public string? Type { get; set; }
