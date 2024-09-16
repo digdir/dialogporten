@@ -36,9 +36,6 @@ param sourceKeyVaultName string
 @minLength(3)
 param sourceKeyVaultSshJumperSshPublicKey string
 
-@description('The object ID of the group to assign the Admin Login role for SSH Jumper')
-param sshJumperAdminLoginGroupObjectId string
-
 import { Sku as KeyVaultSku } from '../modules/keyvault/create.bicep'
 param keyVaultSku KeyVaultSku
 
@@ -168,7 +165,6 @@ module sshJumper '../modules/ssh-jumper/main.bicep' = {
     subnetId: vnet.outputs.defaultSubnetId
     tags: tags
     sshPublicKey: secrets.sourceKeyVaultSshJumperSshPublicKey
-    adminLoginGroupObjectId: sshJumperAdminLoginGroupObjectId
   }
 }
 
