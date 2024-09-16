@@ -45,3 +45,5 @@ param serviceBusSku = {
   tier: 'Premium'
   capacity: 1
 }
+
+param vmAdminGroupObjectId = 'c12e51e3-5cbd-4229-8a31-5394c423fb5f'
