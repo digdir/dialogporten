@@ -20,6 +20,7 @@ internal static class CloudEventTypes
         nameof(DialogActivityType.Values.TransmissionOpened) => "dialogporten.dialog.activity.transmission-opened.v1",
         nameof(DialogActivityType.Values.PaymentMade) => "dialogporten.dialog.activity.payment-made.v1",
         nameof(DialogActivityType.Values.SignatureProvided) => "dialogporten.dialog.activity.signature-provided.v1",
+        nameof(DialogActivityType.Values.DialogOpened) => "dialogporten.dialog.activity.dialog-opened.v1",
 
         _ => throw new ArgumentOutOfRangeException(nameof(eventName), eventName, null)
     };
