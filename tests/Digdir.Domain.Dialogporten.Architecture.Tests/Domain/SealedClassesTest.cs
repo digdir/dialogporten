@@ -17,11 +17,13 @@ public class SealedClassesTest
             .Where(x => x.Name != nameof(Program))
             .ToList();
 
+        var typesWithInheritors = new HashSet<Type>(
+            allTypes.Where(t => t.BaseType != null)
+                .Select(t => t.BaseType!.IsGenericType ? t.BaseType.GetGenericTypeDefinition() : t.BaseType)
+        );
+
         var nonInheritedTypes = allTypes
-            .Where(t => !allTypes.Any(other =>
-                other.BaseType != null &&
-                (other.BaseType == t ||
-                (other.BaseType.IsGenericType && other.BaseType.GetGenericTypeDefinition() == t))))
+            .Where(t => !typesWithInheritors.Contains(t))
             .ToList();
 
         var failingTypes = nonInheritedTypes
