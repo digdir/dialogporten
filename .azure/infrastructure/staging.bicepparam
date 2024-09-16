@@ -45,5 +45,5 @@ param serviceBusSku = {
   tier: 'Premium'
   capacity: 1
 }
-
-param sshJumperAdminLoginGroupObjectId = 'c12e51e3-5cbd-4229-8a31-5394c423fb5f'
+// Altinn Product Dialogporten: Developers Prod
+param sshJumperAdminLoginGroupObjectId = 'a94de4bf-0a83-4d30-baba-0c6a7365571c'
