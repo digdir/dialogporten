@@ -153,6 +153,7 @@ export function addActivity(dialog, activity) {
    if (dialog.activities == null) {
         dialog.activities = []; 
    } 
+   dialog.activities.push(activity);
 }
 
 function dateToUTCString(date) {
