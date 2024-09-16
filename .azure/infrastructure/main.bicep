@@ -36,9 +36,6 @@ param sourceKeyVaultName string
 @minLength(3)
 param sourceKeyVaultSshJumperSshPublicKey string
 
-@description('The object ID of the group to assign the SSH Jumper Admin Login role')
-param sshJumperAdminGroupObjectId string
-
 @description('The object ID of the group to assign the Admin Login role for SSH Jumper')
 param sshJumperAdminLoginGroupObjectId string
 
