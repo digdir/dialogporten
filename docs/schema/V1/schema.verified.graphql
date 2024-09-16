@@ -276,6 +276,8 @@ enum ActivityType {
   PAYMENT_MADE
   "Indicates that a signature has been provided."
   SIGNATURE_PROVIDED
+  "Refers to a dialog that has been opened."
+  DIALOG_OPENED
 }
 
 enum ActorType {
