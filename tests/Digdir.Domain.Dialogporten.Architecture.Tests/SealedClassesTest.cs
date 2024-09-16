@@ -1,6 +1,6 @@
 using NetArchTest.Rules;
 
-namespace Digdir.Domain.Dialogporten.Architecture.Tests.Domain;
+namespace Digdir.Domain.Dialogporten.Architecture.Tests;
 
 public class SealedClassesTest
 {
