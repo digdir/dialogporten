@@ -69,7 +69,7 @@ type StorageProfile = {
 param storageProfile StorageProfile
 
 @description('Specifies the AD group object ID for the virtual machine administrator login')
-param adminLoginADGroupObjectId string
+param adminLoginGroupObjectId string
 
 @description('Specifies the SSH public key for the virtual machine')
 @secure()
@@ -140,11 +140,11 @@ resource vmAdminLoginRoleDefinition 'Microsoft.Authorization/roleDefinitions@202
 }
 
 resource roleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(virtualMachine.id, adminLoginADGroupObjectId, vmAdminLoginRoleDefinition.id)
+  name: guid(virtualMachine.id, adminLoginGroupObjectId, vmAdminLoginRoleDefinition.id)
   scope: virtualMachine
   properties: {
     roleDefinitionId: vmAdminLoginRoleDefinition.id
-    principalId: adminLoginADGroupObjectId
+    principalId: adminLoginGroupObjectId
     principalType: 'Group'
   }
 }

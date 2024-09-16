@@ -14,8 +14,8 @@ param tags object
 @secure()
 param sshPublicKey string
 
-@description('The object ID of the group to assign the VM Admin Login role')
-param vmAdminGroupObjectId string
+@description('The object ID of the group to assign the Admin Login role for SSH Jumper')
+param adminLoginGroupObjectId string
 
 var name = '${namePrefix}-ssh-jumper'
 
@@ -82,7 +82,7 @@ module virtualMachine '../../modules/virtualMachine/main.bicep' = {
     sshPublicKey: sshPublicKey
     location: location
     tags: tags
-    adminLoginADGroupObjectId: vmAdminGroupObjectId
+    adminLoginGroupObjectId: adminLoginGroupObjectId
     hardwareProfile: {
       vmSize: 'Standard_B1s'
     }
