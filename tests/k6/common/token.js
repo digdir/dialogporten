@@ -4,6 +4,7 @@ import { extend } from "./extend.js";
 import { defaultEndUserSsn, defaultServiceOwnerOrgNo } from "./config.js";
 
 let defaultTokenOptions = {
+    // Amund: Må legge til digdir:dialogporten.correspondence men helst ikkje hard kode det in.
   scopes: "digdir:dialogporten digdir:dialogporten.serviceprovider digdir:dialogporten.serviceprovider.search",
   orgName: "digdir",
   orgNo: defaultServiceOwnerOrgNo,
@@ -55,6 +56,7 @@ function fetchToken(url, tokenOptions, type) {
   return cachedTokens[cacheKey];
 }
 
+// Amund: Det er denne jeg burde bruke for å legge til ekstra token options
 export function getServiceOwnerTokenFromGenerator(tokenOptions = null) {
   let fullTokenOptions = extend({}, defaultTokenOptions, tokenOptions);
   const url = `http://altinn-testtools-token-generator.azurewebsites.net/api/GetEnterpriseToken?env=tt02&scopes=${encodeURIComponent(fullTokenOptions.scopes)}&org=${fullTokenOptions.orgName}&orgNo=${fullTokenOptions.orgNo}&ttl=${tokenTtl}`;
