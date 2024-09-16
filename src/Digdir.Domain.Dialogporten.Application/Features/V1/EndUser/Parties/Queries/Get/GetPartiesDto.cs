@@ -1,11 +1,11 @@
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Parties.Queries.Get;
 
-public class GetPartiesDto
+public sealed class GetPartiesDto
 {
     public List<AuthorizedPartyDto> AuthorizedParties { get; init; } = [];
 }
 
-public class AuthorizedPartyDto
+public sealed class AuthorizedPartyDto
 {
     public string Party { get; init; } = null!;
     public string Name { get; init; } = null!;

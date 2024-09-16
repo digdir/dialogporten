@@ -5,7 +5,7 @@ using FastEndpoints;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.WellKnown.Jwks.Get;
 
-public class GetJwksSwaggerConfig : ISwaggerConfig
+public sealed class GetJwksSwaggerConfig : ISwaggerConfig
 {
     public static string OperationId => "GetJwks";
 

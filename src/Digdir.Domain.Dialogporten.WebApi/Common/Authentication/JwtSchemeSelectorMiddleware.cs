@@ -4,7 +4,7 @@ using FluentValidation.Results;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Common.Authentication;
 
-public class JwtSchemeSelectorMiddleware
+public sealed class JwtSchemeSelectorMiddleware
 {
     private readonly RequestDelegate _next;
 

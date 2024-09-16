@@ -9,7 +9,7 @@ public interface IUserOrganizationRegistry
     Task<string?> GetCurrentUserOrgShortName(CancellationToken cancellationToken);
 }
 
-public class UserOrganizationRegistry : IUserOrganizationRegistry
+public sealed class UserOrganizationRegistry : IUserOrganizationRegistry
 {
     private readonly IUser _user;
     private readonly IServiceOwnerNameRegistry _serviceOwnerNameRegistry;

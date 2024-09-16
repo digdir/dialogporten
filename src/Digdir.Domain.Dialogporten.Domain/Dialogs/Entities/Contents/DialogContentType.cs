@@ -3,7 +3,7 @@ using Digdir.Library.Entity.Abstractions.Features.Lookup;
 
 namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Contents;
 
-public class DialogContentType : AbstractLookupEntity<DialogContentType, DialogContentType.Values>
+public sealed class DialogContentType : AbstractLookupEntity<DialogContentType, DialogContentType.Values>
 {
     public DialogContentType(Values id) : base(id) { }
     public enum Values

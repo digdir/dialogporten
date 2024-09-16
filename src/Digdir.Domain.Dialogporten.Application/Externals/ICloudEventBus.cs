@@ -5,7 +5,7 @@ public interface ICloudEventBus
     Task Publish(CloudEvent cloudEvent, CancellationToken cancellationToken);
 }
 
-public class CloudEvent
+public sealed class CloudEvent
 {
     public string SpecVersion { get; set; } = "1.0";
     public Guid Id { get; set; }

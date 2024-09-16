@@ -97,7 +97,7 @@ public sealed class OrderSet<TOrderDefinition, TTarget> : IOrderSet<TTarget>
         return string.Join(PaginationConstants.OrderSetDelimiter, orderParts);
     }
 
-    private class OrderComparer : IEqualityComparer<Order<TTarget>>
+    private sealed class OrderComparer : IEqualityComparer<Order<TTarget>>
     {
         public bool Equals(Order<TTarget>? x, Order<TTarget>? y)
         {

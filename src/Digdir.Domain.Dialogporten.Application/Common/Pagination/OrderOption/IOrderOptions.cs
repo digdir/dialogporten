@@ -17,7 +17,7 @@ internal static class OrderOptions<TOrderDefinition, TTarget>
     public static readonly IOrderOptions<TTarget> Value = TOrderDefinition.Configure(new OrderOptionsBuilder<TTarget>());
 }
 
-internal class OrderOptions<TTarget> : IOrderOptions<TTarget>
+internal sealed class OrderOptions<TTarget> : IOrderOptions<TTarget>
 {
     private readonly Dictionary<string, OrderSelector<TTarget>> _optionByKey;
 

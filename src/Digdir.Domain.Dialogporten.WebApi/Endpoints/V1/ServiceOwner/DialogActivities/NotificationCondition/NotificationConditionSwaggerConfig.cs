@@ -9,7 +9,7 @@ using FastEndpoints;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.DialogActivities.NotificationCondition;
 
-public class NotificationConditionSwaggerConfig : ISwaggerConfig
+public sealed class NotificationConditionSwaggerConfig : ISwaggerConfig
 {
     public static string OperationId => "GetDialogActivityNotificationConditionSO";
     public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder)

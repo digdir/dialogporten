@@ -5,7 +5,7 @@ using FastEndpoints;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.WellKnown.OauthAuthorizationServer.Get;
 
-public class GetOauthAuthorizationServerSwaggerConfig : ISwaggerConfig
+public sealed class GetOauthAuthorizationServerSwaggerConfig : ISwaggerConfig
 {
     public static string OperationId => "GetOauthAuthorizationServer";
 

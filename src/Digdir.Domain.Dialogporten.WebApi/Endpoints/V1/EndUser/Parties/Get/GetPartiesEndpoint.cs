@@ -5,7 +5,7 @@ using MediatR;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.EndUser.Parties.Get;
 
-public class GetPartiesEndpoint : EndpointWithoutRequest<GetPartiesDto>
+public sealed class GetPartiesEndpoint : EndpointWithoutRequest<GetPartiesDto>
 {
     private readonly ISender _sender;
 

@@ -6,7 +6,7 @@ using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Queries
 
 namespace Digdir.Domain.Dialogporten.GraphQL.EndUser.Common;
 
-public class MappingProfile : Profile
+public sealed class MappingProfile : Profile
 {
     public MappingProfile()
     {

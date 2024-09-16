@@ -7,7 +7,7 @@ using FastEndpoints;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.DialogSeenLogs.Get;
 
-public class GetDialogSeenLogSwaggerConfig : ISwaggerConfig
+public sealed class GetDialogSeenLogSwaggerConfig : ISwaggerConfig
 {
     public static string OperationId => "GetDialogSeenLogSO";
     public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder)

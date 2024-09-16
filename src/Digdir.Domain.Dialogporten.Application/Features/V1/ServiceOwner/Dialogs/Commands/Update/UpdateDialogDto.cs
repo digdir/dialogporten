@@ -158,7 +158,7 @@ public class UpdateDialogDialogTransmissionDto
     public List<UpdateDialogTransmissionAttachmentDto> Attachments { get; set; } = [];
 }
 
-public class UpdateDialogDialogTransmissionContentDto
+public sealed class UpdateDialogDialogTransmissionContentDto
 {
     /// <summary>
     /// The transmission title. Must be text/plain.
@@ -171,7 +171,7 @@ public class UpdateDialogDialogTransmissionContentDto
     public ContentValueDto Summary { get; set; } = null!;
 }
 
-public class UpdateDialogDialogTransmissionSenderActorDto
+public sealed class UpdateDialogDialogTransmissionSenderActorDto
 {
     /// <summary>
     /// The type of actor that sent the transmission.
@@ -461,7 +461,7 @@ public sealed class UpdateDialogDialogGuiActionDto
     public List<LocalizationDto>? Prompt { get; set; }
 }
 
-public class UpdateDialogDialogAttachmentDto
+public sealed class UpdateDialogDialogAttachmentDto
 {
     /// <summary>
     /// A UUIDv7 used for merging existing data, unknown IDs will be ignored as this entity does not support user-defined IDs.
@@ -508,7 +508,7 @@ public sealed class UpdateDialogDialogAttachmentUrlDto
     public AttachmentUrlConsumerType.Values ConsumerType { get; set; }
 }
 
-public class UpdateDialogTransmissionAttachmentDto
+public sealed class UpdateDialogTransmissionAttachmentDto
 {
     /// <summary>
     /// The display name of the attachment that should be used in GUIs.

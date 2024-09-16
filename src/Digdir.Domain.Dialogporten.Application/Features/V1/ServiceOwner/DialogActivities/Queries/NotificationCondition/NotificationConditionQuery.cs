@@ -23,7 +23,7 @@ public enum NotificationConditionType
 }
 
 [GenerateOneOf]
-public partial class NotificationConditionResult : OneOfBase<NotificationConditionDto, ValidationError, EntityNotFound>;
+public sealed partial class NotificationConditionResult : OneOfBase<NotificationConditionDto, ValidationError, EntityNotFound>;
 
 internal sealed class NotificationConditionQueryHandler : IRequestHandler<NotificationConditionQuery, NotificationConditionResult>
 {

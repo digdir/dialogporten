@@ -4,7 +4,7 @@ using UserIdType = Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogUser
 
 namespace Digdir.Domain.Dialogporten.WebApi.Common.Authentication;
 
-public class UserTypeValidationMiddleware
+public sealed class UserTypeValidationMiddleware
 {
     private readonly RequestDelegate _next;
 

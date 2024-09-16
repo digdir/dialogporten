@@ -2,7 +2,7 @@
 
 namespace Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 
-public record AltinnAction
+public sealed record AltinnAction
 {
     public string Name { get; }
     public string AuthorizationAttribute { get; }

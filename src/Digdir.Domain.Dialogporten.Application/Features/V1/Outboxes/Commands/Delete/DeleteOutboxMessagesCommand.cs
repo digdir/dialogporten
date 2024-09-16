@@ -8,13 +8,13 @@ using OneOf.Types;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.Outboxes.Commands.Delete;
 
-public class DeleteOutboxMessagesCommand : IRequest<DeleteOutboxMessagesResult>
+public sealed class DeleteOutboxMessagesCommand : IRequest<DeleteOutboxMessagesResult>
 {
     public required Guid EventId { get; init; }
 }
 
 [GenerateOneOf]
-public partial class DeleteOutboxMessagesResult : OneOfBase<Success, EntityNotFound>;
+public sealed partial class DeleteOutboxMessagesResult : OneOfBase<Success, EntityNotFound>;
 
 internal sealed class DeleteOutboxMessagesCommandHandler : IRequestHandler<DeleteOutboxMessagesCommand, DeleteOutboxMessagesResult>
 {

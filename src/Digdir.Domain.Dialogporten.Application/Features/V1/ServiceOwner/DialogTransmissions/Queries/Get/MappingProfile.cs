@@ -6,7 +6,7 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions.Contents;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.DialogTransmissions.Queries.Get;
 
-public class MappingProfile : Profile
+public sealed class MappingProfile : Profile
 {
     public MappingProfile()
     {

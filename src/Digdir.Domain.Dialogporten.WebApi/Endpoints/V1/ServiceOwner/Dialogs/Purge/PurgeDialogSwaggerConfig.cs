@@ -7,7 +7,7 @@ using FastEndpoints;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.Dialogs.Purge;
 
-public class PurgeDialogSwaggerConfig : ISwaggerConfig
+public sealed class PurgeDialogSwaggerConfig : ISwaggerConfig
 {
     public static string OperationId => "PurgeDialog";
 

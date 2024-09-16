@@ -1,11 +1,11 @@
 namespace Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 
-public class AuthorizedPartiesResult
+public sealed class AuthorizedPartiesResult
 {
     public List<AuthorizedParty> AuthorizedParties { get; set; } = [];
 }
 
-public class AuthorizedParty
+public sealed class AuthorizedParty
 {
     public string Party { get; init; } = null!;
     public string Name { get; init; } = null!;

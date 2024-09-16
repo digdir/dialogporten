@@ -1,6 +1,6 @@
 namespace Digdir.Domain.Dialogporten.GraphQL.EndUser.Parties;
 
-public class AuthorizedParty
+public sealed class AuthorizedParty
 {
     public string Party { get; init; } = null!;
     public string Name { get; init; } = null!;

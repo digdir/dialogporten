@@ -2,7 +2,7 @@
 
 namespace Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 
-public record Forbidden(List<string> Reasons)
+public sealed record Forbidden(List<string> Reasons)
 {
     private const string ForbiddenMessage = "Forbidden";
 

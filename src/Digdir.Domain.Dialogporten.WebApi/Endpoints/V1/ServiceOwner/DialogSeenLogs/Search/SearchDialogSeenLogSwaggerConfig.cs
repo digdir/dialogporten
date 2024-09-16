@@ -7,7 +7,7 @@ using FastEndpoints;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.DialogSeenLogs.Search;
 
-public class SearchDialogSeenLogSwaggerConfig : ISwaggerConfig
+public sealed class SearchDialogSeenLogSwaggerConfig : ISwaggerConfig
 {
     public static string OperationId => "SearchDialogSeenLogSO";
 

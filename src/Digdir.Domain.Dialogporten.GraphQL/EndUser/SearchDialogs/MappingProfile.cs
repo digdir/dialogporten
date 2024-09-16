@@ -4,7 +4,7 @@ using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Queries
 
 namespace Digdir.Domain.Dialogporten.GraphQL.EndUser.SearchDialogs;
 
-public class MappingProfile : Profile
+public sealed class MappingProfile : Profile
 {
     public MappingProfile()
     {

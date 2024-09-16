@@ -138,7 +138,7 @@ public class CreateDialogDto
     public List<CreateDialogDialogActivityDto> Activities { get; set; } = [];
 }
 
-public class CreateDialogDialogTransmissionDto
+public sealed class CreateDialogDialogTransmissionDto
 {
     /// <summary>
     /// A self-defined UUIDv7 may be provided in order to support idempotent creation of transmissions. If not provided, a new UUIDv7 will be generated.

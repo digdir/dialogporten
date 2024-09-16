@@ -1,6 +1,6 @@
 ﻿namespace Digdir.Domain.Dialogporten.Domain.Common;
 
-public class DomainFailure
+public sealed class DomainFailure
 {
     public string PropertyName { get; init; }
     public string ErrorMessage { get; init; }

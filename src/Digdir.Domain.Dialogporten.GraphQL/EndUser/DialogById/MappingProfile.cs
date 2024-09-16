@@ -4,7 +4,7 @@ using Digdir.Domain.Dialogporten.GraphQL.EndUser.Common;
 
 namespace Digdir.Domain.Dialogporten.GraphQL.EndUser.DialogById;
 
-public class MappingProfile : Profile
+public sealed class MappingProfile : Profile
 {
     public MappingProfile()
     {

@@ -9,7 +9,7 @@ public interface ISubjectResourceRepository
     Task<DateTimeOffset> GetLastUpdatedAt(TimeSpan? timeSkew = null, CancellationToken cancellationToken = default);
 }
 
-public class MergableSubjectResource : SubjectResource
+public sealed class MergableSubjectResource : SubjectResource
 {
     public bool IsDeleted { get; set; }
 }
