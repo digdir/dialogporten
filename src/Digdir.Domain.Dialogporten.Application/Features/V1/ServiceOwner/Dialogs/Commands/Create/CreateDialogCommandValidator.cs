@@ -134,8 +134,8 @@ internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDia
             .SetValidator(activityValidator);
 
         RuleFor(x => x.Process)
-            .Must(x => Uri.IsWellFormedUriString(x, UriKind.Absolute))
-            .WithMessage("{PropertyName} must be a valid absolute URI.")
+            .IsValidUri()
+            .MaximumLength(Constants.DefaultMaxUriLength)
             .When(x => x.Process is not null);
 
         RuleFor(x => x.Process)
@@ -144,8 +144,8 @@ internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDia
             .When(x => x.PrecedingProcess is not null);
 
         RuleFor(x => x.PrecedingProcess)
-            .Must(x => Uri.IsWellFormedUriString(x, UriKind.Absolute))
-            .WithMessage("{PropertyName} must be a valid absolute URI.")
+            .IsValidUri()
+            .MaximumLength(Constants.DefaultMaxUriLength)
             .When(x => x.PrecedingProcess is not null);
     }
 }
