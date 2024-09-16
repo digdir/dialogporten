@@ -14,6 +14,9 @@ param tags object
 @secure()
 param sshPublicKey string
 
+@description('The object ID of the group to assign the Admin Login role for SSH Jumper')
+param adminLoginGroupObjectId string
+
 var name = '${namePrefix}-ssh-jumper'
 
 resource publicIp 'Microsoft.Network/publicIPAddresses@2023-11-01' = {
@@ -79,6 +82,7 @@ module virtualMachine '../../modules/virtualMachine/main.bicep' = {
     sshPublicKey: sshPublicKey
     location: location
     tags: tags
+    adminLoginGroupObjectId: adminLoginGroupObjectId
     hardwareProfile: {
       vmSize: 'Standard_B1s'
     }
