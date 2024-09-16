@@ -19,7 +19,8 @@ public class SealedClassesTest
 
         var typesWithInheritors = new HashSet<Type>(
             allTypes.Where(t => t.BaseType != null)
-                .Select(t => t.BaseType!.IsGenericType ? t.BaseType.GetGenericTypeDefinition() : t.BaseType)
+                .Select(t => t.BaseType!.IsGenericType ?
+                    t.BaseType.GetGenericTypeDefinition() : t.BaseType)
         );
 
         var nonInheritedTypes = allTypes
