@@ -1,6 +1,5 @@
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
-using FluentValidation.Results;
 using UserIdType = Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogUserType.Values;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Common.Authentication;
@@ -24,11 +23,10 @@ public class UserTypeValidationMiddleware
                 context.Response.StatusCode = StatusCodes.Status403Forbidden;
                 await context.Response.WriteAsJsonAsync(context.ResponseBuilder(
                     context.Response.StatusCode,
-                    new List<ValidationFailure>()
-                    {
+                    [
                         new("Type",
                             "The request was authenticated, but we were unable to determine valid user type (person or system user) in order to authorize the request.")
-                    }
+                    ]
                 ));
 
                 return;

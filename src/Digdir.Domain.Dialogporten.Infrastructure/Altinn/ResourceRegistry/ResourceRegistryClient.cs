@@ -1,4 +1,5 @@
-﻿using Digdir.Domain.Dialogporten.Application.Externals;
+﻿using System.Runtime.CompilerServices;
+using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Domain.Common;
 using ZiggyCreatures.Caching.Fusion;
 
@@ -43,6 +44,29 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
         return resource;
     }
 
+    public async IAsyncEnumerable<List<UpdatedSubjectResource>> GetUpdatedSubjectResources(DateTimeOffset since, int batchSize, [EnumeratorCancellation] CancellationToken cancellationToken)
+    {
+        const string searchEndpoint = "resourceregistry/api/v1/resource/updated";
+        var nextUrl = searchEndpoint + $"?since={Uri.EscapeDataString(since.ToString("O"))}&limit={batchSize}";
+
+        do
+        {
+            var response = await _client
+                .GetFromJsonEnsuredAsync<UpdatedResponse>(nextUrl,
+                    cancellationToken: cancellationToken);
+
+            if (response.Data.Count == 0)
+            {
+                yield break;
+            }
+
+            yield return response.Data;
+
+            nextUrl = response.Links.Next?.ToString();
+        } while (nextUrl is not null);
+    }
+
+
     private async Task<Dictionary<string, ServiceResourceInformation[]>> GetOrSetResourceInformationByOrg(
         CancellationToken cancellationToken)
     {
@@ -76,7 +100,7 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
         const string searchEndpoint = "resourceregistry/api/v1/resource/resourcelist";
 
         var response = await _client
-            .GetFromJsonEnsuredAsync<List<ResourceRegistryResponse>>(searchEndpoint,
+            .GetFromJsonEnsuredAsync<List<ResourceListResponse>>(searchEndpoint,
                 cancellationToken: cancellationToken);
 
         return response
@@ -92,7 +116,7 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
             .ToArray();
     }
 
-    private sealed class ResourceRegistryResponse
+    private sealed class ResourceListResponse
     {
         public required string Identifier { get; init; }
         public required CompetentAuthority HasCompetentAuthority { get; init; }
@@ -106,5 +130,7 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
         public string? Organization { get; init; }
         public required string OrgCode { get; init; }
     }
-}
 
+    private sealed record UpdatedResponse(UpdatedResponseLinks Links, List<UpdatedSubjectResource> Data);
+    private sealed record UpdatedResponseLinks(Uri? Next);
+}

@@ -9,16 +9,16 @@ public sealed class DialogDetailsAuthorizationResult
     // e.g. urn:altinn:resource:some-other-resource
     public List<AltinnAction> AuthorizedAltinnActions { get; init; } = [];
 
-    public bool HasReadAccessToMainResource() =>
-        AuthorizedAltinnActions.Contains(new(Constants.ReadAction, Constants.MainResource));
+    public bool HasAccessToMainResource() =>
+        AuthorizedAltinnActions.Any(action => action.AuthorizationAttribute == Constants.MainResource);
 
     public bool HasReadAccessToDialogTransmission(string? authorizationAttribute)
     {
         return authorizationAttribute is not null
-            ? ( // Dialog transmissions are authorized by either the read or read action, depending on the authorization attribute type
+            ? ( // Dialog transmissions are authorized by either the read or transmissionRead action, depending on the authorization attribute type
                 // The infrastructure will ensure that the correct action is used, so here we just check for either
                 AuthorizedAltinnActions.Contains(new(Constants.TransmissionReadAction, authorizationAttribute))
                 || AuthorizedAltinnActions.Contains(new(Constants.ReadAction, authorizationAttribute))
-            ) : HasReadAccessToMainResource();
+            ) : HasAccessToMainResource();
     }
 }

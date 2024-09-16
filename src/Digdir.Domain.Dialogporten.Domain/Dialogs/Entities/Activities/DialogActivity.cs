@@ -40,7 +40,7 @@ public class DialogActivity : IImmutableEntity, IAggregateCreatedHandler, IEvent
     {
         _domainEvents.Add(new DialogActivityCreatedDomainEvent(
             DialogId, Id, TypeId, Dialog.Party,
-            Dialog.ServiceResource, ExtendedType,
+            Dialog.ServiceResource, Dialog.Process, Dialog.PrecedingProcess, ExtendedType,
             RelatedActivityId));
     }
 

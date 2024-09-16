@@ -35,6 +35,8 @@ public sealed class SearchDialog
     public string ServiceResourceType { get; set; } = null!;
     public string Party { get; set; } = null!;
     public int? Progress { get; set; }
+    public string? Process { get; set; }
+    public string? PrecedingProcess { get; set; }
     public int? GuiAttachmentCount { get; set; }
     public string? ExtendedStatus { get; set; }
     public DateTimeOffset CreatedAt { get; set; }

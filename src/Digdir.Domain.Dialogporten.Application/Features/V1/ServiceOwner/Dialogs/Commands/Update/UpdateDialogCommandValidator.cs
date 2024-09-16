@@ -1,6 +1,8 @@
 ﻿using System.Reflection;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.Enumerables;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.FluentValidation;
+using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
+using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Actors;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Content;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using Digdir.Domain.Dialogporten.Domain.Actors;
@@ -48,15 +50,15 @@ internal sealed class UpdateDialogDtoValidator : AbstractValidator<UpdateDialogD
 
         RuleFor(x => x.ExpiresAt)
             .GreaterThanOrEqualTo(x => x.DueAt)
-                .WithMessage(FluentValidationDateTimeOffsetExtensions.InFutureOfMessage)
-                .When(x => x.DueAt.HasValue, ApplyConditionTo.CurrentValidator)
+            .WithMessage(FluentValidationDateTimeOffsetExtensions.InFutureOfMessage)
+            .When(x => x.DueAt.HasValue, ApplyConditionTo.CurrentValidator)
             .GreaterThanOrEqualTo(x => x.VisibleFrom)
-                .WithMessage(FluentValidationDateTimeOffsetExtensions.InFutureOfMessage)
-                .When(x => x.VisibleFrom.HasValue, ApplyConditionTo.CurrentValidator);
+            .WithMessage(FluentValidationDateTimeOffsetExtensions.InFutureOfMessage)
+            .When(x => x.VisibleFrom.HasValue, ApplyConditionTo.CurrentValidator);
         RuleFor(x => x.DueAt)
             .GreaterThanOrEqualTo(x => x.VisibleFrom)
-                .WithMessage(FluentValidationDateTimeOffsetExtensions.InFutureOfMessage)
-                .When(x => x.VisibleFrom.HasValue, ApplyConditionTo.CurrentValidator);
+            .WithMessage(FluentValidationDateTimeOffsetExtensions.InFutureOfMessage)
+            .When(x => x.VisibleFrom.HasValue, ApplyConditionTo.CurrentValidator);
 
         RuleFor(x => x.Status)
             .IsInEnum();
@@ -72,15 +74,15 @@ internal sealed class UpdateDialogDtoValidator : AbstractValidator<UpdateDialogD
             .Must(x => x
                 .EmptyIfNull()
                 .Count(x => x.Priority == DialogGuiActionPriority.Values.Primary) <= 1)
-                .WithMessage("Only one primary GUI action is allowed.")
+            .WithMessage("Only one primary GUI action is allowed.")
             .Must(x => x
                 .EmptyIfNull()
                 .Count(x => x.Priority == DialogGuiActionPriority.Values.Secondary) <= 1)
-                .WithMessage("Only one secondary GUI action is allowed.")
+            .WithMessage("Only one secondary GUI action is allowed.")
             .Must(x => x
                 .EmptyIfNull()
                 .Count(x => x.Priority == DialogGuiActionPriority.Values.Tertiary) <= 5)
-                .WithMessage("Only five tertiary GUI actions are allowed.")
+            .WithMessage("Only five tertiary GUI actions are allowed.")
             .UniqueBy(x => x.Id)
             .ForEach(x => x.SetValidator(guiActionValidator));
 
@@ -112,12 +114,8 @@ internal sealed class UpdateDialogTransmissionAttachmentDtoValidator : AbstractV
         IValidator<IEnumerable<LocalizationDto>> localizationsValidator,
         IValidator<UpdateDialogTransmissionAttachmentUrlDto> urlValidator)
     {
-        RuleFor(x => x.Id)
-            .NotEqual(default(Guid));
         RuleFor(x => x.DisplayName)
             .SetValidator(localizationsValidator);
-        RuleFor(x => x.Urls)
-            .UniqueBy(x => x.Id);
         RuleFor(x => x.Urls)
             .NotEmpty()
             .ForEach(x => x.SetValidator(urlValidator));
@@ -144,14 +142,11 @@ internal sealed class UpdateDialogDialogTransmissionActorDtoValidator : Abstract
         RuleFor(x => x.ActorType)
             .IsInEnum();
 
-        RuleFor(x => x.ActorId)
-            .Must((dto, value) => value is null || dto.ActorName is null)
-            .WithMessage("Only one of 'ActorId' or 'ActorName' can be set, but not both.");
-
-        RuleFor(x => x.ActorType)
-            .Must((dto, value) => (value == ActorType.Values.ServiceOwner && dto.ActorId is null && dto.ActorName is null) ||
-                                  (value != ActorType.Values.ServiceOwner && (dto.ActorId is not null || dto.ActorName is not null)))
-            .WithMessage("If 'ActorType' is 'ServiceOwner', both 'ActorId' and 'ActorName' must be null. Otherwise, one of them must be set.");
+        RuleFor(x => x)
+            .Must(dto => (dto.ActorId is null || dto.ActorName is null) &&
+                         ((dto.ActorType == ActorType.Values.ServiceOwner && dto.ActorId is null && dto.ActorName is null) ||
+                          (dto.ActorType != ActorType.Values.ServiceOwner && (dto.ActorId is not null || dto.ActorName is not null))))
+            .WithMessage(ActorValidationErrorMessages.ActorIdActorNameExclusiveOr);
 
         RuleFor(x => x.ActorId!)
             .IsValidPartyIdentifier()
@@ -185,7 +180,8 @@ internal sealed class UpdateDialogDialogTransmissionDtoValidator : AbstractValid
         IValidator<UpdateDialogTransmissionAttachmentDto> attachmentValidator)
     {
         RuleFor(x => x.Id)
-            .NotEqual(default(Guid));
+            .IsValidUuidV7()
+            .UuidV7TimestampIsInPast();
         RuleFor(x => x.CreatedAt)
             .IsInPast();
         RuleFor(x => x.ExtendedType)
@@ -203,8 +199,6 @@ internal sealed class UpdateDialogDialogTransmissionDtoValidator : AbstractValid
             .SetValidator(actorValidator);
         RuleFor(x => x.AuthorizationAttribute)
             .MaximumLength(Constants.DefaultMaxStringLength);
-        RuleFor(x => x.Attachments)
-            .UniqueBy(x => x.Id);
         RuleForEach(x => x.Attachments)
             .SetValidator(attachmentValidator);
         RuleFor(x => x.Content)
@@ -226,7 +220,7 @@ internal sealed class UpdateDialogContentDtoValidator : AbstractValidator<Update
             })
             .ToDictionary(x => x.Property.Name, StringComparer.InvariantCultureIgnoreCase);
 
-    public UpdateDialogContentDtoValidator()
+    public UpdateDialogContentDtoValidator(IUser? user)
     {
         foreach (var (propertyName, propMetadata) in SourcePropertyMetaDataByName)
         {
@@ -237,12 +231,12 @@ internal sealed class UpdateDialogContentDtoValidator : AbstractValidator<Update
                         .NotNull()
                         .WithMessage($"{propertyName} must not be empty.")
                         .SetValidator(
-                            new ContentValueDtoValidator(DialogContentType.Parse(propertyName))!);
+                            new ContentValueDtoValidator(DialogContentType.Parse(propertyName), user)!);
                     break;
                 case NullabilityState.Nullable:
                     RuleFor(x => propMetadata.Property.GetValue(x) as ContentValueDto)
                         .SetValidator(
-                            new ContentValueDtoValidator(DialogContentType.Parse(propertyName))!)
+                            new ContentValueDtoValidator(DialogContentType.Parse(propertyName), user)!)
                         .When(x => propMetadata.Property.GetValue(x) is not null);
                     break;
                 case NullabilityState.Unknown:
@@ -261,7 +255,8 @@ internal sealed class UpdateDialogDialogAttachmentDtoValidator : AbstractValidat
         IValidator<UpdateDialogDialogAttachmentUrlDto> urlValidator)
     {
         RuleFor(x => x.Id)
-            .NotEqual(default(Guid));
+            .IsValidUuidV7()
+            .UuidV7TimestampIsInPast();
         RuleFor(x => x.DisplayName)
             .SetValidator(localizationsValidator);
         RuleFor(x => x.Urls)
@@ -376,7 +371,8 @@ internal sealed class UpdateDialogDialogActivityDtoValidator : AbstractValidator
         IValidator<UpdateDialogDialogActivityPerformedByActorDto> actorValidator)
     {
         RuleFor(x => x.Id)
-            .NotEqual(default(Guid));
+            .IsValidUuidV7()
+            .UuidV7TimestampIsInPast();
         RuleFor(x => x.CreatedAt)
             .IsInPast();
         RuleFor(x => x.ExtendedType)
@@ -410,14 +406,11 @@ internal sealed class UpdateDialogDialogActivityActorDtoValidator : AbstractVali
         RuleFor(x => x.ActorType)
             .IsInEnum();
 
-        RuleFor(x => x.ActorId)
-            .Must((dto, value) => value is null || dto.ActorName is null)
-            .WithMessage("Only one of 'ActorId' or 'ActorName' can be set, but not both.");
-
-        RuleFor(x => x.ActorType)
-            .Must((dto, value) => (value == ActorType.Values.ServiceOwner && dto.ActorId is null && dto.ActorName is null) ||
-                                  (value != ActorType.Values.ServiceOwner && (dto.ActorId is not null || dto.ActorName is not null)))
-            .WithMessage("If 'ActorType' is 'ServiceOwner', both 'ActorId' and 'ActorName' must be null. Otherwise, one of them must be set.");
+        RuleFor(x => x)
+            .Must(dto => (dto.ActorId is null || dto.ActorName is null) &&
+                         ((dto.ActorType == ActorType.Values.ServiceOwner && dto.ActorId is null && dto.ActorName is null) ||
+                          (dto.ActorType != ActorType.Values.ServiceOwner && (dto.ActorId is not null || dto.ActorName is not null))))
+            .WithMessage(ActorValidationErrorMessages.ActorIdActorNameExclusiveOr);
 
         RuleFor(x => x.ActorId!)
             .IsValidPartyIdentifier()

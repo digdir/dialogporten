@@ -10,6 +10,7 @@ export default function () {
         "dueAt": "2033-11-25T06:37:54.2920190Z", // must be UTC
         "expiresAt": "2053-11-25T06:37:54.2920190Z", // must be UTC
         "visibleFrom": "2032-11-25T06:37:54.2920190Z", // must be UTC
+        "process": "urn:test:process:1",
         "searchTags": [
             { "value": "something searchable" },
             { "value": "something else searchable" }

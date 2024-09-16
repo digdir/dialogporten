@@ -2,6 +2,7 @@ import {
     describe, expect, expectStatusFor,
     getEU,
     uuidv4,
+    uuidv7,
     setTitle,
     setAdditionalInfo,
     setSearchTags,
@@ -13,20 +14,24 @@ import {
     setDueAt,
     setExpiresAt,
     setVisibleFrom,
+    setProcess,
     postSO,
     putSO,
-    purgeSO } from '../../common/testimports.js'
+    purgeSO
+} from '../../common/testimports.js'
 
-import { default as dialogToInsert } from '../serviceowner/testdata/01-create-dialog.js';
-import { getDefaultEnduserOrgNo, getDefaultEnduserSsn } from '../../common/token.js';
+import {default as dialogToInsert} from '../serviceowner/testdata/01-create-dialog.js';
+import {getDefaultEnduserOrgNo, getDefaultEnduserSsn} from '../../common/token.js';
+
 export default function () {
 
     let dialogs = [];
     let dialogIds = [];
 
     let titleToSearchFor = uuidv4();
+    let processToSearchFor = "urn:test:process:1"
     let additionalInfoToSearchFor = uuidv4();
-    let searchTagsToSearchFor = [ uuidv4(), uuidv4() ];
+    let searchTagsToSearchFor = [uuidv4(), uuidv4()];
     let extendedStatusToSearchFor = "status:" + uuidv4();
     let secondExtendedStatusToSearchFor = "status:" + uuidv4();
     let senderNameToSearchFor = uuidv4()
@@ -37,16 +42,16 @@ export default function () {
     let titleForExpiresAtItem = "expires_" + uuidv4();
     let titleForUpdatedItem = "updated_" + uuidv4();
     let titleForLastItem = "last_" + uuidv4();
-    let idForCustomOrg = uuidv4();
+    let idForCustomOrg = uuidv7();
     let createdAfter = (new Date()).toISOString(); // We use this on all tests to hopefully avoid clashing with unrelated dialogs
     let defaultFilter = "?CreatedAfter=" + createdAfter + "&Party=" + defaultParty;
     let auxOrg = "ttd";
 
     describe('Arrange: Create some dialogs to test against', () => {
-
         for (let i = 0; i < 15; i++) {
             let d = dialogToInsert();
-            setTitle(d, "e2e-test-dialog eu #" + (i+1), "nn_NO");
+            setTitle(d, "e2e-test-dialog eu #" + (i + 1), "nn_NO");
+            setProcess(d, ("urn:test:process:" + (i + 1)));
             setParty(d, defaultParty);
             setVisibleFrom(d, null);
             dialogs.push(d);
@@ -56,7 +61,7 @@ export default function () {
         setTitle(dialogs[++d], titleToSearchFor);
         setAdditionalInfo(dialogs[++d], additionalInfoToSearchFor);
         setSearchTags(dialogs[++d], searchTagsToSearchFor);
-        setStatus(dialogs[++d], "signing");
+        setStatus(dialogs[++d], "draft");
         setExtendedStatus(dialogs[++d], extendedStatusToSearchFor);
 
         setSenderName(dialogs[++d], senderNameToSearchFor);
@@ -73,18 +78,18 @@ export default function () {
 
         dialogs[++d].id = idForCustomOrg;
 
-        setTitle(dialogs[dialogs.length-1], titleForLastItem);
+        setTitle(dialogs[dialogs.length - 1], titleForLastItem);
 
         let tokenOptions = {};
         dialogs.forEach((d) => {
-            tokenOptions = (d.id == idForCustomOrg) ? { orgName: auxOrg } : {};
+            tokenOptions = (d.id == idForCustomOrg) ? {orgName: auxOrg} : {};
             let r = postSO("dialogs", d, null, tokenOptions);
             expectStatusFor(r).to.equal(201);
             dialogIds.push(r.json());
         });
 
-        let penultimateDialog = dialogs[dialogs.length-2];
-        let penultimateDialogId = dialogIds[dialogIds.length-2];
+        let penultimateDialog = dialogs[dialogs.length - 2];
+        let penultimateDialogId = dialogIds[dialogIds.length - 2];
         setTitle(penultimateDialog, titleForUpdatedItem);
         let r = putSO("dialogs/" + penultimateDialogId, penultimateDialog);
         expectStatusFor(r).to.equal(204);
@@ -191,6 +196,21 @@ export default function () {
         expect(r.json().items[0], 'party').to.have.property("serviceResource").that.equals(auxResource);
     });
 
+    describe('List with invalid process filter', () => {
+        let r = getEU('dialogs/' + defaultFilter + '&process=.,.');
+        expectStatusFor(r).to.equal(400);
+        expect(r, 'response').to.have.validJsonBody();
+        expect(r.json(), 'response json').to.have.property("errors");
+        expect(r.json().errors, 'errors').to.have.property("Process").with.lengthOf(1);
+    })
+
+    describe('List with process filter', () => {
+        let r = getEU('dialogs/' + defaultFilter + '&process=' + processToSearchFor);
+        expectStatusFor(r).to.equal(200);
+        expect(r, 'response').to.have.validJsonBody();
+        expect(r.json(), 'response json').to.have.property("items").with.lengthOf(1);
+        expect(r.json().items[0], 'process').to.have.property("process").that.equals(processToSearchFor);
+    })
     /*
     Disabled for now. Dialogporten doesn't have proper TTD handling as of yet.
 

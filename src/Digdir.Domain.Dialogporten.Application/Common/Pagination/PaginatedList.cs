@@ -1,4 +1,7 @@
-﻿namespace Digdir.Domain.Dialogporten.Application.Common.Pagination;
+﻿using Digdir.Domain.Dialogporten.Application.Common.Pagination.Extensions;
+using Digdir.Domain.Dialogporten.Application.Common.Pagination.OrderOption;
+
+namespace Digdir.Domain.Dialogporten.Application.Common.Pagination;
 
 public sealed class PaginatedList<T>
 {
@@ -31,4 +34,34 @@ public sealed class PaginatedList<T>
         OrderBy = orderBy;
         Items = items?.ToList() ?? throw new ArgumentNullException(nameof(items));
     }
+
+    /// <summary>
+    /// Converts the items in the paginated list to a different type.
+    /// </summary>
+    /// <typeparam name="TDestination">The type to convert the items to.</typeparam>
+    /// <param name="map">A function to convert each item to the new type.</param>
+    /// <returns>A new <see cref="PaginatedList{TDestination}"/> with the converted items.</returns>
+    public PaginatedList<TDestination> ConvertTo<TDestination>(Func<T, TDestination> map)
+    {
+        return new PaginatedList<TDestination>(
+            Items.Select(map),
+            HasNextPage,
+            ContinuationToken,
+            OrderBy);
+    }
+
+    /// <summary>
+    /// Creates an empty paginated list based on the provided pagination parameters.
+    /// </summary>
+    /// <typeparam name="TOrderDefinition">The type of the order definition.</typeparam>
+    /// <typeparam name="TTarget">The type of the target.</typeparam>
+    /// <param name="parameter">The sortable pagination parameter.</param>
+    /// <returns>An empty <see cref="PaginatedList{T}"/>.</returns>
+    public static PaginatedList<T> CreateEmpty<TOrderDefinition, TTarget>(SortablePaginationParameter<TOrderDefinition, TTarget> parameter)
+        where TOrderDefinition : IOrderDefinition<TTarget> =>
+        new(
+            items: [],
+            hasNextPage: false,
+            @continue: parameter.ContinuationToken?.Raw,
+            orderBy: parameter.OrderBy.DefaultIfNull().GetOrderString());
 }

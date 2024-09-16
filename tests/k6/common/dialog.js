@@ -48,7 +48,7 @@ export function setSenderName(dialog, senderName, language = "nb") {
 }
 
 export function setStatus(dialog, status) {
-    const validStatuses = ["unspecified", "inprogress", "waiting", "signing", "cancelled", "completed"];
+    const validStatuses = ["unspecified", "inprogress", "new", "draft", "sent", "requiresAttention", "append"];
 
     if (!validStatuses.includes(status)) {
         throw new Error("Invalid status provided.");
@@ -83,6 +83,12 @@ export function setParty(dialog, party) {
     dialog.party = party;
 }
 
+export function setProcess(dialog, process) {
+    if (!isValidURI(process)) {
+        throw new Error("Invalid process provided. " + process); 
+    }
+    dialog.process = process;
+}
 export function setDueAt(dialog, dueAt) {
     if (dueAt == null) {
         delete dialog.dueAt;

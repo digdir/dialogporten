@@ -225,6 +225,16 @@
             "example": "urn:altinn:person:identifier-no:01125512345\nurn:altinn:organization:identifier-no:912345678",
             "type": "string"
           },
+          "precedingProcess": {
+            "description": "Optional preceding process identifier to indicate the business process that preceded the process indicated in the \u0022Process\u0022 field. Cannot be set without also \u0022Process\u0022 being set.",
+            "nullable": true,
+            "type": "string"
+          },
+          "process": {
+            "description": "Optional process identifier used to indicate a business process this dialog belongs to ",
+            "nullable": true,
+            "type": "string"
+          },
           "progress": {
             "description": "Advisory indicator of progress, represented as 1-100 percentage value. 100% representing a dialog that has come\nto a natural completion (successful or not).",
             "format": "int32",
@@ -873,8 +883,8 @@
         "enum": [
           "New",
           "InProgress",
-          "Signing",
-          "Processing",
+          "Draft",
+          "Sent",
           "RequiresAttention",
           "Completed"
         ],
@@ -882,8 +892,8 @@
         "x-enumNames": [
           "New",
           "InProgress",
-          "Signing",
-          "Processing",
+          "Draft",
+          "Sent",
           "RequiresAttention",
           "Completed"
         ]
@@ -2035,6 +2045,16 @@
             "example": "urn:altinn:person:identifier-no:01125512345\nurn:altinn:organization:identifier-no:912345678",
             "type": "string"
           },
+          "precedingProcess": {
+            "description": "Optional preceding process identifier to indicate the business process that preceded the process indicated in the \u0022Process\u0022 field. Cannot be set without also \u0022Process\u0022 being set.",
+            "nullable": true,
+            "type": "string"
+          },
+          "process": {
+            "description": "Optional process identifier used to indicate a business process this dialog belongs to",
+            "nullable": true,
+            "type": "string"
+          },
           "progress": {
             "description": "Advisory indicator of progress, represented as 1-100 percentage value. 100% representing a dialog that has come\nto a natural completion (successful or not).",
             "format": "int32",
@@ -2176,6 +2196,16 @@
           "party": {
             "description": "The party code representing the organization or person that the dialog belongs to in URN format",
             "example": "urn:altinn:person:identifier-no:01125512345\nurn:altinn:organization:identifier-no:912345678",
+            "type": "string"
+          },
+          "precedingProcess": {
+            "description": "Optional preceding process identifier to indicate the business process that preceded the process indicated in the \u0022Process\u0022 field. Cannot be set without also \u0022Process\u0022 being set. ",
+            "nullable": true,
+            "type": "string"
+          },
+          "process": {
+            "description": "Optional process identifier used to indicate a business process this dialog belongs to ",
+            "nullable": true,
             "type": "string"
           },
           "progress": {
@@ -3108,6 +3138,16 @@
             "example": "urn:altinn:person:identifier-no:01125512345\nurn:altinn:organization:identifier-no:912345678",
             "type": "string"
           },
+          "precedingProcess": {
+            "description": "Optional preceding process identifier to indicate the business process that preceded the process indicated in the \u0022Process\u0022 field. Cannot be set without also \u0022Process\u0022 being set. ",
+            "nullable": true,
+            "type": "string"
+          },
+          "process": {
+            "description": "Optional process identifier used to indicate a business process this dialog belongs to ",
+            "nullable": true,
+            "type": "string"
+          },
           "progress": {
             "description": "Advisory indicator of progress, represented as 1-100 percentage value. 100% representing a dialog that has come\nto a natural completion (successful or not).",
             "format": "int32",
@@ -3205,6 +3245,16 @@
           "party": {
             "description": "The party code representing the organization or person that the dialog belongs to in URN format",
             "example": "urn:altinn:person:identifier-no:01125512345\nurn:altinn:organization:identifier-no:912345678",
+            "type": "string"
+          },
+          "precedingProcess": {
+            "description": "Optional preceding process identifier to indicate the business process that preceded the process indicated in the \u0022Process\u0022 field. Cannot be set without also \u0022Process\u0022 being set.",
+            "nullable": true,
+            "type": "string"
+          },
+          "process": {
+            "description": "Optional process identifier used to indicate a business process this dialog belongs to",
+            "nullable": true,
             "type": "string"
           },
           "progress": {
@@ -3494,7 +3544,7 @@
             "type": "array"
           },
           "id": {
-            "description": "The UUDIv7 of the action may be provided to support idempotent additions to the list of API actions.\nIf not supplied, a new UUIDv7 will be generated.",
+            "description": "A UUIDv7 used for merging existing data, unknown IDs will be ignored as this entity does not support user-defined IDs.",
             "example": "01913cd5-784f-7d3b-abef-4c77b1f0972d",
             "format": "guid",
             "nullable": true,
@@ -3525,7 +3575,7 @@
             ]
           },
           "id": {
-            "description": "The UUDIv7 of the action may be provided to support idempotent additions to the list of API action endpoints.\nIf not supplied, a new UUIDv7 will be generated.",
+            "description": "A UUIDv7 used for merging existing data, unknown IDs will be ignored as this entity does not support user-defined IDs.",
             "example": "01913cd5-784f-7d3b-abef-4c77b1f0972d",
             "format": "guid",
             "nullable": true,
@@ -3573,7 +3623,7 @@
             "type": "array"
           },
           "id": {
-            "description": "A self-defined UUIDv7 may be provided in order to support idempotent updates of attachments. If not supplied,\na new UUIDv7 will be generated.",
+            "description": "A UUIDv7 used for merging existing data, unknown IDs will be ignored as this entity does not support user-defined IDs.",
             "example": "01913cd5-784f-7d3b-abef-4c77b1f0972d",
             "format": "guid",
             "nullable": true,
@@ -3601,7 +3651,7 @@
             ]
           },
           "id": {
-            "description": "A self-defined UUIDv7 may be provided in order to support idempotent updates of attachment URLs. If not supplied,\na new UUIDv7 will be generated.",
+            "description": "A UUIDv7 used for merging existing data, unknown IDs will be ignored as this entity does not support user-defined IDs.",
             "example": "01913cd5-784f-7d3b-abef-4c77b1f0972d",
             "format": "guid",
             "nullable": true,
@@ -3644,7 +3694,7 @@
             ]
           },
           "id": {
-            "description": "The UUDIv7 of the action may be provided to support idempotent additions to the list of actions. If not supplied,\na new UUIDv7 will be generated.",
+            "description": "A UUIDv7 used for merging existing data, unknown IDs will be ignored as this entity does not support user-defined IDs.",
             "example": "01913cd5-784f-7d3b-abef-4c77b1f0972d",
             "format": "guid",
             "nullable": true,
@@ -3931,13 +3981,6 @@
             },
             "type": "array"
           },
-          "id": {
-            "description": "A self-defined UUIDv7 may be provided in order to support idempotent updates of attachments. If not supplied,\na new UUIDv7 will be generated.",
-            "example": "01913cd5-784f-7d3b-abef-4c77b1f0972d",
-            "format": "guid",
-            "nullable": true,
-            "type": "string"
-          },
           "urls": {
             "description": "The URLs associated with the attachment, each referring to a different representation of the attachment.",
             "items": {
@@ -3958,13 +4001,6 @@
                 "$ref": "#/components/schemas/AttachmentUrlConsumerType_Values"
               }
             ]
-          },
-          "id": {
-            "description": "A self-defined UUIDv7 may be provided in order to support idempotent updates of attachment URLs. If not supplied,\na new UUIDv7 will be generated.",
-            "example": "01913cd5-784f-7d3b-abef-4c77b1f0972d",
-            "format": "guid",
-            "nullable": true,
-            "type": "string"
           },
           "mediaType": {
             "description": "The media type of the attachment.",
@@ -4180,6 +4216,15 @@
             "name": "dueBefore",
             "schema": {
               "format": "date-time",
+              "nullable": true,
+              "type": "string"
+            }
+          },
+          {
+            "description": "Filter by process",
+            "in": "query",
+            "name": "process",
+            "schema": {
               "nullable": true,
               "type": "string"
             }
@@ -4831,6 +4876,15 @@
             "name": "visibleBefore",
             "schema": {
               "format": "date-time",
+              "nullable": true,
+              "type": "string"
+            }
+          },
+          {
+            "description": "Filter by process",
+            "in": "query",
+            "name": "process",
+            "schema": {
               "nullable": true,
               "type": "string"
             }

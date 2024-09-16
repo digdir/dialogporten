@@ -26,7 +26,9 @@ using Digdir.Domain.Dialogporten.Infrastructure.Altinn.Events;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.NameRegistry;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.OrganizationRegistry;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.ResourceRegistry;
+using Digdir.Domain.Dialogporten.Infrastructure.GraphQl;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence.Configurations.Actors;
+using Digdir.Domain.Dialogporten.Infrastructure.Persistence.Repositories;
 using MassTransit;
 using ZiggyCreatures.Caching.Fusion;
 using ZiggyCreatures.Caching.Fusion.NullObjects;
@@ -65,15 +67,11 @@ public static class InfrastructureExtensions
 
         services.AddFusionCacheNeueccMessagePackSerializer();
 
-        if (infrastructureSettings.Redis.Enabled == true)
-        {
-            services.AddStackExchangeRedisCache(opt => opt.Configuration = infrastructureSettings.Redis.ConnectionString);
-            services.AddFusionCacheStackExchangeRedisBackplane(opt => opt.Configuration = infrastructureSettings.Redis.ConnectionString);
-        }
-        else
-        {
-            services.AddDistributedMemoryCache();
-        }
+
+        services.AddStackExchangeRedisCache(opt => opt.Configuration = infrastructureSettings.Redis.ConnectionString);
+        services.AddFusionCacheStackExchangeRedisBackplane(opt => opt.Configuration = infrastructureSettings.Redis.ConnectionString);
+
+        services.AddGraphQlRedisSubscriptions(infrastructureSettings.Redis.ConnectionString);
 
         services.AddMassTransit(x =>
         {
@@ -132,18 +130,20 @@ public static class InfrastructureExtensions
                     {
                         o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
                     })
-                    .AddInterceptors([
+                    .AddInterceptors(
                         services.GetRequiredService<PopulateActorNameInterceptor>(),
                         services.GetRequiredService<ConvertDomainEventsToOutboxMessagesInterceptor>()
-                    ]);
+                    );
             })
             .AddHostedService<DevelopmentMigratorHostedService>()
+            .AddHostedService<DevelopmentSubjectResourceSyncHostedService>()
 
             // Scoped
             .AddScoped<IDialogDbContext>(x => x.GetRequiredService<DialogDbContext>())
             .AddScoped<IUnitOfWork, UnitOfWork>()
 
             // Transient
+            .AddTransient<ISubjectResourceRepository, SubjectResourceRepository>()
             .AddTransient<OutboxDispatcher>()
             .AddTransient<ConvertDomainEventsToOutboxMessagesInterceptor>()
             .AddTransient<PopulateActorNameInterceptor>()
@@ -265,8 +265,11 @@ public static class InfrastructureExtensions
                 SkipMemoryCache = settings.SkipMemoryCache
             })
             .WithRegisteredSerializer()
-            .WithRegisteredDistributedCache()
-            .WithRegisteredBackplane();
+            // If Redis is disabled (eg. in local development or non-web runtimes), we must instruct FusionCache to
+            // allow the use of InMemoryDistributedCache (it is by default ignored as a IDistributedCache implementation)
+            // TryWithRegisteredBackplane is used to ensure that we can continue without Redis as backplane
+            .WithRegisteredDistributedCache(ignoreMemoryDistributedCache: false)
+            .TryWithRegisteredBackplane();
 
         return services;
     }

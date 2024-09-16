@@ -51,7 +51,7 @@ public class DialogContentType : AbstractLookupEntity<DialogContentType, DialogC
             Required = false,
             MaxLength = 1023,
             OutputInList = false,
-            AllowedMediaTypes = [MediaTypes.Html, MediaTypes.PlainText, MediaTypes.Markdown]
+            AllowedMediaTypes = [MediaTypes.PlainText, MediaTypes.Markdown]
         },
         Values.ExtendedStatus => new(id)
         {

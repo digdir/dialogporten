@@ -30,6 +30,7 @@ internal sealed class LocalDevelopmentAltinnAuthorization : IAltinnAuthorization
     public async Task<DialogSearchAuthorizationResult> GetAuthorizedResourcesForSearch(List<string> constraintParties, List<string> serviceResources, string? endUserId,
         CancellationToken cancellationToken = default)
     {
+
         // constraintParties and serviceResources are passed from the client as query parameters
         // If one and/or the other is supplied, this will limit the resources and parties to the ones supplied
         var dialogData = await _db.Dialogs
@@ -42,17 +43,18 @@ internal sealed class LocalDevelopmentAltinnAuthorization : IAltinnAuthorization
         // Keep the number of parties and resources reasonable
         var allParties = dialogData.Select(x => x.Party).Distinct().Take(1000).ToList();
         var allResources = dialogData.Select(x => x.ServiceResource).Distinct().Take(1000).ToList();
+        var allRoles = await _db.SubjectResources.Select(x => x.Subject).Distinct().Take(30).ToListAsync(cancellationToken);
 
-        var hasMorePartiesThanResources = allParties.Count > allResources.Count;
         var authorizedResources = new DialogSearchAuthorizationResult
         {
-            PartiesByResources = hasMorePartiesThanResources ? allResources.ToDictionary(resource => resource, _ => allParties) : new(),
-            ResourcesByParties = hasMorePartiesThanResources ? new() : allParties.ToDictionary(party => party, _ => allResources)
+            ResourcesByParties = allParties.ToDictionary(party => party, _ => allResources),
+            SubjectsByParties = allParties.ToDictionary(party => party, _ => allRoles)
         };
 
         return authorizedResources;
     }
 
-    public async Task<AuthorizedPartiesResult> GetAuthorizedParties(IPartyIdentifier authenticatedParty, CancellationToken cancellationToken = default)
+    [SuppressMessage("Performance", "CA1822:Mark members as static")]
+    public async Task<AuthorizedPartiesResult> GetAuthorizedParties(IPartyIdentifier authenticatedParty, bool _ = false, CancellationToken __ = default)
         => await Task.FromResult(new AuthorizedPartiesResult { AuthorizedParties = [new() { Name = "Local Party", Party = authenticatedParty.FullId, IsCurrentEndUser = true }] });
 }

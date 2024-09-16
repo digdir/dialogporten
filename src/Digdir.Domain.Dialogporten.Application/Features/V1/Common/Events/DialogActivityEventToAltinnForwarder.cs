@@ -45,6 +45,14 @@ internal sealed class DialogActivityEventToAltinnForwarder : DomainEventToAltinn
             data["relatedActivityId"] = domainEvent.RelatedActivityId.ToString()!;
         }
 
+        if (domainEvent.Process is not null)
+        {
+            data["process"] = domainEvent.Process;
+        }
+        if (domainEvent.PrecedingProcess is not null)
+        {
+            data["precedingProcess"] = domainEvent.PrecedingProcess;
+        }
         return data;
     }
 }

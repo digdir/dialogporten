@@ -68,7 +68,7 @@ public class ActivityLogTests(DialogApplication application) : ApplicationCollec
         var activityId = getDialogResult.AsT0.Activities.First().Id;
 
         // Act
-        var response = await Application.Send(new GetDialogActivityQuery()
+        var response = await Application.Send(new GetDialogActivityQuery
         {
             DialogId = createCommandResponse.AsT0.Value,
             ActivityId = activityId

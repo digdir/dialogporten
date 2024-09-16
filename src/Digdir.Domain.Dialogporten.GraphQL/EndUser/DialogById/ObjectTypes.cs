@@ -38,6 +38,8 @@ public sealed class Dialog
     public string ServiceResourceType { get; set; } = null!;
     public string Party { get; set; } = null!;
     public int? Progress { get; set; }
+    public string? Process { get; set; }
+    public string? PrecedingProcess { get; set; }
     public string? ExtendedStatus { get; set; }
     public string? ExternalReference { get; set; }
     public DateTimeOffset? VisibleFrom { get; set; }
@@ -98,7 +100,7 @@ public enum TransmissionType
     Submission = 7,
 
     [GraphQLDescription("A submission correcting/overriding some previously submitted information")]
-    Correction = 8,
+    Correction = 8
 }
 
 public sealed class Content
@@ -197,4 +199,9 @@ public enum AttachmentUrlConsumer
 {
     Gui = 1,
     Api = 2
+}
+
+public sealed class DialogUpdatedPayload
+{
+    public Guid Id { get; set; }
 }

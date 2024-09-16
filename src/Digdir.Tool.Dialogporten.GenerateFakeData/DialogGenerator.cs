@@ -7,7 +7,9 @@ using Digdir.Domain.Dialogporten.Domain.Attachments;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 using Digdir.Domain.Dialogporten.Domain.Http;
+using Medo;
 
 namespace Digdir.Tool.Dialogporten.GenerateFakeData;
 
@@ -27,6 +29,7 @@ public static class DialogGenerator
         DateTimeOffset? updatedAt = null,
         DateTimeOffset? dueAt = null,
         DateTimeOffset? expiresAt = null,
+        string? process = null,
         DialogStatus.Values? status = null,
         CreateDialogContentDto? content = null,
         List<CreateDialogSearchTagDto>? searchTags = null,
@@ -41,6 +44,8 @@ public static class DialogGenerator
             id,
             serviceResource,
             party,
+            null,
+            null,
             progress,
             extendedStatus,
             externalReference,
@@ -48,6 +53,7 @@ public static class DialogGenerator
             updatedAt,
             dueAt,
             expiresAt,
+            process,
             status,
             content,
             searchTags,
@@ -64,6 +70,8 @@ public static class DialogGenerator
         Guid? id = null,
         string? serviceResource = null,
         string? party = null,
+        Func<string?>? serviceResourceGenerator = null,
+        Func<string?>? partyGenerator = null,
         int? progress = null,
         string? extendedStatus = null,
         string? externalReference = null,
@@ -71,6 +79,7 @@ public static class DialogGenerator
         DateTimeOffset? updatedAt = null,
         DateTimeOffset? dueAt = null,
         DateTimeOffset? expiresAt = null,
+        string? process = null,
         DialogStatus.Values? status = null,
         CreateDialogContentDto? content = null,
         List<CreateDialogSearchTagDto>? searchTags = null,
@@ -81,9 +90,9 @@ public static class DialogGenerator
     {
         Randomizer.Seed = seed.HasValue ? new Random(seed.Value) : new Random();
         return new Faker<CreateDialogCommand>()
-            .RuleFor(o => o.Id, f => id)
-            .RuleFor(o => o.ServiceResource, _ => serviceResource ?? GenerateFakeResource())
-            .RuleFor(o => o.Party, _ => party ?? GenerateRandomParty())
+            .RuleFor(o => o.Id, _ => id)
+            .RuleFor(o => o.ServiceResource, _ => serviceResource ?? GenerateFakeResource(serviceResourceGenerator))
+            .RuleFor(o => o.Party, _ => party ?? GenerateRandomParty(partyGenerator))
             .RuleFor(o => o.Progress, f => progress ?? f.Random.Number(0, 100))
             .RuleFor(o => o.ExtendedStatus, f => extendedStatus ?? f.Random.AlphaNumeric(10))
             .RuleFor(o => o.ExternalReference, f => externalReference ?? f.Random.AlphaNumeric(10))
@@ -98,6 +107,7 @@ public static class DialogGenerator
             .RuleFor(o => o.GuiActions, _ => guiActions ?? GenerateFakeDialogGuiActions())
             .RuleFor(o => o.ApiActions, _ => apiActions ?? GenerateFakeDialogApiActions())
             .RuleFor(o => o.Activities, _ => activities ?? GenerateFakeDialogActivities())
+            .RuleFor(o => o.Process, f => process ?? GenerateFakeProcessUri())
             .Generate(count);
     }
 
@@ -114,8 +124,11 @@ public static class DialogGenerator
             searchTags: []);
     }
 
-    public static string GenerateFakeResource()
+    public static string GenerateFakeResource(Func<string?>? generator = null)
     {
+        var generatedValue = generator?.Invoke();
+        if (generatedValue != null) return generatedValue;
+
         var r = new Randomizer();
         // Apply a power function to skew the distribution towards higher numbers
         // The exponent controls the shape of the distribution curve
@@ -128,8 +141,11 @@ public static class DialogGenerator
         return ResourcePrefix + result.ToString("D4", CultureInfo.InvariantCulture);
     }
 
-    public static string GenerateRandomParty(bool forcePerson = false)
+    public static string GenerateRandomParty(Func<string?>? generator = null, bool forcePerson = false)
     {
+        var generatedValue = generator?.Invoke();
+        if (generatedValue != null) return generatedValue;
+
         var r = new Randomizer();
         return r.Bool() && !forcePerson ? $"urn:altinn:organization:identifier-no:{GenerateFakeOrgNo()}" : $"urn:altinn:person:identifier-no:{GenerateFakePid()}";
     }
@@ -216,10 +232,26 @@ public static class DialogGenerator
     public static CreateDialogDialogActivityDto GenerateFakeDialogActivity(DialogActivityType.Values? type = null)
         => GenerateFakeDialogActivities(1, type)[0];
 
+    public static List<CreateDialogDialogTransmissionDto> GenerateFakeDialogTransmissions(int? count = null,
+        DialogTransmissionType.Values? type = null)
+    {
+        return new Faker<CreateDialogDialogTransmissionDto>()
+            .RuleFor(o => o.Id, _ => Uuid7.NewUuid7().ToGuid(true))
+            .RuleFor(o => o.CreatedAt, f => f.Date.Past())
+            .RuleFor(o => o.Type, f => type ?? f.PickRandom<DialogTransmissionType.Values>())
+            .RuleFor(o => o.Sender, _ => new() { ActorType = ActorType.Values.ServiceOwner })
+            .RuleFor(o => o.Content, _ => new()
+            {
+                Title = new() { Value = GenerateFakeLocalizations(1) },
+                Summary = new() { Value = GenerateFakeLocalizations(3) }
+            })
+            .Generate(count ?? new Randomizer().Number(1, 4));
+    }
+
     public static List<CreateDialogDialogActivityDto> GenerateFakeDialogActivities(int? count = null, DialogActivityType.Values? type = null)
     {
         return new Faker<CreateDialogDialogActivityDto>()
-            .RuleFor(o => o.Id, f => f.Random.Guid())
+            .RuleFor(o => o.Id, f => Uuid7.NewUuid7().ToGuid(true))
             .RuleFor(o => o.CreatedAt, f => f.Date.Past())
             .RuleFor(o => o.ExtendedType, f => new Uri(f.Internet.UrlWithPath()))
             .RuleFor(o => o.Type, f => type ?? f.PickRandom<DialogActivityType.Values>())
@@ -247,6 +279,11 @@ public static class DialogGenerator
             .RuleFor(o => o.ResponseSchema, f => new Uri(f.Internet.UrlWithPath()))
             .RuleFor(o => o.DocumentationUrl, f => new Uri(f.Internet.UrlWithPath()))
             .Generate(new Randomizer().Number(min: 1, 4));
+    }
+
+    public static string GenerateFakeProcessUri()
+    {
+        return new Faker().Internet.UrlWithPath();
     }
 
     public static List<CreateDialogDialogGuiActionDto> GenerateFakeDialogGuiActions()
@@ -286,13 +323,6 @@ public static class DialogGenerator
             .RuleFor(o => o.Urls, _ => GenerateFakeDialogAttachmentUrls())
             .Generate(count ?? new Randomizer().Number(1, 6));
     }
-
-    private static readonly string[] MediaTypes = [
-        "application/json",
-        "application/xml",
-        "text/html",
-        "application/pdf"
-    ];
 
     public static List<CreateDialogDialogAttachmentUrlDto> GenerateFakeDialogAttachmentUrls()
     {

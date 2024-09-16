@@ -7,11 +7,12 @@ namespace Digdir.Domain.Dialogporten.GraphQL;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddDialogportenGraphQl(
-        this IServiceCollection services)
+    public static IServiceCollection AddDialogportenGraphQl(this IServiceCollection services)
     {
         return services
             .AddGraphQLServer()
+            // This assumes that subscriptions have been set up by the infrastructure
+            .AddSubscriptionType<Subscriptions>()
             .AddAuthorization()
             .RegisterDbContext<DialogDbContext>()
             .AddDiagnosticEventListener<ApplicationInsightEventListener>()
@@ -21,6 +22,8 @@ public static class ServiceCollectionExtensions
             .AddType<DialogByIdForbidden>()
             .AddType<SearchDialogValidationError>()
             .AddType<SearchDialogForbidden>()
+            .AddInstrumentation()
+            .InitializeOnStartup()
             .Services;
     }
 }

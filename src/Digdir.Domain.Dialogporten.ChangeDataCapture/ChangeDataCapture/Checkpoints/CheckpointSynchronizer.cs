@@ -3,7 +3,7 @@ using Microsoft.Extensions.Options;
 
 namespace Digdir.Domain.Dialogporten.ChangeDataCapture.ChangeDataCapture.Checkpoints;
 
-internal sealed class CheckpointSyncronizer : BackgroundService, IAsyncDisposable
+internal sealed class CheckpointSynchronizer : BackgroundService, IAsyncDisposable
 {
     private IReadOnlyCollection<Checkpoint> _syncedCheckpoints = new List<Checkpoint>().AsReadOnly();
 
@@ -12,13 +12,13 @@ internal sealed class CheckpointSyncronizer : BackgroundService, IAsyncDisposabl
 
     private readonly ICheckpointCache _snapshotCache;
     private readonly ICheckpointRepository _snapshotRepository;
-    private readonly ILogger<CheckpointSyncronizer> _logger;
+    private readonly ILogger<CheckpointSynchronizer> _logger;
     private readonly IDisposable _optionsChangeSubscription;
 
-    public CheckpointSyncronizer(
+    public CheckpointSynchronizer(
         ICheckpointCache cache,
         ICheckpointRepository snapshotRepository,
-        ILogger<CheckpointSyncronizer> logger,
+        ILogger<CheckpointSynchronizer> logger,
         IOptionsMonitor<OutboxCdcSubscriptionOptions> options)
     {
         _snapshotCache = cache ?? throw new ArgumentNullException(nameof(cache));

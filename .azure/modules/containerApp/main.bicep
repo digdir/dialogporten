@@ -22,6 +22,9 @@ param containerAppEnvId string
 @description('The tags to be applied to the container app')
 param tags object
 
+@description('CPU and memory resources for the container app')
+param resources object?
+
 var probes = [
   {
     periodSeconds: 5
@@ -82,6 +85,7 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
           image: image
           env: envVariables
           probes: probes
+          resources: resources
         }
       ]
     }

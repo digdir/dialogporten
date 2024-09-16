@@ -45,7 +45,6 @@ static void BuildAndRun(string[] args)
 
     builder.Host.UseSerilog((context, services, configuration) => configuration
         .MinimumLevel.Warning()
-        .MinimumLevel.Override("Microsoft.EntityFrameworkCore", Serilog.Events.LogEventLevel.Fatal)
         .ReadFrom.Configuration(context.Configuration)
         .ReadFrom.Services(services)
         .Enrich.FromLogContext()
@@ -54,7 +53,9 @@ static void BuildAndRun(string[] args)
             services.GetRequiredService<TelemetryConfiguration>(),
             TelemetryConverter.Traces));
 
-    builder.Configuration.AddAzureConfiguration(builder.Environment.EnvironmentName);
+    builder.Configuration
+        .AddAzureConfiguration(builder.Environment.EnvironmentName)
+        .AddLocalConfiguration(builder.Environment);
 
     builder.Services
         .AddOptions<GraphQlSettings>()

@@ -1,5 +1,6 @@
 ﻿schema {
   query: Queries
+  subscription: Subscriptions
 }
 
 interface DialogByIdError {
@@ -94,6 +95,8 @@ type Dialog {
   serviceResourceType: String!
   party: String!
   progress: Int
+  process: String
+  precedingProcess: String
   extendedStatus: String
   externalReference: String
   visibleFrom: DateTime
@@ -127,6 +130,10 @@ type DialogByIdNotFound implements DialogByIdError {
 type DialogByIdPayload {
   dialog: Dialog
   errors: [DialogByIdError!]!
+}
+
+type DialogUpdatedPayload {
+  id: UUID!
 }
 
 type GuiAction {
@@ -167,6 +174,8 @@ type SearchDialog {
   serviceResourceType: String!
   party: String!
   progress: Int
+  process: String
+  precedingProcess: String
   guiAttachmentCount: Int
   extendedStatus: String
   createdAt: DateTime!
@@ -199,6 +208,10 @@ type SeenLog {
   seenAt: DateTime!
   seenBy: Actor!
   isCurrentEndUser: Boolean!
+}
+
+type Subscriptions @authorize(policy: "enduser") {
+  dialogUpdated(dialogId: UUID!): DialogUpdatedPayload!
 }
 
 type Transmission {
@@ -286,10 +299,10 @@ enum DialogStatus {
   NEW
   "Started. In a serial process, this is used to indicate that, for example, a form filling is ongoing."
   IN_PROGRESS
-  "Equivalent to \"InProgress\", but will be used by the workspace\/frontend for display purposes."
-  SIGNING
-  "For processing by the service owner. In a serial process, this is used after a submission is made."
-  PROCESSING
+  "Used to indicate user-initiated dialogs not yet sent."
+  DRAFT
+  "Sent by the service owner. In a serial process, this is used after a submission is made."
+  SENT
   "Used to indicate that the dialogue is in progress\/under work, but is in a state where the user must do something - for example, correct an error, or other conditions that hinder further processing."
   REQUIRES_ATTENTION
   "The dialogue was completed. This typically means that the dialogue is moved to a GUI archive or similar."

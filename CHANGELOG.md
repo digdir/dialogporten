@@ -1,5 +1,35 @@
 # Changelog
 
+## [1.17.0](https://github.com/digdir/dialogporten/compare/v1.16.0...v1.17.0) (2024-09-10)
+
+
+### Features
+
+* Add SubjectResource entity and db migration ([#1048](https://github.com/digdir/dialogporten/issues/1048)) ([d04d764](https://github.com/digdir/dialogporten/commit/d04d764b80b855b4d906d23d48de53720b2d8bf1))
+* **graphQL:** Add subscription for dialog details ([#1072](https://github.com/digdir/dialogporten/issues/1072)) ([8214acb](https://github.com/digdir/dialogporten/commit/8214acbf61085cacadaea3ef7e5f3d6ac222cc2c))
+* Implement scalable dialog search authorization ([#875](https://github.com/digdir/dialogporten/issues/875)) ([aa8f84d](https://github.com/digdir/dialogporten/commit/aa8f84ded3aaf569e97e2d85f1035d1b14c59915))
+* revise dialog status ([#1099](https://github.com/digdir/dialogporten/issues/1099)) ([0029f46](https://github.com/digdir/dialogporten/commit/0029f46c464e4ff05443cebb73be13b52879ab93))
+
+
+### Bug Fixes
+
+* ensure correct appsettings is used ([#1086](https://github.com/digdir/dialogporten/issues/1086)) ([d43f6d7](https://github.com/digdir/dialogporten/commit/d43f6d7d04108c8baaf131feb0b4a9c4efd18a42))
+* ensure jobs are run with correct arguments and parameters ([#1085](https://github.com/digdir/dialogporten/issues/1085)) ([e21de56](https://github.com/digdir/dialogporten/commit/e21de56130c48684324fd648699a5965c8a88ebf))
+* **webapi:** Return 422 when existing transmission IDs are used in dialog update ([#1094](https://github.com/digdir/dialogporten/issues/1094)) ([7a8a933](https://github.com/digdir/dialogporten/commit/7a8a933fd63f7c456f625bd1885ad429d1fc0832))
+
+## [1.16.0](https://github.com/digdir/dialogporten/compare/v1.15.0...v1.16.0) (2024-09-04)
+
+
+### Features
+
+* **webapi:** Require legacy scope for HTML support ([#1073](https://github.com/digdir/dialogporten/issues/1073)) ([03237cc](https://github.com/digdir/dialogporten/commit/03237cc29d05f34dce3f683368117f546de40762))
+* **webAPI:** Require UUIDv7  ([#1032](https://github.com/digdir/dialogporten/issues/1032)) ([e9b844f](https://github.com/digdir/dialogporten/commit/e9b844f8092bbb28c0ec1d63676593d78719954b))
+
+
+### Bug Fixes
+
+* Fix iss claim in dialog token ([#1047](https://github.com/digdir/dialogporten/issues/1047)) ([9ab4a85](https://github.com/digdir/dialogporten/commit/9ab4a85eea321fd80215616580785f4c99fa85bb))
+
 ## [1.15.0](https://github.com/digdir/dialogporten/compare/v1.14.0...v1.15.0) (2024-08-21)
 
 

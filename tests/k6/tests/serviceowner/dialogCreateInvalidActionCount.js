@@ -23,6 +23,8 @@ export default function () {
 
         return dialog;
     };
+    
+    
 
     describe('Attempt dialog create with two primary actions', () => {
         expectGuiActionErrorResponseForDialog(createDialogWithGuiActions(2, "primary"));

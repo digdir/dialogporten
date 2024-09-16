@@ -24,7 +24,7 @@ brew install docker-compose
 
 4. Finish setup in Podman Desktop
 
-5. Check that `Docker Compatility mode` is enabled, see bottom left corner
+5. Check that `Docker Compatility mode` is enabled, see the bottom left corner
 
 6. Enable privileged [testcontainers-dotnet](https://github.com/testcontainers/testcontainers-dotnet/issues/876#issuecomment-1930397928)  
 `echo "ryuk.container.privileged = true" >> $HOME/.testcontainers.properties`
@@ -46,7 +46,7 @@ brew install docker-compose
 
 3. Follow instructions in Podman Desktop to create and start a Podman machine.
 
-4. In Podman Desktop, go to Settings -> Resources and run setup for the Compose Extension. This will install docker-compose.
+4. In Podman Desktop, go to Settings → Resources and run setup for the Compose Extension. This will install docker-compose.
 
 ### Running the project
 
@@ -102,7 +102,7 @@ Remember to target `Digdir.Domain.Dialogporten.Infrastructure` project when runn
 dotnet ef migrations add -p .\src\Digdir.Domain.Dialogporten.Infrastructure\ TestMigration
 ```
 
-Or change your directory to the infrastructure project, and then run the command.
+Or change your directory to the infrastructure project and then run the command.
 ```powershell
 cd .\src\Digdir.Domain.Dialogporten.Infrastructure\
 dotnet ef migrations add TestMigration
@@ -114,7 +114,9 @@ Besides ordinary unit and integration tests, there are test suites for both func
 See `tests/k6/README.md` for more information.
 
 ## Updating the SDK in global.json
-When RenovateBot updates `global.json` or base image versions in Dockerfiles, remember that these two must match.  
+When RenovateBot updates `global.json` or base image versions in Dockerfiles, make sure they match. 
+The `global.json` file should always have the same SDK version as the base image in the Dockerfiles. 
+This is to ensure that the SDK version used in the local development environment matches the SDK version used in the CI/CD pipeline. 
 `global.json` is used when building the solution in CI/CD.
 
 ## Development in local and test environments
@@ -137,6 +139,58 @@ We are able to toggle some external resources in local development. This is done
 }
 ```
 Toggling these flags will enable/disable the external resources. The `DisableAuth` flag, for example, will disable authentication in the WebAPI project. This is useful when debugging the WebAPI project in an IDE. These settings will only be respected in the `Development` environment.
+
+### Using `appsettings.local.json`
+
+During local development, it is natural to tweak configurations. Some of these configurations are _meant_ to be shared through git, such as the endpoint for a new integration that may be used during local development. Other configurations are only meant for a specific debug session or a developer's personal preferences, which _should not be shared_ through git, such as lowering the log level below warning.
+
+The configuration in the `appsettings.local.json` file takes precedence over **all** other configurations and is only loaded in the **Development environment**. Additionally, it is ignored by git through the `.gitignore` file.
+
+If developers need to add configuration that should be shared, they should use `appsettings.Development.json`. If the configuration is not meant to be shared, they can create an `appsettings.local.json` file to override the desired settings.
+
+Here is an example of enabling debug logging only locally:
+```json5
+// appsettings.local.json
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Debug"
+    }
+  },
+  "Serilog": {
+    "MinimumLevel": {
+      "Default": "Debug"
+    }
+  }
+}
+```
+
+#### Adding `appsettings.local.json` to new projects
+Add the following to the `Program.cs` file to load the `appsettings.local.json` file:
+```csharp
+
+Example usage:
+```csharp
+var builder = WebApplication.CreateBuilder(args);
+// or var builder = CoconaApp.CreateBuilder(args);
+// or var builder = Host.CreateApplicationBuilder(args);
+// or some other builder implementing IHostApplicationBuilder
+
+// Left out for brevity
+builder.Configuration
+    // Add local configuration as the last configuration source to override other configurations
+    //.AddSomeOtherConfiguration()
+    .AddLocalConfiguration(builder.Environment);
+
+// Left out for brevity
+```
+
+## Pull requests
+For pull requests, the title must follow [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/).
+The title of the PR will be used as the commit message when squashing/merging the pull request, and the body of the PR will be used as the description.
+
+This title will be used to generate the changelog (using [Release Please](https://github.com/google-github-actions/release-please-action))
+Using `fix` will add to "Bug Fixes", `feat` will add to "Features". All the others,`chore`, `ci`, etc., will be ignored. ([Example release](https://github.com/digdir/dialogporten/releases/tag/v1.12.0))
 
 ## Deployment
 

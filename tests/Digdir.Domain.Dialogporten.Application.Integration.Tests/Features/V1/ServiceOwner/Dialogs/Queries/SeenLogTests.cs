@@ -105,7 +105,7 @@ public class SeenLogTests(DialogApplication application) : ApplicationCollection
         // Act
         var response = await Application.Send(new SearchDialogSeenLogQuery
         {
-            DialogId = createCommandResponse.AsT0.Value,
+            DialogId = createCommandResponse.AsT0.Value
         });
 
         // Assert

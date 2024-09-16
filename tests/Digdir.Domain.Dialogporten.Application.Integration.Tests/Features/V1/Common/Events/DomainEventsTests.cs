@@ -10,6 +10,7 @@ using AutoMapper;
 using FluentAssertions;
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Delete;
 using Digdir.Domain.Dialogporten.Domain.Attachments;
+using static Digdir.Domain.Dialogporten.Application.Integration.Tests.UuiDv7Utils;
 
 namespace Digdir.Domain.Dialogporten.Application.Integration.Tests.Features.V1.Common.Events;
 
@@ -36,7 +37,7 @@ public class DomainEventsTests(DialogApplication application) : ApplicationColle
         var activities = allActivityTypes.Select(activityType =>
             DialogGenerator.GenerateFakeDialogActivity(activityType)).ToList();
 
-        var dialogId = Guid.NewGuid();
+        var dialogId = GenerateBigEndianUuidV7();
         var createDialogCommand = DialogGenerator.GenerateFakeDialog(
             id: dialogId,
             activities: activities,
@@ -69,7 +70,7 @@ public class DomainEventsTests(DialogApplication application) : ApplicationColle
     public async Task Creates_CloudEvent_When_Dialog_Updates()
     {
         // Arrange
-        var dialogId = Guid.NewGuid();
+        var dialogId = GenerateBigEndianUuidV7();
         var createDialogCommand = DialogGenerator.GenerateFakeDialog(
             id: dialogId,
             activities: [],
@@ -110,7 +111,7 @@ public class DomainEventsTests(DialogApplication application) : ApplicationColle
     public async Task Creates_CloudEvent_When_Attachments_Updates()
     {
         // Arrange
-        var dialogId = Guid.NewGuid();
+        var dialogId = GenerateBigEndianUuidV7();
         var createDialogCommand = DialogGenerator.GenerateFakeDialog(
             id: dialogId,
             attachments: []);
@@ -156,7 +157,7 @@ public class DomainEventsTests(DialogApplication application) : ApplicationColle
     public async Task Creates_CloudEvents_When_Dialog_Deleted()
     {
         // Arrange
-        var dialogId = Guid.NewGuid();
+        var dialogId = GenerateBigEndianUuidV7();
         var createDialogCommand = DialogGenerator.GenerateFakeDialog(id: dialogId, attachments: [], activities: []);
 
         _ = await Application.Send(createDialogCommand);
@@ -184,10 +185,10 @@ public class DomainEventsTests(DialogApplication application) : ApplicationColle
     public async Task Creates_DialogDeletedEvent_When_Dialog_Purged()
     {
         // Arrange
-        var dialogId = Guid.NewGuid();
+        var dialogId = GenerateBigEndianUuidV7();
         var createDialogCommand = DialogGenerator.GenerateFakeDialog(id: dialogId, attachments: [], activities: []);
 
-        _ = await Application.Send(createDialogCommand);
+        await Application.Send(createDialogCommand);
 
         // Act
         var purgeCommand = new PurgeDialogCommand

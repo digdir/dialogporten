@@ -94,7 +94,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
             dialog,
             cancellationToken: cancellationToken);
 
-        if (!authorizationResult.HasReadAccessToMainResource())
+        if (!authorizationResult.HasAccessToMainResource())
         {
             return new EntityNotFound<DialogEntity>(request.DialogId);
         }

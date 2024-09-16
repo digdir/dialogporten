@@ -90,6 +90,11 @@ public sealed class SearchDialogQuery : SortablePaginationParameter<SearchDialog
     public DateTimeOffset? VisibleBefore { get; init; }
 
     /// <summary>
+    /// Filter by process
+    /// </summary>
+    public string? Process { get; init; }
+
+    /// <summary>
     /// Search string for free text search. Will attempt to fuzzily match in all free text fields in the aggregate
     /// </summary>
     public string? Search { get; init; }
@@ -140,9 +145,24 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
         var resourceIds = await _userResourceRegistry.GetCurrentUserResourceIds(cancellationToken);
         var searchExpression = Expressions.LocalizedSearchExpression(request.Search, request.SearchLanguageCode);
 
-        var query = _db.Dialogs
+        var dialogQuery = _db.Dialogs.AsQueryable();
+
+        // If the service owner impersonates an end user, we need to filter the dialogs
+        // based on the end user's authorization, not the service owner's (which is
+        // allowed to see everything about every service resource they own).
+        if (request.EndUserId is not null)
+        {
+            var authorizedResources = await _altinnAuthorization.GetAuthorizedResourcesForSearch(
+                request.Party ?? [],
+                request.ServiceResource ?? [],
+                request.EndUserId,
+                cancellationToken);
+            dialogQuery = _db.Dialogs.PrefilterAuthorizedDialogs(authorizedResources);
+        }
+
+        var paginatedList = await dialogQuery
             .Include(x => x.Content)
-                .ThenInclude(x => x.Value.Localizations)
+            .ThenInclude(x => x.Value.Localizations)
             .WhereIf(!request.ServiceResource.IsNullOrEmpty(),
                 x => request.ServiceResource!.Contains(x.ServiceResource))
             .WhereIf(!request.Party.IsNullOrEmpty(), x => request.Party!.Contains(x.Party))
@@ -157,25 +177,14 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
             .WhereIf(request.UpdatedBefore.HasValue, x => x.UpdatedAt <= request.UpdatedBefore)
             .WhereIf(request.DueAfter.HasValue, x => request.DueAfter <= x.DueAt)
             .WhereIf(request.DueBefore.HasValue, x => x.DueAt <= request.DueBefore)
+           .WhereIf(request.Process is not null, x => EF.Functions.ILike(x.Process!, request.Process!))
             .WhereIf(request.VisibleAfter.HasValue, x => request.VisibleAfter <= x.VisibleFrom)
             .WhereIf(request.VisibleBefore.HasValue, x => x.VisibleFrom <= request.VisibleBefore)
             .WhereIf(request.Search is not null, x =>
                 x.Content.Any(x => x.Value.Localizations.AsQueryable().Any(searchExpression)) ||
                 x.SearchTags.Any(x => EF.Functions.ILike(x.Value, request.Search!))
             )
-            .Where(x => resourceIds.Contains(x.ServiceResource));
-
-        if (request.EndUserId is not null)
-        {
-            var authorizedResources = await _altinnAuthorization.GetAuthorizedResourcesForSearch(
-                request.Party ?? [],
-                request.ServiceResource ?? [],
-                request.EndUserId,
-                cancellationToken);
-            query = query.WhereUserIsAuthorizedFor(authorizedResources);
-        }
-
-        var paginatedList = await query
+            .Where(x => resourceIds.Contains(x.ServiceResource))
             .ProjectTo<IntermediateSearchDialogDto>(_mapper.ConfigurationProvider)
             .ToPaginatedListAsync(request, cancellationToken: cancellationToken);
 
@@ -187,8 +196,6 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
             }
         }
 
-        var mappedItems = _mapper.Map<List<SearchDialogDto>>(paginatedList.Items).ToList();
-        return new PaginatedList<SearchDialogDto>(mappedItems, paginatedList.HasNextPage,
-            paginatedList.ContinuationToken, paginatedList.OrderBy);
+        return paginatedList.ConvertTo(_mapper.Map<SearchDialogDto>);
     }
 }

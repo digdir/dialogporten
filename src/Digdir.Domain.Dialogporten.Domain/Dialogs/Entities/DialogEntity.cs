@@ -37,6 +37,10 @@ public class DialogEntity :
     public DateTimeOffset? DueAt { get; set; }
     public DateTimeOffset? ExpiresAt { get; set; }
 
+    public string? Process { get; set; }
+
+    public string? PrecedingProcess { get; set; }
+
     // === Dependent relationships ===
     public DialogStatus.Values StatusId { get; set; }
     public DialogStatus Status { get; set; } = null!;
@@ -68,7 +72,7 @@ public class DialogEntity :
     public List<DialogSeenLog> SeenLog { get; set; } = [];
 
     public void OnCreate(AggregateNode self, DateTimeOffset utcNow)
-        => _domainEvents.Add(new DialogCreatedDomainEvent(Id, ServiceResource, Party));
+        => _domainEvents.Add(new DialogCreatedDomainEvent(Id, ServiceResource, Party, Process, PrecedingProcess));
 
     public void OnUpdate(AggregateNode self, DateTimeOffset utcNow)
     {
@@ -80,12 +84,12 @@ public class DialogEntity :
         var shouldProduceEvent = self.IsDirectlyModified() || changedChildren.Any();
         if (shouldProduceEvent)
         {
-            _domainEvents.Add(new DialogUpdatedDomainEvent(Id, ServiceResource, Party));
+            _domainEvents.Add(new DialogUpdatedDomainEvent(Id, ServiceResource, Party, Process, PrecedingProcess));
         }
     }
 
     public void OnDelete(AggregateNode self, DateTimeOffset utcNow)
-        => _domainEvents.Add(new DialogDeletedDomainEvent(Id, ServiceResource, Party));
+        => _domainEvents.Add(new DialogDeletedDomainEvent(Id, ServiceResource, Party, Process, PrecedingProcess));
 
     public void UpdateSeenAt(string endUserId, DialogUserType.Values userTypeId, string? endUserName)
     {
@@ -112,7 +116,7 @@ public class DialogEntity :
             }
         });
 
-        _domainEvents.Add(new DialogSeenDomainEvent(Id, ServiceResource, Party));
+        _domainEvents.Add(new DialogSeenDomainEvent(Id, ServiceResource, Party, Process, PrecedingProcess));
     }
 
     private readonly List<IDomainEvent> _domainEvents = [];
