@@ -12,7 +12,7 @@ namespace Digdir.Domain.Dialogporten.WebApi.Common.Json;
 /// This does not however, remove the complex types from the generated documentation, these are handlied by the
 /// schema processor in PaginationAndOrderingsSchemaProcessor.cs
 /// </summary>
-public class PaginatedListParametersProcessor : IOperationProcessor
+public sealed class PaginatedListParametersProcessor : IOperationProcessor
 {
     public bool Process(OperationProcessorContext context)
     {

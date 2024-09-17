@@ -232,7 +232,7 @@ public static class Program
     }
 }
 
-public class Options
+public sealed class Options
 {
     [Option('c', "count", Required = false, HelpText = "Number of fake dialogs to generate.")]
     public int Count { get; set; } = 1;

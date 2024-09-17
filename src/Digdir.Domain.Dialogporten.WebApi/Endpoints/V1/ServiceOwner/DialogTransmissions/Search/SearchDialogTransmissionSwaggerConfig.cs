@@ -8,7 +8,7 @@ using FastEndpoints;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.DialogTransmissions.Search;
 
-public class SearchDialogTransmissionSwaggerConfig : ISwaggerConfig
+public sealed class SearchDialogTransmissionSwaggerConfig : ISwaggerConfig
 {
     public static string OperationId => "GetDialogTransmissionListSO";
     public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder)

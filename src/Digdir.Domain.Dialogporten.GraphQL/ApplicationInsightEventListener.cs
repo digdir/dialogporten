@@ -8,7 +8,7 @@ using Microsoft.ApplicationInsights.Extensibility;
 
 namespace Digdir.Domain.Dialogporten.GraphQL;
 
-public class ApplicationInsightEventListener : ExecutionDiagnosticEventListener
+public sealed class ApplicationInsightEventListener : ExecutionDiagnosticEventListener
 {
     private readonly TelemetryClient _telemetryClient;
 

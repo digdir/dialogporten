@@ -13,7 +13,7 @@ using Digdir.Library.Entity.Abstractions.Features.Versionable;
 
 namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 
-public class DialogEntity :
+public sealed class DialogEntity :
     IEntity,
     ISoftDeletableEntity,
     IVersionableEntity,

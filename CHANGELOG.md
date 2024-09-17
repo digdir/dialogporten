@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.18.0](https://github.com/digdir/dialogporten/compare/v1.17.0...v1.18.0) (2024-09-16)
+
+
+### Features
+
+* add dialogOpened activitytype ([#1110](https://github.com/digdir/dialogporten/issues/1110)) ([711fa6d](https://github.com/digdir/dialogporten/commit/711fa6dcbd3e8ab1240c765b9fe1b765f00fe86d))
+* Add process and precedingProcess to dialog as optional fields ([#1092](https://github.com/digdir/dialogporten/issues/1092)) ([2bf0d30](https://github.com/digdir/dialogporten/commit/2bf0d30619f6c40716a70890cda47fa7b30ad0ac))
+
+
+### Bug Fixes
+
+* Allow setting UpdatedAt when creating Dialog ([#1105](https://github.com/digdir/dialogporten/issues/1105)) ([481e907](https://github.com/digdir/dialogporten/commit/481e907993a1c32337ea6a85ced8312ec4cd1e5b))
+* Authorize access to dialog details for any mainresource action ([#1122](https://github.com/digdir/dialogporten/issues/1122)) ([a7e769a](https://github.com/digdir/dialogporten/commit/a7e769ad2be45c7f72169f7ae980ab24fd43ce72))
+
 ## [1.17.0](https://github.com/digdir/dialogporten/compare/v1.16.0...v1.17.0) (2024-09-10)
 
 

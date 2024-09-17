@@ -10,7 +10,7 @@ public interface IUserParties
     public Task<AuthorizedPartiesResult> GetUserParties(CancellationToken cancellationToken = default);
 }
 
-public class UserParties : IUserParties
+public sealed class UserParties : IUserParties
 {
     private readonly IUser _user;
     private readonly IAltinnAuthorization _altinnAuthorization;

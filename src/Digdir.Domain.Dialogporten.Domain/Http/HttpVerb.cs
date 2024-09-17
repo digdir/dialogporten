@@ -3,7 +3,7 @@
 
 namespace Digdir.Domain.Dialogporten.Domain.Http;
 
-public class HttpVerb : AbstractLookupEntity<HttpVerb, HttpVerb.Values>
+public sealed class HttpVerb : AbstractLookupEntity<HttpVerb, HttpVerb.Values>
 {
     public HttpVerb(Values id) : base(id) { }
     public override HttpVerb MapValue(Values id) => new(id);

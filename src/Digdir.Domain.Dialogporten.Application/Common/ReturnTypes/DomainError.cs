@@ -3,7 +3,7 @@ using FluentValidation.Results;
 
 namespace Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 
-public record DomainError(IEnumerable<DomainFailure> Errors)
+public sealed record DomainError(IEnumerable<DomainFailure> Errors)
 {
     public DomainError(DomainFailure error) : this([error]) { }
     public List<ValidationFailure> ToValidationResults() => Errors

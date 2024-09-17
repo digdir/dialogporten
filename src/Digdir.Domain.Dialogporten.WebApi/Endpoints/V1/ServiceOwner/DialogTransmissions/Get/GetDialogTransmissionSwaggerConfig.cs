@@ -7,7 +7,7 @@ using FastEndpoints;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.DialogTransmissions.Get;
 
-public class GetDialogTransmissionSwaggerConfig : ISwaggerConfig
+public sealed class GetDialogTransmissionSwaggerConfig : ISwaggerConfig
 {
     public static string OperationId => "GetDialogTransmissionSO";
 
