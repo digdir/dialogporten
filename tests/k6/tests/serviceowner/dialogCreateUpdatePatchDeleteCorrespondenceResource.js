@@ -88,7 +88,7 @@ export default function () {
 
     describe('delete dialog with correspondence resource with correct scope', () => {
         const dialogId = dialogIds.pop();
-        const r = purgeSO("dialogs/" + dialogId, null, tokenOptions);
+        const response = purgeSO(`dialogs/${dialogId}`, null, tokenOptions);
         expectStatusFor(r).to.equal(204)
     })
 
