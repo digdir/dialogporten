@@ -77,7 +77,7 @@ export default function () {
         expectStatusFor(response).to.equal(204);
     })
 
-    describe('deconste dialog with correspondence resource without correct scope', () => {
+    describe('delete dialog with correspondence resource without correct scope', () => {
         const dialogId = dialogIds.pop();
         const response = purgeSO('dialogs/' + dialogId);
         expectStatusFor(response).to.equal(403);
@@ -86,7 +86,7 @@ export default function () {
         dialogIds.push(dialogId);
     })
 
-    describe('deconste dialog with correspondence resource with correct scope', () => {
+    describe('delete dialog with correspondence resource with correct scope', () => {
         const dialogId = dialogIds.pop();
         const r = purgeSO("dialogs/" + dialogId, null, tokenOptions);
         expectStatusFor(r).to.equal(204)
