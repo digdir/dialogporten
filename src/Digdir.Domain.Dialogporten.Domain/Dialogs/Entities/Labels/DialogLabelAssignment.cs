@@ -5,7 +5,7 @@ using Digdir.Library.Entity.Abstractions.Features.SoftDeletable;
 
 namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Labels;
 
-// Amund: Er IEntity rett her? he ikkje fonne en koblings entitet å sammenligne mæ endå. 
+// Amund: er dette rett? he ikkje fonne en koblings entitet å sammenligne mæ endå. 
 public class DialogLabelAssignment : IIdentifiableEntity, ISoftDeletableEntity
 {
     public Guid Id { get; set; }
