@@ -25,10 +25,18 @@ export default function () {
         dialogIds.push(response.json());
     })
 
-    describe("Cleanup", () => {
-        dialogIds.forEach((d) => {
-            let r = purgeSO("dialogs/" + d, null, tokenOptions);
-            expect(r.status, 'response status').to.equal(204);
-        });
-    });
+
+    describe('dialog delete correspondence resource wth incorrect scope', () => {
+        let dialogId = dialogIds.pop();
+        let response = purgeSO('dialogs/' +  dialogId);
+        expectStatusFor(response).to.equal(403);
+        dialogIds.push(dialogId);
+    })
+    
+    describe('dialog delete correspondence resource with correct scope', () => {
+        let dialogId = dialogIds.pop();
+        let r = purgeSO("dialogs/" + dialogId, null, tokenOptions);
+        expectStatusFor(r).to.equal(204)
+    })
+
 }
