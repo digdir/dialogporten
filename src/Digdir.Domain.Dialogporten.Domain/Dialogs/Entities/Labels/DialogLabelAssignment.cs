@@ -1,3 +1,4 @@
+using System.Reflection.Emit;
 using Digdir.Library.Entity.Abstractions;
 using Digdir.Library.Entity.Abstractions.Features.Identifiable;
 using Digdir.Library.Entity.Abstractions.Features.SoftDeletable;
@@ -9,9 +10,13 @@ public class DialogLabelAssignment : IIdentifiableEntity, ISoftDeletableEntity
 {
     public Guid Id { get; set; }
 
-    public Guid LabelId { get; set; }
+    // public Guid LabelId { get; set; }
+    public Label Label { get; set; }
 
-    public Guid DialogId { get; set; }
+    // public Guid DialogId { get; set; }
+    public DialogEntity Dialog { get; set; } = null!;
+
+    public string AssignedByParty { get; set; } = null!;
     public bool Deleted { get; set; }
     public DateTimeOffset? DeletedAt { get; set; }
 }
