@@ -4,6 +4,7 @@ using Digdir.Domain.Dialogporten.GraphQL.Common.Extensions.HotChocolate;
 using HotChocolate.Authorization;
 using HotChocolate.Resolvers;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.Extensions.Options;
 using AuthorizationOptions = Microsoft.AspNetCore.Authorization.AuthorizationOptions;
 
@@ -51,7 +52,7 @@ internal sealed class AuthorizationOptionsSetup : IConfigureOptions<Authorizatio
             .Combine(options.DefaultPolicy)
             .RequireScope(AuthorizationScope.Testing));
 
-        options.AddPolicy("foo", policy => policy
+        options.AddPolicy(AuthorizationPolicy.EndUserSubscription, policy => policy
             .Combine(options.GetPolicy(AuthorizationPolicy.EndUser)!)
             .RequireAssertion(context =>
             {
