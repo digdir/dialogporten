@@ -17,10 +17,11 @@ internal sealed class GetOauthAuthorizationServerQueryHandler : IRequestHandler<
 
     public async Task<GetOauthAuthorizationServerDto> Handle(GetOauthAuthorizationServerQuery request, CancellationToken cancellationToken)
     {
+        var issuerUrl = _applicationSettings.Dialogporten.BaseUri.AbsoluteUri.TrimEnd('/') + "/api/v1";
         return await Task.FromResult(new GetOauthAuthorizationServerDto
         {
-            Issuer = _applicationSettings.Dialogporten.BaseUri + "api/v1",
-            JwksUri = _applicationSettings.Dialogporten.BaseUri + "api/v1/.well-known/jwks.json"
+            Issuer = issuerUrl,
+            JwksUri = $"{issuerUrl}/.well-known/jwks.json"
         });
     }
 }
