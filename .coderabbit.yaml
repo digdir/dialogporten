@@ -1,10 +1,9 @@
 # yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
 language: en-US
-tone_instructions: Use a friendly and helpful tone. Try to subtly incorporate Star Wars references.
 early_access: true
 enable_free_tier: true
 reviews:
-  profile: chill
+  profile: assertive
   request_changes_workflow: false
   high_level_summary: true
   high_level_summary_placeholder: "@coderabbitai summary"
@@ -94,4 +93,3 @@ knowledge_base:
     team_keys: []
   pull_requests:
     scope: auto
-
