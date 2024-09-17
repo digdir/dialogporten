@@ -10,7 +10,8 @@ internal static class FluentValidationDateTimeOffsetExtensions
     public const string InPastOfMessage = "'{PropertyName}' must be before '{ComparisonProperty}'.";
     public const string InFutureOfMessage = "'{PropertyName}' must be after '{ComparisonProperty}'.";
 
-    public static IRuleBuilderOptions<T, DateTimeOffset?> IsInFuture<T>(this IRuleBuilder<T, DateTimeOffset?> ruleBuilder)
+    public static IRuleBuilderOptions<T, DateTimeOffset?> IsInFuture<T>(
+        this IRuleBuilder<T, DateTimeOffset?> ruleBuilder)
     {
         return ruleBuilder
             .GreaterThanOrEqualTo(DateTimeOffset.UtcNow)

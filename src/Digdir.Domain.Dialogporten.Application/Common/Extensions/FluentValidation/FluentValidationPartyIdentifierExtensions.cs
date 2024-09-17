@@ -10,10 +10,10 @@ public static class FluentValidationPartyIdentifierExtensions
     {
         return ruleBuilder
             .Must(identifier => identifier is null
-                || (
-                    PartyIdentifier.TryParse(identifier, out var id)
-                    && id is NorwegianPersonIdentifier or NorwegianOrganizationIdentifier
-                ))
+                                || (
+                                    PartyIdentifier.TryParse(identifier, out var id)
+                                    && id is NorwegianPersonIdentifier or NorwegianOrganizationIdentifier
+                                ))
             .WithMessage(
                 $"'{{PropertyName}}' must be on format '{NorwegianOrganizationIdentifier.PrefixWithSeparator}{{norwegian org-nr}}' or " +
                 $"'{NorwegianPersonIdentifier.PrefixWithSeparator}{{norwegian f-nr/d-nr}}' with valid numbers respectively.");

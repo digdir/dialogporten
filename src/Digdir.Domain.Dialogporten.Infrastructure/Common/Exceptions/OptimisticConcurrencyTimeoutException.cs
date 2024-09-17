@@ -1,3 +1,3 @@
 namespace Digdir.Domain.Dialogporten.Infrastructure.Common.Exceptions;
 
-internal class OptimisticConcurrencyTimeoutException : Exception;
+internal sealed class OptimisticConcurrencyTimeoutException : Exception;

@@ -12,7 +12,8 @@ public static class FluentValidationUriExtensions
             .WithMessage("'{PropertyName}' is not a well formatted URI.");
     }
 
-    public static IRuleBuilderOptions<T, TUri> MaximumLength<T, TUri>(this IRuleBuilder<T, TUri> ruleBuilder, int maximumLength)
+    public static IRuleBuilderOptions<T, TUri> MaximumLength<T, TUri>(this IRuleBuilder<T, TUri> ruleBuilder,
+        int maximumLength)
         where TUri : Uri?
     {
         return ruleBuilder
@@ -24,6 +25,7 @@ public static class FluentValidationUriExtensions
                     .AppendArgument("TotalLength", length);
                 return !length.HasValue || length <= maximumLength;
             })
-            .WithMessage("The length of '{PropertyName}' must be {MaxLength} characters or fewer. You entered {TotalLength} characters.");
+            .WithMessage(
+                "The length of '{PropertyName}' must be {MaxLength} characters or fewer. You entered {TotalLength} characters.");
     }
 }

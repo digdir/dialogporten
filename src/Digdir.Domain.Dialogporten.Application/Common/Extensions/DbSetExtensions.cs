@@ -9,28 +9,29 @@ namespace Digdir.Domain.Dialogporten.Application.Common.Extensions;
 
 public static class DbSetExtensions
 {
-    public static IQueryable<DialogEntity> PrefilterAuthorizedDialogs(this DbSet<DialogEntity> dialogs, DialogSearchAuthorizationResult authorizedResources)
+    public static IQueryable<DialogEntity> PrefilterAuthorizedDialogs(this DbSet<DialogEntity> dialogs,
+        DialogSearchAuthorizationResult authorizedResources)
     {
         var parameters = new List<object>();
 
         // lang=sql
         var sb = new StringBuilder()
             .AppendLine(CultureInfo.InvariantCulture, $"""
-                SELECT *
-                FROM "Dialog"
-                WHERE "Id" = ANY(@p{parameters.Count})
-                """);
+                                                       SELECT *
+                                                       FROM "Dialog"
+                                                       WHERE "Id" = ANY(@p{parameters.Count})
+                                                       """);
         parameters.Add(authorizedResources.DialogIds);
 
         foreach (var (party, resources) in authorizedResources.ResourcesByParties)
         {
             // lang=sql
             sb.AppendLine(CultureInfo.InvariantCulture, $"""
-                 OR (
-                    "{nameof(DialogEntity.Party)}" = @p{parameters.Count} 
-                    AND "{nameof(DialogEntity.ServiceResource)}" = ANY(@p{parameters.Count + 1})
-                 )
-                 """);
+                                                         OR (
+                                                            "{nameof(DialogEntity.Party)}" = @p{parameters.Count} 
+                                                            AND "{nameof(DialogEntity.ServiceResource)}" = ANY(@p{parameters.Count + 1})
+                                                         )
+                                                         """);
             parameters.Add(party);
             parameters.Add(resources);
         }
@@ -39,15 +40,15 @@ public static class DbSetExtensions
         {
             // lang=sql
             sb.AppendLine(CultureInfo.InvariantCulture, $"""
-                 OR (
-                    "{nameof(DialogEntity.Party)}" = @p{parameters.Count} 
-                    AND "{nameof(DialogEntity.ServiceResource)}" = ANY(
-                        SELECT "{nameof(SubjectResource.Resource)}" 
-                        FROM "{nameof(SubjectResource)}" 
-                        WHERE "{nameof(SubjectResource.Subject)}" = ANY(@p{parameters.Count + 1})
-                    )
-                 )
-                 """);
+                                                         OR (
+                                                            "{nameof(DialogEntity.Party)}" = @p{parameters.Count} 
+                                                            AND "{nameof(DialogEntity.ServiceResource)}" = ANY(
+                                                                SELECT "{nameof(SubjectResource.Resource)}" 
+                                                                FROM "{nameof(SubjectResource)}" 
+                                                                WHERE "{nameof(SubjectResource.Subject)}" = ANY(@p{parameters.Count + 1})
+                                                            )
+                                                         )
+                                                         """);
             parameters.Add(party);
             parameters.Add(subjects);
         }

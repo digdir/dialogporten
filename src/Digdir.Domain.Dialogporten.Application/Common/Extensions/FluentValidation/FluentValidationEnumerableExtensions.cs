@@ -41,21 +41,22 @@ internal static class FluentValidationEnumerableExtensions
         IEqualityComparer<TKey>? comparer = null)
     {
         return ruleBuilder.Must((parent, dependent, ctx) =>
-        {
-            comparer ??= EqualityComparer<TKey>.Default;
-            var dependentKey = dependentKeySelector(dependent);
-            var member = principalsSelector.GetMember();
-            var func = AccessorCache<T>.GetCachedAccessor(member, principalsSelector);
-            var name = ValidatorOptions.Global.DisplayNameResolver(typeof(T), member, principalsSelector) ?? member.Name;
-            ctx.MessageFormatter
-                .AppendArgument("DependentKey", dependentKey)
-                .AppendArgument("PrincipalName", name);
-            return dependentKey is null ||
-                func(parent)
-                    .EmptyIfNull()
-                    .Any(principal => comparer
-                        .Equals(principalKeySelector(principal), dependentKey));
-        })
-        .WithMessage("Item '{DependentKey}' in '{PrincipalName}' does not exist.");
+            {
+                comparer ??= EqualityComparer<TKey>.Default;
+                var dependentKey = dependentKeySelector(dependent);
+                var member = principalsSelector.GetMember();
+                var func = AccessorCache<T>.GetCachedAccessor(member, principalsSelector);
+                var name = ValidatorOptions.Global.DisplayNameResolver(typeof(T), member, principalsSelector) ??
+                           member.Name;
+                ctx.MessageFormatter
+                    .AppendArgument("DependentKey", dependentKey)
+                    .AppendArgument("PrincipalName", name);
+                return dependentKey is null ||
+                       func(parent)
+                           .EmptyIfNull()
+                           .Any(principal => comparer
+                               .Equals(principalKeySelector(principal), dependentKey));
+            })
+            .WithMessage("Item '{DependentKey}' in '{PrincipalName}' does not exist.");
     }
 }

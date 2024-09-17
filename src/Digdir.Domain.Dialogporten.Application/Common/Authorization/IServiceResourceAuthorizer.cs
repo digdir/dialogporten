@@ -58,12 +58,14 @@ internal sealed class ServiceResourceAuthorizer : IServiceResourceAuthorizer
 
         if (notOwnedResources.Count != 0)
         {
-            return new Forbidden($"Not allowed to reference the following unowned resources: [{string.Join(", ", notOwnedResources)}].");
+            return new Forbidden(
+                $"Not allowed to reference the following unowned resources: [{string.Join(", ", notOwnedResources)}].");
         }
 
         if (!_userResourceRegistry.UserCanModifyResourceType(dialog.ServiceResourceType))
         {
-            return new Forbidden($"User cannot create or modify a dialog with resource type {dialog.ServiceResourceType}.");
+            return new Forbidden(
+                $"User cannot create or modify a dialog with resource type {dialog.ServiceResourceType}.");
         }
 
         return new Success();
@@ -71,7 +73,8 @@ internal sealed class ServiceResourceAuthorizer : IServiceResourceAuthorizer
 
     public async Task<SetResourceTypeResult> SetResourceType(DialogEntity dialog, CancellationToken cancellationToken)
     {
-        var serviceResourceInformation = await _resourceRegistry.GetResourceInformation(dialog.ServiceResource, cancellationToken);
+        var serviceResourceInformation =
+            await _resourceRegistry.GetResourceInformation(dialog.ServiceResource, cancellationToken);
         if (serviceResourceInformation is null)
         {
             _domainContext.AddError(nameof(CreateDialogCommand.ServiceResource),

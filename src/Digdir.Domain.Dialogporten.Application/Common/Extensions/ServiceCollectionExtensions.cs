@@ -43,8 +43,8 @@ public static class ServiceCollectionExtensions
 
         // Remove all matching service registrations
         foreach (var descriptor in services
-            .Where(x => x.ServiceType == serviceType)
-            .ToList())
+                     .Where(x => x.ServiceType == serviceType)
+                     .ToList())
         {
             services.Remove(descriptor);
         }

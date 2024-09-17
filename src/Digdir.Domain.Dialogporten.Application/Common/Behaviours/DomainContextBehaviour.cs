@@ -26,11 +26,11 @@ internal sealed class DomainContextBehaviour<TRequest, TResponse> : IPipelineBeh
 
     public DomainContextBehaviour(IDomainContext domainContext)
     {
-
         _domainContext = domainContext ?? throw new ArgumentNullException(nameof(domainContext));
     }
 
-    public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
+    public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next,
+        CancellationToken cancellationToken)
     {
         TResponse? response;
 

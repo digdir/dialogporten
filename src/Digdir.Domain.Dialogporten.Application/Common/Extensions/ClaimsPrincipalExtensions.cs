@@ -41,14 +41,16 @@ public static class ClaimsPrincipalExtensions
         return value is not null;
     }
 
-    public static bool TryGetOrganizationNumber(this ClaimsPrincipal claimsPrincipal, [NotNullWhen(true)] out string? orgNumber)
+    public static bool TryGetOrganizationNumber(this ClaimsPrincipal claimsPrincipal,
+        [NotNullWhen(true)] out string? orgNumber)
         => claimsPrincipal.FindFirst(ConsumerClaim).TryGetOrganizationNumber(out orgNumber);
 
     public static bool HasScope(this ClaimsPrincipal claimsPrincipal, string scope) =>
         claimsPrincipal.TryGetClaimValue(ScopeClaim, out var scopes) &&
         scopes.Split(ScopeClaimSeparator).Contains(scope);
 
-    public static bool TryGetSupplierOrgNumber(this ClaimsPrincipal claimsPrincipal, [NotNullWhen(true)] out string? orgNumber)
+    public static bool TryGetSupplierOrgNumber(this ClaimsPrincipal claimsPrincipal,
+        [NotNullWhen(true)] out string? orgNumber)
         => claimsPrincipal.FindFirst(SupplierClaim).TryGetOrganizationNumber(out orgNumber);
 
     public static bool TryGetPid(this ClaimsPrincipal claimsPrincipal, [NotNullWhen(true)] out string? pid)
@@ -103,7 +105,8 @@ public static class ClaimsPrincipalExtensions
         }
         else
         {
-            var systemUserAuthorizationDetails = JsonSerializer.Deserialize<SystemUserAuthorizationDetails>(authDetailsJson);
+            var systemUserAuthorizationDetails =
+                JsonSerializer.Deserialize<SystemUserAuthorizationDetails>(authDetailsJson);
             authorizationDetails = [systemUserAuthorizationDetails!];
         }
 
@@ -165,14 +168,17 @@ public static class ClaimsPrincipalExtensions
 
         orgNumber = id.Split(IdDelimiter) switch
         {
-        [IdPrefix, var on] => NorwegianOrganizationIdentifier.IsValid(on) ? on : null,
+#pragma warning disable IDE0055
+            [IdPrefix, var on] => NorwegianOrganizationIdentifier.IsValid(on) ? on : null,
+#pragma warning restore IDE0055
             _ => null
         };
 
         return orgNumber is not null;
     }
 
-    public static bool TryGetAuthenticationLevel(this ClaimsPrincipal claimsPrincipal, [NotNullWhen(true)] out int? authenticationLevel)
+    public static bool TryGetAuthenticationLevel(this ClaimsPrincipal claimsPrincipal,
+        [NotNullWhen(true)] out int? authenticationLevel)
     {
         foreach (var claimType in new[] { IdportenAuthLevelClaim, AltinnAuthLevelClaim })
         {
@@ -230,12 +236,13 @@ public static class ClaimsPrincipalExtensions
         var (userType, externalId) = claimsPrincipal.GetUserType();
         return userType switch
         {
-            UserIdType.ServiceOwnerOnBehalfOfPerson or UserIdType.Person => NorwegianPersonIdentifier.TryParse(externalId, out var personId)
-                                ? personId
-                                : null,
+            UserIdType.ServiceOwnerOnBehalfOfPerson or UserIdType.Person => NorwegianPersonIdentifier.TryParse(
+                externalId, out var personId)
+                ? personId
+                : null,
             UserIdType.SystemUser => SystemUserIdentifier.TryParse(externalId, out var systemUserId)
-                                ? systemUserId
-                                : null,
+                ? systemUserId
+                : null,
             UserIdType.Unknown => null,
             UserIdType.ServiceOwner => null,
             _ => null

@@ -46,5 +46,6 @@ internal sealed class IsValidUuidV7TimestampValidator<T> : PropertyValidator<T, 
     public override string Name { get; } = "Uuid7TimestampValidator";
 
     protected override string GetDefaultMessageTemplate(string errorCode)
-        => "Invalid {PropertyName}. Expected the unix timestamp portion of the UUIDv7 to be in the past. Extrapolated '{date}' from '{PropertyValue}'. See [link TBD].";
+        =>
+            "Invalid {PropertyName}. Expected the unix timestamp portion of the UUIDv7 to be in the past. Extrapolated '{date}' from '{PropertyValue}'. See [link TBD].";
 }

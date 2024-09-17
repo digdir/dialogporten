@@ -2,22 +2,34 @@
 
 namespace Digdir.Domain.Dialogporten.Application.Common.Extensions.Enumerables;
 
-internal delegate Task<IEnumerable<TDestination>> CreateAsyncDelegate<TDestination, in TSource>(IEnumerable<TSource> creatables, CancellationToken cancellationToken = default);
-internal delegate Task UpdateAsyncDelegate<TDestination, TSource>(IEnumerable<UpdateSet<TDestination, TSource>> updateSets, CancellationToken cancellationToken = default);
-internal delegate Task DeleteAsyncDelegate<in TDestination>(IEnumerable<TDestination> deletables, CancellationToken cancellationToken = default);
+internal delegate Task<IEnumerable<TDestination>> CreateAsyncDelegate<TDestination, in TSource>(
+    IEnumerable<TSource> creatables, CancellationToken cancellationToken = default);
 
-internal delegate IEnumerable<TDestination> CreateDelegate<out TDestination, in TSource>(IEnumerable<TSource> creatables);
+internal delegate Task UpdateAsyncDelegate<TDestination, TSource>(
+    IEnumerable<UpdateSet<TDestination, TSource>> updateSets, CancellationToken cancellationToken = default);
+
+internal delegate Task DeleteAsyncDelegate<in TDestination>(IEnumerable<TDestination> deletables,
+    CancellationToken cancellationToken = default);
+
+internal delegate IEnumerable<TDestination> CreateDelegate<out TDestination, in TSource>(
+    IEnumerable<TSource> creatables);
+
 internal delegate void UpdateDelegate<TDestination, TSource>(IEnumerable<UpdateSet<TDestination, TSource>> updateSets);
+
 internal delegate void DeleteDelegate<in TDestination>(IEnumerable<TDestination> deletables);
 
 internal static class DeleteDelegate
 {
 #pragma warning disable IDE0060
     // ReSharper disable once MethodOverloadWithOptionalParameter
-    public static Task NoOp<TDestination>(IEnumerable<TDestination> deletables, CancellationToken cancellationToken = default) => Task.CompletedTask;
-    public static void NoOp<TDestination>(IEnumerable<TDestination> deletables) { /* No operation by design */ }
-#pragma warning restore IDE0060
+    public static Task NoOp<TDestination>(IEnumerable<TDestination> deletables,
+        CancellationToken cancellationToken = default) => Task.CompletedTask;
 
+    public static void NoOp<TDestination>(IEnumerable<TDestination> deletables)
+    {
+        /* No operation by design */
+    }
+#pragma warning restore IDE0060
 }
 
 internal static class MergeExtensions
@@ -79,7 +91,8 @@ internal static class MergeExtensions
         await CreateAsync(destinations, concreteSources, create, updateSets, cancellationToken);
     }
 
-    internal static void Update<TDestination, TSource>(this IMapperBase mapper, IEnumerable<UpdateSet<TDestination, TSource>> updateSets)
+    internal static void Update<TDestination, TSource>(this IMapperBase mapper,
+        IEnumerable<UpdateSet<TDestination, TSource>> updateSets)
     {
         foreach (var (source, destination) in updateSets)
         {

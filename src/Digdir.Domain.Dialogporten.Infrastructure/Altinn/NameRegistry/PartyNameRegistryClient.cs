@@ -8,7 +8,7 @@ using ZiggyCreatures.Caching.Fusion;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.NameRegistry;
 
-internal class PartyNameRegistryClient : IPartyNameRegistry
+internal sealed class PartyNameRegistryClient : IPartyNameRegistry
 {
     private readonly IFusionCache _cache;
     private readonly HttpClient _client;

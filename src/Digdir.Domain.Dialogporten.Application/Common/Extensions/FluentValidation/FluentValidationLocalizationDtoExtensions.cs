@@ -8,6 +8,7 @@ namespace Digdir.Domain.Dialogporten.Application.Common.Extensions.FluentValidat
 internal static class FluentValidationLocalizationDtoExtensions
 {
     private static readonly string[] AllowedTags = ["p", "a", "br", "em", "strong", "ul", "ol", "li"];
+
     private static readonly string ContainsValidHtmlError =
         "Value contains unsupported HTML/markdown. The following tags are supported: " +
         $"[{string.Join(",", AllowedTags.Select(x => '<' + x + '>'))}]. Tag attributes " +
@@ -43,6 +44,7 @@ internal static class FluentValidationLocalizationDtoExtensions
             {
                 return false;
             }
+
             // If the node is a hyperlink, it should only have a href attribute,
             // and it must start with 'https://'
             if (node.IsAnchorTag())
@@ -60,6 +62,7 @@ internal static class FluentValidationLocalizationDtoExtensions
                 return false;
             }
         }
+
         return true;
     }
 
@@ -74,7 +77,7 @@ internal static class FluentValidationLocalizationDtoExtensions
         const string https = "https://";
         const string href = "href";
         return node.Attributes.Count == 1 &&
-            node.Attributes[href] is not null &&
-            node.Attributes[href].Value.StartsWith(https, StringComparison.InvariantCultureIgnoreCase);
+               node.Attributes[href] is not null &&
+               node.Attributes[href].Value.StartsWith(https, StringComparison.InvariantCultureIgnoreCase);
     }
 }
