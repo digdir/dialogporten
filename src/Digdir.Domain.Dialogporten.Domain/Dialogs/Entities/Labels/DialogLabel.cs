@@ -1,4 +1,5 @@
 using Digdir.Library.Entity.Abstractions;
+using Digdir.Library.Entity.Abstractions.Features.Identifiable;
 using Digdir.Library.Entity.Abstractions.Features.SoftDeletable;
 
 namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Labels;
@@ -15,13 +16,9 @@ public static class DialogLabelName
 
 // Amund: Matcher ikkje 100% med diagram/forklaring fra Bjørn.
 // men trur Magnus sa at det er slik jeg skal bruke interfacene.
-public sealed class DialogLabel : IEntity, ISoftDeletableEntity
+public sealed class DialogLabel : IIdentifiableEntity
 {
     public Guid Id { get; set; }
-    public DateTimeOffset CreatedAt { get; set; }
-    public DateTimeOffset UpdatedAt { get; set; }
-    public bool Deleted { get; set; }
-    public DateTimeOffset? DeletedAt { get; set; }
 
     public string LabelName { get; set; } = null!;
 }
