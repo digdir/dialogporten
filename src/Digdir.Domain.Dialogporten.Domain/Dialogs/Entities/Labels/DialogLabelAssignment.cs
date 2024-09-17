@@ -1,7 +1,6 @@
 using Digdir.Library.Entity.Abstractions;
-using Digdir.Library.Entity.Abstractions.Features.Identifiable;
 
-namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
+namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Labels;
 
 // Amund: Er IEntity rett her? he ikkje fonne en koblings entitet å sammenligne mæ endå. 
 public class DialogLabelAssignment : IEntity

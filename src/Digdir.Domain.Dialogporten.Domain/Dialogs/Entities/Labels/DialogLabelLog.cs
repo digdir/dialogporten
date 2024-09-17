@@ -2,7 +2,7 @@ using Digdir.Domain.Dialogporten.Domain.Actors;
 using Digdir.Library.Entity.Abstractions.Features.Aggregate;
 using Digdir.Library.Entity.Abstractions.Features.Immutable;
 
-namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
+namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Labels;
 
 public class DialogLabelLog : IImmutableEntity
 {

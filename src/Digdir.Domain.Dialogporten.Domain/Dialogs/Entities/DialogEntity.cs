@@ -3,6 +3,7 @@ using Digdir.Domain.Dialogporten.Domain.Attachments;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Contents;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Labels;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Events;
 using Digdir.Library.Entity.Abstractions;
@@ -71,6 +72,10 @@ public sealed class DialogEntity :
     [AggregateChild]
     public List<DialogSeenLog> SeenLog { get; set; } = [];
 
+    [AggregateChild]
+    public List<DialogLabel> Labels { get; set; } = [];
+
+
     public void OnCreate(AggregateNode self, DateTimeOffset utcNow)
         => _domainEvents.Add(new DialogCreatedDomainEvent(Id, ServiceResource, Party, Process, PrecedingProcess));
 
@@ -94,10 +99,10 @@ public sealed class DialogEntity :
     public void UpdateSeenAt(string endUserId, DialogUserType.Values userTypeId, string? endUserName)
     {
         var lastSeenAt = SeenLog
-            .Where(x => x.SeenBy.ActorId == endUserId)
-            .MaxBy(x => x.CreatedAt)
-            ?.CreatedAt
-            ?? DateTimeOffset.MinValue;
+                             .Where(x => x.SeenBy.ActorId == endUserId)
+                             .MaxBy(x => x.CreatedAt)
+                             ?.CreatedAt
+                         ?? DateTimeOffset.MinValue;
 
         if (lastSeenAt >= UpdatedAt)
         {
