@@ -2,5 +2,5 @@ namespace Digdir.Domain.Dialogporten.Application.Common.ResourceRegistry;
 
 public sealed class Constants
 {
-    public const string Correspondence = "Correspondence";
+    public const string CorrespondenceService = "correspondenceservice";
 }

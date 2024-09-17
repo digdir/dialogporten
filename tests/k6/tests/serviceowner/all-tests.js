@@ -7,6 +7,7 @@ import { default as dialogCreateExternalResource } from './dialogCreateExternalR
 import { default as dialogCreateInvalidActionCount } from './dialogCreateInvalidActionCount.js';
 import { default as dialogCreateInvalidProcess } from './dialogCreateInvalidProcess.js';
 import { default as dialogCreatePatchDelete } from './dialogCreatePatchDelete.js';
+import { default as dialogCreateUpdatePatchDeleteCorrespondenceResource } from './dialogCreateUpdatePatchDeleteCorrespondenceResource.js';
 import { default as dialogSearch } from './dialogSearch.js';
 import { default as dialogUpdateActivity } from './dialogUpdateActivity.js';
 
@@ -19,6 +20,7 @@ export default function() {
   dialogCreateInvalidActionCount();
   dialogCreateInvalidProcess();
   dialogCreatePatchDelete();
+  dialogCreateUpdatePatchDeleteCorrespondenceResource();
   dialogSearch();
   dialogUpdateActivity();
 }
