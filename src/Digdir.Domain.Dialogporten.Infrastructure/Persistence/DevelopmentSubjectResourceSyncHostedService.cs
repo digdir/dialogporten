@@ -5,7 +5,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence;
 
-public class DevelopmentSubjectResourceSyncHostedService : IHostedService
+internal sealed class DevelopmentSubjectResourceSyncHostedService : IHostedService
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly IHostEnvironment _environment;

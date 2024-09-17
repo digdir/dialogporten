@@ -5,14 +5,14 @@ using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.Authorization;
 
-public sealed class DialogSearchAuthorizationRequest
+internal sealed class DialogSearchAuthorizationRequest
 {
     public required List<Claim> Claims { get; init; }
     public List<string> ConstraintParties { get; set; } = [];
     public List<string> ConstraintServiceResources { get; set; } = [];
 }
 
-public static class DialogSearchAuthorizationRequestExtensions
+internal static class DialogSearchAuthorizationRequestExtensions
 {
     public static string GenerateCacheKey(this DialogSearchAuthorizationRequest request)
     {
