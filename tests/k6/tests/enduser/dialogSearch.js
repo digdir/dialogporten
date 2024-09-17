@@ -197,7 +197,7 @@ export default function () {
     });
 
     describe('List with invalid process filter', () => {
-        let r = getEU('dialogs/' + defaultFilter + '&process=.,.');
+        let r = getEU('dialogs/' + defaultFilter + '&process=?? ?');
         expectStatusFor(r).to.equal(400);
         expect(r, 'response').to.have.validJsonBody();
         expect(r.json(), 'response json').to.have.property("errors");

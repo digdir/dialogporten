@@ -6,7 +6,7 @@ export default function (){
     
     describe ('Attempt to create dialog with invalid URI', () => {
         let dialog = dialogToInsert();
-        dialog.process = '.,.';
+        dialog.process = '?? ?';
         let r = postSO('dialogs', dialog) 
         expectStatusFor(r).to.equal(400);
         expect(r, 'response').to.have.validJsonBody();
