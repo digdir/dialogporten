@@ -63,7 +63,7 @@ export default function () {
         expect(response, 'response').to.have.validJsonBody();
         expect(response.json(), 'response body').to.have.property('errors');
     })
-    
+
     describe('patch dialog with correspondence resource with correct scope', () => {
         const dialogId = dialogIds[dialogs.length - 1];
         const patch = [
@@ -89,7 +89,7 @@ export default function () {
     describe('delete dialog with correspondence resource with correct scope', () => {
         const dialogId = dialogIds.pop();
         const response = purgeSO(`dialogs/${dialogId}`, null, tokenOptions);
-        expectStatusFor(r).to.equal(204)
+        expectStatusFor(response).to.equal(204)
     })
 
 }
