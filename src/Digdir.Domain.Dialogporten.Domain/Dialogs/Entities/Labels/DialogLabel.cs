@@ -13,9 +13,6 @@ public static class DialogLabelName
     public const string Trashcan = "dp:trashcan";
     public const string Archive = "dp:archive";
 }
-
-// Amund: Matcher ikkje 100% med diagram/forklaring fra Bjørn.
-// men trur Magnus sa at det er slik jeg skal bruke interfacene.
 public sealed class DialogLabel : IIdentifiableEntity
 {
     public Guid Id { get; set; }
