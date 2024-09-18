@@ -186,7 +186,7 @@ public static class InfrastructureExtensions
         services.AddHealthChecks()
             .AddRedis(
                 redisConnectionString: infrastructureSettings.Redis.ConnectionString,
-                name: "Redis",
+                name: "redis",
                 failureStatus: HealthStatus.Unhealthy,
                 tags: ["redis"])
             .AddNpgSql(
