@@ -9,8 +9,9 @@ namespace Digdir.Domain.Dialogporten.GraphQL.EndUser.DialogById;
 public sealed class Subscriptions
 {
     [Subscribe]
-    [Authorize(AuthorizationPolicy.EndUserSubscription, ApplyPolicy.Validation)]
     [Topic($"{Constants.DialogUpdatedTopic}{{{nameof(dialogId)}}}")]
+    [Authorize(AuthorizationPolicy.EndUserSubscription, ApplyPolicy.Validation)]
+    [GraphQLDescription($"Requires a dialog token in the '{AuthorizationOptionsSetup.DialogTokenHeader}' header.")]
     public DialogUpdatedPayload DialogUpdated(Guid dialogId,
         [EventMessage] Guid eventMessage)
     {

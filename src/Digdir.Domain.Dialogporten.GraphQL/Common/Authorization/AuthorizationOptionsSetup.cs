@@ -11,7 +11,7 @@ internal sealed class AuthorizationOptionsSetup : IConfigureOptions<Authorizatio
 {
     private readonly GraphQlSettings _options;
     private readonly ICompactJwsGenerator _compactJwsGenerator;
-    private const string DialogTokenHeader = "DigDir-Dialog-Token";
+    public const string DialogTokenHeader = "DigDir-Dialog-Token";
 
     public AuthorizationOptionsSetup(IOptions<GraphQlSettings> options, ICompactJwsGenerator compactJwsGenerator)
     {
