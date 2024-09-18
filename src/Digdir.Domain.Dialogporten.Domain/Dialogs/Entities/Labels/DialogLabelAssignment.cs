@@ -10,10 +10,8 @@ public class DialogLabelAssignment : IIdentifiableEntity, ISoftDeletableEntity
 {
     public Guid Id { get; set; }
 
-    // public Guid LabelId { get; set; }
     public Label Label { get; set; }
 
-    // public Guid DialogId { get; set; }
     public DialogEntity Dialog { get; set; } = null!;
 
     public string AssignedByParty { get; set; } = null!;

@@ -11,6 +11,8 @@ public class DialogLabelLog : IImmutableEntity
 
     public string Action { get; set; } = null!;
 
+    // Magnus: IDK ka den egt jær
+    // Tenker den gjør noe form for join på FK. uee det skal EF gjøre uten [AggregateChild]
     [AggregateChild]
     public Actor Actor { get; set; } = null!;
 
