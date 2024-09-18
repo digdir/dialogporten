@@ -19,8 +19,10 @@ using Digdir.Domain.Dialogporten.WebApi.Common.Swagger;
 using FastEndpoints;
 using FastEndpoints.Swagger;
 using FluentValidation;
+using HealthChecks.UI.Client;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using NSwag;
 using Serilog;
 
@@ -200,7 +202,11 @@ static void BuildAndRun(string[] args)
             uiConfig.DocumentPath = dialogPrefix + "/swagger/{documentName}/swagger.json";
         });
     app.MapControllers();
-    app.MapHealthChecks("/healthz");
+    app.MapHealthChecks("/healthz", new HealthCheckOptions
+    {
+        ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+    });
+
     app.Run();
 }
 

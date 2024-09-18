@@ -30,6 +30,7 @@ using Digdir.Domain.Dialogporten.Infrastructure.GraphQl;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence.Configurations.Actors;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence.Repositories;
 using HotChocolate.Subscriptions;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using StackExchange.Redis;
 using ZiggyCreatures.Caching.Fusion;
 using ZiggyCreatures.Caching.Fusion.NullObjects;
@@ -181,6 +182,19 @@ public static class InfrastructureExtensions
                 client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", altinnSettings.SubscriptionKey);
             })
             .AddPolicyHandlerFromRegistry(PollyPolicy.DefaultHttpRetryPolicy);
+
+        services.AddHealthChecks()
+            .AddRedis(
+                redisConnectionString: infrastructureSettings.Redis.ConnectionString,
+                name: "Redis",
+                failureStatus: HealthStatus.Unhealthy,
+                tags: ["redis"])
+            .AddNpgSql(
+                connectionString: infrastructureSettings.DialogDbConnectionString,
+                name: "postgres",
+                healthQuery: "SELECT 1",
+                failureStatus: HealthStatus.Unhealthy,
+                tags: ["db", "postgres"]);
 
         if (environment.IsDevelopment())
         {
