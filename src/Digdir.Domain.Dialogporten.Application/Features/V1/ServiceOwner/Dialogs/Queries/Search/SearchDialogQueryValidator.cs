@@ -2,6 +2,7 @@
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.FluentValidation;
 using Digdir.Domain.Dialogporten.Application.Common.Pagination;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
+using Digdir.Domain.Dialogporten.Domain.Common;
 using Digdir.Domain.Dialogporten.Domain.Localizations;
 using Digdir.Domain.Dialogporten.Domain.Parties;
 using Digdir.Domain.Dialogporten.Domain.Parties.Abstractions;
@@ -53,8 +54,8 @@ internal sealed class SearchDialogQueryValidator : AbstractValidator<SearchDialo
         RuleForEach(x => x.Status).IsInEnum();
 
         RuleFor(x => x.Process)
-            .Must(x => Uri.IsWellFormedUriString(x, UriKind.Absolute))
-            .WithMessage("{PropertyName} must be a valid URI")
+            .IsValidUri()
+            .MaximumLength(Constants.DefaultMaxUriLength)
             .When(x => x.Process is not null);
     }
 }

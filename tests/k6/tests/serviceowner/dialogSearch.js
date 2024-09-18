@@ -178,7 +178,7 @@ export default function () {
     });
     
     describe('List with invalid process', () => {
-        let r = getSO('dialogs/?CreatedAfter=' + createdAfter + '&process=?? ?');
+        let r = getSO('dialogs/?CreatedAfter=' + createdAfter + '&process=inval|d');
         expectStatusFor(r).to.equal(400);
         expect(r, 'response').to.have.validJsonBody();
         expect(r.json(), 'response json').to.have.property("errors");
