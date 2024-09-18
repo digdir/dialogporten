@@ -16,7 +16,7 @@ public interface ICompactJwsGenerator
     bool TryGetClaimValue(string compactJws, string claim, [NotNullWhen(true)] out string? value);
 }
 
-public class Ed25519Generator : ICompactJwsGenerator
+public sealed class Ed25519Generator : ICompactJwsGenerator
 {
     private readonly ApplicationSettings _applicationSettings;
     private string? _kid;

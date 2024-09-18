@@ -5,7 +5,7 @@ using Npgsql;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Repositories;
 
-internal class SubjectResourceRepository : ISubjectResourceRepository
+internal sealed class SubjectResourceRepository : ISubjectResourceRepository
 {
     private readonly DialogDbContext _dbContext;
 

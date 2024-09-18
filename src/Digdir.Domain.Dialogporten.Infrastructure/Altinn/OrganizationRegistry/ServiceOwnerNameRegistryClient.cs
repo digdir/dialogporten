@@ -3,7 +3,7 @@ using ZiggyCreatures.Caching.Fusion;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.OrganizationRegistry;
 
-internal class ServiceOwnerNameRegistryClient : IServiceOwnerNameRegistry
+internal sealed class ServiceOwnerNameRegistryClient : IServiceOwnerNameRegistry
 {
     private const string ServiceOwnerShortNameReferenceCacheKey = "ServiceOwnerShortNameReference";
 

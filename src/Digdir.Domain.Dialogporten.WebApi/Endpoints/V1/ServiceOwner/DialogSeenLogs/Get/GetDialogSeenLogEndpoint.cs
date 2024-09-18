@@ -6,7 +6,7 @@ using MediatR;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.DialogSeenLogs.Get;
 
-public class GetDialogSeenLogEndpoint : Endpoint<GetDialogSeenLogQuery, GetDialogSeenLogDto>
+public sealed class GetDialogSeenLogEndpoint : Endpoint<GetDialogSeenLogQuery, GetDialogSeenLogDto>
 {
     private readonly ISender _sender;
 

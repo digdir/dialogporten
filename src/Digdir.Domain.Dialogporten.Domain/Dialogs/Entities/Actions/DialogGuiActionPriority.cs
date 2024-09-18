@@ -2,7 +2,7 @@
 
 namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 
-public class DialogGuiActionPriority : AbstractLookupEntity<DialogGuiActionPriority, DialogGuiActionPriority.Values>
+public sealed class DialogGuiActionPriority : AbstractLookupEntity<DialogGuiActionPriority, DialogGuiActionPriority.Values>
 {
     public DialogGuiActionPriority(Values id) : base(id) { }
     public override DialogGuiActionPriority MapValue(Values id) => new(id);

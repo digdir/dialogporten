@@ -95,7 +95,7 @@ public class CreateDialogDto
     /// If not supplied, the current date /time will be used.
     /// </summary>
     /// <example>2022-12-31T23:59:59Z</example>
-    public DateTimeOffset UpdatedAt { get; set; } // TODO: This does not work, as UpdatedAt is always overwritten
+    public DateTimeOffset UpdatedAt { get; set; }
 
     /// <summary>
     /// The aggregated status of the dialog.
@@ -138,7 +138,7 @@ public class CreateDialogDto
     public List<CreateDialogDialogActivityDto> Activities { get; set; } = [];
 }
 
-public class CreateDialogDialogTransmissionDto
+public sealed class CreateDialogDialogTransmissionDto
 {
     /// <summary>
     /// A self-defined UUIDv7 may be provided in order to support idempotent creation of transmissions. If not provided, a new UUIDv7 will be generated.

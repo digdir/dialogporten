@@ -2,7 +2,7 @@
 
 namespace Digdir.Domain.Dialogporten.GraphQL.Common.Authentication;
 
-public class JwtSchemeSelectorMiddleware
+public sealed class JwtSchemeSelectorMiddleware
 {
     private readonly RequestDelegate _next;
 

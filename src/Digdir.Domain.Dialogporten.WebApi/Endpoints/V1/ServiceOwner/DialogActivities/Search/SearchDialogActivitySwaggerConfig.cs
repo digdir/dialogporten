@@ -8,7 +8,7 @@ using FastEndpoints;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.DialogActivities.Search;
 
-public class SearchDialogActivitySwaggerConfig : ISwaggerConfig
+public sealed class SearchDialogActivitySwaggerConfig : ISwaggerConfig
 {
     public static string OperationId => "GetDialogActivityListSO";
     public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder)

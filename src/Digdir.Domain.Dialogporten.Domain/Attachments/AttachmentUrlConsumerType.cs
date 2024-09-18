@@ -2,7 +2,7 @@
 
 namespace Digdir.Domain.Dialogporten.Domain.Attachments;
 
-public class AttachmentUrlConsumerType : AbstractLookupEntity<AttachmentUrlConsumerType, AttachmentUrlConsumerType.Values>
+public sealed class AttachmentUrlConsumerType : AbstractLookupEntity<AttachmentUrlConsumerType, AttachmentUrlConsumerType.Values>
 {
     public AttachmentUrlConsumerType(Values id) : base(id) { }
     public override AttachmentUrlConsumerType MapValue(Values id) => new(id);

@@ -458,6 +458,11 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         {
                             Id = 6,
                             Name = "SignatureProvided"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Name = "DialogOpened"
                         });
                 });
 

@@ -17,7 +17,7 @@ public sealed class PurgeDialogCommand : IRequest<PurgeDialogResult>
 }
 
 [GenerateOneOf]
-public partial class PurgeDialogResult : OneOfBase<Success, EntityNotFound, Forbidden, ConcurrencyError, ValidationError>;
+public sealed partial class PurgeDialogResult : OneOfBase<Success, EntityNotFound, Forbidden, ConcurrencyError, ValidationError>;
 
 internal sealed class PurgeDialogCommandHandler : IRequestHandler<PurgeDialogCommand, PurgeDialogResult>
 {

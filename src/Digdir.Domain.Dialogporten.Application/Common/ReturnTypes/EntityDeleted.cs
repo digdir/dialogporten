@@ -2,7 +2,7 @@
 
 namespace Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 
-public record EntityDeleted<T>(IEnumerable<object> Keys) : EntityDeleted(typeof(T).Name, Keys)
+public sealed record EntityDeleted<T>(IEnumerable<object> Keys) : EntityDeleted(typeof(T).Name, Keys)
 {
     public EntityDeleted(IEnumerable<Guid> keys) : this(keys.Cast<object>()) { }
     public EntityDeleted(Guid keys) : this(new object[] { keys }) { }

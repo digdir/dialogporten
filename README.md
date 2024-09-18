@@ -152,16 +152,19 @@ Here is an example of enabling debug logging only locally:
 ```json5
 // appsettings.local.json
 {
-  "Logging": {
-    "LogLevel": {
-      "Default": "Debug"
+    "Serilog": {
+        "WriteTo": [
+            {
+                "Name": "Console",
+                "Args": {
+                    "outputTemplate": "[{Timestamp:HH:mm:ss.fff} {Level:u3}] {Message:lj}{NewLine}{Exception}"
+                }
+            }
+        ],
+        "MinimumLevel": {
+            "Default": "Debug"
+        }
     }
-  },
-  "Serilog": {
-    "MinimumLevel": {
-      "Default": "Debug"
-    }
-  }
 }
 ```
 

@@ -16,7 +16,7 @@ public sealed class SearchDialogSeenLogQuery : IRequest<SearchDialogSeenLogResul
 }
 
 [GenerateOneOf]
-public partial class SearchDialogSeenLogResult : OneOfBase<List<SearchDialogSeenLogDto>, EntityNotFound, EntityDeleted, Forbidden>;
+public sealed partial class SearchDialogSeenLogResult : OneOfBase<List<SearchDialogSeenLogDto>, EntityNotFound, EntityDeleted, Forbidden>;
 
 internal sealed class SearchDialogSeenLogQueryHandler : IRequestHandler<SearchDialogSeenLogQuery, SearchDialogSeenLogResult>
 {

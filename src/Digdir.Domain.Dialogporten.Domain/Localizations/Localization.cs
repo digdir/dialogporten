@@ -3,7 +3,7 @@ using System.Globalization;
 
 namespace Digdir.Domain.Dialogporten.Domain.Localizations;
 
-public class Localization : IJoinEntity
+public sealed class Localization : IJoinEntity
 {
     private static readonly Dictionary<string, CultureInfo> NeutralCultureByValidCultureCodes =
         BuildNeutralCultureByValidCultureCodes();

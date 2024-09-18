@@ -49,7 +49,7 @@ internal sealed class ContentValueDtoValidator : AbstractValidator<ContentValueD
                          $"Allowed media types are {string.Join(", ", allowedMediaTypes.Select(x => $"'{x}'"))}");
         RuleForEach(x => x.Value)
             .ContainsValidHtml()
-            .When(x => x.MediaType.Equals(LegacyHtmlMediaType, StringComparison.OrdinalIgnoreCase));
+            .When(x => string.Equals(x.MediaType, LegacyHtmlMediaType, StringComparison.OrdinalIgnoreCase));
         RuleForEach(x => x.Value)
             .ContainsValidMarkdown()
             .When(x => x.MediaType is MediaTypes.Markdown);

@@ -33,7 +33,7 @@ public sealed class UserInformation
     public string? Name { get; init; }
 }
 
-public class UserRegistry : IUserRegistry
+public sealed class UserRegistry : IUserRegistry
 {
     private readonly IUser _user;
     private readonly IPartyNameRegistry _partyNameRegistry;

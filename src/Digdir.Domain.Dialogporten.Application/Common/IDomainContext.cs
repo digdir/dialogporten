@@ -14,7 +14,7 @@ public interface IDomainContext
     void EnsureValidState();
 }
 
-internal class DomainContext : IDomainContext
+internal sealed class DomainContext : IDomainContext
 {
     private readonly List<DomainFailure> _errors = [];
 

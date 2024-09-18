@@ -19,10 +19,10 @@ public interface IServiceResourceAuthorizer
 }
 
 [GenerateOneOf]
-public partial class AuthorizeServiceResourcesResult : OneOfBase<Success, Forbidden>;
+public sealed partial class AuthorizeServiceResourcesResult : OneOfBase<Success, Forbidden>;
 
 [GenerateOneOf]
-public partial class SetResourceTypeResult : OneOfBase<Success, DomainContextInvalidated>;
+public sealed partial class SetResourceTypeResult : OneOfBase<Success, DomainContextInvalidated>;
 
 public struct DomainContextInvalidated;
 

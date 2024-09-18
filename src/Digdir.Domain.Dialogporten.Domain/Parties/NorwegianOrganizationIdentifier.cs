@@ -5,7 +5,7 @@ using Digdir.Domain.Dialogporten.Domain.Parties.Abstractions;
 
 namespace Digdir.Domain.Dialogporten.Domain.Parties;
 
-public record NorwegianOrganizationIdentifier : IPartyIdentifier
+public sealed record NorwegianOrganizationIdentifier : IPartyIdentifier
 {
     private static readonly int[] OrgNumberWeights = [3, 2, 7, 6, 5, 4, 3, 2];
     public static string Prefix => "urn:altinn:organization:identifier-no";

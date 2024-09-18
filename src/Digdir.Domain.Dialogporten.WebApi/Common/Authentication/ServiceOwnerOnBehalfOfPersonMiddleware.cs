@@ -6,7 +6,7 @@ using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Common.Authentication;
 
-public class ServiceOwnerOnBehalfOfPersonMiddleware
+public sealed class ServiceOwnerOnBehalfOfPersonMiddleware
 {
     private readonly RequestDelegate _next;
     private const string EndUserId = "enduserid";

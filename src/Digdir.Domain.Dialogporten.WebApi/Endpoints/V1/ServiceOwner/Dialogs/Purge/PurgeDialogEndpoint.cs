@@ -50,7 +50,7 @@ public sealed class PurgeDialogRequest
 
 
 // Custom request binder to avoid attempted automatic deserialization of the Request body if the content type is application/json
-public class PurgeDialogRequestBinder : IRequestBinder<PurgeDialogRequest>
+public sealed class PurgeDialogRequestBinder : IRequestBinder<PurgeDialogRequest>
 {
     public ValueTask<PurgeDialogRequest> BindAsync(BinderContext ctx, CancellationToken ct)
     {

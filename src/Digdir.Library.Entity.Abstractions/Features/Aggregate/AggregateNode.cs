@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using Digdir.Library.Entity.Abstractions.Features.Updatable;
 
 namespace Digdir.Library.Entity.Abstractions.Features.Aggregate;
 
@@ -88,6 +89,34 @@ public abstract class AggregateNode
     /// Convenience method to check if the state of the node is <see cref="AggregateNodeState.Modified"/> and not by a child node.
     /// </summary>
     public bool IsDirectlyModified() => State is AggregateNodeState.Modified && !ModifiedByChild;
+
+    /// <summary>
+    /// Convenience method to check if the state of the node is <see cref="AggregateNodeState.Added"/>.
+    /// </summary>
+    public bool IsAdded() => State is AggregateNodeState.Added;
+
+    /// <summary>
+    /// Convenience method to check if the state of the node is <see cref="AggregateNodeState.Modified"/>.
+    /// </summary>
+    public bool IsModified() => State is AggregateNodeState.Modified;
+
+    /// <summary>
+    /// Convenience method to check if the state of the node is <see cref="AggregateNodeState.Restored"/>.
+    /// </summary>
+    public bool IsRestored() => State is AggregateNodeState.Restored;
+
+    /// <summary>
+    /// Convenience method to check if the state of the node is <see cref="AggregateNodeState.Deleted"/>.
+    /// </summary>
+    public bool IsDeleted() => State is AggregateNodeState.Deleted;
+
+    /// <summary>
+    /// Convenience method to check if the state of the node is <see cref="AggregateNodeState.Added"/>,
+    /// and that UpdatedAt is the default value.
+    /// </summary>
+    /// <param name="updatable"></param>
+    public bool IsAddedWithDefaultUpdatedAt(IUpdateableEntity updatable)
+        => IsAdded() && updatable.UpdatedAt == default;
 }
 
 /// <summary>

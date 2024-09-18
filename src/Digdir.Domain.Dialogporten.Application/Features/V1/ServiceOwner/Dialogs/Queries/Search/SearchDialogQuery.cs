@@ -119,7 +119,7 @@ public sealed class SearchDialogQueryOrderDefinition : IOrderDefinition<Intermed
 }
 
 [GenerateOneOf]
-public partial class SearchDialogResult : OneOfBase<PaginatedList<SearchDialogDto>, ValidationError>;
+public sealed partial class SearchDialogResult : OneOfBase<PaginatedList<SearchDialogDto>, ValidationError>;
 
 internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQuery, SearchDialogResult>
 {

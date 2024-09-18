@@ -19,7 +19,7 @@ public interface IOrderOptionsOptionsBuilder<TTarget>
     IOrderOptions<TTarget> Build();
 }
 
-internal class OrderOptionsBuilder<TTarget> :
+internal sealed class OrderOptionsBuilder<TTarget> :
     IOrderOptionsBuilder<TTarget>,
     IOrderDefaultOptionsBuilder<TTarget>,
     IOrderOptionsOptionsBuilder<TTarget>

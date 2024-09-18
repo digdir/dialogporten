@@ -68,11 +68,14 @@ type StorageProfile = {
 @description('Specifies the storage profile for the virtual machine')
 param storageProfile StorageProfile
 
+@description('Specifies the AD group object ID for the virtual machine administrator login')
+param adminLoginGroupObjectId string
+
 @description('Specifies the SSH public key for the virtual machine')
 @secure()
 param sshPublicKey string
 
-resource virtualMachine 'Microsoft.Compute/virtualMachines@2024-03-01' = {
+resource virtualMachine 'Microsoft.Compute/virtualMachines@2024-07-01' = {
   name: name
   location: location
   zones: [
@@ -118,7 +121,7 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@2024-03-01' = {
   tags: tags
 }
 
-resource aadLoginExtension 'Microsoft.Compute/virtualMachines/extensions@2023-03-01' = {
+resource aadLoginExtension 'Microsoft.Compute/virtualMachines/extensions@2024-07-01' = {
   parent: virtualMachine
   name: 'AADSSHLoginForLinux'
   location: location
@@ -127,5 +130,21 @@ resource aadLoginExtension 'Microsoft.Compute/virtualMachines/extensions@2023-03
     type: 'AADSSHLoginForLinux'
     typeHandlerVersion: '1.0'
     autoUpgradeMinorVersion: true
+  }
+}
+
+@description('This is the built-in Virtual Machine Administrator Login role. See https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#compute')
+resource vmAdminLoginRoleDefinition 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
+  scope: subscription()
+  name: '1c0163c0-47e6-4577-8991-ea5c82e286e4'
+}
+
+resource roleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(virtualMachine.id, adminLoginGroupObjectId, vmAdminLoginRoleDefinition.id)
+  scope: virtualMachine
+  properties: {
+    roleDefinitionId: vmAdminLoginRoleDefinition.id
+    principalId: adminLoginGroupObjectId
+    principalType: 'Group'
   }
 }
