@@ -39,7 +39,7 @@ internal sealed class GetDialogLabelQueryHandler : IRequestHandler<GetDialogLabe
         var currentUserInformation = await _userRegistry.GetCurrentUserInformation(cancellationToken);
         var dialog = await _dbContext.Dialogs
             .AsNoTracking()
-            .Include(x => x.Labels)
+            // .Include(x => x.Labels)
             .FirstOrDefaultAsync(x => x.Id == request.DialogId,
                 cancellationToken: cancellationToken);
         if (dialog is null)
@@ -61,10 +61,11 @@ internal sealed class GetDialogLabelQueryHandler : IRequestHandler<GetDialogLabe
         {
             return new EntityDeleted<DialogEntity>(request.DialogId);
         }
-        return dialog.Labels.Select(x =>
-        {
-            var dto = _mapper.Map<GetDialogLabelDto>(x);
-            return dto;
-        }).ToList();
+        // return dialog.Labels.Select(x =>
+        // {
+        //     var dto = _mapper.Map<GetDialogLabelDto>(x);
+        //     return dto;
+        // }).ToList();
+        return null!;
     }
 }
