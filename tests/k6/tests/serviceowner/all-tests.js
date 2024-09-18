@@ -9,7 +9,7 @@ import { default as dialogCreatePatchDelete } from './dialogCreatePatchDelete.js
 import { default as dialogCreateUpdatePatchDeleteCorrespondenceResource } from './dialogCreateUpdatePatchDeleteCorrespondenceResource.js';
 import { default as dialogSearch } from './dialogSearch.js';
 import { default as dialogUpdateActivity } from './dialogUpdateActivity.js';
-import { default as concurrency } from './concurrency.js';
+import { default as fconcurrency } from './fconcurrency.js';
 
 export default function() {
   authentication();
@@ -22,5 +22,5 @@ export default function() {
   dialogCreateUpdatePatchDeleteCorrespondenceResource();
   dialogSearch();
   dialogUpdateActivity();
-  concurrency();
+  fconcurrency();
 }
