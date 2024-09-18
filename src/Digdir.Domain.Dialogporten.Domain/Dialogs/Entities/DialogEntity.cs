@@ -72,7 +72,6 @@ public sealed class DialogEntity :
     [AggregateChild]
     public List<DialogSeenLog> SeenLog { get; set; } = [];
 
-    [AggregateChild]
     public List<DialogLabel> Labels { get; set; } = [];
 
 
