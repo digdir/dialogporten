@@ -1,10 +1,7 @@
-﻿using System.Security.Claims;
-using Digdir.Domain.Dialogporten.Application.Common;
+﻿using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.GraphQL.Common.Extensions.HotChocolate;
 using HotChocolate.Authorization;
-using HotChocolate.Resolvers;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.Extensions.Options;
 using AuthorizationOptions = Microsoft.AspNetCore.Authorization.AuthorizationOptions;
 
@@ -56,9 +53,6 @@ internal sealed class AuthorizationOptionsSetup : IConfigureOptions<Authorizatio
             .Combine(options.GetPolicy(AuthorizationPolicy.EndUser)!)
             .RequireAssertion(context =>
             {
-                // Cast resource to MiddleWareContext
-                // Get first value from FieldSelection.Arguments (DialogIdSubscriptionInput)
-                // Get HttpContext from context.Resource.ContextData, key is "HttpContext" and assign to var httpContext
                 if (context.Resource is not AuthorizationContext authContext)
                 {
                     return false;
@@ -81,52 +75,33 @@ internal sealed class AuthorizationOptionsSetup : IConfigureOptions<Authorizatio
 
                 if (!httpContext.Request.Headers.TryGetValue(DialogTokenHeader, out var dialogToken))
                 {
-                    // requestBuilder.SetQuery("");
-                    // const string message = "{\"errors\": [{\"message\": \"Forbidden, missing header 'DigDir-Dialog-Token'\"}]}";
-                    // await SendForbiddenAsync(context, message, cancellationToken);
                     return false;
                 }
 
                 if (string.IsNullOrWhiteSpace(dialogToken))
                 {
-                    // requestBuilder.SetQuery("");
-                    // const string message = "{\"errors\": [{\"message\": \"Forbidden, empty token\"}]}";
-                    // await SendForbiddenAsync(context, message, cancellationToken);
                     return false;
                 }
 
                 if (!_compactJwsGenerator.VerifyCompactJws(dialogToken!))
                 {
-                    // requestBuilder.SetQuery("");
-                    // const string message = "{\"errors\": [{\"message\": \"Forbidden, invalid token\"}]}";
-                    // await SendForbiddenAsync(context, message, cancellationToken);
                     return false;
                 }
 
                 if (!_compactJwsGenerator.VerifyCompactJwsTimestamp(dialogToken!))
                 {
-                    // requestBuilder.SetQuery("");
-                    // const string message = "{\"errors\": [{\"message\": \"Forbidden, expired token\"}]}";
-                    // await SendForbiddenAsync(context, message, cancellationToken);
                     return false;
                 }
 
-                if (!_compactJwsGenerator.TryGetClaimValue(dialogToken!, "i", out var dialogTokenDialogId))
+                if (!_compactJwsGenerator.TryGetClaimValue(dialogToken!, DialogTokenClaimTypes.DialogId, out var dialogTokenDialogId))
                 {
-                    // requestBuilder.SetQuery("");
-                    // const string message = "{\"errors\": [{\"message\": \"Forbidden, missing claim 'i', (DialogId)\"}]}";
-                    // await SendForbiddenAsync(context, message, cancellationToken);
                     return false;
                 }
 
                 if (dialogId.ToString() != dialogTokenDialogId)
                 {
-                    // requestBuilder.SetQuery("");
-                    // const string message = "{\"errors\": [{\"message\": \"Forbidden, token dialogId does not match subscription dialogId\"}]}";
-                    // await SendForbiddenAsync(context, message, cancellationToken);
                     return false;
                 }
-
 
                 return true;
             }));
