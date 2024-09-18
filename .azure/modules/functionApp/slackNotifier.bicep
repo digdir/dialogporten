@@ -158,7 +158,7 @@ resource notifyDevTeam 'Microsoft.Insights/actionGroups@2023-01-01' = {
 var query = '''
             union
                  (exceptions
-                 | where not(type == "ClientConnectionFailure" and customDimensions["Service ID"] == "altinn-dev-api")),
+                 | where not(customDimensions.['Service Type'] == 'API Management')),
                  (traces
                  | where severityLevel >= 3 or (severityLevel >= 2 and customDimensions.SourceContext startswith "Digdir"))
              | summarize Count = count()
