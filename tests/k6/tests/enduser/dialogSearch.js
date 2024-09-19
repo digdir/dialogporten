@@ -171,7 +171,7 @@ export default function () {
         expect(allIds.some((id, i) => allIds.indexOf(id) !== i)).to.be.false;
     });
 
-    describe('List with custom orderBy', () => {
+    describe('EU List with custom orderBy', () => {
         let r = getEU('dialogs/' + defaultFilter + '&Limit=3&OrderBy=dueAt_desc,updatedAt_desc');
         expectStatusFor(r).to.equal(200);
         expect(r, 'response').to.have.validJsonBody();
