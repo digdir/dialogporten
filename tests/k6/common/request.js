@@ -16,7 +16,7 @@ function resolveParams(defaultParams, params) {
 }
 
 function getServiceOwnerRequestParams(params = null, tokenOptions = null) {
-    
+
     params = params || {};
     const headers = params.Headers || {};
     const hasOverridenAuthorizationHeader = headers.Authorization !== undefined;
@@ -61,7 +61,6 @@ export function postSO(url, body, params = null, tokenOptions = null) {
     params = extend(true, {}, params, { headers: { 'Content-Type': 'application/json' }});
     return http.post(baseUrlServiceOwner + url, body, getServiceOwnerRequestParams(params, tokenOptions));
 }
-
 
 export function postBatchSO(batch) {
     const processedBatch = batch.map(([url, body, params]) => {
