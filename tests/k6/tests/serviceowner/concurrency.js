@@ -1,4 +1,4 @@
-import { describe, expect, expectStatusFor, postSO, postSOAsync, purgeSO } from '../../common/testimports.js'
+import { describe, expect, expectStatusFor, postSO, postBatchSO, purgeSO } from '../../common/testimports.js'
 import { default as dialogToInsert } from './testdata/01-create-dialog.js';
 
 export default function () {
@@ -16,14 +16,14 @@ export default function () {
 
     describe('Attempt to add a few child entities concurrently', async () => {
 
-        let promises = [];
+        let batch = [];
 
         for (let i=0; i<10; i++) {
             let activity = { type: "Information", performedBy: { actorType: "serviceOwner" }, description: [ { value: i.toString(), languageCode: "nb"}]};
-            promises.push(postSOAsync('dialogs/' + dialogId + '/activities?' + i, activity))
+            batch.push(['dialogs/' + dialogId + '/activities?' + i, activity]);
         }
 
-        const results = await Promise.all(promises);
+        const results = postBatchSO(batch);
 
         // Cleanup here, as we're in another thread
         purgeSO('dialogs/' + dialogId);

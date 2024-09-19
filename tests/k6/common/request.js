@@ -62,6 +62,16 @@ export function postSO(url, body, params = null, tokenOptions = null) {
     return http.post(baseUrlServiceOwner + url, body, getServiceOwnerRequestParams(params, tokenOptions));
 }
 
+
+export function postBatchSO(batch) {
+    const processedBatch = batch.map(([url, body, params]) => {
+        params = extend(true, {}, params, { headers: { 'Content-Type': 'application/json' }});
+        return ['POST', baseUrlServiceOwner + url, JSON.stringify(body), getServiceOwnerRequestParams(params)];
+    });
+
+    return http.batch(processedBatch);
+}
+
 export function postSOAsync(url, body, params = null, tokenOptions = null) {
     body = maybeStringifyBody(body);
     params = extend(true, {}, params, { headers: { 'Content-Type': 'application/json' }});
