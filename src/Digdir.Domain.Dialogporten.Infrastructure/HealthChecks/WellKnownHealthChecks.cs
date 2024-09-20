@@ -54,20 +54,23 @@ internal sealed class WellKnownEndpointsHealthCheck : IHealthCheck
                     unhealthyEndpoints.Add($"{url} (Status Code: {response.StatusCode})");
                 }
             }
-            catch (Exception ex)
+            catch (HttpRequestException ex)
             {
                 _logger.LogError(ex, "Exception occurred while checking Well-Known endpoint: {Url}", url);
-                unhealthyEndpoints.Add($"{url} (Exception: {ex.Message})");
+                return HealthCheckResult.Unhealthy($"Exception occurred while checking Well-Known endpoint {url}.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An unexpected error occurred while checking Well-Known endpoint: {Url}", url);
+                return HealthCheckResult.Unhealthy($"An unexpected error occurred while checking Well-Known endpoint {url}.");
             }
         }
 
-        if (unhealthyEndpoints.Any())
+        if (unhealthyEndpoints.Count > 0)
         {
             var description = $"The following endpoints are unhealthy: {string.Join(", ", unhealthyEndpoints)}";
             return HealthCheckResult.Unhealthy(description);
         }
-
-        return HealthCheckResult.Healthy("All Well-Known endpoints are healthy.");
 
         return HealthCheckResult.Healthy("All Well-Known endpoints are healthy.");
     }

@@ -185,6 +185,10 @@ public static class InfrastructureExtensions
             .AddPolicyHandlerFromRegistry(PollyPolicy.DefaultHttpRetryPolicy);
 
         services.AddHttpClient("HealthCheckClient")
+            .ConfigureHttpClient((services, client) =>
+            {
+                client.Timeout = TimeSpan.FromSeconds(5);
+            })
             .SetHandlerLifetime(TimeSpan.FromSeconds(10));
 
         services.AddHealthChecks()
