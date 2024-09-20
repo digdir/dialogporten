@@ -30,7 +30,7 @@ public class InfrastructureArchitectureTests
             .Should().NotBePublic()
             .GetResult();
 
-        publicClasses.FailingTypes.Should().BeEmpty();
+        publicClasses.FailingTypes.Should().BeNullOrEmpty();
         publicClasses.IsSuccessful.Should().BeTrue();
     }
 }
