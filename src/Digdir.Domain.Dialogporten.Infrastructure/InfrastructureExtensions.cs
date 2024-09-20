@@ -188,13 +188,13 @@ public static class InfrastructureExtensions
                 redisConnectionString: infrastructureSettings.Redis.ConnectionString,
                 name: "redis",
                 failureStatus: HealthStatus.Unhealthy,
-                tags: ["redis"])
+                tags: ["dependencies", "redis"])
             .AddNpgSql(
                 connectionString: infrastructureSettings.DialogDbConnectionString,
                 name: "postgres",
                 healthQuery: "SELECT 1",
                 failureStatus: HealthStatus.Unhealthy,
-                tags: ["db", "postgres"]);
+                tags: ["dependencies", "db", "postgres"]);
 
         if (environment.IsDevelopment())
         {
