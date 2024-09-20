@@ -1,5 +1,6 @@
 ﻿using Digdir.Domain.Dialogporten.Domain.Actors;
 using Digdir.Domain.Dialogporten.Domain.Attachments;
+using Digdir.Domain.Dialogporten.Domain.DialogEndUserContexts.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Contents;
@@ -41,6 +42,7 @@ public sealed class DialogEntity :
 
     public string? PrecedingProcess { get; set; }
 
+
     // === Dependent relationships ===
     public DialogStatus.Values StatusId { get; set; }
     public DialogStatus Status { get; set; } = null!;
@@ -70,9 +72,8 @@ public sealed class DialogEntity :
 
     [AggregateChild]
     public List<DialogSeenLog> SeenLog { get; set; } = [];
-    // Magnus: Vil aggregateChild gjlre DisplayState en del av Dialog aggregatet?
-    // [AggregateChild]
-    public DisplayStateValue DisplayState { get; set; }
+
+    public DialogEndUserContext DialogEndUserContext { get; set; } = null!;
     public void OnCreate(AggregateNode self, DateTimeOffset utcNow)
         => _domainEvents.Add(new DialogCreatedDomainEvent(Id, ServiceResource, Party, Process, PrecedingProcess));
 
