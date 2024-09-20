@@ -15,7 +15,7 @@ public class InfrastructureArchitectureTests
         {
             nameof(InfrastructureAssemblyMarker),
             nameof(InfrastructureExtensions),
-            
+
             // These classes are currently public, but should be internal, moved to another assembly, or deleted
             nameof(OutboxScheduler),
             nameof(IUpstreamServiceError)

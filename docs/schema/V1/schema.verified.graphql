@@ -132,8 +132,9 @@ type DialogByIdPayload {
   errors: [DialogByIdError!]!
 }
 
-type DialogUpdatedPayload {
+type DialogEventPayload {
   id: UUID!
+  type: DialogEventType!
 }
 
 type GuiAction {
@@ -212,7 +213,7 @@ type SeenLog {
 
 type Subscriptions {
   "Requires a dialog token in the 'DigDir-Dialog-Token' header."
-  dialogUpdated(dialogId: UUID!): DialogUpdatedPayload! @authorize(policy: "enduserSubscription", apply: VALIDATION)
+  dialogEvents(dialogId: UUID!): DialogEventPayload! @authorize(policy: "enduserSubscription", apply: VALIDATION)
 }
 
 type Transmission {
@@ -295,6 +296,11 @@ enum ApplyPolicy {
 enum AttachmentUrlConsumer {
   GUI
   API
+}
+
+enum DialogEventType {
+  DIALOG_UPDATED
+  DIALOG_DELETED
 }
 
 enum DialogStatus {
