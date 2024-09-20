@@ -28,6 +28,9 @@ param resources object?
 @description('The suffix for the revision of the container app')
 param revisionSuffix string?
 
+// Container app revision name does not allow '.' character
+replace(revisionSuffix, '.', '-')
+
 var probes = [
   {
     periodSeconds: 5
