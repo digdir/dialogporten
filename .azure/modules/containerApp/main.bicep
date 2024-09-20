@@ -26,10 +26,10 @@ param tags object
 param resources object?
 
 @description('The suffix for the revision of the container app')
-param revisionSuffix string?
+param revisionSuffix string
 
 // Container app revision name does not allow '.' character
-var cleanedRevisionSuffix = replace(revisionSuffix ?? '', '.', '-')
+var cleanedRevisionSuffix = replace(revisionSuffix, '.', '-')
 
 var probes = [
   {
