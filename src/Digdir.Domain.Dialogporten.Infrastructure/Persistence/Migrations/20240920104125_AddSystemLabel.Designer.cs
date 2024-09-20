@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(DialogDbContext))]
-    [Migration("20240920064859_AddSystemLabel")]
+    [Migration("20240920104125_AddSystemLabel")]
     partial class AddSystemLabel
     {
         /// <inheritdoc />
@@ -226,6 +226,38 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.HasIndex("SystemLabelId");
 
                     b.ToTable("DialogEndUserContext");
+                });
+
+            modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.DialogEndUserContexts.Entities.LabelAssignmentLog", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<Guid>("ContextId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("current_timestamp at time zone 'utc'");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ContextId");
+
+                    b.ToTable("LabelAssignmentLog");
                 });
 
             modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.DialogEndUserContexts.Entities.SystemLabel", b =>
@@ -1283,6 +1315,19 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.ToTable("SubjectResource");
                 });
 
+            modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.DialogEndUserContexts.Entities.LabelAssignmentLogActor", b =>
+                {
+                    b.HasBaseType("Digdir.Domain.Dialogporten.Domain.Actors.Actor");
+
+                    b.Property<Guid>("LabelAssignmentLogId")
+                        .HasColumnType("uuid");
+
+                    b.HasIndex("LabelAssignmentLogId")
+                        .IsUnique();
+
+                    b.HasDiscriminator().HasValue("LabelAssignmentLogActor");
+                });
+
             modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities.DialogActivityPerformedByActor", b =>
                 {
                     b.HasBaseType("Digdir.Domain.Dialogporten.Domain.Actors.Actor");
@@ -1475,6 +1520,17 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.Navigation("Dialog");
 
                     b.Navigation("SystemLabel");
+                });
+
+            modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.DialogEndUserContexts.Entities.LabelAssignmentLog", b =>
+                {
+                    b.HasOne("Digdir.Domain.Dialogporten.Domain.DialogEndUserContexts.Entities.DialogEndUserContext", "Context")
+                        .WithMany()
+                        .HasForeignKey("ContextId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Context");
                 });
 
             modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions.DialogApiAction", b =>
@@ -1694,6 +1750,17 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.Navigation("OutboxMessage");
                 });
 
+            modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.DialogEndUserContexts.Entities.LabelAssignmentLogActor", b =>
+                {
+                    b.HasOne("Digdir.Domain.Dialogporten.Domain.DialogEndUserContexts.Entities.LabelAssignmentLog", "LabelAssignmentLog")
+                        .WithOne("PerformedBy")
+                        .HasForeignKey("Digdir.Domain.Dialogporten.Domain.DialogEndUserContexts.Entities.LabelAssignmentLogActor", "LabelAssignmentLogId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("LabelAssignmentLog");
+                });
+
             modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities.DialogActivityPerformedByActor", b =>
                 {
                     b.HasOne("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities.DialogActivity", "Activity")
@@ -1820,6 +1887,12 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.Navigation("DisplayName");
 
                     b.Navigation("Urls");
+                });
+
+            modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.DialogEndUserContexts.Entities.LabelAssignmentLog", b =>
+                {
+                    b.Navigation("PerformedBy")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions.DialogApiAction", b =>

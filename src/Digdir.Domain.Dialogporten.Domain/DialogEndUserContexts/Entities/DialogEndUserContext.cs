@@ -15,4 +15,6 @@ public class DialogEndUserContext : IEntity
 
     public SystemLabel.Values SystemLabelId { get; set; } = SystemLabel.Values.Default;
     public SystemLabel SystemLabel { get; set; } = null!;
+
+    public List<LabelAssignmentLog> LabelAssignmentLogs { get; set; } = [];
 }

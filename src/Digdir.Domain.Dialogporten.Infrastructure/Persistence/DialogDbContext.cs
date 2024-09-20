@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System.Linq.Expressions;
 using Digdir.Domain.Dialogporten.Domain.Actors;
+using Digdir.Domain.Dialogporten.Domain.DialogEndUserContexts.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Contents;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions.Contents;
@@ -43,10 +44,11 @@ internal sealed class DialogDbContext : DbContext, IDialogDbContext
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
     public DbSet<OutboxMessageConsumer> OutboxMessageConsumers => Set<OutboxMessageConsumer>();
     public DbSet<SubjectResource> SubjectResources => Set<SubjectResource>();
+    public DbSet<DialogEndUserContext> DialogEndUserContexts => Set<DialogEndUserContext>();
+    public DbSet<LabelAssignmentLog> LabelAssignmentLogs => Set<LabelAssignmentLog>();
 
     //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) =>
     //    optionsBuilder.LogTo(Console.WriteLine);
-
     internal bool TrySetOriginalRevision<TEntity>(
         TEntity? entity,
         Guid? revision)
@@ -62,6 +64,7 @@ internal sealed class DialogDbContext : DbContext, IDialogDbContext
         prop.IsModified = false;
         return true;
     }
+
 
     /// <inheritdoc/>
     public bool MustWhenModified<TEntity, TProperty>(

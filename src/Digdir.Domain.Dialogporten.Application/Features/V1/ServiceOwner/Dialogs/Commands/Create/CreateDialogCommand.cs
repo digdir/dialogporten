@@ -5,6 +5,7 @@ using Digdir.Domain.Dialogporten.Application.Common.Authorization;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Domain.Common;
+using Digdir.Domain.Dialogporten.Domain.DialogEndUserContexts.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
@@ -61,6 +62,8 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
             _domainContext.AddError(new DomainFailure(nameof(DialogEntity.Org),
                 "Cannot find service owner organization shortname for current user. Please ensure that you are logged in as a service owner."));
         }
+
+        dialog.DialogEndUserContext = new();
 
         await EnsureNoExistingUserDefinedIds(dialog, cancellationToken);
         await _db.Dialogs.AddAsync(dialog, cancellationToken);
