@@ -11,7 +11,7 @@ internal sealed class AuthorizationOptionsSetup : IConfigureOptions<Authorizatio
 {
     private readonly GraphQlSettings _options;
     private readonly ICompactJwsGenerator _compactJwsGenerator;
-    public const string DialogTokenHeader = "DigDir-Dialog-Token";
+    // public const string DialogTokenHeader = "DigDir-Dialog-Token";
 
     public AuthorizationOptionsSetup(IOptions<GraphQlSettings> options, ICompactJwsGenerator compactJwsGenerator)
     {
@@ -73,7 +73,7 @@ internal sealed class AuthorizationOptionsSetup : IConfigureOptions<Authorizatio
                     return false;
                 }
 
-                if (!httpContext.Request.Headers.TryGetValue(DialogTokenHeader, out var dialogToken))
+                if (!httpContext.Request.Headers.TryGetValue("", out var dialogToken))
                 {
                     return false;
                 }

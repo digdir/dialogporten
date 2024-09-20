@@ -11,7 +11,7 @@ public sealed class Subscriptions
     [Subscribe]
     [Topic($"{Constants.DialogUpdatedTopic}{{{nameof(dialogId)}}}")]
     [Authorize(AuthorizationPolicy.EndUserSubscription, ApplyPolicy.Validation)]
-    [GraphQLDescription($"Requires a dialog token in the '{AuthorizationOptionsSetup.DialogTokenHeader}' header.")]
+    [GraphQLDescription($"Requires a dialog token in the '{DialogTokenMiddleware.DialogTokenHeader}' header.")]
     public DialogUpdatedPayload DialogUpdated(Guid dialogId,
         [EventMessage] Guid eventMessage)
     {
