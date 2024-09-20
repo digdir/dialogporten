@@ -33,7 +33,7 @@ internal sealed class WellKnownEndpointsHealthCheck : IHealthCheck
             .Select(section => section.GetValue<string>("WellKnown"))
             .ToList();
 
-        if (!wellKnownEndpoints.Any())
+        if (wellKnownEndpoints.Count == 0)
         {
             _logger.LogWarning("No Well-Known endpoints found in configuration.");
             return HealthCheckResult.Unhealthy("No Well-Known endpoints are configured.");
