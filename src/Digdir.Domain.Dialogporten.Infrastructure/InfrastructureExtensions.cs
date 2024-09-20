@@ -34,6 +34,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using StackExchange.Redis;
 using ZiggyCreatures.Caching.Fusion;
 using ZiggyCreatures.Caching.Fusion.NullObjects;
+using Digdir.Domain.Dialogporten.Infrastructure.HealthChecks;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure;
 
@@ -183,18 +184,26 @@ public static class InfrastructureExtensions
             })
             .AddPolicyHandlerFromRegistry(PollyPolicy.DefaultHttpRetryPolicy);
 
+        services.AddHttpClient("HealthCheckClient")
+            .SetHandlerLifetime(TimeSpan.FromSeconds(10));
+
         services.AddHealthChecks()
             .AddRedis(
                 redisConnectionString: infrastructureSettings.Redis.ConnectionString,
                 name: "redis",
                 failureStatus: HealthStatus.Unhealthy,
-                tags: ["dependencies", "redis"])
+                tags: ["dependencies"])
             .AddNpgSql(
                 connectionString: infrastructureSettings.DialogDbConnectionString,
                 name: "postgres",
                 healthQuery: "SELECT 1",
                 failureStatus: HealthStatus.Unhealthy,
-                tags: ["dependencies", "db", "postgres"]);
+                tags: ["dependencies"])
+            .AddCheck<WellKnownEndpointsHealthCheck>(
+                "Well-Known Endpoints",
+                failureStatus: HealthStatus.Unhealthy,
+                tags: ["dependencies", "auth"]);
+
 
         if (environment.IsDevelopment())
         {
