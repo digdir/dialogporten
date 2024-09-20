@@ -33,6 +33,12 @@ internal sealed class WellKnownEndpointsHealthCheck : IHealthCheck
             .Select(section => section.GetValue<string>("WellKnown"))
             .ToList();
 
+        if (!wellKnownEndpoints.Any())
+        {
+            _logger.LogWarning("No Well-Known endpoints found in configuration.");
+            return HealthCheckResult.Unhealthy("No Well-Known endpoints are configured.");
+        }
+
         var client = _httpClientFactory.CreateClient("HealthCheckClient");
 
         var unhealthyEndpoints = new List<string>();
