@@ -3,7 +3,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Primitives;
 using NSec.Cryptography;
 
 namespace Digdir.Domain.Dialogporten.Application.Common;

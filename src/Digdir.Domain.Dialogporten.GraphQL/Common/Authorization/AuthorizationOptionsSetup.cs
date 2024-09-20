@@ -1,4 +1,4 @@
-﻿using Digdir.Domain.Dialogporten.Application.Common;
+﻿using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.GraphQL.Common.Extensions.HotChocolate;
 using HotChocolate.Authorization;
 using Microsoft.AspNetCore.Authorization;
@@ -10,12 +10,9 @@ namespace Digdir.Domain.Dialogporten.GraphQL.Common.Authorization;
 internal sealed class AuthorizationOptionsSetup : IConfigureOptions<AuthorizationOptions>
 {
     private readonly GraphQlSettings _options;
-    private readonly ICompactJwsGenerator _compactJwsGenerator;
-    // public const string DialogTokenHeader = "DigDir-Dialog-Token";
 
-    public AuthorizationOptionsSetup(IOptions<GraphQlSettings> options, ICompactJwsGenerator compactJwsGenerator)
+    public AuthorizationOptionsSetup(IOptions<GraphQlSettings> options)
     {
-        _compactJwsGenerator = compactJwsGenerator ?? throw new ArgumentNullException(nameof(compactJwsGenerator));
         _options = options.Value ?? throw new ArgumentNullException(nameof(options));
     }
 
@@ -58,52 +55,13 @@ internal sealed class AuthorizationOptionsSetup : IConfigureOptions<Authorizatio
                     return false;
                 }
 
-                if (!authContext.ContextData.TryGetValue("HttpContext", out var httpContextObj))
-                {
-                    return false;
-                }
-
-                if (httpContextObj is not HttpContext httpContext)
-                {
-                    return false;
-                }
-
                 if (!authContext.Document.Definitions.TryGetSubscriptionDialogId(out var dialogId))
                 {
                     return false;
                 }
 
-                if (!httpContext.Request.Headers.TryGetValue("", out var dialogToken))
-                {
-                    return false;
-                }
-
-                if (string.IsNullOrWhiteSpace(dialogToken))
-                {
-                    return false;
-                }
-
-                if (!_compactJwsGenerator.VerifyCompactJws(dialogToken!))
-                {
-                    return false;
-                }
-
-                if (!_compactJwsGenerator.VerifyCompactJwsTimestamp(dialogToken!))
-                {
-                    return false;
-                }
-
-                if (!_compactJwsGenerator.TryGetClaimValue(dialogToken!, DialogTokenClaimTypes.DialogId, out var dialogTokenDialogId))
-                {
-                    return false;
-                }
-
-                if (dialogId.ToString() != dialogTokenDialogId)
-                {
-                    return false;
-                }
-
-                return true;
+                context.User.TryGetClaimValue("dialogId", out var dialogIdClaimValue);
+                return dialogId.ToString() == dialogIdClaimValue;
             }));
     }
 }
