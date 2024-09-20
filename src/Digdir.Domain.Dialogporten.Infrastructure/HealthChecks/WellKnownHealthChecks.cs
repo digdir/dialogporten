@@ -8,7 +8,7 @@ using Microsoft.Extensions.Options;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.HealthChecks;
 
-public class WellKnownEndpointsHealthCheck : IHealthCheck
+internal sealed class WellKnownEndpointsHealthCheck : IHealthCheck
 {
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly ILogger<WellKnownEndpointsHealthCheck> _logger;
