@@ -29,7 +29,7 @@ param resources object?
 param revisionSuffix string?
 
 // Container app revision name does not allow '.' character
-replace(revisionSuffix, '.', '-')
+revisionSuffix = revisionSuffix.replace('.', '-')
 
 var probes = [
   {
