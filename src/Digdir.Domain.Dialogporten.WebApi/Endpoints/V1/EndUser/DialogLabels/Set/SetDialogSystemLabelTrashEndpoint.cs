@@ -16,7 +16,7 @@ public class SetDialogSystemLabelTrashEndpoint(ISender sender) : Endpoint<SetDia
     {
         // Spørsmål: Kan jeg lage parameter for {trash} samme som med dialogId?
         // 
-        Post("dialogs/{dialogId}/actions/setsystemlabel/{labelId}");
+        Post("dialogs/{dialogId}/actions/setsystemlabel/{label}");
         Policies(AuthorizationPolicy.EndUser);
         Group<EndUserGroup>();
 

@@ -16,12 +16,11 @@ namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogLabel
 public sealed class SetDialogSystemLabelCommand : IRequest<SetDialogSystemLabelResult>
 {
     public Guid DialogId { get; set; }
-    public SystemLabel.Values LabelId { get; set; }
+    public SystemLabel.Values Label { get; set; }
 }
 
 [GenerateOneOf]
 public sealed partial class SetDialogSystemLabelResult : OneOfBase<Success, EntityNotFound, Forbidden, EntityDeleted, DomainError, ConcurrencyError>;
-
 
 internal sealed class SetDialogSystemLabelHandler : IRequestHandler<SetDialogSystemLabelCommand, SetDialogSystemLabelResult>
 {
@@ -68,7 +67,7 @@ internal sealed class SetDialogSystemLabelHandler : IRequestHandler<SetDialogSys
         }
         // Amund: Her skal ting gjæres, dialog e ferdig fonne, endUserContext e joina, bruker har accessToMainResource!
         // Nå kan SystemLabel oppdateres?!
-        dialog.DialogEndUserContext.SystemLabelId = request.LabelId;
+        dialog.DialogEndUserContext.SystemLabelId = request.Label;
         var saveResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
         return saveResult.Match<SetDialogSystemLabelResult>(
             success => success,
