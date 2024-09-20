@@ -132,8 +132,9 @@ type DialogByIdPayload {
   errors: [DialogByIdError!]!
 }
 
-type DialogUpdatedPayload {
+type DialogEventPayload {
   id: UUID!
+  type: DialogEventType!
 }
 
 type GuiAction {
@@ -211,7 +212,7 @@ type SeenLog {
 }
 
 type Subscriptions @authorize(policy: "enduser") {
-  dialogUpdated(dialogId: UUID!): DialogUpdatedPayload!
+  dialogEvents(dialogId: UUID!): DialogEventPayload!
 }
 
 type Transmission {
@@ -294,6 +295,11 @@ enum ApplyPolicy {
 enum AttachmentUrlConsumer {
   GUI
   API
+}
+
+enum DialogEventType {
+  DIALOG_UPDATED
+  DIALOG_DELETED
 }
 
 enum DialogStatus {
