@@ -14,7 +14,7 @@ public sealed class Subscriptions
     public DialogEventPayload DialogEvents(Guid dialogId,
         [EventMessage] DialogEventPayload eventMessage)
     {
-        Console.WriteLine(dialogId);
+        ArgumentNullException.ThrowIfNull(dialogId);
         ArgumentNullException.ThrowIfNull(eventMessage);
         return eventMessage;
     }
