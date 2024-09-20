@@ -1,6 +1,8 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Events;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Events.Activities;
 using Digdir.Domain.Dialogporten.Domain.Outboxes;
+using Digdir.Domain.Dialogporten.Infrastructure.GraphQl;
 using Digdir.Library.Entity.Abstractions.Features.EventPublisher;
 using HotChocolate.Subscriptions;
 using Microsoft.EntityFrameworkCore.Diagnostics;
@@ -72,8 +74,28 @@ internal sealed class ConvertDomainEventsToOutboxMessagesInterceptor : SaveChang
                 var task = domainEvent switch
                 {
                     DialogUpdatedDomainEvent dialogUpdatedDomainEvent => _topicEventSender.SendAsync(
-                        $"{Constants.DialogUpdatedTopic}{dialogUpdatedDomainEvent.DialogId}",
-                        dialogUpdatedDomainEvent.DialogId,
+                        $"{Constants.DialogEventsTopic}{dialogUpdatedDomainEvent.DialogId}",
+                        new DialogEventPayload
+                        {
+                            Id = dialogUpdatedDomainEvent.DialogId,
+                            Type = DialogEventType.DialogUpdated
+                        },
+                        cancellationToken),
+                    DialogDeletedDomainEvent dialogDeletedDomainEvent => _topicEventSender.SendAsync(
+                        $"{Constants.DialogEventsTopic}{dialogDeletedDomainEvent.DialogId}",
+                        new DialogEventPayload
+                        {
+                            Id = dialogDeletedDomainEvent.DialogId,
+                            Type = DialogEventType.DialogDeleted
+                        },
+                        cancellationToken),
+                    DialogActivityCreatedDomainEvent dialogActivityCreatedDomainEvent => _topicEventSender.SendAsync(
+                        $"{Constants.DialogEventsTopic}{dialogActivityCreatedDomainEvent.DialogId}",
+                        new DialogEventPayload
+                        {
+                            Id = dialogActivityCreatedDomainEvent.DialogId,
+                            Type = DialogEventType.DialogUpdated
+                        },
                         cancellationToken),
                     _ => ValueTask.CompletedTask
                 };
