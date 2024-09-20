@@ -47,6 +47,7 @@ jobs:
               - '.github/**/*'
               - 'src/**/*'
               - '.azure/applications/**/*'
+              - '.azure/modules/containerApp/**/*'
             tests:
               - 'tests/**/*'
             azure:

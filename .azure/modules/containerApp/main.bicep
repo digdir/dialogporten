@@ -25,6 +25,12 @@ param tags object
 @description('CPU and memory resources for the container app')
 param resources object?
 
+@description('The suffix for the revision of the container app')
+param revisionSuffix string
+
+// Container app revision name does not allow '.' character
+var cleanedRevisionSuffix = replace(revisionSuffix, '.', '-')
+
 var probes = [
   {
     periodSeconds: 5
@@ -75,6 +81,7 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
     }
     environmentId: containerAppEnvId
     template: {
+      revisionSuffix: cleanedRevisionSuffix
       scale: {
         minReplicas: 1
         maxReplicas: 1 // temp disable scaling for outbox scheduling
