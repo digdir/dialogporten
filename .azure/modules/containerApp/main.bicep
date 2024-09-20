@@ -29,7 +29,7 @@ param resources object?
 param revisionSuffix string?
 
 // Container app revision name does not allow '.' character
-revisionSuffix = replace(revisionSuffix, '.', '-')
+var cleanedRevisionSuffix = replace(revisionSuffix, '.', '-')
 
 var probes = [
   {
@@ -81,7 +81,7 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
     }
     environmentId: containerAppEnvId
     template: {
-      revisionSuffix: revisionSuffix
+      revisionSuffix: cleanedRevisionSuffix
       scale: {
         minReplicas: 1
         maxReplicas: 1 // temp disable scaling for outbox scheduling
