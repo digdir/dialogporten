@@ -3386,6 +3386,20 @@
         },
         "type": "object"
       },
+      "SystemLabel_Values": {
+        "description": "",
+        "enum": [
+          "Default",
+          "Trash",
+          "Archive"
+        ],
+        "type": "string",
+        "x-enumNames": [
+          "Default",
+          "Trash",
+          "Archive"
+        ]
+      },
       "UpdateDialogContentDto": {
         "additionalProperties": false,
         "properties": {
@@ -4366,6 +4380,61 @@
           }
         ],
         "summary": "Gets a single dialog",
+        "tags": [
+          "Enduser"
+        ]
+      }
+    },
+    "/api/v1/enduser/dialogs/{dialogId}/actions/setsystemlabel/{label}": {
+      "post": {
+        "operationId": "DigdirDomainDialogportenWebApiEndpointsV1EndUserDialogLabelsSetSetDialogSystemLabelTrashEndpoint",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "dialogId",
+            "required": true,
+            "schema": {
+              "format": "guid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "label",
+            "required": true,
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/SystemLabel_Values"
+                }
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              },
+              "text/plain": {
+                "schema": {}
+              }
+            },
+            "description": "Success"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "JWTBearerAuth": []
+          }
+        ],
         "tags": [
           "Enduser"
         ]
