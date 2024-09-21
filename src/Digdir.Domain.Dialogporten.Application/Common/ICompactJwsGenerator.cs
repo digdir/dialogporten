@@ -11,8 +11,6 @@ public interface ICompactJwsGenerator
 {
     string GetCompactJws(Dictionary<string, object?> claims);
     bool VerifyCompactJws(string compactJws);
-    bool VerifyCompactJwsTimestamp(string compactJwt);
-    bool TryGetClaimValue(string compactJws, string claim, [NotNullWhen(true)] out string? value);
 }
 
 public sealed class Ed25519Generator : ICompactJwsGenerator
@@ -64,80 +62,24 @@ public sealed class Ed25519Generator : ICompactJwsGenerator
 
     public bool VerifyCompactJws(string compactJws)
     {
-        try
+        var parts = compactJws.Split('.');
+        if (parts.Length != 3) return false;
+
+        var header = Base64Url.Decode(parts[0]);
+
+        var headerJson = JsonSerializer.Deserialize<JsonElement>(header);
+        if (headerJson.TryGetProperty("kid", out var kid))
         {
-            var parts = compactJws.Split('.');
-            if (parts.Length != 3) return false;
-
-            var header = Base64Url.Decode(parts[0]);
-
-            var headerJson = JsonSerializer.Deserialize<JsonElement>(header);
-            if (headerJson.TryGetProperty("kid", out var kid))
-            {
-                if (kid.GetString() != _kid) return false;
-            }
-            else
-            {
-                return false;
-            }
-
-            var signature = Base64Url.Decode(parts[2]);
-            return SignatureAlgorithm.Ed25519.Verify(_publicKey!, Encoding.UTF8.GetBytes(parts[0] + '.' + parts[1]), signature);
+            if (kid.GetString() != _kid) return false;
         }
-        catch (Exception)
+        else
         {
-            // Log?
             return false;
         }
-    }
 
-    public bool VerifyCompactJwsTimestamp(string compactJwt)
-    {
-        try
-        {
-            var parts = compactJwt.Split('.');
-            if (parts.Length != 3) return false;
+        var signature = Base64Url.Decode(parts[2]);
+        return SignatureAlgorithm.Ed25519.Verify(_publicKey!, Encoding.UTF8.GetBytes(parts[0] + '.' + parts[1]), signature);
 
-            var payload = Base64Url.Decode(parts[1]);
-            var payloadJson = JsonSerializer.Deserialize<JsonElement>(payload);
-            if (!payloadJson.TryGetProperty(DialogTokenClaimTypes.Expires, out var exp)) return false;
-
-            var now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-            return exp.GetInt64() > now;
-        }
-        catch (Exception)
-        {
-            // Log?
-            return false;
-        }
-    }
-
-    public bool TryGetClaimValue(string compactJws, string claim, [NotNullWhen(true)] out string? value)
-    {
-        value = null;
-        try
-        {
-            var parts = compactJws.Split('.');
-            if (parts.Length != 3)
-            {
-                return false;
-            }
-
-            var payload = Base64Url.Decode(parts[1]);
-            var payloadJson = JsonSerializer.Deserialize<JsonElement>(payload);
-            if (!payloadJson.TryGetProperty(claim, out var claimValue))
-            {
-                return false;
-            }
-
-            value = claimValue.GetString();
-            return value != null;
-        }
-        catch (Exception)
-        {
-            // Log?
-            return false;
-        }
     }
 
     private void InitSigningKey()
@@ -163,13 +105,6 @@ internal sealed class LocalDevelopmentCompactJwsGeneratorDecorator : ICompactJws
     public string GetCompactJws(Dictionary<string, object?> claims) => "local-development-jws";
 
     public bool VerifyCompactJws(string compactJws) => true;
-    public bool VerifyCompactJwsTimestamp(string compactJwt) => true;
-
-    public bool TryGetClaimValue(string compactJws, string claim, [NotNullWhen(true)] out string? value)
-    {
-        value = "local-development-claim";
-        return true;
-    }
 }
 
 public static class Base64Url

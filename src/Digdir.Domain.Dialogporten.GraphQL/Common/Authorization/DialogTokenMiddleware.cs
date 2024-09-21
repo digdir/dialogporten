@@ -1,5 +1,7 @@
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Digdir.Domain.Dialogporten.Application.Common;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Digdir.Domain.Dialogporten.GraphQL.Common.Authorization;
 
@@ -23,23 +25,31 @@ public sealed class DialogTokenMiddleware
         }
 
         var token = dialogToken.FirstOrDefault();
-        if (!_compactJwsGenerator.VerifyCompactJws(token ?? string.Empty))
+        var tokenHandler = new JwtSecurityTokenHandler();
+        try
         {
+            tokenHandler.ValidateToken(token, new TokenValidationParameters
+            {
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                // ValidateLifetime = false,
+                ValidateIssuerSigningKey = false,
+                SignatureValidator = (token, parameters) =>
+                {
+                    var jwt = new JwtSecurityToken(token);
+                    return jwt;
+                },
+            }, out var securityToken);
+
+            var jwt = securityToken as JwtSecurityToken;
+            context.User.AddIdentity(new ClaimsIdentity(jwt!.Claims));
+
             return _next(context);
         }
-
-        if (!_compactJwsGenerator.VerifyCompactJwsTimestamp(token!))
+        catch (Exception e)
         {
+            Console.WriteLine(e);
             return _next(context);
         }
-
-        if (!_compactJwsGenerator.TryGetClaimValue(dialogToken!, DialogTokenClaimTypes.DialogId, out var dialogTokenDialogId))
-        {
-            return _next(context);
-        }
-
-        context.User.AddIdentity(new ClaimsIdentity([new Claim("dialogId", dialogTokenDialogId)]));
-
-        return _next(context);
     }
 }
