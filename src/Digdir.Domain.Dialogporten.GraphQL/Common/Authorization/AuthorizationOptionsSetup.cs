@@ -65,10 +65,7 @@ internal sealed class AuthorizationOptionsSetup : IConfigureOptions<Authorizatio
 
                 if (operationDefinition.Operation != OperationType.Subscription) return false;
 
-                if (!operationDefinition.TryGetDialogEventsSubscriptionDialogId(out var dialogId))
-                {
-                    return false;
-                }
+                if (!operationDefinition.TryGetDialogEventsSubscriptionDialogId(out var dialogId)) return false;
 
                 context.User.TryGetClaimValue(DialogTokenClaimTypes.DialogId, out var dialogIdClaimValue);
                 return dialogId.ToString() == dialogIdClaimValue;
