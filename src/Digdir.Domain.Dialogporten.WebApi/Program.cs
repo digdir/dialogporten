@@ -210,12 +210,12 @@ static void BuildAndRun(string[] args)
     });
     app.MapHealthChecks("/liveness", new HealthCheckOptions
     {
-        Predicate = check => check.Tags.Contains("self"), // Retains the self check for liveness
+        Predicate = check => check.Tags.Contains("self"),
         ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
     });
     app.MapHealthChecks("/readiness", new HealthCheckOptions
     {
-        Predicate = check => check.Tags.Contains("dependencies"),
+        Predicate = check => check.Tags.Contains("critical"),
         ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
     });
     app.MapHealthChecks("/health", new HealthCheckOptions

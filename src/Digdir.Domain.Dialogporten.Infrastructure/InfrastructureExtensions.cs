@@ -202,11 +202,11 @@ public static class InfrastructureExtensions
                 name: "postgres",
                 healthQuery: "SELECT 1",
                 failureStatus: HealthStatus.Unhealthy,
-                tags: ["dependencies"])
+                tags: ["dependencies", "critical"])
             .AddCheck<WellKnownEndpointsHealthCheck>(
                 "Well-Known Endpoints",
                 failureStatus: HealthStatus.Unhealthy,
-                tags: ["dependencies", "auth"]);
+                tags: ["dependencies"]);
 
 
         if (environment.IsDevelopment())
