@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.18.1](https://github.com/digdir/dialogporten/compare/v1.18.0...v1.18.1) (2024-09-23)
+
+
+### Bug Fixes
+
+* Add missing events to dialog subscription ([#1163](https://github.com/digdir/dialogporten/issues/1163)) ([162ce9a](https://github.com/digdir/dialogporten/commit/162ce9a9a0c4183d10e8edfe0f8c5589110b7a59))
+* Fix BaseUri on localhost trailing slash discrepancy on OAuth metadata ([#1145](https://github.com/digdir/dialogporten/issues/1145)) ([09ce878](https://github.com/digdir/dialogporten/commit/09ce878cb537bf2e495e3801e0c769e25008246a))
+
 ## [1.18.0](https://github.com/digdir/dialogporten/compare/v1.17.0...v1.18.0) (2024-09-16)
 
 
