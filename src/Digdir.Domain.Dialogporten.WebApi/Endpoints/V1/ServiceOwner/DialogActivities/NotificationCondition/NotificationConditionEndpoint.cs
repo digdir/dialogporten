@@ -17,7 +17,7 @@ public sealed class NotificationConditionEndpoint : Endpoint<NotificationConditi
 
     public override void Configure()
     {
-        Get("dialogs/{dialogId}/notification-condition");
+        Get("dialogs/{dialogId}/actions/should-send-notification");
         Policies(AuthorizationPolicy.NotificationConditionCheck);
         Group<ServiceOwnerGroup>();
 
