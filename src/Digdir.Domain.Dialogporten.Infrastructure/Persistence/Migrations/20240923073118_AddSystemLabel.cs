@@ -48,7 +48,8 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         name: "FK_DialogEndUserContext_Dialog_DialogId",
                         column: x => x.DialogId,
                         principalTable: "Dialog",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
                     table.ForeignKey(
                         name: "FK_DialogEndUserContext_SystemLabel_SystemLabelId",
                         column: x => x.SystemLabelId,

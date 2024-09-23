@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(DialogDbContext))]
-    [Migration("20240920104125_AddSystemLabel")]
+    [Migration("20240923073118_AddSystemLabel")]
     partial class AddSystemLabel
     {
         /// <inheritdoc />
@@ -1509,7 +1509,8 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                 {
                     b.HasOne("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogEntity", "Dialog")
                         .WithOne("DialogEndUserContext")
-                        .HasForeignKey("Digdir.Domain.Dialogporten.Domain.DialogEndUserContexts.Entities.DialogEndUserContext", "DialogId");
+                        .HasForeignKey("Digdir.Domain.Dialogporten.Domain.DialogEndUserContexts.Entities.DialogEndUserContext", "DialogId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("Digdir.Domain.Dialogporten.Domain.DialogEndUserContexts.Entities.SystemLabel", "SystemLabel")
                         .WithMany()
@@ -1525,7 +1526,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.DialogEndUserContexts.Entities.LabelAssignmentLog", b =>
                 {
                     b.HasOne("Digdir.Domain.Dialogporten.Domain.DialogEndUserContexts.Entities.DialogEndUserContext", "Context")
-                        .WithMany()
+                        .WithMany("LabelAssignmentLogs")
                         .HasForeignKey("ContextId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1887,6 +1888,11 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.Navigation("DisplayName");
 
                     b.Navigation("Urls");
+                });
+
+            modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.DialogEndUserContexts.Entities.DialogEndUserContext", b =>
+                {
+                    b.Navigation("LabelAssignmentLogs");
                 });
 
             modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.DialogEndUserContexts.Entities.LabelAssignmentLog", b =>

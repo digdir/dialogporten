@@ -8,7 +8,7 @@ using MediatR;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.EndUser.DialogLabels.Set;
 
-public class SetDialogSystemLabelTrashEndpoint(ISender sender) : Endpoint<SetDialogSystemLabelCommand>
+public sealed class SetDialogSystemLabelEndpoint(ISender sender) : Endpoint<SetDialogSystemLabelCommand>
 {
     private readonly ISender _sender = sender ?? throw new ArgumentNullException(nameof(sender));
 

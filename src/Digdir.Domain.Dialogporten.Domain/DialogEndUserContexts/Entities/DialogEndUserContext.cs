@@ -4,7 +4,7 @@ using Digdir.Library.Entity.Abstractions;
 namespace Digdir.Domain.Dialogporten.Domain.DialogEndUserContexts.Entities;
 
 // Amund: legges til dialog create command handler
-public class DialogEndUserContext : IEntity
+public sealed class DialogEndUserContext : IEntity
 {
     public Guid Id { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
