@@ -1,5 +1,6 @@
 ﻿schema {
   query: Queries
+  mutation: Mutations
   subscription: Subscriptions
 }
 
@@ -8,6 +9,10 @@ interface DialogByIdError {
 }
 
 interface SearchDialogError {
+  message: String!
+}
+
+interface SetSystemLabelError {
   message: String!
 }
 
@@ -154,6 +159,10 @@ type Localization {
   languageCode: String!
 }
 
+type Mutations {
+  setSystemLabel(input: SetSystemLabelInput!): SetSystemLabelPayload!
+}
+
 type Queries @authorize(policy: "enduser") {
   dialogById(dialogId: UUID!): DialogByIdPayload!
   searchDialogs(input: SearchDialogInput!): SearchDialogsPayload!
@@ -210,6 +219,15 @@ type SeenLog {
   isCurrentEndUser: Boolean!
 }
 
+type SetSystemLabelEntityNotFound implements SetSystemLabelError {
+  message: String!
+}
+
+type SetSystemLabelPayload {
+  success: Boolean!
+  errors: [SetSystemLabelError!]!
+}
+
 type Subscriptions @authorize(policy: "enduser") {
   dialogUpdated(dialogId: UUID!): DialogUpdatedPayload!
 }
@@ -261,6 +279,11 @@ input SearchDialogInput {
   search: String
   "Limit free text search to texts with this language code, e.g. 'no', 'en'. Culture codes will be normalized to neutral language codes (ISO 639). Default: search all culture codes"
   searchLanguageCode: String
+}
+
+input SetSystemLabelInput {
+  dialogId: UUID!
+  label: SystemLabel!
 }
 
 enum ActivityType {
@@ -327,6 +350,12 @@ enum HttpVerb {
   OPTIONS
   TRACE
   CONNECT
+}
+
+enum SystemLabel {
+  DEFAULT
+  TRASH
+  ARCHIVE
 }
 
 enum TransmissionType {

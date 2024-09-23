@@ -17,11 +17,13 @@ public static class ServiceCollectionExtensions
             .RegisterDbContext<DialogDbContext>()
             .AddDiagnosticEventListener<ApplicationInsightEventListener>()
             .AddQueryType<Queries>()
+            .AddMutationType<Mutations>()
             .AddType<DialogByIdDeleted>()
             .AddType<DialogByIdNotFound>()
             .AddType<DialogByIdForbidden>()
             .AddType<SearchDialogValidationError>()
             .AddType<SearchDialogForbidden>()
+            .AddType<SetSystemLabelEntityNotFound>()
             .AddInstrumentation()
             .InitializeOnStartup()
             .Services;
