@@ -78,7 +78,6 @@ public sealed class Ed25519Generator : ICompactJwsGenerator
 
         var signature = Base64Url.Decode(parts[2]);
         return SignatureAlgorithm.Ed25519.Verify(_publicKey!, Encoding.UTF8.GetBytes(parts[0] + '.' + parts[1]), signature);
-
     }
 
     private void InitSigningKey()
