@@ -12,8 +12,8 @@ public static class ServiceCollectionExtensions
         return services
             .AddGraphQLServer()
             // This assumes that subscriptions have been set up by the infrastructure
-            .AddAuthorization()
             .AddSubscriptionType<Subscriptions>()
+            .AddAuthorization()
             .RegisterDbContext<DialogDbContext>()
             .AddDiagnosticEventListener<ApplicationInsightEventListener>()
             .AddQueryType<Queries>()
