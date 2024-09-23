@@ -13,14 +13,12 @@ public sealed class DialogTokenMiddleware
 {
     public const string DialogTokenHeader = "DigDir-Dialog-Token";
     private readonly RequestDelegate _next;
-    private readonly IOptions<ApplicationSettings> _applicationSettings;
     private readonly PublicKey _publicKey;
     private readonly string _issuer;
 
     public DialogTokenMiddleware(RequestDelegate next, IOptions<ApplicationSettings> applicationSettings)
     {
         _next = next;
-        _applicationSettings = applicationSettings;
 
         var keyPair = applicationSettings.Value.Dialogporten.Ed25519KeyPairs.Primary;
         _publicKey = PublicKey.Import(SignatureAlgorithm.Ed25519,
@@ -43,7 +41,7 @@ public sealed class DialogTokenMiddleware
             {
                 ValidateAudience = false,
                 ValidIssuer = _issuer,
-                SignatureValidator = (encodedToken, parameters) =>
+                SignatureValidator = (encodedToken, _) =>
                 {
                     var jwt = new JwtSecurityToken(encodedToken);
 
@@ -60,9 +58,8 @@ public sealed class DialogTokenMiddleware
 
             return _next(context);
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            Console.WriteLine(e);
             return _next(context);
         }
     }
