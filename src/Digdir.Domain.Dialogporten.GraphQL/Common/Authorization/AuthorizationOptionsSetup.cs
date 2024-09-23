@@ -57,6 +57,8 @@ internal sealed class AuthorizationOptionsSetup : IConfigureOptions<Authorizatio
                     return false;
                 }
 
+                if (authContext.Document.Definitions.Count == 0) return false;
+
                 var definition = authContext.Document.Definitions[0];
 
                 if (definition is not OperationDefinitionNode operationDefinition) return false;
