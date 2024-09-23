@@ -10,11 +10,12 @@ namespace Digdir.Domain.Dialogporten.GraphQL.EndUser.DialogById;
 public sealed class Subscriptions
 {
     [Subscribe]
-    [Topic($"{Constants.DialogUpdatedTopic}{{{nameof(dialogId)}}}")]
-    public DialogUpdatedPayload DialogUpdated(Guid dialogId,
-        [EventMessage] Guid eventMessage)
+    [Topic($"{Constants.DialogEventsTopic}{{{nameof(dialogId)}}}")]
+    public DialogEventPayload DialogEvents(Guid dialogId,
+        [EventMessage] DialogEventPayload eventMessage)
     {
+        ArgumentNullException.ThrowIfNull(dialogId);
         ArgumentNullException.ThrowIfNull(eventMessage);
-        return new DialogUpdatedPayload { Id = dialogId };
+        return eventMessage;
     }
 }

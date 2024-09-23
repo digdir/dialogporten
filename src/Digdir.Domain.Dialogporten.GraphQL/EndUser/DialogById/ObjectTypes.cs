@@ -201,7 +201,14 @@ public enum AttachmentUrlConsumer
     Api = 2
 }
 
-public sealed class DialogUpdatedPayload
+public sealed class DialogEventPayload
 {
     public Guid Id { get; set; }
+    public DialogEventType Type { get; set; }
+}
+
+public enum DialogEventType
+{
+    DialogUpdated = 1,
+    DialogDeleted = 2
 }

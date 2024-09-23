@@ -15,8 +15,8 @@ public class InfrastructureArchitectureTests
         {
             nameof(InfrastructureAssemblyMarker),
             nameof(InfrastructureExtensions),
-            
-            // These classes are currently public, but should be internal, moved to another assembly, or deleted
+
+            // These classes are currently public but should be internal, moved to another assembly, or deleted
             nameof(OutboxScheduler),
             nameof(IUpstreamServiceError)
         };
@@ -29,6 +29,8 @@ public class InfrastructureArchitectureTests
             .And().DoNotHaveName(publicByDesignClasses)
             .Should().NotBePublic()
             .GetResult();
+
+        publicClasses.FailingTypes.Should().BeNullOrEmpty();
         publicClasses.IsSuccessful.Should().BeTrue();
     }
 }
