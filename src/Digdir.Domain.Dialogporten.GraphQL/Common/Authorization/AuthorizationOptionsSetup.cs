@@ -1,4 +1,5 @@
-﻿using Digdir.Domain.Dialogporten.Application.Common.Extensions;
+﻿using Digdir.Domain.Dialogporten.Application.Common;
+using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.GraphQL.Common.Extensions.HotChocolate;
 using HotChocolate.Authorization;
 using Microsoft.AspNetCore.Authorization;
@@ -60,7 +61,7 @@ internal sealed class AuthorizationOptionsSetup : IConfigureOptions<Authorizatio
                     return false;
                 }
 
-                context.User.TryGetClaimValue("dialogId", out var dialogIdClaimValue);
+                context.User.TryGetClaimValue(DialogTokenClaimTypes.DialogId, out var dialogIdClaimValue);
                 return dialogId.ToString() == dialogIdClaimValue;
             }));
     }

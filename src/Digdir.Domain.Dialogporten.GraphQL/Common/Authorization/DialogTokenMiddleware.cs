@@ -1,7 +1,11 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Text;
+using Digdir.Domain.Dialogporten.Application;
 using Digdir.Domain.Dialogporten.Application.Common;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using NSec.Cryptography;
 
 namespace Digdir.Domain.Dialogporten.GraphQL.Common.Authorization;
 
@@ -9,12 +13,19 @@ public sealed class DialogTokenMiddleware
 {
     public const string DialogTokenHeader = "DigDir-Dialog-Token";
     private readonly RequestDelegate _next;
-    private readonly ICompactJwsGenerator _compactJwsGenerator;
+    private readonly IOptions<ApplicationSettings> _applicationSettings;
+    private readonly PublicKey _publicKey;
+    private readonly string _issuer;
 
-    public DialogTokenMiddleware(RequestDelegate next, ICompactJwsGenerator compactJwsGenerator)
+    public DialogTokenMiddleware(RequestDelegate next, IOptions<ApplicationSettings> applicationSettings)
     {
         _next = next;
-        _compactJwsGenerator = compactJwsGenerator;
+        _applicationSettings = applicationSettings;
+
+        var keyPair = applicationSettings.Value.Dialogporten.Ed25519KeyPairs.Primary;
+        _publicKey = PublicKey.Import(SignatureAlgorithm.Ed25519,
+            Base64Url.Decode(keyPair.PublicComponent), KeyBlobFormat.RawPublicKey);
+        _issuer = applicationSettings.Value.Dialogporten.BaseUri.AbsoluteUri.TrimEnd('/') + "/api/v1";
     }
 
     public Task InvokeAsync(HttpContext context)
@@ -30,14 +41,17 @@ public sealed class DialogTokenMiddleware
         {
             tokenHandler.ValidateToken(token, new TokenValidationParameters
             {
-                ValidateIssuer = false,
                 ValidateAudience = false,
-                // ValidateLifetime = false,
-                ValidateIssuerSigningKey = false,
-                SignatureValidator = (token, parameters) =>
+                ValidIssuer = _issuer,
+                SignatureValidator = (encodedToken, parameters) =>
                 {
-                    var jwt = new JwtSecurityToken(token);
-                    return jwt;
+                    var jwt = new JwtSecurityToken(encodedToken);
+
+                    var signature = Base64Url.Decode(jwt.RawSignature);
+                    var signatureIsValid = SignatureAlgorithm.Ed25519
+                        .Verify(_publicKey, Encoding.UTF8.GetBytes(jwt.EncodedHeader + '.' + jwt.EncodedPayload), signature);
+
+                    return !signatureIsValid ? throw new SecurityTokenInvalidSignatureException("Invalid token signature.") : (SecurityToken)jwt;
                 },
             }, out var securityToken);
 
