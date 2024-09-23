@@ -4381,7 +4381,7 @@
     },
     "/api/v1/enduser/dialogs/{dialogId}/actions/setsystemlabel/{label}": {
       "post": {
-        "operationId": "DigdirDomainDialogportenWebApiEndpointsV1EndUserDialogLabelsSetSetDialogSystemLabelTrashEndpoint",
+        "operationId": "DigdirDomainDialogportenWebApiEndpointsV1EndUserDialogLabelsSetSetDialogSystemLabelEndpoint",
         "parameters": [
           {
             "in": "path",

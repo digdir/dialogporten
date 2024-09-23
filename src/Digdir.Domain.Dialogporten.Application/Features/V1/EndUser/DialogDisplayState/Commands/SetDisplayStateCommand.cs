@@ -12,7 +12,7 @@ namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogDispl
 [GenerateOneOf]
 public sealed partial class SetDisplayStateResult : OneOfBase<Success, EntityNotFound, BadRequest, ValidationError, Forbidden, DomainError, ConcurrencyError>;
 
-public class SetDisplayStateCommand : IRequest<SetDisplayStateResult>
+public sealed class SetDisplayStateCommand : IRequest<SetDisplayStateResult>
 {
 
 }
