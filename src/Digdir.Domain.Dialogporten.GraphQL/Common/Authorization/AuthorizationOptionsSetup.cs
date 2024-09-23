@@ -2,6 +2,7 @@
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.GraphQL.Common.Extensions.HotChocolate;
 using HotChocolate.Authorization;
+using HotChocolate.Language;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
 using AuthorizationOptions = Microsoft.AspNetCore.Authorization.AuthorizationOptions;
@@ -56,7 +57,13 @@ internal sealed class AuthorizationOptionsSetup : IConfigureOptions<Authorizatio
                     return false;
                 }
 
-                if (!authContext.Document.Definitions.TryGetSubscriptionDialogId(out var dialogId))
+                var definition = authContext.Document.Definitions[0];
+
+                if (definition is not OperationDefinitionNode operationDefinition) return false;
+
+                if (operationDefinition.Operation != OperationType.Subscription) return false;
+
+                if (!operationDefinition.TryGetDialogEventsSubscriptionDialogId(out var dialogId))
                 {
                     return false;
                 }
