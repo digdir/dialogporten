@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.19.0](https://github.com/digdir/dialogporten/compare/v1.18.1...v1.19.0) (2024-09-24)
+
+
+### Features
+
+* **breaking:** Move notification check endpoint to /actions ([#1175](https://github.com/digdir/dialogporten/issues/1175)) ([e0c1cf2](https://github.com/digdir/dialogporten/commit/e0c1cf205c66200f024431dc3392c988b99fdb30))
+
+
+### Bug Fixes
+
+* **janitor:** ensure Redis is configured correctly ([#1182](https://github.com/digdir/dialogporten/issues/1182)) ([37fe982](https://github.com/digdir/dialogporten/commit/37fe982ea9f08e48c75481008d614aaacf19a57d))
+
 ## [1.18.1](https://github.com/digdir/dialogporten/compare/v1.18.0...v1.18.1) (2024-09-23)
 
 
