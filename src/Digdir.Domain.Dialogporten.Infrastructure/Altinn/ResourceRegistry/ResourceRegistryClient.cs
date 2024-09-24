@@ -9,6 +9,7 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
 {
     private const string ServiceResourceInformationByOrgCacheKey = "ServiceResourceInformationByOrgCacheKey";
     private const string ServiceResourceInformationByResourceIdCacheKey = "ServiceResourceInformationByResourceIdCacheKey";
+    private const string ServiceResourceInformationCacheKey = "ServiceResourceInformationCacheKey";
     private const string ResourceTypeGenericAccess = "GenericAccessResource";
     private const string ResourceTypeAltinnApp = "AltinnApp";
     private const string ResourceTypeCorrespondence = "CorrespondenceService";
@@ -99,21 +100,27 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
     {
         const string searchEndpoint = "resourceregistry/api/v1/resource/resourcelist";
 
-        var response = await _client
-            .GetFromJsonEnsuredAsync<List<ResourceListResponse>>(searchEndpoint,
-                cancellationToken: cancellationToken);
+        return await _cache.GetOrSetAsync(
+            ServiceResourceInformationCacheKey,
+            async cToken =>
+            {
+                var response = await _client
+                    .GetFromJsonEnsuredAsync<List<ResourceListResponse>>(searchEndpoint,
+                        cancellationToken: cToken);
 
-        return response
-            .Where(x => !string.IsNullOrWhiteSpace(x.HasCompetentAuthority.Organization))
-            .Where(x => x.ResourceType is
-                ResourceTypeGenericAccess or
-                ResourceTypeAltinnApp or
-                ResourceTypeCorrespondence)
-            .Select(x => new ServiceResourceInformation(
-                $"{Constants.ServiceResourcePrefix}{x.Identifier}",
-                x.ResourceType,
-                x.HasCompetentAuthority.Organization!))
-            .ToArray();
+                return response
+                    .Where(x => !string.IsNullOrWhiteSpace(x.HasCompetentAuthority.Organization))
+                    .Where(x => x.ResourceType is
+                        ResourceTypeGenericAccess or
+                        ResourceTypeAltinnApp or
+                        ResourceTypeCorrespondence)
+                    .Select(x => new ServiceResourceInformation(
+                        $"{Constants.ServiceResourcePrefix}{x.Identifier}",
+                        x.ResourceType,
+                        x.HasCompetentAuthority.Organization!))
+                    .ToArray();
+            },
+            token: cancellationToken);
     }
 
     private sealed class ResourceListResponse
