@@ -108,6 +108,9 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
                     .GetFromJsonEnsuredAsync<List<ResourceListResponse>>(searchEndpoint,
                         cancellationToken: cToken);
 
+                await _cache.ExpireAsync(ServiceResourceInformationByOrgCacheKey, token: cToken);
+                await _cache.ExpireAsync(ServiceResourceInformationByResourceIdCacheKey, token: cToken);
+
                 return response
                     .Where(x => !string.IsNullOrWhiteSpace(x.HasCompetentAuthority.Organization))
                     .Where(x => x.ResourceType is
