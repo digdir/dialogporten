@@ -13,8 +13,6 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
-    - name: Check .github directory contents
-      run: ls -la .github
     - name: Send GitHub slack message
       id: slack
       env:
@@ -32,8 +30,8 @@ jobs:
                 {
                   "type": "section",
                   "text": {
-                    "type": "mrkdwn",
-                    "text": ":shipit: *${{ github.event.pull_request.title }}* :shipit: \n${{ github.event.pull_request.body }}"
+                    "type": "plain_text",
+                    "text": ":shipit: *${{ github.event.pull_request.title }}* :shipit: \n${{ github.event.pull_request.body}}"
                   }
                 },
                 {
