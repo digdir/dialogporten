@@ -38,8 +38,9 @@ internal sealed class NotificationConditionQueryHandler : IRequestHandler<Notifi
     {
         var dialog = await _db.Dialogs
             .AsNoTracking()
-            .Include(x => x.Activities)
-            .IgnoreQueryFilters()
+            .Include(x => x.Activities
+                .Where(x => request.TransmissionId == null || x.TransmissionId == request.TransmissionId)
+                .Where(x => x.TypeId == request.ActivityType))
             .FirstOrDefaultAsync(x => x.Id == request.DialogId,
                 cancellationToken: cancellationToken);
 
@@ -48,20 +49,10 @@ internal sealed class NotificationConditionQueryHandler : IRequestHandler<Notifi
             return new EntityNotFound<DialogEntity>(request.DialogId);
         }
 
-        var conditionMet = CheckDialogActivitiesCondition(dialog.Activities, request.ConditionType, request.ActivityType, request.TransmissionId);
+        var conditionMet = dialog.Activities.Count == 0
+            ? request.ConditionType == NotificationConditionType.NotExists
+            : request.ConditionType == NotificationConditionType.Exists;
 
         return new NotificationConditionDto { SendNotification = conditionMet };
     }
-
-    private static bool CheckDialogActivitiesCondition(
-        List<DialogActivity> activities,
-        NotificationConditionType conditionType,
-        DialogActivityType.Values activityType,
-        Guid? transmissionId) =>
-        activities.Where(
-                x => x.TypeId == activityType
-                     && (transmissionId is null || x.TransmissionId == transmissionId)).ToList()
-            .Count == 0
-            ? conditionType == NotificationConditionType.NotExists
-            : conditionType == NotificationConditionType.Exists;
 }
