@@ -65,6 +65,10 @@ internal sealed class SetDialogSystemLabelHandler : IRequestHandler<SetDialogSys
         {
             return new EntityDeleted<DialogEntity>(request.DialogId);
         }
+
+        // TEMP, set default to new() in migration
+        dialog.DialogEndUserContext ??= new();
+
         // Amund: Her skal ting gjæres, dialog e ferdig fonne, endUserContext e joina, bruker har accessToMainResource!
         // Nå kan SystemLabel oppdateres?!
         dialog.DialogEndUserContext.SystemLabelId = request.Label;
