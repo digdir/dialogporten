@@ -52,6 +52,5 @@ jobs:
                   }
                 ]
               }
-            ],
-            "channel-id": "NEW_TARGET_CHANNEL_ID"
+            ]
           }
