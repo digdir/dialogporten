@@ -6,7 +6,7 @@ using Digdir.Domain.Dialogporten.Application.Common;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using NSec.Cryptography;
-using static Digdir.Domain.Dialogporten.Application.Common.Authorization.Constants;
+using static Digdir.Domain.Dialogporten.Application.Features.V1.Common.Authorization.Constants;
 
 namespace Digdir.Domain.Dialogporten.GraphQL.Common.Authorization;
 
