@@ -53,8 +53,12 @@ public sealed class DialogTokenMiddleware
                 },
             }, out var securityToken);
 
-            var jwt = securityToken as JwtSecurityToken;
-            context.User.AddIdentity(new ClaimsIdentity(jwt!.Claims));
+            if (securityToken is not JwtSecurityToken jwt)
+            {
+                return _next(context);
+            }
+
+            context.User.AddIdentity(new ClaimsIdentity(jwt.Claims));
 
             return _next(context);
         }
