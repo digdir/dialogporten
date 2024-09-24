@@ -65,18 +65,19 @@ var containerAppEnvVars = [
   }
 ]
 
+// Base URL for accessing secrets in the Key Vault
 // https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-functions-deployment#example-1
-var keyVaultUrl = 'https://${environmentKeyVaultName}${az.environment().suffixes.keyvaultDns}/secrets'
+var keyVaultBaseUrl = 'https://${environmentKeyVaultName}${az.environment().suffixes.keyvaultDns}/secrets'
 
 var secrets = [
   {
     name: 'dbconnectionstring'
-    keyVaultUrl: '${keyVaultUrl}/dialogportenAdoConnectionString'
+    keyVaultUrl: '${keyVaultBaseUrl}/dialogportenAdoConnectionString'
     identity: 'System'
   }
   {
     name: 'redisconnectionstring'
-    keyVaultUrl: '${keyVaultUrl}/dialogportenRedisConnectionString'
+    keyVaultUrl: '${keyVaultBaseUrl}/dialogportenRedisConnectionString'
     identity: 'System'
   }
 ]
