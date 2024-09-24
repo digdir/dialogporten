@@ -13,6 +13,9 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
+    - name: Set PR body single line
+      id: set_pr_body_single_line
+      run: echo "PR_BODY_SINGLE_LINE=$(echo ${{ github.event.pull_request.body }} | tr '\n' ' ')" >> $GITHUB_ENV
     - name: Send GitHub slack message
       id: slack
       env:
@@ -31,7 +34,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "plain_text",
-                    "text": ":shipit: *${{ github.event.pull_request.title }}* :shipit: \n${{ github.event.pull_request.body}}"
+                    "text": ":shipit: *${{ github.event.pull_request.title }}* :shipit: \n${{ env.PR_BODY_SINGLE_LINE }}"
                   }
                 },
                 {
