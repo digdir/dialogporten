@@ -52,6 +52,10 @@ var containerAppEnvVars = [
     secretRef: 'dbconnectionstring'
   }
   {
+    name: 'Infrastructure__Redis__ConnectionString'
+    secretRef: 'redisconnectionstring'
+  }
+  {
     name: 'DOTNET_ENVIRONMENT'
     value: environment
   }
@@ -62,12 +66,17 @@ var containerAppEnvVars = [
 ]
 
 // https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-functions-deployment#example-1
-var keyVaultUrl = 'https://${environmentKeyVaultName}${az.environment().suffixes.keyvaultDns}/secrets/dialogportenAdoConnectionString'
+var keyVaultUrl = 'https://${environmentKeyVaultName}${az.environment().suffixes.keyvaultDns}/secrets'
 
 var secrets = [
   {
     name: 'dbconnectionstring'
-    keyVaultUrl: keyVaultUrl
+    keyVaultUrl: '${keyVaultUrl}/dialogportenAdoConnectionString'
+    identity: 'System'
+  }
+  {
+    name: 'redisconnectionstring'
+    keyVaultUrl: '${keyVaultUrl}/dialogportenRedisConnectionString'
     identity: 'System'
   }
 ]
