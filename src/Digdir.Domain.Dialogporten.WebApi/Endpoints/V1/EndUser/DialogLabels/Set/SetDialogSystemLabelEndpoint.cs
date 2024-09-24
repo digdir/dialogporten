@@ -8,7 +8,7 @@ using MediatR;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.EndUser.DialogLabels.Set;
 
-public sealed class SetDialogSystemLabelEndpoint(ISender sender) : Endpoint<SetDialogSystemLabelCommand>
+public class SetDialogSystemLabelEndpoint(ISender sender) : Endpoint<SetDialogSystemLabelCommand>
 {
     private readonly ISender _sender = sender ?? throw new ArgumentNullException(nameof(sender));
 
@@ -27,7 +27,7 @@ public sealed class SetDialogSystemLabelEndpoint(ISender sender) : Endpoint<SetD
 
         var result = await _sender.Send(req, ct);
         await result.Match(
-            _ => SendOkAsync(ct),
+            _ => SendNoContentAsync(ct),
             notFound => this.NotFoundAsync(notFound, ct),
             forbidden => this.ForbiddenAsync(forbidden, ct),
             deleted => this.GoneAsync(deleted, ct),

@@ -27,7 +27,8 @@ internal sealed class MappingProfile : Profile
                 .Count(x => x.Urls
                     .Any(url => url.ConsumerTypeId == AttachmentUrlConsumerType.Values.Gui))))
             .ForMember(dest => dest.Content, opt => opt.MapFrom(src => src.Content.Where(x => x.Type.OutputInList)))
-            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.StatusId));
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.StatusId))
+            .ForMember(dest => dest.DisplayState, opt => opt.MapFrom(src => src.DialogEndUserContext.SystemLabelId));
 
         CreateMap<DialogSeenLog, SearchDialogDialogSeenLogDto>()
             .ForMember(dest => dest.SeenAt, opt => opt.MapFrom(src => src.CreatedAt));

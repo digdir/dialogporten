@@ -2,6 +2,7 @@
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using Digdir.Domain.Dialogporten.Domain.Actors;
 using Digdir.Domain.Dialogporten.Domain.Attachments;
+using Digdir.Domain.Dialogporten.Domain.DialogEndUserContexts.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
@@ -115,6 +116,12 @@ public sealed class GetDialogDto
     /// The aggregated status of the dialog.
     /// </summary>
     public DialogStatus.Values Status { get; set; }
+
+    /// <summary>
+    /// Current display state.
+    /// </summary>
+    // public GetDialogEndUserContextsDto DialogEndUserContext { get; set; } = null!;
+    public SystemLabel.Values DisplayState { get; set; }
 
     /// <summary>
     /// The dialog unstructured text content
