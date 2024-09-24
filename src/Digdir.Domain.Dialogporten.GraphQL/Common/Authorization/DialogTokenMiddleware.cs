@@ -50,7 +50,12 @@ public sealed class DialogTokenMiddleware
                     var signatureIsValid = SignatureAlgorithm.Ed25519
                         .Verify(_publicKey, Encoding.UTF8.GetBytes(jwt.EncodedHeader + '.' + jwt.EncodedPayload), signature);
 
-                    return !signatureIsValid ? throw new SecurityTokenInvalidSignatureException("Invalid token signature.") : (SecurityToken)jwt;
+                    if (signatureIsValid)
+                    {
+                        return jwt;
+                    }
+
+                    throw new SecurityTokenInvalidSignatureException("Invalid token signature.");
                 },
             }, out var securityToken);
 
