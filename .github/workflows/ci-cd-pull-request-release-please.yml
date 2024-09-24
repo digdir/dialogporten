@@ -11,6 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     name: Send GitHub slack message
     steps:
+    - name: Check .github directory contents
+      run: ls -la .github
     - name: Send GitHub slack message
       id: slack
       env:
