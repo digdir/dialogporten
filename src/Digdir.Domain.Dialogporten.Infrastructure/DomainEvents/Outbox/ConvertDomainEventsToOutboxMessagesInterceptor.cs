@@ -1,8 +1,8 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Events;
-using Digdir.Domain.Dialogporten.Domain.Outboxes;
 using Digdir.Library.Entity.Abstractions.Features.EventPublisher;
 using HotChocolate.Subscriptions;
+using MassTransit;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Logging;
 using Constants = Digdir.Domain.Dialogporten.Infrastructure.GraphQl.GraphQlSubscriptionConstants;
@@ -14,20 +14,23 @@ internal sealed class ConvertDomainEventsToOutboxMessagesInterceptor : SaveChang
     private readonly ITransactionTime _transactionTime;
     private readonly ITopicEventSender _topicEventSender;
     private readonly ILogger<ConvertDomainEventsToOutboxMessagesInterceptor> _logger;
+    private readonly IPublishEndpoint? _publishEndpoint;
 
     private List<IDomainEvent> _domainEvents = [];
 
     public ConvertDomainEventsToOutboxMessagesInterceptor(
         ITransactionTime transactionTime,
         ITopicEventSender topicEventSender,
-        ILogger<ConvertDomainEventsToOutboxMessagesInterceptor> logger)
+        ILogger<ConvertDomainEventsToOutboxMessagesInterceptor> logger,
+        IPublishEndpoint? publishEndpoint = null)
     {
         _transactionTime = transactionTime ?? throw new ArgumentNullException(nameof(transactionTime));
         _topicEventSender = topicEventSender ?? throw new ArgumentNullException(nameof(topicEventSender));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _publishEndpoint = publishEndpoint;// ?? throw new ArgumentNullException(nameof(publishEndpoint));
     }
 
-    public override ValueTask<InterceptionResult<int>> SavingChangesAsync(
+    public override async ValueTask<InterceptionResult<int>> SavingChangesAsync(
         DbContextEventData eventData,
         InterceptionResult<int> result,
         CancellationToken cancellationToken = default)
@@ -36,7 +39,7 @@ internal sealed class ConvertDomainEventsToOutboxMessagesInterceptor : SaveChang
 
         if (dbContext is null)
         {
-            return base.SavingChangesAsync(eventData, result, cancellationToken);
+            return await base.SavingChangesAsync(eventData, result, cancellationToken);
         }
 
         _domainEvents = dbContext.ChangeTracker.Entries()
@@ -51,13 +54,20 @@ internal sealed class ConvertDomainEventsToOutboxMessagesInterceptor : SaveChang
             domainEvent.OccuredAt = _transactionTime.Value;
         }
 
-        var outboxMessages = _domainEvents
-            .Select(OutboxMessage.Create)
-            .ToList();
+        if (_publishEndpoint is not null)
+        {
+            await Task.WhenAll(_domainEvents
+                .Select(x => _publishEndpoint
+                    .Publish(x, x.GetType(), cancellationToken)));
+        }
 
-        dbContext.Set<OutboxMessage>().AddRange(outboxMessages);
+        // var outboxMessages = _domainEvents
+        //     .Select(OutboxMessage.Create)
+        //     .ToList();
+        //
+        // dbContext.Set<OutboxMessage>().AddRange(outboxMessages);
 
-        return base.SavingChangesAsync(eventData, result, cancellationToken);
+        return await base.SavingChangesAsync(eventData, result, cancellationToken);
     }
 
     public override async ValueTask<int> SavedChangesAsync(SaveChangesCompletedEventData eventData, int result,

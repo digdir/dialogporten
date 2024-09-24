@@ -78,9 +78,29 @@ public static class InfrastructureExtensions
             x.AddEntityFrameworkOutbox<DialogDbContext>(o =>
             {
                 o.UsePostgres();
+                // TODO: Disable for api, enable for service
                 o.UseBusOutbox();
             });
+            // Magnus: Denne denne må legges til i service
+            // x.AddConsumers();
+            x.UsingRabbitMq((context, cfg) =>
+            {
+                cfg.Host("localhost", "/", h =>
+                {
+                    h.Username("guest");
+                    h.Password("guest");
+                });
+            });
+            // x.UsingAzureServiceBus((context, cfg) =>
+            // {
+            //     // Magnus: Denne denne må legges til i service
+            //     // cfg.ConfigureEndpoints(context);
+            // });
         });
+
+        //
+        // services.AddTransient<IBus, MockBus>();
+        // services.AddTransient<IPublishEndpoint>(x => x.GetRequiredService<IBus>());
 
         services.ConfigureFusionCache(nameof(Altinn.NameRegistry), new()
         {
@@ -274,3 +294,61 @@ public static class InfrastructureExtensions
         return services;
     }
 }
+//
+// public sealed class MockBus : IBus
+// {
+//     public ConnectHandle ConnectPublishObserver(IPublishObserver observer) => throw new NotImplementedException();
+//     public Task<ISendEndpoint> GetPublishSendEndpoint<T>() where T : class => throw new NotImplementedException();
+//
+//     public Task Publish<T>(T message, CancellationToken cancellationToken = new CancellationToken()) where T : class => throw new NotImplementedException();
+//
+//     public Task Publish<T>(T message, IPipe<PublishContext<T>> publishPipe, CancellationToken cancellationToken = new CancellationToken()) where T : class => throw new NotImplementedException();
+//
+//     public Task Publish<T>(T message, IPipe<PublishContext> publishPipe, CancellationToken cancellationToken = new CancellationToken()) where T : class => throw new NotImplementedException();
+//
+//     public Task Publish(object message, CancellationToken cancellationToken = new CancellationToken()) => throw new NotImplementedException();
+//
+//     public Task Publish(object message, IPipe<PublishContext> publishPipe, CancellationToken cancellationToken = new CancellationToken()) => throw new NotImplementedException();
+//
+//     public Task Publish(object message, Type messageType, CancellationToken cancellationToken = new CancellationToken()) => throw new NotImplementedException();
+//
+//     public Task Publish(object message, Type messageType, IPipe<PublishContext> publishPipe,
+//         CancellationToken cancellationToken = new CancellationToken()) =>
+//         throw new NotImplementedException();
+//
+//     public Task Publish<T>(object values, CancellationToken cancellationToken = new CancellationToken()) where T : class => throw new NotImplementedException();
+//
+//     public Task Publish<T>(object values, IPipe<PublishContext<T>> publishPipe, CancellationToken cancellationToken = new CancellationToken()) where T : class => throw new NotImplementedException();
+//
+//     public Task Publish<T>(object values, IPipe<PublishContext> publishPipe, CancellationToken cancellationToken = new CancellationToken()) where T : class => throw new NotImplementedException();
+//     public ConnectHandle ConnectSendObserver(ISendObserver observer) => throw new NotImplementedException();
+//
+//     public Task<ISendEndpoint> GetSendEndpoint(Uri address) => throw new NotImplementedException();
+//
+//     public ConnectHandle ConnectConsumePipe<T>(IPipe<ConsumeContext<T>> pipe) where T : class => throw new NotImplementedException();
+//
+//     public ConnectHandle ConnectConsumePipe<T>(IPipe<ConsumeContext<T>> pipe, ConnectPipeOptions options) where T : class => throw new NotImplementedException();
+//
+//     public ConnectHandle ConnectRequestPipe<T>(Guid requestId, IPipe<ConsumeContext<T>> pipe) where T : class => throw new NotImplementedException();
+//
+//     public ConnectHandle ConnectConsumeMessageObserver<T>(IConsumeMessageObserver<T> observer) where T : class => throw new NotImplementedException();
+//
+//     public ConnectHandle ConnectConsumeObserver(IConsumeObserver observer) => throw new NotImplementedException();
+//
+//     public ConnectHandle ConnectReceiveObserver(IReceiveObserver observer) => throw new NotImplementedException();
+//
+//     public ConnectHandle ConnectReceiveEndpointObserver(IReceiveEndpointObserver observer) => throw new NotImplementedException();
+//
+//     public ConnectHandle ConnectEndpointConfigurationObserver(IEndpointConfigurationObserver observer) => throw new NotImplementedException();
+//
+//     public HostReceiveEndpointHandle ConnectReceiveEndpoint(IEndpointDefinition definition,
+//         IEndpointNameFormatter? endpointNameFormatter = null, Action<IReceiveEndpointConfigurator>? configureEndpoint = null) =>
+//         throw new NotImplementedException();
+//
+//     public HostReceiveEndpointHandle ConnectReceiveEndpoint(string queueName, Action<IReceiveEndpointConfigurator>? configureEndpoint = null) => throw new NotImplementedException();
+//
+//     public void Probe(ProbeContext context) => throw new NotImplementedException();
+//
+//     public Uri Address { get; } = null!;
+//     public IBusTopology Topology { get; } = null!;
+// }
