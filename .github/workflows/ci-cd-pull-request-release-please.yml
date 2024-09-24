@@ -20,6 +20,7 @@ jobs:
         channel-id: 'C07A822MM7T'
         payload: |
           {
+            "text": "New Release Ready! ${{ job.status }}\n",
             "blocks": [
               { "type": "divider" },
               {
