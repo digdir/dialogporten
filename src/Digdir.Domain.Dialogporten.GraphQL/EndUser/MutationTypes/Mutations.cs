@@ -2,16 +2,7 @@ using AutoMapper;
 using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogLabels.Commands.Set;
 using MediatR;
 
-namespace Digdir.Domain.Dialogporten.GraphQL.EndUser;
-
-public sealed class MappingProfile : Profile
-{
-    public MappingProfile()
-    {
-        CreateMap<SetSystemLabelInput, SetDialogSystemLabelCommand>()
-            .ForMember(dest => dest.Label, opt => opt.MapFrom(src => src.Label));
-    }
-}
+namespace Digdir.Domain.Dialogporten.GraphQL.EndUser.MutationTypes;
 
 public sealed class Mutations
 {
@@ -45,54 +36,4 @@ public sealed class Mutations
             },
             concurrencyError => new SetSystemLabelPayload { Errors = [] });
     }
-}
-
-public sealed class SetSystemLabelPayload
-{
-    public bool Success { get; set; }
-    public List<ISetSystemLabelError> Errors { get; set; } = [];
-}
-
-public sealed class SetSystemLabelInput
-{
-    public Guid DialogId { get; set; }
-    public SystemLabel Label { get; set; }
-}
-
-public enum SystemLabel
-{
-    Default = 1,
-    Trash = 2,
-    Archive = 3
-}
-
-[InterfaceType("SetSystemLabelError")]
-public interface ISetSystemLabelError
-{
-    public string Message { get; set; }
-}
-
-public sealed class SetSystemLabelEntityNotFound : ISetSystemLabelError
-{
-    public string Message { get; set; } = null!;
-}
-
-public sealed class SetSystemLabelForbidden : ISetSystemLabelError
-{
-    public string Message { get; set; } = null!;
-}
-
-public sealed class SetSystemLabelDomainError : ISetSystemLabelError
-{
-    public string Message { get; set; } = null!;
-}
-
-public sealed class SetSystemLabelConcurrencyError : ISetSystemLabelError
-{
-    public string Message { get; set; } = null!;
-}
-
-public sealed class SetSystemLabelEntityDeleted : ISetSystemLabelError
-{
-    public string Message { get; set; } = null!;
 }
