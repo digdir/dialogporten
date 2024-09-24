@@ -2,6 +2,7 @@
 
 public static class Constants
 {
+    public const string DialogTokenIssuerVersion = "/api/v1";
     public const string MainResource = "main";
     public const string ReadAction = "read";
     public const string TransmissionReadAction = "transmissionread";

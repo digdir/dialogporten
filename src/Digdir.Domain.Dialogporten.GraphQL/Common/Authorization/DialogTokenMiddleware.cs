@@ -6,6 +6,7 @@ using Digdir.Domain.Dialogporten.Application.Common;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using NSec.Cryptography;
+using static Digdir.Domain.Dialogporten.Application.Common.Authorization.Constants;
 
 namespace Digdir.Domain.Dialogporten.GraphQL.Common.Authorization;
 
@@ -23,7 +24,7 @@ public sealed class DialogTokenMiddleware
         var keyPair = applicationSettings.Value.Dialogporten.Ed25519KeyPairs.Primary;
         _publicKey = PublicKey.Import(SignatureAlgorithm.Ed25519,
             Base64Url.Decode(keyPair.PublicComponent), KeyBlobFormat.RawPublicKey);
-        _issuer = applicationSettings.Value.Dialogporten.BaseUri.AbsoluteUri.TrimEnd('/') + "/api/v1";
+        _issuer = applicationSettings.Value.Dialogporten.BaseUri.AbsoluteUri.TrimEnd('/') + DialogTokenIssuerVersion;
     }
 
     public Task InvokeAsync(HttpContext context)
