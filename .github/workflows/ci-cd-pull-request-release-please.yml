@@ -22,4 +22,42 @@ jobs:
       uses: slackapi/slack-github-action@v1.27.0
       with:
         channel-id: 'C07A822MM7T'
+        # todo: replace with file-path
         payload-file-path: ".github/new-release-ready.json"
+        payload: |
+          {
+              "text": "New Release Ready!\n",
+              "blocks": [
+                { "type": "divider" },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": ":shipit: *${{ github.event.pull_request.title }}* :shipit: \n${{ github.event.pull_request.body }}"
+                  }
+                },
+                {
+                  "type": "image",
+                  "title": {
+                    "type": "plain_text",
+                    "text": "Release Please",
+                    "emoji": true
+                  },
+                  "image_url": "https://blog.tomkerkhove.be/content/images/2016/07/ship-it-squirrel-1.png",
+                  "alt_text": "marg"
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "text": {
+                        "type": "plain_text",
+                        "text": "Approve Release"
+                      },
+                      "url": "https://github.com/${{ github.repository }}/pull/${{ github.event.pull_request.number }}/reviews"
+                    }
+                  ]
+                }
+              ]
+          }
