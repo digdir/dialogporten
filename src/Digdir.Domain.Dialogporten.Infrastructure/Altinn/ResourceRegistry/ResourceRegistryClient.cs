@@ -71,29 +71,17 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
     private async Task<Dictionary<string, ServiceResourceInformation[]>> GetOrSetResourceInformationByOrg(
         CancellationToken cancellationToken)
     {
-        return await _cache.GetOrSetAsync(
-            ServiceResourceInformationByOrgCacheKey,
-            async cToken =>
-            {
-                var resources = await FetchServiceResourceInformation(cToken);
-                return resources
-                    .GroupBy(x => x.OwnerOrgNumber)
-                    .ToDictionary(x => x.Key, x => x.ToArray());
-            },
-            token: cancellationToken);
+        var resources = await FetchServiceResourceInformation(cancellationToken);
+        return resources
+            .GroupBy(x => x.OwnerOrgNumber)
+            .ToDictionary(x => x.Key, x => x.ToArray());
     }
 
     private async Task<Dictionary<string, ServiceResourceInformation>> GetOrSetResourceInformationByResourceId(
         CancellationToken cancellationToken)
     {
-        return await _cache.GetOrSetAsync(
-            ServiceResourceInformationByResourceIdCacheKey,
-            async cToken =>
-            {
-                var resources = await FetchServiceResourceInformation(cToken);
-                return resources.ToDictionary(x => x.ResourceId);
-            },
-            token: cancellationToken);
+        var resources = await FetchServiceResourceInformation(cancellationToken);
+        return resources.ToDictionary(x => x.ResourceId);
     }
 
     private async Task<ServiceResourceInformation[]> FetchServiceResourceInformation(CancellationToken cancellationToken)
@@ -107,9 +95,6 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
                 var response = await _client
                     .GetFromJsonEnsuredAsync<List<ResourceListResponse>>(searchEndpoint,
                         cancellationToken: cToken);
-
-                await _cache.ExpireAsync(ServiceResourceInformationByOrgCacheKey, token: cToken);
-                await _cache.ExpireAsync(ServiceResourceInformationByResourceIdCacheKey, token: cToken);
 
                 return response
                     .Where(x => !string.IsNullOrWhiteSpace(x.HasCompetentAuthority.Organization))
