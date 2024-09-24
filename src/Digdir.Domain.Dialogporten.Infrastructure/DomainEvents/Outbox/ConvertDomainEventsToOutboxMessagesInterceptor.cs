@@ -6,6 +6,7 @@ using Digdir.Domain.Dialogporten.Infrastructure.GraphQl;
 using Digdir.Library.Entity.Abstractions.Features.EventPublisher;
 using HotChocolate.Subscriptions;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Constants = Digdir.Domain.Dialogporten.Infrastructure.GraphQl.GraphQlSubscriptionConstants;
 
@@ -16,6 +17,8 @@ internal sealed class ConvertDomainEventsToOutboxMessagesInterceptor : SaveChang
     private readonly ITransactionTime _transactionTime;
     private readonly ITopicEventSender _topicEventSender;
     private readonly ILogger<ConvertDomainEventsToOutboxMessagesInterceptor> _logger;
+    private static readonly MemoryCache UpdateEventThrottleCache = new(new MemoryCacheOptions());
+
 
     private List<IDomainEvent> _domainEvents = [];
 
@@ -69,32 +72,20 @@ internal sealed class ConvertDomainEventsToOutboxMessagesInterceptor : SaveChang
         {
             try
             {
-                // If you are adding any additional cases to this switch,
-                // please consider making the running of the tasks parallel
                 var task = domainEvent switch
                 {
-                    DialogUpdatedDomainEvent dialogUpdatedDomainEvent => _topicEventSender.SendAsync(
-                        $"{Constants.DialogEventsTopic}{dialogUpdatedDomainEvent.DialogId}",
-                        new DialogEventPayload
-                        {
-                            Id = dialogUpdatedDomainEvent.DialogId,
-                            Type = DialogEventType.DialogUpdated
-                        },
-                        cancellationToken),
+                    DialogUpdatedDomainEvent dialogUpdatedDomainEvent =>
+                        SendDialogUpdated(dialogUpdatedDomainEvent.DialogId, cancellationToken),
+
+                    DialogActivityCreatedDomainEvent dialogActivityCreatedDomainEvent =>
+                        SendDialogUpdated(dialogActivityCreatedDomainEvent.DialogId, cancellationToken),
+
                     DialogDeletedDomainEvent dialogDeletedDomainEvent => _topicEventSender.SendAsync(
                         $"{Constants.DialogEventsTopic}{dialogDeletedDomainEvent.DialogId}",
                         new DialogEventPayload
                         {
                             Id = dialogDeletedDomainEvent.DialogId,
                             Type = DialogEventType.DialogDeleted
-                        },
-                        cancellationToken),
-                    DialogActivityCreatedDomainEvent dialogActivityCreatedDomainEvent => _topicEventSender.SendAsync(
-                        $"{Constants.DialogEventsTopic}{dialogActivityCreatedDomainEvent.DialogId}",
-                        new DialogEventPayload
-                        {
-                            Id = dialogActivityCreatedDomainEvent.DialogId,
-                            Type = DialogEventType.DialogUpdated
                         },
                         cancellationToken),
                     _ => ValueTask.CompletedTask
@@ -109,5 +100,24 @@ internal sealed class ConvertDomainEventsToOutboxMessagesInterceptor : SaveChang
         }
 
         return await base.SavedChangesAsync(eventData, result, cancellationToken);
+    }
+
+    private async ValueTask SendDialogUpdated(Guid dialogId, CancellationToken cancellationToken)
+    {
+        if (UpdateEventThrottleCache.TryGetValue(dialogId, out _))
+        {
+            return;
+        }
+
+        UpdateEventThrottleCache.Set(dialogId, true, TimeSpan.FromMilliseconds(50));
+
+        await _topicEventSender.SendAsync(
+            $"{Constants.DialogEventsTopic}{dialogId}",
+            new DialogEventPayload
+            {
+                Id = dialogId,
+                Type = DialogEventType.DialogUpdated
+            },
+            cancellationToken);
     }
 }
