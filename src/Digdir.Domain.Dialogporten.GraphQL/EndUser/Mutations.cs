@@ -25,11 +25,25 @@ public sealed class Mutations
 
         return result.Match(
             success => new SetSystemLabelPayload { Success = true },
-            entityNotFound => new SetSystemLabelPayload { Errors = [new SetSystemLabelEntityNotFound { Message = entityNotFound.Message }] },
-            forbidden => new SetSystemLabelPayload { Errors = [new SetSystemLabelForbidden { Message = "forbidden.Reasons" }] },
-            entityDeleted => new SetSystemLabelPayload { Errors = [new SetSystemLabelEntityDeleted { Message = entityDeleted.Message }] },
-            domainError => new SetSystemLabelPayload { Errors = [new SetSystemLabelDomainError { Message = "domain.Errors" }] },
-            concurrencyError => new SetSystemLabelPayload { Errors = [new SetSystemLabelConcurrencyError { Message = "concurry" }] });
+            entityNotFound => new SetSystemLabelPayload
+            {
+                Errors = [new SetSystemLabelEntityNotFound { Message = entityNotFound.Message }]
+            },
+            forbidden => new SetSystemLabelPayload
+            {
+                Errors = forbidden.Reasons.Select(x => new SetSystemLabelForbidden { Message = x })
+                    .Cast<ISetSystemLabelError>().ToList()
+            },
+            entityDeleted => new SetSystemLabelPayload
+            {
+                Errors = [new SetSystemLabelEntityDeleted { Message = entityDeleted.Message }]
+            },
+            domainError => new SetSystemLabelPayload
+            {
+                Errors = domainError.Errors.Select(x => new SetSystemLabelDomainError { Message = x.ErrorMessage })
+                    .Cast<ISetSystemLabelError>().ToList()
+            },
+            concurrencyError => new SetSystemLabelPayload { Errors = [] });
     }
 }
 
