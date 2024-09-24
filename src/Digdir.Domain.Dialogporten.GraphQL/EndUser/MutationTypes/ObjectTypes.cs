@@ -16,7 +16,7 @@ public sealed class SetSystemLabelInput
 public enum SystemLabel
 {
     Default = 1,
-    Trash = 2,
+    Bin = 2,
     Archive = 3
 }
 

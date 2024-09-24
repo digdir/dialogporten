@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using Digdir.Library.Entity.Abstractions.Features.Lookup;
 
 namespace Digdir.Domain.Dialogporten.Domain.DialogEndUserContexts.Entities;
@@ -8,7 +7,7 @@ public sealed class SystemLabel : AbstractLookupEntity<SystemLabel, SystemLabel.
     public enum Values
     {
         Default = 1,
-        Trash = 2,
+        Bin = 2,
         Archive = 3
     }
 
@@ -16,15 +15,15 @@ public sealed class SystemLabel : AbstractLookupEntity<SystemLabel, SystemLabel.
     public override SystemLabel MapValue(Values id) => new(id);
 }
 
-public static class LabelExtensions
+public static class SystemLabelExtensions
 {
-    private static string Namespace { get; } = "dp:systemlabel:";
+    private static string Namespace { get; } = "systemlabel:";
     public static string ToNamespacedName(this SystemLabel.Values label) => label switch
     {
 
-        SystemLabel.Values.Default => "Default",
-        SystemLabel.Values.Trash => Namespace + "Trash",
-        SystemLabel.Values.Archive => Namespace + "Archive",
+        SystemLabel.Values.Default => label.ToString(),
+        SystemLabel.Values.Bin => Namespace + label,
+        SystemLabel.Values.Archive => Namespace + label,
         _ => throw new ArgumentOutOfRangeException(nameof(label), label, null)
     };
 }
