@@ -131,7 +131,7 @@ public sealed class GetDialogDto
     /// <summary>
     /// Current display state.
     /// </summary>
-    public SystemLabel.Values DisplayState { get; set; }
+    public SystemLabel.Values SystemLabel { get; set; }
 
     /// <summary>
     /// The dialog unstructured text content

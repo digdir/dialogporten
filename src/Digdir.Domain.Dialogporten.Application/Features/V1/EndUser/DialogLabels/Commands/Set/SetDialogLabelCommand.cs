@@ -14,16 +14,12 @@ using OneOf.Types;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogLabels.Commands.Set;
 
-public sealed class SetDialogSystemLabelCommand : IRequest<SetDialogSystemLabelResult>
-{
-    public Guid DialogId { get; set; }
-    public SystemLabel.Values Label { get; set; }
-}
+public sealed class SetDialogLabelCommand : SetDialogLabelDto, IRequest<SetDialogLabelResult>;
 
 [GenerateOneOf]
-public sealed partial class SetDialogSystemLabelResult : OneOfBase<Success, EntityNotFound, Forbidden, EntityDeleted, DomainError, ConcurrencyError>;
+public sealed partial class SetDialogLabelResult : OneOfBase<Success, EntityNotFound, Forbidden, EntityDeleted, DomainError, ValidationError, ConcurrencyError>;
 
-internal sealed class SetDialogSystemLabelHandler : IRequestHandler<SetDialogSystemLabelCommand, SetDialogSystemLabelResult>
+internal sealed class SetDialogLabelHandler : IRequestHandler<SetDialogLabelCommand, SetDialogLabelResult>
 {
 
     private readonly IDialogDbContext _db;
@@ -34,7 +30,7 @@ internal sealed class SetDialogSystemLabelHandler : IRequestHandler<SetDialogSys
     private readonly IAltinnAuthorization _altinnAuthorization;
     private readonly IDialogTokenGenerator _dialogTokenGenerator;
 
-    public SetDialogSystemLabelHandler(IDialogDbContext db, IMapper mapper, IUnitOfWork unitOfWork, IClock clock, IUserRegistry userRegistry, IAltinnAuthorization altinnAuthorization, IDialogTokenGenerator dialogTokenGenerator)
+    public SetDialogLabelHandler(IDialogDbContext db, IMapper mapper, IUnitOfWork unitOfWork, IClock clock, IUserRegistry userRegistry, IAltinnAuthorization altinnAuthorization, IDialogTokenGenerator dialogTokenGenerator)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
@@ -44,13 +40,12 @@ internal sealed class SetDialogSystemLabelHandler : IRequestHandler<SetDialogSys
         _altinnAuthorization = altinnAuthorization ?? throw new ArgumentNullException(nameof(altinnAuthorization));
         _dialogTokenGenerator = dialogTokenGenerator ?? throw new ArgumentNullException(nameof(dialogTokenGenerator));
     }
-    public async Task<SetDialogSystemLabelResult> Handle(
-        SetDialogSystemLabelCommand request,
+    public async Task<SetDialogLabelResult> Handle(
+        SetDialogLabelCommand request,
         CancellationToken cancellationToken)
     {
         var currentUserInformation = await _userRegistry.GetCurrentUserInformation(cancellationToken);
         var dialog = await _db.Dialogs.Include(x => x.DialogEndUserContext).FirstOrDefaultAsync(x => x.Id == request.DialogId, cancellationToken: cancellationToken);
-        // var dialogEndUserContext = await _db.DialogEndUserContexts.Include(x => x.Dialog).FirstOrDefaultAsync()
 
         if (dialog is null)
         {
@@ -72,10 +67,13 @@ internal sealed class SetDialogSystemLabelHandler : IRequestHandler<SetDialogSys
 
         // Amund: Her skal ting gjæres, dialog e ferdig fonne, endUserContext e joina, bruker har accessToMainResource!
         // Nå kan SystemLabel oppdateres?!
-        dialog.DialogEndUserContext.UpdateLabel(request.Label, currentUserInformation.UserId.ExternalIdWithPrefix, currentUserInformation.Name);
+        // Amund: dette føles for manulet ut det er sikkert noe magi jeg kan ta i bruk her det blir ikke å fungere på default heller her må noe annet gjøres 
+        // det funker om default også har prefixen.
+        _ = Enum.TryParse(request.Label.Split(":")[1], true, out SystemLabel.Values labelId);
+        dialog.DialogEndUserContext.UpdateLabel(labelId, currentUserInformation.UserId.ExternalIdWithPrefix, currentUserInformation.Name);
 
         var saveResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
-        return saveResult.Match<SetDialogSystemLabelResult>(
+        return saveResult.Match<SetDialogLabelResult>(
             success => success,
             domainError => domainError,
             concurrencyError => concurrencyError);

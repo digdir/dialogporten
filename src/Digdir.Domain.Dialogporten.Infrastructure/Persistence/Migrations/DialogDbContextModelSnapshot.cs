@@ -280,7 +280,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         new
                         {
                             Id = 2,
-                            Name = "Trash"
+                            Name = "Bin"
                         },
                         new
                         {

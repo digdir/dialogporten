@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(DialogDbContext))]
-    [Migration("20240923073118_AddSystemLabel")]
+    [Migration("20240925075200_AddSystemLabel")]
     partial class AddSystemLabel
     {
         /// <inheritdoc />
@@ -283,7 +283,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         new
                         {
                             Id = 2,
-                            Name = "Trash"
+                            Name = "Bin"
                         },
                         new
                         {

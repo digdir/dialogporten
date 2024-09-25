@@ -18,7 +18,7 @@ public sealed class DialogEndUserContext : IEntity
     public SystemLabel SystemLabel { get; set; } = null!;
 
     public List<LabelAssignmentLog> LabelAssignmentLogs { get; set; } = [];
-    public void UpdateLabel(SystemLabel.Values labelId, string userId, string? userName)
+    public void UpdateLabel(SystemLabel.Values labelId, string userId, string? userName, ActorType.Values actorType = ActorType.Values.PartyRepresentative)
     {
         if (labelId == SystemLabelId) return;
         // remove old label then add new one 
@@ -31,7 +31,7 @@ public sealed class DialogEndUserContext : IEntity
                 PerformedBy =
                     new LabelAssignmentLogActor
                     {
-                        ActorTypeId = ActorType.Values.PartyRepresentative,
+                        ActorTypeId = actorType,
                         ActorId = userId,
                         ActorName = userName,
                     }

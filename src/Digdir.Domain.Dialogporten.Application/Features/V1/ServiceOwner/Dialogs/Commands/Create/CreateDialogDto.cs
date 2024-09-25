@@ -103,6 +103,11 @@ public class CreateDialogDto
     public DialogStatus.Values Status { get; set; }
 
     /// <summary>
+    /// Set the system label of the dialog Migration purposes 
+    /// </summary>
+    public string? Label { get; set; }
+
+    /// <summary>
     /// The dialog unstructured text content
     /// </summary>
     public CreateDialogContentDto Content { get; set; } = null!;

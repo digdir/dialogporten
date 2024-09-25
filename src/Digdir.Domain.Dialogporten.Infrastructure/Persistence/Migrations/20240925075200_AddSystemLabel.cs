@@ -85,7 +85,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                 values: new object[,]
                 {
                     { 1, "Default" },
-                    { 2, "Trash" },
+                    { 2, "Bin" },
                     { 3, "Archive" }
                 });
 

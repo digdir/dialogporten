@@ -2000,6 +2000,14 @@
             "nullable": true,
             "type": "string"
           },
+          "displayState": {
+            "description": "Current display state.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/SystemLabel_Values"
+              }
+            ]
+          },
           "dueAt": {
             "description": "The due date for the dialog. Dialogs past due date might be marked as such in frontends but will still be available.",
             "example": "2022-12-31T23:59:59Z",
@@ -2152,6 +2160,14 @@
             "format": "date-time",
             "nullable": true,
             "type": "string"
+          },
+          "displayState": {
+            "description": "Current display state.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/SystemLabel_Values"
+              }
+            ]
           },
           "dueAt": {
             "description": "The due date for the dialog. Dialogs past due date might be marked as such in frontends but will still be available.",
@@ -3097,6 +3113,14 @@
             "format": "date-time",
             "type": "string"
           },
+          "displayState": {
+            "description": "Current display state.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/SystemLabel_Values"
+              }
+            ]
+          },
           "dueAt": {
             "description": "The due date for the dialog. This is the last date when the dialog is expected to be completed.",
             "example": "2022-12-31T23:59:59Z",
@@ -3205,6 +3229,14 @@
             "example": "2022-12-31T23:59:59Z",
             "format": "date-time",
             "type": "string"
+          },
+          "displayState": {
+            "description": "Current display state.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/SystemLabel_Values"
+              }
+            ]
           },
           "dueAt": {
             "description": "The due date for the dialog. This is the last date when the dialog is expected to be completed.",
@@ -3386,17 +3418,26 @@
         },
         "type": "object"
       },
+      "SetDialogSystemLabelCommand": {
+        "additionalProperties": false,
+        "properties": {
+          "label": {
+            "$ref": "#/components/schemas/SystemLabel_Values"
+          }
+        },
+        "type": "object"
+      },
       "SystemLabel_Values": {
         "description": "",
         "enum": [
           "Default",
-          "Trash",
+          "Bin",
           "Archive"
         ],
         "type": "string",
         "x-enumNames": [
           "Default",
-          "Trash",
+          "Bin",
           "Archive"
         ]
       },
@@ -4252,6 +4293,19 @@
             }
           },
           {
+            "description": "Filter by Display state ",
+            "in": "query",
+            "name": "displayState",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/SystemLabel_Values"
+                }
+              ],
+              "nullable": true
+            }
+          },
+          {
             "description": "Search string for free text search. Will attempt to fuzzily match in all free text fields in the aggregate",
             "in": "query",
             "name": "search",
@@ -4385,61 +4439,6 @@
         ]
       }
     },
-    "/api/v1/enduser/dialogs/{dialogId}/actions/setsystemlabel/{label}": {
-      "post": {
-        "operationId": "DigdirDomainDialogportenWebApiEndpointsV1EndUserDialogLabelsSetSetDialogSystemLabelEndpoint",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "dialogId",
-            "required": true,
-            "schema": {
-              "format": "guid",
-              "type": "string"
-            }
-          },
-          {
-            "in": "path",
-            "name": "label",
-            "required": true,
-            "schema": {
-              "allOf": [
-                {
-                  "$ref": "#/components/schemas/SystemLabel_Values"
-                }
-              ]
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {}
-              },
-              "text/plain": {
-                "schema": {}
-              }
-            },
-            "description": "Success"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          }
-        },
-        "security": [
-          {
-            "JWTBearerAuth": []
-          }
-        ],
-        "tags": [
-          "Enduser"
-        ]
-      }
-    },
     "/api/v1/enduser/dialogs/{dialogId}/activities": {
       "get": {
         "description": "Gets the list of activities belonging to a dialog",
@@ -4536,6 +4535,62 @@
           }
         ],
         "summary": "Gets a single dialog activity",
+        "tags": [
+          "Enduser"
+        ]
+      }
+    },
+    "/api/v1/enduser/dialogs/{dialogId}/labels": {
+      "post": {
+        "operationId": "DigdirDomainDialogportenWebApiEndpointsV1EndUserDialogLabelsSetSetDialogSystemLabelEndpoint",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "dialogId",
+            "required": true,
+            "schema": {
+              "format": "guid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetDialogSystemLabelCommand"
+              }
+            }
+          },
+          "description": "",
+          "required": true,
+          "x-name": "SetDialogSystemLabelCommand",
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              },
+              "text/plain": {
+                "schema": {}
+              }
+            },
+            "description": "Success"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "JWTBearerAuth": []
+          }
+        ],
         "tags": [
           "Enduser"
         ]
@@ -4964,6 +5019,19 @@
             "schema": {
               "nullable": true,
               "type": "string"
+            }
+          },
+          {
+            "description": "Filter by Display state ",
+            "in": "query",
+            "name": "displayState",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/SystemLabel_Values"
+                }
+              ],
+              "nullable": true
             }
           },
           {

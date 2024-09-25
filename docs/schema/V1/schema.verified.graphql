@@ -361,7 +361,7 @@ enum HttpVerb {
 
 enum SystemLabel {
   DEFAULT
-  TRASH
+  BIN
   ARCHIVE
 }
 

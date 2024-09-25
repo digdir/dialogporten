@@ -1,4 +1,5 @@
 using AutoMapper;
+using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogLabels.Commands.Set;
 using MediatR;
 
@@ -11,7 +12,7 @@ public sealed class Mutations
         [Service] IMapper mapper,
         SetSystemLabelInput input)
     {
-        var command = mapper.Map<SetDialogSystemLabelCommand>(input);
+        var command = mapper.Map<SetDialogLabelCommand>(input);
         var result = await mediator.Send(command);
 
         return result.Match(
@@ -28,6 +29,13 @@ public sealed class Mutations
             entityDeleted => new SetSystemLabelPayload
             {
                 Errors = [new SetSystemLabelEntityDeleted { Message = entityDeleted.Message }]
+            },
+            validationError => new SetSystemLabelPayload
+            {
+                Errors = validationError.Errors.Select(x => new SetSystemLabelValidationError
+                {
+                    Message = x.ErrorMessage
+                }).Cast<ISetSystemLabelError>().ToList()
             },
             domainError => new SetSystemLabelPayload
             {

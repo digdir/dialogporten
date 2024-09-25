@@ -1,6 +1,5 @@
 namespace Digdir.Domain.Dialogporten.GraphQL.EndUser.MutationTypes;
 
-
 public sealed class SetSystemLabelPayload
 {
     public bool Success { get; set; }
@@ -47,6 +46,11 @@ public sealed class SetSystemLabelConcurrencyError : ISetSystemLabelError
 }
 
 public sealed class SetSystemLabelEntityDeleted : ISetSystemLabelError
+{
+    public string Message { get; set; } = null!;
+}
+
+public sealed class SetSystemLabelValidationError : ISetSystemLabelError
 {
     public string Message { get; set; } = null!;
 }
