@@ -1,8 +1,6 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.GraphQL.Common.Extensions.HotChocolate;
-using HotChocolate.Authorization;
-using HotChocolate.Language;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
 using AuthorizationOptions = Microsoft.AspNetCore.Authorization.AuthorizationOptions;
@@ -51,21 +49,9 @@ internal sealed class AuthorizationOptionsSetup : IConfigureOptions<Authorizatio
         options.AddPolicy(AuthorizationPolicy.EndUserSubscription, policy => policy
             .Combine(options.GetPolicy(AuthorizationPolicy.EndUser)!)
             .RequireAssertion(context =>
-            {
-                if (context.Resource is not AuthorizationContext authContext) return false;
-
-                if (authContext.Document.Definitions.Count == 0) return false;
-
-                var definition = authContext.Document.Definitions[0];
-
-                if (definition is not OperationDefinitionNode operationDefinition) return false;
-
-                if (operationDefinition.Operation != OperationType.Subscription) return false;
-
-                if (!operationDefinition.TryGetDialogEventsSubscriptionDialogId(out var dialogId)) return false;
-
-                context.User.TryGetClaimValue(DialogTokenClaimTypes.DialogId, out var dialogIdClaimValue);
-                return dialogId.ToString() == dialogIdClaimValue;
-            }));
+                context.TryGetDialogEventsSubscriptionDialogId(out var dialogIdTopic)
+                && context.User.TryGetClaimValue(DialogTokenClaimTypes.DialogId, out var dialogIdClaimValue)
+                && Guid.TryParse(dialogIdClaimValue, out var dialogIdClaim)
+                && dialogIdTopic == dialogIdClaim));
     }
 }
