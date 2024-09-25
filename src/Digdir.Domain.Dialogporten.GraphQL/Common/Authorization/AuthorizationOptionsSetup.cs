@@ -49,8 +49,7 @@ internal sealed class AuthorizationOptionsSetup : IConfigureOptions<Authorizatio
             .RequireScope(AuthorizationScope.Testing));
 
         options.AddPolicy(AuthorizationPolicy.EndUserSubscription, policy => policy
-            .Combine(options.GetPolicy(AuthorizationPolicy.EndUser)
-                     ?? throw new InvalidOperationException($"{AuthorizationPolicy.EndUser} policy not found"))
+            .Combine(options.GetPolicy(AuthorizationPolicy.EndUser)!)
             .RequireAssertion(context =>
             {
                 if (context.Resource is not AuthorizationContext authContext) return false;
