@@ -64,7 +64,13 @@ public sealed class DialogTokenMiddleware
                 return _next(context);
             }
 
-            context.User.AddIdentity(new ClaimsIdentity(jwt.Claims));
+            var dialogIdClaim = jwt.Claims.FirstOrDefault(x => x.Type == DialogTokenClaimTypes.DialogId);
+            if (dialogIdClaim is null)
+            {
+                return _next(context);
+            }
+
+            context.User.AddIdentity(new ClaimsIdentity([dialogIdClaim]));
 
             return _next(context);
         }
