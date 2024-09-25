@@ -12,6 +12,7 @@ using Digdir.Domain.Dialogporten.Domain.DialogEndUserContexts.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
+using Digdir.Domain.Dialogporten.Domain.Parties;
 using MediatR;
 using OneOf;
 using OneOf.Types;
@@ -68,21 +69,7 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
             _domainContext.AddError(new DomainFailure(nameof(DialogEntity.Org),
                 "Cannot find service owner organization shortname for current user. Please ensure that you are logged in as a service owner."));
         }
-        dialog.DialogEndUserContext = new();
-        _user.TryGetOrganizationNumber(out var organizationNumber);
-        if (string.IsNullOrWhiteSpace(organizationNumber))
-        {
-            _domainContext.AddError(new DomainFailure(nameof(organizationNumber), "Cannot find organization number for current user."));
-        }
-        else
-        {
-            if (request.Label != null)
-            {
-                _ = Enum.TryParse(request.Label.Split(":")[1], true, out SystemLabel.Values labelId);
-                dialog.DialogEndUserContext.UpdateLabel(labelId, organizationNumber, dialog.Org,
-                    ActorType.Values.ServiceOwner);
-            }
-        }
+        CreateDialogEndUserContext(request, dialog);
         await EnsureNoExistingUserDefinedIds(dialog, cancellationToken);
         await _db.Dialogs.AddAsync(dialog, cancellationToken);
         var saveResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
@@ -90,6 +77,27 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
             success => new Success<Guid>(dialog.Id),
             domainError => domainError,
             concurrencyError => throw new UnreachableException("Should never get a concurrency error when creating a new dialog"));
+    }
+
+    private void CreateDialogEndUserContext(CreateDialogCommand request, DialogEntity dialog)
+    {
+        dialog.DialogEndUserContext = new();
+        if (!request.SystemLabel.HasValue)
+        {
+            return;
+        }
+
+        if (!_user.TryGetOrganizationNumber(out var organizationNumber))
+        {
+            _domainContext.AddError(new DomainFailure(nameof(organizationNumber), "Cannot find organization number for current user."));
+            return;
+        }
+
+        dialog.DialogEndUserContext.UpdateLabel(
+            request.SystemLabel.Value,
+            $"{NorwegianOrganizationIdentifier.PrefixWithSeparator}{organizationNumber}",
+            dialog.Org,
+            ActorType.Values.ServiceOwner);
     }
 
     private async Task EnsureNoExistingUserDefinedIds(DialogEntity dialog, CancellationToken cancellationToken)

@@ -2,6 +2,7 @@
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using Digdir.Domain.Dialogporten.Domain.Actors;
 using Digdir.Domain.Dialogporten.Domain.Attachments;
+using Digdir.Domain.Dialogporten.Domain.DialogEndUserContexts.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
@@ -105,8 +106,7 @@ public class CreateDialogDto
     /// <summary>
     /// Set the system label of the dialog Migration purposes 
     /// </summary>
-    public string? Label { get; set; }
-
+    public SystemLabel.Values? SystemLabel { get; set; }
     /// <summary>
     /// The dialog unstructured text content
     /// </summary>
