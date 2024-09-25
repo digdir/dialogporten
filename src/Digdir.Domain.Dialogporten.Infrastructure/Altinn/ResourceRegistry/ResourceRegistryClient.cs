@@ -7,8 +7,6 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.ResourceRegistry;
 
 internal sealed class ResourceRegistryClient : IResourceRegistry
 {
-    private const string ServiceResourceInformationByOrgCacheKey = "ServiceResourceInformationByOrgCacheKey";
-    private const string ServiceResourceInformationByResourceIdCacheKey = "ServiceResourceInformationByResourceIdCacheKey";
     private const string ServiceResourceInformationCacheKey = "ServiceResourceInformationCacheKey";
     private const string ResourceTypeGenericAccess = "GenericAccessResource";
     private const string ResourceTypeAltinnApp = "AltinnApp";
