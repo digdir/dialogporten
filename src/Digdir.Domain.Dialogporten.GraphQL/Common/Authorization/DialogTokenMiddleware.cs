@@ -24,7 +24,8 @@ public sealed class DialogTokenMiddleware
         var keyPair = applicationSettings.Value.Dialogporten.Ed25519KeyPairs.Primary;
         _publicKey = PublicKey.Import(SignatureAlgorithm.Ed25519,
             Base64Url.Decode(keyPair.PublicComponent), KeyBlobFormat.RawPublicKey);
-        _issuer = applicationSettings.Value.Dialogporten.BaseUri.AbsoluteUri.TrimEnd('/') + DialogTokenIssuerVersion;
+        // _issuer = applicationSettings.Value.Dialogporten.BaseUri.AbsoluteUri.TrimEnd('/') + DialogTokenIssuerVersion;
+        _issuer = "https://altinn-dev-api.azure-api.net/dialogporten" + DialogTokenIssuerVersion;
     }
 
     public Task InvokeAsync(HttpContext context)
@@ -42,21 +43,7 @@ public sealed class DialogTokenMiddleware
             {
                 ValidateAudience = false,
                 ValidIssuer = _issuer,
-                SignatureValidator = (encodedToken, _) =>
-                {
-                    var jwt = new JwtSecurityToken(encodedToken);
-
-                    var signature = Base64Url.Decode(jwt.RawSignature);
-                    var signatureIsValid = SignatureAlgorithm.Ed25519
-                        .Verify(_publicKey, Encoding.UTF8.GetBytes(jwt.EncodedHeader + '.' + jwt.EncodedPayload), signature);
-
-                    if (signatureIsValid)
-                    {
-                        return jwt;
-                    }
-
-                    throw new SecurityTokenInvalidSignatureException("Invalid token signature.");
-                },
+                SignatureValidator = ValidateSignature
             }, out var securityToken);
 
             if (securityToken is not JwtSecurityToken jwt)
@@ -78,5 +65,21 @@ public sealed class DialogTokenMiddleware
         {
             return _next(context);
         }
+    }
+
+    private JwtSecurityToken ValidateSignature(string encodedToken, object _)
+    {
+        var jwt = new JwtSecurityToken(encodedToken);
+
+        var signature = Base64Url.Decode(jwt.RawSignature);
+        var signatureIsValid = SignatureAlgorithm.Ed25519
+            .Verify(_publicKey, Encoding.UTF8.GetBytes(jwt.EncodedHeader + '.' + jwt.EncodedPayload), signature);
+
+        if (signatureIsValid)
+        {
+            return jwt;
+        }
+
+        throw new SecurityTokenInvalidSignatureException("Invalid token signature.");
     }
 }
