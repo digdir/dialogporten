@@ -52,10 +52,10 @@ type StorageProfile = {
     version: string
   }
   osDisk: {
-    osType: string
+    osType: 'Linux' | 'Windows' | null
     name: string
     createOption: string
-    caching: string
+    caching: 'None' | 'ReadOnly' | 'ReadWrite' | null
     managedDisk: {
       storageAccountType: string
     }
