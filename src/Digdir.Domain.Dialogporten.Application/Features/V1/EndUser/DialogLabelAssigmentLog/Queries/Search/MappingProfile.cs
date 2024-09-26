@@ -1,3 +1,4 @@
+using System.Reflection.Emit;
 using AutoMapper;
 using Digdir.Domain.Dialogporten.Domain.DialogEndUserContexts.Entities;
 
@@ -9,5 +10,6 @@ public class MappingProfile : Profile
     public MappingProfile()
     {
         CreateMap<LabelAssignmentLog, SearchDialogLabelAssignmentLogDto>();
+        CreateMap<LabelAssignmentLogActor, LabelAssignmentLogActorDto>();
     }
 }

@@ -14,7 +14,10 @@ using OneOf.Types;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogLabels.Commands.Set;
 
-public sealed class SetDialogLabelCommand : SetDialogLabelDto, IRequest<SetDialogLabelResult>;
+public sealed class SetDialogLabelCommand : SetDialogLabelDto, IRequest<SetDialogLabelResult>
+{
+    public Guid? IfMatchDialogRevision { get; set; }
+}
 
 [GenerateOneOf]
 public sealed partial class SetDialogLabelResult : OneOfBase<Success, EntityNotFound, Forbidden, EntityDeleted, DomainError, ValidationError, ConcurrencyError>;
@@ -68,11 +71,13 @@ internal sealed class SetDialogLabelHandler : IRequestHandler<SetDialogLabelComm
         // Amund: Her skal ting gjæres, dialog e ferdig fonne, endUserContext e joina, bruker har accessToMainResource!
         // Nå kan SystemLabel oppdateres?!
         // Amund: dette føles for manulet ut det er sikkert noe magi jeg kan ta i bruk her det blir ikke å fungere på default heller her må noe annet gjøres 
-        // det funker om default også har prefixen.
+        // det funker om default også har prefixen. Validator har sjekket at dette skal funke kan dette flyttes inn i mapper? mappe til namespace og label i mapper? det virker vartfall bedre plassert enn å ha det er her
         _ = Enum.TryParse(request.Label.Split(":")[1], true, out SystemLabel.Values labelId);
         dialog.DialogEndUserContext.UpdateLabel(labelId, currentUserInformation.UserId.ExternalIdWithPrefix, currentUserInformation.Name);
 
-        var saveResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
+        var saveResult = await _unitOfWork
+            .EnableConcurrencyCheck(dialog, request.IfMatchDialogRevision)
+            .SaveChangesAsync(cancellationToken);
         return saveResult.Match<SetDialogLabelResult>(
             success => success,
             domainError => domainError,

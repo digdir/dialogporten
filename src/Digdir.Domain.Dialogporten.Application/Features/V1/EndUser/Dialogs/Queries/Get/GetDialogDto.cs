@@ -116,11 +116,9 @@ public sealed class GetDialogDto
     /// The aggregated status of the dialog.
     /// </summary>
     public DialogStatus.Values Status { get; set; }
-
     /// <summary>
     /// Current display state.
     /// </summary>
-    // public GetDialogEndUserContextsDto DialogEndUserContext { get; set; } = null!;
     public SystemLabel.Values SystemLabel { get; set; }
 
     /// <summary>

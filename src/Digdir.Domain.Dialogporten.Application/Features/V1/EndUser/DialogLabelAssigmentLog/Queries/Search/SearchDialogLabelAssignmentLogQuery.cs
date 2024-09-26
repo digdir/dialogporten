@@ -1,4 +1,5 @@
 using AutoMapper;
+using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
@@ -17,7 +18,8 @@ public sealed class SearchDialogLabelAssignmentLogQuery : IRequest<SearchDialogL
 [GenerateOneOf]
 public sealed partial class SearchDialogLabelAssignmentLogResult : OneOfBase<List<SearchDialogLabelAssignmentLogDto>, EntityNotFound, EntityDeleted, Forbidden>;
 
-internal sealed class SearchDialogLabelAssignmentLogQueryHandler(IDialogDbContext dialogDbContext, IMapper mapper, IAltinnAuthorization altinnAuthorization) : IRequestHandler<SearchDialogLabelAssignmentLogQuery, SearchDialogLabelAssignmentLogResult>
+internal sealed class SearchDialogLabelAssignmentLogQueryHandler(IDialogDbContext dialogDbContext, IMapper mapper, IAltinnAuthorization altinnAuthorization)
+    : IRequestHandler<SearchDialogLabelAssignmentLogQuery, SearchDialogLabelAssignmentLogResult>
 {
     private readonly IDialogDbContext _dialogDbContext = dialogDbContext ?? throw new ArgumentNullException(nameof(dialogDbContext));
     private readonly IMapper _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
@@ -25,14 +27,14 @@ internal sealed class SearchDialogLabelAssignmentLogQueryHandler(IDialogDbContex
 
     public async Task<SearchDialogLabelAssignmentLogResult> Handle(SearchDialogLabelAssignmentLogQuery request, CancellationToken cancellationToken)
     {
-        var dialog = await _dialogDbContext.Dialogs.Include(x => x.DialogEndUserContext).FirstOrDefaultAsync(x => x.Id == request.DialogId, cancellationToken: cancellationToken);
+        var dialog = await _dialogDbContext.Dialogs.AsNoTracking().Include(x => x.DialogEndUserContext).ThenInclude(x => x.LabelAssignmentLogs).ThenInclude(x => x.PerformedBy).FirstOrDefaultAsync(x => x.Id == request.DialogId, cancellationToken: cancellationToken);
         if (dialog == null)
         {
             return new EntityNotFound<DialogEntity>(request.DialogId);
         }
 
         var authorizationResult = await _altinnAuthorization.GetDialogDetailsAuthorization(dialog, cancellationToken: cancellationToken);
-        if (authorizationResult.HasAccessToMainResource())
+        if (!authorizationResult.HasAccessToMainResource())
         {
             return new EntityNotFound<DialogEntity>(request.DialogId);
         }
