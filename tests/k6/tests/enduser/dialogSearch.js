@@ -214,13 +214,20 @@ export default function () {
         expect(r.json(), 'response json').to.have.property("items").with.lengthOf(1);
         expect(r.json().items[0], 'process').to.have.property("process").that.equals(processToSearchFor);
     })
-    
+
     describe('List with systemLabel filter', () => {
         let response = getEU('dialogs/' + defaultFilter + '&SystemLabel=' + systemLabelToSearchFor);
         expectStatusFor(response).to.equal(200);
         expect(response, 'response').to.have.validJsonBody();
         expect(response.json(), 'response json').to.have.property("items").with.lengthOf(1);
-        expect(response.json().items[0]);
+        expect(response.json().items[0], 'system label').to.have.property('systemLabel').that.equals(systemLabelToSearchFor);
+    })
+
+    describe('List with invalid systemLabel filter', () => {
+        let response = getEU('dialogs/' + defaultFilter + '&SystemLabel=' + 'firepit');
+        expectStatusFor(response).to.equal(400);
+        expect(response, 'response').to.have.validJsonBody();
+        expect(response.json(), 'response json').to.have.property("errors");
     })
     /*
     Disabled for now. Dialogporten doesn't have proper TTD handling as of yet.
