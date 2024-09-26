@@ -11,6 +11,7 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
     private const string ResourceTypeGenericAccess = "GenericAccessResource";
     private const string ResourceTypeAltinnApp = "AltinnApp";
     private const string ResourceTypeCorrespondence = "CorrespondenceService";
+    private const string ResourceRegistryResourceEndpoint = "resourceregistry/api/v1/resource/";
 
     private readonly IFusionCache _cache;
     private readonly HttpClient _client;
@@ -42,7 +43,7 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
 
     public async IAsyncEnumerable<List<UpdatedSubjectResource>> GetUpdatedSubjectResources(DateTimeOffset since, int batchSize, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        const string searchEndpoint = "resourceregistry/api/v1/resource/updated";
+        const string searchEndpoint = $"{ResourceRegistryResourceEndpoint}updated";
         var nextUrl = searchEndpoint + $"?since={Uri.EscapeDataString(since.ToString("O"))}&limit={batchSize}";
 
         do
@@ -64,7 +65,7 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
 
     private async Task<ServiceResourceInformation[]> FetchServiceResourceInformation(CancellationToken cancellationToken)
     {
-        const string searchEndpoint = "resourceregistry/api/v1/resource/resourcelist";
+        const string searchEndpoint = $"{ResourceRegistryResourceEndpoint}resourcelist";
 
         return await _cache.GetOrSetAsync(
             ServiceResourceInformationCacheKey,
