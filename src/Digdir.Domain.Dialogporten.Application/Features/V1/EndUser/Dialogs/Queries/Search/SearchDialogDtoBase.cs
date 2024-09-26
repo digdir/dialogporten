@@ -97,7 +97,7 @@ public class SearchDialogDtoBase
     /// <summary>
     /// Current display state.
     /// </summary>
-    public SystemLabel.Values DisplayState { get; set; }
+    public SystemLabel.Values SystemLabel { get; set; }
     /// <summary>
     /// The latest entry in the dialog's activity log.
     /// </summary>

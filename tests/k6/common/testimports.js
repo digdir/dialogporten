@@ -28,5 +28,6 @@ export {
     setProcess,
     setVisibleFrom,
     setActivities,
-    addActivity
+    addActivity,
+    setSystemLabel
 } from './dialog.js';
