@@ -13,7 +13,7 @@ internal sealed class AuthorizationOptionsSetup : IConfigureOptions<Authorizatio
 
     public AuthorizationOptionsSetup(IOptions<GraphQlSettings> options)
     {
-        _options = options.Value ?? throw new ArgumentNullException(nameof(options));
+        _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
     }
 
     public void Configure(AuthorizationOptions options)
