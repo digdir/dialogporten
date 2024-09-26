@@ -261,6 +261,15 @@
               }
             ]
           },
+          "systemLabel": {
+            "description": "Set the system label of the dialog Migration purposes ",
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/SystemLabel_Values"
+              }
+            ]
+          },
           "transmissions": {
             "description": "The immutable list of transmissions associated with the dialog",
             "items": {
@@ -2000,14 +2009,6 @@
             "nullable": true,
             "type": "string"
           },
-          "displayState": {
-            "description": "Current display state.",
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/SystemLabel_Values"
-              }
-            ]
-          },
           "dueAt": {
             "description": "The due date for the dialog. Dialogs past due date might be marked as such in frontends but will still be available.",
             "example": "2022-12-31T23:59:59Z",
@@ -2101,6 +2102,14 @@
               }
             ]
           },
+          "systemLabel": {
+            "description": "Current display state.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/SystemLabel_Values"
+              }
+            ]
+          },
           "transmissions": {
             "description": "The immutable list of transmissions associated with the dialog",
             "items": {
@@ -2160,14 +2169,6 @@
             "format": "date-time",
             "nullable": true,
             "type": "string"
-          },
-          "displayState": {
-            "description": "Current display state.",
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/SystemLabel_Values"
-              }
-            ]
           },
           "dueAt": {
             "description": "The due date for the dialog. Dialogs past due date might be marked as such in frontends but will still be available.",
@@ -2267,6 +2268,14 @@
             "oneOf": [
               {
                 "$ref": "#/components/schemas/DialogStatus_Values"
+              }
+            ]
+          },
+          "systemLabel": {
+            "description": "Current display state.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/SystemLabel_Values"
               }
             ]
           },
@@ -2562,6 +2571,18 @@
             "type": "string"
           },
           "x": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "LabelAssignmentLogActorDto": {
+        "additionalProperties": false,
+        "properties": {
+          "actorId": {
+            "type": "string"
+          },
+          "actorName": {
             "type": "string"
           }
         },
@@ -3230,14 +3251,6 @@
             "format": "date-time",
             "type": "string"
           },
-          "displayState": {
-            "description": "Current display state.",
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/SystemLabel_Values"
-              }
-            ]
-          },
           "dueAt": {
             "description": "The due date for the dialog. This is the last date when the dialog is expected to be completed.",
             "example": "2022-12-31T23:59:59Z",
@@ -3327,6 +3340,14 @@
               }
             ]
           },
+          "systemLabel": {
+            "description": "Current display state.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/SystemLabel_Values"
+              }
+            ]
+          },
           "updatedAt": {
             "description": "The date and time when the dialog was last updated.",
             "example": "2022-12-31T23:59:59Z",
@@ -3338,6 +3359,25 @@
             "format": "date-time",
             "nullable": true,
             "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "SearchDialogLabelAssignmentLogDto": {
+        "additionalProperties": false,
+        "properties": {
+          "action": {
+            "type": "string"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "performedBy": {
+            "$ref": "#/components/schemas/LabelAssignmentLogActorDto"
           }
         },
         "type": "object"
@@ -3418,11 +3458,16 @@
         },
         "type": "object"
       },
-      "SetDialogSystemLabelCommand": {
+      "SetDialogLabelCommand": {
         "additionalProperties": false,
         "properties": {
+          "ifMatchDialogRevision": {
+            "format": "guid",
+            "nullable": true,
+            "type": "string"
+          },
           "label": {
-            "$ref": "#/components/schemas/SystemLabel_Values"
+            "type": "string"
           }
         },
         "type": "object"
@@ -4541,8 +4586,64 @@
       }
     },
     "/api/v1/enduser/dialogs/{dialogId}/labels": {
+      "get": {
+        "operationId": "SearchDialogLabelAssignmentLog",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "dialogId",
+            "required": true,
+            "schema": {
+              "format": "guid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SearchDialogLabelAssignmentLogDto"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Success"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "410": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWTBearerAuth": []
+          }
+        ],
+        "tags": [
+          "Enduser"
+        ]
+      },
       "post": {
-        "operationId": "DigdirDomainDialogportenWebApiEndpointsV1EndUserDialogLabelsSetSetDialogSystemLabelEndpoint",
+        "operationId": "SetDialogLabel",
         "parameters": [
           {
             "in": "path",
@@ -4558,32 +4659,67 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/SetDialogSystemLabelCommand"
+                "$ref": "#/components/schemas/SetDialogLabelCommand"
               }
             }
           },
           "description": "",
           "required": true,
-          "x-name": "SetDialogSystemLabelCommand",
+          "x-name": "SetDialogLabelCommand",
           "x-position": 1
         },
         "responses": {
-          "200": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
             "content": {
-              "application/json": {
-                "schema": {}
-              },
-              "text/plain": {
-                "schema": {}
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
               }
             },
-            "description": "Success"
+            "description": "Bad Request"
           },
           "401": {
             "description": "Unauthorized"
           },
           "403": {
             "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "410": {
+            "description": ""
+          },
+          "412": {
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": ""
+          },
+          "422": {
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": ""
           }
         },
         "security": [

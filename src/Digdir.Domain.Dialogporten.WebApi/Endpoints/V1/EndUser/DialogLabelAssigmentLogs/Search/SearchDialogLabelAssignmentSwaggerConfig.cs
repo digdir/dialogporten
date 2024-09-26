@@ -4,7 +4,7 @@ using Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.Common.Extensions;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.EndUser.DialogLabelAssigmentLogs.Search;
 
-public class SearchDialogLabelAssignmentSwaggerConfig : ISwaggerConfig
+public sealed class SearchDialogLabelAssignmentSwaggerConfig : ISwaggerConfig
 {
 
     public static string OperationId => "SearchDialogLabelAssignmentLog";
