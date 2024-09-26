@@ -25,22 +25,19 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
         string orgNumber,
         CancellationToken cancellationToken)
     {
-        var dic = await GetOrSetResourceInformationByOrg(cancellationToken);
-        if (!dic.TryGetValue(orgNumber, out var resources))
-        {
-            resources = [];
-        }
-
-        return resources.AsReadOnly();
+        var resources = await FetchServiceResourceInformation(cancellationToken);
+        return resources
+            .Where(x => x.OwnerOrgNumber == orgNumber)
+            .ToList();
     }
 
     public async Task<ServiceResourceInformation?> GetResourceInformation(
         string serviceResourceId,
         CancellationToken cancellationToken)
     {
-        var dic = await GetOrSetResourceInformationByResourceId(cancellationToken);
-        dic.TryGetValue(serviceResourceId, out var resource);
-        return resource;
+        var resources = await FetchServiceResourceInformation(cancellationToken);
+        return resources
+            .FirstOrDefault(x => x.ResourceId == serviceResourceId);
     }
 
     public async IAsyncEnumerable<List<UpdatedSubjectResource>> GetUpdatedSubjectResources(DateTimeOffset since, int batchSize, [EnumeratorCancellation] CancellationToken cancellationToken)
@@ -63,23 +60,6 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
 
             nextUrl = response.Links.Next?.ToString();
         } while (nextUrl is not null);
-    }
-
-
-    private async Task<Dictionary<string, ServiceResourceInformation[]>> GetOrSetResourceInformationByOrg(
-        CancellationToken cancellationToken)
-    {
-        var resources = await FetchServiceResourceInformation(cancellationToken);
-        return resources
-            .GroupBy(x => x.OwnerOrgNumber)
-            .ToDictionary(x => x.Key, x => x.ToArray());
-    }
-
-    private async Task<Dictionary<string, ServiceResourceInformation>> GetOrSetResourceInformationByResourceId(
-        CancellationToken cancellationToken)
-    {
-        var resources = await FetchServiceResourceInformation(cancellationToken);
-        return resources.ToDictionary(x => x.ResourceId);
     }
 
     private async Task<ServiceResourceInformation[]> FetchServiceResourceInformation(CancellationToken cancellationToken)
