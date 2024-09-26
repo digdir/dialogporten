@@ -12,10 +12,16 @@ public sealed class SetDialogLabelEndpoint(ISender sender) : Endpoint<SetDialogL
 
     public override void Configure()
     {
-        // Spørsmål: Hvordan ha namespaced label i dto men ha ikke namespaced enum
         Post("dialogs/{dialogId}/labels");
         Policies(AuthorizationPolicy.EndUser);
         Group<EndUserGroup>();
+        // Amund: Vil dette funke på alle samme? deler alle samme rate limit?
+        // Amund: Ser ut som dette er en enkel ting å lure seg unna med minimal innsats, vil bare stoppe vanlige personer fra å bytte tag veldig fort.
+        // Amund: Om hensikt er for å stoppe db skriving burdce jeg heller ta en manuel sjekk på db call innen en tid og ikke skrive på hyppig bruk?
+        // men burde ikke ratelimit være her av DDD grunner?
+        // Men kan ha egen return type for ratelimit (429)? så den kan fint leve i commanden og den blir ikke å direkte bryte ddd?
+        // trenger da en billig måte å sjekke hvor mange updates det har vært innen en tidsperiode
+        Options(x => x.RequireRateLimiting("limiterPolicy"));
 
         Description(b => SetDialogLabelSwaggerConfig.SetDescription(b));
     }
