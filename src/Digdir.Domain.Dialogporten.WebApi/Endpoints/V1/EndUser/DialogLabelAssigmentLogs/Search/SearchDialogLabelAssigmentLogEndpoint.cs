@@ -17,7 +17,7 @@ public sealed class SearchDialogLabelAssigmentLogEndpoint : Endpoint<SearchDialo
     }
     public override void Configure()
     {
-        Get("dialogs/{dialogId}/labels");
+        Get("dialogs/{dialogId}/labellog");
         Policies(AuthorizationPolicy.EndUser);
         Group<EndUserGroup>();
 
