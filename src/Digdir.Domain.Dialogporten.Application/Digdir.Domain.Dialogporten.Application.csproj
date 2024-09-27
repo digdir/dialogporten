@@ -33,7 +33,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Features\V1\EndUser\DialogLabels\Queries\Get\" />
+      <Folder Include="Features\V1\EndUser\DialogLabels\Queries\" />
     </ItemGroup>
 
 </Project>

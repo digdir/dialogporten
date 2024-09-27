@@ -1,9 +1,8 @@
 import {
-    describe, expect, expectStatusFor, getEU, postEU, postSO, putSO, purgeSO, uuidv7
+    describe, expect, expectStatusFor, getEU, postEU, postSO, putSO, purgeSO
 } from '../../common/testimports.js'
 
 import {default as dialogToInsert} from '../serviceowner/testdata/01-create-dialog.js';
-import {getDefaultEnduserOrgNo, getDefaultEnduserSsn} from '../../common/token.js';
 
 export default function () {
     //Lag 1 dialog, gjør forandriger på den, sjekk om det er log
@@ -43,7 +42,7 @@ export default function () {
         console.log(response.json());
         expect(response.json(), 'response body').to.have.lengthOf(3);
     })
-   
+
     describe('Dialog update set system label to default', () => {
         dialog.progress = "60";
         let response = putSO('dialogs/' + dialogId, dialog);

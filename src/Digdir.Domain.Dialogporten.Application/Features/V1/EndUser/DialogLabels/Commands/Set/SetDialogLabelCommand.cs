@@ -26,22 +26,16 @@ internal sealed class SetDialogLabelHandler : IRequestHandler<SetDialogLabelComm
 {
 
     private readonly IDialogDbContext _db;
-    private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IClock _clock;
     private readonly IUserRegistry _userRegistry;
     private readonly IAltinnAuthorization _altinnAuthorization;
-    private readonly IDialogTokenGenerator _dialogTokenGenerator;
 
-    public SetDialogLabelHandler(IDialogDbContext db, IMapper mapper, IUnitOfWork unitOfWork, IClock clock, IUserRegistry userRegistry, IAltinnAuthorization altinnAuthorization, IDialogTokenGenerator dialogTokenGenerator)
+    public SetDialogLabelHandler(IDialogDbContext db, IUnitOfWork unitOfWork, IUserRegistry userRegistry, IAltinnAuthorization altinnAuthorization)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
-        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
-        _clock = clock ?? throw new ArgumentNullException(nameof(clock));
         _userRegistry = userRegistry ?? throw new ArgumentNullException(nameof(userRegistry));
         _altinnAuthorization = altinnAuthorization ?? throw new ArgumentNullException(nameof(altinnAuthorization));
-        _dialogTokenGenerator = dialogTokenGenerator ?? throw new ArgumentNullException(nameof(dialogTokenGenerator));
     }
     public async Task<SetDialogLabelResult> Handle(
         SetDialogLabelCommand request,
