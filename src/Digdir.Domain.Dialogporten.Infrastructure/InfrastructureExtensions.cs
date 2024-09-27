@@ -68,7 +68,10 @@ public static class InfrastructureExtensions
 
         services.AddFusionCacheNeueccMessagePackSerializer();
 
-        services.ConfigureRedisCache(infrastructureSettings);
+        services.AddStackExchangeRedisCache(options =>
+            options.ConnectionMultiplexerFactory = () => Task.FromResult<IConnectionMultiplexer>(
+                ConnectionMultiplexer.Connect(infrastructureSettings.Redis.ConnectionString)
+            ));
 
         services.AddFusionCacheStackExchangeRedisBackplane(opt => opt.Configuration = infrastructureSettings.Redis.ConnectionString);
 
@@ -275,20 +278,6 @@ public static class InfrastructureExtensions
             // TryWithRegisteredBackplane is used to ensure that we can continue without Redis as backplane
             .WithRegisteredDistributedCache(ignoreMemoryDistributedCache: false)
             .TryWithRegisteredBackplane();
-
-        return services;
-    }
-
-    private static IServiceCollection ConfigureRedisCache(this IServiceCollection services,
-        InfrastructureSettings infrastructureSettings)
-    {
-        var redisConnection = ConnectionMultiplexer.Connect(infrastructureSettings.Redis.ConnectionString);
-        services.AddSingleton<IConnectionMultiplexer>(redisConnection);
-
-        services.AddStackExchangeRedisCache(options =>
-        {
-            options.ConnectionMultiplexerFactory = () => Task.FromResult<IConnectionMultiplexer>(redisConnection);
-        });
 
         return services;
     }

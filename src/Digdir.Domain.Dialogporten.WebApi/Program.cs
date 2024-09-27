@@ -151,14 +151,17 @@ static void BuildAndRun(string[] args)
             .WithMetrics(metrics =>
             {
                 metrics.AddRuntimeInstrumentation();
-            })
-            .UseAzureMonitor()
-            .Services
+            });
 
-        // Auth
-        .AddDialogportenAuthentication(builder.Configuration)
-        .AddAuthorization()
-        .AddHealthChecks();
+    if (!builder.Environment.IsDevelopment())
+    {
+        builder.Services.AddOpenTelemetry().UseAzureMonitor();
+    }
+
+    // Auth
+    builder.Services.AddDialogportenAuthentication(builder.Configuration)
+    .AddAuthorization()
+    .AddHealthChecks();
 
     if (builder.Environment.IsDevelopment())
     {
