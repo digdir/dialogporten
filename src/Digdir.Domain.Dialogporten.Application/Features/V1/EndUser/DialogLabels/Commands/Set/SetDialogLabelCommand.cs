@@ -68,8 +68,6 @@ internal sealed class SetDialogLabelHandler : IRequestHandler<SetDialogLabelComm
         // TEMP, set default to new() in migration
         dialog.DialogEndUserContext ??= new();
 
-        // Amund: Her skal ting gjæres, dialog e ferdig fonne, endUserContext e joina, bruker har accessToMainResource!
-        // Nå kan SystemLabel oppdateres?!
         // Amund: dette føles for manulet ut det er sikkert noe magi jeg kan ta i bruk her det blir ikke å fungere på default heller her må noe annet gjøres 
         // det funker om default også har prefixen. Validator har sjekket at dette skal funke kan dette flyttes inn i mapper? mappe til namespace og label i mapper? det virker vartfall bedre plassert enn å ha det er her
         _ = Enum.TryParse(request.Label.Split(":")[1], true, out SystemLabel.Values labelId);

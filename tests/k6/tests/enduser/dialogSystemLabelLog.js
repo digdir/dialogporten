@@ -43,18 +43,18 @@ export default function () {
         console.log(response.json());
         expect(response.json(), 'response body').to.have.lengthOf(3);
     })
-    
+   
     describe('Dialog update set system label to default', () => {
-        dialog.progress ="60";  
-        let response = putSO('dialogs/' + dialogId,dialog);
+        dialog.progress = "60";
+        let response = putSO('dialogs/' + dialogId, dialog);
         expectStatusFor(response).to.equal(204);
         response = getEU('dialogs/' + dialogId + '/labellog');
         expectStatusFor(response).to.equal(200);
         expect(response, 'response').to.have.validJsonBody();
         console.log(response.json());
         expect(response.json(), 'response body').to.have.lengthOf(4);
-    }) 
-    
+    })
+
     describe('Cleanup', () => {
         let response = purgeSO("dialogs/" + dialogId);
         expectStatusFor(response).to.equal(204);

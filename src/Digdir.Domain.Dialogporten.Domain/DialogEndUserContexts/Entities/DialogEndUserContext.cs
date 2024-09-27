@@ -5,7 +5,6 @@ using Digdir.Library.Entity.Abstractions;
 
 namespace Digdir.Domain.Dialogporten.Domain.DialogEndUserContexts.Entities;
 
-// Amund: legges til dialog create command handler
 public sealed class DialogEndUserContext : IEntity
 {
     public Guid Id { get; set; }

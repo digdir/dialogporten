@@ -3134,14 +3134,6 @@
             "format": "date-time",
             "type": "string"
           },
-          "displayState": {
-            "description": "Current display state.",
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/SystemLabel_Values"
-              }
-            ]
-          },
           "dueAt": {
             "description": "The due date for the dialog. This is the last date when the dialog is expected to be completed.",
             "example": "2022-12-31T23:59:59Z",
@@ -3222,6 +3214,14 @@
             "oneOf": [
               {
                 "$ref": "#/components/schemas/DialogStatus_Values"
+              }
+            ]
+          },
+          "systemLabel": {
+            "description": "Current display state.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/SystemLabel_Values"
               }
             ]
           },
@@ -4340,7 +4340,7 @@
           {
             "description": "Filter by Display state ",
             "in": "query",
-            "name": "displayState",
+            "name": "systemLabel",
             "schema": {
               "allOf": [
                 {
@@ -4585,7 +4585,7 @@
         ]
       }
     },
-    "/api/v1/enduser/dialogs/{dialogId}/labels": {
+    "/api/v1/enduser/dialogs/{dialogId}/labellog": {
       "get": {
         "operationId": "SearchDialogLabelAssignmentLog",
         "parameters": [
@@ -4641,7 +4641,9 @@
         "tags": [
           "Enduser"
         ]
-      },
+      }
+    },
+    "/api/v1/enduser/dialogs/{dialogId}/labels": {
       "post": {
         "operationId": "SetDialogLabel",
         "parameters": [
