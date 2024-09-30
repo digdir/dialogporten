@@ -31,18 +31,11 @@ jobs:
                 {
                   "type": "section",
                   "text": {
-                    "type": "plain_text",
-                    "text": ":shipit: *${{ github.event.pull_request.title }}* :shipit: \n"
-                  }
-                },
-                { "type": "divider" },
-                {
-                  "type": "section",
-                  "text": {
                     "type": "mrkdwn",
                     "text": ${{ toJson(steps.slackify.outputs.text) }}
                   }
                 },
+                { "type": "divider" },
                 {
                   "type": "actions",
                   "elements": [
