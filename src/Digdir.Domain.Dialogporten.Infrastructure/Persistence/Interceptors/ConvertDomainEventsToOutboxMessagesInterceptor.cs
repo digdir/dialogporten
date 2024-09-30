@@ -7,14 +7,14 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Logging;
 using Constants = Digdir.Domain.Dialogporten.Infrastructure.GraphQl.GraphQlSubscriptionConstants;
 
-namespace Digdir.Domain.Dialogporten.Infrastructure.DomainEvents.Outbox;
+namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Interceptors;
 
 internal sealed class ConvertDomainEventsToOutboxMessagesInterceptor : SaveChangesInterceptor
 {
     private readonly ITransactionTime _transactionTime;
     private readonly ITopicEventSender _topicEventSender;
     private readonly ILogger<ConvertDomainEventsToOutboxMessagesInterceptor> _logger;
-    private readonly IPublishEndpoint? _publishEndpoint;
+    private readonly Lazy<IPublishEndpoint> _publishEndpoint;
 
     private List<IDomainEvent> _domainEvents = [];
 
@@ -22,12 +22,12 @@ internal sealed class ConvertDomainEventsToOutboxMessagesInterceptor : SaveChang
         ITransactionTime transactionTime,
         ITopicEventSender topicEventSender,
         ILogger<ConvertDomainEventsToOutboxMessagesInterceptor> logger,
-        IPublishEndpoint? publishEndpoint = null)
+        Lazy<IPublishEndpoint> publishEndpoint)
     {
         _transactionTime = transactionTime ?? throw new ArgumentNullException(nameof(transactionTime));
         _topicEventSender = topicEventSender ?? throw new ArgumentNullException(nameof(topicEventSender));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _publishEndpoint = publishEndpoint;// ?? throw new ArgumentNullException(nameof(publishEndpoint));
+        _publishEndpoint = publishEndpoint ?? throw new ArgumentNullException(nameof(publishEndpoint));
     }
 
     public override async ValueTask<InterceptionResult<int>> SavingChangesAsync(
@@ -54,18 +54,9 @@ internal sealed class ConvertDomainEventsToOutboxMessagesInterceptor : SaveChang
             domainEvent.OccuredAt = _transactionTime.Value;
         }
 
-        if (_publishEndpoint is not null)
-        {
-            await Task.WhenAll(_domainEvents
-                .Select(x => _publishEndpoint
-                    .Publish(x, x.GetType(), cancellationToken)));
-        }
-
-        // var outboxMessages = _domainEvents
-        //     .Select(OutboxMessage.Create)
-        //     .ToList();
-        //
-        // dbContext.Set<OutboxMessage>().AddRange(outboxMessages);
+        await Task.WhenAll(_domainEvents
+            .Select(x => _publishEndpoint.Value
+                .Publish(x, x.GetType(), cancellationToken)));
 
         return await base.SavingChangesAsync(eventData, result, cancellationToken);
     }

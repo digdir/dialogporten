@@ -3,7 +3,6 @@ using Digdir.Domain.Dialogporten.Domain.Common;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
-using Digdir.Domain.Dialogporten.Domain.Outboxes;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence.ValueConverters;
 using Digdir.Library.Entity.Abstractions.Features.Identifiable;
 using Digdir.Library.Entity.Abstractions.Features.Versionable;
@@ -17,6 +16,8 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions.Contents;
 using Digdir.Domain.Dialogporten.Domain.SubjectResources;
 using MassTransit;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using OutboxMessage = MassTransit.EntityFrameworkCoreIntegration.OutboxMessage;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence;
 
@@ -41,8 +42,6 @@ internal sealed class DialogDbContext : DbContext, IDialogDbContext
     public DbSet<DialogSearchTag> DialogSearchTags => Set<DialogSearchTag>();
     public DbSet<DialogContent> DialogContents => Set<DialogContent>();
     public DbSet<DialogContentType> DialogContentTypes => Set<DialogContentType>();
-    public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
-    public DbSet<OutboxMessageConsumer> OutboxMessageConsumers => Set<OutboxMessageConsumer>();
     public DbSet<SubjectResource> SubjectResources => Set<SubjectResource>();
 
     //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) =>
@@ -111,6 +110,18 @@ internal sealed class DialogDbContext : DbContext, IDialogDbContext
             .RemovePluralizingTableNameConvention()
             .AddAuditableEntities()
             .ApplyConfigurationsFromAssembly(typeof(DialogDbContext).Assembly)
-            .AddTransactionalOutboxEntities(x => x.ToTable("MassTransit" + x.Metadata.GetTableName()));
+            .AddTransactionalOutboxEntities(builder =>
+            {
+                builder.ToTable($"MassTransit{builder.Metadata.GetTableName()}");
+                if (builder is not EntityTypeBuilder<OutboxMessage> outboxMessageBuilder)
+                {
+                    return;
+                }
+
+                outboxMessageBuilder.Property(x => x.Properties).Metadata.SetMaxLength(null);
+                outboxMessageBuilder.Property(x => x.Body).Metadata.SetMaxLength(null);
+                outboxMessageBuilder.Property(x => x.Headers).Metadata.SetMaxLength(null);
+                outboxMessageBuilder.Property(x => x.MessageType).Metadata.SetMaxLength(null);
+            });
     }
 }

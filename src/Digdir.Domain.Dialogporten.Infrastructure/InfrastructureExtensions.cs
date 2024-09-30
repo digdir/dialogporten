@@ -2,10 +2,7 @@
 using Altinn.ApiClients.Maskinporten.Interfaces;
 using Altinn.ApiClients.Maskinporten.Services;
 using Digdir.Domain.Dialogporten.Application.Externals;
-using Digdir.Domain.Dialogporten.Infrastructure.DomainEvents.Outbox;
-using Digdir.Domain.Dialogporten.Infrastructure.DomainEvents.Outbox.Dispatcher;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,9 +24,8 @@ using Digdir.Domain.Dialogporten.Infrastructure.Altinn.NameRegistry;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.OrganizationRegistry;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.ResourceRegistry;
 using Digdir.Domain.Dialogporten.Infrastructure.GraphQl;
-using Digdir.Domain.Dialogporten.Infrastructure.Persistence.Configurations.Actors;
+using Digdir.Domain.Dialogporten.Infrastructure.Persistence.Interceptors;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence.Repositories;
-using MassTransit;
 using ZiggyCreatures.Caching.Fusion;
 using ZiggyCreatures.Caching.Fusion.NullObjects;
 
@@ -37,7 +33,13 @@ namespace Digdir.Domain.Dialogporten.Infrastructure;
 
 public static class InfrastructureExtensions
 {
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services,
+    public static IPubSubInfrastructureChoice AddInfrastructure(
+        this IServiceCollection services,
+        IConfiguration configuration,
+        IHostEnvironment environment)
+        => new InfrastructureBuilder(services, configuration, environment);
+
+    internal static IServiceCollection AddInfrastructure_Internal(this IServiceCollection services,
         IConfiguration configuration, IHostEnvironment environment)
     {
         ArgumentNullException.ThrowIfNull(services);
@@ -72,35 +74,6 @@ public static class InfrastructureExtensions
         services.AddFusionCacheStackExchangeRedisBackplane(opt => opt.Configuration = infrastructureSettings.Redis.ConnectionString);
 
         services.AddGraphQlRedisSubscriptions(infrastructureSettings.Redis.ConnectionString);
-
-        services.AddMassTransit(x =>
-        {
-            x.AddEntityFrameworkOutbox<DialogDbContext>(o =>
-            {
-                o.UsePostgres();
-                // TODO: Disable for api, enable for service
-                o.UseBusOutbox();
-            });
-            // Magnus: Denne denne må legges til i service
-            // x.AddConsumers();
-            x.UsingRabbitMq((context, cfg) =>
-            {
-                cfg.Host("localhost", "/", h =>
-                {
-                    h.Username("guest");
-                    h.Password("guest");
-                });
-            });
-            // x.UsingAzureServiceBus((context, cfg) =>
-            // {
-            //     // Magnus: Denne denne må legges til i service
-            //     // cfg.ConfigureEndpoints(context);
-            // });
-        });
-
-        //
-        // services.AddTransient<IBus, MockBus>();
-        // services.AddTransient<IPublishEndpoint>(x => x.GetRequiredService<IBus>());
 
         services.ConfigureFusionCache(nameof(Altinn.NameRegistry), new()
         {
@@ -147,16 +120,16 @@ public static class InfrastructureExtensions
                 var connectionString = services.GetRequiredService<IOptions<InfrastructureSettings>>()
                     .Value.DialogDbConnectionString;
                 options.UseNpgsql(connectionString, o =>
-                    {
-                        o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
-                    })
-                    .AddInterceptors(
-                        services.GetRequiredService<PopulateActorNameInterceptor>(),
-                        services.GetRequiredService<ConvertDomainEventsToOutboxMessagesInterceptor>()
-                    );
+                {
+                    o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
+                })
+                .AddInterceptors(
+                    services.GetRequiredService<PopulateActorNameInterceptor>(),
+                    services.GetRequiredService<ConvertDomainEventsToOutboxMessagesInterceptor>()
+                );
             })
             .AddHostedService<DevelopmentMigratorHostedService>()
-            .AddHostedService<DevelopmentSubjectResourceSyncHostedService>()
+            // .AddHostedService<DevelopmentSubjectResourceSyncHostedService>()
 
             // Scoped
             .AddScoped<IDialogDbContext>(x => x.GetRequiredService<DialogDbContext>())
@@ -164,14 +137,32 @@ public static class InfrastructureExtensions
 
             // Transient
             .AddTransient<ISubjectResourceRepository, SubjectResourceRepository>()
-            .AddTransient<OutboxDispatcher>()
-            .AddTransient<ConvertDomainEventsToOutboxMessagesInterceptor>()
-            .AddTransient<PopulateActorNameInterceptor>()
+            // .AddTransient<OutboxDispatcher>()
+            .AddScoped<ConvertDomainEventsToOutboxMessagesInterceptor>()
+            .AddScoped<PopulateActorNameInterceptor>();
 
-            // Decorate
-            .Decorate(typeof(INotificationHandler<>), typeof(IdempotentDomainEventHandler<>));
+        // Decorate
+        // .Decorate(typeof(INotificationHandler<>), typeof(IdempotentDomainEventHandler<>));
 
         // HttpClient
+        AddHttpClients(services, infrastructureConfigurationSection);
+
+        if (environment.IsDevelopment())
+        {
+            var localDeveloperSettings = configuration.GetLocalDevelopmentSettings();
+            services
+                .ReplaceTransient<ICloudEventBus, ConsoleLogEventBus>(predicate: localDeveloperSettings.UseLocalDevelopmentCloudEventBus)
+                .ReplaceTransient<IResourceRegistry, LocalDevelopmentResourceRegistry>(predicate: localDeveloperSettings.UseLocalDevelopmentResourceRegister)
+                .ReplaceTransient<IAltinnAuthorization, LocalDevelopmentAltinnAuthorization>(predicate: localDeveloperSettings.UseLocalDevelopmentAltinnAuthorization)
+                .ReplaceSingleton<IFusionCache, NullFusionCache>(predicate: localDeveloperSettings.DisableCache);
+        }
+
+        return services;
+    }
+
+    private static void AddHttpClients(IServiceCollection services,
+        IConfigurationSection infrastructureConfigurationSection)
+    {
         services.
             AddMaskinportenHttpClient<ICloudEventBus, AltinnEventsClient, SettingsJwkClientDefinition>(
                 infrastructureConfigurationSection,
@@ -209,18 +200,6 @@ public static class InfrastructureExtensions
                 client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", altinnSettings.SubscriptionKey);
             })
             .AddPolicyHandlerFromRegistry(PollyPolicy.DefaultHttpRetryPolicy);
-
-        if (environment.IsDevelopment())
-        {
-            var localDeveloperSettings = configuration.GetLocalDevelopmentSettings();
-            services
-                .ReplaceTransient<ICloudEventBus, ConsoleLogEventBus>(predicate: localDeveloperSettings.UseLocalDevelopmentCloudEventBus)
-                .ReplaceTransient<IResourceRegistry, LocalDevelopmentResourceRegistry>(predicate: localDeveloperSettings.UseLocalDevelopmentResourceRegister)
-                .ReplaceTransient<IAltinnAuthorization, LocalDevelopmentAltinnAuthorization>(predicate: localDeveloperSettings.UseLocalDevelopmentAltinnAuthorization)
-                .ReplaceSingleton<IFusionCache, NullFusionCache>(predicate: localDeveloperSettings.DisableCache);
-        }
-
-        return services;
     }
 
     public class FusionCacheSettings
@@ -294,61 +273,3 @@ public static class InfrastructureExtensions
         return services;
     }
 }
-//
-// public sealed class MockBus : IBus
-// {
-//     public ConnectHandle ConnectPublishObserver(IPublishObserver observer) => throw new NotImplementedException();
-//     public Task<ISendEndpoint> GetPublishSendEndpoint<T>() where T : class => throw new NotImplementedException();
-//
-//     public Task Publish<T>(T message, CancellationToken cancellationToken = new CancellationToken()) where T : class => throw new NotImplementedException();
-//
-//     public Task Publish<T>(T message, IPipe<PublishContext<T>> publishPipe, CancellationToken cancellationToken = new CancellationToken()) where T : class => throw new NotImplementedException();
-//
-//     public Task Publish<T>(T message, IPipe<PublishContext> publishPipe, CancellationToken cancellationToken = new CancellationToken()) where T : class => throw new NotImplementedException();
-//
-//     public Task Publish(object message, CancellationToken cancellationToken = new CancellationToken()) => throw new NotImplementedException();
-//
-//     public Task Publish(object message, IPipe<PublishContext> publishPipe, CancellationToken cancellationToken = new CancellationToken()) => throw new NotImplementedException();
-//
-//     public Task Publish(object message, Type messageType, CancellationToken cancellationToken = new CancellationToken()) => throw new NotImplementedException();
-//
-//     public Task Publish(object message, Type messageType, IPipe<PublishContext> publishPipe,
-//         CancellationToken cancellationToken = new CancellationToken()) =>
-//         throw new NotImplementedException();
-//
-//     public Task Publish<T>(object values, CancellationToken cancellationToken = new CancellationToken()) where T : class => throw new NotImplementedException();
-//
-//     public Task Publish<T>(object values, IPipe<PublishContext<T>> publishPipe, CancellationToken cancellationToken = new CancellationToken()) where T : class => throw new NotImplementedException();
-//
-//     public Task Publish<T>(object values, IPipe<PublishContext> publishPipe, CancellationToken cancellationToken = new CancellationToken()) where T : class => throw new NotImplementedException();
-//     public ConnectHandle ConnectSendObserver(ISendObserver observer) => throw new NotImplementedException();
-//
-//     public Task<ISendEndpoint> GetSendEndpoint(Uri address) => throw new NotImplementedException();
-//
-//     public ConnectHandle ConnectConsumePipe<T>(IPipe<ConsumeContext<T>> pipe) where T : class => throw new NotImplementedException();
-//
-//     public ConnectHandle ConnectConsumePipe<T>(IPipe<ConsumeContext<T>> pipe, ConnectPipeOptions options) where T : class => throw new NotImplementedException();
-//
-//     public ConnectHandle ConnectRequestPipe<T>(Guid requestId, IPipe<ConsumeContext<T>> pipe) where T : class => throw new NotImplementedException();
-//
-//     public ConnectHandle ConnectConsumeMessageObserver<T>(IConsumeMessageObserver<T> observer) where T : class => throw new NotImplementedException();
-//
-//     public ConnectHandle ConnectConsumeObserver(IConsumeObserver observer) => throw new NotImplementedException();
-//
-//     public ConnectHandle ConnectReceiveObserver(IReceiveObserver observer) => throw new NotImplementedException();
-//
-//     public ConnectHandle ConnectReceiveEndpointObserver(IReceiveEndpointObserver observer) => throw new NotImplementedException();
-//
-//     public ConnectHandle ConnectEndpointConfigurationObserver(IEndpointConfigurationObserver observer) => throw new NotImplementedException();
-//
-//     public HostReceiveEndpointHandle ConnectReceiveEndpoint(IEndpointDefinition definition,
-//         IEndpointNameFormatter? endpointNameFormatter = null, Action<IReceiveEndpointConfigurator>? configureEndpoint = null) =>
-//         throw new NotImplementedException();
-//
-//     public HostReceiveEndpointHandle ConnectReceiveEndpoint(string queueName, Action<IReceiveEndpointConfigurator>? configureEndpoint = null) => throw new NotImplementedException();
-//
-//     public void Probe(ProbeContext context) => throw new NotImplementedException();
-//
-//     public Uri Address { get; } = null!;
-//     public IBusTopology Topology { get; } = null!;
-// }

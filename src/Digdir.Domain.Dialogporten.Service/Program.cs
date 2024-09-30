@@ -60,25 +60,10 @@ static void BuildAndRun(string[] args)
 
     builder.Services
         .AddApplicationInsightsTelemetry()
-        .AddMassTransit(x =>
-        {
-            x.AddConsumers(thisAssembly);
-            var useInMemoryTransport = builder.Configuration.GetValue<bool>("MassTransit:UseInMemoryTransport");
-
-            if (useInMemoryTransport)
-            {
-                x.UsingInMemory((context, cfg) =>
-                {
-                    cfg.ConfigureEndpoints(context);
-                });
-            }
-            else
-            {
-                // todo: Configure for using Azure Service Bus
-            }
-        })
         .AddApplication(builder.Configuration, builder.Environment)
         .AddInfrastructure(builder.Configuration, builder.Environment)
+            .WithPubSubCapabilities(thisAssembly)
+            .Build()
         .AddTransient<IUser, ServiceUser>()
         .AddHealthChecks();
 

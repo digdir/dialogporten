@@ -39,8 +39,6 @@ public interface IDialogDbContext
     DbSet<DialogContent> DialogContents { get; }
     DbSet<DialogContentType> DialogContentTypes { get; }
 
-    DbSet<OutboxMessage> OutboxMessages { get; }
-    DbSet<OutboxMessageConsumer> OutboxMessageConsumers { get; }
     DbSet<SubjectResource> SubjectResources { get; }
 
     /// <summary>
