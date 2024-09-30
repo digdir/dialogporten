@@ -1,6 +1,5 @@
 using Digdir.Domain.Dialogporten.Infrastructure;
 using Digdir.Domain.Dialogporten.Infrastructure.Common.Exceptions;
-using Digdir.Domain.Dialogporten.Infrastructure.DomainEvents.Outbox.Dispatcher;
 using FluentAssertions;
 using NetArchTest.Rules;
 
@@ -17,7 +16,6 @@ public class InfrastructureArchitectureTests
             nameof(InfrastructureExtensions),
 
             // These classes are currently public but should be internal, moved to another assembly, or deleted
-            nameof(OutboxScheduler),
             nameof(IUpstreamServiceError)
         };
 
