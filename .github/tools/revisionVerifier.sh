@@ -4,7 +4,6 @@ then
     tdnf install -y jq
 fi
 
-
 if [ -z "$1" ]; then
   echo "Usage: $0 <revision-name>"
   exit 1
@@ -24,7 +23,6 @@ verify_revision() {
 
   # Fetch app revision
   json_output=$(az containerapp revision show -g "$resource_group" --revision "$revision_name" --query "$query_filter" 2>/dev/null)
-
 
   health_state=$(echo $json_output | jq -r '.healthState')
   running_state=$(echo $json_output | jq -r '.runningState')
