@@ -36,7 +36,8 @@ public static class DialogGenerator
         List<CreateDialogDialogAttachmentDto>? attachments = null,
         List<CreateDialogDialogGuiActionDto>? guiActions = null,
         List<CreateDialogDialogApiActionDto>? apiActions = null,
-        List<CreateDialogDialogActivityDto>? activities = null)
+        List<CreateDialogDialogActivityDto>? activities = null,
+        List<CreateDialogDialogTransmissionDto>? transmissions = null)
     {
         return GenerateFakeDialogs(
             seed,
@@ -60,12 +61,12 @@ public static class DialogGenerator
             attachments,
             guiActions,
             apiActions,
-            activities
+            activities,
+            transmissions
         )[0];
     }
 
-    public static List<CreateDialogCommand> GenerateFakeDialogs(
-        int? seed = null,
+    public static List<CreateDialogCommand> GenerateFakeDialogs(int? seed = null,
         int count = 1,
         Guid? id = null,
         string? serviceResource = null,
@@ -86,7 +87,8 @@ public static class DialogGenerator
         List<CreateDialogDialogAttachmentDto>? attachments = null,
         List<CreateDialogDialogGuiActionDto>? guiActions = null,
         List<CreateDialogDialogApiActionDto>? apiActions = null,
-        List<CreateDialogDialogActivityDto>? activities = null)
+        List<CreateDialogDialogActivityDto>? activities = null,
+        List<CreateDialogDialogTransmissionDto>? transmissions = null)
     {
         Randomizer.Seed = seed.HasValue ? new Random(seed.Value) : new Random();
         return new Faker<CreateDialogCommand>()
@@ -108,6 +110,7 @@ public static class DialogGenerator
             .RuleFor(o => o.ApiActions, _ => apiActions ?? GenerateFakeDialogApiActions())
             .RuleFor(o => o.Activities, _ => activities ?? GenerateFakeDialogActivities())
             .RuleFor(o => o.Process, f => process ?? GenerateFakeProcessUri())
+            .RuleFor(o => o.Transmissions, f => transmissions ?? GenerateFakeDialogTransmissions())
             .Generate(count);
     }
 
@@ -121,7 +124,8 @@ public static class DialogGenerator
             attachments: [],
             guiActions: [],
             apiActions: [],
-            searchTags: []);
+            searchTags: [],
+            transmissions: []);
     }
 
     public static string GenerateFakeResource(Func<string?>? generator = null)

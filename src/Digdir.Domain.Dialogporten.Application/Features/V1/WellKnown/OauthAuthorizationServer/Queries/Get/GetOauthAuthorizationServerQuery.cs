@@ -1,5 +1,7 @@
-﻿using MediatR;
+﻿using Digdir.Domain.Dialogporten.Application.Common.Authorization;
+using MediatR;
 using Microsoft.Extensions.Options;
+using Constants = Digdir.Domain.Dialogporten.Application.Features.V1.Common.Authorization.Constants;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.WellKnown.OauthAuthorizationServer.Queries.Get;
 
@@ -17,7 +19,7 @@ internal sealed class GetOauthAuthorizationServerQueryHandler : IRequestHandler<
 
     public async Task<GetOauthAuthorizationServerDto> Handle(GetOauthAuthorizationServerQuery request, CancellationToken cancellationToken)
     {
-        var issuerUrl = _applicationSettings.Dialogporten.BaseUri.AbsoluteUri.TrimEnd('/') + "/api/v1";
+        var issuerUrl = _applicationSettings.Dialogporten.BaseUri.AbsoluteUri.TrimEnd('/') + Constants.DialogTokenIssuerVersion;
         return await Task.FromResult(new GetOauthAuthorizationServerDto
         {
             Issuer = issuerUrl,

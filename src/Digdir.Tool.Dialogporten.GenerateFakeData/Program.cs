@@ -35,9 +35,7 @@ public static class Program
             Randomizer.Seed = new Random(options.Seed);
             var dialogs = DialogGenerator.GenerateFakeDialogs(
                 seed: new Randomizer().Number(int.MaxValue),
-                serviceResourceGenerator: () => MaybeGetRandomResource(options),
-                partyGenerator: () => MaybeGetRandomParty(options),
-                count: options.Count);
+                count: options.Count, serviceResourceGenerator: () => MaybeGetRandomResource(options), partyGenerator: () => MaybeGetRandomParty(options));
             var serialized = JsonSerializer.Serialize(dialogs, JsonSerializerOptions);
             Console.WriteLine(serialized);
             return;
@@ -118,9 +116,7 @@ public static class Program
             var dialogsToGenerate = Math.Min(DialogsPerBatch, totalDialogs - dialogCounter);
             var dialogs = DialogGenerator.GenerateFakeDialogs(
                 seed: new Randomizer().Number(int.MaxValue),
-                serviceResourceGenerator: () => MaybeGetRandomResource(options),
-                partyGenerator: () => MaybeGetRandomParty(options),
-                count: dialogsToGenerate).Take(dialogsToGenerate);
+                count: dialogsToGenerate, serviceResourceGenerator: () => MaybeGetRandomResource(options), partyGenerator: () => MaybeGetRandomParty(options)).Take(dialogsToGenerate);
             foreach (var dialog in dialogs)
             {
                 dialogQueue.Add((dialogCounter + 1, dialog), cancellationToken);
