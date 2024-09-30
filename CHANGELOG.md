@@ -1,5 +1,39 @@
 # Changelog
 
+## [1.19.0](https://github.com/digdir/dialogporten/compare/v1.18.1...v1.19.0) (2024-09-24)
+
+
+### Features
+
+* **breaking:** Move notification check endpoint to /actions ([#1175](https://github.com/digdir/dialogporten/issues/1175)) ([e0c1cf2](https://github.com/digdir/dialogporten/commit/e0c1cf205c66200f024431dc3392c988b99fdb30))
+
+
+### Bug Fixes
+
+* **janitor:** ensure Redis is configured correctly ([#1182](https://github.com/digdir/dialogporten/issues/1182)) ([37fe982](https://github.com/digdir/dialogporten/commit/37fe982ea9f08e48c75481008d614aaacf19a57d))
+
+## [1.18.1](https://github.com/digdir/dialogporten/compare/v1.18.0...v1.18.1) (2024-09-23)
+
+
+### Bug Fixes
+
+* Add missing events to dialog subscription ([#1163](https://github.com/digdir/dialogporten/issues/1163)) ([162ce9a](https://github.com/digdir/dialogporten/commit/162ce9a9a0c4183d10e8edfe0f8c5589110b7a59))
+* Fix BaseUri on localhost trailing slash discrepancy on OAuth metadata ([#1145](https://github.com/digdir/dialogporten/issues/1145)) ([09ce878](https://github.com/digdir/dialogporten/commit/09ce878cb537bf2e495e3801e0c769e25008246a))
+
+## [1.18.0](https://github.com/digdir/dialogporten/compare/v1.17.0...v1.18.0) (2024-09-16)
+
+
+### Features
+
+* add dialogOpened activitytype ([#1110](https://github.com/digdir/dialogporten/issues/1110)) ([711fa6d](https://github.com/digdir/dialogporten/commit/711fa6dcbd3e8ab1240c765b9fe1b765f00fe86d))
+* Add process and precedingProcess to dialog as optional fields ([#1092](https://github.com/digdir/dialogporten/issues/1092)) ([2bf0d30](https://github.com/digdir/dialogporten/commit/2bf0d30619f6c40716a70890cda47fa7b30ad0ac))
+
+
+### Bug Fixes
+
+* Allow setting UpdatedAt when creating Dialog ([#1105](https://github.com/digdir/dialogporten/issues/1105)) ([481e907](https://github.com/digdir/dialogporten/commit/481e907993a1c32337ea6a85ced8312ec4cd1e5b))
+* Authorize access to dialog details for any mainresource action ([#1122](https://github.com/digdir/dialogporten/issues/1122)) ([a7e769a](https://github.com/digdir/dialogporten/commit/a7e769ad2be45c7f72169f7ae980ab24fd43ce72))
+
 ## [1.17.0](https://github.com/digdir/dialogporten/compare/v1.16.0...v1.17.0) (2024-09-10)
 
 

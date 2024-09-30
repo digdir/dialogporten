@@ -5,7 +5,7 @@ using Digdir.Library.Entity.Abstractions.Features.Aggregate;
 
 namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 
-public class DialogGuiAction : IEntity
+public sealed class DialogGuiAction : IEntity
 {
     public Guid Id { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
@@ -35,13 +35,13 @@ public class DialogGuiAction : IEntity
     public DialogGuiActionPrompt? Prompt { get; set; }
 }
 
-public class DialogGuiActionPrompt : LocalizationSet
+public sealed class DialogGuiActionPrompt : LocalizationSet
 {
     public Guid GuiActionId { get; set; }
     public DialogGuiAction GuiAction { get; set; } = null!;
 }
 
-public class DialogGuiActionTitle : LocalizationSet
+public sealed class DialogGuiActionTitle : LocalizationSet
 {
     public Guid GuiActionId { get; set; }
     public DialogGuiAction GuiAction { get; set; } = null!;

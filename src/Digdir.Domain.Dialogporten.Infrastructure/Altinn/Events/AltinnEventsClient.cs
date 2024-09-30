@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.Events;
 
-internal class AltinnEventsClient : ICloudEventBus
+internal sealed class AltinnEventsClient : ICloudEventBus
 {
     private readonly HttpClient _client;
 
@@ -24,7 +24,7 @@ internal class AltinnEventsClient : ICloudEventBus
             cancellationToken: cancellationToken);
 }
 
-internal class ConsoleLogEventBus : ICloudEventBus
+internal sealed class ConsoleLogEventBus : ICloudEventBus
 {
     private readonly ILogger<ConsoleLogEventBus> _logger;
 

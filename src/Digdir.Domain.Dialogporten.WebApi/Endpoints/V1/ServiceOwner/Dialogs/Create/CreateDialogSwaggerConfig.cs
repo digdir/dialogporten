@@ -7,7 +7,7 @@ using FastEndpoints;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.Dialogs.Create;
 
-public class CreateDialogSwaggerConfig : ISwaggerConfig
+public sealed class CreateDialogSwaggerConfig : ISwaggerConfig
 {
     public static string OperationId => "CreateDialog";
 

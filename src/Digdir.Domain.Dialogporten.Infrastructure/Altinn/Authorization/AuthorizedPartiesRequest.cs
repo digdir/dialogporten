@@ -4,13 +4,13 @@ using Digdir.Domain.Dialogporten.Domain.Parties.Abstractions;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.Authorization;
 
-public sealed class AuthorizedPartiesRequest(IPartyIdentifier partyIdentifier)
+internal sealed class AuthorizedPartiesRequest(IPartyIdentifier partyIdentifier)
 {
     public string Type { get; init; } = partyIdentifier.Prefix();
     public string Value { get; init; } = partyIdentifier.Id;
 }
 
-public static class AuthorizedPartiesRequestExtensions
+internal static class AuthorizedPartiesRequestExtensions
 {
     public static string GenerateCacheKey(this AuthorizedPartiesRequest request)
     {

@@ -14,7 +14,7 @@ public interface IDialogTokenGenerator
     string GetDialogToken(DialogEntity dialog, DialogDetailsAuthorizationResult authorizationResult, string issuerVersion);
 }
 
-internal class DialogTokenGenerator : IDialogTokenGenerator
+internal sealed class DialogTokenGenerator : IDialogTokenGenerator
 {
     private readonly ApplicationSettings _applicationSettings;
     private readonly IUser _user;

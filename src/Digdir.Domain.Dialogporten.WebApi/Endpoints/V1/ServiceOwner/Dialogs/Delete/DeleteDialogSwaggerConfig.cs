@@ -7,7 +7,7 @@ using FastEndpoints;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.Dialogs.Delete;
 
-public class DeleteDialogSwaggerConfig : ISwaggerConfig
+public sealed class DeleteDialogSwaggerConfig : ISwaggerConfig
 {
     public static string OperationId => "DeleteDialog";
 

@@ -8,7 +8,7 @@ using FastEndpoints;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.Dialogs.Get;
 
-public class GetDialogSwaggerConfig : ISwaggerConfig
+public sealed class GetDialogSwaggerConfig : ISwaggerConfig
 {
     public static string OperationId => "GetDialogSO";
 

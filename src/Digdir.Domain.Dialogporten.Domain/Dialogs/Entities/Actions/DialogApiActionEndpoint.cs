@@ -3,7 +3,7 @@ using Digdir.Library.Entity.Abstractions;
 
 namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 
-public class DialogApiActionEndpoint : IEntity
+public sealed class DialogApiActionEndpoint : IEntity
 {
     public Guid Id { get; set; }
     public DateTimeOffset CreatedAt { get; set; }

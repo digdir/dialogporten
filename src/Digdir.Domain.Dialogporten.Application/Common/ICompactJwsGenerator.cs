@@ -12,7 +12,7 @@ public interface ICompactJwsGenerator
     bool VerifyCompactJws(string compactJws);
 }
 
-public class Ed25519Generator : ICompactJwsGenerator
+public sealed class Ed25519Generator : ICompactJwsGenerator
 {
     private readonly ApplicationSettings _applicationSettings;
     private string? _kid;
@@ -22,12 +22,11 @@ public class Ed25519Generator : ICompactJwsGenerator
     public Ed25519Generator(IOptions<ApplicationSettings> applicationSettings)
     {
         _applicationSettings = applicationSettings.Value;
+        InitSigningKey();
     }
 
     public string GetCompactJws(Dictionary<string, object?> claims)
     {
-        InitSigningKey();
-
         var header = JsonSerializer.SerializeToUtf8Bytes(new
         {
             alg = "EdDSA",

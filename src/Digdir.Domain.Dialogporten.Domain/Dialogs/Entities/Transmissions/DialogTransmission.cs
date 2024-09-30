@@ -7,7 +7,7 @@ using Digdir.Library.Entity.Abstractions.Features.Immutable;
 
 namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 
-public class DialogTransmission : IImmutableEntity
+public sealed class DialogTransmission : IImmutableEntity
 {
     public Guid Id { get; set; }
     public DateTimeOffset CreatedAt { get; set; }

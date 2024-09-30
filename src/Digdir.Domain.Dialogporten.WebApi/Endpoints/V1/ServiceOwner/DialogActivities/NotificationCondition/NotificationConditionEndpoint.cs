@@ -6,7 +6,7 @@ using MediatR;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.DialogActivities.NotificationCondition;
 
-public class NotificationConditionEndpoint : Endpoint<NotificationConditionQuery>
+public sealed class NotificationConditionEndpoint : Endpoint<NotificationConditionQuery>
 {
     private readonly ISender _sender;
 
@@ -17,7 +17,7 @@ public class NotificationConditionEndpoint : Endpoint<NotificationConditionQuery
 
     public override void Configure()
     {
-        Get("dialogs/{dialogId}/notification-condition");
+        Get("dialogs/{dialogId}/actions/should-send-notification");
         Policies(AuthorizationPolicy.NotificationConditionCheck);
         Group<ServiceOwnerGroup>();
 

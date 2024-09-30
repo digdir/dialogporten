@@ -4,4 +4,4 @@ using HotChocolate.Authorization;
 namespace Digdir.Domain.Dialogporten.GraphQL.EndUser;
 
 [Authorize(Policy = AuthorizationPolicy.EndUser)]
-public partial class Queries;
+public sealed partial class Queries;

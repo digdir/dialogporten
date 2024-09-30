@@ -2,7 +2,7 @@ using FluentValidation.Results;
 
 namespace Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 
-public record BadRequest(List<string> Reasons)
+public sealed record BadRequest(List<string> Reasons)
 {
     private const string BadRequestMessage = "BadRequest";
 

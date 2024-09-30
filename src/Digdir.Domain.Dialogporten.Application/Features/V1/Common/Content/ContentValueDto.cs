@@ -3,7 +3,7 @@ using Digdir.Domain.Dialogporten.Domain;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.Common.Content;
 
-public class ContentValueDto
+public sealed class ContentValueDto
 {
     /// <summary>
     /// A list of localizations for the content

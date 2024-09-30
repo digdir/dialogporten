@@ -90,6 +90,7 @@ module containerApp '../../modules/containerApp/main.bicep' = {
     apimIp: apimIp
     tags: tags
     resources: resources
+    revisionSuffix: imageTag
   }
 }
 

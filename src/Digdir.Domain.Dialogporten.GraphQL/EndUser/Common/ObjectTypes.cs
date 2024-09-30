@@ -69,7 +69,10 @@ public enum ActivityType
     PaymentMade = 5,
 
     [GraphQLDescription("Indicates that a signature has been provided.")]
-    SignatureProvided = 6
+    SignatureProvided = 6,
+
+    [GraphQLDescription("Refers to a dialog that has been opened.")]
+    DialogOpened = 7,
 }
 
 public enum DialogStatus

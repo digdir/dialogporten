@@ -17,7 +17,7 @@ public sealed class GetDialogActivityQuery : IRequest<GetDialogActivityResult>
 }
 
 [GenerateOneOf]
-public partial class GetDialogActivityResult : OneOfBase<GetDialogActivityDto, EntityNotFound>;
+public sealed partial class GetDialogActivityResult : OneOfBase<GetDialogActivityDto, EntityNotFound>;
 
 internal sealed class GetDialogActivityQueryHandler : IRequestHandler<GetDialogActivityQuery, GetDialogActivityResult>
 {

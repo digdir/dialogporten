@@ -6,7 +6,7 @@ using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.Authorization;
 
-public sealed class DialogDetailsAuthorizationRequest
+internal sealed class DialogDetailsAuthorizationRequest
 {
     public required List<Claim> Claims { get; init; }
     public required string ServiceResource { get; init; }
@@ -18,7 +18,7 @@ public sealed class DialogDetailsAuthorizationRequest
     public required List<AltinnAction> AltinnActions { get; init; }
 }
 
-public static class DialogDetailsAuthorizationRequestExtensions
+internal static class DialogDetailsAuthorizationRequestExtensions
 {
     public static string GenerateCacheKey(this DialogDetailsAuthorizationRequest request)
     {

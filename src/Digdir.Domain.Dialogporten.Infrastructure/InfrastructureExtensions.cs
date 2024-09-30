@@ -26,6 +26,8 @@ using Digdir.Domain.Dialogporten.Infrastructure.Altinn.ResourceRegistry;
 using Digdir.Domain.Dialogporten.Infrastructure.GraphQl;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence.Interceptors;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence.Repositories;
+using HotChocolate.Subscriptions;
+using StackExchange.Redis;
 using ZiggyCreatures.Caching.Fusion;
 using ZiggyCreatures.Caching.Fusion.NullObjects;
 
@@ -202,7 +204,20 @@ public static class InfrastructureExtensions
             .AddPolicyHandlerFromRegistry(PollyPolicy.DefaultHttpRetryPolicy);
     }
 
-    public class FusionCacheSettings
+    private static IServiceCollection AddGraphQlRedisSubscriptions(this IServiceCollection services,
+        string redisConnectionString)
+    {
+        var dummyImplementation = new DummyRequestExecutorBuilder { Services = services };
+        dummyImplementation.AddRedisSubscriptions(_ => ConnectionMultiplexer.Connect(redisConnectionString),
+            new SubscriptionOptions
+            {
+                TopicPrefix = GraphQlSubscriptionConstants.SubscriptionTopicPrefix
+            });
+
+        return services;
+    }
+
+    public sealed class FusionCacheSettings
     {
         public TimeSpan Duration { get; set; } = TimeSpan.FromMinutes(1);
         public TimeSpan FailSafeMaxDuration { get; set; } = TimeSpan.FromHours(2);

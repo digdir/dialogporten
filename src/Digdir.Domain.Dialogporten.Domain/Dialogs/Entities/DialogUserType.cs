@@ -2,7 +2,7 @@ using Digdir.Library.Entity.Abstractions.Features.Lookup;
 
 namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 
-public class DialogUserType : AbstractLookupEntity<DialogUserType, DialogUserType.Values>
+public sealed class DialogUserType : AbstractLookupEntity<DialogUserType, DialogUserType.Values>
 {
     public DialogUserType(Values id) : base(id) { }
     public override DialogUserType MapValue(Values id) => new(id);

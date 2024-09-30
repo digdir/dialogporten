@@ -39,7 +39,7 @@ jobs:
           # fetch-depth needs to be 0 in cases where we want to fetch changes since previous tag for example
           fetch-depth: 0
 
-      - uses: tj-actions/changed-files@v44
+      - uses: tj-actions/changed-files@v45
         id: filter
         with:
           files_yaml: |
@@ -47,6 +47,7 @@ jobs:
               - '.github/**/*'
               - 'src/**/*'
               - '.azure/applications/**/*'
+              - '.azure/modules/containerApp/**/*'
             tests:
               - 'tests/**/*'
             azure:

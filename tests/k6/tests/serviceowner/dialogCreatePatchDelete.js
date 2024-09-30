@@ -1,5 +1,17 @@
-import { describe, expect, expectStatusFor, getSO, postSO, purgeSO, patchSO, uuidv4 } from '../../common/testimports.js'
-import { default as dialogToInsert } from './testdata/01-create-dialog.js';
+import {
+    describe,
+    expect,
+    expectStatusFor,
+    getSO,
+    postSO,
+    purgeSO,
+    patchSO,
+    uuidv4,
+    uuidv7,
+    setActivities,
+    addActivity
+} from '../../common/testimports.js'
+import {default as dialogToInsert} from './testdata/01-create-dialog.js';
 
 export default function () {
 
@@ -12,7 +24,7 @@ export default function () {
         expectStatusFor(r).to.equal(201);
         expect(r, 'response').to.have.validJsonBody();
         expect(r.json(), 'response json').to.match(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/)
-        
+
         dialogId = r.json();
     });
 
@@ -21,12 +33,12 @@ export default function () {
         expectStatusFor(r).to.equal(200);
         expect(r, 'response').to.have.validJsonBody();
         expect(r.json(), 'dialog').to.have.property("id").to.equal(dialogId);
-        expect(r.json(), 'dialog').to.have.property("createdAt");        
+        expect(r.json(), 'dialog').to.have.property("createdAt");
         expect(r.json().createdAt, 'createdAt').to.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{7}Z$/);
         expect(r.json(), 'dialog').to.have.property("updatedAt");
         expect(r.json().updatedAt, 'updatedAt').to.equal(r.json().createdAt);
         expect(r.json(), 'dialog').to.have.property('revision');
-        
+
         eTag = r.json()["revision"];
     });
 
@@ -39,7 +51,7 @@ export default function () {
                 "value": newApiActionEndpointUrl
             }
         ];
-        let r = patchSO('dialogs/' + dialogId, patchDocument, { "headers": { "If-Match": uuidv4() } });
+        let r = patchSO('dialogs/' + dialogId, patchDocument, {"headers": {"If-Match": uuidv4()}});
         expectStatusFor(r).to.equal(412); // Precondition failed
     });
 
@@ -52,7 +64,7 @@ export default function () {
                 "value": newApiActionEndpointUrl
             }
         ];
-        let r = patchSO('dialogs/' + dialogId, patchDocument, { "headers": { "If-Match": eTag } });
+        let r = patchSO('dialogs/' + dialogId, patchDocument, {"headers": {"If-Match": eTag}});
         expectStatusFor(r).to.equal(204);
     });
 
@@ -60,7 +72,7 @@ export default function () {
         let r = getSO('dialogs/' + dialogId);
         expectStatusFor(r).to.equal(200);
         expect(r, 'response').to.have.validJsonBody();
-        expect(r.json(), 'dialog').to.have.property("updatedAt");        
+        expect(r.json(), 'dialog').to.have.property("updatedAt");
         expect(r.json().updatedAt, 'updatedAt').to.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{7}Z$/);
         expect(r.json(), 'dialog').to.have.property("createdAt");
         expect(r.json().updatedAt, 'updatedAt').to.not.equal(r.json().createdAt);
@@ -72,5 +84,102 @@ export default function () {
     describe('Perform dialog purge', () => {
         let r = purgeSO('dialogs/' + dialogId);
         expectStatusFor(r).to.equal(204);
+    });
+
+    describe('Perform dialog create with activity type (dialogOpened)', () => {
+        // Setup
+        let dialog = dialogToInsert();
+        let activities = [{
+            'id': uuidv7(),
+            'type': 'dialogOpened',
+            'performedBy': {
+                'actorType': 'ServiceOwner'
+            }
+        }]
+
+        setActivities(dialog, activities);
+
+        // Act
+        let r = postSO('dialogs', dialog);
+
+        // Assert
+        expectStatusFor(r).to.equal(201);
+        expect(r, 'response').to.have.validJsonBody();
+        expect(r.json(), 'response json').to.match(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/)
+    });
+
+    describe('Perform dialog create with invalid activity type (transmissionOpened)', () => {
+        // Setup
+        let dialog = dialogToInsert();
+        let activities = [{
+            'id': uuidv7(),
+            'type': 'transmissionOpened',
+            'performedBy': {
+                'actorType': 'ServiceOwner'
+            }
+        }]
+
+        setActivities(dialog, activities);
+
+        // Act
+        let r = postSO('dialogs', dialog);
+
+        // Assert
+        expectStatusFor(r).to.equal(400);
+        expect(r, 'response').to.have.validJsonBody();
+        expect(r.json(), 'response json').to.have.property('errors');
+    });
+
+
+    describe('Perform dialog create with activity type (transmissionOpened)', () => {
+        // Setup
+        let dialog = dialogToInsert();
+        let transmissionId = uuidv7();
+        dialog.transmissions[0].id = transmissionId;
+
+        let activities = [{
+            'id': uuidv7(),
+            'type': 'transmissionOpened',
+            'transmissionId': transmissionId,
+            'performedBy': {
+                'actorType': 'ServiceOwner'
+            }
+        }]
+
+        setActivities(dialog, activities);
+
+        // Act
+        let r = postSO('dialogs', dialog);
+
+        // Assert
+        expectStatusFor(r).to.equal(201);
+        expect(r, 'response').to.have.validJsonBody();
+
+        expect(r.json(), 'response json').to.match(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/)
+    });
+    describe('Perform dialog create with invalid activity type (dialogOpened)', () => {
+        // Setup
+        let dialog = dialogToInsert();
+        let transmissionId = uuidv7();
+        dialog.transmissions[0].id = transmissionId;
+
+        let activities = [{
+            'id': uuidv7(),
+            'type': 'DialogOpened',
+            'transmissionId': transmissionId,
+            'performedBy': {
+                'actorType': 'ServiceOwner'
+            }
+        }]
+
+        setActivities(dialog, activities);
+
+        // Act
+        let r = postSO('dialogs', dialog);
+
+        // Assert
+        expectStatusFor(r).to.equal(400);
+        expect(r, 'response').to.have.validJsonBody();
+        expect(r.json(), 'response json').to.have.property('errors');
     });
 }

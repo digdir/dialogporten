@@ -5,7 +5,7 @@ using FastEndpoints;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.EndUser.Parties.Get;
 
-public class GetPartiesSwaggerConfig : ISwaggerConfig
+public sealed class GetPartiesSwaggerConfig : ISwaggerConfig
 {
     public static string OperationId => "GetParties";
 

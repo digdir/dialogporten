@@ -5,7 +5,7 @@ using Digdir.Domain.Dialogporten.Infrastructure.Common.Exceptions;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure;
 
-public static class HttpClientExtensions
+internal static class HttpClientExtensions
 {
     public static async Task<T> GetFromJsonEnsuredAsync<T>(
         this HttpClient client,

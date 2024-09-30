@@ -36,7 +36,8 @@ public static class DialogGenerator
         List<CreateDialogDialogAttachmentDto>? attachments = null,
         List<CreateDialogDialogGuiActionDto>? guiActions = null,
         List<CreateDialogDialogApiActionDto>? apiActions = null,
-        List<CreateDialogDialogActivityDto>? activities = null)
+        List<CreateDialogDialogActivityDto>? activities = null,
+        List<CreateDialogDialogTransmissionDto>? transmissions = null)
     {
         return GenerateFakeDialogs(
             seed,
@@ -60,12 +61,12 @@ public static class DialogGenerator
             attachments,
             guiActions,
             apiActions,
-            activities
+            activities,
+            transmissions
         )[0];
     }
 
-    public static List<CreateDialogCommand> GenerateFakeDialogs(
-        int? seed = null,
+    public static List<CreateDialogCommand> GenerateFakeDialogs(int? seed = null,
         int count = 1,
         Guid? id = null,
         string? serviceResource = null,
@@ -86,7 +87,8 @@ public static class DialogGenerator
         List<CreateDialogDialogAttachmentDto>? attachments = null,
         List<CreateDialogDialogGuiActionDto>? guiActions = null,
         List<CreateDialogDialogApiActionDto>? apiActions = null,
-        List<CreateDialogDialogActivityDto>? activities = null)
+        List<CreateDialogDialogActivityDto>? activities = null,
+        List<CreateDialogDialogTransmissionDto>? transmissions = null)
     {
         Randomizer.Seed = seed.HasValue ? new Random(seed.Value) : new Random();
         return new Faker<CreateDialogCommand>()
@@ -108,6 +110,7 @@ public static class DialogGenerator
             .RuleFor(o => o.ApiActions, _ => apiActions ?? GenerateFakeDialogApiActions())
             .RuleFor(o => o.Activities, _ => activities ?? GenerateFakeDialogActivities())
             .RuleFor(o => o.Process, f => process ?? GenerateFakeProcessUri())
+            .RuleFor(o => o.Transmissions, f => transmissions ?? GenerateFakeDialogTransmissions())
             .Generate(count);
     }
 
@@ -121,7 +124,8 @@ public static class DialogGenerator
             attachments: [],
             guiActions: [],
             apiActions: [],
-            searchTags: []);
+            searchTags: [],
+            transmissions: []);
     }
 
     public static string GenerateFakeResource(Func<string?>? generator = null)
@@ -250,11 +254,16 @@ public static class DialogGenerator
 
     public static List<CreateDialogDialogActivityDto> GenerateFakeDialogActivities(int? count = null, DialogActivityType.Values? type = null)
     {
+        // Temporarily removing the ActivityType TransmissionOpened from the list of possible types for random picking.
+        // Going to have a look at re-writing the generator https://github.com/digdir/dialogporten/issues/1123
+        var activityTypes = Enum.GetValues<DialogActivityType.Values>()
+            .Where(x => x != DialogActivityType.Values.TransmissionOpened).ToList();
+
         return new Faker<CreateDialogDialogActivityDto>()
-            .RuleFor(o => o.Id, f => Uuid7.NewUuid7().ToGuid(true))
+            .RuleFor(o => o.Id, () => Uuid7.NewUuid7().ToGuid(true))
             .RuleFor(o => o.CreatedAt, f => f.Date.Past())
             .RuleFor(o => o.ExtendedType, f => new Uri(f.Internet.UrlWithPath()))
-            .RuleFor(o => o.Type, f => type ?? f.PickRandom<DialogActivityType.Values>())
+            .RuleFor(o => o.Type, f => type ?? f.PickRandom(activityTypes))
             .RuleFor(o => o.PerformedBy, f => new CreateDialogDialogActivityPerformedByActorDto { ActorType = ActorType.Values.PartyRepresentative, ActorName = f.Name.FullName() })
             .RuleFor(o => o.Description, (f, o) => o.Type == DialogActivityType.Values.Information ? GenerateFakeLocalizations(f.Random.Number(4, 8)) : null)
             .Generate(count ?? new Randomizer().Number(1, 4));

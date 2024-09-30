@@ -17,14 +17,14 @@ namespace Digdir.Domain.Dialogporten.Application.Features.V1.Common.Content;
 /// We might want to consider combining this class with DialogContentInputConverter later.
 /// </summary>
 
-internal class IntermediateTransmissionContent
+internal sealed class IntermediateTransmissionContent
 {
     public DialogTransmissionContentType.Values TypeId { get; set; }
     public List<LocalizationDto> Value { get; set; } = null!;
     public string MediaType { get; set; } = MediaTypes.PlainText;
 }
 
-internal class TransmissionContentInputConverter<TTransmissionContent> :
+internal sealed class TransmissionContentInputConverter<TTransmissionContent> :
     ITypeConverter<TTransmissionContent?, List<DialogTransmissionContent>?>
     where TTransmissionContent : class, new()
 {
@@ -70,7 +70,7 @@ internal class TransmissionContentInputConverter<TTransmissionContent> :
     }
 }
 
-internal class TransmissionContentOutputConverter<TTransmissionContent> :
+internal sealed class TransmissionContentOutputConverter<TTransmissionContent> :
     ITypeConverter<List<DialogTransmissionContent>?, TTransmissionContent?>
     where TTransmissionContent : class, new()
 {
@@ -98,7 +98,7 @@ internal class TransmissionContentOutputConverter<TTransmissionContent> :
 }
 
 // ReSharper disable once ClassNeverInstantiated.Local
-file class PropertyCache<T>
+file sealed class PropertyCache<T>
 {
     public static readonly Dictionary<string, PropertyInfo> PropertyByName = typeof(T)
         .GetProperties()

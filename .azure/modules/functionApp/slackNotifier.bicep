@@ -158,7 +158,7 @@ resource notifyDevTeam 'Microsoft.Insights/actionGroups@2023-01-01' = {
 var query = '''
             union
                  (exceptions
-                 | where problemId != "ClientConnectionFailure at forward-request" and problemId != "ClientConnectionFailure at transfer-response"),
+                 | where not(customDimensions.['Service Type'] == 'API Management')),
                  (traces
                  | where severityLevel >= 3 or (severityLevel >= 2 and customDimensions.SourceContext startswith "Digdir"))
              | summarize Count = count()

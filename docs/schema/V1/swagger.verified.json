@@ -852,7 +852,8 @@
           "Information",
           "TransmissionOpened",
           "PaymentMade",
-          "SignatureProvided"
+          "SignatureProvided",
+          "DialogOpened"
         ],
         "type": "string",
         "x-enumNames": [
@@ -861,7 +862,8 @@
           "Information",
           "TransmissionOpened",
           "PaymentMade",
-          "SignatureProvided"
+          "SignatureProvided",
+          "DialogOpened"
         ]
       },
       "DialogGuiActionPriority_Values": {
@@ -5559,6 +5561,84 @@
         ]
       }
     },
+    "/api/v1/serviceowner/dialogs/{dialogId}/actions/should-send-notification": {
+      "get": {
+        "description": "Used by Altinn Notification only. Takes a dialogId and returns a boolean value based on conditions used to determine if a notification is to be sent.",
+        "operationId": "GetDialogActivityNotificationConditionSO",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "dialogId",
+            "required": true,
+            "schema": {
+              "format": "guid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "conditionType",
+            "required": true,
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/NotificationConditionType"
+                }
+              ]
+            }
+          },
+          {
+            "in": "query",
+            "name": "activityType",
+            "required": true,
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/DialogActivityType_Values"
+                }
+              ]
+            }
+          },
+          {
+            "in": "query",
+            "name": "transmissionId",
+            "schema": {
+              "format": "guid",
+              "nullable": true,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              },
+              "text/plain": {
+                "schema": {}
+              }
+            },
+            "description": "Successfully returned the notification determination."
+          },
+          "401": {
+            "description": "Missing or invalid authentication token. Requires a Maskinporten-token with the scope \u0022altinn:system/notifications.condition.check\u0022."
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "JWTBearerAuth": []
+          }
+        ],
+        "summary": "Returns a boolean value based on conditions used to determine if a notification is to be sent",
+        "tags": [
+          "Serviceowner"
+        ]
+      }
+    },
     "/api/v1/serviceowner/dialogs/{dialogId}/activities": {
       "get": {
         "description": "Gets the list of activities belonging to a dialog",
@@ -5760,84 +5840,6 @@
           }
         ],
         "summary": "Gets a single dialog activity",
-        "tags": [
-          "Serviceowner"
-        ]
-      }
-    },
-    "/api/v1/serviceowner/dialogs/{dialogId}/notification-condition": {
-      "get": {
-        "description": "Used by Altinn Notification only. Takes a dialogId and returns a boolean value based on conditions used to determine if a notification is to be sent.",
-        "operationId": "GetDialogActivityNotificationConditionSO",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "dialogId",
-            "required": true,
-            "schema": {
-              "format": "guid",
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "conditionType",
-            "required": true,
-            "schema": {
-              "allOf": [
-                {
-                  "$ref": "#/components/schemas/NotificationConditionType"
-                }
-              ]
-            }
-          },
-          {
-            "in": "query",
-            "name": "activityType",
-            "required": true,
-            "schema": {
-              "allOf": [
-                {
-                  "$ref": "#/components/schemas/DialogActivityType_Values"
-                }
-              ]
-            }
-          },
-          {
-            "in": "query",
-            "name": "transmissionId",
-            "schema": {
-              "format": "guid",
-              "nullable": true,
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {}
-              },
-              "text/plain": {
-                "schema": {}
-              }
-            },
-            "description": "Successfully returned the notification determination."
-          },
-          "401": {
-            "description": "Missing or invalid authentication token. Requires a Maskinporten-token with the scope \u0022altinn:system/notifications.condition.check\u0022."
-          },
-          "403": {
-            "description": "Forbidden"
-          }
-        },
-        "security": [
-          {
-            "JWTBearerAuth": []
-          }
-        ],
-        "summary": "Returns a boolean value based on conditions used to determine if a notification is to be sent",
         "tags": [
           "Serviceowner"
         ]

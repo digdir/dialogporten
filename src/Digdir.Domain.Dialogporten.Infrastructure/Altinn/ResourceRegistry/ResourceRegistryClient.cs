@@ -7,11 +7,11 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.ResourceRegistry;
 
 internal sealed class ResourceRegistryClient : IResourceRegistry
 {
-    private const string ServiceResourceInformationByOrgCacheKey = "ServiceResourceInformationByOrgCacheKey";
-    private const string ServiceResourceInformationByResourceIdCacheKey = "ServiceResourceInformationByResourceIdCacheKey";
+    private const string ServiceResourceInformationCacheKey = "ServiceResourceInformationCacheKey";
     private const string ResourceTypeGenericAccess = "GenericAccessResource";
     private const string ResourceTypeAltinnApp = "AltinnApp";
-    private const string ResourceTypeCorrespondence = "Correspondence";
+    private const string ResourceTypeCorrespondence = "CorrespondenceService";
+    private const string ResourceRegistryResourceEndpoint = "resourceregistry/api/v1/resource/";
 
     private readonly IFusionCache _cache;
     private readonly HttpClient _client;
@@ -26,27 +26,24 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
         string orgNumber,
         CancellationToken cancellationToken)
     {
-        var dic = await GetOrSetResourceInformationByOrg(cancellationToken);
-        if (!dic.TryGetValue(orgNumber, out var resources))
-        {
-            resources = [];
-        }
-
-        return resources.AsReadOnly();
+        var resources = await FetchServiceResourceInformation(cancellationToken);
+        return resources
+            .Where(x => x.OwnerOrgNumber == orgNumber)
+            .ToList();
     }
 
     public async Task<ServiceResourceInformation?> GetResourceInformation(
         string serviceResourceId,
         CancellationToken cancellationToken)
     {
-        var dic = await GetOrSetResourceInformationByResourceId(cancellationToken);
-        dic.TryGetValue(serviceResourceId, out var resource);
-        return resource;
+        var resources = await FetchServiceResourceInformation(cancellationToken);
+        return resources
+            .FirstOrDefault(x => x.ResourceId == serviceResourceId);
     }
 
     public async IAsyncEnumerable<List<UpdatedSubjectResource>> GetUpdatedSubjectResources(DateTimeOffset since, int batchSize, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        const string searchEndpoint = "resourceregistry/api/v1/resource/updated";
+        const string searchEndpoint = $"{ResourceRegistryResourceEndpoint}updated";
         var nextUrl = searchEndpoint + $"?since={Uri.EscapeDataString(since.ToString("O"))}&limit={batchSize}";
 
         do
@@ -66,54 +63,31 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
         } while (nextUrl is not null);
     }
 
-
-    private async Task<Dictionary<string, ServiceResourceInformation[]>> GetOrSetResourceInformationByOrg(
-        CancellationToken cancellationToken)
-    {
-        return await _cache.GetOrSetAsync(
-            ServiceResourceInformationByOrgCacheKey,
-            async cToken =>
-            {
-                var resources = await FetchServiceResourceInformation(cToken);
-                return resources
-                    .GroupBy(x => x.OwnerOrgNumber)
-                    .ToDictionary(x => x.Key, x => x.ToArray());
-            },
-            token: cancellationToken);
-    }
-
-    private async Task<Dictionary<string, ServiceResourceInformation>> GetOrSetResourceInformationByResourceId(
-        CancellationToken cancellationToken)
-    {
-        return await _cache.GetOrSetAsync(
-            ServiceResourceInformationByResourceIdCacheKey,
-            async cToken =>
-            {
-                var resources = await FetchServiceResourceInformation(cToken);
-                return resources.ToDictionary(x => x.ResourceId);
-            },
-            token: cancellationToken);
-    }
-
     private async Task<ServiceResourceInformation[]> FetchServiceResourceInformation(CancellationToken cancellationToken)
     {
-        const string searchEndpoint = "resourceregistry/api/v1/resource/resourcelist";
+        const string searchEndpoint = $"{ResourceRegistryResourceEndpoint}resourcelist";
 
-        var response = await _client
-            .GetFromJsonEnsuredAsync<List<ResourceListResponse>>(searchEndpoint,
-                cancellationToken: cancellationToken);
+        return await _cache.GetOrSetAsync(
+            ServiceResourceInformationCacheKey,
+            async cToken =>
+            {
+                var response = await _client
+                    .GetFromJsonEnsuredAsync<List<ResourceListResponse>>(searchEndpoint,
+                        cancellationToken: cToken);
 
-        return response
-            .Where(x => !string.IsNullOrWhiteSpace(x.HasCompetentAuthority.Organization))
-            .Where(x => x.ResourceType is
-                ResourceTypeGenericAccess or
-                ResourceTypeAltinnApp or
-                ResourceTypeCorrespondence)
-            .Select(x => new ServiceResourceInformation(
-                $"{Constants.ServiceResourcePrefix}{x.Identifier}",
-                x.ResourceType,
-                x.HasCompetentAuthority.Organization!))
-            .ToArray();
+                return response
+                    .Where(x => !string.IsNullOrWhiteSpace(x.HasCompetentAuthority.Organization))
+                    .Where(x => x.ResourceType is
+                        ResourceTypeGenericAccess or
+                        ResourceTypeAltinnApp or
+                        ResourceTypeCorrespondence)
+                    .Select(x => new ServiceResourceInformation(
+                        $"{Constants.ServiceResourcePrefix}{x.Identifier}",
+                        x.ResourceType,
+                        x.HasCompetentAuthority.Organization!))
+                    .ToArray();
+            },
+            token: cancellationToken);
     }
 
     private sealed class ResourceListResponse

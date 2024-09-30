@@ -132,9 +132,10 @@ internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDia
                 dependentKeySelector: activity => activity.RelatedActivityId,
                 principalKeySelector: activity => activity.Id)
             .SetValidator(activityValidator);
+
         RuleFor(x => x.Process)
-            .Must(x => Uri.IsWellFormedUriString(x, UriKind.Absolute))
-            .WithMessage("{PropertyName} must be a valid absolute URI.")
+            .IsValidUri()
+            .MaximumLength(Constants.DefaultMaxUriLength)
             .When(x => x.Process is not null);
 
         RuleFor(x => x.Process)
@@ -143,8 +144,8 @@ internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDia
             .When(x => x.PrecedingProcess is not null);
 
         RuleFor(x => x.PrecedingProcess)
-            .Must(x => Uri.IsWellFormedUriString(x, UriKind.Absolute))
-            .WithMessage("{PropertyName} must be a valid absolute URI.")
+            .IsValidUri()
+            .MaximumLength(Constants.DefaultMaxUriLength)
             .When(x => x.PrecedingProcess is not null);
     }
 }
@@ -411,6 +412,14 @@ internal sealed class CreateDialogDialogActivityDtoValidator : AbstractValidator
             .Empty()
             .WithMessage("Description is only allowed when the type is '" + nameof(DialogActivityType.Values.Information) + "'.")
             .When(x => x.Type != DialogActivityType.Values.Information);
+        RuleFor(x => x.TransmissionId)
+            .Null()
+            .WithMessage($"A {nameof(DialogActivityType.Values.DialogOpened)} activity cannot reference a transmission.")
+            .When(x => x.Type == DialogActivityType.Values.DialogOpened);
+        RuleFor(x => x.TransmissionId)
+            .NotEmpty()
+            .WithMessage($"A {nameof(DialogActivityType.Values.TransmissionOpened)} needs to reference a transmission.")
+            .When(x => x.Type == DialogActivityType.Values.TransmissionOpened);
     }
 }
 

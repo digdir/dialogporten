@@ -9,7 +9,7 @@ using FastEndpoints;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.Dialogs.Search;
 
-public class SwaggerConfig : ISwaggerConfig
+public sealed class SwaggerConfig : ISwaggerConfig
 {
     public static string OperationId => "GetDialogListSO";
 

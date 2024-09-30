@@ -4,7 +4,7 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.Authorization;
 
-public static class DialogEntityExtensions
+internal static class DialogEntityExtensions
 {
     public static List<AltinnAction> GetAltinnActions(this DialogEntity dialogEntity)
     {

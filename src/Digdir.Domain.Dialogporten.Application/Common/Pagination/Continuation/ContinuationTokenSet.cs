@@ -10,7 +10,7 @@ public interface IContinuationTokenSet
     public string Raw { get; }
 }
 
-public class ContinuationTokenSet<TOrderDefinition, TTarget> : IContinuationTokenSet
+public sealed class ContinuationTokenSet<TOrderDefinition, TTarget> : IContinuationTokenSet
     where TOrderDefinition : IOrderDefinition<TTarget>
 {
     private static readonly ContinuationTokenComparer _tokenComparer = new();
@@ -55,7 +55,7 @@ public class ContinuationTokenSet<TOrderDefinition, TTarget> : IContinuationToke
         return true;
     }
 
-    private class ContinuationTokenComparer : IEqualityComparer<ContinuationToken>
+    private sealed class ContinuationTokenComparer : IEqualityComparer<ContinuationToken>
     {
         public bool Equals(ContinuationToken? x, ContinuationToken? y)
         {

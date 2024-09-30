@@ -3,7 +3,7 @@ using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Parties.Queries
 
 namespace Digdir.Domain.Dialogporten.GraphQL.EndUser.Parties;
 
-public class MappingProfile : Profile
+public sealed class MappingProfile : Profile
 {
     public MappingProfile()
     {

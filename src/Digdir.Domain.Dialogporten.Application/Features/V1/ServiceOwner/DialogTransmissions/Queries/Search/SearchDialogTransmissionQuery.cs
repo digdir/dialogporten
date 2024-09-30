@@ -15,7 +15,7 @@ public sealed class SearchDialogTransmissionQuery : IRequest<SearchDialogTransmi
 }
 
 [GenerateOneOf]
-public partial class SearchDialogTransmissionResult : OneOfBase<List<SearchDialogTransmissionDto>, EntityNotFound>;
+public sealed partial class SearchDialogTransmissionResult : OneOfBase<List<SearchDialogTransmissionDto>, EntityNotFound>;
 
 internal sealed class SearchDialogTransmissionQueryHandler : IRequestHandler<SearchDialogTransmissionQuery, SearchDialogTransmissionResult>
 {

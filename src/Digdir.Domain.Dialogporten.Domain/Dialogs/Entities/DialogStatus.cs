@@ -2,7 +2,7 @@
 
 namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 
-public class DialogStatus : AbstractLookupEntity<DialogStatus, DialogStatus.Values>
+public sealed class DialogStatus : AbstractLookupEntity<DialogStatus, DialogStatus.Values>
 {
     public DialogStatus(Values id) : base(id) { }
     public override DialogStatus MapValue(Values id) => new(id);
