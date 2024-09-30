@@ -1,5 +1,8 @@
-﻿using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Queries.Get;
+﻿using Castle.Core.Logging;
+using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
+using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Queries.Get;
 using Digdir.Domain.Dialogporten.Application.Integration.Tests.Common;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 using Digdir.Tool.Dialogporten.GenerateFakeData;
 using FluentAssertions;
 using static Digdir.Domain.Dialogporten.Application.Integration.Tests.UuiDv7Utils;
@@ -202,5 +205,71 @@ public class CreateDialogTests : ApplicationCollectionFixture
         // Assert
         response.TryPickT0(out var success, out _).Should().BeTrue();
         success.Should().NotBeNull();
+    }
+
+    [Fact]
+    public async Task Cannot_Create_Transmission_Without_Content()
+    {
+        // Arrange
+        var transmission = DialogGenerator.GenerateFakeDialogTransmissions(1)[0];
+        transmission.Content = null!;
+
+        var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog();
+        createDialogCommand.Transmissions = [transmission];
+
+        // Act
+        var response = await Application.Send(createDialogCommand);
+
+        // Assert
+        response.TryPickT2(out var validationError, out _).Should().BeTrue();
+        validationError.Should().NotBeNull();
+        validationError.Errors.Should().HaveCount(1);
+        validationError.Errors.First().ErrorMessage.Should().Contain("'Content' must not be empty");
+    }
+
+    [Fact]
+    public async Task Cannot_Create_Transmission_Without_Content_Value()
+    {
+        // Arrange
+        var transmission = DialogGenerator.GenerateFakeDialogTransmissions(1)[0];
+        transmission.Content.Summary.Value = [];
+        transmission.Content.Title.Value = [];
+
+        var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog();
+        createDialogCommand.Transmissions = [transmission];
+
+        // Act
+        var response = await Application.Send(createDialogCommand);
+
+        // Assert
+        response.TryPickT2(out var validationError, out _).Should().BeTrue();
+        validationError.Should().NotBeNull();
+        validationError.Errors
+            .Count(e => e.PropertyName.Contains(nameof(createDialogCommand.Content)))
+            .Should()
+            .Be(2);
+    }
+
+    [Fact]
+    public async Task Cannot_Create_Transmission_With_Empty_Content_Localization_Values()
+    {
+        // Arrange
+        var transmission = DialogGenerator.GenerateFakeDialogTransmissions(1)[0];
+        transmission.Content.Summary.Value = [new LocalizationDto { LanguageCode = "nb", Value = "" }];
+        transmission.Content.Title.Value = [new LocalizationDto { LanguageCode = "nb", Value = "" }];
+
+        var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog();
+        createDialogCommand.Transmissions = [transmission];
+
+        // Act
+        var response = await Application.Send(createDialogCommand);
+
+        // Assert
+        response.TryPickT2(out var validationError, out _).Should().BeTrue();
+        validationError.Should().NotBeNull();
+        validationError.Errors
+            .Count(e => e.PropertyName.Contains(nameof(createDialogCommand.Content)))
+            .Should()
+            .Be(2);
     }
 }
