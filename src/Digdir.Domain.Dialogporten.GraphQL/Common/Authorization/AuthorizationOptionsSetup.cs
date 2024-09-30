@@ -1,5 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Digdir.Domain.Dialogporten.Application.Common;
+using Digdir.Domain.Dialogporten.Application.Common.Extensions;
+using Digdir.Domain.Dialogporten.GraphQL.Common.Extensions.HotChocolate;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
+using AuthorizationOptions = Microsoft.AspNetCore.Authorization.AuthorizationOptions;
 
 namespace Digdir.Domain.Dialogporten.GraphQL.Common.Authorization;
 
@@ -9,7 +13,7 @@ internal sealed class AuthorizationOptionsSetup : IConfigureOptions<Authorizatio
 
     public AuthorizationOptionsSetup(IOptions<GraphQlSettings> options)
     {
-        _options = options.Value;
+        _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
     }
 
     public void Configure(AuthorizationOptions options)
@@ -41,5 +45,13 @@ internal sealed class AuthorizationOptionsSetup : IConfigureOptions<Authorizatio
         options.AddPolicy(AuthorizationPolicy.Testing, builder => builder
             .Combine(options.DefaultPolicy)
             .RequireScope(AuthorizationScope.Testing));
+
+        options.AddPolicy(AuthorizationPolicy.EndUserSubscription, policy => policy
+            .Combine(options.GetPolicy(AuthorizationPolicy.EndUser)!)
+            .RequireAssertion(context =>
+                context.TryGetDialogEventsSubscriptionDialogId(out var dialogIdTopic)
+                && context.User.TryGetClaimValue(DialogTokenClaimTypes.DialogId, out var dialogIdClaimValue)
+                && Guid.TryParse(dialogIdClaimValue, out var dialogIdClaim)
+                && dialogIdTopic == dialogIdClaim));
     }
 }
