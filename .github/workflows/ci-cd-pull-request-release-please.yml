@@ -16,7 +16,9 @@ jobs:
       # todo
     # - name: Set PR body single line
     #   id: set_pr_body_single_line
-    #   run: echo "PR_BODY_SINGLE_LINE=$(echo \"${{ github.event.pull_request.body }}\" | tr '\n' ' ' | tr -d '\r')" >> $GITHUB_ENV
+    #   run: |
+    #     PR_BODY=$(${{ github.event.pull_request.body }})
+    #     echo "PR_BODY=${PR_BODY}" >> $GITHUB_OUTPUT
     - name: Send GitHub slack message
       id: slack
       env:
@@ -39,14 +41,11 @@ jobs:
                   }
                 },
                 {
-                  "type": "image",
-                  "title": {
-                    "type": "plain_text",
-                    "text": "Release Please",
-                    "emoji": true
-                  },
-                  "image_url": "https://blog.tomkerkhove.be/content/images/2016/07/ship-it-squirrel-1.png",
-                  "alt_text": "marg"
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "${{ toJson(github.event.pull_request.body) }}"
+                  }
                 },
                 {
                   "type": "actions",
