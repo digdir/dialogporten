@@ -69,7 +69,7 @@ jobs:
     needs: [dry-run-deploy-infra-staging, dry-run-deploy-apps-staging]
     runs-on: ubuntu-latest
     steps:
-      - name: Slackify markdown
+      - name: Slackify markdown in pull request body
         id: slackify
         uses: LoveToKnow/slackify-markdown-action@v1.1.1
         with:
