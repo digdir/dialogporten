@@ -189,7 +189,7 @@ public static class InfrastructureExtensions
             {
                 client.Timeout = TimeSpan.FromSeconds(5);
             })
-            .SetHandlerLifetime(TimeSpan.FromSeconds(10));
+            .SetHandlerLifetime(TimeSpan.FromMinutes(2));
 
         services.AddHealthChecks()
             .AddRedis(
