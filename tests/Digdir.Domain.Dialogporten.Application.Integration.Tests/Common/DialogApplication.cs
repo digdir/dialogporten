@@ -19,6 +19,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Npgsql;
@@ -55,21 +56,41 @@ public class DialogApplication : IAsyncLifetime
             return options;
         });
 
+        _rootProvider = BuildServiceCollection()
+            .BuildServiceProvider();
+
+        await _dbContainer.StartAsync();
+        await EnsureDatabaseAsync();
+        await BuildRespawnState();
+    }
+
+    public void ReplaceSingletonService<T>(T instance)
+        where T : class
+    {
+        var serviceCollection = BuildServiceCollection();
+
+        serviceCollection.RemoveAll<T>();
+        serviceCollection.AddSingleton(instance);
+
+        _rootProvider = serviceCollection.BuildServiceProvider();
+    }
+
+    private IServiceCollection BuildServiceCollection()
+    {
         var serviceCollection = new ServiceCollection();
 
-        _rootProvider = serviceCollection
+        return serviceCollection
             .AddApplication(Substitute.For<IConfiguration>(), Substitute.For<IHostEnvironment>())
             .AddDistributedMemoryCache()
             .AddLogging()
             .AddTransient<ConvertDomainEventsToOutboxMessagesInterceptor>()
             .AddDbContext<DialogDbContext>((services, options) =>
                 options.UseNpgsql(_dbContainer.GetConnectionString(), o =>
-                {
-                    o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
-                })
-                .AddInterceptors(services.GetRequiredService<ConvertDomainEventsToOutboxMessagesInterceptor>()))
+                    {
+                        o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
+                    })
+                    .AddInterceptors(services.GetRequiredService<ConvertDomainEventsToOutboxMessagesInterceptor>()))
             .AddScoped<IDialogDbContext>(x => x.GetRequiredService<DialogDbContext>())
-            .AddScoped<IUser, IntegrationTestUser>()
             .AddScoped<IResourceRegistry, LocalDevelopmentResourceRegistry>()
             .AddScoped<IServiceOwnerNameRegistry>(_ => CreateServiceOwnerNameRegistrySubstitute())
             .AddScoped<IPartyNameRegistry>(_ => CreateNameRegistrySubstitute())
@@ -77,14 +98,10 @@ public class DialogApplication : IAsyncLifetime
             .AddScoped<ITopicEventSender>(_ => Substitute.For<ITopicEventSender>())
             .AddScoped<IUnitOfWork, UnitOfWork>()
             .AddScoped<IAltinnAuthorization, LocalDevelopmentAltinnAuthorization>()
+            .AddSingleton<IUser, IntegrationTestUser>()
             .AddSingleton<ICloudEventBus, IntegrationTestCloudBus>()
             .Decorate<IUserResourceRegistry, LocalDevelopmentUserResourceRegistryDecorator>()
-            .Decorate<IUserRegistry, LocalDevelopmentUserRegistryDecorator>()
-            .BuildServiceProvider();
-
-        await _dbContainer.StartAsync();
-        await EnsureDatabaseAsync();
-        await BuildRespawnState();
+            .Decorate<IUserRegistry, LocalDevelopmentUserRegistryDecorator>();
     }
 
     private static IPartyNameRegistry CreateNameRegistrySubstitute()

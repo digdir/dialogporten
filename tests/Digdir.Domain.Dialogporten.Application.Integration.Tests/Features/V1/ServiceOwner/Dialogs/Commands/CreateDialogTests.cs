@@ -1,8 +1,9 @@
-﻿using Castle.Core.Logging;
+﻿using Digdir.Domain.Dialogporten.Application.Common.Authorization;
+using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
+using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Content;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Queries.Get;
 using Digdir.Domain.Dialogporten.Application.Integration.Tests.Common;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 using Digdir.Tool.Dialogporten.GenerateFakeData;
 using FluentAssertions;
 using static Digdir.Domain.Dialogporten.Application.Integration.Tests.UuiDv7Utils;
@@ -271,5 +272,72 @@ public class CreateDialogTests : ApplicationCollectionFixture
             .Count(e => e.PropertyName.Contains(nameof(createDialogCommand.Content)))
             .Should()
             .Be(2);
+    }
+
+    private const string LegacyHtmlMediaType = ContentValueDtoValidator.LegacyHtmlMediaType;
+
+    private static ContentValueDto CreateHtmlContentValueDto() => new()
+    {
+        MediaType = LegacyHtmlMediaType,
+        Value = [new() { LanguageCode = "nb", Value = "<p>Some HTML content</p>" }]
+    };
+
+    [Fact]
+    public async Task Cannot_Create_AdditionalInfo_Content_With_Html_MediaType_Without_Correct_Scope()
+    {
+        // Arrange
+        var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog();
+        createDialogCommand.Content.AdditionalInfo = CreateHtmlContentValueDto();
+
+        // Act
+        var response = await Application.Send(createDialogCommand);
+
+        // Assert
+        response.TryPickT2(out var validationError, out _).Should().BeTrue();
+        validationError.Should().NotBeNull();
+        validationError.Errors
+            .Count(e => e.AttemptedValue.Equals(LegacyHtmlMediaType))
+            .Should()
+            .Be(1);
+    }
+
+    [Fact]
+    public async Task Can_Create_AdditionalInfo_Content_With_Html_MediaType_With_Correct_Scope()
+    {
+        // Arrange
+        var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog();
+        createDialogCommand.Content.AdditionalInfo = CreateHtmlContentValueDto();
+
+        var userWithLegacyScope = new IntegrationTestUser([new("scope", Constants.LegacyHtmlScope)]);
+        Application.ReplaceSingletonService<IUser>(userWithLegacyScope);
+
+        // Act
+        var response = await Application.Send(createDialogCommand);
+
+        // Assert
+        response.TryPickT0(out var success, out _).Should().BeTrue();
+        success.Should().NotBeNull();
+    }
+
+    [Fact]
+    public async Task Cannot_Create_Title_Content_With_Html_MediaType_With_Correct_Scope()
+    {
+        // Arrange
+        var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog();
+        createDialogCommand.Content.Title = CreateHtmlContentValueDto();
+
+        var userWithLegacyScope = new IntegrationTestUser([new("scope", Constants.LegacyHtmlScope)]);
+        Application.ReplaceSingletonService<IUser>(userWithLegacyScope);
+
+        // Act
+        var response = await Application.Send(createDialogCommand);
+
+        // Assert
+        response.TryPickT2(out var validationError, out _).Should().BeTrue();
+        validationError.Should().NotBeNull();
+        validationError.Errors
+            .Count(e => e.AttemptedValue.Equals(LegacyHtmlMediaType))
+            .Should()
+            .Be(1);
     }
 }
