@@ -22,12 +22,11 @@ public sealed class Ed25519Generator : ICompactJwsGenerator
     public Ed25519Generator(IOptions<ApplicationSettings> applicationSettings)
     {
         _applicationSettings = applicationSettings.Value;
+        InitSigningKey();
     }
 
     public string GetCompactJws(Dictionary<string, object?> claims)
     {
-        InitSigningKey();
-
         var header = JsonSerializer.SerializeToUtf8Bytes(new
         {
             alg = "EdDSA",

@@ -6,10 +6,11 @@ using Constants = Digdir.Domain.Dialogporten.Infrastructure.GraphQl.GraphQlSubsc
 
 namespace Digdir.Domain.Dialogporten.GraphQL.EndUser.DialogById;
 
-[Authorize(Policy = AuthorizationPolicy.EndUser)]
 public sealed class Subscriptions
 {
     [Subscribe]
+    [Authorize(AuthorizationPolicy.EndUserSubscription, ApplyPolicy.Validation)]
+    [GraphQLDescription($"Requires a dialog token in the '{DialogTokenMiddleware.DialogTokenHeader}' header.")]
     [Topic($"{Constants.DialogEventsTopic}{{{nameof(dialogId)}}}")]
     public DialogEventPayload DialogEvents(Guid dialogId,
         [EventMessage] DialogEventPayload eventMessage)
