@@ -98,7 +98,7 @@ public sealed class SearchDialogQuery : SortablePaginationParameter<SearchDialog
     /// <summary>
     /// Filter by Display state 
     /// </summary>
-    public SystemLabel.Values? DisplayState { get; set; }
+    public List<SystemLabel.Values>? SystemLabel { get; set; }
 
     /// <summary>
     /// Search string for free text search. Will attempt to fuzzily match in all free text fields in the aggregate
@@ -187,7 +187,7 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
             .WhereIf(request.Process is not null, x => EF.Functions.ILike(x.Process!, request.Process!))
             .WhereIf(request.VisibleAfter.HasValue, x => request.VisibleAfter <= x.VisibleFrom)
             .WhereIf(request.VisibleBefore.HasValue, x => x.VisibleFrom <= request.VisibleBefore)
-            .WhereIf(request.DisplayState is not null, x => request.DisplayState! == x.DialogEndUserContext.SystemLabelId)
+            .WhereIf(request.SystemLabel.IsNullOrEmpty(), x => request.SystemLabel!.Contains(x.DialogEndUserContext.SystemLabelId))
             .WhereIf(request.Search is not null, x =>
                 x.Content.Any(x => x.Value.Localizations.AsQueryable().Any(searchExpression)) ||
                 x.SearchTags.Any(x => EF.Functions.ILike(x.Value, request.Search!))

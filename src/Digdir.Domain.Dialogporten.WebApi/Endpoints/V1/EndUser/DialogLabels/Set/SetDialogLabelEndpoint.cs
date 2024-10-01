@@ -20,12 +20,10 @@ public sealed class SetDialogLabelEndpoint(ISender sender) : Endpoint<SetDialogL
     }
     public override async Task HandleAsync(SetDialogLabelCommand req, CancellationToken ct)
     {
-
         var result = await _sender.Send(req, ct);
         await result.Match(
             _ => SendNoContentAsync(ct),
             notFound => this.NotFoundAsync(notFound, ct),
-            forbidden => this.ForbiddenAsync(forbidden, ct),
             deleted => this.GoneAsync(deleted, ct),
             domainError => this.UnprocessableEntityAsync(domainError, ct),
             validationError => this.BadRequestAsync(validationError, ct),

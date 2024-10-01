@@ -118,6 +118,17 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                 principalTable: "LabelAssignmentLog",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.Sql("""
+                INSERT INTO "DialogEndUserContext" ("Id", "DialogId", "SystemLabelId")
+                    SELECT d."Id" -- Just borrow the DialogId to get uuid7
+                        ,d."Id"
+                        ,1 -- Default System Label
+                    FROM "Dialog" d
+                    LEFT JOIN "DialogEndUserContext" c 
+                        ON d."Id" = c."DialogId"
+                    WHERE c."Id" is null;
+                """);
         }
 
         /// <inheritdoc />

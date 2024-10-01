@@ -1,4 +1,3 @@
-using Digdir.Domain.Dialogporten.Domain.Common;
 using Digdir.Domain.Dialogporten.Domain.DialogEndUserContexts.Entities;
 using FluentValidation;
 
@@ -8,13 +7,15 @@ public sealed class SetDialogLabelCommandValidator : AbstractValidator<SetDialog
 {
     public SetDialogLabelCommandValidator()
     {
-        RuleFor(x => x.Label).NotNull().Must(x =>
-                x.StartsWith(Constants.SystemLabelPrefix, StringComparison.InvariantCulture))
-            .WithMessage($"'{{PropertyName}}' must start with '{Constants.SystemLabelPrefix}'.");
         RuleFor(x => x.Label)
-            .NotNull()
+            .NotNull();
+        RuleFor(x => x.Label)
+            .Must(x => x.StartsWith(SystemLabel.PrefixWithSeparator, StringComparison.InvariantCulture))
+            .When(x => x.Label is not null)
+            .WithMessage($"'{{PropertyName}}' must start with '{SystemLabel.PrefixWithSeparator}'.");
+        RuleFor(x => x.Label)
             .Must(x => Enum.TryParse(x.Split(":")[1], true, out SystemLabel.Values _))
-            .WithMessage($"'{{PropertyName}}' is not a valid value.")
-            .When(x => x.Label.Contains(':'));
+            .When(x => x.Label is not null && x.Label.Contains(':'))
+            .WithMessage("'{PropertyName}' is not a valid value.");
     }
 }

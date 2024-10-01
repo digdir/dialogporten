@@ -51,6 +51,6 @@ internal sealed class SearchDialogQueryValidator : AbstractValidator<SearchDialo
             .When(x => x.Process is not null);
 
         RuleForEach(x => x.Status).IsInEnum();
-        RuleFor(x => x.SystemLabel).IsInEnum().When(x => x.SystemLabel is not null);
+        RuleForEach(x => x.SystemLabel).IsInEnum();
     }
 }

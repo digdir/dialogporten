@@ -6,7 +6,6 @@ namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogLabel
 
 public sealed class MappingProfile : Profile
 {
-
     public MappingProfile()
     {
         CreateMap<LabelAssignmentLog, SearchDialogLabelAssignmentLogDto>();

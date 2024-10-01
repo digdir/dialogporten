@@ -65,7 +65,6 @@ internal sealed class DialogDbContext : DbContext, IDialogDbContext
         return true;
     }
 
-
     /// <inheritdoc/>
     public bool MustWhenModified<TEntity, TProperty>(
         TEntity entity,

@@ -29,7 +29,6 @@ public sealed class SearchDialogLabelAssigmentLogEndpoint : Endpoint<SearchDialo
         await result.Match(
             dto => SendOkAsync(dto, ct),
             notFound => this.NotFoundAsync(notFound, ct),
-            deleted => this.GoneAsync(deleted, ct),
-            forbidden => this.ForbiddenAsync(forbidden, ct));
+            deleted => this.GoneAsync(deleted, ct));
     }
 }

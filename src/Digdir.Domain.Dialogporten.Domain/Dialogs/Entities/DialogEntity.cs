@@ -74,6 +74,7 @@ public sealed class DialogEntity :
     public List<DialogSeenLog> SeenLog { get; set; } = [];
 
     public DialogEndUserContext DialogEndUserContext { get; set; } = null!;
+
     public void OnCreate(AggregateNode self, DateTimeOffset utcNow)
         => _domainEvents.Add(new DialogCreatedDomainEvent(Id, ServiceResource, Party, Process, PrecedingProcess));
 

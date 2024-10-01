@@ -1,10 +1,13 @@
-using Digdir.Domain.Dialogporten.Domain.Common;
+using System.ComponentModel;
 using Digdir.Library.Entity.Abstractions.Features.Lookup;
 
 namespace Digdir.Domain.Dialogporten.Domain.DialogEndUserContexts.Entities;
 
 public sealed class SystemLabel : AbstractLookupEntity<SystemLabel, SystemLabel.Values>
 {
+    public const string Prefix = "systemlabel";
+    public const string PrefixWithSeparator = Prefix + ":";
+
     public enum Values
     {
         Default = 1,
@@ -18,12 +21,11 @@ public sealed class SystemLabel : AbstractLookupEntity<SystemLabel, SystemLabel.
 
 public static class SystemLabelExtensions
 {
-    private static string Namespace { get; } = Constants.SystemLabelPrefix;
     public static string ToNamespacedName(this SystemLabel.Values label) => label switch
     {
-        SystemLabel.Values.Default => Namespace + label,
-        SystemLabel.Values.Bin => Namespace + label,
-        SystemLabel.Values.Archive => Namespace + label,
-        _ => throw new ArgumentOutOfRangeException(nameof(label), label, null)
+        SystemLabel.Values.Default => SystemLabel.PrefixWithSeparator + label,
+        SystemLabel.Values.Bin => SystemLabel.PrefixWithSeparator + label,
+        SystemLabel.Values.Archive => SystemLabel.PrefixWithSeparator + label,
+        _ => throw new InvalidEnumArgumentException(nameof(label), (int)label, typeof(SystemLabel.Values))
     };
 }

@@ -21,11 +21,6 @@ public sealed class Mutations
             {
                 Errors = [new SetSystemLabelEntityNotFound { Message = entityNotFound.Message }]
             },
-            forbidden => new SetSystemLabelPayload
-            {
-                Errors = forbidden.Reasons.Select(x => new SetSystemLabelForbidden { Message = x })
-                    .Cast<ISetSystemLabelError>().ToList()
-            },
             entityDeleted => new SetSystemLabelPayload
             {
                 Errors = [new SetSystemLabelEntityDeleted { Message = entityDeleted.Message }]

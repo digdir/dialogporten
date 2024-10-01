@@ -16,18 +16,30 @@ public sealed class SearchDialogLabelAssignmentLogQuery : IRequest<SearchDialogL
 }
 
 [GenerateOneOf]
-public sealed partial class SearchDialogLabelAssignmentLogResult : OneOfBase<List<SearchDialogLabelAssignmentLogDto>, EntityNotFound, EntityDeleted, Forbidden>;
+public sealed partial class SearchDialogLabelAssignmentLogResult : OneOfBase<List<SearchDialogLabelAssignmentLogDto>, EntityNotFound, EntityDeleted>;
 
-internal sealed class SearchDialogLabelAssignmentLogQueryHandler(IDialogDbContext dialogDbContext, IMapper mapper, IAltinnAuthorization altinnAuthorization)
-    : IRequestHandler<SearchDialogLabelAssignmentLogQuery, SearchDialogLabelAssignmentLogResult>
+internal sealed class SearchDialogLabelAssignmentLogQueryHandler : IRequestHandler<SearchDialogLabelAssignmentLogQuery, SearchDialogLabelAssignmentLogResult>
 {
-    private readonly IDialogDbContext _dialogDbContext = dialogDbContext ?? throw new ArgumentNullException(nameof(dialogDbContext));
-    private readonly IMapper _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-    private readonly IAltinnAuthorization _altinnAuthorization = altinnAuthorization ?? throw new ArgumentNullException(nameof(altinnAuthorization));
+    private readonly IDialogDbContext _dialogDbContext;
+    private readonly IMapper _mapper;
+    private readonly IAltinnAuthorization _altinnAuthorization;
+
+    public SearchDialogLabelAssignmentLogQueryHandler(IDialogDbContext dialogDbContext, IMapper mapper, IAltinnAuthorization altinnAuthorization)
+    {
+        _dialogDbContext = dialogDbContext ?? throw new ArgumentNullException(nameof(dialogDbContext));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        _altinnAuthorization = altinnAuthorization ?? throw new ArgumentNullException(nameof(altinnAuthorization));
+    }
 
     public async Task<SearchDialogLabelAssignmentLogResult> Handle(SearchDialogLabelAssignmentLogQuery request, CancellationToken cancellationToken)
     {
-        var dialog = await _dialogDbContext.Dialogs.AsNoTracking().Include(x => x.DialogEndUserContext).ThenInclude(x => x.LabelAssignmentLogs).ThenInclude(x => x.PerformedBy).FirstOrDefaultAsync(x => x.Id == request.DialogId, cancellationToken: cancellationToken);
+        var dialog = await _dialogDbContext.Dialogs
+            .AsNoTracking()
+            .Include(x => x.DialogEndUserContext)
+                .ThenInclude(x => x.LabelAssignmentLogs)
+                .ThenInclude(x => x.PerformedBy)
+            .FirstOrDefaultAsync(x => x.Id == request.DialogId, cancellationToken: cancellationToken);
+
         if (dialog == null)
         {
             return new EntityNotFound<DialogEntity>(request.DialogId);
@@ -43,6 +55,7 @@ internal sealed class SearchDialogLabelAssignmentLogQueryHandler(IDialogDbContex
         {
             return new EntityDeleted<DialogEntity>(request.DialogId);
         }
-        return dialog.DialogEndUserContext.LabelAssignmentLogs.Select(_mapper.Map<SearchDialogLabelAssignmentLogDto>).ToList();
+
+        return _mapper.Map<List<SearchDialogLabelAssignmentLogDto>>(dialog.DialogEndUserContext.LabelAssignmentLogs);
     }
 }

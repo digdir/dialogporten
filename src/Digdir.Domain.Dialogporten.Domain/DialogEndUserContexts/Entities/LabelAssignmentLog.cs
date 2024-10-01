@@ -7,17 +7,13 @@ public sealed class LabelAssignmentLog : IImmutableEntity
 {
     public Guid Id { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
-
     public string Name { get; set; } = null!;
-
     public string Action { get; set; } = null!;
 
-    public LabelAssignmentLogActor PerformedBy { get; set; } = null!;
-
     public Guid ContextId { get; set; }
-
     public DialogEndUserContext Context { get; set; } = null!;
 
+    public LabelAssignmentLogActor PerformedBy { get; set; } = null!;
 }
 
 public sealed class LabelAssignmentLogActor : Actor, IImmutableEntity
