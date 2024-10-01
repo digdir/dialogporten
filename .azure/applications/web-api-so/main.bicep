@@ -19,6 +19,9 @@ param apimIp string
 @description('CPU and memory resources for the container app')
 param resources object?
 
+@description('The probes for the container app')
+param probes array = []
+
 @description('The name of the container app environment')
 @minLength(3)
 @secure()
@@ -95,6 +98,7 @@ module containerApp '../../modules/containerApp/main.bicep' = {
     tags: tags
     resources: resources
     revisionSuffix: imageTag
+    probes: probes
   }
 }
 
