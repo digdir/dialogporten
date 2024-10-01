@@ -4,6 +4,7 @@ param environment = 'staging'
 param location = 'norwayeast'
 param apimIp = '51.13.86.131'
 param imageTag = readEnvironmentVariable('IMAGE_TAG')
+param revisionSuffix = readEnvironmentVariable('REVISION_SUFFIX')
 
 // secrets
 param environmentKeyVaultName = readEnvironmentVariable('AZURE_ENVIRONMENT_KEY_VAULT_NAME')

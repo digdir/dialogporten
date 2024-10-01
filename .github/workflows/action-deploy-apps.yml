@@ -75,7 +75,6 @@ jobs:
         env:
           # parameters
           IMAGE_TAG: ${{ inputs.version }}
-          REVISION_SUFFIX: "${{ github.run_id }}-${{ inputs.version }}-${{ github.run_attempt}}"
           # secrets
           AZURE_CONTAINER_APP_ENVIRONMENT_NAME: ${{ secrets.AZURE_CONTAINER_APP_ENVIRONMENT_NAME }}
           AZURE_ENVIRONMENT_KEY_VAULT_NAME: ${{ secrets.AZURE_ENVIRONMENT_KEY_VAULT_NAME }}
@@ -97,7 +96,6 @@ jobs:
         env:
           # parameters
           IMAGE_TAG: ${{ inputs.version }}
-          REVISION_SUFFIX: "${{ github.run_id }}-${{ inputs.version }}-${{ github.run_attempt}}"
           # secrets
           AZURE_CONTAINER_APP_ENVIRONMENT_NAME: ${{ secrets.AZURE_CONTAINER_APP_ENVIRONMENT_NAME }}
           AZURE_ENVIRONMENT_KEY_VAULT_NAME: ${{ secrets.AZURE_ENVIRONMENT_KEY_VAULT_NAME }}
@@ -256,7 +254,6 @@ jobs:
         env:
           # parameters
           IMAGE_TAG: ${{ inputs.version }}
-          REVISION_SUFFIX: "${{ github.run_id }}-${{ inputs.version }}-${{ github.run_attempt}}"
           # secrets
           AZURE_CONTAINER_APP_ENVIRONMENT_NAME: ${{ secrets.AZURE_CONTAINER_APP_ENVIRONMENT_NAME }}
           AZURE_ENVIRONMENT_KEY_VAULT_NAME: ${{ secrets.AZURE_ENVIRONMENT_KEY_VAULT_NAME }}
@@ -279,7 +276,6 @@ jobs:
         env:
           # parameters
           IMAGE_TAG: ${{ inputs.version }}
-          REVISION_SUFFIX: "${{ github.run_id }}-${{ inputs.version }}-${{ github.run_attempt}}"
           # secrets
           AZURE_CONTAINER_APP_ENVIRONMENT_NAME: ${{ secrets.AZURE_CONTAINER_APP_ENVIRONMENT_NAME }}
           AZURE_ENVIRONMENT_KEY_VAULT_NAME: ${{ secrets.AZURE_ENVIRONMENT_KEY_VAULT_NAME }}
