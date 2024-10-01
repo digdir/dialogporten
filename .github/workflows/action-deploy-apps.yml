@@ -75,6 +75,7 @@ jobs:
         env:
           # parameters
           IMAGE_TAG: ${{ inputs.version }}
+          REVISION_SUFFIX: "${{ inputs.version }}-${{ github.run_id }}-${{ github.run_attempt}}"
           # secrets
           AZURE_CONTAINER_APP_ENVIRONMENT_NAME: ${{ secrets.AZURE_CONTAINER_APP_ENVIRONMENT_NAME }}
           AZURE_ENVIRONMENT_KEY_VAULT_NAME: ${{ secrets.AZURE_ENVIRONMENT_KEY_VAULT_NAME }}
@@ -96,6 +97,7 @@ jobs:
         env:
           # parameters
           IMAGE_TAG: ${{ inputs.version }}
+          REVISION_SUFFIX: "${{ inputs.version }}-${{ github.run_id }}-${{ github.run_attempt}}"
           # secrets
           AZURE_CONTAINER_APP_ENVIRONMENT_NAME: ${{ secrets.AZURE_CONTAINER_APP_ENVIRONMENT_NAME }}
           AZURE_ENVIRONMENT_KEY_VAULT_NAME: ${{ secrets.AZURE_ENVIRONMENT_KEY_VAULT_NAME }}
@@ -159,7 +161,6 @@ jobs:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
       - name: Dryrun Deploy app ${{ matrix.name }}(${{ inputs.environment }})
         uses: azure/arm-deploy@v2
         if: ${{ inputs.dryRun }}
@@ -167,6 +168,7 @@ jobs:
         env:
           # parameters
           IMAGE_TAG: ${{ inputs.version }}
+          REVISION_SUFFIX: "${{ inputs.version }}-${{ github.run_id }}-${{ github.run_attempt}}"
           # secrets
           AZURE_CONTAINER_APP_ENVIRONMENT_NAME: ${{ secrets.AZURE_CONTAINER_APP_ENVIRONMENT_NAME }}
           AZURE_APP_INSIGHTS_CONNECTION_STRING: ${{ secrets.AZURE_APP_INSIGHTS_CONNECTION_STRING }}
@@ -190,6 +192,7 @@ jobs:
         env:
           # parameters
           IMAGE_TAG: ${{ inputs.version }}
+          REVISION_SUFFIX: "${{ inputs.version }}-${{ github.run_id }}-${{ github.run_attempt}}"
           # secrets
           AZURE_CONTAINER_APP_ENVIRONMENT_NAME: ${{ secrets.AZURE_CONTAINER_APP_ENVIRONMENT_NAME }}
           AZURE_APP_INSIGHTS_CONNECTION_STRING: ${{ secrets.AZURE_APP_INSIGHTS_CONNECTION_STRING }}
@@ -253,6 +256,7 @@ jobs:
         env:
           # parameters
           IMAGE_TAG: ${{ inputs.version }}
+          REVISION_SUFFIX: "${{ inputs.version }}-${{ github.run_id }}-${{ github.run_attempt}}"
           # secrets
           AZURE_CONTAINER_APP_ENVIRONMENT_NAME: ${{ secrets.AZURE_CONTAINER_APP_ENVIRONMENT_NAME }}
           AZURE_ENVIRONMENT_KEY_VAULT_NAME: ${{ secrets.AZURE_ENVIRONMENT_KEY_VAULT_NAME }}
@@ -275,6 +279,7 @@ jobs:
         env:
           # parameters
           IMAGE_TAG: ${{ inputs.version }}
+          REVISION_SUFFIX: "${{ inputs.version }}-${{ github.run_id }}-${{ github.run_attempt}}"
           # secrets
           AZURE_CONTAINER_APP_ENVIRONMENT_NAME: ${{ secrets.AZURE_CONTAINER_APP_ENVIRONMENT_NAME }}
           AZURE_ENVIRONMENT_KEY_VAULT_NAME: ${{ secrets.AZURE_ENVIRONMENT_KEY_VAULT_NAME }}
