@@ -211,8 +211,9 @@ type SeenLog {
   isCurrentEndUser: Boolean!
 }
 
-type Subscriptions @authorize(policy: "enduser") {
-  dialogEvents(dialogId: UUID!): DialogEventPayload!
+type Subscriptions {
+  "Requires a dialog token in the 'DigDir-Dialog-Token' header."
+  dialogEvents(dialogId: UUID!): DialogEventPayload! @authorize(policy: "enduserSubscription", apply: VALIDATION)
 }
 
 type Transmission {
