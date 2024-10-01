@@ -19,9 +19,6 @@ param apimIp string
 @description('CPU and memory resources for the container app')
 param resources object?
 
-@description('The probes for the container app')
-param probes array = []
-
 @description('The name of the container app environment')
 @minLength(3)
 @secure()
@@ -86,6 +83,38 @@ resource environmentKeyVaultResource 'Microsoft.KeyVault/vaults@2023-07-01' exis
 
 var containerAppName = '${namePrefix}-webapi-so-ca'
 
+var port = 8080
+
+var probes = [
+  {
+    periodSeconds: 5
+    initialDelaySeconds: 2
+    type: 'Liveness'
+    httpGet: {
+      path: '/liveness'
+      port: port
+    }
+  }
+  {
+    periodSeconds: 5
+    initialDelaySeconds: 2
+    type: 'Readiness'
+    httpGet: {
+      path: '/readiness'
+      port: port
+    }
+  }
+  {
+    periodSeconds: 5
+    initialDelaySeconds: 2
+    type: 'Startup'
+    httpGet: {
+      path: '/startup'
+      port: port
+    }
+  }
+]
+
 module containerApp '../../modules/containerApp/main.bicep' = {
   name: containerAppName
   params: {
@@ -99,6 +128,7 @@ module containerApp '../../modules/containerApp/main.bicep' = {
     resources: resources
     revisionSuffix: imageTag
     probes: probes
+    port: port
   }
 }
 
