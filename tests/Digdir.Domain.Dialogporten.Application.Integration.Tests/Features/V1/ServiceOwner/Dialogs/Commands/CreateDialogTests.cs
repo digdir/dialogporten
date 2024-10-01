@@ -309,7 +309,7 @@ public class CreateDialogTests : ApplicationCollectionFixture
         createDialogCommand.Content.AdditionalInfo = CreateHtmlContentValueDto();
 
         var userWithLegacyScope = new IntegrationTestUser([new("scope", Constants.LegacyHtmlScope)]);
-        Application.ReplaceSingletonService<IUser>(userWithLegacyScope);
+        Application.ReplaceSingleton<IUser>(userWithLegacyScope);
 
         // Act
         var response = await Application.Send(createDialogCommand);
@@ -327,7 +327,7 @@ public class CreateDialogTests : ApplicationCollectionFixture
         createDialogCommand.Content.Title = CreateHtmlContentValueDto();
 
         var userWithLegacyScope = new IntegrationTestUser([new("scope", Constants.LegacyHtmlScope)]);
-        Application.ReplaceSingletonService<IUser>(userWithLegacyScope);
+        Application.ReplaceSingleton<IUser>(userWithLegacyScope);
 
         // Act
         var response = await Application.Send(createDialogCommand);

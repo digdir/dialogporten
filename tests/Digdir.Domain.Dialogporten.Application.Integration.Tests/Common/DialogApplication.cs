@@ -64,7 +64,7 @@ public class DialogApplication : IAsyncLifetime
         await BuildRespawnState();
     }
 
-    public void ReplaceSingletonService<T>(T instance)
+    public void ReplaceSingleton<T>(T instance)
         where T : class
     {
         var serviceCollection = BuildServiceCollection();
