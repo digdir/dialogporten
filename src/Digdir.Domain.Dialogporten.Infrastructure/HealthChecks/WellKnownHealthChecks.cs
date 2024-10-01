@@ -19,9 +19,9 @@ internal sealed class WellKnownEndpointsHealthCheck : IHealthCheck
         ILogger<WellKnownEndpointsHealthCheck> logger,
         IConfiguration configuration)
     {
-        _httpClientFactory = httpClientFactory;
-        _logger = logger;
-        _configuration = configuration;
+        _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
     }
 
     public async Task<HealthCheckResult> CheckHealthAsync(
