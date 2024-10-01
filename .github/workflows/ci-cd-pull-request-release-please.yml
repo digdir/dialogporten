@@ -7,47 +7,104 @@ on:
       - "tests/k6/**"
 
 jobs:
-  send-slack-message:
+  verify-release-please-branch:
+    if: startsWith(github.head_ref, 'release-please-')
     runs-on: ubuntu-latest
-    name: Send GitHub slack message
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-    - name: Slackify markdown
-      id: slackify
-      uses: LoveToKnow/slackify-markdown-action@v1.1.1
-      with:
-        text: ${{ github.event.pull_request.body }}
-    - name: Send GitHub slack message
-      id: slack
-      env:
-        SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-      uses: slackapi/slack-github-action@v1.27.0
-      with:
-        channel-id: 'C07A822MM7T'
-        payload: |
-          {
-              "blocks": [
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": ${{ toJson(steps.slackify.outputs.text) }}
-                  }
-                },
-                { "type": "divider" },
-                {
-                  "type": "actions",
-                  "elements": [
-                    {
-                      "type": "button",
-                      "text": {
-                        "type": "plain_text",
-                        "text": "Approve Release"
-                      },
-                      "url": "https://github.com/${{ github.repository }}/pull/${{ github.event.pull_request.number }}/reviews"
+      - run: echo "Confirmed to be a release please branch"
+
+  get-current-version:
+    name: Get current version
+    uses: ./.github/workflows/action-get-current-version.yml
+
+  check-for-changes:
+    name: Check for changes
+    uses: ./.github/workflows/action-check-for-changes.yml
+
+  generate-git-short-sha:
+    name: Generate git short sha
+    needs: [verify-release-please-branch]
+    uses: ./.github/workflows/action-generate-git-short-sha.yml
+
+  dry-run-deploy-infra-staging:
+    name: Deploy infra to staging (dry run)
+    needs: [generate-git-short-sha, get-current-version, check-for-changes]
+    uses: ./.github/workflows/action-deploy-infra.yml
+    secrets:
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      AZURE_SOURCE_KEY_VAULT_NAME: ${{ secrets.AZURE_SOURCE_KEY_VAULT_NAME }}
+      AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID: ${{ secrets.AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID }}
+      AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP: ${{ secrets.AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP }}
+      AZURE_SOURCE_KEY_VAULT_SSH_JUMPER_SSH_PUBLIC_KEY: ${{ secrets.AZURE_SOURCE_KEY_VAULT_SSH_JUMPER_SSH_PUBLIC_KEY }}
+    with:
+      environment: staging
+      region: norwayeast
+      dryRun: true
+      version: ${{ needs.get-current-version.outputs.version }}-${{ needs.generate-git-short-sha.outputs.gitShortSha }}
+
+  dry-run-deploy-apps-staging:
+    name: Deploy apps to staging (dry run)
+    needs: [generate-git-short-sha, get-current-version, check-for-changes]
+    uses: ./.github/workflows/action-deploy-apps.yml
+    secrets:
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      # todo: consider resolving these in another way since they are created in the infra-step
+      AZURE_RESOURCE_GROUP_NAME: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
+      AZURE_ENVIRONMENT_KEY_VAULT_NAME: ${{ secrets.AZURE_ENVIRONMENT_KEY_VAULT_NAME }}
+      AZURE_CONTAINER_APP_ENVIRONMENT_NAME: ${{ secrets.AZURE_CONTAINER_APP_ENVIRONMENT_NAME }}
+      AZURE_APP_INSIGHTS_CONNECTION_STRING: ${{ secrets.AZURE_APP_INSIGHTS_CONNECTION_STRING }}
+      AZURE_APP_CONFIGURATION_NAME: ${{ secrets.AZURE_APP_CONFIGURATION_NAME }}
+    with:
+      environment: staging
+      region: norwayeast
+      dryRun: true
+      version: ${{ needs.get-current-version.outputs.version }}-${{ needs.generate-git-short-sha.outputs.gitShortSha }}
+
+  send-slack-message:
+    name: Send Slack message
+    needs: [dry-run-deploy-infra-staging, dry-run-deploy-apps-staging]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Slackify markdown
+        id: slackify
+        uses: LoveToKnow/slackify-markdown-action@v1.1.1
+        with:
+          text: ${{ github.event.pull_request.body }}
+      - name: Send GitHub slack message
+        id: slack
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+        uses: slackapi/slack-github-action@v1.27.0
+        with:
+          channel-id: ${{ secrets.SLACK_CHANNEL_ID_FOR_RELEASES }}
+          payload: |
+            {
+                "blocks": [
+                  {
+                    "type": "section",
+                    "text": {
+                      "type": "mrkdwn",
+                      "text": ${{ toJson(steps.slackify.outputs.text) }}
                     }
-                  ]
-                }
-              ]
-          }
+                  },
+                  { "type": "divider" },
+                  {
+                    "type": "actions",
+                    "elements": [
+                      {
+                        "type": "button",
+                        "text": {
+                          "type": "plain_text",
+                          "text": "Approve Release"
+                        },
+                        "url": "https://github.com/${{ github.repository }}/pull/${{ github.event.pull_request.number }}"
+                      }
+                    ]
+                  }
+                ]
+            }
+
