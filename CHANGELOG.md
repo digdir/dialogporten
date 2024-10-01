@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.20.0](https://github.com/digdir/dialogporten/compare/v1.19.0...v1.20.0) (2024-09-30)
+
+
+### Features
+
+* **GraphQL:** Add DialogToken requirement for subscriptions ([#1124](https://github.com/digdir/dialogporten/issues/1124)) ([651ca62](https://github.com/digdir/dialogporten/commit/651ca62fdec02dec48b674b80acf52737036cf13))
+
 ## [1.19.0](https://github.com/digdir/dialogporten/compare/v1.18.1...v1.19.0) (2024-09-24)
 
 
