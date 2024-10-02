@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.20.1](https://github.com/digdir/dialogporten/compare/v1.20.0...v1.20.1) (2024-10-02)
+
+
+### Bug Fixes
+
+* Add separate settings for parties cache, don't cache invalid response from Altinn 2 ([#1194](https://github.com/digdir/dialogporten/issues/1194)) ([dbb79dc](https://github.com/digdir/dialogporten/commit/dbb79dc26cefc5f28c21a738f39199c36a49438f))
+
 ## [1.20.0](https://github.com/digdir/dialogporten/compare/v1.19.0...v1.20.0) (2024-09-30)
 
 
