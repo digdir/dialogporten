@@ -149,6 +149,8 @@ jobs:
     permissions:
       id-token: write
       contents: read
+    env:
+      REVISION_SUFFIX: "${{ github.run_id }}-${{ inputs.version }}-${{ github.run_attempt}}"
     steps:
       - name: "Checkout GitHub Action"
         uses: actions/checkout@v4
@@ -159,7 +161,6 @@ jobs:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
       - name: Dryrun Deploy app ${{ matrix.name }}(${{ inputs.environment }})
         uses: azure/arm-deploy@v2
         if: ${{ inputs.dryRun }}
@@ -167,6 +168,7 @@ jobs:
         env:
           # parameters
           IMAGE_TAG: ${{ inputs.version }}
+          REVISION_SUFFIX: ${{ env.REVISION_SUFFIX }}
           # secrets
           AZURE_CONTAINER_APP_ENVIRONMENT_NAME: ${{ secrets.AZURE_CONTAINER_APP_ENVIRONMENT_NAME }}
           AZURE_APP_INSIGHTS_CONNECTION_STRING: ${{ secrets.AZURE_APP_INSIGHTS_CONNECTION_STRING }}
@@ -190,6 +192,7 @@ jobs:
         env:
           # parameters
           IMAGE_TAG: ${{ inputs.version }}
+          REVISION_SUFFIX: ${{ env.REVISION_SUFFIX }}
           # secrets
           AZURE_CONTAINER_APP_ENVIRONMENT_NAME: ${{ secrets.AZURE_CONTAINER_APP_ENVIRONMENT_NAME }}
           AZURE_APP_INSIGHTS_CONNECTION_STRING: ${{ secrets.AZURE_APP_INSIGHTS_CONNECTION_STRING }}
