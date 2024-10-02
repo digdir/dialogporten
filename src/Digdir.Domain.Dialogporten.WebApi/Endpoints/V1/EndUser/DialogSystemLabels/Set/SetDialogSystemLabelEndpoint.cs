@@ -1,24 +1,24 @@
-using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogLabels.Commands.Set;
+using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogSystemLabels.Commands.Set;
 using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
 using FastEndpoints;
 using MediatR;
 
-namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.EndUser.DialogLabels.Set;
+namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.EndUser.DialogSystemLabels.Set;
 
-public sealed class SetDialogLabelEndpoint(ISender sender) : Endpoint<SetDialogLabelCommand>
+public sealed class SetDialogSystemLabelEndpoint(ISender sender) : Endpoint<SetDialogSystemLabelCommand>
 {
     private readonly ISender _sender = sender ?? throw new ArgumentNullException(nameof(sender));
 
     public override void Configure()
     {
-        Post("dialogs/{dialogId}/labels");
+        Put("dialogs/{dialogId}/systemlabels");
         Policies(AuthorizationPolicy.EndUser);
         Group<EndUserGroup>();
 
-        Description(b => SetDialogLabelSwaggerConfig.SetDescription(b));
+        Description(b => SetDialogSystemLabelSwaggerConfig.SetDescription(b));
     }
-    public override async Task HandleAsync(SetDialogLabelCommand req, CancellationToken ct)
+    public override async Task HandleAsync(SetDialogSystemLabelCommand req, CancellationToken ct)
     {
         var result = await _sender.Send(req, ct);
         await result.Match(

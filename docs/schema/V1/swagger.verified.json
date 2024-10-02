@@ -3458,7 +3458,7 @@
         },
         "type": "object"
       },
-      "SetDialogLabelCommand": {
+      "SetDialogSystemLabelCommand": {
         "additionalProperties": false,
         "properties": {
           "ifMatchDialogRevision": {
@@ -3467,7 +3467,7 @@
             "type": "string"
           },
           "label": {
-            "type": "string"
+            "$ref": "#/components/schemas/SystemLabel_Values"
           }
         },
         "type": "object"
@@ -4339,16 +4339,17 @@
           },
           {
             "description": "Filter by Display state ",
+            "explode": true,
             "in": "query",
             "name": "systemLabel",
             "schema": {
-              "allOf": [
-                {
-                  "$ref": "#/components/schemas/SystemLabel_Values"
-                }
-              ],
-              "nullable": true
-            }
+              "items": {
+                "$ref": "#/components/schemas/SystemLabel_Values"
+              },
+              "nullable": true,
+              "type": "array"
+            },
+            "style": "form"
           },
           {
             "description": "Search string for free text search. Will attempt to fuzzily match in all free text fields in the aggregate",
@@ -4643,97 +4644,6 @@
         ]
       }
     },
-    "/api/v1/enduser/dialogs/{dialogId}/labels": {
-      "post": {
-        "operationId": "SetDialogLabel",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "dialogId",
-            "required": true,
-            "schema": {
-              "format": "guid",
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SetDialogLabelCommand"
-              }
-            }
-          },
-          "description": "",
-          "required": true,
-          "x-name": "SetDialogLabelCommand",
-          "x-position": 1
-        },
-        "responses": {
-          "204": {
-            "description": "No Content"
-          },
-          "400": {
-            "content": {
-              "application/problem\u002Bjson": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            },
-            "description": "Bad Request"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "404": {
-            "content": {
-              "application/problem\u002Bjson": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            },
-            "description": "Not Found"
-          },
-          "410": {
-            "description": ""
-          },
-          "412": {
-            "content": {
-              "application/problem\u002Bjson": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            },
-            "description": ""
-          },
-          "422": {
-            "content": {
-              "application/problem\u002Bjson": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            },
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "JWTBearerAuth": []
-          }
-        ],
-        "tags": [
-          "Enduser"
-        ]
-      }
-    },
     "/api/v1/enduser/dialogs/{dialogId}/seenlog": {
       "get": {
         "description": "Gets all seen log records for a dialog. For more information see the documentation (link TBD).",
@@ -4849,6 +4759,97 @@
           }
         ],
         "summary": "Gets a single dialog seen log record",
+        "tags": [
+          "Enduser"
+        ]
+      }
+    },
+    "/api/v1/enduser/dialogs/{dialogId}/systemlabels": {
+      "put": {
+        "operationId": "SetDialogLabel",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "dialogId",
+            "required": true,
+            "schema": {
+              "format": "guid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetDialogSystemLabelCommand"
+              }
+            }
+          },
+          "description": "",
+          "required": true,
+          "x-name": "SetDialogSystemLabelCommand",
+          "x-position": 1
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "410": {
+            "description": ""
+          },
+          "412": {
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": ""
+          },
+          "422": {
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWTBearerAuth": []
+          }
+        ],
         "tags": [
           "Enduser"
         ]
@@ -5161,16 +5162,17 @@
           },
           {
             "description": "Filter by Display state ",
+            "explode": true,
             "in": "query",
-            "name": "displayState",
+            "name": "systemLabel",
             "schema": {
-              "allOf": [
-                {
-                  "$ref": "#/components/schemas/SystemLabel_Values"
-                }
-              ],
-              "nullable": true
-            }
+              "items": {
+                "$ref": "#/components/schemas/SystemLabel_Values"
+              },
+              "nullable": true,
+              "type": "array"
+            },
+            "style": "form"
           },
           {
             "description": "Search string for free text search. Will attempt to fuzzily match in all free text fields in the aggregate",

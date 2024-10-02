@@ -1,23 +1,23 @@
 using System.Diagnostics.CodeAnalysis;
 using Digdir.Domain.Dialogporten.Domain.DialogEndUserContexts.Entities;
-using SystemLabelEntity = Digdir.Domain.Dialogporten.Domain.DialogEndUserContexts.Entities.SystemLabel;
 
-namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogLabels.Commands.Set;
+namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogSystemLabels.Commands.Set;
 
-public class SetDialogLabelDto
+public class SetDialogSystemLabelDto
 {
     public Guid DialogId { get; set; }
-    public string Label { get; set; } = null!;
+    public SystemLabel.Values Label { get; set; }
 }
 
-public sealed class SetDialogLabelLabelDto : IParsable<SetDialogLabelLabelDto>
+// Amund: Trengs denne lenger?
+public sealed class SetDialogSystemLabelLabelDto : IParsable<SetDialogSystemLabelLabelDto>
 {
     public string Label { get; }
     public string Namespace { get; }
     public string FullName { get; }
     public SystemLabel.Values? SystemLabel { get; init; }
 
-    public SetDialogLabelLabelDto(string ns, string label)
+    public SetDialogSystemLabelLabelDto(string ns, string label)
     {
         if (string.IsNullOrWhiteSpace(label))
         {
@@ -35,7 +35,7 @@ public sealed class SetDialogLabelLabelDto : IParsable<SetDialogLabelLabelDto>
     }
 
     [SuppressMessage("Style", "IDE0055:Fix formatting")]
-    public static bool TryParse(string? s, IFormatProvider? provider, [NotNullWhen(true)] out SetDialogLabelLabelDto? result)
+    public static bool TryParse(string? s, IFormatProvider? provider, [NotNullWhen(true)] out SetDialogSystemLabelLabelDto? result)
     {
         if (s is null)
         {
@@ -45,10 +45,10 @@ public sealed class SetDialogLabelLabelDto : IParsable<SetDialogLabelLabelDto>
 
         result = s.Split(':') switch
         {
-            [var @namespace, var systemLabel] when 
-                string.Equals(@namespace, SystemLabelEntity.Prefix, StringComparison.OrdinalIgnoreCase)
-                && Enum.TryParse<SystemLabelEntity.Values>(systemLabel, ignoreCase: true, out var actualLabel) =>
-                new SetDialogLabelLabelDto(@namespace, systemLabel)
+            [var @namespace, var systemLabel] when
+                string.Equals(@namespace, Domain.DialogEndUserContexts.Entities.SystemLabel.Prefix, StringComparison.OrdinalIgnoreCase)
+                && Enum.TryParse<SystemLabel.Values>(systemLabel, ignoreCase: true, out var actualLabel) =>
+                new SetDialogSystemLabelLabelDto(@namespace, systemLabel)
                 {
                     SystemLabel = actualLabel
                 },
@@ -61,7 +61,7 @@ public sealed class SetDialogLabelLabelDto : IParsable<SetDialogLabelLabelDto>
         return result is not null;
     }
 
-    public static SetDialogLabelLabelDto Parse(string s, IFormatProvider? provider) =>
+    public static SetDialogSystemLabelLabelDto Parse(string s, IFormatProvider? provider) =>
         !TryParse(s, provider, out var result)
             ? throw new ArgumentException("Could not parse supplied value.", nameof(s))
             : result;

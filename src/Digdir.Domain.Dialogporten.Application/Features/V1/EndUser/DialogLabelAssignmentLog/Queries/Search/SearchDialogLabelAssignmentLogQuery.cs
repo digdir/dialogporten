@@ -8,7 +8,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
 
-namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogLabelAssigmentLog.Queries.Search;
+namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogLabelAssignmentLog.Queries.Search;
 
 public sealed class SearchDialogLabelAssignmentLogQuery : IRequest<SearchDialogLabelAssignmentLogResult>
 {

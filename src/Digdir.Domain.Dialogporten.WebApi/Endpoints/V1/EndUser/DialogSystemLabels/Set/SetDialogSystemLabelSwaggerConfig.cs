@@ -1,8 +1,8 @@
 using Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.Common.Extensions;
 
-namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.EndUser.DialogLabels.Set;
+namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.EndUser.DialogSystemLabels.Set;
 
-public sealed class SetDialogLabelSwaggerConfig
+public sealed class SetDialogSystemLabelSwaggerConfig
 {
     public static string OperationId => "SetDialogLabel";
     public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder) => builder.OperationId(OperationId).ProducesOneOf(

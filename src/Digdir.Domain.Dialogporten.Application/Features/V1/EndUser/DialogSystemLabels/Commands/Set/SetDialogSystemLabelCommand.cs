@@ -9,9 +9,9 @@ using Microsoft.EntityFrameworkCore;
 using OneOf;
 using OneOf.Types;
 
-namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogLabels.Commands.Set;
+namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogSystemLabels.Commands.Set;
 
-public sealed class SetDialogLabelCommand : SetDialogLabelDto, IRequest<SetDialogLabelResult>
+public sealed class SetDialogSystemLabelCommand : SetDialogSystemLabelDto, IRequest<SetDialogLabelResult>
 {
     public Guid? IfMatchDialogRevision { get; set; }
 }
@@ -19,7 +19,7 @@ public sealed class SetDialogLabelCommand : SetDialogLabelDto, IRequest<SetDialo
 [GenerateOneOf]
 public sealed partial class SetDialogLabelResult : OneOfBase<Success, EntityNotFound, EntityDeleted, DomainError, ValidationError, ConcurrencyError>;
 
-internal sealed class SetDialogLabelCommandHandler : IRequestHandler<SetDialogLabelCommand, SetDialogLabelResult>
+internal sealed class SetDialogLabelCommandHandler : IRequestHandler<SetDialogSystemLabelCommand, SetDialogLabelResult>
 {
     private readonly IDialogDbContext _db;
     private readonly IUnitOfWork _unitOfWork;
@@ -35,12 +35,12 @@ internal sealed class SetDialogLabelCommandHandler : IRequestHandler<SetDialogLa
     }
 
     public async Task<SetDialogLabelResult> Handle(
-        SetDialogLabelCommand request,
+        SetDialogSystemLabelCommand request,
         CancellationToken cancellationToken)
     {
         var dialog = await _db.Dialogs
-            .Include(x => x.DialogEndUserContext)
-            .FirstOrDefaultAsync(x => x.Id == request.DialogId, cancellationToken: cancellationToken);
+                              .Include(x => x.DialogEndUserContext)
+                              .FirstOrDefaultAsync(x => x.Id == request.DialogId, cancellationToken: cancellationToken);
 
         if (dialog is null)
         {
@@ -60,8 +60,12 @@ internal sealed class SetDialogLabelCommandHandler : IRequestHandler<SetDialogLa
 
         var currentUserInformation = await _userRegistry.GetCurrentUserInformation(cancellationToken);
 
-        
+
         /*
+         * Amund:
+         *  - Rename meste parten til systenLabel istedet for label
+         *  - Post til put
+         *  - Fjerne intak av prefix på enduser endpoint
          *
          * POST api/v1/enduser/dialogs/{dialogId}/labels
          * [
@@ -76,29 +80,19 @@ internal sealed class SetDialogLabelCommandHandler : IRequestHandler<SetDialogLa
          * [
          *
          * PUT api/v1/enduser/dialogs/{dialogId}/systemlabels
-         * {
+          {
          *     "label": "bin"
          * }
-         * 
-         * 
-         * 
-         * 
-         * 
+         * Er dette bedre?
+         * PUT api/v1/enduser/dialogs/{dialogId}/systemlabels/{label}
          */
-        
-        // Amund: dette føles for manulet ut det er sikkert noe magi jeg kan ta i bruk her det blir ikke å fungere på default heller her må noe annet gjøres 
-        // det funker om default også har prefixen. Validator har sjekket at dette skal
-        // funke kan dette flyttes inn i mapper? mappe til namespace og label i mapper?
-        // det virker vartfall bedre plassert enn å ha det er her
-        var labelId = Enum.Parse<SystemLabel.Values>(
-            request.Label.Split(":")[1],
-            ignoreCase: true);
 
-        dialog.DialogEndUserContext.UpdateLabel(labelId, currentUserInformation.UserId.ExternalIdWithPrefix, currentUserInformation.Name);
+
+        dialog.DialogEndUserContext.UpdateLabel(request.Label, currentUserInformation.UserId.ExternalIdWithPrefix, currentUserInformation.Name);
 
         var saveResult = await _unitOfWork
-            .EnableConcurrencyCheck(dialog, request.IfMatchDialogRevision)
-            .SaveChangesAsync(cancellationToken);
+                               .EnableConcurrencyCheck(dialog, request.IfMatchDialogRevision)
+                               .SaveChangesAsync(cancellationToken);
         return saveResult.Match<SetDialogLabelResult>(
             success => success,
             domainError => domainError,

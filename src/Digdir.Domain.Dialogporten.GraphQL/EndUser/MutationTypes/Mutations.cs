@@ -1,6 +1,6 @@
 using AutoMapper;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
-using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogLabels.Commands.Set;
+using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogSystemLabels.Commands.Set;
 using MediatR;
 
 namespace Digdir.Domain.Dialogporten.GraphQL.EndUser.MutationTypes;
@@ -12,7 +12,7 @@ public sealed class Mutations
         [Service] IMapper mapper,
         SetSystemLabelInput input)
     {
-        var command = mapper.Map<SetDialogLabelCommand>(input);
+        var command = mapper.Map<SetDialogSystemLabelCommand>(input);
         var result = await mediator.Send(command);
 
         return result.Match(
