@@ -112,6 +112,23 @@ public static class InfrastructureExtensions
             // Timeout for the cache to wait for the factory to complete, which when reached without fail-safe data
             // will cause an exception to be thrown
             FactoryHardTimeout = TimeSpan.FromSeconds(10)
+        })
+        .ConfigureFusionCache(nameof(AuthorizedPartiesResult), new()
+        {
+            // We keep authorized parties in a separate cache key, as this originates from a different API
+            // and has lees cardinality than the dialog authorization cache (only one per user). We therefore
+            // allow a memory cache for this.
+            Duration = TimeSpan.FromMinutes(15),
+            // In case Altinn Access Management is down/overloaded, we allow the re-usage of stale authorization data
+            // for an additional 15 minutes. Using default FailSafeThrottleDuration.
+            FailSafeMaxDuration = TimeSpan.FromMinutes(30),
+            // If the request to Altinn AccessManagement takes too long, we allow the cache to return stale data
+            // temporarily whilst updating the cache in the background. Note that we are also using eager refresh
+            // and a backplane.
+            FactorySoftTimeout = TimeSpan.FromSeconds(2),
+            // Timeout for the cache to wait for the factory to complete, which when reached without fail-safe data
+            // will cause an exception to be thrown
+            FactoryHardTimeout = TimeSpan.FromSeconds(10)
         });
 
         services.AddDbContext<DialogDbContext>((services, options) =>

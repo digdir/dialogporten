@@ -9,6 +9,7 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
+using static Digdir.Domain.Dialogporten.Application.Features.V1.Common.Authorization.Constants;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Queries.Get;
 
@@ -134,7 +135,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
         dialogDto.DialogToken = _dialogTokenGenerator.GetDialogToken(
             dialog,
             authorizationResult,
-            "/api/v1"
+            DialogTokenIssuerVersion
         );
 
         DecorateWithAuthorization(dialogDto, authorizationResult);
