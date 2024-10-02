@@ -176,9 +176,9 @@ export default function () {
         expect(r.json(), 'response json').to.have.property("items").with.lengthOf(1);
         expect(r.json().items[0], 'party').to.have.property("serviceResource").that.equals(auxResource);
     });
-    
+
     describe('List with invalid process', () => {
-        let r = getSO('dialogs/?CreatedAfter=' + createdAfter + '&process=?? ?');
+        let r = getSO('dialogs/?CreatedAfter=' + createdAfter + '&process=inval|d');
         expectStatusFor(r).to.equal(400);
         expect(r, 'response').to.have.validJsonBody();
         expect(r.json(), 'response json').to.have.property("errors");

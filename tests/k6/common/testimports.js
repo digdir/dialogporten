@@ -8,6 +8,7 @@ export {
     getSO,
     postSO,
     postSOAsync,
+    postBatchSO,
     putSO,
     patchSO,
     deleteSO,
