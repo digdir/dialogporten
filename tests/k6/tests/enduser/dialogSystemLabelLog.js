@@ -1,11 +1,10 @@
 import {
-    describe, expect, expectStatusFor, getEU, postEU, postSO, putSO, purgeSO
+    describe, expect, expectStatusFor, getEU, putEU, postSO, putSO, purgeSO
 } from '../../common/testimports.js'
 
 import {default as dialogToInsert} from '../serviceowner/testdata/01-create-dialog.js';
 
 export default function () {
-    //Lag 1 dialog, gjør forandriger på den, sjekk om det er log
     let dialogId;
     let dialog;
     describe('Arrange: Create a dialog to test against', () => {
@@ -18,9 +17,9 @@ export default function () {
 
     describe('Update label as enduser', () => {
         let body = {
-            'label': 'systemlabel:Bin'
+            'label': 'Bin'
         }
-        let response = postEU('dialogs/' + dialogId + '/labels', body);
+        let response = putEU('dialogs/' + dialogId + '/systemlabels', body);
         expectStatusFor(response).to.equal(204);
         response = getEU('dialogs/' + dialogId + '/labellog');
         expectStatusFor(response).to.equal(200);
@@ -32,9 +31,9 @@ export default function () {
     describe('Changing labels trigger 2 logs', () => {
 
         let body = {
-            'label': 'systemlabel:Archive'
+            'label': 'archive'
         }
-        let response = postEU('dialogs/' + dialogId + '/labels', body);
+        let response = putEU('dialogs/' + dialogId + '/systemlabels', body);
         expectStatusFor(response).to.equal(204);
         response = getEU('dialogs/' + dialogId + '/labellog');
         expectStatusFor(response).to.equal(200);

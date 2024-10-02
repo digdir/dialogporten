@@ -6,6 +6,7 @@ export { getServiceOwnerTokenFromGenerator, getEnduserTokenFromGenerator } from 
 export {
     getEU,
     postEU,
+    putEU,
     getSO,
     postSO,
     postSOAsync,

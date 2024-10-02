@@ -62,10 +62,11 @@ internal sealed class SetDialogLabelCommandHandler : IRequestHandler<SetDialogSy
 
         /*
          * Amund:
-         *  - Rename meste parten til systenLabel istedet for label
-         *  - Post til put
-         *  - Fjerne intak av prefix på enduser endpoint
-         *
+         *  [x] Rename meste parten til systenLabel istedet for label
+         *  [x] Post til put
+         *  [x] Fjerne intak av prefix på enduser endpoint
+         *  [ ] Search med flere labels? 
+         * 
          * POST api/v1/enduser/dialogs/{dialogId}/labels
          * [
          *    "magnusSineLabels:HelloWorld",
