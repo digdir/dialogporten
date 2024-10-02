@@ -74,19 +74,8 @@ public sealed class DialogEntity :
     public void OnCreate(AggregateNode self, DateTimeOffset utcNow)
         => _domainEvents.Add(new DialogCreatedDomainEvent(Id, ServiceResource, Party, Process, PrecedingProcess));
 
-    public void OnUpdate(AggregateNode self, DateTimeOffset utcNow)
-    {
-        var changedChildren = self.Children.Where(x =>
-            x.State != AggregateNodeState.Unchanged &&
-            x.Entity is not DialogSearchTag &&
-            x.Entity is not DialogActivity);
-
-        var shouldProduceEvent = self.IsDirectlyModified() || changedChildren.Any();
-        if (shouldProduceEvent)
-        {
-            _domainEvents.Add(new DialogUpdatedDomainEvent(Id, ServiceResource, Party, Process, PrecedingProcess));
-        }
-    }
+    public void OnUpdate(AggregateNode self, DateTimeOffset utcNow) =>
+        _domainEvents.Add(new DialogUpdatedDomainEvent(Id, ServiceResource, Party, Process, PrecedingProcess));
 
     public void OnDelete(AggregateNode self, DateTimeOffset utcNow)
         => _domainEvents.Add(new DialogDeletedDomainEvent(Id, ServiceResource, Party, Process, PrecedingProcess));
