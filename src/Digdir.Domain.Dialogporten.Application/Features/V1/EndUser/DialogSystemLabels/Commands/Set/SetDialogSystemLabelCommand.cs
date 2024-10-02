@@ -59,35 +59,6 @@ internal sealed class SetDialogLabelCommandHandler : IRequestHandler<SetDialogSy
 
         var currentUserInformation = await _userRegistry.GetCurrentUserInformation(cancellationToken);
 
-
-        /*
-         * Amund:
-         *  [x] Rename meste parten til systenLabel istedet for label
-         *  [x] Post til put
-         *  [x] Fjerne intak av prefix på enduser endpoint
-         *  [ ] Search med flere labels? 
-         * 
-         * POST api/v1/enduser/dialogs/{dialogId}/labels
-         * [
-         *    "magnusSineLabels:HelloWorld",
-         *    "systemlabels:bin",
-         * [
-         *
-         * DELETE api/v1/enduser/dialogs/{dialogId}/labels
-         * [
-         *    "magnusSineLabels:HelloWorld",
-         *    "systemlabels:bin",
-         * [
-         *
-         * PUT api/v1/enduser/dialogs/{dialogId}/systemlabels
-          {
-         *     "label": "bin"
-         * }
-         * Er dette bedre?
-         * PUT api/v1/enduser/dialogs/{dialogId}/systemlabels/{label}
-         */
-
-
         dialog.DialogEndUserContext.UpdateLabel(request.Label, currentUserInformation.UserId.ExternalIdWithPrefix);
 
         var saveResult = await _unitOfWork
