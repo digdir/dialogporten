@@ -144,7 +144,7 @@ export default function () {
         expect(allIds.some((id, i) => allIds.indexOf(id) !== i)).to.be.false;
     });
 
-    describe('SO List with custom orderBy', () => {
+    describe('List with custom orderBy', () => {
         let r = getSO('dialogs/?CreatedAfter=' + createdAfter + '&Limit=3&OrderBy=dueAt_desc,updatedAt_desc');
         expectStatusFor(r).to.equal(200);
         expect(r, 'response').to.have.validJsonBody();
@@ -176,7 +176,7 @@ export default function () {
         expect(r.json(), 'response json').to.have.property("items").with.lengthOf(1);
         expect(r.json().items[0], 'party').to.have.property("serviceResource").that.equals(auxResource);
     });
-    
+
     describe('List with invalid process', () => {
         let r = getSO('dialogs/?CreatedAfter=' + createdAfter + '&process=inval|d');
         expectStatusFor(r).to.equal(400);
