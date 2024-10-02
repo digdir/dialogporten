@@ -1,17 +1,19 @@
-using System.Collections.ObjectModel;
 using Digdir.Domain.Dialogporten.Domain.Actors;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Library.Entity.Abstractions;
+using Digdir.Library.Entity.Abstractions.Features.Aggregate;
+using Digdir.Library.Entity.Abstractions.Features.Versionable;
 
 namespace Digdir.Domain.Dialogporten.Domain.DialogEndUserContexts.Entities;
 
-public sealed class DialogEndUserContext : IEntity
+public sealed class DialogEndUserContext : IEntity, IVersionableEntity
 {
     private readonly List<LabelAssignmentLog> _labelAssignmentLogs = [];
 
     public Guid Id { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
     public DateTimeOffset UpdatedAt { get; set; }
+    public Guid Revision { get; set; }
 
     public Guid? DialogId { get; set; }
     public DialogEntity? Dialog { get; set; }
@@ -19,9 +21,10 @@ public sealed class DialogEndUserContext : IEntity
     public SystemLabel.Values SystemLabelId { get; private set; } = SystemLabel.Values.Default;
     public SystemLabel SystemLabel { get; private set; } = null!;
 
+    [AggregateChild]
     public IReadOnlyCollection<LabelAssignmentLog> LabelAssignmentLogs => _labelAssignmentLogs.AsReadOnly();
 
-    public void UpdateLabel(SystemLabel.Values newLabel, string userId, string? userName, ActorType.Values actorType = ActorType.Values.PartyRepresentative)
+    public void UpdateLabel(SystemLabel.Values newLabel, string userId, ActorType.Values actorType = ActorType.Values.PartyRepresentative)
     {
         var currentLabel = SystemLabelId;
         if (newLabel == currentLabel)
@@ -39,8 +42,7 @@ public sealed class DialogEndUserContext : IEntity
                 PerformedBy = new()
                 {
                     ActorTypeId = actorType,
-                    ActorId = userId,
-                    ActorName = userName,
+                    ActorId = userId
                 }
             });
         }
@@ -54,12 +56,12 @@ public sealed class DialogEndUserContext : IEntity
                 PerformedBy = new()
                 {
                     ActorTypeId = actorType,
-                    ActorId = userId,
-                    ActorName = userName,
+                    ActorId = userId
                 }
             });
         }
 
         SystemLabelId = newLabel;
     }
+
 }

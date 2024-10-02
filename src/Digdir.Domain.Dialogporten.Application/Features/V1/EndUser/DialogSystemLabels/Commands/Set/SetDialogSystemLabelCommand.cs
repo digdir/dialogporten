@@ -88,10 +88,10 @@ internal sealed class SetDialogLabelCommandHandler : IRequestHandler<SetDialogSy
          */
 
 
-        dialog.DialogEndUserContext.UpdateLabel(request.Label, currentUserInformation.UserId.ExternalIdWithPrefix, currentUserInformation.Name);
+        dialog.DialogEndUserContext.UpdateLabel(request.Label, currentUserInformation.UserId.ExternalIdWithPrefix);
 
         var saveResult = await _unitOfWork
-                               .EnableConcurrencyCheck(dialog, request.IfMatchDialogRevision)
+                               .EnableConcurrencyCheck(dialog.DialogEndUserContext, request.IfMatchDialogRevision)
                                .SaveChangesAsync(cancellationToken);
         return saveResult.Match<SetDialogLabelResult>(
             success => success,

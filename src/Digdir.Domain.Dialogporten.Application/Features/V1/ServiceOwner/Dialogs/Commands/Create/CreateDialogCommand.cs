@@ -96,7 +96,6 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
         dialog.DialogEndUserContext.UpdateLabel(
             request.SystemLabel.Value,
             $"{NorwegianOrganizationIdentifier.PrefixWithSeparator}{organizationNumber}",
-            dialog.Org,
             ActorType.Values.ServiceOwner);
     }
 
