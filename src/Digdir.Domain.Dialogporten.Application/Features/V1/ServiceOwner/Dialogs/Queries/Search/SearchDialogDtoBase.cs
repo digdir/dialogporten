@@ -20,6 +20,12 @@ public class SearchDialogDtoBase
     public string Org { get; set; } = null!;
 
     /// <summary>
+    /// The unique identifier for the revision in UUIDv4 format.
+    /// </summary>
+    /// <example>a312cb9c-7632-43c2-aa38-69b06aed56ca</example>
+    public Guid Revision { get; set; }
+
+    /// <summary>
     /// The service identifier for the service that the dialog is related to in URN-format.
     /// This corresponds to a service resource in the Altinn Resource Registry.
     /// </summary>
