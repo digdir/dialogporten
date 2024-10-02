@@ -3265,6 +3265,12 @@
             "nullable": true,
             "type": "integer"
           },
+          "revision": {
+            "description": "The unique identifier for the revision in UUIDv4 format.",
+            "example": "a312cb9c-7632-43c2-aa38-69b06aed56ca",
+            "format": "guid",
+            "type": "string"
+          },
           "seenSinceLastUpdate": {
             "description": "The list of seen log entries for the dialog newer than the dialog ChangedAt date.",
             "items": {
