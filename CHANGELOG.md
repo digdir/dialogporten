@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.20.2](https://github.com/digdir/dialogporten/compare/v1.20.1...v1.20.2) (2024-10-02)
+
+
+### Bug Fixes
+
+* (webAPI): Add revision to search dto (ServiceOwner) ([#1216](https://github.com/digdir/dialogporten/issues/1216)) ([3b6d130](https://github.com/digdir/dialogporten/commit/3b6d130bb117fa8d3e0a183474c9bd60e377abb7))
+* **graphQL:** GraphQL subscription not notified on DialogActivityCreated ([#1187](https://github.com/digdir/dialogporten/issues/1187)) ([f28e291](https://github.com/digdir/dialogporten/commit/f28e291bdba7cf3cc94cf0de84fcc12e781d3abb))
+
 ## [1.20.1](https://github.com/digdir/dialogporten/compare/v1.20.0...v1.20.1) (2024-10-02)
 
 
