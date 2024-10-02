@@ -1,3 +1,9 @@
+if ! command -v jq 2>&1 >/dev/null
+then
+    echo "jq could not be found, attempting to install from tdnf ..."
+    tdnf install -y jq
+fi
+
 usage_params="<job-name> <resource-group-name> <image-tag>"
 
 if [ -z "$1" ]; then
