@@ -45,7 +45,6 @@ public static class HealthCheckExtensions
                 "Endpoints",
                 failureStatus: HealthStatus.Unhealthy,
                 tags: ["dependencies"]);
-
         return services;
     }
 

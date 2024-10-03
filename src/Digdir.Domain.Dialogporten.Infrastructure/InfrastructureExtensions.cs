@@ -201,20 +201,7 @@ public static class InfrastructureExtensions
             })
             .AddPolicyHandlerFromRegistry(PollyPolicy.DefaultHttpRetryPolicy);
 
-        services.AddHttpClient("HealthCheckClient")
-            .ConfigureHttpClient((services, client) =>
-            {
-                client.Timeout = TimeSpan.FromSeconds(5);
-            })
-            .SetHandlerLifetime(TimeSpan.FromMinutes(2));
-
-        services.AddHealthChecks()
-            .AddCheck<RedisHealthCheck>("redis", tags: ["dependencies", "redis"]);
-
-        services.AddSingleton(sp => new RedisHealthCheck(infrastructureSettings.Redis.ConnectionString));
-
-        services.AddHealthChecks()
-            .AddDbContextCheck<DialogDbContext>("postgres", tags: ["dependencies", "critical"]);
+        services.AddHealthChecks(infrastructureSettings);
 
         if (environment.IsDevelopment())
         {
@@ -225,6 +212,24 @@ public static class InfrastructureExtensions
                 .ReplaceTransient<IAltinnAuthorization, LocalDevelopmentAltinnAuthorization>(predicate: localDeveloperSettings.UseLocalDevelopmentAltinnAuthorization)
                 .ReplaceSingleton<IFusionCache, NullFusionCache>(predicate: localDeveloperSettings.DisableCache);
         }
+
+        return services;
+    }
+
+    private static IServiceCollection AddHealthChecks(this IServiceCollection services, InfrastructureSettings configuration)
+    {
+        services.AddHttpClient("HealthCheckClient")
+            .ConfigureHttpClient((services, client) =>
+            {
+                client.Timeout = TimeSpan.FromSeconds(5);
+            })
+            .SetHandlerLifetime(TimeSpan.FromMinutes(2));
+
+        services.AddHealthChecks()
+            .AddCheck<RedisHealthCheck>("redis", tags: ["dependencies", "redis"])
+            .AddDbContextCheck<DialogDbContext>("postgres", tags: ["dependencies", "critical"]);
+
+        services.AddSingleton(sp => new RedisHealthCheck(configuration.Redis.ConnectionString));
 
         return services;
     }
