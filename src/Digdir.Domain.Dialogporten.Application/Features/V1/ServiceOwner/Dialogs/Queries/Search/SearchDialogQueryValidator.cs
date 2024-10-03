@@ -53,6 +53,7 @@ internal sealed class SearchDialogQueryValidator : AbstractValidator<SearchDialo
 
         RuleForEach(x => x.Status).IsInEnum();
 
+        RuleForEach(x => x.SystemLabel).IsInEnum();
         RuleFor(x => x.Process)
             .IsValidUri()
             .MaximumLength(Constants.DefaultMaxUriLength)

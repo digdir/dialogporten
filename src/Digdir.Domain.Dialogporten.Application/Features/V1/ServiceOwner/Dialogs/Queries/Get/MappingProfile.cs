@@ -16,7 +16,8 @@ internal sealed class MappingProfile : Profile
     {
         CreateMap<DialogEntity, GetDialogDto>()
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.StatusId))
-            .ForMember(dest => dest.SeenSinceLastUpdate, opt => opt.Ignore());
+            .ForMember(dest => dest.SeenSinceLastUpdate, opt => opt.Ignore())
+            .ForMember(dest => dest.SystemLabel, opt => opt.MapFrom(src => src.DialogEndUserContext.SystemLabelId));
 
         CreateMap<DialogSeenLogSeenByActor, GetDialogDialogSeenLogSeenByActorDto>();
         CreateMap<DialogSeenLog, GetDialogDialogSeenLogDto>()

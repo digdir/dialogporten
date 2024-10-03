@@ -5,6 +5,8 @@ export { customConsole  } from './console.js';
 export { getServiceOwnerTokenFromGenerator, getEnduserTokenFromGenerator } from './token.js';
 export {
     getEU,
+    postEU,
+    putEU,
     getSO,
     postSO,
     postSOAsync,
@@ -28,5 +30,6 @@ export {
     setProcess,
     setVisibleFrom,
     setActivities,
-    addActivity
+    addActivity,
+    setSystemLabel
 } from './dialog.js';
