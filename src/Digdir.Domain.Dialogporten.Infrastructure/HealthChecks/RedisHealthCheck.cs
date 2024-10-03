@@ -13,10 +13,7 @@ internal sealed class RedisHealthCheck : IHealthCheck
 
     public RedisHealthCheck(IOptions<InfrastructureSettings> options)
     {
-        if (options == null)
-        {
-            throw new ArgumentNullException(nameof(options));
-        }
+        ArgumentNullException.ThrowIfNull(options);
         if (options.Value == null)
         {
             throw new ArgumentException("InfrastructureSettings cannot be null.", nameof(options));
