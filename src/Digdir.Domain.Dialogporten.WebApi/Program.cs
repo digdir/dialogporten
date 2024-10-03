@@ -124,7 +124,8 @@ static void BuildAndRun(string[] args)
             };
         })
         .AddControllers(options => options.InputFormatters.Insert(0, JsonPatchInputFormatter.Get()))
-        .Services
+            .AddNewtonsoftJson()
+            .Services
 
         // Auth
         .AddDialogportenAuthentication(builder.Configuration)
