@@ -19,14 +19,18 @@ internal sealed class RedisHealthCheck : IHealthCheck
     {
         try
         {
-            var redis = await ConnectionMultiplexer.ConnectAsync(_connectionString);
+            using var redis = await ConnectionMultiplexer.ConnectAsync(_connectionString);
             var db = redis.GetDatabase();
             await db.PingAsync();
-            return HealthCheckResult.Healthy();
+            return HealthCheckResult.Healthy("Redis connection is healthy.");
+        }
+        catch (RedisConnectionException ex)
+        {
+            return HealthCheckResult.Unhealthy("Unable to connect to Redis.", exception: ex);
         }
         catch (Exception ex)
         {
-            return HealthCheckResult.Unhealthy(exception: ex);
+            return HealthCheckResult.Unhealthy("An unexpected error occurred while checking Redis health.", exception: ex);
         }
     }
 }
