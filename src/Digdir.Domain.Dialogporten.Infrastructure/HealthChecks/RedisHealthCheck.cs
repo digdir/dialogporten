@@ -3,23 +3,24 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using StackExchange.Redis;
+using Microsoft.Extensions.Options;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.HealthChecks;
 
 internal sealed class RedisHealthCheck : IHealthCheck
 {
-    private readonly string _connectionString;
+    private readonly InfrastructureSettings _settings;
 
-    public RedisHealthCheck(string connectionString)
+    public RedisHealthCheck(IOptions<InfrastructureSettings> options)
     {
-        _connectionString = connectionString;
+        _settings = options.Value;
     }
 
     public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
     {
         try
         {
-            using var redis = await ConnectionMultiplexer.ConnectAsync(_connectionString);
+            using var redis = await ConnectionMultiplexer.ConnectAsync(_settings.Redis.ConnectionString);
             var db = redis.GetDatabase();
             await db.PingAsync();
             return HealthCheckResult.Healthy("Redis connection is healthy.");

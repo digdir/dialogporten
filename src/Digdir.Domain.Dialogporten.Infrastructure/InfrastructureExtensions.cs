@@ -201,7 +201,7 @@ public static class InfrastructureExtensions
             })
             .AddPolicyHandlerFromRegistry(PollyPolicy.DefaultHttpRetryPolicy);
 
-        services.AddHealthChecks(infrastructureSettings);
+        services.AddCustomHealthChecks();
 
         if (environment.IsDevelopment())
         {
@@ -216,7 +216,7 @@ public static class InfrastructureExtensions
         return services;
     }
 
-    private static IServiceCollection AddHealthChecks(this IServiceCollection services, InfrastructureSettings configuration)
+    private static IServiceCollection AddCustomHealthChecks(this IServiceCollection services)
     {
         services.AddHttpClient("HealthCheckClient")
             .ConfigureHttpClient((services, client) =>
@@ -229,7 +229,7 @@ public static class InfrastructureExtensions
             .AddCheck<RedisHealthCheck>("redis", tags: ["dependencies", "redis"])
             .AddDbContextCheck<DialogDbContext>("postgres", tags: ["dependencies", "critical"]);
 
-        services.AddSingleton(sp => new RedisHealthCheck(configuration.Redis.ConnectionString));
+        services.AddSingleton<RedisHealthCheck>();
 
         return services;
     }
