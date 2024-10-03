@@ -133,8 +133,11 @@ static void BuildAndRun(string[] args)
         .AddDialogportenAuthentication(builder.Configuration)
         .AddAuthorization()
 
-        // Health checks
-        .AddAspNetHealthChecks();
+        // Health checks with configuration
+        .AddAspNetHealthChecks(options =>
+        {
+            options.WellKnownEndpointsConfigurationSectionPath = "WebApi:Authentication:JwtBearerTokenSchemas";
+        });
 
     if (builder.Environment.IsDevelopment())
     {

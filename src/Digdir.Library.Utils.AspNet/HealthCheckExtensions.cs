@@ -10,12 +10,39 @@ namespace Digdir.Library.Utils.AspNet;
 
 public static class HealthCheckExtensions
 {
-    public static IServiceCollection AddAspNetHealthChecks(this IServiceCollection services)
+    public class AspNetHealthChecksOptions
     {
+        public string WellKnownEndpointsConfigurationSectionPath { get; set; } = string.Empty;
+    }
+
+    public class JwtBearerTokenSchema
+    {
+        public string Name { get; set; } = string.Empty;
+        public string WellKnown { get; set; } = string.Empty;
+    }
+
+    public static IServiceCollection AddAspNetHealthChecks(this IServiceCollection services, Action<AspNetHealthChecksOptions> configure)
+    {
+        var options = new AspNetHealthChecksOptions();
+        configure(options);
+
+        var wellKnownSchemas = services.BuildServiceProvider()
+            .GetRequiredService<IConfiguration>()
+            .GetSection(options.WellKnownEndpointsConfigurationSectionPath)
+            .Get<List<JwtBearerTokenSchema>>();
+
+        var wellKnownEndpoints = wellKnownSchemas?.Select(schema => schema.WellKnown).ToList() ?? new List<string>();
+
+        services.Configure<EndpointsHealthCheckOptions>(opts =>
+        {
+            opts.Endpoints = wellKnownEndpoints;
+        });
+
+        // Register the health checks
         services.AddHealthChecks()
             .AddCheck("self", () => HealthCheckResult.Healthy(), tags: ["self"])
-            .AddCheck<WellKnownEndpointsHealthCheck>(
-                "Well-Known Endpoints",
+            .AddCheck<EndpointsHealthCheck>(
+                "Endpoints",
                 failureStatus: HealthStatus.Unhealthy,
                 tags: ["dependencies"]);
 
