@@ -21,13 +21,12 @@ public static class HealthCheckExtensions
         public string WellKnown { get; set; } = string.Empty;
     }
 
-    public static IServiceCollection AddAspNetHealthChecks(this IServiceCollection services, Action<AspNetHealthChecksOptions> configure)
+    public static IServiceCollection AddAspNetHealthChecks(this IServiceCollection services, IConfiguration configuration, Action<AspNetHealthChecksOptions> configure)
     {
         var options = new AspNetHealthChecksOptions();
         configure(options);
 
-        var wellKnownSchemas = services.BuildServiceProvider()
-            .GetRequiredService<IConfiguration>()
+        var wellKnownSchemas = configuration
             .GetSection(options.WellKnownEndpointsConfigurationSectionPath)
             .Get<List<JwtBearerTokenSchema>>();
 

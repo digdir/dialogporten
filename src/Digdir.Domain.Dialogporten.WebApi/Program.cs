@@ -132,7 +132,7 @@ static void BuildAndRun(string[] args)
         .AddAuthorization()
 
         // Health checks with configuration
-        .AddAspNetHealthChecks(options =>
+        .AddAspNetHealthChecks(builder.Configuration, options =>
         {
             options.WellKnownEndpointsConfigurationSectionPath = "WebApi:Authentication:JwtBearerTokenSchemas";
         });

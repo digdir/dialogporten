@@ -222,8 +222,7 @@ public static class InfrastructureExtensions
             .ConfigureHttpClient((services, client) =>
             {
                 client.Timeout = TimeSpan.FromSeconds(5);
-            })
-            .SetHandlerLifetime(TimeSpan.FromMinutes(2));
+            });
 
         services.AddHealthChecks()
             .AddCheck<RedisHealthCheck>("redis", tags: ["dependencies", "redis"])
