@@ -34,7 +34,6 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using StackExchange.Redis;
 using ZiggyCreatures.Caching.Fusion;
 using ZiggyCreatures.Caching.Fusion.NullObjects;
-using Digdir.Domain.Dialogporten.Infrastructure.HealthChecks;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure;
 
@@ -219,11 +218,7 @@ public static class InfrastructureExtensions
                 name: "postgres",
                 healthQuery: "SELECT 1",
                 failureStatus: HealthStatus.Unhealthy,
-                tags: ["dependencies", "critical"])
-            .AddCheck<WellKnownEndpointsHealthCheck>(
-                "Well-Known Endpoints",
-                failureStatus: HealthStatus.Unhealthy,
-                tags: ["dependencies"]);
+                tags: ["dependencies", "critical"]);
 
 
         if (environment.IsDevelopment())

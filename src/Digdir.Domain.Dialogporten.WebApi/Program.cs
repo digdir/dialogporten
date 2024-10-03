@@ -26,6 +26,7 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using NSwag;
 using Serilog;
+using Digdir.Library.Utils.AspNet;
 
 // Using two-stage initialization to catch startup errors.
 Log.Logger = new LoggerConfiguration()
@@ -126,14 +127,14 @@ static void BuildAndRun(string[] args)
             };
         })
         .AddControllers(options => options.InputFormatters.Insert(0, JsonPatchInputFormatter.Get()))
-        .AddNewtonsoftJson()
         .Services
 
         // Auth
         .AddDialogportenAuthentication(builder.Configuration)
         .AddAuthorization()
-        .AddHealthChecks()
-        .AddCheck("self", () => HealthCheckResult.Healthy(), tags: ["self"]);
+
+        // Health checks
+        .AddAspNetHealthChecks();
 
     if (builder.Environment.IsDevelopment())
     {
@@ -203,26 +204,9 @@ static void BuildAndRun(string[] args)
             uiConfig.DocumentPath = dialogPrefix + "/swagger/{documentName}/swagger.json";
         });
     app.MapControllers();
-    app.MapHealthChecks("/startup", new HealthCheckOptions
-    {
-        Predicate = check => check.Tags.Contains("dependencies"),
-        ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-    });
-    app.MapHealthChecks("/liveness", new HealthCheckOptions
-    {
-        Predicate = check => check.Tags.Contains("self"),
-        ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-    });
-    app.MapHealthChecks("/readiness", new HealthCheckOptions
-    {
-        Predicate = check => check.Tags.Contains("critical"),
-        ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-    });
-    app.MapHealthChecks("/health", new HealthCheckOptions
-    {
-        Predicate = check => check.Tags.Contains("dependencies"),
-        ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-    });
+
+    // Map Health Checks
+    app.MapAspNetHealthChecks();
 
     app.Run();
 }

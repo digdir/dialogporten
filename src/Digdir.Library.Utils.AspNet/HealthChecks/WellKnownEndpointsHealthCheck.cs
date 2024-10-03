@@ -4,9 +4,8 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
-namespace Digdir.Domain.Dialogporten.Infrastructure.HealthChecks;
+namespace Digdir.Library.Utils.AspNet.HealthChecks;
 
 internal sealed class WellKnownEndpointsHealthCheck : IHealthCheck
 {
@@ -40,7 +39,6 @@ internal sealed class WellKnownEndpointsHealthCheck : IHealthCheck
         }
 
         var client = _httpClientFactory.CreateClient("HealthCheckClient");
-
         var unhealthyEndpoints = new List<string>();
 
         foreach (var url in wellKnownEndpoints)
