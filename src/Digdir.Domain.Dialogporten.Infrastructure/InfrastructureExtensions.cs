@@ -219,10 +219,11 @@ public static class InfrastructureExtensions
     private static IServiceCollection AddCustomHealthChecks(this IServiceCollection services)
     {
         services.AddHttpClient("HealthCheckClient")
-            .ConfigureHttpClient((services, client) =>
+            .ConfigureHttpClient(client =>
             {
                 client.Timeout = TimeSpan.FromSeconds(5);
-            });
+            })
+            .AddPolicyHandlerFromRegistry(PollyPolicy.DefaultHttpRetryPolicy); ;
 
         services.AddHealthChecks()
             .AddCheck<RedisHealthCheck>("redis", tags: ["dependencies", "redis"])
