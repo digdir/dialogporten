@@ -30,20 +30,25 @@ public static class HealthCheckExtensions
             .GetSection(options.WellKnownEndpointsConfigurationSectionPath)
             .Get<List<JwtBearerTokenSchema>>();
 
+        var healthChecks = services.AddHealthChecks();
+
+        healthChecks.AddCheck("self", () => HealthCheckResult.Healthy(), tags: ["self"]);
+
         var wellKnownEndpoints = wellKnownSchemas?.Select(schema => schema.WellKnown).ToList() ?? new List<string>();
 
-        services.Configure<EndpointsHealthCheckOptions>(opts =>
+        if (wellKnownEndpoints.Count > 0)
         {
-            opts.Endpoints = wellKnownEndpoints;
-        });
+            services.Configure<EndpointsHealthCheckOptions>(opts =>
+            {
+                opts.Endpoints = wellKnownEndpoints;
+            });
 
-        // Register the health checks
-        services.AddHealthChecks()
-            .AddCheck("self", () => HealthCheckResult.Healthy(), tags: ["self"])
-            .AddCheck<EndpointsHealthCheck>(
+            healthChecks.AddCheck<EndpointsHealthCheck>(
                 "Endpoints",
                 failureStatus: HealthStatus.Unhealthy,
                 tags: ["dependencies"]);
+        }
+
         return services;
     }
 
