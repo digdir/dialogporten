@@ -6,7 +6,7 @@ using StackExchange.Redis;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.HealthChecks;
 
-public class RedisHealthCheck : IHealthCheck
+internal sealed class RedisHealthCheck : IHealthCheck
 {
     private readonly string _connectionString;
 
