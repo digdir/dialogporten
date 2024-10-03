@@ -60,7 +60,7 @@ internal sealed class MappingProfile : Profile
         CreateMap<UpdateDialogContentDto?, List<DialogContent>?>()
             .ConvertUsing<DialogContentInputConverter<UpdateDialogContentDto>>();
 
-        // Since these are append only, we don't need to merge with existing
+        // Since these are append-only, we don't need to merge with existing
         // activity/transmission records and thus can map complex properties
         CreateMap<UpdateDialogDialogActivityDto, DialogActivity>()
             .ForMember(dest => dest.Type, opt => opt.Ignore())
@@ -70,6 +70,10 @@ internal sealed class MappingProfile : Profile
             .ForMember(dest => dest.ActorType, opt => opt.Ignore())
             .ForMember(dest => dest.ActorTypeId, opt => opt.MapFrom(src => src.ActorType));
 
+        CreateMap<UpdateDialogDialogTransmissionDto, DialogTransmission>()
+            .ForMember(dest => dest.Type, opt => opt.Ignore())
+            .ForMember(dest => dest.TypeId, opt => opt.MapFrom(src => src.Type));
+
         CreateMap<UpdateDialogDialogTransmissionContentDto?, List<DialogTransmissionContent>?>()
             .ConvertUsing<TransmissionContentInputConverter<UpdateDialogDialogTransmissionContentDto>>();
 
@@ -77,16 +81,10 @@ internal sealed class MappingProfile : Profile
             .ForMember(dest => dest.ActorType, opt => opt.Ignore())
             .ForMember(dest => dest.ActorTypeId, opt => opt.MapFrom(src => src.ActorType));
 
-        CreateMap<UpdateDialogDialogTransmissionDto, DialogTransmission>()
-            .ForMember(dest => dest.Type, opt => opt.Ignore())
-            .ForMember(dest => dest.TypeId, opt => opt.MapFrom(src => src.Type));
-
         CreateMap<UpdateDialogTransmissionAttachmentDto, DialogTransmissionAttachment>()
-            .IgnoreComplexDestinationProperties()
             .ForMember(x => x.Id, opt => opt.Ignore());
 
         CreateMap<UpdateDialogTransmissionAttachmentUrlDto, AttachmentUrl>()
-            .IgnoreComplexDestinationProperties()
             .ForMember(x => x.Id, opt => opt.Ignore())
             .ForMember(dest => dest.ConsumerType, opt => opt.Ignore())
             .ForMember(dest => dest.ConsumerTypeId, opt => opt.MapFrom(src => src.ConsumerType));

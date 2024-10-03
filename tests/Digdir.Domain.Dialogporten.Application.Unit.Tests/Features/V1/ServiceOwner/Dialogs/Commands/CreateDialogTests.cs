@@ -3,6 +3,7 @@ using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Common.Authorization;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
+using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Create;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Tool.Dialogporten.GenerateFakeData;
@@ -28,6 +29,7 @@ public class CreateDialogTests
         var userResourceRegistrySub = Substitute.For<IUserResourceRegistry>();
         var userOrganizationRegistrySub = Substitute.For<IUserOrganizationRegistry>();
         var serviceAuthorizationSub = Substitute.For<IServiceResourceAuthorizer>();
+        var userSub = Substitute.For<IUser>();
 
         var createCommand = DialogGenerator.GenerateSimpleFakeDialog();
 
@@ -39,7 +41,7 @@ public class CreateDialogTests
             .CurrentUserIsOwner(createCommand.ServiceResource, Arg.Any<CancellationToken>())
             .Returns(true);
 
-        var commandHandler = new CreateDialogCommandHandler(dialogDbContextSub,
+        var commandHandler = new CreateDialogCommandHandler(userSub, dialogDbContextSub,
             mapper, unitOfWorkSub, domainContextSub,
             userOrganizationRegistrySub, serviceAuthorizationSub);
 
@@ -66,7 +68,7 @@ public class CreateDialogTests
         var userResourceRegistrySub = Substitute.For<IUserResourceRegistry>();
         var userOrganizationRegistrySub = Substitute.For<IUserOrganizationRegistry>();
         var serviceAuthorizationSub = Substitute.For<IServiceResourceAuthorizer>();
-
+        var userSub = Substitute.For<IUser>();
         var createCommand = DialogGenerator.GenerateSimpleFakeDialog();
 
         serviceAuthorizationSub
@@ -77,7 +79,7 @@ public class CreateDialogTests
             .CurrentUserIsOwner(createCommand.ServiceResource, Arg.Any<CancellationToken>())
             .Returns(false);
 
-        var commandHandler = new CreateDialogCommandHandler(dialogDbContextSub,
+        var commandHandler = new CreateDialogCommandHandler(userSub, dialogDbContextSub,
             mapper, unitOfWorkSub, domainContextSub,
             userOrganizationRegistrySub, serviceAuthorizationSub);
 
