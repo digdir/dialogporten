@@ -13,20 +13,6 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<string>(
-                name: "PrecedingProcess",
-                table: "Dialog",
-                type: "character varying(255)",
-                maxLength: 255,
-                nullable: true);
-
-            migrationBuilder.AddColumn<string>(
-                name: "Process",
-                table: "Dialog",
-                type: "character varying(255)",
-                maxLength: 255,
-                nullable: true);
-
             migrationBuilder.AddColumn<Guid>(
                 name: "LabelAssignmentLogId",
                 table: "Actor",
@@ -94,20 +80,6 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.UpdateData(
-                table: "DialogStatus",
-                keyColumn: "Id",
-                keyValue: 3,
-                column: "Name",
-                value: "Draft");
-
-            migrationBuilder.UpdateData(
-                table: "DialogStatus",
-                keyColumn: "Id",
-                keyValue: 4,
-                column: "Name",
-                value: "Sent");
-
             migrationBuilder.InsertData(
                 table: "SystemLabel",
                 columns: new[] { "Id", "Name" },
@@ -117,11 +89,6 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     { 2, "Bin" },
                     { 3, "Archive" }
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Dialog_Process",
-                table: "Dialog",
-                column: "Process");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Actor_LabelAssignmentLogId",
@@ -182,38 +149,12 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                 name: "SystemLabel");
 
             migrationBuilder.DropIndex(
-                name: "IX_Dialog_Process",
-                table: "Dialog");
-
-            migrationBuilder.DropIndex(
                 name: "IX_Actor_LabelAssignmentLogId",
                 table: "Actor");
 
             migrationBuilder.DropColumn(
-                name: "PrecedingProcess",
-                table: "Dialog");
-
-            migrationBuilder.DropColumn(
-                name: "Process",
-                table: "Dialog");
-
-            migrationBuilder.DropColumn(
                 name: "LabelAssignmentLogId",
                 table: "Actor");
-
-            migrationBuilder.UpdateData(
-                table: "DialogStatus",
-                keyColumn: "Id",
-                keyValue: 3,
-                column: "Name",
-                value: "Signing");
-
-            migrationBuilder.UpdateData(
-                table: "DialogStatus",
-                keyColumn: "Id",
-                keyValue: 4,
-                column: "Name",
-                value: "Processing");
         }
     }
 }
