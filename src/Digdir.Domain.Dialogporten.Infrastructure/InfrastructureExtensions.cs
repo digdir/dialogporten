@@ -30,10 +30,11 @@ using Digdir.Domain.Dialogporten.Infrastructure.GraphQl;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence.Configurations.Actors;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence.Repositories;
 using HotChocolate.Subscriptions;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
 using StackExchange.Redis;
 using ZiggyCreatures.Caching.Fusion;
 using ZiggyCreatures.Caching.Fusion.NullObjects;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Digdir.Domain.Dialogporten.Infrastructure.HealthChecks;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure;
 
@@ -208,18 +209,12 @@ public static class InfrastructureExtensions
             .SetHandlerLifetime(TimeSpan.FromMinutes(2));
 
         services.AddHealthChecks()
-            .AddRedis(
-                redisConnectionString: infrastructureSettings.Redis.ConnectionString,
-                name: "redis",
-                failureStatus: HealthStatus.Unhealthy,
-                tags: ["dependencies"])
-            .AddNpgSql(
-                connectionString: infrastructureSettings.DialogDbConnectionString,
-                name: "postgres",
-                healthQuery: "SELECT 1",
-                failureStatus: HealthStatus.Unhealthy,
-                tags: ["dependencies", "critical"]);
+            .AddCheck<RedisHealthCheck>("redis", tags: ["dependencies", "redis"]);
 
+        services.AddSingleton(sp => new RedisHealthCheck(infrastructureSettings.Redis.ConnectionString));
+
+        services.AddHealthChecks()
+            .AddDbContextCheck<DialogDbContext>("postgres", tags: ["dependencies", "critical"]);
 
         if (environment.IsDevelopment())
         {
