@@ -15,6 +15,19 @@ namespace Digdir.Domain.Dialogporten.Application.Features.V1.Common.Content;
 // The validator is manually created in the Create and Update validators
 internal interface IIgnoreOnAssemblyScan;
 
+// internal sealed class ContentFoo : AbstractValidator<LocalizationDto>
+// {
+//     public ContentFoo()
+//     {
+//
+//         RuleFor(x => x.Value)
+//             .IsValidHttpsUrl()
+//             // .Must(x => Uri.TryCreate(x.Value, UriKind.Absolute, out var uri) && uri.Scheme == Uri.UriSchemeHttps)
+//             // .IsValidHttpsUrl()
+//             .When((x, y) => x.MediaType is not null && x.MediaType.StartsWith(MediaTypes.EmbeddablePrefix, StringComparison.InvariantCultureIgnoreCase))
+//             // .WithMessage("{PropertyName} must be a valid HTTPS URL for embeddable content types");
+//     }
+// }
 internal sealed class ContentValueDtoValidator : AbstractValidator<ContentValueDto>, IIgnoreOnAssemblyScan
 {
     private const string LegacyHtmlMediaType = "text/html";
@@ -27,13 +40,17 @@ internal sealed class ContentValueDtoValidator : AbstractValidator<ContentValueD
             .WithMessage($"{{PropertyName}} '{{PropertyValue}}' is not allowed for content type {contentType.Name}. " +
                          $"Allowed media types are {string.Join(", ", contentType.AllowedMediaTypes.Select(x => $"'{x}'"))}");
 
-        RuleForEach(x => x.Value)
-            .ContainsValidMarkdown()
-            .When(x => x.MediaType is MediaTypes.Markdown);
-        RuleForEach(x => x.Value)
-            .Must(x => Uri.TryCreate(x.Value, UriKind.Absolute, out var uri) && uri.Scheme == Uri.UriSchemeHttps)
-            .When(x => x.MediaType is not null && x.MediaType.StartsWith(MediaTypes.EmbeddablePrefix, StringComparison.InvariantCultureIgnoreCase))
-            .WithMessage("{PropertyName} must be a valid HTTPS URL for embeddable content types");
+        When(x =>
+            x.MediaType is not null
+            && x.MediaType.StartsWith(MediaTypes.EmbeddablePrefix, StringComparison.InvariantCultureIgnoreCase),
+            () =>
+            {
+                RuleForEach(x => x.Value)
+                    .ChildRules(x => x
+                        .RuleFor(x => x.Value)
+                        .IsValidHttpsUrl());
+            });
+
         RuleFor(x => x.Value)
             .NotEmpty()
             .SetValidator(_ => new LocalizationDtosValidator(contentType.MaxLength));
@@ -47,16 +64,18 @@ internal sealed class ContentValueDtoValidator : AbstractValidator<ContentValueD
             .Must(value => value is not null && allowedMediaTypes.Contains(value))
             .WithMessage($"{{PropertyName}} '{{PropertyValue}}' is not allowed for content type {contentType.Name}. " +
                          $"Allowed media types are {string.Join(", ", allowedMediaTypes.Select(x => $"'{x}'"))}");
-        RuleForEach(x => x.Value)
-            .ContainsValidHtml()
-            .When(x => string.Equals(x.MediaType, LegacyHtmlMediaType, StringComparison.OrdinalIgnoreCase));
-        RuleForEach(x => x.Value)
-            .ContainsValidMarkdown()
-            .When(x => x.MediaType is MediaTypes.Markdown);
-        RuleForEach(x => x.Value)
-            .Must(x => Uri.TryCreate(x.Value, UriKind.Absolute, out var uri) && uri.Scheme == Uri.UriSchemeHttps)
-            .When(x => x.MediaType is not null && x.MediaType.StartsWith(MediaTypes.EmbeddablePrefix, StringComparison.InvariantCultureIgnoreCase))
-            .WithMessage("{PropertyName} must be a valid HTTPS URL for embeddable content types");
+
+        When(x =>
+                x.MediaType is not null
+                && x.MediaType.StartsWith(MediaTypes.EmbeddablePrefix, StringComparison.InvariantCultureIgnoreCase),
+            () =>
+            {
+                RuleForEach(x => x.Value)
+                    .ChildRules(x => x
+                        .RuleFor(x => x.Value)
+                        .IsValidHttpsUrl());
+            });
+
         RuleFor(x => x.Value)
             .NotEmpty()
             .SetValidator(_ => new LocalizationDtosValidator(contentType.MaxLength));
