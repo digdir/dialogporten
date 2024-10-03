@@ -7,8 +7,8 @@ using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
 using Digdir.Domain.Dialogporten.Domain.Actors;
-using Digdir.Domain.Dialogporten.Domain.Common;
 using Digdir.Domain.Dialogporten.Domain.Attachments;
+using Digdir.Domain.Dialogporten.Domain.Common;
 using Digdir.Domain.Dialogporten.Domain.DialogEndUserContexts.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
@@ -67,18 +67,18 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         var dialog = await _db.Dialogs
             .Include(x => x.Activities)
             .Include(x => x.Content)
-            .ThenInclude(x => x.Value.Localizations)
+                .ThenInclude(x => x.Value.Localizations)
             .Include(x => x.SearchTags)
             .Include(x => x.Attachments)
-            .ThenInclude(x => x.DisplayName!.Localizations)
+                .ThenInclude(x => x.DisplayName!.Localizations)
             .Include(x => x.Attachments)
-            .ThenInclude(x => x.Urls)
+                .ThenInclude(x => x.Urls)
             .Include(x => x.GuiActions)
-            .ThenInclude(x => x.Title!.Localizations)
+                .ThenInclude(x => x.Title!.Localizations)
             .Include(x => x.GuiActions)
-            .ThenInclude(x => x.Prompt!.Localizations)
+                .ThenInclude(x => x.Prompt!.Localizations)
             .Include(x => x.ApiActions)
-            .ThenInclude(x => x.Endpoints)
+                .ThenInclude(x => x.Endpoints)
             .Include(x => x.Transmissions)
             .Include(x => x.DialogEndUserContext)
             .IgnoreQueryFilters()

@@ -1,17 +1,16 @@
-using System.Diagnostics;
 using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogLabelAssignmentLog.Queries.Search;
 using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
 using FastEndpoints;
 using MediatR;
 
-namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.EndUser.DialogLabelAssigmentLogs.Search;
+namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.EndUser.DialogLabelAssignmentLogs.Search;
 
-public sealed class SearchDialogLabelAssigmentLogEndpoint : Endpoint<SearchDialogLabelAssignmentLogQuery, List<SearchDialogLabelAssignmentLogDto>>
+public sealed class SearchDialogLabelAssignmentLogEndpoint : Endpoint<SearchDialogLabelAssignmentLogQuery, List<SearchDialogLabelAssignmentLogDto>>
 {
     private readonly ISender _sender;
 
-    public SearchDialogLabelAssigmentLogEndpoint(ISender sender)
+    public SearchDialogLabelAssignmentLogEndpoint(ISender sender)
     {
         _sender = sender ?? throw new ArgumentNullException(nameof(sender));
     }

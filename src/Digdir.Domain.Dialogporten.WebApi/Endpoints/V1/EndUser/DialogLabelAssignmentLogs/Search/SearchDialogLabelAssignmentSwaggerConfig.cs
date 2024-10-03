@@ -2,7 +2,7 @@ using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogLabelAssi
 using Digdir.Domain.Dialogporten.WebApi.Common.Swagger;
 using Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.Common.Extensions;
 
-namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.EndUser.DialogLabelAssigmentLogs.Search;
+namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.EndUser.DialogLabelAssignmentLogs.Search;
 
 public sealed class SearchDialogLabelAssignmentSwaggerConfig : ISwaggerConfig
 {
