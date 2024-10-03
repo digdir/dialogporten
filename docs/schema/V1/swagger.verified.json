@@ -2552,33 +2552,6 @@
           "CONNECT"
         ]
       },
-      "IContractResolver": {
-        "additionalProperties": false,
-        "description": "Used by JsonSerializer to resolve a JsonContract for a given Type.",
-        "type": "object",
-        "x-abstract": true
-      },
-      "JsonPatchDocumentOfUpdateDialogDto": {
-        "additionalProperties": false,
-        "properties": {
-          "contractResolver": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/IContractResolver"
-              }
-            ]
-          },
-          "operations": {
-            "items": {
-              "$ref": "#/components/schemas/OperationOfUpdateDialogDto"
-            },
-            "nullable": true,
-            "type": "array"
-          }
-        },
-        "type": "object"
-      },
       "Jwk": {
         "additionalProperties": false,
         "properties": {
@@ -2642,7 +2615,7 @@
           "Exists"
         ]
       },
-      "OperationOfUpdateDialogDto": {
+      "Operation": {
         "additionalProperties": false,
         "properties": {
           "from": {

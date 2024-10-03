@@ -51,12 +51,12 @@ internal sealed class EndpointsHealthCheck : IHealthCheck
             catch (HttpRequestException ex)
             {
                 _logger.LogError(ex, "Exception occurred while checking endpoint: {Url}", url);
-                return HealthCheckResult.Unhealthy($"Exception occurred while checking endpoint {url}.");
+                unhealthyEndpoints.Add($"{url} (Exception: {ex.GetType().Name})");
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An unexpected error occurred while checking endpoint: {Url}", url);
-                return HealthCheckResult.Unhealthy($"An unexpected error occurred while checking endpoint {url}.");
+                _logger.LogError(ex, "Exception occurred while checking endpoint: {Url}", url);
+                unhealthyEndpoints.Add($"{url} (Exception: {ex.GetType().Name})");
             }
         }
 
@@ -70,7 +70,7 @@ internal sealed class EndpointsHealthCheck : IHealthCheck
     }
 }
 
-public class EndpointsHealthCheckOptions
+internal sealed class EndpointsHealthCheckOptions
 {
     public List<string> Endpoints { get; set; } = new();
 }
