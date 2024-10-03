@@ -48,11 +48,6 @@ internal sealed class EndpointsHealthCheck : IHealthCheck
                     unhealthyEndpoints.Add($"{url} (Status Code: {response.StatusCode})");
                 }
             }
-            catch (HttpRequestException ex)
-            {
-                _logger.LogError(ex, "Exception occurred while checking endpoint: {Url}", url);
-                unhealthyEndpoints.Add($"{url} (Exception: {ex.GetType().Name})");
-            }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Exception occurred while checking endpoint: {Url}", url);
