@@ -15,19 +15,6 @@ namespace Digdir.Domain.Dialogporten.Application.Features.V1.Common.Content;
 // The validator is manually created in the Create and Update validators
 internal interface IIgnoreOnAssemblyScan;
 
-// internal sealed class ContentFoo : AbstractValidator<LocalizationDto>
-// {
-//     public ContentFoo()
-//     {
-//
-//         RuleFor(x => x.Value)
-//             .IsValidHttpsUrl()
-//             // .Must(x => Uri.TryCreate(x.Value, UriKind.Absolute, out var uri) && uri.Scheme == Uri.UriSchemeHttps)
-//             // .IsValidHttpsUrl()
-//             .When((x, y) => x.MediaType is not null && x.MediaType.StartsWith(MediaTypes.EmbeddablePrefix, StringComparison.InvariantCultureIgnoreCase))
-//             // .WithMessage("{PropertyName} must be a valid HTTPS URL for embeddable content types");
-//     }
-// }
 internal sealed class ContentValueDtoValidator : AbstractValidator<ContentValueDto>, IIgnoreOnAssemblyScan
 {
     private const string LegacyHtmlMediaType = "text/html";
