@@ -29,7 +29,7 @@ internal sealed class ContentValueDtoValidator : AbstractValidator<ContentValueD
 
         When(x =>
             x.MediaType is not null
-            && x.MediaType.StartsWith(MediaTypes.EmbeddablePrefix, StringComparison.InvariantCultureIgnoreCase),
+            && x.MediaType.StartsWith(MediaTypes.EmbeddablePrefix, StringComparison.OrdinalIgnoreCase),
             () =>
             {
                 RuleForEach(x => x.Value)
