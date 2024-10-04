@@ -36,6 +36,7 @@ public class DialogApplication : IAsyncLifetime
     private IMapper? _mapper;
     private Respawner _respawner = null!;
     private ServiceProvider _rootProvider = null!;
+    private ServiceProvider _fixtureRootProvider = null!;
     private readonly PostgreSqlContainer _dbContainer = new PostgreSqlBuilder()
         .WithImage("postgres:15.7")
         .Build();
@@ -56,22 +57,22 @@ public class DialogApplication : IAsyncLifetime
             return options;
         });
 
-        _rootProvider = BuildServiceCollection()
-            .BuildServiceProvider();
+        _fixtureRootProvider = _rootProvider = BuildServiceCollection().BuildServiceProvider();
 
         await _dbContainer.StartAsync();
         await EnsureDatabaseAsync();
         await BuildRespawnState();
     }
 
-    public void ReplaceSingleton<T>(T instance)
-        where T : class
+    /// <summary>
+    /// This method lets you configure the IoC container in the integration test.
+    /// It will be reset to the default configuration after each test.
+    /// </summary>
+    /// <param name="configure"></param>
+    public void ConfigureServiceCollection(Action<IServiceCollection> configure)
     {
         var serviceCollection = BuildServiceCollection();
-
-        serviceCollection.RemoveAll<T>();
-        serviceCollection.AddSingleton(instance);
-
+        configure(serviceCollection);
         _rootProvider = serviceCollection.BuildServiceProvider();
     }
 
@@ -200,6 +201,7 @@ public class DialogApplication : IAsyncLifetime
         await using var connection = new NpgsqlConnection(_dbContainer.GetConnectionString());
         await connection.OpenAsync();
         await _respawner.ResetAsync(connection);
+        _rootProvider = _fixtureRootProvider;
     }
 
     private async Task EnsureDatabaseAsync()

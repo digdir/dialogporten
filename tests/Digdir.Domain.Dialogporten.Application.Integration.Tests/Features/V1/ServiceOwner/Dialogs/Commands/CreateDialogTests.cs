@@ -2,11 +2,12 @@ using Digdir.Domain.Dialogporten.Application.Common.Authorization;
 using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Content;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
-using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Queries.Get;
 using Digdir.Domain.Dialogporten.Application.Integration.Tests.Common;
 using Digdir.Tool.Dialogporten.GenerateFakeData;
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using static Digdir.Domain.Dialogporten.Application.Integration.Tests.UuiDv7Utils;
 
 namespace Digdir.Domain.Dialogporten.Application.Integration.Tests.Features.V1.ServiceOwner.Dialogs.Commands;
@@ -310,7 +311,11 @@ public class CreateDialogTests : ApplicationCollectionFixture
         createDialogCommand.Content.AdditionalInfo = CreateHtmlContentValueDto();
 
         var userWithLegacyScope = new IntegrationTestUser([new("scope", Constants.LegacyHtmlScope)]);
-        Application.ReplaceSingleton<IUser>(userWithLegacyScope);
+        Application.ConfigureServiceCollection(services =>
+        {
+            services.RemoveAll<IUser>();
+            services.AddSingleton<IUser>(userWithLegacyScope);
+        });
 
         // Act
         var response = await Application.Send(createDialogCommand);
@@ -328,7 +333,11 @@ public class CreateDialogTests : ApplicationCollectionFixture
         createDialogCommand.Content.Title = CreateHtmlContentValueDto();
 
         var userWithLegacyScope = new IntegrationTestUser([new("scope", Constants.LegacyHtmlScope)]);
-        Application.ReplaceSingleton<IUser>(userWithLegacyScope);
+        Application.ConfigureServiceCollection(services =>
+        {
+            services.RemoveAll<IUser>();
+            services.AddSingleton<IUser>(userWithLegacyScope);
+        });
 
         // Act
         var response = await Application.Send(createDialogCommand);
