@@ -19,7 +19,6 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Npgsql;
@@ -65,12 +64,18 @@ public class DialogApplication : IAsyncLifetime
     }
 
     /// <summary>
-    /// This method lets you configure the IoC container in the integration test.
+    /// This method lets you configure the IoC container for an integration test.
     /// It will be reset to the default configuration after each test.
+    /// You may only call this method once per test.
     /// </summary>
-    /// <param name="configure"></param>
+    /// <exception cref="InvalidOperationException">Thrown if the method is called more than once per test.</exception>
     public void ConfigureServiceCollection(Action<IServiceCollection> configure)
     {
+        if (_rootProvider != _fixtureRootProvider)
+        {
+            throw new InvalidOperationException($"Only one call to {nameof(ConfigureServiceCollection)} is allowed per test.");
+        }
+
         var serviceCollection = BuildServiceCollection();
         configure(serviceCollection);
         _rootProvider = serviceCollection.BuildServiceProvider();
@@ -179,6 +184,7 @@ public class DialogApplication : IAsyncLifetime
     public async Task DisposeAsync()
     {
         await _rootProvider.DisposeAsync();
+        await _fixtureRootProvider.DisposeAsync();
         await _dbContainer.DisposeAsync();
     }
 
@@ -201,7 +207,11 @@ public class DialogApplication : IAsyncLifetime
         await using var connection = new NpgsqlConnection(_dbContainer.GetConnectionString());
         await connection.OpenAsync();
         await _respawner.ResetAsync(connection);
-        _rootProvider = _fixtureRootProvider;
+        if (_rootProvider != _fixtureRootProvider)
+        {
+            await _rootProvider.DisposeAsync();
+            _rootProvider = _fixtureRootProvider;
+        }
     }
 
     private async Task EnsureDatabaseAsync()
