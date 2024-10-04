@@ -1,4 +1,3 @@
-using System.Net;
 using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Queries.Get;
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Delete;
 using Digdir.Domain.Dialogporten.Application.Integration.Tests.Common;

@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.21.0](https://github.com/digdir/dialogporten/compare/v1.20.2...v1.21.0) (2024-10-03)
+
+
+### Features
+
+* basic label implementation to hide dialogs ([#1192](https://github.com/digdir/dialogporten/issues/1192)) ([ee90c68](https://github.com/digdir/dialogporten/commit/ee90c6806bf0b394d9062612f5554a4d02616ab4))
+
+
+### Bug Fixes
+
+* **webAPI:** Broken mapping when creating Transmissions in an Update ([#1221](https://github.com/digdir/dialogporten/issues/1221)) ([6e7dfe4](https://github.com/digdir/dialogporten/commit/6e7dfe461eb1841bbdd1dd721fab87e7b609756c))
+
 ## [1.20.2](https://github.com/digdir/dialogporten/compare/v1.20.1...v1.20.2) (2024-10-02)
 
 
