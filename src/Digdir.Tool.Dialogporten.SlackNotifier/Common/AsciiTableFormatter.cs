@@ -4,71 +4,117 @@ namespace Digdir.Tool.Dialogporten.SlackNotifier.Common;
 
 public static class AsciiTableFormatter
 {
-    public static string ToAsciiTable(this IEnumerable<IEnumerable<object>> rows) =>
+    public static string ToAsciiTable(this IEnumerable<IEnumerable<object>> rows, int maxColumnWidth = 30) =>
         rows.Select(x => x.ToList())
             .ToList()
-            .ToAsciiTable();
+            .ToAsciiTable(maxColumnWidth);
 
-    private static string ToAsciiTable(this List<List<object>> rows)
+    private static readonly string[] StringArray = [""];
+
+    private static string ToAsciiTable(this List<List<object>> rows, int maxColumnWidth)
     {
         var builder = new StringBuilder();
 
+        AddLineBreaks(rows, maxColumnWidth);
         var sizes = MaxLengthInEachColumn(rows);
         var types = GetColumnTypes(rows);
 
+        // Top border
+        AppendLine(builder, sizes);
+
+        // For each row
         for (var rowNum = 0; rowNum < rows.Count; rowNum++)
         {
-            if (rowNum == 0)
-            {
-                // Top border
-                AppendLine(builder, sizes);
-                if (rows[0][0] == null)
-                {
-                    continue;
-                }
-            }
-
             var row = rows[rowNum];
-            for (var i = 0; i < row.Count; i++)
+
+            // For each cell, split the content into lines
+            var cellLines = row.Select(cell => cell.ToString()?.Split('\n') ?? StringArray).ToList();
+
+            // Determine the maximum number of lines in this row
+            var maxLines = cellLines.Max(lines => lines.Length);
+
+            // For each line index
+            for (var lineIndex = 0; lineIndex < maxLines; lineIndex++)
             {
-                var item = row[i]!;
-                var size = sizes[i];
-                builder.Append("| ");
-                if (item == null)
+                // For each cell
+                for (var i = 0; i < cellLines.Count; i++)
                 {
-                    builder.Append("".PadLeft(size));
-                }
-                else if (types[i] == ColumnType.Numeric)
-                {
-                    builder.Append(item.ToString()!.PadLeft(size));
-                }
-                else if (types[i] == ColumnType.Text)
-                {
-                    builder.Append(item.ToString()!.PadRight(size));
-                }
-                else
-                {
-                    throw new InvalidOperationException("Unexpected state");
-                }
+                    var lines = cellLines[i];
+                    var size = sizes[i];
+                    var type = types[i];
 
-                builder.Append(' ');
+                    builder.Append("| ");
 
-                if (i == row.Count - 1)
-                {
-                    // Add right border for last column
-                    builder.Append('|');
+                    var line = lineIndex < lines.Length ? lines[lineIndex] : "";
+
+                    builder.Append(type == ColumnType.Numeric ? line.PadLeft(size) : line.PadRight(size));
+
+                    builder.Append(' ');
+
+                    if (i == cellLines.Count - 1)
+                    {
+                        // Add right border for last column
+                        builder.Append('|');
+                    }
                 }
+                builder.Append('\n');
             }
-            builder.Append('\n');
+
+            // After the header row, add separator
             if (rowNum == 0)
             {
+                AppendLine(builder, sizes);
+            }
+            else
+            {
+                // Add separator between rows
                 AppendLine(builder, sizes);
             }
         }
 
-        AppendLine(builder, sizes);
-
         return builder.ToString();
+    }
+
+    private static void AddLineBreaks(List<List<object>> rows, int maxColumnWidth)
+    {
+        foreach (var row in rows)
+        {
+            for (var colIndex = 0; colIndex < row.Count; colIndex++)
+            {
+                if (row[colIndex] is string str)
+                {
+                    var words = str.Split(' ');
+                    var lines = new List<string>();
+                    var currentLine = string.Empty;
+
+                    foreach (var word in words)
+                    {
+                        if ((currentLine + word).Length > maxColumnWidth)
+                        {
+                            lines.Add(currentLine.TrimEnd());
+                            currentLine = "";
+                        }
+                        currentLine += word + " ";
+                    }
+                    if (currentLine.Length > 0)
+                    {
+                        lines.Add(currentLine.TrimEnd());
+                    }
+
+                    row[colIndex] = string.Join("\n", lines);
+                }
+                else if (row[colIndex].ToString()?.Length > maxColumnWidth)
+                {
+                    var strValue = row[colIndex].ToString();
+                    var brokenLines = new List<string>();
+                    for (var i = 0; i < strValue?.Length; i += maxColumnWidth)
+                    {
+                        brokenLines.Add(strValue.Substring(i, Math.Min(maxColumnWidth, strValue.Length - i)));
+                    }
+                    row[colIndex] = string.Join("\n", brokenLines);
+                }
+            }
+        }
     }
 
     private static void AppendLine(StringBuilder builder, IReadOnlyList<int> sizes)
@@ -86,11 +132,10 @@ public static class AsciiTableFormatter
     private static List<int> MaxLengthInEachColumn(IReadOnlyList<List<object>> rows)
     {
         var sizes = new List<int>();
-        //Start from second row to skip the header
-        for (var i = 0; i < rows[1].Count; i++)
+        for (var i = 0; i < rows[0].Count; i++)
         {
-            var max = rows.Max(row => row[i]?.ToString()?.Length ?? 0);
-            sizes.Insert(i, max);
+            var max = rows.Max(row => row[i].ToString()?.Split('\n').Max(line => line.Length) ?? 0);
+            sizes.Add(max);
         }
         return sizes;
     }
@@ -98,25 +143,17 @@ public static class AsciiTableFormatter
     private static List<ColumnType> GetColumnTypes(List<List<object>> rows)
     {
         var types = new List<ColumnType>();
-        for (var i = 0; i < rows[1].Count; i++)
+        for (var i = 0; i < rows[0].Count; i++)
         {
-            var isNumeric = rows.Skip(1).All(row => row[i]?.GetType()?.IsNumericType() ?? false);
+            var isNumeric = rows.Skip(1).All(row => row[i].GetType().IsNumericType());
             var columnType = isNumeric ? ColumnType.Numeric : ColumnType.Text;
-            types.Insert(i, columnType);
+            types.Add(columnType);
         }
         return types;
     }
 
-    /// <summary>
-    /// https://stackoverflow.com/a/5182747/2513761
-    /// </summary>
     private static bool IsNumericType(this Type type)
     {
-        if (type == null)
-        {
-            return false;
-        }
-
         switch (Type.GetTypeCode(type))
         {
             case TypeCode.Byte:
@@ -143,12 +180,9 @@ public static class AsciiTableFormatter
             case TypeCode.Char:
             case TypeCode.DateTime:
             case TypeCode.String:
-                break;
             default:
-                throw new ArgumentOutOfRangeException();
+                return false;
         }
-
-        return false;
     }
 
     private enum ColumnType
