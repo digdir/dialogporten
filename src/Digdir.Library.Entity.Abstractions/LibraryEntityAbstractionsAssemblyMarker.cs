@@ -5,7 +5,7 @@ namespace Digdir.Library.Entity.Abstractions;
 /// <summary>
 /// Provides a marker for the Entity Abstractions assembly.
 /// </summary>
-public static class LibraryEntityAbstractionsAssemblyMarker
+public sealed class LibraryEntityAbstractionsAssemblyMarker
 {
     /// <summary>
     /// Gets the assembly of the Entity Abstractions.
