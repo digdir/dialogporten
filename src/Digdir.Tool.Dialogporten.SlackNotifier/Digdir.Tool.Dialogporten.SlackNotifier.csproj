@@ -6,7 +6,7 @@
         <UserSecretsId>dd6841cd-1cfd-4f1c-a63e-edc687bff657</UserSecretsId>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Azure.Identity" Version="1.12.0"/>
+        <PackageReference Include="Azure.Identity" Version="1.12.1"/>
         <PackageReference Include="Microsoft.Azure.Functions.Worker" Version="1.23.0" />
         <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Http" Version="3.2.0"/>
         <PackageReference Include="Microsoft.Azure.Functions.Worker.Sdk" Version="1.17.4"/>
