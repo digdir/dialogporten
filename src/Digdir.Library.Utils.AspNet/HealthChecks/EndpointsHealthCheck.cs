@@ -21,7 +21,7 @@ internal sealed class EndpointsHealthCheck : IHealthCheck
     {
         _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _endpoints = options?.Value?.Endpoints ?? throw new ArgumentNullException(nameof(options));
+        _endpoints = options?.Value?.GetEndpoints ?? throw new ArgumentNullException(nameof(options));
     }
 
     public async Task<HealthCheckResult> CheckHealthAsync(
@@ -61,5 +61,5 @@ internal sealed class EndpointsHealthCheck : IHealthCheck
 
 internal sealed class EndpointsHealthCheckOptions
 {
-    public List<string> Endpoints { get; set; } = new();
+    public List<string> GetEndpoints { get; set; } = new();
 }

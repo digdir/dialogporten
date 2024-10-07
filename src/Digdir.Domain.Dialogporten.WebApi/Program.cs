@@ -24,6 +24,7 @@ using Microsoft.AspNetCore.Authorization;
 using NSwag;
 using Serilog;
 using Digdir.Library.Utils.AspNet;
+using static Digdir.Library.Utils.AspNet.HealthCheckExtensions;
 
 // Using two-stage initialization to catch startup errors.
 Log.Logger = new LoggerConfiguration()
@@ -129,17 +130,16 @@ static void BuildAndRun(string[] args)
 
         // Auth
         .AddDialogportenAuthentication(builder.Configuration)
-        .AddAuthorization()
-        // options.WellKnownEndpointsConfigurationSectionPath = "WebApi:Authentication:JwtBearerTokenSchemas";
-        // Health checks with configuration
-        .AddAspNetHealthChecks(builder.Configuration.GetSection("AspNetHealthChecks").Get<AspNetHealthChecksSettings>());
+        .AddAuthorization();
 
     // Retrieve JWT bearer token schema URLs from configuration
-    var jwtBearerTokenSchemas = builder.Configuration
-        .GetSection("WebApi:Authentication:JwtBearerTokenSchemas")
-        .Get<List<JwtBearerTokenSchema>>();
+    var authSettings = builder.Configuration
+        .GetSection("WebApi")
+        .Get<WebApiSettings>();
 
-    var wellKnownUrls = jwtBearerTokenSchemas?
+    var wellKnownUrls = authSettings?
+        .Authentication
+        .JwtBearerTokenSchemas
         .Select(schema => schema.WellKnown)
         .Where(url => !string.IsNullOrEmpty(url))
         .ToList() ?? new List<string>();

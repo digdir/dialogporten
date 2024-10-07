@@ -25,7 +25,7 @@ public static class HealthCheckExtensions
         {
             services.Configure<EndpointsHealthCheckOptions>(opts =>
             {
-                opts.Endpoints = settings.HttpGetEndpointsToCheck;
+                opts.GetEndpoints = settings.HttpGetEndpointsToCheck;
             });
 
             healthChecks.AddCheck<EndpointsHealthCheck>(
