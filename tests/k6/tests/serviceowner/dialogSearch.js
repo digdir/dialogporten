@@ -21,7 +21,7 @@ import {
 
 import { default as dialogToInsert } from './testdata/01-create-dialog.js';
 
-import { getDefaultEnduserOrgNo } from "../../common/token.js";
+import { getDefaultEnduserOrgNo, getDefaultEnduserSsn } from "../../common/token.js";
 
 export default function () {
 
@@ -37,6 +37,7 @@ export default function () {
     let senderNameToSearchFor = uuidv4()
     let auxParty = "urn:altinn:organization:identifier-no:" + getDefaultEnduserOrgNo();
     let auxResource = "urn:altinn:resource:ttd-dialogporten-automated-tests-2"; // This must exist in Resource Registry
+    let endUserId = "urn:altinn:person:identifier-no:" + getDefaultEnduserSsn();
     let titleForDueAtItem = uuidv4();
     let titleForExpiresAtItem = uuidv4();
     let titleForVisibleFromItem = uuidv4();
@@ -191,6 +192,15 @@ export default function () {
         expect(r.json(), 'response json').to.have.property("items").with.lengthOf(1);
         expect(r.json().items[0], 'process').to.have.property("process").that.equals(processToSeachFor);
     })
+
+    describe('List with enduserid', () => {
+        let r = getSO('dialogs/?CreatedAfter=' + createdAfter + '&EndUserId=' + endUserId + '&ServiceResource=' + auxResource);    
+        expectStatusFor(r).to.equal(200);
+        expect(r, 'response').to.have.validJsonBody();
+        expect(r.json(), 'response json').to.have.property("items").with.lengthOf(1);
+        expect(r.json().items[0], 'party').to.have.property("serviceResource").that.equals(auxResource);
+    })
+
     describe("Cleanup", () => {
         dialogIds.forEach((d) => {
             let r = purgeSO("dialogs/" + d);
