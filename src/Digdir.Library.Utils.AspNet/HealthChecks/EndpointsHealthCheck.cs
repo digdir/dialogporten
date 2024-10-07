@@ -1,7 +1,3 @@
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -17,17 +13,18 @@ internal sealed class EndpointsHealthCheck : IHealthCheck
     public EndpointsHealthCheck(
         IHttpClientFactory httpClientFactory,
         ILogger<EndpointsHealthCheck> logger,
-        IOptions<EndpointsHealthCheckOptions> options)
+        IOptions<AspNetUtilitiesSettings> options)
     {
         _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _endpoints = options?.Value?.GetEndpoints ?? throw new ArgumentNullException(nameof(options));
+        _endpoints = options.Value.HealthCheckSettings.HttpGetEndpointsToCheck;
     }
 
     public async Task<HealthCheckResult> CheckHealthAsync(
         HealthCheckContext context,
         CancellationToken cancellationToken = default)
     {
+        // TODO: Denne har en sterk avhengighet på infrastruktur registreringen. Fiks
         var client = _httpClientFactory.CreateClient("HealthCheckClient");
         var unhealthyEndpoints = new List<string>();
 
@@ -35,12 +32,15 @@ internal sealed class EndpointsHealthCheck : IHealthCheck
         {
             try
             {
+                // TODO: Kan kanskje paralelliseres? Trengs sannsynligvis ikke...
                 var response = await client.GetAsync(url, cancellationToken);
-                if (!response.IsSuccessStatusCode)
+                if (response.IsSuccessStatusCode)
                 {
-                    _logger.LogWarning("Health check failed for endpoint: {Url}. Status Code: {StatusCode}", url, response.StatusCode);
-                    unhealthyEndpoints.Add($"{url} (Status Code: {response.StatusCode})");
+                    continue;
                 }
+
+                _logger.LogWarning("Health check failed for endpoint: {Url}. Status Code: {StatusCode}", url, response.StatusCode);
+                unhealthyEndpoints.Add($"{url} (Status Code: {response.StatusCode})");
             }
             catch (Exception ex)
             {
@@ -49,17 +49,12 @@ internal sealed class EndpointsHealthCheck : IHealthCheck
             }
         }
 
-        if (unhealthyEndpoints.Count > 0)
+        if (unhealthyEndpoints.Count <= 0)
         {
-            var description = $"The following endpoints are unhealthy: {string.Join(", ", unhealthyEndpoints)}";
-            return HealthCheckResult.Unhealthy(description);
+            return HealthCheckResult.Healthy("All endpoints are healthy.");
         }
 
-        return HealthCheckResult.Healthy("All endpoints are healthy.");
+        var description = $"The following endpoints are unhealthy: {string.Join(", ", unhealthyEndpoints)}";
+        return HealthCheckResult.Unhealthy(description);
     }
-}
-
-internal sealed class EndpointsHealthCheckOptions
-{
-    public List<string> GetEndpoints { get; set; } = new();
 }

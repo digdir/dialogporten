@@ -24,7 +24,7 @@ using Microsoft.AspNetCore.Authorization;
 using NSwag;
 using Serilog;
 using Digdir.Library.Utils.AspNet;
-using static Digdir.Library.Utils.AspNet.HealthCheckExtensions;
+using Microsoft.Extensions.Options;
 
 // Using two-stage initialization to catch startup errors.
 Log.Logger = new LoggerConfiguration()
@@ -127,28 +127,17 @@ static void BuildAndRun(string[] args)
         .AddControllers(options => options.InputFormatters.Insert(0, JsonPatchInputFormatter.Get()))
             .AddNewtonsoftJson()
             .Services
+        // Add health checks with the retrieved URLs
+        .AddAspNetHealthChecks((x, y) => x.HealthCheckSettings.HttpGetEndpointsToCheck = y
+            .GetRequiredService<IOptions<WebApiSettings>>().Value?
+            .Authentication?
+            .JwtBearerTokenSchemas?
+            .Select(z => z.WellKnown)
+            .ToList() ?? [])
 
         // Auth
         .AddDialogportenAuthentication(builder.Configuration)
         .AddAuthorization();
-
-    // Retrieve JWT bearer token schema URLs from configuration
-    var authSettings = builder.Configuration
-        .GetSection(WebApiSettings.SectionName)
-        .Get<WebApiSettings>();
-
-    var wellKnownUrls = authSettings?
-        .Authentication
-        .JwtBearerTokenSchemas
-        .Select(schema => schema.WellKnown)
-        .Where(url => !string.IsNullOrEmpty(url))
-        .ToList() ?? new List<string>();
-
-    // Add health checks with the retrieved URLs
-    builder.Services.AddAspNetHealthChecks(new AspNetHealthChecksSettings
-    {
-        HttpGetEndpointsToCheck = wellKnownUrls
-    });
 
     if (builder.Environment.IsDevelopment())
     {
@@ -165,6 +154,9 @@ static void BuildAndRun(string[] args)
 
     var app = builder.Build();
 
+    app.MapAspNetHealthChecks()
+        .MapControllers();
+
     app.UseHttpsRedirection()
         .UseSerilogRequestLogging()
         .UseDefaultExceptionHandler()
@@ -173,11 +165,8 @@ static void BuildAndRun(string[] args)
         .UseAuthorization()
         .UseServiceOwnerOnBehalfOfPerson()
         .UseUserTypeValidation()
-        .UseAzureConfiguration();
-
-    app.MapAspNetHealthChecks();
-
-    app.UseAddSwaggerCorsHeader()
+        .UseAzureConfiguration()
+        .UseAddSwaggerCorsHeader()
         .UseSwaggerGen(config =>
         {
             config.PostProcess = (document, _) =>
@@ -220,8 +209,6 @@ static void BuildAndRun(string[] args)
             x.Serializer.Options.Converters.Add(new DateTimeNotSupportedConverter());
             x.Errors.ResponseBuilder = ErrorResponseBuilderExtensions.ResponseBuilder;
         });
-
-    app.MapControllers();
 
     app.Run();
 }
