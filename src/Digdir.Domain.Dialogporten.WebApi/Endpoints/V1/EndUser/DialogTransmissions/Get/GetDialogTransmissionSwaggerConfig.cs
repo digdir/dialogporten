@@ -9,7 +9,7 @@ namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.EndUser.DialogTransmiss
 
 public sealed class GetDialogTransmissionSwaggerConfig : ISwaggerConfig
 {
-    public static string OperationId => "GetDialogTransmissionEU";
+    public static string OperationId => "GetDialogTransmission";
 
     public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder)
         => builder.OperationId(OperationId)
