@@ -67,7 +67,7 @@ public class CreateDialogDto
     public DateTimeOffset? DueAt { get; set; }
 
     /// <summary>
-    /// Optional process identifier used to indicate a business process this dialog belongs to 
+    /// Optional process identifier used to indicate a business process this dialog belongs to
     /// </summary>
     public string? Process { get; set; }
     /// <summary>
@@ -104,7 +104,7 @@ public class CreateDialogDto
     public DialogStatus.Values Status { get; set; }
 
     /// <summary>
-    /// Set the system label of the dialog Migration purposes 
+    /// Set the system label of the dialog Migration purposes
     /// </summary>
     public SystemLabel.Values? SystemLabel { get; set; }
     /// <summary>
@@ -527,6 +527,12 @@ public sealed class CreateDialogDialogAttachmentUrlDto
 
 public sealed class CreateDialogTransmissionAttachmentDto
 {
+    /// <summary>
+    /// A self-defined UUIDv7 may be provided to support idempotent creation of transmission attachments. If not provided, a new UUIDv7 will be generated.
+    /// </summary>
+    /// <example>01913cd5-784f-7d3b-abef-4c77b1f0972d</example>
+    public Guid? Id { get; set; }
+
     /// <summary>
     /// The display name of the attachment that should be used in GUIs.
     /// </summary>
