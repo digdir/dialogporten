@@ -132,7 +132,7 @@ internal sealed class UpdateDialogTransmissionAttachmentUrlDtoValidator : Abstra
     {
         RuleFor(x => x.Url)
             .NotNull()
-            .IsValidUri()
+            .IsValidHttpsUrl()
             .MaximumLength(Constants.DefaultMaxUriLength);
         RuleFor(x => x.ConsumerType)
             .IsInEnum();
@@ -277,7 +277,7 @@ internal sealed class UpdateDialogDialogAttachmentUrlDtoValidator : AbstractVali
     {
         RuleFor(x => x.Url)
             .NotNull()
-            .IsValidUri()
+            .IsValidHttpsUrl()
             .MaximumLength(Constants.DefaultMaxUriLength);
         RuleFor(x => x.ConsumerType)
             .IsInEnum();
@@ -304,7 +304,7 @@ internal sealed class UpdateDialogDialogGuiActionDtoValidator : AbstractValidato
             .MaximumLength(Constants.DefaultMaxStringLength);
         RuleFor(x => x.Url)
             .NotNull()
-            .IsValidUri()
+            .IsValidHttpsUrl()
             .MaximumLength(Constants.DefaultMaxUriLength);
         RuleFor(x => x.AuthorizationAttribute)
             .MaximumLength(Constants.DefaultMaxStringLength);
@@ -349,7 +349,7 @@ internal sealed class UpdateDialogDialogApiActionEndpointDtoValidator : Abstract
             .MaximumLength(Constants.DefaultMaxStringLength);
         RuleFor(x => x.Url)
             .NotNull()
-            .IsValidUri()
+            .IsValidHttpsUrl()
             .MaximumLength(Constants.DefaultMaxUriLength);
         RuleFor(x => x.HttpMethod)
             .IsInEnum();

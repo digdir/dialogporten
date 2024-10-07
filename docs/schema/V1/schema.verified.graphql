@@ -110,6 +110,7 @@ type Dialog {
   createdAt: DateTime!
   updatedAt: DateTime!
   dialogToken: String
+  systemLabel: SystemLabel!
   status: DialogStatus!
   content: Content!
   attachments: [Attachment!]!
@@ -192,6 +193,7 @@ type SearchDialog {
   updatedAt: DateTime!
   dueAt: DateTime
   status: DialogStatus!
+  systemLabel: SystemLabel!
   latestActivity: Activity
   content: SearchContent!
   seenSinceLastUpdate: [SeenLog!]!
