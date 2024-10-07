@@ -28,7 +28,7 @@ public static class AsciiTableFormatter
             var row = rows[rowNum];
 
             // For each cell, split the content into lines
-            var cellLines = row.Select(cell => cell.ToString()?.Split('\n') ?? StringArray).ToList();
+            var cellLines = row.Select(cell => cell?.ToString()?.Split('\n') ?? StringArray).ToList();
 
             // Determine the maximum number of lines in this row
             var maxLines = cellLines.Max(lines => lines.Length);
