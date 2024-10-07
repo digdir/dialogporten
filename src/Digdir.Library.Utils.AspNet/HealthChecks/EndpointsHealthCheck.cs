@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System.Collections.Concurrent;
 
 namespace Digdir.Library.Utils.AspNet.HealthChecks;
 
@@ -25,31 +26,31 @@ internal sealed class EndpointsHealthCheck : IHealthCheck
         CancellationToken cancellationToken = default)
     {
         // TODO: Denne har en sterk avhengighet på infrastruktur registreringen. Fiks
+        // Parallelize the requests
         var client = _httpClientFactory.CreateClient("HealthCheckClient");
-        var unhealthyEndpoints = new List<string>();
+        var unhealthyEndpoints = new ConcurrentBag<string>();
 
-        foreach (var url in _endpoints)
+        var tasks = _endpoints.Select(async url =>
         {
             try
             {
-                // TODO: Kan kanskje paralelliseres? Trengs sannsynligvis ikke...
                 var response = await client.GetAsync(url, cancellationToken);
-                if (response.IsSuccessStatusCode)
+                if (!response.IsSuccessStatusCode)
                 {
-                    continue;
+                    _logger.LogWarning("Health check failed for endpoint: {Url}. Status Code: {StatusCode}", url, response.StatusCode);
+                    unhealthyEndpoints.Add($"{url} (Status Code: {response.StatusCode})");
                 }
-
-                _logger.LogWarning("Health check failed for endpoint: {Url}. Status Code: {StatusCode}", url, response.StatusCode);
-                unhealthyEndpoints.Add($"{url} (Status Code: {response.StatusCode})");
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Exception occurred while checking endpoint: {Url}", url);
                 unhealthyEndpoints.Add($"{url} (Exception: {ex.GetType().Name})");
             }
-        }
+        });
 
-        if (unhealthyEndpoints.Count <= 0)
+        await Task.WhenAll(tasks);
+
+        if (unhealthyEndpoints.IsEmpty)
         {
             return HealthCheckResult.Healthy("All endpoints are healthy.");
         }
