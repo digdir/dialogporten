@@ -81,11 +81,9 @@ internal sealed class MappingProfile : Profile
             .ForMember(dest => dest.ActorType, opt => opt.Ignore())
             .ForMember(dest => dest.ActorTypeId, opt => opt.MapFrom(src => src.ActorType));
 
-        CreateMap<UpdateDialogTransmissionAttachmentDto, DialogTransmissionAttachment>()
-            .ForMember(x => x.Id, opt => opt.Ignore());
+        CreateMap<UpdateDialogTransmissionAttachmentDto, DialogTransmissionAttachment>();
 
         CreateMap<UpdateDialogTransmissionAttachmentUrlDto, AttachmentUrl>()
-            .ForMember(x => x.Id, opt => opt.Ignore())
             .ForMember(dest => dest.ConsumerType, opt => opt.Ignore())
             .ForMember(dest => dest.ConsumerTypeId, opt => opt.MapFrom(src => src.ConsumerType));
 
