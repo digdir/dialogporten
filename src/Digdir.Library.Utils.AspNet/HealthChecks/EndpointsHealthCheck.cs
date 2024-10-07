@@ -26,7 +26,6 @@ internal sealed class EndpointsHealthCheck : IHealthCheck
         CancellationToken cancellationToken = default)
     {
         // TODO: Denne har en sterk avhengighet på infrastruktur registreringen. Fiks
-        // Parallelize the requests
         var client = _httpClientFactory.CreateClient("HealthCheckClient");
         var unhealthyEndpoints = new ConcurrentBag<string>();
 
