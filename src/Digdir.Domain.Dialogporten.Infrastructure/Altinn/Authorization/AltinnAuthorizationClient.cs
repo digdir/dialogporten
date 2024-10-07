@@ -45,12 +45,11 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
 
     public async Task<DialogDetailsAuthorizationResult> GetDialogDetailsAuthorization(
         DialogEntity dialogEntity,
-        string? endUserId,
         CancellationToken cancellationToken = default)
     {
         var request = new DialogDetailsAuthorizationRequest
         {
-            Claims = GetOrCreateClaimsBasedOnEndUserId(endUserId),
+            Claims = _user.GetPrincipal().Claims.ToList(),
             ServiceResource = dialogEntity.ServiceResource,
             DialogId = dialogEntity.Id,
             Party = dialogEntity.Party,
@@ -64,10 +63,9 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
     public async Task<DialogSearchAuthorizationResult> GetAuthorizedResourcesForSearch(
         List<string> constraintParties,
         List<string> serviceResources,
-        string? endUserId,
         CancellationToken cancellationToken = default)
     {
-        var claims = GetOrCreateClaimsBasedOnEndUserId(endUserId);
+        var claims = _user.GetPrincipal().Claims.ToList();
         var request = new DialogSearchAuthorizationRequest
         {
             Claims = claims,
@@ -185,21 +183,6 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
                 "Authorization request to {Url} returned decision Indeterminate. Request: {@RequestJson}",
                 AuthorizeUrl, request);
         }
-    }
-
-    private List<Claim> GetOrCreateClaimsBasedOnEndUserId(string? endUserId)
-    {
-        List<Claim> claims = [];
-        if (endUserId is not null && PartyIdentifier.TryParse(endUserId, out var partyIdentifier))
-        {
-            claims.Add(new Claim(partyIdentifier.Prefix(), partyIdentifier.Id));
-        }
-        else
-        {
-            claims.AddRange(_user.GetPrincipal().Claims);
-        }
-
-        return claims;
     }
 
     private async Task<XacmlJsonResponse?> SendPdpRequest(

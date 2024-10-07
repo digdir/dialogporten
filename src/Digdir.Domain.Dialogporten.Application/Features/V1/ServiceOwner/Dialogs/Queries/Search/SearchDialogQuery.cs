@@ -96,7 +96,7 @@ public sealed class SearchDialogQuery : SortablePaginationParameter<SearchDialog
     public string? Process { get; init; }
 
     /// <summary>
-    /// Filter by Display state 
+    /// Filter by Display state
     /// </summary>
     public List<SystemLabel.Values>? SystemLabel { get; set; }
 
@@ -162,7 +162,6 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
             var authorizedResources = await _altinnAuthorization.GetAuthorizedResourcesForSearch(
                 request.Party ?? [],
                 request.ServiceResource ?? [],
-                request.EndUserId,
                 cancellationToken);
             dialogQuery = _db.Dialogs.PrefilterAuthorizedDialogs(authorizedResources);
         }
