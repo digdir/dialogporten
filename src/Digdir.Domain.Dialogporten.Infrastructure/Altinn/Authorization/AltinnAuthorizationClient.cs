@@ -50,7 +50,7 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
     {
         var request = new DialogDetailsAuthorizationRequest
         {
-            Claims = GetOrCreateClaimsBasedOnEndUserId(endUserId),
+            Claims = _user.GetPrincipal().Claims.ToList(),
             ServiceResource = dialogEntity.ServiceResource,
             DialogId = dialogEntity.Id,
             Party = dialogEntity.Party,
@@ -67,7 +67,7 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
         string? endUserId,
         CancellationToken cancellationToken = default)
     {
-        var claims = GetOrCreateClaimsBasedOnEndUserId(endUserId);
+        var claims = _user.GetPrincipal().Claims.ToList();
         var request = new DialogSearchAuthorizationRequest
         {
             Claims = claims,
@@ -184,33 +184,6 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
             _logger.LogError(
                 "Authorization request to {Url} returned decision Indeterminate. Request: {@RequestJson}",
                 AuthorizeUrl, request);
-        }
-    }
-
-    private List<Claim> GetOrCreateClaimsBasedOnEndUserId(string? endUserId)
-    {
-        List<Claim> claims = [];
-        var principal = _user.GetPrincipal();
-
-        if (endUserId is not null && PartyIdentifier.TryParse(endUserId, out var partyIdentifier))
-        {
-            claims.Add(new Claim(partyIdentifier.Prefix(), partyIdentifier.Id));
-            AddClaimIfExists(principal, claims, "scope");
-            AddClaimIfExists(principal, claims, "pid");
-        }
-        else
-        {
-            claims.AddRange(_user.GetPrincipal().Claims);
-        }
-
-        return claims;
-    }
-
-    private static void AddClaimIfExists(ClaimsPrincipal principal, List<Claim> claims, string claimType)
-    {
-        if (principal.TryGetClaimValue(claimType, out var claimValue))
-        {
-            claims.Add(new Claim(claimType, claimValue));
         }
     }
 
