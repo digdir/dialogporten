@@ -1,4 +1,5 @@
 using Digdir.Domain.Dialogporten.GraphQL.EndUser.Common;
+using Digdir.Domain.Dialogporten.GraphQL.EndUser.MutationTypes;
 
 namespace Digdir.Domain.Dialogporten.GraphQL.EndUser.DialogById;
 
@@ -49,6 +50,8 @@ public sealed class Dialog
     public DateTimeOffset UpdatedAt { get; set; }
 
     public string? DialogToken { get; set; }
+
+    public SystemLabel SystemLabel { get; set; }
 
     public DialogStatus Status { get; set; }
 
