@@ -15,9 +15,11 @@ public static class AsciiTableFormatter
     {
         var builder = new StringBuilder();
 
+        // Determine column types before modifying cell contents
+        var types = GetColumnTypes(rows);
+
         AddLineBreaks(rows, maxColumnWidth);
         var sizes = MaxLengthInEachColumn(rows);
-        var types = GetColumnTypes(rows);
 
         // Top border
         AppendLine(builder, sizes);
@@ -60,16 +62,8 @@ public static class AsciiTableFormatter
                 builder.Append('\n');
             }
 
-            // After the header row, add separator
-            if (rowNum == 0)
-            {
-                AppendLine(builder, sizes);
-            }
-            else
-            {
-                // Add separator between rows
-                AppendLine(builder, sizes);
-            }
+            // Add separator between rows
+            AppendLine(builder, sizes);
         }
 
         return builder.ToString();
@@ -144,7 +138,7 @@ public static class AsciiTableFormatter
         var sizes = new List<int>();
         for (var i = 0; i < rows[0].Count; i++)
         {
-            var max = rows.Max(row => row[i].ToString()?.Split('\n').Max(line => line.Length) ?? 0);
+            var max = rows.Max(row => row[i]?.ToString()?.Split('\n').Max(line => line.Length) ?? 0);
             sizes.Add(max);
         }
         return sizes;
