@@ -36,6 +36,7 @@ public class DialogApplication : IAsyncLifetime
     private IMapper? _mapper;
     private Respawner _respawner = null!;
     private ServiceProvider _rootProvider = null!;
+    private ServiceProvider _fixtureRootProvider = null!;
     private readonly PostgreSqlContainer _dbContainer = new PostgreSqlBuilder()
         .WithImage("postgres:15.7")
         .Build();
@@ -56,9 +57,36 @@ public class DialogApplication : IAsyncLifetime
             return options;
         });
 
+        _fixtureRootProvider = _rootProvider = BuildServiceCollection().BuildServiceProvider();
+
+        await _dbContainer.StartAsync();
+        await EnsureDatabaseAsync();
+        await BuildRespawnState();
+    }
+
+    /// <summary>
+    /// This method lets you configure the IoC container for an integration test.
+    /// It will be reset to the default configuration after each test.
+    /// You may only call this method once per test.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">Thrown if the method is called more than once per test.</exception>
+    public void ConfigureServiceCollection(Action<IServiceCollection> configure)
+    {
+        if (_rootProvider != _fixtureRootProvider)
+        {
+            throw new InvalidOperationException($"Only one call to {nameof(ConfigureServiceCollection)} is allowed per test.");
+        }
+
+        var serviceCollection = BuildServiceCollection();
+        configure(serviceCollection);
+        _rootProvider = serviceCollection.BuildServiceProvider();
+    }
+
+    private IServiceCollection BuildServiceCollection()
+    {
         var serviceCollection = new ServiceCollection();
 
-        _rootProvider = serviceCollection
+        return serviceCollection
             .AddApplication(Substitute.For<IConfiguration>(), Substitute.For<IHostEnvironment>())
             .AddDistributedMemoryCache()
             .AddLogging()
@@ -66,12 +94,11 @@ public class DialogApplication : IAsyncLifetime
             .AddTransient(x => new Lazy<IPublishEndpoint>(x.GetRequiredService<IPublishEndpoint>))
             .AddDbContext<DialogDbContext>((services, options) =>
                 options.UseNpgsql(_dbContainer.GetConnectionString(), o =>
-                {
-                    o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
-                })
-                .AddInterceptors(services.GetRequiredService<ConvertDomainEventsToOutboxMessagesInterceptor>()))
+                    {
+                        o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
+                    })
+                    .AddInterceptors(services.GetRequiredService<ConvertDomainEventsToOutboxMessagesInterceptor>()))
             .AddScoped<IDialogDbContext>(x => x.GetRequiredService<DialogDbContext>())
-            .AddScoped<IUser, IntegrationTestUser>()
             .AddScoped<IResourceRegistry, LocalDevelopmentResourceRegistry>()
             .AddScoped<IServiceOwnerNameRegistry>(_ => CreateServiceOwnerNameRegistrySubstitute())
             .AddScoped<IPartyNameRegistry>(_ => CreateNameRegistrySubstitute())
@@ -80,14 +107,10 @@ public class DialogApplication : IAsyncLifetime
             .AddScoped<IPublishEndpoint>(_ => Substitute.For<IPublishEndpoint>())
             .AddScoped<IUnitOfWork, UnitOfWork>()
             .AddScoped<IAltinnAuthorization, LocalDevelopmentAltinnAuthorization>()
+            .AddSingleton<IUser, IntegrationTestUser>()
             .AddSingleton<ICloudEventBus, IntegrationTestCloudBus>()
             .Decorate<IUserResourceRegistry, LocalDevelopmentUserResourceRegistryDecorator>()
-            .Decorate<IUserRegistry, LocalDevelopmentUserRegistryDecorator>()
-            .BuildServiceProvider();
-
-        await _dbContainer.StartAsync();
-        await EnsureDatabaseAsync();
-        await BuildRespawnState();
+            .Decorate<IUserRegistry, LocalDevelopmentUserRegistryDecorator>();
     }
 
     private static IPartyNameRegistry CreateNameRegistrySubstitute()
@@ -164,6 +187,7 @@ public class DialogApplication : IAsyncLifetime
     public async Task DisposeAsync()
     {
         await _rootProvider.DisposeAsync();
+        await _fixtureRootProvider.DisposeAsync();
         await _dbContainer.DisposeAsync();
     }
 
@@ -186,6 +210,11 @@ public class DialogApplication : IAsyncLifetime
         await using var connection = new NpgsqlConnection(_dbContainer.GetConnectionString());
         await connection.OpenAsync();
         await _respawner.ResetAsync(connection);
+        if (_rootProvider != _fixtureRootProvider)
+        {
+            await _rootProvider.DisposeAsync();
+            _rootProvider = _fixtureRootProvider;
+        }
     }
 
     private async Task EnsureDatabaseAsync()

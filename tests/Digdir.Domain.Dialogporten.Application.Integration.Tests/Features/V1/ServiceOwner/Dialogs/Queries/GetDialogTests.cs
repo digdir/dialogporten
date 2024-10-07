@@ -29,7 +29,8 @@ public class GetDialogTests : ApplicationCollectionFixture
         result.Should().BeEquivalentTo(createDialogCommand, options => options
             .ExcludingMissingMembers()
             .Excluding(x => x.UpdatedAt)
-            .Excluding(x => x.CreatedAt));
+            .Excluding(x => x.CreatedAt)
+            .Excluding(x => x.SystemLabel));
     }
 
     [Fact]
@@ -49,7 +50,8 @@ public class GetDialogTests : ApplicationCollectionFixture
         result.Should().BeEquivalentTo(createCommand, options => options
             .ExcludingMissingMembers()
             .Excluding(x => x.UpdatedAt)
-            .Excluding(x => x.CreatedAt));
+            .Excluding(x => x.CreatedAt)
+            .Excluding(x => x.SystemLabel));
     }
     // TODO: Add tests
 }

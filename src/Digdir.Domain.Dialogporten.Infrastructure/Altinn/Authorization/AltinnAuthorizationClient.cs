@@ -8,6 +8,7 @@ using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Parties.Abstractions;
+using Digdir.Domain.Dialogporten.Infrastructure.Common.Exceptions;
 using Microsoft.Extensions.Logging;
 using ZiggyCreatures.Caching.Fusion;
 
@@ -18,7 +19,8 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
     private const string AuthorizedPartiesUrl = "/accessmanagement/api/v1/resourceowner/authorizedparties?includeAltinn2=true";
 
     private readonly HttpClient _httpClient;
-    private readonly IFusionCache _cache;
+    private readonly IFusionCache _pdpCache;
+    private readonly IFusionCache _partiesCache;
     private readonly IUser _user;
     private readonly ILogger _logger;
 
@@ -35,36 +37,35 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
         ILogger<AltinnAuthorizationClient> logger)
     {
         _httpClient = client ?? throw new ArgumentNullException(nameof(client));
-        _cache = cacheProvider.GetCache(nameof(Authorization)) ?? throw new ArgumentNullException(nameof(cacheProvider));
+        _pdpCache = cacheProvider.GetCache(nameof(Authorization)) ?? throw new ArgumentNullException(nameof(cacheProvider));
+        _partiesCache = cacheProvider.GetCache(nameof(AuthorizedPartiesResult)) ?? throw new ArgumentNullException(nameof(cacheProvider));
         _user = user ?? throw new ArgumentNullException(nameof(user));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     public async Task<DialogDetailsAuthorizationResult> GetDialogDetailsAuthorization(
         DialogEntity dialogEntity,
-        string? endUserId,
         CancellationToken cancellationToken = default)
     {
         var request = new DialogDetailsAuthorizationRequest
         {
-            Claims = GetOrCreateClaimsBasedOnEndUserId(endUserId),
+            Claims = _user.GetPrincipal().Claims.ToList(),
             ServiceResource = dialogEntity.ServiceResource,
             DialogId = dialogEntity.Id,
             Party = dialogEntity.Party,
             AltinnActions = dialogEntity.GetAltinnActions()
         };
 
-        return await _cache.GetOrSetAsync(request.GenerateCacheKey(), async token
+        return await _pdpCache.GetOrSetAsync(request.GenerateCacheKey(), async token
             => await PerformDialogDetailsAuthorization(request, token), token: cancellationToken);
     }
 
     public async Task<DialogSearchAuthorizationResult> GetAuthorizedResourcesForSearch(
         List<string> constraintParties,
         List<string> serviceResources,
-        string? endUserId,
         CancellationToken cancellationToken = default)
     {
-        var claims = GetOrCreateClaimsBasedOnEndUserId(endUserId);
+        var claims = _user.GetPrincipal().Claims.ToList();
         var request = new DialogSearchAuthorizationRequest
         {
             Claims = claims,
@@ -72,7 +73,7 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
             ConstraintServiceResources = serviceResources
         };
 
-        return await _cache.GetOrSetAsync(request.GenerateCacheKey(), async token
+        return await _pdpCache.GetOrSetAsync(request.GenerateCacheKey(), async token
             => await PerformDialogSearchAuthorization(request, token), token: cancellationToken);
     }
 
@@ -80,7 +81,7 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
         CancellationToken cancellationToken = default)
     {
         var authorizedPartiesRequest = new AuthorizedPartiesRequest(authenticatedParty);
-        var authorizedParties = await _cache.GetOrSetAsync(authorizedPartiesRequest.GenerateCacheKey(), async token
+        var authorizedParties = await _partiesCache.GetOrSetAsync(authorizedPartiesRequest.GenerateCacheKey(), async token
             => await PerformAuthorizedPartiesRequest(authorizedPartiesRequest, token), token: cancellationToken);
 
         return flatten ? GetFlattenedAuthorizedParties(authorizedParties) : authorizedParties;
@@ -118,6 +119,11 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
         CancellationToken token)
     {
         var authorizedPartiesDto = await SendAuthorizedPartiesRequest(authorizedPartiesRequest, token);
+        if (authorizedPartiesDto is null || authorizedPartiesDto.Count == 0)
+        {
+            throw new UpstreamServiceException("access-management returned no authorized parties, missing Altinn profile?");
+        }
+
         return AuthorizedPartiesHelper.CreateAuthorizedPartiesResult(authorizedPartiesDto, authorizedPartiesRequest);
     }
 
@@ -177,21 +183,6 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
                 "Authorization request to {Url} returned decision Indeterminate. Request: {@RequestJson}",
                 AuthorizeUrl, request);
         }
-    }
-
-    private List<Claim> GetOrCreateClaimsBasedOnEndUserId(string? endUserId)
-    {
-        List<Claim> claims = [];
-        if (endUserId is not null && PartyIdentifier.TryParse(endUserId, out var partyIdentifier))
-        {
-            claims.Add(new Claim(partyIdentifier.Prefix(), partyIdentifier.Id));
-        }
-        else
-        {
-            claims.AddRange(_user.GetPrincipal().Claims);
-        }
-
-        return claims;
     }
 
     private async Task<XacmlJsonResponse?> SendPdpRequest(

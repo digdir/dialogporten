@@ -17,7 +17,7 @@ internal interface IIgnoreOnAssemblyScan;
 
 internal sealed class ContentValueDtoValidator : AbstractValidator<ContentValueDto>, IIgnoreOnAssemblyScan
 {
-    private const string LegacyHtmlMediaType = "text/html";
+    public const string LegacyHtmlMediaType = "text/html";
 
     public ContentValueDtoValidator(DialogTransmissionContentType contentType)
     {
@@ -27,13 +27,17 @@ internal sealed class ContentValueDtoValidator : AbstractValidator<ContentValueD
             .WithMessage($"{{PropertyName}} '{{PropertyValue}}' is not allowed for content type {contentType.Name}. " +
                          $"Allowed media types are {string.Join(", ", contentType.AllowedMediaTypes.Select(x => $"'{x}'"))}");
 
-        RuleForEach(x => x.Value)
-            .ContainsValidMarkdown()
-            .When(x => x.MediaType is MediaTypes.Markdown);
-        RuleForEach(x => x.Value)
-            .Must(x => Uri.TryCreate(x.Value, UriKind.Absolute, out var uri) && uri.Scheme == Uri.UriSchemeHttps)
-            .When(x => x.MediaType is not null && x.MediaType.StartsWith(MediaTypes.EmbeddablePrefix, StringComparison.InvariantCultureIgnoreCase))
-            .WithMessage("{PropertyName} must be a valid HTTPS URL for embeddable content types");
+        When(x =>
+            x.MediaType is not null
+            && x.MediaType.StartsWith(MediaTypes.EmbeddablePrefix, StringComparison.OrdinalIgnoreCase),
+            () =>
+            {
+                RuleForEach(x => x.Value)
+                    .ChildRules(x => x
+                        .RuleFor(x => x.Value)
+                        .IsValidHttpsUrl());
+            });
+
         RuleFor(x => x.Value)
             .NotEmpty()
             .SetValidator(_ => new LocalizationDtosValidator(contentType.MaxLength));
@@ -47,16 +51,18 @@ internal sealed class ContentValueDtoValidator : AbstractValidator<ContentValueD
             .Must(value => value is not null && allowedMediaTypes.Contains(value))
             .WithMessage($"{{PropertyName}} '{{PropertyValue}}' is not allowed for content type {contentType.Name}. " +
                          $"Allowed media types are {string.Join(", ", allowedMediaTypes.Select(x => $"'{x}'"))}");
-        RuleForEach(x => x.Value)
-            .ContainsValidHtml()
-            .When(x => string.Equals(x.MediaType, LegacyHtmlMediaType, StringComparison.OrdinalIgnoreCase));
-        RuleForEach(x => x.Value)
-            .ContainsValidMarkdown()
-            .When(x => x.MediaType is MediaTypes.Markdown);
-        RuleForEach(x => x.Value)
-            .Must(x => Uri.TryCreate(x.Value, UriKind.Absolute, out var uri) && uri.Scheme == Uri.UriSchemeHttps)
-            .When(x => x.MediaType is not null && x.MediaType.StartsWith(MediaTypes.EmbeddablePrefix, StringComparison.InvariantCultureIgnoreCase))
-            .WithMessage("{PropertyName} must be a valid HTTPS URL for embeddable content types");
+
+        When(x =>
+                x.MediaType is not null
+                && x.MediaType.StartsWith(MediaTypes.EmbeddablePrefix, StringComparison.InvariantCultureIgnoreCase),
+            () =>
+            {
+                RuleForEach(x => x.Value)
+                    .ChildRules(x => x
+                        .RuleFor(x => x.Value)
+                        .IsValidHttpsUrl());
+            });
+
         RuleFor(x => x.Value)
             .NotEmpty()
             .SetValidator(_ => new LocalizationDtosValidator(contentType.MaxLength));
@@ -65,6 +71,11 @@ internal sealed class ContentValueDtoValidator : AbstractValidator<ContentValueD
     private static string[] GetAllowedMediaTypes(DialogContentType contentType, IUser? user)
     {
         if (user == null)
+        {
+            return contentType.AllowedMediaTypes;
+        }
+
+        if (contentType.Id != DialogContentType.Values.AdditionalInfo)
         {
             return contentType.AllowedMediaTypes;
         }

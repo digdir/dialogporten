@@ -261,6 +261,15 @@
               }
             ]
           },
+          "systemLabel": {
+            "description": "Set the system label of the dialog Migration purposes ",
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/SystemLabel_Values"
+              }
+            ]
+          },
           "transmissions": {
             "description": "The immutable list of transmissions associated with the dialog",
             "items": {
@@ -2093,6 +2102,14 @@
               }
             ]
           },
+          "systemLabel": {
+            "description": "Current display state.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/SystemLabel_Values"
+              }
+            ]
+          },
           "transmissions": {
             "description": "The immutable list of transmissions associated with the dialog",
             "items": {
@@ -2251,6 +2268,14 @@
             "oneOf": [
               {
                 "$ref": "#/components/schemas/DialogStatus_Values"
+              }
+            ]
+          },
+          "systemLabel": {
+            "description": "Current display state.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/SystemLabel_Values"
               }
             ]
           },
@@ -2546,6 +2571,18 @@
             "type": "string"
           },
           "x": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "LabelAssignmentLogActorDto": {
+        "additionalProperties": false,
+        "properties": {
+          "actorId": {
+            "type": "string"
+          },
+          "actorName": {
             "type": "string"
           }
         },
@@ -3180,6 +3217,14 @@
               }
             ]
           },
+          "systemLabel": {
+            "description": "Current display state.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/SystemLabel_Values"
+              }
+            ]
+          },
           "updatedAt": {
             "description": "The date and time when the dialog was last updated.",
             "example": "2022-12-31T23:59:59Z",
@@ -3265,6 +3310,12 @@
             "nullable": true,
             "type": "integer"
           },
+          "revision": {
+            "description": "The unique identifier for the revision in UUIDv4 format.",
+            "example": "a312cb9c-7632-43c2-aa38-69b06aed56ca",
+            "format": "guid",
+            "type": "string"
+          },
           "seenSinceLastUpdate": {
             "description": "The list of seen log entries for the dialog newer than the dialog ChangedAt date.",
             "items": {
@@ -3289,6 +3340,14 @@
               }
             ]
           },
+          "systemLabel": {
+            "description": "Current display state.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/SystemLabel_Values"
+              }
+            ]
+          },
           "updatedAt": {
             "description": "The date and time when the dialog was last updated.",
             "example": "2022-12-31T23:59:59Z",
@@ -3300,6 +3359,25 @@
             "format": "date-time",
             "nullable": true,
             "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "SearchDialogLabelAssignmentLogDto": {
+        "additionalProperties": false,
+        "properties": {
+          "action": {
+            "type": "string"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "performedBy": {
+            "$ref": "#/components/schemas/LabelAssignmentLogActorDto"
           }
         },
         "type": "object"
@@ -3379,6 +3457,34 @@
           }
         },
         "type": "object"
+      },
+      "SetDialogSystemLabelCommand": {
+        "additionalProperties": false,
+        "properties": {
+          "ifMatchDialogRevision": {
+            "format": "guid",
+            "nullable": true,
+            "type": "string"
+          },
+          "label": {
+            "$ref": "#/components/schemas/SystemLabel_Values"
+          }
+        },
+        "type": "object"
+      },
+      "SystemLabel_Values": {
+        "description": "",
+        "enum": [
+          "Default",
+          "Bin",
+          "Archive"
+        ],
+        "type": "string",
+        "x-enumNames": [
+          "Default",
+          "Bin",
+          "Archive"
+        ]
       },
       "UpdateDialogContentDto": {
         "additionalProperties": false,
@@ -4232,6 +4338,20 @@
             }
           },
           {
+            "description": "Filter by Display state ",
+            "explode": true,
+            "in": "query",
+            "name": "systemLabel",
+            "schema": {
+              "items": {
+                "$ref": "#/components/schemas/SystemLabel_Values"
+              },
+              "nullable": true,
+              "type": "array"
+            },
+            "style": "form"
+          },
+          {
             "description": "Search string for free text search. Will attempt to fuzzily match in all free text fields in the aggregate",
             "in": "query",
             "name": "search",
@@ -4466,6 +4586,64 @@
         ]
       }
     },
+    "/api/v1/enduser/dialogs/{dialogId}/labellog": {
+      "get": {
+        "operationId": "SearchDialogLabelAssignmentLog",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "dialogId",
+            "required": true,
+            "schema": {
+              "format": "guid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SearchDialogLabelAssignmentLogDto"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Success"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "410": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWTBearerAuth": []
+          }
+        ],
+        "tags": [
+          "Enduser"
+        ]
+      }
+    },
     "/api/v1/enduser/dialogs/{dialogId}/seenlog": {
       "get": {
         "description": "Gets all seen log records for a dialog. For more information see the documentation (link TBD).",
@@ -4581,6 +4759,97 @@
           }
         ],
         "summary": "Gets a single dialog seen log record",
+        "tags": [
+          "Enduser"
+        ]
+      }
+    },
+    "/api/v1/enduser/dialogs/{dialogId}/systemlabels": {
+      "put": {
+        "operationId": "SetDialogLabel",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "dialogId",
+            "required": true,
+            "schema": {
+              "format": "guid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetDialogSystemLabelCommand"
+              }
+            }
+          },
+          "description": "",
+          "required": true,
+          "x-name": "SetDialogSystemLabelCommand",
+          "x-position": 1
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "410": {
+            "description": ""
+          },
+          "412": {
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": ""
+          },
+          "422": {
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWTBearerAuth": []
+          }
+        ],
         "tags": [
           "Enduser"
         ]
@@ -4890,6 +5159,20 @@
               "nullable": true,
               "type": "string"
             }
+          },
+          {
+            "description": "Filter by Display state",
+            "explode": true,
+            "in": "query",
+            "name": "systemLabel",
+            "schema": {
+              "items": {
+                "$ref": "#/components/schemas/SystemLabel_Values"
+              },
+              "nullable": true,
+              "type": "array"
+            },
+            "style": "form"
           },
           {
             "description": "Search string for free text search. Will attempt to fuzzily match in all free text fields in the aggregate",

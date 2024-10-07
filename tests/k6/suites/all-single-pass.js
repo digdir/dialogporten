@@ -2,7 +2,6 @@ import { runAllTests } from "../tests/all-tests.js";
 import { default as summary } from "../common/summary.js";
 import { chai, describe } from '../common/testimports.js'
 
-
 export let options = {};
 
 export default function () {

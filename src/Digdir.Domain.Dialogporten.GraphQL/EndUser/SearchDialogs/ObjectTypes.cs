@@ -1,4 +1,5 @@
 using Digdir.Domain.Dialogporten.GraphQL.EndUser.Common;
+using Digdir.Domain.Dialogporten.GraphQL.EndUser.MutationTypes;
 
 namespace Digdir.Domain.Dialogporten.GraphQL.EndUser.SearchDialogs;
 
@@ -44,6 +45,8 @@ public sealed class SearchDialog
     public DateTimeOffset? DueAt { get; set; }
 
     public DialogStatus Status { get; set; }
+
+    public SystemLabel SystemLabel { get; set; }
 
     public Activity? LatestActivity { get; set; }
 

@@ -16,6 +16,10 @@ param location string
 @minLength(3)
 param apimIp string
 
+@description('The suffix for the revision of the container app')
+@minLength(3)
+param revisionSuffix string
+
 @description('CPU and memory resources for the container app')
 param resources object?
 
@@ -90,7 +94,7 @@ module containerApp '../../modules/containerApp/main.bicep' = {
     apimIp: apimIp
     tags: tags
     resources: resources
-    revisionSuffix: imageTag
+    revisionSuffix: revisionSuffix
   }
 }
 

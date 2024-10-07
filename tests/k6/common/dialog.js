@@ -89,6 +89,7 @@ export function setProcess(dialog, process) {
     }
     dialog.process = process;
 }
+
 export function setDueAt(dialog, dueAt) {
     if (dueAt == null) {
         delete dialog.dueAt;
@@ -139,7 +140,13 @@ export function setVisibleFrom(dialog, visibleFrom) {
 
     dialog.visibleFrom = visibleFrom;
 }
-
+export function setSystemLabel(dialog, systemLabel) {
+    let validLabels = ['Default', 'Bin', 'Archive']
+    if (!validLabels.includes(systemLabel)) {
+       throw new Error("Invalid systemLabel provided."); 
+    }
+    dialog.systemLabel = systemLabel;
+}
 export function setActivities(dialog, activities) {
     if (activities == null) {
         delete dialog.activities;

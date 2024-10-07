@@ -15,6 +15,7 @@ import {
     setExpiresAt,
     setVisibleFrom,
     setProcess,
+    setSystemLabel,
     postSO,
     putSO,
     purgeSO
@@ -29,7 +30,8 @@ export default function () {
     let dialogIds = [];
 
     let titleToSearchFor = uuidv4();
-    let processToSearchFor = "urn:test:process:1"
+    let processToSearchFor = "urn:test:process:1";
+    let systemLabelToSearchFor = 'Bin';
     let additionalInfoToSearchFor = uuidv4();
     let searchTagsToSearchFor = [uuidv4(), uuidv4()];
     let extendedStatusToSearchFor = "status:" + uuidv4();
@@ -75,6 +77,7 @@ export default function () {
 
         setTitle(dialogs[++d], titleForExpiresAtItem);
         setExpiresAt(dialogs[d], new Date("2034-03-07T10:13:00Z"));
+        setSystemLabel(dialogs[d], 'Bin')
 
         dialogs[++d].id = idForCustomOrg;
 
@@ -197,7 +200,7 @@ export default function () {
     });
 
     describe('List with invalid process filter', () => {
-        let r = getEU('dialogs/' + defaultFilter + '&process=?? ?');
+        let r = getEU('dialogs/' + defaultFilter + '&process=inval|d');
         expectStatusFor(r).to.equal(400);
         expect(r, 'response').to.have.validJsonBody();
         expect(r.json(), 'response json').to.have.property("errors");
@@ -210,6 +213,21 @@ export default function () {
         expect(r, 'response').to.have.validJsonBody();
         expect(r.json(), 'response json').to.have.property("items").with.lengthOf(1);
         expect(r.json().items[0], 'process').to.have.property("process").that.equals(processToSearchFor);
+    })
+
+    describe('List with systemLabel filter', () => {
+        let response = getEU('dialogs/' + defaultFilter + '&SystemLabel=' + systemLabelToSearchFor);
+        expectStatusFor(response).to.equal(200);
+        expect(response, 'response').to.have.validJsonBody();
+        expect(response.json(), 'response json').to.have.property("items").with.lengthOf(1);
+        expect(response.json().items[0], 'system label').to.have.property('systemLabel').that.equals(systemLabelToSearchFor);
+    })
+
+    describe('List with invalid systemLabel filter', () => {
+        let response = getEU('dialogs/' + defaultFilter + '&SystemLabel=' + 'firepit');
+        expectStatusFor(response).to.equal(400);
+        expect(response, 'response').to.have.validJsonBody();
+        expect(response.json(), 'response json').to.have.property("errors");
     })
     /*
     Disabled for now. Dialogporten doesn't have proper TTD handling as of yet.

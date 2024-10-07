@@ -1,6 +1,5 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Events;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Events.Activities;
 using Digdir.Domain.Dialogporten.Domain.Outboxes;
 using Digdir.Domain.Dialogporten.Infrastructure.GraphQl;
 using Digdir.Library.Entity.Abstractions.Features.EventPublisher;
@@ -67,47 +66,35 @@ internal sealed class ConvertDomainEventsToOutboxMessagesInterceptor : SaveChang
     public override async ValueTask<int> SavedChangesAsync(SaveChangesCompletedEventData eventData, int result,
         CancellationToken cancellationToken = default)
     {
-        foreach (var domainEvent in _domainEvents)
+        try
         {
-            try
-            {
-                // If you are adding any additional cases to this switch,
-                // please consider making the running of the tasks parallel
-                var task = domainEvent switch
+            var tasks = _domainEvents
+                .Select(x => x switch
                 {
-                    DialogUpdatedDomainEvent dialogUpdatedDomainEvent => _topicEventSender.SendAsync(
-                        $"{Constants.DialogEventsTopic}{dialogUpdatedDomainEvent.DialogId}",
-                        new DialogEventPayload
-                        {
-                            Id = dialogUpdatedDomainEvent.DialogId,
-                            Type = DialogEventType.DialogUpdated
-                        },
-                        cancellationToken),
-                    DialogDeletedDomainEvent dialogDeletedDomainEvent => _topicEventSender.SendAsync(
-                        $"{Constants.DialogEventsTopic}{dialogDeletedDomainEvent.DialogId}",
-                        new DialogEventPayload
-                        {
-                            Id = dialogDeletedDomainEvent.DialogId,
-                            Type = DialogEventType.DialogDeleted
-                        },
-                        cancellationToken),
-                    DialogActivityCreatedDomainEvent dialogActivityCreatedDomainEvent => _topicEventSender.SendAsync(
-                        $"{Constants.DialogEventsTopic}{dialogActivityCreatedDomainEvent.DialogId}",
-                        new DialogEventPayload
-                        {
-                            Id = dialogActivityCreatedDomainEvent.DialogId,
-                            Type = DialogEventType.DialogUpdated
-                        },
-                        cancellationToken),
-                    _ => ValueTask.CompletedTask
-                };
-
-                await task;
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, "Failed to send domain event to graphQL subscription");
-            }
+                    DialogUpdatedDomainEvent dialogUpdatedDomainEvent => new DialogEventPayload
+                    {
+                        Id = dialogUpdatedDomainEvent.DialogId,
+                        Type = DialogEventType.DialogUpdated
+                    },
+                    DialogDeletedDomainEvent dialogDeletedDomainEvent => new DialogEventPayload
+                    {
+                        Id = dialogDeletedDomainEvent.DialogId,
+                        Type = DialogEventType.DialogDeleted
+                    },
+                    _ => (DialogEventPayload?)null
+                })
+                .Where(x => x is not null)
+                .Cast<DialogEventPayload>()
+                .Select(x => _topicEventSender.SendAsync(
+                        $"{Constants.DialogEventsTopic}{x.Id}",
+                        x,
+                        cancellationToken)
+                    .AsTask());
+            await Task.WhenAll(tasks);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Failed to send domain events to graphQL subscription");
         }
 
         return await base.SavedChangesAsync(eventData, result, cancellationToken);
