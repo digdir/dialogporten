@@ -231,7 +231,7 @@
             "type": "string"
           },
           "process": {
-            "description": "Optional process identifier used to indicate a business process this dialog belongs to ",
+            "description": "Optional process identifier used to indicate a business process this dialog belongs to",
             "nullable": true,
             "type": "string"
           },
@@ -262,7 +262,7 @@
             ]
           },
           "systemLabel": {
-            "description": "Set the system label of the dialog Migration purposes ",
+            "description": "Set the system label of the dialog Migration purposes",
             "nullable": true,
             "oneOf": [
               {
@@ -750,6 +750,13 @@
               "$ref": "#/components/schemas/LocalizationDto"
             },
             "type": "array"
+          },
+          "id": {
+            "description": "A self-defined UUIDv7 may be provided to support idempotent creation of transmission attachments. If not provided, a new UUIDv7 will be generated.",
+            "example": "01913cd5-784f-7d3b-abef-4c77b1f0972d",
+            "format": "guid",
+            "nullable": true,
+            "type": "string"
           },
           "urls": {
             "description": "The URLs associated with the attachment, each referring to a different representation of the attachment.",
@@ -4088,6 +4095,13 @@
               "$ref": "#/components/schemas/LocalizationDto"
             },
             "type": "array"
+          },
+          "id": {
+            "description": "A self-defined UUIDv7 may be provided to support idempotent creation of transmission attachments. If not provided, a new UUIDv7 will be generated.",
+            "example": "01913cd5-784f-7d3b-abef-4c77b1f0972d",
+            "format": "guid",
+            "nullable": true,
+            "type": "string"
           },
           "urls": {
             "description": "The URLs associated with the attachment, each referring to a different representation of the attachment.",

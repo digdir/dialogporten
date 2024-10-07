@@ -117,5 +117,11 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
         {
             _domainContext.AddError(DomainFailure.EntityExists<DialogTransmission>(existingTransmissionIds));
         }
+
+        var existingTransmissionAttachmentIds = await _db.GetExistingIds(dialog.Transmissions.SelectMany(t => t.Attachments), cancellationToken);
+        if (existingTransmissionAttachmentIds.Count != 0)
+        {
+            _domainContext.AddError(DomainFailure.EntityExists<DialogTransmissionAttachment>(existingTransmissionAttachmentIds));
+        }
     }
 }
