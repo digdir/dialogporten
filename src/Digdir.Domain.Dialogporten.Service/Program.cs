@@ -6,6 +6,7 @@ using Microsoft.ApplicationInsights.Extensibility;
 using Serilog;
 using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
 using Digdir.Domain.Dialogporten.Service;
+using Digdir.Domain.Dialogporten.Service.Consumers;
 
 // TODO: Add AppConfiguration and key vault
 // TODO: Configure Service bus connection settings

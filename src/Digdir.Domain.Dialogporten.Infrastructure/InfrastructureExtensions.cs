@@ -28,6 +28,7 @@ using Digdir.Domain.Dialogporten.Infrastructure.Persistence.Repositories;
 using HotChocolate.Subscriptions;
 using MassTransit;
 using MassTransit.EntityFrameworkCoreIntegration;
+using MassTransit.Metadata;
 using StackExchange.Redis;
 using ZiggyCreatures.Caching.Fusion;
 using ZiggyCreatures.Caching.Fusion.NullObjects;
