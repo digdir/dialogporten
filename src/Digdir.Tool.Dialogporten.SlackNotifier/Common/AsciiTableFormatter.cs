@@ -109,7 +109,7 @@ public static class AsciiTableFormatter
 
                     row[colIndex] = string.Join("\n", lines).Trim();
                 }
-                else if (row[colIndex].ToString()?.Length > maxColumnWidth)
+                else if (row[colIndex]?.ToString()?.Length > maxColumnWidth)
                 {
                     var strValue = row[colIndex].ToString();
                     var brokenLines = new List<string>();
