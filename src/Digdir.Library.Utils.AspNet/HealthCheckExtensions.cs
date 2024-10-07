@@ -10,61 +10,46 @@ namespace Digdir.Library.Utils.AspNet;
 
 public static class HealthCheckExtensions
 {
-    public class AspNetHealthChecksOptions
+    public class AspNetHealthChecksSettings
     {
-        public string WellKnownEndpointsConfigurationSectionPath { get; set; } = string.Empty;
+        public List<string>? HttpGetEndpointsToCheck { get; set; }
     }
 
-    public class JwtBearerTokenSchema
+    public static IServiceCollection AddAspNetHealthChecks(this IServiceCollection services, AspNetHealthChecksSettings settings)
     {
-        public string Name { get; set; } = string.Empty;
-        public string WellKnown { get; set; } = string.Empty;
-    }
-
-    public static IServiceCollection AddAspNetHealthChecks(this IServiceCollection services, IConfiguration configuration, Action<AspNetHealthChecksOptions> configure)
-    {
-        var options = new AspNetHealthChecksOptions();
-        configure(options);
-
-        var wellKnownSchemas = configuration
-            .GetSection(options.WellKnownEndpointsConfigurationSectionPath)
-            .Get<List<JwtBearerTokenSchema>>();
-
         var healthChecks = services.AddHealthChecks();
 
         healthChecks.AddCheck("self", () => HealthCheckResult.Healthy(), tags: ["self"]);
 
-        var wellKnownEndpoints = wellKnownSchemas?.Select(schema => schema.WellKnown).ToList() ?? new List<string>();
-
-        if (wellKnownEndpoints.Count > 0)
+        if (settings.HttpGetEndpointsToCheck != null && settings.HttpGetEndpointsToCheck.Count > 0)
         {
             services.Configure<EndpointsHealthCheckOptions>(opts =>
             {
-                opts.Endpoints = wellKnownEndpoints;
+                opts.Endpoints = settings.HttpGetEndpointsToCheck;
             });
 
             healthChecks.AddCheck<EndpointsHealthCheck>(
                 "Endpoints",
                 failureStatus: HealthStatus.Unhealthy,
-                tags: ["dependencies"]);
+                tags: ["external"]);
         }
 
         return services;
     }
 
-    public static void MapAspNetHealthChecks(this WebApplication app)
+    public static WebApplication MapAspNetHealthChecks(this WebApplication app)
     {
-        app.MapHealthChecks("/startup", new HealthCheckOptions
+        app.MapHealthChecks("/health/startup", new HealthCheckOptions
         {
             Predicate = check => check.Tags.Contains("dependencies"),
             ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
         });
-        app.MapHealthChecks("/liveness", new HealthCheckOptions
+        app.MapHealthChecks("/health/liveness", new HealthCheckOptions
         {
             Predicate = check => check.Tags.Contains("self"),
             ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
         });
-        app.MapHealthChecks("/readiness", new HealthCheckOptions
+        app.MapHealthChecks("/health/readiness", new HealthCheckOptions
         {
             Predicate = check => check.Tags.Contains("critical"),
             ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
@@ -74,5 +59,11 @@ public static class HealthCheckExtensions
             Predicate = check => check.Tags.Contains("dependencies"),
             ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
         });
+        app.MapHealthChecks("/health/deep", new HealthCheckOptions
+        {
+            Predicate = check => check.Tags.Contains("dependencies") || check.Tags.Contains("external"),
+            ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+        });
+        return app;
     }
 }

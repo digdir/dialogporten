@@ -130,12 +130,25 @@ static void BuildAndRun(string[] args)
         // Auth
         .AddDialogportenAuthentication(builder.Configuration)
         .AddAuthorization()
-
+        // options.WellKnownEndpointsConfigurationSectionPath = "WebApi:Authentication:JwtBearerTokenSchemas";
         // Health checks with configuration
-        .AddAspNetHealthChecks(builder.Configuration, options =>
-        {
-            options.WellKnownEndpointsConfigurationSectionPath = "WebApi:Authentication:JwtBearerTokenSchemas";
-        });
+        .AddAspNetHealthChecks(builder.Configuration.GetSection("AspNetHealthChecks").Get<AspNetHealthChecksSettings>());
+
+    // Retrieve JWT bearer token schema URLs from configuration
+    var jwtBearerTokenSchemas = builder.Configuration
+        .GetSection("WebApi:Authentication:JwtBearerTokenSchemas")
+        .Get<List<JwtBearerTokenSchema>>();
+
+    var wellKnownUrls = jwtBearerTokenSchemas?
+        .Select(schema => schema.WellKnown)
+        .Where(url => !string.IsNullOrEmpty(url))
+        .ToList() ?? new List<string>();
+
+    // Add health checks with the retrieved URLs
+    builder.Services.AddAspNetHealthChecks(new AspNetHealthChecksSettings
+    {
+        HttpGetEndpointsToCheck = wellKnownUrls
+    });
 
     if (builder.Environment.IsDevelopment())
     {
@@ -160,25 +173,11 @@ static void BuildAndRun(string[] args)
         .UseAuthorization()
         .UseServiceOwnerOnBehalfOfPerson()
         .UseUserTypeValidation()
-        .UseAzureConfiguration()
-        .UseFastEndpoints(x =>
-        {
-            x.Endpoints.RoutePrefix = "api";
-            x.Versioning.Prefix = "v";
-            x.Versioning.PrependToRoute = true;
-            x.Versioning.DefaultVersion = 1;
-            x.Serializer.Options.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
-            // Do not serialize empty collections
-            x.Serializer.Options.TypeInfoResolver = new DefaultJsonTypeInfoResolver
-            {
-                Modifiers = { IgnoreEmptyCollections }
-            };
-            x.Serializer.Options.Converters.Add(new JsonStringEnumConverter());
-            x.Serializer.Options.Converters.Add(new UtcDateTimeOffsetConverter());
-            x.Serializer.Options.Converters.Add(new DateTimeNotSupportedConverter());
-            x.Errors.ResponseBuilder = ErrorResponseBuilderExtensions.ResponseBuilder;
-        })
-        .UseAddSwaggerCorsHeader()
+        .UseAzureConfiguration();
+
+    app.MapAspNetHealthChecks();
+
+    app.UseAddSwaggerCorsHeader()
         .UseSwaggerGen(config =>
         {
             config.PostProcess = (document, _) =>
@@ -203,11 +202,26 @@ static void BuildAndRun(string[] args)
             // We have to add dialogporten here to get the correct base url for swagger.json in the APIM. Should not be done for development
             var dialogPrefix = builder.Environment.IsDevelopment() ? "" : "/dialogporten";
             uiConfig.DocumentPath = dialogPrefix + "/swagger/{documentName}/swagger.json";
+        })
+        .UseFastEndpoints(x =>
+        {
+            x.Endpoints.RoutePrefix = "api";
+            x.Versioning.Prefix = "v";
+            x.Versioning.PrependToRoute = true;
+            x.Versioning.DefaultVersion = 1;
+            x.Serializer.Options.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+            // Do not serialize empty collections
+            x.Serializer.Options.TypeInfoResolver = new DefaultJsonTypeInfoResolver
+            {
+                Modifiers = { IgnoreEmptyCollections }
+            };
+            x.Serializer.Options.Converters.Add(new JsonStringEnumConverter());
+            x.Serializer.Options.Converters.Add(new UtcDateTimeOffsetConverter());
+            x.Serializer.Options.Converters.Add(new DateTimeNotSupportedConverter());
+            x.Errors.ResponseBuilder = ErrorResponseBuilderExtensions.ResponseBuilder;
         });
-    app.MapControllers();
 
-    // Map Health Checks
-    app.MapAspNetHealthChecks();
+    app.MapControllers();
 
     app.Run();
 }

@@ -28,12 +28,6 @@ internal sealed class EndpointsHealthCheck : IHealthCheck
         HealthCheckContext context,
         CancellationToken cancellationToken = default)
     {
-        if (_endpoints.Count == 0)
-        {
-            _logger.LogWarning("No endpoints provided.");
-            return HealthCheckResult.Unhealthy("No endpoints are configured.");
-        }
-
         var client = _httpClientFactory.CreateClient("HealthCheckClient");
         var unhealthyEndpoints = new List<string>();
 
