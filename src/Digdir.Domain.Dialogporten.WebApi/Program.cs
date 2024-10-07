@@ -134,7 +134,7 @@ static void BuildAndRun(string[] args)
 
     // Retrieve JWT bearer token schema URLs from configuration
     var authSettings = builder.Configuration
-        .GetSection("WebApi")
+        .GetSection(WebApiSettings.SectionName)
         .Get<WebApiSettings>();
 
     var wellKnownUrls = authSettings?
