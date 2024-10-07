@@ -153,17 +153,25 @@ public static class AsciiTableFormatter
     private static List<ColumnType> GetColumnTypes(List<List<object>> rows)
     {
         var types = new List<ColumnType>();
-        for (var i = 0; i < rows[0].Count; i++)
+        for (var i = 0; i < rows[1].Count; i++)
         {
-            var isNumeric = rows.Skip(1).All(row => row[i].GetType().IsNumericType());
+            var isNumeric = rows.Skip(1).All(row => row[i]?.GetType()?.IsNumericType() ?? false);
             var columnType = isNumeric ? ColumnType.Numeric : ColumnType.Text;
-            types.Add(columnType);
+            types.Insert(i, columnType);
         }
         return types;
     }
 
+    /// <summary>
+    /// https://stackoverflow.com/a/5182747/2513761
+    /// </summary>
     private static bool IsNumericType(this Type type)
     {
+        if (type == null)
+        {
+            return false;
+        }
+
         switch (Type.GetTypeCode(type))
         {
             case TypeCode.Byte:
@@ -190,9 +198,12 @@ public static class AsciiTableFormatter
             case TypeCode.Char:
             case TypeCode.DateTime:
             case TypeCode.String:
+                break;
             default:
-                return false;
+                throw new ArgumentOutOfRangeException();
         }
+
+        return false;
     }
 
     private enum ColumnType
