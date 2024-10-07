@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.22.0](https://github.com/digdir/dialogporten/compare/v1.21.0...v1.22.0) (2024-10-07)
+
+
+### Features
+
+* Add support for supplied transmission attachment ID on create/update ([#1242](https://github.com/digdir/dialogporten/issues/1242)) ([c7bfb07](https://github.com/digdir/dialogporten/commit/c7bfb076fd8c8e0c853d3b99c346a87a89501170))
+
+
+### Bug Fixes
+
+* Only allow legacy HTML on AditionalInfo content ([#1210](https://github.com/digdir/dialogporten/issues/1210)) ([aa4acde](https://github.com/digdir/dialogporten/commit/aa4acde212e76cb3665fee0daaf116d9837c4fc9))
+* **webAPI:** Specifying EndUserId on the ServiceOwner Search endpoint produces 500 - Internal Server error ([#1234](https://github.com/digdir/dialogporten/issues/1234)) ([49c0d34](https://github.com/digdir/dialogporten/commit/49c0d3438c396e2ca82a6101bd37e402a0c3aec9))
+
 ## [1.21.0](https://github.com/digdir/dialogporten/compare/v1.20.2...v1.21.0) (2024-10-03)
 
 
