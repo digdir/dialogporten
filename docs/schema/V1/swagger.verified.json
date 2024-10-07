@@ -3428,6 +3428,253 @@
         },
         "type": "object"
       },
+      "SearchDialogTransmissionAttachmentDto": {
+        "additionalProperties": false,
+        "properties": {
+          "displayName": {
+            "items": {
+              "$ref": "#/components/schemas/LocalizationDto"
+            },
+            "type": "array"
+          },
+          "id": {
+            "format": "guid",
+            "type": "string"
+          },
+          "urls": {
+            "items": {
+              "$ref": "#/components/schemas/SearchDialogTransmissionAttachmentUrlDto"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "SearchDialogTransmissionAttachmentDtoSO": {
+        "additionalProperties": false,
+        "properties": {
+          "displayName": {
+            "items": {
+              "$ref": "#/components/schemas/LocalizationDto"
+            },
+            "type": "array"
+          },
+          "id": {
+            "format": "guid",
+            "type": "string"
+          },
+          "urls": {
+            "items": {
+              "$ref": "#/components/schemas/SearchDialogTransmissionAttachmentUrlDtoSO"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "SearchDialogTransmissionAttachmentUrlDto": {
+        "additionalProperties": false,
+        "properties": {
+          "consumerType": {
+            "$ref": "#/components/schemas/AttachmentUrlConsumerType_Values"
+          },
+          "id": {
+            "format": "guid",
+            "type": "string"
+          },
+          "mediaType": {
+            "nullable": true,
+            "type": "string"
+          },
+          "url": {
+            "format": "uri",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "SearchDialogTransmissionAttachmentUrlDtoSO": {
+        "additionalProperties": false,
+        "properties": {
+          "consumerType": {
+            "$ref": "#/components/schemas/AttachmentUrlConsumerType_Values"
+          },
+          "id": {
+            "format": "guid",
+            "type": "string"
+          },
+          "mediaType": {
+            "nullable": true,
+            "type": "string"
+          },
+          "url": {
+            "format": "uri",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "SearchDialogTransmissionContentDto": {
+        "additionalProperties": false,
+        "properties": {
+          "summary": {
+            "$ref": "#/components/schemas/ContentValueDto"
+          },
+          "title": {
+            "$ref": "#/components/schemas/ContentValueDto"
+          }
+        },
+        "type": "object"
+      },
+      "SearchDialogTransmissionContentDtoSO": {
+        "additionalProperties": false,
+        "properties": {
+          "summary": {
+            "$ref": "#/components/schemas/ContentValueDto"
+          },
+          "title": {
+            "$ref": "#/components/schemas/ContentValueDto"
+          }
+        },
+        "type": "object"
+      },
+      "SearchDialogTransmissionDto": {
+        "additionalProperties": false,
+        "properties": {
+          "attachments": {
+            "items": {
+              "$ref": "#/components/schemas/SearchDialogTransmissionAttachmentDto"
+            },
+            "type": "array"
+          },
+          "authorizationAttribute": {
+            "nullable": true,
+            "type": "string"
+          },
+          "content": {
+            "$ref": "#/components/schemas/SearchDialogTransmissionContentDto"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "deletedAt": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "extendedType": {
+            "format": "uri",
+            "nullable": true,
+            "type": "string"
+          },
+          "id": {
+            "format": "guid",
+            "type": "string"
+          },
+          "isAuthorized": {
+            "type": "boolean"
+          },
+          "relatedTransmissionId": {
+            "format": "guid",
+            "nullable": true,
+            "type": "string"
+          },
+          "sender": {
+            "$ref": "#/components/schemas/SearchDialogTransmissionSenderActorDto"
+          },
+          "type": {
+            "$ref": "#/components/schemas/DialogTransmissionType_Values"
+          }
+        },
+        "type": "object"
+      },
+      "SearchDialogTransmissionDtoSO": {
+        "additionalProperties": false,
+        "properties": {
+          "attachments": {
+            "items": {
+              "$ref": "#/components/schemas/SearchDialogTransmissionAttachmentDtoSO"
+            },
+            "type": "array"
+          },
+          "authorizationAttribute": {
+            "nullable": true,
+            "type": "string"
+          },
+          "content": {
+            "$ref": "#/components/schemas/SearchDialogTransmissionContentDtoSO"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "deletedAt": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "extendedType": {
+            "format": "uri",
+            "nullable": true,
+            "type": "string"
+          },
+          "id": {
+            "format": "guid",
+            "type": "string"
+          },
+          "relatedTransmissionId": {
+            "format": "guid",
+            "nullable": true,
+            "type": "string"
+          },
+          "sender": {
+            "$ref": "#/components/schemas/SearchDialogTransmissionSenderActorDtoSO"
+          },
+          "type": {
+            "$ref": "#/components/schemas/DialogTransmissionType_Values"
+          }
+        },
+        "type": "object"
+      },
+      "SearchDialogTransmissionSenderActorDto": {
+        "additionalProperties": false,
+        "properties": {
+          "actorId": {
+            "type": "string"
+          },
+          "actorName": {
+            "type": "string"
+          },
+          "actorType": {
+            "$ref": "#/components/schemas/ActorType_Values"
+          },
+          "id": {
+            "format": "guid",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "SearchDialogTransmissionSenderActorDtoSO": {
+        "additionalProperties": false,
+        "properties": {
+          "actorId": {
+            "type": "string"
+          },
+          "actorName": {
+            "type": "string"
+          },
+          "actorType": {
+            "$ref": "#/components/schemas/ActorType_Values"
+          },
+          "id": {
+            "format": "guid",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
       "SearchSeenLogDto": {
         "additionalProperties": false,
         "properties": {
@@ -4888,10 +5135,12 @@
           "200": {
             "content": {
               "application/json": {
-                "schema": {}
-              },
-              "text/plain": {
-                "schema": {}
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SearchDialogTransmissionDto"
+                  },
+                  "type": "array"
+                }
               }
             },
             "description": "Successfully returned the dialog transmission list."
@@ -6281,10 +6530,12 @@
           "200": {
             "content": {
               "application/json": {
-                "schema": {}
-              },
-              "text/plain": {
-                "schema": {}
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SearchDialogTransmissionDtoSO"
+                  },
+                  "type": "array"
+                }
               }
             },
             "description": "Successfully returned the dialog transmission list."
