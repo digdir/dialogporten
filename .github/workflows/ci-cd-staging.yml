@@ -113,3 +113,23 @@ jobs:
     permissions:
       checks: write
       pull-requests: write
+
+  send-slack-message:
+    name: Send Slack message on failure
+    needs: [deploy-infra-staging, deploy-apps-staging, deploy-slack-notifier-staging, run-e2e-tests, publish-schema-npm]
+    runs-on: ubuntu-latest
+    if: ${{ always() && failure() && !cancelled() }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Send GitHub slack message
+        id: slack
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          ENVIRONMENT: staging
+        uses: slackapi/slack-github-action@v1.27.0
+        with:
+          channel-id: ${{ secrets.SLACK_CHANNEL_ID_FOR_RELEASES }}
+          payload-file-path: "./.github/slack-templates/pipeline-failed.json"
+
+            
