@@ -15,11 +15,15 @@ public static class AsciiTableFormatter
     {
         var builder = new StringBuilder();
 
+        // Determine the maximum number of columns
+        var maxColumns = rows.Max(r => r.Count);
+
         // Determine column types before modifying cell contents
-        var types = GetColumnTypes(rows);
+        var types = GetColumnTypes(rows, maxColumns);
 
         AddLineBreaks(rows, maxColumnWidth);
-        var sizes = MaxLengthInEachColumn(rows);
+
+        var sizes = MaxLengthInEachColumn(rows, maxColumns);
 
         // Top border
         AppendLine(builder, sizes);
@@ -30,7 +34,20 @@ public static class AsciiTableFormatter
             var row = rows[rowNum];
 
             // For each cell, split the content into lines
-            var cellLines = row.Select(cell => cell?.ToString()?.Split('\n') ?? StringArray).ToList();
+            var cellLines = new List<string[]>();
+            for (var i = 0; i < maxColumns; i++)
+            {
+                if (i < row.Count)
+                {
+                    var cell = row[i];
+                    cellLines.Add(cell?.ToString()?.Split('\n') ?? StringArray);
+                }
+                else
+                {
+                    // Empty cell
+                    cellLines.Add(StringArray);
+                }
+            }
 
             // Determine the maximum number of lines in this row
             var maxLines = cellLines.Max(lines => lines.Length);
@@ -39,7 +56,7 @@ public static class AsciiTableFormatter
             for (var lineIndex = 0; lineIndex < maxLines; lineIndex++)
             {
                 // For each cell
-                for (var i = 0; i < cellLines.Count; i++)
+                for (var i = 0; i < maxColumns; i++)
                 {
                     var lines = cellLines[i];
                     var size = sizes[i];
@@ -53,7 +70,7 @@ public static class AsciiTableFormatter
 
                     builder.Append(' ');
 
-                    if (i == cellLines.Count - 1)
+                    if (i == maxColumns - 1)
                     {
                         // Add right border for last column
                         builder.Append('|');
@@ -133,25 +150,25 @@ public static class AsciiTableFormatter
         builder.Append('\n');
     }
 
-    private static List<int> MaxLengthInEachColumn(IReadOnlyList<List<object>> rows)
+    private static List<int> MaxLengthInEachColumn(IReadOnlyList<List<object>> rows, int maxColumns)
     {
         var sizes = new List<int>();
-        for (var i = 0; i < rows[0].Count; i++)
+        for (var i = 0; i < maxColumns; i++)
         {
-            var max = rows.Max(row => row[i]?.ToString()?.Split('\n').Max(line => line.Length) ?? 0);
+            var max = rows.Max(row => i < row.Count ? row[i]?.ToString()?.Split('\n').Max(line => line.Length) ?? 0 : 0);
             sizes.Add(max);
         }
         return sizes;
     }
 
-    private static List<ColumnType> GetColumnTypes(List<List<object>> rows)
+    private static List<ColumnType> GetColumnTypes(List<List<object>> rows, int maxColumns)
     {
         var types = new List<ColumnType>();
-        for (var i = 0; i < rows[1].Count; i++)
+        for (var i = 0; i < maxColumns; i++)
         {
-            var isNumeric = rows.Skip(1).All(row => row[i]?.GetType()?.IsNumericType() ?? false);
+            var isNumeric = rows.Skip(1).All(row => i < row.Count && (row[i]?.GetType()?.IsNumericType() ?? false));
             var columnType = isNumeric ? ColumnType.Numeric : ColumnType.Text;
-            types.Insert(i, columnType);
+            types.Add(columnType);
         }
         return types;
     }

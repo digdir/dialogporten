@@ -169,4 +169,34 @@ public class AsciiTableFormatterTests
             """;
         Assert.Equal(expected, result);
     }
+
+    [Fact]
+    public void ToAsciiTable_JaggedTable_ShouldPadWithEmptyCells()
+    {
+        // Arrange
+        var rows = new List<List<object>>
+        {
+            new() { "Header1", "Header2" },
+            new() { "a", "b", "c" },
+            new() { "a", "b" }
+        };
+        var maxColumnWidth = 5;
+
+        // Act
+        var result = AsciiTableFormatter.ToAsciiTable(rows, maxColumnWidth);
+
+        // Assert
+        var expected =
+            """
+            o---------o---------o---o
+            | Header1 | Header2 |   |
+            o---------o---------o---o
+            | a       | b       | c |
+            o---------o---------o---o
+            | a       | b       |   |
+            o---------o---------o---o
+
+            """;
+        Assert.Equal(expected, result);
+    }
 }
