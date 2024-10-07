@@ -190,9 +190,13 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
     private List<Claim> GetOrCreateClaimsBasedOnEndUserId(string? endUserId)
     {
         List<Claim> claims = [];
+        var principal = _user.GetPrincipal();
+
         if (endUserId is not null && PartyIdentifier.TryParse(endUserId, out var partyIdentifier))
         {
             claims.Add(new Claim(partyIdentifier.Prefix(), partyIdentifier.Id));
+            AddClaimIfExists(principal, claims, "scope");
+            AddClaimIfExists(principal, claims, "pid");
         }
         else
         {
@@ -200,6 +204,14 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
         }
 
         return claims;
+    }
+
+    private static void AddClaimIfExists(ClaimsPrincipal principal, List<Claim> claims, string claimType)
+    {
+        if (principal.TryGetClaimValue(claimType, out var claimValue))
+        {
+            claims.Add(new Claim(claimType, claimValue));
+        }
     }
 
     private async Task<XacmlJsonResponse?> SendPdpRequest(
