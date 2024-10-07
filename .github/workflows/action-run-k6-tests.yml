@@ -29,6 +29,8 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
+    # todo: change to use the new https://github.com/grafana/setup-k6-action and https://github.com/grafana/run-k6-action
+    # grafana/k6-action is deprecated
     - name: Run K6 tests (${{ inputs.testSuitePath }})
       uses: grafana/k6-action@v0.3.1
       with:
@@ -39,8 +41,6 @@ jobs:
         API_VERSION: ${{ inputs.apiVersion }}
         TOKEN_GENERATOR_USERNAME: ${{ secrets.TOKEN_GENERATOR_USERNAME }}
         TOKEN_GENERATOR_PASSWORD: ${{ secrets.TOKEN_GENERATOR_PASSWORD }}  
-      id: k6_tests
-      continue-on-error: true  # Allow the workflow to continue even if tests fail
 
     - name: Store test summary
       uses: actions/upload-artifact@v4
@@ -57,7 +57,7 @@ jobs:
           junit.xml
 
     - name: Send Slack message on K6 test failure
-      if: failure()
+      if: always() && failure()
       uses: slackapi/slack-github-action@v1.27.0
       env:
         SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
