@@ -1,8 +1,6 @@
 ﻿using System.Globalization;
 using Digdir.Domain.Dialogporten.Application;
 using Digdir.Domain.Dialogporten.Infrastructure;
-using MassTransit;
-using System.Reflection;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Microsoft.ApplicationInsights.Extensibility;
 using Serilog;
@@ -39,8 +37,6 @@ finally
 
 static void BuildAndRun(string[] args)
 {
-    var thisAssembly = Assembly.GetExecutingAssembly();
-
     var builder = WebApplication.CreateBuilder(args);
 
     builder.Host.UseSerilog((context, services, configuration) => configuration
@@ -62,7 +58,7 @@ static void BuildAndRun(string[] args)
         .AddApplicationInsightsTelemetry()
         .AddApplication(builder.Configuration, builder.Environment)
         .AddInfrastructure(builder.Configuration, builder.Environment)
-            .WithPubSubCapabilities(thisAssembly)
+            .WithPubSubCapabilities<ServiceAssemblyMarker>()
             .Build()
         .AddTransient<IUser, ServiceUser>()
         .AddHealthChecks();

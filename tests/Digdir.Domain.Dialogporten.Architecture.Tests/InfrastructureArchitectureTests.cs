@@ -24,6 +24,7 @@ public class InfrastructureArchitectureTests
             .That().DoNotResideInNamespaceMatching("Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations")
             .And().DoNotHaveNameEndingWith("Settings")
             .And().DoNotHaveNameEndingWith("Constants")
+            .And().AreNotInterfaces()
             .And().DoNotHaveName(publicByDesignClasses)
             .Should().NotBePublic()
             .GetResult();

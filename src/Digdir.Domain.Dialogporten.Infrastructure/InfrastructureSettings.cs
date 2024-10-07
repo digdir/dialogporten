@@ -59,6 +59,14 @@ internal sealed class InfrastructureSettingsValidator : AbstractValidator<Infras
             .NotEmpty()
             .SetValidator(redisSettingsValidator);
     }
+
+    // This is here to be able to use the validator without having access to the service provider. 
+    private InfrastructureSettingsValidator() : this(
+        new AltinnPlatformSettingsValidator(),
+        new AltinnCdnPlatformSettingsValidator(),
+        new MaskinportenSettingsValidator(),
+        new RedisSettingsValidator())
+    { }
 }
 
 internal sealed class AltinnPlatformSettingsValidator : AbstractValidator<AltinnPlatformSettings>
