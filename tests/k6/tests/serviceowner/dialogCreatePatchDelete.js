@@ -12,14 +12,12 @@ import {
     addActivity
 } from '../../common/testimports.js'
 import {default as dialogToInsert} from './testdata/01-create-dialog.js';
-import { getDefaultEnduserSsn } from "../../common/token.js";
 
 export default function () {
 
     let dialogId = null;
     let eTag = null;
     let newApiActionEndpointUrl = null;
-    let endUserId = "urn:altinn:person:identifier-no:" + getDefaultEnduserSsn();
 
     describe('Perform dialog create', () => {
         let r = postSO('dialogs', dialogToInsert());
@@ -42,13 +40,6 @@ export default function () {
         expect(r.json(), 'dialog').to.have.property('revision');
 
         eTag = r.json()["revision"];
-    });
-
-    describe('Perform dialog get with endUserId', () => {
-        let r = getSO('dialogs/' + dialogId + '?endUserId=' + endUserId);
-        expectStatusFor(r).to.equal(200);
-        expect(r, 'response').to.have.validJsonBody();
-        expect(r.json(), 'dialog').to.have.property("id").to.equal(dialogId);
     });
 
     describe('Deny attempt to patch with invalid If-Match', () => {
