@@ -25,7 +25,6 @@ using NSwag;
 using Serilog;
 using Digdir.Library.Utils.AspNet;
 using Microsoft.Extensions.Options;
-using static Digdir.Library.Utils.AspNet.AspNetUtilitiesExtensions;
 
 // Using two-stage initialization to catch startup errors.
 Log.Logger = new LoggerConfiguration()
