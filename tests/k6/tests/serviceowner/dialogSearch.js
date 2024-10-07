@@ -201,6 +201,14 @@ export default function () {
         expect(r.json().items[0], 'party').to.have.property("serviceResource").that.equals(auxResource);
     })
 
+    describe('List with invalid enduserid', () => {
+        let invalidEndUserId = "urn:altinn:person:identifier-no:08895699684";
+        let r = getSO('dialogs/?CreatedAfter=' + createdAfter + '&EndUserId=' + invalidEndUserId + '&ServiceResource=' + auxResource);    
+        expectStatusFor(r).to.equal(200);
+        expect(r, 'response').to.have.validJsonBody();
+        expect(r.json(), 'response json').not.to.have.property("items");
+    })
+    
     describe("Cleanup", () => {
         dialogIds.forEach((d) => {
             let r = purgeSO("dialogs/" + d);
