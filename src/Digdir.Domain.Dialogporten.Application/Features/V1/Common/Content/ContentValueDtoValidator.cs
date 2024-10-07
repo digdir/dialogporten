@@ -17,7 +17,7 @@ internal interface IIgnoreOnAssemblyScan;
 
 internal sealed class ContentValueDtoValidator : AbstractValidator<ContentValueDto>, IIgnoreOnAssemblyScan
 {
-    private const string LegacyHtmlMediaType = "text/html";
+    public const string LegacyHtmlMediaType = "text/html";
 
     public ContentValueDtoValidator(DialogTransmissionContentType contentType)
     {
@@ -71,6 +71,11 @@ internal sealed class ContentValueDtoValidator : AbstractValidator<ContentValueD
     private static string[] GetAllowedMediaTypes(DialogContentType contentType, IUser? user)
     {
         if (user == null)
+        {
+            return contentType.AllowedMediaTypes;
+        }
+
+        if (contentType.Id != DialogContentType.Values.AdditionalInfo)
         {
             return contentType.AllowedMediaTypes;
         }
