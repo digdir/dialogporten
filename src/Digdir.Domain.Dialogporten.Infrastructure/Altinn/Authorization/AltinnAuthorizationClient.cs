@@ -45,7 +45,6 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
 
     public async Task<DialogDetailsAuthorizationResult> GetDialogDetailsAuthorization(
         DialogEntity dialogEntity,
-        string? endUserId,
         CancellationToken cancellationToken = default)
     {
         var request = new DialogDetailsAuthorizationRequest
@@ -64,7 +63,6 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
     public async Task<DialogSearchAuthorizationResult> GetAuthorizedResourcesForSearch(
         List<string> constraintParties,
         List<string> serviceResources,
-        string? endUserId,
         CancellationToken cancellationToken = default)
     {
         var claims = _user.GetPrincipal().Claims.ToList();

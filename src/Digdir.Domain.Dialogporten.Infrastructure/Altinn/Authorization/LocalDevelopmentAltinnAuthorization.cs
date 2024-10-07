@@ -20,14 +20,13 @@ internal sealed class LocalDevelopmentAltinnAuthorization : IAltinnAuthorization
     [SuppressMessage("Performance", "CA1822:Mark members as static")]
     public Task<DialogDetailsAuthorizationResult> GetDialogDetailsAuthorization(
         DialogEntity dialogEntity,
-        string? _,
         CancellationToken __)
     {
         // Just allow everything
         return Task.FromResult(new DialogDetailsAuthorizationResult { AuthorizedAltinnActions = dialogEntity.GetAltinnActions() });
     }
 
-    public async Task<DialogSearchAuthorizationResult> GetAuthorizedResourcesForSearch(List<string> constraintParties, List<string> serviceResources, string? endUserId,
+    public async Task<DialogSearchAuthorizationResult> GetAuthorizedResourcesForSearch(List<string> constraintParties, List<string> serviceResources,
         CancellationToken cancellationToken = default)
     {
 
