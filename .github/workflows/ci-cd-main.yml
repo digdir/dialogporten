@@ -167,5 +167,3 @@ jobs:
         with:
           channel-id: ${{ secrets.SLACK_CHANNEL_ID_FOR_RELEASES }}
           payload-file-path: "./.github/slack-templates/pipeline-failed.json"
-
-           
