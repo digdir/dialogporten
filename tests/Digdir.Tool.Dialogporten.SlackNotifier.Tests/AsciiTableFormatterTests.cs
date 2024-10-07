@@ -115,7 +115,7 @@ public class AsciiTableFormatterTests
     }
 
     [Fact]
-    public void ToAsciiTable_CellWithNumberic_ShouldRightAlign()
+    public void ToAsciiTable_CellWithNumeric_ShouldRightAlign()
     {
         // Arrange
         var rows = new List<List<object>>
