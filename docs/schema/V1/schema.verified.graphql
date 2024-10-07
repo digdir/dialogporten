@@ -193,6 +193,7 @@ type SearchDialog {
   updatedAt: DateTime!
   dueAt: DateTime
   status: DialogStatus!
+  systemLabel: SystemLabel!
   latestActivity: Activity
   content: SearchContent!
   seenSinceLastUpdate: [SeenLog!]!
