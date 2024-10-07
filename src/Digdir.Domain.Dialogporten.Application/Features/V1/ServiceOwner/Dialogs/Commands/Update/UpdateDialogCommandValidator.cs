@@ -114,6 +114,10 @@ internal sealed class UpdateDialogTransmissionAttachmentDtoValidator : AbstractV
         IValidator<IEnumerable<LocalizationDto>> localizationsValidator,
         IValidator<UpdateDialogTransmissionAttachmentUrlDto> urlValidator)
     {
+        RuleFor(x => x.Id)
+            .IsValidUuidV7()
+            .UuidV7TimestampIsInPast();
+
         RuleFor(x => x.DisplayName)
             .SetValidator(localizationsValidator);
         RuleFor(x => x.Urls)
