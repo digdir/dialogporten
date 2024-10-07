@@ -4,7 +4,7 @@ namespace Digdir.Tool.Dialogporten.SlackNotifier.Common;
 
 public static class AsciiTableFormatter
 {
-    public static string ToAsciiTable(this IEnumerable<IEnumerable<object>> rows, int maxColumnWidth = 30) =>
+    public static string ToAsciiTable(this IEnumerable<IEnumerable<object>> rows, int maxColumnWidth = 90) =>
         rows.Select(x => x.ToList())
             .ToList()
             .ToAsciiTable(maxColumnWidth);
@@ -92,6 +92,12 @@ public static class AsciiTableFormatter
                         if ((currentLine + word).Length > maxColumnWidth)
                         {
                             lines.Add(currentLine.TrimEnd());
+
+                            if (word.Length > maxColumnWidth)
+                            {
+                                maxColumnWidth = word.Length;
+                            }
+
                             currentLine = "";
                         }
                         currentLine += word + " ";
@@ -101,7 +107,7 @@ public static class AsciiTableFormatter
                         lines.Add(currentLine.TrimEnd());
                     }
 
-                    row[colIndex] = string.Join("\n", lines);
+                    row[colIndex] = string.Join("\n", lines).Trim();
                 }
                 else if (row[colIndex].ToString()?.Length > maxColumnWidth)
                 {
@@ -110,6 +116,10 @@ public static class AsciiTableFormatter
                     for (var i = 0; i < strValue?.Length; i += maxColumnWidth)
                     {
                         brokenLines.Add(strValue.Substring(i, Math.Min(maxColumnWidth, strValue.Length - i)));
+                        if (brokenLines.Last().Length > maxColumnWidth)
+                        {
+                            maxColumnWidth = brokenLines.Last().Length;
+                        }
                     }
                     row[colIndex] = string.Join("\n", brokenLines);
                 }

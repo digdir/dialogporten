@@ -11,7 +11,7 @@ internal static class Extensions
             .Select(table => Enumerable.Empty<List<object>>()
                 .Append(table.Columns.Select(x => (object)x.Name))
                 .Concat(table.Rows)
-                .ToAsciiTable(maxColumnWidth: 72));
+                .ToAsciiTable());
         return string.Join(Environment.NewLine, asciiTables);
     }
 
