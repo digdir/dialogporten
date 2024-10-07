@@ -223,7 +223,7 @@ public static class InfrastructureExtensions
             {
                 client.Timeout = TimeSpan.FromSeconds(5);
             })
-            .AddPolicyHandlerFromRegistry(PollyPolicy.DefaultHttpRetryPolicy); ;
+            .AddPolicyHandlerFromRegistry(PollyPolicy.DefaultHttpRetryPolicy);
 
         services.AddHealthChecks()
             .AddCheck<RedisHealthCheck>("redis", tags: ["dependencies", "redis"])
