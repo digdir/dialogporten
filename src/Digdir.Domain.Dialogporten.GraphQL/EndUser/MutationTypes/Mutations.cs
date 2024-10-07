@@ -1,5 +1,4 @@
 using AutoMapper;
-using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogSystemLabels.Commands.Set;
 using MediatR;
 

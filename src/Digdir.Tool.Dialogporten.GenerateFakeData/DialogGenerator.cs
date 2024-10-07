@@ -262,7 +262,7 @@ public static class DialogGenerator
         return new Faker<CreateDialogDialogActivityDto>()
             .RuleFor(o => o.Id, () => Uuid7.NewUuid7().ToGuid(true))
             .RuleFor(o => o.CreatedAt, f => f.Date.Past())
-            .RuleFor(o => o.ExtendedType, f => new Uri(f.Internet.UrlWithPath()))
+            .RuleFor(o => o.ExtendedType, f => new Uri(f.Internet.UrlWithPath(Uri.UriSchemeHttps)))
             .RuleFor(o => o.Type, f => type ?? f.PickRandom(activityTypes))
             .RuleFor(o => o.PerformedBy, f => new CreateDialogDialogActivityPerformedByActorDto { ActorType = ActorType.Values.PartyRepresentative, ActorName = f.Name.FullName() })
             .RuleFor(o => o.Description, (f, o) => o.Type == DialogActivityType.Values.Information ? GenerateFakeLocalizations(f.Random.Number(4, 8)) : null)
@@ -280,19 +280,19 @@ public static class DialogGenerator
     public static List<CreateDialogDialogApiActionEndpointDto> GenerateFakeDialogApiActionEndpoints()
     {
         return new Faker<CreateDialogDialogApiActionEndpointDto>()
-            .RuleFor(o => o.Url, f => new Uri(f.Internet.UrlWithPath()))
+            .RuleFor(o => o.Url, f => new Uri(f.Internet.UrlWithPath(Uri.UriSchemeHttps)))
             .RuleFor(o => o.HttpMethod, f => f.PickRandom<HttpVerb.Values>())
             .RuleFor(o => o.Version, f => "v" + f.Random.Number(100, 999))
             .RuleFor(o => o.Deprecated, f => f.Random.Bool())
-            .RuleFor(o => o.RequestSchema, f => new Uri(f.Internet.UrlWithPath()))
-            .RuleFor(o => o.ResponseSchema, f => new Uri(f.Internet.UrlWithPath()))
-            .RuleFor(o => o.DocumentationUrl, f => new Uri(f.Internet.UrlWithPath()))
+            .RuleFor(o => o.RequestSchema, f => new Uri(f.Internet.UrlWithPath(Uri.UriSchemeHttps)))
+            .RuleFor(o => o.ResponseSchema, f => new Uri(f.Internet.UrlWithPath(Uri.UriSchemeHttps)))
+            .RuleFor(o => o.DocumentationUrl, f => new Uri(f.Internet.UrlWithPath(Uri.UriSchemeHttps)))
             .Generate(new Randomizer().Number(min: 1, 4));
     }
 
     public static string GenerateFakeProcessUri()
     {
-        return new Faker().Internet.UrlWithPath();
+        return new Faker().Internet.UrlWithPath(Uri.UriSchemeHttps);
     }
 
     public static List<CreateDialogDialogGuiActionDto> GenerateFakeDialogGuiActions()
@@ -317,7 +317,7 @@ public static class DialogGenerator
                 hasPrimary = true;
                 return DialogGuiActionPriority.Values.Primary;
             })
-            .RuleFor(o => o.Url, f => new Uri(f.Internet.UrlWithPath()))
+            .RuleFor(o => o.Url, f => new Uri(f.Internet.UrlWithPath(Uri.UriSchemeHttps)))
             .RuleFor(o => o.Title, f => GenerateFakeLocalizations(f.Random.Number(1, 3)))
             .Generate(new Randomizer().Number(min: 1, 4));
     }
@@ -336,7 +336,7 @@ public static class DialogGenerator
     public static List<CreateDialogDialogAttachmentUrlDto> GenerateFakeDialogAttachmentUrls()
     {
         return new Faker<CreateDialogDialogAttachmentUrlDto>()
-            .RuleFor(o => o.Url, f => new Uri(f.Internet.UrlWithPath()))
+            .RuleFor(o => o.Url, f => new Uri(f.Internet.UrlWithPath(Uri.UriSchemeHttps)))
             .RuleFor(o => o.ConsumerType, f => f.PickRandom<AttachmentUrlConsumerType.Values>())
             .Generate(new Randomizer().Number(1, 3));
     }
