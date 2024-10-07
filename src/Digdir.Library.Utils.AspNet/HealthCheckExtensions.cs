@@ -8,11 +8,16 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
 namespace Digdir.Library.Utils.AspNet;
 
+public sealed class AspNetHealthChecksSettings
+{
+    public List<string>? HttpGetEndpointsToCheck { get; set; }
+}
+
 public static class HealthCheckExtensions
 {
-    public class AspNetHealthChecksSettings
+    private static void MapHealthCheckEndpoint(WebApplication app, string path, Func<HealthCheckRegistration, bool> predicate)
     {
-        public List<string>? HttpGetEndpointsToCheck { get; set; }
+        app.MapHealthChecks(path, new HealthCheckOptions { Predicate = predicate, ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse });
     }
 
     public static IServiceCollection AddAspNetHealthChecks(this IServiceCollection services, AspNetHealthChecksSettings settings)
@@ -39,31 +44,11 @@ public static class HealthCheckExtensions
 
     public static WebApplication MapAspNetHealthChecks(this WebApplication app)
     {
-        app.MapHealthChecks("/health/startup", new HealthCheckOptions
-        {
-            Predicate = check => check.Tags.Contains("dependencies"),
-            ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-        });
-        app.MapHealthChecks("/health/liveness", new HealthCheckOptions
-        {
-            Predicate = check => check.Tags.Contains("self"),
-            ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-        });
-        app.MapHealthChecks("/health/readiness", new HealthCheckOptions
-        {
-            Predicate = check => check.Tags.Contains("critical"),
-            ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-        });
-        app.MapHealthChecks("/health", new HealthCheckOptions
-        {
-            Predicate = check => check.Tags.Contains("dependencies"),
-            ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-        });
-        app.MapHealthChecks("/health/deep", new HealthCheckOptions
-        {
-            Predicate = check => check.Tags.Contains("dependencies") || check.Tags.Contains("external"),
-            ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-        });
+        MapHealthCheckEndpoint(app, "/health/startup", check => check.Tags.Contains("dependencies"));
+        MapHealthCheckEndpoint(app, "/health/liveness", check => check.Tags.Contains("self"));
+        MapHealthCheckEndpoint(app, "/health/readiness", check => check.Tags.Contains("critical"));
+        MapHealthCheckEndpoint(app, "/health", check => check.Tags.Contains("dependencies"));
+        MapHealthCheckEndpoint(app, "/health/deep", check => check.Tags.Contains("dependencies") || check.Tags.Contains("external"));
         return app;
     }
 }
