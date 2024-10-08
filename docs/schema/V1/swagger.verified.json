@@ -940,6 +940,137 @@
           "Correction"
         ]
       },
+      "GetDialogActivityDto": {
+        "additionalProperties": false,
+        "properties": {
+          "createdAt": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "description": {
+            "items": {
+              "$ref": "#/components/schemas/LocalizationDto"
+            },
+            "type": "array"
+          },
+          "extendedType": {
+            "format": "uri",
+            "nullable": true,
+            "type": "string"
+          },
+          "id": {
+            "format": "guid",
+            "type": "string"
+          },
+          "performedBy": {
+            "$ref": "#/components/schemas/GetDialogActivityPerformedByActorDto"
+          },
+          "relatedActivityId": {
+            "format": "guid",
+            "nullable": true,
+            "type": "string"
+          },
+          "transmissionId": {
+            "format": "guid",
+            "nullable": true,
+            "type": "string"
+          },
+          "type": {
+            "$ref": "#/components/schemas/DialogActivityType_Values"
+          }
+        },
+        "type": "object"
+      },
+      "GetDialogActivityDtoSO": {
+        "additionalProperties": false,
+        "properties": {
+          "createdAt": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "deletedAt": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "description": {
+            "items": {
+              "$ref": "#/components/schemas/LocalizationDto"
+            },
+            "type": "array"
+          },
+          "extendedType": {
+            "format": "uri",
+            "nullable": true,
+            "type": "string"
+          },
+          "id": {
+            "format": "guid",
+            "type": "string"
+          },
+          "performedBy": {
+            "$ref": "#/components/schemas/GetDialogActivityPerformedByActorDtoSO"
+          },
+          "relatedActivityId": {
+            "format": "guid",
+            "nullable": true,
+            "type": "string"
+          },
+          "transmissionId": {
+            "format": "guid",
+            "nullable": true,
+            "type": "string"
+          },
+          "type": {
+            "$ref": "#/components/schemas/DialogActivityType_Values"
+          }
+        },
+        "type": "object"
+      },
+      "GetDialogActivityPerformedByActorDto": {
+        "additionalProperties": false,
+        "properties": {
+          "actorId": {
+            "nullable": true,
+            "type": "string"
+          },
+          "actorName": {
+            "nullable": true,
+            "type": "string"
+          },
+          "actorType": {
+            "$ref": "#/components/schemas/ActorType_Values"
+          },
+          "id": {
+            "format": "guid",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "GetDialogActivityPerformedByActorDtoSO": {
+        "additionalProperties": false,
+        "properties": {
+          "actorId": {
+            "nullable": true,
+            "type": "string"
+          },
+          "actorName": {
+            "nullable": true,
+            "type": "string"
+          },
+          "actorType": {
+            "$ref": "#/components/schemas/ActorType_Values"
+          },
+          "id": {
+            "format": "guid",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
       "GetDialogContentDto": {
         "additionalProperties": false,
         "properties": {
@@ -2964,6 +3095,15 @@
         },
         "type": "object"
       },
+      "NotificationConditionDto": {
+        "additionalProperties": false,
+        "properties": {
+          "sendNotification": {
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
       "NotificationConditionType": {
         "description": "",
         "enum": [
@@ -3134,6 +3274,79 @@
           "severity": {
             "nullable": true,
             "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "SearchDialogActivityDto": {
+        "additionalProperties": false,
+        "properties": {
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "extendedType": {
+            "format": "uri",
+            "nullable": true,
+            "type": "string"
+          },
+          "id": {
+            "format": "guid",
+            "type": "string"
+          },
+          "relatedActivityId": {
+            "format": "guid",
+            "nullable": true,
+            "type": "string"
+          },
+          "seenByEndUserIdHash": {
+            "nullable": true,
+            "type": "string"
+          },
+          "transmissionId": {
+            "format": "guid",
+            "nullable": true,
+            "type": "string"
+          },
+          "type": {
+            "$ref": "#/components/schemas/DialogActivityType_Values"
+          }
+        },
+        "type": "object"
+      },
+      "SearchDialogActivityDtoSO": {
+        "additionalProperties": false,
+        "properties": {
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "deletedAt": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "extendedType": {
+            "format": "uri",
+            "nullable": true,
+            "type": "string"
+          },
+          "id": {
+            "format": "guid",
+            "type": "string"
+          },
+          "relatedActivityId": {
+            "format": "guid",
+            "nullable": true,
+            "type": "string"
+          },
+          "transmissionId": {
+            "format": "guid",
+            "nullable": true,
+            "type": "string"
+          },
+          "type": {
+            "$ref": "#/components/schemas/DialogActivityType_Values"
           }
         },
         "type": "object"
@@ -5119,10 +5332,12 @@
           "200": {
             "content": {
               "application/json": {
-                "schema": {}
-              },
-              "text/plain": {
-                "schema": {}
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SearchDialogActivityDto"
+                  },
+                  "type": "array"
+                }
               }
             },
             "description": "Successfully returned the dialog activity list."
@@ -5171,6 +5386,13 @@
         ],
         "responses": {
           "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetDialogActivityDto"
+                }
+              }
+            },
             "description": "Successfully returned the dialog activity."
           },
           "401": {
@@ -6520,10 +6742,9 @@
           "200": {
             "content": {
               "application/json": {
-                "schema": {}
-              },
-              "text/plain": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/NotificationConditionDto"
+                }
               }
             },
             "description": "Successfully returned the notification determination."
@@ -6565,10 +6786,12 @@
           "200": {
             "content": {
               "application/json": {
-                "schema": {}
-              },
-              "text/plain": {
-                "schema": {}
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SearchDialogActivityDtoSO"
+                  },
+                  "type": "array"
+                }
               }
             },
             "description": "Successfully returned the dialog activity list."
@@ -6722,6 +6945,13 @@
         ],
         "responses": {
           "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetDialogActivityDtoSO"
+                }
+              }
+            },
             "description": "Successfully returned the dialog activity."
           },
           "401": {
