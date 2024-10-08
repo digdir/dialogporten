@@ -1742,6 +1742,108 @@
         },
         "type": "object"
       },
+      "GetDialogDialogTransmissionAttachmentDto": {
+        "additionalProperties": false,
+        "properties": {
+          "displayName": {
+            "description": "The display name of the attachment that should be used in GUIs.",
+            "items": {
+              "$ref": "#/components/schemas/LocalizationDto"
+            },
+            "type": "array"
+          },
+          "id": {
+            "description": "The unique identifier for the attachment in UUIDv7 format.",
+            "format": "guid",
+            "type": "string"
+          },
+          "urls": {
+            "description": "The URLs associated with the attachment, each referring to a different representation of the attachment.",
+            "items": {
+              "$ref": "#/components/schemas/GetDialogDialogTransmissionAttachmentUrlDto"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "GetDialogDialogTransmissionAttachmentDtoSO": {
+        "additionalProperties": false,
+        "properties": {
+          "displayName": {
+            "description": "The display name of the attachment that should be used in GUIs.",
+            "items": {
+              "$ref": "#/components/schemas/LocalizationDto"
+            },
+            "type": "array"
+          },
+          "id": {
+            "description": "The unique identifier for the attachment in UUIDv7 format.",
+            "format": "guid",
+            "type": "string"
+          },
+          "urls": {
+            "description": "The URLs associated with the attachment, each referring to a different representation of the attachment.",
+            "items": {
+              "$ref": "#/components/schemas/GetDialogDialogTransmissionAttachmentUrlDtoSO"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "GetDialogDialogTransmissionAttachmentUrlDto": {
+        "additionalProperties": false,
+        "properties": {
+          "consumerType": {
+            "description": "The type of consumer the URL is intended for.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/AttachmentUrlConsumerType_Values"
+              }
+            ]
+          },
+          "mediaType": {
+            "description": "The media type of the attachment.",
+            "example": "application/pdf\napplication/zip",
+            "nullable": true,
+            "type": "string"
+          },
+          "url": {
+            "description": "The fully qualified URL of the attachment. Will be set to \u0022urn:dialogporten:unauthorized\u0022 if the user is\nnot authorized to access the transmission.",
+            "example": "https://someendpoint.com/someattachment.pdf\nurn:dialogporten:unauthorized",
+            "format": "uri",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "GetDialogDialogTransmissionAttachmentUrlDtoSO": {
+        "additionalProperties": false,
+        "properties": {
+          "consumerType": {
+            "description": "The type of consumer the URL is intended for.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/AttachmentUrlConsumerType_Values"
+              }
+            ]
+          },
+          "mediaType": {
+            "description": "The media type of the attachment.",
+            "example": "application/pdf\napplication/zip",
+            "nullable": true,
+            "type": "string"
+          },
+          "url": {
+            "description": "The fully qualified URL of the attachment. Will be set to \u0022urn:dialogporten:unauthorized\u0022 if the user is\nnot authorized to access the transmission.",
+            "example": "https://someendpoint.com/someattachment.pdf\nurn:dialogporten:unauthorized",
+            "format": "uri",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
       "GetDialogDialogTransmissionContentDto": {
         "additionalProperties": false,
         "properties": {
@@ -1792,7 +1894,7 @@
           "attachments": {
             "description": "The transmission-level attachments",
             "items": {
-              "$ref": "#/components/schemas/GetDialogTransmissionAttachmentDto"
+              "$ref": "#/components/schemas/GetDialogDialogTransmissionAttachmentDto"
             },
             "type": "array"
           },
@@ -1861,7 +1963,7 @@
           "attachments": {
             "description": "The transmission-level attachments",
             "items": {
-              "$ref": "#/components/schemas/GetDialogTransmissionAttachmentDtoSO"
+              "$ref": "#/components/schemas/GetDialogDialogTransmissionAttachmentDtoSO"
             },
             "type": "array"
           },
@@ -2456,6 +2558,11 @@
               }
             ]
           },
+          "id": {
+            "description": "The unique identifier for the attachment URL in UUIDv7 format.",
+            "format": "guid",
+            "type": "string"
+          },
           "mediaType": {
             "description": "The media type of the attachment.",
             "example": "application/pdf\napplication/zip",
@@ -2482,6 +2589,11 @@
               }
             ]
           },
+          "id": {
+            "description": "The unique identifier for the attachment URL in UUIDv7 format.",
+            "format": "guid",
+            "type": "string"
+          },
           "mediaType": {
             "description": "The media type of the attachment.",
             "example": "application/pdf\napplication/zip",
@@ -2492,6 +2604,248 @@
             "description": "The fully qualified URL of the attachment. Will be set to \u0022urn:dialogporten:unauthorized\u0022 if the user is\nnot authorized to access the transmission.",
             "example": "https://someendpoint.com/someattachment.pdf\nurn:dialogporten:unauthorized",
             "format": "uri",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "GetDialogTransmissionContentDto": {
+        "additionalProperties": false,
+        "properties": {
+          "summary": {
+            "description": "The summary of the content.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ContentValueDto"
+              }
+            ]
+          },
+          "title": {
+            "description": "The title of the content.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ContentValueDto"
+              }
+            ]
+          }
+        },
+        "type": "object"
+      },
+      "GetDialogTransmissionContentDtoSO": {
+        "additionalProperties": false,
+        "properties": {
+          "summary": {
+            "description": "The summary of the content.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ContentValueDto"
+              }
+            ]
+          },
+          "title": {
+            "description": "The title of the content.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ContentValueDto"
+              }
+            ]
+          }
+        },
+        "type": "object"
+      },
+      "GetDialogTransmissionDto": {
+        "additionalProperties": false,
+        "properties": {
+          "attachments": {
+            "description": "The attachments associated with the transmission.",
+            "items": {
+              "$ref": "#/components/schemas/GetDialogTransmissionAttachmentDto"
+            },
+            "type": "array"
+          },
+          "authorizationAttribute": {
+            "description": "The authorization attribute associated with the transmission.",
+            "nullable": true,
+            "type": "string"
+          },
+          "content": {
+            "description": "The content of the transmission.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/GetDialogTransmissionContentDto"
+              }
+            ]
+          },
+          "createdAt": {
+            "description": "The date and time when the transmission was created.",
+            "format": "date-time",
+            "type": "string"
+          },
+          "deletedAt": {
+            "description": "The date and time when the transmission was deleted, if applicable.",
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "extendedType": {
+            "description": "The extended type URI for the transmission.",
+            "format": "uri",
+            "nullable": true,
+            "type": "string"
+          },
+          "id": {
+            "description": "The unique identifier for the transmission in UUIDv7 format.",
+            "format": "guid",
+            "type": "string"
+          },
+          "isAuthorized": {
+            "description": "Flag indicating if the authenticated user is authorized for this transmission. If not, embedded content and\nthe attachments will not be available",
+            "type": "boolean"
+          },
+          "relatedTransmissionId": {
+            "description": "The unique identifier for the related transmission, if any.",
+            "format": "guid",
+            "nullable": true,
+            "type": "string"
+          },
+          "sender": {
+            "description": "The sender actor information for the transmission.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/GetDialogTransmissionSenderActorDto"
+              }
+            ]
+          },
+          "type": {
+            "description": "The type of the transmission.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DialogTransmissionType_Values"
+              }
+            ]
+          }
+        },
+        "type": "object"
+      },
+      "GetDialogTransmissionDtoSO": {
+        "additionalProperties": false,
+        "properties": {
+          "attachments": {
+            "description": "The attachments associated with the transmission.",
+            "items": {
+              "$ref": "#/components/schemas/GetDialogTransmissionAttachmentDtoSO"
+            },
+            "type": "array"
+          },
+          "authorizationAttribute": {
+            "description": "The authorization attribute associated with the transmission.",
+            "nullable": true,
+            "type": "string"
+          },
+          "content": {
+            "description": "The content of the transmission.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/GetDialogTransmissionContentDtoSO"
+              }
+            ]
+          },
+          "createdAt": {
+            "description": "The date and time when the transmission was created.",
+            "format": "date-time",
+            "type": "string"
+          },
+          "deletedAt": {
+            "description": "The date and time when the transmission was deleted, if applicable.",
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "extendedType": {
+            "description": "The extended type URI for the transmission.",
+            "format": "uri",
+            "nullable": true,
+            "type": "string"
+          },
+          "id": {
+            "description": "The unique identifier for the transmission in UUIDv7 format.",
+            "format": "guid",
+            "type": "string"
+          },
+          "relatedTransmissionId": {
+            "description": "The unique identifier for the related transmission, if any.",
+            "format": "guid",
+            "nullable": true,
+            "type": "string"
+          },
+          "sender": {
+            "description": "The sender actor information for the transmission.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/GetDialogTransmissionSenderActorDtoSO"
+              }
+            ]
+          },
+          "type": {
+            "description": "The type of the transmission.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DialogTransmissionType_Values"
+              }
+            ]
+          }
+        },
+        "type": "object"
+      },
+      "GetDialogTransmissionSenderActorDto": {
+        "additionalProperties": false,
+        "properties": {
+          "actorId": {
+            "description": "The identifier of the actor.",
+            "type": "string"
+          },
+          "actorName": {
+            "description": "The name of the actor.",
+            "type": "string"
+          },
+          "actorType": {
+            "description": "The type of the actor.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ActorType_Values"
+              }
+            ]
+          },
+          "id": {
+            "description": "The unique identifier for the sender actor in UUIDv7 format.",
+            "format": "guid",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "GetDialogTransmissionSenderActorDtoSO": {
+        "additionalProperties": false,
+        "properties": {
+          "actorId": {
+            "description": "The identifier of the actor.",
+            "type": "string"
+          },
+          "actorName": {
+            "description": "The name of the actor.",
+            "type": "string"
+          },
+          "actorType": {
+            "description": "The type of the actor.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ActorType_Values"
+              }
+            ]
+          },
+          "id": {
+            "description": "The unique identifier for the sender actor in UUIDv7 format.",
+            "format": "guid",
             "type": "string"
           }
         },
@@ -5119,7 +5473,7 @@
     "/api/v1/enduser/dialogs/{dialogId}/transmissions": {
       "get": {
         "description": "Gets the list of transmissions belonging to a dialog",
-        "operationId": "GetDialogTransmissionListEU",
+        "operationId": "GetDialogTransmissionList",
         "parameters": [
           {
             "in": "path",
@@ -5166,7 +5520,7 @@
     "/api/v1/enduser/dialogs/{dialogId}/transmissions/{transmissionId}": {
       "get": {
         "description": "Gets a single transmission belonging to a dialog. For more information see the documentation (link TBD).",
-        "operationId": "GetDialogTransmissionEU",
+        "operationId": "GetDialogTransmission",
         "parameters": [
           {
             "in": "path",
@@ -5189,6 +5543,13 @@
         ],
         "responses": {
           "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetDialogTransmissionDto"
+                }
+              }
+            },
             "description": "Successfully returned the dialog transmission."
           },
           "401": {
@@ -6689,6 +7050,13 @@
         ],
         "responses": {
           "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetDialogTransmissionDtoSO"
+                }
+              }
+            },
             "description": "Successfully returned the dialog transmission."
           },
           "401": {
