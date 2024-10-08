@@ -166,6 +166,23 @@ static void BuildAndRun(string[] args)
         .UseServiceOwnerOnBehalfOfPerson()
         .UseUserTypeValidation()
         .UseAzureConfiguration()
+        .UseFastEndpoints(x =>
+        {
+            x.Endpoints.RoutePrefix = "api";
+            x.Versioning.Prefix = "v";
+            x.Versioning.PrependToRoute = true;
+            x.Versioning.DefaultVersion = 1;
+            x.Serializer.Options.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+            // Do not serialize empty collections
+            x.Serializer.Options.TypeInfoResolver = new DefaultJsonTypeInfoResolver
+            {
+                Modifiers = { IgnoreEmptyCollections }
+            };
+            x.Serializer.Options.Converters.Add(new JsonStringEnumConverter());
+            x.Serializer.Options.Converters.Add(new UtcDateTimeOffsetConverter());
+            x.Serializer.Options.Converters.Add(new DateTimeNotSupportedConverter());
+            x.Errors.ResponseBuilder = ErrorResponseBuilderExtensions.ResponseBuilder;
+        })
         .UseAddSwaggerCorsHeader()
         .UseSwaggerGen(config =>
         {
@@ -191,23 +208,6 @@ static void BuildAndRun(string[] args)
             // We have to add dialogporten here to get the correct base url for swagger.json in the APIM. Should not be done for development
             var dialogPrefix = builder.Environment.IsDevelopment() ? "" : "/dialogporten";
             uiConfig.DocumentPath = dialogPrefix + "/swagger/{documentName}/swagger.json";
-        })
-        .UseFastEndpoints(x =>
-        {
-            x.Endpoints.RoutePrefix = "api";
-            x.Versioning.Prefix = "v";
-            x.Versioning.PrependToRoute = true;
-            x.Versioning.DefaultVersion = 1;
-            x.Serializer.Options.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
-            // Do not serialize empty collections
-            x.Serializer.Options.TypeInfoResolver = new DefaultJsonTypeInfoResolver
-            {
-                Modifiers = { IgnoreEmptyCollections }
-            };
-            x.Serializer.Options.Converters.Add(new JsonStringEnumConverter());
-            x.Serializer.Options.Converters.Add(new UtcDateTimeOffsetConverter());
-            x.Serializer.Options.Converters.Add(new DateTimeNotSupportedConverter());
-            x.Errors.ResponseBuilder = ErrorResponseBuilderExtensions.ResponseBuilder;
         });
 
     app.Run();
