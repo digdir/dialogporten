@@ -16,6 +16,7 @@ using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
 using Digdir.Domain.Dialogporten.WebApi.Common.Json;
 using Digdir.Domain.Dialogporten.WebApi.Common.Swagger;
+using Digdir.Library.Utils.AspNet;
 using FastEndpoints;
 using FastEndpoints.Swagger;
 using FluentValidation;
@@ -23,7 +24,6 @@ using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Authorization;
 using NSwag;
 using Serilog;
-using Digdir.Library.Utils.AspNet;
 using Microsoft.Extensions.Options;
 
 // Using two-stage initialization to catch startup errors.
