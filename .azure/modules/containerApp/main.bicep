@@ -28,29 +28,11 @@ param resources object?
 @description('The suffix for the revision of the container app')
 param revisionSuffix string
 
+@description('The probes for the container app')
+param probes array = []
+
 // Container app revision name does not allow '.' character
 var cleanedRevisionSuffix = replace(revisionSuffix, '.', '-')
-
-var probes = [
-  {
-    periodSeconds: 5
-    initialDelaySeconds: 2
-    type: 'Liveness'
-    httpGet: {
-      path: '/healthz'
-      port: port
-    }
-  }
-  {
-    periodSeconds: 5
-    initialDelaySeconds: 2
-    type: 'Readiness'
-    httpGet: {
-      path: '/healthz'
-      port: port
-    }
-  }
-]
 
 var ipSecurityRestrictions = empty(apimIp)
   ? []
@@ -74,7 +56,6 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
   identity: {
     type: 'SystemAssigned'
   }
-
   properties: {
     configuration: {
       ingress: ingress

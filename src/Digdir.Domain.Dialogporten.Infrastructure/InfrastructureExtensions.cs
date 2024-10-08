@@ -33,6 +33,8 @@ using HotChocolate.Subscriptions;
 using StackExchange.Redis;
 using ZiggyCreatures.Caching.Fusion;
 using ZiggyCreatures.Caching.Fusion.NullObjects;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Digdir.Domain.Dialogporten.Infrastructure.HealthChecks;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure;
 
@@ -199,6 +201,8 @@ public static class InfrastructureExtensions
             })
             .AddPolicyHandlerFromRegistry(PollyPolicy.DefaultHttpRetryPolicy);
 
+        services.AddCustomHealthChecks();
+
         if (environment.IsDevelopment())
         {
             var localDeveloperSettings = configuration.GetLocalDevelopmentSettings();
@@ -208,6 +212,17 @@ public static class InfrastructureExtensions
                 .ReplaceTransient<IAltinnAuthorization, LocalDevelopmentAltinnAuthorization>(predicate: localDeveloperSettings.UseLocalDevelopmentAltinnAuthorization)
                 .ReplaceSingleton<IFusionCache, NullFusionCache>(predicate: localDeveloperSettings.DisableCache);
         }
+
+        return services;
+    }
+
+    private static IServiceCollection AddCustomHealthChecks(this IServiceCollection services)
+    {
+        services.AddHealthChecks()
+            .AddCheck<RedisHealthCheck>("redis", tags: ["dependencies", "redis"])
+            .AddDbContextCheck<DialogDbContext>("postgres", tags: ["dependencies", "critical"]);
+
+        services.AddSingleton<RedisHealthCheck>();
 
         return services;
     }

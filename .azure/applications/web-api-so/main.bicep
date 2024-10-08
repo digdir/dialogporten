@@ -87,6 +87,38 @@ resource environmentKeyVaultResource 'Microsoft.KeyVault/vaults@2023-07-01' exis
 
 var containerAppName = '${namePrefix}-webapi-so-ca'
 
+var port = 8080
+
+var probes = [
+  {
+    periodSeconds: 5
+    initialDelaySeconds: 2
+    type: 'Liveness'
+    httpGet: {
+      path: '/liveness'
+      port: port
+    }
+  }
+  {
+    periodSeconds: 5
+    initialDelaySeconds: 2
+    type: 'Readiness'
+    httpGet: {
+      path: '/readiness'
+      port: port
+    }
+  }
+  {
+    periodSeconds: 5
+    initialDelaySeconds: 2
+    type: 'Startup'
+    httpGet: {
+      path: '/startup'
+      port: port
+    }
+  }
+]
+
 module containerApp '../../modules/containerApp/main.bicep' = {
   name: containerAppName
   params: {
@@ -98,6 +130,8 @@ module containerApp '../../modules/containerApp/main.bicep' = {
     apimIp: apimIp
     tags: tags
     resources: resources
+    probes: probes
+    port: port
     revisionSuffix: revisionSuffix
   }
 }
