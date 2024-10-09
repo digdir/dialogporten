@@ -331,11 +331,7 @@ public class CreateDialogTests : ApplicationCollectionFixture
     {
         // Arrange
         var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog();
-        createDialogCommand.Content.Title = new ContentValueDto
-        {
-            MediaType = MediaTypes.LegacyEmbeddableHtml,
-            Value = [new LocalizationDto { LanguageCode = "en", Value = "https://external.html" }]
-        };
+        createDialogCommand.Content.Title = CreateHtmlContentValueDto();
 
         var userWithLegacyScope = new IntegrationTestUser([new("scope", Constants.LegacyHtmlScope)]);
         Application.ConfigureServiceCollection(services =>
