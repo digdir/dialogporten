@@ -277,7 +277,7 @@ public class CreateDialogTests : ApplicationCollectionFixture
             .Be(2);
     }
 
-    private const string LegacyHtmlMediaType = MediaTypes.LegacyHtmlMediaType;
+    private const string LegacyHtmlMediaType = MediaTypes.LegacyHtml;
 
     private static ContentValueDto CreateHtmlContentValueDto() => new()
     {

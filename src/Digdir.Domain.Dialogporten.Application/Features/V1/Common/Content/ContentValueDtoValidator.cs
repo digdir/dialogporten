@@ -73,7 +73,7 @@ internal sealed class ContentValueDtoValidator : AbstractValidator<ContentValueD
         => contentType.Id switch
         {
             DialogContentType.Values.AdditionalInfo when UserHasLegacyHtmlScope(user)
-                => contentType.AllowedMediaTypes.Append(MediaTypes.LegacyHtmlMediaType).ToArray(),
+                => contentType.AllowedMediaTypes.Append(MediaTypes.LegacyHtml).ToArray(),
             DialogContentType.Values.MainContentReference when UserHasLegacyHtmlScope(user)
                 => contentType.AllowedMediaTypes.Append(MediaTypes.LegacyEmbeddableHtml).ToArray(),
             _ => contentType.AllowedMediaTypes
