@@ -70,7 +70,6 @@
         "properties": {
           "mediaType": {
             "description": "Media type of the content (plaintext, Markdown). Can also indicate that the content is embeddable.",
-            "example": "text/plain\ntext/markdown\napplication/vnd.dialogporten.frontchannelembed",
             "type": "string"
           },
           "value": {
@@ -297,7 +296,7 @@
         "additionalProperties": false,
         "properties": {
           "additionalInfo": {
-            "description": "Additional information about the dialog, this may contain Markdown.",
+            "description": "Additional information about the dialog.\nSupported media types: text/plain, text/markdown",
             "nullable": true,
             "oneOf": [
               {
@@ -306,7 +305,7 @@
             ]
           },
           "extendedStatus": {
-            "description": "Used as the human-readable label used to describe the \u0022ExtendedStatus\u0022 field. Must be text/plain.",
+            "description": "Used as the human-readable label used to describe the \u0022ExtendedStatus\u0022 field.\nSupported media types: text/plain",
             "nullable": true,
             "oneOf": [
               {
@@ -315,7 +314,7 @@
             ]
           },
           "mainContentReference": {
-            "description": "Front-channel embedded content. Used to dynamically embed content in the frontend from an external URL.",
+            "description": "Front-channel embedded content. Used to dynamically embed content in the frontend from an external URL.\nSupported media types: application/vnd.dialogporten.frontchannelembed\u002Bjson;type=markdown",
             "nullable": true,
             "oneOf": [
               {
@@ -324,7 +323,7 @@
             ]
           },
           "senderName": {
-            "description": "Overridden sender name. If not supplied, assume \u0022org\u0022 as the sender name. Must be text/plain if supplied.",
+            "description": "Overridden sender name. If not supplied, assume \u0022org\u0022 as the sender name. Must be text/plain if supplied.\nSupported media types: text/plain",
             "nullable": true,
             "oneOf": [
               {
@@ -333,7 +332,7 @@
             ]
           },
           "summary": {
-            "description": "A short summary of the dialog and its current state. Must be text/plain.",
+            "description": "A short summary of the dialog and its current state.\nSupported media types: text/plain",
             "oneOf": [
               {
                 "$ref": "#/components/schemas/ContentValueDto"
@@ -341,7 +340,7 @@
             ]
           },
           "title": {
-            "description": "The title of the dialog. Must be text/plain.",
+            "description": "The title of the dialog.\nSupported media types: text/plain",
             "oneOf": [
               {
                 "$ref": "#/components/schemas/ContentValueDto"
