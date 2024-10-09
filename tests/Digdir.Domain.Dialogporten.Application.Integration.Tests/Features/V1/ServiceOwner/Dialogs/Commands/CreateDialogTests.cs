@@ -4,6 +4,7 @@ using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Content;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Queries.Get;
 using Digdir.Domain.Dialogporten.Application.Integration.Tests.Common;
+using Digdir.Domain.Dialogporten.Domain;
 using Digdir.Tool.Dialogporten.GenerateFakeData;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
@@ -330,7 +331,11 @@ public class CreateDialogTests : ApplicationCollectionFixture
     {
         // Arrange
         var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog();
-        createDialogCommand.Content.Title = CreateHtmlContentValueDto();
+        createDialogCommand.Content.Title = new ContentValueDto
+        {
+            MediaType = MediaTypes.LegacyEmbeddableHtml,
+            Value = [new LocalizationDto { LanguageCode = "en", Value = "https://external.html" }]
+        };
 
         var userWithLegacyScope = new IntegrationTestUser([new("scope", Constants.LegacyHtmlScope)]);
         Application.ConfigureServiceCollection(services =>
@@ -349,5 +354,63 @@ public class CreateDialogTests : ApplicationCollectionFixture
             .Count(e => e.AttemptedValue.Equals(LegacyHtmlMediaType))
             .Should()
             .Be(1);
+    }
+
+    [Fact]
+    public async Task Cannot_Create_Title_Content_With_Embeddable_Html_MediaType_With_Correct_Scope()
+    {
+        // Arrange
+        var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog();
+        createDialogCommand.Content.Title = new ContentValueDto
+        {
+            MediaType = MediaTypes.LegacyEmbeddableHtml,
+            Value = [new LocalizationDto { LanguageCode = "en", Value = "https://external.html" }]
+        };
+
+        var userWithLegacyScope = new IntegrationTestUser([new("scope", Constants.LegacyHtmlScope)]);
+        Application.ConfigureServiceCollection(services =>
+        {
+            services.RemoveAll<IUser>();
+            services.AddSingleton<IUser>(userWithLegacyScope);
+        });
+
+        // Act
+        var response = await Application.Send(createDialogCommand);
+
+        // Assert
+        response.TryPickT2(out var validationError, out _).Should().BeTrue();
+        validationError.Should().NotBeNull();
+        validationError.Errors
+            .Count(e => e.AttemptedValue.Equals(MediaTypes.LegacyEmbeddableHtml))
+            .Should()
+            .Be(1);
+    }
+
+    [Fact]
+    public async Task Can_Create_MainContentRef_Content_With_Embeddable_Html_MediaType_With_Correct_Scope()
+    {
+        // Arrange
+        var expectedDialogId = GenerateBigEndianUuidV7();
+        var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog(id: expectedDialogId);
+        createDialogCommand.Content.MainContentReference = new ContentValueDto
+        {
+            MediaType = MediaTypes.LegacyEmbeddableHtml,
+            Value = [new LocalizationDto { LanguageCode = "en", Value = "https://external.html" }]
+        };
+
+        var userWithLegacyScope = new IntegrationTestUser([new("scope", Constants.LegacyHtmlScope)]);
+        Application.ConfigureServiceCollection(services =>
+        {
+            services.RemoveAll<IUser>();
+            services.AddSingleton<IUser>(userWithLegacyScope);
+        });
+
+        // Act
+        var response = await Application.Send(createDialogCommand);
+
+        // Assert
+        response.TryPickT0(out var success, out _).Should().BeTrue();
+        success.Should().NotBeNull();
+        success.Value.Should().Be(expectedDialogId);
     }
 }

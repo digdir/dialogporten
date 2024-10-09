@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Digdir.Domain.Dialogporten.Application.Common.Authorization;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.FluentValidation;
@@ -68,22 +69,15 @@ internal sealed class ContentValueDtoValidator : AbstractValidator<ContentValueD
             .SetValidator(_ => new LocalizationDtosValidator(contentType.MaxLength));
     }
 
+    [SuppressMessage("Style", "IDE0072:Add missing cases")]
     private static string[] GetAllowedMediaTypes(DialogContentType contentType, IUser? user)
-    {
-        if (user == null)
+        => contentType.Id switch
         {
-            return contentType.AllowedMediaTypes;
-        }
-
-        if (contentType.Id != DialogContentType.Values.AdditionalInfo)
-        {
-            return contentType.AllowedMediaTypes;
-        }
-
-        var allowHtmlSupport = user.GetPrincipal().HasScope(Constants.LegacyHtmlScope);
-
-        return allowHtmlSupport
-            ? contentType.AllowedMediaTypes.Append(LegacyHtmlMediaType).ToArray()
-            : contentType.AllowedMediaTypes;
-    }
+            DialogContentType.Values.AdditionalInfo when UserHasLegacyHtmlScope(user)
+                => contentType.AllowedMediaTypes.Append(LegacyHtmlMediaType).ToArray(),
+            DialogContentType.Values.MainContentReference when UserHasLegacyHtmlScope(user)
+                => contentType.AllowedMediaTypes.Append(MediaTypes.LegacyEmbeddableHtml).ToArray(),
+            _ => contentType.AllowedMediaTypes
+        };
+    private static bool UserHasLegacyHtmlScope(IUser? user) => user is not null && user.GetPrincipal().HasScope(Constants.LegacyHtmlScope);
 }
