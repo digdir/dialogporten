@@ -24,7 +24,7 @@ param tags object
 
 @export()
 type Sku = {
-  name: 'Standard_B1ms'
+  name: 'Standard_B1ms' | 'Standard_B2s' | 'Standard_B4ms' | 'Standard_B8ms' | 'Standard_B12ms' | 'Standard_B16ms' | 'Standard_B20ms'
   tier: 'Burstable' | 'GeneralPurpose' | 'MemoryOptimized'
 }
 
