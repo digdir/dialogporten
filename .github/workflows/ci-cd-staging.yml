@@ -106,6 +106,7 @@ jobs:
     secrets:
       TOKEN_GENERATOR_USERNAME: ${{ secrets.TOKEN_GENERATOR_USERNAME }}
       TOKEN_GENERATOR_PASSWORD: ${{ secrets.TOKEN_GENERATOR_PASSWORD }}
+      SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
     with:
       environment: staging
       apiVersion: v1
