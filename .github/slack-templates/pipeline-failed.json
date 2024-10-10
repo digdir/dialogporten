@@ -1,0 +1,25 @@
+{
+    "blocks": [
+      {
+        "type": "section",
+        "text": {
+          "type": "mrkdwn",
+          "text": "*:rotating_light: Pipeline failing for *${{ env.ENVIRONMENT }}* :rotating_light:*\n\nPlease check the workflow for more details."
+        }
+      },
+      { "type": "divider" },
+      {
+        "type": "actions",
+        "elements": [
+          {
+            "type": "button",
+            "text": {
+              "type": "plain_text",
+              "text": "View Run"
+            },
+            "url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          }
+        ]
+      }
+    ]
+}
