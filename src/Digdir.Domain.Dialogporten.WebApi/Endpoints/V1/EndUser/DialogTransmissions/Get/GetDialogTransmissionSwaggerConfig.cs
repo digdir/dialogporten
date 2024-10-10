@@ -1,3 +1,4 @@
+using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogTransmissions.Queries.Get;
 using Digdir.Domain.Dialogporten.WebApi.Common;
 using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
@@ -9,11 +10,11 @@ namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.EndUser.DialogTransmiss
 
 public sealed class GetDialogTransmissionSwaggerConfig : ISwaggerConfig
 {
-    public static string OperationId => "GetDialogTransmissionEU";
+    public static string OperationId => "GetDialogTransmission";
 
     public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder)
         => builder.OperationId(OperationId)
-            .ProducesOneOf(
+            .ProducesOneOf<GetDialogTransmissionDto>(
                 StatusCodes.Status200OK,
                 StatusCodes.Status404NotFound);
 

@@ -939,6 +939,137 @@
           "Correction"
         ]
       },
+      "GetDialogActivityDto": {
+        "additionalProperties": false,
+        "properties": {
+          "createdAt": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "description": {
+            "items": {
+              "$ref": "#/components/schemas/LocalizationDto"
+            },
+            "type": "array"
+          },
+          "extendedType": {
+            "format": "uri",
+            "nullable": true,
+            "type": "string"
+          },
+          "id": {
+            "format": "guid",
+            "type": "string"
+          },
+          "performedBy": {
+            "$ref": "#/components/schemas/GetDialogActivityPerformedByActorDto"
+          },
+          "relatedActivityId": {
+            "format": "guid",
+            "nullable": true,
+            "type": "string"
+          },
+          "transmissionId": {
+            "format": "guid",
+            "nullable": true,
+            "type": "string"
+          },
+          "type": {
+            "$ref": "#/components/schemas/DialogActivityType_Values"
+          }
+        },
+        "type": "object"
+      },
+      "GetDialogActivityDtoSO": {
+        "additionalProperties": false,
+        "properties": {
+          "createdAt": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "deletedAt": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "description": {
+            "items": {
+              "$ref": "#/components/schemas/LocalizationDto"
+            },
+            "type": "array"
+          },
+          "extendedType": {
+            "format": "uri",
+            "nullable": true,
+            "type": "string"
+          },
+          "id": {
+            "format": "guid",
+            "type": "string"
+          },
+          "performedBy": {
+            "$ref": "#/components/schemas/GetDialogActivityPerformedByActorDtoSO"
+          },
+          "relatedActivityId": {
+            "format": "guid",
+            "nullable": true,
+            "type": "string"
+          },
+          "transmissionId": {
+            "format": "guid",
+            "nullable": true,
+            "type": "string"
+          },
+          "type": {
+            "$ref": "#/components/schemas/DialogActivityType_Values"
+          }
+        },
+        "type": "object"
+      },
+      "GetDialogActivityPerformedByActorDto": {
+        "additionalProperties": false,
+        "properties": {
+          "actorId": {
+            "nullable": true,
+            "type": "string"
+          },
+          "actorName": {
+            "nullable": true,
+            "type": "string"
+          },
+          "actorType": {
+            "$ref": "#/components/schemas/ActorType_Values"
+          },
+          "id": {
+            "format": "guid",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "GetDialogActivityPerformedByActorDtoSO": {
+        "additionalProperties": false,
+        "properties": {
+          "actorId": {
+            "nullable": true,
+            "type": "string"
+          },
+          "actorName": {
+            "nullable": true,
+            "type": "string"
+          },
+          "actorType": {
+            "$ref": "#/components/schemas/ActorType_Values"
+          },
+          "id": {
+            "format": "guid",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
       "GetDialogContentDto": {
         "additionalProperties": false,
         "properties": {
@@ -1741,6 +1872,108 @@
         },
         "type": "object"
       },
+      "GetDialogDialogTransmissionAttachmentDto": {
+        "additionalProperties": false,
+        "properties": {
+          "displayName": {
+            "description": "The display name of the attachment that should be used in GUIs.",
+            "items": {
+              "$ref": "#/components/schemas/LocalizationDto"
+            },
+            "type": "array"
+          },
+          "id": {
+            "description": "The unique identifier for the attachment in UUIDv7 format.",
+            "format": "guid",
+            "type": "string"
+          },
+          "urls": {
+            "description": "The URLs associated with the attachment, each referring to a different representation of the attachment.",
+            "items": {
+              "$ref": "#/components/schemas/GetDialogDialogTransmissionAttachmentUrlDto"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "GetDialogDialogTransmissionAttachmentDtoSO": {
+        "additionalProperties": false,
+        "properties": {
+          "displayName": {
+            "description": "The display name of the attachment that should be used in GUIs.",
+            "items": {
+              "$ref": "#/components/schemas/LocalizationDto"
+            },
+            "type": "array"
+          },
+          "id": {
+            "description": "The unique identifier for the attachment in UUIDv7 format.",
+            "format": "guid",
+            "type": "string"
+          },
+          "urls": {
+            "description": "The URLs associated with the attachment, each referring to a different representation of the attachment.",
+            "items": {
+              "$ref": "#/components/schemas/GetDialogDialogTransmissionAttachmentUrlDtoSO"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "GetDialogDialogTransmissionAttachmentUrlDto": {
+        "additionalProperties": false,
+        "properties": {
+          "consumerType": {
+            "description": "The type of consumer the URL is intended for.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/AttachmentUrlConsumerType_Values"
+              }
+            ]
+          },
+          "mediaType": {
+            "description": "The media type of the attachment.",
+            "example": "application/pdf\napplication/zip",
+            "nullable": true,
+            "type": "string"
+          },
+          "url": {
+            "description": "The fully qualified URL of the attachment. Will be set to \u0022urn:dialogporten:unauthorized\u0022 if the user is\nnot authorized to access the transmission.",
+            "example": "https://someendpoint.com/someattachment.pdf\nurn:dialogporten:unauthorized",
+            "format": "uri",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "GetDialogDialogTransmissionAttachmentUrlDtoSO": {
+        "additionalProperties": false,
+        "properties": {
+          "consumerType": {
+            "description": "The type of consumer the URL is intended for.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/AttachmentUrlConsumerType_Values"
+              }
+            ]
+          },
+          "mediaType": {
+            "description": "The media type of the attachment.",
+            "example": "application/pdf\napplication/zip",
+            "nullable": true,
+            "type": "string"
+          },
+          "url": {
+            "description": "The fully qualified URL of the attachment. Will be set to \u0022urn:dialogporten:unauthorized\u0022 if the user is\nnot authorized to access the transmission.",
+            "example": "https://someendpoint.com/someattachment.pdf\nurn:dialogporten:unauthorized",
+            "format": "uri",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
       "GetDialogDialogTransmissionContentDto": {
         "additionalProperties": false,
         "properties": {
@@ -1791,7 +2024,7 @@
           "attachments": {
             "description": "The transmission-level attachments",
             "items": {
-              "$ref": "#/components/schemas/GetDialogTransmissionAttachmentDto"
+              "$ref": "#/components/schemas/GetDialogDialogTransmissionAttachmentDto"
             },
             "type": "array"
           },
@@ -1860,7 +2093,7 @@
           "attachments": {
             "description": "The transmission-level attachments",
             "items": {
-              "$ref": "#/components/schemas/GetDialogTransmissionAttachmentDtoSO"
+              "$ref": "#/components/schemas/GetDialogDialogTransmissionAttachmentDtoSO"
             },
             "type": "array"
           },
@@ -2455,6 +2688,11 @@
               }
             ]
           },
+          "id": {
+            "description": "The unique identifier for the attachment URL in UUIDv7 format.",
+            "format": "guid",
+            "type": "string"
+          },
           "mediaType": {
             "description": "The media type of the attachment.",
             "example": "application/pdf\napplication/zip",
@@ -2481,6 +2719,11 @@
               }
             ]
           },
+          "id": {
+            "description": "The unique identifier for the attachment URL in UUIDv7 format.",
+            "format": "guid",
+            "type": "string"
+          },
           "mediaType": {
             "description": "The media type of the attachment.",
             "example": "application/pdf\napplication/zip",
@@ -2491,6 +2734,248 @@
             "description": "The fully qualified URL of the attachment. Will be set to \u0022urn:dialogporten:unauthorized\u0022 if the user is\nnot authorized to access the transmission.",
             "example": "https://someendpoint.com/someattachment.pdf\nurn:dialogporten:unauthorized",
             "format": "uri",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "GetDialogTransmissionContentDto": {
+        "additionalProperties": false,
+        "properties": {
+          "summary": {
+            "description": "The summary of the content.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ContentValueDto"
+              }
+            ]
+          },
+          "title": {
+            "description": "The title of the content.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ContentValueDto"
+              }
+            ]
+          }
+        },
+        "type": "object"
+      },
+      "GetDialogTransmissionContentDtoSO": {
+        "additionalProperties": false,
+        "properties": {
+          "summary": {
+            "description": "The summary of the content.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ContentValueDto"
+              }
+            ]
+          },
+          "title": {
+            "description": "The title of the content.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ContentValueDto"
+              }
+            ]
+          }
+        },
+        "type": "object"
+      },
+      "GetDialogTransmissionDto": {
+        "additionalProperties": false,
+        "properties": {
+          "attachments": {
+            "description": "The attachments associated with the transmission.",
+            "items": {
+              "$ref": "#/components/schemas/GetDialogTransmissionAttachmentDto"
+            },
+            "type": "array"
+          },
+          "authorizationAttribute": {
+            "description": "The authorization attribute associated with the transmission.",
+            "nullable": true,
+            "type": "string"
+          },
+          "content": {
+            "description": "The content of the transmission.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/GetDialogTransmissionContentDto"
+              }
+            ]
+          },
+          "createdAt": {
+            "description": "The date and time when the transmission was created.",
+            "format": "date-time",
+            "type": "string"
+          },
+          "deletedAt": {
+            "description": "The date and time when the transmission was deleted, if applicable.",
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "extendedType": {
+            "description": "The extended type URI for the transmission.",
+            "format": "uri",
+            "nullable": true,
+            "type": "string"
+          },
+          "id": {
+            "description": "The unique identifier for the transmission in UUIDv7 format.",
+            "format": "guid",
+            "type": "string"
+          },
+          "isAuthorized": {
+            "description": "Flag indicating if the authenticated user is authorized for this transmission. If not, embedded content and\nthe attachments will not be available",
+            "type": "boolean"
+          },
+          "relatedTransmissionId": {
+            "description": "The unique identifier for the related transmission, if any.",
+            "format": "guid",
+            "nullable": true,
+            "type": "string"
+          },
+          "sender": {
+            "description": "The sender actor information for the transmission.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/GetDialogTransmissionSenderActorDto"
+              }
+            ]
+          },
+          "type": {
+            "description": "The type of the transmission.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DialogTransmissionType_Values"
+              }
+            ]
+          }
+        },
+        "type": "object"
+      },
+      "GetDialogTransmissionDtoSO": {
+        "additionalProperties": false,
+        "properties": {
+          "attachments": {
+            "description": "The attachments associated with the transmission.",
+            "items": {
+              "$ref": "#/components/schemas/GetDialogTransmissionAttachmentDtoSO"
+            },
+            "type": "array"
+          },
+          "authorizationAttribute": {
+            "description": "The authorization attribute associated with the transmission.",
+            "nullable": true,
+            "type": "string"
+          },
+          "content": {
+            "description": "The content of the transmission.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/GetDialogTransmissionContentDtoSO"
+              }
+            ]
+          },
+          "createdAt": {
+            "description": "The date and time when the transmission was created.",
+            "format": "date-time",
+            "type": "string"
+          },
+          "deletedAt": {
+            "description": "The date and time when the transmission was deleted, if applicable.",
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "extendedType": {
+            "description": "The extended type URI for the transmission.",
+            "format": "uri",
+            "nullable": true,
+            "type": "string"
+          },
+          "id": {
+            "description": "The unique identifier for the transmission in UUIDv7 format.",
+            "format": "guid",
+            "type": "string"
+          },
+          "relatedTransmissionId": {
+            "description": "The unique identifier for the related transmission, if any.",
+            "format": "guid",
+            "nullable": true,
+            "type": "string"
+          },
+          "sender": {
+            "description": "The sender actor information for the transmission.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/GetDialogTransmissionSenderActorDtoSO"
+              }
+            ]
+          },
+          "type": {
+            "description": "The type of the transmission.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DialogTransmissionType_Values"
+              }
+            ]
+          }
+        },
+        "type": "object"
+      },
+      "GetDialogTransmissionSenderActorDto": {
+        "additionalProperties": false,
+        "properties": {
+          "actorId": {
+            "description": "The identifier of the actor.",
+            "type": "string"
+          },
+          "actorName": {
+            "description": "The name of the actor.",
+            "type": "string"
+          },
+          "actorType": {
+            "description": "The type of the actor.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ActorType_Values"
+              }
+            ]
+          },
+          "id": {
+            "description": "The unique identifier for the sender actor in UUIDv7 format.",
+            "format": "guid",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "GetDialogTransmissionSenderActorDtoSO": {
+        "additionalProperties": false,
+        "properties": {
+          "actorId": {
+            "description": "The identifier of the actor.",
+            "type": "string"
+          },
+          "actorName": {
+            "description": "The name of the actor.",
+            "type": "string"
+          },
+          "actorType": {
+            "description": "The type of the actor.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ActorType_Values"
+              }
+            ]
+          },
+          "id": {
+            "description": "The unique identifier for the sender actor in UUIDv7 format.",
+            "format": "guid",
             "type": "string"
           }
         },
@@ -2605,6 +3090,15 @@
           "value": {
             "description": "The localized text or URI reference",
             "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "NotificationConditionDto": {
+        "additionalProperties": false,
+        "properties": {
+          "sendNotification": {
+            "type": "boolean"
           }
         },
         "type": "object"
@@ -2779,6 +3273,79 @@
           "severity": {
             "nullable": true,
             "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "SearchDialogActivityDto": {
+        "additionalProperties": false,
+        "properties": {
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "extendedType": {
+            "format": "uri",
+            "nullable": true,
+            "type": "string"
+          },
+          "id": {
+            "format": "guid",
+            "type": "string"
+          },
+          "relatedActivityId": {
+            "format": "guid",
+            "nullable": true,
+            "type": "string"
+          },
+          "seenByEndUserIdHash": {
+            "nullable": true,
+            "type": "string"
+          },
+          "transmissionId": {
+            "format": "guid",
+            "nullable": true,
+            "type": "string"
+          },
+          "type": {
+            "$ref": "#/components/schemas/DialogActivityType_Values"
+          }
+        },
+        "type": "object"
+      },
+      "SearchDialogActivityDtoSO": {
+        "additionalProperties": false,
+        "properties": {
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "deletedAt": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "extendedType": {
+            "format": "uri",
+            "nullable": true,
+            "type": "string"
+          },
+          "id": {
+            "format": "guid",
+            "type": "string"
+          },
+          "relatedActivityId": {
+            "format": "guid",
+            "nullable": true,
+            "type": "string"
+          },
+          "transmissionId": {
+            "format": "guid",
+            "nullable": true,
+            "type": "string"
+          },
+          "type": {
+            "$ref": "#/components/schemas/DialogActivityType_Values"
           }
         },
         "type": "object"
@@ -3419,6 +3986,253 @@
           },
           "actorName": {
             "type": "string"
+          },
+          "id": {
+            "format": "guid",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "SearchDialogTransmissionAttachmentDto": {
+        "additionalProperties": false,
+        "properties": {
+          "displayName": {
+            "items": {
+              "$ref": "#/components/schemas/LocalizationDto"
+            },
+            "type": "array"
+          },
+          "id": {
+            "format": "guid",
+            "type": "string"
+          },
+          "urls": {
+            "items": {
+              "$ref": "#/components/schemas/SearchDialogTransmissionAttachmentUrlDto"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "SearchDialogTransmissionAttachmentDtoSO": {
+        "additionalProperties": false,
+        "properties": {
+          "displayName": {
+            "items": {
+              "$ref": "#/components/schemas/LocalizationDto"
+            },
+            "type": "array"
+          },
+          "id": {
+            "format": "guid",
+            "type": "string"
+          },
+          "urls": {
+            "items": {
+              "$ref": "#/components/schemas/SearchDialogTransmissionAttachmentUrlDtoSO"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "SearchDialogTransmissionAttachmentUrlDto": {
+        "additionalProperties": false,
+        "properties": {
+          "consumerType": {
+            "$ref": "#/components/schemas/AttachmentUrlConsumerType_Values"
+          },
+          "id": {
+            "format": "guid",
+            "type": "string"
+          },
+          "mediaType": {
+            "nullable": true,
+            "type": "string"
+          },
+          "url": {
+            "format": "uri",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "SearchDialogTransmissionAttachmentUrlDtoSO": {
+        "additionalProperties": false,
+        "properties": {
+          "consumerType": {
+            "$ref": "#/components/schemas/AttachmentUrlConsumerType_Values"
+          },
+          "id": {
+            "format": "guid",
+            "type": "string"
+          },
+          "mediaType": {
+            "nullable": true,
+            "type": "string"
+          },
+          "url": {
+            "format": "uri",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "SearchDialogTransmissionContentDto": {
+        "additionalProperties": false,
+        "properties": {
+          "summary": {
+            "$ref": "#/components/schemas/ContentValueDto"
+          },
+          "title": {
+            "$ref": "#/components/schemas/ContentValueDto"
+          }
+        },
+        "type": "object"
+      },
+      "SearchDialogTransmissionContentDtoSO": {
+        "additionalProperties": false,
+        "properties": {
+          "summary": {
+            "$ref": "#/components/schemas/ContentValueDto"
+          },
+          "title": {
+            "$ref": "#/components/schemas/ContentValueDto"
+          }
+        },
+        "type": "object"
+      },
+      "SearchDialogTransmissionDto": {
+        "additionalProperties": false,
+        "properties": {
+          "attachments": {
+            "items": {
+              "$ref": "#/components/schemas/SearchDialogTransmissionAttachmentDto"
+            },
+            "type": "array"
+          },
+          "authorizationAttribute": {
+            "nullable": true,
+            "type": "string"
+          },
+          "content": {
+            "$ref": "#/components/schemas/SearchDialogTransmissionContentDto"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "deletedAt": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "extendedType": {
+            "format": "uri",
+            "nullable": true,
+            "type": "string"
+          },
+          "id": {
+            "format": "guid",
+            "type": "string"
+          },
+          "isAuthorized": {
+            "type": "boolean"
+          },
+          "relatedTransmissionId": {
+            "format": "guid",
+            "nullable": true,
+            "type": "string"
+          },
+          "sender": {
+            "$ref": "#/components/schemas/SearchDialogTransmissionSenderActorDto"
+          },
+          "type": {
+            "$ref": "#/components/schemas/DialogTransmissionType_Values"
+          }
+        },
+        "type": "object"
+      },
+      "SearchDialogTransmissionDtoSO": {
+        "additionalProperties": false,
+        "properties": {
+          "attachments": {
+            "items": {
+              "$ref": "#/components/schemas/SearchDialogTransmissionAttachmentDtoSO"
+            },
+            "type": "array"
+          },
+          "authorizationAttribute": {
+            "nullable": true,
+            "type": "string"
+          },
+          "content": {
+            "$ref": "#/components/schemas/SearchDialogTransmissionContentDtoSO"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "deletedAt": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "extendedType": {
+            "format": "uri",
+            "nullable": true,
+            "type": "string"
+          },
+          "id": {
+            "format": "guid",
+            "type": "string"
+          },
+          "relatedTransmissionId": {
+            "format": "guid",
+            "nullable": true,
+            "type": "string"
+          },
+          "sender": {
+            "$ref": "#/components/schemas/SearchDialogTransmissionSenderActorDtoSO"
+          },
+          "type": {
+            "$ref": "#/components/schemas/DialogTransmissionType_Values"
+          }
+        },
+        "type": "object"
+      },
+      "SearchDialogTransmissionSenderActorDto": {
+        "additionalProperties": false,
+        "properties": {
+          "actorId": {
+            "type": "string"
+          },
+          "actorName": {
+            "type": "string"
+          },
+          "actorType": {
+            "$ref": "#/components/schemas/ActorType_Values"
+          },
+          "id": {
+            "format": "guid",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "SearchDialogTransmissionSenderActorDtoSO": {
+        "additionalProperties": false,
+        "properties": {
+          "actorId": {
+            "type": "string"
+          },
+          "actorName": {
+            "type": "string"
+          },
+          "actorType": {
+            "$ref": "#/components/schemas/ActorType_Values"
           },
           "id": {
             "format": "guid",
@@ -4517,10 +5331,12 @@
           "200": {
             "content": {
               "application/json": {
-                "schema": {}
-              },
-              "text/plain": {
-                "schema": {}
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SearchDialogActivityDto"
+                  },
+                  "type": "array"
+                }
               }
             },
             "description": "Successfully returned the dialog activity list."
@@ -4569,6 +5385,13 @@
         ],
         "responses": {
           "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetDialogActivityDto"
+                }
+              }
+            },
             "description": "Successfully returned the dialog activity."
           },
           "401": {
@@ -4871,7 +5694,7 @@
     "/api/v1/enduser/dialogs/{dialogId}/transmissions": {
       "get": {
         "description": "Gets the list of transmissions belonging to a dialog",
-        "operationId": "GetDialogTransmissionListEU",
+        "operationId": "GetDialogTransmissionList",
         "parameters": [
           {
             "in": "path",
@@ -4887,10 +5710,12 @@
           "200": {
             "content": {
               "application/json": {
-                "schema": {}
-              },
-              "text/plain": {
-                "schema": {}
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SearchDialogTransmissionDto"
+                  },
+                  "type": "array"
+                }
               }
             },
             "description": "Successfully returned the dialog transmission list."
@@ -4916,7 +5741,7 @@
     "/api/v1/enduser/dialogs/{dialogId}/transmissions/{transmissionId}": {
       "get": {
         "description": "Gets a single transmission belonging to a dialog. For more information see the documentation (link TBD).",
-        "operationId": "GetDialogTransmissionEU",
+        "operationId": "GetDialogTransmission",
         "parameters": [
           {
             "in": "path",
@@ -4939,6 +5764,13 @@
         ],
         "responses": {
           "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetDialogTransmissionDto"
+                }
+              }
+            },
             "description": "Successfully returned the dialog transmission."
           },
           "401": {
@@ -5909,10 +6741,9 @@
           "200": {
             "content": {
               "application/json": {
-                "schema": {}
-              },
-              "text/plain": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/NotificationConditionDto"
+                }
               }
             },
             "description": "Successfully returned the notification determination."
@@ -5954,10 +6785,12 @@
           "200": {
             "content": {
               "application/json": {
-                "schema": {}
-              },
-              "text/plain": {
-                "schema": {}
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SearchDialogActivityDtoSO"
+                  },
+                  "type": "array"
+                }
               }
             },
             "description": "Successfully returned the dialog activity list."
@@ -6111,6 +6944,13 @@
         ],
         "responses": {
           "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetDialogActivityDtoSO"
+                }
+              }
+            },
             "description": "Successfully returned the dialog activity."
           },
           "401": {
@@ -6280,10 +7120,12 @@
           "200": {
             "content": {
               "application/json": {
-                "schema": {}
-              },
-              "text/plain": {
-                "schema": {}
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SearchDialogTransmissionDtoSO"
+                  },
+                  "type": "array"
+                }
               }
             },
             "description": "Successfully returned the dialog transmission list."
@@ -6437,6 +7279,13 @@
         ],
         "responses": {
           "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetDialogTransmissionDtoSO"
+                }
+              }
+            },
             "description": "Successfully returned the dialog transmission."
           },
           "401": {
