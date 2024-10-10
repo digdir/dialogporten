@@ -30,7 +30,7 @@ param slackNotifierSku = {
   applicationServicePlanTier: 'Dynamic'
 }
 param postgresSku = {
-  name: 'Standard_B1ms'
+  name: 'Standard_B2s'
   tier: 'Burstable'
 }
 
