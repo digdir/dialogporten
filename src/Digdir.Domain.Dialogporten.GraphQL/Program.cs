@@ -111,8 +111,7 @@ static void BuildAndRun(string[] args)
 
     var app = builder.Build();
 
-    app.MapAspNetHealthChecks()
-        .MapControllers();
+    app.MapAspNetHealthChecks();
 
     app.UseJwtSchemeSelector()
         .UseAuthentication()
