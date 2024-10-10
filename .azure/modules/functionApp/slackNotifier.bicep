@@ -155,7 +155,6 @@ resource notifyDevTeam 'Microsoft.Insights/actionGroups@2023-01-01' = {
   tags: tags
 }
 
-
 var query = '''
             union
                  (exceptions
