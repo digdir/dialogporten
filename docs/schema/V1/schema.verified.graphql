@@ -62,6 +62,7 @@ type Attachment {
 type AttachmentUrl {
   id: UUID!
   url: URL!
+  mediaType: String
   consumerType: AttachmentUrlConsumer!
 }
 

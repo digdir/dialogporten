@@ -209,32 +209,38 @@ public sealed class CreateDialogDialogTransmissionDto
 public sealed class CreateDialogContentDto
 {
     /// <summary>
-    /// The title of the dialog. Must be text/plain.
+    /// The title of the dialog.
+    /// Supported media types: text/plain
     /// </summary>
     public ContentValueDto Title { get; set; } = null!;
 
     /// <summary>
-    /// A short summary of the dialog and its current state. Must be text/plain.
+    /// A short summary of the dialog and its current state.
+    /// Supported media types: text/plain
     /// </summary>
     public ContentValueDto Summary { get; set; } = null!;
 
     /// <summary>
     /// Overridden sender name. If not supplied, assume "org" as the sender name. Must be text/plain if supplied.
+    /// Supported media types: text/plain
     /// </summary>
     public ContentValueDto? SenderName { get; set; }
 
     /// <summary>
-    /// Additional information about the dialog, this may contain Markdown.
+    /// Additional information about the dialog.
+    /// Supported media types: text/plain, text/markdown
     /// </summary>
     public ContentValueDto? AdditionalInfo { get; set; }
 
     /// <summary>
-    /// Used as the human-readable label used to describe the "ExtendedStatus" field. Must be text/plain.
+    /// Used as the human-readable label used to describe the "ExtendedStatus" field.
+    /// Supported media types: text/plain
     /// </summary>
     public ContentValueDto? ExtendedStatus { get; set; }
 
     /// <summary>
     /// Front-channel embedded content. Used to dynamically embed content in the frontend from an external URL.
+    /// Supported media types: application/vnd.dialogporten.frontchannelembed+json;type=markdown
     /// </summary>
     public ContentValueDto? MainContentReference { get; set; }
 }

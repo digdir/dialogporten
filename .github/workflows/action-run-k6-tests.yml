@@ -17,6 +17,8 @@ on:
         required: true
       TOKEN_GENERATOR_PASSWORD:
         required: true
+      SLACK_BOT_TOKEN:
+        required: true
 
 jobs:
   k6-test:

@@ -380,6 +380,7 @@ internal sealed class CreateDialogDialogApiActionEndpointDtoValidator : Abstract
             .MaximumLength(Constants.DefaultMaxUriLength);
         RuleFor(x => x.Deprecated)
             .Equal(true)
+            .WithMessage($"'{{PropertyName}}' must be equal to 'True' when {nameof(CreateDialogDialogApiActionEndpointDto.SunsetAt)} is set.")
             .When(x => x.SunsetAt.HasValue);
     }
 }
