@@ -194,6 +194,7 @@ public sealed class AttachmentUrl
 {
     public Guid Id { get; set; }
     public Uri Url { get; set; } = null!;
+    public string? MediaType { get; set; }
 
     public AttachmentUrlConsumer ConsumerType { get; set; }
 }
