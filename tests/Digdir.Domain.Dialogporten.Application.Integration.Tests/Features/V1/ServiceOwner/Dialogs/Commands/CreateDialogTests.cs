@@ -1,10 +1,14 @@
-﻿using Castle.Core.Logging;
+using Digdir.Domain.Dialogporten.Application.Common.Authorization;
+using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
+using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Content;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Queries.Get;
 using Digdir.Domain.Dialogporten.Application.Integration.Tests.Common;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
+using Digdir.Domain.Dialogporten.Domain;
 using Digdir.Tool.Dialogporten.GenerateFakeData;
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using static Digdir.Domain.Dialogporten.Application.Integration.Tests.UuiDv7Utils;
 
 namespace Digdir.Domain.Dialogporten.Application.Integration.Tests.Features.V1.ServiceOwner.Dialogs.Commands;
@@ -271,5 +275,138 @@ public class CreateDialogTests : ApplicationCollectionFixture
             .Count(e => e.PropertyName.Contains(nameof(createDialogCommand.Content)))
             .Should()
             .Be(2);
+    }
+
+    private const string LegacyHtmlMediaType = MediaTypes.LegacyHtml;
+
+    private static ContentValueDto CreateHtmlContentValueDto() => new()
+    {
+        MediaType = LegacyHtmlMediaType,
+        Value = [new() { LanguageCode = "nb", Value = "<p>Some HTML content</p>" }]
+    };
+
+    [Fact]
+    public async Task Cannot_Create_AdditionalInfo_Content_With_Html_MediaType_Without_Correct_Scope()
+    {
+        // Arrange
+        var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog();
+        createDialogCommand.Content.AdditionalInfo = CreateHtmlContentValueDto();
+
+        // Act
+        var response = await Application.Send(createDialogCommand);
+
+        // Assert
+        response.TryPickT2(out var validationError, out _).Should().BeTrue();
+        validationError.Should().NotBeNull();
+        validationError.Errors
+            .Count(e => e.AttemptedValue.Equals(LegacyHtmlMediaType))
+            .Should()
+            .Be(1);
+    }
+
+    [Fact]
+    public async Task Can_Create_AdditionalInfo_Content_With_Html_MediaType_With_Correct_Scope()
+    {
+        // Arrange
+        var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog();
+        createDialogCommand.Content.AdditionalInfo = CreateHtmlContentValueDto();
+
+        var userWithLegacyScope = new IntegrationTestUser([new("scope", Constants.LegacyHtmlScope)]);
+        Application.ConfigureServiceCollection(services =>
+        {
+            services.RemoveAll<IUser>();
+            services.AddSingleton<IUser>(userWithLegacyScope);
+        });
+
+        // Act
+        var response = await Application.Send(createDialogCommand);
+
+        // Assert
+        response.TryPickT0(out var success, out _).Should().BeTrue();
+        success.Should().NotBeNull();
+    }
+
+    [Fact]
+    public async Task Cannot_Create_Title_Content_With_Html_MediaType_With_Correct_Scope()
+    {
+        // Arrange
+        var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog();
+        createDialogCommand.Content.Title = CreateHtmlContentValueDto();
+
+        var userWithLegacyScope = new IntegrationTestUser([new("scope", Constants.LegacyHtmlScope)]);
+        Application.ConfigureServiceCollection(services =>
+        {
+            services.RemoveAll<IUser>();
+            services.AddSingleton<IUser>(userWithLegacyScope);
+        });
+
+        // Act
+        var response = await Application.Send(createDialogCommand);
+
+        // Assert
+        response.TryPickT2(out var validationError, out _).Should().BeTrue();
+        validationError.Should().NotBeNull();
+        validationError.Errors
+            .Count(e => e.AttemptedValue.Equals(LegacyHtmlMediaType))
+            .Should()
+            .Be(1);
+    }
+
+    [Fact]
+    public async Task Cannot_Create_Title_Content_With_Embeddable_Html_MediaType_With_Correct_Scope()
+    {
+        // Arrange
+        var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog();
+        createDialogCommand.Content.Title = new ContentValueDto
+        {
+            MediaType = MediaTypes.LegacyEmbeddableHtml,
+            Value = [new LocalizationDto { LanguageCode = "en", Value = "https://external.html" }]
+        };
+
+        var userWithLegacyScope = new IntegrationTestUser([new("scope", Constants.LegacyHtmlScope)]);
+        Application.ConfigureServiceCollection(services =>
+        {
+            services.RemoveAll<IUser>();
+            services.AddSingleton<IUser>(userWithLegacyScope);
+        });
+
+        // Act
+        var response = await Application.Send(createDialogCommand);
+
+        // Assert
+        response.TryPickT2(out var validationError, out _).Should().BeTrue();
+        validationError.Should().NotBeNull();
+        validationError.Errors
+            .Count(e => e.AttemptedValue.Equals(MediaTypes.LegacyEmbeddableHtml))
+            .Should()
+            .Be(1);
+    }
+
+    [Fact]
+    public async Task Can_Create_MainContentRef_Content_With_Embeddable_Html_MediaType_With_Correct_Scope()
+    {
+        // Arrange
+        var expectedDialogId = GenerateBigEndianUuidV7();
+        var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog(id: expectedDialogId);
+        createDialogCommand.Content.MainContentReference = new ContentValueDto
+        {
+            MediaType = MediaTypes.LegacyEmbeddableHtml,
+            Value = [new LocalizationDto { LanguageCode = "en", Value = "https://external.html" }]
+        };
+
+        var userWithLegacyScope = new IntegrationTestUser([new("scope", Constants.LegacyHtmlScope)]);
+        Application.ConfigureServiceCollection(services =>
+        {
+            services.RemoveAll<IUser>();
+            services.AddSingleton<IUser>(userWithLegacyScope);
+        });
+
+        // Act
+        var response = await Application.Send(createDialogCommand);
+
+        // Assert
+        response.TryPickT0(out var success, out _).Should().BeTrue();
+        success.Should().NotBeNull();
+        success.Value.Should().Be(expectedDialogId);
     }
 }

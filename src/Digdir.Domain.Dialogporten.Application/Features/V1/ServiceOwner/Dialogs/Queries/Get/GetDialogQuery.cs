@@ -83,6 +83,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
                 .Where(x => x.CreatedAt >= x.Dialog.UpdatedAt)
                 .OrderBy(x => x.CreatedAt))
                 .ThenInclude(x => x.SeenBy)
+            .Include(x => x.DialogEndUserContext)
             .IgnoreQueryFilters()
             .Where(x => resourceIds.Contains(x.ServiceResource))
             .FirstOrDefaultAsync(x => x.Id == request.DialogId, cancellationToken);
@@ -100,7 +101,6 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
 
             var authorizationResult = await _altinnAuthorization.GetDialogDetailsAuthorization(
                 dialog,
-                request.EndUserId,
                 cancellationToken);
 
             if (!authorizationResult.HasAccessToMainResource())

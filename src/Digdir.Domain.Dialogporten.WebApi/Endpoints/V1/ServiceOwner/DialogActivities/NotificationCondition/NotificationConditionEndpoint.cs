@@ -6,7 +6,7 @@ using MediatR;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.DialogActivities.NotificationCondition;
 
-public sealed class NotificationConditionEndpoint : Endpoint<NotificationConditionQuery>
+public sealed class NotificationConditionEndpoint : Endpoint<NotificationConditionQuery, NotificationConditionDto>
 {
     private readonly ISender _sender;
 

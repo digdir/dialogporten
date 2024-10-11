@@ -2,12 +2,16 @@
 using AutoMapper;
 using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Common.Authorization;
+using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
+using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
+using Digdir.Domain.Dialogporten.Domain.Actors;
 using Digdir.Domain.Dialogporten.Domain.Common;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
+using Digdir.Domain.Dialogporten.Domain.Parties;
 using MediatR;
 using OneOf;
 using OneOf.Types;
@@ -27,8 +31,10 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
     private readonly IDomainContext _domainContext;
     private readonly IUserOrganizationRegistry _userOrganizationRegistry;
     private readonly IServiceResourceAuthorizer _serviceResourceAuthorizer;
+    private readonly IUser _user;
 
     public CreateDialogCommandHandler(
+        IUser user,
         IDialogDbContext db,
         IMapper mapper,
         IUnitOfWork unitOfWork,
@@ -36,6 +42,7 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
         IUserOrganizationRegistry userOrganizationRegistry,
         IServiceResourceAuthorizer serviceResourceAuthorizer)
     {
+        _user = user ?? throw new ArgumentNullException(nameof(user));
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
@@ -61,7 +68,7 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
             _domainContext.AddError(new DomainFailure(nameof(DialogEntity.Org),
                 "Cannot find service owner organization shortname for current user. Please ensure that you are logged in as a service owner."));
         }
-
+        CreateDialogEndUserContext(request, dialog);
         await EnsureNoExistingUserDefinedIds(dialog, cancellationToken);
         await _db.Dialogs.AddAsync(dialog, cancellationToken);
         var saveResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
@@ -69,6 +76,26 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
             success => new Success<Guid>(dialog.Id),
             domainError => domainError,
             concurrencyError => throw new UnreachableException("Should never get a concurrency error when creating a new dialog"));
+    }
+
+    private void CreateDialogEndUserContext(CreateDialogCommand request, DialogEntity dialog)
+    {
+        dialog.DialogEndUserContext = new();
+        if (!request.SystemLabel.HasValue)
+        {
+            return;
+        }
+
+        if (!_user.TryGetOrganizationNumber(out var organizationNumber))
+        {
+            _domainContext.AddError(new DomainFailure(nameof(organizationNumber), "Cannot find organization number for current user."));
+            return;
+        }
+
+        dialog.DialogEndUserContext.UpdateLabel(
+            request.SystemLabel.Value,
+            $"{NorwegianOrganizationIdentifier.PrefixWithSeparator}{organizationNumber}",
+            ActorType.Values.ServiceOwner);
     }
 
     private async Task EnsureNoExistingUserDefinedIds(DialogEntity dialog, CancellationToken cancellationToken)
@@ -89,6 +116,12 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
         if (existingTransmissionIds.Count != 0)
         {
             _domainContext.AddError(DomainFailure.EntityExists<DialogTransmission>(existingTransmissionIds));
+        }
+
+        var existingTransmissionAttachmentIds = await _db.GetExistingIds(dialog.Transmissions.SelectMany(t => t.Attachments), cancellationToken);
+        if (existingTransmissionAttachmentIds.Count != 0)
+        {
+            _domainContext.AddError(DomainFailure.EntityExists<DialogTransmissionAttachment>(existingTransmissionAttachmentIds));
         }
     }
 }

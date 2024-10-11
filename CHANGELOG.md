@@ -1,5 +1,68 @@
 # Changelog
 
+## [1.23.0](https://github.com/digdir/dialogporten/compare/v1.22.0...v1.23.0) (2024-10-10)
+
+
+### Features
+
+* **infra:** upgrade postgresql SKU in test ([#1257](https://github.com/digdir/dialogporten/issues/1257)) ([5a751af](https://github.com/digdir/dialogporten/commit/5a751af66253515e91bb5d13f2eaefbee8313cf4))
+* **webAPI:** Add legacy HTML support for MainContentReference ([#1256](https://github.com/digdir/dialogporten/issues/1256)) ([482b38a](https://github.com/digdir/dialogporten/commit/482b38a769f1cfff22dbc85ec96f6ad2bb58089f))
+
+
+### Bug Fixes
+
+* Add missing return types for Transmissions and Activities in OpenAPI spec ([#1244](https://github.com/digdir/dialogporten/issues/1244)) ([972870d](https://github.com/digdir/dialogporten/commit/972870d53b9752ecd391b07773e72ea6d08b2082))
+* **graphQL:** Missing MediaType on dialog attachment url ([#1264](https://github.com/digdir/dialogporten/issues/1264)) ([3919343](https://github.com/digdir/dialogporten/commit/391934362bce6a14f6abc8bd16f66879dab30d41))
+* Refactor probes and add more health checks ([#1159](https://github.com/digdir/dialogporten/issues/1159)) ([6889a96](https://github.com/digdir/dialogporten/commit/6889a96adcf7ffd141df0b854ca683e228b1a6fe))
+* **webapi:** ensure correct health checks are used in probes ([#1249](https://github.com/digdir/dialogporten/issues/1249)) ([f951152](https://github.com/digdir/dialogporten/commit/f9511528804f1560992843cde9515811de9eca0a))
+
+## [1.22.0](https://github.com/digdir/dialogporten/compare/v1.21.0...v1.22.0) (2024-10-07)
+
+
+### Features
+
+* Add support for supplied transmission attachment ID on create/update ([#1242](https://github.com/digdir/dialogporten/issues/1242)) ([c7bfb07](https://github.com/digdir/dialogporten/commit/c7bfb076fd8c8e0c853d3b99c346a87a89501170))
+
+
+### Bug Fixes
+
+* Only allow legacy HTML on AditionalInfo content ([#1210](https://github.com/digdir/dialogporten/issues/1210)) ([aa4acde](https://github.com/digdir/dialogporten/commit/aa4acde212e76cb3665fee0daaf116d9837c4fc9))
+* **webAPI:** Specifying EndUserId on the ServiceOwner Search endpoint produces 500 - Internal Server error ([#1234](https://github.com/digdir/dialogporten/issues/1234)) ([49c0d34](https://github.com/digdir/dialogporten/commit/49c0d3438c396e2ca82a6101bd37e402a0c3aec9))
+
+## [1.21.0](https://github.com/digdir/dialogporten/compare/v1.20.2...v1.21.0) (2024-10-03)
+
+
+### Features
+
+* basic label implementation to hide dialogs ([#1192](https://github.com/digdir/dialogporten/issues/1192)) ([ee90c68](https://github.com/digdir/dialogporten/commit/ee90c6806bf0b394d9062612f5554a4d02616ab4))
+
+
+### Bug Fixes
+
+* **webAPI:** Broken mapping when creating Transmissions in an Update ([#1221](https://github.com/digdir/dialogporten/issues/1221)) ([6e7dfe4](https://github.com/digdir/dialogporten/commit/6e7dfe461eb1841bbdd1dd721fab87e7b609756c))
+
+## [1.20.2](https://github.com/digdir/dialogporten/compare/v1.20.1...v1.20.2) (2024-10-02)
+
+
+### Bug Fixes
+
+* (webAPI): Add revision to search dto (ServiceOwner) ([#1216](https://github.com/digdir/dialogporten/issues/1216)) ([3b6d130](https://github.com/digdir/dialogporten/commit/3b6d130bb117fa8d3e0a183474c9bd60e377abb7))
+* **graphQL:** GraphQL subscription not notified on DialogActivityCreated ([#1187](https://github.com/digdir/dialogporten/issues/1187)) ([f28e291](https://github.com/digdir/dialogporten/commit/f28e291bdba7cf3cc94cf0de84fcc12e781d3abb))
+
+## [1.20.1](https://github.com/digdir/dialogporten/compare/v1.20.0...v1.20.1) (2024-10-02)
+
+
+### Bug Fixes
+
+* Add separate settings for parties cache, don't cache invalid response from Altinn 2 ([#1194](https://github.com/digdir/dialogporten/issues/1194)) ([dbb79dc](https://github.com/digdir/dialogporten/commit/dbb79dc26cefc5f28c21a738f39199c36a49438f))
+
+## [1.20.0](https://github.com/digdir/dialogporten/compare/v1.19.0...v1.20.0) (2024-09-30)
+
+
+### Features
+
+* **GraphQL:** Add DialogToken requirement for subscriptions ([#1124](https://github.com/digdir/dialogporten/issues/1124)) ([651ca62](https://github.com/digdir/dialogporten/commit/651ca62fdec02dec48b674b80acf52737036cf13))
+
 ## [1.19.0](https://github.com/digdir/dialogporten/compare/v1.18.1...v1.19.0) (2024-09-24)
 
 

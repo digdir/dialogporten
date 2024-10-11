@@ -63,3 +63,47 @@ jobs:
       region: norwayeast
       dryRun: true
       version: ${{ needs.get-current-version.outputs.version }}-${{ needs.generate-git-short-sha.outputs.gitShortSha }}
+
+  send-slack-message:
+    name: Send Slack message
+    needs: [dry-run-deploy-infra-staging, dry-run-deploy-apps-staging]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Slackify markdown in pull request body
+        id: slackify
+        uses: LoveToKnow/slackify-markdown-action@v1.1.1
+        with:
+          text: ${{ github.event.pull_request.body }}
+      - name: Send GitHub slack message
+        id: slack
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+        uses: slackapi/slack-github-action@v1.27.0
+        with:
+          channel-id: ${{ secrets.SLACK_CHANNEL_ID_FOR_RELEASES }}
+          payload: |
+            {
+                "blocks": [
+                  {
+                    "type": "section",
+                    "text": {
+                      "type": "mrkdwn",
+                      "text": ${{ toJson(steps.slackify.outputs.text) }}
+                    }
+                  },
+                  { "type": "divider" },
+                  {
+                    "type": "actions",
+                    "elements": [
+                      {
+                        "type": "button",
+                        "text": {
+                          "type": "plain_text",
+                          "text": "Approve Release"
+                        },
+                        "url": "https://github.com/${{ github.repository }}/pull/${{ github.event.pull_request.number }}"
+                      }
+                    ]
+                  }
+                ]
+            }

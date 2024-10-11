@@ -6,7 +6,7 @@ using MediatR;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.EndUser.DialogTransmissions.Search;
 
-public sealed class SearchDialogTransmissionEndpoint : Endpoint<SearchDialogTransmissionQuery>
+public sealed class SearchDialogTransmissionEndpoint : Endpoint<SearchDialogTransmissionQuery, List<SearchDialogTransmissionDto>>
 {
     private readonly ISender _sender;
 

@@ -27,6 +27,8 @@ using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using OpenTelemetry.Metrics;
 using Serilog;
+using Digdir.Library.Utils.AspNet;
+using Microsoft.Extensions.Options;
 
 // Using two-stage initialization to catch startup errors.
 Log.Logger = new LoggerConfiguration()
@@ -126,6 +128,13 @@ static void BuildAndRun(string[] args)
         .AddControllers(options => options.InputFormatters.Insert(0, JsonPatchInputFormatter.Get()))
             .AddNewtonsoftJson()
             .Services
+        // Add health checks with the retrieved URLs
+        .AddAspNetHealthChecks((x, y) => x.HealthCheckSettings.HttpGetEndpointsToCheck = y
+            .GetRequiredService<IOptions<WebApiSettings>>().Value?
+            .Authentication?
+            .JwtBearerTokenSchemas?
+            .Select(z => z.WellKnown)
+            .ToList() ?? [])
 
         // OpenTelemetry
         .AddOpenTelemetry()
@@ -160,8 +169,7 @@ static void BuildAndRun(string[] args)
 
     // Auth
     builder.Services.AddDialogportenAuthentication(builder.Configuration)
-    .AddAuthorization()
-    .AddHealthChecks();
+    .AddAuthorization();
 
     if (builder.Environment.IsDevelopment())
     {
@@ -177,6 +185,9 @@ static void BuildAndRun(string[] args)
     }
 
     var app = builder.Build();
+
+    app.MapAspNetHealthChecks()
+        .MapControllers();
 
     app.UseHttpsRedirection()
         .UseSerilogRequestLogging()
@@ -230,8 +241,7 @@ static void BuildAndRun(string[] args)
             var dialogPrefix = builder.Environment.IsDevelopment() ? "" : "/dialogporten";
             uiConfig.DocumentPath = dialogPrefix + "/swagger/{documentName}/swagger.json";
         });
-    app.MapControllers();
-    app.MapHealthChecks("/healthz");
+
     app.Run();
 }
 

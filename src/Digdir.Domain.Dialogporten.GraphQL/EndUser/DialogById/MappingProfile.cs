@@ -29,8 +29,8 @@ public sealed class MappingProfile : Profile
         CreateMap<GetDialogDialogTransmissionDto, Transmission>()
             .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type));
         CreateMap<GetDialogDialogTransmissionSenderActorDto, Actor>();
-        CreateMap<GetDialogTransmissionAttachmentDto, Attachment>();
-        CreateMap<GetDialogTransmissionAttachmentUrlDto, AttachmentUrl>()
+        CreateMap<GetDialogDialogTransmissionAttachmentDto, Attachment>();
+        CreateMap<GetDialogDialogTransmissionAttachmentUrlDto, AttachmentUrl>()
             .ForMember(dest => dest.ConsumerType, opt => opt.MapFrom(src => src.ConsumerType));
         CreateMap<GetDialogDialogTransmissionContentDto, TransmissionContent>();
     }

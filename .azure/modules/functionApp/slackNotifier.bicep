@@ -161,6 +161,7 @@ var query = '''
                  | where not(customDimensions.['Service Type'] == 'API Management')),
                  (traces
                  | where severityLevel >= 3 or (severityLevel >= 2 and customDimensions.SourceContext startswith "Digdir"))
+                 | where operation_Name !startswith "GET /health/"
              | summarize Count = count()
                  by
                  Environment = tostring(customDimensions.AspNetCoreEnvironment),

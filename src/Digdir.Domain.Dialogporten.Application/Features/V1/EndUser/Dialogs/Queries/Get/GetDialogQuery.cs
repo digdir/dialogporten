@@ -9,6 +9,7 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
+using static Digdir.Domain.Dialogporten.Application.Features.V1.Common.Authorization.Constants;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Queries.Get;
 
@@ -78,9 +79,10 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
             .Include(x => x.Activities).ThenInclude(x => x.Description!.Localizations)
             .Include(x => x.Activities).ThenInclude(x => x.PerformedBy)
             .Include(x => x.SeenLog
-                .Where(x => x.CreatedAt >= x.Dialog.UpdatedAt)
-                .OrderBy(x => x.CreatedAt))
+                    .Where(x => x.CreatedAt >= x.Dialog.UpdatedAt)
+                    .OrderBy(x => x.CreatedAt))
                 .ThenInclude(x => x.SeenBy)
+            .Include(x => x.DialogEndUserContext)
             .Where(x => !x.VisibleFrom.HasValue || x.VisibleFrom < _clock.UtcNowOffset)
             .IgnoreQueryFilters()
             .FirstOrDefaultAsync(x => x.Id == request.DialogId, cancellationToken);
@@ -134,7 +136,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
         dialogDto.DialogToken = _dialogTokenGenerator.GetDialogToken(
             dialog,
             authorizationResult,
-            "/api/v1"
+            DialogTokenIssuerVersion
         );
 
         DecorateWithAuthorization(dialogDto, authorizationResult);
@@ -151,7 +153,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
             foreach (var apiAction in dto.ApiActions.Where(a => a.Action == action))
             {
                 if ((apiAction.AuthorizationAttribute is null && resource == Constants.MainResource)
-                 || (apiAction.AuthorizationAttribute is not null && resource == apiAction.AuthorizationAttribute))
+                    || (apiAction.AuthorizationAttribute is not null && resource == apiAction.AuthorizationAttribute))
                 {
                     apiAction.IsAuthorized = true;
                 }
@@ -160,7 +162,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
             foreach (var guiAction in dto.GuiActions.Where(a => a.Action == action))
             {
                 if ((guiAction.AuthorizationAttribute is null && resource == Constants.MainResource)
-                 || (guiAction.AuthorizationAttribute is not null && resource == guiAction.AuthorizationAttribute))
+                    || (guiAction.AuthorizationAttribute is not null && resource == guiAction.AuthorizationAttribute))
                 {
                     guiAction.IsAuthorized = true;
                 }

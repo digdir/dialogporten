@@ -2,6 +2,7 @@
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using Digdir.Domain.Dialogporten.Domain.Actors;
 using Digdir.Domain.Dialogporten.Domain.Attachments;
+using Digdir.Domain.Dialogporten.Domain.DialogEndUserContexts.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
@@ -128,6 +129,11 @@ public sealed class GetDialogDto
     public DialogStatus.Values Status { get; set; }
 
     /// <summary>
+    /// Current display state.
+    /// </summary>
+    public SystemLabel.Values SystemLabel { get; set; }
+
+    /// <summary>
     /// The dialog unstructured text content
     /// </summary>
     public GetDialogContentDto Content { get; set; } = null!;
@@ -231,7 +237,7 @@ public sealed class GetDialogDialogTransmissionDto
     /// <summary>
     /// The transmission-level attachments
     /// </summary>
-    public List<GetDialogTransmissionAttachmentDto> Attachments { get; set; } = [];
+    public List<GetDialogDialogTransmissionAttachmentDto> Attachments { get; set; } = [];
 }
 
 public sealed class GetDialogDialogSeenLogDto
@@ -630,7 +636,7 @@ public sealed class GetDialogDialogAttachmentUrlDto
     public AttachmentUrlConsumerType.Values ConsumerType { get; set; }
 }
 
-public sealed class GetDialogTransmissionAttachmentDto
+public sealed class GetDialogDialogTransmissionAttachmentDto
 {
     /// <summary>
     /// The unique identifier for the attachment in UUIDv7 format.
@@ -645,10 +651,10 @@ public sealed class GetDialogTransmissionAttachmentDto
     /// <summary>
     /// The URLs associated with the attachment, each referring to a different representation of the attachment.
     /// </summary>
-    public List<GetDialogTransmissionAttachmentUrlDto> Urls { get; set; } = [];
+    public List<GetDialogDialogTransmissionAttachmentUrlDto> Urls { get; set; } = [];
 }
 
-public sealed class GetDialogTransmissionAttachmentUrlDto
+public sealed class GetDialogDialogTransmissionAttachmentUrlDto
 {
     /// <summary>
     /// The fully qualified URL of the attachment. Will be set to "urn:dialogporten:unauthorized" if the user is

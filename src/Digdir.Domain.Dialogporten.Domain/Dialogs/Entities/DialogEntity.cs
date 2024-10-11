@@ -1,5 +1,6 @@
 ﻿using Digdir.Domain.Dialogporten.Domain.Actors;
 using Digdir.Domain.Dialogporten.Domain.Attachments;
+using Digdir.Domain.Dialogporten.Domain.DialogEndUserContexts.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Contents;
@@ -41,6 +42,7 @@ public sealed class DialogEntity :
 
     public string? PrecedingProcess { get; set; }
 
+
     // === Dependent relationships ===
     public DialogStatus.Values StatusId { get; set; }
     public DialogStatus Status { get; set; } = null!;
@@ -71,22 +73,13 @@ public sealed class DialogEntity :
     [AggregateChild]
     public List<DialogSeenLog> SeenLog { get; set; } = [];
 
+    public DialogEndUserContext DialogEndUserContext { get; set; } = null!;
+
     public void OnCreate(AggregateNode self, DateTimeOffset utcNow)
         => _domainEvents.Add(new DialogCreatedDomainEvent(Id, ServiceResource, Party, Process, PrecedingProcess));
 
-    public void OnUpdate(AggregateNode self, DateTimeOffset utcNow)
-    {
-        var changedChildren = self.Children.Where(x =>
-            x.State != AggregateNodeState.Unchanged &&
-            x.Entity is not DialogSearchTag &&
-            x.Entity is not DialogActivity);
-
-        var shouldProduceEvent = self.IsDirectlyModified() || changedChildren.Any();
-        if (shouldProduceEvent)
-        {
-            _domainEvents.Add(new DialogUpdatedDomainEvent(Id, ServiceResource, Party, Process, PrecedingProcess));
-        }
-    }
+    public void OnUpdate(AggregateNode self, DateTimeOffset utcNow) =>
+        _domainEvents.Add(new DialogUpdatedDomainEvent(Id, ServiceResource, Party, Process, PrecedingProcess));
 
     public void OnDelete(AggregateNode self, DateTimeOffset utcNow)
         => _domainEvents.Add(new DialogDeletedDomainEvent(Id, ServiceResource, Party, Process, PrecedingProcess));
@@ -94,10 +87,10 @@ public sealed class DialogEntity :
     public void UpdateSeenAt(string endUserId, DialogUserType.Values userTypeId, string? endUserName)
     {
         var lastSeenAt = SeenLog
-            .Where(x => x.SeenBy.ActorId == endUserId)
-            .MaxBy(x => x.CreatedAt)
-            ?.CreatedAt
-            ?? DateTimeOffset.MinValue;
+                             .Where(x => x.SeenBy.ActorId == endUserId)
+                             .MaxBy(x => x.CreatedAt)
+                             ?.CreatedAt
+                         ?? DateTimeOffset.MinValue;
 
         if (lastSeenAt >= UpdatedAt)
         {

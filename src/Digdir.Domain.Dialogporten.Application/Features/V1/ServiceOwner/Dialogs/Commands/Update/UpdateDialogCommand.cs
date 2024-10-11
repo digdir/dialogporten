@@ -1,15 +1,20 @@
 ﻿using AutoMapper;
 using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Common.Authorization;
+using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.Enumerables;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
-using Digdir.Domain.Dialogporten.Domain.Common;
+using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
+using Digdir.Domain.Dialogporten.Domain.Actors;
 using Digdir.Domain.Dialogporten.Domain.Attachments;
+using Digdir.Domain.Dialogporten.Domain.Common;
+using Digdir.Domain.Dialogporten.Domain.DialogEndUserContexts.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
+using Digdir.Domain.Dialogporten.Domain.Parties;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
@@ -30,6 +35,7 @@ public sealed partial class UpdateDialogResult : OneOfBase<Success, EntityNotFou
 internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogCommand, UpdateDialogResult>
 {
     private readonly IDialogDbContext _db;
+    private readonly IUser _user;
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IDomainContext _domainContext;
@@ -38,12 +44,14 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
 
     public UpdateDialogCommandHandler(
         IDialogDbContext db,
+        IUser user,
         IMapper mapper,
         IUnitOfWork unitOfWork,
         IDomainContext domainContext,
         IUserResourceRegistry userResourceRegistry,
         IServiceResourceAuthorizer serviceResourceAuthorizer)
     {
+        _user = user ?? throw new ArgumentNullException(nameof(user));
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
@@ -72,6 +80,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
             .Include(x => x.ApiActions)
                 .ThenInclude(x => x.Endpoints)
             .Include(x => x.Transmissions)
+            .Include(x => x.DialogEndUserContext)
             .IgnoreQueryFilters()
             .Where(x => resourceIds.Contains(x.ServiceResource))
             .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
@@ -140,6 +149,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
             return forbiddenResult;
         }
 
+        UpdateLabel(dialog);
         var saveResult = await _unitOfWork
             .EnableConcurrencyCheck(dialog, request.IfMatchDialogRevision)
             .SaveChangesAsync(cancellationToken);
@@ -148,6 +158,20 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
             success => success,
             domainError => domainError,
             concurrencyError => concurrencyError);
+    }
+    private void UpdateLabel(DialogEntity dialog)
+    {
+
+        if (!_user.TryGetOrganizationNumber(out var organizationNumber))
+        {
+            _domainContext.AddError(new DomainFailure(nameof(organizationNumber), "Cannot find organization number for current user."));
+            return;
+        }
+
+        dialog.DialogEndUserContext.UpdateLabel(
+            SystemLabel.Values.Default,
+            $"{NorwegianOrganizationIdentifier.PrefixWithSeparator}{organizationNumber}",
+            ActorType.Values.ServiceOwner);
     }
 
     private void ValidateTimeFields(DialogEntity dialog)
@@ -258,6 +282,17 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
             return;
         }
 
+        var newTransmissionAttachments = newDialogTransmissions
+            .SelectMany(x => x.Attachments)
+            .ToList();
+
+        var existingTransmissionAttachmentIds = await _db.GetExistingIds(newTransmissionAttachments, cancellationToken);
+        if (existingTransmissionAttachmentIds.Count != 0)
+        {
+            _domainContext.AddError(DomainFailure.EntityExists<DialogTransmissionAttachment>(existingTransmissionAttachmentIds));
+            return;
+        }
+
         dialog.Transmissions.AddRange(newDialogTransmissions);
         // Tell ef explicitly to add transmissions as new to the database.
         _db.DialogTransmissions.AddRange(newDialogTransmissions);
@@ -318,11 +353,11 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
     private IEnumerable<DialogAttachment> CreateAttachments(IEnumerable<UpdateDialogDialogAttachmentDto> creatables)
     {
         return creatables.Select(attachmentDto =>
-            {
-                var attachment = _mapper.Map<DialogAttachment>(attachmentDto);
-                attachment.Urls = _mapper.Map<List<AttachmentUrl>>(attachmentDto.Urls);
-                return attachment;
-            });
+        {
+            var attachment = _mapper.Map<DialogAttachment>(attachmentDto);
+            attachment.Urls = _mapper.Map<List<AttachmentUrl>>(attachmentDto.Urls);
+            return attachment;
+        });
     }
 
     private void UpdateAttachments(IEnumerable<UpdateSet<DialogAttachment, UpdateDialogDialogAttachmentDto>> updateSets)

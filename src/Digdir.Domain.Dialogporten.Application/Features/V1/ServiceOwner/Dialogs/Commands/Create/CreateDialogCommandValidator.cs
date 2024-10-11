@@ -264,7 +264,7 @@ internal sealed class CreateDialogDialogAttachmentUrlDtoValidator : AbstractVali
     {
         RuleFor(x => x.Url)
             .NotNull()
-            .IsValidUri()
+            .IsValidHttpsUrl()
             .MaximumLength(Constants.DefaultMaxUriLength);
         RuleFor(x => x.ConsumerType)
             .IsInEnum();
@@ -277,6 +277,10 @@ internal sealed class CreateDialogTransmissionAttachmentDtoValidator : AbstractV
         IValidator<IEnumerable<LocalizationDto>> localizationsValidator,
         IValidator<CreateDialogTransmissionAttachmentUrlDto> urlValidator)
     {
+        RuleFor(x => x.Id)
+            .IsValidUuidV7()
+            .UuidV7TimestampIsInPast();
+
         RuleFor(x => x.DisplayName)
             .SetValidator(localizationsValidator);
         RuleFor(x => x.Urls)
@@ -291,7 +295,7 @@ internal sealed class CreateDialogTransmissionAttachmentUrlDtoValidator : Abstra
     {
         RuleFor(x => x.Url)
             .NotNull()
-            .IsValidUri()
+            .IsValidHttpsUrl()
             .MaximumLength(Constants.DefaultMaxUriLength);
         RuleFor(x => x.ConsumerType)
             .IsInEnum();
@@ -318,7 +322,7 @@ internal sealed class CreateDialogDialogGuiActionDtoValidator : AbstractValidato
             .MaximumLength(Constants.DefaultMaxStringLength);
         RuleFor(x => x.Url)
             .NotNull()
-            .IsValidUri()
+            .IsValidHttpsUrl()
             .MaximumLength(Constants.DefaultMaxUriLength);
         RuleFor(x => x.AuthorizationAttribute)
             .MaximumLength(Constants.DefaultMaxStringLength);
@@ -361,7 +365,7 @@ internal sealed class CreateDialogDialogApiActionEndpointDtoValidator : Abstract
             .MaximumLength(Constants.DefaultMaxStringLength);
         RuleFor(x => x.Url)
             .NotNull()
-            .IsValidUri()
+            .IsValidHttpsUrl()
             .MaximumLength(Constants.DefaultMaxUriLength);
         RuleFor(x => x.HttpMethod)
             .IsInEnum();
@@ -376,6 +380,7 @@ internal sealed class CreateDialogDialogApiActionEndpointDtoValidator : Abstract
             .MaximumLength(Constants.DefaultMaxUriLength);
         RuleFor(x => x.Deprecated)
             .Equal(true)
+            .WithMessage($"'{{PropertyName}}' must be equal to 'True' when {nameof(CreateDialogDialogApiActionEndpointDto.SunsetAt)} is set.")
             .When(x => x.SunsetAt.HasValue);
     }
 }

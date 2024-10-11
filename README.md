@@ -171,9 +171,6 @@ Here is an example of enabling debug logging only locally:
 #### Adding `appsettings.local.json` to new projects
 Add the following to the `Program.cs` file to load the `appsettings.local.json` file:
 ```csharp
-
-Example usage:
-```csharp
 var builder = WebApplication.CreateBuilder(args);
 // or var builder = CoconaApp.CreateBuilder(args);
 // or var builder = Host.CreateApplicationBuilder(args);

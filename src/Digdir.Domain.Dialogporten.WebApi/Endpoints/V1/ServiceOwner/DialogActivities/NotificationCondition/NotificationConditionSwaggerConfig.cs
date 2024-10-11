@@ -12,6 +12,7 @@ namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.DialogActi
 public sealed class NotificationConditionSwaggerConfig : ISwaggerConfig
 {
     public static string OperationId => "GetDialogActivityNotificationConditionSO";
+
     public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder)
         => builder.OperationId(OperationId);
 

@@ -1,5 +1,6 @@
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using Digdir.Domain.Dialogporten.Domain.Actors;
+using Digdir.Domain.Dialogporten.Domain.DialogEndUserContexts.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 
@@ -18,6 +19,12 @@ public class SearchDialogDtoBase
     /// </summary>
     /// <example>ske</example>
     public string Org { get; set; } = null!;
+
+    /// <summary>
+    /// The unique identifier for the revision in UUIDv4 format.
+    /// </summary>
+    /// <example>a312cb9c-7632-43c2-aa38-69b06aed56ca</example>
+    public Guid Revision { get; set; }
 
     /// <summary>
     /// The service identifier for the service that the dialog is related to in URN-format.
@@ -97,6 +104,11 @@ public class SearchDialogDtoBase
     /// The aggregated status of the dialog.
     /// </summary>
     public DialogStatus.Values Status { get; set; }
+
+    /// <summary>
+    /// Current display state.
+    /// </summary>
+    public SystemLabel.Values SystemLabel { get; set; }
 
     /// <summary>
     /// The latest entry in the dialog's activity log.
