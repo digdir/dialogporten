@@ -1,8 +1,7 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Common;
+using Digdir.Domain.Dialogporten.Domain.Common.EventPublisher;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Events;
-using Digdir.Domain.Dialogporten.Domain.Outboxes;
 using Digdir.Domain.Dialogporten.Infrastructure.GraphQl;
-using Digdir.Library.Entity.Abstractions.Features.EventPublisher;
 using HotChocolate.Subscriptions;
 using MassTransit;
 using Microsoft.EntityFrameworkCore.Diagnostics;

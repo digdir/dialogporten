@@ -5,8 +5,11 @@ using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Microsoft.ApplicationInsights.Extensibility;
 using Serilog;
 using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
+using Digdir.Domain.Dialogporten.Domain;
+using Digdir.Domain.Dialogporten.Domain.Common.EventPublisher;
 using Digdir.Domain.Dialogporten.Service;
 using Digdir.Domain.Dialogporten.Service.Consumers;
+using MassTransit;
 
 // TODO: Add AppConfiguration and key vault
 // TODO: Configure Service bus connection settings
@@ -55,11 +58,31 @@ static void BuildAndRun(string[] args)
 
     builder.Configuration.AddLocalConfiguration(builder.Environment);
 
+    var openDomainEventConsumer = typeof(DomainEventConsumer<>);
+    var openDomainEventConsumerDefinition = typeof(DomainEventConsumerDefinition<>);
+    var domainEventConsumers = DomainAssemblyMarker.Assembly
+        .GetTypes()
+        .Where(x => !x.IsAbstract && !x.IsInterface && !x.IsGenericType)
+        .Where(x => x.IsAssignableTo(typeof(IDomainEvent)))
+        .Select(x =>
+        (
+            consumerType: openDomainEventConsumer.MakeGenericType(x),
+            definitionType: openDomainEventConsumerDefinition.MakeGenericType(x))
+        )
+        .ToArray();
+
     builder.Services
         .AddApplicationInsightsTelemetry()
         .AddApplication(builder.Configuration, builder.Environment)
         .AddInfrastructure(builder.Configuration, builder.Environment)
             .WithPubSubCapabilities<ServiceAssemblyMarker>()
+            .ConfigureBus(x =>
+            {
+                foreach (var (consumer, definition) in domainEventConsumers)
+                {
+                    x.AddConsumer(consumer, definition);
+                }
+            })
             .Build()
         .AddTransient<IUser, ServiceUser>()
         .AddHealthChecks();

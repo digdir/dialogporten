@@ -9,7 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Reflection;
 using Digdir.Domain.Dialogporten.Application.Common.Authorization;
-using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Content;
+using MediatR.NotificationPublishers;
 
 namespace Digdir.Domain.Dialogporten.Application;
 
@@ -34,7 +34,12 @@ public static class ApplicationExtensions
         services
             // Framework
             .AddAutoMapper(thisAssembly)
-            .AddMediatR(x => x.RegisterServicesFromAssembly(thisAssembly))
+            .AddMediatR(x =>
+            {
+                x.RegisterServicesFromAssembly(thisAssembly);
+                x.TypeEvaluator = type => !type.IsAssignableTo(typeof(IIgnoreOnAssemblyScan));
+                x.NotificationPublisherType = typeof(TaskWhenAllPublisher);
+            })
             .AddValidatorsFromAssembly(thisAssembly, ServiceLifetime.Transient, includeInternalTypes: true,
                 filter: type => !type.ValidatorType.IsAssignableTo(typeof(IIgnoreOnAssemblyScan)))
 
@@ -54,7 +59,10 @@ public static class ApplicationExtensions
             .AddTransient<IUserParties, UserParties>()
             .AddTransient<IClock, Clock>()
             .AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>))
-            .AddTransient(typeof(IPipelineBehavior<,>), typeof(DomainContextBehaviour<,>));
+            .AddTransient(typeof(IPipelineBehavior<,>), typeof(DomainContextBehaviour<,>))
+
+            // Decorators
+            .Decorate(typeof(INotificationHandler<>), typeof(IdempotentNotificationHandler<>));
 
         if (!environment.IsDevelopment())
         {

@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using Altinn.ApiClients.Maskinporten.Extensions;
+﻿using Altinn.ApiClients.Maskinporten.Extensions;
 using Altinn.ApiClients.Maskinporten.Interfaces;
 using Altinn.ApiClients.Maskinporten.Services;
 using Digdir.Domain.Dialogporten.Application.Externals;
@@ -15,6 +14,7 @@ using Polly.Contrib.WaitAndRetry;
 using Digdir.Domain.Dialogporten.Infrastructure.Common;
 using FluentValidation;
 using Digdir.Domain.Dialogporten.Application;
+using Digdir.Domain.Dialogporten.Application.Common.Behaviours;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.Authorization;
@@ -27,8 +27,6 @@ using Digdir.Domain.Dialogporten.Infrastructure.Persistence.Interceptors;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence.Repositories;
 using HotChocolate.Subscriptions;
 using MassTransit;
-using MassTransit.EntityFrameworkCoreIntegration;
-using MassTransit.Metadata;
 using StackExchange.Redis;
 using ZiggyCreatures.Caching.Fusion;
 using ZiggyCreatures.Caching.Fusion.NullObjects;
@@ -79,6 +77,7 @@ public static class InfrastructureExtensions
             .AddScoped<IUnitOfWork, UnitOfWork>()
             .AddScoped<ConvertDomainEventsToOutboxMessagesInterceptor>()
             .AddScoped<PopulateActorNameInterceptor>()
+            .AddSingleton<IIdempotentNotificationContext, IdempotentNotificationContext>()
 
             // Transient
             .AddTransient<ISubjectResourceRepository, SubjectResourceRepository>()
@@ -160,7 +159,7 @@ public static class InfrastructureExtensions
             .ReplaceSingleton<IFusionCache, NullFusionCache>(predicate: localDeveloperSettings.DisableCache);
     }
 
-    internal static void AddPubSubCapabilities(InfrastructureBuilderContext builderContext, Assembly[] consumerAssemblies)
+    internal static void AddPubSubCapabilities(InfrastructureBuilderContext builderContext, List<Action<IBusRegistrationConfigurator>> customConfigurations)
     {
         builderContext.Services.AddMassTransit(x =>
             {
@@ -170,17 +169,18 @@ public static class InfrastructureExtensions
                     o.UseBusOutbox();
                 });
 
-                x.AddConsumers(consumerAssemblies
-                    .DefaultIfEmpty(Assembly.GetExecutingAssembly())
-                    .ToArray());
+                foreach (var customConfiguration in customConfigurations)
+                {
+                    customConfiguration(x);
+                }
 
                 if (builderContext.Environment.IsDevelopment())
                 {
-                    x.UsingInMemory((context, cfg) => { cfg.ConfigureEndpoints(context); });
+                    x.UsingInMemory((context, cfg) => cfg.ConfigureEndpoints(context));
                     return;
                 }
 
-                x.UsingAzureServiceBus((context, cfg) => { cfg.ConfigureEndpoints(context); });
+                x.UsingAzureServiceBus((context, cfg) => cfg.ConfigureEndpoints(context));
             })
             .AddTransient<Lazy<IPublishEndpoint>>(x =>
                 new Lazy<IPublishEndpoint>(x.GetRequiredService<IPublishEndpoint>));
@@ -201,6 +201,7 @@ public static class InfrastructureExtensions
                 {
                     o.UsePostgres();
                     o.UseBusOutbox(y => y.DisableDeliveryService());
+                    o.DisableInboxCleanupService();
                 });
 
                 if (builderContext.Environment.IsDevelopment())
@@ -211,7 +212,6 @@ public static class InfrastructureExtensions
 
                 x.UsingAzureServiceBus();
             })
-            .RemoveHostedService<InboxCleanupService<DialogDbContext>>()
             .AddTransient<Lazy<IPublishEndpoint>>(x =>
                 new Lazy<IPublishEndpoint>(x.GetRequiredService<IPublishEndpoint>));
 

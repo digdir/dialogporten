@@ -1,5 +1,6 @@
 using System.Reflection;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.OptionExtensions;
+using MassTransit;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -7,27 +8,34 @@ using static Digdir.Domain.Dialogporten.Infrastructure.InfrastructureExtensions;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure;
 
+public interface IPubSubInfrastructureChoice
+{
+    ISubscriptionInfrastructureOptions WithPubSubCapabilities<TConsumerAssembly>() => WithPubSubCapabilities(typeof(TConsumerAssembly).Assembly);
+    ISubscriptionInfrastructureOptions WithPubSubCapabilities(params Assembly[] consumerAssemblies);
+    IInfrastructureBuilder WithoutPubSubCapabilities();
+    IInfrastructureBuilder WithPubCapabilities();
+}
+
+public interface ISubscriptionInfrastructureOptions : IInfrastructureBuilder
+{
+    IInfrastructureBuilder ConfigureBus(Action<IBusRegistrationConfigurator> configure);
+}
+
 public interface IInfrastructureBuilder
 {
     IServiceCollection Build();
 }
 
-public interface IPubSubInfrastructureChoice
-{
-    IInfrastructureBuilder WithPubSubCapabilities<TConsumerAssembly>() => WithPubSubCapabilities(typeof(TConsumerAssembly).Assembly);
-    IInfrastructureBuilder WithPubSubCapabilities(params Assembly[] consumerAssemblies);
-    IInfrastructureBuilder WithoutPubSubCapabilities();
-    IInfrastructureBuilder WithPubCapabilities();
-}
-
 internal sealed class InfrastructureBuilder(IServiceCollection services, IConfiguration configuration, IHostEnvironment environment) :
     IInfrastructureBuilder,
-    IPubSubInfrastructureChoice
+    IPubSubInfrastructureChoice,
+    ISubscriptionInfrastructureOptions
 {
     private readonly IServiceCollection _services = services ?? throw new ArgumentNullException(nameof(services));
     private readonly IConfiguration _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
     private readonly IHostEnvironment _environment = environment ?? throw new ArgumentNullException(nameof(environment));
     private readonly List<Action<InfrastructureBuilderContext>> _actions = [];
+    private readonly List<Action<IBusRegistrationConfigurator>> _busConfigurations = [];
 
     public IServiceCollection Build()
     {
@@ -41,8 +49,21 @@ internal sealed class InfrastructureBuilder(IServiceCollection services, IConfig
         return _services;
     }
 
-    public IInfrastructureBuilder WithPubSubCapabilities(params Assembly[] consumerAssemblies)
-        => AddAction(context => AddPubSubCapabilities(context, consumerAssemblies));
+    public IInfrastructureBuilder ConfigureBus(Action<IBusRegistrationConfigurator> configure)
+    {
+        _busConfigurations.Add(configure);
+        return this;
+    }
+
+    public ISubscriptionInfrastructureOptions WithPubSubCapabilities(params Assembly[] consumerAssemblies)
+    {
+        _busConfigurations.Add(x => x
+            .AddConsumers(consumerAssemblies
+            .DefaultIfEmpty(Assembly.GetEntryAssembly())
+            .ToArray()));
+        return AddAction(context => AddPubSubCapabilities(context, _busConfigurations));
+    }
+
     public IInfrastructureBuilder WithPubCapabilities() => AddAction(AddPubCapabilities);
     public IInfrastructureBuilder WithoutPubSubCapabilities() => this;
 
