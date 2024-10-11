@@ -114,8 +114,8 @@ jobs:
       checks: write
       pull-requests: write
 
-  send-slack-message:
-    name: Send Slack message
+  send-slack-message-on-failure:
+    name: Send Slack message on failure
     needs: [deploy-infra-staging, deploy-apps-staging, deploy-slack-notifier-staging, run-e2e-tests, publish-schema-npm, publish]
     if: ${{ always() && failure() && !cancelled() }}
     uses: ./.github/workflows/action-send-ci-cd-status-slack-message.yml
