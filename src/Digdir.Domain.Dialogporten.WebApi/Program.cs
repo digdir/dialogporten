@@ -35,8 +35,7 @@ Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Warning()
     .Enrich.FromLogContext()
     .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture)
-    .WriteTo.ApplicationInsights(
-        TelemetryConverter.Traces)
+    .WriteTo.ApplicationInsights(TelemetryConverter.Traces)
     .CreateBootstrapLogger();
 
 try
@@ -62,8 +61,7 @@ static void BuildAndRun(string[] args)
         .ReadFrom.Configuration(context.Configuration)
         .ReadFrom.Services(services)
         .Enrich.FromLogContext()
-        .WriteTo.ApplicationInsights(
-            TelemetryConverter.Traces));
+        .WriteTo.ApplicationInsights(TelemetryConverter.Traces));
 
     builder.Configuration
         .AddAzureConfiguration(builder.Environment.EnvironmentName)
@@ -150,7 +148,7 @@ static void BuildAndRun(string[] args)
                 tracing.AddAspNetCoreInstrumentation(options =>
                 {
                     options.Filter = (httpContext) =>
-                        !httpContext.Request.Path.StartsWithSegments("/healthz");
+                        !httpContext.Request.Path.StartsWithSegments("/health");
                 });
 
                 tracing.AddHttpClientInstrumentation();
@@ -160,16 +158,13 @@ static void BuildAndRun(string[] args)
             .WithMetrics(metrics =>
             {
                 metrics.AddRuntimeInstrumentation();
-            });
+            })
+            .UseAzureMonitor()
+            .Services
 
-    if (!builder.Environment.IsDevelopment())
-    {
-        builder.Services.AddOpenTelemetry().UseAzureMonitor();
-    }
-
-    // Auth
-    builder.Services.AddDialogportenAuthentication(builder.Configuration)
-    .AddAuthorization();
+        // Auth
+        .AddDialogportenAuthentication(builder.Configuration)
+        .AddAuthorization();
 
     if (builder.Environment.IsDevelopment())
     {
