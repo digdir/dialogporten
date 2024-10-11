@@ -52,7 +52,7 @@ jobs:
               [success]=":white_check_mark:"
               [failure]=":x:"
               [cancelled]=":warning:"
-              [skipped]=":heavy_minus_sign:"
+              [skipped]=":ballot_box_with_check:"
             )
             echo "${emoji_map[$1]:-Invalid status: $1}"
           }
