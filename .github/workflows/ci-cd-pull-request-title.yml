@@ -22,6 +22,7 @@ jobs:
           configuration_path: ".github/pr-title-checker-config.json"
   send-slack-message:
     uses: ./.github/workflows/action-send-ci-cd-status-slack-message.yml
+    needs: [validate]
     with:
       environment: ${{ github.event.repository.name }}
       infra_status: 'success'
