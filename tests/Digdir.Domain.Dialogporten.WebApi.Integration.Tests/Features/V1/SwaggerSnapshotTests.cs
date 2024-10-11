@@ -26,7 +26,7 @@ public class SwaggerSnapshotTests : IClassFixture<WebApplicationFactory<Program>
         var swaggerPath = Path.Combine(rootPath!, "docs/schema/V1");
 
         var client = _webApplicationFactory
-            .WithWebHostBuilder(builder => builder.UseEnvironment("Development"))
+            .WithWebHostBuilder(builder => builder.UseEnvironment("test"))
             .CreateClient();
 
         // Act
