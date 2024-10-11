@@ -151,20 +151,18 @@ jobs:
       pull-requests: write
 
   send-slack-message:
-    name: Send Slack message on failure
-    needs: [deploy-infra-test, deploy-apps-test, deploy-slack-notifier-test, run-e2e-tests, publish-schema-npm]
-    runs-on: ubuntu-latest
-    if: ${{ always() && failure() && !cancelled() }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      - name: Send GitHub slack message
-        id: slack
-        env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-          ENVIRONMENT: test
-          RUN_URL: ${{ github.event.repository.html_url }}/actions/runs/${{ github.run_id }}
-        uses: slackapi/slack-github-action@v1.27.0
-        with:
-          channel-id: ${{ secrets.SLACK_CHANNEL_ID_FOR_RELEASES }}
-          payload-file-path: "./.github/slack-templates/pipeline-failed.json"
+    name: Send Slack message
+    needs: [deploy-infra-test, deploy-apps-test, deploy-slack-notifier-test, run-e2e-tests, publish-schema-npm, publish]
+    if: ${{ always() && (failure() || success()) }}
+    uses: ./.github/workflows/action-send-ci-cd-status-slack-message.yml
+    with:
+      environment: test
+      infra_status: ${{ needs.deploy-infra-test.result }}
+      apps_status: ${{ needs.deploy-apps-test.result }}
+      slack_notifier_status: ${{ needs.deploy-slack-notifier-test.result }}
+      e2e_tests_status: ${{ needs.run-e2e-tests.result }}
+      schema_npm_status: ${{ needs.publish-schema-npm.result }}
+      publish_status: ${{ needs.publish.result }}
+    secrets:
+      SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+      SLACK_CHANNEL_ID_FOR_RELEASES: ${{ secrets.SLACK_CHANNEL_ID_FOR_RELEASES }}
