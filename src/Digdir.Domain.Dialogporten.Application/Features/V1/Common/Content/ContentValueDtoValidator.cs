@@ -1,5 +1,6 @@
 using Digdir.Domain.Dialogporten.Application.Common.Authorization;
 using System.Diagnostics.CodeAnalysis;
+using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.FluentValidation;
 using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
@@ -16,8 +17,6 @@ namespace Digdir.Domain.Dialogporten.Application.Features.V1.Common.Content;
 // The validator is manually created in the Create and Update validators
 internal sealed class ContentValueDtoValidator : AbstractValidator<ContentValueDto>, IIgnoreOnAssemblyScan
 {
-    public const string LegacyHtmlMediaType = "text/html";
-
     public ContentValueDtoValidator(DialogTransmissionContentType contentType)
     {
         RuleFor(x => x.MediaType)

@@ -27,12 +27,11 @@ using Digdir.Domain.Dialogporten.Infrastructure.Persistence.IdempotentNotificati
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence.Interceptors;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence.Repositories;
 using HotChocolate.Subscriptions;
-using MassTransit;
 using StackExchange.Redis;
 using ZiggyCreatures.Caching.Fusion;
 using ZiggyCreatures.Caching.Fusion.NullObjects;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Digdir.Domain.Dialogporten.Infrastructure.HealthChecks;
+using MassTransit;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure;
 

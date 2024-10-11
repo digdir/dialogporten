@@ -54,6 +54,9 @@ static void BuildAndRun(string[] args)
 
     builder.Configuration.AddLocalConfiguration(builder.Environment);
 
+    // Generic consumers are not registered through MassTransits assembly
+    // scanning so we need to create domain event handlers for all
+    // domain events and register them manually 
     var openDomainEventConsumer = typeof(DomainEventConsumer<>);
     var openDomainEventConsumerDefinition = typeof(DomainEventConsumerDefinition<>);
     var domainEventConsumers = DomainAssemblyMarker.Assembly

@@ -5,14 +5,17 @@ using MediatR;
 
 namespace Digdir.Domain.Dialogporten.Service.Consumers;
 
-public sealed class DomainEventConsumer<T>(
-    IPublisher publisher,
-    IIdempotentNotificationContext notificationContext)
-    : IConsumer<T>
+public sealed class DomainEventConsumer<T> : IConsumer<T>
     where T : class, IDomainEvent
 {
-    private readonly IPublisher _publisher = publisher ?? throw new ArgumentNullException(nameof(publisher));
-    private readonly IIdempotentNotificationContext _notificationContext = notificationContext ?? throw new ArgumentNullException(nameof(notificationContext));
+    private readonly IPublisher _publisher;
+    private readonly IIdempotentNotificationContext _notificationContext;
+
+    public DomainEventConsumer(IPublisher publisher, IIdempotentNotificationContext notificationContext)
+    {
+        _publisher = publisher ?? throw new ArgumentNullException(nameof(publisher));
+        _notificationContext = notificationContext ?? throw new ArgumentNullException(nameof(notificationContext));
+    }
 
     public async Task Consume(ConsumeContext<T> context)
     {
