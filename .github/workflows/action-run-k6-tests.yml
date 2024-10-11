@@ -29,6 +29,8 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
+    # todo: change to use the new https://github.com/grafana/setup-k6-action and https://github.com/grafana/run-k6-action
+    # grafana/k6-action is deprecated
     - name: Run K6 tests (${{ inputs.testSuitePath }})
       uses: grafana/k6-action@v0.3.1
       with:
@@ -39,7 +41,7 @@ jobs:
         API_VERSION: ${{ inputs.apiVersion }}
         TOKEN_GENERATOR_USERNAME: ${{ secrets.TOKEN_GENERATOR_USERNAME }}
         TOKEN_GENERATOR_PASSWORD: ${{ secrets.TOKEN_GENERATOR_PASSWORD }}  
-    
+
     - name: Store test summary
       uses: actions/upload-artifact@v4
       with:

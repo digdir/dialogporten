@@ -13,10 +13,5 @@ public sealed class ContentValueDto
     /// <summary>
     /// Media type of the content (plaintext, Markdown). Can also indicate that the content is embeddable.
     /// </summary>
-    /// <example>
-    /// text/plain
-    /// text/markdown
-    /// application/vnd.dialogporten.frontchannelembed
-    /// </example>
     public string MediaType { get; set; } = MediaTypes.PlainText;
 }

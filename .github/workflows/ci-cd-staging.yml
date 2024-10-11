@@ -113,3 +113,20 @@ jobs:
     permissions:
       checks: write
       pull-requests: write
+
+  send-slack-message-on-failure:
+    name: Send Slack message on failure
+    needs: [deploy-infra-staging, deploy-apps-staging, deploy-slack-notifier-staging, run-e2e-tests, publish-schema-npm, publish]
+    if: ${{ always() && failure() && !cancelled() }}
+    uses: ./.github/workflows/action-send-ci-cd-status-slack-message.yml
+    with:
+      environment: staging
+      infra_status: ${{ needs.deploy-infra-staging.result }}
+      apps_status: ${{ needs.deploy-apps-staging.result }}
+      slack_notifier_status: ${{ needs.deploy-slack-notifier-staging.result }}
+      e2e_tests_status: ${{ needs.run-e2e-tests.result }}
+      schema_npm_status: ${{ needs.publish-schema-npm.result }}
+      publish_status: ${{ needs.publish.result }}
+    secrets:
+      SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+      SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID_FOR_CI_CD_STATUS }}

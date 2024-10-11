@@ -74,6 +74,38 @@ var containerAppEnvVars = [
   }
 ]
 
+var port = 8080
+
+var probes = [
+  {
+    periodSeconds: 5
+    initialDelaySeconds: 2
+    type: 'Liveness'
+    httpGet: {
+      path: '/health/liveness'
+      port: port
+    }
+  }
+  {
+    periodSeconds: 5
+    initialDelaySeconds: 2
+    type: 'Readiness'
+    httpGet: {
+      path: '/health/readiness'
+      port: port
+    }
+  }
+  {
+    periodSeconds: 5
+    initialDelaySeconds: 2
+    type: 'Startup'
+    httpGet: {
+      path: '/health/startup'
+      port: port
+    }
+  }
+]
+
 resource environmentKeyVaultResource 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
   name: environmentKeyVaultName
 }
@@ -92,6 +124,8 @@ module containerApp '../../modules/containerApp/main.bicep' = {
     tags: tags
     resources: resources
     revisionSuffix: revisionSuffix
+    probes: probes
+    port: port
   }
 }
 

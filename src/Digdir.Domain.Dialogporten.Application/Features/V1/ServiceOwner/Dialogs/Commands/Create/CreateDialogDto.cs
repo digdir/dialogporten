@@ -67,7 +67,7 @@ public class CreateDialogDto
     public DateTimeOffset? DueAt { get; set; }
 
     /// <summary>
-    /// Optional process identifier used to indicate a business process this dialog belongs to 
+    /// Optional process identifier used to indicate a business process this dialog belongs to
     /// </summary>
     public string? Process { get; set; }
     /// <summary>
@@ -104,7 +104,7 @@ public class CreateDialogDto
     public DialogStatus.Values Status { get; set; }
 
     /// <summary>
-    /// Set the system label of the dialog Migration purposes 
+    /// Set the system label of the dialog Migration purposes
     /// </summary>
     public SystemLabel.Values? SystemLabel { get; set; }
     /// <summary>
@@ -209,32 +209,38 @@ public sealed class CreateDialogDialogTransmissionDto
 public sealed class CreateDialogContentDto
 {
     /// <summary>
-    /// The title of the dialog. Must be text/plain.
+    /// The title of the dialog.
+    /// Supported media types: text/plain
     /// </summary>
     public ContentValueDto Title { get; set; } = null!;
 
     /// <summary>
-    /// A short summary of the dialog and its current state. Must be text/plain.
+    /// A short summary of the dialog and its current state.
+    /// Supported media types: text/plain
     /// </summary>
     public ContentValueDto Summary { get; set; } = null!;
 
     /// <summary>
     /// Overridden sender name. If not supplied, assume "org" as the sender name. Must be text/plain if supplied.
+    /// Supported media types: text/plain
     /// </summary>
     public ContentValueDto? SenderName { get; set; }
 
     /// <summary>
-    /// Additional information about the dialog, this may contain Markdown.
+    /// Additional information about the dialog.
+    /// Supported media types: text/plain, text/markdown
     /// </summary>
     public ContentValueDto? AdditionalInfo { get; set; }
 
     /// <summary>
-    /// Used as the human-readable label used to describe the "ExtendedStatus" field. Must be text/plain.
+    /// Used as the human-readable label used to describe the "ExtendedStatus" field.
+    /// Supported media types: text/plain
     /// </summary>
     public ContentValueDto? ExtendedStatus { get; set; }
 
     /// <summary>
     /// Front-channel embedded content. Used to dynamically embed content in the frontend from an external URL.
+    /// Supported media types: application/vnd.dialogporten.frontchannelembed+json;type=markdown
     /// </summary>
     public ContentValueDto? MainContentReference { get; set; }
 }
@@ -527,6 +533,12 @@ public sealed class CreateDialogDialogAttachmentUrlDto
 
 public sealed class CreateDialogTransmissionAttachmentDto
 {
+    /// <summary>
+    /// A self-defined UUIDv7 may be provided to support idempotent creation of transmission attachments. If not provided, a new UUIDv7 will be generated.
+    /// </summary>
+    /// <example>01913cd5-784f-7d3b-abef-4c77b1f0972d</example>
+    public Guid? Id { get; set; }
+
     /// <summary>
     /// The display name of the attachment that should be used in GUIs.
     /// </summary>

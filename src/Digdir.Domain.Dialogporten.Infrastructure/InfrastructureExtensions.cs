@@ -31,6 +31,8 @@ using MassTransit;
 using StackExchange.Redis;
 using ZiggyCreatures.Caching.Fusion;
 using ZiggyCreatures.Caching.Fusion.NullObjects;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Digdir.Domain.Dialogporten.Infrastructure.HealthChecks;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure;
 
@@ -72,6 +74,7 @@ public static class InfrastructureExtensions
                     .HandleTransientHttpError()
                     .WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(medianFirstRetryDelay: TimeSpan.FromSeconds(1), retryCount: 3)));
             })
+            .AddCustomHealthChecks()
 
             // Scoped
             .AddScoped<IDialogDbContext>(x => x.GetRequiredService<DialogDbContext>())
@@ -264,6 +267,17 @@ public static class InfrastructureExtensions
                 client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", altinnSettings.SubscriptionKey);
             })
             .AddPolicyHandlerFromRegistry(PollyPolicy.DefaultHttpRetryPolicy);
+
+        return services;
+    }
+
+    private static IServiceCollection AddCustomHealthChecks(this IServiceCollection services)
+    {
+        services.AddHealthChecks()
+            .AddCheck<RedisHealthCheck>("redis", tags: ["dependencies", "redis"])
+            .AddDbContextCheck<DialogDbContext>("postgres", tags: ["dependencies", "critical"]);
+
+        services.AddSingleton<RedisHealthCheck>();
 
         return services;
     }

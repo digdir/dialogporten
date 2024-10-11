@@ -9,9 +9,9 @@
         <PackageReference Include="Azure.Identity" Version="1.12.1"/>
         <PackageReference Include="Microsoft.Azure.Functions.Worker" Version="1.23.0" />
         <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Http" Version="3.2.0"/>
-        <PackageReference Include="Microsoft.Azure.Functions.Worker.Sdk" Version="1.17.4"/>
-        <PackageReference Include="Microsoft.Extensions.Azure" Version="1.7.5"/>
-        <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="8.0.0"/>
+        <PackageReference Include="Microsoft.Azure.Functions.Worker.Sdk" Version="1.18.1" />
+        <PackageReference Include="Microsoft.Extensions.Azure" Version="1.7.6" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="8.0.1" />
     </ItemGroup>
     <ItemGroup>
         <None Update="host.json">

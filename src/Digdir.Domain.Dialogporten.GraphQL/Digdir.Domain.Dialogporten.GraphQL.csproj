@@ -3,7 +3,7 @@
     <ItemGroup>
         <PackageReference Include="Azure.Identity" Version="1.12.1"/>
         <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.22.0"/>
-        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.8" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.10" />
         <PackageReference Include="HotChocolate.AspNetCore" Version="13.9.14" />
         <PackageReference Include="HotChocolate.Diagnostics" Version="13.9.14" />
         <PackageReference Include="HotChocolate.Data.EntityFramework" Version="13.9.14" />
@@ -16,6 +16,7 @@
     <ItemGroup>
         <ProjectReference Include="..\Digdir.Domain.Dialogporten.Application\Digdir.Domain.Dialogporten.Application.csproj"/>
         <ProjectReference Include="..\Digdir.Domain.Dialogporten.Infrastructure\Digdir.Domain.Dialogporten.Infrastructure.csproj"/>
+        <ProjectReference Include="..\Digdir.Library.Utils.AspNet\Digdir.Library.Utils.AspNet.csproj"/>
     </ItemGroup>
 
 </Project>

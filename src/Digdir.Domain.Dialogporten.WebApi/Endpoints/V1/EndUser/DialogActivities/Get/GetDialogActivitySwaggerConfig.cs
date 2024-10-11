@@ -1,3 +1,4 @@
+using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogActivities.Queries.Get;
 using Digdir.Domain.Dialogporten.WebApi.Common;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
 using Digdir.Domain.Dialogporten.WebApi.Common.Swagger;
@@ -12,7 +13,7 @@ public sealed class GetDialogActivitySwaggerConfig : ISwaggerConfig
 
     public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder) =>
         builder.OperationId(OperationId)
-            .ProducesOneOf(
+            .ProducesOneOf<GetDialogActivityDto>(
                 StatusCodes.Status200OK,
                 StatusCodes.Status404NotFound);
 

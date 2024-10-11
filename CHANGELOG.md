@@ -1,5 +1,41 @@
 # Changelog
 
+## [1.23.1](https://github.com/digdir/dialogporten/compare/v1.23.0...v1.23.1) (2024-10-11)
+
+
+### Bug Fixes
+
+* **graphql:** refactor health check probes ([#1250](https://github.com/digdir/dialogporten/issues/1250)) ([1e9c350](https://github.com/digdir/dialogporten/commit/1e9c3505c004efe1b2e1c0cfe1e6c2a146a4af55))
+
+## [1.23.0](https://github.com/digdir/dialogporten/compare/v1.22.0...v1.23.0) (2024-10-10)
+
+
+### Features
+
+* **infra:** upgrade postgresql SKU in test ([#1257](https://github.com/digdir/dialogporten/issues/1257)) ([5a751af](https://github.com/digdir/dialogporten/commit/5a751af66253515e91bb5d13f2eaefbee8313cf4))
+* **webAPI:** Add legacy HTML support for MainContentReference ([#1256](https://github.com/digdir/dialogporten/issues/1256)) ([482b38a](https://github.com/digdir/dialogporten/commit/482b38a769f1cfff22dbc85ec96f6ad2bb58089f))
+
+
+### Bug Fixes
+
+* Add missing return types for Transmissions and Activities in OpenAPI spec ([#1244](https://github.com/digdir/dialogporten/issues/1244)) ([972870d](https://github.com/digdir/dialogporten/commit/972870d53b9752ecd391b07773e72ea6d08b2082))
+* **graphQL:** Missing MediaType on dialog attachment url ([#1264](https://github.com/digdir/dialogporten/issues/1264)) ([3919343](https://github.com/digdir/dialogporten/commit/391934362bce6a14f6abc8bd16f66879dab30d41))
+* Refactor probes and add more health checks ([#1159](https://github.com/digdir/dialogporten/issues/1159)) ([6889a96](https://github.com/digdir/dialogporten/commit/6889a96adcf7ffd141df0b854ca683e228b1a6fe))
+* **webapi:** ensure correct health checks are used in probes ([#1249](https://github.com/digdir/dialogporten/issues/1249)) ([f951152](https://github.com/digdir/dialogporten/commit/f9511528804f1560992843cde9515811de9eca0a))
+
+## [1.22.0](https://github.com/digdir/dialogporten/compare/v1.21.0...v1.22.0) (2024-10-07)
+
+
+### Features
+
+* Add support for supplied transmission attachment ID on create/update ([#1242](https://github.com/digdir/dialogporten/issues/1242)) ([c7bfb07](https://github.com/digdir/dialogporten/commit/c7bfb076fd8c8e0c853d3b99c346a87a89501170))
+
+
+### Bug Fixes
+
+* Only allow legacy HTML on AditionalInfo content ([#1210](https://github.com/digdir/dialogporten/issues/1210)) ([aa4acde](https://github.com/digdir/dialogporten/commit/aa4acde212e76cb3665fee0daaf116d9837c4fc9))
+* **webAPI:** Specifying EndUserId on the ServiceOwner Search endpoint produces 500 - Internal Server error ([#1234](https://github.com/digdir/dialogporten/issues/1234)) ([49c0d34](https://github.com/digdir/dialogporten/commit/49c0d3438c396e2ca82a6101bd37e402a0c3aec9))
+
 ## [1.21.0](https://github.com/digdir/dialogporten/compare/v1.20.2...v1.21.0) (2024-10-03)
 
 

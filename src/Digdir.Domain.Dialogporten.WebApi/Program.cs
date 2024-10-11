@@ -15,6 +15,7 @@ using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
 using Digdir.Domain.Dialogporten.WebApi.Common.Json;
 using Digdir.Domain.Dialogporten.WebApi.Common.Swagger;
+using Digdir.Library.Utils.AspNet;
 using FastEndpoints;
 using FastEndpoints.Swagger;
 using FluentValidation;
@@ -22,6 +23,7 @@ using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Authorization;
 using NSwag;
 using Serilog;
+using Microsoft.Extensions.Options;
 
 // Using two-stage initialization to catch startup errors.
 Log.Logger = new LoggerConfiguration()
@@ -116,12 +118,17 @@ static void BuildAndRun(string[] args)
         .AddControllers(options => options.InputFormatters.Insert(0, JsonPatchInputFormatter.Get()))
             .AddNewtonsoftJson()
             .Services
-
+        // Add health checks with the retrieved URLs
+        .AddAspNetHealthChecks((x, y) => x.HealthCheckSettings.HttpGetEndpointsToCheck = y
+            .GetRequiredService<IOptions<WebApiSettings>>().Value?
+            .Authentication?
+            .JwtBearerTokenSchemas?
+            .Select(z => z.WellKnown)
+            .ToList() ?? [])
 
         // Auth
         .AddDialogportenAuthentication(builder.Configuration)
-        .AddAuthorization()
-        .AddHealthChecks();
+        .AddAuthorization();
 
     if (builder.Environment.IsDevelopment())
     {
@@ -137,6 +144,9 @@ static void BuildAndRun(string[] args)
     }
 
     var app = builder.Build();
+
+    app.MapAspNetHealthChecks()
+        .MapControllers();
 
     app.UseHttpsRedirection()
         .UseSerilogRequestLogging()
@@ -190,8 +200,7 @@ static void BuildAndRun(string[] args)
             var dialogPrefix = builder.Environment.IsDevelopment() ? "" : "/dialogporten";
             uiConfig.DocumentPath = dialogPrefix + "/swagger/{documentName}/swagger.json";
         });
-    app.MapControllers();
-    app.MapHealthChecks("/healthz");
+
     app.Run();
 }
 
