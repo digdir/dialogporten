@@ -14,9 +14,7 @@ public interface IIdempotentNotificationContext
 
 public readonly record struct NotificationAcknowledgementPart(string NotificationHandler, Guid EventId);
 
-internal sealed class IdempotentNotificationHandler<TNotification>(
-    INotificationHandler<TNotification> decorated,
-    IIdempotentNotificationContext repository) :
+internal sealed class IdempotentNotificationHandler<TNotification> :
     INotificationHandler<TNotification>,
     // We need to manually register this NotificationHandler because
     // it should decorate all INotificationHandler<TNotification>
@@ -24,8 +22,14 @@ internal sealed class IdempotentNotificationHandler<TNotification>(
     IIgnoreOnAssemblyScan
     where TNotification : IDomainEvent
 {
-    private readonly INotificationHandler<TNotification> _decorated = decorated ?? throw new ArgumentNullException(nameof(decorated));
-    private readonly IIdempotentNotificationContext _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+    private readonly INotificationHandler<TNotification> _decorated;
+    private readonly IIdempotentNotificationContext _repository;
+
+    public IdempotentNotificationHandler(INotificationHandler<TNotification> decorated, IIdempotentNotificationContext repository)
+    {
+        _decorated = decorated ?? throw new ArgumentNullException(nameof(decorated));
+        _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+    }
 
     public async Task Handle(TNotification notification, CancellationToken cancellationToken)
     {

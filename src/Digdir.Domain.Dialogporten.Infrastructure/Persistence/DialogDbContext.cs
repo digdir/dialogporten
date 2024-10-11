@@ -117,6 +117,9 @@ internal sealed class DialogDbContext : DbContext, IDialogDbContext
             .AddTransactionalOutboxEntities(builder =>
             {
                 builder.ToTable($"MassTransit{builder.Metadata.GetTableName()}");
+
+                // We can remove the code below when the following commit is in a MassTransit release we are using.
+                // https://github.com/MassTransit/MassTransit/commit/755b267a53c3e5fcdc9dcc0bbfda68a70aaf6bf4 
                 if (builder is not EntityTypeBuilder<OutboxMessage> outboxMessageBuilder)
                 {
                     return;

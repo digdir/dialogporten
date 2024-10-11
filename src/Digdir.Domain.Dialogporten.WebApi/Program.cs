@@ -52,7 +52,7 @@ finally
 static void BuildAndRun(string[] args)
 {
     var builder = WebApplication.CreateBuilder(args);
-    builder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = false);
+
     builder.Host.UseSerilog((context, services, configuration) => configuration
         .MinimumLevel.Warning()
         .ReadFrom.Configuration(context.Configuration)
@@ -139,8 +139,6 @@ static void BuildAndRun(string[] args)
                 predicate: localDevelopmentSettings.DisableAuth)
             .ReplaceSingleton<ITokenIssuerCache, DevelopmentTokenIssuerCache>(
                 predicate: localDevelopmentSettings.DisableAuth);
-        // .AddHostedService<
-        //     OutboxScheduler>(predicate: !localDevelopmentSettings.DisableShortCircuitOutboxDispatcher);
     }
 
     var app = builder.Build();
