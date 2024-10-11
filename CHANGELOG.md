@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.23.1](https://github.com/digdir/dialogporten/compare/v1.23.0...v1.23.1) (2024-10-11)
+
+
+### Bug Fixes
+
+* **graphql:** refactor health check probes ([#1250](https://github.com/digdir/dialogporten/issues/1250)) ([1e9c350](https://github.com/digdir/dialogporten/commit/1e9c3505c004efe1b2e1c0cfe1e6c2a146a4af55))
+
 ## [1.23.0](https://github.com/digdir/dialogporten/compare/v1.22.0...v1.23.0) (2024-10-10)
 
 

@@ -158,7 +158,8 @@ resource notifyDevTeam 'Microsoft.Insights/actionGroups@2023-01-01' = {
 var query = '''
             union
                  (exceptions
-                 | where not(customDimensions.['Service Type'] == 'API Management')),
+                 | where not(customDimensions.['Service Type'] == 'API Management')
+                 | where type != "ZiggyCreatures.Caching.Fusion.SyntheticTimeoutException"),
                  (traces
                  | where severityLevel >= 3 or (severityLevel >= 2 and customDimensions.SourceContext startswith "Digdir"))
                  | where operation_Name !startswith "GET /health/"
