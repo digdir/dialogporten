@@ -1,13 +1,28 @@
 {
 	"attachments": [
 		{
-			"color": "#f2c744",
+			"color": "#FF0000",
 			"blocks": [
+				{
+					"type": "header",
+					"text": {
+						"type": "plain_text",
+						"text": "Github pipeline failing",
+						"emoji": true
+					}
+				},
 				{
 					"type": "section",
 					"text": {
 						"type": "mrkdwn",
-						"text": ":rotating_light: Pipeline failing for *${{ env.ENVIRONMENT }}* :rotating_light:\n\nPlease check the workflow for more details."
+						"text": "*Environment:* ${{ env.ENVIRONMENT }}"
+					}
+				},
+				{
+					"type": "section",
+					"text": {
+						"type": "mrkdwn",
+						"text": "Please check the workflow for more details."
 					}
 				},
 				{
