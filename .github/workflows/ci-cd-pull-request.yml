@@ -25,6 +25,20 @@ jobs:
     needs: [check-for-changes]
     if: ${{ needs.check-for-changes.outputs.hasBackendChanges == 'true' || needs.check-for-changes.outputs.hasTestChanges == 'true' }}
 
+  send-slack-message:
+    uses: ./.github/workflows/action-send-ci-cd-status-slack-message.yml
+    with:
+      environment: ${{ github.event.repository.name }}
+      infra_status: 'success'
+      apps_status: 'failure'
+      slack_notifier_status: 'cancelled'
+      e2e_tests_status: 'skipped'
+      schema_npm_status: 'skipped'
+      publish_status: 'skipped'
+    secrets:
+      SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+      SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID_FOR_CI_CD_STATUS }}
+
   build-infrastructure:
     uses: ./.github/workflows/action-build-infrastructure.yml
     needs: [check-for-changes]
@@ -61,7 +75,6 @@ jobs:
       dryRun: true
       version: ${{ needs.get-current-version.outputs.version }}-${{ needs.generate-git-short-sha.outputs.gitShortSha }}
 
-
   dry-run-deploy-apps:
     name: Dry run deploy apps
     needs:
@@ -89,7 +102,6 @@ jobs:
       version: ${{ needs.get-current-version.outputs.version }}-${{ needs.generate-git-short-sha.outputs.gitShortSha }}
       runMigration: ${{ needs.check-for-changes.outputs.hasMigrationChanges == 'true' }}
       dryRun: true
-
 
   delete-github-deployments:
     name: Delete GitHub deployments
