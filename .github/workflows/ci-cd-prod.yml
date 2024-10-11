@@ -127,7 +127,6 @@ jobs:
   #   secrets:
   #     TOKEN_GENERATOR_USERNAME: ${{ secrets.TOKEN_GENERATOR_USERNAME }}
   #     TOKEN_GENERATOR_PASSWORD: ${{ secrets.TOKEN_GENERATOR_PASSWORD }}
-  #     SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
   #   with:
   #     environment: prod
   #     apiVersion: v1
@@ -149,6 +148,7 @@ jobs:
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
           ENVIRONMENT: prod
+          RUN_URL: ${{ github.event.repository.html_url }}/actions/runs/${{ github.run_id }}
         uses: slackapi/slack-github-action@v1.27.0
         with:
           channel-id: ${{ secrets.SLACK_CHANNEL_ID_FOR_RELEASES }}
