@@ -10,11 +10,13 @@ using Digdir.Domain.Dialogporten.GraphQL.Common.Extensions;
 using Digdir.Domain.Dialogporten.Infrastructure;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.OptionExtensions;
 using Digdir.Domain.Dialogporten.GraphQL;
+using Digdir.Library.Utils.AspNet;
 using Microsoft.ApplicationInsights.Extensibility;
 using Serilog;
 using FluentValidation;
 using HotChocolate.AspNetCore;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Options;
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Warning()
@@ -81,6 +83,18 @@ static void BuildAndRun(string[] args)
         // Graph QL
         .AddDialogportenGraphQl()
 
+        // Add controllers
+        .AddControllers()
+            .Services
+
+        // Add health checks with the well-known URLs
+        .AddAspNetHealthChecks((x, y) => x.HealthCheckSettings.HttpGetEndpointsToCheck = y
+            .GetRequiredService<IOptions<GraphQlSettings>>().Value?
+            .Authentication?
+            .JwtBearerTokenSchemas?
+            .Select(z => z.WellKnown)
+            .ToList() ?? [])
+
         // Auth
         .AddDialogportenAuthentication(builder.Configuration)
         .AddAuthorization()
@@ -96,6 +110,8 @@ static void BuildAndRun(string[] args)
     }
 
     var app = builder.Build();
+
+    app.MapAspNetHealthChecks();
 
     app.UseJwtSchemeSelector()
         .UseAuthentication()
@@ -114,8 +130,6 @@ static void BuildAndRun(string[] args)
                 Enable = true
             }
         });
-
-    app.MapHealthChecks("/healthz");
 
     app.Run();
 }
