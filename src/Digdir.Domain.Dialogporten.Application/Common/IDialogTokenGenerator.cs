@@ -74,6 +74,11 @@ internal sealed class DialogTokenGenerator : IDialogTokenGenerator
 
     private static string GetAuthorizedActions(DialogDetailsAuthorizationResult authorizationResult)
     {
+        if (authorizationResult.AuthorizedAltinnActions.Count == 0)
+        {
+            return string.Empty;
+        }
+
         var actions = new StringBuilder();
         foreach (var (action, resource) in authorizationResult.AuthorizedAltinnActions)
         {
