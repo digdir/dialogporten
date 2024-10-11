@@ -1,47 +1,47 @@
 {
-	"attachments": [
-		{
-			"color": "#FF0000",
-			"blocks": [
-				{
-					"type": "header",
-					"text": {
-						"type": "plain_text",
-						"text": "Github pipeline failing",
-						"emoji": true
-					}
-				},
-				{
-					"type": "section",
-					"text": {
-						"type": "mrkdwn",
-						"text": "*Environment:* ${{ env.ENVIRONMENT }}"
-					}
-				},
-				{
-					"type": "section",
-					"text": {
-						"type": "mrkdwn",
-						"text": "Please check the workflow for more details."
-					}
-				},
-				{
-					"type": "divider"
-				},
-				{
-					"type": "actions",
-					"elements": [
-						{
-							"type": "button",
-							"text": {
-								"type": "plain_text",
-								"text": "View Run"
-							},
-							"url": "${{ env.RUN_URL }}"
-						}
-					]
-				}
-			]
-		}
-	]
+  "attachments": [
+    {
+      "color": "#FF0000",
+      "blocks": [
+        {
+          "type": "header",
+          "text": {
+            "type": "plain_text",
+            "text": "Github pipeline failing",
+            "emoji": true
+          }
+        },
+        {
+          "type": "section",
+          "text": {
+            "type": "mrkdwn",
+            "text": "*Environment:* ${{ env.ENVIRONMENT }}"
+          }
+        },
+        {
+          "type": "section",
+          "text": {
+            "type": "mrkdwn",
+            "text": "Please check the workflow for more details."
+          }
+        },
+        {
+          "type": "divider"
+        },
+        {
+          "type": "actions",
+          "elements": [
+            {
+              "type": "button",
+              "text": {
+                "type": "plain_text",
+                "text": "View Run"
+              },
+              "url": "${{ env.RUN_URL }}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
 }
