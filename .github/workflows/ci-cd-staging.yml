@@ -132,4 +132,4 @@ jobs:
       publish_status: ${{ needs.publish.result }}
     secrets:
       SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-      SLACK_CHANNEL_ID_FOR_RELEASES: ${{ secrets.SLACK_CHANNEL_ID_FOR_RELEASES }}
+      SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID_FOR_CI_CD_STATUS }}

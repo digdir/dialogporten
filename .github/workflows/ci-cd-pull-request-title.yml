@@ -20,3 +20,16 @@ jobs:
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           configuration_path: ".github/pr-title-checker-config.json"
+  send-slack-message:
+    uses: ./.github/workflows/action-send-ci-cd-status-slack-message.yml
+    with:
+      environment: ${{ github.event.repository.name }}
+      infra_status: 'success'
+      apps_status: 'failure'
+      slack_notifier_status: 'cancelled'
+      e2e_tests_status: 'skipped'
+      schema_npm_status: 'skipped'
+      publish_status: 'skipped'
+    secrets:
+      SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+      SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID_FOR_CI_CD_STATUS }}
