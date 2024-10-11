@@ -127,7 +127,6 @@ jobs:
   #   secrets:
   #     TOKEN_GENERATOR_USERNAME: ${{ secrets.TOKEN_GENERATOR_USERNAME }}
   #     TOKEN_GENERATOR_PASSWORD: ${{ secrets.TOKEN_GENERATOR_PASSWORD }}
-  #     SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
   #   with:
   #     environment: prod
   #     apiVersion: v1
@@ -136,20 +135,16 @@ jobs:
   #     checks: write
   #     pull-requests: write
 
-  send-slack-message:
+  send-slack-message-on-failure:
     name: Send Slack message on failure
     needs: [deploy-infra-prod, deploy-apps-prod, deploy-slack-notifier-prod]
-    runs-on: ubuntu-latest
     if: ${{ always() && failure() && !cancelled() }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      - name: Send GitHub slack message
-        id: slack
-        env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-          ENVIRONMENT: prod
-        uses: slackapi/slack-github-action@v1.27.0
-        with:
-          channel-id: ${{ secrets.SLACK_CHANNEL_ID_FOR_RELEASES }}
-          payload-file-path: "./.github/slack-templates/pipeline-failed.json"
+    uses: ./.github/workflows/action-send-ci-cd-status-slack-message.yml
+    with:
+      environment: prod
+      infra_status: ${{ needs.deploy-infra-prod.result }}
+      apps_status: ${{ needs.deploy-apps-prod.result }}
+      slack_notifier_status: ${{ needs.deploy-slack-notifier-prod.result }}
+    secrets:
+      SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+      SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID_FOR_CI_CD_STATUS }}

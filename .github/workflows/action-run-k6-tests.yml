@@ -17,8 +17,6 @@ on:
         required: true
       TOKEN_GENERATOR_PASSWORD:
         required: true
-      SLACK_BOT_TOKEN:
-        required: true
 
 jobs:
   k6-test:
@@ -57,37 +55,3 @@ jobs:
         action_fail: true
         files: |
           junit.xml
-
-    - name: Send Slack message on K6 test failure
-      if: always() && failure()
-      uses: slackapi/slack-github-action@v1.27.0
-      env:
-        SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-      with:
-        channel-id: ${{ secrets.SLACK_CHANNEL_ID_FOR_K6_TESTS }}
-        payload: |
-            {
-                "blocks": [
-                  {
-                    "type": "section",
-                    "text": {
-                      "type": "mrkdwn",
-                      "text": "*:rotating_light: K6 Tests Failed for environment *${{ inputs.environment }}* :rotating_light:*\n\nPlease check the workflow for more details."
-                    }
-                  },
-                  { "type": "divider" },
-                  {
-                    "type": "actions",
-                    "elements": [
-                      {
-                        "type": "button",
-                        "text": {
-                          "type": "plain_text",
-                          "text": "View Run"
-                        },
-                        "url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-                      }
-                    ]
-                  }
-                ]
-            }
