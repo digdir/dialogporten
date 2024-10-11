@@ -44,14 +44,10 @@ static void BuildAndRun(string[] args)
     var builder = WebApplication.CreateBuilder(args);
 
     builder.Host.UseSerilog((context, services, configuration) => configuration
-        .MinimumLevel.Information()
-        .MinimumLevel.Override("Microsoft.EntityFrameworkCore", Serilog.Events.LogEventLevel.Fatal)
+        .MinimumLevel.Warning()
         .ReadFrom.Configuration(context.Configuration)
         .ReadFrom.Services(services)
         .Enrich.FromLogContext()
-        .WriteTo.Conditional(
-            condition: _ => builder.Environment.IsDevelopment(),
-            configureSink: x => x.Console(formatProvider: CultureInfo.InvariantCulture))
         .WriteTo.ApplicationInsights(
             services.GetRequiredService<TelemetryConfiguration>(),
             TelemetryConverter.Traces));
@@ -76,7 +72,7 @@ static void BuildAndRun(string[] args)
         .AddApplication(builder.Configuration, builder.Environment)
         .AddInfrastructure(builder.Configuration, builder.Environment)
             .WithPubSubCapabilities<ServiceAssemblyMarker>()
-            .ConfigureBus(x =>
+            .AndBusConfiguration(x =>
             {
                 foreach (var (consumer, definition) in domainEventConsumers)
                 {

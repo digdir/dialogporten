@@ -16,9 +16,17 @@ public sealed class DomainEventConsumer<T>(
 
     public async Task Consume(ConsumeContext<T> context)
     {
-        await _notificationContext.Load(context.Message, context.CancellationToken);
-        await _publisher.Publish(context.Message, context.CancellationToken);
-        await _notificationContext.AcknowledgeWhole(context.Message, context.CancellationToken);
+        try
+        {
+            await _notificationContext.LoadAcknowledgements(context.Message, context.CancellationToken);
+            await _publisher.Publish(context.Message, context.CancellationToken);
+            await _notificationContext.AcknowledgeWhole(context.Message, context.CancellationToken);
+        }
+        catch (Exception)
+        {
+            await _notificationContext.NotAcknowledgeWhole(context.CancellationToken);
+            throw;
+        }
     }
 }
 

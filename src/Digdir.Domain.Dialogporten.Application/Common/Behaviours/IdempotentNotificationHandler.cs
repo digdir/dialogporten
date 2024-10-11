@@ -8,10 +8,11 @@ public interface IIdempotentNotificationContext
     Task AcknowledgePart(NotificationAcknowledgementPart acknowledgementPart, CancellationToken cancellationToken = default);
     Task<bool> IsAcknowledged(NotificationAcknowledgementPart acknowledgementPart, CancellationToken cancellationToken = default);
     Task AcknowledgeWhole(IDomainEvent domainEvent, CancellationToken cancellationToken = default);
-    Task Load(IDomainEvent domainEvent, CancellationToken cancellationToken = default);
+    Task LoadAcknowledgements(IDomainEvent domainEvent, CancellationToken cancellationToken = default);
+    Task NotAcknowledgeWhole(CancellationToken cancellationToken = default);
 }
 
-public readonly record struct NotificationAcknowledgementPart(string ConsumerType, Guid EventId);
+public readonly record struct NotificationAcknowledgementPart(string NotificationHandler, Guid EventId);
 
 internal sealed class IdempotentNotificationHandler<TNotification>(
     INotificationHandler<TNotification> decorated,

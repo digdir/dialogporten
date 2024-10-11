@@ -18,7 +18,7 @@ public interface IPubSubInfrastructureChoice
 
 public interface ISubscriptionInfrastructureOptions : IInfrastructureBuilder
 {
-    IInfrastructureBuilder ConfigureBus(Action<IBusRegistrationConfigurator> configure);
+    IInfrastructureBuilder AndBusConfiguration(Action<IBusRegistrationConfigurator> configure);
 }
 
 public interface IInfrastructureBuilder
@@ -49,7 +49,7 @@ internal sealed class InfrastructureBuilder(IServiceCollection services, IConfig
         return _services;
     }
 
-    public IInfrastructureBuilder ConfigureBus(Action<IBusRegistrationConfigurator> configure)
+    public IInfrastructureBuilder AndBusConfiguration(Action<IBusRegistrationConfigurator> configure)
     {
         _busConfigurations.Add(configure);
         return this;

@@ -16,6 +16,7 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Contents;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions.Contents;
 using Digdir.Domain.Dialogporten.Domain.SubjectResources;
+using Digdir.Domain.Dialogporten.Infrastructure.Persistence.IdempotentNotifications;
 using MassTransit;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using OutboxMessage = MassTransit.EntityFrameworkCoreIntegration.OutboxMessage;
@@ -46,6 +47,7 @@ internal sealed class DialogDbContext : DbContext, IDialogDbContext
     public DbSet<SubjectResource> SubjectResources => Set<SubjectResource>();
     public DbSet<DialogEndUserContext> DialogEndUserContexts => Set<DialogEndUserContext>();
     public DbSet<LabelAssignmentLog> LabelAssignmentLogs => Set<LabelAssignmentLog>();
+    public DbSet<NotificationAcknowledgement> NotificationAcknowledgements => Set<NotificationAcknowledgement>();
 
     //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) =>
     //    optionsBuilder.LogTo(Console.WriteLine);
