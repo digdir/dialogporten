@@ -9,9 +9,6 @@ on:
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref_name }}
 
-env:
-  ENVIRONMENT: staging
-
 jobs:
   # Get changed files between previous tag and current tag: https://github.com/marketplace/actions/changed-files
   check-for-changes:
