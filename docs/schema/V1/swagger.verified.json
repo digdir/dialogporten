@@ -120,12 +120,6 @@
               }
             ]
           },
-          "relatedActivityId": {
-            "description": "The related activity identifier, if applicable. Must be present in the request body.",
-            "format": "guid",
-            "nullable": true,
-            "type": "string"
-          },
           "transmissionId": {
             "description": "If the activity is related to a particular transmission, this field will contain the transmission identifier.\nMust be present in the request body.",
             "format": "guid",
@@ -386,12 +380,6 @@
                 "$ref": "#/components/schemas/CreateDialogDialogActivityPerformedByActorDto"
               }
             ]
-          },
-          "relatedActivityId": {
-            "description": "The related activity identifier, if applicable. Must be present in the request body.",
-            "format": "guid",
-            "nullable": true,
-            "type": "string"
           },
           "transmissionId": {
             "description": "If the activity is related to a particular transmission, this field will contain the transmission identifier.\nMust be present in the request body.",
@@ -965,11 +953,6 @@
           "performedBy": {
             "$ref": "#/components/schemas/GetDialogActivityPerformedByActorDto"
           },
-          "relatedActivityId": {
-            "format": "guid",
-            "nullable": true,
-            "type": "string"
-          },
           "transmissionId": {
             "format": "guid",
             "nullable": true,
@@ -1011,11 +994,6 @@
           },
           "performedBy": {
             "$ref": "#/components/schemas/GetDialogActivityPerformedByActorDtoSO"
-          },
-          "relatedActivityId": {
-            "format": "guid",
-            "nullable": true,
-            "type": "string"
           },
           "transmissionId": {
             "format": "guid",
@@ -1221,12 +1199,6 @@
               }
             ]
           },
-          "relatedActivityId": {
-            "description": "The related activity identifier, if applicable. Must be present in the current dialog.",
-            "format": "guid",
-            "nullable": true,
-            "type": "string"
-          },
           "transmissionId": {
             "description": "If the activity is related to a particular transmission, this field will contain the transmission identifier.",
             "format": "guid",
@@ -1278,12 +1250,6 @@
                 "$ref": "#/components/schemas/GetDialogDialogActivityPerformedByActorDtoSO"
               }
             ]
-          },
-          "relatedActivityId": {
-            "description": "The related activity identifier, if applicable. Must be present in the current dialog.",
-            "format": "guid",
-            "nullable": true,
-            "type": "string"
           },
           "transmissionId": {
             "description": "If the activity is related to a particular transmission, this field will contain the transmission identifier.",
@@ -3293,11 +3259,6 @@
             "format": "guid",
             "type": "string"
           },
-          "relatedActivityId": {
-            "format": "guid",
-            "nullable": true,
-            "type": "string"
-          },
           "seenByEndUserIdHash": {
             "nullable": true,
             "type": "string"
@@ -3332,11 +3293,6 @@
           },
           "id": {
             "format": "guid",
-            "type": "string"
-          },
-          "relatedActivityId": {
-            "format": "guid",
-            "nullable": true,
             "type": "string"
           },
           "transmissionId": {
@@ -3465,12 +3421,6 @@
               }
             ]
           },
-          "relatedActivityId": {
-            "description": "The related activity identifier, if applicable. Must be present in the current dialog.",
-            "format": "guid",
-            "nullable": true,
-            "type": "string"
-          },
           "transmissionId": {
             "description": "If the activity is related to a particular transmission, this field will contain the transmission identifier.",
             "format": "guid",
@@ -3522,12 +3472,6 @@
                 "$ref": "#/components/schemas/SearchDialogDialogActivityPerformedByActorDtoSO"
               }
             ]
-          },
-          "relatedActivityId": {
-            "description": "The related activity identifier, if applicable. Must be present in the current dialog.",
-            "format": "guid",
-            "nullable": true,
-            "type": "string"
           },
           "transmissionId": {
             "description": "If the activity is related to a particular transmission, this field will contain the transmission identifier.",
@@ -4400,12 +4344,6 @@
                 "$ref": "#/components/schemas/UpdateDialogDialogActivityPerformedByActorDto"
               }
             ]
-          },
-          "relatedActivityId": {
-            "description": "The related activity identifier, if applicable. Must be present in the request body.",
-            "format": "guid",
-            "nullable": true,
-            "type": "string"
           },
           "transmissionId": {
             "description": "If the activity is related to a particular transmission, this field will contain the transmission identifier.\nMust be present in the request body.",
@@ -6439,7 +6377,6 @@
                       "ActorName": null,
                       "ActorType": 2
                     },
-                    "RelatedActivityId": null,
                     "TransmissionId": null,
                     "Type": 3
                   }

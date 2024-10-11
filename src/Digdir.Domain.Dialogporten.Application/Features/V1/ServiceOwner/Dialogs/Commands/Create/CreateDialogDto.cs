@@ -291,11 +291,6 @@ public sealed class CreateDialogDialogActivityDto
     public DialogActivityType.Values Type { get; set; }
 
     /// <summary>
-    /// The related activity identifier, if applicable. Must be present in the request body.
-    /// </summary>
-    public Guid? RelatedActivityId { get; set; }
-
-    /// <summary>
     /// If the activity is related to a particular transmission, this field will contain the transmission identifier.
     /// Must be present in the request body.
     /// </summary>

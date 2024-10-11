@@ -11,5 +11,4 @@ public sealed record DialogActivityCreatedDomainEvent(
     string ServiceResource,
     string? Process,
     string? PrecedingProcess,
-    Uri? ExtendedType,
-    Guid? RelatedActivityId) : DomainEvent;
+    Uri? ExtendedType) : DomainEvent;
