@@ -14,7 +14,6 @@ using Polly.Contrib.WaitAndRetry;
 using Digdir.Domain.Dialogporten.Infrastructure.Common;
 using FluentValidation;
 using Digdir.Domain.Dialogporten.Application;
-using Digdir.Domain.Dialogporten.Application.Common.Behaviours;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.Authorization;
@@ -32,6 +31,7 @@ using ZiggyCreatures.Caching.Fusion;
 using ZiggyCreatures.Caching.Fusion.NullObjects;
 using Digdir.Domain.Dialogporten.Infrastructure.HealthChecks;
 using MassTransit;
+using MediatR;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure;
 
@@ -83,10 +83,15 @@ public static class InfrastructureExtensions
 
             // Transient
             .AddTransient<ISubjectResourceRepository, SubjectResourceRepository>()
-            .AddTransient<IIdempotentNotificationContext, IdempotentNotificationContext>()
+
+            // Singleton
+            .AddSingleton<IIdempotentNotificationContext, IdempotentNotificationContext>()
 
             // HttpClient
-            .AddHttpClients(configuration.GetSection(InfrastructureSettings.ConfigurationSectionName));
+            .AddHttpClients(configuration.GetSection(InfrastructureSettings.ConfigurationSectionName))
+
+            // Decorators
+            .Decorate(typeof(INotificationHandler<>), typeof(IdempotentNotificationHandler<>));
 
         services.AddFusionCacheNeueccMessagePackSerializer();
         services.AddStackExchangeRedisCache(opt => opt.Configuration = infrastructureSettings.Redis.ConnectionString);

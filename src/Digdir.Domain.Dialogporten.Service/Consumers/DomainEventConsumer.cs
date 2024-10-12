@@ -1,5 +1,5 @@
-using Digdir.Domain.Dialogporten.Application.Common.Behaviours;
 using Digdir.Domain.Dialogporten.Domain.Common.EventPublisher;
+using Digdir.Domain.Dialogporten.Infrastructure.Persistence.IdempotentNotifications;
 using MassTransit;
 using MediatR;
 
@@ -19,18 +19,15 @@ public sealed class DomainEventConsumer<T> : IConsumer<T>
 
     public async Task Consume(ConsumeContext<T> context)
     {
-        try
-        {
-            await _notificationContext.LoadAcknowledgements(context.Message, context.CancellationToken);
-            await _publisher.Publish(context.Message, context.CancellationToken);
-            await _notificationContext.AcknowledgeWhole(context.Message, context.CancellationToken);
-        }
-        catch (Exception)
-        {
-            await _notificationContext.NotAcknowledgeWhole(context.CancellationToken);
-            throw;
-        }
+        var isFirstAttempt = IsFirstAttempt(context);
+        await using var transaction = await _notificationContext
+            .BeginTransaction(context.Message, isFirstAttempt, context.CancellationToken);
+        await _publisher.Publish(context.Message, context.CancellationToken);
+        await transaction.Ack(context.CancellationToken);
     }
+
+    private static bool IsFirstAttempt(ConsumeContext<T> context)
+        => (context.GetRetryAttempt() + context.GetRedeliveryCount()) == 0;
 }
 
 public sealed class DomainEventConsumerDefinition<T> : ConsumerDefinition<DomainEventConsumer<T>>
@@ -44,8 +41,8 @@ public sealed class DomainEventConsumerDefinition<T> : ConsumerDefinition<Domain
         endpointConfigurator.UseDelayedRedelivery(r => r.Intervals(
             TimeSpan.FromMinutes(1),
             TimeSpan.FromMinutes(5),
-            TimeSpan.FromMinutes(15),
-            TimeSpan.FromMinutes(30)));
+            TimeSpan.FromMinutes(10),
+            TimeSpan.FromMinutes(15)));
         endpointConfigurator.UseMessageRetry(r => r.Intervals(
             TimeSpan.FromMilliseconds(100),
             TimeSpan.FromMilliseconds(200),

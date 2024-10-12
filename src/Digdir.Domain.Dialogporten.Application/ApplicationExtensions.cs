@@ -59,10 +59,7 @@ public static class ApplicationExtensions
             .AddTransient<IUserParties, UserParties>()
             .AddTransient<IClock, Clock>()
             .AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>))
-            .AddTransient(typeof(IPipelineBehavior<,>), typeof(DomainContextBehaviour<,>))
-
-            // Decorators
-            .Decorate(typeof(INotificationHandler<>), typeof(IdempotentNotificationHandler<>));
+            .AddTransient(typeof(IPipelineBehavior<,>), typeof(DomainContextBehaviour<,>));
 
         if (!environment.IsDevelopment())
         {
