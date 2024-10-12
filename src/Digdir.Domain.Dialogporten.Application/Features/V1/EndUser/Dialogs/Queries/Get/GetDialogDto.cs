@@ -368,11 +368,6 @@ public sealed class GetDialogDialogActivityDto
     public DialogActivityType.Values Type { get; set; }
 
     /// <summary>
-    /// The related activity identifier, if applicable. Must be present in the current dialog.
-    /// </summary>
-    public Guid? RelatedActivityId { get; set; }
-
-    /// <summary>
     /// If the activity is related to a particular transmission, this field will contain the transmission identifier.
     /// </summary>
     public Guid? TransmissionId { get; set; }

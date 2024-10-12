@@ -12,6 +12,5 @@ public sealed class SearchDialogActivityDto
 
     public DateTimeOffset? DeletedAt { get; set; }
 
-    public Guid? RelatedActivityId { get; set; }
     public Guid? TransmissionId { get; set; }
 }
