@@ -252,6 +252,7 @@ type Transmission {
 type TransmissionContent {
   title: ContentValue!
   summary: ContentValue!
+  contentReference: ContentValue
 }
 
 input SearchDialogInput {
