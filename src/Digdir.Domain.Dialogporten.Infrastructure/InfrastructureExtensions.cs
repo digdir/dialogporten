@@ -30,6 +30,7 @@ using StackExchange.Redis;
 using ZiggyCreatures.Caching.Fusion;
 using ZiggyCreatures.Caching.Fusion.NullObjects;
 using Digdir.Domain.Dialogporten.Infrastructure.HealthChecks;
+using Digdir.Domain.Dialogporten.Infrastructure.Persistence.Development;
 using MassTransit;
 using MediatR;
 
@@ -65,6 +66,7 @@ public static class InfrastructureExtensions
                 );
             })
             .AddHostedService<DevelopmentMigratorHostedService>()
+            .AddHostedService<DevelopmentCleanupOutboxHostedService>()
             .AddHostedService<DevelopmentSubjectResourceSyncHostedService>()
             .AddValidatorsFromAssembly(InfrastructureAssemblyMarker.Assembly, ServiceLifetime.Transient, includeInternalTypes: true)
             .AddPolicyRegistry((_, registry) =>
