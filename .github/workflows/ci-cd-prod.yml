@@ -13,17 +13,17 @@ jobs:
   # Get changed files between previous tag and current tag: https://github.com/marketplace/actions/changed-files
   check-for-changes:
     name: Check for changes
-    uses: ./.github/workflows/action-check-for-changes.yml
+    uses: ./.github/workflows/workflow-check-for-changes.yml
 
   get-current-version:
     name: Get current version
-    uses: ./.github/workflows/action-get-current-version.yml
+    uses: ./.github/workflows/workflow-get-current-version.yml
   
   dry-run-deploy-infra-prod:
     name: Dry run deploy infra to prod
     if: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasAzureChanges == 'true' }}
     needs: [get-current-version, check-for-changes]
-    uses: ./.github/workflows/action-deploy-infra.yml
+    uses: ./.github/workflows/workflow-deploy-infra.yml
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
@@ -42,7 +42,7 @@ jobs:
     name: Deploy infra to prod
     if: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasAzureChanges == 'true' }}
     needs: [get-current-version, check-for-changes, dry-run-deploy-infra-prod]
-    uses: ./.github/workflows/action-deploy-infra.yml
+    uses: ./.github/workflows/workflow-deploy-infra.yml
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
@@ -62,7 +62,7 @@ jobs:
       [get-current-version, check-for-changes, deploy-infra-prod]
     # we want deployment of apps to be dependent on deployment of infrastructure, but if infrastructure is skipped, we still want to dry-run deploy the apps
     if: ${{ always() && !failure() && !cancelled() && (github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasBackendChanges == 'true') }}
-    uses: ./.github/workflows/action-deploy-apps.yml
+    uses: ./.github/workflows/workflow-deploy-apps.yml
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
@@ -85,7 +85,7 @@ jobs:
     needs:
       [get-current-version, check-for-changes, dry-run-deploy-apps-prod]
     if: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasBackendChanges == 'true' }}
-    uses: ./.github/workflows/action-deploy-apps.yml
+    uses: ./.github/workflows/workflow-deploy-apps.yml
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
@@ -106,7 +106,7 @@ jobs:
     name: Deploy slack notifier (prod)
     needs: [check-for-changes]
     if: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasSlackNotifierChanges == 'true' }}
-    uses: ./.github/workflows/action-deploy-function.yml
+    uses: ./.github/workflows/workflow-deploy-function.yml
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
@@ -123,7 +123,7 @@ jobs:
   #   # we want the end-to-end tests to be dependent on deployment of infrastructure and apps, but if infrastructure is skipped, we still want to run the tests
   #   if: ${{ always() && !failure() && !cancelled() && (github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasBackendChanges == 'true') }}
   #   needs: [deploy-apps-prod, check-for-changes]
-  #   uses: ./.github/workflows/action-run-k6-tests.yml
+  #   uses: ./.github/workflows/workflow-run-k6-tests.yml
   #   secrets:
   #     TOKEN_GENERATOR_USERNAME: ${{ secrets.TOKEN_GENERATOR_USERNAME }}
   #     TOKEN_GENERATOR_PASSWORD: ${{ secrets.TOKEN_GENERATOR_PASSWORD }}
@@ -139,7 +139,7 @@ jobs:
     name: Send Slack message on failure
     needs: [deploy-infra-prod, deploy-apps-prod, deploy-slack-notifier-prod]
     if: ${{ always() && failure() && !cancelled() }}
-    uses: ./.github/workflows/action-send-ci-cd-status-slack-message.yml
+    uses: ./.github/workflows/workflow-send-ci-cd-status-slack-message.yml
     with:
       environment: prod
       infra_status: ${{ needs.deploy-infra-prod.result }}
