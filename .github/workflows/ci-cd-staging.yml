@@ -89,7 +89,7 @@ jobs:
 
   publish-schema-npm:
     name: Publish schema npm package
-    needs: [check-for-changes, get-current-version]
+    needs: [check-for-changes, get-current-version, deploy-apps-staging]
     if: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasSchemaChanges == 'true' }}
     uses: ./.github/workflows/workflow-publish-schema.yml
     with:
