@@ -70,8 +70,11 @@ public static class InfrastructureExtensions
 
         services.AddFusionCacheNeueccMessagePackSerializer();
 
+        services.AddStackExchangeRedisCache(options =>
+            options.ConnectionMultiplexerFactory = () => Task.FromResult<IConnectionMultiplexer>(
+                ConnectionMultiplexer.Connect(infrastructureSettings.Redis.ConnectionString)
+            ));
 
-        services.AddStackExchangeRedisCache(opt => opt.Configuration = infrastructureSettings.Redis.ConnectionString);
         services.AddFusionCacheStackExchangeRedisBackplane(opt => opt.Configuration = infrastructureSettings.Redis.ConnectionString);
 
         services.AddGraphQlRedisSubscriptions(infrastructureSettings.Redis.ConnectionString);

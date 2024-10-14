@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Reflection;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
+using Azure.Monitor.OpenTelemetry.AspNetCore;
 using Digdir.Domain.Dialogporten.Application;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.OptionExtensions;
@@ -20,9 +21,12 @@ using Digdir.Library.Utils.AspNet;
 using FastEndpoints;
 using FastEndpoints.Swagger;
 using FluentValidation;
-using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Authorization;
+using Npgsql;
 using NSwag;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
+using OpenTelemetry.Metrics;
 using Serilog;
 using Microsoft.Extensions.Options;
 
@@ -31,9 +35,7 @@ Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Warning()
     .Enrich.FromLogContext()
     .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture)
-    .WriteTo.ApplicationInsights(
-        TelemetryConfiguration.CreateDefault(),
-        TelemetryConverter.Traces)
+    .WriteTo.ApplicationInsights(TelemetryConverter.Traces)
     .CreateBootstrapLogger();
 
 try
@@ -59,9 +61,7 @@ static void BuildAndRun(string[] args)
         .ReadFrom.Configuration(context.Configuration)
         .ReadFrom.Services(services)
         .Enrich.FromLogContext()
-        .WriteTo.ApplicationInsights(
-            services.GetRequiredService<TelemetryConfiguration>(),
-            TelemetryConverter.Traces));
+        .WriteTo.ApplicationInsights(TelemetryConverter.Traces));
 
     builder.Configuration
         .AddAzureConfiguration(builder.Environment.EnvironmentName)
@@ -100,7 +100,6 @@ static void BuildAndRun(string[] args)
         .AddHttpContextAccessor()
         .AddValidatorsFromAssembly(thisAssembly, ServiceLifetime.Transient, includeInternalTypes: true)
         .AddAzureAppConfiguration()
-        .AddApplicationInsightsTelemetry()
         .AddEndpointsApiExplorer()
         .AddFastEndpoints()
         .SwaggerDocument(x =>
@@ -134,6 +133,34 @@ static void BuildAndRun(string[] args)
             .JwtBearerTokenSchemas?
             .Select(z => z.WellKnown)
             .ToList() ?? [])
+
+        // OpenTelemetry
+        .AddOpenTelemetry()
+            .ConfigureResource(resource => resource
+                .AddService(serviceName: builder.Environment.ApplicationName))
+            .WithTracing(tracing =>
+            {
+                if (builder.Environment.IsDevelopment())
+                {
+                    tracing.SetSampler(new AlwaysOnSampler());
+                }
+
+                tracing.AddAspNetCoreInstrumentation(options =>
+                {
+                    options.Filter = (httpContext) =>
+                        !httpContext.Request.Path.StartsWithSegments("/health");
+                });
+
+                tracing.AddHttpClientInstrumentation();
+                tracing.AddNpgsql();
+                tracing.AddRedisInstrumentation(options => options.SetVerboseDatabaseStatements = true);
+            })
+            .WithMetrics(metrics =>
+            {
+                metrics.AddRuntimeInstrumentation();
+            })
+            .UseAzureMonitor()
+            .Services
 
         // Auth
         .AddDialogportenAuthentication(builder.Configuration)
