@@ -31,6 +31,12 @@ param revisionSuffix string
 @description('The probes for the container app')
 param probes array = []
 
+@description('The scaling configuration for the container app')
+param scale object = {
+  minReplicas: 1
+  maxReplicas: 1
+}
+
 // Container app revision name does not allow '.' character
 var cleanedRevisionSuffix = replace(revisionSuffix, '.', '-')
 
@@ -63,10 +69,7 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
     environmentId: containerAppEnvId
     template: {
       revisionSuffix: cleanedRevisionSuffix
-      scale: {
-        minReplicas: 1
-        maxReplicas: 1 // temp disable scaling for outbox scheduling
-      }
+      scale: scale
       containers: [
         {
           name: name
