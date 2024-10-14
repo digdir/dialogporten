@@ -1,6 +1,6 @@
 using './main.bicep'
 
-param environment = 'soak'
+param environment = 'yt01'
 param location = 'norwayeast'
 param keyVaultSourceKeys = json(readEnvironmentVariable('AZURE_KEY_VAULT_SOURCE_KEYS'))
 
@@ -45,6 +45,5 @@ param serviceBusSku = {
   tier: 'Premium'
   capacity: 1
 }
-
 // Altinn Product Dialogporten: Developers Dev
 param sshJumperAdminLoginGroupObjectId = 'c12e51e3-5cbd-4229-8a31-5394c423fb5f'
