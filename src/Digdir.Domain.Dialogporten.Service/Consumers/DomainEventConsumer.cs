@@ -9,21 +9,21 @@ public sealed class DomainEventConsumer<T> : IConsumer<T>
     where T : class, IDomainEvent
 {
     private readonly IPublisher _publisher;
-    private readonly IIdempotentNotificationContext _notificationContext;
+    private readonly INotificationProcessingContextFactory _notificationProcessingContextFactory;
 
-    public DomainEventConsumer(IPublisher publisher, IIdempotentNotificationContext notificationContext)
+    public DomainEventConsumer(IPublisher publisher, INotificationProcessingContextFactory notificationProcessingContextFactory)
     {
         _publisher = publisher ?? throw new ArgumentNullException(nameof(publisher));
-        _notificationContext = notificationContext ?? throw new ArgumentNullException(nameof(notificationContext));
+        _notificationProcessingContextFactory = notificationProcessingContextFactory ?? throw new ArgumentNullException(nameof(notificationProcessingContextFactory));
     }
 
     public async Task Consume(ConsumeContext<T> context)
     {
         var isFirstAttempt = IsFirstAttempt(context);
-        await using var transaction = await _notificationContext
-            .BeginTransaction(context.Message, isFirstAttempt, context.CancellationToken);
+        await using var notificationContext = await _notificationProcessingContextFactory
+            .CreateContext(context.Message, isFirstAttempt, context.CancellationToken);
         await _publisher.Publish(context.Message, context.CancellationToken);
-        await transaction.Ack(context.CancellationToken);
+        await notificationContext.Ack(context.CancellationToken);
     }
 
     private static bool IsFirstAttempt(ConsumeContext<T> context)

@@ -87,7 +87,7 @@ public static class InfrastructureExtensions
             .AddTransient<ISubjectResourceRepository, SubjectResourceRepository>()
 
             // Singleton
-            .AddSingleton<IIdempotentNotificationContext, IdempotentNotificationContext>()
+            .AddSingleton<INotificationProcessingContextFactory, NotificationProcessingContextFactory>()
 
             // HttpClient
             .AddHttpClients(configuration.GetSection(InfrastructureSettings.ConfigurationSectionName))

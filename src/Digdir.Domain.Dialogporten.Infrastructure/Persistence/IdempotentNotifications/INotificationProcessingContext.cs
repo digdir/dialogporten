@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.IdempotentNotifications;
 
-public interface IIdempotentNotificationTransaction : IAsyncDisposable
+public interface INotificationProcessingContext : IAsyncDisposable
 {
     Task Ack(CancellationToken cancellationToken = default);
     Task Nack(CancellationToken cancellationToken = default);
@@ -12,7 +12,7 @@ public interface IIdempotentNotificationTransaction : IAsyncDisposable
     Task<bool> HandlerIsAcked(string handlerName, CancellationToken cancellationToken = default);
 }
 
-internal sealed class IdempotentNotificationTransaction : IIdempotentNotificationTransaction
+internal sealed class NotificationProcessingContext : INotificationProcessingContext
 {
     private readonly SemaphoreSlim _initializeLock = new(1, 1);
     private readonly IServiceScopeFactory _serviceScopeFactory;
@@ -23,7 +23,7 @@ internal sealed class IdempotentNotificationTransaction : IIdempotentNotificatio
     private IServiceScope? _serviceScope;
     private bool _acknowledged;
 
-    public IdempotentNotificationTransaction(IServiceScopeFactory serviceScopeFactory, Guid eventId, Action<Guid> onDispose)
+    public NotificationProcessingContext(IServiceScopeFactory serviceScopeFactory, Guid eventId, Action<Guid> onDispose)
     {
         _serviceScopeFactory = serviceScopeFactory ?? throw new ArgumentNullException(nameof(serviceScopeFactory));
         _onDispose = onDispose ?? throw new ArgumentNullException(nameof(onDispose));

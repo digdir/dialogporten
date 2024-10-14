@@ -13,18 +13,18 @@ internal sealed class IdempotentNotificationHandler<TNotification> :
     where TNotification : IDomainEvent
 {
     private readonly INotificationHandler<TNotification> _decorated;
-    private readonly IIdempotentNotificationContext _context;
+    private readonly INotificationProcessingContextFactory _processingContextFactory;
 
-    public IdempotentNotificationHandler(INotificationHandler<TNotification> decorated, IIdempotentNotificationContext context)
+    public IdempotentNotificationHandler(INotificationHandler<TNotification> decorated, INotificationProcessingContextFactory processingContextFactory)
     {
         _decorated = decorated ?? throw new ArgumentNullException(nameof(decorated));
-        _context = context ?? throw new ArgumentNullException(nameof(context));
+        _processingContextFactory = processingContextFactory ?? throw new ArgumentNullException(nameof(processingContextFactory));
     }
 
     public async Task Handle(TNotification notification, CancellationToken cancellationToken)
     {
         var handlerName = _decorated.GetType().FullName!;
-        var transaction = _context.GetExistingTransaction(notification.EventId);
+        var transaction = _processingContextFactory.GetExistingContext(notification.EventId);
         if (await transaction.HandlerIsAcked(handlerName, cancellationToken))
         {
             // I've handled this event before, so I'm not going to do it again.
