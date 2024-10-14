@@ -26,21 +26,18 @@ internal sealed class DevelopmentCleanupOutboxHostedService : IHostedService
         using var scope = _serviceScopeFactory.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<DialogDbContext>();
         var oldestAllowed = DateTimeOffset.UtcNow.AddHours(-12);
-        await Task.WhenAll
-        (
-            dbContext.NotificationAcknowledgements
-                .Where(x => x.AcknowledgedAt < oldestAllowed)
-                .ExecuteDeleteAsync(cancellationToken),
-            dbContext.Set<OutboxMessage>()
-                .Where(x => x.SentTime < oldestAllowed)
-                .ExecuteDeleteAsync(cancellationToken),
-            dbContext.Set<OutboxState>()
-                .Where(x => x.Created < oldestAllowed)
-                .ExecuteDeleteAsync(cancellationToken),
-            dbContext.Set<InboxState>()
-                .Where(x => x.Received < oldestAllowed)
-                .ExecuteDeleteAsync(cancellationToken)
-        );
+        await dbContext.NotificationAcknowledgements
+            .Where(x => x.AcknowledgedAt < oldestAllowed)
+            .ExecuteDeleteAsync(cancellationToken);
+        await dbContext.Set<OutboxMessage>()
+            .Where(x => x.SentTime < oldestAllowed)
+            .ExecuteDeleteAsync(cancellationToken);
+        await dbContext.Set<OutboxState>()
+            .Where(x => x.Created < oldestAllowed)
+            .ExecuteDeleteAsync(cancellationToken);
+        await dbContext.Set<InboxState>()
+            .Where(x => x.Received < oldestAllowed)
+            .ExecuteDeleteAsync(cancellationToken);
     }
 
     public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;

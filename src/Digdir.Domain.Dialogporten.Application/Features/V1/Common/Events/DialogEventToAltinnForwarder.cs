@@ -1,28 +1,9 @@
-using System.Diagnostics.CodeAnalysis;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Events;
 using MediatR;
 using Microsoft.Extensions.Options;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.Common.Events;
-
-internal sealed class MahTestConsumer : INotificationHandler<DialogCreatedDomainEvent>
-{
-    public Task Handle(DialogCreatedDomainEvent notification, CancellationToken cancellationToken)
-    {
-        Console.WriteLine("Mah test consumer");
-        return Task.CompletedTask;
-    }
-}
-
-internal sealed class MahFaultyTestConsumer : INotificationHandler<DialogCreatedDomainEvent>
-{
-    [SuppressMessage("Usage", "CA2201:Do not raise reserved exception types")]
-    public Task Handle(DialogCreatedDomainEvent notification, CancellationToken cancellationToken)
-    {
-        return Task.FromException(new Exception("Woopsie!"));
-    }
-}
 
 internal sealed class DialogEventToAltinnForwarder : DomainEventToAltinnForwarderBase,
     INotificationHandler<DialogCreatedDomainEvent>,

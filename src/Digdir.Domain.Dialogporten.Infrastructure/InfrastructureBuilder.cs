@@ -1,4 +1,5 @@
 using System.Reflection;
+using Digdir.Domain.Dialogporten.Application;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.OptionExtensions;
 using MassTransit;
 using Microsoft.Extensions.Configuration;
@@ -39,8 +40,14 @@ internal sealed class InfrastructureBuilder(IServiceCollection services, IConfig
 
     public IServiceCollection Build()
     {
-        var settings = RegisterAndValidateInfrastructureSettings();
-        var builderContext = new InfrastructureBuilderContext(_services, _configuration, _environment, settings);
+        var infrastructureSettings = RegisterAndValidateInfrastructureSettings();
+        var developmentSettings = _configuration.GetLocalDevelopmentSettings();
+        var builderContext = new InfrastructureBuilderContext(
+            _services,
+            _configuration,
+            _environment,
+            infrastructureSettings,
+            developmentSettings);
         AddInfrastructure_Internal(builderContext);
         foreach (var action in _actions)
         {
@@ -94,4 +101,5 @@ internal sealed record InfrastructureBuilderContext(
     IServiceCollection Services,
     IConfiguration Configuration,
     IHostEnvironment Environment,
-    InfrastructureSettings Settings);
+    InfrastructureSettings InfraSettings,
+    LocalDevelopmentSettings DevSettings);

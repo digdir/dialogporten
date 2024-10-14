@@ -15,6 +15,7 @@ public sealed class LocalDevelopmentSettings
     public bool UseLocalDevelopmentNameRegister { get; set; } = true;
     public bool UseLocalDevelopmentOrganizationRegister { get; set; } = true;
     public bool UseLocalDevelopmentCompactJwsGenerator { get; set; } = true;
+    public bool UseInMemoryServiceBusTransport { get; set; } = true;
 }
 
 public static class LocalDevelopmentSettingsExtensions

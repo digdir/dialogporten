@@ -47,7 +47,7 @@ public static class InfrastructureExtensions
     internal static void AddInfrastructure_Internal(InfrastructureBuilderContext builderContext)
     {
         ArgumentNullException.ThrowIfNull(builderContext);
-        var (services, configuration, environment, infrastructureSettings) = builderContext;
+        var (services, configuration, environment, infrastructureSettings, _) = builderContext;
 
         services
 
@@ -171,6 +171,8 @@ public static class InfrastructureExtensions
 
     internal static void AddPubSubCapabilities(InfrastructureBuilderContext builderContext, List<Action<IBusRegistrationConfigurator>> customConfigurations)
     {
+        // ATTENTION: If you need to add custom configurations to the bus, you should
+        // consider adding equivalent config to AddPubCapabilities method as well
         builderContext.Services.AddMassTransit(x =>
             {
                 x.AddEntityFrameworkOutbox<DialogDbContext>(o =>
@@ -184,19 +186,32 @@ public static class InfrastructureExtensions
                     customConfiguration(x);
                 }
 
-                if (builderContext.Environment.IsDevelopment())
+                if (builderContext.Environment.IsDevelopment() && builderContext.DevSettings.UseInMemoryServiceBusTransport)
                 {
                     x.UsingInMemory((context, cfg) => cfg.ConfigureEndpoints(context));
                     return;
                 }
 
-                x.UsingAzureServiceBus((context, cfg) => cfg.ConfigureEndpoints(context));
+                x.AddConfigureEndpointsCallback((_, cfg) =>
+                {
+                    if (cfg is IServiceBusReceiveEndpointConfigurator sb)
+                    {
+                        sb.ConfigureDeadLetterQueueDeadLetterTransport();
+                        sb.ConfigureDeadLetterQueueErrorTransport();
+                    }
+                });
+
+                x.UsingAzureServiceBus((context, cfg) =>
+                {
+                    cfg.Host(builderContext.InfraSettings.AzureServiceBus.ConnectionString);
+                    cfg.ConfigureEndpoints(context);
+                });
             })
             .AddTransient<Lazy<IPublishEndpoint>>(x =>
                 new Lazy<IPublishEndpoint>(x.GetRequiredService<IPublishEndpoint>));
 
         new DummyRequestExecutorBuilder { Services = builderContext.Services }
-            .AddRedisSubscriptions(_ => ConnectionMultiplexer.Connect(builderContext.Settings.Redis.ConnectionString),
+            .AddRedisSubscriptions(_ => ConnectionMultiplexer.Connect(builderContext.InfraSettings.Redis.ConnectionString),
                 new SubscriptionOptions
                 {
                     TopicPrefix = GraphQlSubscriptionConstants.SubscriptionTopicPrefix
@@ -205,6 +220,8 @@ public static class InfrastructureExtensions
 
     internal static void AddPubCapabilities(InfrastructureBuilderContext builderContext)
     {
+        // ATTENTION: If you need to add custom configurations to the bus, you should
+        // consider adding equivalent config to AddPubSubCapabilities method as well
         builderContext.Services.AddMassTransit(x =>
             {
                 x.AddEntityFrameworkOutbox<DialogDbContext>(o =>
@@ -214,7 +231,7 @@ public static class InfrastructureExtensions
                     o.DisableInboxCleanupService();
                 });
 
-                if (builderContext.Environment.IsDevelopment())
+                if (builderContext.Environment.IsDevelopment() && builderContext.DevSettings.UseInMemoryServiceBusTransport)
                 {
                     x.UsingInMemory();
                     return;
@@ -226,7 +243,7 @@ public static class InfrastructureExtensions
                 new Lazy<IPublishEndpoint>(x.GetRequiredService<IPublishEndpoint>));
 
         new DummyRequestExecutorBuilder { Services = builderContext.Services }
-            .AddRedisSubscriptions(_ => ConnectionMultiplexer.Connect(builderContext.Settings.Redis.ConnectionString),
+            .AddRedisSubscriptions(_ => ConnectionMultiplexer.Connect(builderContext.InfraSettings.Redis.ConnectionString),
                 new SubscriptionOptions
                 {
                     TopicPrefix = GraphQlSubscriptionConstants.SubscriptionTopicPrefix

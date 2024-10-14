@@ -13,6 +13,12 @@ public sealed class InfrastructureSettings
     public required AltinnPlatformSettings Altinn { get; init; }
     public required AltinnCdnPlatformSettings AltinnCdn { get; init; }
     public required MaskinportenSettings Maskinporten { get; init; }
+    public required AzureServiceBusSettings AzureServiceBus { get; init; }
+}
+
+public sealed class AzureServiceBusSettings
+{
+    public required string ConnectionString { get; init; }
 }
 
 public sealed class AltinnPlatformSettings
