@@ -14,7 +14,6 @@ public sealed class GetDialogActivityDto
 
     public DateTimeOffset? DeletedAt { get; set; }
 
-    public Guid? RelatedActivityId { get; set; }
     public Guid? TransmissionId { get; set; }
 
     public GetDialogActivityPerformedByActorDto PerformedBy { get; set; } = null!;

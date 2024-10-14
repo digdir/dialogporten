@@ -27,25 +27,25 @@ jobs:
 
   generate-git-short-sha:
     name: Generate git short sha
-    uses: ./.github/workflows/action-generate-git-short-sha.yml
+    uses: ./.github/workflows/workflow-generate-git-short-sha.yml
 
   get-current-version:
     name: Get current version
-    uses: ./.github/workflows/action-get-current-version.yml
+    uses: ./.github/workflows/workflow-get-current-version.yml
 
   check-for-changes:
     name: Check for changes
-    uses: ./.github/workflows/action-check-for-changes.yml
+    uses: ./.github/workflows/workflow-check-for-changes.yml
 
   build-and-test:
     name: Build and test backend
-    uses: ./.github/workflows/action-build-and-test.yml
+    uses: ./.github/workflows/workflow-build-and-test.yml
     needs: [check-for-changes]
     if: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasBackendChanges == 'true' || needs.check-for-changes.outputs.hasTestChanges == 'true' }}
 
   publish:
     name: Build and publish docker images
-    uses: ./.github/workflows/action-publish.yml
+    uses: ./.github/workflows/workflow-publish.yml
     needs:
       [
         get-current-version,
@@ -64,7 +64,7 @@ jobs:
     name: Deploy infra to test
     needs: [get-current-version, check-for-changes, generate-git-short-sha]
     if: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasAzureChanges == 'true' }}
-    uses: ./.github/workflows/action-deploy-infra.yml
+    uses: ./.github/workflows/workflow-deploy-infra.yml
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
@@ -90,7 +90,7 @@ jobs:
       ]
     # we want deployment of apps to be dependent on deployment of infrastructure, but if infrastructure is skipped, we still want to deploy the apps
     if: ${{ always() && !failure() && !cancelled() && (github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasBackendChanges == 'true') }}
-    uses: ./.github/workflows/action-deploy-apps.yml
+    uses: ./.github/workflows/workflow-deploy-apps.yml
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
@@ -111,7 +111,7 @@ jobs:
     name: Deploy slack notifier (test)
     needs: [check-for-changes]
     if: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasSlackNotifierChanges == 'true' }}
-    uses: ./.github/workflows/action-deploy-function.yml
+    uses: ./.github/workflows/workflow-deploy-function.yml
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
@@ -127,7 +127,7 @@ jobs:
     name: Deploy schema npm package
     needs: [check-for-changes, get-current-version, generate-git-short-sha]
     if: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasSchemaChanges == 'true' }}
-    uses: ./.github/workflows/action-publish-schema.yml
+    uses: ./.github/workflows/workflow-publish-schema.yml
     with:
       version: ${{ needs.get-current-version.outputs.version }}-${{ needs.generate-git-short-sha.outputs.gitShortSha }}
     secrets:
@@ -138,7 +138,7 @@ jobs:
     # we want the end-to-end tests to be dependent on deployment of infrastructure and apps, but if infrastructure is skipped, we still want to run the tests
     if: ${{ always() && !failure() && !cancelled() && (github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasBackendChanges == 'true' || needs.check-for-changes.outputs.hasTestChanges == 'true') }}
     needs: [deploy-apps-test, check-for-changes]
-    uses: ./.github/workflows/action-run-k6-tests.yml
+    uses: ./.github/workflows/workflow-run-k6-tests.yml
     secrets:
       TOKEN_GENERATOR_USERNAME: ${{ secrets.TOKEN_GENERATOR_USERNAME }}
       TOKEN_GENERATOR_PASSWORD: ${{ secrets.TOKEN_GENERATOR_PASSWORD }}
@@ -154,7 +154,7 @@ jobs:
     name: Send Slack message on failure
     needs: [deploy-infra-test, deploy-apps-test, deploy-slack-notifier-test, run-e2e-tests, publish-schema-npm, publish]
     if: ${{ always() && failure() && !cancelled() }}
-    uses: ./.github/workflows/action-send-ci-cd-status-slack-message.yml
+    uses: ./.github/workflows/workflow-send-ci-cd-status-slack-message.yml
     with:
       environment: test
       infra_status: ${{ needs.deploy-infra-test.result }}

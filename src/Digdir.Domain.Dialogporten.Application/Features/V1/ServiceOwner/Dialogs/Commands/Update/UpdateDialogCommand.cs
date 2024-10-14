@@ -102,7 +102,6 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         ValidateTimeFields(dialog);
 
         await AppendActivity(dialog, request.Dto, cancellationToken);
-        VerifyActivityRelations(dialog);
 
         await AppendTransmission(dialog, request.Dto, cancellationToken);
         VerifyTransmissionRelations(dialog);
@@ -241,33 +240,6 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
                 nameof(UpdateDialogDto.Activities),
                 $"Invalid '{nameof(DialogActivity.TransmissionId)}, entity '{nameof(DialogTransmission)}'" +
                 $" with the following key(s) does not exist: ({string.Join(", ", invalidTransmissionIds)}) in '{nameof(dialog.Transmissions)}'");
-        }
-    }
-
-    private void VerifyActivityRelations(DialogEntity dialog)
-    {
-        var relatedActivityIds = dialog.Activities
-            .Where(x => x.RelatedActivityId is not null)
-            .Select(x => x.RelatedActivityId)
-            .ToList();
-
-        if (relatedActivityIds.Count == 0)
-        {
-            return;
-        }
-
-        var activityIds = dialog.Activities.Select(x => x.Id).ToList();
-
-        var invalidRelatedActivityIds = relatedActivityIds
-            .Where(id => !activityIds.Contains(id!.Value))
-            .ToList();
-
-        if (invalidRelatedActivityIds.Count != 0)
-        {
-            _domainContext.AddError(
-                nameof(UpdateDialogDto.Activities),
-                $"Invalid '{nameof(DialogActivity.RelatedActivityId)}, entity '{nameof(DialogActivity)}'" +
-                $" with the following key(s) does not exist: ({string.Join(", ", invalidRelatedActivityIds)}) in '{nameof(dialog.Activities)}'");
         }
     }
 

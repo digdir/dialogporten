@@ -30,7 +30,6 @@ public sealed class Activity
 
     public ActivityType Type { get; set; }
 
-    public Guid? RelatedActivityId { get; set; }
     public Guid? TransmissionId { get; set; }
 
     public Actor PerformedBy { get; set; } = null!;
