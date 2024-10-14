@@ -126,7 +126,7 @@ jobs:
   publish-schema-npm:
     name: Deploy schema npm package
     needs: [check-for-changes, get-current-version, generate-git-short-sha, deploy-apps-test]
-    if: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasSchemaChanges == 'true' }}
+    if: ${{ always() && !failure() && !cancelled() && (github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasSchemaChanges == 'true') }}
     uses: ./.github/workflows/workflow-publish-schema.yml
     with:
       version: ${{ needs.get-current-version.outputs.version }}-${{ needs.generate-git-short-sha.outputs.gitShortSha }}
@@ -152,7 +152,15 @@ jobs:
 
   send-slack-message-on-failure:
     name: Send Slack message on failure
-    needs: [deploy-infra-test, deploy-apps-test, deploy-slack-notifier-test, run-e2e-tests, publish-schema-npm, publish]
+    needs: [
+      deploy-infra-test,
+      deploy-apps-test,
+      deploy-slack-notifier-test,
+      run-e2e-tests,
+      publish-schema-npm,
+      publish,
+      build-and-test,
+    ]
     if: ${{ always() && failure() && !cancelled() }}
     uses: ./.github/workflows/workflow-send-ci-cd-status-slack-message.yml
     with:
@@ -163,6 +171,7 @@ jobs:
       e2e_tests_status: ${{ needs.run-e2e-tests.result }}
       schema_npm_status: ${{ needs.publish-schema-npm.result }}
       publish_status: ${{ needs.publish.result }}
+      build_and_test_status: ${{ needs.build-and-test.result }}
     secrets:
       SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
       SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID_FOR_CI_CD_STATUS }}

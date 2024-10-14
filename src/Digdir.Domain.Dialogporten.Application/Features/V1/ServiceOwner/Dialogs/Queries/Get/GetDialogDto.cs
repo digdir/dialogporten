@@ -59,12 +59,12 @@ public sealed class GetDialogDto
     public int? Progress { get; set; }
 
     /// <summary>
-    /// Optional process identifier used to indicate a business process this dialog belongs to 
+    /// Optional process identifier used to indicate a business process this dialog belongs to
     /// </summary>
     public string? Process { get; set; }
 
     /// <summary>
-    /// Optional preceding process identifier to indicate the business process that preceded the process indicated in the "Process" field. Cannot be set without also "Process" being set. 
+    /// Optional preceding process identifier to indicate the business process that preceded the process indicated in the "Process" field. Cannot be set without also "Process" being set.
     /// </summary>
     public string? PrecedingProcess { get; set; }
 
@@ -335,7 +335,8 @@ public sealed class GetDialogContentDto
     public ContentValueDto? ExtendedStatus { get; set; }
 
     /// <summary>
-    /// Front-channel embedded content. Used to dynamically embed content in the frontend from an external URL.
+    /// Front-channel embedded content. Used to dynamically embed content in the frontend from an external URL. Must be HTTPS.
+    /// Allowed media types: application/vnd.dialogporten.frontchannelembed+json;type=markdown
     /// </summary>
     public ContentValueDto? MainContentReference { get; set; }
 }
@@ -351,6 +352,12 @@ public sealed class GetDialogDialogTransmissionContentDto
     /// The transmission summary.
     /// </summary>
     public ContentValueDto Summary { get; set; } = null!;
+
+    /// <summary>
+    /// Front-channel embedded content. Used to dynamically embed content in the frontend from an external URL. Must be HTTPS.
+    /// Allowed media types: application/vnd.dialogporten.frontchannelembed+json;type=markdown
+    /// </summary>
+    public ContentValueDto? ContentReference { get; set; }
 }
 
 public sealed class GetDialogSearchTagDto
