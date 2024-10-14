@@ -16,4 +16,6 @@ public interface IAltinnAuthorization
 
     public Task<AuthorizedPartiesResult> GetAuthorizedParties(IPartyIdentifier authenticatedParty, bool flatten = false,
         CancellationToken cancellationToken = default);
+
+    Task<bool> HasListAuthorizationForDialog(DialogEntity dialog, CancellationToken cancellationToken);
 }
