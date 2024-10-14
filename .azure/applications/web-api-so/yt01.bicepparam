@@ -1,6 +1,6 @@
 using './main.bicep'
 
-param environment = 'perf'
+param environment = 'yt01'
 param location = 'norwayeast'
 param apimIp = '51.13.86.131' // todo: replace with APIM IP for YT
 param imageTag = readEnvironmentVariable('IMAGE_TAG')

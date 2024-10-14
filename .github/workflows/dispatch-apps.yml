@@ -10,6 +10,7 @@ on:
         type: choice
         options:
           - test
+          - yt01
           - staging
           - prod
       version:
