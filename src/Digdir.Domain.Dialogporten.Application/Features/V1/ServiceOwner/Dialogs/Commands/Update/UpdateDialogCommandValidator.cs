@@ -160,18 +160,40 @@ internal sealed class UpdateDialogDialogTransmissionActorDtoValidator : Abstract
 
 internal sealed class UpdateDialogDialogTransmissionContentDtoValidator : AbstractValidator<UpdateDialogDialogTransmissionContentDto>
 {
-    private static readonly Dictionary<string, PropertyInfo> SourcePropertyMetaDataByName = typeof(UpdateDialogDialogTransmissionContentDto)
+    private static readonly NullabilityInfoContext Context = new();
+    private static readonly Dictionary<string, PropertyInfoWithNullability> SourcePropertyMetaDataByName = typeof(UpdateDialogDialogTransmissionContentDto)
         .GetProperties()
-        .ToDictionary(x => x.Name, StringComparer.InvariantCultureIgnoreCase);
+        .Select(x =>
+        {
+            var nullabilityInfo = Context.Create(x);
+            return new PropertyInfoWithNullability(x, nullabilityInfo);
+        })
+        .ToDictionary(x => x.Property.Name, StringComparer.InvariantCultureIgnoreCase);
 
     public UpdateDialogDialogTransmissionContentDtoValidator()
     {
         foreach (var (propertyName, propMetadata) in SourcePropertyMetaDataByName)
         {
-            RuleFor(x => propMetadata.GetValue(x) as ContentValueDto)
-                .NotNull()
-                .WithMessage($"{propertyName} must not be empty.")
-                .SetValidator(new ContentValueDtoValidator(DialogTransmissionContentType.Parse(propertyName))!);
+            switch (propMetadata.NullabilityInfo.WriteState)
+            {
+                case NullabilityState.NotNull:
+                    RuleFor(x => propMetadata.Property.GetValue(x) as ContentValueDto)
+                        .NotNull()
+                        .WithMessage($"{propertyName} must not be empty.")
+                        .SetValidator(
+                            new ContentValueDtoValidator(DialogTransmissionContentType.Parse(propertyName))!);
+                    break;
+                case NullabilityState.Nullable:
+                    RuleFor(x => propMetadata.Property.GetValue(x) as ContentValueDto)
+                        .SetValidator(
+                            new ContentValueDtoValidator(DialogTransmissionContentType.Parse(propertyName))!)
+                        .When(x => propMetadata.Property.GetValue(x) is not null);
+                    break;
+                case NullabilityState.Unknown:
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }
@@ -213,13 +235,12 @@ internal sealed class UpdateDialogDialogTransmissionDtoValidator : AbstractValid
 
 internal sealed class UpdateDialogContentDtoValidator : AbstractValidator<UpdateDialogContentDto>
 {
+    private static readonly NullabilityInfoContext Context = new();
     private static readonly Dictionary<string, PropertyInfoWithNullability> SourcePropertyMetaDataByName =
         typeof(UpdateDialogContentDto).GetProperties()
             .Select(x =>
             {
-                var context = new NullabilityInfoContext();
-                var nullabilityInfo = context.Create(x);
-
+                var nullabilityInfo = Context.Create(x);
                 return new PropertyInfoWithNullability(x, nullabilityInfo);
             })
             .ToDictionary(x => x.Property.Name, StringComparer.InvariantCultureIgnoreCase);
