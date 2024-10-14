@@ -192,6 +192,7 @@ public static class InfrastructureExtensions
                     return;
                 }
 
+                // x.ConfigureHealthCheckOptions(options => options.Tags.Add("self"));
                 x.AddConfigureEndpointsCallback((_, cfg) =>
                 {
                     if (cfg is IServiceBusReceiveEndpointConfigurator sb)
@@ -200,10 +201,9 @@ public static class InfrastructureExtensions
                         sb.ConfigureDeadLetterQueueErrorTransport();
                     }
                 });
-
                 x.UsingAzureServiceBus((context, cfg) =>
                 {
-                    cfg.Host(builderContext.InfraSettings.AzureServiceBus.ConnectionString);
+                    cfg.Host(builderContext.InfraSettings.MassTransit.Host);
                     cfg.ConfigureEndpoints(context);
                 });
             })

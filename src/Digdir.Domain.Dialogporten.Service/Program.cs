@@ -9,12 +9,8 @@ using Digdir.Domain.Dialogporten.Domain;
 using Digdir.Domain.Dialogporten.Domain.Common.EventPublisher;
 using Digdir.Domain.Dialogporten.Service;
 using Digdir.Domain.Dialogporten.Service.Consumers;
+using Digdir.Library.Utils.AspNet;
 using MassTransit;
-
-// TODO: Add AppConfiguration and key vault
-// TODO: Configure Service bus connection settings
-// TODO: Configure Postgres connection settings
-// TODO: Improve exceptions thrown in this assembly
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Warning()
@@ -84,10 +80,10 @@ static void BuildAndRun(string[] args)
             })
             .Build()
         .AddTransient<IUser, ServiceUser>()
-        .AddHealthChecks();
+        .AddAspNetHealthChecks();
 
     var app = builder.Build();
+    app.MapAspNetHealthChecks();
     app.UseHttpsRedirection();
-    app.MapHealthChecks("/healthz");
     app.Run();
 }
