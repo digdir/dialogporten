@@ -126,7 +126,7 @@ jobs:
   publish-schema-npm:
     name: Deploy schema npm package
     needs: [check-for-changes, get-current-version, generate-git-short-sha, deploy-apps-test]
-    if: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasSchemaChanges == 'true' }}
+    if: ${{ always() && !failure() && !cancelled() && (github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasSchemaChanges == 'true') }}
     uses: ./.github/workflows/workflow-publish-schema.yml
     with:
       version: ${{ needs.get-current-version.outputs.version }}-${{ needs.generate-git-short-sha.outputs.gitShortSha }}
