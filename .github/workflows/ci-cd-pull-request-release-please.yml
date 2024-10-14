@@ -15,21 +15,21 @@ jobs:
 
   get-current-version:
     name: Get current version
-    uses: ./.github/workflows/action-get-current-version.yml
+    uses: ./.github/workflows/workflow-get-current-version.yml
 
   check-for-changes:
     name: Check for changes
-    uses: ./.github/workflows/action-check-for-changes.yml
+    uses: ./.github/workflows/workflow-check-for-changes.yml
 
   generate-git-short-sha:
     name: Generate git short sha
     needs: [verify-release-please-branch]
-    uses: ./.github/workflows/action-generate-git-short-sha.yml
+    uses: ./.github/workflows/workflow-generate-git-short-sha.yml
 
   dry-run-deploy-infra-staging:
     name: Deploy infra to staging (dry run)
     needs: [generate-git-short-sha, get-current-version, check-for-changes]
-    uses: ./.github/workflows/action-deploy-infra.yml
+    uses: ./.github/workflows/workflow-deploy-infra.yml
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
@@ -47,7 +47,7 @@ jobs:
   dry-run-deploy-apps-staging:
     name: Deploy apps to staging (dry run)
     needs: [generate-git-short-sha, get-current-version, check-for-changes]
-    uses: ./.github/workflows/action-deploy-apps.yml
+    uses: ./.github/workflows/workflow-deploy-apps.yml
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}

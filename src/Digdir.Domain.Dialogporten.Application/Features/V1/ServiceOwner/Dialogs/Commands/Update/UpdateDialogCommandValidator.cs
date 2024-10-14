@@ -385,10 +385,6 @@ internal sealed class UpdateDialogDialogActivityDtoValidator : AbstractValidator
             .MaximumLength(Constants.DefaultMaxUriLength);
         RuleFor(x => x.Type)
             .IsInEnum();
-        RuleFor(x => x.RelatedActivityId)
-            .NotEqual(x => x.Id)
-            .WithMessage(x => $"An activity cannot reference itself ({nameof(x.RelatedActivityId)} is equal to {nameof(x.Id)}, '{x.Id}').")
-            .When(x => x.RelatedActivityId.HasValue);
         RuleFor(x => x.PerformedBy)
             .NotNull()
             .SetValidator(actorValidator);

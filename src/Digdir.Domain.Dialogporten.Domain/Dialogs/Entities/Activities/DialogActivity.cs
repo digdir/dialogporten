@@ -21,9 +21,6 @@ public sealed class DialogActivity : IImmutableEntity, IAggregateCreatedHandler,
     public Guid DialogId { get; set; }
     public DialogEntity Dialog { get; set; } = null!;
 
-    public Guid? RelatedActivityId { get; set; }
-    public DialogActivity? RelatedActivity { get; set; }
-
     public Guid? TransmissionId { get; set; }
     public DialogTransmission? Transmission { get; set; }
 
@@ -34,14 +31,11 @@ public sealed class DialogActivity : IImmutableEntity, IAggregateCreatedHandler,
     [AggregateChild]
     public DialogActivityPerformedByActor PerformedBy { get; set; } = null!;
 
-    public List<DialogActivity> RelatedActivities { get; set; } = [];
-
     public void OnCreate(AggregateNode self, DateTimeOffset utcNow)
     {
         _domainEvents.Add(new DialogActivityCreatedDomainEvent(
             DialogId, Id, TypeId, Dialog.Party,
-            Dialog.ServiceResource, Dialog.Process, Dialog.PrecedingProcess, ExtendedType,
-            RelatedActivityId));
+            Dialog.ServiceResource, Dialog.Process, Dialog.PrecedingProcess, ExtendedType));
     }
 
     private readonly List<IDomainEvent> _domainEvents = [];
