@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.23.2](https://github.com/digdir/dialogporten/compare/v1.23.1...v1.23.2) (2024-10-14)
+
+
+### Bug Fixes
+
+* **webAPI:** Allow front channel embeds on TransmissionContent ([#1276](https://github.com/digdir/dialogporten/issues/1276)) ([c87e8f4](https://github.com/digdir/dialogporten/commit/c87e8f4a880e1ed12bda2848e7b745c77cc0c6fa))
+
 ## [1.23.1](https://github.com/digdir/dialogporten/compare/v1.23.0...v1.23.1) (2024-10-11)
 
 
