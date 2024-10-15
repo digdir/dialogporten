@@ -30,6 +30,7 @@ internal sealed class SuffixedSchemaNameGenerator : ISchemaNameGenerator
 
     private static string BaseGenerate(Type type)
     {
+        const string prefix = "Digdir.Domain.Dialogporten.Application.Features.";
         var isGeneric = type.IsGenericType;
         var fullNameWithoutGenericArgs =
             isGeneric
@@ -38,7 +39,11 @@ internal sealed class SuffixedSchemaNameGenerator : ISchemaNameGenerator
 
         var index = fullNameWithoutGenericArgs!.LastIndexOf('.');
         index = index == -1 ? 0 : index + 1;
-        var shortName = fullNameWithoutGenericArgs[index..];
+
+        var shortName = fullNameWithoutGenericArgs!.StartsWith(prefix, StringComparison.Ordinal)
+            ? ApiTypeName(fullNameWithoutGenericArgs[prefix.Length..])
+            : fullNameWithoutGenericArgs[index..];
+        var version = shortName.Split('.').First();
 
         return isGeneric
             ? shortName + GenericArgString(type)
@@ -71,6 +76,24 @@ internal sealed class SuffixedSchemaNameGenerator : ISchemaNameGenerator
 
                 return type.Name[..index];
             }
+
+        }
+
+        static string ApiTypeName(string typeName)
+        {
+            var parts = typeName.Split('.');
+            if (parts.Length < 4)
+            {
+                // Amund: Her burde egt aldri skje, burde dette da throwe for "fail fast"?
+                throw new FormatException($"Invalid type name: {typeName}");
+                // return typeName;
+            }
+            var version = parts.First();
+            var actorType = parts[1];
+            var entity = parts[2];
+            var methode = parts.Last();
+
+            return $"{version}_{actorType}_{entity}_{methode}";
         }
     }
 }
