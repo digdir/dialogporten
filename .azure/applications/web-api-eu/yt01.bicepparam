@@ -2,7 +2,7 @@ using './main.bicep'
 
 param environment = 'yt01'
 param location = 'norwayeast'
-param apimIp = '51.13.86.131' // todo: replace with APIM IP for YT
+param apimIp = '51.13.85.197'
 param imageTag = readEnvironmentVariable('IMAGE_TAG')
 param revisionSuffix = readEnvironmentVariable('REVISION_SUFFIX')
 
