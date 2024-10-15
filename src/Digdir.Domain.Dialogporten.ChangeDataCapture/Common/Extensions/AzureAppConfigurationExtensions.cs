@@ -36,7 +36,7 @@ internal static class AzureAppConfigurationExtensions
                 labelFilter: environment!)
             .ConfigureRefresh(refresh => refresh
                 .Register(SentinelKey, refreshAll: true)
-                .SetCacheExpiration(refreshRate.Value))
+                .SetRefreshInterval(refreshRate.Value))
             .ConfigureKeyVault(keyVaultOptions =>
             {
                 keyVaultOptions.SetCredential(credential);
