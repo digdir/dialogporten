@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.24.0](https://github.com/digdir/dialogporten/compare/v1.23.2...v1.24.0) (2024-10-15)
+
+
+### Features
+
+* **infrastructure:** create new yt01 infrastructure environment ([#1290](https://github.com/digdir/dialogporten/issues/1290)) ([2044070](https://github.com/digdir/dialogporten/commit/2044070e981a7c3bc3182f1659342fb9585fd67d))
+
+
+### Bug Fixes
+
+* Fallback to using list auth if details auth fails, remove double cache ([#1274](https://github.com/digdir/dialogporten/issues/1274)) ([54425e7](https://github.com/digdir/dialogporten/commit/54425e76ecaf3d8cedd06aaa30506b59de019da3))
+
 ## [1.23.2](https://github.com/digdir/dialogporten/compare/v1.23.1...v1.23.2) (2024-10-14)
 
 
