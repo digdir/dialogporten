@@ -73,8 +73,9 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
             ConstraintServiceResources = serviceResources
         };
 
-        return await _pdpCache.GetOrSetAsync(request.GenerateCacheKey(), async token
-            => await PerformDialogSearchAuthorization(request, token), token: cancellationToken);
+        // We don't cache at this level, as the principal information is received from GetAuthorizedParties,
+        // which is already cached
+        return await PerformDialogSearchAuthorization(request, cancellationToken);
     }
 
     public async Task<AuthorizedPartiesResult> GetAuthorizedParties(IPartyIdentifier authenticatedParty, bool flatten = false,
@@ -85,6 +86,16 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
             => await PerformAuthorizedPartiesRequest(authorizedPartiesRequest, token), token: cancellationToken);
 
         return flatten ? GetFlattenedAuthorizedParties(authorizedParties) : authorizedParties;
+    }
+
+    public async Task<bool> HasListAuthorizationForDialog(DialogEntity dialog, CancellationToken cancellationToken)
+    {
+        var authorizedResourcesForSearch = await GetAuthorizedResourcesForSearch(
+            [dialog.Party], [dialog.ServiceResource], cancellationToken);
+
+        return authorizedResourcesForSearch.ResourcesByParties.Count > 0
+               || authorizedResourcesForSearch.SubjectsByParties.Count > 0
+               || authorizedResourcesForSearch.DialogIds.Contains(dialog.Id);
     }
 
     private static AuthorizedPartiesResult GetFlattenedAuthorizedParties(AuthorizedPartiesResult authorizedParties)

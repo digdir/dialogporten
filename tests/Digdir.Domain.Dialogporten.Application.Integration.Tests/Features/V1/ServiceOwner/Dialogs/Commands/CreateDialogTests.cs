@@ -228,7 +228,8 @@ public class CreateDialogTests : ApplicationCollectionFixture
         response.TryPickT2(out var validationError, out _).Should().BeTrue();
         validationError.Should().NotBeNull();
         validationError.Errors.Should().HaveCount(1);
-        validationError.Errors.First().ErrorMessage.Should().Contain("'Content' must not be empty");
+        // The error message might be localized, so we just check for the property name
+        validationError.Errors.First().ErrorMessage.Should().Contain("'Content'");
     }
 
     [Fact]
