@@ -34,7 +34,7 @@ param probes array = []
 @description('The scaling configuration for the container app')
 param scale object = {
   minReplicas: 1
-  maxReplicas: 1
+  maxReplicas: 1 // temp disable scaling by default for outbox scheduling
 }
 
 // Container app revision name does not allow '.' character
