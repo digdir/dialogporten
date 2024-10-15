@@ -101,4 +101,24 @@ public class CreateTransmissionTests : ApplicationCollectionFixture
         validationError.Errors.First().ErrorMessage.Should().Contain("HTTPS");
 
     }
+
+    [Fact]
+    public async Task Cannot_Create_Transmission_Reference_Tree_With_Breadth()
+    {
+        // Arrange
+        var createCommand = DialogGenerator.GenerateSimpleFakeDialog();
+
+        var transmissions = DialogGenerator.GenerateFakeDialogTransmissions(3);
+        transmissions[0].RelatedTransmissionId = transmissions[2].Id;
+        transmissions[1].RelatedTransmissionId = transmissions[2].Id;
+
+        createCommand.Transmissions = transmissions;
+
+        // Act
+        var response = await Application.Send(createCommand);
+
+        // Assert
+        response.TryPickT2(out var validationError, out _).Should().BeTrue();
+        validationError.Errors.Should().Contain(e => e.ErrorMessage.Contains("only one transmission can point to the same relatedTransmissionId"));
+    }
 }
