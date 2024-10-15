@@ -79,22 +79,17 @@ internal sealed class DialogTokenGenerator : IDialogTokenGenerator
             return string.Empty;
         }
 
-        var actions = new StringBuilder();
-        foreach (var (action, resource) in authorizationResult.AuthorizedAltinnActions)
-        {
-            actions.Append(action);
-            if (resource != Authorization.Constants.MainResource)
+        var actions = authorizationResult.AuthorizedAltinnActions
+            .Select(x =>
             {
-                actions.Append(CultureInfo.InvariantCulture, $",{resource}");
-            }
+                var (action, resource) = x;
+                return resource == Authorization.Constants.MainResource
+                    ? action
+                    : $"{action},{resource}";
+            })
+            .Distinct();
 
-            actions.Append(';');
-        }
-
-        // Remove trailing semicolon
-        actions.Remove(actions.Length - 1, 1);
-
-        return actions.ToString();
+        return string.Join(';', actions);
     }
 
     private string GetAuthenticatedParty()
