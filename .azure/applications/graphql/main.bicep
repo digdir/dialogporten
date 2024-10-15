@@ -107,15 +107,23 @@ var probes = [
 ]
 
 var scale = {
-  minReplicas: 1
+  minReplicas: 2
   maxReplicas: 10
   rules: [
     {
       custom: {
-        type: 'Custom'
+        type: 'cpu'
         metricType: 'Utilization'
         metadata: {
-          type: 'Utilization'
+          value: '70'
+        }
+      }
+    }
+    {
+      custom: {
+        type: 'memory'
+        metricType: 'Utilization'
+        metadata: {
           value: '70'
         }
       }
