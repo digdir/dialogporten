@@ -31,12 +31,10 @@ param appInsightConnectionString string
 
 @description('The name of the App Configuration store')
 @minLength(5)
-@secure()
 param appConfigurationName string
 
 @description('The name of the Key Vault for the environment')
 @minLength(3)
-@secure()
 param environmentKeyVaultName string
 
 var namePrefix = 'dp-be-${environment}'
