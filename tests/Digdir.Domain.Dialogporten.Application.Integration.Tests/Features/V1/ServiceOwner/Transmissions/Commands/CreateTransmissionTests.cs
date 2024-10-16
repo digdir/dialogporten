@@ -121,4 +121,48 @@ public class CreateTransmissionTests : ApplicationCollectionFixture
         response.TryPickT2(out var validationError, out _).Should().BeTrue();
         validationError.Errors.Should().Contain(e => e.ErrorMessage.Contains("only one transmission can point to the same relatedTransmissionId"));
     }
+
+    [Fact]
+    public async Task Cannot_Create_Transmission_Reference_Tree_With_Circular_Reference()
+    {
+        // Arrange
+        var dialogId = GenerateBigEndianUuidV7();
+        var createCommand = DialogGenerator.GenerateSimpleFakeDialog(id: dialogId);
+
+        var transmissions = DialogGenerator.GenerateFakeDialogTransmissions(3);
+        transmissions[0].RelatedTransmissionId = transmissions[1].Id;
+        transmissions[1].RelatedTransmissionId = transmissions[2].Id;
+        transmissions[2].RelatedTransmissionId = transmissions[0].Id;
+
+        createCommand.Transmissions = transmissions;
+
+        // Act
+        var response = await Application.Send(createCommand);
+
+        // Assert
+        response.TryPickT2(out var validationError, out _).Should().BeTrue();
+        validationError.Errors.Should().Contain(e => e.ErrorMessage.Contains("circular references are not allowed"));
+    }
+
+    [Fact]
+    public async Task Cannot_Create_Transmission_Exceeding_Max_Depth()
+    {
+        // Arrange
+        var createCommand = DialogGenerator.GenerateSimpleFakeDialog();
+
+        var transmissions = DialogGenerator.GenerateFakeDialogTransmissions(101);
+        for (var i = 1; i < transmissions.Count; i++)
+        {
+            transmissions[i].RelatedTransmissionId = transmissions[i - 1].Id;
+        }
+
+        createCommand.Transmissions = transmissions;
+
+        // Act
+        var response = await Application.Send(createCommand);
+
+        // Assert
+        response.TryPickT2(out var validationError, out _).Should().BeTrue();
+        validationError.Errors.Should().Contain(e => e.ErrorMessage.Contains("transmission chain depth cannot exceed 100"));
+    }
 }
