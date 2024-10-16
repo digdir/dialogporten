@@ -21,8 +21,11 @@ param resources object?
 
 @description('The name of the container app environment')
 @minLength(3)
-@secure()
 param containerAppEnvironmentName string
+
+@description('The name of the Service Bus namespace')
+@minLength(3)
+param serviceBusNamespaceName string
 
 @description('The connection string for Application Insights')
 @minLength(3)
@@ -133,6 +136,14 @@ module appConfigReaderAccessPolicy '../../modules/appConfiguration/addReaderRole
   }
 }
 
+module serviceBusOwnerAccessPolicy '../../modules/serviceBus/addReaderRoles.bicep' = {
+  name: 'serviceBusOwnerAccessPolicy-${containerAppName}'
+  params: {
+    serviceBusNamespaceName: serviceBusNamespaceName
+    principalIds: [managedIdentity.properties.principalId]
+  }
+}
+
 module containerApp '../../modules/containerApp/main.bicep' = {
   name: containerAppName
   params: {
@@ -154,6 +165,7 @@ module containerApp '../../modules/containerApp/main.bicep' = {
   dependsOn: [
     keyVaultReaderAccessPolicy
     appConfigReaderAccessPolicy
+    serviceBusOwnerAccessPolicy
   ]
 }
 
