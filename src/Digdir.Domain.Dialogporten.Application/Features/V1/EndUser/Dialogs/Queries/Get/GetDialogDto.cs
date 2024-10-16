@@ -341,6 +341,12 @@ public sealed class GetDialogDialogTransmissionContentDto
     /// The transmission summary.
     /// </summary>
     public ContentValueDto Summary { get; set; } = null!;
+
+    /// <summary>
+    /// Front-channel embedded content. Used to dynamically embed content in the frontend from an external URL.
+    /// Allowed media types: application/vnd.dialogporten.frontchannelembed+json;type=markdown
+    /// </summary>
+    public ContentValueDto? ContentReference { get; set; }
 }
 
 public sealed class GetDialogDialogActivityDto
@@ -366,11 +372,6 @@ public sealed class GetDialogDialogActivityDto
     /// The type of activity.
     /// </summary>
     public DialogActivityType.Values Type { get; set; }
-
-    /// <summary>
-    /// The related activity identifier, if applicable. Must be present in the current dialog.
-    /// </summary>
-    public Guid? RelatedActivityId { get; set; }
 
     /// <summary>
     /// If the activity is related to a particular transmission, this field will contain the transmission identifier.

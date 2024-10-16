@@ -239,7 +239,7 @@ public sealed class CreateDialogContentDto
     public ContentValueDto? ExtendedStatus { get; set; }
 
     /// <summary>
-    /// Front-channel embedded content. Used to dynamically embed content in the frontend from an external URL.
+    /// Front-channel embedded content. Used to dynamically embed content in the frontend from an external URL. Must be HTTPS.
     /// Supported media types: application/vnd.dialogporten.frontchannelembed+json;type=markdown
     /// </summary>
     public ContentValueDto? MainContentReference { get; set; }
@@ -256,6 +256,12 @@ public sealed class CreateDialogDialogTransmissionContentDto
     /// The transmission summary.
     /// </summary>
     public ContentValueDto Summary { get; set; } = null!;
+
+    /// <summary>
+    /// Front-channel embedded content. Used to dynamically embed content in the frontend from an external URL. Must be HTTPS.
+    /// Allowed media types: application/vnd.dialogporten.frontchannelembed+json;type=markdown
+    /// </summary>
+    public ContentValueDto? ContentReference { get; set; }
 }
 
 public sealed class CreateDialogSearchTagDto
@@ -289,11 +295,6 @@ public sealed class CreateDialogDialogActivityDto
     /// The type of transmission.
     /// </summary>
     public DialogActivityType.Values Type { get; set; }
-
-    /// <summary>
-    /// The related activity identifier, if applicable. Must be present in the request body.
-    /// </summary>
-    public Guid? RelatedActivityId { get; set; }
 
     /// <summary>
     /// If the activity is related to a particular transmission, this field will contain the transmission identifier.

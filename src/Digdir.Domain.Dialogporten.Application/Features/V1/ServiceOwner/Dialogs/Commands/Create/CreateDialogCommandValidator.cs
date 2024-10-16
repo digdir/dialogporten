@@ -128,9 +128,6 @@ internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDia
             .IsIn(x => x.Transmissions,
                 dependentKeySelector: activity => activity.TransmissionId,
                 principalKeySelector: transmission => transmission.Id)
-            .IsIn(x => x.Activities,
-                dependentKeySelector: activity => activity.RelatedActivityId,
-                principalKeySelector: activity => activity.Id)
             .SetValidator(activityValidator);
 
         RuleFor(x => x.Process)
@@ -187,13 +184,12 @@ internal sealed class CreateDialogDialogTransmissionDtoValidator : AbstractValid
 
 internal sealed class CreateDialogContentDtoValidator : AbstractValidator<CreateDialogContentDto?>
 {
+    private static readonly NullabilityInfoContext Context = new();
     private static readonly Dictionary<string, PropertyInfoWithNullability> SourcePropertyMetaDataByName = typeof(CreateDialogContentDto)
         .GetProperties()
         .Select(x =>
         {
-            var context = new NullabilityInfoContext();
-            var nullabilityInfo = context.Create(x);
-
+            var nullabilityInfo = Context.Create(x);
             return new PropertyInfoWithNullability(x, nullabilityInfo);
         })
         .ToDictionary(x => x.Property.Name, StringComparer.InvariantCultureIgnoreCase);
@@ -202,19 +198,20 @@ internal sealed class CreateDialogContentDtoValidator : AbstractValidator<Create
     {
         foreach (var (propertyName, propMetadata) in SourcePropertyMetaDataByName)
         {
+            var contentType = DialogContentType.Parse(propertyName);
+            var propertySelector = propMetadata.Property;
+
             switch (propMetadata.NullabilityInfo.WriteState)
             {
                 case NullabilityState.NotNull:
-                    RuleFor(x => propMetadata.Property.GetValue(x) as ContentValueDto)
+                    RuleFor(x => propertySelector.GetValue(x) as ContentValueDto)
                         .NotNull()
                         .WithMessage($"{propertyName} must not be empty.")
-                        .SetValidator(new ContentValueDtoValidator(
-                            DialogContentType.Parse(propertyName), user)!);
+                        .SetValidator(new ContentValueDtoValidator(contentType, user)!);
                     break;
                 case NullabilityState.Nullable:
                     RuleFor(x => propMetadata.Property.GetValue(x) as ContentValueDto)
-                        .SetValidator(new ContentValueDtoValidator(
-                            DialogContentType.Parse(propertyName), user)!)
+                        .SetValidator(new ContentValueDtoValidator(contentType, user)!)
                         .When(x => propMetadata.Property.GetValue(x) is not null);
                     break;
                 case NullabilityState.Unknown:
@@ -228,18 +225,41 @@ internal sealed class CreateDialogContentDtoValidator : AbstractValidator<Create
 
 internal sealed class CreateDialogDialogTransmissionContentDtoValidator : AbstractValidator<CreateDialogDialogTransmissionContentDto>
 {
-    private static readonly Dictionary<string, PropertyInfo> SourcePropertyMetaDataByName = typeof(CreateDialogDialogTransmissionContentDto)
+    private static readonly NullabilityInfoContext Context = new();
+    private static readonly Dictionary<string, PropertyInfoWithNullability> SourcePropertyMetaDataByName = typeof(CreateDialogDialogTransmissionContentDto)
         .GetProperties()
-        .ToDictionary(x => x.Name, StringComparer.InvariantCultureIgnoreCase);
+        .Select(x =>
+        {
+            var nullabilityInfo = Context.Create(x);
+            return new PropertyInfoWithNullability(x, nullabilityInfo);
+        })
+        .ToDictionary(x => x.Property.Name, StringComparer.InvariantCultureIgnoreCase);
 
     public CreateDialogDialogTransmissionContentDtoValidator()
     {
         foreach (var (propertyName, propMetadata) in SourcePropertyMetaDataByName)
         {
-            RuleFor(x => propMetadata.GetValue(x) as ContentValueDto)
-                .NotNull()
-                .WithMessage($"{propertyName} must not be empty.")
-                .SetValidator(new ContentValueDtoValidator(DialogTransmissionContentType.Parse(propertyName))!);
+            var contentType = DialogTransmissionContentType.Parse(propertyName);
+            var propertySelector = propMetadata.Property;
+
+            switch (propMetadata.NullabilityInfo.WriteState)
+            {
+                case NullabilityState.NotNull:
+                    RuleFor(x => propertySelector.GetValue(x) as ContentValueDto)
+                        .NotNull()
+                        .WithMessage($"{propertyName} must not be empty.")
+                        .SetValidator(new ContentValueDtoValidator(contentType)!);
+                    break;
+                case NullabilityState.Nullable:
+                    RuleFor(x => propertySelector.GetValue(x) as ContentValueDto)
+                        .SetValidator(new ContentValueDtoValidator(contentType)!)
+                        .When(x => propertySelector.GetValue(x) is not null);
+                    break;
+                case NullabilityState.Unknown:
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }
@@ -401,10 +421,6 @@ internal sealed class CreateDialogDialogActivityDtoValidator : AbstractValidator
             .MaximumLength(Constants.DefaultMaxUriLength);
         RuleFor(x => x.Type)
             .IsInEnum();
-        RuleFor(x => x.RelatedActivityId)
-            .NotEqual(x => x.Id)
-            .WithMessage(x => $"An activity cannot reference itself ({nameof(x.RelatedActivityId)} is equal to {nameof(x.Id)}, '{x.Id}').")
-            .When(x => x.RelatedActivityId.HasValue);
         RuleFor(x => x.PerformedBy)
             .NotNull()
             .SetValidator(actorValidator);

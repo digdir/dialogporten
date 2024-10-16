@@ -10,6 +10,7 @@ on:
         type: choice
         options:
           - test
+          - yt01
           - staging
           - prod
       version:
@@ -23,12 +24,12 @@ concurrency:
 jobs:
   generate-git-short-sha:
     name: Generate git short sha
-    uses: ./.github/workflows/action-generate-git-short-sha.yml
+    uses: ./.github/workflows/workflow-generate-git-short-sha.yml
 
   deploy-infra:
     name: Deploy infra to ${{ inputs.environment }}
     needs: [generate-git-short-sha]
-    uses: ./.github/workflows/action-deploy-infra.yml
+    uses: ./.github/workflows/workflow-deploy-infra.yml
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}

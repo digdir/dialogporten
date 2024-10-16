@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 using Azure.Core;
 using Azure.Identity;
 using Microsoft.AspNetCore.Builder;
@@ -39,7 +40,7 @@ public static class AzureAppConfigurationExtensions
                 labelFilter: environment!)
             .ConfigureRefresh(refresh => refresh
                 .Register(SentinelKey, refreshAll: true)
-                .SetCacheExpiration(refreshRate.Value))
+                .SetRefreshInterval(refreshRate.Value))
             .ConfigureKeyVault(keyVaultOptions => keyVaultOptions
                 .SetCredential(credential)
                 .SetSecretRefreshInterval(refreshRate.Value)));

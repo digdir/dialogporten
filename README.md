@@ -271,11 +271,11 @@ This workflow facilitates the deployment of infrastructure to the specified envi
 ### GitHub Actions
 
 Naming conventions for GitHub Actions:
-- `action-*.yml`: Reusable workflows
+- `workflow-*.yml`: Reusable workflows
 - `ci-cd-*.yml`: Workflows that are triggered by an event
 - `dispatch-*.yml`: Workflows that are dispatchable
 
-The `action-check-for-changes.yml` workflow uses the `tj-actions/changed-files` action to check which files have been altered since last commit or tag. We use this filter to ensure we only deploy backend code or infrastructure if the respective files have been altered. 
+The `workflow-check-for-changes.yml` workflow uses the `tj-actions/changed-files` action to check which files have been altered since last commit or tag. We use this filter to ensure we only deploy backend code or infrastructure if the respective files have been altered. 
 
 ### Infrastructure
 
@@ -347,7 +347,7 @@ Ensure you have followed the steps in [Deploying a new infrastructure environmen
 
 Use the following steps:
 
-- From the infrastructure resources created, add the following GitHub secrets in the new environment (this will not be necessary in the future as secrets would be added directly from infrastructure deployment): `AZURE_APP_CONFIGURATION_NAME`, `AZURE_APP_INSIGHTS_CONNECTION_STRING`, `AZURE_CONTAINER_APP_ENVIRONMENT_NAME`, `AZURE_ENVIRONMENT_KEY_VAULT_NAME`, `AZURE_REDIS_NAME`, `AZURE_RESOURCE_GROUP_NAME` and `AZURE_SLACK_NOTIFIER_FUNCTION_APP_NAME`
+- From the infrastructure resources created, add the following GitHub secrets in the new environment (this will not be necessary in the future as secrets would be added directly from infrastructure deployment): `AZURE_APP_CONFIGURATION_NAME`, `AZURE_APP_INSIGHTS_CONNECTION_STRING`, `AZURE_CONTAINER_APP_ENVIRONMENT_NAME`, `AZURE_ENVIRONMENT_KEY_VAULT_NAME`, `AZURE_REDIS_NAME`, `AZURE_RESOURCE_GROUP_NAME`, `AZURE_SERVICE_BUS_NAMESPACE_NAME` and `AZURE_SLACK_NOTIFIER_FUNCTION_APP_NAME`
 
 - Add new parameter files for the environment in all applications `.azure/applications/*/<env>.bicepparam`
 

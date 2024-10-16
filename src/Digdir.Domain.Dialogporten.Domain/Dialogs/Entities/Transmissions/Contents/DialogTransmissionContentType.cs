@@ -9,7 +9,8 @@ public sealed class DialogTransmissionContentType : AbstractLookupEntity<DialogT
     public enum Values
     {
         Title = 1,
-        Summary = 2
+        Summary = 2,
+        ContentReference = 3
     }
 
     public bool Required { get; private init; }
@@ -30,6 +31,12 @@ public sealed class DialogTransmissionContentType : AbstractLookupEntity<DialogT
             Required = true,
             MaxLength = Constants.DefaultMaxStringLength,
             AllowedMediaTypes = [MediaTypes.PlainText]
+        },
+        Values.ContentReference => new(id)
+        {
+            Required = false,
+            MaxLength = 1023,
+            AllowedMediaTypes = [MediaTypes.EmbeddableMarkdown]
         },
         _ => throw new ArgumentOutOfRangeException(nameof(id), id, null)
     };

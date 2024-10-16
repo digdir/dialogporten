@@ -13,15 +13,15 @@ jobs:
   # Get changed files between previous tag and current tag: https://github.com/marketplace/actions/changed-files
   check-for-changes:
     name: Check for changes
-    uses: ./.github/workflows/action-check-for-changes.yml
+    uses: ./.github/workflows/workflow-check-for-changes.yml
 
   get-current-version:
     name: Get current version
-    uses: ./.github/workflows/action-get-current-version.yml
+    uses: ./.github/workflows/workflow-get-current-version.yml
 
   publish:
     name: Build and publish docker images
-    uses: ./.github/workflows/action-publish.yml
+    uses: ./.github/workflows/workflow-publish.yml
     if: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasBackendChanges == 'true' }}
     needs: [get-current-version, check-for-changes]
     secrets:
@@ -30,11 +30,11 @@ jobs:
       dockerImageBaseName: ghcr.io/digdir/dialogporten-
       version: ${{ needs.get-current-version.outputs.version }}
 
-  deploy-infra-staging:
+  deploy-infra:
     name: Deploy infra to staging
     if: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasAzureChanges == 'true' }}
     needs: [get-current-version, check-for-changes]
-    uses: ./.github/workflows/action-deploy-infra.yml
+    uses: ./.github/workflows/workflow-deploy-infra.yml
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
@@ -48,13 +48,13 @@ jobs:
       region: norwayeast
       version: ${{ needs.get-current-version.outputs.version }}
 
-  deploy-apps-staging:
+  deploy-apps:
     name: Deploy apps to staging
     needs:
-      [get-current-version, check-for-changes, deploy-infra-staging, publish]
+      [get-current-version, check-for-changes, deploy-infra, publish]
     # we want deployment of apps to be dependent on deployment of infrastructure, but if infrastructure is skipped, we still want to deploy the apps
     if: ${{ always() && !failure() && !cancelled() && (github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasBackendChanges == 'true') }}
-    uses: ./.github/workflows/action-deploy-apps.yml
+    uses: ./.github/workflows/workflow-deploy-apps.yml
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
@@ -65,17 +65,18 @@ jobs:
       AZURE_CONTAINER_APP_ENVIRONMENT_NAME: ${{ secrets.AZURE_CONTAINER_APP_ENVIRONMENT_NAME }}
       AZURE_APP_INSIGHTS_CONNECTION_STRING: ${{ secrets.AZURE_APP_INSIGHTS_CONNECTION_STRING }}
       AZURE_APP_CONFIGURATION_NAME: ${{ secrets.AZURE_APP_CONFIGURATION_NAME }}
+      AZURE_SERVICE_BUS_NAMESPACE_NAME: ${{ secrets.AZURE_SERVICE_BUS_NAMESPACE_NAME }}
     with:
       environment: staging
       region: norwayeast
       version: ${{ needs.get-current-version.outputs.version }}
       runMigration: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasMigrationChanges == 'true' }}
 
-  deploy-slack-notifier-staging:
+  deploy-slack-notifier:
     name: Deploy slack notifier (staging)
     needs: [check-for-changes]
     if: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasSlackNotifierChanges == 'true' }}
-    uses: ./.github/workflows/action-deploy-function.yml
+    uses: ./.github/workflows/workflow-deploy-function.yml
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
@@ -89,9 +90,9 @@ jobs:
 
   publish-schema-npm:
     name: Publish schema npm package
-    needs: [check-for-changes, get-current-version]
-    if: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasSchemaChanges == 'true' }}
-    uses: ./.github/workflows/action-publish-schema.yml
+    needs: [check-for-changes, get-current-version, deploy-apps]
+    if: ${{ always() && !failure() && !cancelled() && (github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasSchemaChanges == 'true') }}
+    uses: ./.github/workflows/workflow-publish-schema.yml
     with:
       version: ${{ needs.get-current-version.outputs.version }}
     secrets:
@@ -101,8 +102,8 @@ jobs:
     name: "Run K6 functional end-to-end tests"
     # we want the end-to-end tests to be dependent on deployment of infrastructure and apps, but if infrastructure is skipped, we still want to run the tests
     if: ${{ always() && !failure() && !cancelled() && (github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasBackendChanges == 'true') }}
-    needs: [deploy-apps-staging, check-for-changes]
-    uses: ./.github/workflows/action-run-k6-tests.yml
+    needs: [deploy-apps, check-for-changes]
+    uses: ./.github/workflows/workflow-run-k6-tests.yml
     secrets:
       TOKEN_GENERATOR_USERNAME: ${{ secrets.TOKEN_GENERATOR_USERNAME }}
       TOKEN_GENERATOR_PASSWORD: ${{ secrets.TOKEN_GENERATOR_PASSWORD }}
@@ -116,14 +117,14 @@ jobs:
 
   send-slack-message-on-failure:
     name: Send Slack message on failure
-    needs: [deploy-infra-staging, deploy-apps-staging, deploy-slack-notifier-staging, run-e2e-tests, publish-schema-npm, publish]
+    needs: [deploy-infra, deploy-apps, deploy-slack-notifier, run-e2e-tests, publish-schema-npm, publish]
     if: ${{ always() && failure() && !cancelled() }}
-    uses: ./.github/workflows/action-send-ci-cd-status-slack-message.yml
+    uses: ./.github/workflows/workflow-send-ci-cd-status-slack-message.yml
     with:
       environment: staging
-      infra_status: ${{ needs.deploy-infra-staging.result }}
-      apps_status: ${{ needs.deploy-apps-staging.result }}
-      slack_notifier_status: ${{ needs.deploy-slack-notifier-staging.result }}
+      infra_status: ${{ needs.deploy-infra.result }}
+      apps_status: ${{ needs.deploy-apps.result }}
+      slack_notifier_status: ${{ needs.deploy-slack-notifier.result }}
       e2e_tests_status: ${{ needs.run-e2e-tests.result }}
       schema_npm_status: ${{ needs.publish-schema-npm.result }}
       publish_status: ${{ needs.publish.result }}

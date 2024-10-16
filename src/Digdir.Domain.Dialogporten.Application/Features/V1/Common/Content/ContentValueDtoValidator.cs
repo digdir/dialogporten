@@ -76,5 +76,6 @@ internal sealed class ContentValueDtoValidator : AbstractValidator<ContentValueD
                 => contentType.AllowedMediaTypes.Append(MediaTypes.LegacyEmbeddableHtml).ToArray(),
             _ => contentType.AllowedMediaTypes
         };
-    private static bool UserHasLegacyHtmlScope(IUser? user) => user is not null && user.GetPrincipal().HasScope(Constants.LegacyHtmlScope);
+    private static bool UserHasLegacyHtmlScope(IUser? user)
+        => user is not null && user.GetPrincipal().HasScope(Constants.LegacyHtmlScope);
 }
