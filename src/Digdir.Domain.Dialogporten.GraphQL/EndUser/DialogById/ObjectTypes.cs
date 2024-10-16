@@ -120,6 +120,7 @@ public sealed class TransmissionContent
 {
     public ContentValue Title { get; set; } = null!;
     public ContentValue Summary { get; set; } = null!;
+    public ContentValue? ContentReference { get; set; }
 }
 
 public sealed class ApiAction

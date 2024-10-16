@@ -169,6 +169,12 @@ public sealed class UpdateDialogDialogTransmissionContentDto
     /// The transmission summary.
     /// </summary>
     public ContentValueDto Summary { get; set; } = null!;
+
+    /// <summary>
+    /// Front-channel embedded content. Used to dynamically embed content in the frontend from an external URL. Must be HTTPS.
+    /// Allowed media types: application/vnd.dialogporten.frontchannelembed+json;type=markdown
+    /// </summary>
+    public ContentValueDto? ContentReference { get; set; }
 }
 
 public sealed class UpdateDialogDialogTransmissionSenderActorDto
@@ -221,7 +227,7 @@ public sealed class UpdateDialogContentDto
     public ContentValueDto? ExtendedStatus { get; set; }
 
     /// <summary>
-    /// Front-channel embedded content. Used to dynamically embed content in the frontend from an external URL.
+    /// Front-channel embedded content. Used to dynamically embed content in the frontend from an external URL. Must be HTTPS.
     /// </summary>
     public ContentValueDto? MainContentReference { get; set; }
 }

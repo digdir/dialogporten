@@ -30,6 +30,10 @@ on:
         type: string
         description: "Status of the docker image publishing job"
         default: "skipped"
+      build_and_test_status:
+        type: string
+        description: "Status of the build and test job"
+        default: "skipped"
     secrets:
       SLACK_BOT_TOKEN:
         required: true
@@ -64,6 +68,7 @@ jobs:
             echo "E2E_TESTS_EMOJI=$(determine_emoji "${{ inputs.e2e_tests_status }}")"
             echo "SCHEMA_NPM_EMOJI=$(determine_emoji "${{ inputs.schema_npm_status }}")"
             echo "PUBLISH_EMOJI=$(determine_emoji "${{ inputs.publish_status }}")"
+            echo "BUILD_AND_TEST_EMOJI=$(determine_emoji "${{ inputs.build_and_test_status }}")"
           } >> "$GITHUB_OUTPUT"
 
       - name: Send GitHub slack message
@@ -79,6 +84,7 @@ jobs:
           E2E_TESTS_STATUS: "${{ steps.status-emojis.outputs.E2E_TESTS_EMOJI }}"
           SCHEMA_NPM_STATUS: "${{ steps.status-emojis.outputs.SCHEMA_NPM_EMOJI }}"
           PUBLISH_STATUS: "${{ steps.status-emojis.outputs.PUBLISH_EMOJI }}"
+          BUILD_AND_TEST_STATUS: "${{ steps.status-emojis.outputs.BUILD_AND_TEST_EMOJI }}"
         uses: slackapi/slack-github-action@v1.27.0
         with:
           channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
