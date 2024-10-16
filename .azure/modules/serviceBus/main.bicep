@@ -32,7 +32,7 @@ param sku Sku
 var serviceBusNameMaxLength = 50
 var serviceBusName = uniqueResourceName('${namePrefix}-service-bus', serviceBusNameMaxLength)
 
-resource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2022-10-01-preview' = {
+resource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2023-01-01-preview' = {
   name: serviceBusName
   location: location
   sku: sku
