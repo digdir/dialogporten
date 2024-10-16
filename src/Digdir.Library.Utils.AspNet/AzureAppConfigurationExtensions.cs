@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics.CodeAnalysis;
 using Azure.Core;
 using Azure.Identity;
 using Microsoft.AspNetCore.Builder;
