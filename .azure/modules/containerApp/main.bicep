@@ -31,6 +31,10 @@ param revisionSuffix string
 @description('The probes for the container app')
 param probes array = []
 
+// TODO: Refactor to make userAssignedIdentityId a required parameter once all container apps use user-assigned identities
+@description('The ID of the user-assigned managed identity (optional)')
+param userAssignedIdentityId string = ''
+
 // Container app revision name does not allow '.' character
 var cleanedRevisionSuffix = replace(revisionSuffix, '.', '-')
 
@@ -50,12 +54,19 @@ var ingress = {
   ipSecurityRestrictions: ipSecurityRestrictions
 }
 
+var identityConfig = empty(userAssignedIdentityId) ? {
+  type: 'SystemAssigned'
+} : {
+  type: 'UserAssigned'
+  userAssignedIdentities: {
+    '${userAssignedIdentityId}': {}
+  }
+}
+
 resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
   name: name
   location: location
-  identity: {
-    type: 'SystemAssigned'
-  }
+  identity: identityConfig
   properties: {
     configuration: {
       ingress: ingress
@@ -81,6 +92,10 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
   tags: tags
 }
 
-output identityPrincipalId string = containerApp.identity.principalId
+resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' existing = if (!empty(userAssignedIdentityId)) {
+  name: last(split(userAssignedIdentityId, '/'))
+}
+
+output identityPrincipalId string = empty(userAssignedIdentityId) ? containerApp.identity.principalId : managedIdentity.properties.principalId
 output name string = containerApp.name
 output revisionName string = containerApp.properties.latestRevisionName
