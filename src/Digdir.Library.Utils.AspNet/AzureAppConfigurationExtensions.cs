@@ -1,16 +1,18 @@
-﻿using Azure.Core;
+﻿using System.Diagnostics.CodeAnalysis;
+using Azure.Core;
 using Azure.Identity;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.AzureAppConfiguration;
-using System.Diagnostics.CodeAnalysis;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace Digdir.Domain.Dialogporten.GraphQL.Common.Extensions;
-// TODO: Discuss in refinement, merging duplicated extensions across presentation projects
-// https://github.com/digdir/dialogporten/issues/647
+namespace Digdir.Library.Utils.AspNet;
+
 /// <summary>
 /// Wrapper around azure app configuration bootstrapping such that azure app
 /// config is activated through the environment variable AZURE_APPCONFIG_URI.
 /// </summary>
-internal static class AzureAppConfigurationExtensions
+public static class AzureAppConfigurationExtensions
 {
     private const string AzureAppConfigurationUriConfigName = "AZURE_APPCONFIG_URI";
     private const string SentinelKey = "Sentinel";
@@ -38,11 +40,9 @@ internal static class AzureAppConfigurationExtensions
             .ConfigureRefresh(refresh => refresh
                 .Register(SentinelKey, refreshAll: true)
                 .SetCacheExpiration(refreshRate.Value))
-            .ConfigureKeyVault(keyVaultOptions =>
-            {
-                keyVaultOptions.SetCredential(credential);
-                keyVaultOptions.SetSecretRefreshInterval(refreshRate.Value);
-            }));
+            .ConfigureKeyVault(keyVaultOptions => keyVaultOptions
+                .SetCredential(credential)
+                .SetSecretRefreshInterval(refreshRate.Value)));
     }
 
     public static IApplicationBuilder UseAzureConfiguration(this IApplicationBuilder builder)

@@ -48,7 +48,9 @@ static void BuildAndRun(string[] args)
             services.GetRequiredService<TelemetryConfiguration>(),
             TelemetryConverter.Traces));
 
-    builder.Configuration.AddLocalConfiguration(builder.Environment);
+    builder.Configuration
+        .AddAzureConfiguration(builder.Environment.EnvironmentName)
+        .AddLocalConfiguration(builder.Environment);
 
     // Generic consumers are not registered through MassTransits assembly
     // scanning so we need to create domain event handlers for all
@@ -81,6 +83,7 @@ static void BuildAndRun(string[] args)
 
     var app = builder.Build();
     app.MapAspNetHealthChecks();
-    app.UseHttpsRedirection();
+    app.UseHttpsRedirection()
+        .UseAzureConfiguration();
     app.Run();
 }
