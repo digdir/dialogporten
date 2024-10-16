@@ -140,7 +140,7 @@ module appConfigReaderAccessPolicy '../../modules/appConfiguration/addReaderRole
   }
 }
 
-module serviceBusOwnerAccessPolicy '../../modules/serviceBus/addReaderRoles.bicep' = {
+module serviceBusOwnerAccessPolicy '../../modules/serviceBus/addDataOwnerRoles.bicep' = {
   name: 'serviceBusOwnerAccessPolicy-${containerAppName}'
   params: {
     serviceBusNamespaceName: serviceBusNamespaceName
