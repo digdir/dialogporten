@@ -100,7 +100,7 @@ var probes = [
     initialDelaySeconds: 2
     type: 'Liveness'
     httpGet: {
-      path: '/health/liveness'
+      path: '/healthz'
       port: port
     }
   }
@@ -109,7 +109,7 @@ var probes = [
     initialDelaySeconds: 2
     type: 'Readiness'
     httpGet: {
-      path: '/health/readiness'
+      path: '/healthz'
       port: port
     }
   }
@@ -118,7 +118,7 @@ var probes = [
     initialDelaySeconds: 2
     type: 'Startup'
     httpGet: {
-      path: '/health/startup'
+      path: '/healthz'
       port: port
     }
   }
