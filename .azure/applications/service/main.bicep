@@ -52,6 +52,12 @@ resource containerAppEnvironment 'Microsoft.App/managedEnvironments@2024-03-01' 
   name: containerAppEnvironmentName
 }
 
+resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
+  name: '${namePrefix}-service-identity'
+  location: location
+  tags: tags
+}
+
 var containerAppEnvVars = [
   {
     name: 'ASPNETCORE_ENVIRONMENT'
@@ -68,6 +74,10 @@ var containerAppEnvVars = [
   {
     name: 'ASPNETCORE_URLS'
     value: 'http://+:8080'
+  }
+  {
+    name: 'AZURE_CLIENT_ID'
+    value: managedIdentity.properties.clientId
   }
 ]
 
@@ -110,12 +120,6 @@ var probes = [
     }
   }
 ]
-
-resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
-  name: '${namePrefix}-service-identity'
-  location: location
-  tags: tags
-}
 
 module keyVaultReaderAccessPolicy '../../modules/keyvault/addReaderRoles.bicep' = {
   name: 'keyVaultReaderAccessPolicy-${containerAppName}'
