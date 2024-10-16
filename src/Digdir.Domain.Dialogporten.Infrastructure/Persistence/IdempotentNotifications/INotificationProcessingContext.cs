@@ -94,18 +94,26 @@ internal sealed class NotificationProcessingContext : INotificationProcessingCon
     internal async Task Initialize(bool isFirstAttempt = false, CancellationToken cancellationToken = default)
     {
         await _initializeLock.WaitAsync(cancellationToken);
-        if (_serviceScope is not null)
-        {
-            return;
-        }
 
-        _serviceScope = _serviceScopeFactory.CreateScope();
-        _db = _serviceScope.ServiceProvider.GetRequiredService<DialogDbContext>();
-        if (!isFirstAttempt)
+        try
         {
-            await _db.NotificationAcknowledgements
-                .Where(x => x.EventId == _eventId)
-                .LoadAsync(cancellationToken);
+            if (_serviceScope is not null)
+            {
+                throw new InvalidOperationException("Transaction already started.");
+            }
+
+            _serviceScope = _serviceScopeFactory.CreateScope();
+            _db = _serviceScope.ServiceProvider.GetRequiredService<DialogDbContext>();
+            if (!isFirstAttempt)
+            {
+                await _db.NotificationAcknowledgements
+                    .Where(x => x.EventId == _eventId)
+                    .LoadAsync(cancellationToken);
+            }
+        }
+        finally
+        {
+            _initializeLock.Release();
         }
     }
 
