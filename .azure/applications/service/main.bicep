@@ -100,7 +100,7 @@ var probes = [
     initialDelaySeconds: 2
     type: 'Liveness'
     httpGet: {
-      path: '/healthz'
+      path: '/health/liveness'
       port: port
     }
   }
@@ -109,7 +109,7 @@ var probes = [
     initialDelaySeconds: 2
     type: 'Readiness'
     httpGet: {
-      path: '/healthz'
+      path: '/health/readiness'
       port: port
     }
   }
@@ -118,7 +118,7 @@ var probes = [
     initialDelaySeconds: 2
     type: 'Startup'
     httpGet: {
-      path: '/healthz'
+      path: '/health/startup'
       port: port
     }
   }
@@ -152,7 +152,9 @@ module containerApp '../../modules/containerApp/main.bicep' = {
   name: containerAppName
   params: {
     name: containerAppName
-    image: '${baseImageUrl}${serviceName}:${imageTag}'
+    // todo: make this dynamic based on service name. Using webapi for now.
+    // image: '${baseImageUrl}${serviceName}:${imageTag}'
+    image: '${baseImageUrl}webapi:${imageTag}'
     location: location
     envVariables: containerAppEnvVars
     containerAppEnvId: containerAppEnvironment.id
