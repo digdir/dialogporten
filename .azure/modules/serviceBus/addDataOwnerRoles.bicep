@@ -4,7 +4,7 @@ param serviceBusNamespaceName string
 @description('Array of principal IDs to assign the Azure Service Bus Data Owner role to')
 param principalIds array
 
-resource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2022-10-01-preview' existing = {
+resource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2023-01-01-preview' existing = {
   name: serviceBusNamespaceName
 }
 
