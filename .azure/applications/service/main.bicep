@@ -152,9 +152,7 @@ module containerApp '../../modules/containerApp/main.bicep' = {
   name: containerAppName
   params: {
     name: containerAppName
-    // todo: make this dynamic based on service name. Using webapi for now.
-    // image: '${baseImageUrl}${serviceName}:${imageTag}'
-    image: '${baseImageUrl}webapi:${imageTag}'
+    image: '${baseImageUrl}${serviceName}:${imageTag}'
     location: location
     envVariables: containerAppEnvVars
     containerAppEnvId: containerAppEnvironment.id
