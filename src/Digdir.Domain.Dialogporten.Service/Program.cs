@@ -55,10 +55,7 @@ static void BuildAndRun(string[] args)
     // domain events and register them manually 
     var openDomainEventConsumer = typeof(DomainEventConsumer<>);
     var openDomainEventConsumerDefinition = typeof(DomainEventConsumerDefinition<>);
-    var domainEventConsumers = DomainAssemblyMarker.Assembly
-        .GetTypes()
-        .Where(x => !x.IsAbstract && !x.IsInterface && !x.IsGenericType)
-        .Where(x => x.IsAssignableTo(typeof(IDomainEvent)))
+    var domainEventConsumers = DomainExtensions.GetDomainEventTypes()
         .Select(x =>
         (
             consumerType: openDomainEventConsumer.MakeGenericType(x),

@@ -1,12 +1,11 @@
 ﻿using System.Collections.ObjectModel;
 using System.Reflection;
-using System.Text.Json;
 using AutoMapper;
 using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
-using Digdir.Domain.Dialogporten.Domain.Outboxes;
+using Digdir.Domain.Dialogporten.Domain;
 using Digdir.Domain.Dialogporten.Infrastructure;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.Authorization;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.ResourceRegistry;
@@ -16,10 +15,12 @@ using Digdir.Library.Entity.Abstractions.Features.Lookup;
 using FluentAssertions;
 using HotChocolate.Subscriptions;
 using MassTransit;
+using MassTransit.Testing;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Npgsql;
@@ -67,19 +68,45 @@ public class DialogApplication : IAsyncLifetime
     /// <summary>
     /// This method lets you configure the IoC container for an integration test.
     /// It will be reset to the default configuration after each test.
-    /// You may only call this method once per test.
+    /// You may only call this, or equivalent methods once per test.
     /// </summary>
     /// <exception cref="InvalidOperationException">Thrown if the method is called more than once per test.</exception>
-    public void ConfigureServiceCollection(Action<IServiceCollection> configure)
+    public void ConfigureServices(Action<IServiceCollection> configure)
     {
         if (_rootProvider != _fixtureRootProvider)
         {
-            throw new InvalidOperationException($"Only one call to {nameof(ConfigureServiceCollection)} is allowed per test.");
+            throw new InvalidOperationException($"Only one call to {nameof(ConfigureServices)} or equivalent methods are allowed per test.");
         }
 
         var serviceCollection = BuildServiceCollection();
         configure(serviceCollection);
         _rootProvider = serviceCollection.BuildServiceProvider();
+    }
+
+    /// <summary>
+    /// This method lets you configure the IoC container for an integration test.
+    /// It will be reset to the default configuration after each test.
+    /// You may only call this, or equivalent methods once per test.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">Thrown if the method is called more than once per test.</exception>
+    public async Task<ITestHarness> ConfigureServicesWithMassTransitTestHarness(Action<IServiceCollection>? configure = null)
+    {
+        ConfigureServices(x =>
+        {
+            x.RemoveAll<IPublishEndpoint>()
+                .AddMassTransitTestHarness(cfg =>
+                {
+                    var openTestEventConsumer = typeof(TestDomainEventConsumer<>);
+                    foreach (var domainEventType in DomainExtensions.GetDomainEventTypes())
+                    {
+                        cfg.AddConsumer(openTestEventConsumer.MakeGenericType(domainEventType));
+                    }
+                });
+            configure?.Invoke(x);
+        });
+        var harness = _rootProvider.GetRequiredService<ITestHarness>();
+        await harness.Start();
+        return harness;
     }
 
     private IServiceCollection BuildServiceCollection()
@@ -235,18 +262,6 @@ public class DialogApplication : IAsyncLifetime
                 .Concat(GetLookupTables())
                 .ToArray()
         });
-    }
-
-    public async Task PublishOutBoxMessages()
-    {
-        var outBoxMessages = await GetDbEntities<OutboxMessage>();
-        var eventAssembly = typeof(OutboxMessage).Assembly;
-        foreach (var outboxMessage in outBoxMessages)
-        {
-            var eventType = eventAssembly.GetType(outboxMessage.EventType);
-            var domainEvent = JsonSerializer.Deserialize(outboxMessage.EventPayload, eventType!) as INotification;
-            await Publish(domainEvent!);
-        }
     }
 
     public List<CloudEvent> PopPublishedCloudEvents()
