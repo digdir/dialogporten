@@ -106,6 +106,31 @@ var probes = [
   }
 ]
 
+var scale = {
+  minReplicas: 2
+  maxReplicas: 10
+  rules: [
+    {
+      custom: {
+        type: 'cpu'
+        metricType: 'Utilization'
+        metadata: {
+          value: '70'
+        }
+      }
+    }
+    {
+      custom: {
+        type: 'memory'
+        metricType: 'Utilization'
+        metadata: {
+          value: '70'
+        }
+      }
+    }
+  ]
+}
+
 resource environmentKeyVaultResource 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
   name: environmentKeyVaultName
 }
@@ -126,6 +151,7 @@ module containerApp '../../modules/containerApp/main.bicep' = {
     revisionSuffix: revisionSuffix
     probes: probes
     port: port
+    scale: scale
   }
 }
 
