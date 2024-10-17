@@ -82,6 +82,10 @@ var containerAppEnvVars = [
     name: 'AZURE_CLIENT_ID'
     value: managedIdentity.properties.clientId
   }
+  {
+    name: 'Infrastructure__MassTransit__Host'
+    value: 'sb://${serviceBusNamespaceName}.servicebus.windows.net/'
+  }
 ]
 
 resource environmentKeyVaultResource 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
@@ -152,9 +156,7 @@ module containerApp '../../modules/containerApp/main.bicep' = {
   name: containerAppName
   params: {
     name: containerAppName
-    // todo: make this dynamic based on service name. Using webapi for now.
-    // image: '${baseImageUrl}${serviceName}:${imageTag}'
-    image: '${baseImageUrl}webapi:${imageTag}'
+    image: '${baseImageUrl}${serviceName}:${imageTag}'
     location: location
     envVariables: containerAppEnvVars
     containerAppEnvId: containerAppEnvironment.id

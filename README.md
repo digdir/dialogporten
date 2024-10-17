@@ -126,16 +126,16 @@ To generate test tokens, see https://github.com/Altinn/AltinnTestTools. There is
 We are able to toggle some external resources in local development. This is done through the `appsettings.Development.json` file. The following settings are available:
 ```json
 "LocalDevelopment": {
-  "UseLocalDevelopmentUser": true,
-  "UseLocalDevelopmentResourceRegister": true,
-  "UseLocalDevelopmentOrganizationRegister": true,
-  "UseLocalDevelopmentNameRegister": true,
-  "UseLocalDevelopmentAltinnAuthorization": true,
-  "UseLocalDevelopmentCloudEventBus": true,
-  "UseLocalDevelopmentCompactJwsGenerator": true,
-  "DisableShortCircuitOutboxDispatcher": true,
-  "DisableCache": false,
-  "DisableAuth": true
+    "UseLocalDevelopmentUser": true,
+    "UseLocalDevelopmentResourceRegister": true,
+    "UseLocalDevelopmentOrganizationRegister": true,
+    "UseLocalDevelopmentNameRegister": true,
+    "UseLocalDevelopmentAltinnAuthorization": true,
+    "UseLocalDevelopmentCloudEventBus": true,
+    "UseLocalDevelopmentCompactJwsGenerator": true,
+    "DisableCache": true,
+    "DisableAuth": true,
+    "UseInMemoryServiceBusTransport": true
 }
 ```
 Toggling these flags will enable/disable the external resources. The `DisableAuth` flag, for example, will disable authentication in the WebAPI project. This is useful when debugging the WebAPI project in an IDE. These settings will only be respected in the `Development` environment.

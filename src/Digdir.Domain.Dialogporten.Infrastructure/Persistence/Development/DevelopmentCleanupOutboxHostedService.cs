@@ -5,6 +5,11 @@ using Microsoft.Extensions.Hosting;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Development;
 
+/// <summary>
+/// This hosted service is only active in development environments. It cleans up the
+/// outbox/event tables. However, it keeps the last 12 hours of data to allow for
+/// debugging throughout one workday.
+/// </summary>
 internal sealed class DevelopmentCleanupOutboxHostedService : IHostedService
 {
     private readonly IServiceScopeFactory _serviceScopeFactory;
