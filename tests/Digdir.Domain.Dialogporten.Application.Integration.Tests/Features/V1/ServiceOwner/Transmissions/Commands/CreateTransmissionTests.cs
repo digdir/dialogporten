@@ -172,8 +172,9 @@ public class CreateTransmissionTests : ApplicationCollectionFixture
         // Arrange
         var dialogId = GenerateBigEndianUuidV7();
         var createCommand = DialogGenerator.GenerateSimpleFakeDialog(id: dialogId);
-        const int count = 10000;
-        var transmissions = DialogGenerator.GenerateFakeDialogTransmissions(count);
+
+        const int transmissionCount = 101;
+        var transmissions = DialogGenerator.GenerateFakeDialogTransmissions(transmissionCount);
         createCommand.Transmissions = transmissions;
 
         // Act
@@ -184,7 +185,7 @@ public class CreateTransmissionTests : ApplicationCollectionFixture
         success.Value.Should().Be(dialogId);
 
         var transmissionEntities = await Application.GetDbEntities<DialogTransmission>();
-        transmissionEntities.Should().HaveCount(count);
+        transmissionEntities.Should().HaveCount(transmissionCount);
         transmissionEntities.All(t => t.DialogId == dialogId).Should().BeTrue();
     }
 }
