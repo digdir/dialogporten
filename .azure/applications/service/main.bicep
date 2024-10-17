@@ -83,7 +83,7 @@ var containerAppEnvVars = [
     value: managedIdentity.properties.clientId
   }
   {
-    name: 'Infrastructure:MassTransit:Host'
+    name: 'Infrastructure__MassTransit__Host'
     value: 'sb://${serviceBusNamespaceName}.servicebus.windows.net/'
   }
 ]
