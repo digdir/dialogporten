@@ -17,8 +17,8 @@ export const baseUrls = {
     }    
 };
 
-export const defaultEndUserOrgNo = "212475912";
-export const defaultEndUserSsn = "14886498226"; // has "DAGL" for 212475912
+export const defaultEndUserOrgNo = "310923044"; // ÆRLIG UROKKELIG TIGER AS
+export const defaultEndUserSsn = "08844397713"; // UROMANTISK LITTERATUR, has "DAGL" for 310923044
 export const defaultServiceOwnerOrgNo = "991825827";
 
 if (__ENV.IS_DOCKER && __ENV.API_ENVIRONMENT == "localdev") {
@@ -39,3 +39,5 @@ if (!baseUrls[__ENV.API_VERSION]["serviceowner"][__ENV.API_ENVIRONMENT]) {
 
 export const baseUrlEndUser = baseUrls[__ENV.API_VERSION]["enduser"][__ENV.API_ENVIRONMENT];
 export const baseUrlServiceOwner = baseUrls[__ENV.API_VERSION]["serviceowner"][__ENV.API_ENVIRONMENT];
+
+export const sentinelValue = "dialogporten-e2e-sentinel";
