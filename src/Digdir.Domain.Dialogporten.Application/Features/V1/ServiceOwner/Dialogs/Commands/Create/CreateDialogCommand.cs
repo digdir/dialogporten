@@ -123,5 +123,120 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
         {
             _domainContext.AddError(DomainFailure.EntityExists<DialogTransmissionAttachment>(existingTransmissionAttachmentIds));
         }
+
+
+
+
+
+
+
+
+
+
+
+
+        const int maxDepth = 100;
+        var graph = BuildGraph(dialog.Transmissions);
+        var visited = new HashSet<Guid>();
+        var stack = new HashSet<Guid>();
+        var refCount = new Dictionary<Guid, int>();
+        var depthCache = new Dictionary<Guid, int>();
+
+        foreach (var transmission in dialog.Transmissions)
+        {
+            if (transmission.RelatedTransmissionId.HasValue)
+            {
+                if (!refCount.TryAdd(transmission.RelatedTransmissionId.Value, 1))
+                {
+                    refCount[transmission.RelatedTransmissionId.Value]++;
+                    _domainContext.AddError(
+                        nameof(CreateDialogDto.Transmissions),
+                        "TODO: Multiple references to the same transmission");
+                    return;
+                }
+            }
+
+            if (HasCycle(transmission.Id, graph, visited, stack))
+            {
+                _domainContext.AddError(
+                    nameof(CreateDialogDto.Transmissions),
+                    $"TODO: Cycle detected in '{nameof(DialogTransmission.RelatedTransmissionId)}' for entity '{nameof(DialogTransmission)}' with key '{transmission.Id}'");
+                return;
+            }
+
+            if (GetDepth(transmission.Id, graph, depthCache) > maxDepth)
+            {
+                _domainContext.AddError(
+                    nameof(CreateDialogDto.Transmissions),
+                    "TODO: Transmission chain depth cannot exceed 100");
+            }
+        }
     }
+
+    private static int GetDepth(Guid nodeId, Dictionary<Guid, List<Guid>> graph, Dictionary<Guid, int> depthCache)
+    {
+        if (depthCache.TryGetValue(nodeId, out var cachedDepth))
+        {
+            return cachedDepth;
+        }
+
+        if (graph[nodeId].Count == 0)
+        {
+            depthCache[nodeId] = 1;
+            return 1;
+        }
+
+        var depth = 1 + graph[nodeId].Max(neighbor => GetDepth(neighbor, graph, depthCache));
+        depthCache[nodeId] = depth;
+        return depth;
+    }
+
+    private static bool HasCycle(Guid nodeId, Dictionary<Guid, List<Guid>> graph, HashSet<Guid> visited, HashSet<Guid> stack)
+    {
+        if (stack.Contains(nodeId))
+        {
+            return true;
+        }
+
+        if (!visited.Add(nodeId))
+        {
+            return false;
+        }
+
+        stack.Add(nodeId);
+
+        foreach (var neighbor in graph[nodeId])
+        {
+            if (HasCycle(neighbor, graph, visited, stack))
+            {
+                return true;
+            }
+        }
+
+        stack.Remove(nodeId);
+        return false;
+    }
+    private static Dictionary<Guid, List<Guid>> BuildGraph(List<DialogTransmission> transmissions)
+    {
+        var graph = new Dictionary<Guid, List<Guid>>();
+        foreach (var transmission in transmissions)
+        {
+            if (!graph.TryGetValue(transmission.Id, out var value))
+            {
+                value = [];
+                graph[transmission.Id] = value;
+            }
+
+            if (!transmission.RelatedTransmissionId.HasValue) continue;
+
+            if (!graph.ContainsKey(transmission.RelatedTransmissionId.Value))
+            {
+                graph[transmission.RelatedTransmissionId.Value] = [];
+            }
+
+            value.Add(transmission.RelatedTransmissionId.Value);
+        }
+        return graph;
+    }
+
 }
