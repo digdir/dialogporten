@@ -18,6 +18,11 @@ revision_name="$1"
 resource_group="$2"
 query_filter="{name:name, runningState:properties.runningState, healthState:properties.healthState}"
 
+# Define exit codes
+readonly EXIT_SUCCESS=0
+readonly EXIT_NOT_READY=1
+readonly EXIT_FAILED=2
+
 verify_revision() {
   local json_output
 
@@ -33,24 +38,40 @@ verify_revision() {
   echo "Running state: $running_state"
   echo " "
 
+  # Check if running state is Failed
+  if [[ $running_state == "Failed" ]]; then
+    echo "Error: Revision $revision_name has failed."
+    return $EXIT_FAILED
+  fi
+
   # Check health and running status
   if [[ $health_state == "Healthy" && ($running_state == "Running" || $running_state == "RunningAtMaxScale") ]]; then
-    return 0  # OK!
+    return $EXIT_SUCCESS
   else
-    return 1  # Not OK!
+    return $EXIT_NOT_READY
   fi
 }
 
 attempt=1
 
-# Loop until verified (GitHub action will do a timeout)
+# Loop until verified or failed (GitHub action will do a timeout)
 while true; do
-  if verify_revision; then
-    echo "Revision $revision_name is healthy and running"
-    break
-  else
-    echo "Attempt $attempt: Waiting for revision $revision_name ..."
-    sleep 10 # Sleep for 10 seconds
-    attempt=$((attempt+1))
-  fi
+  verify_revision
+  result=$?
+  
+  case $result in
+    $EXIT_SUCCESS)
+      echo "Revision $revision_name is healthy and running"
+      exit $EXIT_SUCCESS
+      ;;
+    $EXIT_FAILED)
+      echo "Revision $revision_name has failed. Exiting."
+      exit $EXIT_FAILED
+      ;;
+    $EXIT_NOT_READY)
+      echo "Attempt $attempt: Waiting for revision $revision_name ..."
+      sleep 10 # Sleep for 10 seconds
+      attempt=$((attempt+1))
+      ;;
+  esac
 done
