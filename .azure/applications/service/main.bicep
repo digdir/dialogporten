@@ -82,6 +82,10 @@ var containerAppEnvVars = [
     name: 'AZURE_CLIENT_ID'
     value: managedIdentity.properties.clientId
   }
+  {
+    name: 'Infrastructure:MassTransit:Host'
+    value: 'sb://${serviceBusNamespaceName}.servicebus.windows.net/'
+  }
 ]
 
 resource environmentKeyVaultResource 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
