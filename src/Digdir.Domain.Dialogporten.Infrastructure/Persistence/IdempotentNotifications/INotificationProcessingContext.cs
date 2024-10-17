@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.IdempotentNotifications;
 
@@ -19,11 +20,17 @@ internal sealed class NotificationProcessingContext : INotificationProcessingCon
     private readonly Action<Guid> _onDispose;
     private readonly Guid _eventId;
 
+    private ILogger<NotificationProcessingContext>? _logger;
     private DialogDbContext? _db;
     private IServiceScope? _serviceScope;
     private bool _acknowledged;
 
-    public NotificationProcessingContext(IServiceScopeFactory serviceScopeFactory, Guid eventId, Action<Guid> onDispose)
+    public bool Disposed { get; private set; }
+
+    public NotificationProcessingContext(
+        IServiceScopeFactory serviceScopeFactory,
+        Guid eventId,
+        Action<Guid> onDispose)
     {
         _serviceScopeFactory = serviceScopeFactory ?? throw new ArgumentNullException(nameof(serviceScopeFactory));
         _onDispose = onDispose ?? throw new ArgumentNullException(nameof(onDispose));
@@ -32,7 +39,7 @@ internal sealed class NotificationProcessingContext : INotificationProcessingCon
 
     public async Task Ack(CancellationToken cancellationToken = default)
     {
-        EnsureInitialized();
+        EnsureAlive();
         var existingAckInDatabase = _db.ChangeTracker
             .Entries<NotificationAcknowledgement>()
             .Any(x => x.Entity.EventId == _eventId && x.State
@@ -51,7 +58,7 @@ internal sealed class NotificationProcessingContext : INotificationProcessingCon
 
     public async Task Nack(CancellationToken cancellationToken = default)
     {
-        EnsureInitialized();
+        EnsureAlive();
         if (!_acknowledged && _db.ChangeTracker.HasChanges())
         {
             await _db.SaveChangesAsync(cancellationToken);
@@ -60,7 +67,7 @@ internal sealed class NotificationProcessingContext : INotificationProcessingCon
 
     public async Task AckHandler(string handlerName, CancellationToken cancellationToken = default)
     {
-        EnsureInitialized();
+        EnsureAlive();
         await _db.NotificationAcknowledgements.AddAsync(new()
         {
             EventId = _eventId,
@@ -70,7 +77,7 @@ internal sealed class NotificationProcessingContext : INotificationProcessingCon
 
     public Task<bool> HandlerIsAcked(string handlerName, CancellationToken cancellationToken = default)
     {
-        EnsureInitialized();
+        EnsureAlive();
         var acknowledged = _db.NotificationAcknowledgements
             .Local
             .Any(x => x.EventId == _eventId && x.NotificationHandler == handlerName);
@@ -81,7 +88,14 @@ internal sealed class NotificationProcessingContext : INotificationProcessingCon
     {
         if (!_acknowledged)
         {
-            await Nack();
+            try
+            {
+                await Nack();
+            }
+            catch (Exception e)
+            {
+                _logger?.LogError(e, "Failed to save changes to database.");
+            }
         }
 
         _initializeLock.Dispose();
@@ -89,6 +103,7 @@ internal sealed class NotificationProcessingContext : INotificationProcessingCon
         _serviceScope = null;
         _db = null;
         _onDispose(_eventId);
+        Disposed = true;
     }
 
     internal async Task Initialize(bool isFirstAttempt = false, CancellationToken cancellationToken = default)
@@ -104,6 +119,7 @@ internal sealed class NotificationProcessingContext : INotificationProcessingCon
 
             _serviceScope = _serviceScopeFactory.CreateScope();
             _db = _serviceScope.ServiceProvider.GetRequiredService<DialogDbContext>();
+            _logger = _serviceScope.ServiceProvider.GetRequiredService<ILogger<NotificationProcessingContext>>();
             if (!isFirstAttempt)
             {
                 await _db.NotificationAcknowledgements
@@ -117,10 +133,11 @@ internal sealed class NotificationProcessingContext : INotificationProcessingCon
         }
     }
 
-    [MemberNotNull(nameof(_db), nameof(_serviceScope))]
-    private void EnsureInitialized()
+    [MemberNotNull(nameof(_db), nameof(_serviceScope), nameof(_logger))]
+    private void EnsureAlive()
     {
-        if (_db is null || _serviceScope is null)
+        ObjectDisposedException.ThrowIf(Disposed, this);
+        if (_db is null || _serviceScope is null || _logger is null)
         {
             throw new InvalidOperationException("Transaction not initialized.");
         }

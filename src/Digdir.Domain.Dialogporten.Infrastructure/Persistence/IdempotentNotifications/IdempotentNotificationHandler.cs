@@ -23,7 +23,7 @@ internal sealed class IdempotentNotificationHandler<TNotification> :
 
     public async Task Handle(TNotification notification, CancellationToken cancellationToken)
     {
-        var handlerName = _decorated.GetType().FullName!;
+        var handlerName = _decorated.GetType().FullName ?? throw new InvalidOperationException("Could not determine the handler name.");
         var transaction = _processingContextFactory.GetExistingContext(notification.EventId);
         if (await transaction.HandlerIsAcked(handlerName, cancellationToken))
         {

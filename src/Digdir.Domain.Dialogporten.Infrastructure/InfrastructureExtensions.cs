@@ -90,7 +90,7 @@ public static class InfrastructureExtensions
             .AddSingleton<INotificationProcessingContextFactory, NotificationProcessingContextFactory>()
 
             // HttpClient
-            .AddHttpClients(configuration.GetSection(InfrastructureSettings.ConfigurationSectionName))
+            .AddHttpClients(infrastructureSettings)
 
             // Decorators
             .Decorate(typeof(INotificationHandler<>), typeof(IdempotentNotificationHandler<>));
@@ -251,11 +251,11 @@ public static class InfrastructureExtensions
     }
 
     private static IServiceCollection AddHttpClients(this IServiceCollection services,
-        IConfigurationSection infrastructureConfigurationSection)
+        InfrastructureSettings infrastructureSettings)
     {
         services.
             AddMaskinportenHttpClient<ICloudEventBus, AltinnEventsClient, SettingsJwkClientDefinition>(
-                infrastructureConfigurationSection,
+                infrastructureSettings,
                 x => x.ClientSettings.ExhangeToAltinnToken = true)
             .ConfigureHttpClient((services, client) =>
             {
@@ -270,7 +270,7 @@ public static class InfrastructureExtensions
             .AddPolicyHandlerFromRegistry(PollyPolicy.DefaultHttpRetryPolicy);
 
         services.AddMaskinportenHttpClient<IPartyNameRegistry, PartyNameRegistryClient, SettingsJwkClientDefinition>(
-                infrastructureConfigurationSection,
+                infrastructureSettings,
                 x => x.ClientSettings.ExhangeToAltinnToken = true)
             .ConfigureHttpClient((services, client) =>
             {
@@ -281,7 +281,7 @@ public static class InfrastructureExtensions
             .AddPolicyHandlerFromRegistry(PollyPolicy.DefaultHttpRetryPolicy);
 
         services.AddMaskinportenHttpClient<IAltinnAuthorization, AltinnAuthorizationClient, SettingsJwkClientDefinition>(
-                infrastructureConfigurationSection,
+                infrastructureSettings,
                 x => x.ClientSettings.ExhangeToAltinnToken = true)
             .ConfigureHttpClient((services, client) =>
             {
@@ -347,14 +347,13 @@ public static class InfrastructureExtensions
 
     private static IHttpClientBuilder AddMaskinportenHttpClient<TClient, TImplementation, TClientDefinition>(
         this IServiceCollection services,
-        IConfiguration configuration,
+        InfrastructureSettings infrastructureSettings,
         Action<TClientDefinition>? configureClientDefinition = null)
         where TClient : class
         where TImplementation : class, TClient
         where TClientDefinition : class, IClientDefinition
     {
-        var settings = configuration.Get<InfrastructureSettings>();
-        services.RegisterMaskinportenClientDefinition<TClientDefinition>(typeof(TClient)!.FullName, settings!.Maskinporten);
+        services.RegisterMaskinportenClientDefinition<TClientDefinition>(typeof(TClient).FullName, infrastructureSettings.Maskinporten);
         return services
             .AddHttpClient<TClient, TImplementation>()
             .AddMaskinportenHttpMessageHandler<TClientDefinition, TClient>(configureClientDefinition);

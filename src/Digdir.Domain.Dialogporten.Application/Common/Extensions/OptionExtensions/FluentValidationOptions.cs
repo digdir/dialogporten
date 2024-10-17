@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Diagnostics;
+using System.Reflection;
 using FluentValidation;
 using Microsoft.Extensions.Options;
 
@@ -33,7 +34,7 @@ public sealed class FluentValidationOptions<TOptions> : IValidateOptions<TOption
         _validators = AssemblyScanner
             .FindValidatorsInAssemblies(assemblies, includeInternalTypes: true)
             .Where(x => x.InterfaceType.GenericTypeArguments.First() == OptionType)
-            .Select(x => (IValidator<TOptions>)Activator.CreateInstance(x.ValidatorType, nonPublic: true)!)
+            .Select(x => (IValidator<TOptions>)Activator.CreateInstance(x.ValidatorType, nonPublic: true)! ?? throw new UnreachableException())
             .ToList();
     }
 

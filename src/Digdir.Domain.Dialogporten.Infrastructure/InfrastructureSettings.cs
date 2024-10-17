@@ -49,7 +49,8 @@ internal sealed class InfrastructureSettingsValidator : AbstractValidator<Infras
         IValidator<AltinnPlatformSettings> altinnPlatformSettingsValidator,
         IValidator<AltinnCdnPlatformSettings> altinnCdnPlatformSettingsValidator,
         IValidator<MaskinportenSettings> maskinportenSettingsValidator,
-        IValidator<RedisSettings> redisSettingsValidator)
+        IValidator<RedisSettings> redisSettingsValidator,
+        IValidator<MassTransitSettings> massTransitSettingsValidator)
     {
         RuleFor(x => x.DialogDbConnectionString)
             .NotEmpty();
@@ -69,6 +70,9 @@ internal sealed class InfrastructureSettingsValidator : AbstractValidator<Infras
         RuleFor(x => x.Redis)
             .NotEmpty()
             .SetValidator(redisSettingsValidator);
+
+        RuleFor(x => x.MassTransit)
+            .SetValidator(massTransitSettingsValidator);
     }
 
     // This is here to be able to use the validator without having access to the service provider. 
@@ -76,9 +80,12 @@ internal sealed class InfrastructureSettingsValidator : AbstractValidator<Infras
         new AltinnPlatformSettingsValidator(),
         new AltinnCdnPlatformSettingsValidator(),
         new MaskinportenSettingsValidator(),
-        new RedisSettingsValidator())
+        new RedisSettingsValidator(),
+        new MassTransitSettingsValidator())
     { }
 }
+
+internal sealed class MassTransitSettingsValidator : AbstractValidator<MassTransitSettings>;
 
 internal sealed class AltinnPlatformSettingsValidator : AbstractValidator<AltinnPlatformSettings>
 {

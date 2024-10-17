@@ -27,16 +27,23 @@ public interface IInfrastructureBuilder
     IServiceCollection Build();
 }
 
-internal sealed class InfrastructureBuilder(IServiceCollection services, IConfiguration configuration, IHostEnvironment environment) :
+internal sealed class InfrastructureBuilder :
     IInfrastructureBuilder,
     IPubSubInfrastructureChoice,
     ISubscriptionInfrastructureOptions
 {
-    private readonly IServiceCollection _services = services ?? throw new ArgumentNullException(nameof(services));
-    private readonly IConfiguration _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-    private readonly IHostEnvironment _environment = environment ?? throw new ArgumentNullException(nameof(environment));
+    private readonly IServiceCollection _services;
+    private readonly IConfiguration _configuration;
+    private readonly IHostEnvironment _environment;
     private readonly List<Action<InfrastructureBuilderContext>> _actions = [];
     private readonly List<Action<IBusRegistrationConfigurator>> _busConfigurations = [];
+
+    public InfrastructureBuilder(IServiceCollection services, IConfiguration configuration, IHostEnvironment environment)
+    {
+        _services = services ?? throw new ArgumentNullException(nameof(services));
+        _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+        _environment = environment ?? throw new ArgumentNullException(nameof(environment));
+    }
 
     public IServiceCollection Build()
     {
@@ -66,7 +73,7 @@ internal sealed class InfrastructureBuilder(IServiceCollection services, IConfig
     {
         _busConfigurations.Add(x => x
             .AddConsumers(consumerAssemblies
-            .DefaultIfEmpty(Assembly.GetEntryAssembly())
+            .DefaultIfEmpty(Assembly.GetEntryAssembly() ?? throw new InvalidOperationException("Could not determine the entry assembly."))
             .ToArray()));
         return AddAction(context => AddPubSubCapabilities(context, _busConfigurations));
     }
@@ -82,9 +89,9 @@ internal sealed class InfrastructureBuilder(IServiceCollection services, IConfig
 
     private InfrastructureSettings RegisterAndValidateInfrastructureSettings()
     {
-        var infrastructureConfigurationSection = configuration
+        var infrastructureConfigurationSection = _configuration
             .GetSection(InfrastructureSettings.ConfigurationSectionName);
-        services.AddOptions<InfrastructureSettings>()
+        _services.AddOptions<InfrastructureSettings>()
             .Bind(infrastructureConfigurationSection)
             .ValidateFluently();
         var settings = infrastructureConfigurationSection.Get<InfrastructureSettings>()

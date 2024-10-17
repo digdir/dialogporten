@@ -185,10 +185,10 @@ public class DomainEventsTests(DialogApplication application) : ApplicationColle
             Id = dialogId
         };
         await Application.Send(deleteDialogCommand);
-        var cloudEvents = Application.PopPublishedCloudEvents();
         await harness.Consumed
             .SelectAsync<DialogDeletedDomainEvent>(x => x.Context.Message.DialogId == dialogId)
             .FirstOrDefault();
+        var cloudEvents = Application.PopPublishedCloudEvents();
 
         // Assert
         cloudEvents.Should().OnlyContain(cloudEvent => cloudEvent.ResourceInstance == dialogId.ToString());
