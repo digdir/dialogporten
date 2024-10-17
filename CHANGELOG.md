@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.26.0](https://github.com/digdir/dialogporten/compare/v1.25.0...v1.26.0) (2024-10-17)
+
+
+### Features
+
+* Add masstransit outbox system ([#1277](https://github.com/digdir/dialogporten/issues/1277)) ([bc04860](https://github.com/digdir/dialogporten/commit/bc048604e96bac67c91193c7d82b031bd9be2923))
+
 ## [1.25.0](https://github.com/digdir/dialogporten/compare/v1.24.0...v1.25.0) (2024-10-17)
 
 
