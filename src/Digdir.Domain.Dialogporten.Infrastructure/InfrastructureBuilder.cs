@@ -65,6 +65,7 @@ internal sealed class InfrastructureBuilder :
 
     public IInfrastructureBuilder AndBusConfiguration(Action<IBusRegistrationConfigurator> configure)
     {
+        ArgumentNullException.ThrowIfNull(configure);
         _busConfigurations.Add(configure);
         return this;
     }
