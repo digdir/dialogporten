@@ -31,10 +31,30 @@ param revisionSuffix string
 @description('The probes for the container app')
 param probes array = []
 
+@export()
+type ScaleRule = {
+  // add additional types as needed: https://keda.sh/docs/2.15/scalers/
+  custom: {
+    type: 'cpu' | 'memory'
+    metadata: {
+      type: 'Utilization'
+      value: string
+    }
+  }
+}
+
+@export()
+type Scale = {
+  minReplicas: int
+  maxReplicas: int
+  rules: ScaleRule[]
+}
+
 @description('The scaling configuration for the container app')
-param scale object = {
+param scale Scale = {
   minReplicas: 1
-  maxReplicas: 1 // temp disable scaling by default for outbox scheduling
+  maxReplicas: 1
+  rules: []
 }
 
 // TODO: Refactor to make userAssignedIdentityId a required parameter once all container apps use user-assigned identities

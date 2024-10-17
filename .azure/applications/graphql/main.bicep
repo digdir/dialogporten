@@ -1,5 +1,7 @@
 targetScope = 'resourceGroup'
 
+import { Scale } from '../../modules/containerApp/main.bicep'
+
 @description('The tag of the image to be used')
 @minLength(3)
 param imageTag string
@@ -106,15 +108,16 @@ var probes = [
   }
 ]
 
-var scale = {
+@description('The scaling configuration for the container app')
+param scale Scale = {
   minReplicas: 2
   maxReplicas: 10
   rules: [
     {
       custom: {
         type: 'cpu'
-        metricType: 'Utilization'
         metadata: {
+          type: 'Utilization'
           value: '70'
         }
       }
@@ -122,8 +125,8 @@ var scale = {
     {
       custom: {
         type: 'memory'
-        metricType: 'Utilization'
         metadata: {
+          type: 'Utilization'
           value: '70'
         }
       }
