@@ -114,6 +114,7 @@ param scale Scale = {
   maxReplicas: 10
   rules: [
     {
+      name: 'cpu'
       custom: {
         type: 'cpu'
         metadata: {
@@ -123,6 +124,7 @@ param scale Scale = {
       }
     }
     {
+      name: 'memory'
       custom: {
         type: 'memory'
         metadata: {

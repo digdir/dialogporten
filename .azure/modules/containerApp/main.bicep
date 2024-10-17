@@ -33,6 +33,7 @@ param probes array = []
 
 @export()
 type ScaleRule = {
+  name: string
   // add additional types as needed: https://keda.sh/docs/2.15/scalers/
   custom: {
     type: 'cpu' | 'memory'
