@@ -45,55 +45,51 @@ resource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2023-01-01-preview
   tags: tags
 }
 
-resource privateEndpoint 'Microsoft.Network/privateEndpoints@2023-11-01' = {
-  name: '${serviceBusName}-pe'
+// private endpoint name max characters is 80
+var serviceBusPrivateEndpointName = uniqueResourceName('${namePrefix}-service-bus-pe', 80)
+
+resource serviceBusPrivateEndpoint 'Microsoft.Network/privateEndpoints@2023-11-01' = {
+  name: serviceBusPrivateEndpointName
   location: location
   properties: {
-    subnet: {
-      id: subnetId
-    }
-    ipConfigurations: [
-      {
-        name: 'default'
-        properties: {
-          groupId: 'namespace'
-          memberName: 'namespace'
-          // must be in the range of the subnet
-          privateIPAddress: '10.0.4.4'
-        }
-      }
-    ]
     privateLinkServiceConnections: [
       {
-        name: '${namePrefix}-plsc'
+        name: serviceBusPrivateEndpointName
         properties: {
           privateLinkServiceId: serviceBusNamespace.id
           groupIds: [
             'namespace'
           ]
-          requestMessage: 'Connection to the Service Bus namespace ${serviceBusName} for Dialogporten'
         }
       }
     ]
+    customNetworkInterfaceName: uniqueResourceName('${namePrefix}-service-bus-pe-nic', 80)
+    subnet: {
+      id: subnetId
+    }
   }
   tags: tags
 }
 
-var serviceBusDomainName = '${serviceBusName}.servicebus.windows.net'
-
 module privateDnsZone '../privateDnsZone/main.bicep' = {
-  name: 'serviceBusPrivateDnsZone'
+  name: '${namePrefix}-service-bus-pdz'
   params: {
     namePrefix: namePrefix
-    defaultDomain: serviceBusDomainName
+    defaultDomain: 'privatelink.servicebus.windows.net'
     vnetId: vnetId
-    aRecords: [
-      {
-        name: 'default'
-        ttl: 300
-        ip: privateEndpoint.properties.ipConfigurations[0].properties.privateIPAddress
-      }
-    ]
     tags: tags
+  }
+}
+
+module privateDnsZoneGroup '../privateDnsZoneGroup/main.bicep' = {
+  name: '${namePrefix}-service-bus-privateDnsZoneGroup'
+  dependsOn: [
+    privateDnsZone
+  ]
+  params: {
+    name: 'default'
+    dnsZoneGroupName: 'privatelink-servicebus-windows-net'
+    dnsZoneId: privateDnsZone.outputs.id
+    privateEndpointName: serviceBusPrivateEndpoint.name
   }
 }
