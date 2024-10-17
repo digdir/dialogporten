@@ -1,5 +1,6 @@
 import { uuidv4 } from '../../../common/testimports.js'
 import { getDefaultEnduserSsn } from "../../../common/token.js";
+import { sentinelValue } from "../../../common/config.js";
 
 export default function () {
     return {
@@ -13,7 +14,8 @@ export default function () {
         "process": "urn:test:process:1",
         "searchTags": [
             { "value": "something searchable" },
-            { "value": "something else searchable" }
+            { "value": "something else searchable" },
+            { "value": sentinelValue } // Do not remove this, this is used to look for unpurged dialogs after a run
         ],
         "content": {
             "Title": {

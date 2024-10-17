@@ -1,4 +1,5 @@
 import { customConsole as console } from './console.js';
+import { sentinelValue } from './config.js';
 
 export function setTitle(dialog, title, language = "nb") {
     setContent(dialog, "Title", title, language);
@@ -39,6 +40,9 @@ export function setSearchTags(dialog, searchTags) {
     searchTags.forEach((t) => {
         tags.push({ "value": t });
     })
+
+    // Always set the sentinel string that we use to check for leftover dialogs after the run
+    tags.push({ "value": sentinelValue });
 
     dialog.searchTags = tags;
 }

@@ -59,7 +59,6 @@ export default function () {
         expect(dialog.apiActions[0], 'api action').to.have.property("isAuthorized").to.equal(false);
         expect(dialog.apiActions[0], 'url').to.have.property("endpoints");
         for (let i=0; i<dialog.apiActions[0].length; i++) {
-            console.log(dialog.apiActions[i]);
             expect(dialog.apiActions[i], 'endpoint').to.have.property("url").to.equal("urn:dialogporten:unauthorized");
         }
     });

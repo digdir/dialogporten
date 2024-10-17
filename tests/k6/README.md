@@ -37,9 +37,11 @@ See `suites/all-single-pass.js` for a basic example, running all tests with defa
 Tests reside within `tests/serviceowner` and `tests/enduser` depending on the type of test.
 
 Each file can contain several tests related to a particular functionality in the APIs. The test should export one default function containing the tests. 
-> Make sure you do not introduce any global state; only create variables within the function scope. 
+> Make sure you do not introduce any global state; only create variables within the function scope.  All test files should be self-contained and handle both being run alone or with others in any sequential order, ie not rely on state created by tests in other files.
 
 There are several utility functions provided in order to create tests, that can be imported from `testimports.js` residing the `common` directory.
+
+Test files **must** clean up any state they create (see `purgeSO` below), to ensure that the test environment is in a consistent state. A check is implemented in `tests/all-tests.js` to ensure that all dialogs created during the gets purged. Failing to clean up will fail the test run. 
 
 ### Making requests
 
@@ -90,7 +92,6 @@ export default function () {
 
 ### Notes
 - The request scripts uses the token generator from [Altinn Test Tools](https://github.com/Altinn/AltinnTestTools). The tokens produced contain all scopes required for all endpoints of Dialogporten, and is generated once per run, then re-used and refreshed as needed.
-- 
 
 ## TODO
 * Add support for getting real Maskinporten tokens, see https://github.com/mulesoft-labs/js-client-oauth2
