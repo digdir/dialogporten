@@ -174,15 +174,24 @@ public static class ClaimsPrincipalExtensions
 
     public static bool TryGetAuthenticationLevel(this ClaimsPrincipal claimsPrincipal, [NotNullWhen(true)] out int? authenticationLevel)
     {
-        foreach (var claimType in new[] { IdportenAuthLevelClaim, AltinnAuthLevelClaim })
+        if (claimsPrincipal.TryGetClaimValue(AltinnAuthLevelClaim, out var claimValue) && int.TryParse(claimValue, out var level))
         {
-            if (!claimsPrincipal.TryGetClaimValue(claimType, out var claimValue)) continue;
-            // The acr claim value is "LevelX" where X is the authentication level
-            var valueToParse = claimType == IdportenAuthLevelClaim ? claimValue[5..] : claimValue;
-            if (!int.TryParse(valueToParse, out var level)) continue;
-
             authenticationLevel = level;
             return true;
+        }
+
+        if (claimsPrincipal.TryGetClaimValue(IdportenAuthLevelClaim, out claimValue))
+        {
+            // The acr claim value is either "idporten-loa-substantial" (previously "Level3") or "idporten-loa-high" (previously "Level4")
+            // https://docs.digdir.no/docs/idporten/oidc/oidc_protocol_new_idporten#new-acr-values
+            authenticationLevel = claimValue switch
+            {
+                "idporten-loa-substantial" => 3,
+                "idporten-loa-high" => 4,
+                _ => null
+            };
+
+            return authenticationLevel.HasValue;
         }
 
         authenticationLevel = null;

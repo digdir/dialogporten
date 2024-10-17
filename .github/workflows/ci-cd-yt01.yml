@@ -48,75 +48,75 @@ jobs:
       region: norwayeast
       version: ${{ needs.get-current-version.outputs.version }}
 
-  # todo: enable when we have infrastructure set up for yt01
-  # deploy-apps-yt01:
-  #   name: Deploy apps to yt01
-  #   needs:
-  #     [get-current-version, check-for-changes, deploy-infra, publish]
-  #   # we want deployment of apps to be dependent on deployment of infrastructure, but if infrastructure is skipped, we still want to deploy the apps
-  #   if: ${{ always() && !failure() && !cancelled() && (github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasBackendChanges == 'true') }}
-  #   uses: ./.github/workflows/workflow-deploy-apps.yml
-  #   secrets:
-  #     AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-  #     AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-  #     AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-  #     # todo: consider resolving these in another way since they are created in the infra-step
-  #     AZURE_RESOURCE_GROUP_NAME: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
-  #     AZURE_ENVIRONMENT_KEY_VAULT_NAME: ${{ secrets.AZURE_ENVIRONMENT_KEY_VAULT_NAME }}
-  #     AZURE_CONTAINER_APP_ENVIRONMENT_NAME: ${{ secrets.AZURE_CONTAINER_APP_ENVIRONMENT_NAME }}
-  #     AZURE_APP_INSIGHTS_CONNECTION_STRING: ${{ secrets.AZURE_APP_INSIGHTS_CONNECTION_STRING }}
-  #     AZURE_APP_CONFIGURATION_NAME: ${{ secrets.AZURE_APP_CONFIGURATION_NAME }}
-  #   with:
-  #     environment: yt01
-  #     region: norwayeast
-  #     version: ${{ needs.get-current-version.outputs.version }}
-  #     runMigration: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasMigrationChanges == 'true' }}
+  deploy-apps:
+    name: Deploy apps to yt01
+    needs:
+      [get-current-version, check-for-changes, deploy-infra, publish]
+    # we want deployment of apps to be dependent on deployment of infrastructure, but if infrastructure is skipped, we still want to deploy the apps
+    if: ${{ always() && !failure() && !cancelled() && (github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasBackendChanges == 'true') }}
+    uses: ./.github/workflows/workflow-deploy-apps.yml
+    secrets:
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      # todo: consider resolving these in another way since they are created in the infra-step
+      AZURE_RESOURCE_GROUP_NAME: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
+      AZURE_ENVIRONMENT_KEY_VAULT_NAME: ${{ secrets.AZURE_ENVIRONMENT_KEY_VAULT_NAME }}
+      AZURE_CONTAINER_APP_ENVIRONMENT_NAME: ${{ secrets.AZURE_CONTAINER_APP_ENVIRONMENT_NAME }}
+      AZURE_APP_INSIGHTS_CONNECTION_STRING: ${{ secrets.AZURE_APP_INSIGHTS_CONNECTION_STRING }}
+      AZURE_APP_CONFIGURATION_NAME: ${{ secrets.AZURE_APP_CONFIGURATION_NAME }}
+      AZURE_SERVICE_BUS_NAMESPACE_NAME: ${{ secrets.AZURE_SERVICE_BUS_NAMESPACE_NAME }}
+    with:
+      environment: yt01
+      region: norwayeast
+      version: ${{ needs.get-current-version.outputs.version }}
+      runMigration: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasMigrationChanges == 'true' }}
 
-  # deploy-slack-notifier-yt01:
-  #   name: Deploy slack notifier (yt01)
-  #   needs: [check-for-changes]
-  #   if: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasSlackNotifierChanges == 'true' }}
-  #   uses: ./.github/workflows/workflow-deploy-function.yml
-  #   secrets:
-  #     AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-  #     AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-  #     AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-  #     # todo: resolve this automatically, or use tags
-  #     AZURE_FUNCTION_APP_NAME: ${{ secrets.AZURE_SLACK_NOTIFIER_FUNCTION_APP_NAME }}
-  #   with:
-  #     function-app-name: "slack-notifier"
-  #     function-project-path: "./src/Digdir.Tool.Dialogporten.SlackNotifier"
-  #     environment: yt01
+  deploy-slack-notifier:
+    name: Deploy slack notifier (yt01)
+    needs: [check-for-changes]
+    if: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasSlackNotifierChanges == 'true' }}
+    uses: ./.github/workflows/workflow-deploy-function.yml
+    secrets:
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      # todo: resolve this automatically, or use tags
+      AZURE_FUNCTION_APP_NAME: ${{ secrets.AZURE_SLACK_NOTIFIER_FUNCTION_APP_NAME }}
+    with:
+      function-app-name: "slack-notifier"
+      function-project-path: "./src/Digdir.Tool.Dialogporten.SlackNotifier"
+      environment: yt01
 
-  # run-e2e-tests:
-  #   name: "Run K6 functional end-to-end tests"
-  #   # we want the end-to-end tests to be dependent on deployment of infrastructure and apps, but if infrastructure is skipped, we still want to run the tests
-  #   if: ${{ always() && !failure() && !cancelled() && (github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasBackendChanges == 'true') }}
-  #   needs: [deploy-apps-yt01, check-for-changes]
-  #   uses: ./.github/workflows/workflow-run-k6-tests.yml
-  #   secrets:
-  #     TOKEN_GENERATOR_USERNAME: ${{ secrets.TOKEN_GENERATOR_USERNAME }}
-  #     TOKEN_GENERATOR_PASSWORD: ${{ secrets.TOKEN_GENERATOR_PASSWORD }}
-  #   with:
-  #     environment: yt01
-  #     apiVersion: v1
-  #     testSuitePath: tests/k6/suites/all-single-pass.js
-  #   permissions:
-  #     checks: write
-  #     pull-requests: write
+  run-e2e-tests:
+    name: "Run K6 functional end-to-end tests"
+    # we want the end-to-end tests to be dependent on deployment of infrastructure and apps, but if infrastructure is skipped, we still want to run the tests
+    if: ${{ always() && !failure() && !cancelled() && (github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasBackendChanges == 'true') }}
+    needs: [deploy-apps, check-for-changes]
+    uses: ./.github/workflows/workflow-run-k6-tests.yml
+    secrets:
+      TOKEN_GENERATOR_USERNAME: ${{ secrets.TOKEN_GENERATOR_USERNAME }}
+      TOKEN_GENERATOR_PASSWORD: ${{ secrets.TOKEN_GENERATOR_PASSWORD }}
+    with:
+      environment: yt01
+      apiVersion: v1
+      testSuitePath: tests/k6/suites/all-single-pass.js
+    permissions:
+      checks: write
+      pull-requests: write
 
-  # send-slack-message-on-failure:
-  #   name: Send Slack message on failure
-  #   needs: [deploy-infra, deploy-apps-yt01, deploy-slack-notifier-yt01, run-e2e-tests, publish]
-  #   if: ${{ always() && failure() && !cancelled() }}
-  #   uses: ./.github/workflows/workflow-send-ci-cd-status-slack-message.yml
-  #   with:
-  #     environment: yt01
-  #     infra_status: ${{ needs.deploy-infra.result }}
-  #     apps_status: ${{ needs.deploy-apps-yt01.result }}
-  #     slack_notifier_status: ${{ needs.deploy-slack-notifier-yt01.result }}
-  #     e2e_tests_status: ${{ needs.run-e2e-tests.result }}
-  #     publish_status: ${{ needs.publish.result }}
-  #   secrets:
-  #     SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-  #     SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID_FOR_CI_CD_STATUS }}
+  send-slack-message-on-failure:
+    name: Send Slack message on failure
+    needs: [deploy-infra, deploy-apps, deploy-slack-notifier, run-e2e-tests, publish]
+    if: ${{ always() && failure() && !cancelled() }}
+    uses: ./.github/workflows/workflow-send-ci-cd-status-slack-message.yml
+    with:
+      environment: yt01
+      infra_status: ${{ needs.deploy-infra.result }}
+      apps_status: ${{ needs.deploy-apps.result }}
+      slack_notifier_status: ${{ needs.deploy-slack-notifier.result }}
+      e2e_tests_status: ${{ needs.run-e2e-tests.result }}
+      publish_status: ${{ needs.publish.result }}
+    secrets:
+      SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+      SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID_FOR_CI_CD_STATUS }}
