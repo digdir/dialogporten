@@ -165,4 +165,26 @@ public class CreateTransmissionTests : ApplicationCollectionFixture
         response.TryPickT2(out var validationError, out _).Should().BeTrue();
         validationError.Errors.Should().Contain(e => e.ErrorMessage.Contains("transmission chain depth cannot exceed 100"));
     }
+
+    [Fact]
+    public async Task Can_Create_More_Than_100_Unchained_Transmissions()
+    {
+        // Arrange
+        var dialogId = GenerateBigEndianUuidV7();
+        var createCommand = DialogGenerator.GenerateSimpleFakeDialog(id: dialogId);
+        const int count = 10000;
+        var transmissions = DialogGenerator.GenerateFakeDialogTransmissions(count);
+        createCommand.Transmissions = transmissions;
+
+        // Act
+        var response = await Application.Send(createCommand);
+
+        // Assert
+        response.TryPickT0(out var success, out _).Should().BeTrue();
+        success.Value.Should().Be(dialogId);
+
+        var transmissionEntities = await Application.GetDbEntities<DialogTransmission>();
+        transmissionEntities.Should().HaveCount(count);
+        transmissionEntities.All(t => t.DialogId == dialogId).Should().BeTrue();
+    }
 }
