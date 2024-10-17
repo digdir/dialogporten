@@ -67,6 +67,7 @@ static void BuildAndRun(string[] args)
 
     builder.Services
         .AddApplicationInsightsTelemetry()
+        .AddAzureAppConfiguration()
         .AddApplication(builder.Configuration, builder.Environment)
         .AddInfrastructure(builder.Configuration, builder.Environment)
             .WithPubSubCapabilities<ServiceAssemblyMarker>()
