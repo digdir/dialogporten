@@ -13,7 +13,7 @@ reviews:
   collapse_walkthrough: true
   sequence_diagrams: false
   labeling_instructions: []
-  path_filters: ["!**/migrations/**/*Designer.cs"]
+  path_filters: ["!**/Migrations/**/*Designer.cs"]
   path_instructions: []
   abort_on_close: true
   auto_review:
