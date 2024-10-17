@@ -1,5 +1,35 @@
 # Changelog
 
+## [1.25.0](https://github.com/digdir/dialogporten/compare/v1.24.0...v1.25.0) (2024-10-17)
+
+
+### Features
+
+* **applications:** add scalers for cpu and memory ([#1295](https://github.com/digdir/dialogporten/issues/1295)) ([eb0f19b](https://github.com/digdir/dialogporten/commit/eb0f19bfb5a49da1b4b45a15b6e43785212fc62f))
+* **infrastructure:** create new yt01 app environment ([#1291](https://github.com/digdir/dialogporten/issues/1291)) ([1a1ccc0](https://github.com/digdir/dialogporten/commit/1a1ccc0a81da0be7bf89b105dc3af57ee8ae4e93))
+* **service:** add permissions for service-bus ([#1305](https://github.com/digdir/dialogporten/issues/1305)) ([7bf4177](https://github.com/digdir/dialogporten/commit/7bf41775fa2e1c343972df75d3e4138647fa5742))
+* **service:** deploy application in container apps ([#1303](https://github.com/digdir/dialogporten/issues/1303)) ([a309044](https://github.com/digdir/dialogporten/commit/a309044bd40d9a56c453496aab9122b8f6c67adb))
+
+
+### Bug Fixes
+
+* **applications:** add missing property for scale configuration ([3ffb724](https://github.com/digdir/dialogporten/commit/3ffb72476e1085347f51e39e25600bc7a4de69ea))
+* **applications:** use correct scale configuration ([#1311](https://github.com/digdir/dialogporten/issues/1311)) ([b8fb3cc](https://github.com/digdir/dialogporten/commit/b8fb3cc956b5365b4008abc946e4d967fd710efe))
+* Fix ID-porten acr claim parsing ([#1299](https://github.com/digdir/dialogporten/issues/1299)) ([8b8862f](https://github.com/digdir/dialogporten/commit/8b8862fb781a9c57dcd9f3c8315ce66c64d399e2))
+* **service:** ensure default credentials work ([#1306](https://github.com/digdir/dialogporten/issues/1306)) ([b1e6a14](https://github.com/digdir/dialogporten/commit/b1e6a1495e6ca9cd25a6a8cf060f39456db95c30))
+
+## [1.24.0](https://github.com/digdir/dialogporten/compare/v1.23.2...v1.24.0) (2024-10-15)
+
+
+### Features
+
+* **infrastructure:** create new yt01 infrastructure environment ([#1290](https://github.com/digdir/dialogporten/issues/1290)) ([2044070](https://github.com/digdir/dialogporten/commit/2044070e981a7c3bc3182f1659342fb9585fd67d))
+
+
+### Bug Fixes
+
+* Fallback to using list auth if details auth fails, remove double cache ([#1274](https://github.com/digdir/dialogporten/issues/1274)) ([54425e7](https://github.com/digdir/dialogporten/commit/54425e76ecaf3d8cedd06aaa30506b59de019da3))
+
 ## [1.23.2](https://github.com/digdir/dialogporten/compare/v1.23.1...v1.23.2) (2024-10-14)
 
 
