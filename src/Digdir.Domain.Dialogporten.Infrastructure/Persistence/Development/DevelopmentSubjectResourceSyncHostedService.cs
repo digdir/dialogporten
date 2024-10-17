@@ -3,7 +3,7 @@ using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence;
+namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Development;
 
 internal sealed class DevelopmentSubjectResourceSyncHostedService : IHostedService
 {

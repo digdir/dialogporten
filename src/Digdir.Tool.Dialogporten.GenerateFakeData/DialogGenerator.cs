@@ -9,6 +9,7 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 using Digdir.Domain.Dialogporten.Domain.Http;
+using Digdir.Library.Entity.Abstractions.Features.Identifiable;
 using Medo;
 
 namespace Digdir.Tool.Dialogporten.GenerateFakeData;
@@ -92,7 +93,7 @@ public static class DialogGenerator
     {
         Randomizer.Seed = seed.HasValue ? new Random(seed.Value) : new Random();
         return new Faker<CreateDialogCommand>()
-            .RuleFor(o => o.Id, _ => id)
+            .RuleFor(o => o.Id, _ => id ?? IdentifiableExtensions.CreateVersion7())
             .RuleFor(o => o.ServiceResource, _ => serviceResource ?? GenerateFakeResource(serviceResourceGenerator))
             .RuleFor(o => o.Party, _ => party ?? GenerateRandomParty(partyGenerator))
             .RuleFor(o => o.Progress, f => progress ?? f.Random.Number(0, 100))

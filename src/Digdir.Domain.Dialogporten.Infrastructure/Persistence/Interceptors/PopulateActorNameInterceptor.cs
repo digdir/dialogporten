@@ -6,7 +6,7 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
-namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Configurations.Actors;
+namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Interceptors;
 
 internal sealed class PopulateActorNameInterceptor : SaveChangesInterceptor
 {

@@ -1,4 +1,4 @@
-namespace Digdir.Library.Entity.Abstractions.Features.EventPublisher;
+namespace Digdir.Domain.Dialogporten.Domain.Common.EventPublisher;
 
 /// <summary>
 /// Abstraction representing functionality to publish domain events.
