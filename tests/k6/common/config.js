@@ -4,6 +4,7 @@ export const baseUrls = {
             localdev: "https://localhost:7214/api/v1/enduser/",
             localdev_docker: "https://host.docker.internal:7214/api/v1/enduser/",
             test: "https://altinn-dev-api.azure-api.net/dialogporten/api/v1/enduser/",
+            yt01: "https://platform.yt01.altinn.cloud/dialogporten/api/v1/enduser/",
             staging: "https://platform.tt02.altinn.no/dialogporten/api/v1/enduser/",
             prod: "https://platform.altinn.no/dialogporten/api/v1/enduser/"
         },
@@ -11,6 +12,7 @@ export const baseUrls = {
             localdev: "https://localhost:7214/api/v1/serviceowner/",
             localdev_docker: "https://host.docker.internal:7214/api/v1/serviceowner/",
             test: "https://altinn-dev-api.azure-api.net/dialogporten/api/v1/serviceowner/",
+            yt01: "https://platform.yt01.altinn.cloud/dialogporten/api/v1/serviceowner/",
             staging: "https://platform.tt02.altinn.no/dialogporten/api/v1/serviceowner/",
             prod: "https://platform.altinn.no/dialogporten/api/v1/serviceowner/"
         }    
