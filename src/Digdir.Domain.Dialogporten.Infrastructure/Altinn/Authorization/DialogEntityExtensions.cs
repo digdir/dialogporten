@@ -20,6 +20,8 @@ internal static class DialogEntityExtensions
                 .Select(x => new AltinnAction(GetReadActionForAuthorizationAttribute(x.AuthorizationAttribute!), x.AuthorizationAttribute)))
             // We always need to check if the user can read the main resource
             .Append(new AltinnAction(Constants.ReadAction, Constants.MainResource))
+            .GroupBy(x => new { x.Name, x.AuthorizationAttribute })
+            .Select(g => g.First()) // Remove duplicates by grouping
             .ToList();
     }
 
