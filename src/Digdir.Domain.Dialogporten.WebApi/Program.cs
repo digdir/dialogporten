@@ -3,17 +3,16 @@ using System.Globalization;
 using System.Reflection;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
-using Azure.Monitor.OpenTelemetry.AspNetCore;
 using Digdir.Domain.Dialogporten.Application;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.OptionExtensions;
 using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
+using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
 using Digdir.Domain.Dialogporten.Infrastructure;
 using Digdir.Domain.Dialogporten.WebApi;
 using Digdir.Domain.Dialogporten.WebApi.Common;
 using Digdir.Domain.Dialogporten.WebApi.Common.Authentication;
 using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
-using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
 using Digdir.Domain.Dialogporten.WebApi.Common.Json;
 using Digdir.Domain.Dialogporten.WebApi.Common.Swagger;
 using Digdir.Library.Utils.AspNet;
@@ -22,11 +21,7 @@ using FastEndpoints.Swagger;
 using FluentValidation;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Authorization;
-using Npgsql;
 using NSwag;
-using OpenTelemetry.Resources;
-using OpenTelemetry.Trace;
-using OpenTelemetry.Metrics;
 using Serilog;
 using Microsoft.Extensions.Options;
 
@@ -75,6 +70,8 @@ static void BuildAndRun(string[] args, TelemetryConfiguration telemetryConfigura
         .ValidateOnStart();
 
     var thisAssembly = Assembly.GetExecutingAssembly();
+
+    builder.ConfigureTelemetry();
 
     builder.Services
         // Options setup
@@ -128,38 +125,9 @@ static void BuildAndRun(string[] args, TelemetryConfiguration telemetryConfigura
             .ToList() ?? [])
         // Auth
         .AddDialogportenAuthentication(builder.Configuration)
-        .AddAuthorization()
+        .AddAuthorization();
 
-        // OpenTelemetry
-        .AddOpenTelemetry()
-            .ConfigureResource(resource => resource
-                .AddService(serviceName: builder.Environment.ApplicationName))
-            .WithTracing(tracing =>
-            {
-                if (builder.Environment.IsDevelopment())
-                {
-                    tracing.SetSampler(new AlwaysOnSampler());
-                }
 
-                tracing.AddAspNetCoreInstrumentation(options =>
-                {
-                    options.Filter = (httpContext) =>
-                        !httpContext.Request.Path.StartsWithSegments("/health");
-                });
-
-                tracing.AddHttpClientInstrumentation();
-                tracing.AddNpgsql();
-                tracing.AddRedisInstrumentation(options => options.SetVerboseDatabaseStatements = true);
-            })
-            .WithMetrics(metrics =>
-            {
-                metrics.AddRuntimeInstrumentation();
-            });
-
-    if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("APPLICATIONINSIGHTS_CONNECTION_STRING")))
-    {
-        builder.Services.AddOpenTelemetry().UseAzureMonitor();
-    }
 
     if (builder.Environment.IsDevelopment())
     {
