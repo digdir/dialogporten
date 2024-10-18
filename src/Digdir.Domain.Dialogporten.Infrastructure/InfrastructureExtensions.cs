@@ -96,9 +96,7 @@ public static class InfrastructureExtensions
             .Decorate(typeof(INotificationHandler<>), typeof(IdempotentNotificationHandler<>));
 
         services.AddFusionCacheNeueccMessagePackSerializer();
-
         services.AddStackExchangeRedisCache(opt => opt.Configuration = infrastructureSettings.Redis.ConnectionString);
-
         services.AddFusionCacheStackExchangeRedisBackplane(opt => opt.Configuration = infrastructureSettings.Redis.ConnectionString);
 
         services.ConfigureFusionCache(nameof(Altinn.NameRegistry), new()
