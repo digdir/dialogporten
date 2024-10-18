@@ -1,5 +1,7 @@
 targetScope = 'resourceGroup'
 
+import { Scale } from '../../modules/containerApp/main.bicep'
+
 @description('The tag of the image to be used')
 @minLength(3)
 param imageTag string
