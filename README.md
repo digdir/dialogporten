@@ -126,16 +126,16 @@ To generate test tokens, see https://github.com/Altinn/AltinnTestTools. There is
 We are able to toggle some external resources in local development. This is done through the `appsettings.Development.json` file. The following settings are available:
 ```json
 "LocalDevelopment": {
-  "UseLocalDevelopmentUser": true,
-  "UseLocalDevelopmentResourceRegister": true,
-  "UseLocalDevelopmentOrganizationRegister": true,
-  "UseLocalDevelopmentNameRegister": true,
-  "UseLocalDevelopmentAltinnAuthorization": true,
-  "UseLocalDevelopmentCloudEventBus": true,
-  "UseLocalDevelopmentCompactJwsGenerator": true,
-  "DisableShortCircuitOutboxDispatcher": true,
-  "DisableCache": false,
-  "DisableAuth": true
+    "UseLocalDevelopmentUser": true,
+    "UseLocalDevelopmentResourceRegister": true,
+    "UseLocalDevelopmentOrganizationRegister": true,
+    "UseLocalDevelopmentNameRegister": true,
+    "UseLocalDevelopmentAltinnAuthorization": true,
+    "UseLocalDevelopmentCloudEventBus": true,
+    "UseLocalDevelopmentCompactJwsGenerator": true,
+    "DisableCache": true,
+    "DisableAuth": true,
+    "UseInMemoryServiceBusTransport": true
 }
 ```
 Toggling these flags will enable/disable the external resources. The `DisableAuth` flag, for example, will disable authentication in the WebAPI project. This is useful when debugging the WebAPI project in an IDE. These settings will only be respected in the `Development` environment.
@@ -347,7 +347,7 @@ Ensure you have followed the steps in [Deploying a new infrastructure environmen
 
 Use the following steps:
 
-- From the infrastructure resources created, add the following GitHub secrets in the new environment (this will not be necessary in the future as secrets would be added directly from infrastructure deployment): `AZURE_APP_CONFIGURATION_NAME`, `AZURE_APP_INSIGHTS_CONNECTION_STRING`, `AZURE_CONTAINER_APP_ENVIRONMENT_NAME`, `AZURE_ENVIRONMENT_KEY_VAULT_NAME`, `AZURE_REDIS_NAME`, `AZURE_RESOURCE_GROUP_NAME` and `AZURE_SLACK_NOTIFIER_FUNCTION_APP_NAME`
+- From the infrastructure resources created, add the following GitHub secrets in the new environment (this will not be necessary in the future as secrets would be added directly from infrastructure deployment): `AZURE_APP_CONFIGURATION_NAME`, `AZURE_APP_INSIGHTS_CONNECTION_STRING`, `AZURE_CONTAINER_APP_ENVIRONMENT_NAME`, `AZURE_ENVIRONMENT_KEY_VAULT_NAME`, `AZURE_REDIS_NAME`, `AZURE_RESOURCE_GROUP_NAME`, `AZURE_SERVICE_BUS_NAMESPACE_NAME` and `AZURE_SLACK_NOTIFIER_FUNCTION_APP_NAME`
 
 - Add new parameter files for the environment in all applications `.azure/applications/*/<env>.bicepparam`
 

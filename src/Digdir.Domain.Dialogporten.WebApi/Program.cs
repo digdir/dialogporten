@@ -9,7 +9,6 @@ using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.OptionExtensions;
 using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
 using Digdir.Domain.Dialogporten.Infrastructure;
-using Digdir.Domain.Dialogporten.Infrastructure.DomainEvents.Outbox.Dispatcher;
 using Digdir.Domain.Dialogporten.WebApi;
 using Digdir.Domain.Dialogporten.WebApi.Common;
 using Digdir.Domain.Dialogporten.WebApi.Common.Authentication;
@@ -73,16 +72,6 @@ static void BuildAndRun(string[] args)
         .ValidateFluently()
         .ValidateOnStart();
 
-    if (!builder.Environment.IsDevelopment())
-    {
-        // Temporary configuration for outbox through Web api
-        var shouldUseOutbox = builder.Configuration.GetValue("RUN_OUTBOX_SCHEDULER", false);
-        if (shouldUseOutbox)
-        {
-            builder.Services.AddHostedService<OutboxScheduler>();
-        }
-    }
-
     var thisAssembly = Assembly.GetExecutingAssembly();
 
     builder.Services
@@ -92,6 +81,8 @@ static void BuildAndRun(string[] args)
         // Clean architecture projects
         .AddApplication(builder.Configuration, builder.Environment)
         .AddInfrastructure(builder.Configuration, builder.Environment)
+            .WithPubCapabilities()
+            .Build()
 
         // Asp infrastructure
         .AddExceptionHandler<GlobalExceptionHandler>()
@@ -174,9 +165,7 @@ static void BuildAndRun(string[] args)
             .ReplaceSingleton<IAuthorizationHandler, AllowAnonymousHandler>(
                 predicate: localDevelopmentSettings.DisableAuth)
             .ReplaceSingleton<ITokenIssuerCache, DevelopmentTokenIssuerCache>(
-                predicate: localDevelopmentSettings.DisableAuth)
-            .AddHostedService<
-                OutboxScheduler>(predicate: !localDevelopmentSettings.DisableShortCircuitOutboxDispatcher);
+                predicate: localDevelopmentSettings.DisableAuth);
     }
 
     var app = builder.Build();

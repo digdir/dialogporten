@@ -75,10 +75,6 @@ var containerAppEnvVars = [
     name: 'ASPNETCORE_URLS'
     value: 'http://+:8080'
   }
-  {
-    name: 'RUN_OUTBOX_SCHEDULER'
-    value: 'true'
-  }
 ]
 
 resource environmentKeyVaultResource 'Microsoft.KeyVault/vaults@2023-07-01' existing = {

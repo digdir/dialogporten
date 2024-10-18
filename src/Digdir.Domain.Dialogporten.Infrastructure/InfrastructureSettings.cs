@@ -13,6 +13,17 @@ public sealed class InfrastructureSettings
     public required AltinnPlatformSettings Altinn { get; init; }
     public required AltinnCdnPlatformSettings AltinnCdn { get; init; }
     public required MaskinportenSettings Maskinporten { get; init; }
+    public required MassTransitSettings MassTransit { get; set; }
+}
+
+public sealed class MassTransitSettings
+{
+    public required string Host { get; init; }
+}
+
+public sealed class AzureServiceBusSettings
+{
+    public required string ConnectionString { get; init; }
 }
 
 public sealed class AltinnPlatformSettings
@@ -38,7 +49,8 @@ internal sealed class InfrastructureSettingsValidator : AbstractValidator<Infras
         IValidator<AltinnPlatformSettings> altinnPlatformSettingsValidator,
         IValidator<AltinnCdnPlatformSettings> altinnCdnPlatformSettingsValidator,
         IValidator<MaskinportenSettings> maskinportenSettingsValidator,
-        IValidator<RedisSettings> redisSettingsValidator)
+        IValidator<RedisSettings> redisSettingsValidator,
+        IValidator<MassTransitSettings> massTransitSettingsValidator)
     {
         RuleFor(x => x.DialogDbConnectionString)
             .NotEmpty();
@@ -58,8 +70,22 @@ internal sealed class InfrastructureSettingsValidator : AbstractValidator<Infras
         RuleFor(x => x.Redis)
             .NotEmpty()
             .SetValidator(redisSettingsValidator);
+
+        RuleFor(x => x.MassTransit)
+            .SetValidator(massTransitSettingsValidator);
     }
+
+    // This is here to be able to use the validator without having access to the service provider. 
+    private InfrastructureSettingsValidator() : this(
+        new AltinnPlatformSettingsValidator(),
+        new AltinnCdnPlatformSettingsValidator(),
+        new MaskinportenSettingsValidator(),
+        new RedisSettingsValidator(),
+        new MassTransitSettingsValidator())
+    { }
 }
+
+internal sealed class MassTransitSettingsValidator : AbstractValidator<MassTransitSettings>;
 
 internal sealed class AltinnPlatformSettingsValidator : AbstractValidator<AltinnPlatformSettings>
 {

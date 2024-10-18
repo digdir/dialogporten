@@ -313,7 +313,7 @@ public class CreateDialogTests : ApplicationCollectionFixture
         createDialogCommand.Content.AdditionalInfo = CreateHtmlContentValueDto();
 
         var userWithLegacyScope = new IntegrationTestUser([new("scope", Constants.LegacyHtmlScope)]);
-        Application.ConfigureServiceCollection(services =>
+        Application.ConfigureServices(services =>
         {
             services.RemoveAll<IUser>();
             services.AddSingleton<IUser>(userWithLegacyScope);
@@ -335,7 +335,7 @@ public class CreateDialogTests : ApplicationCollectionFixture
         createDialogCommand.Content.Title = CreateHtmlContentValueDto();
 
         var userWithLegacyScope = new IntegrationTestUser([new("scope", Constants.LegacyHtmlScope)]);
-        Application.ConfigureServiceCollection(services =>
+        Application.ConfigureServices(services =>
         {
             services.RemoveAll<IUser>();
             services.AddSingleton<IUser>(userWithLegacyScope);
@@ -365,7 +365,7 @@ public class CreateDialogTests : ApplicationCollectionFixture
         };
 
         var userWithLegacyScope = new IntegrationTestUser([new("scope", Constants.LegacyHtmlScope)]);
-        Application.ConfigureServiceCollection(services =>
+        Application.ConfigureServices(services =>
         {
             services.RemoveAll<IUser>();
             services.AddSingleton<IUser>(userWithLegacyScope);
@@ -396,7 +396,7 @@ public class CreateDialogTests : ApplicationCollectionFixture
         };
 
         var userWithLegacyScope = new IntegrationTestUser([new("scope", Constants.LegacyHtmlScope)]);
-        Application.ConfigureServiceCollection(services =>
+        Application.ConfigureServices(services =>
         {
             services.RemoveAll<IUser>();
             services.AddSingleton<IUser>(userWithLegacyScope);
