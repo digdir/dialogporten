@@ -6,7 +6,7 @@ using OpenTelemetry.Resources;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
 
-internal static class ServiceCollectionExtensions
+internal static class WebApplicationBuilderExtensions
 {
     public static WebApplicationBuilder ConfigureTelemetry(this WebApplicationBuilder builder)
     {
