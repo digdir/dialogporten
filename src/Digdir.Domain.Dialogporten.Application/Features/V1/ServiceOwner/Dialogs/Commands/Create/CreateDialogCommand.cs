@@ -12,7 +12,6 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 using Digdir.Domain.Dialogporten.Domain.Parties;
-using Digdir.Library.Entity.Abstractions.Features.Identifiable;
 using MediatR;
 using OneOf;
 using OneOf.Types;
@@ -126,79 +125,6 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
         }
 
         _domainContext.AddErrors(ValidateTransmissionHierarchy(dialog.Transmissions));
-
-
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        // var moreThanOneYo = dialog.Transmissions
-        //     .Where(x => x.RelatedTransmissionId is not null)
-        //     .GroupBy(x => x.RelatedTransmissionId)
-        //     .Where(x => x.Count() > 1)
-        //     .Select(x => x.Key)
-        //     .ToList();
-        //
-        // if (moreThanOneYo.Count != 0)
-        // {
-        //     // domain err
-        // }
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        // // set transmission id
-        //
-        // const int maxDepth = 100;
-        // var transmissionChildrenIdByParentId = BuildGraph(dialog.Transmissions);
-        //
-        // // Breadth
-        // var refCount = new HashSet<Guid>();
-        //
-        // var visited = new HashSet<Guid>();
-        // var stack = new HashSet<Guid>();
-        // var depthCache = new Dictionary<Guid, int>();
-        //
-        // foreach (var transmission in dialog.Transmissions)
-        // {
-        //     if (transmission.RelatedTransmissionId.HasValue)
-        //     {
-        //         if (!refCount.Add(transmission.RelatedTransmissionId.Value))
-        //         {
-        //             _domainContext.AddError(
-        //                 nameof(CreateDialogDto.Transmissions),
-        //                 "TODO: Multiple references to the same transmission");
-        //         }
-        //     }
-        //
-        //     if (HasCycle(transmission.Id, transmissionChildrenIdByParentId, visited, stack))
-        //     {
-        //         _domainContext.AddError(
-        //             nameof(CreateDialogDto.Transmissions),
-        //             $"TODO: Cycle detected in '{nameof(DialogTransmission.RelatedTransmissionId)}' for entity '{nameof(DialogTransmission)}' with key '{transmission.Id}'");
-        //         return;
-        //     }
-        //
-        //     if (GetDepth(transmission.Id, transmissionChildrenIdByParentId, depthCache) > maxDepth)
-        //     {
-        //         _domainContext.AddError(
-        //             nameof(CreateDialogDto.Transmissions),
-        //             "TODO: Transmission chain depth cannot exceed 100");
-        //         return;
-        //     }
-        // }
     }
 
     public static List<DomainFailure> ValidateTransmissionHierarchy(List<DialogTransmission> transmissions)
@@ -270,48 +196,6 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
 
         breadCrumbs.Remove(context.Id);
     }
-
-    // private static int GetDepth(Guid parentId, Dictionary<Guid, List<Guid>> childByParentId, Dictionary<Guid, int> depthCache)
-    // {
-    //     if (depthCache.TryGetValue(parentId, out var cachedDepth))
-    //     {
-    //         return cachedDepth;
-    //     }
-    //
-    //     if (childByParentId[parentId].Count == 0)
-    //     {
-    //         return depthCache[parentId] = 1;
-    //     }
-    //
-    //     var children = childByParentId[parentId];
-    //     var depth = 1 + children.Max(child => GetDepth(child, childByParentId, depthCache));
-    //     depthCache[parentId] = depth;
-    //     return depth;
-    // }
-    //
-    // private static bool HasCycle(Guid parentId, Dictionary<Guid, List<Guid>> childByParentId, HashSet<Guid> visited, HashSet<Guid> breadCrumbs)
-    // {
-    //     if (breadCrumbs.Contains(parentId))
-    //     {
-    //         return true;
-    //     }
-    //
-    //     if (!visited.Add(parentId))
-    //     {
-    //         return false;
-    //     }
-    //
-    //     breadCrumbs.Add(parentId);
-    //
-    //     var children = childByParentId[parentId];
-    //     if (children.Any(child => HasCycle(child, childByParentId, visited, breadCrumbs)))
-    //     {
-    //         return true;
-    //     }
-    //
-    //     breadCrumbs.Remove(parentId);
-    //     return false;
-    // }
 
     private static Dictionary<Guid, HierarchyContext> ToHierarchyContextById(List<DialogTransmission> transmissions)
     {
