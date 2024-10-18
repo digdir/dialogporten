@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.26.0](https://github.com/digdir/dialogporten/compare/v1.25.0...v1.26.0) (2024-10-18)
+
+
+### Features
+
+* Add masstransit outbox system ([#1277](https://github.com/digdir/dialogporten/issues/1277)) ([bc04860](https://github.com/digdir/dialogporten/commit/bc048604e96bac67c91193c7d82b031bd9be2923))
+
+
+### Bug Fixes
+
+* **infrastructure:** use correct networking for servicebus ([#1320](https://github.com/digdir/dialogporten/issues/1320)) ([4fb42bb](https://github.com/digdir/dialogporten/commit/4fb42bbe0af6a9023369f0676be6f38e9fd7c780))
+* Return distinct actions in GetAlinnActions ([#1298](https://github.com/digdir/dialogporten/issues/1298)) ([49948b2](https://github.com/digdir/dialogporten/commit/49948b246247d7798496ddb0225620c809aee4f1))
+
 ## [1.25.0](https://github.com/digdir/dialogporten/compare/v1.24.0...v1.25.0) (2024-10-17)
 
 
