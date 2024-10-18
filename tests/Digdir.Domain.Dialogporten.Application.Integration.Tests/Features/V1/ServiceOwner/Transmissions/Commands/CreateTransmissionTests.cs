@@ -103,7 +103,7 @@ public class CreateTransmissionTests : ApplicationCollectionFixture
     }
 
     [Fact]
-    public async Task Cannot_Create_Transmission_Reference_Tree_With_Breadth()
+    public async Task Cannot_Create_Transmission_Hierarchy_With_Breadth()
     {
         // Arrange
         var createCommand = DialogGenerator.GenerateSimpleFakeDialog();
@@ -125,7 +125,7 @@ public class CreateTransmissionTests : ApplicationCollectionFixture
     }
 
     [Fact]
-    public async Task Cannot_Create_Transmission_Reference_Tree_With_Circular_Reference()
+    public async Task Cannot_Create_Transmission_Hierarchy_With_Circular_Reference()
     {
         // Arrange
         var dialogId = GenerateBigEndianUuidV7();
@@ -149,7 +149,7 @@ public class CreateTransmissionTests : ApplicationCollectionFixture
     }
 
     [Fact]
-    public async Task Cannot_Create_Transmission_Exceeding_Max_Depth()
+    public async Task Cannot_Create_Transmission_Hierarchy_Exceeding_Max_Depth()
     {
         // Arrange
         var createCommand = DialogGenerator.GenerateSimpleFakeDialog();
@@ -192,5 +192,41 @@ public class CreateTransmissionTests : ApplicationCollectionFixture
         var transmissionEntities = await Application.GetDbEntities<DialogTransmission>();
         transmissionEntities.Should().HaveCount(transmissionCount);
         transmissionEntities.All(t => t.DialogId == dialogId).Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task Cannot_Create_Transmission_With_All_Three_Errors()
+    {
+        // Arrange
+        var createCommand = DialogGenerator.GenerateSimpleFakeDialog();
+
+        var transmissions = DialogGenerator.GenerateFakeDialogTransmissions(102);
+
+        // Circular reference
+        transmissions[0].RelatedTransmissionId = transmissions[1].Id;
+        transmissions[1].RelatedTransmissionId = transmissions[2].Id;
+        transmissions[2].RelatedTransmissionId = transmissions[0].Id;
+
+        // Breadth constraint
+        transmissions[3].RelatedTransmissionId = transmissions[4].Id;
+        transmissions[5].RelatedTransmissionId = transmissions[4].Id;
+
+        // Depth constraint
+        for (var i = 6; i < transmissions.Count; i++)
+        {
+            transmissions[i].RelatedTransmissionId = transmissions[i - 1].Id;
+        }
+
+        createCommand.Transmissions = transmissions;
+
+        // Act
+        var response = await Application.Send(createCommand);
+
+        // Assert
+        response.TryPickT1(out var domainError, out _).Should().BeTrue();
+        domainError.Errors.Should().HaveCount(3);
+        // domainError.Errors.Should().Contain(e => e.ErrorMessage.Contains("circular references are not allowed"));
+        // domainError.Errors.Should().Contain(e => e.ErrorMessage.Contains("Multiple references to the same transmission"));
+        // domainError.Errors.Should().Contain(e => e.ErrorMessage.Contains("Transmission chain depth cannot exceed 100"));
     }
 }

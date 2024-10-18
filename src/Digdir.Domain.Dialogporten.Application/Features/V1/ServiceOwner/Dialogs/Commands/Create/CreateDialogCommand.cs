@@ -132,31 +132,55 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
 
 
 
+        var moreThanOneYo = dialog.Transmissions
+            .Where(x => x.RelatedTransmissionId is not null)
+            .GroupBy(x => x.RelatedTransmissionId)
+            .Where(x => x.Count() > 1)
+            .Select(x => x.Key)
+            .ToList();
+
+        if (moreThanOneYo.Count != 0)
+        {
+            // domain err
+        }
 
 
+
+
+
+
+
+
+
+
+
+
+
+        // set transmission id
 
         const int maxDepth = 100;
-        var graph = BuildGraph(dialog.Transmissions);
+        var transmissionChildrenIdByParentId = BuildGraph(dialog.Transmissions);
+
+        // Breadth
+        var refCount = new HashSet<Guid>();
+
         var visited = new HashSet<Guid>();
         var stack = new HashSet<Guid>();
-        var refCount = new Dictionary<Guid, int>();
         var depthCache = new Dictionary<Guid, int>();
 
         foreach (var transmission in dialog.Transmissions)
         {
             if (transmission.RelatedTransmissionId.HasValue)
             {
-                if (!refCount.TryAdd(transmission.RelatedTransmissionId.Value, 1))
+                if (!refCount.Add(transmission.RelatedTransmissionId.Value))
                 {
-                    refCount[transmission.RelatedTransmissionId.Value]++;
                     _domainContext.AddError(
                         nameof(CreateDialogDto.Transmissions),
                         "TODO: Multiple references to the same transmission");
-                    return;
                 }
             }
 
-            if (HasCycle(transmission.Id, graph, visited, stack))
+            if (HasCycle(transmission.Id, transmissionChildrenIdByParentId, visited, stack))
             {
                 _domainContext.AddError(
                     nameof(CreateDialogDto.Transmissions),
@@ -164,79 +188,82 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
                 return;
             }
 
-            if (GetDepth(transmission.Id, graph, depthCache) > maxDepth)
+            if (GetDepth(transmission.Id, transmissionChildrenIdByParentId, depthCache) > maxDepth)
             {
                 _domainContext.AddError(
                     nameof(CreateDialogDto.Transmissions),
                     "TODO: Transmission chain depth cannot exceed 100");
+                return;
             }
         }
     }
 
-    private static int GetDepth(Guid nodeId, Dictionary<Guid, List<Guid>> graph, Dictionary<Guid, int> depthCache)
+    private static int GetDepth(Guid parentId, Dictionary<Guid, List<Guid>> childByParentId, Dictionary<Guid, int> depthCache)
     {
-        if (depthCache.TryGetValue(nodeId, out var cachedDepth))
+        if (depthCache.TryGetValue(parentId, out var cachedDepth))
         {
             return cachedDepth;
         }
 
-        if (graph[nodeId].Count == 0)
+        if (childByParentId[parentId].Count == 0)
         {
-            depthCache[nodeId] = 1;
-            return 1;
+            return depthCache[parentId] = 1;
         }
 
-        var depth = 1 + graph[nodeId].Max(neighbor => GetDepth(neighbor, graph, depthCache));
-        depthCache[nodeId] = depth;
+        var children = childByParentId[parentId];
+        var depth = 1 + children.Max(child => GetDepth(child, childByParentId, depthCache));
+        depthCache[parentId] = depth;
         return depth;
     }
 
-    private static bool HasCycle(Guid nodeId, Dictionary<Guid, List<Guid>> graph, HashSet<Guid> visited, HashSet<Guid> stack)
+    private static bool HasCycle(Guid parentId, Dictionary<Guid, List<Guid>> childByParentId, HashSet<Guid> visited, HashSet<Guid> breadCrumbs)
     {
-        if (stack.Contains(nodeId))
+        if (breadCrumbs.Contains(parentId))
         {
             return true;
         }
 
-        if (!visited.Add(nodeId))
+        if (!visited.Add(parentId))
         {
             return false;
         }
 
-        stack.Add(nodeId);
+        breadCrumbs.Add(parentId);
 
-        foreach (var neighbor in graph[nodeId])
+        var children = childByParentId[parentId];
+        if (children.Any(child => HasCycle(child, childByParentId, visited, breadCrumbs)))
         {
-            if (HasCycle(neighbor, graph, visited, stack))
-            {
-                return true;
-            }
+            return true;
         }
 
-        stack.Remove(nodeId);
+        breadCrumbs.Remove(parentId);
         return false;
     }
+
     private static Dictionary<Guid, List<Guid>> BuildGraph(List<DialogTransmission> transmissions)
     {
-        var graph = new Dictionary<Guid, List<Guid>>();
+        var transmissionChildrenIdByParentId = new Dictionary<Guid, List<Guid>>();
         foreach (var transmission in transmissions)
         {
-            if (!graph.TryGetValue(transmission.Id, out var value))
+            if (!transmissionChildrenIdByParentId.TryGetValue(transmission.Id, out var children))
             {
-                value = [];
-                graph[transmission.Id] = value;
+                children = [];
+                transmissionChildrenIdByParentId[transmission.Id] = children;
             }
 
-            if (!transmission.RelatedTransmissionId.HasValue) continue;
-
-            if (!graph.ContainsKey(transmission.RelatedTransmissionId.Value))
+            if (!transmission.RelatedTransmissionId.HasValue)
             {
-                graph[transmission.RelatedTransmissionId.Value] = [];
+                continue;
             }
 
-            value.Add(transmission.RelatedTransmissionId.Value);
+            if (!transmissionChildrenIdByParentId.ContainsKey(transmission.RelatedTransmissionId.Value))
+            {
+                transmissionChildrenIdByParentId[transmission.RelatedTransmissionId.Value] = [];
+            }
+
+            children.Add(transmission.RelatedTransmissionId.Value);
         }
-        return graph;
+        return transmissionChildrenIdByParentId;
     }
 
 }
