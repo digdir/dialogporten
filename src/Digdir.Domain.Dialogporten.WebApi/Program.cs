@@ -20,6 +20,7 @@ using Digdir.Library.Utils.AspNet;
 using FastEndpoints;
 using FastEndpoints.Swagger;
 using FluentValidation;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Authorization;
 using Npgsql;
 using NSwag;
@@ -30,16 +31,17 @@ using Serilog;
 using Microsoft.Extensions.Options;
 
 // Using two-stage initialization to catch startup errors.
+var telemetryConfiguration = TelemetryConfiguration.CreateDefault();
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Warning()
     .Enrich.FromLogContext()
     .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture)
-    .WriteTo.ApplicationInsights(TelemetryConverter.Traces)
+    .WriteTo.ApplicationInsights(telemetryConfiguration, TelemetryConverter.Traces)
     .CreateBootstrapLogger();
 
 try
 {
-    BuildAndRun(args);
+    BuildAndRun(args, telemetryConfiguration);
 }
 catch (Exception ex) when (ex is not OperationCanceledException)
 {
@@ -51,7 +53,7 @@ finally
     Log.CloseAndFlush();
 }
 
-static void BuildAndRun(string[] args)
+static void BuildAndRun(string[] args, TelemetryConfiguration telemetryConfiguration)
 {
     var builder = WebApplication.CreateBuilder(args);
 
@@ -60,7 +62,7 @@ static void BuildAndRun(string[] args)
         .ReadFrom.Configuration(context.Configuration)
         .ReadFrom.Services(services)
         .Enrich.FromLogContext()
-        .WriteTo.ApplicationInsights(TelemetryConverter.Traces));
+        .WriteTo.ApplicationInsights(telemetryConfiguration, TelemetryConverter.Traces));
 
     builder.Configuration
         .AddAzureConfiguration(builder.Environment.EnvironmentName)
@@ -124,6 +126,9 @@ static void BuildAndRun(string[] args)
             .JwtBearerTokenSchemas?
             .Select(z => z.WellKnown)
             .ToList() ?? [])
+        // Auth
+        .AddDialogportenAuthentication(builder.Configuration)
+        .AddAuthorization()
 
         // OpenTelemetry
         .AddOpenTelemetry()
@@ -149,13 +154,12 @@ static void BuildAndRun(string[] args)
             .WithMetrics(metrics =>
             {
                 metrics.AddRuntimeInstrumentation();
-            })
-            .UseAzureMonitor()
-            .Services
+            });
 
-        // Auth
-        .AddDialogportenAuthentication(builder.Configuration)
-        .AddAuthorization();
+    if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("APPLICATIONINSIGHTS_CONNECTION_STRING")))
+    {
+        builder.Services.AddOpenTelemetry().UseAzureMonitor();
+    }
 
     if (builder.Environment.IsDevelopment())
     {
