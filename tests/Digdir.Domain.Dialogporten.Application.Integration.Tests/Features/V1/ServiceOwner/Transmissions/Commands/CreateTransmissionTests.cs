@@ -195,7 +195,7 @@ public class CreateTransmissionTests : ApplicationCollectionFixture
         // Arrange
         var createCommand = DialogGenerator.GenerateSimpleFakeDialog();
 
-        var transmissions = DialogGenerator.GenerateFakeDialogTransmissions(102);
+        var transmissions = DialogGenerator.GenerateFakeDialogTransmissions(120);
 
         // Circular reference
         transmissions[0].RelatedTransmissionId = transmissions[1].Id;

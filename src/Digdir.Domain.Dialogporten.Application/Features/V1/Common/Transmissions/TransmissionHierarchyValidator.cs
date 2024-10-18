@@ -95,10 +95,10 @@ public static class TransmissionHierarchyValidator
                     out var parentContext))
             {
                 transmissionChildrenIdByParentId[potentialChild.RelatedTransmissionId.Value] =
-                    parentContext = new() { Id = potentialChild.Id };
+                    parentContext = new() { Id = potentialChild.RelatedTransmissionId.Value };
             }
 
-            parentContext.Children.Add(potentialChild.RelatedTransmissionId.Value);
+            parentContext.Children.Add(potentialChild.Id);
         }
 
         return transmissionChildrenIdByParentId;
