@@ -101,4 +101,124 @@ public class CreateTransmissionTests : ApplicationCollectionFixture
         validationError.Errors.First().ErrorMessage.Should().Contain("HTTPS");
 
     }
+
+    [Fact]
+    public async Task Cannot_Create_Transmission_Hierarchy_With_Breadth()
+    {
+        // Arrange
+        var createCommand = DialogGenerator.GenerateSimpleFakeDialog();
+
+        var transmissions = DialogGenerator.GenerateFakeDialogTransmissions(3);
+        transmissions[0].RelatedTransmissionId = transmissions[2].Id;
+        transmissions[1].RelatedTransmissionId = transmissions[2].Id;
+
+        createCommand.Transmissions = transmissions;
+
+        // Act
+        var response = await Application.Send(createCommand);
+
+        // Assert
+        response.TryPickT1(out var domainError, out _).Should().BeTrue();
+        domainError.Errors.Should().NotBeEmpty();
+    }
+
+    [Fact]
+    public async Task Cannot_Create_Transmission_Hierarchy_With_Circular_Reference()
+    {
+        // Arrange
+        var dialogId = GenerateBigEndianUuidV7();
+        var createCommand = DialogGenerator.GenerateSimpleFakeDialog(id: dialogId);
+
+        var transmissions = DialogGenerator.GenerateFakeDialogTransmissions(3);
+        transmissions[0].RelatedTransmissionId = transmissions[1].Id;
+        transmissions[1].RelatedTransmissionId = transmissions[2].Id;
+        transmissions[2].RelatedTransmissionId = transmissions[0].Id;
+
+        createCommand.Transmissions = transmissions;
+
+        // Act
+        var response = await Application.Send(createCommand);
+
+        // Assert
+        response.TryPickT1(out var domainError, out _).Should().BeTrue();
+        domainError.Errors.Should().NotBeEmpty();
+    }
+
+    [Fact]
+    public async Task Cannot_Create_Transmission_Hierarchy_Exceeding_Max_Depth()
+    {
+        // Arrange
+        var createCommand = DialogGenerator.GenerateSimpleFakeDialog();
+
+        var transmissions = DialogGenerator.GenerateFakeDialogTransmissions(101);
+        for (var i = 1; i < transmissions.Count; i++)
+        {
+            transmissions[i].RelatedTransmissionId = transmissions[i - 1].Id;
+        }
+
+        createCommand.Transmissions = transmissions;
+
+        // Act
+        var response = await Application.Send(createCommand);
+
+        // Assert
+        response.TryPickT1(out var domainError, out _).Should().BeTrue();
+        domainError.Errors.Should().NotBeEmpty();
+    }
+
+    [Fact]
+    public async Task Can_Create_More_Than_100_Unchained_Transmissions()
+    {
+        // Arrange
+        var dialogId = GenerateBigEndianUuidV7();
+        var createCommand = DialogGenerator.GenerateSimpleFakeDialog(id: dialogId);
+
+        const int transmissionCount = 101;
+        var transmissions = DialogGenerator.GenerateFakeDialogTransmissions(transmissionCount);
+        createCommand.Transmissions = transmissions;
+
+        // Act
+        var response = await Application.Send(createCommand);
+
+        // Assert
+        response.TryPickT0(out var success, out _).Should().BeTrue();
+        success.Value.Should().Be(dialogId);
+
+        var transmissionEntities = await Application.GetDbEntities<DialogTransmission>();
+        transmissionEntities.Should().HaveCount(transmissionCount);
+        transmissionEntities.All(t => t.DialogId == dialogId).Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task Cannot_Create_Transmission_With_All_Three_Errors()
+    {
+        // Arrange
+        var createCommand = DialogGenerator.GenerateSimpleFakeDialog();
+
+        var transmissions = DialogGenerator.GenerateFakeDialogTransmissions(120);
+
+        // Circular reference
+        transmissions[0].RelatedTransmissionId = transmissions[1].Id;
+        transmissions[1].RelatedTransmissionId = transmissions[2].Id;
+        transmissions[2].RelatedTransmissionId = transmissions[0].Id;
+
+        // Breadth constraint
+        transmissions[3].RelatedTransmissionId = transmissions[4].Id;
+        transmissions[5].RelatedTransmissionId = transmissions[4].Id;
+
+        // Depth constraint
+        for (var i = 6; i < transmissions.Count; i++)
+        {
+            transmissions[i].RelatedTransmissionId = transmissions[i - 1].Id;
+        }
+
+        createCommand.Transmissions = transmissions;
+
+        // Act
+        var response = await Application.Send(createCommand);
+
+        // Assert
+        response.TryPickT1(out var domainError, out _).Should().BeTrue();
+        domainError.Errors.Should().NotBeEmpty();
+    }
 }

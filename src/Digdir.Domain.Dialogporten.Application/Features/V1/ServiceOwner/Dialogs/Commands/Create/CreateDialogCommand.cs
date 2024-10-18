@@ -15,6 +15,7 @@ using Digdir.Domain.Dialogporten.Domain.Parties;
 using MediatR;
 using OneOf;
 using OneOf.Types;
+using static Digdir.Domain.Dialogporten.Application.Features.V1.Common.Transmissions.TransmissionHierarchyValidator;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Create;
 
@@ -123,5 +124,7 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
         {
             _domainContext.AddError(DomainFailure.EntityExists<DialogTransmissionAttachment>(existingTransmissionAttachmentIds));
         }
+
+        _domainContext.AddErrors(ValidateTransmissionHierarchy(dialog.Transmissions));
     }
 }
