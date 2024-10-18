@@ -127,8 +127,6 @@ static void BuildAndRun(string[] args, TelemetryConfiguration telemetryConfigura
         .AddDialogportenAuthentication(builder.Configuration)
         .AddAuthorization();
 
-
-
     if (builder.Environment.IsDevelopment())
     {
         var localDevelopmentSettings = builder.Configuration.GetLocalDevelopmentSettings();
