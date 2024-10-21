@@ -164,19 +164,25 @@ public class CreateTransmissionTests : ApplicationCollectionFixture
     }
 
     [Fact]
-    public async Task Cannot_Create_Transmission_Hierarchy_With_Multiple_Width_Violations()
+    public async Task Cannot_Create_Transmission_Hierarchy_With_Two_Width_Violations()
     {
         // Arrange
         var createCommand = DialogGenerator.GenerateSimpleFakeDialog();
+        const int widthViolationSize = 5;
+        const int totalTransmissions = 2 * widthViolationSize;
 
-        var transmissions = DialogGenerator.GenerateFakeDialogTransmissions(10);
-        for (var i = 1; i < 5; i++)
+        var transmissions = DialogGenerator.GenerateFakeDialogTransmissions(totalTransmissions);
+
+        // First width violation
+        for (var i = 1; i < widthViolationSize; i++)
         {
-            transmissions[i].RelatedTransmissionId = transmissions[0].Id; // First width violation
+            transmissions[i].RelatedTransmissionId = transmissions[0].Id;
         }
-        for (var i = 6; i < 10; i++)
+
+        // Second width violation
+        for (var i = widthViolationSize + 1; i < totalTransmissions; i++)
         {
-            transmissions[i].RelatedTransmissionId = transmissions[5].Id; // Second width violation
+            transmissions[i].RelatedTransmissionId = transmissions[widthViolationSize].Id;
         }
 
         createCommand.Transmissions = transmissions;
@@ -187,7 +193,6 @@ public class CreateTransmissionTests : ApplicationCollectionFixture
         // Assert
         response.TryPickT1(out var domainError, out _).Should().BeTrue();
         domainError.Errors.Should().NotBeEmpty();
-        // domainError.Errors.Should().HaveCount(2); // Expecting two width errors
     }
 
     [Fact]
