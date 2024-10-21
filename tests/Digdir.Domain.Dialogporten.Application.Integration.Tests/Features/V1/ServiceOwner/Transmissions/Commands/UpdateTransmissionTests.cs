@@ -174,7 +174,15 @@ public class UpdateTransmissionTests : ApplicationCollectionFixture
         updateResponse.TryPickT5(out var domainError, out _).Should().BeTrue();
         domainError.Errors.Should().NotBeEmpty();
         // domainError.Errors.Should().HaveCount(2); ???
-        domainError.Errors.First().ErrorMessage.Should().Contain(transmissions[0].Id!.Value.ToString());
+        var error = domainError.Errors.First();
+        foreach (var t in transmissions)
+        {
+            error.ErrorMessage.Should().Contain(t.Id!.Value.ToString());
+        }
+
+        // domainError.Errors.().ErrorMessage.Should().Contain(transmissions[1].Id!.Value.ToString());
+        // domainError.Errors.First().ErrorMessage.Should().Contain(transmissions[2].Id!.Value.ToString());
+
     }
 
     [Fact]
