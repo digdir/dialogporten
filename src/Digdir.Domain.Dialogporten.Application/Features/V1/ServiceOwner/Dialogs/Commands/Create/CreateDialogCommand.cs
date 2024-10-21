@@ -71,6 +71,18 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
         }
         CreateDialogEndUserContext(request, dialog);
         await EnsureNoExistingUserDefinedIds(dialog, cancellationToken);
+        foreach (var transmission in dialog.Transmissions)
+        {
+            transmission.Id = transmission.Id.CreateVersion7IfDefault();
+        }
+
+        _domainContext.AddErrors(dialog.Transmissions.ValidateReferenceHierarchy(
+            keySelector: x => x.Id,
+            parentKeySelector: x => x.RelatedTransmissionId,
+            propertyName: nameof(CreateDialogCommand.Transmissions),
+            maxDepth: 100,
+            maxWidth: 1));
+
         await _db.Dialogs.AddAsync(dialog, cancellationToken);
         var saveResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
         return saveResult.Match<CreateDialogResult>(
@@ -124,17 +136,5 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
         {
             _domainContext.AddError(DomainFailure.EntityExists<DialogTransmissionAttachment>(existingTransmissionAttachmentIds));
         }
-
-        foreach (var transmission in dialog.Transmissions)
-        {
-            transmission.Id = transmission.Id.CreateVersion7IfDefault();
-        }
-
-        _domainContext.AddErrors(dialog.Transmissions.ValidateReferenceHierarchy(
-            keySelector: x => x.Id,
-            parentKeySelector: x => x.RelatedTransmissionId,
-            propertyName: nameof(CreateDialogCommand.Transmissions),
-            maxDepth: 100,
-            maxWidth: 1));
     }
 }
