@@ -48,7 +48,8 @@ internal static class HttpClientExtensions
             configureHeaders?.Invoke(httpRequestMessage.Headers);
             configureContentHeaders?.Invoke(httpRequestMessage.Content.Headers);
             var response = await client.SendAsync(httpRequestMessage, cancellationToken);
-            response.EnsureSuccessStatusCode();
+            await response.EnsureSuccessStatusCodeWithContent();
+
             return response;
         }
         catch (Exception e)
