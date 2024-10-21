@@ -185,7 +185,7 @@ public class CreateTransmissionTests : ApplicationCollectionFixture
     }
 
     [Fact]
-    public async Task Cannot_Create_Transmission_Hierarchy_With_Two_Width_Violations()
+    public async Task Cannot_Create_Transmission_Hierarchy_With_Multiple_Width_Violations()
     {
         // Arrange
         var createCommand = DialogGenerator.GenerateSimpleFakeDialog();
@@ -218,7 +218,7 @@ public class CreateTransmissionTests : ApplicationCollectionFixture
     }
 
     [Fact]
-    public async Task Cannot_Create_Transmission_Hierarchy_With_Two_Depth_Violations()
+    public async Task Cannot_Create_Transmission_Hierarchy_With_Multiple_Depth_Violations()
     {
         // Arrange
         var createCommand = DialogGenerator.GenerateSimpleFakeDialog();
