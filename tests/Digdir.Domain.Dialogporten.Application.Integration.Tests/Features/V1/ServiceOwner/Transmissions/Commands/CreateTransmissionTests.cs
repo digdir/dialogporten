@@ -160,7 +160,7 @@ public class CreateTransmissionTests : ApplicationCollectionFixture
         // Assert
         response.TryPickT1(out var domainError, out _).Should().BeTrue();
         domainError.Errors.Should().NotBeEmpty();
-        // domainError.Errors.Should().HaveCount(2); // Expecting two cycle errors
+        // domainError.Errors.Should().HaveCount(2); // Expecting two cycle errors?
     }
 
     [Fact]
@@ -193,6 +193,7 @@ public class CreateTransmissionTests : ApplicationCollectionFixture
         // Assert
         response.TryPickT1(out var domainError, out _).Should().BeTrue();
         domainError.Errors.Should().NotBeEmpty();
+        // domainError.Errors.Should().HaveCount(2); // Expecting two width errors?
     }
 
     [Fact]
@@ -225,6 +226,7 @@ public class CreateTransmissionTests : ApplicationCollectionFixture
         // Assert
         response.TryPickT1(out var domainError, out _).Should().BeTrue();
         domainError.Errors.Should().NotBeEmpty();
+        // domainError.Errors.Should().HaveCount(2); // Expecting two depth errors?
     }
 
     [Fact]

@@ -57,7 +57,7 @@ internal static class ReadOnlyCollectionExtensions
             var ids = $"[{string.Join(",", depthErrors.Select(x => x.Key))}]";
             errors.Add(new DomainFailure(propertyName,
                 $"Hierarchy depth violation found. {type.Name} with the following " +
-                $"ids is at depth {maxDepthViolation}, exceeding the max allowed depth of {maxWidth}. " +
+                $"ids is at depth {maxDepthViolation}, exceeding the max allowed depth of {maxDepth}. " +
                 $"It, and all its referencing children is in violation of the depth constraint. {ids}."));
         }
 
