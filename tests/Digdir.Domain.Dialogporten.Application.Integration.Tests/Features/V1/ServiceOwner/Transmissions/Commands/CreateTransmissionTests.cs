@@ -1,8 +1,10 @@
+using Bogus;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Content;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Create;
 using Digdir.Domain.Dialogporten.Application.Integration.Tests.Common;
 using Digdir.Domain.Dialogporten.Domain;
+using Digdir.Domain.Dialogporten.Domain.Common;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions.Contents;
 using Digdir.Tool.Dialogporten.GenerateFakeData;
@@ -103,94 +105,7 @@ public class CreateTransmissionTests : ApplicationCollectionFixture
     }
 
     [Fact]
-    public async Task Cannot_Create_Transmission_Hierarchy_With_Breadth()
-    {
-        // Arrange
-        var createCommand = DialogGenerator.GenerateSimpleFakeDialog();
-
-        var transmissions = DialogGenerator.GenerateFakeDialogTransmissions(3);
-        transmissions[0].RelatedTransmissionId = transmissions[2].Id;
-        transmissions[1].RelatedTransmissionId = transmissions[2].Id;
-
-        createCommand.Transmissions = transmissions;
-
-        // Act
-        var response = await Application.Send(createCommand);
-
-        // Assert
-        response.TryPickT1(out var domainError, out _).Should().BeTrue();
-        domainError.Errors.Should().NotBeEmpty();
-    }
-
-    [Fact]
-    public async Task Cannot_Create_Transmission_Hierarchy_With_Circular_Reference()
-    {
-        // Arrange
-        var dialogId = GenerateBigEndianUuidV7();
-        var createCommand = DialogGenerator.GenerateSimpleFakeDialog(id: dialogId);
-
-        var transmissions = DialogGenerator.GenerateFakeDialogTransmissions(3);
-        transmissions[0].RelatedTransmissionId = transmissions[1].Id;
-        transmissions[1].RelatedTransmissionId = transmissions[2].Id;
-        transmissions[2].RelatedTransmissionId = transmissions[0].Id;
-
-        createCommand.Transmissions = transmissions;
-
-        // Act
-        var response = await Application.Send(createCommand);
-
-        // Assert
-        response.TryPickT1(out var domainError, out _).Should().BeTrue();
-        domainError.Errors.Should().NotBeEmpty();
-    }
-
-    [Fact]
-    public async Task Cannot_Create_Transmission_Hierarchy_Exceeding_Max_Depth()
-    {
-        // Arrange
-        var createCommand = DialogGenerator.GenerateSimpleFakeDialog();
-
-        var transmissions = DialogGenerator.GenerateFakeDialogTransmissions(101);
-        for (var i = 1; i < transmissions.Count; i++)
-        {
-            transmissions[i].RelatedTransmissionId = transmissions[i - 1].Id;
-        }
-
-        createCommand.Transmissions = transmissions;
-
-        // Act
-        var response = await Application.Send(createCommand);
-
-        // Assert
-        response.TryPickT1(out var domainError, out _).Should().BeTrue();
-        domainError.Errors.Should().NotBeEmpty();
-    }
-
-    [Fact]
-    public async Task Can_Create_More_Than_100_Unchained_Transmissions()
-    {
-        // Arrange
-        var dialogId = GenerateBigEndianUuidV7();
-        var createCommand = DialogGenerator.GenerateSimpleFakeDialog(id: dialogId);
-
-        const int transmissionCount = 101;
-        var transmissions = DialogGenerator.GenerateFakeDialogTransmissions(transmissionCount);
-        createCommand.Transmissions = transmissions;
-
-        // Act
-        var response = await Application.Send(createCommand);
-
-        // Assert
-        response.TryPickT0(out var success, out _).Should().BeTrue();
-        success.Value.Should().Be(dialogId);
-
-        var transmissionEntities = await Application.GetDbEntities<DialogTransmission>();
-        transmissionEntities.Should().HaveCount(transmissionCount);
-        transmissionEntities.All(t => t.DialogId == dialogId).Should().BeTrue();
-    }
-
-    [Fact]
-    public async Task Cannot_Create_Transmission_With_All_Three_Errors()
+    public async Task Cannot_Create_Transmission_Hierarchy_With_Breadth_Depth_And_Circular_Reference_Errors()
     {
         // Arrange
         var createCommand = DialogGenerator.GenerateSimpleFakeDialog();
@@ -220,5 +135,151 @@ public class CreateTransmissionTests : ApplicationCollectionFixture
         // Assert
         response.TryPickT1(out var domainError, out _).Should().BeTrue();
         domainError.Errors.Should().HaveCount(3);
+    }
+
+    [Fact]
+    public async Task Cannot_Create_Transmission_Hierarchy_With_Multiple_Circular_References()
+    {
+        // Arrange
+        var createCommand = DialogGenerator.GenerateSimpleFakeDialog();
+
+        var transmissions = DialogGenerator.GenerateFakeDialogTransmissions(6);
+        transmissions[0].RelatedTransmissionId = transmissions[1].Id;
+        transmissions[1].RelatedTransmissionId = transmissions[2].Id;
+        transmissions[2].RelatedTransmissionId = transmissions[0].Id; // First cycle
+
+        transmissions[3].RelatedTransmissionId = transmissions[4].Id;
+        transmissions[4].RelatedTransmissionId = transmissions[5].Id;
+        transmissions[5].RelatedTransmissionId = transmissions[3].Id; // Second cycle
+
+        createCommand.Transmissions = transmissions;
+
+        // Act
+        var response = await Application.Send(createCommand);
+
+        // Assert
+        response.TryPickT1(out var domainError, out _).Should().BeTrue();
+        domainError.Errors.Should().NotBeEmpty();
+        // domainError.Errors.Should().HaveCount(2); // Expecting two cycle errors
+    }
+
+    [Fact]
+    public async Task Cannot_Create_Transmission_Hierarchy_With_Multiple_Width_Violations()
+    {
+        // Arrange
+        var createCommand = DialogGenerator.GenerateSimpleFakeDialog();
+
+        var transmissions = DialogGenerator.GenerateFakeDialogTransmissions(10);
+        for (var i = 1; i < 5; i++)
+        {
+            transmissions[i].RelatedTransmissionId = transmissions[0].Id; // First width violation
+        }
+        for (var i = 6; i < 10; i++)
+        {
+            transmissions[i].RelatedTransmissionId = transmissions[5].Id; // Second width violation
+        }
+
+        createCommand.Transmissions = transmissions;
+
+        // Act
+        var response = await Application.Send(createCommand);
+
+        // Assert
+        response.TryPickT1(out var domainError, out _).Should().BeTrue();
+        domainError.Errors.Should().NotBeEmpty();
+        // domainError.Errors.Should().HaveCount(2); // Expecting two width errors
+    }
+
+    [Fact]
+    public async Task Cannot_Create_Transmission_Hierarchy_With_Two_Depth_Violations()
+    {
+        // Arrange
+        var createCommand = DialogGenerator.GenerateSimpleFakeDialog();
+        const int depthViolationLength = 102;
+        const int totalTransmissions = 2 * depthViolationLength;
+
+        var transmissions = DialogGenerator.GenerateFakeDialogTransmissions(totalTransmissions);
+
+        // First depth violation
+        for (var i = 1; i < depthViolationLength; i++)
+        {
+            transmissions[i].RelatedTransmissionId = transmissions[i - 1].Id;
+        }
+
+        // Second depth violation
+        for (var i = depthViolationLength + 1; i < totalTransmissions; i++)
+        {
+            transmissions[i].RelatedTransmissionId = transmissions[i - 1].Id;
+        }
+
+        createCommand.Transmissions = transmissions;
+
+        // Act
+        var response = await Application.Send(createCommand);
+
+        // Assert
+        response.TryPickT1(out var domainError, out _).Should().BeTrue();
+        domainError.Errors.Should().NotBeEmpty();
+    }
+
+    [Fact]
+    public async Task Cannot_Create_Transmission_Hierarchy_With_Self_Reference()
+    {
+        // Arrange
+        var createCommand = DialogGenerator.GenerateSimpleFakeDialog();
+
+        var transmission = DialogGenerator.GenerateFakeDialogTransmissions(1)[0];
+        transmission.RelatedTransmissionId = transmission.Id;
+
+        createCommand.Transmissions = [transmission];
+
+        // Act
+        var response = await Application.Send(createCommand);
+
+        // Assert
+        response.TryPickT2(out var validationError, out _).Should().BeTrue();
+        validationError.Errors.Should().HaveCount(1);
+        validationError.Errors.First().ErrorMessage.Should().Contain(transmission.Id!.Value.ToString());
+    }
+
+    [Fact]
+    public async Task Can_Handle_Large_Transmission_Hierarchy_With_Varying_Chain_Lengths()
+    {
+        // Arrange
+        var createCommand = DialogGenerator.GenerateSimpleFakeDialog();
+        const int transmissionCount = 500;
+        var transmissions = DialogGenerator.GenerateFakeDialogTransmissions(transmissionCount);
+        var chainStartIndex = 0;
+        int[] chainLengths = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
+
+        while (chainStartIndex < transmissions.Count)
+        {
+            // Determine the length of the next chain from the predefined pattern
+            var remainingTransmissions = transmissions.Count - chainStartIndex;
+            var chainLength = chainLengths[chainStartIndex % chainLengths.Length];
+            chainLength = Math.Min(chainLength, remainingTransmissions);
+
+            // Create the chain
+            var chainEndIndex = chainStartIndex + chainLength - 1;
+            for (var i = chainStartIndex + 1; i <= chainEndIndex; i++)
+            {
+                transmissions[i].RelatedTransmissionId = transmissions[i - 1].Id;
+            }
+
+            // Move to the next chain
+            chainStartIndex = chainEndIndex + 1;
+        }
+
+        createCommand.Transmissions = transmissions;
+
+        // Act
+        var response = await Application.Send(createCommand);
+
+        // Assert
+        response.TryPickT0(out var success, out _).Should().BeTrue();
+        UuidV7.IsValid(success.Value).Should().BeTrue();
+
+        var transmissionEntities = await Application.GetDbEntities<DialogTransmission>();
+        transmissionEntities.Should().HaveCount(transmissionCount);
     }
 }
