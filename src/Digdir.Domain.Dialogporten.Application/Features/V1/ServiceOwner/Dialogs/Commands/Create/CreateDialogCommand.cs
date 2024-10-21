@@ -12,7 +12,6 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 using Digdir.Domain.Dialogporten.Domain.Parties;
-using Digdir.Library.Entity.Abstractions.Features.Identifiable;
 using MediatR;
 using OneOf;
 using OneOf.Types;

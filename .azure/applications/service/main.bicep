@@ -1,5 +1,7 @@
 targetScope = 'resourceGroup'
 
+import { Scale } from '../../modules/containerApp/main.bicep'
+
 @description('The tag of the image to be used')
 @minLength(3)
 param imageTag string
@@ -39,6 +41,34 @@ param appConfigurationName string
 @description('The name of the Key Vault for the environment')
 @minLength(3)
 param environmentKeyVaultName string
+
+@description('The scaling configuration for the container app')
+param scale Scale = {
+  minReplicas: 2
+  maxReplicas: 10
+  rules: [
+    {
+      name: 'cpu'
+      custom: {
+        type: 'cpu'
+        metadata: {
+          type: 'Utilization'
+          value: '70'
+        }
+      }
+    }
+    {
+      name: 'memory'
+      custom: {
+        type: 'memory'
+        metadata: {
+          type: 'Utilization'
+          value: '70'
+        }
+      }
+    }
+  ]
+}
 
 var namePrefix = 'dp-be-${environment}'
 var baseImageUrl = 'ghcr.io/digdir/dialogporten-'
@@ -166,6 +196,7 @@ module containerApp '../../modules/containerApp/main.bicep' = {
     port: port
     revisionSuffix: revisionSuffix
     userAssignedIdentityId: managedIdentity.id
+    scale: scale
     // TODO: Once all container apps use user-assigned identities, remove this comment and ensure userAssignedIdentityId is always provided
   }
   dependsOn: [
