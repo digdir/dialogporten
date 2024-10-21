@@ -28,7 +28,6 @@ internal static class WebApplicationBuilderExtensions
 
                 tracing.AddHttpClientInstrumentation();
                 tracing.AddNpgsql();
-                tracing.AddRedisInstrumentation(options => options.SetVerboseDatabaseStatements = true);
             })
             .WithMetrics(metrics =>
             {
