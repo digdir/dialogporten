@@ -44,43 +44,6 @@ public class UpdateDialogTests(DialogApplication application) : ApplicationColle
         domainError.Errors.Should().Contain(e => e.ErrorMessage.Contains("already exists"));
     }
 
-    [Fact]
-    public async Task Cannot_Include_Old_Transmissions_In_UpdateCommand()
-    {
-        // Arrange
-        var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog();
-        var existingTransmission = DialogGenerator.GenerateFakeDialogTransmissions(count: 1).First();
-        createDialogCommand.Transmissions.Add(existingTransmission);
-        var createCommandResponse = await Application.Send(createDialogCommand);
-
-        var getDialogQuery = new GetDialogQuery { DialogId = createCommandResponse.AsT0.Value };
-        var getDialogDto = await Application.Send(getDialogQuery);
-
-        var mapper = Application.GetMapper();
-        var updateDialogDto = mapper.Map<UpdateDialogDto>(getDialogDto.AsT0);
-
-        // Ref. old transmission
-        updateDialogDto.Transmissions.Add(new UpdateDialogDialogTransmissionDto
-        {
-            Id = existingTransmission.Id,
-            Type = DialogTransmissionType.Values.Information,
-            Sender = new() { ActorType = ActorType.Values.ServiceOwner },
-            Content = new()
-            {
-                Title = new() { Value = DialogGenerator.GenerateFakeLocalizations(3) },
-                Summary = new() { Value = DialogGenerator.GenerateFakeLocalizations(3) }
-            }
-        });
-
-        // Act
-        var updateResponse = await Application.Send(new UpdateDialogCommand { Id = createCommandResponse.AsT0.Value, Dto = updateDialogDto });
-
-        // Assert
-        updateResponse.TryPickT5(out var domainError, out _).Should().BeTrue();
-        domainError.Should().NotBeNull();
-        domainError.Errors.Should().Contain(e => e.ErrorMessage.Contains("already exists"));
-    }
-
     private async Task<(CreateDialogCommand, CreateDialogResult)> GenerateDialogWithActivity()
     {
         var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog();

@@ -131,7 +131,7 @@ internal static class ReadOnlyCollectionExtensions
     private static void EnsureNonDefaultTKey<TKey>(this IEnumerable<TKey> keys)
         where TKey : struct
     {
-        if (keys.Any(key => Equals(key, default)))
+        if (keys.Any(key => EqualityComparer<TKey>.Default.Equals(key, default)))
         {
             throw new InvalidOperationException("All keys must be non-default.");
         }

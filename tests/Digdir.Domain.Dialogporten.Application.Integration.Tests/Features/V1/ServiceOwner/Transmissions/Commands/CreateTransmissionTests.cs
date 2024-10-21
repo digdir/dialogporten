@@ -1,7 +1,5 @@
-using Bogus;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Content;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
-using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Create;
 using Digdir.Domain.Dialogporten.Application.Integration.Tests.Common;
 using Digdir.Domain.Dialogporten.Domain;
 using Digdir.Domain.Dialogporten.Domain.Common;
@@ -102,6 +100,29 @@ public class CreateTransmissionTests : ApplicationCollectionFixture
         validationError.Errors.Should().HaveCount(1);
         validationError.Errors.First().ErrorMessage.Should().Contain("HTTPS");
 
+    }
+
+    [Fact]
+    public async Task Can_Create_Related_Transmission_With_Null_Id()
+    {
+        // Arrange
+        var createCommand = DialogGenerator.GenerateSimpleFakeDialog();
+        var transmissions = DialogGenerator.GenerateFakeDialogTransmissions(2);
+
+        transmissions[0].RelatedTransmissionId = transmissions[1].Id;
+
+        // This test assures that the Create-handler will use CreateVersion7IfDefault
+        // on all transmissions before validating the hierarchy.
+        transmissions[0].Id = null;
+
+        createCommand.Transmissions = transmissions;
+
+        // Act
+        var response = await Application.Send(createCommand);
+
+        // Assert
+        response.TryPickT0(out var success, out _).Should().BeTrue();
+        success.Should().NotBeNull();
     }
 
     [Fact]
@@ -230,6 +251,26 @@ public class CreateTransmissionTests : ApplicationCollectionFixture
     }
 
     [Fact]
+    public async Task Cannot_Create_Transmission_Referencing_Non_Existent_Id()
+    {
+        // Arrange
+        var createCommand = DialogGenerator.GenerateSimpleFakeDialog();
+
+        var transmission = DialogGenerator.GenerateFakeDialogTransmissions(1)[0];
+        transmission.RelatedTransmissionId = GenerateBigEndianUuidV7(); // Non-existent ID
+
+        createCommand.Transmissions = [transmission];
+
+        // Act
+        var response = await Application.Send(createCommand);
+
+        // Assert
+        response.TryPickT2(out var validationError, out _).Should().BeTrue();
+        validationError.Errors.Should().HaveCount(1);
+        validationError.Errors.First().ErrorMessage.Should().Contain(transmission.RelatedTransmissionId.Value.ToString());
+    }
+
+    [Fact]
     public async Task Cannot_Create_Transmission_Hierarchy_With_Self_Reference()
     {
         // Arrange
@@ -288,5 +329,6 @@ public class CreateTransmissionTests : ApplicationCollectionFixture
 
         var transmissionEntities = await Application.GetDbEntities<DialogTransmission>();
         transmissionEntities.Should().HaveCount(transmissionCount);
+        transmissionEntities.Should().OnlyContain(x => x.DialogId.Equals(success.Value));
     }
 }
