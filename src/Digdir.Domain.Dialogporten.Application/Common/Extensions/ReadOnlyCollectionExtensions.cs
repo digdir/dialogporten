@@ -7,7 +7,7 @@ internal static class ReadOnlyCollectionExtensions
     private const int Cycle = int.MaxValue;
 
     /// <summary>
-    /// Validates the reference hierarchy of a collection of entities, checking for depth, cyclic references, and width violations.
+    /// Validates the reference hierarchy in a collection of entities, checking for depth, cyclic references, and width violations.
     /// </summary>
     /// <typeparam name="TEntity">The type of the entities in the collection.</typeparam>
     /// <typeparam name="TKey">The type of the key used to identify entities.</typeparam>
@@ -57,7 +57,7 @@ internal static class ReadOnlyCollectionExtensions
             var ids = $"[{string.Join(",", depthErrors.Select(x => x.Key))}]";
             errors.Add(new DomainFailure(propertyName,
                 $"Hierarchy depth violation found. {type.Name} with the following " +
-                $"ids is at depth {maxDepthViolation}, exceeding the max allowed depth of {maxDepth}. " +
+                $"ids is at depth {maxDepthViolation}, exceeding the max allowed depth of {maxDepth}. " + // TODO: Ask about this line
                 $"It, and all its referencing children is in violation of the depth constraint. {ids}."));
         }
 
