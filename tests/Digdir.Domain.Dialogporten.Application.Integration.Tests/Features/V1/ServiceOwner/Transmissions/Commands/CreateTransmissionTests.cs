@@ -200,22 +200,22 @@ public class CreateTransmissionTests : ApplicationCollectionFixture
         // Arrange
         var createCommand = DialogGenerator.GenerateSimpleFakeDialog();
 
-        var transmissions = DialogGenerator.GenerateFakeDialogTransmissions(102);
-
-        // Circular reference
-        transmissions[0].RelatedTransmissionId = transmissions[1].Id;
-        transmissions[1].RelatedTransmissionId = transmissions[2].Id;
-        transmissions[2].RelatedTransmissionId = transmissions[0].Id;
+        var transmissions = DialogGenerator.GenerateFakeDialogTransmissions(110);
 
         // Breadth constraint
-        transmissions[3].RelatedTransmissionId = transmissions[4].Id;
-        transmissions[5].RelatedTransmissionId = transmissions[4].Id;
+        transmissions[1].RelatedTransmissionId = transmissions[0].Id;
+        transmissions[2].RelatedTransmissionId = transmissions[0].Id;
 
         // Depth constraint
-        for (var i = 6; i < transmissions.Count; i++)
+        for (var i = 3; i < transmissions.Count; i++)
         {
             transmissions[i].RelatedTransmissionId = transmissions[i - 1].Id;
         }
+
+        // Circular reference
+        transmissions[107].RelatedTransmissionId = transmissions[108].Id;
+        transmissions[108].RelatedTransmissionId = transmissions[109].Id;
+        transmissions[109].RelatedTransmissionId = transmissions[107].Id;
 
         createCommand.Transmissions = transmissions;
 
@@ -225,8 +225,5 @@ public class CreateTransmissionTests : ApplicationCollectionFixture
         // Assert
         response.TryPickT1(out var domainError, out _).Should().BeTrue();
         domainError.Errors.Should().HaveCount(3);
-        // domainError.Errors.Should().Contain(e => e.ErrorMessage.Contains("circular references are not allowed"));
-        // domainError.Errors.Should().Contain(e => e.ErrorMessage.Contains("Multiple references to the same transmission"));
-        // domainError.Errors.Should().Contain(e => e.ErrorMessage.Contains("Transmission chain depth cannot exceed 100"));
     }
 }
