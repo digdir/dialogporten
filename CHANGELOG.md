@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.26.1](https://github.com/digdir/dialogporten/compare/v1.26.0...v1.26.1) (2024-10-22)
+
+
+### Bug Fixes
+
+* **service:** add appsettings for the yt01 environment ([#1329](https://github.com/digdir/dialogporten/issues/1329)) ([ef2981b](https://github.com/digdir/dialogporten/commit/ef2981b50d9eb9786c6efd19305f3a69e9ce2bf0))
+
 ## [1.26.0](https://github.com/digdir/dialogporten/compare/v1.25.0...v1.26.0) (2024-10-22)
 
 
