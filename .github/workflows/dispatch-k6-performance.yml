@@ -17,7 +17,7 @@ on:
           - staging
           - performance
       tokens:
-        description: 'Tokens to generate; for create dialog, search, ingen eller begge'
+        description: 'Tokens to generate; for create dialog, search, none, or both'
         required: true
         default: 'both'
         type: choice
