@@ -1,0 +1,83 @@
+name: Get currently released version
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        description: "Environment to get currently released version for"
+        required: true
+        default: "test"
+        type: string
+      appName:
+        description: "Name of the app to get currently released version for"
+        required: true
+        type: string
+    secrets:
+      AZURE_CLIENT_ID:
+        description: "Client ID for OIDC login"
+        required: true
+      AZURE_TENANT_ID:
+        description: "Tenant ID for OIDC login"
+        required: true
+      AZURE_SUBSCRIPTION_ID:
+        description: "Subscription ID for OIDC login"
+        required: true
+      AZURE_RESOURCE_GROUP_NAME:
+        description: "Resource group name"
+        required: true
+
+    outputs:
+        version:
+            description: "The currently released version"
+            value: ${{ jobs.get-currently-released-version.outputs.version }}
+        commitish:
+            description: "The commitish sha of the currently released version"
+            value: ${{ jobs.get-currently-released-version.outputs.commitish }}
+
+jobs:
+  get-currently-released-version:
+    name: Get currently released version
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.get-version.outputs.version }}
+      commitish: ${{ steps.get-release-info.outputs.commitish }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: OIDC Login to Azure Public Cloud
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Get version
+        id: get-version
+        uses: azure/CLI@v2
+        timeout-minutes: 3
+        with:
+          azcliversion: ${{ env.AZ_CLI_VERSION }}
+          inlineScript: |
+            RESOURCE_GROUP="${{ secrets.AZURE_RESOURCE_GROUP_NAME }}"
+            APP_NAME="${{ inputs.appName }}"
+            VERSION=$(.github/tools/getCurrentReleaseAsOutput.sh "$RESOURCE_GROUP" "$APP_NAME")
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
+            echo "Current version: $VERSION"
+
+      - name: Get release information
+        uses: cardinalby/git-get-release-action@v1
+        id: get-release-info
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          tag: ${{ steps.get-version.outputs.version }}
+
+      - name: Output version and commitish
+        run: |
+          echo "Currently released version: ${{ steps.get-version.outputs.version }}"
+          echo "Commitish: ${{ steps.get-release-info.outputs.commitish }}"
+      - name: Logout from azure
+        if: ${{failure() || success()}}
+        continue-on-error: true
+        run: az logout

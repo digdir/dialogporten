@@ -2,6 +2,11 @@ name: "Check for file changes"
 
 on:
   workflow_call:
+    inputs:
+      base_sha:
+        description: "Base SHA to compare changes against"
+        required: false
+        type: string
     outputs:
       hasAzureChanges:
         description: "Azure related files changed"
@@ -21,6 +26,7 @@ on:
       hasMigrationChanges:
         description: "Migration related files changed"
         value: ${{ jobs.check-for-changes.outputs.hasMigrationChanges }}
+
 jobs:
   check-for-changes:
     name: Filter
@@ -36,12 +42,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          # fetch-depth needs to be 0 in cases where we want to fetch changes since previous tag for example
           fetch-depth: 0
 
       - uses: tj-actions/changed-files@v45
         id: filter
         with:
+          base_sha: ${{ inputs.base_sha }}
           files_yaml: |
             backend:
               - '.github/**/*'
