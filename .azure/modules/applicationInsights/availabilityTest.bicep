@@ -10,9 +10,14 @@ param tags object
 @description('The ID of the Application Insights resource')
 param appInsightsId string
 
-
 @description('The URL of the availability test')
 param url string
+
+@description('The frequency in seconds at which the test runs')
+param frequency int = 120 // Default is every 2 minutes
+
+@description('The timeout in seconds for the test')
+param timeout int = 60 // Default is 1 minute
 
 resource availabilityTest 'Microsoft.Insights/webtests@2022-06-15' = {
   name: name
@@ -26,8 +31,8 @@ resource availabilityTest 'Microsoft.Insights/webtests@2022-06-15' = {
     SyntheticMonitorId: name
     Name: name
     Description: 'Availability test for ${name}'
-    Frequency: 120 // Run test every 2 minutes
-    Timeout: 60 // 1 minute timeout
+    Frequency: frequency
+    Timeout: timeout
     Kind: 'standard'
     RetryEnabled: true
     Locations: [
