@@ -1,6 +1,7 @@
-import { getEU, expect, expectStatusFor, describe, getEnduserTokenFromGenerator } from "../../../common/testimports.js";
+import { getEU, expect, expectStatusFor, describe } from "../../../common/testimports.js";
 import { SharedArray } from 'k6/data';
 import papaparse from 'https://jslib.k6.io/papaparse/5.1.1/index.js';
+import { randomItem } from 'https://jslib.k6.io/k6-utils/1.2.0/index.js';
 
 const filenameEndusers = '../../performancetest_data/.endusers-with-tokens.csv';
 
