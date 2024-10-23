@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.26.2](https://github.com/digdir/dialogporten/compare/v1.26.1...v1.26.2) (2024-10-23)
+
+
+### Bug Fixes
+
+* **slack-notifier:** exclude health checks from alerts ([#1335](https://github.com/digdir/dialogporten/issues/1335)) ([0a4331a](https://github.com/digdir/dialogporten/commit/0a4331a7508bc59353b539fde27412f17d6e7de8))
+
 ## [1.26.1](https://github.com/digdir/dialogporten/compare/v1.26.0...v1.26.1) (2024-10-22)
 
 
