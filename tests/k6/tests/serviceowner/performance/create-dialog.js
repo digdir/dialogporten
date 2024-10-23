@@ -35,7 +35,7 @@ export default function() {
 
 export function createDialog(serviceOwner, endUser) {  
     var paramsWithToken = {
-        Headers: {
+        headers: {
             Authorization: "Bearer " + serviceOwner.token
         },
         tags: { name: 'create dialog' }

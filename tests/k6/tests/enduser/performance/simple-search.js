@@ -28,7 +28,7 @@ export default function() {
 
 export function simpleSearch(enduser) {
     let paramsWithToken = {
-        Headers: {
+        headers: {
             Authorization: "Bearer " + enduser.token
         },
         tags: { name: 'simple search' }
