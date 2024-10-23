@@ -34,7 +34,7 @@ Log.Logger = new LoggerConfiguration()
 
 try
 {
-    BuildAndRun(args);
+    BuildAndRun(args, telemetryConfiguration);
 }
 catch (Exception ex) when (ex is not OperationCanceledException)
 {
@@ -46,7 +46,7 @@ finally
     Log.CloseAndFlush();
 }
 
-static void BuildAndRun(string[] args)
+static void BuildAndRun(string[] args, TelemetryConfiguration telemetryConfiguration)
 {
     var builder = WebApplication.CreateBuilder(args);
 
@@ -54,8 +54,9 @@ static void BuildAndRun(string[] args)
         .MinimumLevel.Warning()
         .ReadFrom.Configuration(context.Configuration)
         .ReadFrom.Services(services)
-        .Enrich.FromLogContext());
-        
+        .Enrich.FromLogContext()
+        .WriteTo.ApplicationInsights(telemetryConfiguration, TelemetryConverter.Traces));
+
     builder.Configuration
         .AddAzureConfiguration(builder.Environment.EnvironmentName)
         .AddLocalConfiguration(builder.Environment);
