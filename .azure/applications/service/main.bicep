@@ -131,9 +131,7 @@ var port = 8080
 var probes = [
   {
     periodSeconds: 5
-    failureThreshold: 10
-    initialDelaySeconds: 20
-    timeoutSeconds: 20
+    initialDelaySeconds: 2
     type: 'Liveness'
     httpGet: {
       path: '/health/liveness'
