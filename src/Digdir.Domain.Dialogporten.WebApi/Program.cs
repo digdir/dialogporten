@@ -26,10 +26,12 @@ using Serilog;
 using Microsoft.Extensions.Options;
 
 // Using two-stage initialization to catch startup errors.
+var telemetryConfiguration = TelemetryConfiguration.CreateDefault();
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Warning()
     .Enrich.FromLogContext()
     .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture)
+    .WriteTo.ApplicationInsights(telemetryConfiguration, TelemetryConverter.Traces)
     .CreateBootstrapLogger();
 
 try
