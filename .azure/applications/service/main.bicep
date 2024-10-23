@@ -133,7 +133,7 @@ var probes = [
     periodSeconds: 5
     failureThreshold: 10
     initialDelaySeconds: 20
-    timeoutSeconds: 10
+    timeoutSeconds: 20
     type: 'Liveness'
     httpGet: {
       path: '/health/liveness'
