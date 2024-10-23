@@ -6,8 +6,21 @@ import { randomItem } from 'https://jslib.k6.io/k6-utils/1.2.0/index.js';
 const filenameEndusers = '../../performancetest_data/.endusers-with-tokens.csv';
 
 const endUsers = new SharedArray('endUsers', function () {
-    return papaparse.parse(open(filenameEndusers), { header: true, skipEmptyLines: true }).data;
-  });
+    try {
+        const csvData = papaparse.parse(open(filenameEndusers), { header: true, skipEmptyLines: true }).data;
+        if (!csvData.length) {
+            throw new Error('No data found in CSV file');
+        }
+        csvData.forEach((user, index) => {
+            if (!user.token || !user.ssn) {
+                throw new Error(`Missing required fields at row ${index + 1}`);
+            }
+        });
+        return csvData;
+    } catch (error) {
+        throw new Error(`Failed to load end users: ${error.message}`);
+    }
+});
 
 export let options = {
     summaryTrendStats: ['avg', 'min', 'med', 'max', 'p(95)', 'p(99)', 'p(99.5)', 'p(99.9)', 'count'],
