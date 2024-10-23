@@ -1,5 +1,6 @@
-using System.Diagnostics.CodeAnalysis;
 using Digdir.Domain.Dialogporten.Application.Common.Authorization;
+using System.Diagnostics.CodeAnalysis;
+using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.FluentValidation;
 using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
@@ -12,13 +13,10 @@ using FluentValidation;
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.Common.Content;
 
 // DialogContentValueDtoValidator has constructor parameter input, and can't be registered in DI assembly scan
-// This interface is used to ignore the class when scanning for validators
+// IIgnoreOnAssemblyScan is used to ignore the class when scanning for validators
 // The validator is manually created in the Create and Update validators
-internal interface IIgnoreOnAssemblyScan;
-
 internal sealed class ContentValueDtoValidator : AbstractValidator<ContentValueDto>, IIgnoreOnAssemblyScan
 {
-
     public ContentValueDtoValidator(DialogTransmissionContentType contentType)
     {
         RuleFor(x => x.MediaType)

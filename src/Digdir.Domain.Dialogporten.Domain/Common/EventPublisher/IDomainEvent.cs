@@ -1,6 +1,6 @@
 using MediatR;
 
-namespace Digdir.Library.Entity.Abstractions.Features.EventPublisher;
+namespace Digdir.Domain.Dialogporten.Domain.Common.EventPublisher;
 
 /// <summary>
 /// Represents a domain event.

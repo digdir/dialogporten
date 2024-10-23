@@ -1,5 +1,7 @@
 targetScope = 'resourceGroup'
 
+import { Scale } from '../../modules/containerApp/main.bicep'
+
 @description('The tag of the image to be used')
 @minLength(3)
 param imageTag string
@@ -39,6 +41,34 @@ param appConfigurationName string
 @description('The name of the Key Vault for the environment')
 @minLength(3)
 param environmentKeyVaultName string
+
+@description('The scaling configuration for the container app')
+param scale Scale = {
+  minReplicas: 2
+  maxReplicas: 10
+  rules: [
+    {
+      name: 'cpu'
+      custom: {
+        type: 'cpu'
+        metadata: {
+          type: 'Utilization'
+          value: '70'
+        }
+      }
+    }
+    {
+      name: 'memory'
+      custom: {
+        type: 'memory'
+        metadata: {
+          type: 'Utilization'
+          value: '70'
+        }
+      }
+    }
+  ]
+}
 
 var namePrefix = 'dp-be-${environment}'
 var baseImageUrl = 'ghcr.io/digdir/dialogporten-'
@@ -81,6 +111,10 @@ var containerAppEnvVars = [
   {
     name: 'AZURE_CLIENT_ID'
     value: managedIdentity.properties.clientId
+  }
+  {
+    name: 'Infrastructure__MassTransit__Host'
+    value: 'sb://${serviceBusNamespaceName}.servicebus.windows.net/'
   }
 ]
 
@@ -152,9 +186,7 @@ module containerApp '../../modules/containerApp/main.bicep' = {
   name: containerAppName
   params: {
     name: containerAppName
-    // todo: make this dynamic based on service name. Using webapi for now.
-    // image: '${baseImageUrl}${serviceName}:${imageTag}'
-    image: '${baseImageUrl}webapi:${imageTag}'
+    image: '${baseImageUrl}${serviceName}:${imageTag}'
     location: location
     envVariables: containerAppEnvVars
     containerAppEnvId: containerAppEnvironment.id
@@ -164,6 +196,7 @@ module containerApp '../../modules/containerApp/main.bicep' = {
     port: port
     revisionSuffix: revisionSuffix
     userAssignedIdentityId: managedIdentity.id
+    scale: scale
     // TODO: Once all container apps use user-assigned identities, remove this comment and ensure userAssignedIdentityId is always provided
   }
   dependsOn: [

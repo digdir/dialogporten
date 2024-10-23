@@ -2,10 +2,7 @@
 using Altinn.ApiClients.Maskinporten.Interfaces;
 using Altinn.ApiClients.Maskinporten.Services;
 using Digdir.Domain.Dialogporten.Application.Externals;
-using Digdir.Domain.Dialogporten.Infrastructure.DomainEvents.Outbox;
-using Digdir.Domain.Dialogporten.Infrastructure.DomainEvents.Outbox.Dispatcher;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,8 +13,6 @@ using Polly;
 using Polly.Contrib.WaitAndRetry;
 using Digdir.Domain.Dialogporten.Infrastructure.Common;
 using FluentValidation;
-using System.Reflection;
-using Digdir.Domain.Dialogporten.Application.Common.Extensions.OptionExtensions;
 using Digdir.Domain.Dialogporten.Application;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
@@ -27,54 +22,82 @@ using Digdir.Domain.Dialogporten.Infrastructure.Altinn.NameRegistry;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.OrganizationRegistry;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.ResourceRegistry;
 using Digdir.Domain.Dialogporten.Infrastructure.GraphQl;
-using Digdir.Domain.Dialogporten.Infrastructure.Persistence.Configurations.Actors;
+using Digdir.Domain.Dialogporten.Infrastructure.Persistence.IdempotentNotifications;
+using Digdir.Domain.Dialogporten.Infrastructure.Persistence.Interceptors;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence.Repositories;
 using HotChocolate.Subscriptions;
 using StackExchange.Redis;
 using ZiggyCreatures.Caching.Fusion;
 using ZiggyCreatures.Caching.Fusion.NullObjects;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Digdir.Domain.Dialogporten.Infrastructure.HealthChecks;
+using Digdir.Domain.Dialogporten.Infrastructure.Persistence.Development;
+using MassTransit;
+using MediatR;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure;
 
 public static class InfrastructureExtensions
 {
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services,
-        IConfiguration configuration, IHostEnvironment environment)
+    public static IPubSubInfrastructureChoice AddInfrastructure(
+        this IServiceCollection services,
+        IConfiguration configuration,
+        IHostEnvironment environment)
+        => new InfrastructureBuilder(services, configuration, environment);
+
+    internal static void AddInfrastructure_Internal(InfrastructureBuilderContext builderContext)
     {
-        ArgumentNullException.ThrowIfNull(services);
-        ArgumentNullException.ThrowIfNull(configuration);
-
-        services.AddPolicyRegistry((services, registry) =>
-        {
-            registry.Add(PollyPolicy.DefaultHttpRetryPolicy, HttpPolicyExtensions
-                .HandleTransientHttpError()
-                .WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(medianFirstRetryDelay: TimeSpan.FromSeconds(1), retryCount: 3)));
-        });
-
-        var infrastructureConfigurationSection = configuration.GetSection(InfrastructureSettings.ConfigurationSectionName);
-        services.AddOptions<InfrastructureSettings>()
-            .Bind(infrastructureConfigurationSection)
-            .ValidateFluently()
-            .ValidateOnStart();
-
-        var thisAssembly = Assembly.GetExecutingAssembly();
+        ArgumentNullException.ThrowIfNull(builderContext);
+        var (services, configuration, environment, infrastructureSettings, _) = builderContext;
 
         services
-            // Framework
-            .AddValidatorsFromAssembly(thisAssembly, ServiceLifetime.Transient, includeInternalTypes: true);
 
-        var infrastructureSettings = infrastructureConfigurationSection.Get<InfrastructureSettings>()
-                    ?? throw new InvalidOperationException("Failed to get Redis settings. Infrastructure settings must not be null.");
+            // Framework
+            .AddDbContext<DialogDbContext>((services, options) =>
+            {
+                var connectionString = services.GetRequiredService<IOptions<InfrastructureSettings>>()
+                    .Value.DialogDbConnectionString;
+                options.UseNpgsql(connectionString, o =>
+                {
+                    o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
+                })
+                .AddInterceptors(
+                    services.GetRequiredService<PopulateActorNameInterceptor>(),
+                    services.GetRequiredService<ConvertDomainEventsToOutboxMessagesInterceptor>()
+                );
+            })
+            .AddHostedService<DevelopmentMigratorHostedService>()
+            .AddHostedService<DevelopmentCleanupOutboxHostedService>()
+            .AddHostedService<DevelopmentSubjectResourceSyncHostedService>()
+            .AddValidatorsFromAssembly(InfrastructureAssemblyMarker.Assembly, ServiceLifetime.Transient, includeInternalTypes: true)
+            .AddPolicyRegistry((_, registry) =>
+            {
+                registry.Add(PollyPolicy.DefaultHttpRetryPolicy, HttpPolicyExtensions
+                    .HandleTransientHttpError()
+                    .WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(medianFirstRetryDelay: TimeSpan.FromSeconds(1), retryCount: 3)));
+            })
+            .AddCustomHealthChecks()
+
+            // Scoped
+            .AddScoped<IDialogDbContext>(x => x.GetRequiredService<DialogDbContext>())
+            .AddScoped<IUnitOfWork, UnitOfWork>()
+            .AddScoped<ConvertDomainEventsToOutboxMessagesInterceptor>()
+            .AddScoped<PopulateActorNameInterceptor>()
+
+            // Transient
+            .AddTransient<ISubjectResourceRepository, SubjectResourceRepository>()
+
+            // Singleton
+            .AddSingleton<INotificationProcessingContextFactory, NotificationProcessingContextFactory>()
+
+            // HttpClient
+            .AddHttpClients(infrastructureSettings)
+
+            // Decorators
+            .Decorate(typeof(INotificationHandler<>), typeof(IdempotentNotificationHandler<>));
 
         services.AddFusionCacheNeueccMessagePackSerializer();
-
-
         services.AddStackExchangeRedisCache(opt => opt.Configuration = infrastructureSettings.Redis.ConnectionString);
         services.AddFusionCacheStackExchangeRedisBackplane(opt => opt.Configuration = infrastructureSettings.Redis.ConnectionString);
-
-        services.AddGraphQlRedisSubscriptions(infrastructureSettings.Redis.ConnectionString);
 
         services.ConfigureFusionCache(nameof(Altinn.NameRegistry), new()
         {
@@ -133,39 +156,106 @@ public static class InfrastructureExtensions
             FactoryHardTimeout = TimeSpan.FromSeconds(10)
         });
 
-        services.AddDbContext<DialogDbContext>((services, options) =>
+        if (!environment.IsDevelopment())
+        {
+            return;
+        }
+
+        var localDeveloperSettings = configuration.GetLocalDevelopmentSettings();
+        services
+            .ReplaceTransient<ICloudEventBus, ConsoleLogEventBus>(predicate: localDeveloperSettings.UseLocalDevelopmentCloudEventBus)
+            .ReplaceTransient<IResourceRegistry, LocalDevelopmentResourceRegistry>(predicate: localDeveloperSettings.UseLocalDevelopmentResourceRegister)
+            .ReplaceTransient<IAltinnAuthorization, LocalDevelopmentAltinnAuthorization>(predicate: localDeveloperSettings.UseLocalDevelopmentAltinnAuthorization)
+            .ReplaceSingleton<IFusionCache, NullFusionCache>(predicate: localDeveloperSettings.DisableCache);
+    }
+
+    internal static void AddPubSubCapabilities(InfrastructureBuilderContext builderContext, List<Action<IBusRegistrationConfigurator>> customConfigurations)
+    {
+        // ATTENTION: If you need to add custom configurations to the bus, you should
+        // consider adding equivalent config to AddPubCapabilities method as well
+        builderContext.Services.AddMassTransit(x =>
             {
-                var connectionString = services.GetRequiredService<IOptions<InfrastructureSettings>>()
-                    .Value.DialogDbConnectionString;
-                options.UseNpgsql(connectionString, o =>
+                x.AddEntityFrameworkOutbox<DialogDbContext>(o =>
+                {
+                    o.UsePostgres();
+                    o.UseBusOutbox();
+                });
+
+                foreach (var customConfiguration in customConfigurations)
+                {
+                    customConfiguration(x);
+                }
+
+                if (builderContext.Environment.IsDevelopment() && builderContext.DevSettings.UseInMemoryServiceBusTransport)
+                {
+                    x.UsingInMemory((context, cfg) => cfg.ConfigureEndpoints(context));
+                    return;
+                }
+
+                x.ConfigureHealthCheckOptions(options => options.Tags.Add("dependencies"));
+                x.AddConfigureEndpointsCallback((_, cfg) =>
+                {
+                    if (cfg is IServiceBusReceiveEndpointConfigurator sb)
                     {
-                        o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
-                    })
-                    .AddInterceptors(
-                        services.GetRequiredService<PopulateActorNameInterceptor>(),
-                        services.GetRequiredService<ConvertDomainEventsToOutboxMessagesInterceptor>()
-                    );
+                        sb.ConfigureDeadLetterQueueDeadLetterTransport();
+                        sb.ConfigureDeadLetterQueueErrorTransport();
+                    }
+                });
+                x.UsingAzureServiceBus((context, cfg) =>
+                {
+                    cfg.Host(builderContext.InfraSettings.MassTransit.Host);
+                    cfg.ConfigureEndpoints(context);
+                });
             })
-            .AddHostedService<DevelopmentMigratorHostedService>()
-            .AddHostedService<DevelopmentSubjectResourceSyncHostedService>()
+            .AddTransient<Lazy<IPublishEndpoint>>(x =>
+                new Lazy<IPublishEndpoint>(x.GetRequiredService<IPublishEndpoint>));
 
-            // Scoped
-            .AddScoped<IDialogDbContext>(x => x.GetRequiredService<DialogDbContext>())
-            .AddScoped<IUnitOfWork, UnitOfWork>()
+        new DummyRequestExecutorBuilder { Services = builderContext.Services }
+            .AddRedisSubscriptions(_ => ConnectionMultiplexer.Connect(builderContext.InfraSettings.Redis.ConnectionString),
+                new SubscriptionOptions
+                {
+                    TopicPrefix = GraphQlSubscriptionConstants.SubscriptionTopicPrefix
+                });
+    }
 
-            // Transient
-            .AddTransient<ISubjectResourceRepository, SubjectResourceRepository>()
-            .AddTransient<OutboxDispatcher>()
-            .AddTransient<ConvertDomainEventsToOutboxMessagesInterceptor>()
-            .AddTransient<PopulateActorNameInterceptor>()
+    internal static void AddPubCapabilities(InfrastructureBuilderContext builderContext)
+    {
+        // ATTENTION: If you need to add custom configurations to the bus, you should
+        // consider adding equivalent config to AddPubSubCapabilities method as well
+        builderContext.Services.AddMassTransit(x =>
+            {
+                x.AddEntityFrameworkOutbox<DialogDbContext>(o =>
+                {
+                    o.UsePostgres();
+                    o.UseBusOutbox(y => y.DisableDeliveryService());
+                    o.DisableInboxCleanupService();
+                });
 
-            // Decorate
-            .Decorate(typeof(INotificationHandler<>), typeof(IdempotentDomainEventHandler<>));
+                if (builderContext.Environment.IsDevelopment() && builderContext.DevSettings.UseInMemoryServiceBusTransport)
+                {
+                    x.UsingInMemory();
+                    return;
+                }
 
-        // HttpClient
+                x.UsingAzureServiceBus();
+            })
+            .AddTransient<Lazy<IPublishEndpoint>>(x =>
+                new Lazy<IPublishEndpoint>(x.GetRequiredService<IPublishEndpoint>));
+
+        new DummyRequestExecutorBuilder { Services = builderContext.Services }
+            .AddRedisSubscriptions(_ => ConnectionMultiplexer.Connect(builderContext.InfraSettings.Redis.ConnectionString),
+                new SubscriptionOptions
+                {
+                    TopicPrefix = GraphQlSubscriptionConstants.SubscriptionTopicPrefix
+                });
+    }
+
+    private static IServiceCollection AddHttpClients(this IServiceCollection services,
+        InfrastructureSettings infrastructureSettings)
+    {
         services.
             AddMaskinportenHttpClient<ICloudEventBus, AltinnEventsClient, SettingsJwkClientDefinition>(
-                infrastructureConfigurationSection,
+                infrastructureSettings,
                 x => x.ClientSettings.ExhangeToAltinnToken = true)
             .ConfigureHttpClient((services, client) =>
             {
@@ -180,7 +270,7 @@ public static class InfrastructureExtensions
             .AddPolicyHandlerFromRegistry(PollyPolicy.DefaultHttpRetryPolicy);
 
         services.AddMaskinportenHttpClient<IPartyNameRegistry, PartyNameRegistryClient, SettingsJwkClientDefinition>(
-                infrastructureConfigurationSection,
+                infrastructureSettings,
                 x => x.ClientSettings.ExhangeToAltinnToken = true)
             .ConfigureHttpClient((services, client) =>
             {
@@ -191,7 +281,7 @@ public static class InfrastructureExtensions
             .AddPolicyHandlerFromRegistry(PollyPolicy.DefaultHttpRetryPolicy);
 
         services.AddMaskinportenHttpClient<IAltinnAuthorization, AltinnAuthorizationClient, SettingsJwkClientDefinition>(
-                infrastructureConfigurationSection,
+                infrastructureSettings,
                 x => x.ClientSettings.ExhangeToAltinnToken = true)
             .ConfigureHttpClient((services, client) =>
             {
@@ -200,18 +290,6 @@ public static class InfrastructureExtensions
                 client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", altinnSettings.SubscriptionKey);
             })
             .AddPolicyHandlerFromRegistry(PollyPolicy.DefaultHttpRetryPolicy);
-
-        services.AddCustomHealthChecks();
-
-        if (environment.IsDevelopment())
-        {
-            var localDeveloperSettings = configuration.GetLocalDevelopmentSettings();
-            services
-                .ReplaceTransient<ICloudEventBus, ConsoleLogEventBus>(predicate: localDeveloperSettings.UseLocalDevelopmentCloudEventBus)
-                .ReplaceTransient<IResourceRegistry, LocalDevelopmentResourceRegistry>(predicate: localDeveloperSettings.UseLocalDevelopmentResourceRegister)
-                .ReplaceTransient<IAltinnAuthorization, LocalDevelopmentAltinnAuthorization>(predicate: localDeveloperSettings.UseLocalDevelopmentAltinnAuthorization)
-                .ReplaceSingleton<IFusionCache, NullFusionCache>(predicate: localDeveloperSettings.DisableCache);
-        }
 
         return services;
     }
@@ -225,50 +303,6 @@ public static class InfrastructureExtensions
         services.AddSingleton<RedisHealthCheck>();
 
         return services;
-    }
-
-    private static IServiceCollection AddGraphQlRedisSubscriptions(this IServiceCollection services,
-        string redisConnectionString)
-    {
-        var dummyImplementation = new DummyRequestExecutorBuilder { Services = services };
-        dummyImplementation.AddRedisSubscriptions(_ => ConnectionMultiplexer.Connect(redisConnectionString),
-            new SubscriptionOptions
-            {
-                TopicPrefix = GraphQlSubscriptionConstants.SubscriptionTopicPrefix
-            });
-
-        return services;
-    }
-
-    public sealed class FusionCacheSettings
-    {
-        public TimeSpan Duration { get; set; } = TimeSpan.FromMinutes(1);
-        public TimeSpan FailSafeMaxDuration { get; set; } = TimeSpan.FromHours(2);
-        public TimeSpan FailSafeThrottleDuration { get; set; } = TimeSpan.FromSeconds(30);
-        public TimeSpan FactorySoftTimeout { get; set; } = TimeSpan.FromSeconds(1);
-        public TimeSpan FactoryHardTimeout { get; set; } = TimeSpan.FromSeconds(5);
-        public TimeSpan DistributedCacheSoftTimeout { get; set; } = TimeSpan.FromSeconds(1);
-        public TimeSpan DistributedCacheHardTimeout { get; set; } = TimeSpan.FromSeconds(2);
-        public bool AllowBackgroundDistributedCacheOperations { get; set; } = true;
-        public bool IsFailSafeEnabled { get; set; } = true;
-        public TimeSpan JitterMaxDuration { get; set; } = TimeSpan.FromSeconds(2);
-        public float EagerRefreshThreshold { get; set; } = 0.8f;
-        public bool SkipMemoryCache { get; set; }
-    }
-
-    private static IHttpClientBuilder AddMaskinportenHttpClient<TClient, TImplementation, TClientDefinition>(
-        this IServiceCollection services,
-        IConfiguration configuration,
-        Action<TClientDefinition>? configureClientDefinition = null)
-        where TClient : class
-        where TImplementation : class, TClient
-        where TClientDefinition : class, IClientDefinition
-    {
-        var settings = configuration.Get<InfrastructureSettings>();
-        services.RegisterMaskinportenClientDefinition<TClientDefinition>(typeof(TClient)!.FullName, settings!.Maskinporten);
-        return services
-            .AddHttpClient<TClient, TImplementation>()
-            .AddMaskinportenHttpMessageHandler<TClientDefinition, TClient>(configureClientDefinition);
     }
 
     private static IServiceCollection ConfigureFusionCache(this IServiceCollection services, string cacheName, FusionCacheSettings? settings = null)
@@ -309,5 +343,35 @@ public static class InfrastructureExtensions
             .TryWithRegisteredBackplane();
 
         return services;
+    }
+
+    private static IHttpClientBuilder AddMaskinportenHttpClient<TClient, TImplementation, TClientDefinition>(
+        this IServiceCollection services,
+        InfrastructureSettings infrastructureSettings,
+        Action<TClientDefinition>? configureClientDefinition = null)
+        where TClient : class
+        where TImplementation : class, TClient
+        where TClientDefinition : class, IClientDefinition
+    {
+        services.RegisterMaskinportenClientDefinition<TClientDefinition>(typeof(TClient).FullName, infrastructureSettings.Maskinporten);
+        return services
+            .AddHttpClient<TClient, TImplementation>()
+            .AddMaskinportenHttpMessageHandler<TClientDefinition, TClient>(configureClientDefinition);
+    }
+
+    private sealed class FusionCacheSettings
+    {
+        public TimeSpan Duration { get; set; } = TimeSpan.FromMinutes(1);
+        public TimeSpan FailSafeMaxDuration { get; set; } = TimeSpan.FromHours(2);
+        public TimeSpan FailSafeThrottleDuration { get; set; } = TimeSpan.FromSeconds(30);
+        public TimeSpan FactorySoftTimeout { get; set; } = TimeSpan.FromSeconds(1);
+        public TimeSpan FactoryHardTimeout { get; set; } = TimeSpan.FromSeconds(5);
+        public TimeSpan DistributedCacheSoftTimeout { get; set; } = TimeSpan.FromSeconds(1);
+        public TimeSpan DistributedCacheHardTimeout { get; set; } = TimeSpan.FromSeconds(2);
+        public bool AllowBackgroundDistributedCacheOperations { get; set; } = true;
+        public bool IsFailSafeEnabled { get; set; } = true;
+        public TimeSpan JitterMaxDuration { get; set; } = TimeSpan.FromSeconds(2);
+        public float EagerRefreshThreshold { get; set; } = 0.8f;
+        public bool SkipMemoryCache { get; set; }
     }
 }

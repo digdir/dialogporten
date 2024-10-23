@@ -9,11 +9,6 @@ namespace Digdir.Library.Utils.AspNet;
 
 public static class AspNetUtilitiesExtensions
 {
-    public static IServiceCollection AddAspNetHealthChecks(
-        this IServiceCollection services,
-        Action<AspNetUtilitiesSettings>? configure = null)
-        => services.AddAspNetHealthChecks((x, _) => configure?.Invoke(x));
-
     public static IServiceCollection AddAspNetHealthChecks(this IServiceCollection services, Action<AspNetUtilitiesSettings, IServiceProvider>? configure = null)
     {
         var optionsBuilder = services.AddOptions<AspNetUtilitiesSettings>();

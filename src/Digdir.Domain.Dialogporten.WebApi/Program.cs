@@ -7,13 +7,12 @@ using Digdir.Domain.Dialogporten.Application;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.OptionExtensions;
 using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
+using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
 using Digdir.Domain.Dialogporten.Infrastructure;
-using Digdir.Domain.Dialogporten.Infrastructure.DomainEvents.Outbox.Dispatcher;
 using Digdir.Domain.Dialogporten.WebApi;
 using Digdir.Domain.Dialogporten.WebApi.Common;
 using Digdir.Domain.Dialogporten.WebApi.Common.Authentication;
 using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
-using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
 using Digdir.Domain.Dialogporten.WebApi.Common.Json;
 using Digdir.Domain.Dialogporten.WebApi.Common.Swagger;
 using Digdir.Library.Utils.AspNet;
@@ -27,18 +26,17 @@ using Serilog;
 using Microsoft.Extensions.Options;
 
 // Using two-stage initialization to catch startup errors.
+var telemetryConfiguration = TelemetryConfiguration.CreateDefault();
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Warning()
     .Enrich.FromLogContext()
     .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture)
-    .WriteTo.ApplicationInsights(
-        TelemetryConfiguration.CreateDefault(),
-        TelemetryConverter.Traces)
+    .WriteTo.ApplicationInsights(telemetryConfiguration, TelemetryConverter.Traces)
     .CreateBootstrapLogger();
 
 try
 {
-    BuildAndRun(args);
+    BuildAndRun(args, telemetryConfiguration);
 }
 catch (Exception ex) when (ex is not OperationCanceledException)
 {
@@ -50,7 +48,7 @@ finally
     Log.CloseAndFlush();
 }
 
-static void BuildAndRun(string[] args)
+static void BuildAndRun(string[] args, TelemetryConfiguration telemetryConfiguration)
 {
     var builder = WebApplication.CreateBuilder(args);
 
@@ -59,9 +57,7 @@ static void BuildAndRun(string[] args)
         .ReadFrom.Configuration(context.Configuration)
         .ReadFrom.Services(services)
         .Enrich.FromLogContext()
-        .WriteTo.ApplicationInsights(
-            services.GetRequiredService<TelemetryConfiguration>(),
-            TelemetryConverter.Traces));
+        .WriteTo.ApplicationInsights(telemetryConfiguration, TelemetryConverter.Traces));
 
     builder.Configuration
         .AddAzureConfiguration(builder.Environment.EnvironmentName)
@@ -73,17 +69,9 @@ static void BuildAndRun(string[] args)
         .ValidateFluently()
         .ValidateOnStart();
 
-    if (!builder.Environment.IsDevelopment())
-    {
-        // Temporary configuration for outbox through Web api
-        var shouldUseOutbox = builder.Configuration.GetValue("RUN_OUTBOX_SCHEDULER", false);
-        if (shouldUseOutbox)
-        {
-            builder.Services.AddHostedService<OutboxScheduler>();
-        }
-    }
-
     var thisAssembly = Assembly.GetExecutingAssembly();
+
+    builder.ConfigureTelemetry();
 
     builder.Services
         // Options setup
@@ -92,6 +80,8 @@ static void BuildAndRun(string[] args)
         // Clean architecture projects
         .AddApplication(builder.Configuration, builder.Environment)
         .AddInfrastructure(builder.Configuration, builder.Environment)
+            .WithPubCapabilities()
+            .Build()
 
         // Asp infrastructure
         .AddExceptionHandler<GlobalExceptionHandler>()
@@ -100,7 +90,6 @@ static void BuildAndRun(string[] args)
         .AddHttpContextAccessor()
         .AddValidatorsFromAssembly(thisAssembly, ServiceLifetime.Transient, includeInternalTypes: true)
         .AddAzureAppConfiguration()
-        .AddApplicationInsightsTelemetry()
         .AddEndpointsApiExplorer()
         .AddFastEndpoints()
         .SwaggerDocument(x =>
@@ -134,7 +123,6 @@ static void BuildAndRun(string[] args)
             .JwtBearerTokenSchemas?
             .Select(z => z.WellKnown)
             .ToList() ?? [])
-
         // Auth
         .AddDialogportenAuthentication(builder.Configuration)
         .AddAuthorization();
@@ -147,9 +135,7 @@ static void BuildAndRun(string[] args)
             .ReplaceSingleton<IAuthorizationHandler, AllowAnonymousHandler>(
                 predicate: localDevelopmentSettings.DisableAuth)
             .ReplaceSingleton<ITokenIssuerCache, DevelopmentTokenIssuerCache>(
-                predicate: localDevelopmentSettings.DisableAuth)
-            .AddHostedService<
-                OutboxScheduler>(predicate: !localDevelopmentSettings.DisableShortCircuitOutboxDispatcher);
+                predicate: localDevelopmentSettings.DisableAuth);
     }
 
     var app = builder.Build();

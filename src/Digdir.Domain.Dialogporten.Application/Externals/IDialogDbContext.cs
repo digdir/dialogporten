@@ -1,7 +1,6 @@
 ﻿using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
-using Digdir.Domain.Dialogporten.Domain.Outboxes;
 using Digdir.Library.Entity.Abstractions.Features.Identifiable;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
@@ -40,8 +39,6 @@ public interface IDialogDbContext
     DbSet<DialogContent> DialogContents { get; }
     DbSet<DialogContentType> DialogContentTypes { get; }
 
-    DbSet<OutboxMessage> OutboxMessages { get; }
-    DbSet<OutboxMessageConsumer> OutboxMessageConsumers { get; }
     DbSet<SubjectResource> SubjectResources { get; }
     DbSet<DialogEndUserContext> DialogEndUserContexts { get; }
     DbSet<LabelAssignmentLog> LabelAssignmentLogs { get; }

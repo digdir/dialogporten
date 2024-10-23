@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
-using Digdir.Library.Entity.Abstractions.Features.EventPublisher;
+using Digdir.Domain.Dialogporten.Domain.Common.EventPublisher;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Common.Serialization;
 

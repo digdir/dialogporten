@@ -5,7 +5,7 @@ namespace Digdir.Library.Entity.EntityFrameworkCore;
 /// <summary>
 /// Provides a marker for the Entity Framework Core assembly.
 /// </summary>
-public static class LibraryEntityFrameworkCoreAssemblyMarker
+public sealed class LibraryEntityFrameworkCoreAssemblyMarker
 {
     /// <summary>
     /// Gets the assembly of the Entity Framework Core.
