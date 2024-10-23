@@ -1,5 +1,6 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Common.Authorization;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.Authorization;
 using Xunit;
 
@@ -13,11 +14,23 @@ public class DialogEntityExtensionsTests
         // Arrange
         var dialogEntity = new DialogEntity
         {
-            ApiActions = [],
-            GuiActions = [],
+            ApiActions = [
+                new DialogApiAction { Action = "read" },
+                new DialogApiAction { Action = "read" },
+                new DialogApiAction { Action = "read", AuthorizationAttribute = "foo" },
+                new DialogApiAction { Action = "transmissionread", AuthorizationAttribute = "bar" },
+                new DialogApiAction { Action = "apiread" },
+            ],
+            GuiActions = [
+                new DialogGuiAction { Action = "read" },
+                new DialogGuiAction { Action = "read" },
+                new DialogGuiAction { Action = "read", AuthorizationAttribute = "foo" },
+                new DialogGuiAction { Action = "transmissionread", AuthorizationAttribute = "bar" },
+                new DialogGuiAction { Action = "guiread" },
+            ],
             Transmissions =
             [
-                new() { AuthorizationAttribute = "foo" },
+                new() { AuthorizationAttribute = "bar" },
                 new() { AuthorizationAttribute = "urn:altinn:subresource:bar" },
                 new() { AuthorizationAttribute = "urn:altinn:task:Task_1" },
                 new() { AuthorizationAttribute = "urn:altinn:resource:some-service:element1" },
@@ -30,8 +43,12 @@ public class DialogEntityExtensionsTests
 
         // Assert
         Assert.NotNull(actions);
-        Assert.NotEmpty(actions);
-        Assert.Contains(actions, a => a is { Name: Constants.TransmissionReadAction, AuthorizationAttribute: "foo" });
+        Assert.Equal(9, actions.Count);
+        Assert.Contains(actions, a => a is { Name: Constants.ReadAction, AuthorizationAttribute: Constants.MainResource });
+        Assert.Contains(actions, a => a is { Name: Constants.ReadAction, AuthorizationAttribute: "foo" });
+        Assert.Contains(actions, a => a is { Name: Constants.TransmissionReadAction, AuthorizationAttribute: "bar" });
+        Assert.Contains(actions, a => a is { Name: "apiread", AuthorizationAttribute: Constants.MainResource });
+        Assert.Contains(actions, a => a is { Name: "guiread", AuthorizationAttribute: Constants.MainResource });
         Assert.Contains(actions, a => a is { Name: Constants.TransmissionReadAction, AuthorizationAttribute: "urn:altinn:subresource:bar" });
         Assert.Contains(actions, a => a is { Name: Constants.TransmissionReadAction, AuthorizationAttribute: "urn:altinn:task:Task_1" });
         Assert.Contains(actions, a => a is { Name: Constants.ReadAction, AuthorizationAttribute: "urn:altinn:resource:some-service:element1" });

@@ -31,6 +31,37 @@ param revisionSuffix string
 @description('The probes for the container app')
 param probes array = []
 
+@export()
+type ScaleRule = {
+  name: string
+  // add additional types as needed: https://keda.sh/docs/2.15/scalers/
+  custom: {
+    type: 'cpu' | 'memory'
+    metadata: {
+      type: 'Utilization'
+      value: string
+    }
+  }
+}
+
+@export()
+type Scale = {
+  minReplicas: int
+  maxReplicas: int
+  rules: ScaleRule[]
+}
+
+@description('The scaling configuration for the container app')
+param scale Scale = {
+  minReplicas: 1
+  maxReplicas: 1
+  rules: []
+}
+
+// TODO: Refactor to make userAssignedIdentityId a required parameter once all container apps use user-assigned identities
+@description('The ID of the user-assigned managed identity (optional)')
+param userAssignedIdentityId string = ''
+
 // Container app revision name does not allow '.' character
 var cleanedRevisionSuffix = replace(revisionSuffix, '.', '-')
 
@@ -50,12 +81,19 @@ var ingress = {
   ipSecurityRestrictions: ipSecurityRestrictions
 }
 
+var identityConfig = empty(userAssignedIdentityId) ? {
+  type: 'SystemAssigned'
+} : {
+  type: 'UserAssigned'
+  userAssignedIdentities: {
+    '${userAssignedIdentityId}': {}
+  }
+}
+
 resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
   name: name
   location: location
-  identity: {
-    type: 'SystemAssigned'
-  }
+  identity: identityConfig
   properties: {
     configuration: {
       ingress: ingress
@@ -63,10 +101,7 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
     environmentId: containerAppEnvId
     template: {
       revisionSuffix: cleanedRevisionSuffix
-      scale: {
-        minReplicas: 1
-        maxReplicas: 1 // temp disable scaling for outbox scheduling
-      }
+      scale: scale
       containers: [
         {
           name: name
@@ -81,6 +116,10 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
   tags: tags
 }
 
-output identityPrincipalId string = containerApp.identity.principalId
+resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' existing = if (!empty(userAssignedIdentityId)) {
+  name: last(split(userAssignedIdentityId, '/'))
+}
+
+output identityPrincipalId string = empty(userAssignedIdentityId) ? containerApp.identity.principalId : managedIdentity.properties.principalId
 output name string = containerApp.name
 output revisionName string = containerApp.properties.latestRevisionName

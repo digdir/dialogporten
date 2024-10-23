@@ -1,5 +1,7 @@
 targetScope = 'resourceGroup'
 
+import { Scale } from '../../modules/containerApp/main.bicep'
+
 @description('The tag of the image to be used')
 @minLength(3)
 param imageTag string
@@ -106,6 +108,34 @@ var probes = [
   }
 ]
 
+@description('The scaling configuration for the container app')
+param scale Scale = {
+  minReplicas: 2
+  maxReplicas: 10
+  rules: [
+    {
+      name: 'cpu'
+      custom: {
+        type: 'cpu'
+        metadata: {
+          type: 'Utilization'
+          value: '70'
+        }
+      }
+    }
+    {
+      name: 'memory'
+      custom: {
+        type: 'memory'
+        metadata: {
+          type: 'Utilization'
+          value: '70'
+        }
+      }
+    }
+  ]
+}
+
 resource environmentKeyVaultResource 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
   name: environmentKeyVaultName
 }
@@ -126,6 +156,7 @@ module containerApp '../../modules/containerApp/main.bicep' = {
     revisionSuffix: revisionSuffix
     probes: probes
     port: port
+    scale: scale
   }
 }
 

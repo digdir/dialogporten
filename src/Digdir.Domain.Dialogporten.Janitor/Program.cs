@@ -59,6 +59,8 @@ static void BuildAndRun(string[] args)
     builder.Services
         .AddApplication(builder.Configuration, builder.Environment)
         .AddInfrastructure(builder.Configuration, builder.Environment)
+            .WithoutPubSubCapabilities()
+            .Build()
         .AddScoped<IUser, ConsoleUser>()
         .AddSingleton(TelemetryConfiguration.CreateDefault());
 
