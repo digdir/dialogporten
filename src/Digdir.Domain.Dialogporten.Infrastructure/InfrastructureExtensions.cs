@@ -192,7 +192,11 @@ public static class InfrastructureExtensions
                     return;
                 }
 
-                // x.ConfigureHealthCheckOptions(options => options.Tags.Add("self"));
+                x.ConfigureHealthCheckOptions(options =>
+                {
+                    options.Tags.Add("self");
+                    options.Tags.Add("dependencies");
+                });
                 x.AddConfigureEndpointsCallback((_, cfg) =>
                 {
                     if (cfg is IServiceBusReceiveEndpointConfigurator sb)
