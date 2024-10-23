@@ -22,7 +22,7 @@ export default function() {
         simpleSearch(endUsers[0]);
     }
     else {
-        while (true) { simpleSearch(randomItem(endUsers)); }
+        simpleSearch(randomItem(endUsers));
     }
 }
 

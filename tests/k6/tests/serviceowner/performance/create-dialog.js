@@ -29,7 +29,7 @@ export default function() {
       createDialog(serviceOwners[0], endUsers[0]);
     }
     else {
-      while (true) { createDialog(randomItem(serviceOwners), randomItem(endUsers)); }
+        createDialog(randomItem(serviceOwners), randomItem(endUsers));
     }
   }
 
