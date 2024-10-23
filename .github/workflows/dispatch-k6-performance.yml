@@ -39,7 +39,7 @@ on:
       testSuitePath:
         description: 'Path to test suite to run'
         required: true
-        default: 'tests/k6/tests/serviceowner/performance/createremove-no-delay.js'
+        default: 'tests/k6/tests/serviceowner/performance/create-dialog.js'
 
 jobs:
   k6-performance:
