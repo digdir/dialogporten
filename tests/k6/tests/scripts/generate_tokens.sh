@@ -63,8 +63,9 @@ if [ "$tokens" = "both" ] || [ "$tokens" = "enterprise" ]; then
             echo "Error: Failed to generate enterprise token for: $env, $org, $orgno, $scopes "
             continue
         fi
-        eval echo "$org,$orgno,$scopes,$resource,$token" >> $serviceowner_tokenfile
-        if [ $? -ne 0 ]; then
+        echo "$org,$orgno,$scopes,$resource,$token" >> $serviceowner_tokenfile
+        status=$?
+        if [ $status -ne 0 ]; then
             echo "Error: Failed to write enterprise token to file for: $env, $org, $orgno, $scopes"
         fi
     done < <(tail -n +2 $serviceowner_datafile)
@@ -85,7 +86,8 @@ if [ "$tokens" = "both" ] || [ "$tokens" = "personal" ]; then
             continue
         fi
         echo "$ssn,$resource,$scopes,$token" >> $enduser_tokenfile
-        if [ $? -ne 0 ]; then
+        status=$?
+        if [ $status -ne 0 ]; then
             echo "Error: Failed to write personal token to file for: $ssn, $scopes"
         fi
     done < <(tail -n +2 $enduser_datafile)
