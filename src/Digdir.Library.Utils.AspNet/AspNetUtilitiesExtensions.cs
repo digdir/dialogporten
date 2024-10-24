@@ -67,6 +67,7 @@ public static class AspNetUtilitiesExtensions
 
                 tracing.AddHttpClientInstrumentation();
                 tracing.AddNpgsql();
+                tracing.AddSource(DiagnosticHeaders.DefaultListenerName); // MassTransit ActivitySource
             })
             .WithMetrics(metrics =>
             {
