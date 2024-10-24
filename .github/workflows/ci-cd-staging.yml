@@ -10,40 +10,23 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref_name }}
 
 jobs:
-  get-currently-released-version:
-    name: Get currently released version
-    uses: ./.github/workflows/workflow-get-currently-released-version.yml
+  get-versions-from-github:
+    name: Get Latest Deployed Versions from GitHub Variables
+    uses: ./.github/workflows/workflow-get-latest-deployed-versions-from-github.yml
     with:
       environment: staging
-      # todo: we need to figure out a way to resolve this for both infrastructure and applications
-      appName: dp-be-staging-graphql-ca
-    secrets:
-      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-      AZURE_RESOURCE_GROUP_NAME: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
 
   check-for-changes:
     name: Check for changes
-    needs: [get-currently-released-version]
+    needs: [get-versions-from-github]
     uses: ./.github/workflows/workflow-check-for-changes.yml
     with:
-      base_sha: ${{ needs.get-currently-released-version.outputs.commitish }}
+      infra_base_sha: ${{ needs.get-versions-from-github.outputs.infra_version_sha }}
+      apps_base_sha: ${{ needs.get-versions-from-github.outputs.apps_version_sha }}
 
   get-current-version:
     name: Get current version
     uses: ./.github/workflows/workflow-get-current-version.yml
-
-  publish:
-    name: Build and publish docker images
-    uses: ./.github/workflows/workflow-publish.yml
-    if: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasBackendChanges == 'true' }}
-    needs: [get-current-version, check-for-changes]
-    secrets:
-      GCR_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
-    with:
-      dockerImageBaseName: ghcr.io/digdir/dialogporten-
-      version: ${{ needs.get-current-version.outputs.version }}
 
   deploy-infra:
     name: Deploy infra to staging
@@ -61,6 +44,27 @@ jobs:
     with:
       environment: staging
       region: norwayeast
+      version: ${{ needs.get-current-version.outputs.version }}
+
+  store-infra-version:
+    name: Store Infra Version as GitHub Variable
+    runs-on: ubuntu-latest
+    needs: [deploy-infra, get-current-version]
+    if: ${{ needs.deploy-infra.result == 'success' }}
+    steps:
+      - name: Set GitHub variable for infra version
+        run: |
+          gh variable set INFRA_VERSION_STAGING "${{ needs.get-current-version.outputs.version }}" --repo ${{ github.repository }}
+
+  publish:
+    name: Build and publish docker images
+    uses: ./.github/workflows/workflow-publish.yml
+    if: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasBackendChanges == 'true' }}
+    needs: [get-current-version, check-for-changes]
+    secrets:
+      GCR_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+    with:
+      dockerImageBaseName: ghcr.io/digdir/dialogporten-
       version: ${{ needs.get-current-version.outputs.version }}
 
   deploy-apps:
@@ -86,6 +90,16 @@ jobs:
       region: norwayeast
       version: ${{ needs.get-current-version.outputs.version }}
       runMigration: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasMigrationChanges == 'true' }}
+
+  store-apps-version:
+    name: Store Apps Version as GitHub Variable
+    runs-on: ubuntu-latest
+    needs: [deploy-apps, get-current-version]
+    if: ${{ needs.deploy-apps.result == 'success' }}
+    steps:
+      - name: Set GitHub variable for apps version
+        run: |
+          gh variable set APPS_VERSION_STAGING "${{ needs.get-current-version.outputs.version }}" --repo ${{ github.repository }}
 
   deploy-slack-notifier:
     name: Deploy slack notifier (staging)
