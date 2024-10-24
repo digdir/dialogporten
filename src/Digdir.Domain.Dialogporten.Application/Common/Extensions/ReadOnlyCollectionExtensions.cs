@@ -144,6 +144,7 @@ internal static class ReadOnlyCollectionExtensions
                 : throw new InvalidOperationException(
                     $"{nameof(entitiesById)} does not contain expected " +
                     $"key '{parentKey.Value}'.");
+
         breadCrumbs.Remove(key);
         return cachedDepthByVisited[key] = parentDepth == Cycle ? Cycle : ++parentDepth;
     }
