@@ -8,6 +8,7 @@
     <ItemGroup>
         <PackageReference Include="Azure.Identity" Version="1.13.0" />
         <PackageReference Include="Azure.Monitor.OpenTelemetry.AspNetCore" Version="1.2.0" />
+        <PackageReference Include="MassTransit" Version="8.2.5" />
         <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.22.0" />
         <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.1" />
         <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="8.0.1" />

@@ -10,6 +10,7 @@ using Npgsql;
 using OpenTelemetry.Trace;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
+using MassTransit.Logging;
 
 namespace Digdir.Library.Utils.AspNet;
 
