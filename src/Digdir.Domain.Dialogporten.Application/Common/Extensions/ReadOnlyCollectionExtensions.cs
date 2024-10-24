@@ -29,8 +29,8 @@ internal static class ReadOnlyCollectionExtensions
         int maxWidth = 1)
         where TKey : struct
     {
-        entities.Select(keySelector)
-            .EnsureNonDefaultTKey();
+        entities.Select(keySelector).EnsureNonDefaultTKey();
+
         var maxDepthViolation = maxDepth + 1;
         var type = typeof(TEntity);
         var errors = new List<DomainFailure>();
