@@ -18,18 +18,18 @@ using HotChocolate.AspNetCore;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
 
+// Using two-stage initialization to catch startup errors.
+var telemetryConfiguration = TelemetryConfiguration.CreateDefault();
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Warning()
     .Enrich.FromLogContext()
     .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture)
-    .WriteTo.ApplicationInsights(
-        TelemetryConfiguration.CreateDefault(),
-        TelemetryConverter.Traces)
+    .WriteTo.ApplicationInsights(telemetryConfiguration, TelemetryConverter.Traces)
     .CreateBootstrapLogger();
 
 try
 {
-    BuildAndRun(args);
+    BuildAndRun(args, telemetryConfiguration);
 }
 catch (Exception ex) when (ex is not OperationCanceledException)
 {
@@ -41,7 +41,7 @@ finally
     Log.CloseAndFlush();
 }
 
-static void BuildAndRun(string[] args)
+static void BuildAndRun(string[] args, TelemetryConfiguration telemetryConfiguration)
 {
     var builder = WebApplication.CreateBuilder(args);
 
@@ -51,9 +51,7 @@ static void BuildAndRun(string[] args)
         .ReadFrom.Services(services)
         .Enrich.FromLogContext()
         .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture)
-        .WriteTo.ApplicationInsights(
-            services.GetRequiredService<TelemetryConfiguration>(),
-            TelemetryConverter.Traces));
+        .WriteTo.ApplicationInsights(telemetryConfiguration, TelemetryConverter.Traces));
 
     builder.Configuration
         .AddAzureConfiguration(builder.Environment.EnvironmentName)
@@ -67,6 +65,8 @@ static void BuildAndRun(string[] args)
 
     var thisAssembly = Assembly.GetExecutingAssembly();
 
+    builder.ConfigureTelemetry();
+
     builder.Services
         // Options setup
         .ConfigureOptions<AuthorizationOptionsSetup>()
@@ -77,7 +77,6 @@ static void BuildAndRun(string[] args)
             .WithPubCapabilities()
             .Build()
         .AddAutoMapper(Assembly.GetExecutingAssembly())
-        .AddApplicationInsightsTelemetry()
         .AddScoped<IUser, ApplicationUser>()
         .AddValidatorsFromAssembly(thisAssembly, ServiceLifetime.Transient, includeInternalTypes: true)
         .AddAzureAppConfiguration()
