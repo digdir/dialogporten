@@ -77,6 +77,58 @@ public class ValidateReferenceHierarchyTests
         domainFailure.ErrorMessage.Should().Contain("cyclic reference");
     }
 
+    [Theory]
+    [InlineData(1, 1, 1)]
+    [InlineData(10, 10, 10)]
+    [InlineData(100, 100, 100)]
+    public void Cannot_Create_Hierarchy_With_Multiple_Violations(int maxDepth, int maxWidth, int cycleLength)
+    {
+        // Arrange
+        var violatingDepth = maxDepth + 1;
+        var violatingWidth = maxWidth + 1;
+
+        var elements = Enumerable
+            .Range(1, maxDepth)
+            .Aggregate(
+                HierarchyTestNodeBuilder.CreateNewHierarchy(violatingDepth),
+                (current, _) => current.CreateNewHierarchy(violatingDepth))
+            .AddWidth(violatingWidth)
+            .CreateNewCyclicHierarchy(cycleLength)
+            .Build();
+
+        // Act
+        var domainFailures = Sut(elements, maxDepth: maxDepth, maxWidth: maxWidth);
+
+        // Assert
+        domainFailures.Should().HaveCount(3);
+        domainFailures.Should().ContainSingle(x => x.ErrorMessage.Contains("depth violation"));
+        domainFailures.Should().ContainSingle(x => x.ErrorMessage.Contains("width violation"));
+        domainFailures.Should().ContainSingle(x => x.ErrorMessage.Contains("cyclic reference"));
+
+    }
+
+    [Theory]
+    [InlineData(1, 1, 1)]
+    [InlineData(10, 10, 10)]
+    [InlineData(100, 100, 100)]
+    public void Can_Create_Valid_Complex_Hierarchy(int numberOfSegments, int maxDepth, int maxWidth)
+    {
+        // Arrange
+        var elements = Enumerable
+            .Range(1, numberOfSegments)
+            .Aggregate(
+                HierarchyTestNodeBuilder.CreateNewHierarchy(maxDepth).AddWidth(maxWidth - 1),
+                (current, _) => current.CreateNewHierarchy(maxDepth))
+            .Build();
+
+        // Act
+        var domainFailures = Sut(elements, maxDepth: maxDepth, maxWidth: maxWidth);
+
+        // Assert
+
+        domainFailures.Should().BeEmpty();
+    }
+
     [Fact]
     public void Cannot_Create_Node_Referencing_Non_Existent_Parent()
     {
@@ -121,8 +173,7 @@ public class ValidateReferenceHierarchyTests
         node.Id = Guid.Empty;
 
         // Act
-        var exception = Assert.Throws<InvalidOperationException>(
-            () => Sut([node], maxDepth: 1, maxWidth: 1));
+        var exception = Assert.Throws<InvalidOperationException>(() => Sut([node], maxDepth: 1, maxWidth: 1));
 
         // Assert
         exception.Message.Should().Contain("non-default");

@@ -50,6 +50,7 @@ internal sealed class HierarchyTestNodeBuilder : IHierarchyTestNodeBuilder
 
     IHierarchyTestNodeBuilder IHierarchyTestNodeBuilder.AddWidth(int width, params Guid[] ids)
     {
+        if (width == 0) return this;
         AddRangeReturnFirst(_current.CreateChildrenWidth(width, ids));
         return this;
     }
