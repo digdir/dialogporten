@@ -3,7 +3,8 @@ import {
     expect,
     expectStatusFor,
     getSO,
-    postSO
+    postSO,
+    purgeSO
 } from '../../common/testimports.js'
 import {default as dialogToInsert} from './testdata/01-create-dialog.js';
 import { getDefaultEnduserSsn } from "../../common/token.js";
@@ -32,5 +33,10 @@ export default function () {
     describe('Perform dialog get with invalid endUserId', () => {
         let r = getSO('dialogs/' + dialogId + '?endUserId=' + invalidEndUserId);
         expectStatusFor(r).to.equal(404);
+    });
+
+    describe('Cleanup', () => {
+        let r = purgeSO('dialogs/' + dialogId);
+        expectStatusFor(r).to.equal(204);
     });
 }

@@ -24,7 +24,6 @@ export default function () {
         response = getEU('dialogs/' + dialogId + '/labellog');
         expectStatusFor(response).to.equal(200);
         expect(response, 'response').to.have.validJsonBody();
-        console.log(response.json());
         expect(response.json(), 'response body').to.have.lengthOf(1);
     });
 
@@ -38,7 +37,6 @@ export default function () {
         response = getEU('dialogs/' + dialogId + '/labellog');
         expectStatusFor(response).to.equal(200);
         expect(response, 'response').to.have.validJsonBody();
-        console.log(response.json());
         expect(response.json(), 'response body').to.have.lengthOf(3);
     })
 
@@ -49,7 +47,6 @@ export default function () {
         response = getEU('dialogs/' + dialogId + '/labellog');
         expectStatusFor(response).to.equal(200);
         expect(response, 'response').to.have.validJsonBody();
-        console.log(response.json());
         expect(response.json(), 'response body').to.have.lengthOf(4);
     })
 
