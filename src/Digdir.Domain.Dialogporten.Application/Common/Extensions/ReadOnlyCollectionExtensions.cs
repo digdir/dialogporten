@@ -75,10 +75,13 @@ internal static class ReadOnlyCollectionExtensions
 
         if (cycleErrors.Count > 0)
         {
-            var ids = $"[{string.Join(",", cycleErrors.Take(10).Select(x => x.Key))}]";
+            var firstTenFailedIds = cycleErrors.Take(10).Select(x => x.Key).ToList();
+            var cycleCutOffInfo = cycleErrors.Count > 10 ? " (showing first 10)" : string.Empty;
+
+            var joinedIds = $"[{string.Join(",", firstTenFailedIds)}]";
             errors.Add(new DomainFailure(propertyName,
                 $"Hierarchy cyclic reference violation found. {type.Name} with the " +
-                $"following ids is part of a cyclic reference chain (showing first 10): {ids}."));
+                $"following ids is part of a cyclic reference chain{cycleCutOffInfo}: {joinedIds}."));
         }
 
         if (widthErrors.Count > 0)
