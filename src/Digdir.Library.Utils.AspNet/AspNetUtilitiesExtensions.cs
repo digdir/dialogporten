@@ -1,14 +1,22 @@
+using Azure.Monitor.OpenTelemetry.AspNetCore;
 using Digdir.Library.Utils.AspNet.HealthChecks;
 using HealthChecks.UI.Client;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Hosting;
+using Npgsql;
+using OpenTelemetry.Trace;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
 
 namespace Digdir.Library.Utils.AspNet;
 
 public static class AspNetUtilitiesExtensions
 {
+    private const string MassTransitSource = "MassTransit";
+
     public static IServiceCollection AddAspNetHealthChecks(this IServiceCollection services, Action<AspNetUtilitiesSettings, IServiceProvider>? configure = null)
     {
         var optionsBuilder = services.AddOptions<AspNetUtilitiesSettings>();
@@ -39,5 +47,45 @@ public static class AspNetUtilitiesExtensions
     {
         app.MapHealthChecks(path, new HealthCheckOptions { Predicate = predicate, ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse });
         return app;
+    }
+
+    public static WebApplicationBuilder ConfigureTelemetry(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddOpenTelemetry()
+            .ConfigureResource(resource => resource
+                .AddService(serviceName: builder.Environment.ApplicationName))
+            .WithTracing(tracing =>
+            {
+                if (builder.Environment.IsDevelopment())
+                {
+                    tracing.SetSampler(new AlwaysOnSampler());
+                }
+
+                tracing.AddAspNetCoreInstrumentation(options =>
+                {
+                    options.Filter = (httpContext) =>
+                        !httpContext.Request.Path.StartsWithSegments("/health");
+                });
+
+                tracing.AddHttpClientInstrumentation();
+                tracing.AddNpgsql();
+                tracing.AddSource(MassTransitSource); // MassTransit ActivitySource
+            })
+            .WithMetrics(metrics =>
+            {
+                metrics.AddRuntimeInstrumentation();
+            });
+
+        if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("APPLICATIONINSIGHTS_CONNECTION_STRING")))
+        {
+            builder.Services.AddOpenTelemetry().UseAzureMonitor();
+        }
+        else
+        {
+            // Use Application Insights SDK for local development
+            builder.Services.AddApplicationInsightsTelemetry();
+        }
+
+        return builder;
     }
 }

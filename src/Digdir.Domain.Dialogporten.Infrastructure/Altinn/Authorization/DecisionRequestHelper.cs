@@ -19,7 +19,7 @@ internal static class DecisionRequestHelper
     private const string AltinnAutorizationDetailsClaim = "authorization_details";
     private const string AttributeIdOrg = "urn:altinn:org";
     private const string AttributeIdApp = "urn:altinn:app";
-    private const string AttributeIdSystemUser = "urn:altinn:systemuser";
+    private const string AttributeIdSystemUser = "urn:altinn:systemuser:uuid";
     private const string AttributeIdUserId = "urn:altinn:userid";
     private const string ReservedResourcePrefixForApps = "app_";
     private const string AttributeIdAppInstance = "urn:altinn:instance-id";
