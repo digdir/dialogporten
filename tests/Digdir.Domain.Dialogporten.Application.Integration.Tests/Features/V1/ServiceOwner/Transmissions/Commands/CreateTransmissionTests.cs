@@ -1,6 +1,5 @@
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Content;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
-using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Create;
 using Digdir.Domain.Dialogporten.Application.Integration.Tests.Common;
 using Digdir.Domain.Dialogporten.Domain;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
@@ -100,5 +99,28 @@ public class CreateTransmissionTests : ApplicationCollectionFixture
         validationError.Errors.Should().HaveCount(1);
         validationError.Errors.First().ErrorMessage.Should().Contain("HTTPS");
 
+    }
+
+    [Fact]
+    public async Task Can_Create_Related_Transmission_With_Null_Id()
+    {
+        // Arrange
+        var createCommand = DialogGenerator.GenerateSimpleFakeDialog();
+        var transmissions = DialogGenerator.GenerateFakeDialogTransmissions(2);
+
+        transmissions[0].RelatedTransmissionId = transmissions[1].Id;
+
+        // This test assures that the Create-handler will use CreateVersion7IfDefault
+        // on all transmissions before validating the hierarchy.
+        transmissions[0].Id = null;
+
+        createCommand.Transmissions = transmissions;
+
+        // Act
+        var response = await Application.Send(createCommand);
+
+        // Assert
+        response.TryPickT0(out var success, out _).Should().BeTrue();
+        success.Should().NotBeNull();
     }
 }
