@@ -15,6 +15,8 @@ namespace Digdir.Library.Utils.AspNet;
 
 public static class AspNetUtilitiesExtensions
 {
+    private const string MassTransitSource = "MassTransit";
+
     public static IServiceCollection AddAspNetHealthChecks(this IServiceCollection services, Action<AspNetUtilitiesSettings, IServiceProvider>? configure = null)
     {
         var optionsBuilder = services.AddOptions<AspNetUtilitiesSettings>();
@@ -67,6 +69,7 @@ public static class AspNetUtilitiesExtensions
 
                 tracing.AddHttpClientInstrumentation();
                 tracing.AddNpgsql();
+                tracing.AddSource(MassTransitSource); // MassTransit ActivitySource
             })
             .WithMetrics(metrics =>
             {
