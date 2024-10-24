@@ -138,8 +138,7 @@ internal static class ReadOnlyCollectionExtensions
 
         breadCrumbs.Add(key);
         var parentKey = parentKeySelector(current);
-        var parentDepth = !parentKey.HasValue
-            ? 0
+        var parentDepth = !parentKey.HasValue ? 0
             : entitiesById.TryGetValue(parentKey.Value, out var parent)
                 ? GetDepth(parent, entitiesById, keySelector, parentKeySelector, cachedDepthByVisited, breadCrumbs)
                 : throw new InvalidOperationException(
