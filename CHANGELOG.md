@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.26.3](https://github.com/digdir/dialogporten/compare/v1.26.2...v1.26.3) (2024-10-23)
+
+
+### Bug Fixes
+
+* Fix XACML attribute id for system users ([#1340](https://github.com/digdir/dialogporten/issues/1340)) ([4257729](https://github.com/digdir/dialogporten/commit/42577295a78426132eafeaeaa536e88f711e50bc))
+* **service:** enable health-check for servicebus ([#1338](https://github.com/digdir/dialogporten/issues/1338)) ([480f5e3](https://github.com/digdir/dialogporten/commit/480f5e37e299c032fe06d1071872c599fdc1dcfc))
+
 ## [1.26.2](https://github.com/digdir/dialogporten/compare/v1.26.1...v1.26.2) (2024-10-23)
 
 
