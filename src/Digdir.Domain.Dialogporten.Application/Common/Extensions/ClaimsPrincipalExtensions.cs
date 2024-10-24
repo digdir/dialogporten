@@ -21,8 +21,8 @@ public static class ClaimsPrincipalExtensions
     private const string IdPrefix = "0192";
     private const string AltinnClaimPrefix = "urn:altinn:";
     private const string IdportenAuthLevelClaim = "acr";
-    private const string AltinnAutorizationDetailsClaim = "authorization_details";
-    private const string AttributeIdSystemUser = "urn:altinn:systemuser";
+    private const string AuthorizationDetailsClaim = "authorization_details";
+    private const string AuthorizationDetailsType = "urn:altinn:systemuser";
     private const string AltinnAuthLevelClaim = "urn:altinn:authlevel";
     private const string ScopeClaim = "scope";
     private const char ScopeClaimSeparator = ' ';
@@ -85,7 +85,7 @@ public static class ClaimsPrincipalExtensions
     {
         authorizationDetails = null;
 
-        if (!claimsPrincipal.TryGetClaimValue(AltinnAutorizationDetailsClaim, out var authDetailsJson))
+        if (!claimsPrincipal.TryGetClaimValue(AuthorizationDetailsClaim, out var authDetailsJson))
         {
             return false;
         }
@@ -125,7 +125,7 @@ public static class ClaimsPrincipalExtensions
             return false;
         }
 
-        var systemUserDetails = authorizationDetails.FirstOrDefault(x => x.Type == AttributeIdSystemUser);
+        var systemUserDetails = authorizationDetails.FirstOrDefault(x => x.Type == AuthorizationDetailsType);
 
         if (systemUserDetails?.SystemUserIds is null)
         {
