@@ -125,7 +125,6 @@ public class ValidateReferenceHierarchyTests
         var domainFailures = Sut(elements, maxDepth: maxDepth, maxWidth: maxWidth);
 
         // Assert
-
         domainFailures.Should().BeEmpty();
     }
 
