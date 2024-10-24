@@ -148,8 +148,7 @@ internal static class ReadOnlyCollectionExtensions
         return cachedDepthByVisited[key] = parentDepth == Cycle ? Cycle : ++parentDepth;
     }
 
-    private static void EnsureNonDefaultTKey<TKey>(this IEnumerable<TKey> keys)
-        where TKey : struct
+    private static void EnsureNonDefaultTKey<TKey>(this IEnumerable<TKey> keys) where TKey : struct
     {
         if (keys.Any(key => EqualityComparer<TKey>.Default.Equals(key, default)))
         {
