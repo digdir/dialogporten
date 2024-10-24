@@ -27,6 +27,11 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref_name }}-${{ inputs.environment }}
 
 jobs:
+
+  get-currently-released-version:
+    name: Get currently released version
+    uses: ./.github/workflows/workflow-get-currently-released-version.yml
+
   generate-git-short-sha:
     name: Generate git short sha
     uses: ./.github/workflows/workflow-generate-git-short-sha.yml
