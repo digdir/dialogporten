@@ -77,7 +77,6 @@ static void BuildAndRun(string[] args, TelemetryConfiguration telemetryConfigura
             .WithPubCapabilities()
             .Build()
         .AddAutoMapper(Assembly.GetExecutingAssembly())
-        .AddApplicationInsightsTelemetry()
         .AddScoped<IUser, ApplicationUser>()
         .AddValidatorsFromAssembly(thisAssembly, ServiceLifetime.Transient, includeInternalTypes: true)
         .AddAzureAppConfiguration()
