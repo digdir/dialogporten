@@ -3,9 +3,15 @@ namespace Digdir.Domain.Dialogporten.Application.Unit.Tests.Common;
 internal sealed class HierarchyTestNode
 {
     private readonly List<HierarchyTestNode> _children = [];
+    private Guid? _parentId;
 
-    public Guid Id { get; }
-    public Guid? ParentId => Parent?.Id;
+    public Guid Id { get; set; }
+    public Guid? ParentId
+    {
+        get => _parentId ?? Parent?.Id;
+        set => _parentId = value;
+    }
+
     public HierarchyTestNode? Parent { get; private set; }
     public IReadOnlyCollection<HierarchyTestNode> Children => _children;
 

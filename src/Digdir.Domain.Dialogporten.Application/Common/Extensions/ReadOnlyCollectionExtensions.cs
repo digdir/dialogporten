@@ -34,6 +34,18 @@ internal static class ReadOnlyCollectionExtensions
         var maxDepthViolation = maxDepth + 1;
         var type = typeof(TEntity);
         var errors = new List<DomainFailure>();
+
+        var invalidReferences = GetInvalidReferences(entities, keySelector, parentKeySelector);
+        if (invalidReferences.Count > 0)
+        {
+            var ids = $"[{string.Join(",", invalidReferences)}]";
+            errors.Add(new DomainFailure(propertyName,
+                $"Hierarchy reference violation found. " +
+                $"{type.Name} with the following referenced ids does not exist: {ids}."));
+
+            return errors;
+        }
+
         var depthByKey = entities
             .ToDictionary(keySelector)
             .ToDepthByKey(keySelector, parentKeySelector);
@@ -57,7 +69,7 @@ internal static class ReadOnlyCollectionExtensions
             var ids = $"[{string.Join(",", depthErrors.Select(x => x.Key))}]";
             errors.Add(new DomainFailure(propertyName,
                 $"Hierarchy depth violation found. {type.Name} with the following " +
-                $"ids is at depth {maxDepthViolation}, exceeding the max allowed depth of {maxDepth}. " + // TODO: Ask about this line
+                $"ids is at depth {maxDepthViolation}, exceeding the max allowed depth of {maxDepth}. " +
                 $"It, and all its referencing children is in violation of the depth constraint. {ids}."));
         }
 
@@ -80,6 +92,14 @@ internal static class ReadOnlyCollectionExtensions
 
         return errors;
     }
+
+    private static List<TKey> GetInvalidReferences<TEntity, TKey>(IReadOnlyCollection<TEntity> entities,
+        Func<TEntity, TKey> keySelector,
+        Func<TEntity, TKey?> parentKeySelector) where TKey : struct => entities
+        .Where(x => parentKeySelector(x).HasValue)
+        .Select(x => parentKeySelector(x)!.Value)
+        .Except(entities.Select(keySelector))
+        .ToList();
 
     private static Dictionary<TKey, int> ToDepthByKey<TKey, TEntity>(
         this Dictionary<TKey, TEntity> transmissionById,
@@ -118,7 +138,8 @@ internal static class ReadOnlyCollectionExtensions
 
         breadCrumbs.Add(key);
         var parentKey = parentKeySelector(current);
-        var parentDepth = !parentKey.HasValue ? 0
+        var parentDepth = !parentKey.HasValue
+            ? 0
             : entitiesById.TryGetValue(parentKey.Value, out var parent)
                 ? GetDepth(parent, entitiesById, keySelector, parentKeySelector, cachedDepthByVisited, breadCrumbs)
                 : throw new InvalidOperationException(

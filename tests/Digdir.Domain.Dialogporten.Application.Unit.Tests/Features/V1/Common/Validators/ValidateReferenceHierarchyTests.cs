@@ -1,0 +1,148 @@
+using Digdir.Domain.Dialogporten.Application.Common.Extensions;
+using Digdir.Domain.Dialogporten.Application.Unit.Tests.Common;
+using Digdir.Domain.Dialogporten.Domain.Common;
+using FluentAssertions;
+
+namespace Digdir.Domain.Dialogporten.Application.Unit.Tests.Features.V1.Common.Validators;
+
+public class ValidateReferenceHierarchyTests
+{
+    [Theory]
+    [InlineData(1, 1)]
+    [InlineData(10, 10)]
+    [InlineData(100, 100)]
+    public void Cannot_Create_Hierarchy_With_Depth_Violations(int maxDepth, int numberOfViolations)
+    {
+        // Arrange
+        var violatingDepth = maxDepth + 1;
+        var elements = Enumerable
+            .Range(1, numberOfViolations)
+            .Aggregate(
+                HierarchyTestNodeBuilder.CreateNewHierarchy(violatingDepth),
+                (current, _) => current.CreateNewHierarchy(violatingDepth))
+            .Build();
+
+        // Act
+        var domainFailures = Sut(elements, maxDepth: maxDepth, maxWidth: 1);
+
+        // Assert
+        domainFailures.Should().HaveCount(1);
+        var domainFailure = domainFailures.First();
+        domainFailure.ErrorMessage.Should().Contain("depth violation");
+    }
+
+    [Theory]
+    [InlineData(1, 1)]
+    [InlineData(10, 10)]
+    [InlineData(100, 100)]
+    public void Cannot_Create_Hierarchy_With_Width_Violations(int maxWidth, int numberOfViolations)
+    {
+        // Arrange
+        var violatingWidth = maxWidth + 1;
+        var elements = Enumerable
+            .Range(1, numberOfViolations)
+            .Aggregate(
+                HierarchyTestNodeBuilder.CreateNewHierarchy(1).AddWidth(violatingWidth),
+                (current, _) => current.CreateNewHierarchy(1).AddWidth(violatingWidth))
+            .Build();
+
+        // Act
+        var domainFailures = Sut(elements, maxDepth: 2, maxWidth: maxWidth);
+
+        // Assert
+        domainFailures.Should().HaveCount(1);
+        var domainFailure = domainFailures.First();
+        domainFailure.ErrorMessage.Should().Contain("width violation");
+    }
+
+    [Theory]
+    [InlineData(1, 1)]
+    [InlineData(10, 10)]
+    [InlineData(100, 100)]
+    public void Cannot_Create_Hierarchy_With_Circular_References(int cycleLength, int numberOfViolations)
+    {
+        // Arrange
+        var elements = Enumerable
+            .Range(1, numberOfViolations)
+            .Aggregate(HierarchyTestNodeBuilder.CreateNewCyclicHierarchy(cycleLength),
+                (current, _) => current.CreateNewCyclicHierarchy(cycleLength))
+            .Build();
+
+        // Act
+        var domainFailures = Sut(elements, maxDepth: cycleLength, maxWidth: 1);
+
+        // Assert
+        domainFailures.Should().HaveCount(1);
+        var domainFailure = domainFailures.First();
+        domainFailure.ErrorMessage.Should().Contain("cyclic reference");
+    }
+
+    [Fact]
+    public void Cannot_Create_Node_Referencing_Non_Existent_Parent()
+    {
+        // Arrange
+        var id = Guid.NewGuid();
+        var node = HierarchyTestNode.Create(id);
+        node.ParentId = Guid.NewGuid();
+
+        // Act
+        var domainFailures = Sut([node], maxDepth: 1, maxWidth: 1);
+
+        // Assert
+        domainFailures.Should().HaveCount(1);
+        var domainFailure = domainFailures.First();
+        domainFailure.ErrorMessage.Should().Contain(node.ParentId.ToString());
+        domainFailure.ErrorMessage.Should().Contain("reference violation");
+    }
+
+    [Fact]
+    public void Cannot_Create_Node_With_Self_Reference()
+    {
+        // Arrange
+        var id = Guid.NewGuid();
+        var node = HierarchyTestNode.Create(id);
+        node.ParentId = id;
+
+        // Act
+        var domainFailures = Sut([node], maxDepth: 1, maxWidth: 1);
+
+        // Assert
+        domainFailures.Should().HaveCount(1);
+        var domainFailure = domainFailures.First();
+        domainFailure.ErrorMessage.Should().Contain(id.ToString());
+        domainFailure.ErrorMessage.Should().Contain("cyclic reference");
+    }
+
+    [Fact]
+    public void Sut_Should_Throw_Exception_For_Node_With_Default_Id()
+    {
+        // Arrange
+        var node = HierarchyTestNode.Create();
+        node.Id = Guid.Empty;
+
+        // Act
+        var exception = Assert.Throws<InvalidOperationException>(
+            () => Sut([node], maxDepth: 1, maxWidth: 1));
+
+        // Assert
+        exception.Message.Should().Contain("non-default");
+    }
+
+    [Fact]
+    public void Empty_Hierarchy_Should_Not_Fail()
+    {
+        // Arrange/Act
+        var domainFailures = Sut([], maxDepth: 1, maxWidth: 1);
+
+        // Assert
+        domainFailures.Should().BeEmpty();
+    }
+
+    private static List<DomainFailure> Sut(IReadOnlyCollection<HierarchyTestNode> nodes, int maxDepth, int maxWidth)
+        => nodes.ValidateReferenceHierarchy(
+            keySelector: x => x.Id,
+            parentKeySelector: x => x.ParentId,
+            propertyName: "Reference",
+            maxDepth: maxDepth,
+            maxWidth: maxWidth);
+}
