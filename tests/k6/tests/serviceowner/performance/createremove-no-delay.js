@@ -4,7 +4,7 @@ import { default as dialogToInsert } from '../testdata/01-create-dialog.js';
 export function setup() {
     // Get the token during setup stage so that it doesn't interfere with timings
     return {
-        Headers: {
+        headers: {
             Authorization: "Bearer " + getServiceOwnerTokenFromGenerator()
         }
     }

@@ -374,3 +374,10 @@ FodyWeavers.xsd
 
 # MacOS
 .DS_Store
+
+# Secrets file used by act
+.secrets
+
+# Generated files with tokens
+**/.endusers-with-tokens.csv
+**/.serviceowners-with-tokens.csv
