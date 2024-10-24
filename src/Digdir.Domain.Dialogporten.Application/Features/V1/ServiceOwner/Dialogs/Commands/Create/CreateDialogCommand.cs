@@ -71,6 +71,8 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
         }
         CreateDialogEndUserContext(request, dialog);
         await EnsureNoExistingUserDefinedIds(dialog, cancellationToken);
+
+        // Ensure transmissions have a UUIDv7 ID, needed for the transmission hierarchy validation.
         foreach (var transmission in dialog.Transmissions)
         {
             transmission.Id = transmission.Id.CreateVersion7IfDefault();
