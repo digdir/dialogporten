@@ -43,6 +43,8 @@ jobs:
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
       - name: Set Mock Infra Version
         run: |
           gh variable set LATEST_DEPLOYED_INFRA_VERSION --body "v1.0.0-mock" --env test
