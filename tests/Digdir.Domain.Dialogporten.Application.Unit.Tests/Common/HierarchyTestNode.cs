@@ -3,27 +3,21 @@ namespace Digdir.Domain.Dialogporten.Application.Unit.Tests.Common;
 internal sealed class HierarchyTestNode
 {
     private readonly List<HierarchyTestNode> _children = [];
-    private Guid? _parentId;
 
-    public Guid Id { get; set; }
-    public Guid? ParentId
-    {
-        get => _parentId ?? Parent?.Id;
-        set => _parentId = value;
-    }
-
+    public Guid Id { get; }
+    public Guid? ParentId => Parent?.Id;
     public HierarchyTestNode? Parent { get; private set; }
     public IReadOnlyCollection<HierarchyTestNode> Children => _children;
 
     private HierarchyTestNode(Guid? id = null, HierarchyTestNode? parent = null)
     {
-        Id = id.HasValue && id.Value != default ? id.Value : Guid.NewGuid();
+        Id = id ?? Guid.NewGuid();
         Parent = parent;
     }
 
-    public IEnumerable<HierarchyTestNode> CreateChildrenWidth(int width, params Guid[] ids) => CreateWidth(width, this, ids);
+    public IEnumerable<HierarchyTestNode> CreateChildrenWidth(int width, params Guid?[] ids) => CreateWidth(width, this, ids);
 
-    public IEnumerable<HierarchyTestNode> CreateChildrenDepth(int depth, params Guid[] ids) => CreateDepth(depth, this, ids);
+    public IEnumerable<HierarchyTestNode> CreateChildrenDepth(int depth, params Guid?[] ids) => CreateDepth(depth, this, ids);
 
     public static HierarchyTestNode Create(Guid? id = null, HierarchyTestNode? parent = null)
     {
@@ -32,7 +26,7 @@ internal sealed class HierarchyTestNode
         return node;
     }
 
-    public static IEnumerable<HierarchyTestNode> CreateDepth(int depth, HierarchyTestNode? from = null, params Guid[] ids)
+    public static IEnumerable<HierarchyTestNode> CreateDepth(int depth, HierarchyTestNode? from = null, params Guid?[] ids)
     {
         for (var i = 0; i < depth; i++)
         {
@@ -40,7 +34,7 @@ internal sealed class HierarchyTestNode
         }
     }
 
-    public static IEnumerable<HierarchyTestNode> CreateWidth(int width, HierarchyTestNode from, params Guid[] ids)
+    public static IEnumerable<HierarchyTestNode> CreateWidth(int width, HierarchyTestNode from, params Guid?[] ids)
     {
         for (var i = 0; i < width; i++)
         {
@@ -48,7 +42,7 @@ internal sealed class HierarchyTestNode
         }
     }
 
-    public static IEnumerable<HierarchyTestNode> CreateCyclicDepth(int depth, params Guid[] ids)
+    public static IEnumerable<HierarchyTestNode> CreateCyclicDepth(int depth, params Guid?[] ids)
     {
         if (depth < 1)
         {

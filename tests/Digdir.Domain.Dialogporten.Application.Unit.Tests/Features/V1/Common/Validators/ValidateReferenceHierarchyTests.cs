@@ -132,9 +132,8 @@ public class ValidateReferenceHierarchyTests
     public void Cannot_Create_Node_Referencing_Non_Existent_Parent()
     {
         // Arrange
-        var id = Guid.NewGuid();
-        var node = HierarchyTestNode.Create(id);
-        node.ParentId = Guid.NewGuid();
+        var unknownParent = HierarchyTestNode.Create();
+        var node = HierarchyTestNode.Create(parent: unknownParent);
 
         // Act
         var domainFailures = Sut([node], maxDepth: 1, maxWidth: 1);
@@ -151,11 +150,12 @@ public class ValidateReferenceHierarchyTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        var node = HierarchyTestNode.Create(id);
-        node.ParentId = id;
+        var nodes = HierarchyTestNodeBuilder
+            .CreateNewCyclicHierarchy(depth: 1, id)
+            .Build();
 
         // Act
-        var domainFailures = Sut([node], maxDepth: 1, maxWidth: 1);
+        var domainFailures = Sut(nodes, maxDepth: 1, maxWidth: 1);
 
         // Assert
         domainFailures.Should().HaveCount(1);
@@ -168,8 +168,7 @@ public class ValidateReferenceHierarchyTests
     public void Sut_Should_Throw_Exception_For_Node_With_Default_Id()
     {
         // Arrange
-        var node = HierarchyTestNode.Create();
-        node.Id = Guid.Empty;
+        var node = HierarchyTestNode.Create(Guid.Empty);
 
         // Act
         var exception = Assert.Throws<InvalidOperationException>(() => Sut([node], maxDepth: 1, maxWidth: 1));

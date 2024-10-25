@@ -2,11 +2,11 @@ namespace Digdir.Domain.Dialogporten.Application.Unit.Tests.Common;
 
 internal interface IHierarchyTestNodeBuilder
 {
-    IHierarchyTestNodeBuilder CreateNewCyclicHierarchy(int depth, params Guid[] ids);
-    IHierarchyTestNodeBuilder CreateNewHierarchy(int depth, params Guid[] ids);
+    IHierarchyTestNodeBuilder CreateNewCyclicHierarchy(int depth, params Guid?[] ids);
+    IHierarchyTestNodeBuilder CreateNewHierarchy(int depth, params Guid?[] ids);
     IHierarchyTestNodeBuilder FromNode(Guid id);
-    IHierarchyTestNodeBuilder AddWidth(int width, params Guid[] ids);
-    IHierarchyTestNodeBuilder AddDepth(int depth, params Guid[] ids);
+    IHierarchyTestNodeBuilder AddWidth(int width, params Guid?[] ids);
+    IHierarchyTestNodeBuilder AddDepth(int depth, params Guid?[] ids);
     IReadOnlyCollection<HierarchyTestNode> Build();
 }
 
@@ -20,23 +20,23 @@ internal sealed class HierarchyTestNodeBuilder : IHierarchyTestNodeBuilder
         _current = AddRangeReturnFirst(nodes);
     }
 
-    public static IHierarchyTestNodeBuilder CreateNewHierarchy(int depth, params Guid[] ids)
+    public static IHierarchyTestNodeBuilder CreateNewHierarchy(int depth, params Guid?[] ids)
     {
         return new HierarchyTestNodeBuilder(HierarchyTestNode.CreateDepth(depth, ids: ids));
     }
 
-    public static IHierarchyTestNodeBuilder CreateNewCyclicHierarchy(int depth, params Guid[] ids)
+    public static IHierarchyTestNodeBuilder CreateNewCyclicHierarchy(int depth, params Guid?[] ids)
     {
         return new HierarchyTestNodeBuilder(HierarchyTestNode.CreateCyclicDepth(depth, ids));
     }
 
-    IHierarchyTestNodeBuilder IHierarchyTestNodeBuilder.CreateNewHierarchy(int depth, params Guid[] ids)
+    IHierarchyTestNodeBuilder IHierarchyTestNodeBuilder.CreateNewHierarchy(int depth, params Guid?[] ids)
     {
         _current = AddRangeReturnFirst(HierarchyTestNode.CreateDepth(depth, ids: ids));
         return this;
     }
 
-    IHierarchyTestNodeBuilder IHierarchyTestNodeBuilder.CreateNewCyclicHierarchy(int depth, params Guid[] ids)
+    IHierarchyTestNodeBuilder IHierarchyTestNodeBuilder.CreateNewCyclicHierarchy(int depth, params Guid?[] ids)
     {
         _current = AddRangeReturnFirst(HierarchyTestNode.CreateCyclicDepth(depth, ids));
         return this;
@@ -48,14 +48,14 @@ internal sealed class HierarchyTestNodeBuilder : IHierarchyTestNodeBuilder
         return this;
     }
 
-    IHierarchyTestNodeBuilder IHierarchyTestNodeBuilder.AddWidth(int width, params Guid[] ids)
+    IHierarchyTestNodeBuilder IHierarchyTestNodeBuilder.AddWidth(int width, params Guid?[] ids)
     {
         if (width == 0) return this;
         AddRangeReturnFirst(_current.CreateChildrenWidth(width, ids));
         return this;
     }
 
-    IHierarchyTestNodeBuilder IHierarchyTestNodeBuilder.AddDepth(int depth, params Guid[] ids)
+    IHierarchyTestNodeBuilder IHierarchyTestNodeBuilder.AddDepth(int depth, params Guid?[] ids)
     {
         AddRangeReturnFirst(_current.CreateChildrenDepth(depth, ids));
         return this;
