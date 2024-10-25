@@ -9,7 +9,6 @@ namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.EndUser.DialogSeenLogs.
 
 public sealed class SearchDialogSeenLogSwaggerConfig : ISwaggerConfig
 {
-    public static string OperationId => "SearchDialogSeenLog";
 
     public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder, Type type)
         => builder.OperationId(TypeNameConverter.Convert(type))

@@ -7,7 +7,6 @@ namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.WellKnown.Jwks.Get;
 
 public sealed class GetJwksSwaggerConfig : ISwaggerConfig
 {
-    public static string OperationId => "GetJwks";
 
     public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder, Type type)
         => builder.OperationId(TypeNameConverter.Convert(type))

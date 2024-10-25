@@ -10,12 +10,6 @@ namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.DialogActi
 
 public sealed class GetDialogActivitySwaggerConfig : ISwaggerConfig
 {
-    public static string OperationId
-    {
-        get;
-        set;
-    } = null!;
-
     public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder, Type type)
         => builder.OperationId(TypeNameConverter.Convert(type))
                   .ProducesOneOf<GetDialogActivityDto>(

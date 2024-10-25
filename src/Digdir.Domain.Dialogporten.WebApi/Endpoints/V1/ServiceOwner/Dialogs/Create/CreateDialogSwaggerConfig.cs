@@ -9,7 +9,6 @@ namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.Dialogs.Cr
 
 public sealed class CreateDialogSwaggerConfig : ISwaggerConfig
 {
-    public static string OperationId => "CreateDialog";
 
     public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder, Type type)
         => builder.OperationId(TypeNameConverter.Convert(type))

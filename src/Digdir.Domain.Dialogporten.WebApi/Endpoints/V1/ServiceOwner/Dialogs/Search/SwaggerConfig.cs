@@ -11,7 +11,6 @@ namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.Dialogs.Se
 
 public sealed class SwaggerConfig : ISwaggerConfig
 {
-    public static string OperationId => "GetDialogListSO";
 
     public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder, Type type)
         => builder.OperationId(TypeNameConverter.Convert(type))

@@ -10,7 +10,6 @@ namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.EndUser.DialogTransmiss
 
 public sealed class SearchDialogTransmissionSwaggerConfig : ISwaggerConfig
 {
-    public static string OperationId => "GetDialogTransmissionList";
     public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder, Type type)
         => builder.OperationId(TypeNameConverter.Convert(type));
 

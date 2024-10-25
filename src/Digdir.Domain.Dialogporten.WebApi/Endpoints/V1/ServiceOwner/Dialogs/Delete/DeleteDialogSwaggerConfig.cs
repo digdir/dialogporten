@@ -9,7 +9,6 @@ namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.Dialogs.De
 
 public sealed class DeleteDialogSwaggerConfig : ISwaggerConfig
 {
-    public static string OperationId => "DeleteDialog";
 
     public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder, Type type)
         => builder.OperationId(TypeNameConverter.Convert(type))

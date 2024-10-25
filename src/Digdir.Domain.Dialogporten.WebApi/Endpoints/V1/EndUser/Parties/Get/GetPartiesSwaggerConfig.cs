@@ -7,7 +7,6 @@ namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.EndUser.Parties.Get;
 
 public sealed class GetPartiesSwaggerConfig : ISwaggerConfig
 {
-    public static string OperationId => "GetParties";
 
     public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder, Type type)
         => builder.OperationId(TypeNameConverter.Convert(type))

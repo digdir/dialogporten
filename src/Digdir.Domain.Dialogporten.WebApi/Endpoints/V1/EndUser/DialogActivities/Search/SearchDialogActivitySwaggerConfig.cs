@@ -9,7 +9,6 @@ namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.EndUser.DialogActivitie
 
 public sealed class SearchDialogActivitySwaggerConfig : ISwaggerConfig
 {
-    public static string OperationId => "GetDialogActivityList";
 
     public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder, Type type)
         => builder.OperationId(TypeNameConverter.Convert(type));

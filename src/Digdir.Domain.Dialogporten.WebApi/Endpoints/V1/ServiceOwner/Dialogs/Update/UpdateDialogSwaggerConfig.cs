@@ -18,7 +18,6 @@ namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.Dialogs.Up
 
 internal abstract class UpdateDialogSwaggerConfig : ISwaggerConfig
 {
-    public static string OperationId => "ReplaceDialog";
 
     public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder, Type type) =>
         builder

@@ -9,7 +9,6 @@ namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.Dialogs.Pu
 
 public sealed class PurgeDialogSwaggerConfig : ISwaggerConfig
 {
-    public static string OperationId => "PurgeDialog";
 
     public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder, Type type)
         => builder.OperationId(TypeNameConverter.Convert(type))

@@ -7,7 +7,6 @@ namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.WellKnown.OauthAuthoriz
 
 public sealed class GetOauthAuthorizationServerSwaggerConfig : ISwaggerConfig
 {
-    public static string OperationId => "GetOauthAuthorizationServer";
 
     public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder, Type type)
         => builder.OperationId(TypeNameConverter.Convert(type))

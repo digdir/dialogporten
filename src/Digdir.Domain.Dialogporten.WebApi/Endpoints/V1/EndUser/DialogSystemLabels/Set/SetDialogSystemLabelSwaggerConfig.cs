@@ -5,7 +5,6 @@ namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.EndUser.DialogSystemLab
 
 public sealed class SetDialogSystemLabelSwaggerConfig
 {
-    public static string OperationId => "SetDialogLabel";
     public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder, Type type)
         => builder.OperationId(TypeNameConverter.Convert(type)).ProducesOneOf(
             StatusCodes.Status204NoContent,
