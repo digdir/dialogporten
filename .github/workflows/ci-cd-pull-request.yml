@@ -33,10 +33,10 @@ jobs:
     steps:
       - name: Set Mock Infra Version
         run: |
-          gh variable set --env test LATEST_DEPLOYED_INFRA_VERSION "v1.0.0-mock" --repo ${{ github.repository }}
+          gh variable set LATEST_DEPLOYED_INFRA_VERSION --body "v1.0.0-mock" --env test --repo ${{ github.repository }}
       - name: Set Mock Apps Version
         run: |
-          gh variable set --env test LATEST_DEPLOYED_APPS_VERSION "v1.0.0-mock" --repo ${{ github.repository }}
+          gh variable set LATEST_DEPLOYED_APPS_VERSION --body "v1.0.0-mock" --env test --repo ${{ github.repository }}
 
   verify-stored-versions:
     name: Verify Stored Versions
