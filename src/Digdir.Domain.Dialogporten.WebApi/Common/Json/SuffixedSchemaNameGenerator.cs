@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations;
 using Digdir.Domain.Dialogporten.WebApi.Common.Swagger;
 using NJsonSchema.Generation;
 
@@ -16,22 +17,13 @@ internal sealed class SuffixedSchemaNameGenerator : ISchemaNameGenerator
 {
     public string Generate(Type type)
     {
-        var baseName = BaseGenerate(type);
 
-        // TODO! Find a more typed approach
-        if (type.FullName != null &&
-            (baseName.StartsWith("GetDialog", StringComparison.Ordinal) ||
-             baseName.StartsWith("SearchDialog", StringComparison.Ordinal) ||
-             baseName.StartsWith("PaginatedList", StringComparison.Ordinal)) && type.FullName.Contains(".ServiceOwner"))
-        {
-            baseName += "SO";
-        }
-        return baseName;
+
+        return TypeNameConverter.Convert(type);
     }
 
     private static string BaseGenerate(Type type)
     {
-        TypeNameConverter.Convert(type);
         var isGeneric = type.IsGenericType;
         var fullNameWithoutGenericArgs =
             isGeneric

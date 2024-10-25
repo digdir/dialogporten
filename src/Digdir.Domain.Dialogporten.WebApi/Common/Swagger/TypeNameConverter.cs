@@ -1,5 +1,6 @@
+using System.Net.Http.Headers;
 using System.Text;
-using Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations;
+using MessagePack.Resolvers;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Common.Swagger;
 
@@ -17,6 +18,7 @@ internal static class TypeNameConverter
 
     // Common namespace has unique handling, Can't be added to list above
     private const string CommonNamespace = "Digdir.Domain.Dialogporten.Application.Common.";
+    private const string FastEndpointsNamespace = "FastEndpoints";
 
     private const string EndpointPostfix = "Endpoint";
 
@@ -41,19 +43,33 @@ internal static class TypeNameConverter
     {
         var isGeneric = type.IsGenericType;
 
-        var nameWithoutGenericArgs =
-            isGeneric
+        // When parsing generics we can get a type without namespace.
+        // FullName is needed for nested classes.
+        string shortName;
+        if (type.FullName is not null)
+        {
+            var nameWithoutGenericArgs = isGeneric
+                ? type.FullName![..type.FullName!.IndexOf('`')]
+                : type.FullName;
+            var index = nameWithoutGenericArgs!.LastIndexOf('.');
+            index = index == -1 ? 0 : index + 1;
+            shortName = nameWithoutGenericArgs[index..];
+        }
+        else
+        {
+            shortName = isGeneric
                 ? type.Name[..type.Name.IndexOf('`')]
                 : type.Name;
+        }
 
         var nameWithoutPostfix =
-            nameWithoutGenericArgs.EndsWith(EndpointPostfix, StringComparison.Ordinal)
-                ? nameWithoutGenericArgs[..^EndpointPostfix.Length]
-                : nameWithoutGenericArgs;
+            shortName.EndsWith(EndpointPostfix, StringComparison.Ordinal)
+                ? shortName[..^EndpointPostfix.Length]
+                : shortName;
 
         var name = isGeneric ? nameWithoutPostfix + GenericArgString(type) : nameWithoutPostfix;
 
-        if (type.Namespace!.StartsWith(CommonNamespace, StringComparison.Ordinal))
+        if (type.Namespace!.StartsWith(CommonNamespace, StringComparison.Ordinal) || type.Namespace.StartsWith(FastEndpointsNamespace, StringComparison.Ordinal))
         {
             return name;
         }
@@ -88,6 +104,7 @@ internal static class TypeNameConverter
             if (i == 0)
                 sb.Append("Of");
             sb.Append(TypeNameWithoutGenericArgs(arg));
+            // Amund: problemet oppstår her, type som blir sendt in har ikke FullName og ingen Namespace og derfor funker den ikke
             sb.Append(FullName(arg));
             if (i < args.Length - 1)
                 sb.Append("And");
