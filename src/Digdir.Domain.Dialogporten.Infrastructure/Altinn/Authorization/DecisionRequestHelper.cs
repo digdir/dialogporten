@@ -1,4 +1,5 @@
-﻿using Altinn.Authorization.ABAC.Xacml.JsonProfile;
+﻿using System.Diagnostics;
+using Altinn.Authorization.ABAC.Xacml.JsonProfile;
 using System.Security.Claims;
 
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
@@ -110,11 +111,9 @@ internal static class DecisionRequestHelper
             }
         }
 
-        var attributes = selectedAttribute != null
-            ? [selectedAttribute]
-            : new List<XacmlJsonAttribute>();
-
-        return [new() { Id = SubjectId, Attribute = attributes }];
+        return selectedAttribute == null
+            ? throw new UnreachableException("Unable to find a suitable subject attribute for the authorization request. Having a known user type should be enforced during authentication (see UserTypeValidationMiddleware).")
+            : ([new() { Id = SubjectId, Attribute = [selectedAttribute] }]);
     }
 
 
