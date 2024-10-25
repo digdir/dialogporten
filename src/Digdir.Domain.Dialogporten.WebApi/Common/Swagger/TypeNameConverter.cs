@@ -1,35 +1,45 @@
 using System.Text;
+using Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Common.Swagger;
 
 internal static class TypeNameConverter
 {
-    private static readonly HashSet<string> UsedName = new();
-    private static readonly string[] Prefixes =
+    // Amund: Bruk av dict gjør feilmeldingene mer tydelig på hva som er galt.
+    // private static readonly HashSet<string> RegisteredNames = new();
+    private static readonly Dictionary<string, string> RegisteredNamesMap = new();
+
+    private static readonly string[] RemovedNamespace =
     {
         "Digdir.Domain.Dialogporten.WebApi.Endpoints.",
-        "Digdir.Domain.Dialogporten.Application.Features.",
-
-
+        "Digdir.Domain.Dialogporten.Application.Features."
     };
+
+    // Common namespace has unique handling, Can't be added to list above
     private const string CommonNamespace = "Digdir.Domain.Dialogporten.Application.Common.";
+
+    private const string EndpointPostfix = "Endpoint";
 
     internal static string Convert(Type type)
     {
-
         var fullName = FullName(type);
-        if (!UsedName.Add(fullName))
+        // if (!RegisteredNames.Add(fullName))
+        // {
+        //     throw new ArgumentException($"{type.FullName} can't be registered. Type {fullName} is already registered.");
+        // }
+
+        if (RegisteredNamesMap.TryGetValue(fullName, out var value))
         {
-            throw new InvalidOperationException($"Type {fullName} is already registered.");
+            throw new ArgumentException($"{type.FullName} can't be registered. Type {fullName} is already registered by {value}.");
         }
+        RegisteredNamesMap.Add(fullName, type.FullName!);
+
         return fullName;
     }
 
     private static string FullName(Type type)
     {
-        var typeNamespace = type.Namespace!;
-        var namespaceWithoutPrefix = RemovePrefix(typeNamespace);
-        var collapsedNamespace = namespaceWithoutPrefix.Replace(".", "");
+        var collapsedNamespace = RemoveNamespace(type.Namespace!).Replace(".", "");
 
         var isGeneric = type.IsGenericType;
         var nameWithoutGenericArgs =
@@ -37,26 +47,25 @@ internal static class TypeNameConverter
                 ? type.Name![..type.Name!.IndexOf('`')]
                 : type.Name;
 
-        var nameWithoutPostfix = RemovePostfix(nameWithoutGenericArgs);
+        var nameWithoutPostfix =
+            nameWithoutGenericArgs.EndsWith(EndpointPostfix, StringComparison.Ordinal)
+                ? nameWithoutGenericArgs[..^EndpointPostfix.Length]
+                : nameWithoutGenericArgs;
 
         var name = isGeneric ? nameWithoutPostfix + GenericArgString(type) : nameWithoutPostfix;
-        if (string.IsNullOrEmpty(collapsedNamespace))
+
+        if (type.Namespace!.StartsWith(CommonNamespace, StringComparison.Ordinal))
         {
             return name;
         }
+
         var fullName = $"{collapsedNamespace}_{name}";
         return fullName;
     }
 
-    private static string RemovePrefix(string typeName)
+    private static string RemoveNamespace(string typeName)
     {
-
-        if (typeName.StartsWith(CommonNamespace, StringComparison.Ordinal))
-        {
-            return string.Empty;
-        }
-
-        foreach (var prefix in Prefixes)
+        foreach (var prefix in RemovedNamespace)
         {
             if (typeName.StartsWith(prefix, StringComparison.Ordinal))
             {
@@ -64,11 +73,6 @@ internal static class TypeNameConverter
             }
         }
         return typeName;
-    }
-
-    private static string RemovePostfix(string typeName)
-    {
-        return typeName.EndsWith("Endpoint", StringComparison.Ordinal) ? typeName[..^"Endpoint".Length] : typeName;
     }
 
     private static string GenericArgString(Type type)
