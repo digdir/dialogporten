@@ -162,7 +162,7 @@ public class DecisionRequestHelperTests
         // Arrange
         var request = CreateDialogDetailsAuthorizationRequest(
             GetAsClaims(
-                ("consumer", ConsumerClaimValue)
+                ("pid", "12345678901")
             ),
             $"{NorwegianPersonIdentifier.PrefixWithSeparator}16073422888");
 
@@ -187,7 +187,7 @@ public class DecisionRequestHelperTests
         // Arrange
         var request = CreateDialogDetailsAuthorizationRequest(
             GetAsClaims(
-                ("consumer", ConsumerClaimValue)
+                ("pid", "12345678901")
             ),
             $"{NorwegianPersonIdentifier.PrefixWithSeparator}16073422888");
 
@@ -209,12 +209,13 @@ public class DecisionRequestHelperTests
     }
 
     [Fact]
+
     public void CreateDialogDetailsRequestShouldReturnCorrectRequestForFullyQualifiedSubresource()
     {
         // Arrange
         var request = CreateDialogDetailsAuthorizationRequest(
             GetAsClaims(
-                ("consumer", ConsumerClaimValue)
+                ("pid", "12345678901")
             ),
             $"{NorwegianPersonIdentifier.PrefixWithSeparator}16073422888");
 
@@ -239,7 +240,7 @@ public class DecisionRequestHelperTests
         var request = CreateDialogDetailsAuthorizationRequest(
             GetAsClaims(
                 // Should be copied as subject claim since there's not a "pid"-claim
-                ("consumer", ConsumerClaimValue)
+                ("pid", "12345678901")
             ),
             $"{NorwegianPersonIdentifier.PrefixWithSeparator}12345678901");
 

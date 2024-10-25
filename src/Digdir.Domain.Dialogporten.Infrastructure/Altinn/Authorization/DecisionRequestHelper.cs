@@ -15,7 +15,7 @@ internal static class DecisionRequestHelper
 
     private const string PidClaimType = "pid";
     private const string UserIdClaimType = "urn:altinn:userid";
-    private const string RarAutorizationDetailsClaimType = "authorization_details";
+    private const string RarAuthorizationDetailsClaimType = "authorization_details";
 
     private const string AttributeIdAction = "urn:oasis:names:tc:xacml:1.0:action:action-id";
     private const string AttributeIdResource = "urn:altinn:resource";
@@ -84,38 +84,34 @@ internal static class DecisionRequestHelper
         // which in essence is the pid and the systemuser uuid. In addition, we also utilize urn:altinn:userid
         // if present instead of the pid as a simple optimization as this offloads the PDP from having to look up
         // the user id from the pid.
-        XacmlJsonAttribute? selectedAttribute = null;
 
         foreach (var claim in claims)
         {
             if (claim.Type == UserIdClaimType)
             {
-                selectedAttribute = new XacmlJsonAttribute { AttributeId = AttributeIdUserId, Value = claim.Value };
-                break;
+                return [new() { Id = SubjectId, Attribute =
+                    [new XacmlJsonAttribute { AttributeId = AttributeIdUserId, Value = claim.Value }] }];
             }
 
             if (claim.Type == PidClaimType)
             {
-                selectedAttribute = new XacmlJsonAttribute { AttributeId = NorwegianPersonIdentifier.Prefix, Value = claim.Value };
-                break;
+                return [new() { Id = SubjectId, Attribute =
+                    [new XacmlJsonAttribute { AttributeId = NorwegianPersonIdentifier.Prefix, Value = claim.Value }] }];
             }
 
-            if (claim.Type == RarAutorizationDetailsClaimType)
+            if (claim.Type == RarAuthorizationDetailsClaimType)
             {
                 var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new[] { claim }));
                 if (claimsPrincipal.TryGetSystemUserId(out var systemUserId))
                 {
-                    selectedAttribute = new XacmlJsonAttribute { AttributeId = AttributeIdSystemUser, Value = systemUserId };
+                    return [new() { Id = SubjectId, Attribute =
+                        [new XacmlJsonAttribute { AttributeId = AttributeIdSystemUser, Value = systemUserId }] }];
                 }
-                break;
             }
         }
 
-        return selectedAttribute == null
-            ? throw new UnreachableException("Unable to find a suitable subject attribute for the authorization request. Having a known user type should be enforced during authentication (see UserTypeValidationMiddleware).")
-            : ([new() { Id = SubjectId, Attribute = [selectedAttribute] }]);
+        throw new UnreachableException("Unable to find a suitable subject attribute for the authorization request. Having a known user type should be enforced during authentication (see UserTypeValidationMiddleware).");
     }
-
 
     private static List<XacmlJsonCategory> CreateActionCategories(
         List<AltinnAction> altinnActions, out Dictionary<string, string> actionIdByName)
