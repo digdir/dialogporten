@@ -1,6 +1,7 @@
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.DialogActivities.Queries.Get;
 using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
+using Digdir.Domain.Dialogporten.WebApi.Common.Swagger;
 using FastEndpoints;
 using MediatR;
 
@@ -20,7 +21,7 @@ public sealed class GetDialogActivityEndpoint : Endpoint<GetDialogActivityQuery,
         Get("dialogs/{dialogId}/activities/{activityId}");
         Policies(AuthorizationPolicy.ServiceProvider);
         Group<ServiceOwnerGroup>();
-
+        GetDialogActivitySwaggerConfig.OperationId = TypeNameConverter.Convert(GetType());
         Description(b => GetDialogActivitySwaggerConfig.SetDescription(b));
     }
 

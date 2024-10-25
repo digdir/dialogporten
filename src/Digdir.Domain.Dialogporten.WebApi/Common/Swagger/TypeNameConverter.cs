@@ -20,7 +20,7 @@ internal static class TypeNameConverter
 
     private const string EndpointPostfix = "Endpoint";
 
-    internal static string Convert(Type type)
+    public static string Convert(Type type)
     {
         var fullName = FullName(type);
         // if (!RegisteredNames.Add(fullName))

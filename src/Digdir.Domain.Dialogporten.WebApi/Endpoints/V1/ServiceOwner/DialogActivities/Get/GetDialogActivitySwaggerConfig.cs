@@ -10,13 +10,17 @@ namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.DialogActi
 
 public sealed class GetDialogActivitySwaggerConfig : ISwaggerConfig
 {
-    public static string OperationId => "GetDialogActivitySO";
+    public static string OperationId
+    {
+        get;
+        set;
+    } = null!;
 
     public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder)
         => builder.OperationId(OperationId)
-            .ProducesOneOf<GetDialogActivityDto>(
-                StatusCodes.Status200OK,
-                StatusCodes.Status404NotFound);
+                  .ProducesOneOf<GetDialogActivityDto>(
+                      StatusCodes.Status200OK,
+                      StatusCodes.Status404NotFound);
 
     public static object GetExample() => throw new NotImplementedException();
 }
