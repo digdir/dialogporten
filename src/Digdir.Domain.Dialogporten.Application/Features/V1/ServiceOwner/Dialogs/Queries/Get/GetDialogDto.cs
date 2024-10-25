@@ -39,12 +39,12 @@ public sealed class GetDialogDto
     public string ServiceResource { get; set; } = null!;
 
     /// <summary>
-    /// The ServiceResource type, as defined in Altinn Resource Registry (see ResourceType)
+    /// The ServiceResource type, as defined in Altinn Resource Registry (see ResourceType).
     /// </summary>
     public string ServiceResourceType { get; set; } = null!;
 
     /// <summary>
-    /// The party code representing the organization or person that the dialog belongs to in URN format
+    /// The party code representing the organization or person that the dialog belongs to in URN format.
     /// </summary>
     /// <example>
     /// urn:altinn:person:identifier-no:01125512345
@@ -59,7 +59,7 @@ public sealed class GetDialogDto
     public int? Progress { get; set; }
 
     /// <summary>
-    /// Optional process identifier used to indicate a business process this dialog belongs to
+    /// Optional process identifier used to indicate a business process this dialog belongs to.
     /// </summary>
     public string? Process { get; set; }
 
@@ -134,7 +134,7 @@ public sealed class GetDialogDto
     public SystemLabel.Values SystemLabel { get; set; }
 
     /// <summary>
-    /// The dialog unstructured text content
+    /// The dialog unstructured text content.
     /// </summary>
     public GetDialogContentDto Content { get; set; } = null!;
 
@@ -144,12 +144,12 @@ public sealed class GetDialogDto
     public List<GetDialogSearchTagDto>? SearchTags { get; set; }
 
     /// <summary>
-    /// The attachments associated with the dialog (on an aggregate level)
+    /// The attachments associated with the dialog (on an aggregate level).
     /// </summary>
     public List<GetDialogDialogAttachmentDto> Attachments { get; set; } = [];
 
     /// <summary>
-    /// The immutable list of transmissions associated with the dialog
+    /// The immutable list of transmissions associated with the dialog.
     /// </summary>
     public List<GetDialogDialogTransmissionDto> Transmissions { get; set; } = [];
 
@@ -230,12 +230,12 @@ public sealed class GetDialogDialogTransmissionDto
     public GetDialogDialogTransmissionSenderActorDto Sender { get; set; } = null!;
 
     /// <summary>
-    /// The transmission unstructured text content
+    /// The transmission unstructured text content.
     /// </summary>
     public GetDialogDialogTransmissionContentDto Content { get; set; } = null!;
 
     /// <summary>
-    /// The transmission-level attachments
+    /// The transmission-level attachments.
     /// </summary>
     public List<GetDialogDialogTransmissionAttachmentDto> Attachments { get; set; } = [];
 }
@@ -248,12 +248,12 @@ public sealed class GetDialogDialogSeenLogDto
     public Guid Id { get; set; }
 
     /// <summary>
-    /// The timestamp when the dialog revision was seen
+    /// The timestamp when the dialog revision was seen.
     /// </summary>
     public DateTimeOffset SeenAt { get; set; }
 
     /// <summary>
-    /// The actor that saw the dialog revision
+    /// The actor that saw the dialog revision.
     /// </summary>
     public GetDialogDialogSeenLogSeenByActorDto SeenBy { get; set; } = null!;
 
@@ -265,7 +265,7 @@ public sealed class GetDialogDialogSeenLogDto
     public bool? IsViaServiceOwner { get; set; }
 
     /// <summary>
-    /// Flag indicating whether the seen log entry was created by the current end user, if provided in the query
+    /// Flag indicating whether the seen log entry was created by the current end user, if provided in the query.
     /// </summary>
     public bool IsCurrentEndUser { get; set; }
 }
@@ -437,7 +437,7 @@ public sealed class GetDialogDialogApiActionDto
 
     /// <summary>
     /// String identifier for the action, corresponding to the "action" attributeId used in the XACML service policy,
-    /// which by default is the policy belonging to the service referred to by "serviceResource" in the dialog
+    /// which by default is the policy belonging to the service referred to by "serviceResource" in the dialog.
     /// </summary>
     /// <example>write</example>
     public string Action { get; set; } = null!;
@@ -531,7 +531,7 @@ public sealed class GetDialogDialogGuiActionDto
     public Guid Id { get; set; }
 
     /// <summary>
-    /// The action identifier for the action, corresponding to the "action" attributeId used in the XACML service policy,
+    /// The action identifier for the action, corresponding to the "action" attributeId used in the XACML service policy.
     /// </summary>
     public string Action { get; set; } = null!;
 

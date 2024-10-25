@@ -9,10 +9,9 @@ public class ClaimsPrincipalExtensionsTests
     public void TryGetAuthenticationLevel_Should_Parse_Idporten_Acr_Claim_For_Level3()
     {
         // Arrange
-        var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new[]
-        {
+        var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity([
             new Claim("acr", "idporten-loa-substantial")
-        }));
+        ]));
 
         // Act
         var result = claimsPrincipal.TryGetAuthenticationLevel(out var authenticationLevel);
@@ -26,10 +25,9 @@ public class ClaimsPrincipalExtensionsTests
     public void TryGetAuthenticationLevel_Should_Parse_Idporten_Acr_Claim_For_Level4()
     {
         // Arrange
-        var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new[]
-        {
+        var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity([
             new Claim("acr", "idporten-loa-high")
-        }));
+        ]));
 
         // Act
         var result = claimsPrincipal.TryGetAuthenticationLevel(out var authenticationLevel);
@@ -43,11 +41,10 @@ public class ClaimsPrincipalExtensionsTests
     public void TryGetAuthenticationLevel_Should_Parse_Altinn_Authlevel_First()
     {
         // Arrange
-        var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new[]
-        {
+        var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity([
             new Claim("acr", "idporten-loa-high"),
             new Claim("urn:altinn:authlevel", "5")
-        }));
+        ]));
 
         // Act
         var result = claimsPrincipal.TryGetAuthenticationLevel(out var authenticationLevel);
