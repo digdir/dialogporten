@@ -26,6 +26,8 @@ internal static class DecisionRequestHelper
     private const string AttributeIdAppInstance = "urn:altinn:instance-id";
     private const string AttributeIdSubResource = "urn:altinn:subresource";
     private const string AttributeIdUserId = "urn:altinn:userid";
+    // The order of these attribute types is important as we want to prioritize the most specific claim types.
+    private static readonly List<string> PrioritizedClaimTypes = [AttributeIdUserId, NorwegianPersonIdentifier.Prefix, AttributeIdSystemUser];
 
     private const string ReservedResourcePrefixForApps = "app_";
 
@@ -82,8 +84,7 @@ internal static class DecisionRequestHelper
         // security reasons). We therefore need to filter out the relevant attributes and only include those,
         // which in essence is the pid and the system user uuid. In addition, we also utilize urn:altinn:userid
         // if present instead of the pid as a simple optimization as this offloads the PDP from having to look up
-        // the user id from the pid.
-
+        // the user id from the pid. See PrioritizedClaimTypes for the order of prioritization.
         claims.Select(claim => claim.Type switch
         {
             UserIdClaimType => new XacmlJsonCategory
@@ -99,14 +100,19 @@ internal static class DecisionRequestHelper
             RarAuthorizationDetailsClaimType when new ClaimsPrincipal(new ClaimsIdentity(new[] { claim })).TryGetSystemUserId(out var systemUserId) => new XacmlJsonCategory
             {
                 Id = SubjectId,
-                Attribute = [new XacmlJsonAttribute { AttributeId = AttributeIdSystemUser, Value = systemUserId }]
+                Attribute =
+                [
+                    new XacmlJsonAttribute { AttributeId = AttributeIdSystemUser, Value = systemUserId }
+                ]
             },
             _ => null
         })
-        .FirstOrDefault(x => x != null) switch
+        .Where(x => x != null)
+        .MinBy(x => PrioritizedClaimTypes.IndexOf(x!.Attribute.First().AttributeId)) switch
         {
             { } validCategory => new List<XacmlJsonCategory> { validCategory },
-            _ => throw new UnreachableException("Unable to find a suitable subject attribute for the authorization request. Having a known user type should be enforced during authentication (see UserTypeValidationMiddleware)."),
+            _ => throw new UnreachableException(
+                "Unable to find a suitable subject attribute for the authorization request. Having a known user type should be enforced during authentication (see UserTypeValidationMiddleware)."),
         };
 
     private static List<XacmlJsonCategory> CreateActionCategories(

@@ -19,10 +19,9 @@ public class DecisionRequestHelperTests
         // Arrange
         var request = CreateDialogDetailsAuthorizationRequest(
             GetAsClaims(
-                ("pid", "12345678901"),
-
                 // This should not be copied as subject claim since there's a "pid"-claim
-                ("authorization_details", AuthorizationDetailsClaimValue)
+                ("authorization_details", AuthorizationDetailsClaimValue),
+                ("pid", "12345678901")
             ),
             $"{NorwegianOrganizationIdentifier.PrefixWithSeparator}713330310");
         var dialogId = request.DialogId;
@@ -82,10 +81,9 @@ public class DecisionRequestHelperTests
         // Arrange
         var request = CreateDialogDetailsAuthorizationRequest(
             GetAsClaims(
-                ("urn:altinn:userid", "5678901"),
-
                 // This should not be copied as subject claim since there's a "urn:altinn:user-id"-claim
-                ("pid", "12345678901")
+                ("pid", "12345678901"),
+                ("urn:altinn:userid", "5678901")
             ),
             $"{NorwegianOrganizationIdentifier.PrefixWithSeparator}713330310");
 
@@ -134,8 +132,7 @@ public class DecisionRequestHelperTests
         // Arrange
         var request = CreateDialogDetailsAuthorizationRequest(
             GetAsClaims(
-                ("authorization_details", AuthorizationDetailsClaimValue),
-                ("pid", "12345678901")
+                ("authorization_details", AuthorizationDetailsClaimValue)
             ),
             $"{NorwegianOrganizationIdentifier.PrefixWithSeparator}713330310"
             );
