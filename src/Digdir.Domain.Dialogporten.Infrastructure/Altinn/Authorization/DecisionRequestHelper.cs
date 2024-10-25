@@ -20,14 +20,18 @@ internal static class DecisionRequestHelper
     private const string AttributeIdAction = "urn:oasis:names:tc:xacml:1.0:action:action-id";
     private const string AttributeIdResource = "urn:altinn:resource";
     private const string AttributeIdResourceInstance = "urn:altinn:resourceinstance";
+    private const string AttributeIdSubResource = "urn:altinn:subresource";
+
     private const string AttributeIdOrg = "urn:altinn:org";
     private const string AttributeIdApp = "urn:altinn:app";
-    private const string AttributeIdSystemUser = "urn:altinn:systemuser:uuid";
     private const string AttributeIdAppInstance = "urn:altinn:instance-id";
-    private const string AttributeIdSubResource = "urn:altinn:subresource";
+
     private const string AttributeIdUserId = "urn:altinn:userid";
+    private const string AttributeIdPerson = "urn:altinn:person:identifier-no";
+    private const string AttributeIdSystemUser = "urn:altinn:systemuser:uuid";
+
     // The order of these attribute types is important as we want to prioritize the most specific claim types.
-    private static readonly List<string> PrioritizedClaimTypes = [AttributeIdUserId, NorwegianPersonIdentifier.Prefix, AttributeIdSystemUser];
+    private static readonly List<string> PrioritizedClaimTypes = [AttributeIdUserId, AttributeIdPerson, AttributeIdSystemUser];
 
     private const string ReservedResourcePrefixForApps = "app_";
 
@@ -95,7 +99,7 @@ internal static class DecisionRequestHelper
             PidClaimType => new XacmlJsonCategory
             {
                 Id = SubjectId,
-                Attribute = [new() { AttributeId = NorwegianPersonIdentifier.Prefix, Value = claim.Value }]
+                Attribute = [new() { AttributeId = AttributeIdPerson, Value = claim.Value }]
             },
             RarAuthorizationDetailsClaimType when new ClaimsPrincipal(new ClaimsIdentity(new[] { claim })).TryGetSystemUserId(out var systemUserId) => new XacmlJsonCategory
             {
