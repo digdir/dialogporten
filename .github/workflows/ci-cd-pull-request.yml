@@ -9,7 +9,7 @@ permissions:
   contents: write
   pull-requests: write
   repository-projects: write
-
+  actions: write
 jobs:
   get-versions-from-github:
     name: Get Latest Deployed Versions from GitHub Variables
@@ -35,20 +35,20 @@ jobs:
     needs: [mock-deployment]
     runs-on: ubuntu-latest
     environment: test
-    permissions:
-      contents: write
-      pull-requests: write
-      repository-projects: write
-      actions: write
+    # permissions:
+    #   contents: write
+    #   pull-requests: write
+    #   repository-projects: write
+    #   actions: write
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Set Mock Infra Version
         run: |
-          gh variable set LATEST_DEPLOYED_INFRA_VERSION --body "v1.0.0-mock" --env test --repo ${{ github.repository }}
+          gh variable set LATEST_DEPLOYED_INFRA_VERSION --body "v1.0.0-mock" --env test
       - name: Set Mock Apps Version
         run: |
-          gh variable set LATEST_DEPLOYED_APPS_VERSION --body "v1.0.0-mock" --env test --repo ${{ github.repository }}
+          gh variable set LATEST_DEPLOYED_APPS_VERSION --body "v1.0.0-mock" --env test
 
   verify-stored-versions:
     name: Verify Stored Versions
