@@ -6,7 +6,6 @@ using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
 using Digdir.Domain.Dialogporten.GraphQL.Common;
 using Digdir.Domain.Dialogporten.GraphQL.Common.Authentication;
 using Digdir.Domain.Dialogporten.GraphQL.Common.Authorization;
-using Digdir.Domain.Dialogporten.GraphQL.Common.Extensions;
 using Digdir.Domain.Dialogporten.Infrastructure;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.OptionExtensions;
 using Digdir.Domain.Dialogporten.GraphQL;

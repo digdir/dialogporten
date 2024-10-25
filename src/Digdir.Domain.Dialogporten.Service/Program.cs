@@ -6,7 +6,6 @@ using Microsoft.ApplicationInsights.Extensibility;
 using Serilog;
 using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
 using Digdir.Domain.Dialogporten.Domain;
-using Digdir.Domain.Dialogporten.Domain.Common.EventPublisher;
 using Digdir.Domain.Dialogporten.Service;
 using Digdir.Domain.Dialogporten.Service.Consumers;
 using Digdir.Library.Utils.AspNet;
