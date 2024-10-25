@@ -236,7 +236,6 @@ public class DecisionRequestHelperTests
         // Arrange
         var request = CreateDialogDetailsAuthorizationRequest(
             GetAsClaims(
-                // Should be copied as subject claim since there's not a "pid"-claim
                 ("pid", "12345678901")
             ),
             $"{NorwegianPersonIdentifier.PrefixWithSeparator}12345678901");
