@@ -15,6 +15,8 @@ jobs:
     uses: ./.github/workflows/workflow-get-latest-deployed-versions-from-github.yml
     with:
       environment: staging
+    secrets:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   check-for-changes:
     name: Check for changes
@@ -51,10 +53,12 @@ jobs:
     runs-on: ubuntu-latest
     needs: [deploy-infra, get-current-version]
     if: ${{ needs.deploy-infra.result == 'success' }}
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Set GitHub variable for latest deployed infra version
         run: |
-          gh variable set LATEST_DEPLOYED_INFRA_VERSION "${{ needs.get-current-version.outputs.version }}" --repo ${{ github.repository }} --env staging
+          gh variable set LATEST_DEPLOYED_INFRA_VERSION --body "${{ needs.get-current-version.outputs.version }}" --env staging --repo ${{ github.repository }}
 
   publish:
     name: Build and publish docker images
@@ -94,10 +98,12 @@ jobs:
     runs-on: ubuntu-latest
     needs: [deploy-apps, get-current-version]
     if: ${{ needs.deploy-apps.result == 'success' }}
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Set GitHub variable for latest deployed apps version
         run: |
-          gh variable set LATEST_DEPLOYED_APPS_VERSION "${{ needs.get-current-version.outputs.version }}" --repo ${{ github.repository }} --env staging
+          gh variable set LATEST_DEPLOYED_APPS_VERSION --body "${{ needs.get-current-version.outputs.version }}" --env staging --repo ${{ github.repository }}
 
   deploy-slack-notifier:
     name: Deploy slack notifier (staging)
