@@ -4,7 +4,7 @@ on:
   workflow_call:
     inputs:
       environment:
-        description: "Environment to get latest deployed versions for (e.g., staging, prod)"
+        description: "Environment to get latest deployed versions for (e.g., staging, prod, yt01)"
         required: true
         type: string
     outputs:
@@ -30,7 +30,7 @@ jobs:
 
       - name: Get Latest Deployed Infra Version
         id: get-infra-version
-        run: echo "version=$(gh variable get INFRA_VERSION_${{ inputs.environment }} --repo ${{ github.repository }} --json value --jq .value || echo '')" >> $GITHUB_OUTPUT
+        run: echo "version=$(gh variable get LATEST_DEPLOYED_INFRA_VERSION --repo ${{ github.repository }} --env ${{ inputs.environment }} --json value --jq .value || echo '')" >> $GITHUB_OUTPUT
 
       - name: Get Infra SHA
         id: get-infra-sha
@@ -41,7 +41,7 @@ jobs:
 
       - name: Get Latest Deployed Apps Version
         id: get-apps-version
-        run: echo "version=$(gh variable get APPS_VERSION_${{ inputs.environment }} --repo ${{ github.repository }} --json value --jq .value || echo '')" >> $GITHUB_OUTPUT
+        run: echo "version=$(gh variable get LATEST_DEPLOYED_APPS_VERSION --repo ${{ github.repository }} --env ${{ inputs.environment }} --json value --jq .value || echo '')" >> $GITHUB_OUTPUT
 
       - name: Get Apps SHA
         id: get-apps-sha

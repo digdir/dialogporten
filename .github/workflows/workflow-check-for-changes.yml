@@ -5,11 +5,13 @@ on:
     inputs:
       infra_base_sha:
         description: "Base SHA for infrastructure changes"
-        required: true
+        required: false
+        default: ''
         type: string
       apps_base_sha:
         description: "Base SHA for application changes"
-        required: true
+        required: false
+        default: ''
         type: string
     outputs:
       hasAzureChanges:
