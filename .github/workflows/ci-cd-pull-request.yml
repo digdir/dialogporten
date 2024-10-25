@@ -44,6 +44,8 @@ jobs:
     uses: ./.github/workflows/workflow-get-latest-deployed-versions-from-github.yml
     with:
       environment: test
+    secrets:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   echo-verified-versions:
     name: Echo Verified Versions
