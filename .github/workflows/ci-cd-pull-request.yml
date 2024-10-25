@@ -10,6 +10,9 @@ jobs:
     uses: ./.github/workflows/workflow-get-latest-deployed-versions-from-github.yml
     with:
       environment: test
+    secrets:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
 
   mock-deployment:
     name: Mock Deployment
@@ -25,13 +28,15 @@ jobs:
     name: Store Mock Versions
     needs: [mock-deployment]
     runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Set Mock Infra Version
         run: |
-          gh variable set LATEST_DEPLOYED_INFRA_VERSION "v1.0.0-mock" --repo ${{ github.repository }} --env test
+          gh variable set --env test LATEST_DEPLOYED_INFRA_VERSION "v1.0.0-mock" --repo ${{ github.repository }}
       - name: Set Mock Apps Version
         run: |
-          gh variable set LATEST_DEPLOYED_APPS_VERSION "v1.0.0-mock" --repo ${{ github.repository }} --env test
+          gh variable set --env test LATEST_DEPLOYED_APPS_VERSION "v1.0.0-mock" --repo ${{ github.repository }}
 
   verify-stored-versions:
     name: Verify Stored Versions
