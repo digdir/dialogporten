@@ -36,7 +36,7 @@ jobs:
 
       - name: Get Latest Deployed Infra Version
         id: get-infra-version
-        run: echo "version=$(gh variable get LATEST_DEPLOYED_INFRA_VERSION --repo ${{ github.repository }} --env ${{ inputs.environment }} --json value --jq .value || echo '')" >> $GITHUB_OUTPUT
+        run: echo "version=${{ vars.LATEST_DEPLOYED_INFRA_VERSION }}" >> $GITHUB_OUTPUT
 
       - name: Get Infra SHA
         id: get-infra-sha
@@ -47,7 +47,7 @@ jobs:
 
       - name: Get Latest Deployed Apps Version
         id: get-apps-version
-        run: echo "version=$(gh variable get LATEST_DEPLOYED_APPS_VERSION --repo ${{ github.repository }} --env ${{ inputs.environment }} --json value --jq .value || echo '')" >> $GITHUB_OUTPUT
+        run: echo "version=${{ vars.LATEST_DEPLOYED_APPS_VERSION }}" >> $GITHUB_OUTPUT
 
       - name: Get Apps SHA
         id: get-apps-sha
