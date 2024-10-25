@@ -76,42 +76,38 @@ internal static class DecisionRequestHelper
         };
     }
 
-    private static List<XacmlJsonCategory> CreateAccessSubjectCategory(IEnumerable<Claim> claims)
-    {
+    private static List<XacmlJsonCategory> CreateAccessSubjectCategory(IEnumerable<Claim> claims) =>
         // The PDP expects for the most part only a single subject attribute, and will even fail the request
         // for some types (e.g. the urn:altinn:systemuser:uuid) if there are multiple subject attributes (for
         // security reasons). We therefore need to filter out the relevant attributes and only include those,
-        // which in essence is the pid and the systemuser uuid. In addition, we also utilize urn:altinn:userid
+        // which in essence is the pid and the system user uuid. In addition, we also utilize urn:altinn:userid
         // if present instead of the pid as a simple optimization as this offloads the PDP from having to look up
         // the user id from the pid.
 
-        foreach (var claim in claims)
+        claims.Select(claim => claim.Type switch
         {
-            if (claim.Type == UserIdClaimType)
+            UserIdClaimType => new XacmlJsonCategory
             {
-                return [new() { Id = SubjectId, Attribute =
-                    [new XacmlJsonAttribute { AttributeId = AttributeIdUserId, Value = claim.Value }] }];
-            }
-
-            if (claim.Type == PidClaimType)
+                Id = SubjectId,
+                Attribute = [new() { AttributeId = AttributeIdUserId, Value = claim.Value }]
+            },
+            PidClaimType => new XacmlJsonCategory
             {
-                return [new() { Id = SubjectId, Attribute =
-                    [new XacmlJsonAttribute { AttributeId = NorwegianPersonIdentifier.Prefix, Value = claim.Value }] }];
-            }
-
-            if (claim.Type == RarAuthorizationDetailsClaimType)
+                Id = SubjectId,
+                Attribute = [new() { AttributeId = NorwegianPersonIdentifier.Prefix, Value = claim.Value }]
+            },
+            RarAuthorizationDetailsClaimType when new ClaimsPrincipal(new ClaimsIdentity(new[] { claim })).TryGetSystemUserId(out var systemUserId) => new XacmlJsonCategory
             {
-                var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new[] { claim }));
-                if (claimsPrincipal.TryGetSystemUserId(out var systemUserId))
-                {
-                    return [new() { Id = SubjectId, Attribute =
-                        [new XacmlJsonAttribute { AttributeId = AttributeIdSystemUser, Value = systemUserId }] }];
-                }
-            }
-        }
-
-        throw new UnreachableException("Unable to find a suitable subject attribute for the authorization request. Having a known user type should be enforced during authentication (see UserTypeValidationMiddleware).");
-    }
+                Id = SubjectId,
+                Attribute = [new XacmlJsonAttribute { AttributeId = AttributeIdSystemUser, Value = systemUserId }]
+            },
+            _ => null
+        })
+        .FirstOrDefault(x => x != null) switch
+        {
+            { } validCategory => new List<XacmlJsonCategory> { validCategory },
+            _ => throw new UnreachableException("Unable to find a suitable subject attribute for the authorization request. Having a known user type should be enforced during authentication (see UserTypeValidationMiddleware)."),
+        };
 
     private static List<XacmlJsonCategory> CreateActionCategories(
         List<AltinnAction> altinnActions, out Dictionary<string, string> actionIdByName)

@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using System.Diagnostics;
+using System.Security.Claims;
 using Altinn.Authorization.ABAC.Xacml.JsonProfile;
 using Digdir.Domain.Dialogporten.Application.Common.Authorization;
 using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
@@ -10,8 +11,6 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Unit.Tests;
 
 public class DecisionRequestHelperTests
 {
-    private const string ConsumerClaimValue = /*lang=json,strict*/ "{\"authority\":\"iso6523-actorid-upis\",\"ID\":\"0192:991825827\"}";
-
     private const string AuthorizationDetailsClaimValue = /*lang=json,strict*/"[{\"type\":\"urn:altinn:systemuser\",\"systemuser_id\":[\"unique_systemuser_id\"]}]";
 
     [Fact]
@@ -136,8 +135,7 @@ public class DecisionRequestHelperTests
         var request = CreateDialogDetailsAuthorizationRequest(
             GetAsClaims(
                 ("authorization_details", AuthorizationDetailsClaimValue),
-                ("pid", "12345678901"),
-                ("consumer", ConsumerClaimValue)
+                ("pid", "12345678901")
             ),
             $"{NorwegianOrganizationIdentifier.PrefixWithSeparator}713330310"
             );
@@ -209,7 +207,6 @@ public class DecisionRequestHelperTests
     }
 
     [Fact]
-
     public void CreateDialogDetailsRequestShouldReturnCorrectRequestForFullyQualifiedSubresource()
     {
         // Arrange
@@ -263,6 +260,21 @@ public class DecisionRequestHelperTests
         Assert.DoesNotContain(new AltinnAction("elementread", "element3"), response.AuthorizedAltinnActions);
         Assert.DoesNotContain(new AltinnAction("failaction", Constants.MainResource), response.AuthorizedAltinnActions);
     }
+
+    [Fact]
+    public void CreateDetailsRequestShouldThrowUnreachableExceptionIfNoValidUserType()
+    {
+        // Arrange
+        var request = CreateDialogDetailsAuthorizationRequest(
+            GetAsClaims(
+                ("consumer", "somevalue")
+            ),
+            $"{NorwegianOrganizationIdentifier.PrefixWithSeparator}713330310");
+
+        // Act / assert
+        Assert.Throws<UnreachableException>(() => DecisionRequestHelper.CreateDialogDetailsRequest(request));
+    }
+
 
     private static DialogDetailsAuthorizationRequest CreateDialogDetailsAuthorizationRequest(List<Claim> principalClaims, string party, bool isApp = false)
     {
