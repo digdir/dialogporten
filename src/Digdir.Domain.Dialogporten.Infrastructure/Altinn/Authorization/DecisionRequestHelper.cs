@@ -1,5 +1,6 @@
 ﻿using Altinn.Authorization.ABAC.Xacml.JsonProfile;
 using System.Security.Claims;
+
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 using Digdir.Domain.Dialogporten.Domain.Parties;
@@ -10,20 +11,23 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.Authorization;
 internal static class DecisionRequestHelper
 {
     private const string SubjectId = "s1";
-    private const string AltinnUrnNsPrefix = "urn:altinn:";
+
     private const string PidClaimType = "pid";
-    private const string ConsumerClaimType = "consumer";
+    private const string UserIdClaimType = "urn:altinn:userid";
+    private const string RarAutorizationDetailsClaimType = "authorization_details";
+
     private const string AttributeIdAction = "urn:oasis:names:tc:xacml:1.0:action:action-id";
     private const string AttributeIdResource = "urn:altinn:resource";
     private const string AttributeIdResourceInstance = "urn:altinn:resourceinstance";
-    private const string AltinnAutorizationDetailsClaim = "authorization_details";
     private const string AttributeIdOrg = "urn:altinn:org";
     private const string AttributeIdApp = "urn:altinn:app";
     private const string AttributeIdSystemUser = "urn:altinn:systemuser:uuid";
-    private const string AttributeIdUserId = "urn:altinn:userid";
-    private const string ReservedResourcePrefixForApps = "app_";
     private const string AttributeIdAppInstance = "urn:altinn:instance-id";
     private const string AttributeIdSubResource = "urn:altinn:subresource";
+    private const string AttributeIdUserId = "urn:altinn:userid";
+
+    private const string ReservedResourcePrefixForApps = "app_";
+
     private const string PermitResponse = "Permit";
 
     public static XacmlJsonRequestRoot CreateDialogDetailsRequest(DialogDetailsAuthorizationRequest request)
@@ -73,37 +77,46 @@ internal static class DecisionRequestHelper
 
     private static List<XacmlJsonCategory> CreateAccessSubjectCategory(IEnumerable<Claim> claims)
     {
-        var attributes = claims
-            .Select(x => x switch
-            {
-                { Type: PidClaimType } => new XacmlJsonAttribute { AttributeId = NorwegianPersonIdentifier.Prefix, Value = x.Value },
-                { Type: var type } when type.StartsWith(AltinnUrnNsPrefix, StringComparison.Ordinal) => new() { AttributeId = type, Value = x.Value },
-                { Type: ConsumerClaimType } when x.TryGetOrganizationNumber(out var organizationNumber) => new() { AttributeId = NorwegianOrganizationIdentifier.Prefix, Value = organizationNumber },
-                { Type: AltinnAutorizationDetailsClaim } => new() { AttributeId = AttributeIdSystemUser, Value = GetSystemUserId(x) },
-                _ => null
-            })
-            .Where(x => x is not null)
-            .Cast<XacmlJsonAttribute>()
-            .ToList();
+        // The PDP expects for the most part only a single subject attribute, and will even fail the request
+        // for some types (e.g. the urn:altinn:systemuser:uuid) if there are multiple subject attributes (for
+        // security reasons). We therefore need to filter out the relevant attributes and only include those,
+        // which in essence is the pid and the systemuser uuid. In addition, we also utilize urn:altinn:userid
+        // if present instead of the pid as a simple optimization as this offloads the PDP from having to look up
+        // the user id from the pid.
+        XacmlJsonAttribute? selectedAttribute = null;
 
-        // If we're authorizing a person (i.e. ID-porten token), we are not interested in the consumer-claim (organization number)
-        // as that is not relevant for the authorization decision (it's just the organization owning the OAuth client).
-        // The same goes if urn:altinn:userid is present, which might be present if using a legacy enterprise user token
-        if (attributes.Any(x => x.AttributeId == NorwegianPersonIdentifier.Prefix) ||
-            attributes.Any(x => x.AttributeId == AttributeIdUserId))
+        foreach (var claim in claims)
         {
-            attributes.RemoveAll(x => x.AttributeId == NorwegianOrganizationIdentifier.Prefix);
+            if (claim.Type == UserIdClaimType)
+            {
+                selectedAttribute = new XacmlJsonAttribute { AttributeId = AttributeIdUserId, Value = claim.Value };
+                break;
+            }
+
+            if (claim.Type == PidClaimType)
+            {
+                selectedAttribute = new XacmlJsonAttribute { AttributeId = NorwegianPersonIdentifier.Prefix, Value = claim.Value };
+                break;
+            }
+
+            if (claim.Type == RarAutorizationDetailsClaimType)
+            {
+                var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new[] { claim }));
+                if (claimsPrincipal.TryGetSystemUserId(out var systemUserId))
+                {
+                    selectedAttribute = new XacmlJsonAttribute { AttributeId = AttributeIdSystemUser, Value = systemUserId };
+                }
+                break;
+            }
         }
+
+        var attributes = selectedAttribute != null
+            ? [selectedAttribute]
+            : new List<XacmlJsonAttribute>();
 
         return [new() { Id = SubjectId, Attribute = attributes }];
     }
 
-    private static string GetSystemUserId(Claim claim)
-    {
-        var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity([claim]));
-        claimsPrincipal.TryGetSystemUserId(out var systemUserId);
-        return systemUserId!;
-    }
 
     private static List<XacmlJsonCategory> CreateActionCategories(
         List<AltinnAction> altinnActions, out Dictionary<string, string> actionIdByName)
