@@ -35,22 +35,31 @@ jobs:
     needs: [mock-deployment]
     runs-on: ubuntu-latest
     environment: test
-    # permissions:
-    #   contents: write
-    #   pull-requests: write
-    #   repository-projects: write
-    #   actions: write
-    env:
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
       - name: Set Mock Infra Version
-        run: |
-          gh variable set LATEST_DEPLOYED_INFRA_VERSION --body "v1.0.0-mock" --env test
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            await github.rest.actions.createEnvironmentVariable({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: 'LATEST_DEPLOYED_INFRA_VERSION',
+              value: 'v1.0.0-mock',
+              environment_name: 'test'
+            });
       - name: Set Mock Apps Version
-        run: |
-          gh variable set LATEST_DEPLOYED_APPS_VERSION --body "v1.0.0-mock" --env test
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            await github.rest.actions.createEnvironmentVariable({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: 'LATEST_DEPLOYED_APPS_VERSION',
+              value: 'v1.0.0-mock',
+              environment_name: 'test'
+            });
 
   verify-stored-versions:
     name: Verify Stored Versions
