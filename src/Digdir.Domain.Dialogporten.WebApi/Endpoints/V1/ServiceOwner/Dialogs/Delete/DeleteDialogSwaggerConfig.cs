@@ -11,12 +11,12 @@ public sealed class DeleteDialogSwaggerConfig : ISwaggerConfig
 {
     public static string OperationId => "DeleteDialog";
 
-    public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder)
-        => builder.OperationId(OperationId)
-            .ProducesOneOf(
-                StatusCodes.Status204NoContent,
-                StatusCodes.Status404NotFound,
-                StatusCodes.Status412PreconditionFailed);
+    public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder, Type type)
+        => builder.OperationId(TypeNameConverter.Convert(type))
+                  .ProducesOneOf(
+                      StatusCodes.Status204NoContent,
+                      StatusCodes.Status404NotFound,
+                      StatusCodes.Status412PreconditionFailed);
 
     public static object GetExample() => throw new NotImplementedException();
 }

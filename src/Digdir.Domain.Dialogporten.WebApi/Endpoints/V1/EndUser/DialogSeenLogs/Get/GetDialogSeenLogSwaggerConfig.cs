@@ -14,8 +14,8 @@ public sealed class GetDialogSeenLogSwaggerConfig : ISwaggerConfig
         get;
         set;
     } = null!;
-    public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder)
-        => builder.OperationId(OperationId)
+    public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder, Type type)
+        => builder.OperationId(TypeNameConverter.Convert(type))
                   .ProducesOneOf<GetDialogSeenLogDto>(
                       StatusCodes.Status200OK,
                       StatusCodes.Status404NotFound);

@@ -29,7 +29,7 @@ public sealed class CreateDialogTransmissionEndpoint : Endpoint<CreateDialogTran
         Policies(AuthorizationPolicy.ServiceProvider);
         Group<ServiceOwnerGroup>();
 
-        Description(b => CreateDialogTransmissionSwaggerConfig.SetDescription(b));
+        Description(b => CreateDialogTransmissionSwaggerConfig.SetDescription(b, GetType()));
     }
 
     public override async Task HandleAsync(CreateDialogTransmissionRequest req, CancellationToken ct)

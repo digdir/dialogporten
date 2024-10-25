@@ -16,7 +16,7 @@ public sealed class SetDialogSystemLabelEndpoint(ISender sender) : Endpoint<SetD
         Policies(AuthorizationPolicy.EndUser);
         Group<EndUserGroup>();
 
-        Description(b => SetDialogSystemLabelSwaggerConfig.SetDescription(b));
+        Description(b => SetDialogSystemLabelSwaggerConfig.SetDescription(b, GetType()));
     }
     public override async Task HandleAsync(SetDialogSystemLabelCommand req, CancellationToken ct)
     {

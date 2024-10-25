@@ -21,7 +21,7 @@ public sealed class GetDialogActivityEndpoint : Endpoint<GetDialogActivityQuery,
         Policies(AuthorizationPolicy.EndUser);
         Group<EndUserGroup>();
 
-        Description(b => GetDialogActivitySwaggerConfig.SetDescription(b));
+        Description(b => GetDialogActivitySwaggerConfig.SetDescription(b, GetType()));
     }
 
     public override async Task HandleAsync(GetDialogActivityQuery req, CancellationToken ct)

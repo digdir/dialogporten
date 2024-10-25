@@ -21,7 +21,7 @@ public sealed class GetDialogSeenLogEndpoint : Endpoint<GetDialogSeenLogQuery, G
         Policies(AuthorizationPolicy.ServiceProvider);
         Group<ServiceOwnerGroup>();
 
-        Description(d => GetDialogSeenLogSwaggerConfig.SetDescription(d));
+        Description(d => GetDialogSeenLogSwaggerConfig.SetDescription(d, GetType()));
     }
 
     public override async Task HandleAsync(GetDialogSeenLogQuery req, CancellationToken ct)

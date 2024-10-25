@@ -21,7 +21,7 @@ public sealed class SearchDialogActivityEndpoint : Endpoint<SearchDialogActivity
         Policies(AuthorizationPolicy.ServiceProvider);
         Group<ServiceOwnerGroup>();
 
-        Description(b => SearchDialogActivitySwaggerConfig.SetDescription(b));
+        Description(b => SearchDialogActivitySwaggerConfig.SetDescription(b, GetType()));
     }
 
     public override async Task HandleAsync(SearchDialogActivityQuery req, CancellationToken ct)

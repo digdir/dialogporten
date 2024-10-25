@@ -21,7 +21,7 @@ public sealed class GetDialogTransmissionEndpoint : Endpoint<GetDialogTransmissi
         Policies(AuthorizationPolicy.ServiceProvider);
         Group<ServiceOwnerGroup>();
 
-        Description(b => GetDialogTransmissionSwaggerConfig.SetDescription(b));
+        Description(b => GetDialogTransmissionSwaggerConfig.SetDescription(b, GetType()));
     }
 
     public override async Task HandleAsync(GetDialogTransmissionQuery req, CancellationToken ct)

@@ -19,7 +19,7 @@ public sealed class GetJwksEndpoint : EndpointWithoutRequest<GetJwksDto>
         Get(".well-known/jwks.json");
         Group<MetadataGroup>();
 
-        Description(b => GetJwksSwaggerConfig.SetDescription(b));
+        Description(b => GetJwksSwaggerConfig.SetDescription(b, GetType()));
     }
 
     public override async Task HandleAsync(CancellationToken ct)

@@ -11,8 +11,8 @@ public sealed class CreateDialogActivitySwaggerConfig : ISwaggerConfig
 {
     public static string OperationId => "CreateDialogActivity";
 
-    public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder)
-        => builder.OperationId("CreateDialogActivity")
+    public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder, Type type)
+        => builder.OperationId(TypeNameConverter.Convert(type))
             .ProducesOneOf(
                 StatusCodes.Status201Created,
                 StatusCodes.Status400BadRequest,

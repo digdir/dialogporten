@@ -8,8 +8,8 @@ public sealed class SearchDialogLabelAssignmentSwaggerConfig : ISwaggerConfig
 {
 
     public static string OperationId => "SearchDialogLabelAssignmentLog";
-    public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder)
-        => builder.OperationId(OperationId).ProducesOneOf<List<SearchDialogLabelAssignmentLogDto>>(
+    public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder, Type type)
+        => builder.OperationId(TypeNameConverter.Convert(type)).ProducesOneOf<List<SearchDialogLabelAssignmentLogDto>>(
             StatusCodes.Status200OK,
             StatusCodes.Status404NotFound,
             StatusCodes.Status410Gone);

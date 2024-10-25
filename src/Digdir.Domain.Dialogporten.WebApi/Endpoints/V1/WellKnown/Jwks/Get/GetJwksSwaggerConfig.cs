@@ -9,8 +9,8 @@ public sealed class GetJwksSwaggerConfig : ISwaggerConfig
 {
     public static string OperationId => "GetJwks";
 
-    public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder)
-        => builder.OperationId(OperationId)
+    public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder, Type type)
+        => builder.OperationId(TypeNameConverter.Convert(type))
             .ProducesOneOf<GetJwksDto>(
                 StatusCodes.Status200OK);
 

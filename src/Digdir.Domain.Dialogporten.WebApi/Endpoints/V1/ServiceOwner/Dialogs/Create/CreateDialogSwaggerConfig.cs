@@ -11,12 +11,12 @@ public sealed class CreateDialogSwaggerConfig : ISwaggerConfig
 {
     public static string OperationId => "CreateDialog";
 
-    public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder)
-        => builder.OperationId(OperationId)
-            .ProducesOneOf(
-                StatusCodes.Status201Created,
-                StatusCodes.Status400BadRequest,
-                StatusCodes.Status422UnprocessableEntity);
+    public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder, Type type)
+        => builder.OperationId(TypeNameConverter.Convert(type))
+                  .ProducesOneOf(
+                      StatusCodes.Status201Created,
+                      StatusCodes.Status400BadRequest,
+                      StatusCodes.Status422UnprocessableEntity);
 
     public static object GetExample() => throw new NotImplementedException();
 }

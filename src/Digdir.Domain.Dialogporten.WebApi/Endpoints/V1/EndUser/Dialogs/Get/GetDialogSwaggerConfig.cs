@@ -11,8 +11,8 @@ public abstract class GetDialogSwaggerConfig : ISwaggerConfig
 {
     public static string OperationId => "GetDialog";
 
-    public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder) =>
-        builder.OperationId(OperationId)
+    public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder, Type type) =>
+        builder.OperationId(TypeNameConverter.Convert(type))
             .ProducesOneOf<GetDialogDto>(
                 StatusCodes.Status200OK,
                 StatusCodes.Status404NotFound);

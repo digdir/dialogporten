@@ -22,7 +22,7 @@ public sealed class SearchDialogEndpoint : Endpoint<SearchDialogQuery, Paginated
         Policies(AuthorizationPolicy.EndUser);
         Group<EndUserGroup>();
 
-        Description(d => SearchDialogSwaggerConfig.SetDescription(d));
+        Description(d => SearchDialogSwaggerConfig.SetDescription(d, GetType()));
     }
 
     public override async Task HandleAsync(SearchDialogQuery req, CancellationToken ct)

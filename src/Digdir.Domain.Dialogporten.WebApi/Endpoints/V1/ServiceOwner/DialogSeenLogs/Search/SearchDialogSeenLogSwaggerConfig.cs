@@ -11,8 +11,8 @@ public sealed class SearchDialogSeenLogSwaggerConfig : ISwaggerConfig
 {
     public static string OperationId => "SearchDialogSeenLogSO";
 
-    public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder)
-        => builder.OperationId(OperationId)
+    public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder, Type type)
+        => builder.OperationId(TypeNameConverter.Convert(type))
             .ProducesOneOf<List<SearchSeenLogDto>>(
                 StatusCodes.Status200OK,
                 StatusCodes.Status404NotFound);

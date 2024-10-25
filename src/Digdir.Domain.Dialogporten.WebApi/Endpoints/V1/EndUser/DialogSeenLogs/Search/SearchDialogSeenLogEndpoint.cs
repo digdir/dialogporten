@@ -21,7 +21,7 @@ public sealed class SearchDialogSeenLogEndpoint : Endpoint<SearchDialogSeenLogQu
         Policies(AuthorizationPolicy.EndUser);
         Group<EndUserGroup>();
 
-        Description(d => SearchDialogSeenLogSwaggerConfig.SetDescription(d));
+        Description(d => SearchDialogSeenLogSwaggerConfig.SetDescription(d, GetType()));
     }
 
     public override async Task HandleAsync(SearchDialogSeenLogQuery req, CancellationToken ct)

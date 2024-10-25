@@ -21,7 +21,7 @@ public sealed class SearchDialogTransmissionEndpoint : Endpoint<SearchDialogTran
         Policies(AuthorizationPolicy.EndUser);
         Group<EndUserGroup>();
 
-        Description(b => SearchDialogTransmissionSwaggerConfig.SetDescription(b));
+        Description(b => SearchDialogTransmissionSwaggerConfig.SetDescription(b, GetType()));
     }
 
     public override async Task HandleAsync(SearchDialogTransmissionQuery req, CancellationToken ct)

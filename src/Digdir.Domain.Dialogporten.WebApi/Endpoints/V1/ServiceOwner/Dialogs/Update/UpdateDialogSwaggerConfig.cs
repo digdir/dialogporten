@@ -20,9 +20,9 @@ internal abstract class UpdateDialogSwaggerConfig : ISwaggerConfig
 {
     public static string OperationId => "ReplaceDialog";
 
-    public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder) =>
+    public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder, Type type) =>
         builder
-            .OperationId(OperationId)
+            .OperationId(TypeNameConverter.Convert(type))
             .ProducesOneOf(
                 StatusCodes.Status204NoContent,
                 StatusCodes.Status400BadRequest,

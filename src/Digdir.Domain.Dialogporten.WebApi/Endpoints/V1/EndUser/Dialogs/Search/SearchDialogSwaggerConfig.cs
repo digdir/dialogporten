@@ -12,9 +12,9 @@ public abstract class SearchDialogSwaggerConfig : ISwaggerConfig
 {
     public static string OperationId => "GetDialogList";
 
-    public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder) =>
-        builder.OperationId(OperationId)
-            .ClearDefaultProduces(StatusCodes.Status403Forbidden);
+    public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder, Type type) =>
+        builder.OperationId(TypeNameConverter.Convert(type))
+               .ClearDefaultProduces(StatusCodes.Status403Forbidden);
 
     public static object GetExample() => throw new NotImplementedException();
 }

@@ -11,8 +11,8 @@ public sealed class PurgeDialogSwaggerConfig : ISwaggerConfig
 {
     public static string OperationId => "PurgeDialog";
 
-    public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder)
-        => builder.OperationId(OperationId)
+    public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder, Type type)
+        => builder.OperationId(TypeNameConverter.Convert(type))
             .Accepts<PurgeDialogRequest>()
             .ProducesOneOf(
                 StatusCodes.Status204NoContent,

@@ -19,7 +19,7 @@ public sealed class GetOauthAuthorizationServerEndpoint : EndpointWithoutRequest
         Get(".well-known/oauth-authorization-server");
         Group<MetadataGroup>();
 
-        Description(b => GetOauthAuthorizationServerSwaggerConfig.SetDescription(b));
+        Description(b => GetOauthAuthorizationServerSwaggerConfig.SetDescription(b, GetType()));
     }
 
     public override async Task HandleAsync(CancellationToken ct)

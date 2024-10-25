@@ -29,7 +29,7 @@ public sealed class CreateDialogActivityEndpoint : Endpoint<CreateDialogActivity
         Policies(AuthorizationPolicy.ServiceProvider);
         Group<ServiceOwnerGroup>();
 
-        Description(b => CreateDialogActivitySwaggerConfig.SetDescription(b));
+        Description(b => CreateDialogActivitySwaggerConfig.SetDescription(b, GetType()));
     }
 
     public override async Task HandleAsync(CreateDialogActivityRequest req, CancellationToken ct)

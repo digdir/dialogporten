@@ -23,7 +23,7 @@ public sealed class CreateDialogEndpoint : Endpoint<CreateDialogCommand>
         Policies(AuthorizationPolicy.ServiceProvider);
         Group<ServiceOwnerGroup>();
 
-        Description(b => CreateDialogSwaggerConfig.SetDescription(b));
+        Description(b => CreateDialogSwaggerConfig.SetDescription(b, GetType()));
     }
 
     public override async Task HandleAsync(CreateDialogCommand req, CancellationToken ct)

@@ -13,8 +13,8 @@ public sealed class NotificationConditionSwaggerConfig : ISwaggerConfig
 {
     public static string OperationId => "GetDialogActivityNotificationConditionSO";
 
-    public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder)
-        => builder.OperationId(OperationId);
+    public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder, Type type)
+        => builder.OperationId(TypeNameConverter.Convert(type));
 
     public static object GetExample() => throw new NotImplementedException();
 }

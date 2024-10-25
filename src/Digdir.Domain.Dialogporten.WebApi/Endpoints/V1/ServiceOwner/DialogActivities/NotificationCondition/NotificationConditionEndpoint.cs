@@ -21,7 +21,7 @@ public sealed class NotificationConditionEndpoint : Endpoint<NotificationConditi
         Policies(AuthorizationPolicy.NotificationConditionCheck);
         Group<ServiceOwnerGroup>();
 
-        Description(b => NotificationConditionSwaggerConfig.SetDescription(b));
+        Description(b => NotificationConditionSwaggerConfig.SetDescription(b, GetType()));
     }
 
     public override async Task HandleAsync(NotificationConditionQuery req, CancellationToken ct)

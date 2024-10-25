@@ -22,7 +22,7 @@ public sealed class DeleteDialogEndpoint : Endpoint<DeleteDialogRequest>
         Policies(AuthorizationPolicy.ServiceProvider);
         Group<ServiceOwnerGroup>();
 
-        Description(b => DeleteDialogSwaggerConfig.SetDescription(b));
+        Description(b => DeleteDialogSwaggerConfig.SetDescription(b, GetType()));
     }
 
     public override async Task HandleAsync(DeleteDialogRequest req, CancellationToken ct)

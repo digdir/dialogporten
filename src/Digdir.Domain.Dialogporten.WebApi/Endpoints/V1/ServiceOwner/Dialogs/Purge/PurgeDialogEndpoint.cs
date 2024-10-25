@@ -23,7 +23,7 @@ public sealed class PurgeDialogEndpoint : Endpoint<PurgeDialogRequest>
         Policies(AuthorizationPolicy.ServiceProvider);
         Group<ServiceOwnerGroup>();
 
-        Description(b => PurgeDialogSwaggerConfig.SetDescription(b));
+        Description(b => PurgeDialogSwaggerConfig.SetDescription(b, GetType()));
     }
 
     public override async Task HandleAsync(PurgeDialogRequest req, CancellationToken ct)

@@ -20,7 +20,7 @@ public sealed class SearchDialogLabelAssignmentLogEndpoint : Endpoint<SearchDial
         Policies(AuthorizationPolicy.EndUser);
         Group<EndUserGroup>();
 
-        Description(d => SearchDialogLabelAssignmentSwaggerConfig.SetDescription(d));
+        Description(d => SearchDialogLabelAssignmentSwaggerConfig.SetDescription(d, GetType()));
     }
     public override async Task HandleAsync(SearchDialogLabelAssignmentLogQuery req, CancellationToken ct)
     {

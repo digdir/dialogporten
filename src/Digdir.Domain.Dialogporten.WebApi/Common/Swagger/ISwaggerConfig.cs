@@ -5,9 +5,8 @@ public interface ISwaggerConfig
     public static abstract string OperationId
     {
         get;
-        set;
     }
-    static abstract RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder);
+    static abstract RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder, Type type);
     // TODO: Does this need to be split in two? One for request, one for response
     static abstract object GetExample();
 }
