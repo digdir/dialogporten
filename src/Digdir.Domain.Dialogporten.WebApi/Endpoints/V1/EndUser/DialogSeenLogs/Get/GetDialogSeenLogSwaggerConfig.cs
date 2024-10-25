@@ -9,12 +9,16 @@ namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.EndUser.DialogSeenLogs.
 
 public sealed class GetDialogSeenLogSwaggerConfig : ISwaggerConfig
 {
-    public static string OperationId => "GetDialogSeenLog";
+    public static string OperationId
+    {
+        get;
+        set;
+    } = null!;
     public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder)
         => builder.OperationId(OperationId)
-            .ProducesOneOf<GetDialogSeenLogDto>(
-                StatusCodes.Status200OK,
-                StatusCodes.Status404NotFound);
+                  .ProducesOneOf<GetDialogSeenLogDto>(
+                      StatusCodes.Status200OK,
+                      StatusCodes.Status404NotFound);
 
     public static object GetExample() => throw new NotImplementedException();
 }

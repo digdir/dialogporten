@@ -39,12 +39,11 @@ internal static class TypeNameConverter
 
     private static string FullName(Type type)
     {
-        var collapsedNamespace = RemoveNamespace(type.Namespace!).Replace(".", "");
-
         var isGeneric = type.IsGenericType;
+
         var nameWithoutGenericArgs =
             isGeneric
-                ? type.Name![..type.Name!.IndexOf('`')]
+                ? type.Name[..type.Name.IndexOf('`')]
                 : type.Name;
 
         var nameWithoutPostfix =
@@ -59,8 +58,9 @@ internal static class TypeNameConverter
             return name;
         }
 
-        var fullName = $"{collapsedNamespace}_{name}";
-        return fullName;
+        var collapsedNamespace = RemoveNamespace(type.Namespace!).Replace(".", "");
+
+        return $"{collapsedNamespace}_{name}";
     }
 
     private static string RemoveNamespace(string typeName)

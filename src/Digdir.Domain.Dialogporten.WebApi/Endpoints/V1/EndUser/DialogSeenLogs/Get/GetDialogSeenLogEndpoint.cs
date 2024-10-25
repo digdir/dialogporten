@@ -1,6 +1,7 @@
 using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogSeenLogs.Queries.Get;
 using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
+using Digdir.Domain.Dialogporten.WebApi.Common.Swagger;
 using FastEndpoints;
 using MediatR;
 
@@ -20,7 +21,7 @@ public sealed class GetDialogSeenLogEndpoint : Endpoint<GetDialogSeenLogQuery, G
         Get("dialogs/{dialogId}/seenlog/{seenLogId}");
         Policies(AuthorizationPolicy.EndUser);
         Group<EndUserGroup>();
-
+        GetDialogSeenLogSwaggerConfig.OperationId = TypeNameConverter.Convert(GetType());
         Description(d => GetDialogSeenLogSwaggerConfig.SetDescription(d));
     }
 
