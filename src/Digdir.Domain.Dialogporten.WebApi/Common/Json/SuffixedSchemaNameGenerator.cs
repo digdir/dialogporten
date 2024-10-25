@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using Digdir.Domain.Dialogporten.WebApi.Common.Swagger;
 using NJsonSchema.Generation;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Common.Json;
@@ -30,6 +31,7 @@ internal sealed class SuffixedSchemaNameGenerator : ISchemaNameGenerator
 
     private static string BaseGenerate(Type type)
     {
+        TypeNameConverter.Convert(type);
         var isGeneric = type.IsGenericType;
         var fullNameWithoutGenericArgs =
             isGeneric
