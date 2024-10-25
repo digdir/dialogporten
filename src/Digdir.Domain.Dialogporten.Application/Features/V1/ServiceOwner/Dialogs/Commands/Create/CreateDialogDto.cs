@@ -14,7 +14,7 @@ namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialog
 public class CreateDialogDto
 {
     /// <summary>
-    /// A self-defined UUIDv7 may be provided in order to support idempotent creation of dialogs. If not provided, a new UUIDv7 will be generated.
+    /// A self-defined UUIDv7 may be provided to support idempotent creation of dialogs. If not provided, a new UUIDv7 will be generated.
     /// </summary>
     /// <example>01913cd5-784f-7d3b-abef-4c77b1f0972d</example>
     public Guid? Id { get; set; }
@@ -28,7 +28,7 @@ public class CreateDialogDto
     public string ServiceResource { get; set; } = null!;
 
     /// <summary>
-    /// The party code representing the organization or person that the dialog belongs to in URN format
+    /// The party code representing the organization or person that the dialog belongs to in URN format.
     /// </summary>
     /// <example>
     /// urn:altinn:person:identifier-no:01125512345
@@ -67,7 +67,7 @@ public class CreateDialogDto
     public DateTimeOffset? DueAt { get; set; }
 
     /// <summary>
-    /// Optional process identifier used to indicate a business process this dialog belongs to
+    /// Optional process identifier used to indicate a business process this dialog belongs to.
     /// </summary>
     public string? Process { get; set; }
     /// <summary>
@@ -85,14 +85,14 @@ public class CreateDialogDto
     public DateTimeOffset? ExpiresAt { get; set; }
 
     /// <summary>
-    /// If set, will override the date and time when the dialog is set as created
+    /// If set, will override the date and time when the dialog is set as created.
     /// If not supplied, the current date /time will be used.
     /// </summary>
     /// <example>2022-12-31T23:59:59Z</example>
     public DateTimeOffset CreatedAt { get; set; }
 
     /// <summary>
-    /// If set, will override the date and time when the dialog is set as last updated
+    /// If set, will override the date and time when the dialog is set as last updated.
     /// If not supplied, the current date /time will be used.
     /// </summary>
     /// <example>2022-12-31T23:59:59Z</example>
@@ -104,11 +104,11 @@ public class CreateDialogDto
     public DialogStatus.Values Status { get; set; }
 
     /// <summary>
-    /// Set the system label of the dialog Migration purposes
+    /// Set the system label of the dialog Migration purposes.
     /// </summary>
     public SystemLabel.Values? SystemLabel { get; set; }
     /// <summary>
-    /// The dialog unstructured text content
+    /// The dialog unstructured text content.
     /// </summary>
     public CreateDialogContentDto Content { get; set; } = null!;
 
@@ -118,12 +118,12 @@ public class CreateDialogDto
     public List<CreateDialogSearchTagDto> SearchTags { get; set; } = [];
 
     /// <summary>
-    /// The attachments associated with the dialog (on an aggregate level)
+    /// The attachments associated with the dialog (on an aggregate level).
     /// </summary>
     public List<CreateDialogDialogAttachmentDto> Attachments { get; set; } = [];
 
     /// <summary>
-    /// The immutable list of transmissions associated with the dialog
+    /// The immutable list of transmissions associated with the dialog.
     /// </summary>
     public List<CreateDialogDialogTransmissionDto> Transmissions { get; set; } = [];
 
@@ -146,13 +146,13 @@ public class CreateDialogDto
 public sealed class CreateDialogDialogTransmissionDto
 {
     /// <summary>
-    /// A self-defined UUIDv7 may be provided in order to support idempotent creation of transmissions. If not provided, a new UUIDv7 will be generated.
+    /// A self-defined UUIDv7 may be provided to support idempotent creation of transmissions. If not provided, a new UUIDv7 will be generated.
     /// </summary>
     /// <example>01913cd5-784f-7d3b-abef-4c77b1f0972d</example>
     public Guid? Id { get; set; }
 
     /// <summary>
-    /// If supplied, overrides the creating date and time for the transmission
+    /// If supplied, overrides the creating date and time for the transmission.
     /// If not supplied, the current date /time will be used.
     /// </summary>
     public DateTimeOffset CreatedAt { get; set; }
@@ -196,12 +196,12 @@ public sealed class CreateDialogDialogTransmissionDto
     public CreateDialogDialogTransmissionSenderActorDto Sender { get; set; } = null!;
 
     /// <summary>
-    /// The transmission unstructured text content
+    /// The transmission unstructured text content.
     /// </summary>
     public CreateDialogDialogTransmissionContentDto Content { get; set; } = null!;
 
     /// <summary>
-    /// The transmission-level attachments
+    /// The transmission-level attachments.
     /// </summary>
     public List<CreateDialogTransmissionAttachmentDto> Attachments { get; set; } = [];
 }
@@ -275,7 +275,7 @@ public sealed class CreateDialogSearchTagDto
 public sealed class CreateDialogDialogActivityDto
 {
     /// <summary>
-    /// A self-defined UUIDv7 may be provided in order to support idempotent creation of activities. If not provided, a new UUIDv7 will be generated.
+    /// A self-defined UUIDv7 may be provided to support idempotent creation of activities. If not provided, a new UUIDv7 will be generated.
     /// </summary>
     /// <example>01913cd5-784f-7d3b-abef-4c77b1f0972d</example>
     public Guid? Id { get; set; }
@@ -361,7 +361,7 @@ public sealed class CreateDialogDialogApiActionDto
 {
     /// <summary>
     /// String identifier for the action, corresponding to the "action" attributeId used in the XACML service policy,
-    /// which by default is the policy belonging to the service referred to by "serviceResource" in the dialog
+    /// which by default is the policy belonging to the service referred to by "serviceResource" in the dialog.
     /// </summary>
     /// <example>write</example>
     public string Action { get; set; } = null!;
@@ -438,7 +438,7 @@ public sealed class CreateDialogDialogApiActionEndpointDto
 public sealed class CreateDialogDialogGuiActionDto
 {
     /// <summary>
-    /// The action identifier for the action, corresponding to the "action" attributeId used in the XACML service policy,
+    /// The action identifier for the action, corresponding to the "action" attributeId used in the XACML service policy.
     /// </summary>
     public string Action { get; set; } = null!;
 
