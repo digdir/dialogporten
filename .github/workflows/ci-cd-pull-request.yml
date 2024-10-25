@@ -5,7 +5,10 @@ on:
     branches: [main]
 
 
-permissions: write-all
+permissions:
+  contents: write
+  pull-requests: write
+  repository-projects: write
 
 jobs:
   get-versions-from-github:
