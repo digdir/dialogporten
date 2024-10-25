@@ -8,7 +8,7 @@ on:
         required: true
         type: string
     secrets:
-      GITHUB_TOKEN:
+      GH_TOKEN:
         required: true
     outputs:
       infra_version_sha:
@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     env:
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GH_TOKEN: ${{ secrets.GH_TOKEN }}
     outputs:
       infra_version_sha: ${{ steps.get-infra-sha.outputs.sha }}
       apps_version_sha: ${{ steps.get-apps-sha.outputs.sha }}
