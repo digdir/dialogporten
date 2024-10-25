@@ -112,7 +112,7 @@ internal static class DecisionRequestHelper
             _ => null
         })
         .Where(x => x != null)
-        .MinBy(x => PrioritizedClaimTypes.IndexOf(x!.Attribute.First().AttributeId)) switch
+        .MinBy(x => PrioritizedClaimTypes.IndexOf(x!.Attribute[0].AttributeId)) switch
         {
             { } validCategory => new List<XacmlJsonCategory> { validCategory },
             _ => throw new UnreachableException(
