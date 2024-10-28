@@ -1,123 +1,167 @@
-using System.Net.Http.Headers;
-using System.Text;
-using MessagePack.Resolvers;
+using System.Diagnostics;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Common.Swagger;
 
 internal static class TypeNameConverter
 {
-    // Amund: Bruk av dict gjør feilmeldingene mer tydelig på hva som er galt.
-    // private static readonly HashSet<string> RegisteredNames = new();
-    private static readonly Dictionary<string, string> RegisteredNamesMap = new();
+    private const string Of = "Of";
+    private const string And = "And";
+    private const string NamespaceClassSeparator = "_";
 
-    private static readonly string[] RemovedNamespace =
-    {
+    private static readonly string[] ExcludedClassPostfixes = ["Endpoint", "+Values"];
+    private static readonly string[] ExcludedClassPrefixes = ["Create", "Update", "Delete", "Patch"];
+    private static readonly string[] ExcludedNamespacePostfixes = [];
+    private static readonly string[] ExcludedNamespacePrefixes =
+    [
+        "FastEndpoints",
+        "Digdir.Domain.Dialogporten.Domain.",
         "Digdir.Domain.Dialogporten.WebApi.Endpoints.",
         "Digdir.Domain.Dialogporten.Application.Features."
-    };
+    ];
 
-    // Common namespace has unique handling, Can't be added to list above
-    private const string CommonNamespace = "Digdir.Domain.Dialogporten.Application.Common.";
-    private const string FastEndpointsNamespace = "FastEndpoints";
+    private static readonly Dictionary<string, Type> RegisteredTypeByShortName = new();
 
-    private const string EndpointPostfix = "Endpoint";
-
-    public static string Convert(Type type)
+    public static string ToShortNameStrict(Type type)
     {
-        var fullName = FullName(type);
-        // if (!RegisteredNames.Add(fullName))
-        // {
-        //     throw new ArgumentException($"{type.FullName} can't be registered. Type {fullName} is already registered.");
-        // }
-
-        if (RegisteredNamesMap.TryGetValue(fullName, out var value))
+        var shortName = ToShortName(type);
+        if (RegisteredTypeByShortName.TryGetValue(shortName, out var registeredType))
         {
-            throw new ArgumentException($"{type.FullName} can't be registered. Type {fullName} is already registered by {value}.");
+            throw new InvalidOperationException($"{type.FullName} can't be registered. Type {shortName} is already registered by {registeredType.FullName}.");
         }
-        RegisteredNamesMap.Add(fullName, type.FullName!);
 
-        return fullName;
+        RegisteredTypeByShortName.Add(shortName, type);
+        return shortName;
     }
 
-    private static string FullName(Type type)
+    internal static string ToShortName(Type type)
     {
-        var isGeneric = type.IsGenericType;
-
-        // When parsing generics we can get a type without namespace.
-        // FullName is needed for nested classes.
-        string shortName;
-        if (type.FullName is not null)
-        {
-            var nameWithoutGenericArgs = isGeneric
-                ? type.FullName![..type.FullName!.IndexOf('`')]
-                : type.FullName;
-            var index = nameWithoutGenericArgs!.LastIndexOf('.');
-            index = index == -1 ? 0 : index + 1;
-            shortName = nameWithoutGenericArgs[index..];
-        }
-        else
-        {
-            shortName = isGeneric
-                ? type.Name[..type.Name.IndexOf('`')]
-                : type.Name;
-        }
-
-        var nameWithoutPostfix =
-            shortName.EndsWith(EndpointPostfix, StringComparison.Ordinal)
-                ? shortName[..^EndpointPostfix.Length]
-                : shortName;
-
-        var name = isGeneric ? nameWithoutPostfix + GenericArgString(type) : nameWithoutPostfix;
-
-        if (type.Namespace!.StartsWith(CommonNamespace, StringComparison.Ordinal) || type.Namespace.StartsWith(FastEndpointsNamespace, StringComparison.Ordinal))
-        {
-            return name;
-        }
-
-        var collapsedNamespace = RemoveNamespace(type.Namespace!).Replace(".", "");
-
-        return $"{collapsedNamespace}_{name}";
+        var index = 0;
+        Span<char> finalName = stackalloc char[type.FullName!.Length];
+        ToShortName(type, finalName, ref index);
+        return finalName[..index].ToString();
     }
 
-    private static string RemoveNamespace(string typeName)
+    private static void ToShortName(Type type, Span<char> finalName, ref int index)
     {
-        foreach (var prefix in RemovedNamespace)
+        if (type.IsGenericType)
         {
-            if (typeName.StartsWith(prefix, StringComparison.Ordinal))
+            WriteGenericType(type, finalName, ref index);
+            return;
+        }
+
+        WriteNonGenericType(type, finalName, ref index);
+    }
+
+    private static void WriteGenericType(Type type, Span<char> finalName, ref int index)
+    {
+        var genericName = type.Name.AsSpan();
+        genericName[..genericName.IndexOf('`')].CopyTo(finalName, ref index);
+        Of.AsSpan().CopyTo(finalName, ref index);
+
+        using var typeArguments = type
+            .GetGenericArguments()
+            .AsEnumerable()
+            .GetEnumerator();
+
+        if (!typeArguments.MoveNext())
+        {
+            throw new UnreachableException("Assumption: Generic type has at least one generic argument.");
+        }
+
+        ToShortName(typeArguments.Current, finalName, ref index);
+        while (typeArguments.MoveNext())
+        {
+            And.AsSpan().CopyTo(finalName, ref index);
+            ToShortName(typeArguments.Current, finalName, ref index);
+        }
+    }
+
+    private static void WriteNonGenericType(Type type, Span<char> finalName, ref int index)
+    {
+        // If the input type is a generic parameter, use its name as is. For example in the
+        // generic type List<T>, T is a generic parameter. Concrete types are not generic 
+        // parameters and will be processed as usual. For example in List<int>, int is a
+        // concrete type, and not a generic parameter.
+        if (type.IsGenericTypeParameter)
+        {
+            type.Name.AsSpan().CopyTo(finalName, ref index);
+            return;
+        }
+
+        type.FullName
+            .AsSpan()
+            .SplitNamespaceAndClassName(out var namespaceName, out var className);
+        className = className
+            .ExcludePrefix(ExcludedClassPrefixes)
+            .ExcludePostfix(ExcludedClassPostfixes);
+        namespaceName = namespaceName
+            .ExcludePrefix(ExcludedNamespacePrefixes)
+            .ExcludePostfix(ExcludedNamespacePostfixes);
+        var namespaceWritten = false;
+
+        // Copy namespace without '.'
+        foreach (var @char in namespaceName)
+        {
+            if (@char != '.')
             {
-                return typeName[prefix.Length..];
+                finalName[index++] = @char;
+                namespaceWritten = true;
             }
         }
-        return typeName;
+
+        // Add separator between namespace and class name
+        if (namespaceWritten)
+        {
+            NamespaceClassSeparator.AsSpan().CopyTo(finalName, ref index);
+        }
+
+        // Copy class name
+        className.CopyTo(finalName, ref index);
     }
 
-    private static string GenericArgString(Type type)
+    private static ReadOnlySpan<char> ExcludePrefix(this ReadOnlySpan<char> name, IEnumerable<string> prefixes)
     {
-        if (!type.IsGenericType) return type.Name;
-
-        var sb = new StringBuilder();
-        var args = type.GetGenericArguments();
-
-        for (var i = 0; i < args.Length; i++)
+        foreach (var prefix in prefixes)
         {
-            var arg = args[i];
-            if (i == 0)
-                sb.Append("Of");
-            sb.Append(TypeNameWithoutGenericArgs(arg));
-            // Amund: problemet oppstår her, type som blir sendt in har ikke FullName og ingen Namespace og derfor funker den ikke
-            sb.Append(FullName(arg));
-            if (i < args.Length - 1)
-                sb.Append("And");
+            if (name.StartsWith(prefix))
+            {
+                name = name[prefix.Length..];
+                break;
+            }
         }
 
-        return sb.ToString();
+        return name;
+    }
 
-        static string TypeNameWithoutGenericArgs(Type type)
+    private static ReadOnlySpan<char> ExcludePostfix(this ReadOnlySpan<char> name, IEnumerable<string> postfixes)
+    {
+        foreach (var postfix in postfixes)
         {
-            var index = type.Name.IndexOf('`');
-            index = index == -1 ? 0 : index;
-
-            return type.Name[..index];
+            if (name.EndsWith(postfix))
+            {
+                name = name[..^postfix.Length];
+                break;
+            }
         }
+
+        return name;
+    }
+
+    private static void SplitNamespaceAndClassName(this ReadOnlySpan<char> fullName, out ReadOnlySpan<char> namespaceName, out ReadOnlySpan<char> className)
+    {
+        const int notFound = -1;
+        var classNamespaceSeparatorIndex = fullName.LastIndexOf('.');
+        className = classNamespaceSeparatorIndex == notFound
+            ? fullName
+            : fullName[(classNamespaceSeparatorIndex + 1)..];
+        namespaceName = classNamespaceSeparatorIndex == notFound
+            ? ReadOnlySpan<char>.Empty
+            : fullName[..classNamespaceSeparatorIndex];
+    }
+
+    private static void CopyTo(this ReadOnlySpan<char> source, Span<char> destination, ref int index)
+    {
+        source.CopyTo(destination[index..]);
+        index += source.Length;
     }
 }

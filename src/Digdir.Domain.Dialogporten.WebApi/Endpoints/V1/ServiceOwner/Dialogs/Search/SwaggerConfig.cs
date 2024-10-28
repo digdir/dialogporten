@@ -13,7 +13,7 @@ public sealed class SwaggerConfig : ISwaggerConfig
 {
 
     public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder, Type type)
-        => builder.OperationId(TypeNameConverter.Convert(type))
+        => builder.OperationId(TypeNameConverter.ToShortNameStrict(type))
             .ClearDefaultProduces(StatusCodes.Status403Forbidden);
 
     public static object GetExample() => throw new NotImplementedException();

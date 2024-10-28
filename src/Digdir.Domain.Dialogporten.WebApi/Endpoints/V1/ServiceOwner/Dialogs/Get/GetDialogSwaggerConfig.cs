@@ -12,7 +12,7 @@ public sealed class GetDialogSwaggerConfig : ISwaggerConfig
 {
 
     public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder, Type type)
-        => builder.OperationId(TypeNameConverter.Convert(type))
+        => builder.OperationId(TypeNameConverter.ToShortNameStrict(type))
             .ProducesOneOf<GetDialogDto>(
                 StatusCodes.Status200OK,
                 StatusCodes.Status404NotFound);

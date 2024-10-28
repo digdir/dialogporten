@@ -21,7 +21,7 @@ internal abstract class UpdateDialogSwaggerConfig : ISwaggerConfig
 
     public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder, Type type) =>
         builder
-            .OperationId(TypeNameConverter.Convert(type))
+            .OperationId(TypeNameConverter.ToShortNameStrict(type))
             .ProducesOneOf(
                 StatusCodes.Status204NoContent,
                 StatusCodes.Status400BadRequest,

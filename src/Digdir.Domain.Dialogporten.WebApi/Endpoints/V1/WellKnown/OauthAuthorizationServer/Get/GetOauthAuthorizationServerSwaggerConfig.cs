@@ -9,7 +9,7 @@ public sealed class GetOauthAuthorizationServerSwaggerConfig : ISwaggerConfig
 {
 
     public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder, Type type)
-        => builder.OperationId(TypeNameConverter.Convert(type))
+        => builder.OperationId(TypeNameConverter.ToShortNameStrict(type))
             .ProducesOneOf<GetOauthAuthorizationServerDto>(
                 StatusCodes.Status200OK);
 

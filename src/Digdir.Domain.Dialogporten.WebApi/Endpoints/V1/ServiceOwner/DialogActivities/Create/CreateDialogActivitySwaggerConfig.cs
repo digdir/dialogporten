@@ -10,7 +10,7 @@ namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.DialogActi
 public sealed class CreateDialogActivitySwaggerConfig : ISwaggerConfig
 {
     public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder, Type type)
-        => builder.OperationId(TypeNameConverter.Convert(type))
+        => builder.OperationId(TypeNameConverter.ToShortNameStrict(type))
             .ProducesOneOf(
                 StatusCodes.Status201Created,
                 StatusCodes.Status400BadRequest,

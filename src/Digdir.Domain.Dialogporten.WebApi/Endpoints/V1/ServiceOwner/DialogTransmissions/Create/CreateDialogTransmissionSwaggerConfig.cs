@@ -11,7 +11,7 @@ public sealed class CreateDialogTransmissionSwaggerConfig : ISwaggerConfig
 {
 
     public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder, Type type)
-        => builder.OperationId(TypeNameConverter.Convert(type))
+        => builder.OperationId(TypeNameConverter.ToShortNameStrict(type))
             .ProducesOneOf(
                 StatusCodes.Status201Created,
                 StatusCodes.Status400BadRequest,

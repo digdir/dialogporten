@@ -19,7 +19,7 @@ internal sealed class SuffixedSchemaNameGenerator : ISchemaNameGenerator
     {
 
 
-        return TypeNameConverter.Convert(type);
+        return TypeNameConverter.ToShortNameStrict(type);
     }
 
     private static string BaseGenerate(Type type)

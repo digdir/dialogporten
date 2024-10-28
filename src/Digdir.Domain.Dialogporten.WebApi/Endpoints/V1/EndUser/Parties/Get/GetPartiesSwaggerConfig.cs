@@ -9,7 +9,7 @@ public sealed class GetPartiesSwaggerConfig : ISwaggerConfig
 {
 
     public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder, Type type)
-        => builder.OperationId(TypeNameConverter.Convert(type))
+        => builder.OperationId(TypeNameConverter.ToShortNameStrict(type))
                   .Produces<List<GetPartiesDto>>();
 
     public static object GetExample() => throw new NotImplementedException();

@@ -11,7 +11,7 @@ namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.DialogTran
 public sealed class SearchDialogTransmissionSwaggerConfig : ISwaggerConfig
 {
     public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder, Type type)
-        => builder.OperationId(TypeNameConverter.Convert(type));
+        => builder.OperationId(TypeNameConverter.ToShortNameStrict(type));
 
     public static object GetExample() => throw new NotImplementedException();
 }
