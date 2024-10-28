@@ -113,15 +113,15 @@ public class SearchDialogDtoBase
     /// <summary>
     /// The latest entry in the dialog's activity log.
     /// </summary>
-    public SearchDialogDialogActivityDto? LatestActivity { get; set; }
+    public DialogActivityDto? LatestActivity { get; set; }
 
     /// <summary>
     /// The list of seen log entries for the dialog newer than the dialog ChangedAt date.
     /// </summary>
-    public List<SearchDialogDialogSeenLogDto> SeenSinceLastUpdate { get; set; } = [];
+    public List<DialogSeenLogDto> SeenSinceLastUpdate { get; set; } = [];
 }
 
-public sealed class SearchDialogDialogSeenLogDto
+public sealed class DialogSeenLogDto
 {
     /// <summary>
     /// The unique identifier for the seen log entry in UUIDv7 format.
@@ -136,7 +136,7 @@ public sealed class SearchDialogDialogSeenLogDto
     /// <summary>
     /// The actor that saw the dialog revision
     /// </summary>
-    public SearchDialogDialogSeenLogSeenByActorDto SeenBy { get; set; } = null!;
+    public DialogSeenLogSeenByActorDto SeenBy { get; set; } = null!;
 
     /// <summary>
     /// Flag indicating whether the seen log entry was created via the service owner.
@@ -151,7 +151,7 @@ public sealed class SearchDialogDialogSeenLogDto
     public bool IsCurrentEndUser { get; set; }
 }
 
-public sealed class SearchDialogDialogSeenLogSeenByActorDto
+public sealed class DialogSeenLogSeenByActorDto
 {
     /// <summary>
     /// The natural name of the person/business that saw the dialog revision.
@@ -168,7 +168,7 @@ public sealed class SearchDialogDialogSeenLogSeenByActorDto
     public string ActorId { get; set; } = null!;
 }
 
-public sealed class SearchDialogDialogActivityDto
+public sealed class DialogActivityDto
 {
     /// <summary>
     /// The unique identifier for the activity in UUIDv7 format.
@@ -200,7 +200,7 @@ public sealed class SearchDialogDialogActivityDto
     /// <summary>
     /// The actor that performed the activity.
     /// </summary>
-    public SearchDialogDialogActivityPerformedByActorDto PerformedBy { get; set; } = null!;
+    public DialogActivityPerformedByActorDto PerformedBy { get; set; } = null!;
 
     /// <summary>
     /// Unstructured text describing the activity. Only set if the activity type is "Information".
@@ -208,7 +208,7 @@ public sealed class SearchDialogDialogActivityDto
     public List<LocalizationDto> Description { get; set; } = [];
 }
 
-public sealed class SearchDialogDialogActivityPerformedByActorDto
+public sealed class DialogActivityPerformedByActorDto
 {
     /// <summary>
     /// What type of actor performed the activity.

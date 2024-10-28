@@ -35,7 +35,7 @@ public class ContentTypeTests
             .Select(x => x.Name)
             .ToList();
 
-        var dtoPropertyNames = typeof(SearchDialogContentDto)
+        var dtoPropertyNames = typeof(ContentDto)
             .GetProperties()
             .Select(p => p.Name)
             .ToList();

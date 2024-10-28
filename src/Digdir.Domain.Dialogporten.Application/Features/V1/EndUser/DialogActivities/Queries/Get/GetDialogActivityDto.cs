@@ -14,11 +14,11 @@ public sealed class GetDialogActivityDto
 
     public Guid? TransmissionId { get; set; }
 
-    public GetDialogActivityPerformedByActorDto PerformedBy { get; set; } = null!;
+    public PerformedByActorDto PerformedBy { get; set; } = null!;
     public List<LocalizationDto> Description { get; set; } = [];
 }
 
-public sealed class GetDialogActivityPerformedByActorDto
+public sealed class PerformedByActorDto
 {
     public Guid Id { get; set; }
     public ActorType.Values ActorType { get; set; }

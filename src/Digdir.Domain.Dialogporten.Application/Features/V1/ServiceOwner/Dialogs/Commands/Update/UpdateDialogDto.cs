@@ -59,42 +59,42 @@ public sealed class UpdateDialogDto
     /// <summary>
     /// The dialog unstructured text content
     /// </summary>
-    public UpdateDialogContentDto Content { get; set; } = null!;
+    public ContentDto Content { get; set; } = null!;
 
     /// <summary>
     /// A list of words (tags) that will be used in dialog search queries. Not visible in end-user DTO.
     /// </summary>
-    public List<UpdateDialogSearchTagDto> SearchTags { get; set; } = [];
+    public List<SearchTagDto> SearchTags { get; set; } = [];
 
     /// <summary>
     /// The attachments associated with the dialog (on an aggregate level)
     /// </summary>
-    public List<UpdateDialogDialogAttachmentDto> Attachments { get; set; } = [];
+    public List<DialogAttachmentDto> Attachments { get; set; } = [];
 
     /// <summary>
     /// The immutable list of transmissions associated with the dialog. When updating via PUT, any transmissions
     /// added here will be appended to the existing list of transmissions.
     /// </summary>
-    public List<UpdateDialogDialogTransmissionDto> Transmissions { get; set; } = [];
+    public List<DialogTransmissionDto> Transmissions { get; set; } = [];
 
     /// <summary>
     /// The GUI actions associated with the dialog. Should be used in browser-based interactive frontends.
     /// </summary>
-    public List<UpdateDialogDialogGuiActionDto> GuiActions { get; set; } = [];
+    public List<DialogGuiActionDto> GuiActions { get; set; } = [];
 
     /// <summary>
     /// The API actions associated with the dialog. Should be used in specialized, non-browser-based integrations.
     /// </summary>
-    public List<UpdateDialogDialogApiActionDto> ApiActions { get; set; } = [];
+    public List<DialogApiActionDto> ApiActions { get; set; } = [];
 
     /// <summary>
     /// An immutable list of activities associated with the dialog. When updating via PUT, any activities added here
     /// will be appended to the existing list of activities.
     /// </summary>
-    public List<UpdateDialogDialogActivityDto> Activities { get; set; } = [];
+    public List<DialogActivityDto> Activities { get; set; } = [];
 }
 
-public class UpdateDialogDialogTransmissionDto
+public class DialogTransmissionDto
 {
     /// <summary>
     /// The UUDIv7 of the action may be provided to support idempotent additions to the list of transmissions.
@@ -145,20 +145,20 @@ public class UpdateDialogDialogTransmissionDto
     /// <summary>
     /// The actor that sent the transmission.
     /// </summary>
-    public UpdateDialogDialogTransmissionSenderActorDto Sender { get; set; } = null!;
+    public DialogTransmissionSenderActorDto Sender { get; set; } = null!;
 
     /// <summary>
     /// The transmission unstructured text content
     /// </summary>
-    public UpdateDialogDialogTransmissionContentDto Content { get; set; } = null!;
+    public DialogTransmissionContentDto Content { get; set; } = null!;
 
     /// <summary>
     /// The transmission-level attachments
     /// </summary>
-    public List<UpdateDialogTransmissionAttachmentDto> Attachments { get; set; } = [];
+    public List<TransmissionAttachmentDto> Attachments { get; set; } = [];
 }
 
-public sealed class UpdateDialogDialogTransmissionContentDto
+public sealed class DialogTransmissionContentDto
 {
     /// <summary>
     /// The transmission title. Must be text/plain.
@@ -177,7 +177,7 @@ public sealed class UpdateDialogDialogTransmissionContentDto
     public ContentValueDto? ContentReference { get; set; }
 }
 
-public sealed class UpdateDialogDialogTransmissionSenderActorDto
+public sealed class DialogTransmissionSenderActorDto
 {
     /// <summary>
     /// The type of actor that sent the transmission.
@@ -199,7 +199,7 @@ public sealed class UpdateDialogDialogTransmissionSenderActorDto
     public string? ActorId { get; set; }
 }
 
-public sealed class UpdateDialogContentDto
+public sealed class ContentDto
 {
     /// <summary>
     /// The title of the dialog. Must be text/plain.
@@ -232,7 +232,7 @@ public sealed class UpdateDialogContentDto
     public ContentValueDto? MainContentReference { get; set; }
 }
 
-public sealed class UpdateDialogSearchTagDto
+public sealed class SearchTagDto
 {
     /// <summary>
     /// A search tag value.
@@ -240,7 +240,7 @@ public sealed class UpdateDialogSearchTagDto
     public string Value { get; set; } = null!;
 }
 
-public class UpdateDialogDialogActivityDto
+public class DialogActivityDto
 {
     /// <summary>
     /// The UUDIv7 of the action may be provided to support idempotent additions to the list of activities.
@@ -274,7 +274,7 @@ public class UpdateDialogDialogActivityDto
     /// <summary>
     /// The actor that performed the activity.
     /// </summary>
-    public UpdateDialogDialogActivityPerformedByActorDto PerformedBy { get; set; } = null!;
+    public DialogActivityPerformedByActorDto PerformedBy { get; set; } = null!;
 
     /// <summary>
     /// Unstructured text describing the activity. Only set if the activity type is "Information".
@@ -282,7 +282,7 @@ public class UpdateDialogDialogActivityDto
     public List<LocalizationDto> Description { get; set; } = [];
 }
 
-public sealed class UpdateDialogDialogActivityPerformedByActorDto
+public sealed class DialogActivityPerformedByActorDto
 {
     /// <summary>
     /// What type of actor performed the activity.
@@ -304,7 +304,7 @@ public sealed class UpdateDialogDialogActivityPerformedByActorDto
     public string? ActorId { get; set; }
 }
 
-public sealed class UpdateDialogDialogApiActionDto
+public sealed class DialogApiActionDto
 {
     /// <summary>
     /// A UUIDv7 used for merging existing data, unknown IDs will be ignored as this entity does not support user-defined IDs.
@@ -338,10 +338,10 @@ public sealed class UpdateDialogDialogApiActionDto
     /// <summary>
     /// The endpoints associated with the action.
     /// </summary>
-    public List<UpdateDialogDialogApiActionEndpointDto> Endpoints { get; set; } = [];
+    public List<DialogApiActionEndpointDto> Endpoints { get; set; } = [];
 }
 
-public sealed class UpdateDialogDialogApiActionEndpointDto
+public sealed class DialogApiActionEndpointDto
 {
     /// <summary>
     /// A UUIDv7 used for merging existing data, unknown IDs will be ignored as this entity does not support user-defined IDs.
@@ -394,7 +394,7 @@ public sealed class UpdateDialogDialogApiActionEndpointDto
     public DateTimeOffset? SunsetAt { get; set; }
 }
 
-public sealed class UpdateDialogDialogGuiActionDto
+public sealed class DialogGuiActionDto
 {
     /// <summary>
     /// A UUIDv7 used for merging existing data, unknown IDs will be ignored as this entity does not support user-defined IDs.
@@ -462,7 +462,7 @@ public sealed class UpdateDialogDialogGuiActionDto
     public List<LocalizationDto>? Prompt { get; set; }
 }
 
-public sealed class UpdateDialogDialogAttachmentDto
+public sealed class DialogAttachmentDto
 {
     /// <summary>
     /// A UUIDv7 used for merging existing data, unknown IDs will be ignored as this entity does not support user-defined IDs.
@@ -478,10 +478,10 @@ public sealed class UpdateDialogDialogAttachmentDto
     /// <summary>
     /// The URLs associated with the attachment, each referring to a different representation of the attachment.
     /// </summary>
-    public List<UpdateDialogDialogAttachmentUrlDto> Urls { get; set; } = [];
+    public List<DialogAttachmentUrlDto> Urls { get; set; } = [];
 }
 
-public sealed class UpdateDialogDialogAttachmentUrlDto
+public sealed class DialogAttachmentUrlDto
 {
     /// <summary>
     /// A UUIDv7 used for merging existing data, unknown IDs will be ignored as this entity does not support user-defined IDs.
@@ -509,7 +509,7 @@ public sealed class UpdateDialogDialogAttachmentUrlDto
     public AttachmentUrlConsumerType.Values ConsumerType { get; set; }
 }
 
-public sealed class UpdateDialogTransmissionAttachmentDto
+public sealed class TransmissionAttachmentDto
 {
     /// <summary>
     /// A self-defined UUIDv7 may be provided to support idempotent creation of transmission attachments. If not provided, a new UUIDv7 will be generated.
@@ -525,10 +525,10 @@ public sealed class UpdateDialogTransmissionAttachmentDto
     /// <summary>
     /// The URLs associated with the attachment, each referring to a different representation of the attachment.
     /// </summary>
-    public List<UpdateDialogTransmissionAttachmentUrlDto> Urls { get; set; } = [];
+    public List<TransmissionAttachmentUrlDto> Urls { get; set; } = [];
 }
 
-public sealed class UpdateDialogTransmissionAttachmentUrlDto
+public sealed class TransmissionAttachmentUrlDto
 {
     /// <summary>
     /// The fully qualified URL of the attachment.

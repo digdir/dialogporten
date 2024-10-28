@@ -8,6 +8,7 @@ using Digdir.Library.Entity.Abstractions.Features.Identifiable;
 using FastEndpoints;
 using MediatR;
 using Constants = Digdir.Domain.Dialogporten.WebApi.Common.Constants;
+using DialogTransmissionDto = Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Update.DialogTransmissionDto;
 using IMapper = AutoMapper.IMapper;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.DialogTransmissions.Create;
@@ -68,7 +69,7 @@ public sealed class CreateDialogTransmissionEndpoint : Endpoint<CreateDialogTran
     }
 }
 
-public sealed class CreateDialogTransmissionRequest : UpdateDialogDialogTransmissionDto
+public sealed class CreateDialogTransmissionRequest : DialogTransmissionDto
 {
     public Guid DialogId { get; set; }
 

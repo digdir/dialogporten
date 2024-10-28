@@ -11,7 +11,7 @@ public sealed class MappingProfile : Profile
         CreateMap<DialogSeenLog, SearchDialogSeenLogDto>()
             .ForMember(dest => dest.SeenAt, opt => opt.MapFrom(src => src.CreatedAt));
 
-        CreateMap<DialogSeenLogSeenByActor, SearchDialogSeenLogSeenByActorDto>()
+        CreateMap<DialogSeenLogSeenByActor, SeenLogSeenByActorDto>()
             .ForMember(dest => dest.ActorId, opt => opt.MapFrom(src => IdentifierMasker.GetMaybeMaskedIdentifier(src.ActorId)));
     }
 }

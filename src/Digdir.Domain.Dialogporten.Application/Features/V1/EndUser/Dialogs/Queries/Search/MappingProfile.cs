@@ -30,20 +30,20 @@ internal sealed class MappingProfile : Profile
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.StatusId))
             .ForMember(dest => dest.SystemLabel, opt => opt.MapFrom(src => src.DialogEndUserContext.SystemLabelId));
 
-        CreateMap<DialogSeenLog, SearchDialogDialogSeenLogDto>()
+        CreateMap<DialogSeenLog, DialogSeenLogDto>()
             .ForMember(dest => dest.SeenAt, opt => opt.MapFrom(src => src.CreatedAt));
 
-        CreateMap<DialogSeenLogSeenByActor, SearchDialogDialogSeenLogSeenByActorDto>()
+        CreateMap<DialogSeenLogSeenByActor, DialogSeenLogSeenByActorDto>()
             .ForMember(dest => dest.ActorId, opt => opt.MapFrom(src => IdentifierMasker.GetMaybeMaskedIdentifier(src.ActorId)));
 
-        CreateMap<DialogActivity, SearchDialogDialogActivityDto>()
+        CreateMap<DialogActivity, DialogActivityDto>()
             .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.TypeId));
 
-        CreateMap<DialogActivityPerformedByActor, SearchDialogDialogActivityPerformedByActorDto>()
+        CreateMap<DialogActivityPerformedByActor, DialogActivityPerformedByActorDto>()
             .ForMember(dest => dest.ActorType, opt => opt.MapFrom(src => src.ActorTypeId))
             .ForMember(dest => dest.ActorId, opt => opt.MapFrom(src => IdentifierMasker.GetMaybeMaskedIdentifier(src.ActorId)));
 
-        CreateMap<List<DialogContent>?, SearchDialogContentDto?>()
-            .ConvertUsing<DialogContentOutputConverter<SearchDialogContentDto>>();
+        CreateMap<List<DialogContent>?, ContentDto?>()
+            .ConvertUsing<DialogContentOutputConverter<ContentDto>>();
     }
 }

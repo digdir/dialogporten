@@ -19,13 +19,13 @@ namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialog
 internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDialogCommand>
 {
     public CreateDialogCommandValidator(
-        IValidator<CreateDialogDialogTransmissionDto> transmissionValidator,
-        IValidator<CreateDialogDialogAttachmentDto> attachmentValidator,
-        IValidator<CreateDialogDialogGuiActionDto> guiActionValidator,
-        IValidator<CreateDialogDialogApiActionDto> apiActionValidator,
-        IValidator<CreateDialogDialogActivityDto> activityValidator,
-        IValidator<CreateDialogSearchTagDto> searchTagValidator,
-        IValidator<CreateDialogContentDto> contentValidator)
+        IValidator<DialogTransmissionDto> transmissionValidator,
+        IValidator<DialogAttachmentDto> attachmentValidator,
+        IValidator<DialogGuiActionDto> guiActionValidator,
+        IValidator<DialogApiActionDto> apiActionValidator,
+        IValidator<DialogActivityDto> activityValidator,
+        IValidator<SearchTagDto> searchTagValidator,
+        IValidator<ContentDto> contentValidator)
     {
         RuleFor(x => x.Id)
             .IsValidUuidV7()
@@ -147,12 +147,12 @@ internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDia
     }
 }
 
-internal sealed class CreateDialogDialogTransmissionDtoValidator : AbstractValidator<CreateDialogDialogTransmissionDto>
+internal sealed class CreateDialogDialogTransmissionDtoValidator : AbstractValidator<DialogTransmissionDto>
 {
     public CreateDialogDialogTransmissionDtoValidator(
-        IValidator<CreateDialogDialogTransmissionSenderActorDto> actorValidator,
-        IValidator<CreateDialogDialogTransmissionContentDto> contentValidator,
-        IValidator<CreateDialogTransmissionAttachmentDto> attachmentValidator)
+        IValidator<DialogTransmissionSenderActorDto> actorValidator,
+        IValidator<DialogTransmissionContentDto> contentValidator,
+        IValidator<TransmissionAttachmentDto> attachmentValidator)
     {
         RuleFor(x => x.Id)
             .IsValidUuidV7()
@@ -182,10 +182,10 @@ internal sealed class CreateDialogDialogTransmissionDtoValidator : AbstractValid
     }
 }
 
-internal sealed class CreateDialogContentDtoValidator : AbstractValidator<CreateDialogContentDto?>
+internal sealed class CreateDialogContentDtoValidator : AbstractValidator<ContentDto?>
 {
     private static readonly NullabilityInfoContext Context = new();
-    private static readonly Dictionary<string, PropertyInfoWithNullability> SourcePropertyMetaDataByName = typeof(CreateDialogContentDto)
+    private static readonly Dictionary<string, PropertyInfoWithNullability> SourcePropertyMetaDataByName = typeof(ContentDto)
         .GetProperties()
         .Select(x =>
         {
@@ -223,10 +223,10 @@ internal sealed class CreateDialogContentDtoValidator : AbstractValidator<Create
     }
 }
 
-internal sealed class CreateDialogDialogTransmissionContentDtoValidator : AbstractValidator<CreateDialogDialogTransmissionContentDto>
+internal sealed class CreateDialogDialogTransmissionContentDtoValidator : AbstractValidator<DialogTransmissionContentDto>
 {
     private static readonly NullabilityInfoContext Context = new();
-    private static readonly Dictionary<string, PropertyInfoWithNullability> SourcePropertyMetaDataByName = typeof(CreateDialogDialogTransmissionContentDto)
+    private static readonly Dictionary<string, PropertyInfoWithNullability> SourcePropertyMetaDataByName = typeof(DialogTransmissionContentDto)
         .GetProperties()
         .Select(x =>
         {
@@ -264,11 +264,11 @@ internal sealed class CreateDialogDialogTransmissionContentDtoValidator : Abstra
     }
 }
 
-internal sealed class CreateDialogDialogAttachmentDtoValidator : AbstractValidator<CreateDialogDialogAttachmentDto>
+internal sealed class CreateDialogDialogAttachmentDtoValidator : AbstractValidator<DialogAttachmentDto>
 {
     public CreateDialogDialogAttachmentDtoValidator(
         IValidator<IEnumerable<LocalizationDto>> localizationsValidator,
-        IValidator<CreateDialogDialogAttachmentUrlDto> urlValidator)
+        IValidator<DialogAttachmentUrlDto> urlValidator)
     {
         RuleFor(x => x.DisplayName)
             .SetValidator(localizationsValidator);
@@ -278,7 +278,7 @@ internal sealed class CreateDialogDialogAttachmentDtoValidator : AbstractValidat
     }
 }
 
-internal sealed class CreateDialogDialogAttachmentUrlDtoValidator : AbstractValidator<CreateDialogDialogAttachmentUrlDto>
+internal sealed class CreateDialogDialogAttachmentUrlDtoValidator : AbstractValidator<DialogAttachmentUrlDto>
 {
     public CreateDialogDialogAttachmentUrlDtoValidator()
     {
@@ -291,11 +291,11 @@ internal sealed class CreateDialogDialogAttachmentUrlDtoValidator : AbstractVali
     }
 }
 
-internal sealed class CreateDialogTransmissionAttachmentDtoValidator : AbstractValidator<CreateDialogTransmissionAttachmentDto>
+internal sealed class CreateDialogTransmissionAttachmentDtoValidator : AbstractValidator<TransmissionAttachmentDto>
 {
     public CreateDialogTransmissionAttachmentDtoValidator(
         IValidator<IEnumerable<LocalizationDto>> localizationsValidator,
-        IValidator<CreateDialogTransmissionAttachmentUrlDto> urlValidator)
+        IValidator<TransmissionAttachmentUrlDto> urlValidator)
     {
         RuleFor(x => x.Id)
             .IsValidUuidV7()
@@ -309,7 +309,7 @@ internal sealed class CreateDialogTransmissionAttachmentDtoValidator : AbstractV
     }
 }
 
-internal sealed class CreateDialogTransmissionAttachmentUrlDtoValidator : AbstractValidator<CreateDialogTransmissionAttachmentUrlDto>
+internal sealed class CreateDialogTransmissionAttachmentUrlDtoValidator : AbstractValidator<TransmissionAttachmentUrlDto>
 {
     public CreateDialogTransmissionAttachmentUrlDtoValidator()
     {
@@ -322,7 +322,7 @@ internal sealed class CreateDialogTransmissionAttachmentUrlDtoValidator : Abstra
     }
 }
 
-internal sealed class CreateDialogSearchTagDtoValidator : AbstractValidator<CreateDialogSearchTagDto>
+internal sealed class CreateDialogSearchTagDtoValidator : AbstractValidator<SearchTagDto>
 {
     public CreateDialogSearchTagDtoValidator()
     {
@@ -332,7 +332,7 @@ internal sealed class CreateDialogSearchTagDtoValidator : AbstractValidator<Crea
     }
 }
 
-internal sealed class CreateDialogDialogGuiActionDtoValidator : AbstractValidator<CreateDialogDialogGuiActionDto>
+internal sealed class CreateDialogDialogGuiActionDtoValidator : AbstractValidator<DialogGuiActionDto>
 {
     public CreateDialogDialogGuiActionDtoValidator(
         IValidator<IEnumerable<LocalizationDto>> localizationsValidator)
@@ -361,10 +361,10 @@ internal sealed class CreateDialogDialogGuiActionDtoValidator : AbstractValidato
     }
 }
 
-internal sealed class CreateDialogDialogApiActionDtoValidator : AbstractValidator<CreateDialogDialogApiActionDto>
+internal sealed class CreateDialogDialogApiActionDtoValidator : AbstractValidator<DialogApiActionDto>
 {
     public CreateDialogDialogApiActionDtoValidator(
-        IValidator<CreateDialogDialogApiActionEndpointDto> apiActionEndpointValidator)
+        IValidator<DialogApiActionEndpointDto> apiActionEndpointValidator)
     {
         RuleFor(x => x.Action)
             .NotEmpty()
@@ -377,7 +377,7 @@ internal sealed class CreateDialogDialogApiActionDtoValidator : AbstractValidato
     }
 }
 
-internal sealed class CreateDialogDialogApiActionEndpointDtoValidator : AbstractValidator<CreateDialogDialogApiActionEndpointDto>
+internal sealed class CreateDialogDialogApiActionEndpointDtoValidator : AbstractValidator<DialogApiActionEndpointDto>
 {
     public CreateDialogDialogApiActionEndpointDtoValidator()
     {
@@ -400,16 +400,16 @@ internal sealed class CreateDialogDialogApiActionEndpointDtoValidator : Abstract
             .MaximumLength(Constants.DefaultMaxUriLength);
         RuleFor(x => x.Deprecated)
             .Equal(true)
-            .WithMessage($"'{{PropertyName}}' must be equal to 'True' when {nameof(CreateDialogDialogApiActionEndpointDto.SunsetAt)} is set.")
+            .WithMessage($"'{{PropertyName}}' must be equal to 'True' when {nameof(DialogApiActionEndpointDto.SunsetAt)} is set.")
             .When(x => x.SunsetAt.HasValue);
     }
 }
 
-internal sealed class CreateDialogDialogActivityDtoValidator : AbstractValidator<CreateDialogDialogActivityDto>
+internal sealed class CreateDialogDialogActivityDtoValidator : AbstractValidator<DialogActivityDto>
 {
     public CreateDialogDialogActivityDtoValidator(
         IValidator<IEnumerable<LocalizationDto>> localizationsValidator,
-        IValidator<CreateDialogDialogActivityPerformedByActorDto> actorValidator)
+        IValidator<DialogActivityPerformedByActorDto> actorValidator)
     {
         RuleFor(x => x.Id)
             .IsValidUuidV7()
@@ -444,7 +444,7 @@ internal sealed class CreateDialogDialogActivityDtoValidator : AbstractValidator
     }
 }
 
-internal sealed class CreateDialogDialogTransmissionActorDtoValidator : AbstractValidator<CreateDialogDialogTransmissionSenderActorDto>
+internal sealed class CreateDialogDialogTransmissionActorDtoValidator : AbstractValidator<DialogTransmissionSenderActorDto>
 {
     public CreateDialogDialogTransmissionActorDtoValidator()
     {
@@ -463,7 +463,7 @@ internal sealed class CreateDialogDialogTransmissionActorDtoValidator : Abstract
     }
 }
 
-internal sealed class CreateDialogDialogActivityActorDtoValidator : AbstractValidator<CreateDialogDialogActivityPerformedByActorDto>
+internal sealed class CreateDialogDialogActivityActorDtoValidator : AbstractValidator<DialogActivityPerformedByActorDto>
 {
     public CreateDialogDialogActivityActorDtoValidator()
     {

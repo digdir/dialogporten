@@ -17,11 +17,11 @@ public sealed class MappingProfile : Profile
         CreateMap<DialogTransmissionSenderActor, GetDialogTransmissionSenderActorDto>()
             .ForMember(dest => dest.ActorType, opt => opt.MapFrom(src => src.ActorTypeId));
 
-        CreateMap<List<DialogTransmissionContent>?, GetDialogTransmissionContentDto?>()
-            .ConvertUsing<TransmissionContentOutputConverter<GetDialogTransmissionContentDto>>();
+        CreateMap<List<DialogTransmissionContent>?, TransmissionContentDto?>()
+            .ConvertUsing<TransmissionContentOutputConverter<TransmissionContentDto>>();
 
-        CreateMap<DialogTransmissionAttachment, GetDialogTransmissionAttachmentDto>();
-        CreateMap<AttachmentUrl, GetDialogTransmissionAttachmentUrlDto>()
+        CreateMap<DialogTransmissionAttachment, TransmissionAttachmentDto>();
+        CreateMap<AttachmentUrl, TransmissionAttachmentUrlDto>()
             .ForMember(dest => dest.ConsumerType, opt => opt.MapFrom(src => src.ConsumerTypeId));
     }
 }

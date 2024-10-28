@@ -124,7 +124,7 @@ public sealed class GetDialogDto
     /// <summary>
     /// The dialog unstructured text content
     /// </summary>
-    public GetDialogContentDto Content { get; set; } = null!;
+    public ContentDto Content { get; set; } = null!;
 
     /// <summary>
     /// The dialog token. May be used (if supported) against external URLs referred to in this dialog's apiActions,
@@ -135,35 +135,35 @@ public sealed class GetDialogDto
     /// <summary>
     /// The attachments associated with the dialog (on an aggregate level)
     /// </summary>
-    public List<GetDialogDialogAttachmentDto> Attachments { get; set; } = [];
+    public List<DialogAttachmentDto> Attachments { get; set; } = [];
 
     /// <summary>
     /// The immutable list of transmissions associated with the dialog
     /// </summary>
-    public List<GetDialogDialogTransmissionDto> Transmissions { get; set; } = [];
+    public List<DialogTransmissionDto> Transmissions { get; set; } = [];
 
     /// <summary>
     /// The GUI actions associated with the dialog. Should be used in browser-based interactive frontends.
     /// </summary>
-    public List<GetDialogDialogGuiActionDto> GuiActions { get; set; } = [];
+    public List<DialogGuiActionDto> GuiActions { get; set; } = [];
 
     /// <summary>
     /// The API actions associated with the dialog. Should be used in specialized, non-browser-based integrations.
     /// </summary>
-    public List<GetDialogDialogApiActionDto> ApiActions { get; set; } = [];
+    public List<DialogApiActionDto> ApiActions { get; set; } = [];
 
     /// <summary>
     /// An immutable list of activities associated with the dialog.
     /// </summary>
-    public List<GetDialogDialogActivityDto> Activities { get; set; } = [];
+    public List<DialogActivityDto> Activities { get; set; } = [];
 
     /// <summary>
     /// The list of seen log entries for the dialog newer than the dialog ChangedAt date.
     /// </summary>
-    public List<GetDialogDialogSeenLogDto> SeenSinceLastUpdate { get; set; } = [];
+    public List<DialogSeenLogDto> SeenSinceLastUpdate { get; set; } = [];
 }
 
-public sealed class GetDialogDialogTransmissionDto
+public sealed class DialogTransmissionDto
 {
     /// <summary>
     /// The unique identifier for the transmission in UUIDv7 format.
@@ -217,20 +217,20 @@ public sealed class GetDialogDialogTransmissionDto
     /// <summary>
     /// The actor that sent the transmission.
     /// </summary>
-    public GetDialogDialogTransmissionSenderActorDto Sender { get; set; } = null!;
+    public DialogTransmissionSenderActorDto Sender { get; set; } = null!;
 
     /// <summary>
     /// The transmission unstructured text content
     /// </summary>
-    public GetDialogDialogTransmissionContentDto Content { get; set; } = null!;
+    public DialogTransmissionContentDto Content { get; set; } = null!;
 
     /// <summary>
     /// The transmission-level attachments
     /// </summary>
-    public List<GetDialogDialogTransmissionAttachmentDto> Attachments { get; set; } = [];
+    public List<DialogTransmissionAttachmentDto> Attachments { get; set; } = [];
 }
 
-public sealed class GetDialogDialogSeenLogDto
+public sealed class DialogSeenLogDto
 {
     /// <summary>
     /// The unique identifier for the seen log entry in UUIDv7 format.
@@ -245,7 +245,7 @@ public sealed class GetDialogDialogSeenLogDto
     /// <summary>
     /// The actor that saw the dialog revision
     /// </summary>
-    public GetDialogDialogSeenLogSeenByActorDto SeenBy { get; set; } = null!;
+    public DialogSeenLogSeenByActorDto SeenBy { get; set; } = null!;
 
     /// <summary>
     /// Flag indicating whether the seen log entry was created via the service owner.
@@ -260,7 +260,7 @@ public sealed class GetDialogDialogSeenLogDto
     public bool IsCurrentEndUser { get; set; }
 }
 
-public sealed class GetDialogDialogSeenLogSeenByActorDto
+public sealed class DialogSeenLogSeenByActorDto
 {
     /// <summary>
     /// The natural name of the person/business that saw the dialog revision.
@@ -277,7 +277,7 @@ public sealed class GetDialogDialogSeenLogSeenByActorDto
     public string ActorId { get; set; } = null!;
 }
 
-public sealed class GetDialogDialogTransmissionSenderActorDto
+public sealed class DialogTransmissionSenderActorDto
 {
     /// <summary>
     /// The type of actor that sent the transmission.
@@ -297,7 +297,7 @@ public sealed class GetDialogDialogTransmissionSenderActorDto
     public string ActorId { get; set; } = null!;
 }
 
-public sealed class GetDialogContentDto
+public sealed class ContentDto
 {
     /// <summary>
     /// The title of the dialog.
@@ -330,7 +330,7 @@ public sealed class GetDialogContentDto
     public ContentValueDto? MainContentReference { get; set; }
 }
 
-public sealed class GetDialogDialogTransmissionContentDto
+public sealed class DialogTransmissionContentDto
 {
     /// <summary>
     /// The transmission title.
@@ -349,7 +349,7 @@ public sealed class GetDialogDialogTransmissionContentDto
     public ContentValueDto? ContentReference { get; set; }
 }
 
-public sealed class GetDialogDialogActivityDto
+public sealed class DialogActivityDto
 {
     /// <summary>
     /// The unique identifier for the activity in UUIDv7 format.
@@ -381,7 +381,7 @@ public sealed class GetDialogDialogActivityDto
     /// <summary>
     /// The actor that performed the activity.
     /// </summary>
-    public GetDialogDialogActivityPerformedByActorDto PerformedBy { get; set; } = null!;
+    public DialogActivityPerformedByActorDto PerformedBy { get; set; } = null!;
 
     /// <summary>
     /// Unstructured text describing the activity. Only set if the activity type is "Information".
@@ -389,7 +389,7 @@ public sealed class GetDialogDialogActivityDto
     public List<LocalizationDto> Description { get; set; } = [];
 }
 
-public sealed class GetDialogDialogActivityPerformedByActorDto
+public sealed class DialogActivityPerformedByActorDto
 {
     /// <summary>
     /// The type of actor that performed the activity.
@@ -409,7 +409,7 @@ public sealed class GetDialogDialogActivityPerformedByActorDto
     public string? ActorId { get; set; }
 }
 
-public sealed class GetDialogDialogApiActionDto
+public sealed class DialogApiActionDto
 {
     /// <summary>
     /// The unique identifier for the action in UUIDv7 format.
@@ -448,10 +448,10 @@ public sealed class GetDialogDialogApiActionDto
     /// <summary>
     /// The endpoints associated with the action.
     /// </summary>
-    public List<GetDialogDialogApiActionEndpointDto> Endpoints { get; set; } = [];
+    public List<DialogApiActionEndpointDto> Endpoints { get; set; } = [];
 }
 
-public sealed class GetDialogDialogApiActionEndpointDto
+public sealed class DialogApiActionEndpointDto
 {
     /// <summary>
     /// The unique identifier for the endpoint in UUIDv7 format.
@@ -510,7 +510,7 @@ public sealed class GetDialogDialogApiActionEndpointDto
     public DateTimeOffset? SunsetAt { get; set; }
 }
 
-public sealed class GetDialogDialogGuiActionDto
+public sealed class DialogGuiActionDto
 {
     /// <summary>
     /// The unique identifier for the action in UUIDv7 format.
@@ -582,7 +582,7 @@ public sealed class GetDialogDialogGuiActionDto
     public List<LocalizationDto>? Prompt { get; set; }
 }
 
-public sealed class GetDialogDialogAttachmentDto
+public sealed class DialogAttachmentDto
 {
     /// <summary>
     /// The unique identifier for the attachment in UUIDv7 format.
@@ -597,10 +597,10 @@ public sealed class GetDialogDialogAttachmentDto
     /// <summary>
     /// The URLs associated with the attachment, each referring to a different representation of the attachment.
     /// </summary>
-    public List<GetDialogDialogAttachmentUrlDto> Urls { get; set; } = [];
+    public List<DialogAttachmentUrlDto> Urls { get; set; } = [];
 }
 
-public sealed class GetDialogDialogAttachmentUrlDto
+public sealed class DialogAttachmentUrlDto
 {
     /// <summary>
     /// The unique identifier for the attachment URL in UUIDv7 format.
@@ -630,7 +630,7 @@ public sealed class GetDialogDialogAttachmentUrlDto
     public AttachmentUrlConsumerType.Values ConsumerType { get; set; }
 }
 
-public sealed class GetDialogDialogTransmissionAttachmentDto
+public sealed class DialogTransmissionAttachmentDto
 {
     /// <summary>
     /// The unique identifier for the attachment in UUIDv7 format.
@@ -645,10 +645,10 @@ public sealed class GetDialogDialogTransmissionAttachmentDto
     /// <summary>
     /// The URLs associated with the attachment, each referring to a different representation of the attachment.
     /// </summary>
-    public List<GetDialogDialogTransmissionAttachmentUrlDto> Urls { get; set; } = [];
+    public List<DialogTransmissionAttachmentUrlDto> Urls { get; set; } = [];
 }
 
-public sealed class GetDialogDialogTransmissionAttachmentUrlDto
+public sealed class DialogTransmissionAttachmentUrlDto
 {
     /// <summary>
     /// The fully qualified URL of the attachment. Will be set to "urn:dialogporten:unauthorized" if the user is

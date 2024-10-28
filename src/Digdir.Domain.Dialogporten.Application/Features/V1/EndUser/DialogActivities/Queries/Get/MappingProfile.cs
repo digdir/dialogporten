@@ -11,7 +11,7 @@ internal sealed class MappingProfile : Profile
         CreateMap<DialogActivity, GetDialogActivityDto>()
             .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.TypeId));
 
-        CreateMap<DialogActivityPerformedByActor, GetDialogActivityPerformedByActorDto>()
+        CreateMap<DialogActivityPerformedByActor, PerformedByActorDto>()
             .ForMember(dest => dest.ActorType, opt => opt.MapFrom(src => src.ActorTypeId))
             .ForMember(dest => dest.ActorId, opt => opt.MapFrom(src => IdentifierMasker.GetMaybeMaskedIdentifier(src.ActorId)));
     }

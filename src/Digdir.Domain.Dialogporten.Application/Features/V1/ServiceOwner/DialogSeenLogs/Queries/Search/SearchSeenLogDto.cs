@@ -5,12 +5,12 @@ public sealed class SearchSeenLogDto
     public Guid Id { get; set; }
     public DateTimeOffset SeenAt { get; set; }
 
-    public SearchSeenLogSeenByActorDto SeenBy { get; set; } = null!;
+    public SeenByActorDto SeenBy { get; set; } = null!;
 
     public bool? IsViaServiceOwner { get; set; }
 }
 
-public sealed class SearchSeenLogSeenByActorDto
+public sealed class SeenByActorDto
 {
     public Guid Id { get; set; }
     public string ActorName { get; set; } = null!;

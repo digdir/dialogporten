@@ -46,20 +46,20 @@ public sealed class SearchDialogTransmissionDto
     /// <summary>
     /// The sender actor information for the transmission.
     /// </summary>
-    public SearchDialogTransmissionSenderActorDto Sender { get; set; } = null!;
+    public SenderActorDto Sender { get; set; } = null!;
 
     /// <summary>
     /// The content of the transmission.
     /// </summary>
-    public SearchDialogTransmissionContentDto Content { get; set; } = null!;
+    public ContentDto Content { get; set; } = null!;
 
     /// <summary>
     /// The attachments associated with the transmission.
     /// </summary>
-    public List<SearchDialogTransmissionAttachmentDto> Attachments { get; set; } = [];
+    public List<AttachmentDto> Attachments { get; set; } = [];
 }
 
-public sealed class SearchDialogTransmissionSenderActorDto
+public sealed class SenderActorDto
 {
     /// <summary>
     /// The unique identifier for the sender actor in UUIDv7 format.
@@ -82,7 +82,7 @@ public sealed class SearchDialogTransmissionSenderActorDto
     public string ActorId { get; set; } = null!;
 }
 
-public sealed class SearchDialogTransmissionContentDto
+public sealed class ContentDto
 {
     /// <summary>
     /// The title of the content.
@@ -100,7 +100,7 @@ public sealed class SearchDialogTransmissionContentDto
     public ContentValueDto? ContentReference { get; set; }
 }
 
-public sealed class SearchDialogTransmissionAttachmentDto
+public sealed class AttachmentDto
 {
     /// <summary>
     /// The unique identifier for the attachment in UUIDv7 format.
@@ -115,10 +115,10 @@ public sealed class SearchDialogTransmissionAttachmentDto
     /// <summary>
     /// The URLs associated with the attachment, each referring to a different representation of the attachment.
     /// </summary>
-    public List<SearchDialogTransmissionAttachmentUrlDto> Urls { get; set; } = [];
+    public List<AttachmentUrlDto> Urls { get; set; } = [];
 }
 
-public sealed class SearchDialogTransmissionAttachmentUrlDto
+public sealed class AttachmentUrlDto
 {
     /// <summary>
     /// The unique identifier for the attachment URL in UUIDv7 format.

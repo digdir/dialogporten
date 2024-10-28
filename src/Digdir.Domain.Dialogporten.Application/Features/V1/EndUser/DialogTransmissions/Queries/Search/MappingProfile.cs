@@ -14,14 +14,14 @@ public sealed class MappingProfile : Profile
             .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.TypeId))
             .ForMember(dest => dest.DeletedAt, opt => opt.MapFrom(src => src.Dialog.DeletedAt));
 
-        CreateMap<DialogTransmissionSenderActor, SearchDialogTransmissionSenderActorDto>()
+        CreateMap<DialogTransmissionSenderActor, TransmissionSenderActorDto>()
             .ForMember(dest => dest.ActorType, opt => opt.MapFrom(src => src.ActorTypeId));
 
-        CreateMap<List<DialogTransmissionContent>?, SearchDialogTransmissionContentDto?>()
-            .ConvertUsing<TransmissionContentOutputConverter<SearchDialogTransmissionContentDto>>();
+        CreateMap<List<DialogTransmissionContent>?, TransmissionContentDto?>()
+            .ConvertUsing<TransmissionContentOutputConverter<TransmissionContentDto>>();
 
-        CreateMap<DialogTransmissionAttachment, SearchDialogTransmissionAttachmentDto>();
-        CreateMap<AttachmentUrl, SearchDialogTransmissionAttachmentUrlDto>()
+        CreateMap<DialogTransmissionAttachment, TransmissionAttachmentDto>();
+        CreateMap<AttachmentUrl, TransmissionAttachmentUrlDto>()
             .ForMember(dest => dest.ConsumerType, opt => opt.MapFrom(src => src.ConsumerTypeId));
     }
 }

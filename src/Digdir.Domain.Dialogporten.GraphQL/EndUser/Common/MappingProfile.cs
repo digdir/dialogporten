@@ -3,6 +3,10 @@ using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Content;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Queries.Get;
 using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Queries.Search;
+using DialogActivityDto = Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Queries.Search.DialogActivityDto;
+using DialogActivityPerformedByActorDto = Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Queries.Search.DialogActivityPerformedByActorDto;
+using DialogSeenLogDto = Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Queries.Search.DialogSeenLogDto;
+using DialogSeenLogSeenByActorDto = Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Queries.Search.DialogSeenLogSeenByActorDto;
 
 namespace Digdir.Domain.Dialogporten.GraphQL.EndUser.Common;
 
@@ -14,20 +18,20 @@ public sealed class MappingProfile : Profile
 
         CreateMap<ContentValueDto, ContentValue>();
 
-        CreateMap<GetDialogDialogSeenLogDto, SeenLog>();
-        CreateMap<GetDialogDialogSeenLogSeenByActorDto, Actor>();
+        CreateMap<Application.Features.V1.EndUser.Dialogs.Queries.Get.DialogSeenLogDto, SeenLog>();
+        CreateMap<Application.Features.V1.EndUser.Dialogs.Queries.Get.DialogSeenLogSeenByActorDto, Actor>();
 
-        CreateMap<SearchDialogDialogSeenLogDto, SeenLog>();
-        CreateMap<SearchDialogDialogSeenLogSeenByActorDto, Actor>();
+        CreateMap<DialogSeenLogDto, SeenLog>();
+        CreateMap<DialogSeenLogSeenByActorDto, Actor>();
 
-        CreateMap<GetDialogDialogActivityDto, Activity>()
+        CreateMap<Application.Features.V1.EndUser.Dialogs.Queries.Get.DialogActivityDto, Activity>()
             .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type));
-        CreateMap<GetDialogDialogActivityPerformedByActorDto, Actor>()
+        CreateMap<Application.Features.V1.EndUser.Dialogs.Queries.Get.DialogActivityPerformedByActorDto, Actor>()
             .ForMember(dest => dest.ActorType, opt => opt.MapFrom(src => src.ActorType));
 
-        CreateMap<SearchDialogDialogActivityDto, Activity>()
+        CreateMap<DialogActivityDto, Activity>()
             .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type));
-        CreateMap<SearchDialogDialogActivityPerformedByActorDto, Actor>()
+        CreateMap<DialogActivityPerformedByActorDto, Actor>()
             .ForMember(dest => dest.ActorType, opt => opt.MapFrom(src => src.ActorType));
     }
 }

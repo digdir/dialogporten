@@ -57,12 +57,12 @@ public sealed class GetDialogTransmissionDto
     /// <summary>
     /// The content of the transmission.
     /// </summary>
-    public GetDialogTransmissionContentDto Content { get; set; } = null!;
+    public TransmissionContentDto Content { get; set; } = null!;
 
     /// <summary>
     /// The attachments associated with the transmission.
     /// </summary>
-    public List<GetDialogTransmissionAttachmentDto> Attachments { get; set; } = [];
+    public List<TransmissionAttachmentDto> Attachments { get; set; } = [];
 }
 
 public sealed class GetDialogTransmissionSenderActorDto
@@ -88,7 +88,7 @@ public sealed class GetDialogTransmissionSenderActorDto
     public string ActorId { get; set; } = null!;
 }
 
-public sealed class GetDialogTransmissionContentDto
+public sealed class TransmissionContentDto
 {
     /// <summary>
     /// The title of the content.
@@ -107,7 +107,7 @@ public sealed class GetDialogTransmissionContentDto
     public ContentValueDto? ContentReference { get; set; }
 }
 
-public sealed class GetDialogTransmissionAttachmentDto
+public sealed class TransmissionAttachmentDto
 {
     /// <summary>
     /// The unique identifier for the attachment in UUIDv7 format.
@@ -122,10 +122,10 @@ public sealed class GetDialogTransmissionAttachmentDto
     /// <summary>
     /// The URLs associated with the attachment, each referring to a different representation of the attachment.
     /// </summary>
-    public List<GetDialogTransmissionAttachmentUrlDto> Urls { get; set; } = [];
+    public List<TransmissionAttachmentUrlDto> Urls { get; set; } = [];
 }
 
-public sealed class GetDialogTransmissionAttachmentUrlDto
+public sealed class TransmissionAttachmentUrlDto
 {
     /// <summary>
     /// The unique identifier for the attachment URL in UUIDv7 format.

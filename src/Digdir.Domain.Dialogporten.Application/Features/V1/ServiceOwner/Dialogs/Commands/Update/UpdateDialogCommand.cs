@@ -296,7 +296,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         }
     }
 
-    private IEnumerable<DialogApiAction> CreateApiActions(IEnumerable<UpdateDialogDialogApiActionDto> creatables)
+    private IEnumerable<DialogApiAction> CreateApiActions(IEnumerable<DialogApiActionDto> creatables)
     {
         return creatables.Select(x =>
         {
@@ -306,7 +306,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         });
     }
 
-    private void UpdateApiActions(IEnumerable<UpdateSet<DialogApiAction, UpdateDialogDialogApiActionDto>> updateSets)
+    private void UpdateApiActions(IEnumerable<UpdateSet<DialogApiAction, DialogApiActionDto>> updateSets)
     {
         foreach (var (source, destination) in updateSets)
         {
@@ -322,7 +322,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         }
     }
 
-    private IEnumerable<DialogAttachment> CreateAttachments(IEnumerable<UpdateDialogDialogAttachmentDto> creatables)
+    private IEnumerable<DialogAttachment> CreateAttachments(IEnumerable<DialogAttachmentDto> creatables)
     {
         return creatables.Select(attachmentDto =>
         {
@@ -332,7 +332,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         });
     }
 
-    private void UpdateAttachments(IEnumerable<UpdateSet<DialogAttachment, UpdateDialogDialogAttachmentDto>> updateSets)
+    private void UpdateAttachments(IEnumerable<UpdateSet<DialogAttachment, DialogAttachmentDto>> updateSets)
     {
         foreach (var updateSet in updateSets)
         {
