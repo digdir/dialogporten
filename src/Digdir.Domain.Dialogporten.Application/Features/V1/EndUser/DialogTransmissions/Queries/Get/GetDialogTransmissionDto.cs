@@ -25,7 +25,7 @@ public sealed class GetDialogTransmissionDto
 
     /// <summary>
     /// Flag indicating if the authenticated user is authorized for this transmission. If not, embedded content and
-    /// the attachments will not be available
+    /// the attachments will not be available.
     /// </summary>
     public bool IsAuthorized { get; set; }
 

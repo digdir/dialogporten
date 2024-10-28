@@ -6,7 +6,6 @@ using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
 using Digdir.Domain.Dialogporten.GraphQL.Common;
 using Digdir.Domain.Dialogporten.GraphQL.Common.Authentication;
 using Digdir.Domain.Dialogporten.GraphQL.Common.Authorization;
-using Digdir.Domain.Dialogporten.GraphQL.Common.Extensions;
 using Digdir.Domain.Dialogporten.Infrastructure;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.OptionExtensions;
 using Digdir.Domain.Dialogporten.GraphQL;
@@ -19,17 +18,16 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
 
 // Using two-stage initialization to catch startup errors.
-var telemetryConfiguration = TelemetryConfiguration.CreateDefault();
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Warning()
     .Enrich.FromLogContext()
     .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture)
-    .WriteTo.ApplicationInsights(telemetryConfiguration, TelemetryConverter.Traces)
+    .WriteTo.ApplicationInsights(TelemetryConfiguration.CreateDefault(), TelemetryConverter.Traces)
     .CreateBootstrapLogger();
 
 try
 {
-    BuildAndRun(args, telemetryConfiguration);
+    BuildAndRun(args);
 }
 catch (Exception ex) when (ex is not OperationCanceledException)
 {
@@ -41,7 +39,7 @@ finally
     Log.CloseAndFlush();
 }
 
-static void BuildAndRun(string[] args, TelemetryConfiguration telemetryConfiguration)
+static void BuildAndRun(string[] args)
 {
     var builder = WebApplication.CreateBuilder(args);
 
@@ -51,7 +49,7 @@ static void BuildAndRun(string[] args, TelemetryConfiguration telemetryConfigura
         .ReadFrom.Services(services)
         .Enrich.FromLogContext()
         .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture)
-        .WriteTo.ApplicationInsights(telemetryConfiguration, TelemetryConverter.Traces));
+        .WriteTo.ApplicationInsights(services.GetRequiredService<TelemetryConfiguration>(), TelemetryConverter.Traces));
 
     builder.Configuration
         .AddAzureConfiguration(builder.Environment.EnvironmentName)
@@ -77,6 +75,7 @@ static void BuildAndRun(string[] args, TelemetryConfiguration telemetryConfigura
             .WithPubCapabilities()
             .Build()
         .AddAutoMapper(Assembly.GetExecutingAssembly())
+        .AddApplicationInsightsTelemetry()
         .AddScoped<IUser, ApplicationUser>()
         .AddValidatorsFromAssembly(thisAssembly, ServiceLifetime.Transient, includeInternalTypes: true)
         .AddAzureAppConfiguration()
