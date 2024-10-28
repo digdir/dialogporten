@@ -8,7 +8,7 @@ internal static class TypeNameConverter
     private const string And = "And";
     private const string NamespaceClassSeparator = "_";
 
-    private static readonly string[] ExcludedClassPostfixes = ["Endpoint", "+Values"];
+    private static readonly string[] ExcludedClassPostfixes = ["Endpoint", "+Values", "Dto"];
     private static readonly string[] ExcludedClassPrefixes = ["Create", "Update", "Delete", "Patch"];
     private static readonly string[] ExcludedNamespacePostfixes = [];
     private static readonly string[] ExcludedNamespacePrefixes =
@@ -78,7 +78,7 @@ internal static class TypeNameConverter
 
     private static void WriteNonGenericType(Type type, Span<char> finalName, ref int index)
     {
-        // If the input type is a generic parameter, use its name as is. For example in the
+        // If the input type is a generic parameter, use its name as is. For example, in the
         // generic type List<T>, T is a generic parameter. Concrete types are not generic 
         // parameters and will be processed as usual. For example in List<int>, int is a
         // concrete type, and not a generic parameter.
