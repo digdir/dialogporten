@@ -4,7 +4,7 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Contents;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Queries.Search;
 
-public sealed class SearchDialogDto : SearchDialogDtoBase
+public sealed class DialogDto : DialogDtoBase
 {
     /// <summary>
     /// The content of the dialog in search results
@@ -43,7 +43,7 @@ public sealed class ContentDto
 /// in the SearchDialog handlers, after EF core is done loading the data.
 /// Then we create a new PaginatedList with the outwards facing dto
 /// </summary>
-public sealed class IntermediateSearchDialogDto : SearchDialogDtoBase
+public sealed class IntermediateDialogDto : DialogDtoBase
 {
     public List<DialogContent> Content { get; set; } = [];
 }

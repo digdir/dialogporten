@@ -12,7 +12,7 @@ public sealed class SearchDialogSeenLogSwaggerConfig : ISwaggerConfig
 
     public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder, Type type)
         => builder.OperationId(TypeNameConverter.ToShortNameStrict(type))
-            .ProducesOneOf<List<SearchDialogSeenLogDto>>(
+            .ProducesOneOf<List<DialogSeenLogDto>>(
                 StatusCodes.Status200OK,
                 StatusCodes.Status404NotFound);
 

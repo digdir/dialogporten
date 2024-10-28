@@ -7,7 +7,7 @@ using MediatR;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.DialogActivities.Get;
 
-public sealed class GetDialogActivityEndpoint : Endpoint<GetDialogActivityQuery, GetDialogActivityDto>
+public sealed class GetDialogActivityEndpoint : Endpoint<GetDialogActivityQuery, DialogActivityDto>
 {
     private readonly ISender _sender;
 

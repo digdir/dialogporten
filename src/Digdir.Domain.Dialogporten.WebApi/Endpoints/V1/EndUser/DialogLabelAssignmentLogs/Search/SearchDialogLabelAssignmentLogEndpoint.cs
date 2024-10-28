@@ -6,7 +6,7 @@ using MediatR;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.EndUser.DialogLabelAssignmentLogs.Search;
 
-public sealed class SearchDialogLabelAssignmentLogEndpoint : Endpoint<SearchDialogLabelAssignmentLogQuery, List<SearchDialogLabelAssignmentLogDto>>
+public sealed class SearchDialogLabelAssignmentLogEndpoint : Endpoint<SearchDialogLabelAssignmentLogQuery, List<DialogLabelAssignmentLogDto>>
 {
     private readonly ISender _sender;
 

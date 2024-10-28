@@ -2,7 +2,7 @@ using FluentValidation;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogSystemLabels.Commands.Set;
 
-public sealed class SetDialogSystemLabelCommandValidator : AbstractValidator<SetDialogSystemLabelCommand>
+public sealed class SetDialogSystemLabelCommandValidator : AbstractValidator<DialogSystemLabelCommand>
 {
     public SetDialogSystemLabelCommandValidator()
     {

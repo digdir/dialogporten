@@ -6,7 +6,7 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogTransmissions.Queries.Get;
 
-public sealed class GetDialogTransmissionDto
+public sealed class DialogTransmissionDto
 {
     /// <summary>
     /// The unique identifier for the transmission in UUIDv7 format.

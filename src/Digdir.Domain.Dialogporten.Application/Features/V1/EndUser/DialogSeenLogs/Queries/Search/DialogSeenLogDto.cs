@@ -1,6 +1,6 @@
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogSeenLogs.Queries.Search;
 
-public sealed class SearchDialogSeenLogDto
+public sealed class DialogSeenLogDto
 {
     public Guid Id { get; set; }
     public DateTimeOffset SeenAt { get; set; }

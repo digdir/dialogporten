@@ -17,8 +17,6 @@ internal sealed class SuffixedSchemaNameGenerator : ISchemaNameGenerator
 {
     public string Generate(Type type)
     {
-
-
         return TypeNameConverter.ToShortNameStrict(type);
     }
 

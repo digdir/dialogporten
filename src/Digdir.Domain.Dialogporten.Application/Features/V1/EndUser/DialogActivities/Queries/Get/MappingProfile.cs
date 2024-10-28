@@ -8,7 +8,7 @@ internal sealed class MappingProfile : Profile
 {
     public MappingProfile()
     {
-        CreateMap<DialogActivity, GetDialogActivityDto>()
+        CreateMap<DialogActivity, DialogActivityDto>()
             .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.TypeId));
 
         CreateMap<DialogActivityPerformedByActor, PerformedByActorDto>()

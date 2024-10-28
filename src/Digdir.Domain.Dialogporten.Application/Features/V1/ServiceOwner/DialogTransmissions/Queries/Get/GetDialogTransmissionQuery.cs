@@ -17,7 +17,7 @@ public sealed class GetDialogTransmissionQuery : IRequest<GetDialogTransmissionR
 }
 
 [GenerateOneOf]
-public sealed partial class GetDialogTransmissionResult : OneOfBase<GetDialogTransmissionDto, EntityNotFound>;
+public sealed partial class GetDialogTransmissionResult : OneOfBase<DialogTransmissionDto, EntityNotFound>;
 
 internal sealed class GetDialogTransmissionQueryHandler : IRequestHandler<GetDialogTransmissionQuery, GetDialogTransmissionResult>
 {
@@ -63,6 +63,6 @@ internal sealed class GetDialogTransmissionQueryHandler : IRequestHandler<GetDia
 
         return transmission is null
             ? (GetDialogTransmissionResult)new EntityNotFound<DialogTransmission>(request.TransmissionId)
-            : _mapper.Map<GetDialogTransmissionDto>(transmission);
+            : _mapper.Map<DialogTransmissionDto>(transmission);
     }
 }

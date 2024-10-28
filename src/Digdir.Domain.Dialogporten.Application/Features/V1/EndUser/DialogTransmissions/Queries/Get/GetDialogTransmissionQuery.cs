@@ -18,7 +18,7 @@ public sealed class GetDialogTransmissionQuery : IRequest<GetDialogTransmissionR
 }
 
 [GenerateOneOf]
-public sealed partial class GetDialogTransmissionResult : OneOfBase<GetDialogTransmissionDto, EntityNotFound, EntityDeleted>;
+public sealed partial class GetDialogTransmissionResult : OneOfBase<DialogTransmissionDto, EntityNotFound, EntityDeleted>;
 
 internal sealed class GetDialogTransmissionQueryHandler : IRequestHandler<GetDialogTransmissionQuery, GetDialogTransmissionResult>
 {
@@ -78,7 +78,7 @@ internal sealed class GetDialogTransmissionQueryHandler : IRequestHandler<GetDia
             return new EntityNotFound<DialogTransmission>(request.TransmissionId);
         }
 
-        var dto = _mapper.Map<GetDialogTransmissionDto>(transmission);
+        var dto = _mapper.Map<DialogTransmissionDto>(transmission);
         dto.IsAuthorized = authorizationResult.HasReadAccessToDialogTransmission(transmission.AuthorizationAttribute);
 
         if (dto.IsAuthorized) return dto;

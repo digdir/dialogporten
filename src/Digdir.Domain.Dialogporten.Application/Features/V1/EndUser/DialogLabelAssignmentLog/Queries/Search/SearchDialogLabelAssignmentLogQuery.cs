@@ -15,7 +15,7 @@ public sealed class SearchDialogLabelAssignmentLogQuery : IRequest<SearchDialogL
 }
 
 [GenerateOneOf]
-public sealed partial class SearchDialogLabelAssignmentLogResult : OneOfBase<List<SearchDialogLabelAssignmentLogDto>, EntityNotFound, EntityDeleted>;
+public sealed partial class SearchDialogLabelAssignmentLogResult : OneOfBase<List<DialogLabelAssignmentLogDto>, EntityNotFound, EntityDeleted>;
 
 internal sealed class SearchDialogLabelAssignmentLogQueryHandler : IRequestHandler<SearchDialogLabelAssignmentLogQuery, SearchDialogLabelAssignmentLogResult>
 {
@@ -55,6 +55,6 @@ internal sealed class SearchDialogLabelAssignmentLogQueryHandler : IRequestHandl
             return new EntityDeleted<DialogEntity>(request.DialogId);
         }
 
-        return _mapper.Map<List<SearchDialogLabelAssignmentLogDto>>(dialog.DialogEndUserContext.LabelAssignmentLogs);
+        return _mapper.Map<List<DialogLabelAssignmentLogDto>>(dialog.DialogEndUserContext.LabelAssignmentLogs);
     }
 }

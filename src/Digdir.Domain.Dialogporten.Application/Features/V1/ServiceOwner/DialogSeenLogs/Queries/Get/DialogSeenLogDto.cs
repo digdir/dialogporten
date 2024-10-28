@@ -1,6 +1,6 @@
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.DialogSeenLogs.Queries.Get;
 
-public sealed class GetDialogSeenLogDto
+public sealed class DialogSeenLogDto
 {
     public Guid Id { get; set; }
     public DateTimeOffset SeenAt { get; set; }

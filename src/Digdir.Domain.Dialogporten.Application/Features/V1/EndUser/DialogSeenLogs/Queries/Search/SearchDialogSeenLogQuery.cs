@@ -16,7 +16,7 @@ public sealed class SearchDialogSeenLogQuery : IRequest<SearchDialogSeenLogResul
 }
 
 [GenerateOneOf]
-public sealed partial class SearchDialogSeenLogResult : OneOfBase<List<SearchDialogSeenLogDto>, EntityNotFound, EntityDeleted, Forbidden>;
+public sealed partial class SearchDialogSeenLogResult : OneOfBase<List<DialogSeenLogDto>, EntityNotFound, EntityDeleted, Forbidden>;
 
 internal sealed class SearchDialogSeenLogQueryHandler : IRequestHandler<SearchDialogSeenLogQuery, SearchDialogSeenLogResult>
 {
@@ -72,7 +72,7 @@ internal sealed class SearchDialogSeenLogQueryHandler : IRequestHandler<SearchDi
         return dialog.SeenLog
             .Select(x =>
             {
-                var dto = _mapper.Map<SearchDialogSeenLogDto>(x);
+                var dto = _mapper.Map<DialogSeenLogDto>(x);
                 dto.IsCurrentEndUser = currentUserInformation.UserId.ExternalIdWithPrefix == x.SeenBy.ActorId;
                 return dto;
             })

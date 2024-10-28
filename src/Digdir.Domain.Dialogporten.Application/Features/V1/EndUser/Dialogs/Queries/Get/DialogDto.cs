@@ -9,9 +9,9 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 using Digdir.Domain.Dialogporten.Domain.Http;
 
-namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Queries.Get;
+namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Queries.Get;
 
-public sealed class GetDialogDto
+public sealed class DialogDto
 {
     /// <summary>
     /// The unique identifier for the dialog in UUIDv7 format.
@@ -85,17 +85,6 @@ public sealed class GetDialogDto
     public string? ExternalReference { get; set; }
 
     /// <summary>
-    /// If deleted, the date and time when the deletion was performed.
-    /// </summary>
-    public DateTimeOffset? DeletedAt { get; set; }
-
-    /// <summary>
-    /// The timestamp when the dialog will be made visible for authorized end users.
-    /// </summary>
-    /// <example>2022-12-31T23:59:59Z</example>
-    public DateTimeOffset? VisibleFrom { get; set; }
-
-    /// <summary>
     /// The due date for the dialog. Dialogs past due date might be marked as such in frontends but will still be available.
     /// </summary>
     /// <example>2022-12-31T23:59:59Z</example>
@@ -127,7 +116,6 @@ public sealed class GetDialogDto
     /// The aggregated status of the dialog.
     /// </summary>
     public DialogStatus.Values Status { get; set; }
-
     /// <summary>
     /// Current display state.
     /// </summary>
@@ -139,9 +127,10 @@ public sealed class GetDialogDto
     public ContentDto Content { get; set; } = null!;
 
     /// <summary>
-    /// The list of words (tags) that will be used in dialog search queries. Not visible in end-user DTO.
+    /// The dialog token. May be used (if supported) against external URLs referred to in this dialog's apiActions,
+    /// transmissions or attachments. Should also be used for front-channel embeds.
     /// </summary>
-    public List<SearchTagDto>? SearchTags { get; set; }
+    public string? DialogToken { get; set; }
 
     /// <summary>
     /// The attachments associated with the dialog (on an aggregate level)
@@ -203,9 +192,10 @@ public sealed class DialogTransmissionDto
     public string? AuthorizationAttribute { get; set; }
 
     /// <summary>
-    /// Flag indicating if the authenticated user supplied in the query is authorized for this transmission.
+    /// Flag indicating if the authenticated user is authorized for this transmission. If not, embedded content and
+    /// the attachments will not be available
     /// </summary>
-    public bool? IsAuthorized { get; set; }
+    public bool IsAuthorized { get; set; }
 
     /// <summary>
     /// Arbitrary URI/URN describing a service-specific transmission type.
@@ -265,7 +255,7 @@ public sealed class DialogSeenLogDto
     public bool? IsViaServiceOwner { get; set; }
 
     /// <summary>
-    /// Flag indicating whether the seen log entry was created by the current end user, if provided in the query
+    /// Flag indicating whether the seen log entry was created by the current end user.
     /// </summary>
     public bool IsCurrentEndUser { get; set; }
 }
@@ -335,8 +325,7 @@ public sealed class ContentDto
     public ContentValueDto? ExtendedStatus { get; set; }
 
     /// <summary>
-    /// Front-channel embedded content. Used to dynamically embed content in the frontend from an external URL. Must be HTTPS.
-    /// Allowed media types: application/vnd.dialogporten.frontchannelembed+json;type=markdown
+    /// Front-channel embedded content. Used to dynamically embed content in the frontend from an external URL.
     /// </summary>
     public ContentValueDto? MainContentReference { get; set; }
 }
@@ -354,18 +343,10 @@ public sealed class DialogTransmissionContentDto
     public ContentValueDto Summary { get; set; } = null!;
 
     /// <summary>
-    /// Front-channel embedded content. Used to dynamically embed content in the frontend from an external URL. Must be HTTPS.
+    /// Front-channel embedded content. Used to dynamically embed content in the frontend from an external URL.
     /// Allowed media types: application/vnd.dialogporten.frontchannelembed+json;type=markdown
     /// </summary>
     public ContentValueDto? ContentReference { get; set; }
-}
-
-public sealed class SearchTagDto
-{
-    /// <summary>
-    /// A search tag value.
-    /// </summary>
-    public string Value { get; set; } = null!;
 }
 
 public sealed class DialogActivityDto
@@ -411,7 +392,7 @@ public sealed class DialogActivityDto
 public sealed class DialogActivityPerformedByActorDto
 {
     /// <summary>
-    /// What type of actor performed the activity.
+    /// The type of actor that performed the activity.
     /// </summary>
     public ActorType.Values ActorType { get; set; }
 
@@ -459,9 +440,10 @@ public sealed class DialogApiActionDto
     public string? AuthorizationAttribute { get; set; }
 
     /// <summary>
-    /// True if the authenticated user (set in the query) is authorized for this action.
+    /// True if the authenticated user is authorized for this action. If not, the action will not be available
+    /// and all endpoints will be replaced with a fixed placeholder.
     /// </summary>
-    public bool? IsAuthorized { get; set; }
+    public bool IsAuthorized { get; set; }
 
     /// <summary>
     /// The endpoints associated with the action.
@@ -484,8 +466,13 @@ public sealed class DialogApiActionEndpointDto
     public string? Version { get; set; }
 
     /// <summary>
-    /// The fully qualified URL of the API endpoint.
+    /// The fully qualified URL of the API endpoint. Will be set to "urn:dialogporten:unauthorized" if the user is
+    /// not authorized to perform the action.
     /// </summary>
+    /// <example>
+    /// https://someendpoint.com/api/v1/someaction
+    /// urn:dialogporten:unauthorized
+    /// </example>
     public Uri Url { get; set; } = null!;
 
     /// <summary>
@@ -536,8 +523,13 @@ public sealed class DialogGuiActionDto
     public string Action { get; set; } = null!;
 
     /// <summary>
-    /// The fully qualified URL of the action, to which the user will be redirected when the action is triggered.
+    /// The fully qualified URL of the action, to which the user will be redirected when the action is triggered. Will be set to
+    /// "urn:dialogporten:unauthorized" if the user is not authorized to perform the action.
     /// </summary>
+    /// <example>
+    /// urn:dialogporten:unauthorized
+    /// https://someendpoint.com/gui/some-service-instance-id
+    /// </example>
     public Uri Url { get; set; } = null!;
 
     /// <summary>
@@ -557,9 +549,9 @@ public sealed class DialogGuiActionDto
     public string? AuthorizationAttribute { get; set; }
 
     /// <summary>
-    /// Whether the user, if supplied in the query, is authorized to perform the action.
+    /// Whether the user is authorized to perform the action.
     /// </summary>
-    public bool? IsAuthorized { get; set; }
+    public bool IsAuthorized { get; set; }
 
     /// <summary>
     /// Indicates whether the action results in the dialog being deleted. Used by frontends to implement custom UX

@@ -10,7 +10,7 @@ using OneOf.Types;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogSystemLabels.Commands.Set;
 
-public sealed class SetDialogSystemLabelCommand : SetDialogSystemLabelDto, IRequest<SetDialogSystemLabelResult>
+public sealed class DialogSystemLabelCommand : DialogSystemLabelDto, IRequest<SetDialogSystemLabelResult>
 {
     public Guid? IfMatchDialogRevision { get; set; }
 }
@@ -18,7 +18,7 @@ public sealed class SetDialogSystemLabelCommand : SetDialogSystemLabelDto, IRequ
 [GenerateOneOf]
 public sealed partial class SetDialogSystemLabelResult : OneOfBase<Success, EntityNotFound, EntityDeleted, DomainError, ValidationError, ConcurrencyError>;
 
-internal sealed class SetDialogSystemLabelCommandHandler : IRequestHandler<SetDialogSystemLabelCommand, SetDialogSystemLabelResult>
+internal sealed class SetDialogSystemLabelCommandHandler : IRequestHandler<DialogSystemLabelCommand, SetDialogSystemLabelResult>
 {
     private readonly IDialogDbContext _db;
     private readonly IUnitOfWork _unitOfWork;
@@ -34,7 +34,7 @@ internal sealed class SetDialogSystemLabelCommandHandler : IRequestHandler<SetDi
     }
 
     public async Task<SetDialogSystemLabelResult> Handle(
-        SetDialogSystemLabelCommand request,
+        DialogSystemLabelCommand request,
         CancellationToken cancellationToken)
     {
         var dialog = await _db.Dialogs

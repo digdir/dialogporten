@@ -6,7 +6,7 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Queries.Search;
 
-public class SearchDialogDtoBase
+public class DialogDtoBase
 {
     /// <summary>
     /// The unique identifier for the dialog in UUIDv7 format.

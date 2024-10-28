@@ -4,9 +4,9 @@ using Digdir.Domain.Dialogporten.Domain.Actors;
 using Digdir.Domain.Dialogporten.Domain.Attachments;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 
-namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogTransmissions.Queries.Search;
+namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.DialogTransmissions.Queries.Get;
 
-public sealed class SearchDialogTransmissionDto
+public sealed class DialogTransmissionDto
 {
     /// <summary>
     /// The unique identifier for the transmission in UUIDv7 format.
@@ -22,12 +22,6 @@ public sealed class SearchDialogTransmissionDto
     /// The authorization attribute associated with the transmission.
     /// </summary>
     public string? AuthorizationAttribute { get; set; }
-
-    /// <summary>
-    /// Flag indicating if the authenticated user is authorized for this transmission. If not, embedded content and
-    /// the attachments will not be available
-    /// </summary>
-    public bool IsAuthorized { get; set; }
 
     /// <summary>
     /// The extended type URI for the transmission.
@@ -52,20 +46,20 @@ public sealed class SearchDialogTransmissionDto
     /// <summary>
     /// The sender actor information for the transmission.
     /// </summary>
-    public TransmissionSenderActorDto Sender { get; set; } = null!;
+    public SenderActorDto Sender { get; set; } = null!;
 
     /// <summary>
     /// The content of the transmission.
     /// </summary>
-    public TransmissionContentDto Content { get; set; } = null!;
+    public ContentDto Content { get; set; } = null!;
 
     /// <summary>
     /// The attachments associated with the transmission.
     /// </summary>
-    public List<TransmissionAttachmentDto> Attachments { get; set; } = [];
+    public List<AttachmentDto> Attachments { get; set; } = [];
 }
 
-public sealed class TransmissionSenderActorDto
+public sealed class SenderActorDto
 {
     /// <summary>
     /// The unique identifier for the sender actor in UUIDv7 format.
@@ -88,7 +82,7 @@ public sealed class TransmissionSenderActorDto
     public string ActorId { get; set; } = null!;
 }
 
-public sealed class TransmissionContentDto
+public sealed class ContentDto
 {
     /// <summary>
     /// The title of the content.
@@ -107,7 +101,7 @@ public sealed class TransmissionContentDto
     public ContentValueDto? ContentReference { get; set; }
 }
 
-public sealed class TransmissionAttachmentDto
+public sealed class AttachmentDto
 {
     /// <summary>
     /// The unique identifier for the attachment in UUIDv7 format.
@@ -122,10 +116,10 @@ public sealed class TransmissionAttachmentDto
     /// <summary>
     /// The URLs associated with the attachment, each referring to a different representation of the attachment.
     /// </summary>
-    public List<TransmissionAttachmentUrlDto> Urls { get; set; } = [];
+    public List<AttachmentUrlDto> Urls { get; set; } = [];
 }
 
-public sealed class TransmissionAttachmentUrlDto
+public sealed class AttachmentUrlDto
 {
     /// <summary>
     /// The unique identifier for the attachment URL in UUIDv7 format.

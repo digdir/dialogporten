@@ -4,7 +4,7 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogActivities.Queries.Get;
 
-public sealed class GetDialogActivityDto
+public sealed class DialogActivityDto
 {
     public Guid Id { get; set; }
     public DateTimeOffset? CreatedAt { get; set; }

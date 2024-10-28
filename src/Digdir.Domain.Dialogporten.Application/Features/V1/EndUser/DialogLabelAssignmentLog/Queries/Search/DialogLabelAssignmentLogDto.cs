@@ -1,6 +1,6 @@
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogLabelAssignmentLog.Queries.Search;
 
-public sealed class SearchDialogLabelAssignmentLogDto
+public sealed class DialogLabelAssignmentLogDto
 {
     public DateTimeOffset CreatedAt { get; set; }
 

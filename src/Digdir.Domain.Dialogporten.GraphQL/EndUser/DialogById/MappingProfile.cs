@@ -8,7 +8,7 @@ public sealed class MappingProfile : Profile
 {
     public MappingProfile()
     {
-        CreateMap<GetDialogDto, Dialog>()
+        CreateMap<DialogDto, Dialog>()
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status));
 
         CreateMap<DialogAttachmentDto, Attachment>();

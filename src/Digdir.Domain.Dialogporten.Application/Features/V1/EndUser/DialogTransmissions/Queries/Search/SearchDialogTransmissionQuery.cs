@@ -15,7 +15,7 @@ public sealed class SearchDialogTransmissionQuery : IRequest<SearchDialogTransmi
 }
 
 [GenerateOneOf]
-public sealed partial class SearchDialogTransmissionResult : OneOfBase<List<SearchDialogTransmissionDto>, EntityNotFound, EntityDeleted>;
+public sealed partial class SearchDialogTransmissionResult : OneOfBase<List<DialogTransmissionDto>, EntityNotFound, EntityDeleted>;
 
 internal sealed class SearchDialogTransmissionQueryHandler : IRequestHandler<SearchDialogTransmissionQuery, SearchDialogTransmissionResult>
 {
@@ -68,6 +68,6 @@ internal sealed class SearchDialogTransmissionQueryHandler : IRequestHandler<Sea
             return new EntityDeleted<DialogEntity>(request.DialogId);
         }
 
-        return _mapper.Map<List<SearchDialogTransmissionDto>>(dialog.Transmissions);
+        return _mapper.Map<List<DialogTransmissionDto>>(dialog.Transmissions);
     }
 }

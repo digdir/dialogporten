@@ -11,7 +11,7 @@ public sealed class Mutations
         [Service] IMapper mapper,
         SetSystemLabelInput input)
     {
-        var command = mapper.Map<SetDialogSystemLabelCommand>(input);
+        var command = mapper.Map<DialogSystemLabelCommand>(input);
         var result = await mediator.Send(command);
 
         return result.Match(

@@ -91,7 +91,7 @@ internal sealed class MappingProfile : Profile
         // ===========================================
         // ================== Patch ==================
         // ===========================================
-        CreateMap<GetDialogDto, UpdateDialogDto>()
+        CreateMap<DialogDto, UpdateDialogDto>()
             // Remove all existing activities and transmissions, since these lists are append only and
             // existing activities/transmissions should not be considered in the update request.
             .ForMember(dest => dest.Activities, opt => opt.Ignore())
