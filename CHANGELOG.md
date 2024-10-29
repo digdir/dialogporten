@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.27.0](https://github.com/digdir/dialogporten/compare/v1.26.3...v1.27.0) (2024-10-29)
+
+
+### Features
+
+* Add restrictions to Transmissions reference hierarchy ([#1310](https://github.com/digdir/dialogporten/issues/1310)) ([e3d53ca](https://github.com/digdir/dialogporten/commit/e3d53cafbbb7157d8439c23745d6b23cbbaeea17))
+* **graphql:** configure opentelemetry ([#1343](https://github.com/digdir/dialogporten/issues/1343)) ([e31c08b](https://github.com/digdir/dialogporten/commit/e31c08b0ddcad8b43db2c1ce7f46be5b924fdb9d))
+* **infrastructure:** add availability test for apim ([#1327](https://github.com/digdir/dialogporten/issues/1327)) ([1f9fa2b](https://github.com/digdir/dialogporten/commit/1f9fa2b3fbb7ea9bd84ddde5f99697724785921d))
+* **service:** configure opentelemetry ([#1342](https://github.com/digdir/dialogporten/issues/1342)) ([513d5e4](https://github.com/digdir/dialogporten/commit/513d5e4bf3345ecf70c5adb858143025db2738fa))
+* **utils:** configure open telemetry tracing for masstransit in aspnet package ([#1344](https://github.com/digdir/dialogporten/issues/1344)) ([5ec3b84](https://github.com/digdir/dialogporten/commit/5ec3b84be6955963cda92ab209510ad01d4dda90))
+
 ## [1.26.3](https://github.com/digdir/dialogporten/compare/v1.26.2...v1.26.3) (2024-10-23)
 
 
