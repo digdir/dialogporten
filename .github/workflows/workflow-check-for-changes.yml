@@ -14,9 +14,9 @@ on:
         default: ''
         type: string
     outputs:
-      hasAzureChanges:
-        description: "Azure related files changed"
-        value: ${{ jobs.check-for-changes.outputs.hasAzureChanges }}
+      hasInfraChanges:
+        description: "Infrastructure related files changed"
+        value: ${{ jobs.check-for-changes.outputs.hasInfraChanges }}
       hasBackendChanges:
         description: "Backend related files changed"
         value: ${{ jobs.check-for-changes.outputs.hasBackendChanges }}
@@ -38,10 +38,10 @@ jobs:
     name: Filter
     runs-on: ubuntu-latest
     outputs:
-      hasBackendChanges: ${{ steps.filter-backend.outputs.backend_any_modified == 'true' }}
-      hasAzureChanges: ${{ steps.filter.outputs.azure_any_modified == 'true' }}
-      hasTestChanges: ${{ steps.filter-backend.outputs.tests_any_modified == 'true' }}
+      hasInfraChanges: ${{ steps.filter.outputs.azure_any_modified == 'true' }}
       hasSlackNotifierChanges: ${{ steps.filter.outputs.slackNotifier_any_modified == 'true'}}
+      hasBackendChanges: ${{ steps.filter-backend.outputs.backend_any_modified == 'true' }}
+      hasTestChanges: ${{ steps.filter-backend.outputs.tests_any_modified == 'true' }}
       hasSchemaChanges: ${{ steps.filter-backend.outputs.schema_any_modified == 'true'}}
       hasMigrationChanges: ${{ steps.filter-backend.outputs.migration_any_modified == 'true'}}
     steps:
