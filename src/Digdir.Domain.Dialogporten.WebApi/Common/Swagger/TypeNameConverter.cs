@@ -65,8 +65,8 @@ internal static class TypeNameConverter
     private static void WriteNonGenericType(Type type, Span<char> finalName, ref int index)
     {
         // If the input type is a generic parameter, use its name as is. For example, in the
-        // generic type List<T>, T is a generic parameter. Concrete types are not generic 
-        // parameters and will be processed as usual. For example in List<int>, int is a
+        // generic type List<T>, T is a generic parameter. Concrete types are not generic
+        // parameters and will be processed as usual. For example, in List<int>, int is a
         // concrete type, and not a generic parameter.
         if (type.IsGenericTypeParameter)
         {
