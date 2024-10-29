@@ -14,13 +14,13 @@ internal static class CloudEventTypes
         nameof(DialogSeenDomainEvent) => "dialogporten.dialog.seen.v1",
 
         // Dialog activity
-        nameof(DialogActivityType.Values.DialogCreated) => "dialogporten.dialog.activity.created.v1",
-        nameof(DialogActivityType.Values.DialogClosed) => "dialogporten.dialog.activity.closed.v1",
-        nameof(DialogActivityType.Values.Information) => "dialogporten.dialog.activity.information.v1",
-        nameof(DialogActivityType.Values.TransmissionOpened) => "dialogporten.dialog.activity.transmission-opened.v1",
-        nameof(DialogActivityType.Values.PaymentMade) => "dialogporten.dialog.activity.payment-made.v1",
-        nameof(DialogActivityType.Values.SignatureProvided) => "dialogporten.dialog.activity.signature-provided.v1",
-        nameof(DialogActivityType.Values.DialogOpened) => "dialogporten.dialog.activity.dialog-opened.v1",
+        nameof(DialogDialogActivityType.Values.DialogCreated) => "dialogporten.dialog.activity.created.v1",
+        nameof(DialogDialogActivityType.Values.DialogClosed) => "dialogporten.dialog.activity.closed.v1",
+        nameof(DialogDialogActivityType.Values.Information) => "dialogporten.dialog.activity.information.v1",
+        nameof(DialogDialogActivityType.Values.TransmissionOpened) => "dialogporten.dialog.activity.transmission-opened.v1",
+        nameof(DialogDialogActivityType.Values.PaymentMade) => "dialogporten.dialog.activity.payment-made.v1",
+        nameof(DialogDialogActivityType.Values.SignatureProvided) => "dialogporten.dialog.activity.signature-provided.v1",
+        nameof(DialogDialogActivityType.Values.DialogOpened) => "dialogporten.dialog.activity.dialog-opened.v1",
 
         _ => throw new ArgumentOutOfRangeException(nameof(eventName), eventName, null)
     };

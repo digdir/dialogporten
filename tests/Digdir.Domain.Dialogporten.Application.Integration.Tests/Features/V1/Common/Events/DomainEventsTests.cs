@@ -38,12 +38,12 @@ public class DomainEventsTests(DialogApplication application) : ApplicationColle
         // Arrange
         var harness = await Application.ConfigureServicesWithMassTransitTestHarness();
 
-        var allActivityTypes = Enum.GetValues<DialogActivityType.Values>().ToList();
+        var allActivityTypes = Enum.GetValues<DialogDialogActivityType.Values>().ToList();
         var activities = allActivityTypes
             .Select(activityType => DialogGenerator.GenerateFakeDialogActivity(activityType))
             .ToList();
         var transmissionOpenedActivity = activities
-            .Single(x => x.Type == DialogActivityType.Values.TransmissionOpened);
+            .Single(x => x.Type == DialogDialogActivityType.Values.TransmissionOpened);
         var transmission = DialogGenerator.GenerateFakeDialogTransmissions(1).First();
         transmissionOpenedActivity.TransmissionId = transmission.Id;
         var createDialogCommand = DialogGenerator.GenerateFakeDialog(

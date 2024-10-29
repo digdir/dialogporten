@@ -15,8 +15,8 @@ public sealed class DialogDialogActivity : IImmutableEntity, IAggregateCreatedHa
     public Uri? ExtendedType { get; set; }
 
     // === Dependent relationships ===
-    public DialogActivityType.Values TypeId { get; set; }
-    public DialogActivityType Type { get; set; } = null!;
+    public DialogDialogActivityType.Values TypeId { get; set; }
+    public DialogDialogActivityType Type { get; set; } = null!;
 
     public Guid DialogId { get; set; }
     public DialogEntity Dialog { get; set; } = null!;

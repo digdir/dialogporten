@@ -12,7 +12,7 @@ public sealed class NotificationConditionQuery : IRequest<NotificationConditionR
 {
     public Guid DialogId { get; set; }
     public NotificationConditionType ConditionType { get; set; }
-    public DialogActivityType.Values ActivityType { get; set; }
+    public DialogDialogActivityType.Values ActivityType { get; set; }
     public Guid? TransmissionId { get; set; }
 }
 
