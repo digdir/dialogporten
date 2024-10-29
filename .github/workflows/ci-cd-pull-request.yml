@@ -36,6 +36,8 @@ jobs:
     runs-on: ubuntu-latest
     environment: test
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
       - name: Set Mock Infra Version
         run: gh variable set LATEST_DEPLOYED_INFRA_VERSION --env test --body "1.0.0"
         env:
