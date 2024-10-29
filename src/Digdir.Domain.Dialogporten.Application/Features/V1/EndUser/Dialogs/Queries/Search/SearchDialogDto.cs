@@ -7,7 +7,7 @@ namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Que
 public sealed class SearchDialogDto : SearchDialogDtoBase
 {
     /// <summary>
-    /// The content of the dialog in search results
+    /// The content of the dialog in search results.
     /// </summary>
     [JsonPropertyOrder(100)] // ILU MAGNUS
     public SearchDialogContentDto Content { get; set; } = null!;
@@ -37,8 +37,8 @@ public sealed class SearchDialogContentDto
 }
 
 /// <summary>
-/// TOOD: Discuss this with the team later. It works for now
-/// This class is used in order to keep using ProjectTo and existing PaginationList code.
+/// TODO: Discuss this with the team later. It works for now
+/// This class is used to keep using ProjectTo and existing PaginationList code.
 /// We first map to this using ProjectTo, then map to the new DialogContent structure
 /// in the SearchDialog handlers, after EF core is done loading the data.
 /// Then we create a new PaginatedList with the outwards facing dto

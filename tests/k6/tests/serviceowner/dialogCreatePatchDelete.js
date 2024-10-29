@@ -106,6 +106,10 @@ export default function () {
         expectStatusFor(r).to.equal(201);
         expect(r, 'response').to.have.validJsonBody();
         expect(r.json(), 'response json').to.match(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/)
+
+        // Cleanup
+        r = purgeSO('dialogs/' + r.json());
+        expectStatusFor(r).to.equal(204);
     });
 
     describe('Perform dialog create with invalid activity type (transmissionOpened)', () => {
@@ -154,8 +158,11 @@ export default function () {
         // Assert
         expectStatusFor(r).to.equal(201);
         expect(r, 'response').to.have.validJsonBody();
-
         expect(r.json(), 'response json').to.match(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/)
+
+        // Cleanup
+        r = purgeSO('dialogs/' + r.json());
+        expectStatusFor(r).to.equal(204);
     });
     describe('Perform dialog create with invalid activity type (dialogOpened)', () => {
         // Setup
@@ -182,4 +189,5 @@ export default function () {
         expect(r, 'response').to.have.validJsonBody();
         expect(r.json(), 'response json').to.have.property('errors');
     });
+
 }

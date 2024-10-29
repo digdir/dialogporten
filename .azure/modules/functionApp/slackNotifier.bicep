@@ -162,7 +162,7 @@ var query = '''
                  | where type != "ZiggyCreatures.Caching.Fusion.SyntheticTimeoutException"),
                  (traces
                  | where severityLevel >= 3 or (severityLevel >= 2 and customDimensions.SourceContext startswith "Digdir"))
-                 | where operation_Name !startswith "GET /health/"
+                 | where customDimensions.RequestPath !startswith "/health"
              | summarize Count = count()
                  by
                  Environment = tostring(customDimensions.AspNetCoreEnvironment),

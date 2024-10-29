@@ -39,6 +39,9 @@ param sourceKeyVaultSshJumperSshPublicKey string
 @description('The object ID of the group to assign the Admin Login role for SSH Jumper')
 param sshJumperAdminLoginGroupObjectId string
 
+@description('The URL of the APIM instance')
+param apimUrl string
+
 import { Sku as KeyVaultSku } from '../modules/keyvault/create.bicep'
 param keyVaultSku KeyVaultSku
 
@@ -114,6 +117,18 @@ module appInsights '../modules/applicationInsights/create.bicep' = {
     location: location
     sku: appInsightsSku
     tags: tags
+  }
+}
+
+module apimAvailabilityTest '../modules/applicationInsights/availabilityTest.bicep' = {
+  scope: resourceGroup
+  name: 'apimAvailabilityTest'
+  params: {
+    name: '${namePrefix}-dialogporten-health-test'
+    location: location
+    tags: tags
+    appInsightsId: appInsights.outputs.appInsightsId
+    url: '${apimUrl}/health/deep'
   }
 }
 

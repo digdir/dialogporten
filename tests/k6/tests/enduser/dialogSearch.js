@@ -45,8 +45,8 @@ export default function () {
     let titleForUpdatedItem = "updated_" + uuidv4();
     let titleForLastItem = "last_" + uuidv4();
     let idForCustomOrg = uuidv7();
-    let createdAfter = (new Date()).toISOString(); // We use this on all tests to hopefully avoid clashing with unrelated dialogs
-    let defaultFilter = "?CreatedAfter=" + createdAfter + "&Party=" + defaultParty;
+    let updatedAfter = (new Date()).toISOString(); // We use this on all tests to avoid clashing with unrelated dialogs
+    let defaultFilter = "?UpdatedAfter=" + updatedAfter + "&Party=" + defaultParty;
     let auxOrg = "ttd";
 
     describe('Arrange: Create some dialogs to test against', () => {

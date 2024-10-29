@@ -152,7 +152,7 @@ public class DecisionRequestHelperTests
         var accessSubject = result.Request.AccessSubject.First();
         Assert.Equal("s1", accessSubject.Id);
         Assert.Contains(accessSubject.Attribute, a => a.AttributeId == "urn:altinn:foo" && a.Value == "bar");
-        Assert.Contains(accessSubject.Attribute, a => a.AttributeId == "urn:altinn:systemuser" && a.Value == "unique_systemuser_id");
+        Assert.Contains(accessSubject.Attribute, a => a.AttributeId == "urn:altinn:systemuser:uuid" && a.Value == "unique_systemuser_id");
     }
 
     [Fact]
