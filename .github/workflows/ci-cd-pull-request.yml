@@ -44,7 +44,7 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.RELEASE_VERSION_STORAGE_PAT }}" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
             https://api.github.com/repos/${{ github.repository }}/environments/test/variables \
-            -d '{"name":"LATEST_DEPLOYED_INFRA_VERSION","value":"v1.0.0-mock"}'
+            -d '{"name":"LATEST_DEPLOYED_INFRA_VERSION","value":"v1.0.0"}'
       - name: Set Mock Apps Version
         run: |
           curl -L \
@@ -73,3 +73,11 @@ jobs:
         run: echo "Verified infrastructure version ${{ needs.verify-stored-versions.outputs.infra_version_sha }}"
       - name: Echo Verified Apps Version
         run: echo "Verified applications version ${{ needs.verify-stored-versions.outputs.apps_version_sha }}"
+
+  check-for-changes:
+    name: Check for Changes
+    needs: [verify-stored-versions]
+    uses: ./.github/workflows/workflow-check-for-changes.yml
+    with:
+      infra_base_sha: ${{ needs.verify-stored-versions.outputs.infra_version_sha }}
+      apps_base_sha: ${{ needs.verify-stored-versions.outputs.apps_version_sha }}
