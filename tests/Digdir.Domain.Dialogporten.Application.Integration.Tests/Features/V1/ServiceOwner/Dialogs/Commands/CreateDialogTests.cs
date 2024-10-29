@@ -87,6 +87,52 @@ public class CreateDialogTests : ApplicationCollectionFixture
     }
 
     [Fact]
+    public async Task Test_With_UTC_TimeZone()
+    {
+        // TODO: This needs to be set to a specific time zone, because the test will run in different time zones?
+        // For example running this in UTC would make the test fail, response would be success
+        var norwayNow = DateTime.Now;
+
+        using (new FakeLocalTimeZone(TimeZoneInfo.Utc))
+        {
+            // Arrange
+            var dialogId = GenerateBigEndianUuidV7();
+            var createDialogCommand = DialogGenerator.GenerateFakeDialog(id: dialogId, createdAt: norwayNow);
+
+            // Act
+            var response = await Application.Send(createDialogCommand);
+
+            // Assert
+            response.TryPickT2(out var validationError, out _).Should().BeTrue();
+            validationError.Should().NotBeNull();
+            validationError.Errors.Should().Contain(e => e.ErrorMessage.Contains("in the past"));
+        }
+    }
+
+    [Fact]
+    public async Task Test_With_UTC_Offset_Conversion()
+    {
+        // TODO: This needs to be set to a specific time zone, because the test will run in different time zones?
+        var norwayNow = DateTime.Now;
+        var norwayOffset = TimeZoneInfo.FindSystemTimeZoneById("W. Europe Standard Time").GetUtcOffset(norwayNow);
+        var norwayNowWithOffset = new DateTimeOffset(norwayNow, norwayOffset);
+
+        using (new FakeLocalTimeZone(TimeZoneInfo.Utc))
+        {
+            // Arrange
+            var dialogId = GenerateBigEndianUuidV7();
+            var createDialogCommand = DialogGenerator.GenerateFakeDialog(id: dialogId, createdAt: norwayNowWithOffset);
+
+            // Act
+            var response = await Application.Send(createDialogCommand);
+
+            // Assert
+            response.TryPickT0(out var success, out _).Should().BeTrue();
+            success.Should().NotBeNull();
+        }
+    }
+
+    [Fact]
     public async Task Create_CreatesDialog_WhenDialogIsSimple()
     {
         // Arrange
