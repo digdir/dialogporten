@@ -103,7 +103,7 @@ jobs:
     steps:
       - name: Set GitHub variable for latest deployed apps version
         run: |
-          gh variable set LATEST_DEPLOYED_APPS_VERSION --body "${{ needs.get-current-version.outputs.version }}" --env staging --repo ${{ github.repository }}
+          gh variable set LATEST_DEPLOYED_APPS_VERSION --body "${{ needs.get-current-version.outputs.version }}" --env staging
 
   deploy-slack-notifier:
     name: Deploy slack notifier (staging)

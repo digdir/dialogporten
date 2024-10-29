@@ -39,11 +39,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
       - name: Set Mock Infra Version
-        run: gh variable set LATEST_DEPLOYED_INFRA_VERSION --env test --body "1.0.0"
+        run: gh variable set LATEST_DEPLOYED_INFRA_VERSION --body "1.0.0" --env test
         env:
           GH_TOKEN: ${{ secrets.RELEASE_VERSION_STORAGE_PAT }}
       - name: Set Mock Apps Version
-        run: gh variable set LATEST_DEPLOYED_APPS_VERSION --env test --body "1.0.0"
+        run: gh variable set LATEST_DEPLOYED_APPS_VERSION --body "1.0.0" --env test
         env:
           GH_TOKEN: ${{ secrets.RELEASE_VERSION_STORAGE_PAT }}
 
