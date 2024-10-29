@@ -16,7 +16,7 @@ public sealed class SearchDialogActivitySwaggerConfig : ISwaggerConfig
     public static object GetExample() => throw new NotImplementedException();
 }
 
-public sealed class SearchDialogActivityEndpointSummary : Summary<SearchDialogActivityEndpoint, SearchDialogActivityQuery>
+public sealed class SearchDialogActivityEndpointSummary : Summary<SearchDialogActivityEndpoint, SearchActivityQuery>
 {
     public SearchDialogActivityEndpointSummary()
     {

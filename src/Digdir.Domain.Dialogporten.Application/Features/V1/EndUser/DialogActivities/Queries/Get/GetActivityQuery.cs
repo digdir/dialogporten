@@ -3,40 +3,46 @@ using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
 
-namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogActivities.Queries.Search;
+namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogActivities.Queries.Get;
 
-public sealed class SearchDialogActivityQuery : IRequest<SearchDialogActivityResult>
+public sealed class GetActivityQuery : IRequest<GetActivityResult>
 {
     public Guid DialogId { get; set; }
+    public Guid ActivityId { get; set; }
 }
 
 [GenerateOneOf]
-public sealed partial class SearchDialogActivityResult : OneOfBase<List<DialogActivityDto>, EntityNotFound, EntityDeleted>;
+public sealed partial class GetActivityResult : OneOfBase<ActivityDto, EntityNotFound, EntityDeleted>;
 
-internal sealed class SearchDialogActivityQueryHandler : IRequestHandler<SearchDialogActivityQuery, SearchDialogActivityResult>
+internal sealed class GetActivityQueryHandler : IRequestHandler<GetActivityQuery, GetActivityResult>
 {
-    private readonly IDialogDbContext _db;
     private readonly IMapper _mapper;
     private readonly IAltinnAuthorization _altinnAuthorization;
+    private readonly IDialogDbContext _dbContext;
 
-    public SearchDialogActivityQueryHandler(
-        IDialogDbContext db,
+    public GetActivityQueryHandler(
+        IDialogDbContext dbContext,
         IMapper mapper,
         IAltinnAuthorization altinnAuthorization)
     {
-        _db = db ?? throw new ArgumentNullException(nameof(db));
+        _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _altinnAuthorization = altinnAuthorization ?? throw new ArgumentNullException(nameof(altinnAuthorization));
     }
 
-    public async Task<SearchDialogActivityResult> Handle(SearchDialogActivityQuery request, CancellationToken cancellationToken)
+    public async Task<GetActivityResult> Handle(GetActivityQuery request,
+        CancellationToken cancellationToken)
     {
-        var dialog = await _db.Dialogs
-            .Include(x => x.Activities)
+        var dialog = await _dbContext.Dialogs
+            .Include(x => x.Activities.Where(x => x.Id == request.ActivityId))
+                .ThenInclude(x => x.PerformedBy)
+            .Include(x => x.Activities.Where(x => x.Id == request.ActivityId))
+                .ThenInclude(x => x.Description!.Localizations)
             .IgnoreQueryFilters()
             .FirstOrDefaultAsync(x => x.Id == request.DialogId,
                 cancellationToken: cancellationToken);
@@ -61,6 +67,13 @@ internal sealed class SearchDialogActivityQueryHandler : IRequestHandler<SearchD
             return new EntityDeleted<DialogEntity>(request.DialogId);
         }
 
-        return _mapper.Map<List<DialogActivityDto>>(dialog.Activities);
+        var activity = dialog.Activities.FirstOrDefault();
+
+        if (activity is null)
+        {
+            return new EntityNotFound<DialogActivity>(request.ActivityId);
+        }
+
+        return _mapper.Map<ActivityDto>(activity);
     }
 }

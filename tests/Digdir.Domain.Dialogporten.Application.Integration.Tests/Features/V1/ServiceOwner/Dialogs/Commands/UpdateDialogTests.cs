@@ -7,9 +7,9 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 using Digdir.Tool.Dialogporten.GenerateFakeData;
 using FluentAssertions;
-using DialogActivityDto = Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Update.DialogActivityDto;
-using DialogActivityPerformedByActorDto = Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Update.DialogActivityPerformedByActorDto;
-using DialogTransmissionDto = Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Update.DialogTransmissionDto;
+using ActivityDto = Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Update.ActivityDto;
+using ActivityPerformedByActorDto = Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Update.ActivityPerformedByActorDto;
+using TransmissionDto = Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Update.TransmissionDto;
 
 namespace Digdir.Domain.Dialogporten.Application.Integration.Tests.Features.V1.ServiceOwner.Dialogs.Commands;
 
@@ -28,11 +28,11 @@ public class UpdateDialogTests(DialogApplication application) : ApplicationColle
         var updateDialogDto = mapper.Map<UpdateDialogDto>(getDialogDto.AsT0);
 
         // Ref. old activity
-        updateDialogDto.Activities.Add(new DialogActivityDto
+        updateDialogDto.Activities.Add(new ActivityDto
         {
             Id = getDialogDto.AsT0.Activities.First().Id,
-            Type = DialogActivityType.Values.DialogCreated,
-            PerformedBy = new DialogActivityPerformedByActorDto
+            Type = ActivityType.Values.DialogCreated,
+            PerformedBy = new ActivityPerformedByActorDto
             {
                 ActorType = ActorType.Values.ServiceOwner
             }
@@ -63,7 +63,7 @@ public class UpdateDialogTests(DialogApplication application) : ApplicationColle
         var updateDialogDto = mapper.Map<UpdateDialogDto>(getDialogDto.AsT0);
 
         // Ref. old transmission
-        updateDialogDto.Transmissions.Add(new DialogTransmissionDto
+        updateDialogDto.Transmissions.Add(new TransmissionDto
         {
             Id = existingTransmission.Id,
             Type = DialogTransmissionType.Values.Information,
@@ -87,7 +87,7 @@ public class UpdateDialogTests(DialogApplication application) : ApplicationColle
     private async Task<(CreateDialogCommand, CreateDialogResult)> GenerateDialogWithActivity()
     {
         var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog();
-        var activity = DialogGenerator.GenerateFakeDialogActivity(type: DialogActivityType.Values.Information);
+        var activity = DialogGenerator.GenerateFakeDialogActivity(type: ActivityType.Values.Information);
         activity.PerformedBy.ActorId = DialogGenerator.GenerateRandomParty(forcePerson: true);
         activity.PerformedBy.ActorName = null;
         createDialogCommand.Activities.Add(activity);

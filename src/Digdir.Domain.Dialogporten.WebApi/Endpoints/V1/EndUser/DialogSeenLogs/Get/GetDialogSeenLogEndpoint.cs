@@ -7,7 +7,7 @@ using MediatR;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.EndUser.DialogSeenLogs.Get;
 
-public sealed class GetDialogSeenLogEndpoint : Endpoint<GetDialogSeenLogQuery, DialogSeenLogDto>
+public sealed class GetDialogSeenLogEndpoint : Endpoint<GetSeenLogQuery, SeenLogDto>
 {
     private readonly ISender _sender;
 
@@ -24,7 +24,7 @@ public sealed class GetDialogSeenLogEndpoint : Endpoint<GetDialogSeenLogQuery, D
         Description(d => GetDialogSeenLogSwaggerConfig.SetDescription(d, GetType()));
     }
 
-    public override async Task HandleAsync(GetDialogSeenLogQuery req, CancellationToken ct)
+    public override async Task HandleAsync(GetSeenLogQuery req, CancellationToken ct)
     {
         var result = await _sender.Send(req, ct);
         await result.Match(

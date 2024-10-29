@@ -6,7 +6,7 @@ using MediatR;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.EndUser.DialogLabelAssignmentLogs.Search;
 
-public sealed class SearchDialogLabelAssignmentLogEndpoint : Endpoint<SearchDialogLabelAssignmentLogQuery, List<DialogLabelAssignmentLogDto>>
+public sealed class SearchDialogLabelAssignmentLogEndpoint : Endpoint<SearchLabelAssignmentLogQuery, List<LabelAssignmentLogDto>>
 {
     private readonly ISender _sender;
 
@@ -22,7 +22,7 @@ public sealed class SearchDialogLabelAssignmentLogEndpoint : Endpoint<SearchDial
 
         Description(d => SearchDialogLabelAssignmentSwaggerConfig.SetDescription(d, GetType()));
     }
-    public override async Task HandleAsync(SearchDialogLabelAssignmentLogQuery req, CancellationToken ct)
+    public override async Task HandleAsync(SearchLabelAssignmentLogQuery req, CancellationToken ct)
     {
         var result = await _sender.Send(req, ct);
         await result.Match(

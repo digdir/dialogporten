@@ -18,7 +18,7 @@ public interface IDialogDbContext
     DbSet<DialogStatus> DialogStatuses { get; }
 
     DbSet<DialogActivity> DialogActivities { get; }
-    DbSet<DialogActivityType> DialogActivityTypes { get; }
+    DbSet<ActivityType> DialogActivityTypes { get; }
 
     DbSet<DialogTransmission> DialogTransmissions { get; }
     DbSet<DialogTransmissionType> DialogTransmissionTypes { get; }

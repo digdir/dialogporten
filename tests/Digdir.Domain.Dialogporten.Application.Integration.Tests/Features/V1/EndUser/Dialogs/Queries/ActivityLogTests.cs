@@ -67,7 +67,7 @@ public class ActivityLogTests(DialogApplication application) : ApplicationCollec
         var activityId = getDialogResult.AsT0.Activities.First().Id;
 
         // Act
-        var response = await Application.Send(new GetDialogActivityQuery
+        var response = await Application.Send(new GetActivityQuery
         {
             DialogId = createCommandResponse.AsT0.Value,
             ActivityId = activityId
@@ -85,7 +85,7 @@ public class ActivityLogTests(DialogApplication application) : ApplicationCollec
     private async Task<(CreateDialogCommand, CreateDialogResult)> GenerateDialogWithActivity()
     {
         var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog();
-        var activity = DialogGenerator.GenerateFakeDialogActivity(type: DialogActivityType.Values.Information);
+        var activity = DialogGenerator.GenerateFakeDialogActivity(type: ActivityType.Values.Information);
         activity.PerformedBy.ActorId = DialogGenerator.GenerateRandomParty(forcePerson: true);
         activity.PerformedBy.ActorName = null;
         createDialogCommand.Activities.Add(activity);

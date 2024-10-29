@@ -6,7 +6,7 @@ using MediatR;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.EndUser.DialogActivities.Get;
 
-public sealed class GetDialogActivityEndpoint : Endpoint<GetDialogActivityQuery, DialogActivityDto>
+public sealed class GetDialogActivityEndpoint : Endpoint<GetActivityQuery, ActivityDto>
 {
     private readonly ISender _sender;
 
@@ -24,7 +24,7 @@ public sealed class GetDialogActivityEndpoint : Endpoint<GetDialogActivityQuery,
         Description(b => GetDialogActivitySwaggerConfig.SetDescription(b, GetType()));
     }
 
-    public override async Task HandleAsync(GetDialogActivityQuery req, CancellationToken ct)
+    public override async Task HandleAsync(GetActivityQuery req, CancellationToken ct)
     {
         var result = await _sender.Send(req, ct);
         await result.Match(

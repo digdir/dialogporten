@@ -14,7 +14,6 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Events.Activities;
 using MassTransit.Internals;
 using MassTransit.Testing;
 using static Digdir.Domain.Dialogporten.Application.Integration.Tests.UuiDv7Utils;
-using DialogAttachmentDto = Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Update.DialogAttachmentDto;
 
 namespace Digdir.Domain.Dialogporten.Application.Integration.Tests.Features.V1.Common.Events;
 
@@ -39,12 +38,12 @@ public class DomainEventsTests(DialogApplication application) : ApplicationColle
         // Arrange
         var harness = await Application.ConfigureServicesWithMassTransitTestHarness();
 
-        var allActivityTypes = Enum.GetValues<DialogActivityType.Values>().ToList();
+        var allActivityTypes = Enum.GetValues<ActivityType.Values>().ToList();
         var activities = allActivityTypes
             .Select(activityType => DialogGenerator.GenerateFakeDialogActivity(activityType))
             .ToList();
         var transmissionOpenedActivity = activities
-            .Single(x => x.Type == DialogActivityType.Values.TransmissionOpened);
+            .Single(x => x.Type == ActivityType.Values.TransmissionOpened);
         var transmission = DialogGenerator.GenerateFakeDialogTransmissions(1).First();
         transmissionOpenedActivity.TransmissionId = transmission.Id;
         var createDialogCommand = DialogGenerator.GenerateFakeDialog(
@@ -140,7 +139,7 @@ public class DomainEventsTests(DialogApplication application) : ApplicationColle
         var updateDialogDto = Mapper.Map<UpdateDialogDto>(getDialogDto);
 
         // Act
-        updateDialogDto.Attachments = [new DialogAttachmentDto
+        updateDialogDto.Attachments = [new AttachmentDto
         {
             DisplayName = DialogGenerator.GenerateFakeLocalizations(3),
             Urls = [new()

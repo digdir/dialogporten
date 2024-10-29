@@ -4,7 +4,7 @@ using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Co
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Contents;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions.Contents;
 using ContentDto = Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Create.ContentDto;
-using DialogTransmissionContentDto = Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Create.DialogTransmissionContentDto;
+using TransmissionContentDto = Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Create.TransmissionContentDto;
 
 namespace Digdir.Domain.Dialogporten.Application.Unit.Tests.Features.V1.Common;
 
@@ -79,8 +79,8 @@ public class ContentTypeTests
 
         var dtoTypes = new[]
         {
-            typeof(DialogTransmissionContentDto),
-            typeof(Application.Features.V1.ServiceOwner.Dialogs.Commands.Update.DialogTransmissionContentDto),
+            typeof(TransmissionContentDto),
+            typeof(Application.Features.V1.ServiceOwner.Dialogs.Commands.Update.TransmissionContentDto),
             typeof(Application.Features.V1.ServiceOwner.Dialogs.Queries.Get.DialogTransmissionContentDto),
             typeof(Application.Features.V1.EndUser.Dialogs.Queries.Get.DialogTransmissionContentDto)
         };

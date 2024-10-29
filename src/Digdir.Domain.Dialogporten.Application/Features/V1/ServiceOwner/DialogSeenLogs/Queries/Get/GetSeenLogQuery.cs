@@ -9,22 +9,22 @@ using OneOf;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.DialogSeenLogs.Queries.Get;
 
-public sealed class GetDialogSeenLogQuery : IRequest<GetDialogSeenLogResult>
+public sealed class GetSeenLogQuery : IRequest<GetSeenLogResult>
 {
     public Guid DialogId { get; set; }
     public Guid SeenLogId { get; set; }
 }
 
 [GenerateOneOf]
-public sealed partial class GetDialogSeenLogResult : OneOfBase<DialogSeenLogDto, EntityNotFound>;
+public sealed partial class GetSeenLogResult : OneOfBase<SeenLogDto, EntityNotFound>;
 
-internal sealed class GetDialogSeenLogQueryHandler : IRequestHandler<GetDialogSeenLogQuery, GetDialogSeenLogResult>
+internal sealed class GetSeenLogQueryHandler : IRequestHandler<GetSeenLogQuery, GetSeenLogResult>
 {
     private readonly IMapper _mapper;
     private readonly IDialogDbContext _dbContext;
     private readonly IUserResourceRegistry _userResourceRegistry;
 
-    public GetDialogSeenLogQueryHandler(
+    public GetSeenLogQueryHandler(
         IMapper mapper,
         IDialogDbContext dbContext,
         IUserResourceRegistry userResourceRegistry)
@@ -34,7 +34,7 @@ internal sealed class GetDialogSeenLogQueryHandler : IRequestHandler<GetDialogSe
         _userResourceRegistry = userResourceRegistry ?? throw new ArgumentNullException(nameof(userResourceRegistry));
     }
 
-    public async Task<GetDialogSeenLogResult> Handle(GetDialogSeenLogQuery request,
+    public async Task<GetSeenLogResult> Handle(GetSeenLogQuery request,
         CancellationToken cancellationToken)
     {
         var resourceIds = await _userResourceRegistry.GetCurrentUserResourceIds(cancellationToken);
@@ -59,7 +59,7 @@ internal sealed class GetDialogSeenLogQueryHandler : IRequestHandler<GetDialogSe
             return new EntityNotFound<DialogSeenLog>(request.SeenLogId);
         }
 
-        var dto = _mapper.Map<DialogSeenLogDto>(seenLog);
+        var dto = _mapper.Map<SeenLogDto>(seenLog);
 
         return dto;
     }

@@ -8,12 +8,12 @@ using Digdir.Library.Entity.Abstractions.Features.Identifiable;
 using FastEndpoints;
 using MediatR;
 using Constants = Digdir.Domain.Dialogporten.WebApi.Common.Constants;
-using DialogTransmissionDto = Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Update.DialogTransmissionDto;
 using IMapper = AutoMapper.IMapper;
+using TransmissionDto = Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Update.TransmissionDto;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.DialogTransmissions.Create;
 
-public sealed class CreateDialogTransmissionEndpoint : Endpoint<CreateDialogTransmissionRequest>
+public sealed class CreateDialogTransmissionEndpoint : Endpoint<CreateTransmissionRequest>
 {
     private readonly IMapper _mapper;
     private readonly ISender _sender;
@@ -33,7 +33,7 @@ public sealed class CreateDialogTransmissionEndpoint : Endpoint<CreateDialogTran
         Description(b => CreateDialogTransmissionSwaggerConfig.SetDescription(b, GetType()));
     }
 
-    public override async Task HandleAsync(CreateDialogTransmissionRequest req, CancellationToken ct)
+    public override async Task HandleAsync(CreateTransmissionRequest req, CancellationToken ct)
     {
         var dialogQueryResult = await _sender.Send(new GetDialogQuery { DialogId = req.DialogId }, ct);
         if (!dialogQueryResult.TryPickT0(out var dialog, out var errors))
@@ -59,7 +59,7 @@ public sealed class CreateDialogTransmissionEndpoint : Endpoint<CreateDialogTran
         var result = await _sender.Send(updateDialogCommand, ct);
 
         await result.Match(
-            success => SendCreatedAtAsync<GetDialogTransmissionEndpoint>(new GetDialogTransmissionQuery { DialogId = dialog.Id, TransmissionId = req.Id.Value }, req.Id, cancellation: ct),
+            success => SendCreatedAtAsync<GetDialogTransmissionEndpoint>(new GetTransmissionQuery { DialogId = dialog.Id, TransmissionId = req.Id.Value }, req.Id, cancellation: ct),
             notFound => this.NotFoundAsync(notFound, ct),
             badRequest => this.BadRequestAsync(badRequest, ct),
             validationError => this.BadRequestAsync(validationError, ct),
@@ -69,7 +69,7 @@ public sealed class CreateDialogTransmissionEndpoint : Endpoint<CreateDialogTran
     }
 }
 
-public sealed class CreateDialogTransmissionRequest : DialogTransmissionDto
+public sealed class CreateTransmissionRequest : TransmissionDto
 {
     public Guid DialogId { get; set; }
 

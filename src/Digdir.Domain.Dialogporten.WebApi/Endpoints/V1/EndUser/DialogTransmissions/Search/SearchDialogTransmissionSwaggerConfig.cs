@@ -16,7 +16,7 @@ public sealed class SearchDialogTransmissionSwaggerConfig : ISwaggerConfig
     public static object GetExample() => throw new NotImplementedException();
 }
 
-public sealed class SearchDialogTransmissionEndpointSummary : Summary<SearchDialogTransmissionEndpoint, SearchDialogTransmissionQuery>
+public sealed class SearchDialogTransmissionEndpointSummary : Summary<SearchDialogTransmissionEndpoint, SearchTransmissionQuery>
 {
     public SearchDialogTransmissionEndpointSummary()
     {

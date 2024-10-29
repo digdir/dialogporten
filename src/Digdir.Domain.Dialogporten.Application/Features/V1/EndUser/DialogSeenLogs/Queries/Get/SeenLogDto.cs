@@ -1,10 +1,9 @@
-namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogSeenLogs.Queries.Search;
+namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogSeenLogs.Queries.Get;
 
-public sealed class DialogSeenLogDto
+public sealed class SeenLogDto
 {
     public Guid Id { get; set; }
     public DateTimeOffset SeenAt { get; set; }
-
     public SeenLogSeenByActorDto SeenBy { get; set; } = null!;
 
     public bool IsViaServiceOwner { get; set; }

@@ -10,22 +10,22 @@ using OneOf.Types;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogSystemLabels.Commands.Set;
 
-public sealed class DialogSystemLabelCommand : DialogSystemLabelDto, IRequest<SetDialogSystemLabelResult>
+public sealed class SystemLabelCommand : SystemLabelDto, IRequest<SetSystemLabelResult>
 {
     public Guid? IfMatchDialogRevision { get; set; }
 }
 
 [GenerateOneOf]
-public sealed partial class SetDialogSystemLabelResult : OneOfBase<Success, EntityNotFound, EntityDeleted, DomainError, ValidationError, ConcurrencyError>;
+public sealed partial class SetSystemLabelResult : OneOfBase<Success, EntityNotFound, EntityDeleted, DomainError, ValidationError, ConcurrencyError>;
 
-internal sealed class SetDialogSystemLabelCommandHandler : IRequestHandler<DialogSystemLabelCommand, SetDialogSystemLabelResult>
+internal sealed class SetSystemLabelCommandHandler : IRequestHandler<SystemLabelCommand, SetSystemLabelResult>
 {
     private readonly IDialogDbContext _db;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IUserRegistry _userRegistry;
     private readonly IAltinnAuthorization _altinnAuthorization;
 
-    public SetDialogSystemLabelCommandHandler(IDialogDbContext db, IUnitOfWork unitOfWork, IUserRegistry userRegistry, IAltinnAuthorization altinnAuthorization)
+    public SetSystemLabelCommandHandler(IDialogDbContext db, IUnitOfWork unitOfWork, IUserRegistry userRegistry, IAltinnAuthorization altinnAuthorization)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
@@ -33,8 +33,8 @@ internal sealed class SetDialogSystemLabelCommandHandler : IRequestHandler<Dialo
         _altinnAuthorization = altinnAuthorization ?? throw new ArgumentNullException(nameof(altinnAuthorization));
     }
 
-    public async Task<SetDialogSystemLabelResult> Handle(
-        DialogSystemLabelCommand request,
+    public async Task<SetSystemLabelResult> Handle(
+        SystemLabelCommand request,
         CancellationToken cancellationToken)
     {
         var dialog = await _db.Dialogs
@@ -64,7 +64,7 @@ internal sealed class SetDialogSystemLabelCommandHandler : IRequestHandler<Dialo
         var saveResult = await _unitOfWork
                                .EnableConcurrencyCheck(dialog.DialogEndUserContext, request.IfMatchDialogRevision)
                                .SaveChangesAsync(cancellationToken);
-        return saveResult.Match<SetDialogSystemLabelResult>(
+        return saveResult.Match<SetSystemLabelResult>(
             success => success,
             domainError => domainError,
             concurrencyError => concurrencyError);

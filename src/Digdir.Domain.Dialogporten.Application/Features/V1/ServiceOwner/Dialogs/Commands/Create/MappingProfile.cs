@@ -19,42 +19,42 @@ internal sealed class MappingProfile : Profile
             .ForMember(dest => dest.StatusId, opt => opt.MapFrom(src => src.Status));
         CreateMap<SearchTagDto, DialogSearchTag>();
 
-        CreateMap<DialogAttachmentDto, DialogAttachment>();
-        CreateMap<DialogAttachmentUrlDto, AttachmentUrl>()
+        CreateMap<AttachmentDto, DialogAttachment>();
+        CreateMap<AttachmentUrlDto, AttachmentUrl>()
             .ForMember(dest => dest.ConsumerType, opt => opt.Ignore())
             .ForMember(dest => dest.ConsumerTypeId, opt => opt.MapFrom(src => src.ConsumerType));
 
-        CreateMap<DialogGuiActionDto, DialogGuiAction>()
+        CreateMap<GuiActionDto, DialogGuiAction>()
             .ForMember(dest => dest.Priority, opt => opt.Ignore())
             .ForMember(dest => dest.PriorityId, opt => opt.MapFrom(src => src.Priority))
             .ForMember(dest => dest.HttpMethod, opt => opt.Ignore())
             .ForMember(dest => dest.HttpMethodId, opt => opt.MapFrom(src => src.HttpMethod));
 
-        CreateMap<DialogApiActionDto, DialogApiAction>();
+        CreateMap<ApiActionDto, DialogApiAction>();
 
-        CreateMap<DialogApiActionEndpointDto, DialogApiActionEndpoint>()
+        CreateMap<ApiActionEndpointDto, DialogApiActionEndpoint>()
             .ForMember(dest => dest.HttpMethod, opt => opt.Ignore())
             .ForMember(dest => dest.HttpMethodId, opt => opt.MapFrom(src => src.HttpMethod));
 
-        CreateMap<DialogActivityDto, DialogActivity>()
+        CreateMap<ActivityDto, DialogActivity>()
             .ForMember(dest => dest.Type, opt => opt.Ignore())
             .ForMember(dest => dest.TypeId, opt => opt.MapFrom(src => src.Type));
 
-        CreateMap<DialogActivityPerformedByActorDto, DialogActivityPerformedByActor>()
+        CreateMap<ActivityPerformedByActorDto, DialogActivityPerformedByActor>()
             .ForMember(dest => dest.ActorType, opt => opt.Ignore())
             .ForMember(dest => dest.ActorTypeId, opt => opt.MapFrom(src => src.ActorType));
 
         CreateMap<ContentDto?, List<DialogContent>?>()
             .ConvertUsing<DialogContentInputConverter<ContentDto>>();
 
-        CreateMap<DialogTransmissionContentDto?, List<DialogTransmissionContent>?>()
-            .ConvertUsing<TransmissionContentInputConverter<DialogTransmissionContentDto>>();
+        CreateMap<TransmissionContentDto?, List<DialogTransmissionContent>?>()
+            .ConvertUsing<TransmissionContentInputConverter<TransmissionContentDto>>();
 
-        CreateMap<DialogTransmissionSenderActorDto, DialogTransmissionSenderActor>()
+        CreateMap<TransmissionSenderActorDto, DialogTransmissionSenderActor>()
             .ForMember(dest => dest.ActorType, opt => opt.Ignore())
             .ForMember(dest => dest.ActorTypeId, opt => opt.MapFrom(src => src.ActorType));
 
-        CreateMap<DialogTransmissionDto, DialogTransmission>()
+        CreateMap<TransmissionDto, DialogTransmission>()
             .ForMember(dest => dest.Type, opt => opt.Ignore())
             .ForMember(dest => dest.TypeId, opt => opt.MapFrom(src => src.Type));
 

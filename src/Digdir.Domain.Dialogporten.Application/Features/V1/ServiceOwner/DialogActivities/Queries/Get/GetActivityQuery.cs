@@ -10,29 +10,29 @@ using OneOf;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.DialogActivities.Queries.Get;
 
-public sealed class GetDialogActivityQuery : IRequest<GetDialogActivityResult>
+public sealed class GetActivityQuery : IRequest<GetActivityResult>
 {
     public Guid DialogId { get; set; }
     public Guid ActivityId { get; set; }
 }
 
 [GenerateOneOf]
-public sealed partial class GetDialogActivityResult : OneOfBase<DialogActivityDto, EntityNotFound>;
+public sealed partial class GetActivityResult : OneOfBase<ActivityDto, EntityNotFound>;
 
-internal sealed class GetDialogActivityQueryHandler : IRequestHandler<GetDialogActivityQuery, GetDialogActivityResult>
+internal sealed class GetActivityQueryHandler : IRequestHandler<GetActivityQuery, GetActivityResult>
 {
     private readonly IMapper _mapper;
     private readonly IDialogDbContext _dbContext;
     private readonly IUserResourceRegistry _userResourceRegistry;
 
-    public GetDialogActivityQueryHandler(IMapper mapper, IDialogDbContext dbContext, IUserResourceRegistry userResourceRegistry)
+    public GetActivityQueryHandler(IMapper mapper, IDialogDbContext dbContext, IUserResourceRegistry userResourceRegistry)
     {
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         _userResourceRegistry = userResourceRegistry ?? throw new ArgumentNullException(nameof(userResourceRegistry));
     }
 
-    public async Task<GetDialogActivityResult> Handle(GetDialogActivityQuery request,
+    public async Task<GetActivityResult> Handle(GetActivityQuery request,
         CancellationToken cancellationToken)
     {
         var resourceIds = await _userResourceRegistry.GetCurrentUserResourceIds(cancellationToken);
@@ -59,6 +59,6 @@ internal sealed class GetDialogActivityQueryHandler : IRequestHandler<GetDialogA
             return new EntityNotFound<DialogActivity>(request.ActivityId);
         }
 
-        return _mapper.Map<DialogActivityDto>(activity);
+        return _mapper.Map<ActivityDto>(activity);
     }
 }
