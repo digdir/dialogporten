@@ -12,8 +12,8 @@ permissions:
   actions: write
 jobs:
   get-versions-from-github:
-    name: Get Latest Deployed Versions from GitHub Variables
-    uses: ./.github/workflows/workflow-get-latest-deployed-versions-from-github.yml
+    name: Get Latest Deployed Version Info from GitHub
+    uses: ./.github/workflows/workflow-get-latest-deployed-version-info-from-github.yml
     with:
       environment: test
     secrets:
@@ -37,28 +37,18 @@ jobs:
     environment: test
     steps:
       - name: Set Mock Infra Version
-        run: |
-          curl -L \
-            -X POST \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer ${{ secrets.RELEASE_VERSION_STORAGE_PAT }}" \
-            -H "X-GitHub-Api-Version: 2022-11-28" \
-            https://api.github.com/repos/${{ github.repository }}/environments/test/variables \
-            -d '{"name":"LATEST_DEPLOYED_INFRA_VERSION","value":"v1.0.0"}'
+        run: gh variable set LATEST_DEPLOYED_INFRA_VERSION --env test --body "1.0.0"
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_VERSION_STORAGE_PAT }}
       - name: Set Mock Apps Version
-        run: |
-          curl -L \
-            -X POST \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer ${{ secrets.RELEASE_VERSION_STORAGE_PAT }}" \
-            -H "X-GitHub-Api-Version: 2022-11-28" \
-            https://api.github.com/repos/${{ github.repository }}/environments/test/variables \
-            -d '{"name":"LATEST_DEPLOYED_APPS_VERSION","value":"v1.0.0"}'
+        run: gh variable set LATEST_DEPLOYED_APPS_VERSION --env test --body "1.0.0"
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_VERSION_STORAGE_PAT }}
 
   verify-stored-versions:
     name: Verify Stored Versions
     needs: [store-mock-versions]
-    uses: ./.github/workflows/workflow-get-latest-deployed-versions-from-github.yml
+    uses: ./.github/workflows/workflow-get-latest-deployed-version-info-from-github.yml
     with:
       environment: test
     secrets:

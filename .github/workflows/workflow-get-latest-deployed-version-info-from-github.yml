@@ -1,4 +1,4 @@
-name: Get Latest Deployed Versions from GitHub
+name: Get Latest Deployed Version Info from GitHub
 
 on:
   workflow_call:
@@ -34,24 +34,16 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Get Latest Deployed Infra Version
-        id: get-infra-version
-        run: echo "version=${{ vars.LATEST_DEPLOYED_INFRA_VERSION }}" >> $GITHUB_OUTPUT
-
       - name: Get Infra SHA
         id: get-infra-sha
-        if: steps.get-infra-version.outputs.version != ''
+        if: vars.LATEST_DEPLOYED_INFRA_VERSION != ''
         run: |
-          SHA=$(git rev-list -n 1 ${{ steps.get-infra-version.outputs.version }})
+          SHA=$(git rev-list -n 1 v${{ vars.LATEST_DEPLOYED_INFRA_VERSION }})
           echo "sha=$SHA" >> $GITHUB_OUTPUT
-
-      - name: Get Latest Deployed Apps Version
-        id: get-apps-version
-        run: echo "version=${{ vars.LATEST_DEPLOYED_APPS_VERSION }}" >> $GITHUB_OUTPUT
 
       - name: Get Apps SHA
         id: get-apps-sha
-        if: steps.get-apps-version.outputs.version != ''
+        if: vars.LATEST_DEPLOYED_APPS_VERSION != ''
         run: |
-          SHA=$(git rev-list -n 1 ${{ steps.get-apps-version.outputs.version }})
+          SHA=$(git rev-list -n 1 v${{ vars.LATEST_DEPLOYED_APPS_VERSION }})
           echo "sha=$SHA" >> $GITHUB_OUTPUT

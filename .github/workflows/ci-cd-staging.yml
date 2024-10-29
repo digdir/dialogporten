@@ -11,8 +11,8 @@ concurrency:
 
 jobs:
   get-versions-from-github:
-    name: Get Latest Deployed Versions from GitHub Variables
-    uses: ./.github/workflows/workflow-get-latest-deployed-versions-from-github.yml
+    name: Get Latest Deployed Version Info from GitHub
+    uses: ./.github/workflows/workflow-get-latest-deployed-version-info-from-github.yml
     with:
       environment: staging
     secrets:
