@@ -10,29 +10,29 @@ using OneOf;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.DialogTransmissions.Queries.Get;
 
-public sealed class GetDialogTransmissionQuery : IRequest<GetDialogTransmissionResult>
+public sealed class GetTransmissionQuery : IRequest<GetTransmissionResult>
 {
     public Guid DialogId { get; set; }
     public Guid TransmissionId { get; set; }
 }
 
 [GenerateOneOf]
-public sealed partial class GetDialogTransmissionResult : OneOfBase<DialogTransmissionDto, EntityNotFound>;
+public sealed partial class GetTransmissionResult : OneOfBase<TransmissionDto, EntityNotFound>;
 
-internal sealed class GetDialogTransmissionQueryHandler : IRequestHandler<GetDialogTransmissionQuery, GetDialogTransmissionResult>
+internal sealed class GetTransmissionQueryHandler : IRequestHandler<GetTransmissionQuery, GetTransmissionResult>
 {
     private readonly IMapper _mapper;
     private readonly IDialogDbContext _dbContext;
     private readonly IUserResourceRegistry _userResourceRegistry;
 
-    public GetDialogTransmissionQueryHandler(IMapper mapper, IDialogDbContext dbContext, IUserResourceRegistry userResourceRegistry)
+    public GetTransmissionQueryHandler(IMapper mapper, IDialogDbContext dbContext, IUserResourceRegistry userResourceRegistry)
     {
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         _userResourceRegistry = userResourceRegistry ?? throw new ArgumentNullException(nameof(userResourceRegistry));
     }
 
-    public async Task<GetDialogTransmissionResult> Handle(GetDialogTransmissionQuery request,
+    public async Task<GetTransmissionResult> Handle(GetTransmissionQuery request,
         CancellationToken cancellationToken)
     {
         var resourceIds = await _userResourceRegistry.GetCurrentUserResourceIds(cancellationToken);
@@ -62,7 +62,7 @@ internal sealed class GetDialogTransmissionQueryHandler : IRequestHandler<GetDia
         var transmission = dialog.Transmissions.FirstOrDefault();
 
         return transmission is null
-            ? (GetDialogTransmissionResult)new EntityNotFound<DialogTransmission>(request.TransmissionId)
-            : _mapper.Map<DialogTransmissionDto>(transmission);
+            ? (GetTransmissionResult)new EntityNotFound<DialogTransmission>(request.TransmissionId)
+            : _mapper.Map<TransmissionDto>(transmission);
     }
 }

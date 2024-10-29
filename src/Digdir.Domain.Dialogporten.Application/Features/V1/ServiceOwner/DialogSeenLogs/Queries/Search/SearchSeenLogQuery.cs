@@ -9,21 +9,21 @@ using OneOf;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.DialogSeenLogs.Queries.Search;
 
-public sealed class SearchDialogSeenLogQuery : IRequest<SearchDialogSeenLogResult>
+public sealed class SearchSeenLogQuery : IRequest<SearchSeenLogResult>
 {
     public Guid DialogId { get; set; }
 }
 
 [GenerateOneOf]
-public sealed partial class SearchDialogSeenLogResult : OneOfBase<List<SeenLogDto>, EntityNotFound>;
+public sealed partial class SearchSeenLogResult : OneOfBase<List<SeenLogDto>, EntityNotFound>;
 
-internal sealed class SearchDialogSeenLogQueryHandler : IRequestHandler<SearchDialogSeenLogQuery, SearchDialogSeenLogResult>
+internal sealed class SearchSeenLogQueryHandler : IRequestHandler<SearchSeenLogQuery, SearchSeenLogResult>
 {
     private readonly IDialogDbContext _db;
     private readonly IMapper _mapper;
     private readonly IUserResourceRegistry _userResourceRegistry;
 
-    public SearchDialogSeenLogQueryHandler(
+    public SearchSeenLogQueryHandler(
         IDialogDbContext db,
         IMapper mapper,
         IUserResourceRegistry userResourceRegistry)
@@ -33,7 +33,7 @@ internal sealed class SearchDialogSeenLogQueryHandler : IRequestHandler<SearchDi
         _userResourceRegistry = userResourceRegistry;
     }
 
-    public async Task<SearchDialogSeenLogResult> Handle(SearchDialogSeenLogQuery request, CancellationToken cancellationToken)
+    public async Task<SearchSeenLogResult> Handle(SearchSeenLogQuery request, CancellationToken cancellationToken)
     {
         var resourceIds = await _userResourceRegistry.GetCurrentUserResourceIds(cancellationToken);
 

@@ -7,7 +7,7 @@ using MediatR;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.DialogSeenLogs.Search;
 
-public sealed class SearchDialogSeenLogEndpoint : Endpoint<SearchDialogSeenLogQuery, List<SeenLogDto>>
+public sealed class SearchDialogSeenLogEndpoint : Endpoint<SearchSeenLogQuery, List<SeenLogDto>>
 {
     private readonly ISender _sender;
 
@@ -27,7 +27,7 @@ public sealed class SearchDialogSeenLogEndpoint : Endpoint<SearchDialogSeenLogQu
             StatusCodes.Status404NotFound));
     }
 
-    public override async Task HandleAsync(SearchDialogSeenLogQuery req, CancellationToken ct)
+    public override async Task HandleAsync(SearchSeenLogQuery req, CancellationToken ct)
     {
         var result = await _sender.Send(req, ct);
         await result.Match(

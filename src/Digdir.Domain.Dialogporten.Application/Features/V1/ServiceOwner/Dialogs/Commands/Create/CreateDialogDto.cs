@@ -120,30 +120,30 @@ public class CreateDialogDto
     /// <summary>
     /// The attachments associated with the dialog (on an aggregate level)
     /// </summary>
-    public List<DialogAttachmentDto> Attachments { get; set; } = [];
+    public List<AttachmentDto> Attachments { get; set; } = [];
 
     /// <summary>
     /// The immutable list of transmissions associated with the dialog
     /// </summary>
-    public List<DialogTransmissionDto> Transmissions { get; set; } = [];
+    public List<TransmissionDto> Transmissions { get; set; } = [];
 
     /// <summary>
     /// The GUI actions associated with the dialog. Should be used in browser-based interactive frontends.
     /// </summary>
-    public List<DialogGuiActionDto> GuiActions { get; set; } = [];
+    public List<GuiActionDto> GuiActions { get; set; } = [];
 
     /// <summary>
     /// The API actions associated with the dialog. Should be used in specialized, non-browser-based integrations.
     /// </summary>
-    public List<DialogApiActionDto> ApiActions { get; set; } = [];
+    public List<ApiActionDto> ApiActions { get; set; } = [];
 
     /// <summary>
     /// An immutable list of activities associated with the dialog.
     /// </summary>
-    public List<DialogActivityDto> Activities { get; set; } = [];
+    public List<ActivityDto> Activities { get; set; } = [];
 }
 
-public sealed class DialogTransmissionDto
+public sealed class TransmissionDto
 {
     /// <summary>
     /// A self-defined UUIDv7 may be provided in order to support idempotent creation of transmissions. If not provided, a new UUIDv7 will be generated.
@@ -193,12 +193,12 @@ public sealed class DialogTransmissionDto
     /// <summary>
     /// The actor that sent the transmission.
     /// </summary>
-    public DialogTransmissionSenderActorDto Sender { get; set; } = null!;
+    public TransmissionSenderActorDto Sender { get; set; } = null!;
 
     /// <summary>
     /// The transmission unstructured text content
     /// </summary>
-    public DialogTransmissionContentDto Content { get; set; } = null!;
+    public TransmissionContentDto Content { get; set; } = null!;
 
     /// <summary>
     /// The transmission-level attachments
@@ -245,7 +245,7 @@ public sealed class ContentDto
     public ContentValueDto? MainContentReference { get; set; }
 }
 
-public sealed class DialogTransmissionContentDto
+public sealed class TransmissionContentDto
 {
     /// <summary>
     /// The transmission title. Must be text/plain.
@@ -272,7 +272,7 @@ public sealed class SearchTagDto
     public string Value { get; set; } = null!;
 }
 
-public sealed class DialogActivityDto
+public sealed class ActivityDto
 {
     /// <summary>
     /// A self-defined UUIDv7 may be provided in order to support idempotent creation of activities. If not provided, a new UUIDv7 will be generated.
@@ -305,7 +305,7 @@ public sealed class DialogActivityDto
     /// <summary>
     /// The actor that performed the activity.
     /// </summary>
-    public DialogActivityPerformedByActorDto PerformedBy { get; set; } = null!;
+    public ActivityPerformedByActorDto PerformedBy { get; set; } = null!;
 
     /// <summary>
     /// Unstructured text describing the activity. Only set if the activity type is "Information".
@@ -313,7 +313,7 @@ public sealed class DialogActivityDto
     public List<LocalizationDto> Description { get; set; } = [];
 }
 
-public sealed class DialogActivityPerformedByActorDto
+public sealed class ActivityPerformedByActorDto
 {
     /// <summary>
     /// What type of actor performed the activity.
@@ -335,7 +335,7 @@ public sealed class DialogActivityPerformedByActorDto
     public string? ActorId { get; set; }
 }
 
-public sealed class DialogTransmissionSenderActorDto
+public sealed class TransmissionSenderActorDto
 {
     /// <summary>
     /// The type of actor that sent the transmission.
@@ -357,7 +357,7 @@ public sealed class DialogTransmissionSenderActorDto
     public string? ActorId { get; set; }
 }
 
-public sealed class DialogApiActionDto
+public sealed class ApiActionDto
 {
     /// <summary>
     /// String identifier for the action, corresponding to the "action" attributeId used in the XACML service policy,
@@ -385,10 +385,10 @@ public sealed class DialogApiActionDto
     /// <summary>
     /// The endpoints associated with the action.
     /// </summary>
-    public List<DialogApiActionEndpointDto> Endpoints { get; set; } = [];
+    public List<ApiActionEndpointDto> Endpoints { get; set; } = [];
 }
 
-public sealed class DialogApiActionEndpointDto
+public sealed class ApiActionEndpointDto
 {
     /// <summary>
     /// Arbitrary string indicating the version of the endpoint.
@@ -435,7 +435,7 @@ public sealed class DialogApiActionEndpointDto
     public DateTimeOffset? SunsetAt { get; set; }
 }
 
-public sealed class DialogGuiActionDto
+public sealed class GuiActionDto
 {
     /// <summary>
     /// The action identifier for the action, corresponding to the "action" attributeId used in the XACML service policy,
@@ -497,7 +497,7 @@ public sealed class DialogGuiActionDto
     public List<LocalizationDto>? Prompt { get; set; }
 }
 
-public sealed class DialogAttachmentDto
+public sealed class AttachmentDto
 {
     /// <summary>
     /// The display name of the attachment that should be used in GUIs.
@@ -507,10 +507,10 @@ public sealed class DialogAttachmentDto
     /// <summary>
     /// The URLs associated with the attachment, each referring to a different representation of the attachment.
     /// </summary>
-    public List<DialogAttachmentUrlDto> Urls { get; set; } = [];
+    public List<AttachmentUrlDto> Urls { get; set; } = [];
 }
 
-public sealed class DialogAttachmentUrlDto
+public sealed class AttachmentUrlDto
 {
     /// <summary>
     /// The fully qualified URL of the attachment.

@@ -11,29 +11,29 @@ using OneOf;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogTransmissions.Queries.Get;
 
-public sealed class GetDialogTransmissionQuery : IRequest<GetDialogTransmissionResult>
+public sealed class GetTransmissionQuery : IRequest<GetTransmissionResult>
 {
     public Guid DialogId { get; set; }
     public Guid TransmissionId { get; set; }
 }
 
 [GenerateOneOf]
-public sealed partial class GetDialogTransmissionResult : OneOfBase<DialogTransmissionDto, EntityNotFound, EntityDeleted>;
+public sealed partial class GetTransmissionResult : OneOfBase<TransmissionDto, EntityNotFound, EntityDeleted>;
 
-internal sealed class GetDialogTransmissionQueryHandler : IRequestHandler<GetDialogTransmissionQuery, GetDialogTransmissionResult>
+internal sealed class GetTransmissionQueryHandler : IRequestHandler<GetTransmissionQuery, GetTransmissionResult>
 {
     private readonly IMapper _mapper;
     private readonly IDialogDbContext _dbContext;
     private readonly IAltinnAuthorization _altinnAuthorization;
 
-    public GetDialogTransmissionQueryHandler(IMapper mapper, IDialogDbContext dbContext, IAltinnAuthorization altinnAuthorization)
+    public GetTransmissionQueryHandler(IMapper mapper, IDialogDbContext dbContext, IAltinnAuthorization altinnAuthorization)
     {
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         _altinnAuthorization = altinnAuthorization ?? throw new ArgumentNullException(nameof(altinnAuthorization));
     }
 
-    public async Task<GetDialogTransmissionResult> Handle(GetDialogTransmissionQuery request,
+    public async Task<GetTransmissionResult> Handle(GetTransmissionQuery request,
         CancellationToken cancellationToken)
     {
         var dialog = await _dbContext.Dialogs
@@ -78,7 +78,7 @@ internal sealed class GetDialogTransmissionQueryHandler : IRequestHandler<GetDia
             return new EntityNotFound<DialogTransmission>(request.TransmissionId);
         }
 
-        var dto = _mapper.Map<DialogTransmissionDto>(transmission);
+        var dto = _mapper.Map<TransmissionDto>(transmission);
         dto.IsAuthorized = authorizationResult.HasReadAccessToDialogTransmission(transmission.AuthorizationAttribute);
 
         if (dto.IsAuthorized) return dto;

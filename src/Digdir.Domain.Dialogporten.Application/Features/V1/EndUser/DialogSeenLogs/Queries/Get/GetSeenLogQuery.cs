@@ -1,50 +1,52 @@
-﻿using AutoMapper;
+using AutoMapper;
+using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
-using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 using Digdir.Domain.Dialogporten.Application.Externals;
+using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using MediatR;
-using OneOf;
 using Microsoft.EntityFrameworkCore;
-using Digdir.Domain.Dialogporten.Application.Common;
+using OneOf;
 
-namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogSeenLogs.Queries.Search;
+namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogSeenLogs.Queries.Get;
 
-public sealed class SearchDialogSeenLogQuery : IRequest<SearchDialogSeenLogResult>
+public sealed class GetSeenLogQuery : IRequest<GetSeenLogResult>
 {
     public Guid DialogId { get; set; }
+    public Guid SeenLogId { get; set; }
 }
 
 [GenerateOneOf]
-public sealed partial class SearchDialogSeenLogResult : OneOfBase<List<DialogSeenLogDto>, EntityNotFound, EntityDeleted, Forbidden>;
+public sealed partial class GetSeenLogResult : OneOfBase<SeenLogDto, EntityNotFound, EntityDeleted, Forbidden>;
 
-internal sealed class SearchDialogSeenLogQueryHandler : IRequestHandler<SearchDialogSeenLogQuery, SearchDialogSeenLogResult>
+internal sealed class GetSeenLogQueryHandler : IRequestHandler<GetSeenLogQuery, GetSeenLogResult>
 {
-    private readonly IDialogDbContext _db;
     private readonly IMapper _mapper;
+    private readonly IDialogDbContext _dbContext;
     private readonly IAltinnAuthorization _altinnAuthorization;
     private readonly IUserRegistry _userRegistry;
 
-    public SearchDialogSeenLogQueryHandler(
-        IDialogDbContext db,
+    public GetSeenLogQueryHandler(
         IMapper mapper,
+        IDialogDbContext dbContext,
         IAltinnAuthorization altinnAuthorization,
         IUserRegistry userRegistry)
     {
-        _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         _altinnAuthorization = altinnAuthorization ?? throw new ArgumentNullException(nameof(altinnAuthorization));
         _userRegistry = userRegistry ?? throw new ArgumentNullException(nameof(userRegistry));
     }
 
-    public async Task<SearchDialogSeenLogResult> Handle(SearchDialogSeenLogQuery request, CancellationToken cancellationToken)
+    public async Task<GetSeenLogResult> Handle(GetSeenLogQuery request,
+        CancellationToken cancellationToken)
     {
         var currentUserInformation = await _userRegistry.GetCurrentUserInformation(cancellationToken);
 
-        var dialog = await _db.Dialogs
+        var dialog = await _dbContext.Dialogs
             .AsNoTracking()
-            .Include(x => x.SeenLog)
-            .ThenInclude(x => x.SeenBy)
+            .Include(x => x.SeenLog.Where(x => x.Id == request.SeenLogId))
+                .ThenInclude(x => x.SeenBy)
             .IgnoreQueryFilters()
             .FirstOrDefaultAsync(x => x.Id == request.DialogId,
                 cancellationToken: cancellationToken);
@@ -69,13 +71,15 @@ internal sealed class SearchDialogSeenLogQueryHandler : IRequestHandler<SearchDi
             return new EntityDeleted<DialogEntity>(request.DialogId);
         }
 
-        return dialog.SeenLog
-            .Select(x =>
-            {
-                var dto = _mapper.Map<DialogSeenLogDto>(x);
-                dto.IsCurrentEndUser = currentUserInformation.UserId.ExternalIdWithPrefix == x.SeenBy.ActorId;
-                return dto;
-            })
-            .ToList();
+        var seenLog = dialog.SeenLog.FirstOrDefault();
+        if (seenLog is null)
+        {
+            return new EntityNotFound<DialogSeenLog>(request.SeenLogId);
+        }
+
+        var dto = _mapper.Map<SeenLogDto>(seenLog);
+        dto.IsCurrentEndUser = currentUserInformation.UserId.ExternalIdWithPrefix == seenLog.SeenBy.ActorId;
+
+        return dto;
     }
 }

@@ -7,43 +7,36 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
 
-namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogTransmissions.Queries.Search;
+namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogActivities.Queries.Search;
 
-public sealed class SearchDialogTransmissionQuery : IRequest<SearchDialogTransmissionResult>
+public sealed class SearchActivityQuery : IRequest<SearchActivityResult>
 {
     public Guid DialogId { get; set; }
 }
 
 [GenerateOneOf]
-public sealed partial class SearchDialogTransmissionResult : OneOfBase<List<DialogTransmissionDto>, EntityNotFound, EntityDeleted>;
+public sealed partial class SearchActivityResult : OneOfBase<List<ActivityDto>, EntityNotFound, EntityDeleted>;
 
-internal sealed class SearchDialogTransmissionQueryHandler : IRequestHandler<SearchDialogTransmissionQuery, SearchDialogTransmissionResult>
+internal sealed class SearchActivityQueryHandler : IRequestHandler<SearchActivityQuery, SearchActivityResult>
 {
     private readonly IDialogDbContext _db;
     private readonly IMapper _mapper;
     private readonly IAltinnAuthorization _altinnAuthorization;
 
-    public SearchDialogTransmissionQueryHandler(IDialogDbContext db, IMapper mapper, IAltinnAuthorization altinnAuthorization)
+    public SearchActivityQueryHandler(
+        IDialogDbContext db,
+        IMapper mapper,
+        IAltinnAuthorization altinnAuthorization)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _altinnAuthorization = altinnAuthorization ?? throw new ArgumentNullException(nameof(altinnAuthorization));
     }
 
-    public async Task<SearchDialogTransmissionResult> Handle(SearchDialogTransmissionQuery request, CancellationToken cancellationToken)
+    public async Task<SearchActivityResult> Handle(SearchActivityQuery request, CancellationToken cancellationToken)
     {
         var dialog = await _db.Dialogs
-            .Include(x => x.Transmissions)
-                .ThenInclude(x => x.Content.OrderBy(x => x.Id).ThenBy(x => x.CreatedAt))
-                .ThenInclude(x => x.Value.Localizations.OrderBy(x => x.CreatedAt).ThenBy(x => x.LanguageCode))
-            .Include(x => x.Transmissions)
-                .ThenInclude(x => x.Attachments.OrderBy(x => x.CreatedAt).ThenBy(x => x.Id))
-                .ThenInclude(x => x.DisplayName!.Localizations.OrderBy(x => x.CreatedAt).ThenBy(x => x.LanguageCode))
-            .Include(x => x.Transmissions)
-                .ThenInclude(x => x.Attachments.OrderBy(x => x.CreatedAt).ThenBy(x => x.Id))
-                .ThenInclude(x => x.Urls.OrderBy(x => x.CreatedAt).ThenBy(x => x.Id))
-            .Include(x => x.Transmissions)
-                .ThenInclude(x => x.Sender)
+            .Include(x => x.Activities)
             .IgnoreQueryFilters()
             .FirstOrDefaultAsync(x => x.Id == request.DialogId,
                 cancellationToken: cancellationToken);
@@ -68,6 +61,6 @@ internal sealed class SearchDialogTransmissionQueryHandler : IRequestHandler<Sea
             return new EntityDeleted<DialogEntity>(request.DialogId);
         }
 
-        return _mapper.Map<List<DialogTransmissionDto>>(dialog.Transmissions);
+        return _mapper.Map<List<ActivityDto>>(dialog.Activities);
     }
 }

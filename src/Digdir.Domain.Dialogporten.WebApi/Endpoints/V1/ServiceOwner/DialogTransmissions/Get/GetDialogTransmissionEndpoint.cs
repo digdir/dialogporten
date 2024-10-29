@@ -7,7 +7,7 @@ using MediatR;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.DialogTransmissions.Get;
 
-public sealed class GetDialogTransmissionEndpoint : Endpoint<GetDialogTransmissionQuery, DialogTransmissionDto>
+public sealed class GetDialogTransmissionEndpoint : Endpoint<GetTransmissionQuery, TransmissionDto>
 {
     private readonly ISender _sender;
 
@@ -27,7 +27,7 @@ public sealed class GetDialogTransmissionEndpoint : Endpoint<GetDialogTransmissi
             StatusCodes.Status404NotFound));
     }
 
-    public override async Task HandleAsync(GetDialogTransmissionQuery req, CancellationToken ct)
+    public override async Task HandleAsync(GetTransmissionQuery req, CancellationToken ct)
     {
         var result = await _sender.Send(req, ct);
         await result.Match(

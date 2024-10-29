@@ -76,7 +76,7 @@ internal abstract class UpdateDialogSwaggerConfig
         DueAt = DateTimeOffset.Parse("2084-04-04T12:13:10.0134400+00:00", CultureInfo.InvariantCulture),
         Attachments =
         [
-            new DialogAttachmentDto
+            new AttachmentDto
             {
                 Id = Guid.Parse("02a72809-eddd-4192-864d-8f1755d72f4e"),
                 DisplayName =
@@ -89,7 +89,7 @@ internal abstract class UpdateDialogSwaggerConfig
                 ],
                 Urls =
                 [
-                    new DialogAttachmentUrlDto
+                    new AttachmentUrlDto
                     {
                         Id = Guid.Parse("858177cb-8584-4d10-a086-3a5defa7a6c3"),
                         Url = new Uri("https://example.com/some-url")
@@ -99,7 +99,7 @@ internal abstract class UpdateDialogSwaggerConfig
         ],
         GuiActions =
         [
-            new DialogGuiActionDto
+            new GuiActionDto
             {
                 Id = Guid.Parse("8c64ecc8-7678-44b2-8788-0b5852dd8fa0"),
                 Action = "submit",
@@ -123,13 +123,13 @@ internal abstract class UpdateDialogSwaggerConfig
         ],
         ApiActions =
         [
-            new DialogApiActionDto
+            new ApiActionDto
             {
                 Id = Guid.Parse("948b07ba-1a82-403e-8eaa-2e5784af07a9"),
                 Action = "submit",
                 Endpoints =
                 [
-                    new DialogApiActionEndpointDto
+                    new ApiActionEndpointDto
                     {
                         Version = "20231015",
                         HttpMethod = HttpVerb.Values.POST,
@@ -144,11 +144,11 @@ internal abstract class UpdateDialogSwaggerConfig
         ],
         Activities =
         [
-            new DialogActivityDto
+            new ActivityDto
             {
                 Id = Guid.Parse("8b95d42d-d2b6-4c01-8ca0-a817a4b3c50d"),
                 Type = DialogActivityType.Values.Information,
-                PerformedBy = new DialogActivityPerformedByActorDto
+                PerformedBy = new ActivityPerformedByActorDto
                 {
                     ActorType = ActorType.Values.ServiceOwner
                 },

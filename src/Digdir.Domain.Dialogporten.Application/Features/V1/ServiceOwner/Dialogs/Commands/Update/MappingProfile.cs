@@ -29,17 +29,17 @@ internal sealed class MappingProfile : Profile
             .IgnoreComplexDestinationProperties()
             .ForMember(x => x.Id, opt => opt.Ignore());
 
-        CreateMap<DialogApiActionDto, DialogApiAction>()
+        CreateMap<ApiActionDto, DialogApiAction>()
             .IgnoreComplexDestinationProperties()
             .ForMember(x => x.Id, opt => opt.Ignore());
 
-        CreateMap<DialogApiActionEndpointDto, DialogApiActionEndpoint>()
+        CreateMap<ApiActionEndpointDto, DialogApiActionEndpoint>()
             .IgnoreComplexDestinationProperties()
             .ForMember(x => x.Id, opt => opt.Ignore())
             .ForMember(dest => dest.HttpMethod, opt => opt.Ignore())
             .ForMember(dest => dest.HttpMethodId, opt => opt.MapFrom(src => src.HttpMethod));
 
-        CreateMap<DialogGuiActionDto, DialogGuiAction>()
+        CreateMap<GuiActionDto, DialogGuiAction>()
             .IgnoreComplexDestinationProperties()
             .ForMember(x => x.Id, opt => opt.Ignore())
             .ForMember(dest => dest.Priority, opt => opt.Ignore())
@@ -47,11 +47,11 @@ internal sealed class MappingProfile : Profile
             .ForMember(dest => dest.HttpMethod, opt => opt.Ignore())
             .ForMember(dest => dest.HttpMethodId, opt => opt.MapFrom(src => src.HttpMethod));
 
-        CreateMap<DialogAttachmentDto, DialogAttachment>()
+        CreateMap<AttachmentDto, DialogAttachment>()
             .IgnoreComplexDestinationProperties()
             .ForMember(x => x.Id, opt => opt.Ignore());
 
-        CreateMap<DialogAttachmentUrlDto, AttachmentUrl>()
+        CreateMap<AttachmentUrlDto, AttachmentUrl>()
             .IgnoreComplexDestinationProperties()
             .ForMember(x => x.Id, opt => opt.Ignore())
             .ForMember(dest => dest.ConsumerType, opt => opt.Ignore())
@@ -62,22 +62,22 @@ internal sealed class MappingProfile : Profile
 
         // Since these are append-only, we don't need to merge with existing
         // activity/transmission records and thus can map complex properties
-        CreateMap<DialogActivityDto, DialogActivity>()
+        CreateMap<ActivityDto, DialogActivity>()
             .ForMember(dest => dest.Type, opt => opt.Ignore())
             .ForMember(dest => dest.TypeId, opt => opt.MapFrom(src => src.Type));
 
-        CreateMap<DialogActivityPerformedByActorDto, DialogActivityPerformedByActor>()
+        CreateMap<ActivityPerformedByActorDto, DialogActivityPerformedByActor>()
             .ForMember(dest => dest.ActorType, opt => opt.Ignore())
             .ForMember(dest => dest.ActorTypeId, opt => opt.MapFrom(src => src.ActorType));
 
-        CreateMap<DialogTransmissionDto, DialogTransmission>()
+        CreateMap<TransmissionDto, DialogTransmission>()
             .ForMember(dest => dest.Type, opt => opt.Ignore())
             .ForMember(dest => dest.TypeId, opt => opt.MapFrom(src => src.Type));
 
-        CreateMap<DialogTransmissionContentDto?, List<DialogTransmissionContent>?>()
-            .ConvertUsing<TransmissionContentInputConverter<DialogTransmissionContentDto>>();
+        CreateMap<TransmissionContentDto?, List<DialogTransmissionContent>?>()
+            .ConvertUsing<TransmissionContentInputConverter<TransmissionContentDto>>();
 
-        CreateMap<DialogTransmissionSenderActorDto, DialogTransmissionSenderActor>()
+        CreateMap<TransmissionSenderActorDto, DialogTransmissionSenderActor>()
             .ForMember(dest => dest.ActorType, opt => opt.Ignore())
             .ForMember(dest => dest.ActorTypeId, opt => opt.MapFrom(src => src.ActorType));
 
@@ -97,13 +97,13 @@ internal sealed class MappingProfile : Profile
             .ForMember(dest => dest.Activities, opt => opt.Ignore())
             .ForMember(dest => dest.Transmissions, opt => opt.Ignore());
         CreateMap<Queries.Get.SearchTagDto, SearchTagDto>();
-        CreateMap<Queries.Get.DialogActivityDto, DialogActivityDto>();
-        CreateMap<Queries.Get.DialogActivityPerformedByActorDto, DialogActivityPerformedByActorDto>();
-        CreateMap<Queries.Get.DialogApiActionDto, DialogApiActionDto>();
-        CreateMap<Queries.Get.DialogApiActionEndpointDto, DialogApiActionEndpointDto>();
-        CreateMap<Queries.Get.DialogGuiActionDto, DialogGuiActionDto>();
-        CreateMap<Queries.Get.DialogAttachmentDto, DialogAttachmentDto>();
-        CreateMap<Queries.Get.DialogAttachmentUrlDto, DialogAttachmentUrlDto>();
+        CreateMap<Queries.Get.DialogActivityDto, ActivityDto>();
+        CreateMap<Queries.Get.DialogActivityPerformedByActorDto, ActivityPerformedByActorDto>();
+        CreateMap<Queries.Get.DialogApiActionDto, ApiActionDto>();
+        CreateMap<Queries.Get.DialogApiActionEndpointDto, ApiActionEndpointDto>();
+        CreateMap<Queries.Get.DialogGuiActionDto, GuiActionDto>();
+        CreateMap<Queries.Get.DialogAttachmentDto, AttachmentDto>();
+        CreateMap<Queries.Get.DialogAttachmentUrlDto, AttachmentUrlDto>();
         CreateMap<Queries.Get.ContentDto, ContentDto>();
     }
 }

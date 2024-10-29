@@ -4,9 +4,9 @@ using Digdir.Domain.Dialogporten.Domain.Actors;
 using Digdir.Domain.Dialogporten.Domain.Attachments;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 
-namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.DialogTransmissions.Queries.Get;
+namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogTransmissions.Queries.Get;
 
-public sealed class DialogTransmissionDto
+public sealed class TransmissionDto
 {
     /// <summary>
     /// The unique identifier for the transmission in UUIDv7 format.
@@ -22,6 +22,12 @@ public sealed class DialogTransmissionDto
     /// The authorization attribute associated with the transmission.
     /// </summary>
     public string? AuthorizationAttribute { get; set; }
+
+    /// <summary>
+    /// Flag indicating if the authenticated user is authorized for this transmission. If not, embedded content and
+    /// the attachments will not be available
+    /// </summary>
+    public bool IsAuthorized { get; set; }
 
     /// <summary>
     /// The extended type URI for the transmission.

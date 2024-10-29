@@ -1,5 +1,4 @@
-﻿using System.Text;
-using Digdir.Domain.Dialogporten.WebApi.Common.Swagger;
+﻿using Digdir.Domain.Dialogporten.WebApi.Common.Swagger;
 using NJsonSchema.Generation;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Common.Json;
@@ -14,54 +13,5 @@ namespace Digdir.Domain.Dialogporten.WebApi.Common.Json;
 /// </summary>
 internal sealed class SuffixedSchemaNameGenerator : ISchemaNameGenerator
 {
-    public string Generate(Type type)
-    {
-        return TypeNameConverter.ToShortName(type);
-    }
-
-    private static string BaseGenerate(Type type)
-    {
-        var isGeneric = type.IsGenericType;
-        var fullNameWithoutGenericArgs =
-            isGeneric
-                ? type.FullName![..type.FullName!.IndexOf('`')]
-                : type.FullName;
-
-        var index = fullNameWithoutGenericArgs!.LastIndexOf('.');
-        index = index == -1 ? 0 : index + 1;
-        var shortName = fullNameWithoutGenericArgs[index..];
-
-        return isGeneric
-            ? shortName + GenericArgString(type)
-            : shortName;
-
-        static string GenericArgString(Type type)
-        {
-            if (!type.IsGenericType) return type.Name;
-
-            var sb = new StringBuilder();
-            var args = type.GetGenericArguments();
-
-            for (var i = 0; i < args.Length; i++)
-            {
-                var arg = args[i];
-                if (i == 0)
-                    sb.Append("Of");
-                sb.Append(TypeNameWithoutGenericArgs(arg));
-                sb.Append(GenericArgString(arg));
-                if (i < args.Length - 1)
-                    sb.Append("And");
-            }
-
-            return sb.ToString();
-
-            static string TypeNameWithoutGenericArgs(Type type)
-            {
-                var index = type.Name.IndexOf('`');
-                index = index == -1 ? 0 : index;
-
-                return type.Name[..index];
-            }
-        }
-    }
+    public string Generate(Type type) => TypeNameConverter.ToShortName(type);
 }
