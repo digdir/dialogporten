@@ -1,6 +1,7 @@
 using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogSystemLabels.Commands.Set;
 using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
+using Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.Common.Extensions;
 using FastEndpoints;
 using MediatR;
 
@@ -16,7 +17,14 @@ public sealed class SetDialogSystemLabelEndpoint(ISender sender) : Endpoint<Dial
         Policies(AuthorizationPolicy.EndUser);
         Group<EndUserGroup>();
 
-        Description(b => SetDialogSystemLabelSwaggerConfig.SetDescription(b, GetType()));
+        Description(b => b.ProducesOneOf(
+            StatusCodes.Status204NoContent,
+            StatusCodes.Status400BadRequest,
+            StatusCodes.Status403Forbidden,
+            StatusCodes.Status404NotFound,
+            StatusCodes.Status410Gone,
+            StatusCodes.Status412PreconditionFailed,
+            StatusCodes.Status422UnprocessableEntity));
     }
     public override async Task HandleAsync(DialogSystemLabelCommand req, CancellationToken ct)
     {

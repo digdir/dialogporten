@@ -22,7 +22,7 @@ public sealed class SearchDialogEndpoint : Endpoint<SearchDialogQuery, Paginated
         Policies(AuthorizationPolicy.ServiceProviderSearch);
         Group<ServiceOwnerGroup>();
 
-        Description(b => SwaggerConfig.SetDescription(b, GetType()));
+        Description(b => b.ClearDefaultProduces(StatusCodes.Status403Forbidden));
     }
 
     public override async Task HandleAsync(SearchDialogQuery req, CancellationToken ct)

@@ -1,20 +1,6 @@
-using Digdir.Domain.Dialogporten.Application.Features.V1.WellKnown.OauthAuthorizationServer.Queries.Get;
-using Digdir.Domain.Dialogporten.WebApi.Common.Swagger;
-using Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.Common.Extensions;
 using FastEndpoints;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.WellKnown.OauthAuthorizationServer.Get;
-
-public sealed class GetOauthAuthorizationServerSwaggerConfig : ISwaggerConfig
-{
-
-    public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder, Type type)
-        => builder.OperationId(TypeNameConverter.ToShortNameStrict(type))
-            .ProducesOneOf<GetOauthAuthorizationServerDto>(
-                StatusCodes.Status200OK);
-
-    public static object GetExample() => throw new NotImplementedException();
-}
 
 public sealed class GetOauthAuthorizationServerEndpointSummary : Summary<GetOauthAuthorizationServerEndpoint>
 {

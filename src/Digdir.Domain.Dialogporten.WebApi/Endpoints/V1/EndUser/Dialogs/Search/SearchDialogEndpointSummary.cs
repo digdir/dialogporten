@@ -1,22 +1,10 @@
 using Digdir.Domain.Dialogporten.Application.Common.Pagination;
 using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Queries.Search;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
-using Digdir.Domain.Dialogporten.WebApi.Common.Swagger;
 using Digdir.Domain.Dialogporten.WebApi.Common;
-using Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.Common.Extensions;
 using FastEndpoints;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.EndUser.Dialogs.Search;
-
-public abstract class SearchDialogSwaggerConfig : ISwaggerConfig
-{
-
-    public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder, Type type) =>
-        builder.OperationId(TypeNameConverter.ToShortNameStrict(type))
-               .ClearDefaultProduces(StatusCodes.Status403Forbidden);
-
-    public static object GetExample() => throw new NotImplementedException();
-}
 
 public sealed class SearchDialogEndpointSummary : Summary<SearchDialogEndpoint, SearchDialogQuery>
 {

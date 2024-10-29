@@ -1,6 +1,7 @@
 using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogTransmissions.Queries.Get;
 using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
+using Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.Common.Extensions;
 using FastEndpoints;
 using MediatR;
 
@@ -21,7 +22,9 @@ public sealed class GetDialogTransmissionEndpoint : Endpoint<GetDialogTransmissi
         Policies(AuthorizationPolicy.EndUser);
         Group<EndUserGroup>();
 
-        Description(b => GetDialogTransmissionSwaggerConfig.SetDescription(b, GetType()));
+        Description(b => b.ProducesOneOf<DialogTransmissionDto>(
+            StatusCodes.Status200OK,
+            StatusCodes.Status404NotFound));
     }
 
     public override async Task HandleAsync(GetDialogTransmissionQuery req, CancellationToken ct)

@@ -2,21 +2,10 @@ using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.DialogActi
 using Digdir.Domain.Dialogporten.WebApi.Common;
 using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
-using Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.Common.Extensions;
-using Digdir.Domain.Dialogporten.WebApi.Common.Swagger;
 using FastEndpoints;
 
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.DialogActivities.NotificationCondition;
-
-public sealed class NotificationConditionSwaggerConfig : ISwaggerConfig
-{
-
-    public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder, Type type)
-        => builder.OperationId(TypeNameConverter.ToShortNameStrict(type));
-
-    public static object GetExample() => throw new NotImplementedException();
-}
 
 public sealed class SearchDialogActivityEndpointSummary : Summary<NotificationConditionEndpoint, NotificationConditionQuery>
 {

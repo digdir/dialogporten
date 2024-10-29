@@ -1,6 +1,7 @@
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.DialogSeenLogs.Queries.Search;
 using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
+using Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.Common.Extensions;
 using FastEndpoints;
 using MediatR;
 
@@ -21,7 +22,9 @@ public sealed class SearchDialogSeenLogEndpoint : Endpoint<SearchDialogSeenLogQu
         Policies(AuthorizationPolicy.ServiceProvider);
         Group<ServiceOwnerGroup>();
 
-        Description(d => SearchDialogSeenLogSwaggerConfig.SetDescription(d, GetType()));
+        Description(d => d.ProducesOneOf<List<SeenLogDto>>(
+            StatusCodes.Status200OK,
+            StatusCodes.Status404NotFound));
     }
 
     public override async Task HandleAsync(SearchDialogSeenLogQuery req, CancellationToken ct)

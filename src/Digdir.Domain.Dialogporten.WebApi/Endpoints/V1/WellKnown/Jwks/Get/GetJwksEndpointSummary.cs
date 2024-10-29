@@ -1,20 +1,6 @@
-using Digdir.Domain.Dialogporten.Application.Features.V1.WellKnown.Jwks.Queries.Get;
-using Digdir.Domain.Dialogporten.WebApi.Common.Swagger;
-using Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.Common.Extensions;
 using FastEndpoints;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.WellKnown.Jwks.Get;
-
-public sealed class GetJwksSwaggerConfig : ISwaggerConfig
-{
-
-    public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder, Type type)
-        => builder.OperationId(TypeNameConverter.ToShortNameStrict(type))
-            .ProducesOneOf<GetJwksDto>(
-                StatusCodes.Status200OK);
-
-    public static object GetExample() => throw new NotImplementedException();
-}
 
 public sealed class GetJwksEndpointSummary : Summary<GetJwksEndpoint>
 {

@@ -2,6 +2,7 @@
 using Digdir.Domain.Dialogporten.WebApi.Common;
 using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
+using Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.Common.Extensions;
 using FastEndpoints;
 using MediatR;
 
@@ -22,7 +23,10 @@ public sealed class DeleteDialogEndpoint : Endpoint<DeleteDialogRequest>
         Policies(AuthorizationPolicy.ServiceProvider);
         Group<ServiceOwnerGroup>();
 
-        Description(b => DeleteDialogSwaggerConfig.SetDescription(b, GetType()));
+        Description(b => b.ProducesOneOf(
+            StatusCodes.Status204NoContent,
+            StatusCodes.Status404NotFound,
+            StatusCodes.Status412PreconditionFailed));
     }
 
     public override async Task HandleAsync(DeleteDialogRequest req, CancellationToken ct)

@@ -1,6 +1,7 @@
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.DialogTransmissions.Queries.Search;
 using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
+using Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.Common.Extensions;
 using FastEndpoints;
 using MediatR;
 
@@ -21,7 +22,9 @@ public sealed class SearchDialogTransmissionEndpoint : Endpoint<SearchDialogTran
         Policies(AuthorizationPolicy.ServiceProvider);
         Group<ServiceOwnerGroup>();
 
-        Description(b => SearchDialogTransmissionSwaggerConfig.SetDescription(b, GetType()));
+        Description(b => b.ProducesOneOf<DialogTransmissionDto>(
+            StatusCodes.Status200OK,
+            StatusCodes.Status404NotFound));
     }
 
     public override async Task HandleAsync(SearchDialogTransmissionQuery req, CancellationToken ct)

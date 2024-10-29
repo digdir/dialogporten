@@ -1,4 +1,5 @@
 using Digdir.Domain.Dialogporten.Application.Features.V1.WellKnown.Jwks.Queries.Get;
+using Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.Common.Extensions;
 using FastEndpoints;
 using MediatR;
 using Microsoft.Net.Http.Headers;
@@ -19,7 +20,7 @@ public sealed class GetJwksEndpoint : EndpointWithoutRequest<GetJwksDto>
         Get(".well-known/jwks.json");
         Group<MetadataGroup>();
 
-        Description(b => GetJwksSwaggerConfig.SetDescription(b, GetType()));
+        Description(b => b.ProducesOneOf<GetJwksDto>(StatusCodes.Status200OK));
     }
 
     public override async Task HandleAsync(CancellationToken ct)

@@ -19,20 +19,6 @@ internal static class TypeNameConverter
         "Digdir.Domain.Dialogporten.Application.Features."
     ];
 
-    private static readonly Dictionary<string, Type> RegisteredTypeByShortName = new();
-
-    public static string ToShortNameStrict(Type type)
-    {
-        var shortName = ToShortName(type);
-        if (RegisteredTypeByShortName.TryGetValue(shortName, out var registeredType))
-        {
-            throw new InvalidOperationException($"{type.FullName} can't be registered. Type {shortName} is already registered by {registeredType.FullName}.");
-        }
-
-        RegisteredTypeByShortName.Add(shortName, type);
-        return shortName;
-    }
-
     internal static string ToShortName(Type type)
     {
         var index = 0;

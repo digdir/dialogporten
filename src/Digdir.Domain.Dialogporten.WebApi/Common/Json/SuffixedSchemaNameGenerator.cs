@@ -1,5 +1,4 @@
 ﻿using System.Text;
-using Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations;
 using Digdir.Domain.Dialogporten.WebApi.Common.Swagger;
 using NJsonSchema.Generation;
 
@@ -17,7 +16,7 @@ internal sealed class SuffixedSchemaNameGenerator : ISchemaNameGenerator
 {
     public string Generate(Type type)
     {
-        return TypeNameConverter.ToShortNameStrict(type);
+        return TypeNameConverter.ToShortName(type);
     }
 
     private static string BaseGenerate(Type type)

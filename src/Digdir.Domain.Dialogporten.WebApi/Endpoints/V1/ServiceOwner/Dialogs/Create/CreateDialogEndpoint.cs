@@ -2,6 +2,7 @@
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Queries.Get;
 using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
+using Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.Common.Extensions;
 using Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.Dialogs.Get;
 using FastEndpoints;
 using MediatR;
@@ -23,7 +24,10 @@ public sealed class CreateDialogEndpoint : Endpoint<CreateDialogCommand>
         Policies(AuthorizationPolicy.ServiceProvider);
         Group<ServiceOwnerGroup>();
 
-        Description(b => CreateDialogSwaggerConfig.SetDescription(b, GetType()));
+        Description(b => b.ProducesOneOf(
+            StatusCodes.Status201Created,
+            StatusCodes.Status400BadRequest,
+            StatusCodes.Status422UnprocessableEntity));
     }
 
     public override async Task HandleAsync(CreateDialogCommand req, CancellationToken ct)

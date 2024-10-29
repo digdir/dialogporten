@@ -21,8 +21,7 @@ public sealed class SearchDialogEndpoint : Endpoint<SearchDialogQuery, Paginated
         Get("dialogs");
         Policies(AuthorizationPolicy.EndUser);
         Group<EndUserGroup>();
-
-        Description(d => SearchDialogSwaggerConfig.SetDescription(d, GetType()));
+        Description(d => d.ClearDefaultProduces(StatusCodes.Status403Forbidden));
     }
 
     public override async Task HandleAsync(SearchDialogQuery req, CancellationToken ct)

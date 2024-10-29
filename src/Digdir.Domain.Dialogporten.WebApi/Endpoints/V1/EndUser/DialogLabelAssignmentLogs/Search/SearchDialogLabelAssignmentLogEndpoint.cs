@@ -1,6 +1,7 @@
 using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogLabelAssignmentLog.Queries.Search;
 using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
+using Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.Common.Extensions;
 using FastEndpoints;
 using MediatR;
 
@@ -20,7 +21,10 @@ public sealed class SearchDialogLabelAssignmentLogEndpoint : Endpoint<SearchDial
         Policies(AuthorizationPolicy.EndUser);
         Group<EndUserGroup>();
 
-        Description(d => SearchDialogLabelAssignmentSwaggerConfig.SetDescription(d, GetType()));
+        Description(d => d.ProducesOneOf<List<DialogLabelAssignmentLogDto>>(
+            StatusCodes.Status200OK,
+            StatusCodes.Status404NotFound,
+            StatusCodes.Status410Gone));
     }
     public override async Task HandleAsync(SearchDialogLabelAssignmentLogQuery req, CancellationToken ct)
     {

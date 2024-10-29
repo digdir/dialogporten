@@ -20,7 +20,7 @@ public sealed class GetPartiesEndpoint : EndpointWithoutRequest<PartiesDto>
         Policies(AuthorizationPolicy.EndUser);
         Group<EndUserGroup>();
 
-        Description(d => GetPartiesSwaggerConfig.SetDescription(d, GetType()));
+        Description(d => d.Produces<List<PartiesDto>>());
     }
 
     public override async Task HandleAsync(CancellationToken ct)

@@ -10,25 +10,12 @@ using Digdir.Domain.Dialogporten.Domain.Http;
 using Digdir.Domain.Dialogporten.WebApi.Common;
 using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
-using Digdir.Domain.Dialogporten.WebApi.Common.Swagger;
-using Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.Common.Extensions;
 using FastEndpoints;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.Dialogs.Update;
 
-internal abstract class UpdateDialogSwaggerConfig : ISwaggerConfig
+internal abstract class UpdateDialogSwaggerConfig
 {
-
-    public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder, Type type) =>
-        builder
-            .OperationId(TypeNameConverter.ToShortNameStrict(type))
-            .ProducesOneOf(
-                StatusCodes.Status204NoContent,
-                StatusCodes.Status400BadRequest,
-                StatusCodes.Status404NotFound,
-                StatusCodes.Status412PreconditionFailed,
-                StatusCodes.Status422UnprocessableEntity);
-
     // TODO: Create fakers
     public static object GetExample() => new UpdateDialogDto
     {

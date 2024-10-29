@@ -3,6 +3,7 @@ using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Qu
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.DialogTransmissions.Queries.Get;
 using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
+using Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.Common.Extensions;
 using Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.DialogTransmissions.Get;
 using Digdir.Library.Entity.Abstractions.Features.Identifiable;
 using FastEndpoints;
@@ -30,7 +31,12 @@ public sealed class CreateDialogTransmissionEndpoint : Endpoint<CreateDialogTran
         Policies(AuthorizationPolicy.ServiceProvider);
         Group<ServiceOwnerGroup>();
 
-        Description(b => CreateDialogTransmissionSwaggerConfig.SetDescription(b, GetType()));
+        Description(b => b.ProducesOneOf(
+            StatusCodes.Status201Created,
+            StatusCodes.Status400BadRequest,
+            StatusCodes.Status404NotFound,
+            StatusCodes.Status412PreconditionFailed,
+            StatusCodes.Status422UnprocessableEntity));
     }
 
     public override async Task HandleAsync(CreateDialogTransmissionRequest req, CancellationToken ct)

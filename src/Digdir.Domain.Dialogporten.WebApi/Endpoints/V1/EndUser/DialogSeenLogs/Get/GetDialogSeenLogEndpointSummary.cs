@@ -1,22 +1,8 @@
-using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogSeenLogs.Queries.Get;
 using Digdir.Domain.Dialogporten.WebApi.Common;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
-using Digdir.Domain.Dialogporten.WebApi.Common.Swagger;
-using Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.Common.Extensions;
 using FastEndpoints;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.EndUser.DialogSeenLogs.Get;
-
-public sealed class GetDialogSeenLogSwaggerConfig : ISwaggerConfig
-{
-    public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder, Type type)
-        => builder.OperationId(TypeNameConverter.ToShortNameStrict(type))
-                  .ProducesOneOf<DialogSeenLogDto>(
-                      StatusCodes.Status200OK,
-                      StatusCodes.Status404NotFound);
-
-    public static object GetExample() => throw new NotImplementedException();
-}
 
 public sealed class GetDialogSeenLogEndpointSummary : Summary<GetDialogSeenLogEndpoint>
 {

@@ -1,24 +1,9 @@
 using Digdir.Domain.Dialogporten.WebApi.Common;
 using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
-using Digdir.Domain.Dialogporten.WebApi.Common.Swagger;
-using Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.Common.Extensions;
 using FastEndpoints;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.Dialogs.Create;
-
-public sealed class CreateDialogSwaggerConfig : ISwaggerConfig
-{
-
-    public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder, Type type)
-        => builder.OperationId(TypeNameConverter.ToShortNameStrict(type))
-                  .ProducesOneOf(
-                      StatusCodes.Status201Created,
-                      StatusCodes.Status400BadRequest,
-                      StatusCodes.Status422UnprocessableEntity);
-
-    public static object GetExample() => throw new NotImplementedException();
-}
 
 public sealed class CreateDialogEndpointSummary : Summary<CreateDialogEndpoint>
 {

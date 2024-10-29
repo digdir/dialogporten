@@ -3,6 +3,7 @@ using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Co
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Queries.Get;
 using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
+using Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.Common.Extensions;
 using Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.DialogActivities.Get;
 using Digdir.Library.Entity.Abstractions.Features.Identifiable;
 using FastEndpoints;
@@ -30,7 +31,12 @@ public sealed class CreateDialogActivityEndpoint : Endpoint<CreateDialogActivity
         Policies(AuthorizationPolicy.ServiceProvider);
         Group<ServiceOwnerGroup>();
 
-        Description(b => CreateDialogActivitySwaggerConfig.SetDescription(b, GetType()));
+        Description(b => b.ProducesOneOf(
+            StatusCodes.Status201Created,
+            StatusCodes.Status400BadRequest,
+            StatusCodes.Status404NotFound,
+            StatusCodes.Status412PreconditionFailed,
+            StatusCodes.Status422UnprocessableEntity));
     }
 
     public override async Task HandleAsync(CreateDialogActivityRequest req, CancellationToken ct)

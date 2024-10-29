@@ -1,19 +1,6 @@
-using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Parties.Queries.Get;
-using Digdir.Domain.Dialogporten.WebApi.Common.Swagger;
-using Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.Common.Extensions;
 using FastEndpoints;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.EndUser.Parties.Get;
-
-public sealed class GetPartiesSwaggerConfig : ISwaggerConfig
-{
-
-    public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder, Type type)
-        => builder.OperationId(TypeNameConverter.ToShortNameStrict(type))
-                  .Produces<List<PartiesDto>>();
-
-    public static object GetExample() => throw new NotImplementedException();
-}
 
 public sealed class GetPartiesEndpointSummary : Summary<GetPartiesEndpoint>
 {

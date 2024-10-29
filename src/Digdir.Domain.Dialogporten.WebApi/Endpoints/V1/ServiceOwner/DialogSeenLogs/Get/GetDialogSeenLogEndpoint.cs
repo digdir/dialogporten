@@ -1,6 +1,7 @@
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.DialogSeenLogs.Queries.Get;
 using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
+using Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.Common.Extensions;
 using FastEndpoints;
 using MediatR;
 
@@ -21,7 +22,9 @@ public sealed class GetDialogSeenLogEndpoint : Endpoint<GetDialogSeenLogQuery, D
         Policies(AuthorizationPolicy.ServiceProvider);
         Group<ServiceOwnerGroup>();
 
-        Description(d => GetDialogSeenLogSwaggerConfig.SetDescription(d, GetType()));
+        Description(d => d.ProducesOneOf<DialogSeenLogDto>(
+            StatusCodes.Status200OK,
+            StatusCodes.Status404NotFound));
     }
 
     public override async Task HandleAsync(GetDialogSeenLogQuery req, CancellationToken ct)
