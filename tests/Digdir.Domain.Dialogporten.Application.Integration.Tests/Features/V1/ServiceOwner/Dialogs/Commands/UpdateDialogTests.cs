@@ -31,7 +31,7 @@ public class UpdateDialogTests(DialogApplication application) : ApplicationColle
         updateDialogDto.Activities.Add(new ActivityDto
         {
             Id = getDialogDto.AsT0.Activities.First().Id,
-            Type = DialogDialogActivityType.Values.DialogCreated,
+            Type = DialogActivityType.Values.DialogCreated,
             PerformedBy = new ActivityPerformedByActorDto
             {
                 ActorType = ActorType.Values.ServiceOwner
@@ -87,7 +87,7 @@ public class UpdateDialogTests(DialogApplication application) : ApplicationColle
     private async Task<(CreateDialogCommand, CreateDialogResult)> GenerateDialogWithActivity()
     {
         var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog();
-        var activity = DialogGenerator.GenerateFakeDialogActivity(type: DialogDialogActivityType.Values.Information);
+        var activity = DialogGenerator.GenerateFakeDialogActivity(type: DialogActivityType.Values.Information);
         activity.PerformedBy.ActorId = DialogGenerator.GenerateRandomParty(forcePerson: true);
         activity.PerformedBy.ActorName = null;
         createDialogCommand.Activities.Add(activity);

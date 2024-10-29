@@ -35,7 +35,7 @@ internal sealed class MappingProfile : Profile
         CreateMap<DialogSeenLogSeenByActor, DialogSeenLogSeenByActorDto>()
             .ForMember(dest => dest.ActorId, opt => opt.MapFrom(src => src.ActorId));
 
-        CreateMap<DialogDialogActivity, DialogActivityDto>()
+        CreateMap<DialogActivity, DialogActivityDto>()
             .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.TypeId));
 
         CreateMap<DialogActivityPerformedByActor, DialogActivityPerformedByActorDto>()

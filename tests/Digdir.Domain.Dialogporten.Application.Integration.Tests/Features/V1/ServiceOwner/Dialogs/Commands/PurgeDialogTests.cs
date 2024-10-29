@@ -33,7 +33,7 @@ public class PurgeDialogTests(DialogApplication application) : ApplicationCollec
         var dialogAttachments = await Application.GetDbEntities<DialogAttachment>();
         dialogAttachments.Should().BeEmpty();
 
-        var dialogActivities = await Application.GetDbEntities<DialogDialogActivity>();
+        var dialogActivities = await Application.GetDbEntities<DialogActivity>();
         dialogActivities.Should().BeEmpty();
     }
 

@@ -62,7 +62,7 @@ internal sealed class MappingProfile : Profile
 
         // Since these are append-only, we don't need to merge with existing
         // activity/transmission records and thus can map complex properties
-        CreateMap<ActivityDto, DialogDialogActivity>()
+        CreateMap<ActivityDto, DialogActivity>()
             .ForMember(dest => dest.Type, opt => opt.Ignore())
             .ForMember(dest => dest.TypeId, opt => opt.MapFrom(src => src.Type));
 

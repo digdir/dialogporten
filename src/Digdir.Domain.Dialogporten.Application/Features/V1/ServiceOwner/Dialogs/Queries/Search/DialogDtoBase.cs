@@ -190,7 +190,7 @@ public sealed class DialogActivityDto
     /// <summary>
     /// The type of activity.
     /// </summary>
-    public DialogDialogActivityType.Values Type { get; set; }
+    public DialogActivityType.Values Type { get; set; }
 
     /// <summary>
     /// If the activity is related to a particular transmission, this field will contain the transmission identifier.

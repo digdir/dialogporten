@@ -6,7 +6,7 @@ namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Events.Activities;
 public sealed record DialogActivityCreatedDomainEvent(
     Guid DialogId,
     Guid ActivityId,
-    DialogDialogActivityType.Values TypeId,
+    DialogActivityType.Values TypeId,
     string Party,
     string ServiceResource,
     string? Process,

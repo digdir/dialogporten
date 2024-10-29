@@ -2,10 +2,10 @@
 
 namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 
-public sealed class DialogDialogActivityType : AbstractLookupEntity<DialogDialogActivityType, DialogDialogActivityType.Values>
+public sealed class DialogActivityType : AbstractLookupEntity<DialogActivityType, DialogActivityType.Values>
 {
-    public DialogDialogActivityType(Values id) : base(id) { }
-    public override DialogDialogActivityType MapValue(Values id) => new(id);
+    public DialogActivityType(Values id) : base(id) { }
+    public override DialogActivityType MapValue(Values id) => new(id);
 
     public enum Values
     {
