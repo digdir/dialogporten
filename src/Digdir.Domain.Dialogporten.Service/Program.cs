@@ -6,24 +6,23 @@ using Microsoft.ApplicationInsights.Extensibility;
 using Serilog;
 using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
 using Digdir.Domain.Dialogporten.Domain;
-using Digdir.Domain.Dialogporten.Domain.Common.EventPublisher;
 using Digdir.Domain.Dialogporten.Service;
 using Digdir.Domain.Dialogporten.Service.Consumers;
 using Digdir.Library.Utils.AspNet;
 using MassTransit;
 
+// Using two-stage initialization to catch startup errors.
+var telemetryConfiguration = TelemetryConfiguration.CreateDefault();
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Warning()
     .Enrich.FromLogContext()
     .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture)
-    .WriteTo.ApplicationInsights(
-        TelemetryConfiguration.CreateDefault(),
-        TelemetryConverter.Traces)
+    .WriteTo.ApplicationInsights(telemetryConfiguration, TelemetryConverter.Traces)
     .CreateBootstrapLogger();
 
 try
 {
-    BuildAndRun(args);
+    BuildAndRun(args, telemetryConfiguration);
 }
 catch (Exception ex) when (ex is not OperationCanceledException)
 {
@@ -35,7 +34,7 @@ finally
     Log.CloseAndFlush();
 }
 
-static void BuildAndRun(string[] args)
+static void BuildAndRun(string[] args, TelemetryConfiguration telemetryConfiguration)
 {
     var builder = WebApplication.CreateBuilder(args);
 
@@ -44,9 +43,7 @@ static void BuildAndRun(string[] args)
         .ReadFrom.Configuration(context.Configuration)
         .ReadFrom.Services(services)
         .Enrich.FromLogContext()
-        .WriteTo.ApplicationInsights(
-            services.GetRequiredService<TelemetryConfiguration>(),
-            TelemetryConverter.Traces));
+        .WriteTo.ApplicationInsights(telemetryConfiguration, TelemetryConverter.Traces));
 
     builder.Configuration
         .AddAzureConfiguration(builder.Environment.EnvironmentName)
@@ -65,8 +62,9 @@ static void BuildAndRun(string[] args)
         )
         .ToArray();
 
+    builder.ConfigureTelemetry();
+
     builder.Services
-        .AddApplicationInsightsTelemetry()
         .AddAzureAppConfiguration()
         .AddApplication(builder.Configuration, builder.Environment)
         .AddInfrastructure(builder.Configuration, builder.Environment)
