@@ -8,15 +8,15 @@ using Digdir.Library.Entity.Abstractions.Features.Immutable;
 
 namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 
-public sealed class DialogActivity : IImmutableEntity, IAggregateCreatedHandler, IEventPublisher
+public sealed class DialogDialogActivity : IImmutableEntity, IAggregateCreatedHandler, IEventPublisher
 {
     public Guid Id { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
     public Uri? ExtendedType { get; set; }
 
     // === Dependent relationships ===
-    public ActivityType.Values TypeId { get; set; }
-    public ActivityType Type { get; set; } = null!;
+    public DialogActivityType.Values TypeId { get; set; }
+    public DialogActivityType Type { get; set; } = null!;
 
     public Guid DialogId { get; set; }
     public DialogEntity Dialog { get; set; } = null!;
@@ -50,12 +50,12 @@ public sealed class DialogActivity : IImmutableEntity, IAggregateCreatedHandler,
 
 public sealed class DialogActivityDescription : LocalizationSet
 {
-    public DialogActivity Activity { get; set; } = null!;
+    public DialogDialogActivity Activity { get; set; } = null!;
     public Guid ActivityId { get; set; }
 }
 
 public sealed class DialogActivityPerformedByActor : Actor, IImmutableEntity
 {
     public Guid ActivityId { get; set; }
-    public DialogActivity Activity { get; set; } = null!;
+    public DialogDialogActivity Activity { get; set; } = null!;
 }

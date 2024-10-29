@@ -201,12 +201,12 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
 
     private async Task AppendActivity(DialogEntity dialog, UpdateDialogDto dto, CancellationToken cancellationToken)
     {
-        var newDialogActivities = _mapper.Map<List<DialogActivity>>(dto.Activities);
+        var newDialogActivities = _mapper.Map<List<DialogDialogActivity>>(dto.Activities);
 
         var existingIds = await _db.GetExistingIds(newDialogActivities, cancellationToken);
         if (existingIds.Count != 0)
         {
-            _domainContext.AddError(DomainFailure.EntityExists<DialogActivity>(existingIds));
+            _domainContext.AddError(DomainFailure.EntityExists<DialogDialogActivity>(existingIds));
             return;
         }
 
@@ -238,7 +238,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         {
             _domainContext.AddError(
                 nameof(UpdateDialogDto.Activities),
-                $"Invalid '{nameof(DialogActivity.TransmissionId)}, entity '{nameof(DialogTransmission)}'" +
+                $"Invalid '{nameof(DialogDialogActivity.TransmissionId)}, entity '{nameof(DialogTransmission)}'" +
                 $" with the following key(s) does not exist: ({string.Join(", ", invalidTransmissionIds)}) in '{nameof(dialog.Transmissions)}'");
         }
     }

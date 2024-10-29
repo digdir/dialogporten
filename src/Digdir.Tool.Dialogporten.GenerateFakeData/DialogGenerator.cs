@@ -234,7 +234,7 @@ public static class DialogGenerator
         return mod == 10 ? -1 : mod;
     }
 
-    public static ActivityDto GenerateFakeDialogActivity(ActivityType.Values? type = null)
+    public static ActivityDto GenerateFakeDialogActivity(DialogActivityType.Values? type = null)
         => GenerateFakeDialogActivities(1, type)[0];
 
     public static List<TransmissionDto> GenerateFakeDialogTransmissions(int? count = null,
@@ -253,12 +253,12 @@ public static class DialogGenerator
             .Generate(count ?? new Randomizer().Number(1, 4));
     }
 
-    public static List<ActivityDto> GenerateFakeDialogActivities(int? count = null, ActivityType.Values? type = null)
+    public static List<ActivityDto> GenerateFakeDialogActivities(int? count = null, DialogActivityType.Values? type = null)
     {
         // Temporarily removing the ActivityType TransmissionOpened from the list of possible types for random picking.
         // Going to have a look at re-writing the generator https://github.com/digdir/dialogporten/issues/1123
-        var activityTypes = Enum.GetValues<ActivityType.Values>()
-            .Where(x => x != ActivityType.Values.TransmissionOpened).ToList();
+        var activityTypes = Enum.GetValues<DialogActivityType.Values>()
+            .Where(x => x != DialogActivityType.Values.TransmissionOpened).ToList();
 
         return new Faker<ActivityDto>()
             .RuleFor(o => o.Id, () => Uuid7.NewUuid7().ToGuid(true))
@@ -266,7 +266,7 @@ public static class DialogGenerator
             .RuleFor(o => o.ExtendedType, f => new Uri(f.Internet.UrlWithPath(Uri.UriSchemeHttps)))
             .RuleFor(o => o.Type, f => type ?? f.PickRandom(activityTypes))
             .RuleFor(o => o.PerformedBy, f => new ActivityPerformedByActorDto { ActorType = ActorType.Values.PartyRepresentative, ActorName = f.Name.FullName() })
-            .RuleFor(o => o.Description, (f, o) => o.Type == ActivityType.Values.Information ? GenerateFakeLocalizations(f.Random.Number(4, 8)) : null)
+            .RuleFor(o => o.Description, (f, o) => o.Type == DialogActivityType.Values.Information ? GenerateFakeLocalizations(f.Random.Number(4, 8)) : null)
             .Generate(count ?? new Randomizer().Number(1, 4));
     }
 

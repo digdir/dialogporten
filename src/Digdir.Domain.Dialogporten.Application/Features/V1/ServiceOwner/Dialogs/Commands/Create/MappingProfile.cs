@@ -36,7 +36,7 @@ internal sealed class MappingProfile : Profile
             .ForMember(dest => dest.HttpMethod, opt => opt.Ignore())
             .ForMember(dest => dest.HttpMethodId, opt => opt.MapFrom(src => src.HttpMethod));
 
-        CreateMap<ActivityDto, DialogActivity>()
+        CreateMap<ActivityDto, DialogDialogActivity>()
             .ForMember(dest => dest.Type, opt => opt.Ignore())
             .ForMember(dest => dest.TypeId, opt => opt.MapFrom(src => src.Type));
 

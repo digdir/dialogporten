@@ -7,7 +7,7 @@ internal sealed class MappingProfile : Profile
 {
     public MappingProfile()
     {
-        CreateMap<DialogActivity, ActivityDto>()
+        CreateMap<DialogDialogActivity, ActivityDto>()
             .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.TypeId));
     }
 }

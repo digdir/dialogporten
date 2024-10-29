@@ -9,7 +9,7 @@ public sealed class ActivityDto
     public Uri? ExtendedType { get; set; }
     public string? SeenByEndUserIdHash { get; set; }
 
-    public ActivityType.Values Type { get; set; }
+    public DialogActivityType.Values Type { get; set; }
 
     public Guid? TransmissionId { get; set; }
 }

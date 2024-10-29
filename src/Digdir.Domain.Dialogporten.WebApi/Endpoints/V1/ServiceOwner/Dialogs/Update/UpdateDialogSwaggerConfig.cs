@@ -160,7 +160,7 @@ internal abstract class UpdateDialogSwaggerConfig : ISwaggerConfig
             new ActivityDto
             {
                 Id = Guid.Parse("8b95d42d-d2b6-4c01-8ca0-a817a4b3c50d"),
-                Type = ActivityType.Values.Information,
+                Type = DialogActivityType.Values.Information,
                 PerformedBy = new ActivityPerformedByActorDto
                 {
                     ActorType = ActorType.Values.ServiceOwner

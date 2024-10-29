@@ -426,21 +426,21 @@ internal sealed class CreateDialogDialogActivityDtoValidator : AbstractValidator
             .SetValidator(actorValidator);
         RuleFor(x => x.Description)
             .NotEmpty()
-            .WithMessage("Description is required when the type is '" + nameof(ActivityType.Values.Information) + "'.")
+            .WithMessage("Description is required when the type is '" + nameof(DialogActivityType.Values.Information) + "'.")
             .SetValidator(localizationsValidator)
-            .When(x => x.Type == ActivityType.Values.Information);
+            .When(x => x.Type == DialogActivityType.Values.Information);
         RuleFor(x => x.Description)
             .Empty()
-            .WithMessage("Description is only allowed when the type is '" + nameof(ActivityType.Values.Information) + "'.")
-            .When(x => x.Type != ActivityType.Values.Information);
+            .WithMessage("Description is only allowed when the type is '" + nameof(DialogActivityType.Values.Information) + "'.")
+            .When(x => x.Type != DialogActivityType.Values.Information);
         RuleFor(x => x.TransmissionId)
             .Null()
-            .WithMessage($"A {nameof(ActivityType.Values.DialogOpened)} activity cannot reference a transmission.")
-            .When(x => x.Type == ActivityType.Values.DialogOpened);
+            .WithMessage($"A {nameof(DialogActivityType.Values.DialogOpened)} activity cannot reference a transmission.")
+            .When(x => x.Type == DialogActivityType.Values.DialogOpened);
         RuleFor(x => x.TransmissionId)
             .NotEmpty()
-            .WithMessage($"A {nameof(ActivityType.Values.TransmissionOpened)} needs to reference a transmission.")
-            .When(x => x.Type == ActivityType.Values.TransmissionOpened);
+            .WithMessage($"A {nameof(DialogActivityType.Values.TransmissionOpened)} needs to reference a transmission.")
+            .When(x => x.Type == DialogActivityType.Values.TransmissionOpened);
     }
 }
 

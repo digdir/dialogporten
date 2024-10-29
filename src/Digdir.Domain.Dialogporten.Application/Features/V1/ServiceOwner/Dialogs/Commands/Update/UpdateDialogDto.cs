@@ -263,7 +263,7 @@ public class ActivityDto
     /// <summary>
     /// The type of transmission.
     /// </summary>
-    public ActivityType.Values Type { get; set; }
+    public DialogActivityType.Values Type { get; set; }
 
     /// <summary>
     /// If the activity is related to a particular transmission, this field will contain the transmission identifier.

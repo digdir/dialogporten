@@ -109,7 +109,7 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
         var existingActivityIds = await _db.GetExistingIds(dialog.Activities, cancellationToken);
         if (existingActivityIds.Count != 0)
         {
-            _domainContext.AddError(DomainFailure.EntityExists<DialogActivity>(existingActivityIds));
+            _domainContext.AddError(DomainFailure.EntityExists<DialogDialogActivity>(existingActivityIds));
         }
 
         var existingTransmissionIds = await _db.GetExistingIds(dialog.Transmissions, cancellationToken);

@@ -68,7 +68,7 @@ public sealed class DialogEntity :
     public List<DialogApiAction> ApiActions { get; set; } = [];
 
     [AggregateChild]
-    public List<DialogActivity> Activities { get; set; } = [];
+    public List<DialogDialogActivity> Activities { get; set; } = [];
 
     [AggregateChild]
     public List<DialogSeenLog> SeenLog { get; set; } = [];

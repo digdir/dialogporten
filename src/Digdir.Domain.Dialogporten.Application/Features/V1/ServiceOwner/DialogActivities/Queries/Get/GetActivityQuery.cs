@@ -56,7 +56,7 @@ internal sealed class GetActivityQueryHandler : IRequestHandler<GetActivityQuery
 
         if (activity is null)
         {
-            return new EntityNotFound<DialogActivity>(request.ActivityId);
+            return new EntityNotFound<DialogDialogActivity>(request.ActivityId);
         }
 
         return _mapper.Map<ActivityDto>(activity);

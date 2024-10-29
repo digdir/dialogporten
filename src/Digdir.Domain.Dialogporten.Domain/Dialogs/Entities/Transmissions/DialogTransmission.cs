@@ -26,7 +26,7 @@ public sealed class DialogTransmission : IImmutableEntity
 
     public List<DialogTransmission> RelatedTransmissions { get; set; } = [];
 
-    public List<DialogActivity> Activities { get; set; } = [];
+    public List<DialogDialogActivity> Activities { get; set; } = [];
 
     // === Dependent relationships ===
     public Guid DialogId { get; set; }
