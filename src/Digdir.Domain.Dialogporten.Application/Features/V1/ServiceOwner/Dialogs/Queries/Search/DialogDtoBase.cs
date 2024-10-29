@@ -34,12 +34,12 @@ public class DialogDtoBase
     public string ServiceResource { get; set; } = null!;
 
     /// <summary>
-    /// The ServiceResource type, as defined in Altinn Resource Registry (see ResourceType)
+    /// The ServiceResource type, as defined in Altinn Resource Registry (see ResourceType).
     /// </summary>
     public string ServiceResourceType { get; set; } = null!;
 
     /// <summary>
-    /// The party code representing the organization or person that the dialog belongs to in URN format
+    /// The party code representing the organization or person that the dialog belongs to in URN format.
     /// </summary>
     /// <example>
     /// urn:altinn:person:identifier-no:01125512345
@@ -54,7 +54,7 @@ public class DialogDtoBase
     public int? Progress { get; set; }
 
     /// <summary>
-    /// Optional process identifier used to indicate a business process this dialog belongs to
+    /// Optional process identifier used to indicate a business process this dialog belongs to.
     /// </summary>
     public string? Process { get; set; }
 
@@ -129,12 +129,12 @@ public sealed class DialogSeenLogDto
     public Guid Id { get; set; }
 
     /// <summary>
-    /// The timestamp when the dialog revision was seen
+    /// The timestamp when the dialog revision was seen.
     /// </summary>
     public DateTimeOffset SeenAt { get; set; }
 
     /// <summary>
-    /// The actor that saw the dialog revision
+    /// The actor that saw the dialog revision.
     /// </summary>
     public DialogSeenLogSeenByActorDto SeenBy { get; set; } = null!;
 

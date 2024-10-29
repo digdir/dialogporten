@@ -57,7 +57,7 @@ public sealed class UpdateDialogDto
     public DialogStatus.Values Status { get; set; }
 
     /// <summary>
-    /// The dialog unstructured text content
+    /// The dialog unstructured text content.
     /// </summary>
     public ContentDto Content { get; set; } = null!;
 
@@ -67,7 +67,7 @@ public sealed class UpdateDialogDto
     public List<SearchTagDto> SearchTags { get; set; } = [];
 
     /// <summary>
-    /// The attachments associated with the dialog (on an aggregate level)
+    /// The attachments associated with the dialog (on an aggregate level).
     /// </summary>
     public List<AttachmentDto> Attachments { get; set; } = [];
 
@@ -148,12 +148,12 @@ public class TransmissionDto
     public TransmissionSenderActorDto Sender { get; set; } = null!;
 
     /// <summary>
-    /// The transmission unstructured text content
+    /// The transmission unstructured text content.
     /// </summary>
     public TransmissionContentDto Content { get; set; } = null!;
 
     /// <summary>
-    /// The transmission-level attachments
+    /// The transmission-level attachments.
     /// </summary>
     public List<TransmissionAttachmentDto> Attachments { get; set; } = [];
 }
@@ -314,7 +314,7 @@ public sealed class ApiActionDto
 
     /// <summary>
     /// String identifier for the action, corresponding to the "action" attributeId used in the XACML service policy,
-    /// which by default is the policy belonging to the service referred to by "serviceResource" in the dialog
+    /// which by default is the policy belonging to the service referred to by "serviceResource" in the dialog.
     /// </summary>
     /// <example>write</example>
     public string Action { get; set; } = null!;
@@ -403,7 +403,7 @@ public sealed class GuiActionDto
     public Guid? Id { get; set; }
 
     /// <summary>
-    /// The action identifier for the action, corresponding to the "action" attributeId used in the XACML service policy,
+    /// The action identifier for the action, corresponding to the "action" attributeId used in the XACML service policy.
     /// </summary>
     public string Action { get; set; } = null!;
 

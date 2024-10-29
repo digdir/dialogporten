@@ -6,7 +6,7 @@ namespace Digdir.Domain.Dialogporten.Application.Features.V1.Common.Content;
 public sealed class ContentValueDto
 {
     /// <summary>
-    /// A list of localizations for the content
+    /// A list of localizations for the content.
     /// </summary>
     public List<LocalizationDto> Value { get; set; } = [];
 

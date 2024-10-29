@@ -12,6 +12,7 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 using Digdir.Domain.Dialogporten.Domain.Parties;
+using Digdir.Library.Entity.Abstractions.Features.Identifiable;
 using MediatR;
 using OneOf;
 using OneOf.Types;
@@ -70,6 +71,20 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
         }
         CreateDialogEndUserContext(request, dialog);
         await EnsureNoExistingUserDefinedIds(dialog, cancellationToken);
+
+        // Ensure transmissions have a UUIDv7 ID, needed for the transmission hierarchy validation.
+        foreach (var transmission in dialog.Transmissions)
+        {
+            transmission.Id = transmission.Id.CreateVersion7IfDefault();
+        }
+
+        _domainContext.AddErrors(dialog.Transmissions.ValidateReferenceHierarchy(
+            keySelector: x => x.Id,
+            parentKeySelector: x => x.RelatedTransmissionId,
+            propertyName: nameof(CreateDialogCommand.Transmissions),
+            maxDepth: 100,
+            maxWidth: 1));
+
         await _db.Dialogs.AddAsync(dialog, cancellationToken);
         var saveResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
         return saveResult.Match<CreateDialogResult>(
