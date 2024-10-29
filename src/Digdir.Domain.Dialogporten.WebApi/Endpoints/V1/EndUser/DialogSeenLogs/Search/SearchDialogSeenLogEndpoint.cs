@@ -22,7 +22,7 @@ public sealed class SearchDialogSeenLogEndpoint : Endpoint<SearchSeenLogQuery, L
         Policies(AuthorizationPolicy.EndUser);
         Group<EndUserGroup>();
 
-        Description(d => d.ProducesOneOf<List<DialogSeenLogDto>>(
+        Description(d => d.ProducesOneOf<List<SeenLogDto>>(
             StatusCodes.Status200OK,
             StatusCodes.Status404NotFound));
     }

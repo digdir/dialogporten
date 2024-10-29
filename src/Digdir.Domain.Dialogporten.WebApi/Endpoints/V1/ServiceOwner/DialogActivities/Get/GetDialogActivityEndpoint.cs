@@ -21,7 +21,7 @@ public sealed class GetDialogActivityEndpoint : Endpoint<GetActivityQuery, Activ
         Get("dialogs/{dialogId}/activities/{activityId}");
         Policies(AuthorizationPolicy.ServiceProvider);
         Group<ServiceOwnerGroup>();
-        Description(b => b.ProducesOneOf<DialogActivityDto>(
+        Description(b => b.ProducesOneOf<ActivityDto>(
             StatusCodes.Status200OK,
             StatusCodes.Status404NotFound));
     }

@@ -6,7 +6,7 @@ using FastEndpoints;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.DialogActivities.Search;
 
-public sealed class SearchDialogActivityEndpointSummary : Summary<SearchDialogActivityEndpoint, SearchDialogActivityQuery>
+public sealed class SearchDialogActivityEndpointSummary : Summary<SearchDialogActivityEndpoint, SearchActivityQuery>
 {
     public SearchDialogActivityEndpointSummary()
     {

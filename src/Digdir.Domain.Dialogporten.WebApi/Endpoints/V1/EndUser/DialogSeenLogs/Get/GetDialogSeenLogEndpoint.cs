@@ -21,7 +21,7 @@ public sealed class GetDialogSeenLogEndpoint : Endpoint<GetSeenLogQuery, SeenLog
         Get("dialogs/{dialogId}/seenlog/{seenLogId}");
         Policies(AuthorizationPolicy.EndUser);
         Group<EndUserGroup>();
-        Description(d => d.ProducesOneOf<DialogSeenLogDto>(
+        Description(d => d.ProducesOneOf<SeenLogDto>(
             StatusCodes.Status200OK,
             StatusCodes.Status404NotFound));
     }

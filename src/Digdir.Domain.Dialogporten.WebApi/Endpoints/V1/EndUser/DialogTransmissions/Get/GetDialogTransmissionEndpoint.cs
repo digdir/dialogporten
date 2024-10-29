@@ -22,7 +22,7 @@ public sealed class GetDialogTransmissionEndpoint : Endpoint<GetTransmissionQuer
         Policies(AuthorizationPolicy.EndUser);
         Group<EndUserGroup>();
 
-        Description(b => b.ProducesOneOf<DialogTransmissionDto>(
+        Description(b => b.ProducesOneOf<TransmissionDto>(
             StatusCodes.Status200OK,
             StatusCodes.Status404NotFound));
     }

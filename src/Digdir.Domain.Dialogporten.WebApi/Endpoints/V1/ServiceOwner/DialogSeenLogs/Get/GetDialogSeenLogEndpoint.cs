@@ -22,7 +22,7 @@ public sealed class GetDialogSeenLogEndpoint : Endpoint<GetSeenLogQuery, SeenLog
         Policies(AuthorizationPolicy.ServiceProvider);
         Group<ServiceOwnerGroup>();
 
-        Description(d => d.ProducesOneOf<DialogSeenLogDto>(
+        Description(d => d.ProducesOneOf<SeenLogDto>(
             StatusCodes.Status200OK,
             StatusCodes.Status404NotFound));
     }

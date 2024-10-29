@@ -22,7 +22,7 @@ public sealed class GetDialogActivityEndpoint : Endpoint<GetActivityQuery, Activ
         Policies(AuthorizationPolicy.EndUser);
         Group<EndUserGroup>();
 
-        Description(b => b.ProducesOneOf<DialogActivityDto>(
+        Description(b => b.ProducesOneOf<ActivityDto>(
             StatusCodes.Status200OK,
             StatusCodes.Status404NotFound));
     }

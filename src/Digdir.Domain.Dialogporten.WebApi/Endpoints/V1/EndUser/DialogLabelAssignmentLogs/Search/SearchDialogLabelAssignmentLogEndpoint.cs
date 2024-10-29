@@ -21,7 +21,7 @@ public sealed class SearchDialogLabelAssignmentLogEndpoint : Endpoint<SearchLabe
         Policies(AuthorizationPolicy.EndUser);
         Group<EndUserGroup>();
 
-        Description(d => d.ProducesOneOf<List<DialogLabelAssignmentLogDto>>(
+        Description(d => d.ProducesOneOf<List<LabelAssignmentLogDto>>(
             StatusCodes.Status200OK,
             StatusCodes.Status404NotFound,
             StatusCodes.Status410Gone));
