@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.27.1](https://github.com/digdir/dialogporten/compare/v1.27.0...v1.27.1) (2024-10-30)
+
+
+### Bug Fixes
+
+* Simplify subject attribute matching ([#1348](https://github.com/digdir/dialogporten/issues/1348)) ([55159b7](https://github.com/digdir/dialogporten/commit/55159b772578e58d3406dd8028e9c14d9b3254e1))
+
 ## [1.27.0](https://github.com/digdir/dialogporten/compare/v1.26.3...v1.27.0) (2024-10-29)
 
 
