@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Digdir.Domain.Dialogporten.Application.Common;
+using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Actors;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Content;
 using Digdir.Domain.Dialogporten.Domain.Attachments;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
@@ -33,13 +34,13 @@ internal sealed class MappingProfile : Profile
         CreateMap<DialogSeenLog, DialogSeenLogDto>()
             .ForMember(dest => dest.SeenAt, opt => opt.MapFrom(src => src.CreatedAt));
 
-        CreateMap<DialogSeenLogSeenByActor, DialogSeenLogSeenByActorDto>()
+        CreateMap<DialogSeenLogSeenByActor, ActorDto>()
             .ForMember(dest => dest.ActorId, opt => opt.MapFrom(src => IdentifierMasker.GetMaybeMaskedIdentifier(src.ActorId)));
 
         CreateMap<DialogActivity, DialogActivityDto>()
             .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.TypeId));
 
-        CreateMap<DialogActivityPerformedByActor, DialogActivityPerformedByActorDto>()
+        CreateMap<DialogActivityPerformedByActor, ActorDto>()
             .ForMember(dest => dest.ActorType, opt => opt.MapFrom(src => src.ActorTypeId))
             .ForMember(dest => dest.ActorId, opt => opt.MapFrom(src => IdentifierMasker.GetMaybeMaskedIdentifier(src.ActorId)));
 

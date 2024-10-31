@@ -1,4 +1,5 @@
 using AutoMapper;
+using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Actors;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Content;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using DialogActivityDto = Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Queries.Search.DialogActivityDto;
@@ -16,20 +17,20 @@ public sealed class MappingProfile : Profile
 
         CreateMap<ContentValueDto, ContentValue>();
 
-        CreateMap<Application.Features.V1.EndUser.Dialogs.Queries.Get.DialogSeenLogDto, SeenLog>();
-        CreateMap<Application.Features.V1.EndUser.Dialogs.Queries.Get.DialogSeenLogSeenByActorDto, Actor>();
+        CreateMap<DialogSeenLogDto, SeenLog>();
+        CreateMap<ActorDto, Actor>();
 
         CreateMap<DialogSeenLogDto, SeenLog>();
-        CreateMap<DialogSeenLogSeenByActorDto, Actor>();
+        CreateMap<ActorDto, Actor>();
 
         CreateMap<Application.Features.V1.EndUser.Dialogs.Queries.Get.DialogActivityDto, Activity>()
             .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type));
-        CreateMap<Application.Features.V1.EndUser.Dialogs.Queries.Get.DialogActivityPerformedByActorDto, Actor>()
+        CreateMap<ActorDto, Actor>()
             .ForMember(dest => dest.ActorType, opt => opt.MapFrom(src => src.ActorType));
 
         CreateMap<DialogActivityDto, Activity>()
             .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type));
-        CreateMap<DialogActivityPerformedByActorDto, Actor>()
+        CreateMap<ActorDto, Actor>()
             .ForMember(dest => dest.ActorType, opt => opt.MapFrom(src => src.ActorType));
     }
 }
