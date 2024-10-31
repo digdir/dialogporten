@@ -58,7 +58,7 @@ jobs:
       environment: ${{ inputs.environment }}
       apiVersion: ${{ inputs.apiVersion }}
       testSuitePath: ${{ inputs.testSuitePath }}
-      vus: 1
+      vus: ${{ fromJson(inputs.vus) }}
       duration: ${{ inputs.duration }}
       tokens: ${{ inputs.tokens }}
 
