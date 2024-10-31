@@ -40,6 +40,10 @@ on:
         description: 'Path to test suite to run'
         required: true
         default: 'tests/k6/tests/serviceowner/performance/create-dialog.js'
+        type: choice
+        options:
+          - 'tests/k6/tests/serviceowner/performance/create-dialog.js'
+          - 'tests/k6/tests/enduser/performance/simple-search.js'
 
 jobs:
   k6-performance:
