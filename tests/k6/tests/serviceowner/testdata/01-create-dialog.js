@@ -2,10 +2,10 @@ import { uuidv4 } from '../../../common/testimports.js'
 import { getDefaultEnduserSsn } from "../../../common/token.js";
 import { sentinelValue } from "../../../common/config.js";
 
-export default function () {
+export default function (endUser = getDefaultEnduserSsn()) {
     return {
         "serviceResource": "urn:altinn:resource:ttd-dialogporten-automated-tests", // urn starting with urn:altinn:resource:
-        "party": "urn:altinn:person:identifier-no:" + getDefaultEnduserSsn(), // or urn:altinn:organization:identifier-no:<9 digits>
+        "party": "urn:altinn:person:identifier-no:" + endUser, // or urn:altinn:organization:identifier-no:<9 digits>
         "status": "new", // valid values: new, inprogress, waiting, signing, cancelled, completed
         "extendedStatus": "urn:any/valid/uri",
         "dueAt": "2033-11-25T06:37:54.2920190Z", // must be UTC
