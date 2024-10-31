@@ -176,6 +176,8 @@ prompt_selection() {
     local options=("$@")
     local selected
     
+    trap 'echo -e "\nOperation cancelled by user"; exit 130' INT
+    
     PS3="$prompt "
     select selected in "${options[@]}"; do
         if [ -n "$selected" ]; then
