@@ -51,10 +51,13 @@ const log = {
   }
 };
 
-const executeCommand = (command: string): string => {
+const executeCommand = (command: string, timeoutMs: number = 30000): string => {
   try {
-    return execSync(command, { encoding: 'utf-8' }).trim();
+    return execSync(command, { encoding: 'utf-8', timeout: timeoutMs }).trim();
   } catch (error) {
+    if (error.code === 'ETIMEDOUT') {
+      throw new Error(`${chalk.red('Command timed out after')} ${timeoutMs}ms: ${command}`);
+    }
     throw new Error(`${chalk.red('Command execution failed:')} ${command}\n${(error as Error).message}`);
   }
 };
