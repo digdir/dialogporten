@@ -144,7 +144,6 @@ const getRedisInfo = (env: Environment, subscriptionId: string): ResourceInfo =>
 
 // SSH tunnel setup
 const setupSshTunnel = (env: Environment, resourceInfo: ResourceInfo): void => {
-  let tunnelEstablished = false;
   const sshProcess = spawn('az', [
     'ssh',
     'vm',
@@ -168,19 +167,6 @@ const setupSshTunnel = (env: Environment, resourceInfo: ResourceInfo): void => {
     throw new Error(`Failed to start SSH tunnel: ${error.message}`);
   });
 
-  sshProcess.on('exit', (code) => {
-    if (code !== 0 && !tunnelEstablished) {
-      throw new Error('SSH tunnel failed to establish');
-    }
-  });
-
-  // Verify tunnel after a short delay
-  setTimeout(() => {
-    if (sshProcess.pid) {
-      tunnelEstablished = true;
-      log.success('SSH tunnel established successfully');
-    }
-  }, 2000);
 };
 
 // Main function
