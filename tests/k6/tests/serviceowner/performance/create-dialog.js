@@ -1,7 +1,7 @@
 import { postSO, expect, describe } from "../../../common/testimports.js";
 import { SharedArray } from 'k6/data';
 import papaparse from 'https://jslib.k6.io/papaparse/5.1.1/index.js';
-import { default as dialogToInsert } from '../testdata/01-create-dialog.js';
+import { default as dialogToInsert } from '../../performancetest_data/01-create-dialog.js';
 import { randomItem } from 'https://jslib.k6.io/k6-utils/1.2.0/index.js';
 
 const filenameServiceowners = '../../performancetest_data/.serviceowners-with-tokens.csv';
@@ -42,7 +42,7 @@ export function createDialog(serviceOwner, endUser) {
     }
 
     describe('create dialog', () => {
-        let r = postSO('dialogs', dialogToInsert(endUser.ssn), paramsWithToken);  
+        let r = postSO('dialogs', dialogToInsert(endUser.ssn, endUser.resource), paramsWithToken); 
         expect(r.status, 'response status').to.equal(201);
     });
     
