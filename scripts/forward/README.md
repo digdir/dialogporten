@@ -75,11 +75,13 @@ npm start
 
 Example using redis-cli:
 ```bash
-redis-cli -h localhost -p 6379 -a "<password>"
+# Set password in environment variable  
+export REDIS_PASSWORD="<password>"  
+redis-cli -h localhost -p 6379 -a "$REDIS_PASSWORD"  
 ```
 
 Example connection string for applications:
-```
+```plaintext
 redis://:<password>@localhost:6379
 ```
 

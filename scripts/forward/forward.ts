@@ -187,7 +187,14 @@ const forwardConnection = async (options: { environment?: Environment; type?: Db
     ]);
 
     const env = options.environment || answers.environment;
+    if (!Object.values(ENVIRONMENTS).includes(env)) {
+      throw new Error(`Invalid environment: ${env}`);
+    }
+
     const dbType = options.type || answers.type;
+    if (!Object.values(DB_TYPES).includes(dbType)) {
+      throw new Error(`Invalid database type: ${dbType}`);
+    }
 
     const confirmation = await inquirer.prompt([
       {
