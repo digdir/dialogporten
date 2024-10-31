@@ -220,13 +220,11 @@ public static class ClaimsPrincipalExtensions
 
         // If we have a RAR-claim, this is most likely a system user. We need to extract the systemuser-uuid
         // from the authorization_details claim
-        if (claimsList.Any(c => c.Type == AuthorizationDetailsClaim))
+        // Extract the systemuser-uuid from the authorization_details claim if present
+        var rarClaim = claimsList.FirstOrDefault(c => c.Type == AuthorizationDetailsClaim);
+        if (rarClaim != null && rarClaim.TryGetSystemUserId(out var systemUserId))
         {
-            var rarClaim = claimsList.First(c => c.Type == AuthorizationDetailsClaim);
-            if (rarClaim.TryGetSystemUserId(out var systemUserId))
-            {
-                identifyingClaims.Add(new Claim(AuthorizationDetailsType, systemUserId));
-            }
+            identifyingClaims.Add(new Claim(AuthorizationDetailsType, systemUserId));
         }
 
         return identifyingClaims;
