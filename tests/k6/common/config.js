@@ -15,7 +15,15 @@ export const baseUrls = {
             yt01: "https://platform.yt01.altinn.cloud/dialogporten/api/v1/serviceowner/",
             staging: "https://platform.tt02.altinn.no/dialogporten/api/v1/serviceowner/",
             prod: "https://platform.altinn.no/dialogporten/api/v1/serviceowner/"
-        }    
+        },
+        graphql: {
+            localdev: "https://localhost:7214/graphql",
+            localdev_docker: "https://host.docker.internal:7214/graphql",
+            test: "https://altinn-dev-api.azure-api.net/dialogporten/graphql",
+            yt01: "https://platform.yt01.altinn.cloud/dialogporten/graphql",
+            staging: "https://platform.tt02.altinn.no/dialogporten/graphql",
+            prod: "https://platform.altinn.no/dialogporten/api/v1/graphql"
+        },   
     }    
 };
 
@@ -41,5 +49,7 @@ if (!baseUrls[__ENV.API_VERSION]["serviceowner"][__ENV.API_ENVIRONMENT]) {
 
 export const baseUrlEndUser = baseUrls[__ENV.API_VERSION]["enduser"][__ENV.API_ENVIRONMENT];
 export const baseUrlServiceOwner = baseUrls[__ENV.API_VERSION]["serviceowner"][__ENV.API_ENVIRONMENT];
+
+export const baseUrlGraphql = baseUrls[__ENV.API_VERSION]["graphql"][__ENV.API_ENVIRONMENT];
 
 export const sentinelValue = "dialogporten-e2e-sentinel";
