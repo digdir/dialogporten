@@ -1,4 +1,5 @@
 using Digdir.Domain.Dialogporten.Application.Features.V1.WellKnown.OauthAuthorizationServer.Queries.Get;
+using Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.Common.Extensions;
 using FastEndpoints;
 using MediatR;
 using Microsoft.Net.Http.Headers;
@@ -19,7 +20,7 @@ public sealed class GetOauthAuthorizationServerEndpoint : EndpointWithoutRequest
         Get(".well-known/oauth-authorization-server");
         Group<MetadataGroup>();
 
-        Description(b => GetOauthAuthorizationServerSwaggerConfig.SetDescription(b));
+        Description(b => b.ProducesOneOf<GetOauthAuthorizationServerDto>(StatusCodes.Status200OK));
     }
 
     public override async Task HandleAsync(CancellationToken ct)

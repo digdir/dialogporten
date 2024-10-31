@@ -1,0 +1,18 @@
+using Digdir.Domain.Dialogporten.WebApi.Common;
+using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
+using FastEndpoints;
+
+namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.DialogSeenLogs.Get;
+
+public sealed class GetDialogSeenLogEndpointSummary : Summary<GetDialogSeenLogEndpoint>
+{
+    public GetDialogSeenLogEndpointSummary()
+    {
+        Summary = "Gets a single dialog seen log record";
+        Description = """
+                      Gets a single dialog seen log record. For more information see the documentation (link TBD).
+                      """;
+
+        Responses[StatusCodes.Status200OK] = Constants.SwaggerSummary.ReturnedResult.FormatInvariant("seen log record");
+    }
+}

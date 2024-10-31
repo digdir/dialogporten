@@ -14,48 +14,48 @@ internal sealed class MappingProfile : Profile
 {
     public MappingProfile()
     {
-        CreateMap<DialogEntity, GetDialogDto>()
+        CreateMap<DialogEntity, DialogDto>()
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.StatusId))
             .ForMember(dest => dest.SeenSinceLastUpdate, opt => opt.Ignore())
             .ForMember(dest => dest.SystemLabel, opt => opt.MapFrom(src => src.DialogEndUserContext.SystemLabelId));
 
-        CreateMap<DialogSeenLogSeenByActor, GetDialogDialogSeenLogSeenByActorDto>();
-        CreateMap<DialogSeenLog, GetDialogDialogSeenLogDto>()
+        CreateMap<DialogSeenLogSeenByActor, DialogSeenLogSeenByActorDto>();
+        CreateMap<DialogSeenLog, DialogSeenLogDto>()
             .ForMember(dest => dest.SeenAt, opt => opt.MapFrom(src => src.CreatedAt));
 
-        CreateMap<DialogActivity, GetDialogDialogActivityDto>()
+        CreateMap<DialogActivity, DialogActivityDto>()
             .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.TypeId));
-        CreateMap<DialogActivityPerformedByActor, GetDialogDialogActivityPerformedByActorDto>()
+        CreateMap<DialogActivityPerformedByActor, DialogActivityPerformedByActorDto>()
             .ForMember(dest => dest.ActorType, opt => opt.MapFrom(src => src.ActorTypeId));
 
-        CreateMap<DialogApiAction, GetDialogDialogApiActionDto>();
-        CreateMap<DialogApiActionEndpoint, GetDialogDialogApiActionEndpointDto>()
+        CreateMap<DialogApiAction, DialogApiActionDto>();
+        CreateMap<DialogApiActionEndpoint, DialogApiActionEndpointDto>()
             .ForMember(dest => dest.HttpMethod, opt => opt.MapFrom(src => src.HttpMethodId));
 
-        CreateMap<DialogGuiAction, GetDialogDialogGuiActionDto>()
+        CreateMap<DialogGuiAction, DialogGuiActionDto>()
             .ForMember(dest => dest.Priority, opt => opt.MapFrom(src => src.PriorityId))
             .ForMember(dest => dest.HttpMethod, opt => opt.MapFrom(src => src.HttpMethodId));
 
-        CreateMap<DialogAttachment, GetDialogDialogAttachmentDto>();
-        CreateMap<AttachmentUrl, GetDialogDialogAttachmentUrlDto>()
+        CreateMap<DialogAttachment, DialogAttachmentDto>();
+        CreateMap<AttachmentUrl, DialogAttachmentUrlDto>()
             .ForMember(dest => dest.ConsumerType, opt => opt.MapFrom(src => src.ConsumerTypeId));
 
-        CreateMap<DialogSearchTag, GetDialogSearchTagDto>();
+        CreateMap<DialogSearchTag, SearchTagDto>();
 
-        CreateMap<List<DialogContent>?, GetDialogContentDto?>()
-            .ConvertUsing<DialogContentOutputConverter<GetDialogContentDto>>();
+        CreateMap<List<DialogContent>?, ContentDto?>()
+            .ConvertUsing<DialogContentOutputConverter<ContentDto>>();
 
-        CreateMap<DialogTransmissionSenderActor, GetDialogDialogTransmissionSenderActorDto>()
+        CreateMap<DialogTransmissionSenderActor, DialogTransmissionSenderActorDto>()
             .ForMember(dest => dest.ActorType, opt => opt.MapFrom(src => src.ActorTypeId));
 
-        CreateMap<List<DialogTransmissionContent>?, GetDialogDialogTransmissionContentDto?>()
-            .ConvertUsing<TransmissionContentOutputConverter<GetDialogDialogTransmissionContentDto>>();
+        CreateMap<List<DialogTransmissionContent>?, DialogTransmissionContentDto?>()
+            .ConvertUsing<TransmissionContentOutputConverter<DialogTransmissionContentDto>>();
 
-        CreateMap<DialogTransmission, GetDialogDialogTransmissionDto>()
+        CreateMap<DialogTransmission, DialogTransmissionDto>()
             .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.TypeId));
 
-        CreateMap<DialogTransmissionAttachment, GetDialogDialogTransmissionAttachmentDto>();
-        CreateMap<AttachmentUrl, GetDialogDialogTransmissionAttachmentUrlDto>()
+        CreateMap<DialogTransmissionAttachment, DialogTransmissionAttachmentDto>();
+        CreateMap<AttachmentUrl, DialogTransmissionAttachmentUrlDto>()
             .ForMember(dest => dest.ConsumerType, opt => opt.MapFrom(src => src.ConsumerTypeId));
     }
 }

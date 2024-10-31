@@ -1,15 +1,7 @@
-using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Create;
-using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Update;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Contents;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions.Contents;
-using GetDialogContentDtoEU = Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Queries.Get.GetDialogContentDto;
-using GetDialogContentDtoSO = Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Queries.Get.GetDialogContentDto;
-
-using SearchDialogContentDtoEU = Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Queries.Search.SearchDialogContentDto;
-using SearchDialogDtoContentSO = Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Queries.Search.SearchDialogContentDto;
-
-using GetDialogDialogTransmissionContentDtoSO = Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Queries.Get.GetDialogDialogTransmissionContentDto;
-using GetDialogDialogTransmissionContentDtoEU = Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Queries.Get.GetDialogDialogTransmissionContentDto;
+using ContentDto = Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Create.ContentDto;
+using TransmissionContentDto = Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Create.TransmissionContentDto;
 
 namespace Digdir.Domain.Dialogporten.Application.Unit.Tests.Features.V1.Common;
 
@@ -25,10 +17,10 @@ public class ContentTypeTests
 
         var dtoTypes = new[]
         {
-            typeof(CreateDialogContentDto),
-            typeof(UpdateDialogContentDto),
-            typeof(GetDialogContentDtoEU),
-            typeof(GetDialogContentDtoSO)
+            typeof(ContentDto),
+            typeof(Application.Features.V1.ServiceOwner.Dialogs.Commands.Update.ContentDto),
+            typeof(Application.Features.V1.EndUser.Dialogs.Queries.Get.ContentDto),
+            typeof(Application.Features.V1.ServiceOwner.Dialogs.Queries.Get.ContentDto)
         };
 
         foreach (var dtoType in dtoTypes)
@@ -56,8 +48,8 @@ public class ContentTypeTests
 
         var dtoTypes = new[]
         {
-            typeof(SearchDialogContentDtoEU),
-            typeof(SearchDialogDtoContentSO)
+            typeof(Application.Features.V1.EndUser.Dialogs.Queries.Search.ContentDto),
+            typeof(Application.Features.V1.ServiceOwner.Dialogs.Queries.Search.ContentDto)
         };
 
         foreach (var dtoType in dtoTypes)
@@ -84,10 +76,10 @@ public class ContentTypeTests
 
         var dtoTypes = new[]
         {
-            typeof(CreateDialogDialogTransmissionContentDto),
-            typeof(UpdateDialogDialogTransmissionContentDto),
-            typeof(GetDialogDialogTransmissionContentDtoSO),
-            typeof(GetDialogDialogTransmissionContentDtoEU)
+            typeof(TransmissionContentDto),
+            typeof(Application.Features.V1.ServiceOwner.Dialogs.Commands.Update.TransmissionContentDto),
+            typeof(Application.Features.V1.ServiceOwner.Dialogs.Queries.Get.DialogTransmissionContentDto),
+            typeof(Application.Features.V1.EndUser.Dialogs.Queries.Get.DialogTransmissionContentDto)
         };
 
         foreach (var dtoType in dtoTypes)

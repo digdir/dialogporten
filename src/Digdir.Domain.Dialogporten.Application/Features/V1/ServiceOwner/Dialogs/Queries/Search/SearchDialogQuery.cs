@@ -17,7 +17,7 @@ using OneOf;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Queries.Search;
 
-public sealed class SearchDialogQuery : SortablePaginationParameter<SearchDialogQueryOrderDefinition, IntermediateSearchDialogDto>, IRequest<SearchDialogResult>
+public sealed class SearchDialogQuery : SortablePaginationParameter<SearchDialogQueryOrderDefinition, IntermediateDialogDto>, IRequest<SearchDialogResult>
 {
     private string? _searchLanguageCode;
 
@@ -115,9 +115,9 @@ public sealed class SearchDialogQuery : SortablePaginationParameter<SearchDialog
     }
 }
 
-public sealed class SearchDialogQueryOrderDefinition : IOrderDefinition<IntermediateSearchDialogDto>
+public sealed class SearchDialogQueryOrderDefinition : IOrderDefinition<IntermediateDialogDto>
 {
-    public static IOrderOptions<IntermediateSearchDialogDto> Configure(IOrderOptionsBuilder<IntermediateSearchDialogDto> options) =>
+    public static IOrderOptions<IntermediateDialogDto> Configure(IOrderOptionsBuilder<IntermediateDialogDto> options) =>
         options.AddId(x => x.Id)
             .AddDefault("createdAt", x => x.CreatedAt)
             .AddOption("updatedAt", x => x.UpdatedAt)
@@ -126,7 +126,7 @@ public sealed class SearchDialogQueryOrderDefinition : IOrderDefinition<Intermed
 }
 
 [GenerateOneOf]
-public sealed partial class SearchDialogResult : OneOfBase<PaginatedList<SearchDialogDto>, ValidationError>;
+public sealed partial class SearchDialogResult : OneOfBase<PaginatedList<DialogDto>, ValidationError>;
 
 internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQuery, SearchDialogResult>
 {
@@ -192,7 +192,7 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
                 x.SearchTags.Any(x => EF.Functions.ILike(x.Value, request.Search!))
             )
             .Where(x => resourceIds.Contains(x.ServiceResource))
-            .ProjectTo<IntermediateSearchDialogDto>(_mapper.ConfigurationProvider)
+            .ProjectTo<IntermediateDialogDto>(_mapper.ConfigurationProvider)
             .ToPaginatedListAsync(request, cancellationToken: cancellationToken);
 
         if (request.EndUserId is not null)
@@ -203,6 +203,6 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
             }
         }
 
-        return paginatedList.ConvertTo(_mapper.Map<SearchDialogDto>);
+        return paginatedList.ConvertTo(_mapper.Map<DialogDto>);
     }
 }

@@ -2,6 +2,7 @@
 using Digdir.Domain.Dialogporten.WebApi.Common;
 using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
+using Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.Common.Extensions;
 using FastEndpoints;
 using MediatR;
 
@@ -22,7 +23,12 @@ public sealed class UpdateDialogEndpoint : Endpoint<UpdateDialogRequest>
         Policies(AuthorizationPolicy.ServiceProvider);
         Group<ServiceOwnerGroup>();
 
-        Description(b => UpdateDialogSwaggerConfig.SetDescription(b));
+        Description(b => b.ProducesOneOf(
+            StatusCodes.Status204NoContent,
+            StatusCodes.Status400BadRequest,
+            StatusCodes.Status404NotFound,
+            StatusCodes.Status412PreconditionFailed,
+            StatusCodes.Status422UnprocessableEntity));
     }
 
     public override async Task HandleAsync(UpdateDialogRequest req, CancellationToken ct)

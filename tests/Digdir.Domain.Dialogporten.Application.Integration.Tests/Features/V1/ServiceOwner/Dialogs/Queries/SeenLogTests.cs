@@ -77,7 +77,7 @@ public class SeenLogTests(DialogApplication application) : ApplicationCollection
         var seenLogId = triggerSeenLogResponse.AsT0.SeenSinceLastUpdate.Single().Id;
 
         // Act
-        var response = await Application.Send(new GetDialogSeenLogQuery
+        var response = await Application.Send(new GetSeenLogQuery
         {
             DialogId = createCommandResponse.AsT0.Value,
             SeenLogId = seenLogId
@@ -103,7 +103,7 @@ public class SeenLogTests(DialogApplication application) : ApplicationCollection
         await Application.Send(new GetDialogQueryEndUser { DialogId = createCommandResponse.AsT0.Value });
 
         // Act
-        var response = await Application.Send(new SearchDialogSeenLogQuery
+        var response = await Application.Send(new SearchSeenLogQuery
         {
             DialogId = createCommandResponse.AsT0.Value
         });

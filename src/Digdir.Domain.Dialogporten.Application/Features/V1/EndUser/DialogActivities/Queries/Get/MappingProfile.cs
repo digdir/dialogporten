@@ -8,10 +8,10 @@ internal sealed class MappingProfile : Profile
 {
     public MappingProfile()
     {
-        CreateMap<DialogActivity, GetDialogActivityDto>()
+        CreateMap<DialogActivity, ActivityDto>()
             .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.TypeId));
 
-        CreateMap<DialogActivityPerformedByActor, GetDialogActivityPerformedByActorDto>()
+        CreateMap<DialogActivityPerformedByActor, PerformedByActorDto>()
             .ForMember(dest => dest.ActorType, opt => opt.MapFrom(src => src.ActorTypeId))
             .ForMember(dest => dest.ActorId, opt => opt.MapFrom(src => IdentifierMasker.GetMaybeMaskedIdentifier(src.ActorId)));
     }

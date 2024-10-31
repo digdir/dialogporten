@@ -10,18 +10,18 @@ public sealed class MappingProfile : Profile
 {
     public MappingProfile()
     {
-        CreateMap<DialogTransmission, SearchDialogTransmissionDto>()
+        CreateMap<DialogTransmission, TransmissionDto>()
             .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.TypeId))
             .ForMember(dest => dest.DeletedAt, opt => opt.MapFrom(src => src.Dialog.DeletedAt));
 
-        CreateMap<DialogTransmissionSenderActor, SearchDialogTransmissionSenderActorDto>()
+        CreateMap<DialogTransmissionSenderActor, SenderActorDto>()
             .ForMember(dest => dest.ActorType, opt => opt.MapFrom(src => src.ActorTypeId));
 
-        CreateMap<List<DialogTransmissionContent>?, SearchDialogTransmissionContentDto?>()
-            .ConvertUsing<TransmissionContentOutputConverter<SearchDialogTransmissionContentDto>>();
+        CreateMap<List<DialogTransmissionContent>?, ContentDto?>()
+            .ConvertUsing<TransmissionContentOutputConverter<ContentDto>>();
 
-        CreateMap<DialogTransmissionAttachment, SearchDialogTransmissionAttachmentDto>();
-        CreateMap<AttachmentUrl, SearchDialogTransmissionAttachmentUrlDto>()
+        CreateMap<DialogTransmissionAttachment, AttachmentDto>();
+        CreateMap<AttachmentUrl, AttachmentUrlDto>()
             .ForMember(dest => dest.ConsumerType, opt => opt.MapFrom(src => src.ConsumerTypeId));
     }
 }
