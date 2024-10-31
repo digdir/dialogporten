@@ -29,8 +29,8 @@ on:
       vus:
         description: 'Number of VUS'
         required: true
-        type: number
         default: 10
+        type: number
       duration:
         description: 'Duration of test, ie 30s, 1m, 10m'
         required: true
