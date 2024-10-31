@@ -18,7 +18,7 @@ function resolveParams(defaultParams, params) {
 function getServiceOwnerRequestParams(params = null, tokenOptions = null) {
 
     params = params || {};
-    const headers = params.Headers || {};
+    const headers = params.headers || {};
     const hasOverridenAuthorizationHeader = headers.Authorization !== undefined;
 
     const defaultParams = {
@@ -33,11 +33,14 @@ function getServiceOwnerRequestParams(params = null, tokenOptions = null) {
 }
 
 function getEnduserRequestParams(params = null, tokenOptions = null) {
+    params = params || {};
+    const headers = params.headers || {};
+    const hasOverridenAuthorizationHeader = headers.Authorization !== undefined;
     let defaultParams = {
         headers: {
             'Accept': 'application/json',
             'User-Agent': 'dialogporten-k6',
-            'Authorization': 'Bearer ' + getEnduserTokenFromGenerator(tokenOptions)
+            'Authorization': hasOverridenAuthorizationHeader ? headers.Authorization : 'Bearer ' + getEnduserTokenFromGenerator(tokenOptions)
         }
     }
 
