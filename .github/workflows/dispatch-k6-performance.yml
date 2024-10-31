@@ -44,7 +44,7 @@ on:
 jobs:
   k6-performance:
     name: "Run K6 performance test"
-    uses: ./.github/workflows/performance-workflows/workflow-run-k6-performance.yml
+    uses: ./.github/workflows/workflow-run-k6-performance.yml
     secrets:
       TOKEN_GENERATOR_USERNAME: ${{ secrets.TOKEN_GENERATOR_USERNAME }}
       TOKEN_GENERATOR_PASSWORD: ${{ secrets.TOKEN_GENERATOR_PASSWORD }}
