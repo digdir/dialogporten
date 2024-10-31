@@ -27,6 +27,22 @@ export let options = {
     thresholds: {
         'http_req_duration{name:simple search}': [],
         'http_reqs{name:simple search}': [],
+        'http_req_duration{name:get dialog}': [],
+        'http_reqs{name:get dialog}': [],
+        'http_req_duration{name:get dialog activities}': [],
+        'http_reqs{name:get dialog activities}': [],
+        'http_req_duration{name:get dialog activity}': [],
+        'http_reqs{name:get dialog activity}': [],
+        'http_req_duration{name:get seenlogs}': [],
+        'http_reqs{name:get seenlogs}': [],
+        'http_req_duration{name:get seenlog}': [],
+        'http_reqs{name:get seenlog}': [],
+        'http_req_duration{name:get transmissions}': [],
+        'http_reqs{name:get transmissions}': [],
+        'http_req_duration{name:get transmission}': [],
+        'http_reqs{name:get transmission}': [],
+        'http_req_duration{name:get labellog}': [],
+        'http_reqs{name:get labellog}': [],
     },
 };
 
@@ -52,6 +68,63 @@ export function simpleSearch(enduser) {
         let r = getEU('dialogs' + defaultFilter, paramsWithToken);
         expectStatusFor(r).to.equal(200);
         expect(r, 'response').to.have.validJsonBody();
+        if (r.json().items && r.json().items.length > 0) {
+            let dialogId = r.json().items[0].id;
+            if (dialogId) {
+                getDialog(dialogId, paramsWithToken);
+                getDialogActivities(dialogId, paramsWithToken);
+                getSeenLog(dialogId, paramsWithToken);
+                getLabelLog(dialogId, paramsWithToken);
+                getDialogTransmissions(dialogId, paramsWithToken);
+            }
+        }
     });
+}
+
+export function getDialog(dialogId, paramsWithToken) {
+    paramsWithToken.tags.name = 'get dialog'
+    getUrl('dialogs/' + dialogId, paramsWithToken);
+}
+
+export function getDialogActivities(dialogId, paramsWithToken) {
+    paramsWithToken.tags.name = 'get dialog activities'
+    let d = getUrl('dialogs/' + dialogId + '/activities', paramsWithToken);
+    let dialog_activites = d.json();
+    if (dialog_activites.length > 0) {
+        paramsWithToken.tags.name = 'get dialog activity'
+        getUrl('dialogs/' + dialogId + '/activities/' + randomItem(dialog_activites).id, paramsWithToken);
+    }
+}
+
+export function getSeenLog(dialogId, paramsWithToken) {
+    paramsWithToken.tags.name = 'get seenlogs'
+    let s = getEU('dialogs/' + dialogId + '/seenlog', paramsWithToken);
+    let seen_logs = s.json();
+    if (seen_logs.length > 0) {
+        paramsWithToken.tags.name = 'get seenlog'
+        getUrl('dialogs/' + dialogId + '/seenlog/' + randomItem(seen_logs).id, paramsWithToken);
+    }
+}
+
+export function getLabelLog(dialogId, paramsWithToken) {
+    paramsWithToken.tags.name = 'get labellog'
+    getEU('dialogs/' + dialogId + '/labellog', paramsWithToken);
+}
+
+export function getDialogTransmissions(dialogId, paramsWithToken) {
+    paramsWithToken.tags.name = 'get transmissions'
+    let d = getUrl('dialogs/' + dialogId + '/transmissions', paramsWithToken);
+    let dialog_transmissions = d.json();
+    if (dialog_transmissions.length > 0) {
+        paramsWithToken.tags.name = 'get transmission'
+        getUrl('dialogs/' + dialogId + '/transmissions/' + randomItem(dialog_transmissions).id, paramsWithToken);
+    }
+}
+
+export function getUrl(url, paramsWithToken) {
+    let r = getEU(url, paramsWithToken);
+    expectStatusFor(r).to.equal(200);
+    expect(r, 'response').to.have.validJsonBody();
+    return r;
 }
 
