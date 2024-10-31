@@ -101,7 +101,7 @@ internal static class DecisionRequestHelper
                 Id = SubjectId,
                 Attribute = [new() { AttributeId = AttributeIdPerson, Value = claim.Value }]
             },
-            RarAuthorizationDetailsClaimType when new ClaimsPrincipal(new ClaimsIdentity(new[] { claim })).TryGetSystemUserId(out var systemUserId) => new XacmlJsonCategory
+            RarAuthorizationDetailsClaimType when claim.TryGetSystemUserId(out var systemUserId) => new XacmlJsonCategory
             {
                 Id = SubjectId,
                 Attribute =
