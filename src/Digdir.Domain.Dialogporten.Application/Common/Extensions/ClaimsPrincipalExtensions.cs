@@ -218,9 +218,8 @@ public static class ClaimsPrincipalExtensions
             c.Type.StartsWith(AltinnClaimPrefix, StringComparison.Ordinal)
         ).OrderBy(c => c.Type).ToList();
 
-        // If we have a RAR-claim, this is most likely a system user. We need to extract the systemuser-uuid
-        // from the authorization_details claim
-        // Extract the systemuser-uuid from the authorization_details claim if present
+        // If we have a RAR-claim, this is most likely a system user. Attempt to extract the
+        // systemuser-uuid from the authorization_details claim and add to the list.
         var rarClaim = claimsList.FirstOrDefault(c => c.Type == AuthorizationDetailsClaim);
         if (rarClaim != null && rarClaim.TryGetSystemUserId(out var systemUserId))
         {
