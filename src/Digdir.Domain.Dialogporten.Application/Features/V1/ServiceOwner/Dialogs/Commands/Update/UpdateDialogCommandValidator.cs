@@ -139,6 +139,7 @@ internal sealed class UpdateDialogTransmissionAttachmentUrlDtoValidator : Abstra
     }
 }
 
+internal sealed class UpdateDialogDialogTransmissionActorDtoValidator : AbstractValidator<ActorDto>
 internal sealed class UpdateDialogDialogTransmissionActorDtoValidator : AbstractValidator<TransmissionSenderActorDto>
 {
     public UpdateDialogDialogTransmissionActorDtoValidator()
@@ -201,7 +202,7 @@ internal sealed class UpdateDialogDialogTransmissionContentDtoValidator : Abstra
 internal sealed class UpdateDialogDialogTransmissionDtoValidator : AbstractValidator<TransmissionDto>
 {
     public UpdateDialogDialogTransmissionDtoValidator(
-        IValidator<TransmissionSenderActorDto> actorValidator,
+        IValidator<ActorDto> actorValidator,
         IValidator<TransmissionContentDto> contentValidator,
         IValidator<TransmissionAttachmentDto> attachmentValidator)
     {
@@ -394,7 +395,7 @@ internal sealed class UpdateDialogDialogActivityDtoValidator : AbstractValidator
 {
     public UpdateDialogDialogActivityDtoValidator(
         IValidator<IEnumerable<LocalizationDto>> localizationsValidator,
-        IValidator<ActivityPerformedByActorDto> actorValidator)
+        IValidator<ActorDto> actorValidator)
     {
         RuleFor(x => x.Id)
             .IsValidUuidV7()
@@ -429,7 +430,7 @@ internal sealed class UpdateDialogDialogActivityDtoValidator : AbstractValidator
     }
 }
 
-internal sealed class UpdateDialogDialogActivityActorDtoValidator : AbstractValidator<ActivityPerformedByActorDto>
+internal sealed class UpdateDialogDialogActivityActorDtoValidator : AbstractValidator<ActorDto>
 {
     public UpdateDialogDialogActivityActorDtoValidator()
     {

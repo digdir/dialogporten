@@ -150,7 +150,7 @@ internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDia
 internal sealed class CreateDialogDialogTransmissionDtoValidator : AbstractValidator<TransmissionDto>
 {
     public CreateDialogDialogTransmissionDtoValidator(
-        IValidator<TransmissionSenderActorDto> actorValidator,
+        IValidator<ActorDto> actorValidator,
         IValidator<TransmissionContentDto> contentValidator,
         IValidator<TransmissionAttachmentDto> attachmentValidator)
     {
@@ -409,7 +409,7 @@ internal sealed class CreateDialogDialogActivityDtoValidator : AbstractValidator
 {
     public CreateDialogDialogActivityDtoValidator(
         IValidator<IEnumerable<LocalizationDto>> localizationsValidator,
-        IValidator<ActivityPerformedByActorDto> actorValidator)
+        IValidator<ActorDto> actorValidator)
     {
         RuleFor(x => x.Id)
             .IsValidUuidV7()
@@ -444,7 +444,7 @@ internal sealed class CreateDialogDialogActivityDtoValidator : AbstractValidator
     }
 }
 
-internal sealed class CreateDialogDialogTransmissionActorDtoValidator : AbstractValidator<TransmissionSenderActorDto>
+internal sealed class CreateDialogDialogTransmissionActorDtoValidator : AbstractValidator<ActorDto>
 {
     public CreateDialogDialogTransmissionActorDtoValidator()
     {
@@ -463,7 +463,7 @@ internal sealed class CreateDialogDialogTransmissionActorDtoValidator : Abstract
     }
 }
 
-internal sealed class CreateDialogDialogActivityActorDtoValidator : AbstractValidator<ActivityPerformedByActorDto>
+internal sealed class CreateDialogDialogActivityActorDtoValidator : AbstractValidator<ActorDto>
 {
     public CreateDialogDialogActivityActorDtoValidator()
     {

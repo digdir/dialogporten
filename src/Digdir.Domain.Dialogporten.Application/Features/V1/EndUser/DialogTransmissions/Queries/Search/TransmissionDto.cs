@@ -1,3 +1,4 @@
+using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Actors;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Content;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using Digdir.Domain.Dialogporten.Domain.Actors;
@@ -52,7 +53,7 @@ public sealed class TransmissionDto
     /// <summary>
     /// The sender actor information for the transmission.
     /// </summary>
-    public SenderActorDto Sender { get; set; } = null!;
+    public ActorDto Sender { get; set; } = null!;
 
     /// <summary>
     /// The content of the transmission.
@@ -63,29 +64,6 @@ public sealed class TransmissionDto
     /// The attachments associated with the transmission.
     /// </summary>
     public List<AttachmentDto> Attachments { get; set; } = [];
-}
-
-public sealed class SenderActorDto
-{
-    /// <summary>
-    /// The unique identifier for the sender actor in UUIDv7 format.
-    /// </summary>
-    public Guid Id { get; set; }
-
-    /// <summary>
-    /// The type of the actor.
-    /// </summary>
-    public ActorType.Values ActorType { get; set; }
-
-    /// <summary>
-    /// The name of the actor.
-    /// </summary>
-    public string ActorName { get; set; } = null!;
-
-    /// <summary>
-    /// The identifier of the actor.
-    /// </summary>
-    public string ActorId { get; set; } = null!;
 }
 
 public sealed class ContentDto

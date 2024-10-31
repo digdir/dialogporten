@@ -1,6 +1,6 @@
-﻿using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Content;
+﻿using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Actors;
+using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Content;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
-using Digdir.Domain.Dialogporten.Domain.Actors;
 using Digdir.Domain.Dialogporten.Domain.Attachments;
 using Digdir.Domain.Dialogporten.Domain.DialogEndUserContexts.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
@@ -193,7 +193,7 @@ public sealed class TransmissionDto
     /// <summary>
     /// The actor that sent the transmission.
     /// </summary>
-    public TransmissionSenderActorDto Sender { get; set; } = null!;
+    public ActorDto Sender { get; set; } = null!;
 
     /// <summary>
     /// The transmission unstructured text content.
@@ -305,56 +305,12 @@ public sealed class ActivityDto
     /// <summary>
     /// The actor that performed the activity.
     /// </summary>
-    public ActivityPerformedByActorDto PerformedBy { get; set; } = null!;
+    public ActorDto PerformedBy { get; set; } = null!;
 
     /// <summary>
     /// Unstructured text describing the activity. Only set if the activity type is "Information".
     /// </summary>
     public List<LocalizationDto> Description { get; set; } = [];
-}
-
-public sealed class ActivityPerformedByActorDto
-{
-    /// <summary>
-    /// What type of actor performed the activity.
-    /// </summary>
-    public ActorType.Values ActorType { get; set; }
-
-    /// <summary>
-    /// Specifies the name of the entity that performed the activity. Mutually exclusive with ActorId. If ActorId
-    /// is supplied, the name will be automatically populated from the name registries.
-    /// </summary>
-    /// <example>Ola Nordmann</example>
-    public string? ActorName { get; set; }
-
-    /// <summary>
-    /// The identifier of the person or organization that performed the activity. Mutually exclusive with ActorName.
-    /// Might be omitted if ActorType is "ServiceOwner".
-    /// </summary>
-    /// <example>urn:altinn:person:identifier-no:12018212345</example>
-    public string? ActorId { get; set; }
-}
-
-public sealed class TransmissionSenderActorDto
-{
-    /// <summary>
-    /// The type of actor that sent the transmission.
-    /// </summary>
-    public ActorType.Values ActorType { get; set; }
-
-    /// <summary>
-    /// Specifies the name of the entity that sent the transmission. Mutually exclusive with ActorId. If ActorId
-    /// is supplied, the name will be automatically populated from the name registries.
-    /// </summary>
-    /// <example>Ola Nordmann</example>
-    public string? ActorName { get; set; }
-
-    /// <summary>
-    /// The identifier of the person or organization that sent the transmission. Mutually exclusive with ActorName.
-    /// Might be omitted if ActorType is "ServiceOwner".
-    /// </summary>
-    /// <example>urn:altinn:person:identifier-no:12018212345</example>
-    public string? ActorId { get; set; }
 }
 
 public sealed class ApiActionDto

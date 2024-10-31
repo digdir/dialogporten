@@ -1,4 +1,5 @@
-﻿using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Queries.Get;
+﻿using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Actors;
+using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Queries.Get;
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Create;
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Update;
 using Digdir.Domain.Dialogporten.Application.Integration.Tests.Common;
@@ -32,7 +33,7 @@ public class UpdateDialogTests(DialogApplication application) : ApplicationColle
         {
             Id = getDialogDto.AsT0.Activities.First().Id,
             Type = DialogActivityType.Values.DialogCreated,
-            PerformedBy = new ActivityPerformedByActorDto
+            PerformedBy = new ActorDto
             {
                 ActorType = ActorType.Values.ServiceOwner
             }
