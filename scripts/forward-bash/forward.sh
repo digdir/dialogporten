@@ -37,7 +37,7 @@ log_warning() {
 }
 
 log_error() {
-    echo -e "${RED}✖${NC} $1"
+    echo -e "${RED}✖${NC} $1" >&2
 }
 
 log_title() {
