@@ -24,7 +24,9 @@ public sealed class PurgeDialogEndpoint : Endpoint<PurgeDialogRequest>
         Policies(AuthorizationPolicy.ServiceProvider);
         Group<ServiceOwnerGroup>();
 
-        Description(b => b.ProducesOneOf(
+        Description(b => b
+            .Accepts<PurgeDialogRequest>()
+            .ProducesOneOf(
             StatusCodes.Status204NoContent,
             StatusCodes.Status404NotFound,
             StatusCodes.Status412PreconditionFailed));
