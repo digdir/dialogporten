@@ -16,15 +16,11 @@ public sealed class MappingProfile : Profile
         CreateMap<ContentValueDto, ContentValue>();
 
         CreateMap<DialogSeenLogDto, SeenLog>();
-        CreateMap<ActorDto, Actor>();
 
         CreateMap<DialogSeenLogDto, SeenLog>();
-        CreateMap<ActorDto, Actor>();
 
         CreateMap<Application.Features.V1.EndUser.Dialogs.Queries.Get.DialogActivityDto, Activity>()
             .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type));
-        CreateMap<ActorDto, Actor>()
-            .ForMember(dest => dest.ActorType, opt => opt.MapFrom(src => src.ActorType));
 
         CreateMap<DialogActivityDto, Activity>()
             .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type));
