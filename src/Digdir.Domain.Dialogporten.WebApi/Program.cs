@@ -203,7 +203,9 @@ static void IgnoreEmptyCollections(JsonTypeInfo typeInfo)
 {
     foreach (var property in typeInfo.Properties)
     {
-        if (property.PropertyType.IsAssignableTo(typeof(ICollection)))
+        if (property.PropertyType.IsGenericType &&
+            property.PropertyType.IsAssignableTo(typeof(ICollection)) &&
+            property.PropertyType.GetGenericTypeDefinition() == typeof(Nullable<>))
         {
             property.ShouldSerialize = (_, val) => val is ICollection collection && collection.Count > 0;
         }
