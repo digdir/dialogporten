@@ -344,15 +344,24 @@
         "additionalProperties": false,
         "properties": {
           "actorId": {
+            "description": "The identifier of the person or organization that sent the transmission. Mutually exclusive with ActorName.\nMight be omitted if ActorType is \u0022ServiceOwner\u0022.",
+            "example": "urn:altinn:person:identifier-no:12018212345",
             "nullable": true,
             "type": "string"
           },
           "actorName": {
+            "description": "Specifies the name of the entity that sent the transmission. Mutually exclusive with ActorId. If ActorId\nis supplied, the name will be automatically populated from the name registries.",
+            "example": "Ola Nordmann",
             "nullable": true,
             "type": "string"
           },
           "actorType": {
-            "$ref": "#/components/schemas/Actors_ActorType"
+            "description": "The type of actor that sent the transmission.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/Actors_ActorType"
+              }
+            ]
           }
         },
         "type": "object"
@@ -1791,15 +1800,24 @@
         "additionalProperties": false,
         "properties": {
           "actorId": {
+            "description": "The identifier of the person or organization that sent the transmission. Mutually exclusive with ActorName.\nMight be omitted if ActorType is \u0022ServiceOwner\u0022.",
+            "example": "urn:altinn:person:identifier-no:12018212345",
             "nullable": true,
             "type": "string"
           },
           "actorName": {
+            "description": "Specifies the name of the entity that sent the transmission. Mutually exclusive with ActorId. If ActorId\nis supplied, the name will be automatically populated from the name registries.",
+            "example": "Ola Nordmann",
             "nullable": true,
             "type": "string"
           },
           "actorType": {
-            "$ref": "#/components/schemas/Actors_ActorType"
+            "description": "The type of actor that sent the transmission.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/Actors_ActorType"
+              }
+            ]
           }
         },
         "type": "object"
