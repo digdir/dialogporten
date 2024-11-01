@@ -23,7 +23,7 @@ public sealed class GetDialogQuery : IRequest<GetDialogResult>
 }
 
 [GenerateOneOf]
-public sealed partial class GetDialogResult : OneOfBase<GetDialogDto, EntityNotFound, ValidationError>;
+public sealed partial class GetDialogResult : OneOfBase<DialogDto, EntityNotFound, ValidationError>;
 
 internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, GetDialogResult>
 {
@@ -93,7 +93,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
             return new EntityNotFound<DialogEntity>(request.DialogId);
         }
 
-        var dialogDto = _mapper.Map<GetDialogDto>(dialog);
+        var dialogDto = _mapper.Map<DialogDto>(dialog);
 
         if (request.EndUserId is not null)
         {
@@ -128,7 +128,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
         dialogDto.SeenSinceLastUpdate = dialog.SeenLog
             .Select(log =>
             {
-                var logDto = _mapper.Map<GetDialogDialogSeenLogDto>(log);
+                var logDto = _mapper.Map<DialogSeenLogDto>(log);
                 logDto.IsViaServiceOwner = true;
                 return logDto;
             })
@@ -137,7 +137,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
         return dialogDto;
     }
 
-    private static void DecorateWithAuthorization(GetDialogDto dto,
+    private static void DecorateWithAuthorization(DialogDto dto,
         DialogDetailsAuthorizationResult authorizationResult)
     {
         foreach (var (action, resource) in authorizationResult.AuthorizedAltinnActions)

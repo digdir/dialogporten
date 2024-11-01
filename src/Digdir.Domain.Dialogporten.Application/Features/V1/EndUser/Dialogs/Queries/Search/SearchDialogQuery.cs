@@ -17,7 +17,7 @@ using OneOf;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Queries.Search;
 
-public sealed class SearchDialogQuery : SortablePaginationParameter<SearchDialogQueryOrderDefinition, IntermediateSearchDialogDto>, IRequest<SearchDialogResult>
+public sealed class SearchDialogQuery : SortablePaginationParameter<SearchDialogQueryOrderDefinition, IntermediateDialogDto>, IRequest<SearchDialogResult>
 {
     private readonly string? _searchLanguageCode;
 
@@ -106,9 +106,9 @@ public sealed class SearchDialogQuery : SortablePaginationParameter<SearchDialog
     }
 }
 
-public sealed class SearchDialogQueryOrderDefinition : IOrderDefinition<IntermediateSearchDialogDto>
+public sealed class SearchDialogQueryOrderDefinition : IOrderDefinition<IntermediateDialogDto>
 {
-    public static IOrderOptions<IntermediateSearchDialogDto> Configure(IOrderOptionsBuilder<IntermediateSearchDialogDto> options) =>
+    public static IOrderOptions<IntermediateDialogDto> Configure(IOrderOptionsBuilder<IntermediateDialogDto> options) =>
         options.AddId(x => x.Id)
             .AddDefault("createdAt", x => x.CreatedAt)
             .AddOption("updatedAt", x => x.UpdatedAt)
@@ -117,7 +117,7 @@ public sealed class SearchDialogQueryOrderDefinition : IOrderDefinition<Intermed
 }
 
 [GenerateOneOf]
-public sealed partial class SearchDialogResult : OneOfBase<PaginatedList<SearchDialogDto>, ValidationError, Forbidden>;
+public sealed partial class SearchDialogResult : OneOfBase<PaginatedList<DialogDto>, ValidationError, Forbidden>;
 
 internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQuery, SearchDialogResult>
 {
@@ -153,7 +153,7 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
 
         if (authorizedResources.HasNoAuthorizations)
         {
-            return PaginatedList<SearchDialogDto>.CreateEmpty(request);
+            return PaginatedList<DialogDto>.CreateEmpty(request);
         }
 
         var paginatedList = await _db.Dialogs
@@ -183,7 +183,7 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
             )
             .Where(x => !x.VisibleFrom.HasValue || _clock.UtcNowOffset > x.VisibleFrom)
             .Where(x => !x.ExpiresAt.HasValue || x.ExpiresAt > _clock.UtcNowOffset)
-            .ProjectTo<IntermediateSearchDialogDto>(_mapper.ConfigurationProvider)
+            .ProjectTo<IntermediateDialogDto>(_mapper.ConfigurationProvider)
             .ToPaginatedListAsync(request, cancellationToken: cancellationToken);
 
         foreach (var seenLog in paginatedList.Items.SelectMany(x => x.SeenSinceLastUpdate))
@@ -191,6 +191,6 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
             seenLog.IsCurrentEndUser = IdentifierMasker.GetMaybeMaskedIdentifier(currentUserInfo.UserId.ExternalIdWithPrefix) == seenLog.SeenBy.ActorId;
         }
 
-        return paginatedList.ConvertTo(_mapper.Map<SearchDialogDto>);
+        return paginatedList.ConvertTo(_mapper.Map<DialogDto>);
     }
 }

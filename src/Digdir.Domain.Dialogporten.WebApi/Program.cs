@@ -158,6 +158,14 @@ static void BuildAndRun(string[] args, TelemetryConfiguration telemetryConfigura
             x.Versioning.Prefix = "v";
             x.Versioning.PrependToRoute = true;
             x.Versioning.DefaultVersion = 1;
+            x.Endpoints.Configurator = endpointDefinition =>
+            {
+                endpointDefinition.Description(routeHandlerBuilder
+                    => routeHandlerBuilder.Add(endpointBuilder
+                        => endpointBuilder.Metadata.Add(
+                            new EndpointNameMetadata(
+                                TypeNameConverter.ToShortName(endpointDefinition.EndpointType)))));
+            };
             x.Serializer.Options.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
             // Do not serialize empty collections
             x.Serializer.Options.TypeInfoResolver = new DefaultJsonTypeInfoResolver

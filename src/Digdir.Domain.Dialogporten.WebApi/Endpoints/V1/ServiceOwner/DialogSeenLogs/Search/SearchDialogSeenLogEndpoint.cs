@@ -1,12 +1,13 @@
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.DialogSeenLogs.Queries.Search;
 using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
+using Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.Common.Extensions;
 using FastEndpoints;
 using MediatR;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.DialogSeenLogs.Search;
 
-public sealed class SearchDialogSeenLogEndpoint : Endpoint<SearchDialogSeenLogQuery, List<SearchSeenLogDto>>
+public sealed class SearchDialogSeenLogEndpoint : Endpoint<SearchSeenLogQuery, List<SeenLogDto>>
 {
     private readonly ISender _sender;
 
@@ -21,10 +22,12 @@ public sealed class SearchDialogSeenLogEndpoint : Endpoint<SearchDialogSeenLogQu
         Policies(AuthorizationPolicy.ServiceProvider);
         Group<ServiceOwnerGroup>();
 
-        Description(d => SearchDialogSeenLogSwaggerConfig.SetDescription(d));
+        Description(d => d.ProducesOneOf<List<SeenLogDto>>(
+            StatusCodes.Status200OK,
+            StatusCodes.Status404NotFound));
     }
 
-    public override async Task HandleAsync(SearchDialogSeenLogQuery req, CancellationToken ct)
+    public override async Task HandleAsync(SearchSeenLogQuery req, CancellationToken ct)
     {
         var result = await _sender.Send(req, ct);
         await result.Match(

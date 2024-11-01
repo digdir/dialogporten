@@ -7,7 +7,7 @@ internal sealed class MappingProfile : Profile
 {
     public MappingProfile()
     {
-        CreateMap<AuthorizedPartiesResult, GetPartiesDto>();
+        CreateMap<AuthorizedPartiesResult, PartiesDto>();
         CreateMap<AuthorizedParty, AuthorizedPartyDto>();
     }
 }

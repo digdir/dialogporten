@@ -120,7 +120,7 @@ public class UpdateTransmissionTests : ApplicationCollectionFixture
         domainError.Errors.Should().Contain(e => e.ErrorMessage.Contains(existingTransmission.Id.ToString()!));
     }
 
-    private static UpdateDialogDialogTransmissionDto UpdateDialogDialogTransmissionDto() => new()
+    private static TransmissionDto UpdateDialogDialogTransmissionDto() => new()
     {
         Id = GenerateBigEndianUuidV7(),
         Type = DialogTransmissionType.Values.Information,

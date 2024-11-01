@@ -7,7 +7,7 @@ using MediatR;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.EndUser.Dialogs.Search;
 
-public sealed class SearchDialogEndpoint : Endpoint<SearchDialogQuery, PaginatedList<SearchDialogDto>>
+public sealed class SearchDialogEndpoint : Endpoint<SearchDialogQuery, PaginatedList<DialogDto>>
 {
     private readonly ISender _sender;
 
@@ -21,8 +21,7 @@ public sealed class SearchDialogEndpoint : Endpoint<SearchDialogQuery, Paginated
         Get("dialogs");
         Policies(AuthorizationPolicy.EndUser);
         Group<EndUserGroup>();
-
-        Description(d => SearchDialogSwaggerConfig.SetDescription(d));
+        Description(d => d.ClearDefaultProduces(StatusCodes.Status403Forbidden));
     }
 
     public override async Task HandleAsync(SearchDialogQuery req, CancellationToken ct)

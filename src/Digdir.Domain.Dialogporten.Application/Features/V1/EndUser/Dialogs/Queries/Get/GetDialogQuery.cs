@@ -19,7 +19,7 @@ public sealed class GetDialogQuery : IRequest<GetDialogResult>
 }
 
 [GenerateOneOf]
-public sealed partial class GetDialogResult : OneOfBase<GetDialogDto, EntityNotFound, EntityDeleted, Forbidden>;
+public sealed partial class GetDialogResult : OneOfBase<DialogDto, EntityNotFound, EntityDeleted, Forbidden>;
 
 internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, GetDialogResult>
 {
@@ -134,12 +134,12 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
             domainError => throw new UnreachableException("Should not get domain error when updating SeenAt."),
             concurrencyError => throw new UnreachableException("Should not get concurrencyError when updating SeenAt."));
 
-        var dialogDto = _mapper.Map<GetDialogDto>(dialog);
+        var dialogDto = _mapper.Map<DialogDto>(dialog);
 
         dialogDto.SeenSinceLastUpdate = dialog.SeenLog
             .Select(log =>
             {
-                var logDto = _mapper.Map<GetDialogDialogSeenLogDto>(log);
+                var logDto = _mapper.Map<DialogSeenLogDto>(log);
                 logDto.IsCurrentEndUser = currentUserInformation.UserId.ExternalIdWithPrefix == log.SeenBy.ActorId;
                 return logDto;
             })
@@ -157,7 +157,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
         return dialogDto;
     }
 
-    private static void DecorateWithAuthorization(GetDialogDto dto,
+    private static void DecorateWithAuthorization(DialogDto dto,
         DialogDetailsAuthorizationResult authorizationResult)
     {
         foreach (var (action, resource) in authorizationResult.AuthorizedAltinnActions)
@@ -188,7 +188,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
         }
     }
 
-    private static void ReplaceUnauthorizedUrls(GetDialogDto dto)
+    private static void ReplaceUnauthorizedUrls(DialogDto dto)
     {
         // For all API and GUI actions and transmissions where isAuthorized is false, replace the URLs with Constants.UnauthorizedUrl
         foreach (var guiAction in dto.GuiActions.Where(a => !a.IsAuthorized))

@@ -110,6 +110,14 @@ public static class ClaimsPrincipalExtensions
         return authorizationDetails is not null;
     }
 
+    public static bool TryGetSystemUserId(this Claim claim,
+        [NotNullWhen(true)] out string? systemUserId) =>
+        new List<Claim> { claim }.TryGetSystemUserId(out systemUserId);
+
+    public static bool TryGetSystemUserId(this List<Claim> claimsList,
+        [NotNullWhen(true)] out string? systemUserId) =>
+        new ClaimsPrincipal(new ClaimsIdentity(claimsList.ToArray())).TryGetSystemUserId(out systemUserId);
+
     public static bool TryGetSystemUserId(this ClaimsPrincipal claimsPrincipal,
         [NotNullWhen(true)] out string? systemUserId)
     {
@@ -198,14 +206,28 @@ public static class ClaimsPrincipalExtensions
         return false;
     }
 
-    public static IEnumerable<Claim> GetIdentifyingClaims(this List<Claim> claims) =>
-        claims.Where(c =>
+    public static IEnumerable<Claim> GetIdentifyingClaims(this IEnumerable<Claim> claims)
+    {
+        var claimsList = claims.ToList();
+
+        var identifyingClaims = claimsList.Where(c =>
             c.Type == PidClaim ||
             c.Type == ConsumerClaim ||
             c.Type == SupplierClaim ||
             c.Type == IdportenAuthLevelClaim ||
             c.Type.StartsWith(AltinnClaimPrefix, StringComparison.Ordinal)
-        ).OrderBy(c => c.Type);
+        ).OrderBy(c => c.Type).ToList();
+
+        // If we have a RAR-claim, this is most likely a system user. Attempt to extract the
+        // systemuser-uuid from the authorization_details claim and add to the list.
+        var rarClaim = claimsList.FirstOrDefault(c => c.Type == AuthorizationDetailsClaim);
+        if (rarClaim != null && rarClaim.TryGetSystemUserId(out var systemUserId))
+        {
+            identifyingClaims.Add(new Claim(AuthorizationDetailsType, systemUserId));
+        }
+
+        return identifyingClaims;
+    }
 
     public static (UserIdType, string externalId) GetUserType(this ClaimsPrincipal claimsPrincipal)
     {

@@ -18,8 +18,6 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions.Contents;
 using Digdir.Domain.Dialogporten.Domain.SubjectResources;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence.IdempotentNotifications;
 using MassTransit;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using OutboxMessage = MassTransit.EntityFrameworkCoreIntegration.OutboxMessage;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence;
 
