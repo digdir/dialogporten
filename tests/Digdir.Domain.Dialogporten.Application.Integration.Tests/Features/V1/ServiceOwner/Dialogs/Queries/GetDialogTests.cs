@@ -52,12 +52,6 @@ public class GetDialogTests : ApplicationCollectionFixture
             .Excluding(x => x.UpdatedAt)
             .Excluding(x => x.CreatedAt)
             .Excluding(x => x.SystemLabel));
-
-        /*result.Activities.Should().BeEquivalentTo(createCommand.Activities,
-            options => options.ExcludingMissingMembers().Excluding(x => x.PerformedBy.Id));
-
-        result.Transmissions.Should().BeEquivalentTo(createCommand.Transmissions,
-            options => options.ExcludingMissingMembers().Excluding(x => x.Sender.Id));*/
     }
     // TODO: Add tests
 }
