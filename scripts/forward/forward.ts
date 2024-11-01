@@ -114,7 +114,7 @@ const getPostgresInfo = (env: Environment, subscriptionId: string): ResourceInfo
     name,
     hostname,
     port,
-    connectionString: `postgresql://${credentials.username}:<retrieve-password-from-keyvault>@${hostname}:${port}/dialogporten`
+    connectionString: `postgresql://${credentials.username}:<retrieve-password-from-keyvault>@$localhost:${port}/dialogporten`
   };
 };
 
