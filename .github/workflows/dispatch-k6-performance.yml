@@ -47,6 +47,7 @@ on:
           - 'tests/k6/tests/enduser/performance/simple-search.js'
           - 'tests/k6/tests/enduser/performance/graphql-search.js'
 
+run-name: Performance test ${{ inputs.testSuitePath }} vus ${{ inputs.vus }} duration ${{ inputs.duration }}
 jobs:
   k6-performance:
     name: "Run K6 performance test"
