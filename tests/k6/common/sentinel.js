@@ -20,10 +20,9 @@ export default function () {
                 response.items.forEach((item) => {
                     dialogIdsToPurge.push(item.id);
                 });
-
-                hasNextPage = response.hasNextPage;
                 continuationToken = "&continuationToken=" + response.continuationToken;
             }
+            hasNextPage = response.hasNextPage;
         } while (hasNextPage);
 
         if (dialogIdsToPurge.length > 0) {
