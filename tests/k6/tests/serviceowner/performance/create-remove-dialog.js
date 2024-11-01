@@ -18,6 +18,7 @@ const endUsers = new SharedArray('endUsers', function () {
 export let options = {
     summaryTrendStats: ['avg', 'min', 'med', 'max', 'p(95)', 'p(99)', 'p(99.5)', 'p(99.9)', 'count'],
     thresholds: {
+        http_req_failed: ['rate<0.01'],
         'http_req_duration{scenario:default}': [`max>=0`],
         'http_req_duration{name:create dialog}': [],
         'http_reqs{name:create dialog}': [],
