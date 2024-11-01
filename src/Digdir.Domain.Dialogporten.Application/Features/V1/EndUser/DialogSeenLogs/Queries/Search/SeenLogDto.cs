@@ -1,4 +1,3 @@
-using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Actors;
 using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Common.Actors;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogSeenLogs.Queries.Search;

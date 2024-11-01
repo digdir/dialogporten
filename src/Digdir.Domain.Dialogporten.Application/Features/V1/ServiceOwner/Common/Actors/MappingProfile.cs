@@ -1,9 +1,6 @@
 using AutoMapper;
 using Digdir.Domain.Dialogporten.Domain;
 using Digdir.Domain.Dialogporten.Domain.Actors;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Common.Actors;
 

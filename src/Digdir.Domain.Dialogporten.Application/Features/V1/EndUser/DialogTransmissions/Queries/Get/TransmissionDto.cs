@@ -1,8 +1,6 @@
-using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Actors;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Content;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Common.Actors;
-using Digdir.Domain.Dialogporten.Domain.Actors;
 using Digdir.Domain.Dialogporten.Domain.Attachments;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 
