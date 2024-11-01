@@ -6,7 +6,7 @@ using MediatR;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.EndUser.DialogTransmissions.Search;
 
-public sealed class SearchDialogTransmissionEndpoint : Endpoint<SearchDialogTransmissionQuery, List<SearchDialogTransmissionDto>>
+public sealed class SearchDialogTransmissionEndpoint : Endpoint<SearchTransmissionQuery, List<TransmissionDto>>
 {
     private readonly ISender _sender;
 
@@ -20,11 +20,9 @@ public sealed class SearchDialogTransmissionEndpoint : Endpoint<SearchDialogTran
         Get("dialogs/{dialogId}/transmissions");
         Policies(AuthorizationPolicy.EndUser);
         Group<EndUserGroup>();
-
-        Description(b => SearchDialogTransmissionSwaggerConfig.SetDescription(b));
     }
 
-    public override async Task HandleAsync(SearchDialogTransmissionQuery req, CancellationToken ct)
+    public override async Task HandleAsync(SearchTransmissionQuery req, CancellationToken ct)
     {
         var result = await _sender.Send(req, ct);
         await result.Match(

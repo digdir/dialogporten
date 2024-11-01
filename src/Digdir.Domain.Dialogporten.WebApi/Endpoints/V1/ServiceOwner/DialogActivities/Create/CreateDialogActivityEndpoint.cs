@@ -3,16 +3,18 @@ using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Co
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Queries.Get;
 using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
+using Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.Common.Extensions;
 using Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.DialogActivities.Get;
 using Digdir.Library.Entity.Abstractions.Features.Identifiable;
 using FastEndpoints;
 using MediatR;
+using ActivityDto = Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Update.ActivityDto;
 using Constants = Digdir.Domain.Dialogporten.WebApi.Common.Constants;
 using IMapper = AutoMapper.IMapper;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.DialogActivities.Create;
 
-public sealed class CreateDialogActivityEndpoint : Endpoint<CreateDialogActivityRequest>
+public sealed class CreateDialogActivityEndpoint : Endpoint<CreateActivityRequest>
 {
     private readonly IMapper _mapper;
     private readonly ISender _sender;
@@ -29,10 +31,15 @@ public sealed class CreateDialogActivityEndpoint : Endpoint<CreateDialogActivity
         Policies(AuthorizationPolicy.ServiceProvider);
         Group<ServiceOwnerGroup>();
 
-        Description(b => CreateDialogActivitySwaggerConfig.SetDescription(b));
+        Description(b => b.ProducesOneOf(
+            StatusCodes.Status201Created,
+            StatusCodes.Status400BadRequest,
+            StatusCodes.Status404NotFound,
+            StatusCodes.Status412PreconditionFailed,
+            StatusCodes.Status422UnprocessableEntity));
     }
 
-    public override async Task HandleAsync(CreateDialogActivityRequest req, CancellationToken ct)
+    public override async Task HandleAsync(CreateActivityRequest req, CancellationToken ct)
     {
         var dialogQueryResult = await _sender.Send(new GetDialogQuery { DialogId = req.DialogId }, ct);
         if (!dialogQueryResult.TryPickT0(out var dialog, out var errors))
@@ -57,7 +64,7 @@ public sealed class CreateDialogActivityEndpoint : Endpoint<CreateDialogActivity
 
         var result = await _sender.Send(updateDialogCommand, ct);
         await result.Match(
-            success => SendCreatedAtAsync<GetDialogActivityEndpoint>(new GetDialogActivityQuery { DialogId = dialog.Id, ActivityId = req.Id.Value }, req.Id, cancellation: ct),
+            success => SendCreatedAtAsync<GetDialogActivityEndpoint>(new GetActivityQuery { DialogId = dialog.Id, ActivityId = req.Id.Value }, req.Id, cancellation: ct),
             notFound => this.NotFoundAsync(notFound, ct),
             badRequest => this.BadRequestAsync(badRequest, ct),
             validationError => this.BadRequestAsync(validationError, ct),
@@ -67,7 +74,7 @@ public sealed class CreateDialogActivityEndpoint : Endpoint<CreateDialogActivity
     }
 }
 
-public sealed class CreateDialogActivityRequest : UpdateDialogDialogActivityDto
+public sealed class CreateActivityRequest : ActivityDto
 {
     public Guid DialogId { get; set; }
 

@@ -139,7 +139,7 @@ public class DomainEventsTests(DialogApplication application) : ApplicationColle
         var updateDialogDto = Mapper.Map<UpdateDialogDto>(getDialogDto);
 
         // Act
-        updateDialogDto.Attachments = [new UpdateDialogDialogAttachmentDto
+        updateDialogDto.Attachments = [new AttachmentDto
         {
             DisplayName = DialogGenerator.GenerateFakeLocalizations(3),
             Urls = [new()
