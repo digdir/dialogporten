@@ -10,26 +10,12 @@ using Digdir.Domain.Dialogporten.Domain.Http;
 using Digdir.Domain.Dialogporten.WebApi.Common;
 using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
-using Digdir.Domain.Dialogporten.WebApi.Common.Swagger;
-using Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.Common.Extensions;
 using FastEndpoints;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.Dialogs.Update;
 
-internal abstract class UpdateDialogSwaggerConfig : ISwaggerConfig
+internal abstract class UpdateDialogSwaggerConfig
 {
-    public static string OperationId => "ReplaceDialog";
-
-    public static RouteHandlerBuilder SetDescription(RouteHandlerBuilder builder) =>
-        builder
-            .OperationId(OperationId)
-            .ProducesOneOf(
-                StatusCodes.Status204NoContent,
-                StatusCodes.Status400BadRequest,
-                StatusCodes.Status404NotFound,
-                StatusCodes.Status412PreconditionFailed,
-                StatusCodes.Status422UnprocessableEntity);
-
     // TODO: Create fakers
     public static object GetExample() => new UpdateDialogDto
     {
@@ -39,11 +25,11 @@ internal abstract class UpdateDialogSwaggerConfig : ISwaggerConfig
         Status = DialogStatus.Values.New,
         SearchTags =
         [
-            new UpdateDialogSearchTagDto
+            new SearchTagDto
             {
                 Value = "searchTag"
             },
-            new UpdateDialogSearchTagDto
+            new SearchTagDto
             {
                 Value = "anotherSearchTag"
             }
@@ -90,7 +76,7 @@ internal abstract class UpdateDialogSwaggerConfig : ISwaggerConfig
         DueAt = DateTimeOffset.Parse("2084-04-04T12:13:10.0134400+00:00", CultureInfo.InvariantCulture),
         Attachments =
         [
-            new UpdateDialogDialogAttachmentDto
+            new AttachmentDto
             {
                 Id = Guid.Parse("02a72809-eddd-4192-864d-8f1755d72f4e"),
                 DisplayName =
@@ -103,7 +89,7 @@ internal abstract class UpdateDialogSwaggerConfig : ISwaggerConfig
                 ],
                 Urls =
                 [
-                    new UpdateDialogDialogAttachmentUrlDto
+                    new AttachmentUrlDto
                     {
                         Id = Guid.Parse("858177cb-8584-4d10-a086-3a5defa7a6c3"),
                         Url = new Uri("https://example.com/some-url")
@@ -113,7 +99,7 @@ internal abstract class UpdateDialogSwaggerConfig : ISwaggerConfig
         ],
         GuiActions =
         [
-            new UpdateDialogDialogGuiActionDto
+            new GuiActionDto
             {
                 Id = Guid.Parse("8c64ecc8-7678-44b2-8788-0b5852dd8fa0"),
                 Action = "submit",
@@ -137,13 +123,13 @@ internal abstract class UpdateDialogSwaggerConfig : ISwaggerConfig
         ],
         ApiActions =
         [
-            new UpdateDialogDialogApiActionDto
+            new ApiActionDto
             {
                 Id = Guid.Parse("948b07ba-1a82-403e-8eaa-2e5784af07a9"),
                 Action = "submit",
                 Endpoints =
                 [
-                    new UpdateDialogDialogApiActionEndpointDto
+                    new ApiActionEndpointDto
                     {
                         Version = "20231015",
                         HttpMethod = HttpVerb.Values.POST,
@@ -158,11 +144,11 @@ internal abstract class UpdateDialogSwaggerConfig : ISwaggerConfig
         ],
         Activities =
         [
-            new UpdateDialogDialogActivityDto
+            new ActivityDto
             {
                 Id = Guid.Parse("8b95d42d-d2b6-4c01-8ca0-a817a4b3c50d"),
                 Type = DialogActivityType.Values.Information,
-                PerformedBy = new UpdateDialogDialogActivityPerformedByActorDto
+                PerformedBy = new ActivityPerformedByActorDto
                 {
                     ActorType = ActorType.Values.ServiceOwner
                 },

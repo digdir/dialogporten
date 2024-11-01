@@ -20,8 +20,6 @@ public sealed class NotificationConditionEndpoint : Endpoint<NotificationConditi
         Get("dialogs/{dialogId}/actions/should-send-notification");
         Policies(AuthorizationPolicy.NotificationConditionCheck);
         Group<ServiceOwnerGroup>();
-
-        Description(b => NotificationConditionSwaggerConfig.SetDescription(b));
     }
 
     public override async Task HandleAsync(NotificationConditionQuery req, CancellationToken ct)

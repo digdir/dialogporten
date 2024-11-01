@@ -1,12 +1,13 @@
 using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogSeenLogs.Queries.Get;
 using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
+using Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.Common.Extensions;
 using FastEndpoints;
 using MediatR;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.EndUser.DialogSeenLogs.Get;
 
-public sealed class GetDialogSeenLogEndpoint : Endpoint<GetDialogSeenLogQuery, GetDialogSeenLogDto>
+public sealed class GetDialogSeenLogEndpoint : Endpoint<GetSeenLogQuery, SeenLogDto>
 {
     private readonly ISender _sender;
 
@@ -20,11 +21,12 @@ public sealed class GetDialogSeenLogEndpoint : Endpoint<GetDialogSeenLogQuery, G
         Get("dialogs/{dialogId}/seenlog/{seenLogId}");
         Policies(AuthorizationPolicy.EndUser);
         Group<EndUserGroup>();
-
-        Description(d => GetDialogSeenLogSwaggerConfig.SetDescription(d));
+        Description(d => d.ProducesOneOf<SeenLogDto>(
+            StatusCodes.Status200OK,
+            StatusCodes.Status404NotFound));
     }
 
-    public override async Task HandleAsync(GetDialogSeenLogQuery req, CancellationToken ct)
+    public override async Task HandleAsync(GetSeenLogQuery req, CancellationToken ct)
     {
         var result = await _sender.Send(req, ct);
         await result.Match(

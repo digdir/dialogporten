@@ -11,10 +11,10 @@ public sealed class MappingProfile : Profile
         CreateMap<SearchDialogInput, SearchDialogQuery>()
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status));
 
-        CreateMap<PaginatedList<SearchDialogDto>, SearchDialogsPayload>();
+        CreateMap<PaginatedList<DialogDto>, SearchDialogsPayload>();
 
-        CreateMap<SearchDialogContentDto, SearchContent>();
+        CreateMap<ContentDto, SearchContent>();
 
-        CreateMap<SearchDialogDto, SearchDialog>();
+        CreateMap<DialogDto, SearchDialog>();
     }
 }

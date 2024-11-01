@@ -1,0 +1,64 @@
+name: Run K6 performance test
+
+on:
+  workflow_dispatch:
+    inputs:
+      apiVersion:
+        description: 'API Version'
+        required: true
+        default: 'v1'
+      environment:
+        description: 'Environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - test
+          - staging
+          - performance
+      tokens:
+        description: 'Tokens to generate; for create dialog, search, none, or both'
+        required: true
+        default: 'both'
+        type: choice
+        options:
+          - both
+          - enterprise
+          - personal
+          - none
+      vus:
+        description: 'Number of VUS'
+        required: true
+        default: 10
+        type: number
+      duration:
+        description: 'Duration of test, ie 30s, 1m, 10m'
+        required: true
+        default: 1m
+        type: string
+      testSuitePath:
+        description: 'Path to test suite to run'
+        required: true
+        default: 'tests/k6/tests/serviceowner/performance/create-dialog.js'
+        type: choice
+        options:
+          - 'tests/k6/tests/serviceowner/performance/create-dialog.js'
+          - 'tests/k6/tests/enduser/performance/simple-search.js'
+
+jobs:
+  k6-performance:
+    name: "Run K6 performance test"
+    uses: ./.github/workflows/workflow-run-k6-performance.yml
+    secrets:
+      TOKEN_GENERATOR_USERNAME: ${{ secrets.TOKEN_GENERATOR_USERNAME }}
+      TOKEN_GENERATOR_PASSWORD: ${{ secrets.TOKEN_GENERATOR_PASSWORD }}
+      K6_CLOUD_TOKEN: ${{ secrets.K6_CLOUD_TOKEN }}
+      K6_CLOUD_PROJECT_ID: ${{ secrets.K6_CLOUD_PROJECT_ID }}
+    with:
+      environment: ${{ inputs.environment }}
+      apiVersion: ${{ inputs.apiVersion }}
+      testSuitePath: ${{ inputs.testSuitePath }}
+      vus: ${{ fromJson(inputs.vus) }}
+      duration: ${{ inputs.duration }}
+      tokens: ${{ inputs.tokens }}
+
