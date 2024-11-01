@@ -26,6 +26,11 @@ on:
           - enterprise
           - personal
           - none
+      tag:
+        description: 'tag the performance test'
+        required: true
+        default: 'Performance test'
+        type: string
       vus:
         description: 'Number of VUS'
         required: true
@@ -47,7 +52,7 @@ on:
           - 'tests/k6/tests/enduser/performance/simple-search.js'
           - 'tests/k6/tests/enduser/performance/graphql-search.js'
 
-run-name: ${{ inputs.testSuitePath }} vus ${{ inputs.vus }} duration ${{ inputs.duration }}
+run-name: ${{ inputs.tag }} vus ${{ inputs.vus }} duration ${{ inputs.duration }}
 jobs:
   k6-performance:
     name: "Run K6 performance test"
