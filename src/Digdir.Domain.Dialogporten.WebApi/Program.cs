@@ -1,8 +1,6 @@
-using System.Collections;
 using System.Globalization;
 using System.Reflection;
 using System.Text.Json.Serialization;
-using System.Text.Json.Serialization.Metadata;
 using Digdir.Domain.Dialogporten.Application;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.OptionExtensions;
