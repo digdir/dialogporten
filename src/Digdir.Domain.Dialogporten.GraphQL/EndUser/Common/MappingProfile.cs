@@ -6,7 +6,6 @@ using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Common.Actors;
 using DialogActivityDto = Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Queries.Search.DialogActivityDto;
 using DialogActivityPerformedByActorDto = Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Queries.Search.DialogActivityPerformedByActorDto;
 using DialogSeenLogDto = Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Queries.Search.DialogSeenLogDto;
-using DialogSeenLogSeenByActorDto = Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Queries.Search.DialogSeenLogSeenByActorDto;
 
 namespace Digdir.Domain.Dialogporten.GraphQL.EndUser.Common;
 

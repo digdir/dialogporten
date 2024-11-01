@@ -141,7 +141,6 @@ internal sealed class UpdateDialogTransmissionAttachmentUrlDtoValidator : Abstra
 }
 
 internal sealed class UpdateDialogDialogTransmissionActorDtoValidator : AbstractValidator<ActorDto>
-internal sealed class UpdateDialogDialogTransmissionActorDtoValidator : AbstractValidator<TransmissionSenderActorDto>
 {
     public UpdateDialogDialogTransmissionActorDtoValidator()
     {
