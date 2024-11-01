@@ -127,7 +127,7 @@ get_postgres_info() {
     echo "name=$name"
     echo "hostname=$hostname"
     echo "port=$port"
-    echo "connection_string=postgresql://${username}:<retrieve-password-from-keyvault>@${hostname}:${port}/dialogporten"
+    echo "connection_string=postgresql://${username}:<retrieve-password-from-keyvault>@localhost:${port}/dialogporten"
 }
 
 get_redis_info() {
