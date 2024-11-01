@@ -1,36 +1,16 @@
 import { postGQ, expect, expectStatusFor, describe } from "../../../common/testimports.js";
-import { SharedArray } from 'k6/data';
-import papaparse from 'https://jslib.k6.io/papaparse/5.1.1/index.js';
 import { randomItem } from 'https://jslib.k6.io/k6-utils/1.2.0/index.js';
 import { getGraphqlParty } from '../../performancetest_data/graphql-search.js';
+import { getEndusers, getDefaultThresholds } from '../../performancetest_common/common.js'
 
 
 const filenameEndusers = '../../performancetest_data/.endusers-with-tokens.csv';
 
-const endUsers = new SharedArray('endUsers', function () {
-    try {
-        const csvData = papaparse.parse(open(filenameEndusers), { header: true, skipEmptyLines: true }).data;
-        if (!csvData.length) {
-            throw new Error('No data found in CSV file');
-        }
-        csvData.forEach((user, index) => {
-            if (!user.token || !user.ssn) {
-                throw new Error(`Missing required fields at row ${index + 1}`);
-            }
-        });
-        return csvData;
-    } catch (error) {
-        throw new Error(`Failed to load end users: ${error.message}`);
-    }
-});
+const endUsers = getEndusers(filenameEndusers);
 
 export let options = {
     summaryTrendStats: ['avg', 'min', 'med', 'max', 'p(95)', 'p(99)', 'p(99.5)', 'p(99.9)', 'count'],
-    thresholds: {
-        http_req_failed: ['rate<0.01'],
-        'http_req_duration{name:graph search}': [],
-        'http_reqs{name:graph search}': [],
-    },
+    thresholds: getDefaultThresholds(['http_req_duration', 'http_reqs'],['graphql search'])
 };
 
 export default function() {
