@@ -45,7 +45,7 @@ export default function () {
     let titleForLastItem = uuidv4();
     let updatedAfter = (new Date()).toISOString(); // We use this on all tests to avoid clashing with unrelated dialogs
     let defaultFilter = "?UpdatedAfter=" + updatedAfter;
-    
+
     describe('Arrange: Create some dialogs to test against', () => {
 
         for (let i = 0; i < 20; i++) {
@@ -207,7 +207,9 @@ export default function () {
         let r = getSO('dialogs/' + defaultFilter + '&EndUserId=' + invalidEndUserId + '&ServiceResource=' + auxResource);
         expectStatusFor(r).to.equal(200);
         expect(r, 'response').to.have.validJsonBody();
-        expect(r.json(), 'response json').not.to.have.property("items");
+        let response = r.json();
+        expect(response, 'response json').to.have.property("items");
+        expect(response.items, 'items').to.have.lengthOf(0);
     })
 
     describe("Cleanup", () => {
