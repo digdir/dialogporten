@@ -49,17 +49,15 @@ public class GetDialogTests : ApplicationCollectionFixture
         result.Should().NotBeNull();
         result.Should().BeEquivalentTo(createCommand, options => options
             .ExcludingMissingMembers()
-            .Excluding(x => x.Activities)
-            .Excluding(x => x.Transmissions)
             .Excluding(x => x.UpdatedAt)
             .Excluding(x => x.CreatedAt)
             .Excluding(x => x.SystemLabel));
 
-        result.Activities.Should().BeEquivalentTo(createCommand.Activities,
+        /*result.Activities.Should().BeEquivalentTo(createCommand.Activities,
             options => options.ExcludingMissingMembers().Excluding(x => x.PerformedBy.Id));
 
         result.Transmissions.Should().BeEquivalentTo(createCommand.Transmissions,
-            options => options.ExcludingMissingMembers().Excluding(x => x.Sender.Id));
+            options => options.ExcludingMissingMembers().Excluding(x => x.Sender.Id));*/
     }
     // TODO: Add tests
 }

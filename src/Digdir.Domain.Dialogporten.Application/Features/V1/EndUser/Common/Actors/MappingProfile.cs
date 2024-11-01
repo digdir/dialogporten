@@ -1,0 +1,36 @@
+using AutoMapper;
+using Digdir.Domain.Dialogporten.Application.Common;
+using Digdir.Domain.Dialogporten.Domain;
+using Digdir.Domain.Dialogporten.Domain.Actors;
+using Digdir.Domain.Dialogporten.Domain.DialogEndUserContexts.Entities;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
+
+namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Common.Actors;
+
+internal sealed class MappingProfile : Profile
+{
+    public MappingProfile()
+    {
+
+        var actorDtoType = typeof(ActorDto);
+        var actorType = typeof(Actor);
+
+        var derivedActorTypes = DomainAssemblyMarker
+            .Assembly
+            .GetTypes()
+            .Where(x => x.IsClass && !x.IsAbstract && x.IsSubclassOf(actorType))
+            .ToList();
+
+        CreateMap<Actor, ActorDto>()
+            .ForMember(dest => dest.ActorType, opt => opt.MapFrom(src => src.ActorTypeId))
+            .ForMember(dest => dest.ActorId, opt => opt.MapFrom(src => IdentifierMasker.GetMaybeMaskedIdentifier(src.ActorId)));
+
+        foreach (var outputActor in derivedActorTypes)
+        {
+            CreateMap(outputActor, actorDtoType)
+                .IncludeBase(actorType, actorDtoType);
+        }
+    }
+}

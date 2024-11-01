@@ -9,6 +9,5 @@ public sealed class MappingProfile : Profile
     public MappingProfile()
     {
         CreateMap<LabelAssignmentLog, LabelAssignmentLogDto>();
-        CreateMap<LabelAssignmentLogActor, ActorDto>();
     }
 }
