@@ -28,7 +28,7 @@ jobs:
   build-infrastructure:
     uses: ./.github/workflows/workflow-build-infrastructure.yml
     needs: [check-for-changes]
-    if: ${{ always() && needs.check-for-changes.outputs.hasAzureChanges == 'true' }}
+    if: ${{ always() && needs.check-for-changes.outputs.hasInfraChanges == 'true' }}
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
@@ -46,7 +46,7 @@ jobs:
         get-current-version,
         build-infrastructure,
       ]
-    if: ${{ always() && needs.check-for-changes.outputs.hasAzureChanges == 'true' }}
+    if: ${{ always() && needs.check-for-changes.outputs.hasInfraChanges == 'true' }}
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
