@@ -11,12 +11,8 @@ using FluentAssertions;
 namespace Digdir.Domain.Dialogporten.Application.Integration.Tests.Features.V1.ServiceOwner.NotificationCondition;
 
 [Collection(nameof(DialogCqrsCollectionFixture))]
-public class NotificationConditionTests : ApplicationCollectionFixture
+public class NotificationConditionTests(DialogApplication application) : ApplicationCollectionFixture(application)
 {
-    public NotificationConditionTests(DialogApplication application) : base(application)
-    {
-    }
-
     public static IEnumerable<object[]> NotificationConditionTestData()
     {
         foreach (var activityType in Enum.GetValues(typeof(DialogActivityType.Values)))
