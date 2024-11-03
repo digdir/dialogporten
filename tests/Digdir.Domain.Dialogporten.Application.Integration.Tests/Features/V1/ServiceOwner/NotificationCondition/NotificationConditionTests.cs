@@ -74,4 +74,24 @@ public class NotificationConditionTests(DialogApplication application) : Applica
         createDialogCommand.Transmissions.Add(transmission);
         createDialogCommand.Activities[0].TransmissionId = createDialogCommand.Transmissions[0].Id;
     }
+
+    [Fact]
+    public async Task NotFound_Should_Be_Returned_When_Dialog_Does_Not_Exist()
+    {
+        // Arrange
+        var notificationConditionQuery = new NotificationConditionQuery
+        {
+            DialogId = Guid.NewGuid(),
+            ActivityType = DialogActivityType.Values.Information,
+            ConditionType = NotificationConditionType.Exists,
+        };
+
+        // Act
+        var queryResult = await Application.Send(notificationConditionQuery);
+
+        // Assert
+        queryResult.TryPickT2(out var notFound, out _);
+        queryResult.IsT2.Should().BeTrue();
+        notFound.Should().NotBeNull();
+    }
 }
