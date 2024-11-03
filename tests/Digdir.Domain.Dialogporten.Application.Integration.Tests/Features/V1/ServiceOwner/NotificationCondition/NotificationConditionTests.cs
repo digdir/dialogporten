@@ -13,16 +13,11 @@ namespace Digdir.Domain.Dialogporten.Application.Integration.Tests.Features.V1.S
 [Collection(nameof(DialogCqrsCollectionFixture))]
 public class NotificationConditionTests(DialogApplication application) : ApplicationCollectionFixture(application)
 {
-    public static IEnumerable<object[]> NotificationConditionTestData()
-    {
-        foreach (var activityType in Enum.GetValues(typeof(DialogActivityType.Values)))
-        {
-            foreach (var conditionType in Enum.GetValues(typeof(NotificationConditionType)))
-            {
-                yield return [activityType, conditionType];
-            }
-        }
-    }
+    public static IEnumerable<object[]> NotificationConditionTestData() =>
+        from DialogActivityType.Values activityType in Enum.GetValues(typeof(DialogActivityType.Values))
+        from NotificationConditionType conditionType in Enum.GetValues(typeof(NotificationConditionType))
+        select new object[] { activityType, conditionType };
+
 
     [Theory]
     [MemberData(nameof(NotificationConditionTestData))]
