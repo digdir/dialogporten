@@ -13,7 +13,9 @@ namespace Digdir.Domain.Dialogporten.Application.Integration.Tests.Features.V1.S
 [Collection(nameof(DialogCqrsCollectionFixture))]
 public class NotificationConditionTests : ApplicationCollectionFixture
 {
-    public NotificationConditionTests(DialogApplication application) : base(application) { }
+    public NotificationConditionTests(DialogApplication application) : base(application)
+    {
+    }
 
     public static IEnumerable<object[]> NotificationConditionTestData()
     {
@@ -33,7 +35,11 @@ public class NotificationConditionTests : ApplicationCollectionFixture
         NotificationConditionType conditionType)
     {
         // Arrange
-        var createDialogCommand = GetCreateDialogCommand(activityType, conditionType);
+        var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog();
+        if (conditionType == NotificationConditionType.Exists)
+        {
+            AddActivityExistsRequirements(createDialogCommand, activityType);
+        }
 
         // Act
         var response = await Application.Send(createDialogCommand);
@@ -60,16 +66,10 @@ public class NotificationConditionTests : ApplicationCollectionFixture
         notificationConditionResult.SendNotification.Should().BeTrue();
     }
 
-    private static CreateDialogCommand GetCreateDialogCommand(
-        DialogActivityType.Values activityType,
-        NotificationConditionType conditionType)
+    private static void AddActivityExistsRequirements(
+        CreateDialogCommand createDialogCommand,
+        DialogActivityType.Values activityType)
     {
-        var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog();
-        if (conditionType != NotificationConditionType.Exists)
-        {
-            return createDialogCommand;
-        }
-
         createDialogCommand.Activities.Add(new ActivityDto
         {
             Type = activityType,
@@ -81,14 +81,15 @@ public class NotificationConditionTests : ApplicationCollectionFixture
 
         if (activityType is DialogActivityType.Values.TransmissionOpened)
         {
-            var transmission = DialogGenerator.GenerateFakeDialogTransmissions(type: DialogTransmissionType.Values.Information)[0];
+            var transmission =
+                DialogGenerator.GenerateFakeDialogTransmissions(type: DialogTransmissionType.Values.Information)[0];
             createDialogCommand.Transmissions.Add(transmission);
             createDialogCommand.Activities[0].TransmissionId = createDialogCommand.Transmissions[0].Id;
         }
         else if (activityType is DialogActivityType.Values.Information)
         {
-            createDialogCommand.Activities[0].Description = [new LocalizationDto { LanguageCode = "nb", Value = "Info" }];
+            createDialogCommand.Activities[0].Description =
+                [new LocalizationDto { LanguageCode = "nb", Value = "Info" }];
         }
-        return createDialogCommand;
     }
 }
