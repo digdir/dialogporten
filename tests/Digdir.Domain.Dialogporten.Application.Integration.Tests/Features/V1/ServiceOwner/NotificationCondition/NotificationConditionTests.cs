@@ -11,23 +11,29 @@ namespace Digdir.Domain.Dialogporten.Application.Integration.Tests.Features.V1.S
 [Collection(nameof(DialogCqrsCollectionFixture))]
 public class NotificationConditionTests(DialogApplication application) : ApplicationCollectionFixture(application)
 {
+    private static readonly bool[] ExpectedSendNotificationsValues = [true, false];
+
     public static IEnumerable<object[]> NotificationConditionTestData() =>
+        from bool expectedSendNotificationValue in ExpectedSendNotificationsValues
         from DialogActivityType.Values activityType in Enum.GetValues(typeof(DialogActivityType.Values))
         from NotificationConditionType conditionType in Enum.GetValues(typeof(NotificationConditionType))
-        select new object[] { activityType, conditionType };
+        select new object[] { activityType, conditionType, expectedSendNotificationValue };
 
 
-    [Theory]
-    [MemberData(nameof(NotificationConditionTestData))]
+    [Theory, MemberData(nameof(NotificationConditionTestData))]
     public async Task SendNotification_Should_Be_True_When_Conditions_Are_Met(
         DialogActivityType.Values activityType,
-        NotificationConditionType conditionType)
+        NotificationConditionType conditionType,
+        bool expectedSendNotificationValue)
     {
         // Arrange
         var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog();
-        if (conditionType == NotificationConditionType.Exists)
+        switch (conditionType)
         {
-            AddActivityExistsRequirements(createDialogCommand, activityType);
+            case NotificationConditionType.Exists when expectedSendNotificationValue:
+            case NotificationConditionType.NotExists when !expectedSendNotificationValue:
+                AddActivityRequirements(createDialogCommand, activityType);
+                break;
         }
 
         // Act
@@ -52,10 +58,10 @@ public class NotificationConditionTests(DialogApplication application) : Applica
         // Assert
         queryResult.TryPickT0(out var notificationConditionResult, out _);
         queryResult.IsT0.Should().BeTrue();
-        notificationConditionResult.SendNotification.Should().BeTrue();
+        notificationConditionResult.SendNotification.Should().Be(expectedSendNotificationValue);
     }
 
-    private static void AddActivityExistsRequirements(
+    private static void AddActivityRequirements(
         CreateDialogCommand createDialogCommand,
         DialogActivityType.Values activityType)
     {
