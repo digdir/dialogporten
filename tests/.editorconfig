@@ -1,3 +1,6 @@
 [*]
 # CA1707: Identifiers should not contain underscores
 dotnet_diagnostic.CA1707.severity = none
+
+# IDE0010: Add missing cases to switch statements
+dotnet_diagnostic.IDE0010.severity = none
