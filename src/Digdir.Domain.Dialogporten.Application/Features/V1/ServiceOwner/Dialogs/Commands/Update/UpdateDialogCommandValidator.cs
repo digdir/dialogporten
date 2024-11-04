@@ -2,11 +2,9 @@
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.Enumerables;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.FluentValidation;
 using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
-using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Actors;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Content;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Common.Actors;
-using Digdir.Domain.Dialogporten.Domain.Actors;
 using Digdir.Domain.Dialogporten.Domain.Common;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
@@ -137,25 +135,6 @@ internal sealed class UpdateDialogTransmissionAttachmentUrlDtoValidator : Abstra
             .MaximumLength(Constants.DefaultMaxUriLength);
         RuleFor(x => x.ConsumerType)
             .IsInEnum();
-    }
-}
-
-internal sealed class UpdateDialogDialogTransmissionActorDtoValidator : AbstractValidator<ActorDto>
-{
-    public UpdateDialogDialogTransmissionActorDtoValidator()
-    {
-        RuleFor(x => x.ActorType)
-            .IsInEnum();
-
-        RuleFor(x => x)
-            .Must(dto => (dto.ActorId is null || dto.ActorName is null) &&
-                         ((dto.ActorType == ActorType.Values.ServiceOwner && dto.ActorId is null && dto.ActorName is null) ||
-                          (dto.ActorType != ActorType.Values.ServiceOwner && (dto.ActorId is not null || dto.ActorName is not null))))
-            .WithMessage(ActorValidationErrorMessages.ActorIdActorNameExclusiveOr);
-
-        RuleFor(x => x.ActorId!)
-            .IsValidPartyIdentifier()
-            .When(x => x.ActorId is not null);
     }
 }
 
@@ -427,24 +406,5 @@ internal sealed class UpdateDialogDialogActivityDtoValidator : AbstractValidator
             .NotEmpty()
             .WithMessage($"A {nameof(DialogActivityType.Values.TransmissionOpened)} needs to reference a transmission.")
             .When(x => x.Type == DialogActivityType.Values.TransmissionOpened);
-    }
-}
-
-internal sealed class UpdateDialogDialogActivityActorDtoValidator : AbstractValidator<ActorDto>
-{
-    public UpdateDialogDialogActivityActorDtoValidator()
-    {
-        RuleFor(x => x.ActorType)
-            .IsInEnum();
-
-        RuleFor(x => x)
-            .Must(dto => (dto.ActorId is null || dto.ActorName is null) &&
-                         ((dto.ActorType == ActorType.Values.ServiceOwner && dto.ActorId is null && dto.ActorName is null) ||
-                          (dto.ActorType != ActorType.Values.ServiceOwner && (dto.ActorId is not null || dto.ActorName is not null))))
-            .WithMessage(ActorValidationErrorMessages.ActorIdActorNameExclusiveOr);
-
-        RuleFor(x => x.ActorId!)
-            .IsValidPartyIdentifier()
-            .When(x => x.ActorId is not null);
     }
 }
