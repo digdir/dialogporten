@@ -1,8 +1,10 @@
 import { postSO, getEU, expectStatusFor, expect, describe } from "../../../common/testimports.js";
 import { SharedArray } from 'k6/data';
 import papaparse from 'https://jslib.k6.io/papaparse/5.1.1/index.js';
-import { default as dialogToInsert } from '../../performancetest_data/01-create-dialog.js';
 import { randomItem } from 'https://jslib.k6.io/k6-utils/1.2.0/index.js';
+
+import { getDefaultThresholds } from '../../performancetest_common/common.js'
+import { default as dialogToInsert } from '../../performancetest_data/01-create-dialog.js';
 
 const filenameServiceowners = '../../performancetest_data/.serviceowners-with-tokens.csv';
 
@@ -36,14 +38,12 @@ export const options = {
 
     },
     summaryTrendStats: ['avg', 'min', 'med', 'max', 'p(95)', 'p(99)', 'p(99.5)', 'p(99.9)', 'count'],
-    thresholds: {
-        'http_req_duration{name:create dialog}': [],
-        'http_reqs{name:create dialog}': [],
-        'http_req_duration{name:simple search}': [],
-        'http_reqs{name:simple search}': [],
-        'http_req_duration{name:get dialog}': [],
-        'http_reqs{name:get dialog}': [],
-    },
+    thresholds: getDefaultThresholds(['http_req_duration', 'http_reqs'],[
+      'create dialog',
+      'simple search',
+      'get dialog'
+    ])
+    
 };
 
 export function createDialogs() {
