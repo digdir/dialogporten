@@ -35,6 +35,17 @@ public class ActorValidatorTest
         Assert.Empty(result.Errors);
     }
 
+    [Fact]
+    public void GivenNullActorTypeShouldReturnError()
+    {
+        var actorDto = new ActorDto
+        {
+            ActorId = DialogGenerator.GenerateRandomParty(forcePerson: true)
+        };
+        var result = _actorValidator.Validate(actorDto);
+        Assert.NotEmpty(result.Errors);
+    }
+
 
     [Theory]
     [InlineData(ActorType.Values.PartyRepresentative)]
