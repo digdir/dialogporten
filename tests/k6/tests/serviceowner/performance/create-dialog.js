@@ -9,11 +9,11 @@ import { default as dialogToInsert } from '../../performancetest_data/01-create-
 const filenameServiceowners = '../../performancetest_data/.serviceowners-with-tokens.csv';
 const filenameEndusers = `../../performancetest_data/endusers-${__ENV.API_ENVIRONMENT}.csv`;
 
-const serviceOwners = new SharedArray('serviceOwners', function () {
+export const serviceOwners = new SharedArray('serviceOwners', function () {
   return papaparse.parse(open(filenameServiceowners), { header: true, skipEmptyLines: true }).data;
 });
 
-const endUsers = new SharedArray('endUsers', function () {
+export const endUsers = new SharedArray('endUsers', function () {
     return papaparse.parse(open(filenameEndusers), { header: true, skipEmptyLines: true }).data;
   });
 

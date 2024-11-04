@@ -5,18 +5,7 @@ import { randomItem } from 'https://jslib.k6.io/k6-utils/1.2.0/index.js';
 
 import { getDefaultThresholds } from '../../performancetest_common/common.js'
 import { default as dialogToInsert } from '../../performancetest_data/01-create-dialog.js';
-
-const filenameServiceowners = '../../performancetest_data/.serviceowners-with-tokens.csv';
-const filenameEndusers = `../../performancetest_data/endusers-${__ENV.API_ENVIRONMENT}.csv`;
-
-const serviceOwners = new SharedArray('serviceOwners', function () {
-  return papaparse.parse(open(filenameServiceowners), { header: true, skipEmptyLines: true }).data;
-});
-
-const endUsers = new SharedArray('endUsers', function () {
-    return papaparse.parse(open(filenameEndusers), { header: true, skipEmptyLines: true }).data;
-  });
-
+import { serviceOwners, endUsers } from "./create-dialog.js";
 export let options = {
     summaryTrendStats: ['avg', 'min', 'med', 'max', 'p(95)', 'p(99)', 'p(99.5)', 'p(99.9)', 'count'],
     thresholds: getDefaultThresholds(['http_req_duration', 'http_reqs'],[
