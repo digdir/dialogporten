@@ -7,6 +7,9 @@ import { getDefaultThresholds } from '../../performancetest_common/common.js'
 import { default as dialogToInsert } from '../../performancetest_data/01-create-dialog.js';
 
 const filenameServiceowners = '../../performancetest_data/.serviceowners-with-tokens.csv';
+if (!__ENV.API_ENVIRONMENT) {
+   throw new Error('API_ENVIRONMENT must be set');
+}
 const filenameEndusers = `../../performancetest_data/endusers-${__ENV.API_ENVIRONMENT}.csv`;
 
 export const serviceOwners = new SharedArray('serviceOwners', function () {
