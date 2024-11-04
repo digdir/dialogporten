@@ -6,7 +6,6 @@ import { randomItem } from 'https://jslib.k6.io/k6-utils/1.2.0/index.js';
 import { getDefaultThresholds } from '../../performancetest_common/common.js'
 import { default as dialogToInsert } from '../../performancetest_data/01-create-dialog.js';
 
-
 const filenameServiceowners = '../../performancetest_data/.serviceowners-with-tokens.csv';
 const filenameEndusers = `../../performancetest_data/endusers-${__ENV.API_ENVIRONMENT}.csv`;
 

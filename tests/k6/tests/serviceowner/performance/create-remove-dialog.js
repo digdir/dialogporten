@@ -27,14 +27,14 @@ export let options = {
 
 export default function() {
     if ((options.vus === undefined || options.vus === 1) && (options.iterations === undefined || options.iterations === 1)) {
-      createDialog(serviceOwners[0], endUsers[0]);
+      createAndRemoveDialog(serviceOwners[0], endUsers[0]);
     }
     else {
-        createDialog(randomItem(serviceOwners), randomItem(endUsers));
+        createAndRemoveDialog(randomItem(serviceOwners), randomItem(endUsers));
     }
   }
 
-export function createDialog(serviceOwner, endUser) {  
+export function createAndRemoveDialog(serviceOwner, endUser) {  
     var paramsWithToken = {
         headers: {
             Authorization: "Bearer " + serviceOwner.token
