@@ -80,4 +80,48 @@ public static class OpenApiDocumentExtensions
             }
         }
     }
+
+    public static void MakeCollectionsNullable(this OpenApiDocument openApiDocument)
+    {
+        foreach (var schema in openApiDocument.Components.Schemas.Values)
+        {
+            MakeCollectionsNullable(schema);
+        }
+    }
+
+    private static void MakeCollectionsNullable(JsonSchema schema)
+    {
+        List<string> typesToIgnore = ["ProblemDetails", "ProblemDetails_Error", "V1CommonLocalizations_Localization"];
+
+        if (schema.Properties == null)
+        {
+            return;
+        }
+
+        foreach (var property in schema.Properties.Values)
+        {
+            var id = property.Item?.Reference?.Id;
+            Console.WriteLine(id);
+            var title = property.Item?.Title;
+            var refTitle = property.Item?.Reference?.Title;
+            var reference = property.Item?.Reference?.ToString();
+
+            if (title is not null || refTitle is not null || (reference is not null && reference != "NJsonSchema.JsonSchema"))
+            {
+                Console.WriteLine(title);
+                Console.WriteLine(refTitle);
+                Console.WriteLine(reference);
+            }
+
+            if (property.Item?.Reference?.Id != null && typesToIgnore.Contains(property.Item.Reference.Id))
+            {
+                continue;
+            }
+
+            if (property.Type.HasFlag(JsonObjectType.Array))
+            {
+                property.IsNullableRaw = true;
+            }
+        }
+    }
 }
