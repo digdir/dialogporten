@@ -1337,6 +1337,11 @@
             "nullable": true,
             "type": "string"
           },
+          "externalReference": {
+            "description": "Arbitrary string with a service-specific reference to an external system or service.\n            \nRefer to the service-specific documentation provided by the service owner for details (if in use).",
+            "nullable": true,
+            "type": "string"
+          },
           "guiAttachmentCount": {
             "description": "The number of attachments in the dialog made available for browser-based frontends.",
             "format": "int32",
