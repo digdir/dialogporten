@@ -2,21 +2,27 @@ import { SharedArray } from 'k6/data';
 import papaparse from 'https://jslib.k6.io/papaparse/5.1.1/index.js';
 
 export function getEndusers(filenameEndusers) {
+    if (!filenameEndusers || typeof filenameEndusers !== 'string') {
+        throw new Error('filenameEndusers must be a non-empty string');
+    }
 
     const endUsers = new SharedArray('endUsers', function () {
         try {
             const csvData = papaparse.parse(open(filenameEndusers), { header: true, skipEmptyLines: true }).data;
             if (!csvData.length) {
-                throw new Error('No data found in CSV file');
+                throw new Error(`No data found in CSV file: ${filenameEndusers}`);
             }
             csvData.forEach((user, index) => {
                 if (!user.token || !user.ssn) {
-                    throw new Error(`Missing required fields at row ${index + 1}`);
+                    throw new Error(`Missing required fields (token or ssn) at row ${index + 1} in ${filenameEndusers}`);
                 }
         });
         return csvData;
     } catch (error) {
-        throw new Error(`Failed to load end users: ${error.message}`);
+        if (error.code === 'ENOENT') {
+            throw new Error(`CSV file not found: ${filenameEndusers}`);
+        }
+        throw new Error(`Failed to load end users from ${filenameEndusers}: ${error.message}`);
     }
     });
     return endUsers;
