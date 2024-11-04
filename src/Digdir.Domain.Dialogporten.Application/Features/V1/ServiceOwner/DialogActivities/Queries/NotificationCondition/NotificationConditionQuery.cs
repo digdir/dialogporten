@@ -23,7 +23,7 @@ public enum NotificationConditionType
 }
 
 [GenerateOneOf]
-public sealed partial class NotificationConditionResult : OneOfBase<NotificationConditionDto, ValidationError, EntityNotFound>;
+public sealed partial class NotificationConditionResult : OneOfBase<NotificationConditionDto, ValidationError, EntityNotFound, EntityDeleted>;
 
 internal sealed class NotificationConditionQueryHandler : IRequestHandler<NotificationConditionQuery, NotificationConditionResult>
 {
@@ -41,12 +41,18 @@ internal sealed class NotificationConditionQueryHandler : IRequestHandler<Notifi
             .Include(x => x.Activities
                 .Where(x => request.TransmissionId == null || x.TransmissionId == request.TransmissionId)
                 .Where(x => x.TypeId == request.ActivityType))
+            .IgnoreQueryFilters()
             .FirstOrDefaultAsync(x => x.Id == request.DialogId,
                 cancellationToken: cancellationToken);
 
         if (dialog is null)
         {
             return new EntityNotFound<DialogEntity>(request.DialogId);
+        }
+
+        if (dialog.Deleted)
+        {
+            return new EntityDeleted<DialogEntity>(request.DialogId);
         }
 
         var conditionMet = dialog.Activities.Count == 0

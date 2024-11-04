@@ -28,6 +28,7 @@ public sealed class NotificationConditionEndpoint : Endpoint<NotificationConditi
         await result.Match(
             dto => SendOkAsync(dto, ct),
             validationError => this.BadRequestAsync(validationError, ct),
-            notFound => this.NotFoundAsync(notFound, ct));
+            notFound => this.NotFoundAsync(notFound, ct),
+            deleted => this.GoneAsync(deleted, ct));
     }
 }
