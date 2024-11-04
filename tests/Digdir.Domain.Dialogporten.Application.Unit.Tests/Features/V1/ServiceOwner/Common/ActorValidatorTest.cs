@@ -21,15 +21,16 @@ public class ActorValidatorTest
         Assert.NotEmpty(result.Errors);
     }
 
-    [Fact]
-    public void GivenValidActorIdShouldReturnSuccess()
+    [Theory]
+    [InlineData(ActorType.Values.PartyRepresentative)]
+    [InlineData(ActorType.Values.ServiceOwner)]
+    public void GivenValidActorIdShouldReturnSuccess(ActorType.Values actorType)
     {
 
         var actorDto = new ActorDto
         {
-            ActorType = ActorType.Values.PartyRepresentative,
-            ActorName = null,
-            ActorId = DialogGenerator.GenerateRandomParty(forcePerson: true)
+            ActorType = actorType,
+            ActorId = actorType == ActorType.Values.PartyRepresentative ? DialogGenerator.GenerateRandomParty(forcePerson: true) : null
         };
         var result = _actorValidator.Validate(actorDto);
         Assert.Empty(result.Errors);
