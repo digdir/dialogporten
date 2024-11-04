@@ -36,14 +36,31 @@ public class ActorValidatorTest
     }
 
 
-    [Fact]
-    public void GivenActorIdAndActorNameShouldReturnError()
+    [Theory]
+    [InlineData(ActorType.Values.PartyRepresentative)]
+    [InlineData(ActorType.Values.ServiceOwner)]
+    public void GivenActorIdAndActorNameShouldReturnError(ActorType.Values actorType)
     {
         var actorDto = new ActorDto
         {
-            ActorType = ActorType.Values.PartyRepresentative,
+            ActorType = actorType,
             ActorName = "Fredrik Testland",
             ActorId = DialogGenerator.GenerateRandomParty(forcePerson: true)
+        };
+        var result = _actorValidator.Validate(actorDto);
+        Assert.NotEmpty(result.Errors);
+    }
+
+    [Theory]
+    [InlineData("Fredik TestLand", false)]
+    [InlineData(null, true)]
+    public void ActorTypeServiceOwnerRules(string? actorName, bool generateActorId)
+    {
+        var actorDto = new ActorDto
+        {
+            ActorType = ActorType.Values.ServiceOwner,
+            ActorName = actorName,
+            ActorId = generateActorId ? DialogGenerator.GenerateRandomParty(forcePerson: true) : null
         };
         var result = _actorValidator.Validate(actorDto);
         Assert.NotEmpty(result.Errors);
