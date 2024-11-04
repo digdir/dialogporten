@@ -9,7 +9,7 @@ public class ActorValidatorTest
     private readonly ActorValidator _actorValidator = new();
 
     [Fact]
-    public void GivenInvalidActorIdShouldReturnError()
+    public void Given_Invalid_ActorId_Should_Return_Error()
     {
         var actorDto = new ActorDto
         {
@@ -24,7 +24,7 @@ public class ActorValidatorTest
     [Theory]
     [InlineData(ActorType.Values.PartyRepresentative)]
     [InlineData(ActorType.Values.ServiceOwner)]
-    public void GivenValidActorIdShouldReturnSuccess(ActorType.Values actorType)
+    public void Given_Valid_ActorId_Should_Return_Success(ActorType.Values actorType)
     {
 
         var actorDto = new ActorDto
@@ -37,7 +37,7 @@ public class ActorValidatorTest
     }
 
     [Fact]
-    public void GivenNullActorTypeShouldReturnError()
+    public void Given_Null_ActorType_Should_Return_Error()
     {
         var actorDto = new ActorDto
         {
@@ -51,7 +51,7 @@ public class ActorValidatorTest
     [Theory]
     [InlineData(ActorType.Values.PartyRepresentative)]
     [InlineData(ActorType.Values.ServiceOwner)]
-    public void GivenActorIdAndActorNameShouldReturnError(ActorType.Values actorType)
+    public void Given_ActorId_And_ActorName_Should_Return_Error(ActorType.Values actorType)
     {
         var actorDto = new ActorDto
         {
@@ -66,7 +66,7 @@ public class ActorValidatorTest
     [Theory]
     [InlineData("Fredik TestLand", false)]
     [InlineData(null, true)]
-    public void ActorTypeServiceOwnerRules(string? actorName, bool generateActorId)
+    public void ActorType_ServiceOwner_Rules(string? actorName, bool generateActorId)
     {
         var actorDto = new ActorDto
         {
