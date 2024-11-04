@@ -36,7 +36,6 @@ public class NotificationConditionTests(DialogApplication application) : Applica
                 break;
         }
 
-        // Act
         var response = await Application.Send(createDialogCommand);
         response.TryPickT0(out var dialogId, out _);
 
@@ -53,6 +52,7 @@ public class NotificationConditionTests(DialogApplication application) : Applica
             notificationConditionQuery.TransmissionId = transmissionId;
         }
 
+        // Act
         var queryResult = await Application.Send(notificationConditionQuery);
 
         // Assert
