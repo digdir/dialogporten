@@ -29,6 +29,20 @@ export default function() {
     }
 }
 
+function retrieveDialogContent(response, paramsWithToken) {
+    const items = response.json().items;
+    if (!items?.length) return;
+        
+    const dialogId = items[0].id;
+    if (!dialogId) return;
+        
+    getContent(dialogId, paramsWithToken, 'get dialog');
+    getContentChain(dialogId, paramsWithToken, 'get dialog activities', 'get dialog activity', '/activities/')
+    getContentChain(dialogId, paramsWithToken, 'get seenlogs', 'get seenlog', '/seenlog/')
+    getContent(dialogId, paramsWithToken, 'get labellog', '/labellog');
+    getContentChain(dialogId, paramsWithToken, 'get transmissions', 'get transmission', '/transmissions/')
+}
+
 export function simpleSearch(enduser) {
     let paramsWithToken = {
         headers: {
@@ -42,31 +56,31 @@ export function simpleSearch(enduser) {
         let r = getEU('dialogs' + defaultFilter, paramsWithToken);
         expectStatusFor(r).to.equal(200);
         expect(r, 'response').to.have.validJsonBody();
-        if (r.json().items && r.json().items.length > 0) {
-            let dialogId = r.json().items[0].id;
-            if (dialogId) {
-                getContent(dialogId, paramsWithToken, 'get dialog');
-                getContentChain(dialogId, paramsWithToken, 'get dialog activities', 'get dialog activity', '/activities/')
-                getContentChain(dialogId, paramsWithToken, 'get seenlogs', 'get seenlog', '/seenlog/')
-                getContent(dialogId, paramsWithToken, 'get labellog', '/labellog');
-                getContentChain(dialogId, paramsWithToken, 'get transmissions', 'get transmission', '/transmissions/')
-            }
-        }
+        retrieveDialogContent(r, paramsWithToken);
     });
 }
 
 export function getContent(dialogId, paramsWithToken, tag, path = '') {
-    paramsWithToken.tags.name = tag
-    getUrl('dialogs/' + dialogId + path, paramsWithToken);
+    const listParams = {
+        ...paramsWithToken,
+        tags: { ...paramsWithToken.tags, name: tag }
+    };
+    getUrl('dialogs/' + dialogId + path, listParams);
 }
 
 export function getContentChain(dialogId, paramsWithToken, tag, subtag, endpoint) {
-    paramsWithToken.tags.name = tag;
-    let d = getUrl('dialogs/' + dialogId + endpoint, paramsWithToken);
+    const listParams = {
+        ...paramsWithToken,
+        tags: { ...paramsWithToken.tags, name: tag }
+    };
+    let d = getUrl('dialogs/' + dialogId + endpoint, listParams);
     let json = d.json();
     if (json.length > 0) {
-        paramsWithToken.tags.name = subtag;
-        getUrl('dialogs/' + dialogId + endpoint + randomItem(json).id, paramsWithToken);
+        const detailParams = {
+            ...paramsWithToken,
+            tags: { ...paramsWithToken.tags, name: subtag }
+        };
+        getUrl('dialogs/' + dialogId + endpoint + randomItem(json).id, detailParams);
     }
 }
 

@@ -4,7 +4,7 @@ import { getGraphqlParty } from '../../performancetest_data/graphql-search.js';
 import { getEndusers, getDefaultThresholds } from '../../performancetest_common/common.js'
 
 
-const filenameEndusers = '../../performancetest_data/.endusers-with-tokens.csv';
+const filenameEndusers = __ENV.ENDUSERS_CSV_PATH || '../../performancetest_data/.endusers-with-tokens.csv';
 
 const endUsers = getEndusers(filenameEndusers);
 
@@ -14,6 +14,9 @@ export let options = {
 };
 
 export default function() {
+    if (!endUsers || endUsers.length === 0) {
+        throw new Error('No end users loaded for testing');
+    }
     if ((options.vus === undefined || options.vus === 1) && (options.iterations === undefined || options.iterations === 1)) {
         graphqlSearch(endUsers[0]);
     }
