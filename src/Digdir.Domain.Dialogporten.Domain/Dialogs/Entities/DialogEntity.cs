@@ -85,7 +85,7 @@ public sealed class DialogEntity :
     public void OnDelete(AggregateNode self, DateTimeOffset utcNow)
         => _domainEvents.Add(new DialogDeletedDomainEvent(Id, ServiceResource, Party, Process, PrecedingProcess));
 
-    public DialogSeenLog? UpdateSeenAt(string endUserId, DialogUserType.Values userTypeId, string? endUserName)
+    public void UpdateSeenAt(string endUserId, DialogUserType.Values userTypeId, string? endUserName)
     {
         var lastSeenAt = SeenLog
                              .Where(x => x.SeenBy.ActorId == endUserId)
@@ -95,10 +95,10 @@ public sealed class DialogEntity :
 
         if (lastSeenAt >= UpdatedAt)
         {
-            return null;
+            return;
         }
 
-        var log = new DialogSeenLog
+        SeenLog.Add(new DialogSeenLog
         {
             EndUserTypeId = userTypeId,
             IsViaServiceOwner = userTypeId == DialogUserType.Values.ServiceOwnerOnBehalfOfPerson,
@@ -107,13 +107,9 @@ public sealed class DialogEntity :
                 ActorTypeId = ActorType.Values.PartyRepresentative,
                 ActorId = endUserId,
                 ActorName = endUserName
-            },
-            CreatedAt = DateTimeOffset.UtcNow,
-            Id = IdentifiableExtensions.CreateVersion7()
-        };
-        SeenLog.Add(log);
+            }
+        });
         _domainEvents.Add(new DialogSeenDomainEvent(Id, ServiceResource, Party, Process, PrecedingProcess));
-        return log;
     }
 
     private readonly List<IDomainEvent> _domainEvents = [];

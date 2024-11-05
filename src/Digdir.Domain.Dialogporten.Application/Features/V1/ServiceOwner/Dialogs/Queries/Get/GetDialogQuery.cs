@@ -108,15 +108,10 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
                 return new EntityNotFound<DialogEntity>(request.DialogId);
             }
 
-            var log = dialog.UpdateSeenAt(
+            dialog.UpdateSeenAt(
                 currentUserInformation.UserId.ExternalIdWithPrefix,
                 currentUserInformation.UserId.Type,
                 currentUserInformation.Name);
-
-            if (log is not null)
-            {
-                _db.DialogSeenLog.Add(log);
-            }
 
             var saveResult = await _unitOfWork
                 .WithoutAggregateSideEffects()
