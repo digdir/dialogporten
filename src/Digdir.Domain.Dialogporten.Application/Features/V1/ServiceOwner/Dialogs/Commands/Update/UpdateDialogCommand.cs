@@ -15,6 +15,7 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 using Digdir.Domain.Dialogporten.Domain.Parties;
+using Digdir.Library.Entity.Abstractions.Features.Identifiable;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
@@ -97,6 +98,12 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
             return new BadRequest($"Entity '{nameof(DialogEntity)}' with key '{request.Id}' is removed, and cannot be updated.");
         }
 
+        // Ensure transmissions have a UUIDv7 ID, needed for the transmission hierarchy validation.
+        foreach (var transmission in request.Dto.Transmissions)
+        {
+            transmission.Id = transmission.Id.CreateVersion7IfDefault();
+        }
+
         // Update primitive properties
         _mapper.Map(request.Dto, dialog);
         ValidateTimeFields(dialog);
@@ -104,7 +111,13 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         await AppendActivity(dialog, request.Dto, cancellationToken);
 
         await AppendTransmission(dialog, request.Dto, cancellationToken);
-        VerifyTransmissionRelations(dialog);
+
+        _domainContext.AddErrors(dialog.Transmissions.ValidateReferenceHierarchy(
+            keySelector: x => x.Id,
+            parentKeySelector: x => x.RelatedTransmissionId,
+            propertyName: nameof(UpdateDialogDto.Transmissions),
+            maxDepth: 100,
+            maxWidth: 1));
 
         VerifyActivityTransmissionRelations(dialog);
 
@@ -270,33 +283,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         _db.DialogTransmissions.AddRange(newDialogTransmissions);
     }
 
-    private void VerifyTransmissionRelations(DialogEntity dialog)
-    {
-        var relatedTransmissionIds = dialog.Transmissions
-            .Where(x => x.RelatedTransmissionId is not null)
-            .Select(x => x.RelatedTransmissionId)
-            .ToList();
-
-        if (relatedTransmissionIds.Count == 0)
-        {
-            return;
-        }
-
-        var transmissionIds = dialog.Transmissions.Select(x => x.Id).ToList();
-
-        var invalidRelatedTransmissionIds = relatedTransmissionIds
-            .Where(id => !transmissionIds.Contains(id!.Value))
-            .ToList();
-
-        if (invalidRelatedTransmissionIds.Count != 0)
-        {
-            _domainContext.AddError(
-                nameof(UpdateDialogDto.Transmissions),
-                $"Invalid '{nameof(DialogTransmission.RelatedTransmissionId)}, entity '{nameof(DialogTransmission)}' with the following key(s) does not exist: ({string.Join(", ", invalidRelatedTransmissionIds)}).");
-        }
-    }
-
-    private IEnumerable<DialogApiAction> CreateApiActions(IEnumerable<UpdateDialogDialogApiActionDto> creatables)
+    private IEnumerable<DialogApiAction> CreateApiActions(IEnumerable<ApiActionDto> creatables)
     {
         return creatables.Select(x =>
         {
@@ -306,7 +293,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         });
     }
 
-    private void UpdateApiActions(IEnumerable<UpdateSet<DialogApiAction, UpdateDialogDialogApiActionDto>> updateSets)
+    private void UpdateApiActions(IEnumerable<UpdateSet<DialogApiAction, ApiActionDto>> updateSets)
     {
         foreach (var (source, destination) in updateSets)
         {
@@ -322,7 +309,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         }
     }
 
-    private IEnumerable<DialogAttachment> CreateAttachments(IEnumerable<UpdateDialogDialogAttachmentDto> creatables)
+    private IEnumerable<DialogAttachment> CreateAttachments(IEnumerable<AttachmentDto> creatables)
     {
         return creatables.Select(attachmentDto =>
         {
@@ -332,7 +319,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         });
     }
 
-    private void UpdateAttachments(IEnumerable<UpdateSet<DialogAttachment, UpdateDialogDialogAttachmentDto>> updateSets)
+    private void UpdateAttachments(IEnumerable<UpdateSet<DialogAttachment, AttachmentDto>> updateSets)
     {
         foreach (var updateSet in updateSets)
         {

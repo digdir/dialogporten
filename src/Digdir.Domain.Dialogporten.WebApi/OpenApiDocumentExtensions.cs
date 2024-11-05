@@ -36,7 +36,7 @@ public static class OpenApiDocumentExtensions
 
         // TEMP hard coding of operationId, there is only one endpoint with a request body example
         // More to follow, make look up function based on operationId
-        if (operationId != "ReplaceDialog") return;
+        if (operationId != "V1ServiceOwnerDialogsUpdate_Dialog") return;
 
         foreach (var (_, value) in openApiOperation.RequestBody.Content)
         {

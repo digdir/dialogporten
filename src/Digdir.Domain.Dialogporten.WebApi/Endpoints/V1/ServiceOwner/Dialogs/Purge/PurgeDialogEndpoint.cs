@@ -2,6 +2,7 @@
 using Digdir.Domain.Dialogporten.WebApi.Common;
 using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
+using Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.Common.Extensions;
 using FastEndpoints;
 using MediatR;
 
@@ -23,7 +24,12 @@ public sealed class PurgeDialogEndpoint : Endpoint<PurgeDialogRequest>
         Policies(AuthorizationPolicy.ServiceProvider);
         Group<ServiceOwnerGroup>();
 
-        Description(b => PurgeDialogSwaggerConfig.SetDescription(b));
+        Description(b => b
+            .Accepts<PurgeDialogRequest>()
+            .ProducesOneOf(
+            StatusCodes.Status204NoContent,
+            StatusCodes.Status404NotFound,
+            StatusCodes.Status412PreconditionFailed));
     }
 
     public override async Task HandleAsync(PurgeDialogRequest req, CancellationToken ct)

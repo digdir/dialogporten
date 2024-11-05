@@ -1,0 +1,55 @@
+name: Run K6 performance tests
+
+on:
+  workflow_call:
+    inputs:
+      apiVersion:
+        required: true
+        type: string   
+      environment:
+        required: true
+        type: string
+      testSuitePath:
+        required: true
+        type: string
+      vus:
+        required: true
+        type: number
+      duration:
+        required: true
+        type: string
+      tokens:
+        required: true
+        type: string    
+    secrets:
+      TOKEN_GENERATOR_USERNAME:
+        required: true
+      TOKEN_GENERATOR_PASSWORD:
+        required: true
+      K6_CLOUD_TOKEN:
+        required: true
+      K6_CLOUD_PROJECT_ID:
+        required: true
+
+jobs:
+  k6-test:
+    runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      pull-requests: write
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: Setup k6
+      uses: grafana/setup-k6-action@v1
+    - name: Run K6 tests (${{ inputs.testSuitePath }})
+      run: |
+        ./tests/k6/tests/scripts/generate_tokens.sh ./tests/k6/tests/performancetest_data ${{ inputs.tokens }} 
+        k6 run ${{ inputs.testSuitePath }} --quiet --log-output=stdout --include-system-env-vars --vus=${{ inputs.vus }} --duration=${{ inputs.duration }} --out=cloud
+      env:
+        API_ENVIRONMENT: ${{ inputs.environment }}
+        API_VERSION: ${{ inputs.apiVersion }}
+        TOKEN_GENERATOR_USERNAME: ${{ secrets.TOKEN_GENERATOR_USERNAME }}
+        TOKEN_GENERATOR_PASSWORD: ${{ secrets.TOKEN_GENERATOR_PASSWORD }}  
+        K6_CLOUD_TOKEN: ${{ secrets.K6_CLOUD_TOKEN }}
+        K6_CLOUD_PROJECT_ID: ${{ secrets.K6_CLOUD_PROJECT_ID }}

@@ -63,7 +63,7 @@ jobs:
   deploy-infra:
     name: Deploy infra to test
     needs: [get-current-version, check-for-changes, generate-git-short-sha]
-    if: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasAzureChanges == 'true' }}
+    if: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasInfraChanges == 'true' }}
     uses: ./.github/workflows/workflow-deploy-infra.yml
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}

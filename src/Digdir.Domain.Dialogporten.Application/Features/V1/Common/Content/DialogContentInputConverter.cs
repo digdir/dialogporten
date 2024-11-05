@@ -11,7 +11,7 @@ namespace Digdir.Domain.Dialogporten.Application.Features.V1.Common.Content;
 
 /// <summary>
 /// TODO: Discuss this with the team later. It works for now
-/// This class is used to map bewteen the incoming dto object and the internal dialog content structure.
+/// This class is used to map between the incoming dto object and the internal dialog content structure.
 /// Value needs to be mapped from a list of LocalizationDto in order for merging to work.
 /// </summary>
 internal sealed class IntermediateDialogContent

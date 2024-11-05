@@ -18,8 +18,6 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions.Contents;
 using Digdir.Domain.Dialogporten.Domain.SubjectResources;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence.IdempotentNotifications;
 using MassTransit;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using OutboxMessage = MassTransit.EntityFrameworkCoreIntegration.OutboxMessage;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence;
 
@@ -117,18 +115,6 @@ internal sealed class DialogDbContext : DbContext, IDialogDbContext
             .AddTransactionalOutboxEntities(builder =>
             {
                 builder.ToTable($"MassTransit{builder.Metadata.GetTableName()}");
-
-                // We can remove the code below when the following commit is in a MassTransit release we are using.
-                // https://github.com/MassTransit/MassTransit/commit/755b267a53c3e5fcdc9dcc0bbfda68a70aaf6bf4 
-                if (builder is not EntityTypeBuilder<OutboxMessage> outboxMessageBuilder)
-                {
-                    return;
-                }
-
-                outboxMessageBuilder.Property(x => x.Properties).Metadata.SetMaxLength(null);
-                outboxMessageBuilder.Property(x => x.Body).Metadata.SetMaxLength(null);
-                outboxMessageBuilder.Property(x => x.Headers).Metadata.SetMaxLength(null);
-                outboxMessageBuilder.Property(x => x.MessageType).Metadata.SetMaxLength(null);
             });
     }
 }

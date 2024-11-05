@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Security.Claims;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Altinn.Authorization.ABAC.Xacml.JsonProfile;
@@ -82,9 +81,9 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
         CancellationToken cancellationToken = default)
     {
         var authorizedPartiesRequest = new AuthorizedPartiesRequest(authenticatedParty);
-        var authorizedParties = await _partiesCache.GetOrSetAsync(authorizedPartiesRequest.GenerateCacheKey(), async token
-            => await PerformAuthorizedPartiesRequest(authorizedPartiesRequest, token), token: cancellationToken);
-
+        // var authorizedParties = await _partiesCache.GetOrSetAsync(authorizedPartiesRequest.GenerateCacheKey(), async token
+        //     => await PerformAuthorizedPartiesRequest(authorizedPartiesRequest, token), token: cancellationToken);
+        var authorizedParties = await PerformAuthorizedPartiesRequest(authorizedPartiesRequest, cancellationToken);
         return flatten ? GetFlattenedAuthorizedParties(authorizedParties) : authorizedParties;
     }
 

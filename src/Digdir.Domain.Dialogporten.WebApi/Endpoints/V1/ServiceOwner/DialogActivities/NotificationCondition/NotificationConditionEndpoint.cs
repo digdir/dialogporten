@@ -20,8 +20,6 @@ public sealed class NotificationConditionEndpoint : Endpoint<NotificationConditi
         Get("dialogs/{dialogId}/actions/should-send-notification");
         Policies(AuthorizationPolicy.NotificationConditionCheck);
         Group<ServiceOwnerGroup>();
-
-        Description(b => NotificationConditionSwaggerConfig.SetDescription(b));
     }
 
     public override async Task HandleAsync(NotificationConditionQuery req, CancellationToken ct)
@@ -30,6 +28,7 @@ public sealed class NotificationConditionEndpoint : Endpoint<NotificationConditi
         await result.Match(
             dto => SendOkAsync(dto, ct),
             validationError => this.BadRequestAsync(validationError, ct),
-            notFound => this.NotFoundAsync(notFound, ct));
+            notFound => this.NotFoundAsync(notFound, ct),
+            deleted => this.GoneAsync(deleted, ct));
     }
 }

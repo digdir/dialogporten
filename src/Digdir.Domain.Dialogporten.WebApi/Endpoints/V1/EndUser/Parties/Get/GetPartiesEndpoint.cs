@@ -5,7 +5,7 @@ using MediatR;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.EndUser.Parties.Get;
 
-public sealed class GetPartiesEndpoint : EndpointWithoutRequest<GetPartiesDto>
+public sealed class GetPartiesEndpoint : EndpointWithoutRequest<PartiesDto>
 {
     private readonly ISender _sender;
 
@@ -20,7 +20,7 @@ public sealed class GetPartiesEndpoint : EndpointWithoutRequest<GetPartiesDto>
         Policies(AuthorizationPolicy.EndUser);
         Group<EndUserGroup>();
 
-        Description(d => GetPartiesSwaggerConfig.SetDescription(d));
+        Description(d => d.Produces<List<PartiesDto>>());
     }
 
     public override async Task HandleAsync(CancellationToken ct)

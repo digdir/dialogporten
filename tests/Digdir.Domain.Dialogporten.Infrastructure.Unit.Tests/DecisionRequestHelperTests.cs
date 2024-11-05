@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using System.Diagnostics;
+using System.Security.Claims;
 using Altinn.Authorization.ABAC.Xacml.JsonProfile;
 using Digdir.Domain.Dialogporten.Application.Common.Authorization;
 using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
@@ -10,8 +11,6 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Unit.Tests;
 
 public class DecisionRequestHelperTests
 {
-    private const string ConsumerClaimValue = /*lang=json,strict*/ "{\"authority\":\"iso6523-actorid-upis\",\"ID\":\"0192:991825827\"}";
-
     private const string AuthorizationDetailsClaimValue = /*lang=json,strict*/"[{\"type\":\"urn:altinn:systemuser\",\"systemuser_id\":[\"unique_systemuser_id\"]}]";
 
     [Fact]
@@ -20,10 +19,9 @@ public class DecisionRequestHelperTests
         // Arrange
         var request = CreateDialogDetailsAuthorizationRequest(
             GetAsClaims(
-                ("pid", "12345678901"),
-
                 // This should not be copied as subject claim since there's a "pid"-claim
-                ("consumer", ConsumerClaimValue)
+                ("authorization_details", AuthorizationDetailsClaimValue),
+                ("pid", "12345678901")
             ),
             $"{NorwegianOrganizationIdentifier.PrefixWithSeparator}713330310");
         var dialogId = request.DialogId;
@@ -42,9 +40,8 @@ public class DecisionRequestHelperTests
         // Check AccessSubject attributes
         var accessSubject = result.Request.AccessSubject.First();
         Assert.Equal("s1", accessSubject.Id);
-        Assert.Contains(accessSubject.Attribute, a => a.AttributeId == "urn:altinn:foo" && a.Value == "bar");
         Assert.Contains(accessSubject.Attribute, a => a.AttributeId == "urn:altinn:person:identifier-no" && a.Value == "12345678901");
-        Assert.DoesNotContain(accessSubject.Attribute, a => a.AttributeId == "urn:altinn:organization:identifier-no");
+        Assert.Single(accessSubject.Attribute);
 
         // Check Action attributes.
         var actionIdsByName = new Dictionary<string, string>();
@@ -79,15 +76,14 @@ public class DecisionRequestHelperTests
     }
 
     [Fact]
-    public void CreateDialogDetailsRequestShouldReturnCorrectRequestForLegacyEnterpriseUsers()
+    public void CreateDialogDetailsRequestShouldReturnCorrectRequestForExchangedTokens()
     {
         // Arrange
         var request = CreateDialogDetailsAuthorizationRequest(
             GetAsClaims(
-                ("urn:altinn:userid", "5678901"),
-
                 // This should not be copied as subject claim since there's a "urn:altinn:user-id"-claim
-                ("consumer", ConsumerClaimValue)
+                ("pid", "12345678901"),
+                ("urn:altinn:userid", "5678901")
             ),
             $"{NorwegianOrganizationIdentifier.PrefixWithSeparator}713330310");
 
@@ -98,7 +94,7 @@ public class DecisionRequestHelperTests
         var accessSubject = result.Request.AccessSubject.First();
         Assert.Equal("s1", accessSubject.Id);
         Assert.Contains(accessSubject.Attribute, a => a.AttributeId == "urn:altinn:userid" && a.Value == "5678901");
-        Assert.DoesNotContain(accessSubject.Attribute, a => a.AttributeId == "urn:altinn:organization:identifier-no");
+        Assert.Single(accessSubject.Attribute);
     }
 
     [Fact]
@@ -151,33 +147,8 @@ public class DecisionRequestHelperTests
 
         var accessSubject = result.Request.AccessSubject.First();
         Assert.Equal("s1", accessSubject.Id);
-        Assert.Contains(accessSubject.Attribute, a => a.AttributeId == "urn:altinn:foo" && a.Value == "bar");
         Assert.Contains(accessSubject.Attribute, a => a.AttributeId == "urn:altinn:systemuser:uuid" && a.Value == "unique_systemuser_id");
-    }
-
-    [Fact]
-    public void CreateDialogDetailsRequestShouldReturnCorrectRequestForConsumerOrgAndPersonParty()
-    {
-        // Arrange
-        var request = CreateDialogDetailsAuthorizationRequest(
-            GetAsClaims(
-                // Should be copied as subject claim since there's not a "pid"-claim
-                ("consumer", ConsumerClaimValue)
-            ),
-            $"{NorwegianPersonIdentifier.PrefixWithSeparator}16073422888");
-
-        // Act
-        var result = DecisionRequestHelper.CreateDialogDetailsRequest(request);
-
-        // Assert
-        // Check that we have the organizationnumber
-        var accessSubject = result.Request.AccessSubject.First();
-        Assert.Contains(accessSubject.Attribute, a => a.AttributeId == "urn:altinn:organization:identifier-no" && a.Value == "991825827");
-
-        // Check that we have the ssn attribute as resource owner
-        var resource1 = result.Request.Resource.FirstOrDefault(r => r.Id == "r1");
-        Assert.NotNull(resource1);
-        Assert.Contains(resource1.Attribute, a => a.AttributeId == "urn:altinn:person:identifier-no" && a.Value == "16073422888");
+        Assert.Single(accessSubject.Attribute);
     }
 
     [Fact]
@@ -186,7 +157,7 @@ public class DecisionRequestHelperTests
         // Arrange
         var request = CreateDialogDetailsAuthorizationRequest(
             GetAsClaims(
-                ("consumer", ConsumerClaimValue)
+                ("pid", "12345678901")
             ),
             $"{NorwegianPersonIdentifier.PrefixWithSeparator}16073422888");
 
@@ -211,7 +182,7 @@ public class DecisionRequestHelperTests
         // Arrange
         var request = CreateDialogDetailsAuthorizationRequest(
             GetAsClaims(
-                ("consumer", ConsumerClaimValue)
+                ("pid", "12345678901")
             ),
             $"{NorwegianPersonIdentifier.PrefixWithSeparator}16073422888");
 
@@ -238,7 +209,7 @@ public class DecisionRequestHelperTests
         // Arrange
         var request = CreateDialogDetailsAuthorizationRequest(
             GetAsClaims(
-                ("consumer", ConsumerClaimValue)
+                ("pid", "12345678901")
             ),
             $"{NorwegianPersonIdentifier.PrefixWithSeparator}16073422888");
 
@@ -262,8 +233,7 @@ public class DecisionRequestHelperTests
         // Arrange
         var request = CreateDialogDetailsAuthorizationRequest(
             GetAsClaims(
-                // Should be copied as subject claim since there's not a "pid"-claim
-                ("consumer", ConsumerClaimValue)
+                ("pid", "12345678901")
             ),
             $"{NorwegianPersonIdentifier.PrefixWithSeparator}12345678901");
 
@@ -286,6 +256,21 @@ public class DecisionRequestHelperTests
         Assert.DoesNotContain(new AltinnAction("elementread", "element3"), response.AuthorizedAltinnActions);
         Assert.DoesNotContain(new AltinnAction("failaction", Constants.MainResource), response.AuthorizedAltinnActions);
     }
+
+    [Fact]
+    public void CreateDetailsRequestShouldThrowUnreachableExceptionIfNoValidUserType()
+    {
+        // Arrange
+        var request = CreateDialogDetailsAuthorizationRequest(
+            GetAsClaims(
+                ("consumer", "somevalue")
+            ),
+            $"{NorwegianOrganizationIdentifier.PrefixWithSeparator}713330310");
+
+        // Act / assert
+        Assert.Throws<UnreachableException>(() => DecisionRequestHelper.CreateDialogDetailsRequest(request));
+    }
+
 
     private static DialogDetailsAuthorizationRequest CreateDialogDetailsAuthorizationRequest(List<Claim> principalClaims, string party, bool isApp = false)
     {

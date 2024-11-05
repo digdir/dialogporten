@@ -4,9 +4,9 @@ using MediatR;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Parties.Queries.Get;
 
-public sealed class GetPartiesQuery : IRequest<GetPartiesDto>;
+public sealed class GetPartiesQuery : IRequest<PartiesDto>;
 
-internal sealed class GetPartiesQueryHandler : IRequestHandler<GetPartiesQuery, GetPartiesDto>
+internal sealed class GetPartiesQueryHandler : IRequestHandler<GetPartiesQuery, PartiesDto>
 {
     private readonly IUserParties _userParties;
     private readonly IMapper _mapper;
@@ -17,9 +17,9 @@ internal sealed class GetPartiesQueryHandler : IRequestHandler<GetPartiesQuery, 
         _mapper = mapper;
     }
 
-    public async Task<GetPartiesDto> Handle(GetPartiesQuery request, CancellationToken cancellationToken)
+    public async Task<PartiesDto> Handle(GetPartiesQuery request, CancellationToken cancellationToken)
     {
         var authorizedPartiesResult = await _userParties.GetUserParties(cancellationToken);
-        return _mapper.Map<GetPartiesDto>(authorizedPartiesResult);
+        return _mapper.Map<PartiesDto>(authorizedPartiesResult);
     }
 }

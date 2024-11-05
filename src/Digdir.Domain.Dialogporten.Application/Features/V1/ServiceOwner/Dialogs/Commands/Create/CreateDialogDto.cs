@@ -14,7 +14,7 @@ namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialog
 public class CreateDialogDto
 {
     /// <summary>
-    /// A self-defined UUIDv7 may be provided in order to support idempotent creation of dialogs. If not provided, a new UUIDv7 will be generated.
+    /// A self-defined UUIDv7 may be provided to support idempotent creation of dialogs. If not provided, a new UUIDv7 will be generated.
     /// </summary>
     /// <example>01913cd5-784f-7d3b-abef-4c77b1f0972d</example>
     public Guid? Id { get; set; }
@@ -28,7 +28,7 @@ public class CreateDialogDto
     public string ServiceResource { get; set; } = null!;
 
     /// <summary>
-    /// The party code representing the organization or person that the dialog belongs to in URN format
+    /// The party code representing the organization or person that the dialog belongs to in URN format.
     /// </summary>
     /// <example>
     /// urn:altinn:person:identifier-no:01125512345
@@ -67,7 +67,7 @@ public class CreateDialogDto
     public DateTimeOffset? DueAt { get; set; }
 
     /// <summary>
-    /// Optional process identifier used to indicate a business process this dialog belongs to
+    /// Optional process identifier used to indicate a business process this dialog belongs to.
     /// </summary>
     public string? Process { get; set; }
     /// <summary>
@@ -85,14 +85,14 @@ public class CreateDialogDto
     public DateTimeOffset? ExpiresAt { get; set; }
 
     /// <summary>
-    /// If set, will override the date and time when the dialog is set as created
+    /// If set, will override the date and time when the dialog is set as created.
     /// If not supplied, the current date /time will be used.
     /// </summary>
     /// <example>2022-12-31T23:59:59Z</example>
     public DateTimeOffset CreatedAt { get; set; }
 
     /// <summary>
-    /// If set, will override the date and time when the dialog is set as last updated
+    /// If set, will override the date and time when the dialog is set as last updated.
     /// If not supplied, the current date /time will be used.
     /// </summary>
     /// <example>2022-12-31T23:59:59Z</example>
@@ -104,55 +104,55 @@ public class CreateDialogDto
     public DialogStatus.Values Status { get; set; }
 
     /// <summary>
-    /// Set the system label of the dialog Migration purposes
+    /// Set the system label of the dialog Migration purposes.
     /// </summary>
     public SystemLabel.Values? SystemLabel { get; set; }
     /// <summary>
-    /// The dialog unstructured text content
+    /// The dialog unstructured text content.
     /// </summary>
-    public CreateDialogContentDto Content { get; set; } = null!;
+    public ContentDto Content { get; set; } = null!;
 
     /// <summary>
     /// A list of words (tags) that will be used in dialog search queries. Not visible in end-user DTO.
     /// </summary>
-    public List<CreateDialogSearchTagDto> SearchTags { get; set; } = [];
+    public List<SearchTagDto> SearchTags { get; set; } = [];
 
     /// <summary>
-    /// The attachments associated with the dialog (on an aggregate level)
+    /// The attachments associated with the dialog (on an aggregate level).
     /// </summary>
-    public List<CreateDialogDialogAttachmentDto> Attachments { get; set; } = [];
+    public List<AttachmentDto> Attachments { get; set; } = [];
 
     /// <summary>
-    /// The immutable list of transmissions associated with the dialog
+    /// The immutable list of transmissions associated with the dialog.
     /// </summary>
-    public List<CreateDialogDialogTransmissionDto> Transmissions { get; set; } = [];
+    public List<TransmissionDto> Transmissions { get; set; } = [];
 
     /// <summary>
     /// The GUI actions associated with the dialog. Should be used in browser-based interactive frontends.
     /// </summary>
-    public List<CreateDialogDialogGuiActionDto> GuiActions { get; set; } = [];
+    public List<GuiActionDto> GuiActions { get; set; } = [];
 
     /// <summary>
     /// The API actions associated with the dialog. Should be used in specialized, non-browser-based integrations.
     /// </summary>
-    public List<CreateDialogDialogApiActionDto> ApiActions { get; set; } = [];
+    public List<ApiActionDto> ApiActions { get; set; } = [];
 
     /// <summary>
     /// An immutable list of activities associated with the dialog.
     /// </summary>
-    public List<CreateDialogDialogActivityDto> Activities { get; set; } = [];
+    public List<ActivityDto> Activities { get; set; } = [];
 }
 
-public sealed class CreateDialogDialogTransmissionDto
+public sealed class TransmissionDto
 {
     /// <summary>
-    /// A self-defined UUIDv7 may be provided in order to support idempotent creation of transmissions. If not provided, a new UUIDv7 will be generated.
+    /// A self-defined UUIDv7 may be provided to support idempotent creation of transmissions. If not provided, a new UUIDv7 will be generated.
     /// </summary>
     /// <example>01913cd5-784f-7d3b-abef-4c77b1f0972d</example>
     public Guid? Id { get; set; }
 
     /// <summary>
-    /// If supplied, overrides the creating date and time for the transmission
+    /// If supplied, overrides the creating date and time for the transmission.
     /// If not supplied, the current date /time will be used.
     /// </summary>
     public DateTimeOffset CreatedAt { get; set; }
@@ -193,20 +193,20 @@ public sealed class CreateDialogDialogTransmissionDto
     /// <summary>
     /// The actor that sent the transmission.
     /// </summary>
-    public CreateDialogDialogTransmissionSenderActorDto Sender { get; set; } = null!;
+    public TransmissionSenderActorDto Sender { get; set; } = null!;
 
     /// <summary>
-    /// The transmission unstructured text content
+    /// The transmission unstructured text content.
     /// </summary>
-    public CreateDialogDialogTransmissionContentDto Content { get; set; } = null!;
+    public TransmissionContentDto Content { get; set; } = null!;
 
     /// <summary>
-    /// The transmission-level attachments
+    /// The transmission-level attachments.
     /// </summary>
-    public List<CreateDialogTransmissionAttachmentDto> Attachments { get; set; } = [];
+    public List<TransmissionAttachmentDto> Attachments { get; set; } = [];
 }
 
-public sealed class CreateDialogContentDto
+public sealed class ContentDto
 {
     /// <summary>
     /// The title of the dialog.
@@ -245,7 +245,7 @@ public sealed class CreateDialogContentDto
     public ContentValueDto? MainContentReference { get; set; }
 }
 
-public sealed class CreateDialogDialogTransmissionContentDto
+public sealed class TransmissionContentDto
 {
     /// <summary>
     /// The transmission title. Must be text/plain.
@@ -264,7 +264,7 @@ public sealed class CreateDialogDialogTransmissionContentDto
     public ContentValueDto? ContentReference { get; set; }
 }
 
-public sealed class CreateDialogSearchTagDto
+public sealed class SearchTagDto
 {
     /// <summary>
     /// A search tag value.
@@ -272,10 +272,10 @@ public sealed class CreateDialogSearchTagDto
     public string Value { get; set; } = null!;
 }
 
-public sealed class CreateDialogDialogActivityDto
+public sealed class ActivityDto
 {
     /// <summary>
-    /// A self-defined UUIDv7 may be provided in order to support idempotent creation of activities. If not provided, a new UUIDv7 will be generated.
+    /// A self-defined UUIDv7 may be provided to support idempotent creation of activities. If not provided, a new UUIDv7 will be generated.
     /// </summary>
     /// <example>01913cd5-784f-7d3b-abef-4c77b1f0972d</example>
     public Guid? Id { get; set; }
@@ -305,7 +305,7 @@ public sealed class CreateDialogDialogActivityDto
     /// <summary>
     /// The actor that performed the activity.
     /// </summary>
-    public CreateDialogDialogActivityPerformedByActorDto PerformedBy { get; set; } = null!;
+    public ActivityPerformedByActorDto PerformedBy { get; set; } = null!;
 
     /// <summary>
     /// Unstructured text describing the activity. Only set if the activity type is "Information".
@@ -313,7 +313,7 @@ public sealed class CreateDialogDialogActivityDto
     public List<LocalizationDto> Description { get; set; } = [];
 }
 
-public sealed class CreateDialogDialogActivityPerformedByActorDto
+public sealed class ActivityPerformedByActorDto
 {
     /// <summary>
     /// What type of actor performed the activity.
@@ -335,7 +335,7 @@ public sealed class CreateDialogDialogActivityPerformedByActorDto
     public string? ActorId { get; set; }
 }
 
-public sealed class CreateDialogDialogTransmissionSenderActorDto
+public sealed class TransmissionSenderActorDto
 {
     /// <summary>
     /// The type of actor that sent the transmission.
@@ -357,11 +357,11 @@ public sealed class CreateDialogDialogTransmissionSenderActorDto
     public string? ActorId { get; set; }
 }
 
-public sealed class CreateDialogDialogApiActionDto
+public sealed class ApiActionDto
 {
     /// <summary>
     /// String identifier for the action, corresponding to the "action" attributeId used in the XACML service policy,
-    /// which by default is the policy belonging to the service referred to by "serviceResource" in the dialog
+    /// which by default is the policy belonging to the service referred to by "serviceResource" in the dialog.
     /// </summary>
     /// <example>write</example>
     public string Action { get; set; } = null!;
@@ -385,10 +385,10 @@ public sealed class CreateDialogDialogApiActionDto
     /// <summary>
     /// The endpoints associated with the action.
     /// </summary>
-    public List<CreateDialogDialogApiActionEndpointDto> Endpoints { get; set; } = [];
+    public List<ApiActionEndpointDto> Endpoints { get; set; } = [];
 }
 
-public sealed class CreateDialogDialogApiActionEndpointDto
+public sealed class ApiActionEndpointDto
 {
     /// <summary>
     /// Arbitrary string indicating the version of the endpoint.
@@ -435,10 +435,10 @@ public sealed class CreateDialogDialogApiActionEndpointDto
     public DateTimeOffset? SunsetAt { get; set; }
 }
 
-public sealed class CreateDialogDialogGuiActionDto
+public sealed class GuiActionDto
 {
     /// <summary>
-    /// The action identifier for the action, corresponding to the "action" attributeId used in the XACML service policy,
+    /// The action identifier for the action, corresponding to the "action" attributeId used in the XACML service policy.
     /// </summary>
     public string Action { get; set; } = null!;
 
@@ -497,7 +497,7 @@ public sealed class CreateDialogDialogGuiActionDto
     public List<LocalizationDto>? Prompt { get; set; }
 }
 
-public sealed class CreateDialogDialogAttachmentDto
+public sealed class AttachmentDto
 {
     /// <summary>
     /// The display name of the attachment that should be used in GUIs.
@@ -507,10 +507,10 @@ public sealed class CreateDialogDialogAttachmentDto
     /// <summary>
     /// The URLs associated with the attachment, each referring to a different representation of the attachment.
     /// </summary>
-    public List<CreateDialogDialogAttachmentUrlDto> Urls { get; set; } = [];
+    public List<AttachmentUrlDto> Urls { get; set; } = [];
 }
 
-public sealed class CreateDialogDialogAttachmentUrlDto
+public sealed class AttachmentUrlDto
 {
     /// <summary>
     /// The fully qualified URL of the attachment.
@@ -532,7 +532,7 @@ public sealed class CreateDialogDialogAttachmentUrlDto
     public AttachmentUrlConsumerType.Values ConsumerType { get; set; }
 }
 
-public sealed class CreateDialogTransmissionAttachmentDto
+public sealed class TransmissionAttachmentDto
 {
     /// <summary>
     /// A self-defined UUIDv7 may be provided to support idempotent creation of transmission attachments. If not provided, a new UUIDv7 will be generated.
@@ -548,10 +548,10 @@ public sealed class CreateDialogTransmissionAttachmentDto
     /// <summary>
     /// The URLs associated with the attachment, each referring to a different representation of the attachment.
     /// </summary>
-    public List<CreateDialogTransmissionAttachmentUrlDto> Urls { get; set; } = [];
+    public List<TransmissionAttachmentUrlDto> Urls { get; set; } = [];
 }
 
-public sealed class CreateDialogTransmissionAttachmentUrlDto
+public sealed class TransmissionAttachmentUrlDto
 {
     /// <summary>
     /// The fully qualified URL of the attachment.

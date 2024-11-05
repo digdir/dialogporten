@@ -1,0 +1,49 @@
+name: Get Latest Deployed Version Info from GitHub
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        description: "Environment to get latest deployed versions for (e.g., staging, prod, yt01)"
+        required: true
+        type: string
+    secrets:
+      GH_TOKEN:
+        required: true
+    outputs:
+      infra_version_sha:
+        description: "SHA of the latest deployed infrastructure version"
+        value: ${{ jobs.get-versions.outputs.infra_version_sha }}
+      apps_version_sha:
+        description: "SHA of the latest deployed applications version"
+        value: ${{ jobs.get-versions.outputs.apps_version_sha }}
+
+jobs:
+  get-versions:
+    name: Get Latest Deployed Versions from GitHub Variables
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    env:
+      GH_TOKEN: ${{ secrets.GH_TOKEN }}
+    outputs:
+      infra_version_sha: ${{ steps.get-infra-sha.outputs.sha }}
+      apps_version_sha: ${{ steps.get-apps-sha.outputs.sha }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get Infra SHA
+        id: get-infra-sha
+        if: vars.LATEST_DEPLOYED_INFRA_VERSION != ''
+        run: |
+          SHA=$(git rev-list -n 1 v${{ vars.LATEST_DEPLOYED_INFRA_VERSION }})
+          echo "sha=$SHA" >> $GITHUB_OUTPUT
+
+      - name: Get Apps SHA
+        id: get-apps-sha
+        if: vars.LATEST_DEPLOYED_APPS_VERSION != ''
+        run: |
+          SHA=$(git rev-list -n 1 v${{ vars.LATEST_DEPLOYED_APPS_VERSION }})
+          echo "sha=$SHA" >> $GITHUB_OUTPUT
