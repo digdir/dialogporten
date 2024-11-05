@@ -17,7 +17,8 @@ internal static class UpdatableExtensions
     {
         var updatableEntities = changeTracker
             .Entries<IUpdateableEntity>()
-            .Where(x => x.State is EntityState.Added or EntityState.Modified && (x.Entity is not ISoftDeletableEntity deletable || !deletable.Deleted));
+            .Where(IsNotSoftDeleted)
+            .Where(x => AddedWithoutExplicitUpdatedAt(x) || Modified(x));
 
         foreach (var entity in updatableEntities)
         {
@@ -26,4 +27,8 @@ internal static class UpdatableExtensions
 
         return changeTracker;
     }
+
+    private static bool IsNotSoftDeleted(EntityEntry<IUpdateableEntity> x) => x.Entity is not ISoftDeletableEntity { Deleted: true };
+    private static bool AddedWithoutExplicitUpdatedAt(EntityEntry<IUpdateableEntity> x) => x.State is EntityState.Added && x.Entity.UpdatedAt == default;
+    private static bool Modified(EntityEntry<IUpdateableEntity> x) => x.State is EntityState.Modified;
 }
