@@ -16,7 +16,7 @@ public static class ServiceCollectionExtensions
             .AddSubscriptionType<Subscriptions>()
             .AddAuthorization()
             .RegisterDbContext<DialogDbContext>()
-            .AddDiagnosticEventListener<ApplicationInsightEventListener>()
+            .AddDiagnosticEventListener<OpenTelemetryEventListener>()
             .AddQueryType<Queries>()
             .AddMutationType<Mutations>()
             .AddType<DialogByIdDeleted>()
