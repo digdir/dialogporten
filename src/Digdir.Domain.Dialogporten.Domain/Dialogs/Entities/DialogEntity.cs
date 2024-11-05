@@ -9,6 +9,7 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Events;
 using Digdir.Library.Entity.Abstractions;
 using Digdir.Library.Entity.Abstractions.Features.Aggregate;
+using Digdir.Library.Entity.Abstractions.Features.Identifiable;
 using Digdir.Library.Entity.Abstractions.Features.SoftDeletable;
 using Digdir.Library.Entity.Abstractions.Features.Versionable;
 
@@ -106,7 +107,9 @@ public sealed class DialogEntity :
                 ActorTypeId = ActorType.Values.PartyRepresentative,
                 ActorId = endUserId,
                 ActorName = endUserName
-            }
+            },
+            CreatedAt = DateTimeOffset.UtcNow,
+            Id = IdentifiableExtensions.CreateVersion7()
         });
 
         _domainEvents.Add(new DialogSeenDomainEvent(Id, ServiceResource, Party, Process, PrecedingProcess));
