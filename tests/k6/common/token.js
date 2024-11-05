@@ -1,7 +1,7 @@
 import http from "k6/http";
 import encoding from "k6/encoding";
 import { extend } from "./extend.js";
-import { defaultEndUserSsn, defaultServiceOwnerOrgNo } from "./config.js";
+import { defaultEndUserSsn, defaultServiceOwnerOrgNo, tokenGeneratorEnv } from "./config.js";
 
 let defaultTokenOptions = {
   scopes: "digdir:dialogporten digdir:dialogporten.serviceprovider digdir:dialogporten.serviceprovider.search",
@@ -57,14 +57,14 @@ function fetchToken(url, tokenOptions, type) {
 
 export function getServiceOwnerTokenFromGenerator(tokenOptions = null) {
   let fullTokenOptions = extend({}, defaultTokenOptions, tokenOptions);
-  const url = `http://altinn-testtools-token-generator.azurewebsites.net/api/GetEnterpriseToken?env=tt02&scopes=${encodeURIComponent(fullTokenOptions.scopes)}&org=${fullTokenOptions.orgName}&orgNo=${fullTokenOptions.orgNo}&ttl=${tokenTtl}`;
-  return fetchToken(url, fullTokenOptions, `service owner (orgno:${fullTokenOptions.orgNo} orgName:${fullTokenOptions.orgName})`);
+  const url = `http://altinn-testtools-token-generator.azurewebsites.net/api/GetEnterpriseToken?env=${tokenGeneratorEnv}&scopes=${encodeURIComponent(fullTokenOptions.scopes)}&org=${fullTokenOptions.orgName}&orgNo=${fullTokenOptions.orgNo}&ttl=${tokenTtl}`;
+  return fetchToken(url, fullTokenOptions, `service owner (orgno:${fullTokenOptions.orgNo} orgName:${fullTokenOptions.orgName} tokenGeneratorEnv:${tokenGeneratorEnv})`);
 }
 
 export function getEnduserTokenFromGenerator(tokenOptions = null) {
   let fullTokenOptions = extend({}, defaultTokenOptions, tokenOptions);
-  const url = `http://altinn-testtools-token-generator.azurewebsites.net/api/GetPersonalToken?env=tt02&scopes=${encodeURIComponent(fullTokenOptions.scopes)}&pid=${fullTokenOptions.ssn}&ttl=${tokenTtl}`;
-  return fetchToken(url, fullTokenOptions, `end user (ssn:${fullTokenOptions.ssn})`);
+  const url = `http://altinn-testtools-token-generator.azurewebsites.net/api/GetPersonalToken?env=${tokenGeneratorEnv}&scopes=${encodeURIComponent(fullTokenOptions.scopes)}&pid=${fullTokenOptions.ssn}&ttl=${tokenTtl}`;
+  return fetchToken(url, fullTokenOptions, `end user (ssn:${fullTokenOptions.ssn}, tokenGeneratorEnv:${tokenGeneratorEnv})`);
 }
 
 export function getDefaultEnduserOrgNo() {
