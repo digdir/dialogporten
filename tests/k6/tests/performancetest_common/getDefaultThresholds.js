@@ -5,8 +5,6 @@
  * @returns {Object} Threshold configuration object
  * @throws {Error} If inputs are invalid
  */
-
-
 export function getDefaultThresholds(counters, labels) {
     if (!Array.isArray(counters) || !Array.isArray(labels)) {
         throw new Error('Both counters and labels must be arrays');

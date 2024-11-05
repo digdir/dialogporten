@@ -1,3 +1,7 @@
+/**
+ * This file contains common functions for performing simple searches
+ * and GraphQL searches.
+ */
 import { randomItem } from 'https://jslib.k6.io/k6-utils/1.2.0/index.js';
 import { expect, expectStatusFor } from "../../common/testimports.js";
 import { describe } from '../../common/describe.js';
@@ -114,6 +118,7 @@ export function graphqlSearch(enduser) {
     let paramsWithToken = {
         headers: {
             Authorization: "Bearer " + enduser.token,
+            traceparent: uuidv4()
         },
         tags: { name: 'graphql search' }
     };

@@ -1,3 +1,6 @@
+/**
+ * Common functions for creating dialogs.
+ */
 import { uuidv4 } from 'https://jslib.k6.io/k6-utils/1.4.0/index.js';
 import { describe } from "../../common/describe.js";
 import { postSO, purgeSO } from "../../common/request.js";
@@ -6,11 +9,10 @@ import dialogToInsert from "../performancetest_data/01-create-dialog.js";
 
 /**
  * Creates a dialog.
- *
- * @param {Object} serviceOwner - The service owner.
- * @param {Object} endUser - The end user.
+ * 
+ * @param {Object} serviceOwner - The service owner object.
+ * @param {Object} endUser - The end user object.
  */
-
 export function createDialog(serviceOwner, endUser) {
     var paramsWithToken = {
         headers: {
@@ -27,6 +29,12 @@ export function createDialog(serviceOwner, endUser) {
 
 }
 
+/**
+ * Creates a dialog and removes it.
+ * 
+ * @param {Object} serviceOwner - The service owner object.
+ * @param {Object} endUser - The end user object.
+ */
 export function createAndRemoveDialog(serviceOwner, endUser) {  
     var paramsWithToken = {
         headers: {
