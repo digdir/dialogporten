@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.28.1](https://github.com/digdir/dialogporten/compare/v1.28.0...v1.28.1) (2024-11-05)
+
+
+### Bug Fixes
+
+* **service:** ensure correct maskinporten environment ([#1392](https://github.com/digdir/dialogporten/issues/1392)) ([9d7defe](https://github.com/digdir/dialogporten/commit/9d7defe02b2dd97c87056faf93c846fb8e3ab320))
+
 ## [1.28.0](https://github.com/digdir/dialogporten/compare/v1.27.1...v1.28.0) (2024-11-05)
 
 
