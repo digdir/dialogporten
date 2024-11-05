@@ -2,6 +2,7 @@ import { postSO, expect, describe } from "../../../common/testimports.js";
 import { SharedArray } from 'k6/data';
 import papaparse from 'https://jslib.k6.io/papaparse/5.1.1/index.js';
 import { randomItem } from 'https://jslib.k6.io/k6-utils/1.2.0/index.js';
+import { uuidv4 } from 'https://jslib.k6.io/k6-utils/1.4.0/index.js';
 
 import { getDefaultThresholds } from '../../performancetest_common/common.js'
 import { default as dialogToInsert } from '../../performancetest_data/01-create-dialog.js';
@@ -37,7 +38,8 @@ export default function() {
 export function createDialog(serviceOwner, endUser) {  
     var paramsWithToken = {
         headers: {
-            Authorization: "Bearer " + serviceOwner.token
+            Authorization: "Bearer " + serviceOwner.token,
+            traceparent: uuidv4(),
         },
         tags: { name: 'create dialog' }
     }
