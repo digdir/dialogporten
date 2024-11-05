@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.28.2](https://github.com/digdir/dialogporten/compare/v1.28.1...v1.28.2) (2024-11-05)
+
+
+### Bug Fixes
+
+* Use yt01 token generator environment for k6 tests running on yt01 ([#1391](https://github.com/digdir/dialogporten/issues/1391)) ([393176c](https://github.com/digdir/dialogporten/commit/393176c1f21dc6f8b0ab7fbf294e16713bd4d6e0))
+
 ## [1.28.1](https://github.com/digdir/dialogporten/compare/v1.28.0...v1.28.1) (2024-11-05)
 
 
