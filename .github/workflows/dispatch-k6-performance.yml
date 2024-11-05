@@ -34,7 +34,7 @@ on:
       vus:
         description: 'Number of VUS'
         required: true
-        default: 10
+        default: 1
         type: number
       duration:
         description: 'Duration of test, ie 30s, 1m, 10m'
@@ -49,8 +49,8 @@ on:
         options:
           - 'tests/k6/tests/serviceowner/performance/create-dialog.js'
           - 'tests/k6/tests/serviceowner/performance/create-remove-dialog.js'
-          - 'tests/k6/tests/enduser/performance/simple-search.js'
-          - 'tests/k6/tests/enduser/performance/graphql-search.js'
+          - 'tests/k6/tests/enduser/performance/enduser-search.js'
+          - 'tests/k6/tests/graphql/performance/graphql-search.js'
 
 run-name: ${{ inputs.tag }} vus ${{ inputs.vus }} duration ${{ inputs.duration }}
 jobs:
