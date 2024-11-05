@@ -120,10 +120,15 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
 
         // TODO: What if name lookup fails
         // https://github.com/digdir/dialogporten/issues/387
-        dialog.UpdateSeenAt(
+        var log = dialog.UpdateSeenAt(
             currentUserInformation.UserId.ExternalIdWithPrefix,
             currentUserInformation.UserId.Type,
             currentUserInformation.Name);
+
+        if (log is not null)
+        {
+            _db.DialogSeenLog.Add(log);
+        }
 
         var saveResult = await _unitOfWork
             .WithoutAuditableSideEffects()
