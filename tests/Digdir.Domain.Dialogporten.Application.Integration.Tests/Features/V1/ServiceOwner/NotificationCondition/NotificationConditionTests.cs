@@ -1,5 +1,6 @@
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.DialogActivities.Queries.NotificationCondition;
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Create;
+using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Delete;
 using Digdir.Domain.Dialogporten.Application.Integration.Tests.Common;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
@@ -39,12 +40,7 @@ public class NotificationConditionTests(DialogApplication application) : Applica
         var response = await Application.Send(createDialogCommand);
         response.TryPickT0(out var dialogId, out _);
 
-        var notificationConditionQuery = new NotificationConditionQuery
-        {
-            DialogId = dialogId.Value,
-            ActivityType = activityType,
-            ConditionType = conditionType,
-        };
+        var notificationConditionQuery = CreateNotificationConditionQuery(dialogId.Value, activityType, conditionType);
 
         if (activityType is DialogActivityType.Values.TransmissionOpened)
         {
@@ -79,12 +75,7 @@ public class NotificationConditionTests(DialogApplication application) : Applica
     public async Task NotFound_Should_Be_Returned_When_Dialog_Does_Not_Exist()
     {
         // Arrange
-        var notificationConditionQuery = new NotificationConditionQuery
-        {
-            DialogId = Guid.NewGuid(),
-            ActivityType = DialogActivityType.Values.Information,
-            ConditionType = NotificationConditionType.Exists,
-        };
+        var notificationConditionQuery = CreateNotificationConditionQuery(Guid.NewGuid());
 
         // Act
         var queryResult = await Application.Send(notificationConditionQuery);
@@ -94,4 +85,37 @@ public class NotificationConditionTests(DialogApplication application) : Applica
         queryResult.IsT2.Should().BeTrue();
         notFound.Should().NotBeNull();
     }
+
+    [Fact]
+    public async Task Gone_Should_Be_Returned_When_Dialog_Is_Deleted()
+    {
+        // Arrange
+        var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog();
+
+        var response = await Application.Send(createDialogCommand);
+        response.TryPickT0(out var dialogId, out _);
+
+        await Application.Send(new DeleteDialogCommand { Id = dialogId.Value });
+
+        var notificationConditionQuery = CreateNotificationConditionQuery(dialogId.Value);
+
+        // Act
+        var queryResult = await Application.Send(notificationConditionQuery);
+
+        // Assert
+        queryResult.TryPickT3(out var deleted, out _);
+        queryResult.IsT3.Should().BeTrue();
+        deleted.Should().NotBeNull();
+        deleted.Message.Should().Contain(dialogId.Value.ToString());
+    }
+
+    private static NotificationConditionQuery CreateNotificationConditionQuery(Guid dialogId,
+        DialogActivityType.Values activityType = DialogActivityType.Values.Information,
+        NotificationConditionType conditionType = NotificationConditionType.Exists)
+        => new()
+        {
+            DialogId = dialogId,
+            ActivityType = activityType,
+            ConditionType = conditionType,
+        };
 }

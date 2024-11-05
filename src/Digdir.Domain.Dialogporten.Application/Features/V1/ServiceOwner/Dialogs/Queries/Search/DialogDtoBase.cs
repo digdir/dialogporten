@@ -78,6 +78,13 @@ public class DialogDtoBase
     public string? ExtendedStatus { get; set; }
 
     /// <summary>
+    /// Arbitrary string with a service-specific reference to an external system or service.
+    ///
+    /// Refer to the service-specific documentation provided by the service owner for details (if in use).
+    /// </summary>
+    public string? ExternalReference { get; set; }
+
+    /// <summary>
     /// The date and time when the dialog was created.
     /// </summary>
     /// <example>2022-12-31T23:59:59Z</example>

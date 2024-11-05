@@ -14,7 +14,7 @@ internal static class AggregateExtensions
 {
     private static readonly EntityEntryComparer _entityEntryComparer = new();
 
-    internal static async Task HandleAggregateEntities(this ChangeTracker changeTracker,
+    internal static async Task<ChangeTracker> HandleAggregateEntities(this ChangeTracker changeTracker,
         DateTimeOffset utcNow, CancellationToken cancellationToken)
     {
         var aggregateNodeByEntry = await changeTracker
@@ -57,6 +57,8 @@ internal static class AggregateExtensions
                 versionable.NewVersion();
             }
         }
+
+        return changeTracker;
     }
 
     internal static ModelBuilder AddAggregateEntities(this ModelBuilder modelBuilder)

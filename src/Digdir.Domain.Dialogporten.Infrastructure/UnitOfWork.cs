@@ -28,7 +28,7 @@ internal sealed class UnitOfWork : IUnitOfWork, IAsyncDisposable, IDisposable
 
     private IDbContextTransaction? _transaction;
 
-    private bool _auditableSideEffects = true;
+    private bool _aggregateSideEffects = true;
     private bool _enableConcurrencyCheck;
 
     public UnitOfWork(DialogDbContext dialogDbContext, ITransactionTime transactionTime, IDomainContext domainContext)
@@ -51,9 +51,9 @@ internal sealed class UnitOfWork : IUnitOfWork, IAsyncDisposable, IDisposable
         return this;
     }
 
-    public IUnitOfWork WithoutAuditableSideEffects()
+    public IUnitOfWork WithoutAggregateSideEffects()
     {
-        _auditableSideEffects = false;
+        _aggregateSideEffects = false;
         return this;
     }
 
@@ -94,9 +94,11 @@ internal sealed class UnitOfWork : IUnitOfWork, IAsyncDisposable, IDisposable
             return new Success();
         }
 
-        if (_auditableSideEffects)
+        _dialogDbContext.ChangeTracker.HandleAuditableEntities(_transactionTime.Value);
+
+        if (_aggregateSideEffects)
         {
-            await _dialogDbContext.ChangeTracker.HandleAuditableEntities(_transactionTime.Value, cancellationToken);
+            await _dialogDbContext.ChangeTracker.HandleAggregateEntities(_transactionTime.Value, cancellationToken);
         }
 
         if (!_enableConcurrencyCheck)

@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.28.0](https://github.com/digdir/dialogporten/compare/v1.27.1...v1.28.0) (2024-11-05)
+
+
+### Features
+
+* update swagger name generation ([#1350](https://github.com/digdir/dialogporten/issues/1350)) ([94c5544](https://github.com/digdir/dialogporten/commit/94c55446dbc52ec69def8a74bab6bf7a928d2f3c))
+* **webapi:** Add ExternalReference to dialog search result ([#1384](https://github.com/digdir/dialogporten/issues/1384)) ([431fe16](https://github.com/digdir/dialogporten/commit/431fe16587c787e785a8a100f3c464c339d5ee0b))
+* **webapi:** Return 410 GONE for notification checks on deleted dialogs ([#1387](https://github.com/digdir/dialogporten/issues/1387)) ([198bebd](https://github.com/digdir/dialogporten/commit/198bebd6d44554b4c66917c9d6921e730ab648fe))
+
+
+### Bug Fixes
+
+* Add system user id to identifying claims ([#1362](https://github.com/digdir/dialogporten/issues/1362)) ([16f160d](https://github.com/digdir/dialogporten/commit/16f160d5f5a2293444ac63c0ae13a713b3afe318))
+* **e2e:** Use pagination in sentinel ([#1372](https://github.com/digdir/dialogporten/issues/1372)) ([a1df0ff](https://github.com/digdir/dialogporten/commit/a1df0ff06bbc10c07db100d35fafa85c3f95393d))
+* fixed placement of referenced workflow-file ([#1365](https://github.com/digdir/dialogporten/issues/1365)) ([49c1d80](https://github.com/digdir/dialogporten/commit/49c1d8042040fe5e9eef1646a76b7c7ecaac062f))
+* workaround for github number error in dispatch workflow ([#1367](https://github.com/digdir/dialogporten/issues/1367)) ([06ee356](https://github.com/digdir/dialogporten/commit/06ee3563efcd37156aea755db03c90666610e625))
+
 ## [1.27.1](https://github.com/digdir/dialogporten/compare/v1.27.0...v1.27.1) (2024-10-30)
 
 
