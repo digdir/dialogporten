@@ -16,7 +16,7 @@ jobs:
     with:
       environment: prod
     secrets:
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GH_TOKEN: ${{ secrets.RELEASE_VERSION_STORAGE_PAT }}
 
   check-for-changes:
     name: Check for changes
@@ -73,7 +73,7 @@ jobs:
     needs: [deploy-infra, get-current-version]
     if: ${{ needs.deploy-infra.result == 'success' }}
     env:
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GH_TOKEN: ${{ secrets.RELEASE_VERSION_STORAGE_PAT }}
     steps:
       - name: Set GitHub variable for latest deployed infra version
         run: |
@@ -133,7 +133,7 @@ jobs:
     needs: [deploy-apps, get-current-version]
     if: ${{ needs.deploy-apps.result == 'success' }}
     env:
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GH_TOKEN: ${{ secrets.RELEASE_VERSION_STORAGE_PAT }}
     steps:
       - name: Set GitHub variable for latest deployed apps version
         run: |
