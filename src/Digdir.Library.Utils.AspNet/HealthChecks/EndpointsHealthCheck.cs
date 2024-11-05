@@ -39,15 +39,15 @@ internal sealed class EndpointsHealthCheck : IHealthCheck
                 var response = await client.GetAsync(url, cts.Token);
                 sw.Stop();
 
-                if (sw.Elapsed > TimeSpan.FromSeconds(5))
-                {
-                    _logger.LogWarning("Health check response was slow for endpoint: {Url}. Elapsed time: {Elapsed:N1}s", url, sw.Elapsed.TotalSeconds);
-                    unhealthyEndpoints.Add($"{url} (Degraded - Response time: {sw.Elapsed.TotalSeconds:N1}s)");
-                }
-                else if (!response.IsSuccessStatusCode)
+                if (!response.IsSuccessStatusCode)
                 {
                     _logger.LogWarning("Health check failed for endpoint: {Url}. Status Code: {StatusCode}", url, response.StatusCode);
                     unhealthyEndpoints.Add($"{url} (Status Code: {response.StatusCode})");
+                }
+                else if (sw.Elapsed > TimeSpan.FromSeconds(5))
+                {
+                    _logger.LogWarning("Health check response was slow for endpoint: {Url}. Elapsed time: {Elapsed:N1}s", url, sw.Elapsed.TotalSeconds);
+                    unhealthyEndpoints.Add($"{url} (Degraded - Response time: {sw.Elapsed.TotalSeconds:N1}s)");
                 }
             }
             catch (OperationCanceledException)

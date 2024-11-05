@@ -17,11 +17,16 @@ internal sealed class RedisHealthCheck : IHealthCheck
     {
         try
         {
-            using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-            cts.CancelAfter(TimeSpan.FromSeconds(40));
-
+            var timeout = 15000;
             var sw = System.Diagnostics.Stopwatch.StartNew();
-            using var redis = await ConnectionMultiplexer.ConnectAsync(_settings.Redis.ConnectionString);
+
+            var options = ConfigurationOptions.Parse(_settings.Redis.ConnectionString);
+
+            options.AsyncTimeout = timeout;
+            options.ConnectTimeout = timeout;
+            options.SyncTimeout = timeout;
+
+            using var redis = await ConnectionMultiplexer.ConnectAsync(options);
             var db = redis.GetDatabase();
             await db.PingAsync();
             sw.Stop();
@@ -33,9 +38,9 @@ internal sealed class RedisHealthCheck : IHealthCheck
 
             return HealthCheckResult.Healthy("Redis connection is healthy.");
         }
-        catch (OperationCanceledException)
+        catch (RedisTimeoutException ex)
         {
-            return HealthCheckResult.Unhealthy("Redis health check timed out after 40s.");
+            return HealthCheckResult.Unhealthy("Redis connection timed out.", exception: ex);
         }
         catch (RedisConnectionException ex)
         {
