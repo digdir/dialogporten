@@ -52,7 +52,6 @@ public sealed class PatchDialogsController : ControllerBase
     /// <response code="422">Domain error occured. See problem details for a list of errors.</response>
     [HttpPatch("{dialogId}")]
 
-    // [OpenApiOperation()]
     [OpenApiOperation("V1ServiceOwnerDialogsPatchDialog")]
     [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
