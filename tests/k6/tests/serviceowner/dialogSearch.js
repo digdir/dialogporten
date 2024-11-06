@@ -45,7 +45,7 @@ export default function () {
     let titleForLastItem = uuidv4();
     let updatedAfter = (new Date()).toISOString(); // We use this on all tests to avoid clashing with unrelated dialogs
     let defaultFilter = "?UpdatedAfter=" + updatedAfter;
-    
+
     describe('Arrange: Create some dialogs to test against', () => {
 
         for (let i = 0; i < 20; i++) {
