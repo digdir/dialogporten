@@ -61,10 +61,10 @@ public sealed class PatchDialogsController : ControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status412PreconditionFailed)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status422UnprocessableEntity)]
     public async Task<IActionResult> Patch(
-    [FromRoute] Guid dialogId,
-    [FromHeader(Name = Constants.IfMatch)] Guid? etag,
-    [FromBody] JsonPatchDocument<UpdateDialogDto> patchDocument,
-    CancellationToken ct)
+        [FromRoute] Guid dialogId,
+        [FromHeader(Name = Constants.IfMatch)] Guid? etag,
+        [FromBody] JsonPatchDocument<UpdateDialogDto> patchDocument,
+        CancellationToken ct)
     {
         var dialogQueryResult = await _sender.Send(new GetDialogQuery { DialogId = dialogId }, ct);
         if (!dialogQueryResult.TryPickT0(out var dialog, out var errors))
