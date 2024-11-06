@@ -211,6 +211,7 @@
             "items": {
               "$ref": "#/components/schemas/V1EndUserDialogsQueriesSearch_Dialog"
             },
+            "nullable": true,
             "type": "array"
           },
           "orderBy": {
@@ -239,6 +240,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsQueriesSearch_Dialog"
             },
+            "nullable": true,
             "type": "array"
           },
           "orderBy": {
@@ -260,6 +262,7 @@
             "items": {
               "$ref": "#/components/schemas/ProblemDetails_Error"
             },
+            "nullable": true,
             "type": "array"
           },
           "instance": {
@@ -320,6 +323,7 @@
             "items": {
               "$ref": "#/components/schemas/V1CommonLocalizations_Localization"
             },
+            "nullable": true,
             "type": "array"
           }
         },
@@ -352,6 +356,7 @@
             "items": {
               "$ref": "#/components/schemas/V1CommonLocalizations_Localization"
             },
+            "nullable": true,
             "type": "array"
           },
           "extendedType": {
@@ -604,6 +609,7 @@
             "items": {
               "$ref": "#/components/schemas/V1EndUserDialogsQueriesGet_DialogActivity"
             },
+            "nullable": true,
             "type": "array"
           },
           "apiActions": {
@@ -611,6 +617,7 @@
             "items": {
               "$ref": "#/components/schemas/V1EndUserDialogsQueriesGet_DialogApiAction"
             },
+            "nullable": true,
             "type": "array"
           },
           "attachments": {
@@ -618,6 +625,7 @@
             "items": {
               "$ref": "#/components/schemas/V1EndUserDialogsQueriesGet_DialogAttachment"
             },
+            "nullable": true,
             "type": "array"
           },
           "content": {
@@ -668,6 +676,7 @@
             "items": {
               "$ref": "#/components/schemas/V1EndUserDialogsQueriesGet_DialogGuiAction"
             },
+            "nullable": true,
             "type": "array"
           },
           "id": {
@@ -713,6 +722,7 @@
             "items": {
               "$ref": "#/components/schemas/V1EndUserDialogsQueriesGet_DialogSeenLog"
             },
+            "nullable": true,
             "type": "array"
           },
           "serviceResource": {
@@ -745,6 +755,7 @@
             "items": {
               "$ref": "#/components/schemas/V1EndUserDialogsQueriesGet_DialogTransmission"
             },
+            "nullable": true,
             "type": "array"
           },
           "updatedAt": {
@@ -770,6 +781,7 @@
             "items": {
               "$ref": "#/components/schemas/V1CommonLocalizations_Localization"
             },
+            "nullable": true,
             "type": "array"
           },
           "extendedType": {
@@ -851,6 +863,7 @@
             "items": {
               "$ref": "#/components/schemas/V1EndUserDialogsQueriesGet_DialogApiActionEndpoint"
             },
+            "nullable": true,
             "type": "array"
           },
           "id": {
@@ -931,6 +944,7 @@
             "items": {
               "$ref": "#/components/schemas/V1CommonLocalizations_Localization"
             },
+            "nullable": true,
             "type": "array"
           },
           "id": {
@@ -943,6 +957,7 @@
             "items": {
               "$ref": "#/components/schemas/V1EndUserDialogsQueriesGet_DialogAttachmentUrl"
             },
+            "nullable": true,
             "type": "array"
           }
         },
@@ -1034,6 +1049,7 @@
             "items": {
               "$ref": "#/components/schemas/V1CommonLocalizations_Localization"
             },
+            "nullable": true,
             "type": "array"
           },
           "url": {
@@ -1101,6 +1117,7 @@
             "items": {
               "$ref": "#/components/schemas/V1EndUserDialogsQueriesGet_DialogTransmissionAttachment"
             },
+            "nullable": true,
             "type": "array"
           },
           "authorizationAttribute": {
@@ -1170,6 +1187,7 @@
             "items": {
               "$ref": "#/components/schemas/V1CommonLocalizations_Localization"
             },
+            "nullable": true,
             "type": "array"
           },
           "id": {
@@ -1182,6 +1200,7 @@
             "items": {
               "$ref": "#/components/schemas/V1EndUserDialogsQueriesGet_DialogTransmissionAttachmentUrl"
             },
+            "nullable": true,
             "type": "array"
           }
         },
@@ -1394,6 +1413,7 @@
             "items": {
               "$ref": "#/components/schemas/V1EndUserDialogsQueriesSearch_DialogSeenLog"
             },
+            "nullable": true,
             "type": "array"
           },
           "serviceResource": {
@@ -1444,6 +1464,7 @@
             "items": {
               "$ref": "#/components/schemas/V1CommonLocalizations_Localization"
             },
+            "nullable": true,
             "type": "array"
           },
           "extendedType": {
@@ -1576,6 +1597,7 @@
             "items": {
               "$ref": "#/components/schemas/V1CommonLocalizations_Localization"
             },
+            "nullable": true,
             "type": "array"
           },
           "id": {
@@ -1588,6 +1610,7 @@
             "items": {
               "$ref": "#/components/schemas/V1EndUserDialogTransmissionsQueriesGet_AttachmentUrl"
             },
+            "nullable": true,
             "type": "array"
           }
         },
@@ -1690,6 +1713,7 @@
             "items": {
               "$ref": "#/components/schemas/V1EndUserDialogTransmissionsQueriesGet_Attachment"
             },
+            "nullable": true,
             "type": "array"
           },
           "authorizationAttribute": {
@@ -1764,6 +1788,7 @@
             "items": {
               "$ref": "#/components/schemas/V1CommonLocalizations_Localization"
             },
+            "nullable": true,
             "type": "array"
           },
           "id": {
@@ -1776,6 +1801,7 @@
             "items": {
               "$ref": "#/components/schemas/V1EndUserDialogTransmissionsQueriesSearch_AttachmentUrl"
             },
+            "nullable": true,
             "type": "array"
           }
         },
@@ -1878,6 +1904,7 @@
             "items": {
               "$ref": "#/components/schemas/V1EndUserDialogTransmissionsQueriesSearch_Attachment"
             },
+            "nullable": true,
             "type": "array"
           },
           "authorizationAttribute": {
@@ -1991,6 +2018,7 @@
             "items": {
               "$ref": "#/components/schemas/V1EndUserPartiesQueriesGet_AuthorizedParty"
             },
+            "nullable": true,
             "type": "array"
           }
         },
@@ -2010,6 +2038,7 @@
             "items": {
               "$ref": "#/components/schemas/V1CommonLocalizations_Localization"
             },
+            "nullable": true,
             "type": "array"
           },
           "extendedType": {
@@ -2067,6 +2096,7 @@
             "items": {
               "$ref": "#/components/schemas/V1CommonLocalizations_Localization"
             },
+            "nullable": true,
             "type": "array"
           },
           "extendedType": {
@@ -2180,6 +2210,7 @@
             "items": {
               "$ref": "#/components/schemas/V1CommonLocalizations_Localization"
             },
+            "nullable": true,
             "type": "array"
           },
           "extendedType": {
@@ -2265,6 +2296,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsCreate_ApiActionEndpoint"
             },
+            "nullable": true,
             "type": "array"
           }
         },
@@ -2330,6 +2362,7 @@
             "items": {
               "$ref": "#/components/schemas/V1CommonLocalizations_Localization"
             },
+            "nullable": true,
             "type": "array"
           },
           "urls": {
@@ -2337,6 +2370,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsCreate_AttachmentUrl"
             },
+            "nullable": true,
             "type": "array"
           }
         },
@@ -2433,6 +2467,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsCreate_Activity"
             },
+            "nullable": true,
             "type": "array"
           },
           "apiActions": {
@@ -2440,6 +2475,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsCreate_ApiAction"
             },
+            "nullable": true,
             "type": "array"
           },
           "attachments": {
@@ -2447,6 +2483,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsCreate_Attachment"
             },
+            "nullable": true,
             "type": "array"
           },
           "content": {
@@ -2492,6 +2529,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsCreate_GuiAction"
             },
+            "nullable": true,
             "type": "array"
           },
           "id": {
@@ -2527,6 +2565,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsCreate_SearchTag"
             },
+            "nullable": true,
             "type": "array"
           },
           "serviceResource": {
@@ -2556,6 +2595,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsCreate_Transmission"
             },
+            "nullable": true,
             "type": "array"
           },
           "updatedAt": {
@@ -2621,6 +2661,7 @@
             "items": {
               "$ref": "#/components/schemas/V1CommonLocalizations_Localization"
             },
+            "nullable": true,
             "type": "array"
           },
           "url": {
@@ -2650,6 +2691,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsCreate_TransmissionAttachment"
             },
+            "nullable": true,
             "type": "array"
           },
           "authorizationAttribute": {
@@ -2717,6 +2759,7 @@
             "items": {
               "$ref": "#/components/schemas/V1CommonLocalizations_Localization"
             },
+            "nullable": true,
             "type": "array"
           },
           "id": {
@@ -2731,6 +2774,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsCreate_TransmissionAttachmentUrl"
             },
+            "nullable": true,
             "type": "array"
           }
         },
@@ -2832,6 +2876,7 @@
             "items": {
               "$ref": "#/components/schemas/V1CommonLocalizations_Localization"
             },
+            "nullable": true,
             "type": "array"
           },
           "extendedType": {
@@ -2917,6 +2962,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsUpdate_ApiActionEndpoint"
             },
+            "nullable": true,
             "type": "array"
           },
           "id": {
@@ -2996,6 +3042,7 @@
             "items": {
               "$ref": "#/components/schemas/V1CommonLocalizations_Localization"
             },
+            "nullable": true,
             "type": "array"
           },
           "id": {
@@ -3010,6 +3057,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsUpdate_AttachmentUrl"
             },
+            "nullable": true,
             "type": "array"
           }
         },
@@ -3113,6 +3161,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsUpdate_Activity"
             },
+            "nullable": true,
             "type": "array"
           },
           "apiActions": {
@@ -3120,6 +3169,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsUpdate_ApiAction"
             },
+            "nullable": true,
             "type": "array"
           },
           "attachments": {
@@ -3127,6 +3177,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsUpdate_Attachment"
             },
+            "nullable": true,
             "type": "array"
           },
           "content": {
@@ -3166,6 +3217,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsUpdate_GuiAction"
             },
+            "nullable": true,
             "type": "array"
           },
           "progress": {
@@ -3179,6 +3231,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsUpdate_SearchTag"
             },
+            "nullable": true,
             "type": "array"
           },
           "status": {
@@ -3194,6 +3247,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsUpdate_Transmission"
             },
+            "nullable": true,
             "type": "array"
           },
           "visibleFrom": {
@@ -3260,6 +3314,7 @@
             "items": {
               "$ref": "#/components/schemas/V1CommonLocalizations_Localization"
             },
+            "nullable": true,
             "type": "array"
           },
           "url": {
@@ -3289,6 +3344,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsUpdate_TransmissionAttachment"
             },
+            "nullable": true,
             "type": "array"
           },
           "authorizationAttribute": {
@@ -3356,6 +3412,7 @@
             "items": {
               "$ref": "#/components/schemas/V1CommonLocalizations_Localization"
             },
+            "nullable": true,
             "type": "array"
           },
           "id": {
@@ -3370,6 +3427,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsUpdate_TransmissionAttachmentUrl"
             },
+            "nullable": true,
             "type": "array"
           }
         },
@@ -3597,6 +3655,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsQueriesGet_DialogActivity"
             },
+            "nullable": true,
             "type": "array"
           },
           "apiActions": {
@@ -3604,6 +3663,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsQueriesGet_DialogApiAction"
             },
+            "nullable": true,
             "type": "array"
           },
           "attachments": {
@@ -3611,6 +3671,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsQueriesGet_DialogAttachment"
             },
+            "nullable": true,
             "type": "array"
           },
           "content": {
@@ -3662,6 +3723,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsQueriesGet_DialogGuiAction"
             },
+            "nullable": true,
             "type": "array"
           },
           "id": {
@@ -3715,6 +3777,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsQueriesGet_DialogSeenLog"
             },
+            "nullable": true,
             "type": "array"
           },
           "serviceResource": {
@@ -3747,6 +3810,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsQueriesGet_DialogTransmission"
             },
+            "nullable": true,
             "type": "array"
           },
           "updatedAt": {
@@ -3779,6 +3843,7 @@
             "items": {
               "$ref": "#/components/schemas/V1CommonLocalizations_Localization"
             },
+            "nullable": true,
             "type": "array"
           },
           "extendedType": {
@@ -3860,6 +3925,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsQueriesGet_DialogApiActionEndpoint"
             },
+            "nullable": true,
             "type": "array"
           },
           "id": {
@@ -3940,6 +4006,7 @@
             "items": {
               "$ref": "#/components/schemas/V1CommonLocalizations_Localization"
             },
+            "nullable": true,
             "type": "array"
           },
           "id": {
@@ -3952,6 +4019,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsQueriesGet_DialogAttachmentUrl"
             },
+            "nullable": true,
             "type": "array"
           }
         },
@@ -4044,6 +4112,7 @@
             "items": {
               "$ref": "#/components/schemas/V1CommonLocalizations_Localization"
             },
+            "nullable": true,
             "type": "array"
           },
           "url": {
@@ -4110,6 +4179,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsQueriesGet_DialogTransmissionAttachment"
             },
+            "nullable": true,
             "type": "array"
           },
           "authorizationAttribute": {
@@ -4180,6 +4250,7 @@
             "items": {
               "$ref": "#/components/schemas/V1CommonLocalizations_Localization"
             },
+            "nullable": true,
             "type": "array"
           },
           "id": {
@@ -4192,6 +4263,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsQueriesGet_DialogTransmissionAttachmentUrl"
             },
+            "nullable": true,
             "type": "array"
           }
         },
@@ -4420,6 +4492,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsQueriesSearch_DialogSeenLog"
             },
+            "nullable": true,
             "type": "array"
           },
           "serviceResource": {
@@ -4476,6 +4549,7 @@
             "items": {
               "$ref": "#/components/schemas/V1CommonLocalizations_Localization"
             },
+            "nullable": true,
             "type": "array"
           },
           "extendedType": {
@@ -4603,6 +4677,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsUpdate_TransmissionAttachment"
             },
+            "nullable": true,
             "type": "array"
           },
           "authorizationAttribute": {
@@ -4670,6 +4745,7 @@
             "items": {
               "$ref": "#/components/schemas/V1CommonLocalizations_Localization"
             },
+            "nullable": true,
             "type": "array"
           },
           "id": {
@@ -4682,6 +4758,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogTransmissionsQueriesGet_AttachmentUrl"
             },
+            "nullable": true,
             "type": "array"
           }
         },
@@ -4784,6 +4861,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogTransmissionsQueriesGet_Attachment"
             },
+            "nullable": true,
             "type": "array"
           },
           "authorizationAttribute": {
@@ -4854,6 +4932,7 @@
             "items": {
               "$ref": "#/components/schemas/V1CommonLocalizations_Localization"
             },
+            "nullable": true,
             "type": "array"
           },
           "id": {
@@ -4866,6 +4945,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogTransmissionsQueriesSearch_AttachmentUrl"
             },
+            "nullable": true,
             "type": "array"
           }
         },
@@ -4968,6 +5048,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogTransmissionsQueriesSearch_Attachment"
             },
+            "nullable": true,
             "type": "array"
           },
           "authorizationAttribute": {
@@ -5037,6 +5118,7 @@
             "items": {
               "$ref": "#/components/schemas/V1WellKnownJwksQueriesGet_Jwk"
             },
+            "nullable": true,
             "type": "array"
           }
         },
