@@ -9,6 +9,20 @@
 import papaparse from 'https://jslib.k6.io/papaparse/5.1.1/index.js';
 import { SharedArray } from "k6/data";
 
+/**
+ * Function to read the CSV file specified by the filename parameter.
+ * @param {} filename 
+ * @returns 
+ */
+function readCsv(filename) {
+  try {
+    return papaparse.parse(open(filename), { header: true, skipEmptyLines: true }).data;
+  } catch (error) {
+    console.log(`Error reading CSV file: ${error}`);
+    return [];
+  } 
+}
+
 const filenameServiceowners = '../performancetest_data/.serviceowners-with-tokens.csv';
 if (!__ENV.API_ENVIRONMENT) {
   throw new Error('API_ENVIRONMENT must be set');
@@ -24,7 +38,7 @@ const filenameEndusersWithTokens = '../performancetest_data/.endusers-with-token
  * @type {SharedArray}
  */
 export const serviceOwners = new SharedArray('serviceOwners', function () {
-  return papaparse.parse(open(filenameServiceowners), { header: true, skipEmptyLines: true }).data;
+  return readCsv(filenameServiceowners);
 });
 
 /**
@@ -36,7 +50,7 @@ export const serviceOwners = new SharedArray('serviceOwners', function () {
  * @type {SharedArray}
  */
 export const endUsers = new SharedArray('endUsers', function () {
-  return papaparse.parse(open(filenameEndusers), { header: true, skipEmptyLines: true }).data;
+  return readCsv(filenameEndusers); 
 });
 
 /**
@@ -47,6 +61,6 @@ export const endUsers = new SharedArray('endUsers', function () {
  * @type {SharedArray}
  */
 export const endUsersWithTokens = new SharedArray('endUsersWithTokens', function () {
-  return papaparse.parse(open(filenameEndusersWithTokens), { header: true, skipEmptyLines: true }).data;
+  return readCsv(filenameEndusersWithTokens);
 });
 
