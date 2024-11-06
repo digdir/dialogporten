@@ -14,7 +14,8 @@ export {
     putSO,
     patchSO,
     deleteSO,
-    purgeSO
+    purgeSO,
+    postGQ
 } from './request.js';
 export {
     setTitle,
