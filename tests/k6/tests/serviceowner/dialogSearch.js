@@ -207,9 +207,7 @@ export default function () {
         let r = getSO('dialogs/' + defaultFilter + '&EndUserId=' + invalidEndUserId + '&ServiceResource=' + auxResource);
         expectStatusFor(r).to.equal(200);
         expect(r, 'response').to.have.validJsonBody();
-        let response = r.json();
-        expect(response, 'response json').to.have.property("items");
-        expect(response.items, 'items').to.have.lengthOf(0);
+        expect(r.json(), 'response json').not.to.have.property("items");
     })
 
     describe("Cleanup", () => {
