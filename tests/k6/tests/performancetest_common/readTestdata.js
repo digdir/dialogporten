@@ -9,6 +9,11 @@
 import papaparse from 'https://jslib.k6.io/papaparse/5.1.1/index.js';
 import { SharedArray } from "k6/data";
 
+/**
+ * Function to read the CSV file specified by the filename parameter.
+ * @param {} filename 
+ * @returns 
+ */
 function readCsv(filename) {
   try {
     return papaparse.parse(open(filename), { header: true, skipEmptyLines: true }).data;
