@@ -6,6 +6,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using NSwag.Annotations;
 using DialogportenAuthorizationPolicy = Digdir.Domain.Dialogporten.WebApi.Common.Authorization.AuthorizationPolicy;
 using IMapper = AutoMapper.IMapper;
 using ProblemDetails = FastEndpoints.ProblemDetails;
@@ -51,6 +52,8 @@ public sealed class PatchDialogsController : ControllerBase
     /// <response code="422">Domain error occured. See problem details for a list of errors.</response>
     [HttpPatch("{dialogId}")]
 
+    // [OpenApiOperation()]
+    [OpenApiOperation("V1ServiceOwnerDialogsPatchDialog")]
     [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
@@ -59,10 +62,10 @@ public sealed class PatchDialogsController : ControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status412PreconditionFailed)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status422UnprocessableEntity)]
     public async Task<IActionResult> Patch(
-        [FromRoute] Guid dialogId,
-        [FromHeader(Name = Constants.IfMatch)] Guid? etag,
-        [FromBody] JsonPatchDocument<UpdateDialogDto> patchDocument,
-        CancellationToken ct)
+    [FromRoute] Guid dialogId,
+    [FromHeader(Name = Constants.IfMatch)] Guid? etag,
+    [FromBody] JsonPatchDocument<UpdateDialogDto> patchDocument,
+    CancellationToken ct)
     {
         var dialogQueryResult = await _sender.Send(new GetDialogQuery { DialogId = dialogId }, ct);
         if (!dialogQueryResult.TryPickT0(out var dialog, out var errors))
