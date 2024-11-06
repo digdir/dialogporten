@@ -64,12 +64,6 @@ public sealed class DomainEventConsumerDefinition<THandler, TEvent> : ConsumerDe
     where THandler : INotificationHandler<TEvent>
     where TEvent : class, IDomainEvent
 {
-    public DomainEventConsumerDefinition()
-    {
-        var endpointName = $"{typeof(THandler).Name}_{typeof(TEvent).Name}";
-        EndpointName = endpointName;
-    }
-
     protected override void ConfigureConsumer(
         IReceiveEndpointConfigurator endpointConfigurator,
         IConsumerConfigurator<DomainEventConsumer<THandler, TEvent>> consumerConfigurator,
