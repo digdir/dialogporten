@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.29.0](https://github.com/digdir/dialogporten/compare/v1.28.3...v1.29.0) (2024-11-06)
+
+
+### Features
+
+* **webAPI:** Make all lists nullable in OpenAPI schema ([#1359](https://github.com/digdir/dialogporten/issues/1359)) ([920d749](https://github.com/digdir/dialogporten/commit/920d7493d09e551a4207f61636a7188fea490223))
+
+
+### Bug Fixes
+
+* **graphql:** ensure gql has maskinporten environment set ([#1408](https://github.com/digdir/dialogporten/issues/1408)) ([152417a](https://github.com/digdir/dialogporten/commit/152417aa100bb779e68d302c0674e2f9ed2b649e))
+
 ## [1.28.3](https://github.com/digdir/dialogporten/compare/v1.28.2...v1.28.3) (2024-11-06)
 
 
