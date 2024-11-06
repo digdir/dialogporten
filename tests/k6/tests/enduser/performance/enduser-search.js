@@ -17,6 +17,9 @@ export let options = {
 };
 
 export default function() {
+    if (!endUsersWithTokens || endUsersWithTokens.length === 0) {
+        throw new Error('No end users loaded for testing');
+    }   
     if ((options.vus === undefined || options.vus === 1) && (options.iterations === undefined || options.iterations === 1)) {
         enduserSearch(endUsersWithTokens[0]);
     }
