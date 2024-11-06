@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.28.3](https://github.com/digdir/dialogporten/compare/v1.28.2...v1.28.3) (2024-11-06)
+
+
+### Bug Fixes
+
+* avoid crash if testdata file is empty ([#1403](https://github.com/digdir/dialogporten/issues/1403)) ([e0ea0af](https://github.com/digdir/dialogporten/commit/e0ea0afad3a62cf67b495c68405eb420586f80a3))
+
 ## [1.28.2](https://github.com/digdir/dialogporten/compare/v1.28.1...v1.28.2) (2024-11-05)
 
 
