@@ -80,4 +80,28 @@ public static class OpenApiDocumentExtensions
             }
         }
     }
+
+    public static void MakeCollectionsNullable(this OpenApiDocument openApiDocument)
+    {
+        foreach (var schema in openApiDocument.Components.Schemas.Values)
+        {
+            MakeCollectionsNullable(schema);
+        }
+    }
+
+    private static void MakeCollectionsNullable(JsonSchema schema)
+    {
+        if (schema.Properties == null)
+        {
+            return;
+        }
+
+        foreach (var property in schema.Properties.Values)
+        {
+            if (property.Type.HasFlag(JsonObjectType.Array))
+            {
+                property.IsNullableRaw = true;
+            }
+        }
+    }
 }
