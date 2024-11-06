@@ -28,7 +28,7 @@ case $API_ENVIRONMENT in
         env="at21" ;;
     "staging")
         env="tt02" ;;
-    "performance")
+    "yt01")
         env="yt01" ;;
     *)
         echo "Error: Unknown api environment $API_ENVIRONMENT"

@@ -1,5 +1,38 @@
 # Changelog
 
+## [1.29.0](https://github.com/digdir/dialogporten/compare/v1.28.3...v1.29.0) (2024-11-06)
+
+
+### Features
+
+* **webAPI:** Make all lists nullable in OpenAPI schema ([#1359](https://github.com/digdir/dialogporten/issues/1359)) ([920d749](https://github.com/digdir/dialogporten/commit/920d7493d09e551a4207f61636a7188fea490223))
+
+
+### Bug Fixes
+
+* **graphql:** ensure gql has maskinporten environment set ([#1408](https://github.com/digdir/dialogporten/issues/1408)) ([152417a](https://github.com/digdir/dialogporten/commit/152417aa100bb779e68d302c0674e2f9ed2b649e))
+
+## [1.28.3](https://github.com/digdir/dialogporten/compare/v1.28.2...v1.28.3) (2024-11-06)
+
+
+### Bug Fixes
+
+* avoid crash if testdata file is empty ([#1403](https://github.com/digdir/dialogporten/issues/1403)) ([e0ea0af](https://github.com/digdir/dialogporten/commit/e0ea0afad3a62cf67b495c68405eb420586f80a3))
+
+## [1.28.2](https://github.com/digdir/dialogporten/compare/v1.28.1...v1.28.2) (2024-11-05)
+
+
+### Bug Fixes
+
+* Use yt01 token generator environment for k6 tests running on yt01 ([#1391](https://github.com/digdir/dialogporten/issues/1391)) ([393176c](https://github.com/digdir/dialogporten/commit/393176c1f21dc6f8b0ab7fbf294e16713bd4d6e0))
+
+## [1.28.1](https://github.com/digdir/dialogporten/compare/v1.28.0...v1.28.1) (2024-11-05)
+
+
+### Bug Fixes
+
+* **service:** ensure correct maskinporten environment ([#1392](https://github.com/digdir/dialogporten/issues/1392)) ([9d7defe](https://github.com/digdir/dialogporten/commit/9d7defe02b2dd97c87056faf93c846fb8e3ab320))
+
 ## [1.28.0](https://github.com/digdir/dialogporten/compare/v1.27.1...v1.28.0) (2024-11-05)
 
 
