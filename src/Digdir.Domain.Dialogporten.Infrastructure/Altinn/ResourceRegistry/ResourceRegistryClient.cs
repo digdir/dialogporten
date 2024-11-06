@@ -1,6 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Domain.Common;
+using Digdir.Domain.Dialogporten.Domain.ResourcePolicyMetadata;
 using ZiggyCreatures.Caching.Fusion;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.ResourceRegistry;
@@ -62,6 +63,10 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
             nextUrl = response.Links.Next?.ToString();
         } while (nextUrl is not null);
     }
+
+    public IAsyncEnumerable<List<ResourcePolicyMetadata>> GetUpdatedResourcePolicyMetadata(DateTimeOffset since, int batchSize,
+        CancellationToken cancellationToken) =>
+        throw new NotImplementedException();
 
     private async Task<ServiceResourceInformation[]> FetchServiceResourceInformation(CancellationToken cancellationToken)
     {

@@ -1,10 +1,14 @@
-﻿namespace Digdir.Domain.Dialogporten.Application.Externals;
+﻿using Digdir.Domain.Dialogporten.Domain.ResourcePolicyMetadata;
+
+namespace Digdir.Domain.Dialogporten.Application.Externals;
 
 public interface IResourceRegistry
 {
     Task<IReadOnlyCollection<ServiceResourceInformation>> GetResourceInformationForOrg(string orgNumber, CancellationToken cancellationToken);
     Task<ServiceResourceInformation?> GetResourceInformation(string serviceResourceId, CancellationToken cancellationToken);
     IAsyncEnumerable<List<UpdatedSubjectResource>> GetUpdatedSubjectResources(DateTimeOffset since, int batchSize,
+        CancellationToken cancellationToken);
+    IAsyncEnumerable<List<ResourcePolicyMetadata>> GetUpdatedResourcePolicyMetadata(DateTimeOffset since, int batchSize,
         CancellationToken cancellationToken);
 }
 
