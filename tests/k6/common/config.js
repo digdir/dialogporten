@@ -1,22 +1,41 @@
+const localBaseUrl = "https://localhost:7214/";
+const localDockerBaseUrl = "https://host.docker.internal:7214/";
+const testBaseUrl = "https://altinn-dev-api.azure-api.net/dialogporten/";
+const yt01BaseUrl = "https://platform.yt01.altinn.cloud/dialogporten/";
+const stagingBaseUrl = "https://platform.tt02.altinn.no/dialogporten/";
+const prodBaseUrl = "https://platform.altinn.no/dialogporten/";
+
+const endUserPath = "api/v1/enduser/";
+const serviceOwnerPath = "api/v1/serviceowner/";
+const graphqlPath = "graphql";
+
 export const baseUrls = {
     v1: {
         enduser: {
-            localdev: "https://localhost:7214/api/v1/enduser/",
-            localdev_docker: "https://host.docker.internal:7214/api/v1/enduser/",
-            test: "https://altinn-dev-api.azure-api.net/dialogporten/api/v1/enduser/",
-            yt01: "https://platform.yt01.altinn.cloud/dialogporten/api/v1/enduser/",
-            staging: "https://platform.tt02.altinn.no/dialogporten/api/v1/enduser/",
-            prod: "https://platform.altinn.no/dialogporten/api/v1/enduser/"
+            localdev: localBaseUrl + endUserPath,
+            localdev_docker: localDockerBaseUrl + endUserPath,
+            test: testBaseUrl + endUserPath,
+            yt01: yt01BaseUrl + endUserPath,
+            staging: stagingBaseUrl + endUserPath,
+            prod: prodBaseUrl + endUserPath
         },
         serviceowner: {
-            localdev: "https://localhost:7214/api/v1/serviceowner/",
-            localdev_docker: "https://host.docker.internal:7214/api/v1/serviceowner/",
-            test: "https://altinn-dev-api.azure-api.net/dialogporten/api/v1/serviceowner/",
-            yt01: "https://platform.yt01.altinn.cloud/dialogporten/api/v1/serviceowner/",
-            staging: "https://platform.tt02.altinn.no/dialogporten/api/v1/serviceowner/",
-            prod: "https://platform.altinn.no/dialogporten/api/v1/serviceowner/"
-        }    
-    }    
+            localdev: localBaseUrl + serviceOwnerPath,
+            localdev_docker: localDockerBaseUrl + serviceOwnerPath,
+            test: testBaseUrl + serviceOwnerPath,
+            yt01: yt01BaseUrl + serviceOwnerPath,
+            staging: stagingBaseUrl + serviceOwnerPath,
+            prod: prodBaseUrl + serviceOwnerPath
+        },
+        graphql: {
+            localdev: localBaseUrl + graphqlPath,
+            localdev_docker: localDockerBaseUrl + graphqlPath,
+            test: testBaseUrl + graphqlPath,
+            yt01: yt01BaseUrl + graphqlPath,
+            staging: stagingBaseUrl + graphqlPath,
+            prod: prodBaseUrl + graphqlPath
+        },
+    }
 };
 
 export const defaultEndUserOrgNo = "310923044"; // ÆRLIG UROKKELIG TIGER AS
@@ -42,5 +61,7 @@ if (!baseUrls[__ENV.API_VERSION]["serviceowner"][__ENV.API_ENVIRONMENT]) {
 export const baseUrlEndUser = baseUrls[__ENV.API_VERSION]["enduser"][__ENV.API_ENVIRONMENT];
 export const baseUrlServiceOwner = baseUrls[__ENV.API_VERSION]["serviceowner"][__ENV.API_ENVIRONMENT];
 export const tokenGeneratorEnv = __ENV.API_ENVIRONMENT == "yt01" ? "yt01" : "tt02"; // yt01 is the only environment that has a separate token generator environment
+
+export const baseUrlGraphql = baseUrls[__ENV.API_VERSION]["graphql"][__ENV.API_ENVIRONMENT];
 
 export const sentinelValue = "dialogporten-e2e-sentinel";
