@@ -23,7 +23,7 @@
         <PackageReference Include="Polly.Contrib.WaitAndRetry" Version="1.1.1"/>
         <PackageReference Include="ZiggyCreatures.FusionCache" Version="1.4.0" />
         <PackageReference Include="ZiggyCreatures.FusionCache.Backplane.StackExchangeRedis" Version="1.4.0" />
-        <PackageReference Include="ZiggyCreatures.FusionCache.Serialization.NeueccMessagePack" Version="1.4.0" />
+        <PackageReference Include="ZiggyCreatures.FusionCache.Serialization.NeueccMessagePack" Version="1.4.1" />
     </ItemGroup>
 
     <ItemGroup>
