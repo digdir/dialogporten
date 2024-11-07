@@ -9,6 +9,7 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Events;
 using Digdir.Library.Entity.Abstractions;
 using Digdir.Library.Entity.Abstractions.Features.Aggregate;
+using Digdir.Library.Entity.Abstractions.Features.Identifiable;
 using Digdir.Library.Entity.Abstractions.Features.SoftDeletable;
 using Digdir.Library.Entity.Abstractions.Features.Versionable;
 
@@ -97,7 +98,7 @@ public sealed class DialogEntity :
             return;
         }
 
-        SeenLog.Add(new()
+        SeenLog.Add(new DialogSeenLog
         {
             EndUserTypeId = userTypeId,
             IsViaServiceOwner = userTypeId == DialogUserType.Values.ServiceOwnerOnBehalfOfPerson,
@@ -108,7 +109,6 @@ public sealed class DialogEntity :
                 ActorName = endUserName
             }
         });
-
         _domainEvents.Add(new DialogSeenDomainEvent(Id, ServiceResource, Party, Process, PrecedingProcess));
     }
 
