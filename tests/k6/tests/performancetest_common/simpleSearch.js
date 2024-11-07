@@ -5,7 +5,7 @@
 import { randomItem, uuidv4 } from 'https://jslib.k6.io/k6-utils/1.4.0/index.js';
 import { expect, expectStatusFor } from "../../common/testimports.js";
 import { describe } from '../../common/describe.js';
-import { getEU, postGQ } from '../../common/request.js';
+import { getEU, postGQ, getSO } from '../../common/request.js';
 import { getGraphqlParty } from '../performancetest_data/graphql-search.js';
 
 
@@ -31,7 +31,7 @@ function retrieveDialogContent(response, paramsWithToken) {
 }
 
 /**
- * Performs a simple search.
+ * Performs a enduser search.
  * @param {Object} enduser - The end user.
  * @returns {void}
  */
@@ -123,6 +123,30 @@ export function graphqlSearch(enduser) {
     };
     describe('Perform graphql dialog list', () => {
         let r = postGQ(getGraphqlParty(enduser.ssn), paramsWithToken);
+        expectStatusFor(r).to.equal(200);
+        expect(r, 'response').to.have.validJsonBody();
+    });
+}
+
+/**
+ * Performs a serviceowner search.
+ * @param {P} serviceowner 
+ * @param {*} enduser 
+ */
+export function serviceownerSearch(serviceowner, enduser, tag_name) {
+    let paramsWithToken = {
+        headers: {
+            Authorization: "Bearer " + serviceowner.token,
+            traceparent: uuidv4()
+        },
+        tags: { name: tag_name }
+    }
+
+    let enduserid = "urn:altinn:person:identifier-no:" + enduser.ssn;
+    let serviceResource = "urn:altinn:resource:" + serviceowner.resource;
+    let defaultFilter = "?enduserid=" + enduserid + "&serviceResource=" + serviceResource;
+    describe('Perform serviceowner dialog list', () => {
+        let r = getSO('dialogs' + defaultFilter, paramsWithToken);
         expectStatusFor(r).to.equal(200);
         expect(r, 'response').to.have.validJsonBody();
     });
