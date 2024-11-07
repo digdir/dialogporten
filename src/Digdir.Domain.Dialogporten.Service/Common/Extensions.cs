@@ -29,7 +29,7 @@ internal static class Extensions
                     BusConsumerType: openDomainEventConsumer.MakeGenericType(x.@class, x.@event),
                     BusDefinitionType: openDomainEventConsumerDefinition.MakeGenericType(x.@class, x.@event),
                     EndpointName: x.@class.GetInterfaceMap(x.@interface)
-                        .TargetMethods.First()
+                        .TargetMethods.Single()
                         .GetCustomAttribute<EndpointNameAttribute>()?
                         .Name ?? $"{x.@class.Name}_{x.@event.Name}")
                 ))

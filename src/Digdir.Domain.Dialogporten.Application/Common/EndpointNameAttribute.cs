@@ -1,6 +1,11 @@
+using MediatR;
+
 namespace Digdir.Domain.Dialogporten.Application.Common;
 
-[AttributeUsage(AttributeTargets.Method, Inherited = false)]
+/// <summary>
+/// Attribute to specify which endpoint name MassTransit will use when wrapping <see cref="INotificationHandler{T}"/>.<see cref="INotificationHandler{T}.Handle(T, CancellationToken)"/> methods.
+/// </summary>
+[AttributeUsage(AttributeTargets.Method)]
 public sealed class EndpointNameAttribute : Attribute
 {
     public string Name { get; }
