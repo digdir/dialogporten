@@ -1,3 +1,4 @@
+import { randomItem } from 'https://jslib.k6.io/k6-utils/1.1.0/index.js';
 import { serviceownerSearch } from '../../performancetest_common/simpleSearch.js'
 import { getDefaultThresholds } from '../../performancetest_common/getDefaultThresholds.js';
 import { serviceOwners ,endUsersWithTokens } from '../../performancetest_common/readTestdata.js';
@@ -9,6 +10,11 @@ export let options = {
     thresholds: getDefaultThresholds(['http_req_duration', 'http_reqs'],[tag_name])
 };
 
+/**
+ * Perform a service owner search.
+ * In single user mode, the first service owner and end user with token is used. Only one iteration is performed.
+ * In multi user mode, a random service owner and end user with token is used.
+ */
 export default function() {
     if (!endUsersWithTokens || endUsersWithTokens.length === 0) {
         throw new Error('No end users loaded for testing');
@@ -16,12 +22,13 @@ export default function() {
     if (!serviceOwners || serviceOwners.length === 0) {
         throw new Error('No service owners loaded for testing');
     }
-      
-    if ((options.vus === undefined || options.vus === 1) && (options.iterations === undefined || options.iterations === 1)) {
+
+    const isSingleUserMode = (options.vus ?? 1) === 1 && (options.iterations ?? 1) === 1 && (options.duration ?? 0) === 0;
+    if (isSingleUserMode) {
         serviceownerSearch(serviceOwners[0], endUsersWithTokens[0], tag_name);
     }
     else {
-        serviceownerSearch(randomItem(serviceOwners) ,randomItem(endUsersWithTokens), tag_name);
+        serviceownerSearch(randomItem(serviceOwners), randomItem(endUsersWithTokens), tag_name);
     }
 }
 

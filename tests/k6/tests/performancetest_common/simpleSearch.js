@@ -142,9 +142,9 @@ export function serviceownerSearch(serviceowner, enduser, tag_name) {
         tags: { name: tag_name }
     }
 
-    let enduserid = "urn:altinn:person:identifier-no:" + enduser.ssn;
-    let serviceResource = "urn:altinn:resource:" + serviceowner.resource;
-    let defaultFilter = "?enduserid=" + enduserid + "&serviceResource=" + serviceResource;
+    let enduserid = encodeURIComponent(`urn:altinn:person:identifier-no:${enduser.ssn}`);
+    let serviceResource = encodeURIComponent(`urn:altinn:resource:${serviceowner.resource}`);
+    let defaultFilter = `?enduserid=${enduserid}&serviceResource=${serviceResource}`;
     describe('Perform serviceowner dialog list', () => {
         let r = getSO('dialogs' + defaultFilter, paramsWithToken);
         expectStatusFor(r).to.equal(200);
