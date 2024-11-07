@@ -57,8 +57,8 @@ if [ "$tokens" = "both" ] || [ "$tokens" = "enterprise" ]; then
     echo "org,orgno,scopes,resource,token" > $serviceowner_tokenfile
     while IFS=, read -r org orgno scopes resource
     do
-        url="https://altinn-testtools-token-generator.azurewebsites.net/api/GetEnterpriseToken?org=$org&env=$env&scopes=$scopes&orgno=$orgno&ttl=3600"
-        token=$(curl -s -f $url -u "$tokengenuser:$tokengenpasswd" )
+        url="https://altinn-testtools-token-generator.azurewebsites.net/api/GetEnterpriseToken?org=$org&env=$env&orgno=$orgno&ttl=3600"
+        token=$(curl -s -f --get --data-urlencode "scopes=$scopes" $url -u "$tokengenuser:$tokengenpasswd" )
         if [ $? -ne 0 ]; then
             echo "Error: Failed to generate enterprise token for: $env, $org, $orgno, $scopes "
             continue
