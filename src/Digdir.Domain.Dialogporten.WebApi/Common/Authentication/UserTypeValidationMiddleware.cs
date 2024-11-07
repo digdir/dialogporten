@@ -21,7 +21,7 @@ public sealed class UserTypeValidationMiddleware
             if (userType == UserIdType.Unknown)
             {
                 context.Response.StatusCode = StatusCodes.Status403Forbidden;
-                await context.Response.WriteAsJsonAsync(context.ResponseBuilder(
+                await context.Response.WriteAsJsonAsync(context.GetResponseOrDefault(
                     context.Response.StatusCode,
                     [
                         new("Type",

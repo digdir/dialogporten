@@ -52,6 +52,11 @@ static void BuildAndRun(string[] args, TelemetryConfiguration telemetryConfigura
 {
     var builder = WebApplication.CreateBuilder(args);
 
+    builder.WebHost.ConfigureKestrel(kestrelOptions =>
+    {
+        kestrelOptions.Limits.MaxRequestBodySize = Constants.MaxRequestBodySize;
+    });
+
     builder.Host.UseSerilog((context, services, configuration) => configuration
         .MinimumLevel.Warning()
         .ReadFrom.Configuration(context.Configuration)

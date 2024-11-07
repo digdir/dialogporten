@@ -6,16 +6,41 @@ namespace Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
 
 internal static class ErrorResponseBuilderExtensions
 {
-    public static object ResponseBuilder(this HttpContext ctx, int statusCode, List<ValidationFailure>? failures = null) =>
-        ResponseBuilder(failures ?? [], ctx, statusCode);
+    public static ProblemDetails DefaultResponse(this HttpContext ctx, int? statusCode = null) => new()
+    {
+        Title = "An error occurred while processing the request.",
+        Detail = "Something went wrong during the request.",
+        Type = "https://datatracker.ietf.org/doc/html/rfc7231#section-6.6.1",
+        Status = statusCode ?? ctx.Response.StatusCode,
+        Instance = ctx.Request.Path,
+        Extensions = { { "traceId", Activity.Current?.Id ?? ctx.TraceIdentifier } }
+    };
+
+    public static ProblemDetails GetResponseOrDefault(this HttpContext ctx, int statusCode,
+        List<ValidationFailure>? failures = null) =>
+        ctx.ResponseBuilder(failures, statusCode) ?? ctx.DefaultResponse(statusCode);
 
     public static object ResponseBuilder(List<ValidationFailure> failures, HttpContext ctx, int statusCode)
+        => ctx.ResponseBuilder(failures, statusCode) ?? ctx.DefaultResponse(statusCode);
+
+    public static ProblemDetails? ResponseBuilder(this HttpContext ctx, List<ValidationFailure>? failures = null, int? statusCode = null)
     {
-        var errors = failures
+        var errors = failures?
             .GroupBy(f => f.PropertyName)
-            .ToDictionary(x => x.Key, x => x.Select(m => m.ErrorMessage).ToArray());
+            .ToDictionary(x => x.Key, x => x.Select(m => m.ErrorMessage).ToArray())
+            ?? [];
+
+        statusCode ??= ctx.Response.StatusCode;
         return statusCode switch
         {
+            StatusCodes.Status413PayloadTooLarge => new ProblemDetails
+            {
+                Title = $"Payload too large. The maximum allowed size is {Constants.MaxRequestBodySize} bytes.",
+                Type = "https://datatracker.ietf.org/doc/html/rfc7231#section-6.5.11",
+                Status = statusCode,
+                Instance = ctx.Request.Path,
+                Extensions = { { "traceId", Activity.Current?.Id ?? ctx.TraceIdentifier } }
+            },
             StatusCodes.Status400BadRequest => new ValidationProblemDetails(errors)
             {
                 Title = "One or more validation errors occurred.",
@@ -73,15 +98,7 @@ internal static class ErrorResponseBuilderExtensions
                 Instance = ctx.Request.Path,
                 Extensions = { { "traceId", Activity.Current?.Id ?? ctx.TraceIdentifier } }
             },
-            _ => new ProblemDetails
-            {
-                Title = "An error occurred while processing the request.",
-                Detail = "Something went wrong during the request.",
-                Type = "https://datatracker.ietf.org/doc/html/rfc7231#section-6.6.1",
-                Status = ctx.Response.StatusCode,
-                Instance = ctx.Request.Path,
-                Extensions = { { "traceId", Activity.Current?.Id ?? ctx.TraceIdentifier } }
-            }
+            _ => null
         };
     }
 }
