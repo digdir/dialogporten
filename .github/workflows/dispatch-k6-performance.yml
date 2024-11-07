@@ -49,6 +49,7 @@ on:
         options:
           - 'tests/k6/tests/serviceowner/performance/create-dialog.js'
           - 'tests/k6/tests/serviceowner/performance/create-remove-dialog.js'
+          - 'tests/k6/tests/serviceowner/performance/serviceowner-search.js'
           - 'tests/k6/tests/enduser/performance/enduser-search.js'
           - 'tests/k6/tests/graphql/performance/graphql-search.js'
 
