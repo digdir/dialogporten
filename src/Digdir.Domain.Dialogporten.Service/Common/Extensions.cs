@@ -1,9 +1,7 @@
-using System.Reflection;
 using Digdir.Domain.Dialogporten.Application;
 using Digdir.Domain.Dialogporten.Domain.Common.EventPublisher;
 using Digdir.Domain.Dialogporten.Service.Consumers;
 using MediatR;
-using EndpointNameAttribute = Digdir.Domain.Dialogporten.Application.Common.EndpointNameAttribute;
 
 namespace Digdir.Domain.Dialogporten.Service.Common;
 
@@ -27,14 +25,10 @@ internal static class Extensions
                 .Select(x => new ApplicationConsumerMapping(
                     AppConsumerType: x.@class.AsType(),
                     BusConsumerType: openDomainEventConsumer.MakeGenericType(x.@class, x.@event),
-                    BusDefinitionType: openDomainEventConsumerDefinition.MakeGenericType(x.@class, x.@event),
-                    EndpointName: x.@class.GetInterfaceMap(x.@interface)
-                        .TargetMethods.Single()
-                        .GetCustomAttribute<EndpointNameAttribute>()?
-                        .Name ?? $"{x.@class.Name}_{x.@event.Name}")
+                    BusDefinitionType: openDomainEventConsumerDefinition.MakeGenericType(x.@class, x.@event))
                 ))
             .ToArray();
     }
 }
 
-internal record struct ApplicationConsumerMapping(Type AppConsumerType, Type BusConsumerType, Type BusDefinitionType, string EndpointName);
+internal record struct ApplicationConsumerMapping(Type AppConsumerType, Type BusConsumerType, Type BusDefinitionType);
