@@ -58,7 +58,7 @@ static void BuildAndRun(string[] args, TelemetryConfiguration telemetryConfigura
             .WithPubSubCapabilities<ServiceAssemblyMarker>()
             .AndBusConfiguration(x =>
             {
-                foreach (var map in Extensions.GetApplicationConsumerMaps())
+                foreach (var map in MassTransitApplicationUtils.GetApplicationConsumerMaps())
                 {
                     x.TryAddTransient(map.AppConsumerType);
                     x.AddConsumer(map.BusConsumerType, map.BusDefinitionType);

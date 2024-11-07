@@ -1,0 +1,7 @@
+﻿[
+  DialogEventToAltinnForwarder_DialogActivityCreatedDomainEvent,
+  DialogEventToAltinnForwarder_DialogCreatedDomainEvent,
+  DialogEventToAltinnForwarder_DialogUpdatedDomainEvent,
+  DialogEventToAltinnForwarder_DialogDeletedDomainEvent,
+  DialogEventToAltinnForwarder_DialogSeenDomainEvent
+]

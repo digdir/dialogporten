@@ -20,13 +20,7 @@ public sealed class DomainEventConsumerDefinition<THandler, TEvent> : ConsumerDe
 {
     public DomainEventConsumerDefinition()
     {
-        var @class = typeof(THandler);
-        var @interface = typeof(INotificationHandler<TEvent>);
-        var @event = typeof(TEvent);
-        EndpointName = @class.GetInterfaceMap(@interface)
-            .TargetMethods.Single()
-            .GetCustomAttribute<EndpointNameAttribute>()?
-            .Name ?? EndpointNameAttribute.DefaultName(@class, @event);
+        EndpointName = EndpointNameAttribute.GetName<THandler, TEvent>();
     }
 
     protected override void ConfigureConsumer(

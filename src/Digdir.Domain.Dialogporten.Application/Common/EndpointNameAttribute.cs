@@ -1,3 +1,4 @@
+using System.Reflection;
 using Digdir.Domain.Dialogporten.Domain.Common.EventPublisher;
 using MediatR;
 
@@ -27,6 +28,18 @@ public sealed class EndpointNameAttribute : Attribute
         Name = name;
     }
 
-    public static string DefaultName(Type handlerType, Type eventType)
+    public static string GetName<THandler, TEvent>()
+        where THandler : INotificationHandler<TEvent>
+        where TEvent : class, IDomainEvent
+        => GetName(typeof(THandler), typeof(TEvent));
+
+    public static string GetName(Type handlerType, Type eventType)
+        => handlerType
+            .GetInterfaceMap(typeof(INotificationHandler<>).MakeGenericType(eventType))
+            .TargetMethods.Single()
+            .GetCustomAttribute<EndpointNameAttribute>()?
+            .Name ?? DefaultName(handlerType, eventType);
+
+    private static string DefaultName(Type handlerType, Type eventType)
         => $"{handlerType.Name}_{eventType.Name}";
 }
