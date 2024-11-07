@@ -34,7 +34,7 @@ internal sealed class ResourcePolicyMetadataRepository : IResourcePolicyMetadata
             .DefaultIfEmpty()
             .MaxAsync(cancellationToken);
 
-    public async Task<int> Merge(List<ResourcePolicyMetadata> resourceMetadata, CancellationToken cancellationToken)
+    public async Task<int> Merge(IReadOnlyCollection<ResourcePolicyMetadata> resourceMetadata, CancellationToken cancellationToken)
     {
         const string sql =
             $"""

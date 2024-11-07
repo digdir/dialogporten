@@ -23,6 +23,21 @@ internal static class Commands
                     validationError => -1);
             });
 
+        app.AddCommand("sync-resource-policy-metadata", async (
+                [FromService] CoconaAppContext ctx,
+                [FromService] ISender application,
+                [Option('s')] DateTimeOffset? since,
+                [Option('c')] int? numberOfConcurrentRequests)
+            =>
+            {
+                var result = await application.Send(
+                    new SynchronizeResourcePolicyMetadataCommand { Since = since, NumberOfConcurrentRequests = numberOfConcurrentRequests },
+                    ctx.CancellationToken);
+                return result.Match(
+                    success => 0,
+                    validationError => -1);
+            });
+
         return app;
     }
 }

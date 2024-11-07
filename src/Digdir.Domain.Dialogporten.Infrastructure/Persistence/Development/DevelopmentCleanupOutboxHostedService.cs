@@ -23,7 +23,7 @@ internal sealed class DevelopmentCleanupOutboxHostedService : IHostedService
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        if (!_environment.IsDevelopment())
+        if (!_environment.ShouldRunDevelopmentHostedService())
         {
             return;
         }

@@ -44,8 +44,8 @@ internal sealed class LocalDevelopmentResourceRegistry : IResourceRegistry
         => AsyncEnumerableExtensions.Empty<List<UpdatedSubjectResource>>();
 
     [SuppressMessage("Performance", "CA1822:Mark members as static")]
-    public IAsyncEnumerable<List<ResourcePolicyMetadata>> GetUpdatedResourcePolicyMetadata(DateTimeOffset _, int __, CancellationToken ___)
-        => AsyncEnumerableExtensions.Empty<List<ResourcePolicyMetadata>>();
+    public Task<IReadOnlyCollection<UpdatedResourcePolicyMetadata>> GetUpdatedResourcePolicyMetadata(DateTimeOffset _, int __, CancellationToken ___)
+        => Task.FromResult<IReadOnlyCollection<UpdatedResourcePolicyMetadata>>(Array.Empty<UpdatedResourcePolicyMetadata>());
 
     private sealed class ServiceResourceInformationEqualityComparer : IEqualityComparer<ServiceResourceInformation>
     {

@@ -8,7 +8,7 @@ public interface IResourceRegistry
     Task<ServiceResourceInformation?> GetResourceInformation(string serviceResourceId, CancellationToken cancellationToken);
     IAsyncEnumerable<List<UpdatedSubjectResource>> GetUpdatedSubjectResources(DateTimeOffset since, int batchSize,
         CancellationToken cancellationToken);
-    IAsyncEnumerable<List<ResourcePolicyMetadata>> GetUpdatedResourcePolicyMetadata(DateTimeOffset since, int batchSize,
+    Task<IReadOnlyCollection<UpdatedResourcePolicyMetadata>> GetUpdatedResourcePolicyMetadata(DateTimeOffset since, int numberOfConcurrentRequests,
         CancellationToken cancellationToken);
 }
 
@@ -28,3 +28,4 @@ public sealed record ServiceResourceInformation
 
 
 public sealed record UpdatedSubjectResource(Uri SubjectUrn, Uri ResourceUrn, DateTimeOffset UpdatedAt, bool Deleted);
+public sealed record UpdatedResourcePolicyMetadata(Uri ResourceUrn, int MinimumSecurityLevel, DateTimeOffset UpdatedAt);

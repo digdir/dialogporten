@@ -17,7 +17,7 @@ internal sealed class DevelopmentMigratorHostedService : IHostedService
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        if (!_environment.IsDevelopment())
+        if (!_environment.ShouldRunDevelopmentHostedService())
         {
             return;
         }

@@ -10,7 +10,7 @@ namespace Digdir.Domain.Dialogporten.Application.Features.V1.ResourceRegistry.Co
 public sealed class SynchronizeResourcePolicyMetadataCommand : IRequest<SynchronizeResourcePolicyMetadataResult>
 {
     public DateTimeOffset? Since { get; set; }
-    public int? BatchSize { get; set; }
+    public int? NumberOfConcurrentRequests { get; set; }
 }
 
 [GenerateOneOf]
@@ -18,21 +18,18 @@ public sealed partial class SynchronizeResourcePolicyMetadataResult : OneOfBase<
 
 internal class SynchronizeResourcePolicyMetadataCommandHandler : IRequestHandler<SynchronizeResourcePolicyMetadataCommand, SynchronizeResourcePolicyMetadataResult>
 {
-    private const int DefaultBatchSize = 1000;
+    private const int DefaultNumberOfConcurrentRequests = 15;
     private readonly IResourceRegistry _resourceRegistry;
     private readonly IResourcePolicyMetadataRepository _resourcePolicyMetadataRepository;
-    private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<SynchronizeResourcePolicyMetadataCommandHandler> _logger;
 
     public SynchronizeResourcePolicyMetadataCommandHandler(
         IResourceRegistry resourceRegistry,
         IResourcePolicyMetadataRepository resourcePolicyMetadataRepository,
-        IUnitOfWork unitOfWork,
         ILogger<SynchronizeResourcePolicyMetadataCommandHandler> logger)
     {
         _resourceRegistry = resourceRegistry ?? throw new ArgumentNullException(nameof(resourceRegistry));
         _resourcePolicyMetadataRepository = resourcePolicyMetadataRepository ?? throw new ArgumentNullException(nameof(resourcePolicyMetadataRepository));
-        _unitOfWork = unitOfWork;
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
@@ -49,20 +46,19 @@ internal class SynchronizeResourcePolicyMetadataCommandHandler : IRequestHandler
 
         try
         {
-            var mergeCount = 0;
-            await _unitOfWork.BeginTransactionAsync(cancellationToken);
-            await foreach (var resourcePolicyMetadataBatch in _resourceRegistry
-                               .GetUpdatedResourcePolicyMetadata(lastUpdated, request.BatchSize ?? DefaultBatchSize, cancellationToken))
-            {
-                var batchMergeCount = await _resourcePolicyMetadataRepository.Merge(resourcePolicyMetadataBatch, cancellationToken);
-                _logger.LogInformation("{BatchMergeCount} sets of resource policy metadata added to transaction.", batchMergeCount);
-                mergeCount += batchMergeCount;
-            }
+            var syncTime = DateTimeOffset.Now;
+            var updatedResourcePolicyMetadata = await _resourceRegistry
+                               .GetUpdatedResourcePolicyMetadata(lastUpdated, request.NumberOfConcurrentRequests ?? DefaultNumberOfConcurrentRequests, cancellationToken);
 
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            var mergeableResourcePolicyMetadata = updatedResourcePolicyMetadata
+                .Select(x => x.ToResourcePolicyMetadata(syncTime))
+                .ToList();
+            var mergeCount = await _resourcePolicyMetadataRepository.Merge(mergeableResourcePolicyMetadata, cancellationToken);
+            _logger.LogInformation("{MergeCount} sets of resource policy metadata updated.", mergeCount);
+
             if (mergeCount > 0)
             {
-                _logger.LogInformation("Successfully synced {UpdatedAmount} total resource policy metadata. Changes committed.", mergeCount);
+                _logger.LogInformation("Successfully synced {UpdatedAmount} total resource policy metadata.", mergeCount);
             }
             else
             {
@@ -73,7 +69,7 @@ internal class SynchronizeResourcePolicyMetadataCommandHandler : IRequestHandler
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Failed to sync resource policy metadata. Rolling back transaction.");
+            _logger.LogError(e, "Failed to sync resource policy metadata.");
             throw;
         }
     }

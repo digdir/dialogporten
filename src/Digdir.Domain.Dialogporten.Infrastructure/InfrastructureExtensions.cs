@@ -85,6 +85,7 @@ public static class InfrastructureExtensions
 
             // Transient
             .AddTransient<ISubjectResourceRepository, SubjectResourceRepository>()
+            .AddTransient<IResourcePolicyMetadataRepository, ResourcePolicyMetadataRepository>()
 
             // Singleton
             .AddSingleton<INotificationProcessingContextFactory, NotificationProcessingContextFactory>()

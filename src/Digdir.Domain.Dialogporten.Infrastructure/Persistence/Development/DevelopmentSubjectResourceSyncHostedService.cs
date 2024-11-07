@@ -1,3 +1,4 @@
+using System.Reflection;
 using Digdir.Domain.Dialogporten.Application.Features.V1.ResourceRegistry.Commands.Synchronize;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,7 +19,7 @@ internal sealed class DevelopmentSubjectResourceSyncHostedService : IHostedServi
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        if (!_environment.IsDevelopment())
+        if (!_environment.ShouldRunDevelopmentHostedService())
         {
             return;
         }
