@@ -46,9 +46,9 @@ internal static class TypeNameConverter
         Of.AsSpan().CopyTo(finalName, ref index);
 
         using var typeArguments = type
-                                  .GetGenericArguments()
-                                  .AsEnumerable()
-                                  .GetEnumerator();
+            .GetGenericArguments()
+            .AsEnumerable()
+            .GetEnumerator();
 
         if (!typeArguments.MoveNext())
         {
@@ -79,11 +79,11 @@ internal static class TypeNameConverter
             .AsSpan()
             .SplitNamespaceAndClassName(out var namespaceName, out var className);
         className = className
-                    .ExcludePrefix(ExcludedClassPrefixes)
-                    .ExcludePostfix(ExcludedClassPostfixes);
+            .ExcludePrefix(ExcludedClassPrefixes)
+            .ExcludePostfix(ExcludedClassPostfixes);
         namespaceName = namespaceName
-                        .ExcludePrefix(ExcludedNamespacePrefixes)
-                        .ExcludePostfix(ExcludedNamespacePostfixes);
+            .ExcludePrefix(ExcludedNamespacePrefixes)
+            .ExcludePostfix(ExcludedNamespacePostfixes);
         var namespaceWritten = false;
 
         // Copy namespace without '.'
