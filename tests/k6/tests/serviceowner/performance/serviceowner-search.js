@@ -12,7 +12,11 @@ export let options = {
 export default function() {
     if (!endUsersWithTokens || endUsersWithTokens.length === 0) {
         throw new Error('No end users loaded for testing');
-    }   
+    } 
+    if (!serviceOwners || serviceOwners.length === 0) {
+        throw new Error('No service owners loaded for testing');
+    }
+      
     if ((options.vus === undefined || options.vus === 1) && (options.iterations === undefined || options.iterations === 1)) {
         serviceownerSearch(serviceOwners[0], endUsersWithTokens[0], tag_name);
     }
