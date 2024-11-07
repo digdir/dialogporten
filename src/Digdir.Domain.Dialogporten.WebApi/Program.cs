@@ -127,6 +127,7 @@ static void BuildAndRun(string[] args, TelemetryConfiguration telemetryConfigura
             .Authentication?
             .JwtBearerTokenSchemas?
             .Select(z => z.WellKnown)
+            .Append("https://localhost:7214/swagger/v1/swagger.json")
             .ToList() ?? [])
         // Auth
         .AddDialogportenAuthentication(builder.Configuration)
