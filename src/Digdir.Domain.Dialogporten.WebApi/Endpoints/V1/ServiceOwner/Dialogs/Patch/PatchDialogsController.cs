@@ -70,10 +70,10 @@ public sealed class PatchDialogsController : ControllerBase
         if (!dialogQueryResult.TryPickT0(out var dialog, out var errors))
         {
             return errors.Match<IActionResult>(
-                notFound => NotFound(HttpContext.ResponseBuilder(StatusCodes.Status404NotFound,
+                notFound => NotFound(HttpContext.GetResponseOrDefault(StatusCodes.Status404NotFound,
                     notFound.ToValidationResults())),
                 validationFailed =>
-                    BadRequest(HttpContext.ResponseBuilder(StatusCodes.Status400BadRequest,
+                    BadRequest(HttpContext.GetResponseOrDefault(StatusCodes.Status400BadRequest,
                         validationFailed.Errors.ToList())));
         }
 
@@ -88,12 +88,12 @@ public sealed class PatchDialogsController : ControllerBase
         var result = await _sender.Send(command, ct);
         return result.Match(
             success => (IActionResult)NoContent(),
-            notFound => NotFound(HttpContext.ResponseBuilder(StatusCodes.Status404NotFound, notFound.ToValidationResults())),
-            badRequest => BadRequest(HttpContext.ResponseBuilder(StatusCodes.Status400BadRequest, badRequest.ToValidationResults())),
-            validationFailed => BadRequest(HttpContext.ResponseBuilder(StatusCodes.Status400BadRequest, validationFailed.Errors.ToList())),
-            forbidden => new ObjectResult(HttpContext.ResponseBuilder(StatusCodes.Status403Forbidden, forbidden.ToValidationResults())),
-            domainError => UnprocessableEntity(HttpContext.ResponseBuilder(StatusCodes.Status422UnprocessableEntity, domainError.ToValidationResults())),
-            concurrencyError => new ObjectResult(HttpContext.ResponseBuilder(StatusCodes.Status412PreconditionFailed)) { StatusCode = StatusCodes.Status412PreconditionFailed }
+            notFound => NotFound(HttpContext.GetResponseOrDefault(StatusCodes.Status404NotFound, notFound.ToValidationResults())),
+            badRequest => BadRequest(HttpContext.GetResponseOrDefault(StatusCodes.Status400BadRequest, badRequest.ToValidationResults())),
+            validationFailed => BadRequest(HttpContext.GetResponseOrDefault(StatusCodes.Status400BadRequest, validationFailed.Errors.ToList())),
+            forbidden => new ObjectResult(HttpContext.GetResponseOrDefault(StatusCodes.Status403Forbidden, forbidden.ToValidationResults())),
+            domainError => UnprocessableEntity(HttpContext.GetResponseOrDefault(StatusCodes.Status422UnprocessableEntity, domainError.ToValidationResults())),
+            concurrencyError => new ObjectResult(HttpContext.GetResponseOrDefault(StatusCodes.Status412PreconditionFailed)) { StatusCode = StatusCodes.Status412PreconditionFailed }
         );
     }
 }
