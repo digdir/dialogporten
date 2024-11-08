@@ -13,7 +13,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Interceptors;
 internal sealed class ConvertDomainEventsToOutboxMessagesInterceptor : SaveChangesInterceptor
 {
     private readonly ITransactionTime _transactionTime;
-    private readonly ITopicEventSender _topicEventSender;
+    private readonly Lazy<ITopicEventSender> _topicEventSender;
     private readonly ILogger<ConvertDomainEventsToOutboxMessagesInterceptor> _logger;
     private readonly Lazy<IPublishEndpoint> _publishEndpoint;
 
@@ -21,7 +21,7 @@ internal sealed class ConvertDomainEventsToOutboxMessagesInterceptor : SaveChang
 
     public ConvertDomainEventsToOutboxMessagesInterceptor(
         ITransactionTime transactionTime,
-        ITopicEventSender topicEventSender,
+        Lazy<ITopicEventSender> topicEventSender,
         ILogger<ConvertDomainEventsToOutboxMessagesInterceptor> logger,
         Lazy<IPublishEndpoint> publishEndpoint)
     {
@@ -36,6 +36,8 @@ internal sealed class ConvertDomainEventsToOutboxMessagesInterceptor : SaveChang
         InterceptionResult<int> result,
         CancellationToken cancellationToken = default)
     {
+        EnsureLazyLoadedServices();
+
         var dbContext = eventData.Context;
 
         if (dbContext is null)
@@ -84,7 +86,7 @@ internal sealed class ConvertDomainEventsToOutboxMessagesInterceptor : SaveChang
                 })
                 .Where(x => x is not null)
                 .Cast<DialogEventPayload>()
-                .Select(x => _topicEventSender.SendAsync(
+                .Select(x => _topicEventSender.Value.SendAsync(
                         $"{Constants.DialogEventsTopic}{x.Id}",
                         x,
                         cancellationToken)
@@ -97,5 +99,18 @@ internal sealed class ConvertDomainEventsToOutboxMessagesInterceptor : SaveChang
         }
 
         return await base.SavedChangesAsync(eventData, result, cancellationToken);
+    }
+
+    private void EnsureLazyLoadedServices()
+    {
+        try
+        {
+            _ = _topicEventSender.Value;
+            _ = _publishEndpoint.Value;
+        }
+        catch (Exception e)
+        {
+            throw new InvalidOperationException("Failed to ensure lazy loaded services. Is the presentation layer registered with publish capabilities?", e);
+        }
     }
 }

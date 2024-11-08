@@ -210,7 +210,9 @@ public static class InfrastructureExtensions
                 });
             })
             .AddTransient<Lazy<IPublishEndpoint>>(x =>
-                new Lazy<IPublishEndpoint>(x.GetRequiredService<IPublishEndpoint>));
+                new Lazy<IPublishEndpoint>(x.GetRequiredService<IPublishEndpoint>))
+            .AddTransient<Lazy<ITopicEventSender>>(x =>
+                new Lazy<ITopicEventSender>(x.GetRequiredService<ITopicEventSender>));
 
         new DummyRequestExecutorBuilder { Services = builderContext.Services }
             .AddRedisSubscriptions(_ => ConnectionMultiplexer.Connect(builderContext.InfraSettings.Redis.ConnectionString),
@@ -242,7 +244,9 @@ public static class InfrastructureExtensions
                 x.UsingAzureServiceBus();
             })
             .AddTransient<Lazy<IPublishEndpoint>>(x =>
-                new Lazy<IPublishEndpoint>(x.GetRequiredService<IPublishEndpoint>));
+                new Lazy<IPublishEndpoint>(x.GetRequiredService<IPublishEndpoint>))
+            .AddTransient<Lazy<ITopicEventSender>>(x =>
+                new Lazy<ITopicEventSender>(x.GetRequiredService<ITopicEventSender>));
 
         new DummyRequestExecutorBuilder { Services = builderContext.Services }
             .AddRedisSubscriptions(_ => ConnectionMultiplexer.Connect(builderContext.InfraSettings.Redis.ConnectionString),
