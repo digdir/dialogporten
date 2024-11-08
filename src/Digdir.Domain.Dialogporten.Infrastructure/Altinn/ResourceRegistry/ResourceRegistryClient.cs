@@ -5,6 +5,7 @@ using Altinn.Authorization.ABAC.Utils;
 using Altinn.Authorization.ABAC.Xacml;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Domain.Common;
+using Microsoft.Extensions.Logging;
 using ZiggyCreatures.Caching.Fusion;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.ResourceRegistry;
@@ -22,11 +23,13 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
 
     private readonly IFusionCache _cache;
     private readonly HttpClient _client;
+    private readonly ILogger<ResourceRegistryClient> _logger;
 
-    public ResourceRegistryClient(HttpClient client, IFusionCacheProvider cacheProvider)
+    public ResourceRegistryClient(HttpClient client, IFusionCacheProvider cacheProvider, ILogger<ResourceRegistryClient> logger)
     {
         _client = client ?? throw new ArgumentNullException(nameof(client));
         _cache = cacheProvider.GetCache(nameof(ResourceRegistry)) ?? throw new ArgumentNullException(nameof(cacheProvider));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     public async Task<IReadOnlyCollection<ServiceResourceInformation>> GetResourceInformationForOrg(
@@ -74,20 +77,12 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
         int numberOfConcurrentRequests,
         CancellationToken cancellationToken)
     {
-        var metadata = new List<UpdatedResourcePolicyMetadata>();
+        // First fetch all unique updated resources serially using the supplied "since" value (but a fixed batch size; 1000 seems to be a good value)
+        // We then iterate them, and only keep the latest updated resource for each unique resource URN. We then fan out to fetch and parse the policies
+        // concurrently using semaphores.
 
-        // First fetch all unique updated resources using the same "since" value (but a custom batch size)
-        var updatedResources = new Dictionary<Uri, UpdatedSubjectResource>();
-        await foreach (var subjectResources in GetUpdatedSubjectResources(since, 1000, cancellationToken))
-        {
-            // Foreach of the unique resources referred to in this batch, fetch the policies
-            foreach (var subjectResource in subjectResources)
-            {
-                updatedResources[subjectResource.ResourceUrn] = subjectResource;
-            }
-        }
+        var updatedResources = await GetUniqueUpdatedResources(since, cancellationToken);
 
-        // Fan out to numberOfConcurrentRequests tasks to fetch and parse the policies concurrently
         var semaphore = new SemaphoreSlim(numberOfConcurrentRequests);
         var metadataTasks = new List<Task<UpdatedResourcePolicyMetadata>>();
 
@@ -98,7 +93,7 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
             {
                 try
                 {
-                    return await GetUpdatedResourcePolicyMetadata(updatedResource.Value, cancellationToken);
+                    return await GetUpdatedResourcePolicyMetadata(updatedResource, cancellationToken);
                 }
                 finally
                 {
@@ -112,12 +107,32 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
         return await Task.WhenAll(metadataTasks);
     }
 
-    private async Task<UpdatedResourcePolicyMetadata> GetUpdatedResourcePolicyMetadata(UpdatedSubjectResource resource, CancellationToken cancellationToken)
+    private async Task<List<UpdatedResource>> GetUniqueUpdatedResources(DateTimeOffset since, CancellationToken cancellationToken)
+    {
+        var updatedResources = new Dictionary<Uri, UpdatedSubjectResource>();
+        await foreach (var subjectResources in GetUpdatedSubjectResources(since, 1000, cancellationToken))
+        {
+            foreach (var subjectResource in subjectResources)
+            {
+                if (updatedResources.TryGetValue(subjectResource.ResourceUrn, out var value) && value.UpdatedAt > subjectResource.UpdatedAt)
+                {
+                    continue;
+                }
+
+                updatedResources[subjectResource.ResourceUrn] = subjectResource;
+            }
+        }
+
+        return updatedResources
+            .Select(x => new UpdatedResource(x.Value.ResourceUrn, x.Value.UpdatedAt))
+            .ToList();
+    }
+
+    private async Task<UpdatedResourcePolicyMetadata> GetUpdatedResourcePolicyMetadata(UpdatedResource resource, CancellationToken cancellationToken)
     {
         var resourceRegistryEntry = new ResourceRegistryEntry(resource.ResourceUrn);
-        if (!resourceRegistryEntry.HasPolicy)
+        if (!resourceRegistryEntry.HasPolicyInResourceRegistry)
         {
-            // Altinn 2 and Altinn Apps does not have policies in the resource registry as of now, so we fake these
             return new UpdatedResourcePolicyMetadata(resource.ResourceUrn, DefaultMinimumSecurityLevel,
                 resource.UpdatedAt);
         }
@@ -125,12 +140,15 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
         try
         {
             var policy = await FetchPolicy(resourceRegistryEntry.Identifier, cancellationToken);
-            return new UpdatedResourcePolicyMetadata(resource.ResourceUrn, GetMinimumSecurityLevel(policy),
+            return new UpdatedResourcePolicyMetadata(
+                resource.ResourceUrn,
+                GetMinimumSecurityLevel(policy),
                 resource.UpdatedAt);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            Console.Error.WriteLine($"Janitor: Failed to fetch policy for \"{resource.ResourceUrn}\".");
+            // We need to keep going here, so we log and return a default value
+            _logger.LogError("Failed to process policy for \"{ResourceUrn}\": {ExceptionMessage}", resource.ResourceUrn, ex.Message);
             return new UpdatedResourcePolicyMetadata(resource.ResourceUrn, DefaultMinimumSecurityLevel,
                 resource.UpdatedAt);
         }
@@ -152,22 +170,15 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
 
     private static int GetMinimumSecurityLevel(XacmlPolicy policy)
     {
-        var obligationExpression = policy.ObligationExpressions.FirstOrDefault();
-        if (obligationExpression is null)
-        {
-            return DefaultMinimumSecurityLevel;
-        }
-        var authenticationLevelAttributeAssigmentExpression = obligationExpression.AttributeAssignmentExpressions
+        var authenticationLevelAttributeAssigmentExpression = policy.ObligationExpressions
+            .FirstOrDefault()?.AttributeAssignmentExpressions
             .FirstOrDefault(y => y.Category.ToString() == AuthenticationLevelCategory);
 
-        if (authenticationLevelAttributeAssigmentExpression is null)
-        {
-            return DefaultMinimumSecurityLevel;
-        }
-
-        return int.TryParse(((XacmlAttributeValue)authenticationLevelAttributeAssigmentExpression.Property).Value, out var minimumSecurityLevel)
-            ? minimumSecurityLevel
-            : DefaultMinimumSecurityLevel;
+        return authenticationLevelAttributeAssigmentExpression is null
+            ? DefaultMinimumSecurityLevel
+            : int.TryParse(((XacmlAttributeValue)authenticationLevelAttributeAssigmentExpression.Property).Value, out var minimumSecurityLevel)
+                ? minimumSecurityLevel
+                : DefaultMinimumSecurityLevel;
     }
 
     private async Task<ServiceResourceInformation[]> FetchServiceResourceInformation(CancellationToken cancellationToken)
@@ -199,15 +210,21 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
 
     private sealed class ResourceRegistryEntry
     {
-        public string Identifier { get; init; }
-        public bool HasPolicy { get; init; }
+        public string Identifier { get; }
+        public bool HasPolicyInResourceRegistry { get; }
+
+        private const string Altinn2ServicePrefix = "se_";
+        private const string AltinnAppPrefix = "app_";
+        private const char UrnSeparator = ':';
 
         public ResourceRegistryEntry(Uri resourceUrn)
         {
+            // Utility class to extract the identifier from a resource URN, and determine if it has a policy
+            // available in the resource registry API (Altinn 2 representations and Altinn Apps do not)
             var fullIdentifier = resourceUrn.ToString();
-            Identifier = fullIdentifier[(fullIdentifier.LastIndexOf(':') + 1)..];
-            HasPolicy = !Identifier.StartsWith("se_", StringComparison.Ordinal)
-                        && !Identifier.StartsWith("app_", StringComparison.Ordinal);
+            Identifier = fullIdentifier[(fullIdentifier.LastIndexOf(UrnSeparator) + 1)..];
+            HasPolicyInResourceRegistry = !Identifier.StartsWith(Altinn2ServicePrefix, StringComparison.Ordinal)
+                        && !Identifier.StartsWith(AltinnAppPrefix, StringComparison.Ordinal);
         }
     }
 

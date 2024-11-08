@@ -68,6 +68,7 @@ public static class InfrastructureExtensions
             .AddHostedService<DevelopmentMigratorHostedService>()
             .AddHostedService<DevelopmentCleanupOutboxHostedService>()
             .AddHostedService<DevelopmentSubjectResourceSyncHostedService>()
+            .AddHostedService<DevelopmentResourcePolicyMetadataSyncHostedService>()
             .AddValidatorsFromAssembly(InfrastructureAssemblyMarker.Assembly, ServiceLifetime.Transient, includeInternalTypes: true)
             .AddPolicyRegistry((_, registry) =>
             {
