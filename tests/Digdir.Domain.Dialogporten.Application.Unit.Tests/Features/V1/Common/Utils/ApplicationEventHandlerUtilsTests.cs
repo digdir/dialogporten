@@ -1,7 +1,7 @@
 using Digdir.Domain.Dialogporten.Application.Common;
 using FluentAssertions;
 
-namespace Digdir.Domain.Dialogporten.Application.Unit.Tests;
+namespace Digdir.Domain.Dialogporten.Application.Unit.Tests.Features.V1.Common.Utils;
 
 public class ApplicationEventHandlerUtilsTests
 {
@@ -63,7 +63,7 @@ public class ApplicationEventHandlerUtilsTests
             .ToArray();
 
         // Assert
-        await Verify(map).UseDirectory("Snapshots");
+        await Verify(map);
     }
 
     /// <summary>
@@ -103,6 +103,6 @@ public class ApplicationEventHandlerUtilsTests
             .ToArray();
 
         // Assert
-        await Verify(map).UseDirectory("Snapshots");
+        await Verify(map);
     }
 }
