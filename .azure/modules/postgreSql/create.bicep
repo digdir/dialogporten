@@ -31,6 +31,9 @@ type Sku = {
 @description('The SKU of the PostgreSQL server')
 param sku Sku
 
+@description('Enable query performance insight')
+param enableQueryPerformanceInsight bool
+
 @description('The Key Vault to store the PostgreSQL administrator login password')
 @secure()
 param srcKeyVault object
@@ -104,6 +107,33 @@ resource postgres 'Microsoft.DBforPostgreSQL/flexibleServers@2024-08-01' = {
     }
   }
   tags: tags
+}
+
+resource track_io_timing 'Microsoft.DBforPostgreSQL/flexibleServers/configurations@2023-12-01-preview' = if (enableQueryPerformanceInsight) {
+  parent: postgres
+  name: 'track_io_timing'
+  properties: {
+    value: 'on'
+    source: 'user-override'
+  }
+}
+
+resource pg_qs_query_capture_mode 'Microsoft.DBforPostgreSQL/flexibleServers/configurations@2023-12-01-preview' = if (enableQueryPerformanceInsight) {
+  parent: postgres
+  name: 'pg_qs.query_capture_mode'
+  properties: {
+    value: 'all'
+    source: 'user-override'
+  }
+}
+
+resource pgms_wait_sampling_query_capture_mode 'Microsoft.DBforPostgreSQL/flexibleServers/configurations@2023-12-01-preview' = if (enableQueryPerformanceInsight) {
+  parent: postgres
+  name: 'pgms_wait_sampling.query_capture_mode'
+  properties: {
+    value: 'all'
+    source: 'user-override'
+  }
 }
 
 module adoConnectionString '../keyvault/upsertSecret.bicep' = {

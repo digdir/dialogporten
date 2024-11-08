@@ -29,9 +29,12 @@ param slackNotifierSku = {
   applicationServicePlanName: 'Y1'
   applicationServicePlanTier: 'Dynamic'
 }
-param postgresSku = {
-  name: 'Standard_B1ms'
-  tier: 'Burstable'
+param postgresConfiguration = {
+  sku: {
+    name: 'Standard_B1ms'
+    tier: 'Burstable'
+  }
+  enableQueryPerformanceInsight: false
 }
 
 param redisSku = {
