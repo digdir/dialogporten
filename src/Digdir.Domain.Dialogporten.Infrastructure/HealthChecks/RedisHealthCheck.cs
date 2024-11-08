@@ -1,13 +1,16 @@
+using System.Diagnostics;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using StackExchange.Redis;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Logging;
+
 namespace Digdir.Domain.Dialogporten.Infrastructure.HealthChecks;
 
 internal sealed class RedisHealthCheck : IHealthCheck
 {
     private readonly InfrastructureSettings _settings;
     private readonly ILogger<RedisHealthCheck> _logger;
+    private const int DegradationThresholdInSeconds = 5;
 
     public RedisHealthCheck(IOptions<InfrastructureSettings> options, ILogger<RedisHealthCheck> logger)
     {
@@ -17,10 +20,10 @@ internal sealed class RedisHealthCheck : IHealthCheck
 
     public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
     {
-        var sw = System.Diagnostics.Stopwatch.StartNew();
+        var startTime = Stopwatch.GetTimestamp();
         try
         {
-            var timeout = 15000;
+            const int timeout = 15_000;
 
             var options = ConfigurationOptions.Parse(_settings.Redis.ConnectionString);
 
@@ -28,22 +31,25 @@ internal sealed class RedisHealthCheck : IHealthCheck
             options.ConnectTimeout = timeout;
             options.SyncTimeout = timeout;
 
-            using var redis = await ConnectionMultiplexer.ConnectAsync(options);
+            await using var redis = await ConnectionMultiplexer.ConnectAsync(options);
             var db = redis.GetDatabase();
             await db.PingAsync();
 
-            if (sw.Elapsed > TimeSpan.FromSeconds(5))
+            var responseTime = Stopwatch.GetElapsedTime(startTime);
+
+            if (responseTime > TimeSpan.FromSeconds(DegradationThresholdInSeconds))
             {
-                _logger.LogWarning("Redis connection is slow ({Elapsed:N1}s).", sw.Elapsed.TotalSeconds);
-                return HealthCheckResult.Degraded($"Redis connection is slow ({sw.Elapsed.TotalSeconds:N1}s).");
+                _logger.LogWarning("Redis connection is slow ({Elapsed:N1}s).", responseTime.TotalSeconds);
+                return HealthCheckResult.Degraded($"Redis connection is slow ({responseTime.TotalSeconds:N1}s).");
             }
 
             return HealthCheckResult.Healthy("Redis connection is healthy.");
         }
         catch (RedisTimeoutException ex)
         {
-            _logger.LogWarning("Redis connection timed out ({Elapsed:N1}s).", sw.Elapsed.TotalSeconds);
-            return HealthCheckResult.Unhealthy("Redis connection timed out.", exception: ex);
+            var responseTime = Stopwatch.GetElapsedTime(startTime);
+            _logger.LogWarning("Redis connection timed out ({Elapsed:N1}s).", responseTime.TotalSeconds);
+            return HealthCheckResult.Unhealthy($"Redis connection timed out after {responseTime.TotalSeconds:N1}s.", exception: ex);
         }
         catch (RedisConnectionException ex)
         {
@@ -52,12 +58,8 @@ internal sealed class RedisHealthCheck : IHealthCheck
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An unexpected error occurred while checking Redis health.");
-            return HealthCheckResult.Unhealthy("An unexpected error occurred while checking Redis health.", exception: ex);
-        }
-        finally
-        {
-            sw.Stop();
+            _logger.LogError(ex, "An unexpected error occurred while checking Redis' health.");
+            return HealthCheckResult.Unhealthy("An unexpected error occurred while checking Redis' health.", exception: ex);
         }
     }
 }
