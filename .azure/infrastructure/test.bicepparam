@@ -34,7 +34,7 @@ param postgresConfiguration = {
     name: 'Standard_B2s'
     tier: 'Burstable'
   }
-  enableQueryPerformanceInsight: false
+  enableQueryPerformanceInsight: true
 }
 
 param redisSku = {
