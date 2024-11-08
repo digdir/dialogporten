@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.30.0](https://github.com/digdir/dialogporten/compare/v1.29.0...v1.30.0) (2024-11-08)
+
+
+### Features
+
+* **performance:** Performance/create serviceowner search ([#1413](https://github.com/digdir/dialogporten/issues/1413)) ([f1096a4](https://github.com/digdir/dialogporten/commit/f1096a4eec7e7ea0b08d34bd4c9776f3c86fcd66))
+* **webapi:** Combine actorDtos ([#1374](https://github.com/digdir/dialogporten/issues/1374)) ([ca18a99](https://github.com/digdir/dialogporten/commit/ca18a993f21e488bfe4be7c167c822a7954b2683))
+* **webapi:** Limit Content-Length / request body size ([#1416](https://github.com/digdir/dialogporten/issues/1416)) ([44be20a](https://github.com/digdir/dialogporten/commit/44be20affccdb8f879b7118ebd69a72bef9d5f50))
+
 ## [1.29.0](https://github.com/digdir/dialogporten/compare/v1.28.3...v1.29.0) (2024-11-06)
 
 
