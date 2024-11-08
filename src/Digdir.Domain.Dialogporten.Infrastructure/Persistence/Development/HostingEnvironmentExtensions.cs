@@ -3,7 +3,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Development;
 
-public static class HostingEnvironmentExtensions
+internal static class HostingEnvironmentExtensions
 {
     public static bool ShouldRunDevelopmentHostedService(this IHostEnvironment environment)
     {

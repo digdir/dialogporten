@@ -16,7 +16,7 @@ public sealed class SynchronizeResourcePolicyMetadataCommand : IRequest<Synchron
 [GenerateOneOf]
 public sealed partial class SynchronizeResourcePolicyMetadataResult : OneOfBase<Success, ValidationError>;
 
-internal class SynchronizeResourcePolicyMetadataCommandHandler : IRequestHandler<SynchronizeResourcePolicyMetadataCommand, SynchronizeResourcePolicyMetadataResult>
+internal sealed class SynchronizeResourcePolicyMetadataCommandHandler : IRequestHandler<SynchronizeResourcePolicyMetadataCommand, SynchronizeResourcePolicyMetadataResult>
 {
     private const int DefaultNumberOfConcurrentRequests = 15;
     private readonly IResourceRegistry _resourceRegistry;
