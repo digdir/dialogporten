@@ -204,6 +204,7 @@ module postgresql '../modules/postgreSql/create.bicep' = {
       ? srcKeyVaultResource.getSecret('dialogportenPgAdminPassword${environment}')
       : secrets.dialogportenPgAdminPassword
     sku: postgresConfiguration.sku
+    appInsightWorkspaceName: appInsights.outputs.appInsightsWorkspaceName
     enableQueryPerformanceInsight: postgresConfiguration.enableQueryPerformanceInsight
     subnetId: vnet.outputs.postgresqlSubnetId
     vnetId: vnet.outputs.virtualNetworkId

@@ -34,6 +34,9 @@ param sku Sku
 @description('Enable query performance insight')
 param enableQueryPerformanceInsight bool
 
+@description('The name of the Application Insights workspace')
+param appInsightWorkspaceName string
+
 @description('The Key Vault to store the PostgreSQL administrator login password')
 @secure()
 param srcKeyVault object
@@ -133,6 +136,46 @@ resource pgms_wait_sampling_query_capture_mode 'Microsoft.DBforPostgreSQL/flexib
   properties: {
     value: 'all'
     source: 'user-override'
+  }
+}
+
+resource appInsightsWorkspace 'Microsoft.OperationalInsights/workspaces@2023-09-01' existing = {
+  name: appInsightWorkspaceName
+}
+
+// todo: setting as 0 for now. Will use the log analytics workspace policy instead. Consider setting explicitly in the future.
+var diagnosticSettingRetentionPolicy = {
+  days: 0
+  enabled: false
+}
+
+var diagnosticLogCategories = [
+  'PostgreSQLLogs'
+  'PostgreSQLFlexSessions'
+  'PostgreSQLFlexQueryStoreRuntime'
+  'PostgreSQLFlexQueryStoreWaitStats'
+  'PostgreSQLFlexTableStats'
+  'PostgreSQLFlexDatabaseXacts'
+]
+
+resource diagnosticSetting 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = if (enableQueryPerformanceInsight) {
+  name: 'PostgreSQLDiagnosticSetting'
+  scope: postgres
+  properties: {
+    workspaceId: appInsightsWorkspace.id
+    logs: [for category in diagnosticLogCategories: {
+      category: category
+      enabled: true
+      retentionPolicy: diagnosticSettingRetentionPolicy
+    }]
+    metrics: [
+      {
+        timeGrain: null
+        enabled: true
+        retentionPolicy: diagnosticSettingRetentionPolicy
+        category: 'AllMetrics'
+      }
+    ]
   }
 }
 
