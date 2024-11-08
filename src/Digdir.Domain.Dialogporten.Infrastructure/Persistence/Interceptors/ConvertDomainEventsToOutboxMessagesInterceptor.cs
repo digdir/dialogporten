@@ -52,6 +52,12 @@ internal sealed class ConvertDomainEventsToOutboxMessagesInterceptor : SaveChang
                     : [])
             .ToList();
 
+        if (_domainEvents.Count == 0)
+        {
+            return await base.SavingChangesAsync(eventData, result, cancellationToken);
+        }
+
+        EnsureLazyLoadedServices();
         foreach (var domainEvent in _domainEvents)
         {
             domainEvent.OccuredAt = _transactionTime.Value;
@@ -67,6 +73,11 @@ internal sealed class ConvertDomainEventsToOutboxMessagesInterceptor : SaveChang
     public override async ValueTask<int> SavedChangesAsync(SaveChangesCompletedEventData eventData, int result,
         CancellationToken cancellationToken = default)
     {
+        if (_domainEvents.Count == 0)
+        {
+            return await base.SavedChangesAsync(eventData, result, cancellationToken);
+        }
+
         try
         {
             var tasks = _domainEvents
