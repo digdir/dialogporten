@@ -20,5 +20,4 @@ internal static class MassTransitApplicationUtils
     }
 }
 
-
 internal record struct ApplicationConsumerMapping(Type AppConsumerType, Type BusConsumerType, Type BusDefinitionType, string EndpointName);
