@@ -1,5 +1,5 @@
-using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Queries.Search;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Contents;
+using Digdir.Domain.Dialogporten.GraphQL.EndUser.SearchDialogs;
 using Content = Digdir.Domain.Dialogporten.GraphQL.EndUser.DialogById.Content;
 
 namespace Digdir.Domain.Dialogporten.GraphQl.Unit.Tests.ObjectTypes;
@@ -35,7 +35,7 @@ public class ContentTypeTests
             .Select(x => x.Name)
             .ToList();
 
-        var dtoPropertyNames = typeof(ContentDto)
+        var dtoPropertyNames = typeof(SearchContent)
             .GetProperties()
             .Select(p => p.Name)
             .ToList();

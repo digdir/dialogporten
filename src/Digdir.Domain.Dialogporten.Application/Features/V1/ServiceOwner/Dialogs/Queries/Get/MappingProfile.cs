@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Content;
+using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Common.Actors;
 using Digdir.Domain.Dialogporten.Domain.Attachments;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
@@ -19,14 +20,12 @@ internal sealed class MappingProfile : Profile
             .ForMember(dest => dest.SeenSinceLastUpdate, opt => opt.Ignore())
             .ForMember(dest => dest.SystemLabel, opt => opt.MapFrom(src => src.DialogEndUserContext.SystemLabelId));
 
-        CreateMap<DialogSeenLogSeenByActor, DialogSeenLogSeenByActorDto>();
+        CreateMap<DialogSeenLogSeenByActor, ActorDto>();
         CreateMap<DialogSeenLog, DialogSeenLogDto>()
             .ForMember(dest => dest.SeenAt, opt => opt.MapFrom(src => src.CreatedAt));
 
         CreateMap<DialogActivity, DialogActivityDto>()
             .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.TypeId));
-        CreateMap<DialogActivityPerformedByActor, DialogActivityPerformedByActorDto>()
-            .ForMember(dest => dest.ActorType, opt => opt.MapFrom(src => src.ActorTypeId));
 
         CreateMap<DialogApiAction, DialogApiActionDto>();
         CreateMap<DialogApiActionEndpoint, DialogApiActionEndpointDto>()
@@ -44,9 +43,6 @@ internal sealed class MappingProfile : Profile
 
         CreateMap<List<DialogContent>?, ContentDto?>()
             .ConvertUsing<DialogContentOutputConverter<ContentDto>>();
-
-        CreateMap<DialogTransmissionSenderActor, DialogTransmissionSenderActorDto>()
-            .ForMember(dest => dest.ActorType, opt => opt.MapFrom(src => src.ActorTypeId));
 
         CreateMap<List<DialogTransmissionContent>?, DialogTransmissionContentDto?>()
             .ConvertUsing<TransmissionContentOutputConverter<DialogTransmissionContentDto>>();

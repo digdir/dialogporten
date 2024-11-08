@@ -52,7 +52,6 @@ public class DialogApplication : IAsyncLifetime
 
         AssertionOptions.AssertEquivalencyUsing(options =>
         {
-            //options.ExcludingMissingMembers();
             options.Using<DateTimeOffset>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Expectation, TimeSpan.FromMicroseconds(1)))
                 .WhenTypeIs<DateTimeOffset>();
             return options;
