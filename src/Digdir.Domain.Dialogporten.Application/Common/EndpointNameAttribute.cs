@@ -14,7 +14,7 @@ namespace Digdir.Domain.Dialogporten.Application.Common;
 /// </list>
 /// </remarks>
 [AttributeUsage(AttributeTargets.Method)]
-public sealed class EndpointNameAttribute : Attribute
+internal sealed class EndpointNameAttribute : Attribute
 {
     public string Name { get; }
 
@@ -27,11 +27,6 @@ public sealed class EndpointNameAttribute : Attribute
 
         Name = name;
     }
-
-    public static string GetName<THandler, TEvent>()
-        where THandler : INotificationHandler<TEvent>
-        where TEvent : class, IDomainEvent
-        => GetName(typeof(THandler), typeof(TEvent));
 
     public static string GetName(Type handlerType, Type eventType)
         => handlerType

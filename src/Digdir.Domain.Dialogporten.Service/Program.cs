@@ -61,7 +61,8 @@ static void BuildAndRun(string[] args, TelemetryConfiguration telemetryConfigura
                 foreach (var map in MassTransitApplicationUtils.GetApplicationConsumerMaps())
                 {
                     x.TryAddTransient(map.AppConsumerType);
-                    x.AddConsumer(map.BusConsumerType, map.BusDefinitionType);
+                    x.AddConsumer(map.BusConsumerType, map.BusDefinitionType)
+                        .Endpoint(x => x.Name = map.EndpointName);
                 }
             })
             .Build()

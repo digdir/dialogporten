@@ -18,9 +18,9 @@ public static class ApplicationEventHandlerUtils
                     && @interface.GetGenericTypeDefinition() == openNotificationHandler
                     && @interface.GetGenericArguments().Single().IsAssignableTo(domainEventType))
                 .Select(@interface => (@class: x, @event: @interface.GetGenericArguments().Single()))
-                .Select(x => new HandlerEventMapping(x.@class.AsType(), x.@event)))
+                .Select(x => new HandlerEventMapping(x.@class.AsType(), x.@event, EndpointNameAttribute.GetName(x.@class, x.@event))))
             .ToArray();
     }
 }
 
-public record struct HandlerEventMapping(Type HandlerType, Type EventType);
+public record struct HandlerEventMapping(Type HandlerType, Type EventType, string EndpointName);

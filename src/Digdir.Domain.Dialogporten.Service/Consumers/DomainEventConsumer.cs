@@ -1,8 +1,6 @@
-using System.Reflection;
 using Digdir.Domain.Dialogporten.Domain.Common.EventPublisher;
 using MassTransit;
 using MediatR;
-using EndpointNameAttribute = Digdir.Domain.Dialogporten.Application.Common.EndpointNameAttribute;
 
 namespace Digdir.Domain.Dialogporten.Service.Consumers;
 
@@ -18,11 +16,6 @@ public sealed class DomainEventConsumerDefinition<THandler, TEvent> : ConsumerDe
     where THandler : INotificationHandler<TEvent>
     where TEvent : class, IDomainEvent
 {
-    public DomainEventConsumerDefinition()
-    {
-        EndpointName = EndpointNameAttribute.GetName<THandler, TEvent>();
-    }
-
     protected override void ConfigureConsumer(
         IReceiveEndpointConfigurator endpointConfigurator,
         IConsumerConfigurator<DomainEventConsumer<THandler, TEvent>> consumerConfigurator,
