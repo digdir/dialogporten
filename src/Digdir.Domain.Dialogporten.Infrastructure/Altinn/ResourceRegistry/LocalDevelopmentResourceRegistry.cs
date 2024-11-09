@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.Enumerables;
 using Digdir.Domain.Dialogporten.Application.Externals;
-using Digdir.Domain.Dialogporten.Domain.ResourcePolicyMetadata;
+using Digdir.Domain.Dialogporten.Domain.ResourcePolicyInformation;
 using Microsoft.EntityFrameworkCore;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.ResourceRegistry;
@@ -44,8 +44,8 @@ internal sealed class LocalDevelopmentResourceRegistry : IResourceRegistry
         => AsyncEnumerableExtensions.Empty<List<UpdatedSubjectResource>>();
 
     [SuppressMessage("Performance", "CA1822:Mark members as static")]
-    public Task<IReadOnlyCollection<UpdatedResourcePolicyMetadata>> GetUpdatedResourcePolicyMetadata(DateTimeOffset _, int __, CancellationToken ___)
-        => Task.FromResult<IReadOnlyCollection<UpdatedResourcePolicyMetadata>>(Array.Empty<UpdatedResourcePolicyMetadata>());
+    public Task<IReadOnlyCollection<UpdatedResourcePolicyInformation>> GetUpdatedResourcePolicyInformation(DateTimeOffset _, int __, CancellationToken ___)
+        => Task.FromResult<IReadOnlyCollection<UpdatedResourcePolicyInformation>>(Array.Empty<UpdatedResourcePolicyInformation>());
 
     private sealed class ServiceResourceInformationEqualityComparer : IEqualityComparer<ServiceResourceInformation>
     {

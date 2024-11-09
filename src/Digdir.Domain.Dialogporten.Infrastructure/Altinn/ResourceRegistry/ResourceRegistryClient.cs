@@ -73,7 +73,7 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
         } while (nextUrl is not null);
     }
 
-    public async Task<IReadOnlyCollection<UpdatedResourcePolicyMetadata>> GetUpdatedResourcePolicyMetadata(DateTimeOffset since,
+    public async Task<IReadOnlyCollection<UpdatedResourcePolicyInformation>> GetUpdatedResourcePolicyInformation(DateTimeOffset since,
         int numberOfConcurrentRequests,
         CancellationToken cancellationToken)
     {
@@ -84,7 +84,7 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
         var updatedResources = await GetUniqueUpdatedResources(since, cancellationToken);
 
         var semaphore = new SemaphoreSlim(numberOfConcurrentRequests);
-        var metadataTasks = new List<Task<UpdatedResourcePolicyMetadata>>();
+        var metadataTasks = new List<Task<UpdatedResourcePolicyInformation>>();
 
         foreach (var updatedResource in updatedResources)
         {
@@ -93,7 +93,7 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
             {
                 try
                 {
-                    return await GetUpdatedResourcePolicyMetadata(updatedResource, cancellationToken);
+                    return await GetUpdatedResourcePolicyInformation(updatedResource, cancellationToken);
                 }
                 finally
                 {
@@ -128,19 +128,19 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
             .ToList();
     }
 
-    private async Task<UpdatedResourcePolicyMetadata> GetUpdatedResourcePolicyMetadata(UpdatedResource resource, CancellationToken cancellationToken)
+    private async Task<UpdatedResourcePolicyInformation> GetUpdatedResourcePolicyInformation(UpdatedResource resource, CancellationToken cancellationToken)
     {
         var resourceRegistryEntry = new ResourceRegistryEntry(resource.ResourceUrn);
         if (!resourceRegistryEntry.HasPolicyInResourceRegistry)
         {
-            return new UpdatedResourcePolicyMetadata(resource.ResourceUrn, DefaultMinimumSecurityLevel,
+            return new UpdatedResourcePolicyInformation(resource.ResourceUrn, DefaultMinimumSecurityLevel,
                 resource.UpdatedAt);
         }
 
         try
         {
             var policy = await FetchPolicy(resourceRegistryEntry.Identifier, cancellationToken);
-            return new UpdatedResourcePolicyMetadata(
+            return new UpdatedResourcePolicyInformation(
                 resource.ResourceUrn,
                 GetMinimumSecurityLevel(policy),
                 resource.UpdatedAt);
@@ -149,7 +149,7 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
         {
             // We need to keep going here, so we log and return a default value
             _logger.LogError("Failed to process policy for \"{ResourceUrn}\": {ExceptionMessage}", resource.ResourceUrn, ex.Message);
-            return new UpdatedResourcePolicyMetadata(resource.ResourceUrn, DefaultMinimumSecurityLevel,
+            return new UpdatedResourcePolicyInformation(resource.ResourceUrn, DefaultMinimumSecurityLevel,
                 resource.UpdatedAt);
         }
     }

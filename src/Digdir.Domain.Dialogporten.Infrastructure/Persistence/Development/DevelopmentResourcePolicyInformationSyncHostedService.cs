@@ -5,12 +5,12 @@ using Microsoft.Extensions.Hosting;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Development;
 
-internal sealed class DevelopmentResourcePolicyMetadataSyncHostedService : IHostedService
+internal sealed class DevelopmentResourcePolicyInformationSyncHostedService : IHostedService
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly IHostEnvironment _environment;
 
-    public DevelopmentResourcePolicyMetadataSyncHostedService(IServiceProvider serviceProvider, IHostEnvironment environment)
+    public DevelopmentResourcePolicyInformationSyncHostedService(IServiceProvider serviceProvider, IHostEnvironment environment)
     {
         _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
         _environment = environment ?? throw new ArgumentNullException(nameof(environment));
@@ -26,7 +26,7 @@ internal sealed class DevelopmentResourcePolicyMetadataSyncHostedService : IHost
         using var scope = _serviceProvider.CreateScope();
         var sender = scope.ServiceProvider.GetRequiredService<ISender>();
 
-        await sender.Send(new SynchronizeResourcePolicyMetadataCommand(), cancellationToken);
+        await sender.Send(new SynchronizeResourcePolicyInformationCommand(), cancellationToken);
     }
 
     public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;

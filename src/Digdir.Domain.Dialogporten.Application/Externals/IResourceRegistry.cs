@@ -1,4 +1,4 @@
-﻿using Digdir.Domain.Dialogporten.Domain.ResourcePolicyMetadata;
+﻿using Digdir.Domain.Dialogporten.Domain.ResourcePolicyInformation;
 
 namespace Digdir.Domain.Dialogporten.Application.Externals;
 
@@ -8,7 +8,7 @@ public interface IResourceRegistry
     Task<ServiceResourceInformation?> GetResourceInformation(string serviceResourceId, CancellationToken cancellationToken);
     IAsyncEnumerable<List<UpdatedSubjectResource>> GetUpdatedSubjectResources(DateTimeOffset since, int batchSize,
         CancellationToken cancellationToken);
-    Task<IReadOnlyCollection<UpdatedResourcePolicyMetadata>> GetUpdatedResourcePolicyMetadata(DateTimeOffset since, int numberOfConcurrentRequests,
+    Task<IReadOnlyCollection<UpdatedResourcePolicyInformation>> GetUpdatedResourcePolicyInformation(DateTimeOffset since, int numberOfConcurrentRequests,
         CancellationToken cancellationToken);
 }
 
@@ -29,4 +29,4 @@ public sealed record ServiceResourceInformation
 
 public sealed record UpdatedSubjectResource(Uri SubjectUrn, Uri ResourceUrn, DateTimeOffset UpdatedAt, bool Deleted);
 public sealed record UpdatedResource(Uri ResourceUrn, DateTimeOffset UpdatedAt);
-public sealed record UpdatedResourcePolicyMetadata(Uri ResourceUrn, int MinimumSecurityLevel, DateTimeOffset UpdatedAt);
+public sealed record UpdatedResourcePolicyInformation(Uri ResourceUrn, int MinimumSecurityLevel, DateTimeOffset UpdatedAt);

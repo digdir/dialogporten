@@ -15,10 +15,10 @@ Below are the available commands (commands are always the first argument):
     - `-s` *Optional*: Override the time of the last synchronization. This argument should be a `DateTimeOffset`, e.g., `2024-08-15` (default: newest in local copy)
     - `-b` *Optional*: Override the batch size (default: 1000).
 
-### sync-resource-policy-metadata
+### sync-resource-policy-information
 
 - **Description:**  
-  Synchronizes the metadata of resources policies from the Altinn Resource Registry to Dialogporten's local copy used for authorization.
+  Synchronizes information from resources policies from the Altinn Resource Registry to Dialogporten's local copy used for authorization.
 
 - **Argument(s):**
     - `-s` *Optional*: Override the time of the last synchronization. This argument should be a `DateTimeOffset`, e.g., `2024-08-15` (default: newest in local copy)

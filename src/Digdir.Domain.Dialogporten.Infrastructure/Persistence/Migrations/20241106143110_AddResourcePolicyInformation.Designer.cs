@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(DialogDbContext))]
-    [Migration("20241106143110_AddResourcePolicyMetadata")]
-    partial class AddResourcePolicyMetadata
+    [Migration("20241106143110_AddResourcePolicyInformation")]
+    partial class AddResourcePolicyInformation
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -1243,7 +1243,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.UseTphMappingStrategy();
                 });
 
-            modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.ResourcePolicyMetadata.ResourcePolicyMetadata", b =>
+            modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.ResourcePolicyInformation.ResourcePolicyInformation", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -1273,7 +1273,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.HasIndex("Resource")
                         .IsUnique();
 
-                    b.ToTable("ResourcePolicyMetadata");
+                    b.ToTable("ResourcePolicyInformation");
                 });
 
             modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.SubjectResources.SubjectResource", b =>
