@@ -28,12 +28,6 @@ internal sealed class ResourcePolicyInformationRepository : IResourcePolicyInfor
             : lastUpdatedAt;
     }
 
-    public Task<DateTimeOffset> GetLastUpdatedAt(CancellationToken cancellationToken) =>
-        _dbContext.ResourcePolicyInformation
-            .Select(x => x.UpdatedAt)
-            .DefaultIfEmpty()
-            .MaxAsync(cancellationToken);
-
     public async Task<int> Merge(IReadOnlyCollection<ResourcePolicyInformation> resourceMetadata, CancellationToken cancellationToken)
     {
         const string sql =
