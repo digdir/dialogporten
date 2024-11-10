@@ -21,18 +21,18 @@ public class DialogEntityTests
             nameof(DialogEntity.DialogEndUserContext)
         };
 
-        var dialogEntityPropertyNames = typeof(DialogEntity)
+        var dialogProperties = typeof(DialogEntity)
             .GetProperties()
             .Select(p => p.Name)
             .Where(name => !ignoreList.Contains(name))
             .ToList();
 
-        var dialogPropertyNames = typeof(Dialog)
+        var domainDialogProperties = typeof(Dialog)
             .GetProperties()
             .Select(p => p.Name)
             .ToList();
 
-        var missingProperties = dialogEntityPropertyNames.Except(dialogPropertyNames, StringComparer.OrdinalIgnoreCase).ToList();
+        var missingProperties = dialogProperties.Except(domainDialogProperties, StringComparer.OrdinalIgnoreCase).ToList();
 
         // Assert
         Assert.True(missingProperties.Count == 0, $"Properties missing in graphql dialog: {string.Join(", ", missingProperties)}");

@@ -15,19 +15,19 @@ public class AttachmentTests
             nameof(Domain.Attachments.Attachment.UpdatedAt)
         };
 
-        var attachmentPropertyNames = typeof(Attachment)
+        var attachmentProperties = typeof(Attachment)
             .GetProperties()
             .Select(p => p.Name)
             .ToList();
 
-        var attachmentEntityPropertyNames = typeof(Domain.Attachments.Attachment)
+        var domainAttachmentProperties = typeof(Domain.Attachments.Attachment)
             .GetProperties()
             .Select(p => p.Name)
             .Where(name => !ignoreList.Contains(name))
             .ToList();
 
-        var missingProperties = attachmentEntityPropertyNames
-            .Except(attachmentPropertyNames, StringComparer.OrdinalIgnoreCase)
+        var missingProperties = domainAttachmentProperties
+            .Except(attachmentProperties, StringComparer.OrdinalIgnoreCase)
             .ToList();
 
         // Assert
@@ -48,19 +48,19 @@ public class AttachmentTests
             nameof(DomainAttachmentUrl.Attachment)
         };
 
-        var attachmentUrlPropertyNames = typeof(GraphQL.EndUser.DialogById.AttachmentUrl)
+        var attachmentUrlProperties = typeof(GraphQL.EndUser.DialogById.AttachmentUrl)
             .GetProperties()
             .Select(p => p.Name)
             .ToList();
 
-        var domainAttachmentUrl = typeof(DomainAttachmentUrl)
+        var domainAttachmentUrlProperties = typeof(DomainAttachmentUrl)
             .GetProperties()
             .Select(p => p.Name)
             .Where(name => !ignoreList.Contains(name))
             .ToList();
 
-        var missingProperties = domainAttachmentUrl
-            .Except(attachmentUrlPropertyNames, StringComparer.OrdinalIgnoreCase)
+        var missingProperties = domainAttachmentUrlProperties
+            .Except(attachmentUrlProperties, StringComparer.OrdinalIgnoreCase)
             .ToList();
 
         // Assert

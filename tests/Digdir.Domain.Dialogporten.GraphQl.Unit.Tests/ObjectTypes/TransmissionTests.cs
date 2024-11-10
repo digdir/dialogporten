@@ -25,12 +25,12 @@ public class DialogTransmissionTests
             .Where(name => !ignoreList.Contains(name))
             .ToList();
 
-        var transmissionPropertyNames = typeof(Transmission)
+        var transmissionProperties = typeof(Transmission)
             .GetProperties()
             .Select(p => p.Name)
             .ToList();
 
-        var missingProperties = domainTransmissionProperties.Except(transmissionPropertyNames, StringComparer.OrdinalIgnoreCase).ToList();
+        var missingProperties = domainTransmissionProperties.Except(transmissionProperties, StringComparer.OrdinalIgnoreCase).ToList();
 
         // Assert
         Assert.True(missingProperties.Count == 0, $"Properties missing in graphql transmission: {string.Join(", ", missingProperties)}");
@@ -50,7 +50,7 @@ public class DialogTransmissionTests
             .Select(f => f.Name)
             .ToList();
 
-        var missingProperties = transmissionTypes.Except(domainTransmissionTypes, StringComparer.OrdinalIgnoreCase).ToList();
+        var missingProperties = domainTransmissionTypes.Except(transmissionTypes, StringComparer.OrdinalIgnoreCase).ToList();
 
         // Assert
         Assert.True(missingProperties.Count == 0, $"Properties missing in graphql TransmissionType: {string.Join(", ", missingProperties)}");
