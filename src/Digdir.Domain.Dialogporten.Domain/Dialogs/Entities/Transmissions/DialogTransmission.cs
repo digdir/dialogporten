@@ -14,7 +14,7 @@ public sealed class DialogTransmission : IImmutableEntity
     public string? AuthorizationAttribute { get; set; }
     public Uri? ExtendedType { get; set; }
 
-    // === Principal relationships ===t
+    // === Principal relationships ===
     [AggregateChild]
     public List<DialogTransmissionContent> Content { get; set; } = [];
 
