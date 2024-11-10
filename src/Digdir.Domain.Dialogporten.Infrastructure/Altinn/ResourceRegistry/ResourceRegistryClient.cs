@@ -148,7 +148,7 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
         catch (Exception ex)
         {
             // We need to keep going here, so we log and return a default value
-            _logger.LogError("Failed to process policy for \"{ResourceUrn}\": {ExceptionMessage}", resource.ResourceUrn, ex.Message);
+            _logger.LogError("Failed to process policy for \"{ResourceUrn}\": {Exception}", resource.ResourceUrn, ex);
             return new UpdatedResourcePolicyInformation(resource.ResourceUrn, DefaultMinimumSecurityLevel,
                 resource.UpdatedAt);
         }
