@@ -344,6 +344,32 @@
         },
         "type": "object"
       },
+      "V1EndUserCommonActors_Actor": {
+        "additionalProperties": false,
+        "properties": {
+          "actorId": {
+            "description": "The identifier of the person or organization that sent the transmission. Mutually exclusive with ActorName.\nMight be omitted if ActorType is \u0022ServiceOwner\u0022.",
+            "example": "urn:altinn:person:identifier-no:12018212345",
+            "nullable": true,
+            "type": "string"
+          },
+          "actorName": {
+            "description": "Specifies the name of the entity that sent the transmission. Mutually exclusive with ActorId. If ActorId\nis supplied, the name will be automatically populated from the name registries.",
+            "example": "Ola Nordmann",
+            "nullable": true,
+            "type": "string"
+          },
+          "actorType": {
+            "description": "The type of actor that sent the transmission.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/Actors_ActorType"
+              }
+            ]
+          }
+        },
+        "type": "object"
+      },
       "V1EndUserDialogActivitiesQueriesGet_Activity": {
         "additionalProperties": false,
         "properties": {
@@ -369,7 +395,7 @@
             "type": "string"
           },
           "performedBy": {
-            "$ref": "#/components/schemas/V1EndUserDialogActivitiesQueriesGet_PerformedByActor"
+            "$ref": "#/components/schemas/V1EndUserCommonActors_Actor"
           },
           "transmissionId": {
             "format": "guid",
@@ -378,27 +404,6 @@
           },
           "type": {
             "$ref": "#/components/schemas/DialogsEntitiesActivities_DialogActivityType"
-          }
-        },
-        "type": "object"
-      },
-      "V1EndUserDialogActivitiesQueriesGet_PerformedByActor": {
-        "additionalProperties": false,
-        "properties": {
-          "actorId": {
-            "nullable": true,
-            "type": "string"
-          },
-          "actorName": {
-            "nullable": true,
-            "type": "string"
-          },
-          "actorType": {
-            "$ref": "#/components/schemas/Actors_ActorType"
-          },
-          "id": {
-            "format": "guid",
-            "type": "string"
           }
         },
         "type": "object"
@@ -448,19 +453,7 @@
             "type": "string"
           },
           "performedBy": {
-            "$ref": "#/components/schemas/V1EndUserDialogLabelAssignmentLogQueriesSearch_LabelAssignmentLogActor"
-          }
-        },
-        "type": "object"
-      },
-      "V1EndUserDialogLabelAssignmentLogQueriesSearch_LabelAssignmentLogActor": {
-        "additionalProperties": false,
-        "properties": {
-          "actorId": {
-            "type": "string"
-          },
-          "actorName": {
-            "type": "string"
+            "$ref": "#/components/schemas/V1EndUserCommonActors_Actor"
           }
         },
         "type": "object"
@@ -483,23 +476,7 @@
             "type": "string"
           },
           "seenBy": {
-            "$ref": "#/components/schemas/V1EndUserDialogSeenLogsQueriesGet_SeenLogSeenByActor"
-          }
-        },
-        "type": "object"
-      },
-      "V1EndUserDialogSeenLogsQueriesGet_SeenLogSeenByActor": {
-        "additionalProperties": false,
-        "properties": {
-          "actorId": {
-            "type": "string"
-          },
-          "actorName": {
-            "type": "string"
-          },
-          "id": {
-            "format": "guid",
-            "type": "string"
+            "$ref": "#/components/schemas/V1EndUserCommonActors_Actor"
           }
         },
         "type": "object"
@@ -522,23 +499,7 @@
             "type": "string"
           },
           "seenBy": {
-            "$ref": "#/components/schemas/V1EndUserDialogSeenLogsQueriesSearch_SeenLogSeenByActor"
-          }
-        },
-        "type": "object"
-      },
-      "V1EndUserDialogSeenLogsQueriesSearch_SeenLogSeenByActor": {
-        "additionalProperties": false,
-        "properties": {
-          "actorId": {
-            "type": "string"
-          },
-          "actorName": {
-            "type": "string"
-          },
-          "id": {
-            "format": "guid",
-            "type": "string"
+            "$ref": "#/components/schemas/V1EndUserCommonActors_Actor"
           }
         },
         "type": "object"
@@ -799,7 +760,7 @@
             "description": "The actor that performed the activity.",
             "oneOf": [
               {
-                "$ref": "#/components/schemas/V1EndUserDialogsQueriesGet_DialogActivityPerformedByActor"
+                "$ref": "#/components/schemas/V1EndUserCommonActors_Actor"
               }
             ]
           },
@@ -814,30 +775,6 @@
             "oneOf": [
               {
                 "$ref": "#/components/schemas/DialogsEntitiesActivities_DialogActivityType"
-              }
-            ]
-          }
-        },
-        "type": "object"
-      },
-      "V1EndUserDialogsQueriesGet_DialogActivityPerformedByActor": {
-        "additionalProperties": false,
-        "properties": {
-          "actorId": {
-            "description": "The identifier of the person or organization that performed the activity.\nMay be omitted if ActorType is \u0022ServiceOwner\u0022.",
-            "nullable": true,
-            "type": "string"
-          },
-          "actorName": {
-            "description": "The name of the person or organization that performed the activity.\nOnly set if the actor type is \u0022PartyRepresentative\u0022.",
-            "nullable": true,
-            "type": "string"
-          },
-          "actorType": {
-            "description": "The type of actor that performed the activity.",
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/Actors_ActorType"
               }
             ]
           }
@@ -1087,24 +1024,9 @@
             "description": "The actor that saw the dialog revision.",
             "oneOf": [
               {
-                "$ref": "#/components/schemas/V1EndUserDialogsQueriesGet_DialogSeenLogSeenByActor"
+                "$ref": "#/components/schemas/V1EndUserCommonActors_Actor"
               }
             ]
-          }
-        },
-        "type": "object"
-      },
-      "V1EndUserDialogsQueriesGet_DialogSeenLogSeenByActor": {
-        "additionalProperties": false,
-        "properties": {
-          "actorId": {
-            "description": "The identifier of the person/business that saw the dialog revision.",
-            "example": "urn:altinn:person:identifier-no:01125512345\nurn:altinn:organization:identifier-no:912345678",
-            "type": "string"
-          },
-          "actorName": {
-            "description": "The natural name of the person/business that saw the dialog revision.",
-            "type": "string"
           }
         },
         "type": "object"
@@ -1164,7 +1086,7 @@
             "description": "The actor that sent the transmission.",
             "oneOf": [
               {
-                "$ref": "#/components/schemas/V1EndUserDialogsQueriesGet_DialogTransmissionSenderActor"
+                "$ref": "#/components/schemas/V1EndUserCommonActors_Actor"
               }
             ]
           },
@@ -1257,30 +1179,6 @@
             "oneOf": [
               {
                 "$ref": "#/components/schemas/V1CommonContent_ContentValue"
-              }
-            ]
-          }
-        },
-        "type": "object"
-      },
-      "V1EndUserDialogsQueriesGet_DialogTransmissionSenderActor": {
-        "additionalProperties": false,
-        "properties": {
-          "actorId": {
-            "description": "The identifier of the person or organization that sent the transmission.",
-            "example": "urn:altinn:person:identifier-no:12018212345",
-            "type": "string"
-          },
-          "actorName": {
-            "description": "The name of the person or organization that sent the transmission.",
-            "example": "Ola Nordmann",
-            "type": "string"
-          },
-          "actorType": {
-            "description": "The type of actor that sent the transmission.",
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/Actors_ActorType"
               }
             ]
           }
@@ -1482,7 +1380,7 @@
             "description": "The actor that performed the activity.",
             "oneOf": [
               {
-                "$ref": "#/components/schemas/V1EndUserDialogsQueriesSearch_DialogActivityPerformedByActor"
+                "$ref": "#/components/schemas/V1EndUserCommonActors_Actor"
               }
             ]
           },
@@ -1497,30 +1395,6 @@
             "oneOf": [
               {
                 "$ref": "#/components/schemas/DialogsEntitiesActivities_DialogActivityType"
-              }
-            ]
-          }
-        },
-        "type": "object"
-      },
-      "V1EndUserDialogsQueriesSearch_DialogActivityPerformedByActor": {
-        "additionalProperties": false,
-        "properties": {
-          "actorId": {
-            "description": "The identifier of the person or organization that performed the activity.\nMay be omitted if ActorType is \u0022ServiceOwner\u0022.",
-            "nullable": true,
-            "type": "string"
-          },
-          "actorName": {
-            "description": "The name of the person or organization that performed the activity.\nOnly set if the actor type is \u0022PartyRepresentative\u0022.",
-            "nullable": true,
-            "type": "string"
-          },
-          "actorType": {
-            "description": "What type of actor performed the activity.",
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/Actors_ActorType"
               }
             ]
           }
@@ -1553,24 +1427,9 @@
             "description": "The actor that saw the dialog revision.",
             "oneOf": [
               {
-                "$ref": "#/components/schemas/V1EndUserDialogsQueriesSearch_DialogSeenLogSeenByActor"
+                "$ref": "#/components/schemas/V1EndUserCommonActors_Actor"
               }
             ]
-          }
-        },
-        "type": "object"
-      },
-      "V1EndUserDialogsQueriesSearch_DialogSeenLogSeenByActor": {
-        "additionalProperties": false,
-        "properties": {
-          "actorId": {
-            "description": "The identifier of the person/business that saw the dialog revision.",
-            "example": "urn:altinn:person:identifier-no:01125512345\nurn:altinn:organization:identifier-no:912345678",
-            "type": "string"
-          },
-          "actorName": {
-            "description": "The natural name of the person/business that saw the dialog revision.",
-            "type": "string"
           }
         },
         "type": "object"
@@ -1678,33 +1537,6 @@
         },
         "type": "object"
       },
-      "V1EndUserDialogTransmissionsQueriesGet_SenderActor": {
-        "additionalProperties": false,
-        "properties": {
-          "actorId": {
-            "description": "The identifier of the actor.",
-            "type": "string"
-          },
-          "actorName": {
-            "description": "The name of the actor.",
-            "type": "string"
-          },
-          "actorType": {
-            "description": "The type of the actor.",
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/Actors_ActorType"
-              }
-            ]
-          },
-          "id": {
-            "description": "The unique identifier for the sender actor in UUIDv7 format.",
-            "format": "guid",
-            "type": "string"
-          }
-        },
-        "type": "object"
-      },
       "V1EndUserDialogTransmissionsQueriesGet_Transmission": {
         "additionalProperties": false,
         "properties": {
@@ -1765,7 +1597,7 @@
             "description": "The sender actor information for the transmission.",
             "oneOf": [
               {
-                "$ref": "#/components/schemas/V1EndUserDialogTransmissionsQueriesGet_SenderActor"
+                "$ref": "#/components/schemas/V1EndUserCommonActors_Actor"
               }
             ]
           },
@@ -1869,33 +1701,6 @@
         },
         "type": "object"
       },
-      "V1EndUserDialogTransmissionsQueriesSearch_SenderActor": {
-        "additionalProperties": false,
-        "properties": {
-          "actorId": {
-            "description": "The identifier of the actor.",
-            "type": "string"
-          },
-          "actorName": {
-            "description": "The name of the actor.",
-            "type": "string"
-          },
-          "actorType": {
-            "description": "The type of the actor.",
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/Actors_ActorType"
-              }
-            ]
-          },
-          "id": {
-            "description": "The unique identifier for the sender actor in UUIDv7 format.",
-            "format": "guid",
-            "type": "string"
-          }
-        },
-        "type": "object"
-      },
       "V1EndUserDialogTransmissionsQueriesSearch_Transmission": {
         "additionalProperties": false,
         "properties": {
@@ -1956,7 +1761,7 @@
             "description": "The sender actor information for the transmission.",
             "oneOf": [
               {
-                "$ref": "#/components/schemas/V1EndUserDialogTransmissionsQueriesSearch_SenderActor"
+                "$ref": "#/components/schemas/V1EndUserCommonActors_Actor"
               }
             ]
           },
@@ -2024,6 +1829,32 @@
         },
         "type": "object"
       },
+      "V1ServiceOwnerCommonActors_Actor": {
+        "additionalProperties": false,
+        "properties": {
+          "actorId": {
+            "description": "The identifier of the person or organization that sent the transmission. Mutually exclusive with ActorName.\nMight be omitted if ActorType is \u0022ServiceOwner\u0022.",
+            "example": "urn:altinn:person:identifier-no:12018212345",
+            "nullable": true,
+            "type": "string"
+          },
+          "actorName": {
+            "description": "Specifies the name of the entity that sent the transmission. Mutually exclusive with ActorId. If ActorId\nis supplied, the name will be automatically populated from the name registries.",
+            "example": "Ola Nordmann",
+            "nullable": true,
+            "type": "string"
+          },
+          "actorType": {
+            "description": "The type of actor that sent the transmission.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/Actors_ActorType"
+              }
+            ]
+          }
+        },
+        "type": "object"
+      },
       "V1ServiceOwnerDialogActivitiesCreate_ActivityRequest": {
         "additionalProperties": false,
         "properties": {
@@ -2058,7 +1889,7 @@
             "description": "The actor that performed the activity.",
             "oneOf": [
               {
-                "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsUpdate_ActivityPerformedByActor"
+                "$ref": "#/components/schemas/V1ServiceOwnerCommonActors_Actor"
               }
             ]
           },
@@ -2109,7 +1940,7 @@
             "type": "string"
           },
           "performedBy": {
-            "$ref": "#/components/schemas/V1ServiceOwnerDialogActivitiesQueriesGet_ActivityPerformedByActor"
+            "$ref": "#/components/schemas/V1ServiceOwnerCommonActors_Actor"
           },
           "transmissionId": {
             "format": "guid",
@@ -2118,27 +1949,6 @@
           },
           "type": {
             "$ref": "#/components/schemas/DialogsEntitiesActivities_DialogActivityType"
-          }
-        },
-        "type": "object"
-      },
-      "V1ServiceOwnerDialogActivitiesQueriesGet_ActivityPerformedByActor": {
-        "additionalProperties": false,
-        "properties": {
-          "actorId": {
-            "nullable": true,
-            "type": "string"
-          },
-          "actorName": {
-            "nullable": true,
-            "type": "string"
-          },
-          "actorType": {
-            "$ref": "#/components/schemas/Actors_ActorType"
-          },
-          "id": {
-            "format": "guid",
-            "type": "string"
           }
         },
         "type": "object"
@@ -2230,7 +2040,7 @@
             "description": "The actor that performed the activity.",
             "oneOf": [
               {
-                "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsCreate_ActivityPerformedByActor"
+                "$ref": "#/components/schemas/V1ServiceOwnerCommonActors_Actor"
               }
             ]
           },
@@ -2245,32 +2055,6 @@
             "oneOf": [
               {
                 "$ref": "#/components/schemas/DialogsEntitiesActivities_DialogActivityType"
-              }
-            ]
-          }
-        },
-        "type": "object"
-      },
-      "V1ServiceOwnerDialogsCommandsCreate_ActivityPerformedByActor": {
-        "additionalProperties": false,
-        "properties": {
-          "actorId": {
-            "description": "The identifier of the person or organization that performed the activity. Mutually exclusive with ActorName.\nMight be omitted if ActorType is \u0022ServiceOwner\u0022.",
-            "example": "urn:altinn:person:identifier-no:12018212345",
-            "nullable": true,
-            "type": "string"
-          },
-          "actorName": {
-            "description": "Specifies the name of the entity that performed the activity. Mutually exclusive with ActorId. If ActorId\nis supplied, the name will be automatically populated from the name registries.",
-            "example": "Ola Nordmann",
-            "nullable": true,
-            "type": "string"
-          },
-          "actorType": {
-            "description": "What type of actor performed the activity.",
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/Actors_ActorType"
               }
             ]
           }
@@ -2736,7 +2520,7 @@
             "description": "The actor that sent the transmission.",
             "oneOf": [
               {
-                "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsCreate_TransmissionSenderActor"
+                "$ref": "#/components/schemas/V1ServiceOwnerCommonActors_Actor"
               }
             ]
           },
@@ -2836,32 +2620,6 @@
         },
         "type": "object"
       },
-      "V1ServiceOwnerDialogsCommandsCreate_TransmissionSenderActor": {
-        "additionalProperties": false,
-        "properties": {
-          "actorId": {
-            "description": "The identifier of the person or organization that sent the transmission. Mutually exclusive with ActorName.\nMight be omitted if ActorType is \u0022ServiceOwner\u0022.",
-            "example": "urn:altinn:person:identifier-no:12018212345",
-            "nullable": true,
-            "type": "string"
-          },
-          "actorName": {
-            "description": "Specifies the name of the entity that sent the transmission. Mutually exclusive with ActorId. If ActorId\nis supplied, the name will be automatically populated from the name registries.",
-            "example": "Ola Nordmann",
-            "nullable": true,
-            "type": "string"
-          },
-          "actorType": {
-            "description": "The type of actor that sent the transmission.",
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/Actors_ActorType"
-              }
-            ]
-          }
-        },
-        "type": "object"
-      },
       "V1ServiceOwnerDialogsCommandsUpdate_Activity": {
         "additionalProperties": false,
         "properties": {
@@ -2896,7 +2654,7 @@
             "description": "The actor that performed the activity.",
             "oneOf": [
               {
-                "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsUpdate_ActivityPerformedByActor"
+                "$ref": "#/components/schemas/V1ServiceOwnerCommonActors_Actor"
               }
             ]
           },
@@ -2911,32 +2669,6 @@
             "oneOf": [
               {
                 "$ref": "#/components/schemas/DialogsEntitiesActivities_DialogActivityType"
-              }
-            ]
-          }
-        },
-        "type": "object"
-      },
-      "V1ServiceOwnerDialogsCommandsUpdate_ActivityPerformedByActor": {
-        "additionalProperties": false,
-        "properties": {
-          "actorId": {
-            "description": "The identifier of the person or organization that performed the activity. Mutually exclusive with ActorName.\nMight be omitted if ActorType is \u0022ServiceOwner\u0022.",
-            "example": "urn:altinn:person:identifier-no:12018212345",
-            "nullable": true,
-            "type": "string"
-          },
-          "actorName": {
-            "description": "Specifies the name of the entity that performed the activity. Mutually exclusive with ActorId. If ActorId\nis supplied, the name will be automatically populated from the name registries.",
-            "example": "Ola Nordmann",
-            "nullable": true,
-            "type": "string"
-          },
-          "actorType": {
-            "description": "What type of actor performed the activity.",
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/Actors_ActorType"
               }
             ]
           }
@@ -3389,7 +3121,7 @@
             "description": "The actor that sent the transmission.",
             "oneOf": [
               {
-                "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsUpdate_TransmissionSenderActor"
+                "$ref": "#/components/schemas/V1ServiceOwnerCommonActors_Actor"
               }
             ]
           },
@@ -3489,32 +3221,6 @@
         },
         "type": "object"
       },
-      "V1ServiceOwnerDialogsCommandsUpdate_TransmissionSenderActor": {
-        "additionalProperties": false,
-        "properties": {
-          "actorId": {
-            "description": "The identifier of the person or organization that sent the transmission. Mutually exclusive with ActorName.\nMight be omitted if ActorType is \u0022ServiceOwner\u0022.",
-            "example": "urn:altinn:person:identifier-no:12018212345",
-            "nullable": true,
-            "type": "string"
-          },
-          "actorName": {
-            "description": "Specifies the name of the entity that sent the transmission. Mutually exclusive with ActorId. If ActorId\nis supplied, the name will be automatically populated from the name registries.",
-            "example": "Ola Nordmann",
-            "nullable": true,
-            "type": "string"
-          },
-          "actorType": {
-            "description": "The type of actor that sent the transmission.",
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/Actors_ActorType"
-              }
-            ]
-          }
-        },
-        "type": "object"
-      },
       "V1ServiceOwnerDialogSeenLogsQueriesGet_SeenLog": {
         "additionalProperties": false,
         "properties": {
@@ -3531,39 +3237,7 @@
             "type": "string"
           },
           "seenBy": {
-            "$ref": "#/components/schemas/V1ServiceOwnerDialogSeenLogsQueriesGet_SeenLogSeenByActor"
-          }
-        },
-        "type": "object"
-      },
-      "V1ServiceOwnerDialogSeenLogsQueriesGet_SeenLogSeenByActor": {
-        "additionalProperties": false,
-        "properties": {
-          "actorId": {
-            "type": "string"
-          },
-          "actorName": {
-            "type": "string"
-          },
-          "id": {
-            "format": "guid",
-            "type": "string"
-          }
-        },
-        "type": "object"
-      },
-      "V1ServiceOwnerDialogSeenLogsQueriesSearch_SeenByActor": {
-        "additionalProperties": false,
-        "properties": {
-          "actorId": {
-            "type": "string"
-          },
-          "actorName": {
-            "type": "string"
-          },
-          "id": {
-            "format": "guid",
-            "type": "string"
+            "$ref": "#/components/schemas/V1ServiceOwnerCommonActors_Actor"
           }
         },
         "type": "object"
@@ -3584,7 +3258,7 @@
             "type": "string"
           },
           "seenBy": {
-            "$ref": "#/components/schemas/V1ServiceOwnerDialogSeenLogsQueriesSearch_SeenByActor"
+            "$ref": "#/components/schemas/V1ServiceOwnerCommonActors_Actor"
           }
         },
         "type": "object"
@@ -3861,7 +3535,7 @@
             "description": "The actor that performed the activity.",
             "oneOf": [
               {
-                "$ref": "#/components/schemas/V1ServiceOwnerDialogsQueriesGet_DialogActivityPerformedByActor"
+                "$ref": "#/components/schemas/V1ServiceOwnerCommonActors_Actor"
               }
             ]
           },
@@ -3876,30 +3550,6 @@
             "oneOf": [
               {
                 "$ref": "#/components/schemas/DialogsEntitiesActivities_DialogActivityType"
-              }
-            ]
-          }
-        },
-        "type": "object"
-      },
-      "V1ServiceOwnerDialogsQueriesGet_DialogActivityPerformedByActor": {
-        "additionalProperties": false,
-        "properties": {
-          "actorId": {
-            "description": "The identifier of the person or organization that performed the activity.\nMay be omitted if ActorType is \u0022ServiceOwner\u0022.",
-            "nullable": true,
-            "type": "string"
-          },
-          "actorName": {
-            "description": "The name of the person or organization that performed the activity.\nOnly set if the actor type is \u0022PartyRepresentative\u0022.",
-            "nullable": true,
-            "type": "string"
-          },
-          "actorType": {
-            "description": "What type of actor performed the activity.",
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/Actors_ActorType"
               }
             ]
           }
@@ -4149,24 +3799,9 @@
             "description": "The actor that saw the dialog revision.",
             "oneOf": [
               {
-                "$ref": "#/components/schemas/V1ServiceOwnerDialogsQueriesGet_DialogSeenLogSeenByActor"
+                "$ref": "#/components/schemas/V1ServiceOwnerCommonActors_Actor"
               }
             ]
-          }
-        },
-        "type": "object"
-      },
-      "V1ServiceOwnerDialogsQueriesGet_DialogSeenLogSeenByActor": {
-        "additionalProperties": false,
-        "properties": {
-          "actorId": {
-            "description": "The identifier of the person/business that saw the dialog revision.",
-            "example": "urn:altinn:person:identifier-no:01125512345\nurn:altinn:organization:identifier-no:912345678",
-            "type": "string"
-          },
-          "actorName": {
-            "description": "The natural name of the person/business that saw the dialog revision.",
-            "type": "string"
           }
         },
         "type": "object"
@@ -4227,7 +3862,7 @@
             "description": "The actor that sent the transmission.",
             "oneOf": [
               {
-                "$ref": "#/components/schemas/V1ServiceOwnerDialogsQueriesGet_DialogTransmissionSenderActor"
+                "$ref": "#/components/schemas/V1ServiceOwnerCommonActors_Actor"
               }
             ]
           },
@@ -4320,30 +3955,6 @@
             "oneOf": [
               {
                 "$ref": "#/components/schemas/V1CommonContent_ContentValue"
-              }
-            ]
-          }
-        },
-        "type": "object"
-      },
-      "V1ServiceOwnerDialogsQueriesGet_DialogTransmissionSenderActor": {
-        "additionalProperties": false,
-        "properties": {
-          "actorId": {
-            "description": "The identifier of the person or organization that sent the transmission.",
-            "example": "urn:altinn:person:identifier-no:12018212345",
-            "type": "string"
-          },
-          "actorName": {
-            "description": "The name of the person or organization that sent the transmission.",
-            "example": "Ola Nordmann",
-            "type": "string"
-          },
-          "actorType": {
-            "description": "The type of actor that sent the transmission.",
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/Actors_ActorType"
               }
             ]
           }
@@ -4567,7 +4178,7 @@
             "description": "The actor that performed the activity.",
             "oneOf": [
               {
-                "$ref": "#/components/schemas/V1ServiceOwnerDialogsQueriesSearch_DialogActivityPerformedByActor"
+                "$ref": "#/components/schemas/V1ServiceOwnerCommonActors_Actor"
               }
             ]
           },
@@ -4582,30 +4193,6 @@
             "oneOf": [
               {
                 "$ref": "#/components/schemas/DialogsEntitiesActivities_DialogActivityType"
-              }
-            ]
-          }
-        },
-        "type": "object"
-      },
-      "V1ServiceOwnerDialogsQueriesSearch_DialogActivityPerformedByActor": {
-        "additionalProperties": false,
-        "properties": {
-          "actorId": {
-            "description": "The identifier of the person or organization that performed the activity.\nMay be omitted if ActorType is \u0022ServiceOwner\u0022.",
-            "nullable": true,
-            "type": "string"
-          },
-          "actorName": {
-            "description": "The name of the person or organization that performed the activity.\nOnly set if the actor type is \u0022PartyRepresentative\u0022.",
-            "nullable": true,
-            "type": "string"
-          },
-          "actorType": {
-            "description": "What type of actor performed the activity.",
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/Actors_ActorType"
               }
             ]
           }
@@ -4638,24 +4225,9 @@
             "description": "The actor that saw the dialog revision.",
             "oneOf": [
               {
-                "$ref": "#/components/schemas/V1ServiceOwnerDialogsQueriesSearch_DialogSeenLogSeenByActor"
+                "$ref": "#/components/schemas/V1ServiceOwnerCommonActors_Actor"
               }
             ]
-          }
-        },
-        "type": "object"
-      },
-      "V1ServiceOwnerDialogsQueriesSearch_DialogSeenLogSeenByActor": {
-        "additionalProperties": false,
-        "properties": {
-          "actorId": {
-            "description": "The identifier of the person/business that saw the dialog revision.",
-            "example": "urn:altinn:person:identifier-no:01125512345\nurn:altinn:organization:identifier-no:912345678",
-            "type": "string"
-          },
-          "actorName": {
-            "description": "The natural name of the person/business that saw the dialog revision.",
-            "type": "string"
           }
         },
         "type": "object"
@@ -4722,7 +4294,7 @@
             "description": "The actor that sent the transmission.",
             "oneOf": [
               {
-                "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsUpdate_TransmissionSenderActor"
+                "$ref": "#/components/schemas/V1ServiceOwnerCommonActors_Actor"
               }
             ]
           },
@@ -4826,33 +4398,6 @@
         },
         "type": "object"
       },
-      "V1ServiceOwnerDialogTransmissionsQueriesGet_SenderActor": {
-        "additionalProperties": false,
-        "properties": {
-          "actorId": {
-            "description": "The identifier of the actor.",
-            "type": "string"
-          },
-          "actorName": {
-            "description": "The name of the actor.",
-            "type": "string"
-          },
-          "actorType": {
-            "description": "The type of the actor.",
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/Actors_ActorType"
-              }
-            ]
-          },
-          "id": {
-            "description": "The unique identifier for the sender actor in UUIDv7 format.",
-            "format": "guid",
-            "type": "string"
-          }
-        },
-        "type": "object"
-      },
       "V1ServiceOwnerDialogTransmissionsQueriesGet_Transmission": {
         "additionalProperties": false,
         "properties": {
@@ -4909,7 +4454,7 @@
             "description": "The sender actor information for the transmission.",
             "oneOf": [
               {
-                "$ref": "#/components/schemas/V1ServiceOwnerDialogTransmissionsQueriesGet_SenderActor"
+                "$ref": "#/components/schemas/V1ServiceOwnerCommonActors_Actor"
               }
             ]
           },
@@ -5013,33 +4558,6 @@
         },
         "type": "object"
       },
-      "V1ServiceOwnerDialogTransmissionsQueriesSearch_SenderActor": {
-        "additionalProperties": false,
-        "properties": {
-          "actorId": {
-            "description": "The identifier of the actor.",
-            "type": "string"
-          },
-          "actorName": {
-            "description": "The name of the actor.",
-            "type": "string"
-          },
-          "actorType": {
-            "description": "The type of the actor.",
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/Actors_ActorType"
-              }
-            ]
-          },
-          "id": {
-            "description": "The unique identifier for the sender actor in UUIDv7 format.",
-            "format": "guid",
-            "type": "string"
-          }
-        },
-        "type": "object"
-      },
       "V1ServiceOwnerDialogTransmissionsQueriesSearch_Transmission": {
         "additionalProperties": false,
         "properties": {
@@ -5096,7 +4614,7 @@
             "description": "The sender actor information for the transmission.",
             "oneOf": [
               {
-                "$ref": "#/components/schemas/V1ServiceOwnerDialogTransmissionsQueriesSearch_SenderActor"
+                "$ref": "#/components/schemas/V1ServiceOwnerCommonActors_Actor"
               }
             ]
           },
@@ -6501,7 +6019,7 @@
       },
       "patch": {
         "description": "Patches a dialog aggregate with a RFC6902 JSON Patch document. The patch document must be a JSON array of RFC6902 operations.\nSee [https://tools.ietf.org/html/rfc6902](https://tools.ietf.org/html/rfc6902) for more information.\n            \nOptimistic concurrency control is implemented using the If-Match header. Supply the Revision value from the GetDialog endpoint to ensure that the dialog is not modified/deleted by another request in the meantime.",
-        "operationId": "PatchDialogs_Patch",
+        "operationId": "V1ServiceOwnerDialogsPatchDialog",
         "parameters": [
           {
             "in": "path",

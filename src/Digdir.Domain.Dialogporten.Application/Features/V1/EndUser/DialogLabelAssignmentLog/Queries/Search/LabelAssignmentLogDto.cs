@@ -1,3 +1,5 @@
+using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Common.Actors;
+
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.DialogLabelAssignmentLog.Queries.Search;
 
 public sealed class LabelAssignmentLogDto
@@ -8,14 +10,6 @@ public sealed class LabelAssignmentLogDto
 
     public string Action { get; set; } = null!;
 
-    public LabelAssignmentLogActorDto PerformedBy { get; set; } = null!;
+    public ActorDto PerformedBy { get; set; } = null!;
 
-}
-
-public sealed class LabelAssignmentLogActorDto
-{
-
-    public string ActorName { get; set; } = null!;
-
-    public string ActorId { get; set; } = null!;
 }

@@ -1,4 +1,5 @@
 using AutoMapper;
+using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Actors;
 using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Queries.Get;
 using Digdir.Domain.Dialogporten.GraphQL.EndUser.Common;
 
@@ -28,7 +29,6 @@ public sealed class MappingProfile : Profile
 
         CreateMap<DialogTransmissionDto, Transmission>()
             .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type));
-        CreateMap<DialogTransmissionSenderActorDto, Actor>();
         CreateMap<DialogTransmissionAttachmentDto, Attachment>();
         CreateMap<DialogTransmissionAttachmentUrlDto, AttachmentUrl>()
             .ForMember(dest => dest.ConsumerType, opt => opt.MapFrom(src => src.ConsumerType));

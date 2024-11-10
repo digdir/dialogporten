@@ -42,7 +42,7 @@ export const options = {
     },
     summaryTrendStats: ['avg', 'min', 'med', 'max', 'p(95)', 'p(99)', 'p(99.5)', 'p(99.9)', 'count'],
     thresholds: getDefaultThresholds(['http_req_duration', 'http_reqs'],[
-      'simple search',
+      'enduser search',
       'create dialog',
       'get dialog', 
       'get dialog activities', 

@@ -1,6 +1,6 @@
 ﻿using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Content;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
-using Digdir.Domain.Dialogporten.Domain.Actors;
+using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Common.Actors;
 using Digdir.Domain.Dialogporten.Domain.Attachments;
 using Digdir.Domain.Dialogporten.Domain.DialogEndUserContexts.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
@@ -227,7 +227,7 @@ public sealed class DialogTransmissionDto
     /// <summary>
     /// The actor that sent the transmission.
     /// </summary>
-    public DialogTransmissionSenderActorDto Sender { get; set; } = null!;
+    public ActorDto Sender { get; set; } = null!;
 
     /// <summary>
     /// The transmission unstructured text content.
@@ -255,7 +255,7 @@ public sealed class DialogSeenLogDto
     /// <summary>
     /// The actor that saw the dialog revision.
     /// </summary>
-    public DialogSeenLogSeenByActorDto SeenBy { get; set; } = null!;
+    public ActorDto SeenBy { get; set; } = null!;
 
     /// <summary>
     /// Flag indicating whether the seen log entry was created via the service owner.
@@ -270,42 +270,6 @@ public sealed class DialogSeenLogDto
     public bool IsCurrentEndUser { get; set; }
 }
 
-public sealed class DialogSeenLogSeenByActorDto
-{
-    /// <summary>
-    /// The natural name of the person/business that saw the dialog revision.
-    /// </summary>
-    public string ActorName { get; set; } = null!;
-
-    /// <summary>
-    /// The identifier of the person/business that saw the dialog revision.
-    /// </summary>
-    /// <example>
-    /// urn:altinn:person:identifier-no:01125512345
-    /// urn:altinn:organization:identifier-no:912345678
-    /// </example>
-    public string ActorId { get; set; } = null!;
-}
-
-public sealed class DialogTransmissionSenderActorDto
-{
-    /// <summary>
-    /// The type of actor that sent the transmission.
-    /// </summary>
-    public ActorType.Values ActorType { get; set; }
-
-    /// <summary>
-    /// The name of the person or organization that sent the transmission.
-    /// </summary>
-    /// <example>Ola Nordmann</example>
-    public string ActorName { get; set; } = null!;
-
-    /// <summary>
-    /// The identifier of the person or organization that sent the transmission.
-    /// </summary>
-    /// <example>urn:altinn:person:identifier-no:12018212345</example>
-    public string ActorId { get; set; } = null!;
-}
 
 public sealed class ContentDto
 {
@@ -400,7 +364,7 @@ public sealed class DialogActivityDto
     /// <summary>
     /// The actor that performed the activity.
     /// </summary>
-    public DialogActivityPerformedByActorDto PerformedBy { get; set; } = null!;
+    public ActorDto PerformedBy { get; set; } = null!;
 
     /// <summary>
     /// Unstructured text describing the activity. Only set if the activity type is "Information".
@@ -408,25 +372,6 @@ public sealed class DialogActivityDto
     public List<LocalizationDto> Description { get; set; } = [];
 }
 
-public sealed class DialogActivityPerformedByActorDto
-{
-    /// <summary>
-    /// What type of actor performed the activity.
-    /// </summary>
-    public ActorType.Values ActorType { get; set; }
-
-    /// <summary>
-    /// The name of the person or organization that performed the activity.
-    /// Only set if the actor type is "PartyRepresentative".
-    /// </summary>
-    public string? ActorName { get; set; }
-
-    /// <summary>
-    /// The identifier of the person or organization that performed the activity.
-    /// May be omitted if ActorType is "ServiceOwner".
-    /// </summary>
-    public string? ActorId { get; set; }
-}
 
 public sealed class DialogApiActionDto
 {

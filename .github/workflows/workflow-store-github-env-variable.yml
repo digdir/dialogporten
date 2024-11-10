@@ -1,0 +1,39 @@
+name: Store GitHub Environment Variable
+
+on:
+  workflow_call:
+    inputs:
+      variable_name:
+        required: true
+        type: string
+        description: "Name of the variable to store"
+      variable_value:
+        required: true
+        type: string
+        description: "Value to store in the variable"
+      environment:
+        required: true
+        type: string
+        description: "GitHub environment to store the variable in"
+    secrets:
+      GH_TOKEN:
+        required: true
+        description: "GitHub token with permission to set variables"
+
+jobs:
+  store-variable:
+    name: Store GitHub Environment Variable
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set GitHub variable
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          gh variable set ${{ inputs.variable_name }} \
+            --body "${{ inputs.variable_value }}" \
+            --env ${{ inputs.environment }} \
+            --repo ${{ github.repository }}
