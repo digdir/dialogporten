@@ -112,7 +112,7 @@ resource postgres 'Microsoft.DBforPostgreSQL/flexibleServers@2024-08-01' = {
   tags: tags
 }
 
-resource track_io_timing 'Microsoft.DBforPostgreSQL/flexibleServers/configurations@2023-12-01-preview' = if (enableQueryPerformanceInsight) {
+resource track_io_timing 'Microsoft.DBforPostgreSQL/flexibleServers/configurations@2024-08-01' = if (enableQueryPerformanceInsight) {
   parent: postgres
   name: 'track_io_timing'
   properties: {
@@ -121,7 +121,7 @@ resource track_io_timing 'Microsoft.DBforPostgreSQL/flexibleServers/configuratio
   }
 }
 
-resource pg_qs_query_capture_mode 'Microsoft.DBforPostgreSQL/flexibleServers/configurations@2023-12-01-preview' = if (enableQueryPerformanceInsight) {
+resource pg_qs_query_capture_mode 'Microsoft.DBforPostgreSQL/flexibleServers/configurations@2024-08-01' = if (enableQueryPerformanceInsight) {
   parent: postgres
   name: 'pg_qs.query_capture_mode'
   properties: {
@@ -130,7 +130,7 @@ resource pg_qs_query_capture_mode 'Microsoft.DBforPostgreSQL/flexibleServers/con
   }
 }
 
-resource pgms_wait_sampling_query_capture_mode 'Microsoft.DBforPostgreSQL/flexibleServers/configurations@2023-12-01-preview' = if (enableQueryPerformanceInsight) {
+resource pgms_wait_sampling_query_capture_mode 'Microsoft.DBforPostgreSQL/flexibleServers/configurations@2024-08-01' = if (enableQueryPerformanceInsight) {
   parent: postgres
   name: 'pgms_wait_sampling.query_capture_mode'
   properties: {
