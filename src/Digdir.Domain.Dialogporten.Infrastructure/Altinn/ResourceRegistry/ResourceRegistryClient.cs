@@ -158,11 +158,12 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
     {
         const string policyEndpointPattern = ResourceRegistryResourceEndpoint + "{0}/policy";
 
-        var policyXml = await _client
+        await using var policyXml = await _client
             .GetStreamAsync(string.Format(CultureInfo.InvariantCulture, policyEndpointPattern, resourceIdentifier),
                 cancellationToken: cancellationToken);
 
-        var policy = XacmlParser.ParseXacmlPolicy(XmlReader.Create(policyXml))
+        using var reader = XmlReader.Create(policyXml);
+        var policy = XacmlParser.ParseXacmlPolicy(reader)
                      ?? throw new InvalidOperationException($"Failed to parse XACML policy for \"{resourceIdentifier}\".");
 
         return policy;
