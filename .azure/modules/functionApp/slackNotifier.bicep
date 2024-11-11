@@ -178,7 +178,7 @@ var query = '''
                  severityLevel == 4, "Critical",
                  tostring(severityLevel)
                                       )
-             | extend Details = coalesce(customDimensions_MessageTemplate, problemId)
+             | extend Details = coalesce(problemId, customDimensions_MessageTemplate)
              | extend Details = replace_string(Details, "Digdir.Domain.Dialogporten.", "")
              | project Environment, Type, SeverityLevel, Count, Details
              '''
