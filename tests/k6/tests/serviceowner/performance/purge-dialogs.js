@@ -38,7 +38,11 @@ function getDialogs(serviceOwner) {
             response.items.forEach((item) => {
                 dialogIdsToPurge.push(item.id);
             });
-            continuationToken = "&continuationToken=" + response.continuationToken;
+            if (response.continuationToken) {
+                continuationToken = "&continuationToken=" + response.continuationToken;
+            } else {
+                continuationToken = "";
+            }
         }
         console.log("Found " + dialogIdsToPurge.length + " unpurged dialogs");  
         if (dialogIdsToPurge.length < 200) {
