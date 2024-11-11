@@ -16,7 +16,8 @@ internal static class TypeNameConverter
         "FastEndpoints",
         "Digdir.Domain.Dialogporten.Domain.",
         "Digdir.Domain.Dialogporten.WebApi.Endpoints.",
-        "Digdir.Domain.Dialogporten.Application.Features."
+        "Digdir.Domain.Dialogporten.Application.Features.",
+        "Microsoft.AspNetCore."
     ];
 
     internal static string ToShortName(Type type)
