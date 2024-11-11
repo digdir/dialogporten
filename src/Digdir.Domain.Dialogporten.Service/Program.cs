@@ -5,11 +5,11 @@ using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Microsoft.ApplicationInsights.Extensibility;
 using Serilog;
 using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
-using Digdir.Domain.Dialogporten.Domain;
 using Digdir.Domain.Dialogporten.Service;
-using Digdir.Domain.Dialogporten.Service.Consumers;
+using Digdir.Domain.Dialogporten.Service.Common;
 using Digdir.Library.Utils.AspNet;
 using MassTransit;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 // Using two-stage initialization to catch startup errors.
 var telemetryConfiguration = TelemetryConfiguration.CreateDefault();
@@ -49,19 +49,6 @@ static void BuildAndRun(string[] args, TelemetryConfiguration telemetryConfigura
         .AddAzureConfiguration(builder.Environment.EnvironmentName)
         .AddLocalConfiguration(builder.Environment);
 
-    // Generic consumers are not registered through MassTransits assembly
-    // scanning, so we need to create domain event handlers for all
-    // domain events and register them manually
-    var openDomainEventConsumer = typeof(DomainEventConsumer<>);
-    var openDomainEventConsumerDefinition = typeof(DomainEventConsumerDefinition<>);
-    var domainEventConsumers = DomainExtensions.GetDomainEventTypes()
-        .Select(x =>
-        (
-            consumerType: openDomainEventConsumer.MakeGenericType(x),
-            definitionType: openDomainEventConsumerDefinition.MakeGenericType(x))
-        )
-        .ToArray();
-
     builder.ConfigureTelemetry();
 
     builder.Services
@@ -71,9 +58,11 @@ static void BuildAndRun(string[] args, TelemetryConfiguration telemetryConfigura
             .WithPubSubCapabilities<ServiceAssemblyMarker>()
             .AndBusConfiguration(x =>
             {
-                foreach (var (consumer, definition) in domainEventConsumers)
+                foreach (var map in MassTransitApplicationUtils.GetApplicationConsumerMaps())
                 {
-                    x.AddConsumer(consumer, definition);
+                    x.TryAddTransient(map.AppConsumerType);
+                    x.AddConsumer(map.BusConsumerType, map.BusDefinitionType)
+                        .Endpoint(x => x.Name = map.EndpointName);
                 }
             })
             .Build()
