@@ -112,7 +112,7 @@ export function purgeDialogs(serviceOwner) {
             for(var i = dialogIdsToPurge.length - 1; i>=0; i--) {
                 let r = purgeSO('dialogs/' + dialogIdsToPurge[i], paramsWithToken);
                 if (r.status != 204) {
-                    console.error("Failed to purge dialog with id: " + id);
+                    console.error("Failed to purge dialog with id: " + dialogIdsToPurge[i]);
                     console.log(r);
                 }
                 else {
