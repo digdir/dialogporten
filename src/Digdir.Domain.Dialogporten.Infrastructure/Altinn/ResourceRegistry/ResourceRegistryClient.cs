@@ -171,15 +171,20 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
 
     private static int GetMinimumSecurityLevel(XacmlPolicy policy)
     {
-        var authenticationLevelAttributeAssigmentExpression = policy.ObligationExpressions
+        var authenticationLevelAttributeAssignmentExpression = policy.ObligationExpressions
             .FirstOrDefault()?.AttributeAssignmentExpressions
-            .FirstOrDefault(y => y.Category.ToString() == AuthenticationLevelCategory);
+            .FirstOrDefault(x => x.Category?.ToString() == AuthenticationLevelCategory);
 
-        return authenticationLevelAttributeAssigmentExpression is null
-            ? DefaultMinimumSecurityLevel
-            : int.TryParse(((XacmlAttributeValue)authenticationLevelAttributeAssigmentExpression.Property).Value, out var minimumSecurityLevel)
-                ? minimumSecurityLevel
-                : DefaultMinimumSecurityLevel;
+        if (authenticationLevelAttributeAssignmentExpression?.Property is XacmlAttributeValue attributeValue)
+        {
+            if (int.TryParse(attributeValue.Value, out var minimumSecurityLevel))
+            {
+                return minimumSecurityLevel;
+            }
+        }
+
+        // Return default security level if parsing fails or no valid expression is found
+        return DefaultMinimumSecurityLevel;
     }
 
     private async Task<ServiceResourceInformation[]> FetchServiceResourceInformation(CancellationToken cancellationToken)
