@@ -31,6 +31,12 @@ type Sku = {
 @description('The SKU of the PostgreSQL server')
 param sku Sku
 
+@description('Enable query performance insight')
+param enableQueryPerformanceInsight bool
+
+@description('The name of the Application Insights workspace')
+param appInsightWorkspaceName string
+
 @description('The Key Vault to store the PostgreSQL administrator login password')
 @secure()
 param srcKeyVault object
@@ -104,6 +110,73 @@ resource postgres 'Microsoft.DBforPostgreSQL/flexibleServers@2024-08-01' = {
     }
   }
   tags: tags
+}
+
+resource track_io_timing 'Microsoft.DBforPostgreSQL/flexibleServers/configurations@2024-08-01' = if (enableQueryPerformanceInsight) {
+  parent: postgres
+  name: 'track_io_timing'
+  properties: {
+    value: 'on'
+    source: 'user-override'
+  }
+}
+
+resource pg_qs_query_capture_mode 'Microsoft.DBforPostgreSQL/flexibleServers/configurations@2024-08-01' = if (enableQueryPerformanceInsight) {
+  parent: postgres
+  name: 'pg_qs.query_capture_mode'
+  properties: {
+    value: 'all'
+    source: 'user-override'
+  }
+}
+
+resource pgms_wait_sampling_query_capture_mode 'Microsoft.DBforPostgreSQL/flexibleServers/configurations@2024-08-01' = if (enableQueryPerformanceInsight) {
+  parent: postgres
+  name: 'pgms_wait_sampling.query_capture_mode'
+  properties: {
+    value: 'all'
+    source: 'user-override'
+  }
+}
+
+resource appInsightsWorkspace 'Microsoft.OperationalInsights/workspaces@2023-09-01' existing = {
+  name: appInsightWorkspaceName
+}
+
+// todo: setting as 0 for now. Will use the log analytics workspace policy instead. Consider setting explicitly in the future.
+var diagnosticSettingRetentionPolicy = {
+  days: 0
+  enabled: false
+}
+
+var diagnosticLogCategories = [
+  'PostgreSQLLogs'
+  'PostgreSQLFlexSessions'
+  'PostgreSQLFlexQueryStoreRuntime'
+  'PostgreSQLFlexQueryStoreWaitStats'
+  'PostgreSQLFlexTableStats'
+  'PostgreSQLFlexDatabaseXacts'
+]
+
+resource diagnosticSetting 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = if (enableQueryPerformanceInsight) {
+  name: 'PostgreSQLDiagnosticSetting'
+  scope: postgres
+  properties: {
+    workspaceId: appInsightsWorkspace.id
+    logs: [for category in diagnosticLogCategories: {
+      category: category
+      enabled: true
+      retentionPolicy: diagnosticSettingRetentionPolicy
+    }]
+    metrics: [
+      {
+        timeGrain: null
+        enabled: true
+        retentionPolicy: diagnosticSettingRetentionPolicy
+        category: 'AllMetrics'
+      }
+    ]
+  }
 }
 
 module adoConnectionString '../keyvault/upsertSecret.bicep' = {

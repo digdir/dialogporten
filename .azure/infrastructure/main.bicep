@@ -55,7 +55,11 @@ import { Sku as SlackNotifierSku } from '../modules/functionApp/slackNotifier.bi
 param slackNotifierSku SlackNotifierSku
 
 import { Sku as PostgresSku } from '../modules/postgreSql/create.bicep'
-param postgresSku PostgresSku
+
+param postgresConfiguration {
+  sku: PostgresSku
+  enableQueryPerformanceInsight: bool
+}
 
 import { Sku as ServiceBusSku } from '../modules/serviceBus/main.bicep'
 param serviceBusSku ServiceBusSku
@@ -199,7 +203,9 @@ module postgresql '../modules/postgreSql/create.bicep' = {
     administratorLoginPassword: contains(keyVaultSourceKeys, 'dialogportenPgAdminPassword${environment}')
       ? srcKeyVaultResource.getSecret('dialogportenPgAdminPassword${environment}')
       : secrets.dialogportenPgAdminPassword
-    sku: postgresSku
+    sku: postgresConfiguration.sku
+    appInsightWorkspaceName: appInsights.outputs.appInsightsWorkspaceName
+    enableQueryPerformanceInsight: postgresConfiguration.enableQueryPerformanceInsight
     subnetId: vnet.outputs.postgresqlSubnetId
     vnetId: vnet.outputs.virtualNetworkId
     tags: tags
