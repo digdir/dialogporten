@@ -88,9 +88,9 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
 
         foreach (var updatedResource in updatedResources)
         {
-            await semaphore.WaitAsync(cancellationToken);
             var task = Task.Run(async () =>
             {
+                await semaphore.WaitAsync(cancellationToken);
                 try
                 {
                     return await GetUpdatedResourcePolicyInformation(updatedResource, cancellationToken);
