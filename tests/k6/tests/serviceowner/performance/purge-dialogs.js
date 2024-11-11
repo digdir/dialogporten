@@ -1,13 +1,25 @@
+/**
+ * This script purges dialogs that have not been cleaned up by the tests.
+ * The script is intended to be run after the main tests have completed.
+ * 
+ * The script retrieves all dialogs that contain a sentinel value in the search query.
+ * It then purges these dialogs.
+ * 
+ * Run: k6 run tests/k6/tests/serviceowner/performance/purge-dialogs.js -e env=yt01
+ */
 import { getSO, purgeSO } from '../../../common/request.js';
 import { serviceOwners } from '../../performancetest_common/readTestdata.js';
 import { expect, expectStatusFor } from "../../../common/testimports.js";
 import { getDefaultThresholds } from '../../performancetest_common/getDefaultThresholds.js';
 import { describe } from '../../../common/describe.js';
-import { randomItem } from 'https://jslib.k6.io/k6-utils/1.4.0/index.js';
+import { sentinelValue } from '../../../common/config.js';
 
-const sentinelValue = "Performance-created-dialog";
-const sentinelValue1 = "dialogporten-e2e-sentinel";
-
+/**
+ * Retrieves the dialog ids to purge.
+ * 
+ * @param {Object} serviceOwner - The service owner object.
+ * @returns {Array} - The dialog ids to purge.
+ */
 function getDialogs(serviceOwner) {
     var paramsWithToken = {
         headers: {
@@ -60,6 +72,11 @@ export function setup() {
     return data;
 }
 
+/**
+ * Purges dialogs.
+ * In single user mode, the first service owner is used. Only one iteration is performed.
+ * In multi user mode, all service owners are used.
+ */
 export default function(serviceOwners) {
     if (!serviceOwners || serviceOwners.length === 0) {
         throw new Error('No service owners loaded for testing');
@@ -76,6 +93,11 @@ export default function(serviceOwners) {
     }
   }
 
+/**
+ * Purges dialogs.
+ * 
+ * @param {Object} serviceOwner - The service owner object.
+ */
 export function purgeDialogs(serviceOwner) {
     var paramsWithToken = {
         headers: {
