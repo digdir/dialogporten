@@ -292,10 +292,7 @@ public static class DialogGenerator
             .Generate(new Randomizer().Number(min: 1, 4));
     }
 
-    public static string GenerateFakeProcessUri()
-    {
-        return new Faker().Internet.UrlWithPath(Uri.UriSchemeHttps);
-    }
+    public static string GenerateFakeProcessUri() => new Faker().Internet.UrlWithPath(Uri.UriSchemeHttps);
 
     public static List<GuiActionDto> GenerateFakeDialogGuiActions()
     {
