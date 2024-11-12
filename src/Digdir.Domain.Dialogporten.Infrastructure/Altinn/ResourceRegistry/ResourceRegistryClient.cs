@@ -99,7 +99,7 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
 
     private sealed class CompetentAuthority
     {
-        // Altinn 2 resources does not always have an organization number as competent authority, only service owner code
+        // Altinn 2 resources do not always have an organization number as competent authority, only service owner code
         // We filter these out anyway, but we need to allow null here
         public string? Organization { get; init; }
         public required string OrgCode { get; init; }

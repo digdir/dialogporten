@@ -87,7 +87,7 @@ public sealed class SearchDialogQuery : SortablePaginationParameter<SearchDialog
     public string? Process { get; init; }
 
     /// <summary>
-    /// Filter by Display state 
+    /// Filter by Display state
     /// </summary>
     public List<SystemLabel.Values>? SystemLabel { get; set; }
 

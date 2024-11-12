@@ -77,7 +77,7 @@ public class ApplicationEventHandlerUtilsTests
     ///         Event removed from snapshot: Handlers whose queues were bound to this topic mey contain
     ///         unprocessable messages due to old schema format, and the topic is NOT removed
     ///         automatically.
-    ///     </item> 
+    ///     </item>
     ///     <item>
     ///         Event renamed in snapshot: See both of the above bullet points.
     ///     </item>
