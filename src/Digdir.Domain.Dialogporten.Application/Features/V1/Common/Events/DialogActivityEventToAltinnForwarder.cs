@@ -1,3 +1,4 @@
+using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Events.Activities;
 using MediatR;
@@ -11,6 +12,7 @@ internal sealed class DialogActivityEventToAltinnForwarder : DomainEventToAltinn
     public DialogActivityEventToAltinnForwarder(ICloudEventBus cloudEventBus, IOptions<ApplicationSettings> settings)
         : base(cloudEventBus, settings) { }
 
+    [EndpointName("DialogEventToAltinnForwarder_DialogActivityCreatedDomainEvent")]
     public async Task Handle(DialogActivityCreatedDomainEvent domainEvent, CancellationToken cancellationToken)
     {
         var cloudEvent = new CloudEvent

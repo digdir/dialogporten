@@ -168,7 +168,7 @@ var query = '''
                  Environment = tostring(customDimensions.AspNetCoreEnvironment),
                  Type = itemType,
                  problemId,
-                 message,
+                 tostring(customDimensions.MessageTemplate),
                  severityLevel
              | extend SeverityLevel = case(
                  severityLevel == 0, "Verbose",
@@ -178,7 +178,7 @@ var query = '''
                  severityLevel == 4, "Critical",
                  tostring(severityLevel)
                                       )
-             | extend Details = coalesce(message, problemId)
+             | extend Details = coalesce(problemId, customDimensions_MessageTemplate)
              | extend Details = replace_string(Details, "Digdir.Domain.Dialogporten.", "")
              | project Environment, Type, SeverityLevel, Count, Details
              '''

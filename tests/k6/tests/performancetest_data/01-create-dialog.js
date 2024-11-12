@@ -8,7 +8,10 @@ function cleanUp(originalPayload) {
         throw new Error('Invalid payload');
     }
 
-    originalPayload.searchTags.push({ "value": sentinelPerformanceValue });
+    const payload = { 
+        ...originalPayload,
+        searchTags: [...(originalPayload.searchTags || []), { "value": sentinelPerformanceValue }]
+    };
     const payload = { ...originalPayload };
     const { visibleFrom, ...payloadWithoutVisibleFrom } = payload;
 
