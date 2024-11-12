@@ -41,7 +41,7 @@ public class TokenGenerationBenchmark
         _rsa = RSA.Create();
         _rsa.KeySize = 2048;
 
-        // ECDSA Setup (gives security equivalent to a 128 bit symmetric key)
+        // ECDSA Setup (gives security equivalent to a 128-bit symmetric key)
         _ecdsa = ECDsa.Create(ECCurve.NamedCurves.nistP256);
 
         // For correctness checks, use a pre-defined key in EdDSA signatures
@@ -50,7 +50,7 @@ public class TokenGenerationBenchmark
                                     MC4CAQAwBQYDK2VwBCIEIAYIsKL0xkTkAXDhUN6eDheqODEOGyFZ04jsgFNCFxZf
                                     -----END PRIVATE KEY-----
                                     """;
-        // EdDSA Setup using Ed25519 (gives security equivalent to a 128 bit symmetric key)
+        // EdDSA Setup using Ed25519 (gives security equivalent to a 128-bit symmetric key)
         var pemReaderPrivate = new PemReader(new StringReader(ed25519Pkcs8));
         _eddsaKeys = (Ed25519PrivateKeyParameters)pemReaderPrivate.ReadObject();
         _eddsaSigner = new Ed25519Signer();

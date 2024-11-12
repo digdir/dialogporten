@@ -28,7 +28,7 @@ public abstract class AbstractLookupEntity<TSelf, TEnum> : ILookupEntity<TSelf, 
     /// Initializes a new instance of the <see cref="AbstractLookupEntity{TSelf, TEnum}"/> class.
     /// </summary>
     /// <param name="id">The entity identification.</param>
-    /// <param name="name">A human readable name to identify the lookup type.</param>
+    /// <param name="name">A human-readable name to identify the lookup type.</param>
     protected AbstractLookupEntity(TEnum id, string name)
     {
         if (!Enum.IsDefined(typeof(TEnum), id))
