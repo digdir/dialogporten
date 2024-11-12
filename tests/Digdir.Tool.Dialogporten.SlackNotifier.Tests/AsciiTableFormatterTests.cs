@@ -8,18 +8,19 @@ public class AsciiTableFormatterTests
     public void AddLineBreaks_TextLongerThanMaxColumnWidth_ShouldWrapText()
     {
         // Arrange
-        var rows = new List<List<object>>
-        {
-            new() { "Header1" },
-            new() { "This is a very long text that exceeds the max column width" }
-        };
-        var maxColumnWidth = 20;
+        List<List<object>> rows =
+        [
+            ["Header1"],
+            ["This is a very long text that exceeds the max column width"]
+        ];
+
+        const int maxColumnWidth = 20;
 
         // Act
         var result = rows.ToAsciiTable(maxColumnWidth);
 
         // Assert
-        var expected =
+        const string expected =
             """
             o----------------------o
             | Header1              |
@@ -37,18 +38,19 @@ public class AsciiTableFormatterTests
     public void ToAsciiTable_WordLongerThanMaxColumnWidth_ShouldNotBreakWord()
     {
         // Arrange
-        var rows = new List<List<object>>
-        {
-            new() { "Header1" },
-            new() { "Supercalifragilisticexpialidocious" }
-        };
-        var maxColumnWidth = 10;
+        List<List<object>> rows =
+        [
+            ["Header1"],
+            ["Supercalifragilisticexpialidocious"]
+        ];
+
+        const int maxColumnWidth = 10;
 
         // Act
         var result = rows.ToAsciiTable(maxColumnWidth);
 
         // Assert
-        var expected =
+        const string expected =
             """
             o------------------------------------o
             | Header1                            |
@@ -57,6 +59,7 @@ public class AsciiTableFormatterTests
             o------------------------------------o
 
             """;
+
         Assert.Equal(expected, result);
     }
 
@@ -64,18 +67,19 @@ public class AsciiTableFormatterTests
     public void ToAsciiTable_CellWithNull_ShouldHandleNullGracefully()
     {
         // Arrange
-        var rows = new List<List<object>>
-        {
-            new() { "Header1" },
-            new() { null! }
-        };
-        var maxColumnWidth = 10;
+        List<List<object>> rows =
+        [
+            ["Header1"],
+            [null!]
+        ];
+
+        const int maxColumnWidth = 10;
 
         // Act
         var result = rows.ToAsciiTable(maxColumnWidth);
 
         // Assert
-        var expected =
+        const string expected =
             """
             o---------o
             | Header1 |
@@ -84,6 +88,7 @@ public class AsciiTableFormatterTests
             o---------o
 
             """;
+
         Assert.Equal(expected, result);
     }
 
@@ -91,18 +96,19 @@ public class AsciiTableFormatterTests
     public void ToAsciiTable_CellWithEmptyString_ShouldHandleEmptyString()
     {
         // Arrange
-        var rows = new List<List<object>>
-        {
-            new() { "Header1" },
-            new() { "" }
-        };
-        var maxColumnWidth = 10;
+        List<List<object>> rows =
+        [
+            ["Header1"],
+            [""]
+        ];
+
+        const int maxColumnWidth = 10;
 
         // Act
         var result = rows.ToAsciiTable(maxColumnWidth);
 
         // Assert
-        var expected =
+        const string expected =
             """
             o---------o
             | Header1 |
@@ -118,18 +124,19 @@ public class AsciiTableFormatterTests
     public void ToAsciiTable_CellWithNumeric_ShouldRightAlign()
     {
         // Arrange
-        var rows = new List<List<object>>
-        {
-            new() { "Header1" },
-            new() { 12345 }
-        };
-        var maxColumnWidth = 5;
+        List<List<object>> rows =
+        [
+            ["Header1"],
+            [12345]
+        ];
+
+        const int maxColumnWidth = 5;
 
         // Act
         var result = rows.ToAsciiTable(maxColumnWidth);
 
         // Assert
-        var expected =
+        const string expected =
             """
             o---------o
             | Header1 |
@@ -138,6 +145,7 @@ public class AsciiTableFormatterTests
             o---------o
 
             """;
+
         Assert.Equal(expected, result);
     }
 
@@ -146,18 +154,19 @@ public class AsciiTableFormatterTests
     public void ToAsciiTable_CellWithNonStringObject_ShouldConvertAndWrap()
     {
         // Arrange
-        var rows = new List<List<object>>
-        {
-            new() { "Header1" },
-            new() { 1234567890 }
-        };
-        var maxColumnWidth = 5;
+        List<List<object>> rows =
+        [
+            ["Header1"],
+            [1234567890]
+        ];
+
+        const int maxColumnWidth = 5;
 
         // Act
         var result = rows.ToAsciiTable(maxColumnWidth);
 
         // Assert
-        var expected =
+        const string expected =
             """
             o---------o
             | Header1 |
@@ -167,6 +176,7 @@ public class AsciiTableFormatterTests
             o---------o
 
             """;
+
         Assert.Equal(expected, result);
     }
 
@@ -174,19 +184,20 @@ public class AsciiTableFormatterTests
     public void ToAsciiTable_JaggedTable_ShouldPadWithEmptyCells()
     {
         // Arrange
-        var rows = new List<List<object>>
-        {
-            new() { "Header1", "Header2" },
-            new() { "a", "b", "c" },
-            new() { "a", "b" }
-        };
-        var maxColumnWidth = 5;
+        List<List<object>> rows =
+        [
+            ["Header1", "Header2"],
+            ["a", "b", "c"],
+            ["a", "b"]
+        ];
+
+        const int maxColumnWidth = 5;
 
         // Act
         var result = rows.ToAsciiTable(maxColumnWidth);
 
         // Assert
-        var expected =
+        const string expected =
             """
             o---------o---------o---o
             | Header1 | Header2 |   |
@@ -197,6 +208,7 @@ public class AsciiTableFormatterTests
             o---------o---------o---o
 
             """;
+
         Assert.Equal(expected, result);
     }
 }
