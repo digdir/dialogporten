@@ -16,7 +16,7 @@ public class AsciiTableFormatterTests
         var maxColumnWidth = 20;
 
         // Act
-        var result = AsciiTableFormatter.ToAsciiTable(rows, maxColumnWidth);
+        var result = rows.ToAsciiTable(maxColumnWidth);
 
         // Assert
         var expected =
@@ -45,7 +45,7 @@ public class AsciiTableFormatterTests
         var maxColumnWidth = 10;
 
         // Act
-        var result = AsciiTableFormatter.ToAsciiTable(rows, maxColumnWidth);
+        var result = rows.ToAsciiTable(maxColumnWidth);
 
         // Assert
         var expected =
@@ -72,7 +72,7 @@ public class AsciiTableFormatterTests
         var maxColumnWidth = 10;
 
         // Act
-        var result = AsciiTableFormatter.ToAsciiTable(rows, maxColumnWidth);
+        var result = rows.ToAsciiTable(maxColumnWidth);
 
         // Assert
         var expected =
@@ -99,7 +99,7 @@ public class AsciiTableFormatterTests
         var maxColumnWidth = 10;
 
         // Act
-        var result = AsciiTableFormatter.ToAsciiTable(rows, maxColumnWidth);
+        var result = rows.ToAsciiTable(maxColumnWidth);
 
         // Assert
         var expected =
@@ -126,7 +126,7 @@ public class AsciiTableFormatterTests
         var maxColumnWidth = 5;
 
         // Act
-        var result = AsciiTableFormatter.ToAsciiTable(rows, maxColumnWidth);
+        var result = rows.ToAsciiTable(maxColumnWidth);
 
         // Assert
         var expected =
@@ -154,7 +154,7 @@ public class AsciiTableFormatterTests
         var maxColumnWidth = 5;
 
         // Act
-        var result = AsciiTableFormatter.ToAsciiTable(rows, maxColumnWidth);
+        var result = rows.ToAsciiTable(maxColumnWidth);
 
         // Assert
         var expected =
@@ -183,7 +183,7 @@ public class AsciiTableFormatterTests
         var maxColumnWidth = 5;
 
         // Act
-        var result = AsciiTableFormatter.ToAsciiTable(rows, maxColumnWidth);
+        var result = rows.ToAsciiTable(maxColumnWidth);
 
         // Assert
         var expected =
