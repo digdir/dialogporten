@@ -14,12 +14,13 @@ import dialogToInsert from "../performancetest_data/01-create-dialog.js";
  * @param {Object} endUser - The end user object.
  */
 export function createDialog(serviceOwner, endUser) {
+    var traceparent = uuidv4();
     var paramsWithToken = {
         headers: {
             Authorization: "Bearer " + serviceOwner.token,
-            traceparent: uuidv4()
+            traceparent: traceparent
         },
-        tags: { name: 'create dialog' }
+        tags: { name: 'create dialog', traceparent: traceparent, enduser: endUser.ssn }
     };
 
     describe('create dialog', () => {
@@ -35,12 +36,14 @@ export function createDialog(serviceOwner, endUser) {
  * @param {Object} serviceOwner - The service owner object.
  * @param {Object} endUser - The end user object.
  */
-export function createAndRemoveDialog(serviceOwner, endUser) {  
+export function createAndRemoveDialog(serviceOwner, endUser) { 
+    var traceparent = uuidv4(); 
     var paramsWithToken = {
         headers: {
-            Authorization: "Bearer " + serviceOwner.token
+            Authorization: "Bearer " + serviceOwner.token,
+            traceparent: traceparent
         },
-        tags: { name: 'create dialog' }
+        tags: { name: 'create dialog', traceparent: traceparent, enduser: endUser.ssn }
     }
 
     let dialogId = 0;
@@ -52,7 +55,10 @@ export function createAndRemoveDialog(serviceOwner, endUser) {
     });
 
     describe('remove dialog', () => {
+      traceparent = uuidv4();
       paramsWithToken.tags.name = 'remove dialog';
+      paramsWithToken.tags.traceparent = traceparent;
+      paramsWithToken.headers.traceparent = traceparent
       if (dialogId) {
           let r = purgeSO('dialogs/' + dialogId, paramsWithToken);   
           expect(r.status, 'response status').to.equal(204);
