@@ -12,7 +12,6 @@ function cleanUp(originalPayload) {
         ...originalPayload,
         searchTags: [...(originalPayload.searchTags || []), { "value": sentinelPerformanceValue }]
     };
-    const payload = { ...originalPayload };
     const { visibleFrom, ...payloadWithoutVisibleFrom } = payload;
 
     const activities = payload.activities?.map(activity => {
