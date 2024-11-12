@@ -22,7 +22,9 @@ export default function() {
     if (!serviceOwners || serviceOwners.length === 0) {
         throw new Error('No service owners loaded for testing');
     }
-    if ((options.vus === undefined || options.vus === 1) && (options.iterations === undefined || options.iterations === 1)) {
+
+    const isSingleUserMode = (options.vus ?? 1) === 1 && (options.iterations ?? 1) === 1 && (options.duration ?? 0) === 0;
+    if (isSingleUserMode) {
       createAndRemoveDialog(serviceOwners[0], endUsers[0]);
     }
     else {

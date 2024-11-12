@@ -1,4 +1,5 @@
 import {default as createDialogPayload} from "../serviceowner/testdata/01-create-dialog.js"
+import { sentinelPerformanceValue } from "../../common/config.js";
 
 const ACTIVITY_TYPE_INFORMATION = 'Information';
 
@@ -7,6 +8,7 @@ function cleanUp(originalPayload) {
         throw new Error('Invalid payload');
     }
 
+    originalPayload.searchTags.push({ "value": sentinelPerformanceValue });
     const payload = { ...originalPayload };
     const { visibleFrom, ...payloadWithoutVisibleFrom } = payload;
 

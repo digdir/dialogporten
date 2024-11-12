@@ -7,12 +7,13 @@
  * 
  * Run: k6 run tests/k6/tests/serviceowner/performance/purge-dialogs.js -e env=yt01
  */
+import { uuidv4 } from 'https://jslib.k6.io/k6-utils/1.2.0/index.js';
 import { getSO, purgeSO } from '../../../common/request.js';
 import { serviceOwners } from '../../performancetest_common/readTestdata.js';
 import { expect, expectStatusFor } from "../../../common/testimports.js";
 import { getDefaultThresholds } from '../../performancetest_common/getDefaultThresholds.js';
 import { describe } from '../../../common/describe.js';
-import { sentinelValue } from '../../../common/config.js';
+import { sentinelPerformanceValue as sentinelValue } from '../../../common/config.js';
 
 /**
  * Retrieves the dialog ids to purge.
@@ -21,9 +22,12 @@ import { sentinelValue } from '../../../common/config.js';
  * @returns {Array} - The dialog ids to purge.
  */
 function getDialogs(serviceOwner) {
+    var traceparent = uuidv4();
+    console.log("Searching for dialogs to purge, tracevalue: " + traceparent);
     var paramsWithToken = {
         headers: {
-            Authorization: "Bearer " + serviceOwner.token
+            Authorization: "Bearer " + serviceOwner.token,
+            traceparent: traceparent
         }
     }
     let hasNextPage = false;

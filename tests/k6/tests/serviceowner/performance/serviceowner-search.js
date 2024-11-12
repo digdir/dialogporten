@@ -7,7 +7,14 @@ const tag_name = 'serviceowner search';
 
 export let options = {
     summaryTrendStats: ['avg', 'min', 'med', 'max', 'p(95)', 'p(99)', 'p(99.5)', 'p(99.9)', 'count'],
-    thresholds: getDefaultThresholds(['http_req_duration', 'http_reqs'],[tag_name])
+    thresholds: getDefaultThresholds(['http_req_duration', 'http_reqs'],[tag_name, 
+        'get dialog', 
+        'get dialog activities', 
+        'get dialog activity', 
+        'get seenlogs',
+        'get seenlog',
+        'get transmissions',
+        'get transmission'])
 };
 
 /**

@@ -8,6 +8,7 @@ import { getDefaultThresholds } from '../../performancetest_common/getDefaultThr
 import { endUsersWithTokens as endUsers } from '../../performancetest_common/readTestdata.js';
 import { graphqlSearch } from "../../performancetest_common/simpleSearch.js";
 
+
 /**
  * The options object for configuring the performance test for GraphQL search.
  *
@@ -26,7 +27,8 @@ export default function() {
     if (!endUsers || endUsers.length === 0) {
         throw new Error('No end users loaded for testing');
     }
-    if ((options.vus === undefined || options.vus === 1) && (options.iterations === undefined || options.iterations === 1)) {
+    const isSingleUserMode = (options.vus ?? 1) === 1 && (options.iterations ?? 1) === 1 && (options.duration ?? 0) === 0;
+    if (isSingleUserMode) {
         graphqlSearch(endUsers[0]);
     }
     else {

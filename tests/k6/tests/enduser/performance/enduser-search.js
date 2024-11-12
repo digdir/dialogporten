@@ -1,6 +1,7 @@
 import { enduserSearch } from '../../performancetest_common/simpleSearch.js'
 import { getDefaultThresholds } from '../../performancetest_common/getDefaultThresholds.js';
 import { endUsersWithTokens } from '../../performancetest_common/readTestdata.js';
+import { randomItem } from 'https://jslib.k6.io/k6-utils/1.1.0/index.js';
 
 export let options = {
     summaryTrendStats: ['avg', 'min', 'med', 'max', 'p(95)', 'p(99)', 'p(99.5)', 'p(99.9)', 'count'],
@@ -19,8 +20,10 @@ export let options = {
 export default function() {
     if (!endUsersWithTokens || endUsersWithTokens.length === 0) {
         throw new Error('No end users loaded for testing');
-    }   
-    if ((options.vus === undefined || options.vus === 1) && (options.iterations === undefined || options.iterations === 1)) {
+    }
+      
+    const isSingleUserMode = (options.vus ?? 1) === 1 && (options.iterations ?? 1) === 1 && (options.duration ?? 0) === 0;
+    if (isSingleUserMode) {
         enduserSearch(endUsersWithTokens[0]);
     }
     else {
