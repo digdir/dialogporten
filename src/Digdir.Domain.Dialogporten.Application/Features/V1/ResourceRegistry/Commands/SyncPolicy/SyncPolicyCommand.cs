@@ -5,35 +5,35 @@ using Microsoft.Extensions.Logging;
 using OneOf;
 using OneOf.Types;
 
-namespace Digdir.Domain.Dialogporten.Application.Features.V1.ResourceRegistry.Commands.Synchronize;
+namespace Digdir.Domain.Dialogporten.Application.Features.V1.ResourceRegistry.Commands.SyncPolicy;
 
-public sealed class SynchronizeResourcePolicyInformationCommand : IRequest<SynchronizeResourcePolicyInformationResult>
+public sealed class SyncPolicyCommand : IRequest<SyncPolicyResult>
 {
     public DateTimeOffset? Since { get; set; }
     public int? NumberOfConcurrentRequests { get; set; }
 }
 
 [GenerateOneOf]
-public sealed partial class SynchronizeResourcePolicyInformationResult : OneOfBase<Success, ValidationError>;
+public sealed partial class SyncPolicyResult : OneOfBase<Success, ValidationError>;
 
-internal sealed class SynchronizeResourcePolicyInformationCommandHandler : IRequestHandler<SynchronizeResourcePolicyInformationCommand, SynchronizeResourcePolicyInformationResult>
+internal sealed class SyncPolicyCommandHandler : IRequestHandler<SyncPolicyCommand, SyncPolicyResult>
 {
     private const int DefaultNumberOfConcurrentRequests = 15;
     private readonly IResourceRegistry _resourceRegistry;
     private readonly IResourcePolicyInformationRepository _resourcePolicyMetadataRepository;
-    private readonly ILogger<SynchronizeResourcePolicyInformationCommandHandler> _logger;
+    private readonly ILogger<SyncPolicyCommandHandler> _logger;
 
-    public SynchronizeResourcePolicyInformationCommandHandler(
+    public SyncPolicyCommandHandler(
         IResourceRegistry resourceRegistry,
         IResourcePolicyInformationRepository resourcePolicyMetadataRepository,
-        ILogger<SynchronizeResourcePolicyInformationCommandHandler> logger)
+        ILogger<SyncPolicyCommandHandler> logger)
     {
         _resourceRegistry = resourceRegistry ?? throw new ArgumentNullException(nameof(resourceRegistry));
         _resourcePolicyMetadataRepository = resourcePolicyMetadataRepository ?? throw new ArgumentNullException(nameof(resourcePolicyMetadataRepository));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public async Task<SynchronizeResourcePolicyInformationResult> Handle(SynchronizeResourcePolicyInformationCommand request,
+    public async Task<SyncPolicyResult> Handle(SyncPolicyCommand request,
         CancellationToken cancellationToken)
     {
         // Get the last updated timestamp from parameter, or the database (with a time skew), or use a default

@@ -28,5 +28,4 @@ public sealed record ServiceResourceInformation
 
 
 public sealed record UpdatedSubjectResource(Uri SubjectUrn, Uri ResourceUrn, DateTimeOffset UpdatedAt, bool Deleted);
-public sealed record UpdatedResource(Uri ResourceUrn, DateTimeOffset UpdatedAt);
 public sealed record UpdatedResourcePolicyInformation(Uri ResourceUrn, int MinimumSecurityLevel, DateTimeOffset UpdatedAt);

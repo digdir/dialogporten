@@ -1,5 +1,6 @@
 using Cocona;
-using Digdir.Domain.Dialogporten.Application.Features.V1.ResourceRegistry.Commands.Synchronize;
+using Digdir.Domain.Dialogporten.Application.Features.V1.ResourceRegistry.Commands.SyncPolicy;
+using Digdir.Domain.Dialogporten.Application.Features.V1.ResourceRegistry.Commands.SyncSubjectMap;
 using MediatR;
 
 namespace Digdir.Domain.Dialogporten.Janitor;
@@ -16,7 +17,7 @@ internal static class Commands
             =>
             {
                 var result = await application.Send(
-                    new SynchronizeSubjectResourceMappingsCommand { Since = since, BatchSize = batchSize },
+                    new SyncSubjectMapCommand { Since = since, BatchSize = batchSize },
                     ctx.CancellationToken);
                 return result.Match(
                     success => 0,
@@ -31,7 +32,7 @@ internal static class Commands
             =>
             {
                 var result = await application.Send(
-                    new SynchronizeResourcePolicyInformationCommand { Since = since, NumberOfConcurrentRequests = numberOfConcurrentRequests },
+                    new SyncPolicyCommand { Since = since, NumberOfConcurrentRequests = numberOfConcurrentRequests },
                     ctx.CancellationToken);
                 return result.Match(
                     success => 0,

@@ -5,30 +5,30 @@ using Microsoft.Extensions.Logging;
 using OneOf;
 using OneOf.Types;
 
-namespace Digdir.Domain.Dialogporten.Application.Features.V1.ResourceRegistry.Commands.Synchronize;
+namespace Digdir.Domain.Dialogporten.Application.Features.V1.ResourceRegistry.Commands.SyncSubjectMap;
 
-public sealed class SynchronizeSubjectResourceMappingsCommand : IRequest<SynchronizeResourceMappingsResult>
+public sealed class SyncSubjectMapCommand : IRequest<SyncSubjectMapResult>
 {
     public DateTimeOffset? Since { get; set; }
     public int? BatchSize { get; set; }
 }
 
 [GenerateOneOf]
-public sealed partial class SynchronizeResourceMappingsResult : OneOfBase<Success, ValidationError>;
+public sealed partial class SyncSubjectMapResult : OneOfBase<Success, ValidationError>;
 
-internal sealed class SynchronizeResourceMappingsCommandHandler : IRequestHandler<SynchronizeSubjectResourceMappingsCommand, SynchronizeResourceMappingsResult>
+internal sealed class SyncSubjectMapCommandHandler : IRequestHandler<SyncSubjectMapCommand, SyncSubjectMapResult>
 {
     private const int DefaultBatchSize = 1000;
     private readonly IResourceRegistry _resourceRegistry;
     private readonly ISubjectResourceRepository _subjectResourceRepository;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly ILogger<SynchronizeResourceMappingsCommandHandler> _logger;
+    private readonly ILogger<SyncSubjectMapCommandHandler> _logger;
 
-    public SynchronizeResourceMappingsCommandHandler(
+    public SyncSubjectMapCommandHandler(
         IResourceRegistry resourceRegistry,
         ISubjectResourceRepository subjectResourceRepository,
         IUnitOfWork unitOfWork,
-        ILogger<SynchronizeResourceMappingsCommandHandler> logger)
+        ILogger<SyncSubjectMapCommandHandler> logger)
     {
         _resourceRegistry = resourceRegistry ?? throw new ArgumentNullException(nameof(resourceRegistry));
         _subjectResourceRepository = subjectResourceRepository ?? throw new ArgumentNullException(nameof(subjectResourceRepository));
@@ -36,7 +36,7 @@ internal sealed class SynchronizeResourceMappingsCommandHandler : IRequestHandle
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public async Task<SynchronizeResourceMappingsResult> Handle(SynchronizeSubjectResourceMappingsCommand request, CancellationToken cancellationToken)
+    public async Task<SyncSubjectMapResult> Handle(SyncSubjectMapCommand request, CancellationToken cancellationToken)
     {
         // Get the last updated timestamp from parameter, or the database (with a time skew), or use a default
         var lastUpdated = request.Since

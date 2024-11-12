@@ -77,10 +77,8 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
         int numberOfConcurrentRequests,
         CancellationToken cancellationToken)
     {
-        // First fetch all unique updated resources serially using the supplied "since" value (but a fixed batch size; 1000 seems to be a good value)
-        // We then iterate them, and only keep the latest updated resource for each unique resource URN. We then fan out to fetch and parse the policies
+        // First fetch all unique updated resources serially using the supplied "since" value, then iterate them with a fan out to fetch and parse the policies
         // concurrently using semaphores.
-
         var updatedResources = await GetUniqueUpdatedResources(since, cancellationToken);
 
         var semaphore = new SemaphoreSlim(numberOfConcurrentRequests);
@@ -107,24 +105,11 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
         return await Task.WhenAll(metadataTasks);
     }
 
-    private async Task<List<UpdatedResource>> GetUniqueUpdatedResources(DateTimeOffset since, CancellationToken cancellationToken)
+    private async Task<List<UpdatedResource>> GetUniqueUpdatedResources(DateTimeOffset _, CancellationToken cancellationToken)
     {
-        var updatedResources = new Dictionary<Uri, UpdatedSubjectResource>();
-        await foreach (var subjectResources in GetUpdatedSubjectResources(since, 1000, cancellationToken))
-        {
-            foreach (var subjectResource in subjectResources)
-            {
-                if (updatedResources.TryGetValue(subjectResource.ResourceUrn, out var value) && value.UpdatedAt > subjectResource.UpdatedAt)
-                {
-                    continue;
-                }
-
-                updatedResources[subjectResource.ResourceUrn] = subjectResource;
-            }
-        }
-
-        return updatedResources
-            .Select(x => new UpdatedResource(x.Value.ResourceUrn, x.Value.UpdatedAt))
+        // Until we have an API in RR to fetch updated resources only, we have to fetch them all
+        return (await FetchServiceResourceInformation(cancellationToken))
+            .Select(x => new UpdatedResource(new Uri(x.ResourceId), DateTimeOffset.MinValue))
             .ToList();
     }
 
@@ -251,4 +236,5 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
 
     private sealed record UpdatedResponse(UpdatedResponseLinks Links, List<UpdatedSubjectResource> Data);
     private sealed record UpdatedResponseLinks(Uri? Next);
+    private sealed record UpdatedResource(Uri ResourceUrn, DateTimeOffset UpdatedAt);
 }
