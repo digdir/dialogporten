@@ -2,7 +2,7 @@
  * Performance test for creating and removing a dialog
  * Run: k6 run tests/k6/tests/serviceowner/performance/create-remove-dialog.js --vus 1 --iterations 1
  */
-import { randomItem } from 'https://jslib.k6.io/k6-utils/1.2.0/index.js';
+import { randomItem } from 'https://jslib.k6.io/k6-utils/1.4.0/index.js';
 import { getDefaultThresholds } from '../../performancetest_common/getDefaultThresholds.js';
 import { serviceOwners, endUsers } from "../../performancetest_common/readTestdata.js";
 import { createAndRemoveDialog } from '../../performancetest_common/createDialog.js';

@@ -7,7 +7,7 @@
  * 
  * Run: k6 run tests/k6/tests/serviceowner/performance/purge-dialogs.js -e env=yt01
  */
-import { uuidv4 } from 'https://jslib.k6.io/k6-utils/1.2.0/index.js';
+import { uuidv4 } from 'https://jslib.k6.io/k6-utils/1.4.0/index.js';
 import { getSO, purgeSO } from '../../../common/request.js';
 import { serviceOwners } from '../../performancetest_common/readTestdata.js';
 import { expect, expectStatusFor } from "../../../common/testimports.js";

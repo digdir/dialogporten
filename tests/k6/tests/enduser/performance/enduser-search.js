@@ -1,7 +1,7 @@
 import { enduserSearch } from '../../performancetest_common/simpleSearch.js'
 import { getDefaultThresholds } from '../../performancetest_common/getDefaultThresholds.js';
 import { endUsersWithTokens } from '../../performancetest_common/readTestdata.js';
-import { randomItem } from 'https://jslib.k6.io/k6-utils/1.1.0/index.js';
+import { randomItem } from 'https://jslib.k6.io/k6-utils/1.4.0/index.js';
 
 export let options = {
     summaryTrendStats: ['avg', 'min', 'med', 'max', 'p(95)', 'p(99)', 'p(99.5)', 'p(99.9)', 'count'],

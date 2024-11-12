@@ -3,7 +3,7 @@
  * Run: k6 run tests/k6/tests/graphql/performance/graphql-search.js --vus 1 --iterations 1 -e env=yt01
  */
 
-import { randomItem } from 'https://jslib.k6.io/k6-utils/1.2.0/index.js';
+import { randomItem } from 'https://jslib.k6.io/k6-utils/1.4.0/index.js';
 import { getDefaultThresholds } from '../../performancetest_common/getDefaultThresholds.js';
 import { endUsersWithTokens as endUsers } from '../../performancetest_common/readTestdata.js';
 import { graphqlSearch } from "../../performancetest_common/simpleSearch.js";

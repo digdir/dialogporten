@@ -1,4 +1,4 @@
-import { randomItem } from 'https://jslib.k6.io/k6-utils/1.1.0/index.js';
+import { randomItem } from 'https://jslib.k6.io/k6-utils/1.4.0/index.js';
 import { serviceownerSearch } from '../../performancetest_common/simpleSearch.js'
 import { getDefaultThresholds } from '../../performancetest_common/getDefaultThresholds.js';
 import { serviceOwners ,endUsersWithTokens } from '../../performancetest_common/readTestdata.js';
