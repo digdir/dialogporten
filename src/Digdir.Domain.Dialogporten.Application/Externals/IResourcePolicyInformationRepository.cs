@@ -17,7 +17,7 @@ public static class ResourcePolicyInformationExtensions
         {
             Id = IdentifiableExtensions.CreateVersion7(),
             Resource = updatedResourcePolicyInformation.ResourceUrn.ToString()!,
-            MinimumSecurityLevel = updatedResourcePolicyInformation.MinimumSecurityLevel,
+            MinimumAuthenticationLevel = updatedResourcePolicyInformation.MinimumAuthenticationLevel,
             CreatedAt = createdAt.ToUniversalTime(),
             UpdatedAt = updatedResourcePolicyInformation.UpdatedAt.ToUniversalTime()
         };

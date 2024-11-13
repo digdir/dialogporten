@@ -34,7 +34,7 @@ internal sealed class ResourcePolicyInformationRepository : IResourcePolicyInfor
             $"""
             with source as (
             	SELECT *
-            	FROM unnest(@ids, @resources, @minimumSecurityLevels, @createdAts, @updatedAts) 
+            	FROM unnest(@ids, @resources, @minimumAuthenticationLevels, @createdAts, @updatedAts) 
             	    as s(id, resource, minimumSecurityLevel, createdAt, updatedAt)
             )
             merge into "{nameof(ResourcePolicyInformation)}" t
@@ -43,7 +43,7 @@ internal sealed class ResourcePolicyInformationRepository : IResourcePolicyInfor
             when matched then
               	update set "{nameof(ResourcePolicyInformation.UpdatedAt)}" = s.updatedAt
             when not matched then
-              	insert ("{nameof(ResourcePolicyInformation.Id)}", "{nameof(ResourcePolicyInformation.Resource)}", "{nameof(ResourcePolicyInformation.MinimumSecurityLevel)}", "{nameof(ResourcePolicyInformation.CreatedAt)}", "{nameof(ResourcePolicyInformation.UpdatedAt)}")
+              	insert ("{nameof(ResourcePolicyInformation.Id)}", "{nameof(ResourcePolicyInformation.Resource)}", "{nameof(ResourcePolicyInformation.MinimumAuthenticationLevel)}", "{nameof(ResourcePolicyInformation.CreatedAt)}", "{nameof(ResourcePolicyInformation.UpdatedAt)}")
               	values (s.id, s.resource, s.minimumSecurityLevel, s.createdAt, s.updatedAt);
             """;
 
@@ -52,7 +52,7 @@ internal sealed class ResourcePolicyInformationRepository : IResourcePolicyInfor
             [
                 new NpgsqlParameter("ids", resourceMetadata.Select(x => x.Id).ToArray()),
                 new NpgsqlParameter("resources", resourceMetadata.Select(x => x.Resource).ToArray()),
-                new NpgsqlParameter("minimumSecurityLevels", resourceMetadata.Select(x => x.MinimumSecurityLevel).ToArray()),
+                new NpgsqlParameter("minimumAuthenticationLevels", resourceMetadata.Select(x => x.MinimumAuthenticationLevel).ToArray()),
                 new NpgsqlParameter("createdAts", resourceMetadata.Select(x => x.CreatedAt).ToArray()),
                 new NpgsqlParameter("updatedAts", resourceMetadata.Select(x => x.UpdatedAt).ToArray())
             ], cancellationToken);

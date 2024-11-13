@@ -17,8 +17,6 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
     private const string ResourceTypeAltinnApp = "AltinnApp";
     private const string ResourceTypeCorrespondence = "CorrespondenceService";
     private const string ResourceRegistryResourceEndpoint = "resourceregistry/api/v1/resource/";
-
-    private const int DefaultMinimumSecurityLevel = 1;
     private const string AuthenticationLevelCategory = "urn:altinn:minimum-authenticationlevel";
 
     private readonly IFusionCache _cache;
@@ -82,7 +80,7 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
         var updatedResources = await GetUniqueUpdatedResources(since, cancellationToken);
 
         var semaphore = new SemaphoreSlim(numberOfConcurrentRequests);
-        var metadataTasks = new List<Task<UpdatedResourcePolicyInformation>>();
+        var metadataTasks = new List<Task<UpdatedResourcePolicyInformation?>>();
 
         foreach (var updatedResource in updatedResources)
         {
@@ -102,7 +100,11 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
             metadataTasks.Add(task);
         }
 
-        return await Task.WhenAll(metadataTasks);
+        // Filter out null values (indicating missing/invalid policies)
+        return (await Task.WhenAll(metadataTasks))
+            .Where(x => x is not null)
+            .Select(x => x!)
+            .ToList();
     }
 
     private async Task<List<UpdatedResource>> GetUniqueUpdatedResources(DateTimeOffset _, CancellationToken cancellationToken)
@@ -113,29 +115,29 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
             .ToList();
     }
 
-    private async Task<UpdatedResourcePolicyInformation> GetUpdatedResourcePolicyInformation(UpdatedResource resource, CancellationToken cancellationToken)
+    private async Task<UpdatedResourcePolicyInformation?> GetUpdatedResourcePolicyInformation(UpdatedResource resource, CancellationToken cancellationToken)
     {
         var resourceRegistryEntry = new ResourceRegistryEntry(resource.ResourceUrn);
         if (!resourceRegistryEntry.HasPolicyInResourceRegistry)
         {
-            return new UpdatedResourcePolicyInformation(resource.ResourceUrn, DefaultMinimumSecurityLevel,
-                resource.UpdatedAt);
+            return null;
         }
 
         try
         {
-            var policy = await FetchPolicy(resourceRegistryEntry.Identifier, cancellationToken);
-            return new UpdatedResourcePolicyInformation(
-                resource.ResourceUrn,
-                GetMinimumSecurityLevel(policy),
-                resource.UpdatedAt);
+            var minimumAuthenticationLevel = GetMinimumAuthenticationLevel(await FetchPolicy(resourceRegistryEntry.Identifier, cancellationToken));
+            return minimumAuthenticationLevel is null
+                ? null
+                : new UpdatedResourcePolicyInformation(
+                    resource.ResourceUrn,
+                    minimumAuthenticationLevel.Value,
+                    resource.UpdatedAt);
         }
         catch (Exception ex)
         {
             // We need to keep going here, so we log and return a default value
-            _logger.LogError(ex, "Failed to process policy for \"{ResourceUrn}\".", resource.ResourceUrn);
-            return new UpdatedResourcePolicyInformation(resource.ResourceUrn, DefaultMinimumSecurityLevel,
-                resource.UpdatedAt);
+            _logger.LogWarning(ex, "Failed to process policy for \"{ResourceUrn}\", returning a default.", resource.ResourceUrn);
+            return null;
         }
     }
 
@@ -148,13 +150,10 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
                 cancellationToken: cancellationToken);
 
         using var reader = XmlReader.Create(policyXml);
-        var policy = XacmlParser.ParseXacmlPolicy(reader)
-                     ?? throw new InvalidOperationException($"Failed to parse XACML policy for \"{resourceIdentifier}\".");
-
-        return policy;
+        return XacmlParser.ParseXacmlPolicy(reader);
     }
 
-    private static int GetMinimumSecurityLevel(XacmlPolicy policy)
+    private static int? GetMinimumAuthenticationLevel(XacmlPolicy policy)
     {
         var authenticationLevelAttributeAssignmentExpression = policy.ObligationExpressions
             .FirstOrDefault()?.AttributeAssignmentExpressions
@@ -168,8 +167,8 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
             }
         }
 
-        // Return default security level if parsing fails or no valid expression is found
-        return DefaultMinimumSecurityLevel;
+        // No minimum authentication level defined
+        return null;
     }
 
     private async Task<ServiceResourceInformation[]> FetchServiceResourceInformation(CancellationToken cancellationToken)
