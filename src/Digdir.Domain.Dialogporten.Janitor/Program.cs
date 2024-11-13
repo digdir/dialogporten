@@ -15,6 +15,7 @@ using Serilog;
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Warning()
     .Enrich.FromLogContext()
+    .Enrich.WithEnvironmentName()
     .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture)
     .WriteTo.ApplicationInsights(
         TelemetryConfiguration.CreateDefault(),
@@ -51,6 +52,7 @@ static void BuildAndRun(string[] args)
         .ReadFrom.Configuration(context.Configuration)
         .ReadFrom.Services(services)
         .Enrich.FromLogContext()
+        .Enrich.WithEnvironmentName()
         .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture)
         .WriteTo.ApplicationInsights(
             services.GetRequiredService<TelemetryConfiguration>(),

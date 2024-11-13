@@ -29,6 +29,7 @@ using Microsoft.Extensions.Options;
 var telemetryConfiguration = TelemetryConfiguration.CreateDefault();
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Warning()
+    .Enrich.WithEnvironmentName()
     .Enrich.FromLogContext()
     .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture)
     .WriteTo.ApplicationInsights(telemetryConfiguration, TelemetryConverter.Traces)
@@ -61,6 +62,7 @@ static void BuildAndRun(string[] args, TelemetryConfiguration telemetryConfigura
         .MinimumLevel.Warning()
         .ReadFrom.Configuration(context.Configuration)
         .ReadFrom.Services(services)
+        .Enrich.WithEnvironmentName()
         .Enrich.FromLogContext()
         .WriteTo.ApplicationInsights(telemetryConfiguration, TelemetryConverter.Traces));
 
