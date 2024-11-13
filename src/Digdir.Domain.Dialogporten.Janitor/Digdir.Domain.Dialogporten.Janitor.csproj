@@ -18,6 +18,7 @@
         <PackageReference Include="Serilog.Settings.Configuration" Version="8.0.4" />
         <PackageReference Include="Serilog.Sinks.ApplicationInsights" Version="4.0.0" />
         <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
+        <PackageReference Include="Serilog.Enrichers.Environment" Version="3.0.1" />
     </ItemGroup>
 
     <ItemGroup>
