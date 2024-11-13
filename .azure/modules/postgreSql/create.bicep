@@ -128,6 +128,7 @@ resource pg_qs_query_capture_mode 'Microsoft.DBforPostgreSQL/flexibleServers/con
     value: 'all'
     source: 'user-override'
   }
+  dependsOn: [track_io_timing]
 }
 
 resource pgms_wait_sampling_query_capture_mode 'Microsoft.DBforPostgreSQL/flexibleServers/configurations@2024-08-01' = if (enableQueryPerformanceInsight) {
@@ -137,6 +138,7 @@ resource pgms_wait_sampling_query_capture_mode 'Microsoft.DBforPostgreSQL/flexib
     value: 'all'
     source: 'user-override'
   }
+  dependsOn: [pg_qs_query_capture_mode]
 }
 
 resource appInsightsWorkspace 'Microsoft.OperationalInsights/workspaces@2023-09-01' existing = {
@@ -177,6 +179,7 @@ resource diagnosticSetting 'Microsoft.Insights/diagnosticSettings@2021-05-01-pre
       }
     ]
   }
+  dependsOn: [pgms_wait_sampling_query_capture_mode]
 }
 
 module adoConnectionString '../keyvault/upsertSecret.bicep' = {
