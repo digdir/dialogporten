@@ -40,9 +40,9 @@ static void BuildAndRun(string[] args)
 {
     var builder = CoconaApp.CreateBuilder(args);
 
-    // Disable scope validation because cocona does not create a scope for the commands.
+    // Disable scope validation because Cocona does not create a scope for the commands.
     // This makes sense because console applications are short-lived, and the scope of
-    // a command is the scope of the application.   
+    // a command is the scope of the application.
     builder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = false);
 
     builder.Configuration

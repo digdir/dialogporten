@@ -1,6 +1,5 @@
 using System.Globalization;
 using Bogus;
-using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Actors;
 using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Common.Actors;
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Create;
@@ -293,10 +292,7 @@ public static class DialogGenerator
             .Generate(new Randomizer().Number(min: 1, 4));
     }
 
-    public static string GenerateFakeProcessUri()
-    {
-        return new Faker().Internet.UrlWithPath(Uri.UriSchemeHttps);
-    }
+    public static string GenerateFakeProcessUri() => new Faker().Internet.UrlWithPath(Uri.UriSchemeHttps);
 
     public static List<GuiActionDto> GenerateFakeDialogGuiActions()
     {

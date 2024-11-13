@@ -10,7 +10,7 @@ namespace Digdir.Library.Entity.EntityFrameworkCore.Features.SoftDeletable;
 /// </summary>
 public static class SoftDeletableExtensions
 {
-    private static readonly MethodInfo _openGenericInternalMethodInfo = typeof(SoftDeletableExtensions)
+    private static readonly MethodInfo OpenGenericInternalMethodInfo = typeof(SoftDeletableExtensions)
             .GetMethod(nameof(EnableSoftDeletableQueryFilter_Internal), BindingFlags.NonPublic | BindingFlags.Static)!;
 
     /// <summary>
@@ -52,7 +52,7 @@ public static class SoftDeletableExtensions
     /// This will mark the entity as deleted in the database.
     /// </remarks>
     /// <param name="set">The <see cref="DbSet{TEntity}"/> where <paramref name="entity"/> resides.</param>
-    /// <param name="entity">The entity to soft delete.</param>
+    /// <param name="entity">The entity to soft-delete.</param>
     /// <returns>
     /// The <see cref="EntityEntry{TEntity}" /> for the entity. The entry provides
     /// access to change tracking information and operations for the entity.
@@ -61,7 +61,7 @@ public static class SoftDeletableExtensions
         where TSoftDeletableEntity : class, ISoftDeletableEntity
     {
         entity.SoftDelete();
-        // In case the entity implements SoftDelete, but forgot to set Deleted to true.
+        // In case the entity implements SoftDelete, but forgets to set Deleted to true.
         entity.Deleted = true;
         return set.Entry(entity);
     }
@@ -73,7 +73,7 @@ public static class SoftDeletableExtensions
     /// This will mark the entity as deleted in the database.
     /// </remarks>
     /// <param name="set">The <see cref="DbSet{TEntity}"/> where <paramref name="entities"/> resides.</param>
-    /// <param name="entities">The entities to soft delete.</param>
+    /// <param name="entities">The entities to soft-delete.</param>
     public static void SoftRemoveRange<TSoftDeletableEntity>(this DbSet<TSoftDeletableEntity> set, IEnumerable<TSoftDeletableEntity> entities)
         where TSoftDeletableEntity : class, ISoftDeletableEntity
     {
@@ -87,7 +87,7 @@ public static class SoftDeletableExtensions
     {
         return modelBuilder.EntitiesOfType<ISoftDeletableEntity>(builder =>
         {
-            var method = _openGenericInternalMethodInfo.MakeGenericMethod(builder.Metadata.ClrType);
+            var method = OpenGenericInternalMethodInfo.MakeGenericMethod(builder.Metadata.ClrType);
             method.Invoke(null, [modelBuilder]);
         });
     }
@@ -95,21 +95,21 @@ public static class SoftDeletableExtensions
     internal static bool IsMarkedForSoftDeletion(this EntityEntry entry)
     {
         return entry.Entity is ISoftDeletableEntity
-            && !(bool)entry.Property(nameof(ISoftDeletableEntity.Deleted)).OriginalValue! // Not already soft deleted in database
+            && !(bool)entry.Property(nameof(ISoftDeletableEntity.Deleted)).OriginalValue! // Not already soft-deleted in the database
             && (bool)entry.Property(nameof(ISoftDeletableEntity.Deleted)).CurrentValue!; // Deleted in memory
     }
 
     internal static bool IsMarkedForRestoration(this EntityEntry entry)
     {
         return entry.Entity is ISoftDeletableEntity
-            && (bool)entry.Property(nameof(ISoftDeletableEntity.Deleted)).OriginalValue! // Already soft deleted in database
+            && (bool)entry.Property(nameof(ISoftDeletableEntity.Deleted)).OriginalValue! // Already soft-deleted in the database
             && !(bool)entry.Property(nameof(ISoftDeletableEntity.Deleted)).CurrentValue!; // Restored in memory
     }
 
     internal static bool IsSoftDeleted(this EntityEntry entry)
     {
         return entry.Entity is ISoftDeletableEntity
-            && (bool)entry.Property(nameof(ISoftDeletableEntity.Deleted)).OriginalValue!; // Already soft deleted in database
+            && (bool)entry.Property(nameof(ISoftDeletableEntity.Deleted)).OriginalValue!; // Already soft-deleted in the database
     }
 
     internal static ChangeTracker HandleSoftDeletableEntities(this ChangeTracker changeTracker, DateTimeOffset utcNow)
@@ -134,8 +134,8 @@ public static class SoftDeletableExtensions
     {
         var invalidSoftDeleteModifications = softDeletableEntities
             .Where(x => x.State is EntityState.Modified
-                && x.Property(x => x.Deleted).OriginalValue // Allerede slettet i databasen
-                && !x.Property(x => x.Deleted).CurrentValue); // Ikke gjennopprettet i koden
+                && x.Property(x => x.Deleted).OriginalValue // Already soft-deleted in the database
+                && !x.Property(x => x.Deleted).CurrentValue); // Restored in memory
 
         return invalidSoftDeleteModifications.Any()
             ? throw new InvalidOperationException("Cannot modify a soft deleted entity without restoring it first.")

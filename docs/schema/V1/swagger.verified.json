@@ -4892,7 +4892,7 @@
             }
           },
           {
-            "description": "Filter by Display state ",
+            "description": "Filter by Display state",
             "explode": true,
             "in": "query",
             "name": "systemLabel",

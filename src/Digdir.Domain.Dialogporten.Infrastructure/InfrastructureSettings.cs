@@ -75,7 +75,7 @@ internal sealed class InfrastructureSettingsValidator : AbstractValidator<Infras
             .SetValidator(massTransitSettingsValidator);
     }
 
-    // This is here to be able to use the validator without having access to the service provider. 
+    // This is here to be able to use the validator without having access to the service provider.
     private InfrastructureSettingsValidator() : this(
         new AltinnPlatformSettingsValidator(),
         new AltinnCdnPlatformSettingsValidator(),
