@@ -44,7 +44,7 @@ public sealed class OpenTelemetryEventListener : ExecutionDiagnosticEventListene
         var currentActivity = Activity.Current;
         if (currentActivity != null)
         {
-            currentActivity.RecordException(exception);
+            currentActivity.AddException(exception);
             currentActivity.SetStatus(ActivityStatusCode.Error, exception.Message);
         }
         base.RequestError(context, exception);
@@ -72,7 +72,7 @@ public sealed class OpenTelemetryEventListener : ExecutionDiagnosticEventListene
         var httpContext = GetHttpContextFrom(context);
         if (context.Exception != null)
         {
-            activity.RecordException(context.Exception);
+            activity.AddException(context.Exception);
             activity.SetStatus(ActivityStatusCode.Error, context.Exception.Message);
         }
 
@@ -85,7 +85,7 @@ public sealed class OpenTelemetryEventListener : ExecutionDiagnosticEventListene
                     continue;
                 }
 
-                activity.RecordException(error.Exception);
+                activity.AddException(error.Exception);
                 activity.SetStatus(ActivityStatusCode.Error, error.Exception.Message);
             }
         }
