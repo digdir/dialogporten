@@ -7,12 +7,12 @@
       },
       "commandLineArgs": "sync-subject-resource-mappings"
     },
-    "resource-policy-metadata": {
+    "resource-policy-information": {
       "commandName": "Project",
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Development"
       },
-      "commandLineArgs": "sync-resource-policy-metadata -c 1"
+      "commandLineArgs": "sync-resource-policy-information -c 1"
     }
   }
 }

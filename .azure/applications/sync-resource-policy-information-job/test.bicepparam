@@ -3,7 +3,7 @@ using './main.bicep'
 param environment = 'test'
 param location = 'norwayeast'
 param imageTag = readEnvironmentVariable('IMAGE_TAG')
-param jobSchedule = '*/30 * * * *' // Runs every 30 minutes
+param jobSchedule = '20 3 * * *' // 3:20AM every night
 
 //secrets
 param containerAppEnvironmentName = readEnvironmentVariable('AZURE_CONTAINER_APP_ENVIRONMENT_NAME')
