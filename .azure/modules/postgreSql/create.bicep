@@ -24,7 +24,7 @@ param tags object
 
 @export()
 type Sku = {
-  name: 'Standard_B1ms' | 'Standard_B2s' | 'Standard_B4ms' | 'Standard_B8ms' | 'Standard_B12ms' | 'Standard_B16ms' | 'Standard_B20ms'
+  name: 'Standard_B1ms' | 'Standard_B2s' | 'Standard_B4ms' | 'Standard_B8ms' | 'Standard_B12ms' | 'Standard_B16ms' | 'Standard_B20ms' | 'Standard_D4ads_v5'
   tier: 'Burstable' | 'GeneralPurpose' | 'MemoryOptimized'
 }
 
@@ -56,8 +56,8 @@ var postgresServerName = uniqueResourceName('${namePrefix}-postgres', postgresSe
 //	//wal_level: 'logical'
 //	//max_worker_processes: '16'
 
-//	// The leading theory is that we are using pgoutput as the replication protocol 
-//	// which comes out of the box in postgresql. Therefore we may not need the 
+//	// The leading theory is that we are using pgoutput as the replication protocol
+//	// which comes out of the box in postgresql. Therefore we may not need the
 //	// following two lines.
 //	//'azure.extensions': 'pglogical'
 //	//shared_preload_libraries: 'pglogical'
