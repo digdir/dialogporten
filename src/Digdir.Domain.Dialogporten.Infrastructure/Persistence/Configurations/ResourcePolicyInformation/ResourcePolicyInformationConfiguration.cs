@@ -8,7 +8,7 @@ internal sealed class ResourcePolicyInformationConfiguration : IEntityTypeConfig
     public void Configure(EntityTypeBuilder<Domain.ResourcePolicyInformation.ResourcePolicyInformation> builder)
     {
         builder
-            .HasIndex(r => new { r.Resource })
+            .HasIndex(r => r.Resource)
             .IsUnique();
     }
 }

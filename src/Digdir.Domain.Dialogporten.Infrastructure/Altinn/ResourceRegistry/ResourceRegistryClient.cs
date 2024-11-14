@@ -79,7 +79,7 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
         // concurrently using semaphores.
         var updatedResources = await GetUniqueUpdatedResources(since, cancellationToken);
 
-        var semaphore = new SemaphoreSlim(numberOfConcurrentRequests);
+        using var semaphore = new SemaphoreSlim(numberOfConcurrentRequests);
         var metadataTasks = new List<Task<UpdatedResourcePolicyInformation?>>();
 
         foreach (var updatedResource in updatedResources)

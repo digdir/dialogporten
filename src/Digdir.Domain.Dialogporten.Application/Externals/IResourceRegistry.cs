@@ -1,5 +1,3 @@
-﻿using Digdir.Domain.Dialogporten.Domain.ResourcePolicyInformation;
-
 namespace Digdir.Domain.Dialogporten.Application.Externals;
 
 public interface IResourceRegistry
