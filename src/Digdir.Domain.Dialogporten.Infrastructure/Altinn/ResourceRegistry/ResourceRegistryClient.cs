@@ -84,27 +84,27 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
 
         foreach (var updatedResource in updatedResources)
         {
-            var task = Task.Run(async () =>
-            {
-                await semaphore.WaitAsync(cancellationToken);
-                try
-                {
-                    return await GetUpdatedResourcePolicyInformation(updatedResource, cancellationToken);
-                }
-                finally
-                {
-                    semaphore.Release();
-                }
-            }, cancellationToken);
-
-            metadataTasks.Add(task);
+            metadataTasks.Add(ProcessResourcePolicy(updatedResource, semaphore, cancellationToken));
         }
 
         // Filter out null values (indicating missing/invalid policies)
         return (await Task.WhenAll(metadataTasks))
-            .Where(x => x is not null)
+            .Where(x => x != null)
             .Select(x => x!)
             .ToList();
+    }
+
+    private async Task<UpdatedResourcePolicyInformation?> ProcessResourcePolicy(UpdatedResource item, SemaphoreSlim semaphore, CancellationToken cancellationToken)
+    {
+        await semaphore.WaitAsync(cancellationToken);
+        try
+        {
+            return await GetUpdatedResourcePolicyInformation(item, cancellationToken);
+        }
+        finally
+        {
+            semaphore.Release();
+        }
     }
 
     private async Task<List<UpdatedResource>> GetUniqueUpdatedResources(DateTimeOffset _, CancellationToken cancellationToken)
@@ -136,7 +136,7 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
         catch (Exception ex)
         {
             // We need to keep going here, so we log and return a default value
-            _logger.LogWarning(ex, "Failed to process policy for \"{ResourceUrn}\", returning a default.", resource.ResourceUrn);
+            _logger.LogWarning(ex, "Failed to process policy for \"{ResourceUrn}\"", resource.ResourceUrn);
             return null;
         }
     }

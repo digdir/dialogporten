@@ -58,7 +58,7 @@ internal sealed class SyncPolicyCommandHandler : IRequestHandler<SyncPolicyComma
 
             if (mergeCount > 0)
             {
-                _logger.LogInformation("Successfully synced information from {UpdatedAmount} policies", mergeCount);
+                _logger.LogInformation("Successfully synced information from {MergeCount} policies", mergeCount);
             }
             else
             {
