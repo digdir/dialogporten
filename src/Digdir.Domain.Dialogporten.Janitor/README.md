@@ -18,7 +18,7 @@ Below are the available commands (commands are always the first argument):
 ### sync-resource-policy-information
 
 - **Description:**  
-  Synchronizes information from resources policies from the Altinn Resource Registry to Dialogporten's local copy used for authorization.
+  Synchronizes resource policies from the Altinn Resource Registry to Dialogporten's local copy used for authorization.
 
 - **Argument(s):**
     - `-s` *Optional*: Override the time of the last synchronization. This argument should be a `DateTimeOffset`, e.g., `2024-08-15` (default: newest in local copy)
