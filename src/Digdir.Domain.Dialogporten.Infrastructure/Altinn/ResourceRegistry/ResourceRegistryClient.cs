@@ -71,7 +71,7 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
         } while (nextUrl is not null);
     }
 
-    public async Task<IReadOnlyCollection<UpdatedResourcePolicyInformation>> GetUpdatedResourcePolicyInformation(DateTimeOffset since,
+    public async Task<IReadOnlyCollection<UpdatedResourcePolicy>> GetUpdatedResourcePolicy(DateTimeOffset since,
         int numberOfConcurrentRequests,
         CancellationToken cancellationToken)
     {
@@ -80,7 +80,7 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
         var updatedResources = await GetUniqueUpdatedResources(since, cancellationToken);
 
         var semaphore = new SemaphoreSlim(numberOfConcurrentRequests);
-        var metadataTasks = new List<Task<UpdatedResourcePolicyInformation?>>();
+        var metadataTasks = new List<Task<UpdatedResourcePolicy?>>();
 
         foreach (var updatedResource in updatedResources)
         {
@@ -94,12 +94,12 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
             .ToList();
     }
 
-    private async Task<UpdatedResourcePolicyInformation?> ProcessResourcePolicy(UpdatedResource item, SemaphoreSlim semaphore, CancellationToken cancellationToken)
+    private async Task<UpdatedResourcePolicy?> ProcessResourcePolicy(UpdatedResource item, SemaphoreSlim semaphore, CancellationToken cancellationToken)
     {
         await semaphore.WaitAsync(cancellationToken);
         try
         {
-            return await GetUpdatedResourcePolicyInformation(item, cancellationToken);
+            return await GetUpdatedResourcePolicy(item, cancellationToken);
         }
         finally
         {
@@ -115,7 +115,7 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
             .ToList();
     }
 
-    private async Task<UpdatedResourcePolicyInformation?> GetUpdatedResourcePolicyInformation(UpdatedResource resource, CancellationToken cancellationToken)
+    private async Task<UpdatedResourcePolicy?> GetUpdatedResourcePolicy(UpdatedResource resource, CancellationToken cancellationToken)
     {
         var resourceRegistryEntry = new ResourceRegistryEntry(resource.ResourceUrn);
         if (!resourceRegistryEntry.HasPolicyInResourceRegistry)
@@ -128,7 +128,7 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
             var minimumAuthenticationLevel = GetMinimumAuthenticationLevel(await FetchPolicy(resourceRegistryEntry.Identifier, cancellationToken));
             return minimumAuthenticationLevel is null
                 ? null
-                : new UpdatedResourcePolicyInformation(
+                : new UpdatedResourcePolicy(
                     resource.ResourceUrn,
                     minimumAuthenticationLevel.Value,
                     resource.UpdatedAt);

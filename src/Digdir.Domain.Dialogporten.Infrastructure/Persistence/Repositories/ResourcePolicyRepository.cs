@@ -1,15 +1,15 @@
 using Digdir.Domain.Dialogporten.Application.Externals;
-using Digdir.Domain.Dialogporten.Domain.ResourcePolicyInformation;
+using Digdir.Domain.Dialogporten.Domain.ResourcePolicy;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Repositories;
 
-internal sealed class ResourcePolicyInformationRepository : IResourcePolicyInformationRepository
+internal sealed class ResourcePolicyRepository : IResourcePolicyRepository
 {
     private readonly DialogDbContext _dbContext;
 
-    public ResourcePolicyInformationRepository(DialogDbContext dbContext)
+    public ResourcePolicyRepository(DialogDbContext dbContext)
     {
         _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
     }
@@ -18,7 +18,7 @@ internal sealed class ResourcePolicyInformationRepository : IResourcePolicyInfor
         TimeSpan? timeSkew = null,
         CancellationToken cancellationToken = default)
     {
-        var lastUpdatedAt = await _dbContext.ResourcePolicyInformation
+        var lastUpdatedAt = await _dbContext.ResourcePolicy
             .Select(x => x.UpdatedAt)
             .DefaultIfEmpty()
             .MaxAsync(cancellationToken);
@@ -28,7 +28,7 @@ internal sealed class ResourcePolicyInformationRepository : IResourcePolicyInfor
             : lastUpdatedAt;
     }
 
-    public async Task<int> Merge(IReadOnlyCollection<ResourcePolicyInformation> resourceMetadata, CancellationToken cancellationToken)
+    public async Task<int> Merge(IReadOnlyCollection<ResourcePolicy> resourceMetadata, CancellationToken cancellationToken)
     {
         const string sql =
             $"""
@@ -37,13 +37,13 @@ internal sealed class ResourcePolicyInformationRepository : IResourcePolicyInfor
             	FROM unnest(@ids, @resources, @minimumAuthenticationLevels, @createdAts, @updatedAts) 
             	    as s(id, resource, minimumSecurityLevel, createdAt, updatedAt)
             )
-            merge into "{nameof(ResourcePolicyInformation)}" t
+            merge into "{nameof(ResourcePolicy)}" t
             using source s
-            on t."{nameof(ResourcePolicyInformation.Resource)}" = s.resource
+            on t."{nameof(ResourcePolicy.Resource)}" = s.resource
             when matched then
-              	update set "{nameof(ResourcePolicyInformation.UpdatedAt)}" = s.updatedAt
+              	update set "{nameof(ResourcePolicy.UpdatedAt)}" = s.updatedAt
             when not matched then
-              	insert ("{nameof(ResourcePolicyInformation.Id)}", "{nameof(ResourcePolicyInformation.Resource)}", "{nameof(ResourcePolicyInformation.MinimumAuthenticationLevel)}", "{nameof(ResourcePolicyInformation.CreatedAt)}", "{nameof(ResourcePolicyInformation.UpdatedAt)}")
+              	insert ("{nameof(ResourcePolicy.Id)}", "{nameof(ResourcePolicy.Resource)}", "{nameof(ResourcePolicy.MinimumAuthenticationLevel)}", "{nameof(ResourcePolicy.CreatedAt)}", "{nameof(ResourcePolicy.UpdatedAt)}")
               	values (s.id, s.resource, s.minimumSecurityLevel, s.createdAt, s.updatedAt);
             """;
 

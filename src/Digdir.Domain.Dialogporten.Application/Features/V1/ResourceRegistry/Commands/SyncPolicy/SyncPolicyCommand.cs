@@ -20,12 +20,12 @@ internal sealed class SyncPolicyCommandHandler : IRequestHandler<SyncPolicyComma
 {
     private const int DefaultNumberOfConcurrentRequests = 15;
     private readonly IResourceRegistry _resourceRegistry;
-    private readonly IResourcePolicyInformationRepository _resourcePolicyMetadataRepository;
+    private readonly IResourcePolicyRepository _resourcePolicyMetadataRepository;
     private readonly ILogger<SyncPolicyCommandHandler> _logger;
 
     public SyncPolicyCommandHandler(
         IResourceRegistry resourceRegistry,
-        IResourcePolicyInformationRepository resourcePolicyMetadataRepository,
+        IResourcePolicyRepository resourcePolicyMetadataRepository,
         ILogger<SyncPolicyCommandHandler> logger)
     {
         _resourceRegistry = resourceRegistry ?? throw new ArgumentNullException(nameof(resourceRegistry));
@@ -47,13 +47,13 @@ internal sealed class SyncPolicyCommandHandler : IRequestHandler<SyncPolicyComma
         try
         {
             var syncTime = DateTimeOffset.Now;
-            var updatedResourcePolicyInformation = await _resourceRegistry
-                               .GetUpdatedResourcePolicyInformation(lastUpdated, request.NumberOfConcurrentRequests ?? DefaultNumberOfConcurrentRequests, cancellationToken);
+            var updatedResourcePolicy = await _resourceRegistry
+                               .GetUpdatedResourcePolicy(lastUpdated, request.NumberOfConcurrentRequests ?? DefaultNumberOfConcurrentRequests, cancellationToken);
 
-            var mergeableResourcePolicyInformation = updatedResourcePolicyInformation
-                .Select(x => x.ToResourcePolicyInformation(syncTime))
+            var mergeableResourcePolicy = updatedResourcePolicy
+                .Select(x => x.ToResourcePolicy(syncTime))
                 .ToList();
-            var mergeCount = await _resourcePolicyMetadataRepository.Merge(mergeableResourcePolicyInformation, cancellationToken);
+            var mergeCount = await _resourcePolicyMetadataRepository.Merge(mergeableResourcePolicy, cancellationToken);
             _logger.LogInformation("{MergeCount} copies of resource policy information updated.", mergeCount);
 
             if (mergeCount > 0)

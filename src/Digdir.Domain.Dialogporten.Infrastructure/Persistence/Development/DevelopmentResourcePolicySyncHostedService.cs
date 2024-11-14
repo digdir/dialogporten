@@ -7,13 +7,13 @@ using Microsoft.Extensions.Hosting;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Development;
 
-internal sealed class DevelopmentResourcePolicyInformationSyncHostedService : IHostedService
+internal sealed class DevelopmentResourcePolicySyncHostedService : IHostedService
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly IHostEnvironment _environment;
     private readonly IConfiguration _configuration;
 
-    public DevelopmentResourcePolicyInformationSyncHostedService(IServiceProvider serviceProvider, IHostEnvironment environment, IConfiguration configuration)
+    public DevelopmentResourcePolicySyncHostedService(IServiceProvider serviceProvider, IHostEnvironment environment, IConfiguration configuration)
     {
         _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
         _environment = environment ?? throw new ArgumentNullException(nameof(environment));
@@ -22,7 +22,7 @@ internal sealed class DevelopmentResourcePolicyInformationSyncHostedService : IH
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        if (!_environment.ShouldRunDevelopmentHostedService() || _configuration.GetLocalDevelopmentSettings().DisablePolicyInformationSyncOnStartup)
+        if (!_environment.ShouldRunDevelopmentHostedService() || _configuration.GetLocalDevelopmentSettings().DisableResourcePolicySyncOnStartup)
         {
             return;
         }

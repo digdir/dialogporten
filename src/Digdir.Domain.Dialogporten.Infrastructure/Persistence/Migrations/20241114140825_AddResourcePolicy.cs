@@ -6,13 +6,13 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class AddResourcePolicyInformation : Migration
+    public partial class AddResourcePolicy : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "ResourcePolicyInformation",
+                name: "ResourcePolicy",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
@@ -23,12 +23,12 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ResourcePolicyInformation", x => x.Id);
+                    table.PrimaryKey("PK_ResourcePolicy", x => x.Id);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ResourcePolicyInformation_Resource",
-                table: "ResourcePolicyInformation",
+                name: "IX_ResourcePolicy_Resource",
+                table: "ResourcePolicy",
                 column: "Resource",
                 unique: true);
         }
@@ -37,7 +37,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "ResourcePolicyInformation");
+                name: "ResourcePolicy");
         }
     }
 }

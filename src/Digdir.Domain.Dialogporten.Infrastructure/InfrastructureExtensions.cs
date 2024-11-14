@@ -68,7 +68,7 @@ public static class InfrastructureExtensions
             .AddHostedService<DevelopmentMigratorHostedService>()
             .AddHostedService<DevelopmentCleanupOutboxHostedService>()
             .AddHostedService<DevelopmentSubjectResourceSyncHostedService>()
-            .AddHostedService<DevelopmentResourcePolicyInformationSyncHostedService>()
+            .AddHostedService<DevelopmentResourcePolicySyncHostedService>()
             .AddValidatorsFromAssembly(InfrastructureAssemblyMarker.Assembly, ServiceLifetime.Transient, includeInternalTypes: true)
             .AddPolicyRegistry((_, registry) =>
             {
@@ -86,7 +86,7 @@ public static class InfrastructureExtensions
 
             // Transient
             .AddTransient<ISubjectResourceRepository, SubjectResourceRepository>()
-            .AddTransient<IResourcePolicyInformationRepository, ResourcePolicyInformationRepository>()
+            .AddTransient<IResourcePolicyRepository, ResourcePolicyRepository>()
             .AddTransient<Lazy<IPublishEndpoint>>(x =>
                 new Lazy<IPublishEndpoint>(x.GetRequiredService<IPublishEndpoint>))
             .AddTransient<Lazy<ITopicEventSender>>(x =>

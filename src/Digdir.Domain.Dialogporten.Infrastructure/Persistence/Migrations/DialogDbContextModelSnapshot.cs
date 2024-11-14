@@ -1240,7 +1240,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.UseTphMappingStrategy();
                 });
 
-            modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.ResourcePolicyInformation.ResourcePolicyInformation", b =>
+            modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.ResourcePolicy.ResourcePolicy", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -1270,7 +1270,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.HasIndex("Resource")
                         .IsUnique();
 
-                    b.ToTable("ResourcePolicyInformation");
+                    b.ToTable("ResourcePolicy");
                 });
 
             modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.SubjectResources.SubjectResource", b =>

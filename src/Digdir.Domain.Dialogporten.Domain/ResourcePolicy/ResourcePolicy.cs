@@ -1,8 +1,8 @@
 using Digdir.Library.Entity.Abstractions;
 
-namespace Digdir.Domain.Dialogporten.Domain.ResourcePolicyInformation;
+namespace Digdir.Domain.Dialogporten.Domain.ResourcePolicy;
 
-public sealed class ResourcePolicyInformation : IEntity
+public sealed class ResourcePolicy : IEntity
 {
     public Guid Id { get; set; }
     public string Resource { get; set; } = null!;
