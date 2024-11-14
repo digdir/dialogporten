@@ -200,7 +200,6 @@ static void BuildAndRun(string[] args, TelemetryConfiguration telemetryConfigura
                 document.Servers.Add(new OpenApiServer { Url = dialogportenBaseUri });
                 document.Generator = null;
                 document.ReplaceProblemDetailsDescriptions();
-                document.ReplaceRequestExampleBodies();
                 document.MakeCollectionsNullable();
             };
         }, uiConfig =>
