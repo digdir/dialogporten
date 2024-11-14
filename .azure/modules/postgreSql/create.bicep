@@ -34,6 +34,9 @@ param sku Sku
 @description('Enable query performance insight')
 param enableQueryPerformanceInsight bool
 
+@description('Enable index tuning')
+param enableIndexTuning bool
+
 @description('The name of the Application Insights workspace')
 param appInsightWorkspaceName string
 
@@ -136,6 +139,16 @@ resource pgms_wait_sampling_query_capture_mode 'Microsoft.DBforPostgreSQL/flexib
   name: 'pgms_wait_sampling.query_capture_mode'
   properties: {
     value: 'all'
+    source: 'user-override'
+  }
+  dependsOn: [pg_qs_query_capture_mode]
+}
+
+resource index_tuning_mode 'Microsoft.DBforPostgreSQL/flexibleServers/configurations@2024-08-01' = if (enableIndexTuning) {
+  parent: postgres
+  name: 'index_tuning.mode'
+  properties: {
+    value: 'report'
     source: 'user-override'
   }
   dependsOn: [pg_qs_query_capture_mode]

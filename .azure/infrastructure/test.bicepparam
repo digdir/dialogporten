@@ -34,6 +34,7 @@ param postgresConfiguration = {
     name: 'Standard_B2s'
     tier: 'Burstable'
   }
+  enableIndexTuning: false
   enableQueryPerformanceInsight: true
 }
 

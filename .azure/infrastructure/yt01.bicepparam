@@ -34,6 +34,7 @@ param postgresConfiguration = {
     name: 'Standard_D4ads_v5'
     tier: 'GeneralPurpose'
   }
+  enableIndexTuning: true
   enableQueryPerformanceInsight: true
 }
 

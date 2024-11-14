@@ -35,6 +35,7 @@ param postgresConfiguration = {
     tier: 'GeneralPurpose'
   }
   enableQueryPerformanceInsight: false
+  enableIndexTuning: false
 }
 
 param redisSku = {
