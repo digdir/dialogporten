@@ -31,8 +31,8 @@ param slackNotifierSku = {
 }
 param postgresConfiguration = {
   sku: {
-    name: 'Standard_B1ms'
-    tier: 'Burstable'
+    name: 'Standard_D4ads_v5'
+    tier: 'GeneralPurpose'
   }
   enableQueryPerformanceInsight: true
 }
