@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.33.1](https://github.com/digdir/dialogporten/compare/v1.33.0...v1.33.1) (2024-11-14)
+
+
+### Bug Fixes
+
+* **bicep:** Add missing SKU for postgres create ([#1453](https://github.com/digdir/dialogporten/issues/1453)) ([ab8cb03](https://github.com/digdir/dialogporten/commit/ab8cb03d9430bc34608637921a31bc21591a2f1c))
+
+## [1.33.0](https://github.com/digdir/dialogporten/compare/v1.32.1...v1.33.0) (2024-11-14)
+
+
+### Features
+
+* **azure:** Upgrade postgres SKU for prod/yt01 ([#1450](https://github.com/digdir/dialogporten/issues/1450)) ([b7586f2](https://github.com/digdir/dialogporten/commit/b7586f2ea0da43b4b2819f75f7bb2a9c1dcc5ad0))
+
 ## [1.32.1](https://github.com/digdir/dialogporten/compare/v1.32.0...v1.32.1) (2024-11-13)
 
 
