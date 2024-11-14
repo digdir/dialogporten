@@ -25,7 +25,8 @@ internal sealed class CheckpointRepository : ICheckpointRepository
 
     public async Task EnsureCheckpointTableExists(CancellationToken ct = default)
     {
-        // TODO: Dette burde ligge sammen med OutboxMessage opprettelsen i infrastruktur via EF
+        // TODO: https://github.com/digdir/dialogporten/issues/...
+        // This should be located together with the OutboxMessage creation in the infrastructure via EF
         await using var command = _dataSource.CreateCommand(
             $"""
             CREATE TABLE IF NOT EXISTS cdc_checkpoint (

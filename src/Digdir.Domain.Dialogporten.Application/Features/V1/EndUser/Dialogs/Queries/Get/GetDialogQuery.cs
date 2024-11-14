@@ -118,8 +118,8 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
             return new EntityDeleted<DialogEntity>(request.DialogId);
         }
 
-        // TODO: What if name lookup fails
-        // https://github.com/digdir/dialogporten/issues/387
+        // TODO: https://github.com/digdir/dialogporten/issues/387
+        // What if name lookup fails?
         dialog.UpdateSeenAt(
             currentUserInformation.UserId.ExternalIdWithPrefix,
             currentUserInformation.UserId.Type,

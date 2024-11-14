@@ -1,0 +1,9 @@
+﻿{
+  "$schema": "https://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "DebugRoslynAnalyzers": {
+      "commandName": "DebugRoslynComponent",
+      "targetProject": "../Digdir.Domain.Dialogporten.Application/Digdir.Domain.Dialogporten.Application.csproj",
+    }
+  }
+}

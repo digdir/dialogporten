@@ -33,7 +33,8 @@ internal sealed class CheckpointSynchronizer : BackgroundService, IAsyncDisposab
         // This method will block the application from starting until
         // snapshots are loaded and permissions are verified
 
-        // TODO: Remove when checkpoint migration exists
+        // TODO: https://github.com/digdir/dialogporten/issues/...
+        // Remove when checkpoint migration exists
         // Ensure table exists
         await _snapshotRepository.EnsureCheckpointTableExists(cancellationToken);
 
