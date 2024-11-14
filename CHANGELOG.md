@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.34.0](https://github.com/digdir/dialogporten/compare/v1.33.1...v1.34.0) (2024-11-14)
+
+
+### Features
+
+* **azure:** enable index tuning for postgres in YT ([#1455](https://github.com/digdir/dialogporten/issues/1455)) ([69f01ae](https://github.com/digdir/dialogporten/commit/69f01aedcff0eb28b8bff80dfd1cec709e0c4409))
+
 ## [1.33.1](https://github.com/digdir/dialogporten/compare/v1.33.0...v1.33.1) (2024-11-14)
 
 
