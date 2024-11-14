@@ -22,7 +22,7 @@ internal sealed class DevelopmentResourcePolicyInformationSyncHostedService : IH
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        if (!_environment.ShouldRunDevelopmentHostedService() || _configuration.GetLocalDevelopmentSettings().DisablePolicyInformationSyncOnStartup)
+        if (!_environment.IsDevelopment() || _configuration.GetLocalDevelopmentSettings().DisablePolicyInformationSyncOnStartup)
         {
             return;
         }

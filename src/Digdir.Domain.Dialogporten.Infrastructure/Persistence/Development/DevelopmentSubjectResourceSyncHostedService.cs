@@ -1,5 +1,7 @@
+using Digdir.Domain.Dialogporten.Application;
 using Digdir.Domain.Dialogporten.Application.Features.V1.ResourceRegistry.Commands.SyncSubjectMap;
 using MediatR;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -9,16 +11,18 @@ internal sealed class DevelopmentSubjectResourceSyncHostedService : IHostedServi
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly IHostEnvironment _environment;
+    private readonly IConfiguration _configuration;
 
-    public DevelopmentSubjectResourceSyncHostedService(IServiceProvider serviceProvider, IHostEnvironment environment)
+    public DevelopmentSubjectResourceSyncHostedService(IServiceProvider serviceProvider, IHostEnvironment environment, IConfiguration _configuration)
     {
         _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
         _environment = environment ?? throw new ArgumentNullException(nameof(environment));
+        this._configuration = _configuration;
     }
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        if (!_environment.ShouldRunDevelopmentHostedService())
+        if (!_environment.IsDevelopment() || _configuration.GetLocalDevelopmentSettings().DisableSubjectResourceSyncOnStartup)
         {
             return;
         }
