@@ -146,7 +146,7 @@
           "CONNECT"
         ]
       },
-      "MicrosoftAspNetCoreJsonPatchOperations_Operation": {
+      "JsonPatchOperations_Operation": {
         "additionalProperties": false,
         "properties": {
           "from": {
@@ -158,7 +158,7 @@
             "type": "string"
           },
           "operationType": {
-            "$ref": "#/components/schemas/MicrosoftAspNetCoreJsonPatchOperations_OperationType"
+            "$ref": "#/components/schemas/JsonPatchOperations_OperationType"
           },
           "path": {
             "nullable": true,
@@ -170,7 +170,7 @@
         },
         "type": "object"
       },
-      "MicrosoftAspNetCoreJsonPatchOperations_OperationType": {
+      "JsonPatchOperations_OperationType": {
         "description": "",
         "enum": [
           "Add",
@@ -4892,7 +4892,7 @@
             }
           },
           {
-            "description": "Filter by Display state ",
+            "description": "Filter by Display state",
             "explode": true,
             "in": "query",
             "name": "systemLabel",
@@ -6048,7 +6048,7 @@
             "application/json": {
               "schema": {
                 "items": {
-                  "$ref": "#/components/schemas/MicrosoftAspNetCoreJsonPatchOperations_Operation"
+                  "$ref": "#/components/schemas/JsonPatchOperations_Operation"
                 },
                 "type": "array"
               }

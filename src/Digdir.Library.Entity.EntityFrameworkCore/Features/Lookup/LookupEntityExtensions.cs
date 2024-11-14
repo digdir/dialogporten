@@ -94,9 +94,7 @@ internal static class LookupEntityExtensions
 
     private abstract class MockLookupEntity : AbstractLookupEntity<MockLookupEntity, MockLookupEntity.Enum>
     {
-        protected MockLookupEntity(Enum id, string name) : base(id, name)
-        {
-        }
+        protected MockLookupEntity(Enum id, string name) : base(id, name) { }
 
         public enum Enum;
     }

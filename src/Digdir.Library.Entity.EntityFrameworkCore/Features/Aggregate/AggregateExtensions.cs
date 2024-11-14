@@ -64,9 +64,9 @@ internal static class AggregateExtensions
     internal static ModelBuilder AddAggregateEntities(this ModelBuilder modelBuilder)
     {
         // This will eager load entire aggregate trees for ALL queries unless explicitly
-        // opted out for through ".IgnoreAutoIncludes()". Optimaly we want to lazy load
-        // the entire tree ONLY when service owner is altering them, not on every query.
-        // In addition - We don't want the ISoftDeletableEntity query filter to be
+        // opted out for through ".IgnoreAutoIncludes()". Optimally we want to lazy load
+        // the entire tree ONLY when the service owner is altering them, not on every query.
+        // In addition, we don't want the ISoftDeletableEntity query filter to be
         // applied when loading aggregates, but it will be through FindAsync and
         // NavProp.LoadAsync.
 
@@ -165,7 +165,7 @@ internal static class AggregateExtensions
         await nodeByEntry.AddAggregateParentChain(entry, cancellationToken);
 
         // This is not needed for now, as we don't need to send Deleted events for
-        // any aggregate children (as we did for the old DialogElement consept
+        // any aggregate children (as we did for the old DialogElement concept
         // await nodeByEntry.AddAggregateChildChain(entry, cancellationToken);
         return node;
     }
@@ -183,7 +183,7 @@ internal static class AggregateExtensions
         foreach (var parentForeignKey in childEntry.Metadata.FindAggregateParents())
         {
             // Supports only dependent to principal. That is - one-to-one and one-to-many
-            // relationships. Many-to-many relationships is not supported.
+            // relationships. Many-to-many relationships are not supported.
             var parentType = parentForeignKey.PrincipalEntityType.ClrType;
 
             var parentPrimaryKey = parentForeignKey
@@ -264,7 +264,7 @@ internal static class AggregateExtensions
             _ => throw new UnreachableException()
         };
 
-        // Add this to modifiedProperties if needed in future.
+        // Add this to modifiedProperties if needed in the future.
         //var modifiedProperties = entry.Properties
         //.Where(x => x.IsModified && !x.IsTemporary)
         //.Select(x => AggregateNodeProperty.Create(

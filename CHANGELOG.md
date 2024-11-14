@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.32.1](https://github.com/digdir/dialogporten/compare/v1.32.0...v1.32.1) (2024-11-13)
+
+
+### Bug Fixes
+
+* **azure:** ensure postgres configuration run in sequence ([#1448](https://github.com/digdir/dialogporten/issues/1448)) ([a5a6868](https://github.com/digdir/dialogporten/commit/a5a6868037619172a97ca1d1acde85075825adbd))
+
+## [1.32.0](https://github.com/digdir/dialogporten/compare/v1.31.0...v1.32.0) (2024-11-12)
+
+
+### Features
+
+* **graphql:** Set max execution depth to 10 ([#1431](https://github.com/digdir/dialogporten/issues/1431)) ([8845e49](https://github.com/digdir/dialogporten/commit/8845e49cc687230d72a8eea6e65c9c210886d7ee)), closes [#1430](https://github.com/digdir/dialogporten/issues/1430)
+* **performance:** create a k6 purge script to run after creating dialogs ([#1435](https://github.com/digdir/dialogporten/issues/1435)) ([9555d78](https://github.com/digdir/dialogporten/commit/9555d7861fe54ab1530b2ac4cccbb7c41e868c0b))
+* **performance:** Expands search for serviceowners, improved tracing and logging ([#1439](https://github.com/digdir/dialogporten/issues/1439)) ([b1d6eaf](https://github.com/digdir/dialogporten/commit/b1d6eafa159f35659bbd4d878028e8fb364e2666))
+
 ## [1.31.0](https://github.com/digdir/dialogporten/compare/v1.30.0...v1.31.0) (2024-11-08)
 
 

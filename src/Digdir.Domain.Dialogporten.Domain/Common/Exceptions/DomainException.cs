@@ -6,10 +6,7 @@ public sealed class DomainException : ApplicationException
 
     public IReadOnlyCollection<DomainFailure> Errors => _errors.ToList().AsReadOnly();
 
-    public DomainException(string message) : this(message, [])
-    {
-
-    }
+    public DomainException(string message) : this(message, []) { }
 
     public DomainException(string message, IEnumerable<DomainFailure> errors) : base(message)
     {

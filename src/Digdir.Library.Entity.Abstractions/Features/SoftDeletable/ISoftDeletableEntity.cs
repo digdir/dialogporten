@@ -1,26 +1,26 @@
 ﻿namespace Digdir.Library.Entity.Abstractions.Features.SoftDeletable;
 
 /// <summary>
-/// Abstraction implemented by entities that can be soft deleted during the application lifetime.
+/// Abstraction implemented by entities that can be soft-deleted during the application lifetime.
 /// </summary>
 public interface ISoftDeletableEntity
 {
     /// <summary>
-    /// Indicating whether or not the entity is soft deleted. 
-    /// True if the entity is soft deleted, otherwise false.
+    /// Indicating whether the entity is soft-deleted.
+    /// True if the entity is soft-deleted, otherwise false.
     /// </summary>
     bool Deleted { get; set; }
 
     /// <summary>
-    /// Time at which the entity was soft deleted in UTC.
+    /// Time at which the entity was soft-deleted in UTC.
     /// </summary>
     /// <remarks>
-    /// Value will be null if the entity never has been soft deleted, or it is restored.
+    /// The value will be null if the entity has never been soft-deleted, or it is restored.
     /// </remarks>
     DateTimeOffset? DeletedAt { get; set; }
 
     /// <summary>
-    /// Marks a entity as soft deleted.
+    /// Marks an entity as soft deleted.
     /// </summary>
     void SoftDelete() => Deleted = true;
 }

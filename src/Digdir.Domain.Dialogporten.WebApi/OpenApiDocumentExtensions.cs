@@ -7,7 +7,7 @@ namespace Digdir.Domain.Dialogporten.WebApi;
 public static class OpenApiDocumentExtensions
 {
     /// <summary>
-    /// This is a workaround for a bug/weird behaviour in FastEndpoints where examples
+    /// This is a workaround for a bug/weird behavior in FastEndpoints where examples
     /// to the RequestExamples array are not added to the OpenAPI document.
     /// Each SwaggerConfig file implements a GetExample method that returns the example
     ///

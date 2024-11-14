@@ -16,18 +16,20 @@ import { getGraphqlParty } from '../performancetest_data/graphql-search.js';
  * @param {Object} paramsWithToken - The parameters with token.
  * @returns {void}
  */
-function retrieveDialogContent(response, paramsWithToken) {
+function retrieveDialogContent(response, paramsWithToken, getFunction = getEU) {
     const items = response.json().items;
     if (!items?.length) return;
         
     const dialogId = items[0].id;
     if (!dialogId) return;
         
-    getContent(dialogId, paramsWithToken, 'get dialog');
-    getContentChain(dialogId, paramsWithToken, 'get dialog activities', 'get dialog activity', '/activities/')
-    getContentChain(dialogId, paramsWithToken, 'get seenlogs', 'get seenlog', '/seenlog/')
-    getContent(dialogId, paramsWithToken, 'get labellog', '/labellog');
-    getContentChain(dialogId, paramsWithToken, 'get transmissions', 'get transmission', '/transmissions/')
+    getContent(dialogId, paramsWithToken, 'get dialog', '', getFunction);
+    getContentChain(dialogId, paramsWithToken, 'get dialog activities', 'get dialog activity', '/activities/', getFunction);
+    getContentChain(dialogId, paramsWithToken, 'get seenlogs', 'get seenlog', '/seenlog/', getFunction);
+    if (getFunction == getEU) {
+        getContent(dialogId, paramsWithToken, 'get labellog', '/labellog', getFunction);
+    }
+    getContentChain(dialogId, paramsWithToken, 'get transmissions', 'get transmission', '/transmissions/', getFunction);
 }
 
 /**
@@ -61,12 +63,12 @@ export function enduserSearch(enduser) {
  * @param {string} path - The path to append to the URL. Can be empty or /labellog.
  * @returns {void}
  */
-export function getContent(dialogId, paramsWithToken, tag, path = '') {
+export function getContent(dialogId, paramsWithToken, tag, path = '', getFunction = getEU) {
     const listParams = {
         ...paramsWithToken,
         tags: { ...paramsWithToken.tags, name: tag }
     };
-    getUrl('dialogs/' + dialogId + path, listParams);
+    getUrl('dialogs/' + dialogId + path, listParams, getFunction);
 }
 
 /**
@@ -78,19 +80,19 @@ export function getContent(dialogId, paramsWithToken, tag, path = '') {
  * @param {string} endpoint - The endpoint to append to the URL.
  * @returns {void}
  */
-export function getContentChain(dialogId, paramsWithToken, tag, subtag, endpoint) {
+export function getContentChain(dialogId, paramsWithToken, tag, subtag, endpoint, getFunction = getEU) {
     const listParams = {
         ...paramsWithToken,
         tags: { ...paramsWithToken.tags, name: tag }
     };
-    let d = getUrl('dialogs/' + dialogId + endpoint, listParams);
+    let d = getUrl('dialogs/' + dialogId + endpoint, listParams, getFunction);
     let json = d.json();
     if (json.length > 0) {
         const detailParams = {
             ...paramsWithToken,
             tags: { ...paramsWithToken.tags, name: subtag }
         };
-        getUrl('dialogs/' + dialogId + endpoint + randomItem(json).id, detailParams);
+        getUrl('dialogs/' + dialogId + endpoint + randomItem(json).id, detailParams, getFunction);
     }
 }
 
@@ -100,8 +102,8 @@ export function getContentChain(dialogId, paramsWithToken, tag, subtag, endpoint
  * @param {Object} paramsWithToken - The parameters with token.
  * @returns {Object} The response object.
  */
-export function getUrl(url, paramsWithToken) {
-    let r = getEU(url, paramsWithToken);
+export function getUrl(url, paramsWithToken, getFunction = getEU) {
+    let r = getFunction(url, paramsWithToken); 
     expectStatusFor(r).to.equal(200);
     expect(r, 'response').to.have.validJsonBody();
     return r;
@@ -114,12 +116,14 @@ export function getUrl(url, paramsWithToken) {
  * @returns {void}
  */
 export function graphqlSearch(enduser) {
+    let traceparent = uuidv4();
     let paramsWithToken = {
         headers: {
             Authorization: "Bearer " + enduser.token,
-            traceparent: uuidv4()
+            traceparent: traceparent,
+            'User-Agent': 'dialogporten-k6-graphql-search'
         },
-        tags: { name: 'graphql search' }
+        tags: { name: 'graphql search', traceparent: traceparent }
     };
     describe('Perform graphql dialog list', () => {
         let r = postGQ(getGraphqlParty(enduser.ssn), paramsWithToken);
@@ -134,12 +138,13 @@ export function graphqlSearch(enduser) {
  * @param {*} enduser 
  */
 export function serviceownerSearch(serviceowner, enduser, tag_name) {
+    let traceparent = uuidv4();
     let paramsWithToken = {
         headers: {
             Authorization: "Bearer " + serviceowner.token,
-            traceparent: uuidv4()
+            traceparent: traceparent
         },
-        tags: { name: tag_name }
+        tags: { name: tag_name, traceparent: traceparent, enduser: enduser.ssn }
     }
 
     let enduserid = encodeURIComponent(`urn:altinn:person:identifier-no:${enduser.ssn}`);
@@ -149,5 +154,6 @@ export function serviceownerSearch(serviceowner, enduser, tag_name) {
         let r = getSO('dialogs' + defaultFilter, paramsWithToken);
         expectStatusFor(r).to.equal(200);
         expect(r, 'response').to.have.validJsonBody();
+        retrieveDialogContent(r, paramsWithToken, getSO);
     });
 }

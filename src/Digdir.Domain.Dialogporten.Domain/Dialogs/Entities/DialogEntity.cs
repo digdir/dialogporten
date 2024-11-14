@@ -9,7 +9,6 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Events;
 using Digdir.Library.Entity.Abstractions;
 using Digdir.Library.Entity.Abstractions.Features.Aggregate;
-using Digdir.Library.Entity.Abstractions.Features.Identifiable;
 using Digdir.Library.Entity.Abstractions.Features.SoftDeletable;
 using Digdir.Library.Entity.Abstractions.Features.Versionable;
 

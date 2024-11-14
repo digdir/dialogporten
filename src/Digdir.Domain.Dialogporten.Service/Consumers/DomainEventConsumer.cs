@@ -1,41 +1,24 @@
 using Digdir.Domain.Dialogporten.Domain.Common.EventPublisher;
-using Digdir.Domain.Dialogporten.Infrastructure.Persistence.IdempotentNotifications;
 using MassTransit;
 using MediatR;
 
 namespace Digdir.Domain.Dialogporten.Service.Consumers;
 
-public sealed class DomainEventConsumer<T> : IConsumer<T>
-    where T : class, IDomainEvent
+public sealed class DomainEventConsumer<THandler, TEvent>(THandler handler) : IConsumer<TEvent>
+    where THandler : INotificationHandler<TEvent>
+    where TEvent : class, IDomainEvent
 {
-    private readonly IPublisher _publisher;
-    private readonly INotificationProcessingContextFactory _notificationProcessingContextFactory;
-
-    public DomainEventConsumer(IPublisher publisher, INotificationProcessingContextFactory notificationProcessingContextFactory)
-    {
-        _publisher = publisher ?? throw new ArgumentNullException(nameof(publisher));
-        _notificationProcessingContextFactory = notificationProcessingContextFactory ?? throw new ArgumentNullException(nameof(notificationProcessingContextFactory));
-    }
-
-    public async Task Consume(ConsumeContext<T> context)
-    {
-        var isFirstAttempt = IsFirstAttempt(context);
-        await using var notificationContext = await _notificationProcessingContextFactory
-            .CreateContext(context.Message, isFirstAttempt, context.CancellationToken);
-        await _publisher.Publish(context.Message, context.CancellationToken);
-        await notificationContext.Ack(context.CancellationToken);
-    }
-
-    private static bool IsFirstAttempt(ConsumeContext<T> context)
-        => (context.GetRetryAttempt() + context.GetRedeliveryCount()) == 0;
+    private readonly THandler _handler = handler ?? throw new ArgumentNullException(nameof(handler));
+    public Task Consume(ConsumeContext<TEvent> context) => _handler.Handle(context.Message, context.CancellationToken);
 }
 
-public sealed class DomainEventConsumerDefinition<T> : ConsumerDefinition<DomainEventConsumer<T>>
-    where T : class, IDomainEvent
+public sealed class DomainEventConsumerDefinition<THandler, TEvent> : ConsumerDefinition<DomainEventConsumer<THandler, TEvent>>
+    where THandler : INotificationHandler<TEvent>
+    where TEvent : class, IDomainEvent
 {
     protected override void ConfigureConsumer(
         IReceiveEndpointConfigurator endpointConfigurator,
-        IConsumerConfigurator<DomainEventConsumer<T>> consumerConfigurator,
+        IConsumerConfigurator<DomainEventConsumer<THandler, TEvent>> consumerConfigurator,
         IRegistrationContext context)
     {
         endpointConfigurator.UseDelayedRedelivery(r => r.Intervals(
