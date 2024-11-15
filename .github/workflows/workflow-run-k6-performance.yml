@@ -46,7 +46,8 @@ jobs:
     - name: Run K6 tests (${{ inputs.testSuitePath }})
       run: |
         ./tests/k6/tests/scripts/generate_tokens.sh ./tests/k6/tests/performancetest_data ${{ inputs.tokens }} 
-        k6 run ${{ inputs.testSuitePath }} --quiet --log-output=stdout --include-system-env-vars --vus=${{ inputs.vus }} --duration=${{ inputs.duration }} --out=cloud
+        k6 run ${{ inputs.testSuitePath }} --quiet --log-output=stdout --include-system-env-vars --vus=${{ inputs.vus }} --duration=${{ inputs.duration }} --out=cloud --out csv=./results.csv
+        grep http_req_duration test_results.csv | sort --field-separator=',' --key=3 -nr | head -50 
       env:
         API_ENVIRONMENT: ${{ inputs.environment }}
         API_VERSION: ${{ inputs.apiVersion }}

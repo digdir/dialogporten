@@ -23,7 +23,6 @@ import { sentinelPerformanceValue as sentinelValue } from '../../../common/confi
  */
 function getDialogs(serviceOwner) {
     var traceparent = uuidv4();
-    console.log("Searching for dialogs to purge, tracevalue: " + traceparent);
     var paramsWithToken = {
         headers: {
             Authorization: "Bearer " + serviceOwner.token,
@@ -34,7 +33,7 @@ function getDialogs(serviceOwner) {
     let continuationToken = "";
     let dialogIdsToPurge = [];
     do {
-        let r = getSO('dialogs/?Search=' + sentinelValue + continuationToken, paramsWithToken);
+        let r = getSO('dialogs/?Search=' + encodeURIComponent(sentinelValue) + continuationToken, paramsWithToken);
         expectStatusFor(r).to.equal(200);
         expect(r, 'response').to.have.validJsonBody();
         let response = r.json();
@@ -49,12 +48,7 @@ function getDialogs(serviceOwner) {
             }
         }
         console.log("Found " + dialogIdsToPurge.length + " unpurged dialogs");  
-        if (dialogIdsToPurge.length < 200) {
-            hasNextPage = response.hasNextPage;
-        }
-        else {
-            hasNextPage = false;
-        }
+        hasNextPage = response.hasNextPage;
     } while (hasNextPage);
     return dialogIdsToPurge;
 }
@@ -107,11 +101,13 @@ export default function(serviceOwners) {
  * @param {Object} serviceOwner - The service owner object.
  */
 export function purgeDialogs(serviceOwner) {
+    var traceparent = uuidv4();
     var paramsWithToken = {
         headers: {
-            Authorization: "Bearer " + serviceOwner.token
-        },
-        tags: { name: 'purge dialog' }
+            Authorization: "Bearer " + serviceOwner.token,
+            traceparent: traceparent
+            },
+        tags: { name: 'purge dialog', traceparent: traceparent }
     }
     describe('Post run: checking for unpurged dialogs', () => {
         let dialogIdsToPurge = serviceOwner.dialogIdsToPurge;

@@ -8,7 +8,6 @@ import { describe } from '../../common/describe.js';
 import { getEU, postGQ, getSO } from '../../common/request.js';
 import { getGraphqlParty } from '../performancetest_data/graphql-search.js';
 
-
 /**
  * Retrieves the content for a dialog.
  * Get dialog, dialog activities, seenlogs, labellog, and transmissions.
@@ -38,12 +37,13 @@ function retrieveDialogContent(response, paramsWithToken, getFunction = getEU) {
  * @returns {void}
  */
 export function enduserSearch(enduser) {
+    var traceparent = uuidv4();
     let paramsWithToken = {
         headers: {
             Authorization: "Bearer " + enduser.token,
-            traceparent: uuidv4()
+            traceparent: traceparent
         },
-        tags: { name: 'enduser search' }
+        tags: { name: 'enduser search', traceparent: traceparent } 
     }
     let defaultParty = "urn:altinn:person:identifier-no:" + enduser.ssn;
     let defaultFilter = "?Party=" + defaultParty;
@@ -60,7 +60,8 @@ export function enduserSearch(enduser) {
  * @param {string} dialogId - The dialog id.
  * @param {Object} paramsWithToken - The parameters with token.
  * @param {string} tag - Tagging the request.
- * @param {string} path - The path to append to the URL. Can be empty or /labellog.
+ * @param {string} path - The path to append to the URL. Can be empty or /labellog. 
+ * @param {function} getFunction - The get function to use.
  * @returns {void}
  */
 export function getContent(dialogId, paramsWithToken, tag, path = '', getFunction = getEU) {
@@ -77,7 +78,8 @@ export function getContent(dialogId, paramsWithToken, tag, path = '', getFunctio
  * @param {Object} paramsWithToken - The parameters with token.
  * @param {string} tag - Tagging the request.
  * @param {string} subtag - Tagging the sub request.
- * @param {string} endpoint - The endpoint to append to the URL.
+ * @param {string} endpoint - The endpoint to append to the URL.   
+ * @param {function} getFunction - The get function to use.
  * @returns {void}
  */
 export function getContentChain(dialogId, paramsWithToken, tag, subtag, endpoint, getFunction = getEU) {
@@ -100,6 +102,7 @@ export function getContentChain(dialogId, paramsWithToken, tag, subtag, endpoint
  * Performs a GET request to the specified URL with the provided parameters.
  * @param {string} url - The URL to send the GET request to.
  * @param {Object} paramsWithToken - The parameters with token.
+ * @param {function} getFunction - The get function to use.
  * @returns {Object} The response object.
  */
 export function getUrl(url, paramsWithToken, getFunction = getEU) {
@@ -135,9 +138,10 @@ export function graphqlSearch(enduser) {
 /**
  * Performs a serviceowner search.
  * @param {P} serviceowner 
- * @param {*} enduser 
+ * @param {*} enduser
+ * @param {*} tag_name 
  */
-export function serviceownerSearch(serviceowner, enduser, tag_name) {
+export function serviceownerSearch(serviceowner, enduser, tag_name, doSubqueries = true) {
     let traceparent = uuidv4();
     let paramsWithToken = {
         headers: {
@@ -154,6 +158,9 @@ export function serviceownerSearch(serviceowner, enduser, tag_name) {
         let r = getSO('dialogs' + defaultFilter, paramsWithToken);
         expectStatusFor(r).to.equal(200);
         expect(r, 'response').to.have.validJsonBody();
-        retrieveDialogContent(r, paramsWithToken, getSO);
+        if (doSubqueries) {
+            retrieveDialogContent(r, paramsWithToken, getSO);
+        }
+        return r
     });
 }
