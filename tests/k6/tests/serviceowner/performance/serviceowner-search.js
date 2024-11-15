@@ -1,7 +1,7 @@
 import { randomItem } from 'https://jslib.k6.io/k6-utils/1.4.0/index.js';
 import { serviceownerSearch } from '../../performancetest_common/simpleSearch.js'
 import { getDefaultThresholds } from '../../performancetest_common/getDefaultThresholds.js';
-import { serviceOwners, endUsersWithTokens } from '../../performancetest_common/readTestdata.js';
+import { serviceOwners, endUsers } from '../../performancetest_common/readTestdata.js';
 
 const tag_name = 'serviceowner search';
 
@@ -23,7 +23,7 @@ export let options = {
  * In multi user mode, a random service owner and end user with token is used.
  */
 export default function() {
-    if (!endUsersWithTokens || endUsersWithTokens.length === 0) {
+    if (!endUsers || endUsers.length === 0) {
         throw new Error('No end users loaded for testing');
     } 
     if (!serviceOwners || serviceOwners.length === 0) {
@@ -32,10 +32,10 @@ export default function() {
 
     const isSingleUserMode = (options.vus ?? 1) === 1 && (options.iterations ?? 1) === 1 && (options.duration ?? 0) === 0;
     if (isSingleUserMode) {
-        serviceownerSearch(serviceOwners[0], endUsersWithTokens[0], tag_name);
+        serviceownerSearch(serviceOwners[0], endUsers[0], tag_name);
     }
     else {
-        serviceownerSearch(randomItem(serviceOwners), randomItem(endUsersWithTokens), tag_name);
+        serviceownerSearch(randomItem(serviceOwners), randomItem(endUsers), tag_name);
     }
 }
 
