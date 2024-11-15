@@ -13,11 +13,11 @@ internal sealed class DevelopmentSubjectResourceSyncHostedService : IHostedServi
     private readonly IHostEnvironment _environment;
     private readonly IConfiguration _configuration;
 
-    public DevelopmentSubjectResourceSyncHostedService(IServiceProvider serviceProvider, IHostEnvironment environment, IConfiguration _configuration)
+    public DevelopmentSubjectResourceSyncHostedService(IServiceProvider serviceProvider, IHostEnvironment environment, IConfiguration configuration)
     {
         _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
         _environment = environment ?? throw new ArgumentNullException(nameof(environment));
-        this._configuration = _configuration;
+        _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
     }
 
     public async Task StartAsync(CancellationToken cancellationToken)
