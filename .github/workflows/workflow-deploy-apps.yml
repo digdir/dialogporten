@@ -243,6 +243,7 @@ jobs:
       matrix:
         include:
           - name: sync-subject-resource-mappings-job
+          - name: sync-resource-policy-information-job
     steps:
       - name: "Checkout GitHub Action"
         uses: actions/checkout@v4
