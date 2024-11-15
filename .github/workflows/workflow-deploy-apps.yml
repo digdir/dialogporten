@@ -85,7 +85,7 @@ jobs:
           template: ./.azure/applications/web-api-migration-job/main.bicep
           resourceGroupName: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
           deploymentMode: Incremental
-          deploymentName: "dp-be-${{ inputs.environment }}-web-api-migration-job-${{ inputs.version }}"
+          deploymentName: "web-api-migration-job-${{ inputs.version }}"
           region: ${{ inputs.region }}
           failOnStdErr: false
           additionalArguments: '--what-if'
@@ -106,7 +106,7 @@ jobs:
           template: ./.azure/applications/web-api-migration-job/main.bicep
           resourceGroupName: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
           deploymentMode: Incremental
-          deploymentName: "dp-be-${{ inputs.environment }}-web-api-migration-job-${{ inputs.version }}"
+          deploymentName: "web-api-migration-job-${{ inputs.version }}"
           region: ${{ inputs.region }}
           failOnStdErr: false
           parameters: ./.azure/applications/web-api-migration-job/${{ inputs.environment }}.bicepparam
@@ -183,7 +183,7 @@ jobs:
           template: ./.azure/applications/${{ matrix.name }}/main.bicep
           resourceGroupName: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
           deploymentMode: Incremental
-          deploymentName: dp-be-${{ inputs.environment }}-${{ matrix.name }}-${{ inputs.version }}
+          deploymentName: "${{ matrix.name }}-${{ inputs.version }}"
           region: ${{ inputs.region }}
           failOnStdErr: false
           additionalArguments: '--what-if'
@@ -208,7 +208,7 @@ jobs:
           template: ./.azure/applications/${{ matrix.name }}/main.bicep
           resourceGroupName: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
           deploymentMode: Incremental
-          deploymentName: dp-be-${{ inputs.environment }}-${{ matrix.name }}-${{ inputs.version }}
+          deploymentName: ${{ matrix.name }}-${{ inputs.version }}
           region: ${{ inputs.region }}
           failOnStdErr: false
           parameters: ./.azure/applications/${{ matrix.name }}/${{ inputs.environment }}.bicepparam
@@ -229,7 +229,7 @@ jobs:
         run: az logout
 
   deploy-jobs:
-    name: Deploy jobs to ${{ inputs.environment }}
+    name: Deploy job ${{ matrix.name }} to ${{ inputs.environment }}
     runs-on: ubuntu-latest
     # Should run even though the migration job was skipped
     if: ${{ always() && !failure() && !cancelled() }}
@@ -271,7 +271,7 @@ jobs:
           template: ./.azure/applications/${{ matrix.name }}/main.bicep
           resourceGroupName: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
           deploymentMode: Incremental
-          deploymentName: dp-be-${{ inputs.environment }}-${{ matrix.name }}-${{ inputs.version }}
+          deploymentName: ${{ matrix.name }}-${{ inputs.version }}
           region: ${{ inputs.region }}
           failOnStdErr: false
           additionalArguments: '--what-if'
@@ -293,7 +293,7 @@ jobs:
           template: ./.azure/applications/${{ matrix.name }}/main.bicep
           resourceGroupName: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
           deploymentMode: Incremental
-          deploymentName: dp-be-${{ inputs.environment }}-${{ matrix.name }}-${{ inputs.version }}
+          deploymentName: ${{ matrix.name }}-${{ inputs.version }}
           region: ${{ inputs.region }}
           failOnStdErr: false
           parameters: ./.azure/applications/${{ matrix.name }}/${{ inputs.environment }}.bicepparam
