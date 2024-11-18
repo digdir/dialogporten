@@ -3,6 +3,10 @@ env:
   AZ_CLI_VERSION: 2.64.0
 on:
   workflow_call:
+    outputs:
+      deployment_executed:
+        description: "Indicates if the deployment was actually executed"
+        value: ${{ jobs.deploy-apps.result == 'success' }}
     secrets:
       AZURE_CLIENT_ID:
         required: true
