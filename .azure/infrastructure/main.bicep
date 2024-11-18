@@ -326,6 +326,18 @@ module keyVaultReaderAccessPolicy '../modules/keyvault/addReaderRoles.bicep' = {
   }
 }
 
+module monitorWorkspace '../modules/monitor-workspace/main.bicep' = {
+  scope: resourceGroup
+  name: 'monitorWorkspace'
+  params: {
+    namePrefix: namePrefix
+    location: location
+    subnetId: vnet.outputs.monitorSubnetId
+    vnetId: vnet.outputs.virtualNetworkId
+    tags: tags
+  }
+}
+
 output resourceGroupName string = resourceGroup.name
 output containerAppEnvId string = containerAppEnv.outputs.containerAppEnvId
 output environmentKeyVaultName string = environmentKeyVault.outputs.name
