@@ -7,7 +7,7 @@ param appSettings object
 @description('The current app settings of the web application')
 param currentAppSettings object
 
-resource webApp 'Microsoft.Web/sites@2024-04-01' existing = {
+resource webApp 'Microsoft.Web/sites@2023-12-01' existing = {
   name: webAppName
 }
 
