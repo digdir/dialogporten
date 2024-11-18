@@ -97,7 +97,7 @@ resource applicationInsights 'Microsoft.Insights/components@2020-02-02' existing
 
 var functionAppNameMaxLength = 40
 var functionAppName = uniqueResourceName('${namePrefix}-slacknotifier-fa', functionAppNameMaxLength)
-resource functionApp 'Microsoft.Web/sites@2024-04-01' = {
+resource functionApp 'Microsoft.Web/sites@2023-12-01' = {
   name: functionAppName
   location: location
   kind: 'functionapp'
