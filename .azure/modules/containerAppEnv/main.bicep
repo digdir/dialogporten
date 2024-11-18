@@ -13,6 +13,12 @@ param tags object
 @description('The name of the Application Insights workspace')
 param appInsightWorkspaceName string
 
+@description('The Application Insights connection string')
+param appInsightsConnectionString string
+
+@description('The ID of the Azure Monitor workspace')
+param monitorWorkspaceId string
+
 resource appInsightsWorkspace 'Microsoft.OperationalInsights/workspaces@2023-09-01' existing = {
   name: appInsightWorkspaceName
 }
@@ -31,6 +37,25 @@ resource containerAppEnv 'Microsoft.App/managedEnvironments@2024-03-01' = {
     vnetConfiguration: {
       infrastructureSubnetId: subnetId
       internal: false
+    }
+    appInsightsConfiguration: {
+      connectionString: appInsightsConnectionString
+    }
+    openTelemetryConfiguration: {
+      tracesConfiguration: {
+        destinations: ['appInsights']
+      }
+      logsConfiguration: {
+        destinations: ['appInsights']
+      }
+      metricsConfiguration: {
+        destinations: ['prometheus']
+      }
+      destinationsConfiguration: {
+        prometheusConfiguration: {
+          monitorWorkspaceId: monitorWorkspaceId
+        }
+      }
     }
   }
   tags: tags
