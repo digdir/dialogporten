@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.35.0](https://github.com/digdir/dialogporten/compare/v1.34.0...v1.35.0) (2024-11-15)
+
+
+### Features
+
+* Synchronization of resource policy metadata ([#1411](https://github.com/digdir/dialogporten/issues/1411)) ([193b764](https://github.com/digdir/dialogporten/commit/193b7645ff45155cedc9a952e4322c5e55642cf8))
+
 ## [1.34.0](https://github.com/digdir/dialogporten/compare/v1.33.1...v1.34.0) (2024-11-14)
 
 
