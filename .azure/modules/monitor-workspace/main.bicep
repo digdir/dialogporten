@@ -62,7 +62,6 @@ module privateDnsZoneGroup '../privateDnsZoneGroup/main.bicep' = {
   name: '${namePrefix}-monitor-privateDnsZoneGroup'
   dependsOn: [
     privateDnsZone
-    monitorPrivateEndpoint
   ]
   params: {
     name: 'default'
