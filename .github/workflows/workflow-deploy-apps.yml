@@ -6,7 +6,7 @@ on:
     outputs:
       deployment_executed:
         description: "Indicates if the deployment was actually executed"
-        value: ${{ jobs.deploy-apps.result == 'success' }}
+        value: ${{ jobs.deploy-apps.result == 'success' && jobs.deploy-jobs.result == 'success' && !inputs.dryRun }}
     secrets:
       AZURE_CLIENT_ID:
         required: true
