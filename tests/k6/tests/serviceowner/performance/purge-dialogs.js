@@ -15,6 +15,8 @@ import { getDefaultThresholds } from '../../performancetest_common/getDefaultThr
 import { describe } from '../../../common/describe.js';
 import { sentinelPerformanceValue as sentinelValue } from '../../../common/config.js';
 
+const traceCalls = (__ENV.traceCalls ?? 'false') === 'true';
+
 /**
  * Retrieves the dialog ids to purge.
  * 
@@ -27,12 +29,19 @@ function getDialogs(serviceOwner) {
         headers: {
             Authorization: "Bearer " + serviceOwner.token,
             traceparent: traceparent
-        }
+        },
+        tags: { name: 'search dialogs' }
     }
+
     let hasNextPage = false;
     let continuationToken = "";
     let dialogIdsToPurge = [];
     do {
+        traceparent = uuidv4();
+        paramsWithToken.headers.traceparent = traceparent;
+        if (traceCalls) {
+            paramsWithToken.tags.traceparent = traceparent;
+        }
         let r = getSO('dialogs/?Search=' + encodeURIComponent(sentinelValue) + continuationToken, paramsWithToken);
         expectStatusFor(r).to.equal(200);
         expect(r, 'response').to.have.validJsonBody();
@@ -107,13 +116,21 @@ export function purgeDialogs(serviceOwner) {
             Authorization: "Bearer " + serviceOwner.token,
             traceparent: traceparent
             },
-        tags: { name: 'purge dialog', traceparent: traceparent }
+        tags: { name: 'purge dialog'}
     }
+
+    
+
     describe('Post run: checking for unpurged dialogs', () => {
         let dialogIdsToPurge = serviceOwner.dialogIdsToPurge;
         if (dialogIdsToPurge.length > 0) {
             console.error("Found " + dialogIdsToPurge.length + " unpurged dialogs, make sure that all tests clean up after themselves. Purging ...");
             for(var i = dialogIdsToPurge.length - 1; i>=0; i--) {
+                traceparent = uuidv4();
+                paramsWithToken.headers.traceparent = traceparent;
+                if (traceCalls) {
+                    paramsWithToken.tags.traceparent = traceparent;
+                }
                 let r = purgeSO('dialogs/' + dialogIdsToPurge[i], paramsWithToken);
                 if (r.status != 204) {
                     console.error("Failed to purge dialog with id: " + dialogIdsToPurge[i]);

@@ -18,7 +18,6 @@ import { getGraphqlParty } from '../performancetest_data/graphql-search.js';
 function retrieveDialogContent(response, paramsWithToken, getFunction = getEU) {
     const items = response.json().items;
     if (!items?.length) return;
-        
     const dialogId = items[0].id;
     if (!dialogId) return;
         
@@ -31,19 +30,29 @@ function retrieveDialogContent(response, paramsWithToken, getFunction = getEU) {
     getContentChain(dialogId, paramsWithToken, 'get transmissions', 'get transmission', '/transmissions/', getFunction);
 }
 
+function log(items, traceCalls, enduser) {
+    if (items?.length && traceCalls) {
+        console.log("Found " + items.length + " dialogs" + " for enduser " + enduser.ssn);
+    } 
+}   
+
 /**
  * Performs a enduser search.
  * @param {Object} enduser - The end user.
  * @returns {void}
  */
-export function enduserSearch(enduser) {
+export function enduserSearch(enduser, traceCalls) {
     var traceparent = uuidv4();
     let paramsWithToken = {
         headers: {
             Authorization: "Bearer " + enduser.token,
             traceparent: traceparent
         },
-        tags: { name: 'enduser search', traceparent: traceparent } 
+        tags: { name: 'enduser search' } 
+    }
+    if (traceCalls) {
+        paramsWithToken.tags.traceparent = traceparent;
+        paramsWithToken.tags.enduser = enduser.ssn;
     }
     let defaultParty = "urn:altinn:person:identifier-no:" + enduser.ssn;
     let defaultFilter = "?Party=" + defaultParty;
@@ -52,6 +61,7 @@ export function enduserSearch(enduser) {
         expectStatusFor(r).to.equal(200);
         expect(r, 'response').to.have.validJsonBody();
         retrieveDialogContent(r, paramsWithToken);
+        log(r.json().items, traceCalls, enduser);
     });
 }
 
@@ -118,7 +128,7 @@ export function getUrl(url, paramsWithToken, getFunction = getEU) {
  * @param {Object} enduser - The enduser object containing the token.
  * @returns {void}
  */
-export function graphqlSearch(enduser) {
+export function graphqlSearch(enduser, traceCalls) {
     let traceparent = uuidv4();
     let paramsWithToken = {
         headers: {
@@ -126,12 +136,17 @@ export function graphqlSearch(enduser) {
             traceparent: traceparent,
             'User-Agent': 'dialogporten-k6-graphql-search'
         },
-        tags: { name: 'graphql search', traceparent: traceparent }
+        tags: { name: 'graphql search' }
     };
+    if (traceCalls) {
+        paramsWithToken.tags.traceparent = traceparent;
+        paramsWithToken.tags.enduser = enduser.ssn;
+    }
     describe('Perform graphql dialog list', () => {
         let r = postGQ(getGraphqlParty(enduser.ssn), paramsWithToken);
         expectStatusFor(r).to.equal(200);
         expect(r, 'response').to.have.validJsonBody();
+        log(r.json().data.searchDialogs.items, traceCalls, enduser);
     });
 }
 
@@ -141,14 +156,18 @@ export function graphqlSearch(enduser) {
  * @param {*} enduser
  * @param {*} tag_name 
  */
-export function serviceownerSearch(serviceowner, enduser, tag_name, doSubqueries = true) {
+export function serviceownerSearch(serviceowner, enduser, tag_name, traceCalls, doSubqueries = true) {
     let traceparent = uuidv4();
     let paramsWithToken = {
         headers: {
             Authorization: "Bearer " + serviceowner.token,
             traceparent: traceparent
         },
-        tags: { name: tag_name, traceparent: traceparent, enduser: enduser.ssn }
+        tags: { name: tag_name }
+    }
+
+    if (traceCalls) {
+        paramsWithToken.tags.traceparent = traceparent;
     }
 
     let enduserid = encodeURIComponent(`urn:altinn:person:identifier-no:${enduser.ssn}`);
@@ -161,6 +180,7 @@ export function serviceownerSearch(serviceowner, enduser, tag_name, doSubqueries
         if (doSubqueries) {
             retrieveDialogContent(r, paramsWithToken, getSO);
         }
+        log(r.json().items, traceCalls, enduser);
         return r
     });
 }

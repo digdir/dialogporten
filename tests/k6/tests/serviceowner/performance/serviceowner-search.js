@@ -4,6 +4,8 @@ import { getDefaultThresholds } from '../../performancetest_common/getDefaultThr
 import { serviceOwners, endUsers } from '../../performancetest_common/readTestdata.js';
 
 const tag_name = 'serviceowner search';
+const isSingleUserMode = (__ENV.isSingleUserMode ?? 'false') === 'true';
+const traceCalls = (__ENV.traceCalls ?? 'false') === 'true';
 
 export let options = {
     summaryTrendStats: ['avg', 'min', 'med', 'max', 'p(95)', 'p(99)', 'p(99.5)', 'p(99.9)', 'count'],
@@ -30,12 +32,14 @@ export default function() {
         throw new Error('No service owners loaded for testing');
     }
 
-    const isSingleUserMode = (options.vus ?? 1) === 1 && (options.iterations ?? 1) === 1 && (options.duration ?? 0) === 0;
     if (isSingleUserMode) {
-        serviceownerSearch(serviceOwners[0], endUsers[0], tag_name);
+        serviceownerSearch(serviceOwners[0], endUsers[0], tag_name, traceCalls);
     }
     else {
-        serviceownerSearch(randomItem(serviceOwners), randomItem(endUsers), tag_name);
+        let serviceOwner = randomItem(serviceOwners);
+        for (let i = 0; i < endUsers.length; i++) {
+            serviceownerSearch(serviceOwner, endUsers[i], tag_name, traceCalls);
+        }
     }
 }
 
