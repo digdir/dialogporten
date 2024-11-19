@@ -269,30 +269,30 @@ resource monitorNSG 'Microsoft.Network/networkSecurityGroups@2024-03-01' = {
   properties: {
     securityRules: [
       {
-        name: 'AllowAnyCustomAnyInbound'
+        name: 'AllowAzureMonitorInbound'
         type: 'Microsoft.Network/networkSecurityGroups/securityRules'
         properties: {
-          protocol: '*'
+          protocol: 'Tcp'
           sourcePortRange: '*'
-          destinationPortRange: '*'
-          sourceAddressPrefix: '*'
+          destinationPortRanges: ['443']
+          sourceAddressPrefix: 'AzureMonitor'
           destinationAddressPrefix: '*'
           access: 'Allow'
-          priority: 100
+          priority: 120
           direction: 'Inbound'
         }
       }
       {
-        name: 'AllowAnyCustomAnyOutbound'
+        name: 'AllowAzureMonitorOutbound'
         type: 'Microsoft.Network/networkSecurityGroups/securityRules'
         properties: {
-          protocol: '*'
+          protocol: 'Tcp'
           sourcePortRange: '*'
-          destinationPortRange: '*'
+          destinationPortRanges: ['443']
           sourceAddressPrefix: '*'
-          destinationAddressPrefix: '*'
+          destinationAddressPrefix: 'AzureMonitor'
           access: 'Allow'
-          priority: 100
+          priority: 120
           direction: 'Outbound'
         }
       }
