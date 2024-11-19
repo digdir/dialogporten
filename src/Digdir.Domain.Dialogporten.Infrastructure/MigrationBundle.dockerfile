@@ -4,6 +4,9 @@ WORKDIR /app
 FROM mcr.microsoft.com/dotnet/sdk:9.0.100@sha256:7d24e90a392e88eb56093e4eb325ff883ad609382a55d42f17fd557b997022ca AS build
 WORKDIR /src
 
+RUN dotnet tool install --global dotnet-ef
+ENV PATH $PATH:/root/.dotnet/tools
+
 COPY [".editorconfig", "."]
 COPY ["Directory.Build.props", "."]
 
@@ -20,8 +23,6 @@ COPY ["src/", "."]
 
 WORKDIR "/src/Digdir.Domain.Dialogporten.Infrastructure"
 RUN mkdir -p /app/publish
-RUN dotnet tool install --global dotnet-ef
-ENV PATH $PATH:/root/.dotnet/tools
 RUN dotnet ef migrations -v bundle -o /app/publish/efbundle
 
 FROM base AS final
