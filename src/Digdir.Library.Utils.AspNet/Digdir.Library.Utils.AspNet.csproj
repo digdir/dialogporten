@@ -14,7 +14,7 @@
         <PackageReference Include="System.Text.Json" Version="9.0.0" />
         <PackageReference Include="System.Drawing.Common" Version="9.0.0" />
         <PackageReference Include="Microsoft.Azure.AppConfiguration.AspNetCore" Version="8.0.0" />
-        <PackageReference Include="Npgsql.OpenTelemetry" Version="8.0.5" />
+        <PackageReference Include="Npgsql.OpenTelemetry" Version="9.0.0" />
         <PackageReference Include="OpenTelemetry" Version="1.10.0" />
         <PackageReference Include="OpenTelemetry.Instrumentation.Runtime" Version="1.9.0" />
     </ItemGroup>
