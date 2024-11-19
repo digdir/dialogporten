@@ -263,6 +263,44 @@ resource serviceBusNSG 'Microsoft.Network/networkSecurityGroups@2024-03-01' = {
   tags: tags
 }
 
+resource monitorNSG 'Microsoft.Network/networkSecurityGroups@2024-03-01' = {
+  name: '${namePrefix}-monitor-nsg'
+  location: location
+  properties: {
+    securityRules: [
+      {
+        name: 'AllowAzureMonitorInbound'
+        type: 'Microsoft.Network/networkSecurityGroups/securityRules'
+        properties: {
+          protocol: 'Tcp'
+          sourcePortRange: '*'
+          destinationPortRanges: ['443']
+          sourceAddressPrefix: 'AzureMonitor'
+          destinationAddressPrefix: '*'
+          access: 'Allow'
+          priority: 120
+          direction: 'Inbound'
+        }
+      }
+      {
+        name: 'AllowAzureMonitorOutbound'
+        type: 'Microsoft.Network/networkSecurityGroups/securityRules'
+        properties: {
+          protocol: 'Tcp'
+          sourcePortRange: '*'
+          destinationPortRanges: ['443']
+          sourceAddressPrefix: '*'
+          destinationAddressPrefix: 'AzureMonitor'
+          access: 'Allow'
+          priority: 120
+          direction: 'Outbound'
+        }
+      }
+    ]
+  }
+  tags: tags
+}
+
 resource virtualNetwork 'Microsoft.Network/virtualNetworks@2024-03-01' = {
   name: '${namePrefix}-vnet'
   location: location
@@ -334,6 +372,17 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2024-03-01' = {
           }
         }
       }
+      {
+        name: 'monitorSubnet'
+        properties: {
+          addressPrefix: '10.0.6.0/24'
+          networkSecurityGroup: {
+            id: monitorNSG.id
+          }
+          privateEndpointNetworkPolicies: 'Disabled'
+          privateLinkServiceNetworkPolicies: 'Enabled'
+        }
+      }
     ]
   }
   tags: tags
@@ -361,4 +410,9 @@ output redisSubnetId string = resourceId(
   'Microsoft.Network/virtualNetworks/subnets',
   virtualNetwork.name,
   'redisSubnet'
+)
+output monitorSubnetId string = resourceId(
+  'Microsoft.Network/virtualNetworks/subnets',
+  virtualNetwork.name,
+  'monitorSubnet'
 )
