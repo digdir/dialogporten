@@ -8,7 +8,7 @@ namespace Digdir.Domain.Dialogporten.Domain.Common.EventPublisher;
 public interface IDomainEvent : INotification
 {
     /// <summary>
-    /// The events identification. This can be used by consumers to ensure exactly once processing.
+    /// The events' identification. Consumers can use this to ensure exactly once processing.
     /// </summary>
     Guid EventId { get; }
 

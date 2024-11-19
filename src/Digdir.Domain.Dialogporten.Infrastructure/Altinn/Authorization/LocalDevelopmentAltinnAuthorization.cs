@@ -20,18 +20,16 @@ internal sealed class LocalDevelopmentAltinnAuthorization : IAltinnAuthorization
     [SuppressMessage("Performance", "CA1822:Mark members as static")]
     public Task<DialogDetailsAuthorizationResult> GetDialogDetailsAuthorization(
         DialogEntity dialogEntity,
-        CancellationToken __)
-    {
-        // Just allow everything
-        return Task.FromResult(new DialogDetailsAuthorizationResult { AuthorizedAltinnActions = dialogEntity.GetAltinnActions() });
-    }
+        CancellationToken __) =>
+        // Allow everything
+        Task.FromResult(new DialogDetailsAuthorizationResult { AuthorizedAltinnActions = dialogEntity.GetAltinnActions() });
 
     public async Task<DialogSearchAuthorizationResult> GetAuthorizedResourcesForSearch(List<string> constraintParties, List<string> serviceResources,
         CancellationToken cancellationToken = default)
     {
 
         // constraintParties and serviceResources are passed from the client as query parameters
-        // If one and/or the other is supplied, this will limit the resources and parties to the ones supplied
+        // If one and/or the other is supplied this will limit the resources and parties to the ones supplied
         var dialogData = await _db.Dialogs
             .Select(dialog => new { dialog.Party, dialog.ServiceResource })
             .WhereIf(constraintParties.Count != 0, dialog => constraintParties.Contains(dialog.Party))

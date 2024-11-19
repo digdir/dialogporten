@@ -4892,7 +4892,7 @@
             }
           },
           {
-            "description": "Filter by Display state ",
+            "description": "Filter by Display state",
             "explode": true,
             "in": "query",
             "name": "systemLabel",
@@ -6145,140 +6145,6 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "example": {
-                "Activities": [
-                  {
-                    "CreatedAt": null,
-                    "Description": [
-                      {
-                        "LanguageCode": "en",
-                        "Value": "Some description"
-                      },
-                      {
-                        "LanguageCode": "nb",
-                        "Value": "En beskrivelse"
-                      }
-                    ],
-                    "ExtendedType": null,
-                    "Id": "8b95d42d-d2b6-4c01-8ca0-a817a4b3c50d",
-                    "PerformedBy": {
-                      "ActorId": null,
-                      "ActorName": null,
-                      "ActorType": 2
-                    },
-                    "TransmissionId": null,
-                    "Type": 3
-                  }
-                ],
-                "ApiActions": [
-                  {
-                    "Action": "submit",
-                    "AuthorizationAttribute": null,
-                    "Endpoints": [
-                      {
-                        "Deprecated": false,
-                        "DocumentationUrl": "https://example.com/some-api-action-doc",
-                        "HttpMethod": 2,
-                        "Id": null,
-                        "RequestSchema": "https://example.com/some-api-action-request-schema",
-                        "ResponseSchema": "https://example.com/some-api-action-response-schema",
-                        "SunsetAt": null,
-                        "Url": "https://example.com/some-api-action",
-                        "Version": "20231015"
-                      }
-                    ],
-                    "Id": "948b07ba-1a82-403e-8eaa-2e5784af07a9"
-                  }
-                ],
-                "Attachments": [
-                  {
-                    "DisplayName": [
-                      {
-                        "LanguageCode": "en",
-                        "Value": "Some display name"
-                      }
-                    ],
-                    "Id": "02a72809-eddd-4192-864d-8f1755d72f4e",
-                    "Urls": [
-                      {
-                        "ConsumerType": 0,
-                        "Id": "858177cb-8584-4d10-a086-3a5defa7a6c3",
-                        "MediaType": null,
-                        "Url": "https://example.com/some-url"
-                      }
-                    ]
-                  }
-                ],
-                "Content": {
-                  "AdditionalInfo": {
-                    "MediaType": "text/markdown",
-                    "Value": [
-                      {
-                        "LanguageCode": "en",
-                        "Value": "Some description with *markdown* support"
-                      }
-                    ]
-                  },
-                  "ExtendedStatus": null,
-                  "MainContentReference": null,
-                  "SenderName": null,
-                  "Summary": {
-                    "MediaType": "text/plain",
-                    "Value": [
-                      {
-                        "LanguageCode": "en",
-                        "Value": "Some Summary"
-                      }
-                    ]
-                  },
-                  "Title": {
-                    "MediaType": "text/plain",
-                    "Value": [
-                      {
-                        "LanguageCode": "en",
-                        "Value": "Some title"
-                      }
-                    ]
-                  }
-                },
-                "DueAt": "2084-04-04T12:13:10.01344\u002B00:00",
-                "ExpiresAt": "2095-05-04T12:13:10.01344\u002B00:00",
-                "ExtendedStatus": "Some extended status",
-                "ExternalReference": "Some external reference",
-                "GuiActions": [
-                  {
-                    "Action": "submit",
-                    "AuthorizationAttribute": null,
-                    "HttpMethod": 1,
-                    "Id": "8c64ecc8-7678-44b2-8788-0b5852dd8fa0",
-                    "IsDeleteDialogAction": false,
-                    "Priority": 1,
-                    "Prompt": null,
-                    "Title": [
-                      {
-                        "LanguageCode": "en",
-                        "Value": "GUI action title"
-                      },
-                      {
-                        "LanguageCode": "nb",
-                        "Value": "GUI action-tittel"
-                      }
-                    ],
-                    "Url": "https://example.com/some-url"
-                  }
-                ],
-                "Progress": 42,
-                "SearchTags": [
-                  {
-                    "Value": "searchTag"
-                  },
-                  {
-                    "Value": "anotherSearchTag"
-                  }
-                ],
-                "Status": 1,
-                "VisibleFrom": "2054-03-04T12:13:10.01344\u002B00:00"
-              },
               "schema": {
                 "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsUpdate_Dialog"
               }

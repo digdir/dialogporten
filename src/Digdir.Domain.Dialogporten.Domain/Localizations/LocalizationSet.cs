@@ -8,7 +8,7 @@ public abstract class LocalizationSet : IImmutableEntity
     public Guid Id { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
 
-    // === Plural principal relationships === 
+    // === Plural principal relationships ===
     [AggregateChild]
     public List<Localization> Localizations { get; set; } = [];
 }

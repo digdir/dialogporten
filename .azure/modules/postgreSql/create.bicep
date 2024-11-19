@@ -24,7 +24,7 @@ param tags object
 
 @export()
 type Sku = {
-  name: 'Standard_B1ms' | 'Standard_B2s' | 'Standard_B4ms' | 'Standard_B8ms' | 'Standard_B12ms' | 'Standard_B16ms' | 'Standard_B20ms'
+  name: 'Standard_B1ms' | 'Standard_B2s' | 'Standard_B4ms' | 'Standard_B8ms' | 'Standard_B12ms' | 'Standard_B16ms' | 'Standard_B20ms' | 'Standard_D4ads_v5'
   tier: 'Burstable' | 'GeneralPurpose' | 'MemoryOptimized'
 }
 
@@ -33,6 +33,9 @@ param sku Sku
 
 @description('Enable query performance insight')
 param enableQueryPerformanceInsight bool
+
+@description('Enable index tuning')
+param enableIndexTuning bool
 
 @description('The name of the Application Insights workspace')
 param appInsightWorkspaceName string
@@ -56,8 +59,8 @@ var postgresServerName = uniqueResourceName('${namePrefix}-postgres', postgresSe
 //	//wal_level: 'logical'
 //	//max_worker_processes: '16'
 
-//	// The leading theory is that we are using pgoutput as the replication protocol 
-//	// which comes out of the box in postgresql. Therefore we may not need the 
+//	// The leading theory is that we are using pgoutput as the replication protocol
+//	// which comes out of the box in postgresql. Therefore we may not need the
 //	// following two lines.
 //	//'azure.extensions': 'pglogical'
 //	//shared_preload_libraries: 'pglogical'
@@ -128,6 +131,7 @@ resource pg_qs_query_capture_mode 'Microsoft.DBforPostgreSQL/flexibleServers/con
     value: 'all'
     source: 'user-override'
   }
+  dependsOn: [track_io_timing]
 }
 
 resource pgms_wait_sampling_query_capture_mode 'Microsoft.DBforPostgreSQL/flexibleServers/configurations@2024-08-01' = if (enableQueryPerformanceInsight) {
@@ -137,6 +141,17 @@ resource pgms_wait_sampling_query_capture_mode 'Microsoft.DBforPostgreSQL/flexib
     value: 'all'
     source: 'user-override'
   }
+  dependsOn: [pg_qs_query_capture_mode]
+}
+
+resource index_tuning_mode 'Microsoft.DBforPostgreSQL/flexibleServers/configurations@2024-08-01' = if (enableIndexTuning) {
+  parent: postgres
+  name: 'index_tuning.mode'
+  properties: {
+    value: 'report'
+    source: 'user-override'
+  }
+  dependsOn: [pgms_wait_sampling_query_capture_mode]
 }
 
 resource appInsightsWorkspace 'Microsoft.OperationalInsights/workspaces@2023-09-01' existing = {
@@ -177,6 +192,7 @@ resource diagnosticSetting 'Microsoft.Insights/diagnosticSettings@2021-05-01-pre
       }
     ]
   }
+  dependsOn: [pgms_wait_sampling_query_capture_mode]
 }
 
 module adoConnectionString '../keyvault/upsertSecret.bicep' = {

@@ -165,7 +165,7 @@ var query = '''
                  | where customDimensions.RequestPath !startswith "/health"
              | summarize Count = count()
                  by
-                 Environment = tostring(customDimensions.AspNetCoreEnvironment),
+                 Environment = tostring(customDimensions.EnvironmentName),
                  Type = itemType,
                  problemId,
                  tostring(customDimensions.MessageTemplate),

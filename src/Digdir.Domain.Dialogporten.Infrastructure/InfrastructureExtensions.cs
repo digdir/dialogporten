@@ -68,6 +68,7 @@ public static class InfrastructureExtensions
             .AddHostedService<DevelopmentMigratorHostedService>()
             .AddHostedService<DevelopmentCleanupOutboxHostedService>()
             .AddHostedService<DevelopmentSubjectResourceSyncHostedService>()
+            .AddHostedService<DevelopmentResourcePolicyInformationSyncHostedService>()
             .AddValidatorsFromAssembly(InfrastructureAssemblyMarker.Assembly, ServiceLifetime.Transient, includeInternalTypes: true)
             .AddPolicyRegistry((_, registry) =>
             {
@@ -85,6 +86,11 @@ public static class InfrastructureExtensions
 
             // Transient
             .AddTransient<ISubjectResourceRepository, SubjectResourceRepository>()
+            .AddTransient<IResourcePolicyInformationRepository, ResourcePolicyInformationRepository>()
+            .AddTransient<Lazy<IPublishEndpoint>>(x =>
+                new Lazy<IPublishEndpoint>(x.GetRequiredService<IPublishEndpoint>))
+            .AddTransient<Lazy<ITopicEventSender>>(x =>
+                new Lazy<ITopicEventSender>(x.GetRequiredService<ITopicEventSender>))
 
             // Singleton
             .AddSingleton<INotificationProcessingContextFactory, NotificationProcessingContextFactory>()
@@ -174,41 +180,39 @@ public static class InfrastructureExtensions
         // ATTENTION: If you need to add custom configurations to the bus, you should
         // consider adding equivalent config to AddPubCapabilities method as well
         builderContext.Services.AddMassTransit(x =>
+        {
+            x.AddEntityFrameworkOutbox<DialogDbContext>(o =>
             {
-                x.AddEntityFrameworkOutbox<DialogDbContext>(o =>
-                {
-                    o.UsePostgres();
-                    o.UseBusOutbox();
-                });
+                o.UsePostgres();
+                o.UseBusOutbox();
+            });
 
-                foreach (var customConfiguration in customConfigurations)
+            foreach (var customConfiguration in customConfigurations)
+            {
+                customConfiguration(x);
+            }
+
+            if (builderContext.Environment.IsDevelopment() && builderContext.DevSettings.UseInMemoryServiceBusTransport)
+            {
+                x.UsingInMemory((context, cfg) => cfg.ConfigureEndpoints(context));
+                return;
+            }
+
+            x.ConfigureHealthCheckOptions(options => options.Tags.Add("dependencies"));
+            x.AddConfigureEndpointsCallback((_, cfg) =>
+            {
+                if (cfg is IServiceBusReceiveEndpointConfigurator sb)
                 {
-                    customConfiguration(x);
+                    sb.ConfigureDeadLetterQueueDeadLetterTransport();
+                    sb.ConfigureDeadLetterQueueErrorTransport();
                 }
-
-                if (builderContext.Environment.IsDevelopment() && builderContext.DevSettings.UseInMemoryServiceBusTransport)
-                {
-                    x.UsingInMemory((context, cfg) => cfg.ConfigureEndpoints(context));
-                    return;
-                }
-
-                x.ConfigureHealthCheckOptions(options => options.Tags.Add("dependencies"));
-                x.AddConfigureEndpointsCallback((_, cfg) =>
-                {
-                    if (cfg is IServiceBusReceiveEndpointConfigurator sb)
-                    {
-                        sb.ConfigureDeadLetterQueueDeadLetterTransport();
-                        sb.ConfigureDeadLetterQueueErrorTransport();
-                    }
-                });
-                x.UsingAzureServiceBus((context, cfg) =>
-                {
-                    cfg.Host(builderContext.InfraSettings.MassTransit.Host);
-                    cfg.ConfigureEndpoints(context);
-                });
-            })
-            .AddTransient<Lazy<IPublishEndpoint>>(x =>
-                new Lazy<IPublishEndpoint>(x.GetRequiredService<IPublishEndpoint>));
+            });
+            x.UsingAzureServiceBus((context, cfg) =>
+            {
+                cfg.Host(builderContext.InfraSettings.MassTransit.Host);
+                cfg.ConfigureEndpoints(context);
+            });
+        });
 
         new DummyRequestExecutorBuilder { Services = builderContext.Services }
             .AddRedisSubscriptions(_ => ConnectionMultiplexer.Connect(builderContext.InfraSettings.Redis.ConnectionString),
@@ -223,24 +227,22 @@ public static class InfrastructureExtensions
         // ATTENTION: If you need to add custom configurations to the bus, you should
         // consider adding equivalent config to AddPubSubCapabilities method as well
         builderContext.Services.AddMassTransit(x =>
+        {
+            x.AddEntityFrameworkOutbox<DialogDbContext>(o =>
             {
-                x.AddEntityFrameworkOutbox<DialogDbContext>(o =>
-                {
-                    o.UsePostgres();
-                    o.UseBusOutbox(y => y.DisableDeliveryService());
-                    o.DisableInboxCleanupService();
-                });
+                o.UsePostgres();
+                o.UseBusOutbox(y => y.DisableDeliveryService());
+                o.DisableInboxCleanupService();
+            });
 
-                if (builderContext.Environment.IsDevelopment() && builderContext.DevSettings.UseInMemoryServiceBusTransport)
-                {
-                    x.UsingInMemory();
-                    return;
-                }
+            if (builderContext.Environment.IsDevelopment() && builderContext.DevSettings.UseInMemoryServiceBusTransport)
+            {
+                x.UsingInMemory();
+                return;
+            }
 
-                x.UsingAzureServiceBus();
-            })
-            .AddTransient<Lazy<IPublishEndpoint>>(x =>
-                new Lazy<IPublishEndpoint>(x.GetRequiredService<IPublishEndpoint>));
+            x.UsingAzureServiceBus();
+        });
 
         new DummyRequestExecutorBuilder { Services = builderContext.Services }
             .AddRedisSubscriptions(_ => ConnectionMultiplexer.Connect(builderContext.InfraSettings.Redis.ConnectionString),
