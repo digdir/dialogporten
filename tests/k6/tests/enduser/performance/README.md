@@ -1,19 +1,17 @@
 # Enduser get dialogs
 
 ## Introduction
-This directory holds a performance test for all GET endpoints for api/v1/serviceowner/dialogs 
+This directory holds a performance test for all GET endpoints for api/v1/enduser/dialogs 
 
 ## Prerequisites
-- ../../#introduction
-
-## Installation
-- Provide instructions on how to install any necessary tools or libraries.
-
-## Configuration
-- Explain how to configure the performance tests, including any environment variables or settings that need to be adjusted.
+- ../../#Prerequsite
 
 ## Running the Tests
-- Provide step-by-step instructions on how to run the performance tests.
+To run tests, clone repo.
+Run genreate-tokens
+Run test
+Variables: vus, duration, iteration.
+Settings: isSingle, 
 
 ## Test Results
 - Explain how to interpret the test results and what metrics to look for.
