@@ -4,7 +4,7 @@
 This directory holds a performance test for all GET endpoints for api/v1/enduser/dialogs 
 
 ## Prerequisites
-- ../../#Prerequsite
+- [K6 prerequisites](../../README.md#Prerequisites)
 
 ## Running the Tests
 To run tests, clone repo.
