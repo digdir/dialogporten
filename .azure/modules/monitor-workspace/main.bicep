@@ -17,7 +17,8 @@ resource monitorWorkspace 'Microsoft.Monitor/accounts@2023-04-03' = {
   name: '${namePrefix}-monitor'
   location: location
   properties: {
-    publicNetworkAccess: 'Disabled'
+    // todo: enable once we have a use case for it https://github.com/digdir/dialogporten/issues/1462
+    publicNetworkAccess: 'Enabled'
   }
   tags: tags
 }
