@@ -1,10 +1,10 @@
 # Enduser get dialogs
 
 ## Introduction
-This directory holds a performance test for all GET endpoints for api/v1/serviceowner/dialogs 
+This directory holds a performance test for all GET endpoints for api/v1/graphql
 
 ## Prerequisites
-- ../../#introduction
+- [K6 prerequisites](../../README.md)
 
 ## Installation
 - Provide instructions on how to install any necessary tools or libraries.
