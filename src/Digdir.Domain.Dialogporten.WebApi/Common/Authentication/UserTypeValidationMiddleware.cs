@@ -21,13 +21,14 @@ public sealed class UserTypeValidationMiddleware
             if (userType == UserIdType.Unknown)
             {
                 context.Response.StatusCode = StatusCodes.Status403Forbidden;
-                await context.Response.WriteAsJsonAsync(context.GetResponseOrDefault(
+                var response = context.GetResponseOrDefault(
                     context.Response.StatusCode,
                     [
                         new("Type",
                             "The request was authenticated, but we were unable to determine valid user type (person or system user) in order to authorize the request.")
                     ]
-                ));
+                );
+                await context.Response.WriteAsJsonAsync(response, response.GetType());
 
                 return;
             }
