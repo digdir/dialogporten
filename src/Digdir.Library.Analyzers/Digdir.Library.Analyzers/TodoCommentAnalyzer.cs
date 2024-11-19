@@ -2,6 +2,7 @@ using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
+using static System.Text.RegularExpressions.Regex;
 
 namespace Digdir.Library.Analyzers;
 
@@ -9,16 +10,17 @@ namespace Digdir.Library.Analyzers;
 public class TodoCommentAnalyzer : DiagnosticAnalyzer
 {
     public const string DiagnosticId = "TODO001";
-    private static readonly LocalizableString Title = "TODO comment must have a GitHub issue URL";
-    private static readonly LocalizableString MessageFormat = "TODO comment must be followed by a GitHub issue URL (on the same line)";
-    private static readonly LocalizableString Description = "TODO comments should be followed by a GitHub issue URL (on the same line).";
+    private static readonly LocalizableString Title = "TODO comment must have an issue URL";
+    private static readonly LocalizableString MessageFormat = "TODO comment must be followed by an issue URL (on the same line)";
+    private static readonly LocalizableString Description = "TODO comments should be followed by an issue URL (on the same line).";
 
     private const string Category = "Documentation";
+    private const string IssueRegexOptionKey = "dotnet_diagnostic.TODO001.issueRegex";
 
     private static readonly DiagnosticDescriptor Rule = new(DiagnosticId, Title, MessageFormat, Category,
         DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
-    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
+    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [Rule];
 
     public override void Initialize(AnalysisContext context)
     {
@@ -28,6 +30,12 @@ public class TodoCommentAnalyzer : DiagnosticAnalyzer
     }
     private static void AnalyzeSyntaxTree(SyntaxTreeAnalysisContext context)
     {
+        var options = context.Options.AnalyzerConfigOptionsProvider.GetOptions(context.Tree);
+        if (!options.TryGetValue(IssueRegexOptionKey, out var issueRegex) || string.IsNullOrEmpty(issueRegex))
+        {
+            return;
+        }
+
         var trivia = context
             .Tree
             .GetRoot(context.CancellationToken)
@@ -40,7 +48,7 @@ public class TodoCommentAnalyzer : DiagnosticAnalyzer
 
             if (!commentText.Contains("TODO")) continue;
 
-            if (commentText.Contains("https://github.com/digdir/dialogporten/issues")) continue;
+            if (IsMatch(commentText, issueRegex)) continue;
 
             var diagnostic = Diagnostic.Create(Rule, comment.GetLocation());
             context.ReportDiagnostic(diagnostic);
