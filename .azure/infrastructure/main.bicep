@@ -131,8 +131,6 @@ module monitorWorkspace '../modules/monitor-workspace/main.bicep' = {
   params: {
     namePrefix: namePrefix
     location: location
-    subnetId: vnet.outputs.monitorSubnetId
-    vnetId: vnet.outputs.virtualNetworkId
     tags: tags
   }
 }
