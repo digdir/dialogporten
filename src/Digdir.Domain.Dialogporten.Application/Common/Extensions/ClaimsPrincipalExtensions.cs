@@ -29,11 +29,10 @@ public static class ClaimsPrincipalExtensions
     private const string PidClaim = "pid";
 
 
-    // TODO: These scopes are also defined in WebAPI/GQL. Can this be fetched from a common auth lib?
+    // TODO: This scope is also defined in WebAPI/GQL. Can this be fetched from a common auth lib?
     // https://github.com/digdir/dialogporten/issues/647
     // This could be done for all claims/scopes/prefixes etc, there are duplicates
-    private const string ServiceProviderScope = "digdir:dialogporten.serviceprovider";
-    private const string ServiceProviderSearchScope = "digdir:dialogporten.serviceprovider.search";
+    public const string ServiceProviderScope = "digdir:dialogporten.serviceprovider";
 
     public static bool TryGetClaimValue(this ClaimsPrincipal claimsPrincipal, string claimType,
         [NotNullWhen(true)] out string? value)
@@ -245,7 +244,7 @@ public static class ClaimsPrincipalExtensions
             return (UserIdType.SystemUser, externalId);
         }
 
-        if ((claimsPrincipal.HasScope(ServiceProviderScope) || claimsPrincipal.HasScope(ServiceProviderSearchScope)) &&
+        if (claimsPrincipal.HasScope(ServiceProviderScope) &&
             claimsPrincipal.TryGetOrganizationNumber(out externalId))
         {
             return (UserIdType.ServiceOwner, externalId);
