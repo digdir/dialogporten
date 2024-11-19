@@ -4,7 +4,7 @@
 This directory holds a performance test for all GET endpoints for api/v1/graphql
 
 ## Prerequisites
-- [K6 prerequisites](../../README.md)
+- [K6 prerequisites](../../README.md#Prerequisites)
 
 ## Installation
 - Provide instructions on how to install any necessary tools or libraries.
