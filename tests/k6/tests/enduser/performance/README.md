@@ -62,7 +62,7 @@ K6_PROMETHEUS_RW_USERNAME=**
 K6_PROMETHEUS_RW_PASSWORD=**
 K6_PROMETHEUS_RW_SERVER_URL=**
 ```
-4. Run act using the command below. Replace ``<vus>` and `<duration>` with the desired values:
+4. Run act using the command below. Replace `<vus>` and `<duration>` with the desired values:
 ```shell
 act workflow_dispatch -j k6-performance -s GITHUB_TOKEN=`gh auth token` \
 --container-architecture linux/amd64 --artifact-server-path $HOME/.act \ 
