@@ -1,6 +1,5 @@
 # Graphql get dialogs
 
-## Introduction
 This directory holds a performance test with POST for `graphql`. The test file `graphql-search.js` is responsible for executing the performance test. It includes a list of end users (ssn) with pregenerated tokens and performs a POST request to the GraphQL endpoint with the payload `input: { party: ["urn:altinn:person:identifier-no:${identifier}"]}`. This test is designed to measure the performance of the GraphQL search functionality. 
 
 ## Prerequisites
@@ -16,16 +15,16 @@ The test file associated with this performance test is
 ```shell
 cd tests/k6/tests/graphql/performance
 ```
-2. Generate tokens using the script below. Make sure to replace `<username>` and `<passwd>` with your actual credentials:
+2. Generate tokens using the script below. Make sure to replace `<username>`, `<passwd>` and `(<test|staging|yt01>)` with your desired values:
 ```shell
 TOKEN_GENERATOR_USERNAME=<username> \
-TOKEN_GENERATOR_PASSWORD=<passwd> API_ENVIRONMENT=yt01 \
+TOKEN_GENERATOR_PASSWORD=<passwd> API_ENVIRONMENT=<(test|staging|yt01)> \
 ../../scripts/generate_tokens.sh ../../performancetest_data personal
 ```
-3. Run the test using the following command. Replace `<test|staging|yt01>`, `<vus>`, and `<duration>` with the desired values:
+3. Run the test using the following command. Replace `<(test|staging|yt01)>`, `<vus>`, and `<duration>` with the desired values:
 ```shell
 k6 run graphql-search.js -e API_VERSION=v1 \
--e API_ENVIRONMENT=<test|staging|yt01> \
+-e API_ENVIRONMENT=<(test|staging|yt01)> \
 --vus=<vus> --duration=<duration>
 ```
 4. Refer to the k6 documentation for more information on usage.
@@ -49,7 +48,7 @@ K6_PROMETHEUS_RW_USERNAME=**
 K6_PROMETHEUS_RW_PASSWORD=**
 K6_PROMETHEUS_RW_SERVER_URL=**
 ```
-4. Run act using the command below. Replace ``<vus>` and `<duration>` with the desired values:
+4. Run act using the command below. Replace `<vus>` and `<duration>` with the desired values:
 ```shell
 act workflow_dispatch -j k6-performance -s GITHUB_TOKEN=`gh auth token` \
 --container-architecture linux/amd64 --artifact-server-path $HOME/.act \ 
