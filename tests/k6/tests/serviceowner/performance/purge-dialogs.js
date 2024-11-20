@@ -119,8 +119,6 @@ export function purgeDialogs(serviceOwner) {
         tags: { name: 'purge dialog'}
     }
 
-    
-
     describe('Post run: checking for unpurged dialogs', () => {
         let dialogIdsToPurge = serviceOwner.dialogIdsToPurge;
         if (dialogIdsToPurge.length > 0) {
