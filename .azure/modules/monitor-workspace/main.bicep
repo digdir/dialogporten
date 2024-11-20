@@ -17,5 +17,57 @@ resource monitorWorkspace 'Microsoft.Monitor/accounts@2023-04-03' = {
   tags: tags
 }
 
+resource dataCollectionEndpoint 'Microsoft.Insights/dataCollectionEndpoints@2023-03-11' = {
+  name: '${namePrefix}-monitor'
+  location: location
+  properties: {
+    description: 'Default DCE created for Monitoring Account'
+    networkAcls: {
+      publicNetworkAccess: 'Enabled'
+    }
+  }
+  tags: tags
+}
+
+resource dataCollectionRule 'Microsoft.Insights/dataCollectionRules@2023-03-11' = {
+  name: '${namePrefix}-monitor'
+  location: location
+  properties: {
+    description: 'Default DCR created for Monitoring Account'
+    dataCollectionEndpointId: dataCollectionEndpoint.id
+    dataSources: {
+      prometheusForwarder: [
+        {
+          streams: [
+            'Microsoft-PrometheusMetrics'
+          ]
+          name: 'PrometheusDataSource'
+        }
+      ]
+    }
+    destinations: {
+      monitoringAccounts: [
+        {
+          accountResourceId: monitorWorkspace.id
+          name: 'MonitoringAccountDestination'
+        }
+      ]
+    }
+    dataFlows: [
+      {
+        streams: [
+          'Microsoft-PrometheusMetrics'
+        ]
+        destinations: [
+          'MonitoringAccountDestination'
+        ]
+      }
+    ]
+  }
+  tags: tags
+}
+
 output monitorWorkspaceId string = monitorWorkspace.id
 output monitorWorkspaceName string = monitorWorkspace.name
+output monitorMetricsIngestionEndpoint string = dataCollectionEndpoint.properties.metricsIngestion.endpoint
+output monitorLogsIngestionEndpoint string = dataCollectionEndpoint.properties.logsIngestion.endpoint

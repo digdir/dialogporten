@@ -16,14 +16,14 @@ param appInsightWorkspaceName string
 @description('The Application Insights connection string')
 param appInsightsConnectionString string
 
-@description('The ID of the Azure Monitor workspace')
-param monitorWorkspaceId string
+@description('The metrics ingestion endpoint of the Azure Monitor workspace')
+param monitorMetricsIngestionEndpoint string
 
 resource appInsightsWorkspace 'Microsoft.OperationalInsights/workspaces@2023-09-01' existing = {
   name: appInsightWorkspaceName
 }
 
-resource containerAppEnv 'Microsoft.App/managedEnvironments@2024-03-01' = {
+resource containerAppEnv 'Microsoft.App/managedEnvironments@2024-02-02-preview' = {
   name: '${namePrefix}-cae'
   location: location
   properties: {
@@ -49,12 +49,16 @@ resource containerAppEnv 'Microsoft.App/managedEnvironments@2024-03-01' = {
         destinations: ['appInsights']
       }
       metricsConfiguration: {
-        destinations: ['prometheus']
+        destinations: ['metrics-ingestion']
       }
       destinationsConfiguration: {
-        prometheusConfiguration: {
-          monitorWorkspaceId: monitorWorkspaceId
-        }
+        otlpConfigurations: [
+          {
+            endpoint: monitorMetricsIngestionEndpoint
+            name: 'metrics-ingestion'
+            insecure: false
+          }
+        ]
       }
     }
   }
