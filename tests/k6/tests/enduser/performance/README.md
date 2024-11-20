@@ -55,14 +55,17 @@ To run the performance test locally using GitHub Actions and act, perform the fo
 2. Navigate to the root of the repository.
 3. Create a `.secrets` file that matches the GitHub secrets used. Example:
 ```file
-TOKEN_GENERATOR_USERNAME:**
-TOKEN_GENERATOR_PASSWORD:**
+TOKEN_GENERATOR_USERNAME:<username>
+TOKEN_GENERATOR_PASSWORD:<passwd>
 K6_CLOUD_PROJECT_ID=**
 K6_CLOUD_TOKEN=**
 K6_PROMETHEUS_RW_USERNAME=**
 K6_PROMETHEUS_RW_PASSWORD=**
 K6_PROMETHEUS_RW_SERVER_URL=**
 ```
+    Replace `<username>` and `<passwd>`, same as for generating tokens above. Fill in the K6_* values if available, 
+    used for reporting to Grafana cloud 
+##### IMPORTANT: Ensure this file is added to .gitignore to prevent accidental commits of sensitive information. Never commit actual credentials to version control.
 4. Run act using the command below. Replace ``<vus>` and `<duration>` with the desired values:
 ```shell
 act workflow_dispatch -j k6-performance -s GITHUB_TOKEN=`gh auth token` \
