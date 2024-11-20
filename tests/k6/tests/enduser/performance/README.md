@@ -8,7 +8,7 @@ This directory holds a performance test for all GET endpoints for `api/v1/enduse
 
 ## Test file
 The test file associated with this performance test is 
-- `create-dialog.js`
+- `enduser-search.js`
 
 ## Test description
 The test has a list of enduser (ssn) with pregenerated tokens, and the following endpoints are visited in
