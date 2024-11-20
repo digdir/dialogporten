@@ -1,6 +1,5 @@
 # Enduser get dialogs
 
-## Introduction
 This directory holds a performance test for all GET endpoints for `api/v1/enduser/dialogs`. The performance test is implemented in the `enduser-search.js` file. The purpose of this test is to measure the response time and performance of each endpoint when accessed sequentially for different end users. By running this test, you can identify any bottlenecks or performance issues in the API. This test can be executed from the command line or as part of a GitHub Actions workflow. For more information on how to run the test and view the results, refer to the sections below.
 
 ## Prerequisites
