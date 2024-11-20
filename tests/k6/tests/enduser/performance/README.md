@@ -28,10 +28,10 @@ sequence for each enduser:
 ```shell
 cd tests/k6/tests/enduser/performance
 ```
-2. Generate tokens using the script below. Make sure to replace `<username>` and `<passwd>` with your actual credentials:
+2. Generate tokens using the script below. Make sure to replace `<username>`, `<passwd>` and <test|staging|yt01> with your desired values:
 ```shell
 TOKEN_GENERATOR_USERNAME=<username> \
-TOKEN_GENERATOR_PASSWORD=<passwd> API_ENVIRONMENT=yt01 \
+TOKEN_GENERATOR_PASSWORD=<passwd> API_ENVIRONMENT=<test|staging|yt01> \
 ../../scripts/generate_tokens.sh ../../performancetest_data personal
 ```
 3. Run the test using the following command. Replace `<test|staging|yt01>`, `<vus>`, and `<duration>` with the desired values:
