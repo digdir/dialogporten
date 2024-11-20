@@ -1,8 +1,5 @@
 ## Service Owner Performance Test
 
-This directory contains a performance test for GET and POST endpoints related to the `serviceowner` API.
-
-### Introduction
 This performance test directory focuses on evaluating the GET and POST endpoints of the `serviceowner` API. The test files associated with this performance test are `create-dialog.js`, `create-remove-dialog.js`, `serviceowner-search.js`, and `purge-dialogs.js`. These files are designed to measure the performance and scalability of the API endpoints under different scenarios. By running these tests, you can gain insights into the system's response time, throughput, and resource utilization. Use the instructions below to execute the performance test and analyze the results.
 
 ### Prerequisites
@@ -10,7 +7,7 @@ Before running the performance test, make sure you have met the following prereq
 - [K6 prerequisites](../../README.md#Prerequisites)
 
 ### Test Files
-The test files associated with this performance test is 
+The test files associated with this performance test are 
 - `create-dialog.js`
 - `create-remove-dialog.js`
 - `serviceowner-search.js`
@@ -24,16 +21,16 @@ To run the performance test, follow the instructions below:
 ```shell
 cd tests/k6/tests/serviceowner/performance
 ```
-2. Generate tokens using the script below. Make sure to replace `<username>`, `<passwd>` and `<test|staging|yt01>` with your actual desired values:
+2. Generate tokens using the script below. Make sure to replace `<username>`, `<passwd>` and `<(test|staging|yt01)>` with your actual desired values:
 ```shell
 TOKEN_GENERATOR_USERNAME=<username> \
-TOKEN_GENERATOR_PASSWORD=<passwd> API_ENVIRONMENT=<test|staging|yt01> \
+TOKEN_GENERATOR_PASSWORD=<passwd> API_ENVIRONMENT=<(test|staging|yt01)> \
 ../../scripts/generate_tokens.sh ../../performancetest_data both
 ```
-3. Run the test using the following command. Replace `<test-file>`, `<test|staging|yt01>`, `<vus>`, and `<duration>` with the desired values:
+3. Run the test using the following command. Replace `<test-file>`, `<(test|staging|yt01)>`, `<vus>`, and `<duration>` with the desired values:
 ```shell
 k6 run <test-file> -e API_VERSION=v1 \
--e API_ENVIRONMENT=<test|staging|yt01> \
+-e API_ENVIRONMENT=<(test|staging|yt01)> \
 --vus=<vus> --duration=<duration>
 ```
 4. Refer to the k6 documentation for more information on usage.
@@ -61,13 +58,13 @@ K6_PROMETHEUS_RW_SERVER_URL=**
     Replace `<username>` and `<passwd>`, same as for generating tokens above. Fill in the K6_* values if available, 
     used for reporting to Grafana cloud 
 ##### IMPORTANT: Ensure this file is added to .gitignore to prevent accidental commits of sensitive information. Never commit actual credentials to version control.
-4. Run act using the command below. Replace `<path-to-testscript>`, `<vus>`, `<duration>` and `<personal|enterprise|both>` with the desired values:
+4. Run `act` using the command below. Replace `<path-to-testscript>`, `<vus>`, `<duration>` and `<(personal|enterprise|both)>` with the desired values:
 ```shell
 act workflow_dispatch -j k6-performance -s GITHUB_TOKEN=`gh auth token` \
 --container-architecture linux/amd64 --artifact-server-path $HOME/.act \ 
 --input vus=<vus> --input duration=<duration> \ 
 --input testSuitePath=<path-to-testscript> \ 
---input tokens=<personal|enterprise|both>
+--input tokens=<(personal|enterprise|both)>
 ```
 
 Example of command:
@@ -92,15 +89,15 @@ cd tests/k6/tests/serviceowner/performance
 2. Run the cleanup script using the following command:
 ```shell
 k6 run purge-dialogs.js -e API_VERSION=v1 \
--e API_ENVIRONMENT=<test|staging|yt01>
+-e API_ENVIRONMENT=<(test|staging|yt01)>
 ```
 
-Replace `<test|staging|yt01>` with the appropriate environment where the test was executed.
+Replace `<(test|staging|yt01)>` with the appropriate environment where the test was executed.
 
 This script will remove any dialogs created during the performance test, ensuring a clean state for future tests.
 
 ### Test Results
-The test results can be found in the GitHub Actions run log and in AppInsights. Currently, the results are exported to a private Grafana instance. Refer to the `.secrets` file mentioned earlier for more details.
+The test results can be found in the GitHub Actions run log and in App Insights. Currently, the results are exported to a private Grafana instance. Refer to the `.secrets` file mentioned earlier for more details.
 
 ### TODO
 - Fix reporting

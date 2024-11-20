@@ -24,7 +24,7 @@ public sealed class FluentValidationOptions<TOptions> : IValidateOptions<TOption
     /// </summary>
     /// <param name="assemblies">The assemblies to scan for validators.</param>
     /// <remarks>
-    /// This constructor scans the provided assemblies for types that implement the 
+    /// This constructor scans the provided assemblies for types that implement the
     /// <see cref="IValidator{T}"/> interface for the specified <typeparamref name="TOptions"/> type.
     /// It includes both public and internal validators in the search. <b>Use this constructor sparingly
     /// as it uses reflection to find validators.</b>

@@ -27,7 +27,7 @@ internal static class DialogEntityExtensions
 
     private static string GetReadActionForAuthorizationAttribute(string authorizationAttribute)
     {
-        // Resource attributes may refer to either subresources/tasks that should be considered just another
+        // Resource attributes may refer to either sub-resources/tasks that should be considered just another
         // attribute to be matched within the same policy file, or they may refer to separate resources (and policies).
         // In the former case, we need to use "transmissionread" as the action, as having "read" on the main resource would
         // also give access to the subresource/task. In the latter case, we should use "read", as the resource is a

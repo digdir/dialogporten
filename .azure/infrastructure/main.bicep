@@ -58,6 +58,7 @@ import { Sku as PostgresSku } from '../modules/postgreSql/create.bicep'
 
 param postgresConfiguration {
   sku: PostgresSku
+  enableIndexTuning: bool
   enableQueryPerformanceInsight: bool
 }
 
@@ -120,6 +121,16 @@ module appInsights '../modules/applicationInsights/create.bicep' = {
     namePrefix: namePrefix
     location: location
     sku: appInsightsSku
+    tags: tags
+  }
+}
+
+module monitorWorkspace '../modules/monitor-workspace/main.bicep' = {
+  scope: resourceGroup
+  name: 'monitorWorkspace'
+  params: {
+    namePrefix: namePrefix
+    location: location
     tags: tags
   }
 }
@@ -205,6 +216,7 @@ module postgresql '../modules/postgreSql/create.bicep' = {
       : secrets.dialogportenPgAdminPassword
     sku: postgresConfiguration.sku
     appInsightWorkspaceName: appInsights.outputs.appInsightsWorkspaceName
+    enableIndexTuning: postgresConfiguration.enableIndexTuning
     enableQueryPerformanceInsight: postgresConfiguration.enableQueryPerformanceInsight
     subnetId: vnet.outputs.postgresqlSubnetId
     vnetId: vnet.outputs.virtualNetworkId

@@ -46,6 +46,7 @@ public interface IAggregateDeletedHandler
     /// <param name="utcNow">The timestamp of the deletion event in UTC time.</param>
     void OnDelete(AggregateNode self, DateTimeOffset utcNow);
 }
+
 /// <summary>
 /// Defines an entity handler for handling the deletion of its own aggregate.
 /// </summary>

@@ -35,7 +35,7 @@ internal sealed class AuthorizationOptionsSetup : IConfigureOptions<Authorizatio
             .RequireScope(AuthorizationScope.ServiceProvider));
 
         options.AddPolicy(AuthorizationPolicy.ServiceProviderSearch, builder => builder
-            .Combine(options.DefaultPolicy)
+            .Combine(options.GetPolicy(AuthorizationPolicy.ServiceProvider)!)
             .RequireScope(AuthorizationScope.ServiceProviderSearch));
 
         options.AddPolicy(AuthorizationPolicy.Testing, builder => builder

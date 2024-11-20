@@ -9,6 +9,5 @@ public sealed class MappingProfile : Profile
     {
         CreateMap<DialogSeenLog, SeenLogDto>()
             .ForMember(dest => dest.SeenAt, opt => opt.MapFrom(src => src.CreatedAt));
-
     }
 }
