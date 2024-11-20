@@ -1,11 +1,18 @@
 {
   "profiles": {
-    "Digdir.Domain.Dialogporten.Janitor": {
+    "subject-resources": {
       "commandName": "Project",
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Development"
       },
       "commandLineArgs": "sync-subject-resource-mappings"
+    },
+    "resource-policy-information": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      },
+      "commandLineArgs": "sync-resource-policy-information -c 1"
     }
   }
 }

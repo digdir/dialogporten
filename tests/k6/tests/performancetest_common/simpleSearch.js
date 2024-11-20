@@ -8,7 +8,6 @@ import { describe } from '../../common/describe.js';
 import { getEU, postGQ, getSO } from '../../common/request.js';
 import { getGraphqlParty } from '../performancetest_data/graphql-search.js';
 
-
 /**
  * Retrieves the content for a dialog.
  * Get dialog, dialog activities, seenlogs, labellog, and transmissions.
@@ -19,7 +18,6 @@ import { getGraphqlParty } from '../performancetest_data/graphql-search.js';
 function retrieveDialogContent(response, paramsWithToken, getFunction = getEU) {
     const items = response.json().items;
     if (!items?.length) return;
-        
     const dialogId = items[0].id;
     if (!dialogId) return;
         
@@ -32,18 +30,29 @@ function retrieveDialogContent(response, paramsWithToken, getFunction = getEU) {
     getContentChain(dialogId, paramsWithToken, 'get transmissions', 'get transmission', '/transmissions/', getFunction);
 }
 
+function log(items, traceCalls, enduser) {
+    if (items?.length && traceCalls) {
+        console.log("Found " + items.length + " dialogs" + " for enduser " + enduser.ssn);
+    } 
+}   
+
 /**
  * Performs a enduser search.
  * @param {Object} enduser - The end user.
  * @returns {void}
  */
-export function enduserSearch(enduser) {
+export function enduserSearch(enduser, traceCalls) {
+    var traceparent = uuidv4();
     let paramsWithToken = {
         headers: {
             Authorization: "Bearer " + enduser.token,
-            traceparent: uuidv4()
+            traceparent: traceparent
         },
-        tags: { name: 'enduser search' }
+        tags: { name: 'enduser search' } 
+    }
+    if (traceCalls) {
+        paramsWithToken.tags.traceparent = traceparent;
+        paramsWithToken.tags.enduser = enduser.ssn;
     }
     let defaultParty = "urn:altinn:person:identifier-no:" + enduser.ssn;
     let defaultFilter = "?Party=" + defaultParty;
@@ -52,6 +61,7 @@ export function enduserSearch(enduser) {
         expectStatusFor(r).to.equal(200);
         expect(r, 'response').to.have.validJsonBody();
         retrieveDialogContent(r, paramsWithToken);
+        log(r.json().items, traceCalls, enduser);
     });
 }
 
@@ -60,7 +70,8 @@ export function enduserSearch(enduser) {
  * @param {string} dialogId - The dialog id.
  * @param {Object} paramsWithToken - The parameters with token.
  * @param {string} tag - Tagging the request.
- * @param {string} path - The path to append to the URL. Can be empty or /labellog.
+ * @param {string} path - The path to append to the URL. Can be empty or /labellog. 
+ * @param {function} getFunction - The get function to use.
  * @returns {void}
  */
 export function getContent(dialogId, paramsWithToken, tag, path = '', getFunction = getEU) {
@@ -77,7 +88,8 @@ export function getContent(dialogId, paramsWithToken, tag, path = '', getFunctio
  * @param {Object} paramsWithToken - The parameters with token.
  * @param {string} tag - Tagging the request.
  * @param {string} subtag - Tagging the sub request.
- * @param {string} endpoint - The endpoint to append to the URL.
+ * @param {string} endpoint - The endpoint to append to the URL.   
+ * @param {function} getFunction - The get function to use.
  * @returns {void}
  */
 export function getContentChain(dialogId, paramsWithToken, tag, subtag, endpoint, getFunction = getEU) {
@@ -100,6 +112,7 @@ export function getContentChain(dialogId, paramsWithToken, tag, subtag, endpoint
  * Performs a GET request to the specified URL with the provided parameters.
  * @param {string} url - The URL to send the GET request to.
  * @param {Object} paramsWithToken - The parameters with token.
+ * @param {function} getFunction - The get function to use.
  * @returns {Object} The response object.
  */
 export function getUrl(url, paramsWithToken, getFunction = getEU) {
@@ -115,7 +128,7 @@ export function getUrl(url, paramsWithToken, getFunction = getEU) {
  * @param {Object} enduser - The enduser object containing the token.
  * @returns {void}
  */
-export function graphqlSearch(enduser) {
+export function graphqlSearch(enduser, traceCalls) {
     let traceparent = uuidv4();
     let paramsWithToken = {
         headers: {
@@ -123,28 +136,38 @@ export function graphqlSearch(enduser) {
             traceparent: traceparent,
             'User-Agent': 'dialogporten-k6-graphql-search'
         },
-        tags: { name: 'graphql search', traceparent: traceparent }
+        tags: { name: 'graphql search' }
     };
+    if (traceCalls) {
+        paramsWithToken.tags.traceparent = traceparent;
+        paramsWithToken.tags.enduser = enduser.ssn;
+    }
     describe('Perform graphql dialog list', () => {
         let r = postGQ(getGraphqlParty(enduser.ssn), paramsWithToken);
         expectStatusFor(r).to.equal(200);
         expect(r, 'response').to.have.validJsonBody();
+        log(r.json().data.searchDialogs.items, traceCalls, enduser);
     });
 }
 
 /**
  * Performs a serviceowner search.
  * @param {P} serviceowner 
- * @param {*} enduser 
+ * @param {*} enduser
+ * @param {*} tag_name 
  */
-export function serviceownerSearch(serviceowner, enduser, tag_name) {
+export function serviceownerSearch(serviceowner, enduser, tag_name, traceCalls, doSubqueries = true) {
     let traceparent = uuidv4();
     let paramsWithToken = {
         headers: {
             Authorization: "Bearer " + serviceowner.token,
             traceparent: traceparent
         },
-        tags: { name: tag_name, traceparent: traceparent, enduser: enduser.ssn }
+        tags: { name: tag_name }
+    }
+
+    if (traceCalls) {
+        paramsWithToken.tags.traceparent = traceparent;
     }
 
     let enduserid = encodeURIComponent(`urn:altinn:person:identifier-no:${enduser.ssn}`);
@@ -154,6 +177,10 @@ export function serviceownerSearch(serviceowner, enduser, tag_name) {
         let r = getSO('dialogs' + defaultFilter, paramsWithToken);
         expectStatusFor(r).to.equal(200);
         expect(r, 'response').to.have.validJsonBody();
-        retrieveDialogContent(r, paramsWithToken, getSO);
+        if (doSubqueries) {
+            retrieveDialogContent(r, paramsWithToken, getSO);
+        }
+        log(r.json().items, traceCalls, enduser);
+        return r
     });
 }

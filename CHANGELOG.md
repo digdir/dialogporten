@@ -1,5 +1,55 @@
 # Changelog
 
+## [1.36.0](https://github.com/digdir/dialogporten/compare/v1.35.0...v1.36.0) (2024-11-19)
+
+
+### Features
+
+* **azure:** create azure monitor workspace ([#1485](https://github.com/digdir/dialogporten/issues/1485)) ([da0aa8f](https://github.com/digdir/dialogporten/commit/da0aa8f974742c146207e64db817bbb6e732dff2))
+
+
+### Bug Fixes
+
+* **app:** Error details missing when user type is unknown ([#1493](https://github.com/digdir/dialogporten/issues/1493)) ([9fbd2cf](https://github.com/digdir/dialogporten/commit/9fbd2cf505cbab1129c0ba75c6a609fc9e3ea44a))
+* **azure:** enable public access for azure monitor ([#1496](https://github.com/digdir/dialogporten/issues/1496)) ([b0d5794](https://github.com/digdir/dialogporten/commit/b0d5794a5c31f979a85f64f512fb3cb2b000b139))
+* **azure:** ensure monitor workspace is reachable ([#1494](https://github.com/digdir/dialogporten/issues/1494)) ([dc7fc1f](https://github.com/digdir/dialogporten/commit/dc7fc1f354f40c1e4dc5f9a1a0e729f1bc3d171d))
+* **webapi:** Require base service provider scope on search endpoint ([#1476](https://github.com/digdir/dialogporten/issues/1476)) ([8c41f3d](https://github.com/digdir/dialogporten/commit/8c41f3d54edc3edec1f48dc1f701e4b83163535a))
+
+## [1.35.0](https://github.com/digdir/dialogporten/compare/v1.34.0...v1.35.0) (2024-11-15)
+
+
+### Features
+
+* Synchronization of resource policy metadata ([#1411](https://github.com/digdir/dialogporten/issues/1411)) ([193b764](https://github.com/digdir/dialogporten/commit/193b7645ff45155cedc9a952e4322c5e55642cf8))
+
+## [1.34.0](https://github.com/digdir/dialogporten/compare/v1.33.1...v1.34.0) (2024-11-14)
+
+
+### Features
+
+* **azure:** enable index tuning for postgres in YT ([#1455](https://github.com/digdir/dialogporten/issues/1455)) ([69f01ae](https://github.com/digdir/dialogporten/commit/69f01aedcff0eb28b8bff80dfd1cec709e0c4409))
+
+## [1.33.1](https://github.com/digdir/dialogporten/compare/v1.33.0...v1.33.1) (2024-11-14)
+
+
+### Bug Fixes
+
+* **bicep:** Add missing SKU for postgres create ([#1453](https://github.com/digdir/dialogporten/issues/1453)) ([ab8cb03](https://github.com/digdir/dialogporten/commit/ab8cb03d9430bc34608637921a31bc21591a2f1c))
+
+## [1.33.0](https://github.com/digdir/dialogporten/compare/v1.32.1...v1.33.0) (2024-11-14)
+
+
+### Features
+
+* **azure:** Upgrade postgres SKU for prod/yt01 ([#1450](https://github.com/digdir/dialogporten/issues/1450)) ([b7586f2](https://github.com/digdir/dialogporten/commit/b7586f2ea0da43b4b2819f75f7bb2a9c1dcc5ad0))
+
+## [1.32.1](https://github.com/digdir/dialogporten/compare/v1.32.0...v1.32.1) (2024-11-13)
+
+
+### Bug Fixes
+
+* **azure:** ensure postgres configuration run in sequence ([#1448](https://github.com/digdir/dialogporten/issues/1448)) ([a5a6868](https://github.com/digdir/dialogporten/commit/a5a6868037619172a97ca1d1acde85075825adbd))
+
 ## [1.32.0](https://github.com/digdir/dialogporten/compare/v1.31.0...v1.32.0) (2024-11-12)
 
 

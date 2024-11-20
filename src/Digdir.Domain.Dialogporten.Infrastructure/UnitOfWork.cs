@@ -58,9 +58,7 @@ internal sealed class UnitOfWork : IUnitOfWork, IAsyncDisposable, IDisposable
     }
 
     public async Task BeginTransactionAsync(CancellationToken cancellationToken = default)
-    {
-        _transaction ??= await _dialogDbContext.Database.BeginTransactionAsync(cancellationToken);
-    }
+        => _transaction ??= await _dialogDbContext.Database.BeginTransactionAsync(cancellationToken);
 
     public async Task<SaveChangesResult> SaveChangesAsync(CancellationToken cancellationToken = default)
     {

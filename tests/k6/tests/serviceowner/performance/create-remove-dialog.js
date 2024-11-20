@@ -7,6 +7,9 @@ import { getDefaultThresholds } from '../../performancetest_common/getDefaultThr
 import { serviceOwners, endUsers } from "../../performancetest_common/readTestdata.js";
 import { createAndRemoveDialog } from '../../performancetest_common/createDialog.js';
 
+const isSingleUserMode = (__ENV.isSingleUserMode ?? 'false') === 'true';
+const traceCalls = (__ENV.traceCalls ?? 'false') === 'true';
+
 export let options = {
     summaryTrendStats: ['avg', 'min', 'med', 'max', 'p(95)', 'p(99)', 'p(99.5)', 'p(99.9)', 'count'],
     thresholds: getDefaultThresholds(['http_req_duration', 'http_reqs'],[
@@ -23,11 +26,13 @@ export default function() {
         throw new Error('No service owners loaded for testing');
     }
 
-    const isSingleUserMode = (options.vus ?? 1) === 1 && (options.iterations ?? 1) === 1 && (options.duration ?? 0) === 0;
     if (isSingleUserMode) {
-      createAndRemoveDialog(serviceOwners[0], endUsers[0]);
+      createAndRemoveDialog(serviceOwners[0], endUsers[0], traceCalls);
     }
     else {
-        createAndRemoveDialog(randomItem(serviceOwners), randomItem(endUsers));
+      let serviceOwner = randomItem(serviceOwners);
+      for (let i = 0; i < endUsers.length; i++) {
+        createAndRemoveDialog(serviceOwner, endUsers[i], traceCalls);
+      } 
     }
   }

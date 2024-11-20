@@ -32,7 +32,7 @@ public sealed class DialogEndUserContext : IEntity, IVersionableEntity
             return;
         }
 
-        // remove old label then add new one 
+        // remove old label then add new one
         if (currentLabel != SystemLabel.Values.Default)
         {
             _labelAssignmentLogs.Add(new()

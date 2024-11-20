@@ -18,6 +18,8 @@ on:
         required: true
         type: string
 
+run-name: Dispatch infrastructure ${{ inputs.environment }} v${{ inputs.version }}
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref_name }}-${{ inputs.environment }}
 
@@ -27,7 +29,7 @@ jobs:
     uses: ./.github/workflows/workflow-generate-git-short-sha.yml
 
   deploy-infra:
-    name: Deploy infra to ${{ inputs.environment }}
+    name: Deploy infra to ${{ inputs.environment }} (v${{ inputs.version }})
     needs: [generate-git-short-sha]
     uses: ./.github/workflows/workflow-deploy-infra.yml
     secrets:

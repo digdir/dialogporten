@@ -1,8 +1,7 @@
 ## DialogGenerator
 
 This is a dialog generator that generates the DTOs used for creating new dialogs in the service owner API, 
-utilizing the [Bogus](https://github.com/bchavez/Bogus) library. It supports supplying a integer seed in 
-order to generate the same set of dialogs across multiple runs.
+using the [Bogus](https://github.com/bchavez/Bogus) library. It supports supplying an integer seed to generate the same set of dialogs across multiple runs.
 
 For improved performance, make sure you build in Release mode (both the tool and the rest of Dialogporten).
 
@@ -38,5 +37,5 @@ var randomContent = DialogGenerator.GenerateContent();
 ## TODO
 * Authorization support for use against remote APIs.
 * Expose options to tweak the generation process (batching, consumers).
-* Add generate-only mode supporting CSVs suitable for directly importing into a database (e.g. PostgreSQL's `COPY` command).
+* Add generate-only mode supporting CSVs suitable for directly importing into a database (e.g., PostgreSQL's `COPY` command).
 * Improve performance (inserting 1 million dialogs locally takes about 2 hours on a Mac M3 Pro).

@@ -8,6 +8,7 @@ using Digdir.Domain.Dialogporten.Domain.DialogEndUserContexts.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Contents;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions.Contents;
+using Digdir.Domain.Dialogporten.Domain.ResourcePolicyInformation;
 using Digdir.Domain.Dialogporten.Domain.SubjectResources;
 
 namespace Digdir.Domain.Dialogporten.Application.Externals;
@@ -42,6 +43,7 @@ public interface IDialogDbContext
     DbSet<SubjectResource> SubjectResources { get; }
     DbSet<DialogEndUserContext> DialogEndUserContexts { get; }
     DbSet<LabelAssignmentLog> LabelAssignmentLogs { get; }
+    DbSet<ResourcePolicyInformation> ResourcePolicyInformation { get; }
 
     /// <summary>
     /// Validate a property on the <typeparamref name="TEntity"/> using a lambda
