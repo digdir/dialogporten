@@ -125,6 +125,16 @@ module appInsights '../modules/applicationInsights/create.bicep' = {
   }
 }
 
+module monitorWorkspace '../modules/monitor-workspace/main.bicep' = {
+  scope: resourceGroup
+  name: 'monitorWorkspace'
+  params: {
+    namePrefix: namePrefix
+    location: location
+    tags: tags
+  }
+}
+
 module apimAvailabilityTest '../modules/applicationInsights/availabilityTest.bicep' = {
   scope: resourceGroup
   name: 'apimAvailabilityTest'
