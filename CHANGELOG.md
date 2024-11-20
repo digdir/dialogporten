@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.37.0](https://github.com/digdir/dialogporten/compare/v1.36.0...v1.37.0) (2024-11-20)
+
+
+### Features
+
+* **performance:** Refactoring and tracing ([#1489](https://github.com/digdir/dialogporten/issues/1489)) ([760c345](https://github.com/digdir/dialogporten/commit/760c3452cb851ec2044101e229e45d79b7d5b6c6))
+
 ## [1.36.0](https://github.com/digdir/dialogporten/compare/v1.35.0...v1.36.0) (2024-11-19)
 
 
