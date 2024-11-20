@@ -7,7 +7,7 @@ Before running the performance test, make sure you have met the following prereq
 - [K6 prerequisites](../../README.md#Prerequisites)
 
 ### Test Files
-The test files associated with this performance test is 
+The test files associated with this performance test are 
 - `create-dialog.js`
 - `create-remove-dialog.js`
 - `serviceowner-search.js`
@@ -55,7 +55,7 @@ K6_PROMETHEUS_RW_USERNAME=**
 K6_PROMETHEUS_RW_PASSWORD=**
 K6_PROMETHEUS_RW_SERVER_URL=**
 ```
-4. Run act using the command below. Replace `<path-to-testscript>`, `<vus>`, `<duration>` and `<(personal|enterprise|both)>` with the desired values:
+4. Run `act` using the command below. Replace `<path-to-testscript>`, `<vus>`, `<duration>` and `<(personal|enterprise|both)>` with the desired values:
 ```shell
 act workflow_dispatch -j k6-performance -s GITHUB_TOKEN=`gh auth token` \
 --container-architecture linux/amd64 --artifact-server-path $HOME/.act \ 
@@ -94,7 +94,7 @@ Replace `<(test|staging|yt01)>` with the appropriate environment where the test 
 This script will remove any dialogs created during the performance test, ensuring a clean state for future tests.
 
 ### Test Results
-The test results can be found in the GitHub Actions run log and in AppInsights. Currently, the results are exported to a private Grafana instance. Refer to the `.secrets` file mentioned earlier for more details.
+The test results can be found in the GitHub Actions run log and in App Insights. Currently, the results are exported to a private Grafana instance. Refer to the `.secrets` file mentioned earlier for more details.
 
 ### TODO
 - Fix reporting
