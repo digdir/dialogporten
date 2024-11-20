@@ -1,5 +1,27 @@
 # Changelog
 
+## [1.37.0](https://github.com/digdir/dialogporten/compare/v1.36.0...v1.37.0) (2024-11-20)
+
+
+### Features
+
+* **performance:** Refactoring and tracing ([#1489](https://github.com/digdir/dialogporten/issues/1489)) ([760c345](https://github.com/digdir/dialogporten/commit/760c3452cb851ec2044101e229e45d79b7d5b6c6))
+
+## [1.36.0](https://github.com/digdir/dialogporten/compare/v1.35.0...v1.36.0) (2024-11-19)
+
+
+### Features
+
+* **azure:** create azure monitor workspace ([#1485](https://github.com/digdir/dialogporten/issues/1485)) ([da0aa8f](https://github.com/digdir/dialogporten/commit/da0aa8f974742c146207e64db817bbb6e732dff2))
+
+
+### Bug Fixes
+
+* **app:** Error details missing when user type is unknown ([#1493](https://github.com/digdir/dialogporten/issues/1493)) ([9fbd2cf](https://github.com/digdir/dialogporten/commit/9fbd2cf505cbab1129c0ba75c6a609fc9e3ea44a))
+* **azure:** enable public access for azure monitor ([#1496](https://github.com/digdir/dialogporten/issues/1496)) ([b0d5794](https://github.com/digdir/dialogporten/commit/b0d5794a5c31f979a85f64f512fb3cb2b000b139))
+* **azure:** ensure monitor workspace is reachable ([#1494](https://github.com/digdir/dialogporten/issues/1494)) ([dc7fc1f](https://github.com/digdir/dialogporten/commit/dc7fc1f354f40c1e4dc5f9a1a0e729f1bc3d171d))
+* **webapi:** Require base service provider scope on search endpoint ([#1476](https://github.com/digdir/dialogporten/issues/1476)) ([8c41f3d](https://github.com/digdir/dialogporten/commit/8c41f3d54edc3edec1f48dc1f701e4b83163535a))
+
 ## [1.35.0](https://github.com/digdir/dialogporten/compare/v1.34.0...v1.35.0) (2024-11-15)
 
 
