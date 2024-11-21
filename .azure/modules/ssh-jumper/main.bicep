@@ -19,7 +19,7 @@ param adminLoginGroupObjectId string
 
 var name = '${namePrefix}-ssh-jumper'
 
-resource publicIp 'Microsoft.Network/publicIPAddresses@2023-11-01' = {
+resource publicIp 'Microsoft.Network/publicIPAddresses@2024-03-01' = {
   name: '${name}-ip'
   location: location
   sku: {
@@ -38,7 +38,7 @@ resource publicIp 'Microsoft.Network/publicIPAddresses@2023-11-01' = {
   tags: tags
 }
 
-resource networkInterface 'Microsoft.Network/networkInterfaces@2023-11-01' = {
+resource networkInterface 'Microsoft.Network/networkInterfaces@2024-03-01' = {
   name: name
   location: location
   properties: {

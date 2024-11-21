@@ -3,7 +3,7 @@
 namespace Digdir.Domain.Dialogporten.GraphQL.Common.Authorization;
 
 /// <summary>
-/// This authorisation handler will bypass all requirements
+/// This authorization handler will bypass all requirements
 /// </summary>
 public sealed class AllowAnonymousHandler : IAuthorizationHandler
 {

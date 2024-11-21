@@ -8,7 +8,7 @@ export default function () {
         expectStatusFor(r).to.equal(400);
         expect(r, 'response').to.have.validJsonBody();
         expect(r.json(), 'reponse').to.have.property('errors');
-        expect(r.json().errors, 'error').to.have.property('GuiActions');
+        expect(r.json().errors, 'error').to.have.property('guiActions');
     };
 
     let createDialogWithGuiActions = function(numActions, actionType) {
@@ -23,8 +23,6 @@ export default function () {
 
         return dialog;
     };
-    
-    
 
     describe('Attempt dialog create with two primary actions', () => {
         expectGuiActionErrorResponseForDialog(createDialogWithGuiActions(2, "primary"));

@@ -52,7 +52,6 @@ public class DialogApplication : IAsyncLifetime
 
         AssertionOptions.AssertEquivalencyUsing(options =>
         {
-            //options.ExcludingMissingMembers();
             options.Using<DateTimeOffset>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Expectation, TimeSpan.FromMicroseconds(1)))
                 .WhenTypeIs<DateTimeOffset>();
             return options;
@@ -132,6 +131,8 @@ public class DialogApplication : IAsyncLifetime
             .AddScoped<IOptions<ApplicationSettings>>(_ => CreateApplicationSettingsSubstitute())
             .AddScoped<ITopicEventSender>(_ => Substitute.For<ITopicEventSender>())
             .AddScoped<IPublishEndpoint>(_ => Substitute.For<IPublishEndpoint>())
+            .AddScoped<Lazy<ITopicEventSender>>(sp => new Lazy<ITopicEventSender>(() => sp.GetRequiredService<ITopicEventSender>()))
+            .AddScoped<Lazy<IPublishEndpoint>>(sp => new Lazy<IPublishEndpoint>(() => sp.GetRequiredService<IPublishEndpoint>()))
             .AddScoped<IUnitOfWork, UnitOfWork>()
             .AddScoped<IAltinnAuthorization, LocalDevelopmentAltinnAuthorization>()
             .AddSingleton<IUser, IntegrationTestUser>()

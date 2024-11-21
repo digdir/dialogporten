@@ -44,7 +44,7 @@ internal sealed class OutboxReplicationMapper : IReplicationMapper<OutboxMessage
         return result;
     }
 
-    private static OutboxMessage ToOutboxMessage(IReadOnlyDictionary<string, object?> dic)
+    private static OutboxMessage ToOutboxMessage(Dictionary<string, object?> dic)
     {
         return new OutboxMessage
         {

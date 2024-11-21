@@ -40,7 +40,7 @@ public static class EntityLibraryEfCoreExtensions
     /// Should be called right before saving the entities.
     /// </remarks>
     /// <param name="changeTracker">The change tracker.</param>
-    /// <param name="utcNow">The time in UTC in which the changes tok place.</param>
+    /// <param name="utcNow">The time in UTC in which the changes took place.</param>
     /// <param name="cancellationToken">A token for requesting cancellation of the operation.</param>
     /// <returns>The same <see cref="ChangeTracker"/> instance so that multiple calls can be chained.</returns>
     public static Task<ChangeTracker> HandleAggregateEntities(
@@ -64,7 +64,7 @@ public static class EntityLibraryEfCoreExtensions
     /// Should be called right before saving the entities.
     /// </remarks>
     /// <param name="changeTracker">The change tracker.</param>
-    /// <param name="utcNow">The time in UTC in which the changes tok place.</param>
+    /// <param name="utcNow">The time in UTC in which the changes took place.</param>
     /// <returns>The same <see cref="ChangeTracker"/> instance so that multiple calls can be chained.</returns>
     public static ChangeTracker HandleAuditableEntities(this ChangeTracker changeTracker, DateTimeOffset utcNow)
         => changeTracker.HandleLookupEntities()

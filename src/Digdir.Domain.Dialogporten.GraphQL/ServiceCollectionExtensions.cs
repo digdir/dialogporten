@@ -25,6 +25,7 @@ public static class ServiceCollectionExtensions
             .AddType<SearchDialogValidationError>()
             .AddType<SearchDialogForbidden>()
             .AddType<SetSystemLabelEntityNotFound>()
+            .AddMaxExecutionDepthRule(10)
             .AddInstrumentation()
             .InitializeOnStartup()
             .Services;

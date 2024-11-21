@@ -10,12 +10,12 @@ on:
       environment:
         description: 'Environment'
         required: true
-        default: 'staging'
+        default: 'yt01'
         type: choice
         options:
           - test
           - staging
-          - performance
+          - yt01
       tokens:
         description: 'Tokens to generate; for create dialog, search, none, or both'
         required: true
@@ -26,10 +26,15 @@ on:
           - enterprise
           - personal
           - none
+      tag:
+        description: 'tag the performance test'
+        required: true
+        default: 'Performance test'
+        type: string
       vus:
         description: 'Number of VUS'
         required: true
-        default: 10
+        default: 1
         type: number
       duration:
         description: 'Duration of test, ie 30s, 1m, 10m'
@@ -43,8 +48,12 @@ on:
         type: choice
         options:
           - 'tests/k6/tests/serviceowner/performance/create-dialog.js'
-          - 'tests/k6/tests/enduser/performance/simple-search.js'
+          - 'tests/k6/tests/serviceowner/performance/create-remove-dialog.js'
+          - 'tests/k6/tests/serviceowner/performance/serviceowner-search.js'
+          - 'tests/k6/tests/enduser/performance/enduser-search.js'
+          - 'tests/k6/tests/graphql/performance/graphql-search.js'
 
+run-name: ${{ inputs.tag }} vus ${{ inputs.vus }} duration ${{ inputs.duration }}
 jobs:
   k6-performance:
     name: "Run K6 performance test"

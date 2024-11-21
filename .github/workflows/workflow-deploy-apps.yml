@@ -3,6 +3,10 @@ env:
   AZ_CLI_VERSION: 2.64.0
 on:
   workflow_call:
+    outputs:
+      deployment_executed:
+        description: "Indicates if the deployment was actually executed"
+        value: ${{ jobs.deploy-apps.result == 'success' && jobs.deploy-jobs.result == 'success' && !inputs.dryRun }}
     secrets:
       AZURE_CLIENT_ID:
         required: true
@@ -85,7 +89,7 @@ jobs:
           template: ./.azure/applications/web-api-migration-job/main.bicep
           resourceGroupName: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
           deploymentMode: Incremental
-          deploymentName: "dp-be-${{ inputs.environment }}-web-api-migration-job-${{ inputs.version }}"
+          deploymentName: "web-api-migration-job-${{ inputs.version }}"
           region: ${{ inputs.region }}
           failOnStdErr: false
           additionalArguments: '--what-if'
@@ -106,7 +110,7 @@ jobs:
           template: ./.azure/applications/web-api-migration-job/main.bicep
           resourceGroupName: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
           deploymentMode: Incremental
-          deploymentName: "dp-be-${{ inputs.environment }}-web-api-migration-job-${{ inputs.version }}"
+          deploymentName: "web-api-migration-job-${{ inputs.version }}"
           region: ${{ inputs.region }}
           failOnStdErr: false
           parameters: ./.azure/applications/web-api-migration-job/${{ inputs.environment }}.bicepparam
@@ -183,7 +187,7 @@ jobs:
           template: ./.azure/applications/${{ matrix.name }}/main.bicep
           resourceGroupName: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
           deploymentMode: Incremental
-          deploymentName: dp-be-${{ inputs.environment }}-${{ matrix.name }}-${{ inputs.version }}
+          deploymentName: "${{ matrix.name }}-${{ inputs.version }}"
           region: ${{ inputs.region }}
           failOnStdErr: false
           additionalArguments: '--what-if'
@@ -208,7 +212,7 @@ jobs:
           template: ./.azure/applications/${{ matrix.name }}/main.bicep
           resourceGroupName: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
           deploymentMode: Incremental
-          deploymentName: dp-be-${{ inputs.environment }}-${{ matrix.name }}-${{ inputs.version }}
+          deploymentName: ${{ matrix.name }}-${{ inputs.version }}
           region: ${{ inputs.region }}
           failOnStdErr: false
           parameters: ./.azure/applications/${{ matrix.name }}/${{ inputs.environment }}.bicepparam
@@ -229,7 +233,7 @@ jobs:
         run: az logout
 
   deploy-jobs:
-    name: Deploy jobs to ${{ inputs.environment }}
+    name: Deploy job ${{ matrix.name }} to ${{ inputs.environment }}
     runs-on: ubuntu-latest
     # Should run even though the migration job was skipped
     if: ${{ always() && !failure() && !cancelled() }}
@@ -243,6 +247,7 @@ jobs:
       matrix:
         include:
           - name: sync-subject-resource-mappings-job
+          - name: sync-resource-policy-information-job
     steps:
       - name: "Checkout GitHub Action"
         uses: actions/checkout@v4
@@ -270,7 +275,7 @@ jobs:
           template: ./.azure/applications/${{ matrix.name }}/main.bicep
           resourceGroupName: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
           deploymentMode: Incremental
-          deploymentName: dp-be-${{ inputs.environment }}-${{ matrix.name }}-${{ inputs.version }}
+          deploymentName: ${{ matrix.name }}-${{ inputs.version }}
           region: ${{ inputs.region }}
           failOnStdErr: false
           additionalArguments: '--what-if'
@@ -292,7 +297,7 @@ jobs:
           template: ./.azure/applications/${{ matrix.name }}/main.bicep
           resourceGroupName: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
           deploymentMode: Incremental
-          deploymentName: dp-be-${{ inputs.environment }}-${{ matrix.name }}-${{ inputs.version }}
+          deploymentName: ${{ matrix.name }}-${{ inputs.version }}
           region: ${{ inputs.region }}
           failOnStdErr: false
           parameters: ./.azure/applications/${{ matrix.name }}/${{ inputs.environment }}.bicepparam

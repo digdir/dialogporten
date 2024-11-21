@@ -29,6 +29,7 @@ using Microsoft.Extensions.Options;
 var telemetryConfiguration = TelemetryConfiguration.CreateDefault();
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Warning()
+    .Enrich.WithEnvironmentName()
     .Enrich.FromLogContext()
     .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture)
     .WriteTo.ApplicationInsights(telemetryConfiguration, TelemetryConverter.Traces)
@@ -52,10 +53,16 @@ static void BuildAndRun(string[] args, TelemetryConfiguration telemetryConfigura
 {
     var builder = WebApplication.CreateBuilder(args);
 
+    builder.WebHost.ConfigureKestrel(kestrelOptions =>
+    {
+        kestrelOptions.Limits.MaxRequestBodySize = Constants.MaxRequestBodySize;
+    });
+
     builder.Host.UseSerilog((context, services, configuration) => configuration
         .MinimumLevel.Warning()
         .ReadFrom.Configuration(context.Configuration)
         .ReadFrom.Services(services)
+        .Enrich.WithEnvironmentName()
         .Enrich.FromLogContext()
         .WriteTo.ApplicationInsights(telemetryConfiguration, TelemetryConverter.Traces));
 
@@ -193,7 +200,7 @@ static void BuildAndRun(string[] args, TelemetryConfiguration telemetryConfigura
                 document.Servers.Add(new OpenApiServer { Url = dialogportenBaseUri });
                 document.Generator = null;
                 document.ReplaceProblemDetailsDescriptions();
-                document.ReplaceRequestExampleBodies();
+                document.MakeCollectionsNullable();
             };
         }, uiConfig =>
         {

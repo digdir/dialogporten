@@ -1,5 +1,5 @@
 import { default as http } from 'k6/http';
-import { baseUrlEndUser, baseUrlServiceOwner } from './config.js'
+import { baseUrlEndUser, baseUrlGraphql, baseUrlServiceOwner } from './config.js'
 import { getServiceOwnerTokenFromGenerator, getEnduserTokenFromGenerator } from './token.js'
 import { extend } from './extend.js'
 
@@ -124,4 +124,10 @@ export function patchEU(url, body, params = null, tokenOptions = null) {
 
 export function deleteEU(url, params = null, tokenOptions = null) {
     return http.request('DELETE', baseUrlEndUser + url, getEnduserRequestParams(params, tokenOptions));
+}
+
+export function postGQ(body, params = null) {
+    body = JSON.stringify({ query: body })
+    params = extend(true, {}, params, { headers: { 'Content-Type': 'application/json' }});
+    return http.post(baseUrlGraphql, body, params);
 }

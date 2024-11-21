@@ -24,12 +24,21 @@ param tags object
 
 @export()
 type Sku = {
-  name: 'Standard_B1ms' | 'Standard_B2s' | 'Standard_B4ms' | 'Standard_B8ms' | 'Standard_B12ms' | 'Standard_B16ms' | 'Standard_B20ms'
+  name: 'Standard_B1ms' | 'Standard_B2s' | 'Standard_B4ms' | 'Standard_B8ms' | 'Standard_B12ms' | 'Standard_B16ms' | 'Standard_B20ms' | 'Standard_D4ads_v5'
   tier: 'Burstable' | 'GeneralPurpose' | 'MemoryOptimized'
 }
 
 @description('The SKU of the PostgreSQL server')
 param sku Sku
+
+@description('Enable query performance insight')
+param enableQueryPerformanceInsight bool
+
+@description('Enable index tuning')
+param enableIndexTuning bool
+
+@description('The name of the Application Insights workspace')
+param appInsightWorkspaceName string
 
 @description('The Key Vault to store the PostgreSQL administrator login password')
 @secure()
@@ -50,8 +59,8 @@ var postgresServerName = uniqueResourceName('${namePrefix}-postgres', postgresSe
 //	//wal_level: 'logical'
 //	//max_worker_processes: '16'
 
-//	// The leading theory is that we are using pgoutput as the replication protocol 
-//	// which comes out of the box in postgresql. Therefore we may not need the 
+//	// The leading theory is that we are using pgoutput as the replication protocol
+//	// which comes out of the box in postgresql. Therefore we may not need the
 //	// following two lines.
 //	//'azure.extensions': 'pglogical'
 //	//shared_preload_libraries: 'pglogical'
@@ -104,6 +113,86 @@ resource postgres 'Microsoft.DBforPostgreSQL/flexibleServers@2024-08-01' = {
     }
   }
   tags: tags
+}
+
+resource track_io_timing 'Microsoft.DBforPostgreSQL/flexibleServers/configurations@2024-08-01' = if (enableQueryPerformanceInsight) {
+  parent: postgres
+  name: 'track_io_timing'
+  properties: {
+    value: 'on'
+    source: 'user-override'
+  }
+}
+
+resource pg_qs_query_capture_mode 'Microsoft.DBforPostgreSQL/flexibleServers/configurations@2024-08-01' = if (enableQueryPerformanceInsight) {
+  parent: postgres
+  name: 'pg_qs.query_capture_mode'
+  properties: {
+    value: 'all'
+    source: 'user-override'
+  }
+  dependsOn: [track_io_timing]
+}
+
+resource pgms_wait_sampling_query_capture_mode 'Microsoft.DBforPostgreSQL/flexibleServers/configurations@2024-08-01' = if (enableQueryPerformanceInsight) {
+  parent: postgres
+  name: 'pgms_wait_sampling.query_capture_mode'
+  properties: {
+    value: 'all'
+    source: 'user-override'
+  }
+  dependsOn: [pg_qs_query_capture_mode]
+}
+
+resource index_tuning_mode 'Microsoft.DBforPostgreSQL/flexibleServers/configurations@2024-08-01' = if (enableIndexTuning) {
+  parent: postgres
+  name: 'index_tuning.mode'
+  properties: {
+    value: 'report'
+    source: 'user-override'
+  }
+  dependsOn: [pgms_wait_sampling_query_capture_mode]
+}
+
+resource appInsightsWorkspace 'Microsoft.OperationalInsights/workspaces@2023-09-01' existing = {
+  name: appInsightWorkspaceName
+}
+
+// todo: setting as 0 for now. Will use the log analytics workspace policy instead. Consider setting explicitly in the future.
+var diagnosticSettingRetentionPolicy = {
+  days: 0
+  enabled: false
+}
+
+var diagnosticLogCategories = [
+  'PostgreSQLLogs'
+  'PostgreSQLFlexSessions'
+  'PostgreSQLFlexQueryStoreRuntime'
+  'PostgreSQLFlexQueryStoreWaitStats'
+  'PostgreSQLFlexTableStats'
+  'PostgreSQLFlexDatabaseXacts'
+]
+
+resource diagnosticSetting 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = if (enableQueryPerformanceInsight) {
+  name: 'PostgreSQLDiagnosticSetting'
+  scope: postgres
+  properties: {
+    workspaceId: appInsightsWorkspace.id
+    logs: [for category in diagnosticLogCategories: {
+      category: category
+      enabled: true
+      retentionPolicy: diagnosticSettingRetentionPolicy
+    }]
+    metrics: [
+      {
+        timeGrain: null
+        enabled: true
+        retentionPolicy: diagnosticSettingRetentionPolicy
+        category: 'AllMetrics'
+      }
+    ]
+  }
+  dependsOn: [pgms_wait_sampling_query_capture_mode]
 }
 
 module adoConnectionString '../keyvault/upsertSecret.bicep' = {

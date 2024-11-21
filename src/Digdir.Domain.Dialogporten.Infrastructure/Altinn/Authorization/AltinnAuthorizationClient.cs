@@ -83,6 +83,7 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
         var authorizedPartiesRequest = new AuthorizedPartiesRequest(authenticatedParty);
         var authorizedParties = await _partiesCache.GetOrSetAsync(authorizedPartiesRequest.GenerateCacheKey(), async token
              => await PerformAuthorizedPartiesRequest(authorizedPartiesRequest, token), token: cancellationToken);
+
         return flatten ? GetFlattenedAuthorizedParties(authorizedParties) : authorizedParties;
     }
 

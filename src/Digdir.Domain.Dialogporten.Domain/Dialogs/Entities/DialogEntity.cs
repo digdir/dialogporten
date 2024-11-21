@@ -97,7 +97,7 @@ public sealed class DialogEntity :
             return;
         }
 
-        SeenLog.Add(new()
+        SeenLog.Add(new DialogSeenLog
         {
             EndUserTypeId = userTypeId,
             IsViaServiceOwner = userTypeId == DialogUserType.Values.ServiceOwnerOnBehalfOfPerson,
@@ -108,7 +108,6 @@ public sealed class DialogEntity :
                 ActorName = endUserName
             }
         });
-
         _domainEvents.Add(new DialogSeenDomainEvent(Id, ServiceResource, Party, Process, PrecedingProcess));
     }
 

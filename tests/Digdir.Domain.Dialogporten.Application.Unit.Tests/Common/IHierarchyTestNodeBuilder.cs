@@ -21,14 +21,10 @@ internal sealed class HierarchyTestNodeBuilder : IHierarchyTestNodeBuilder
     }
 
     public static IHierarchyTestNodeBuilder CreateNewHierarchy(int depth, params Guid?[] ids)
-    {
-        return new HierarchyTestNodeBuilder(HierarchyTestNode.CreateDepth(depth, ids: ids));
-    }
+        => new HierarchyTestNodeBuilder(HierarchyTestNode.CreateDepth(depth, ids: ids));
 
     public static IHierarchyTestNodeBuilder CreateNewCyclicHierarchy(int depth, params Guid?[] ids)
-    {
-        return new HierarchyTestNodeBuilder(HierarchyTestNode.CreateCyclicDepth(depth, ids));
-    }
+        => new HierarchyTestNodeBuilder(HierarchyTestNode.CreateCyclicDepth(depth, ids));
 
     IHierarchyTestNodeBuilder IHierarchyTestNodeBuilder.CreateNewHierarchy(int depth, params Guid?[] ids)
     {
