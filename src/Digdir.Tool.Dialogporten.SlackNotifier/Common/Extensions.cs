@@ -17,7 +17,7 @@ internal static class Extensions
 
     public static string ToQueryLink(this AzureAlertDto azureAlertRequest)
     {
-        // This is a predefined KQL query that will get all exceptions for the last 24h, ordered by timestamp descending. 
+        // This is a predefined KQL query that will get all exceptions for the last 24h, ordered by timestamp descending.
         const string encodedKqlQuery = "H4sIAAAAAAAAA0utSE4tKMnMzyvmqlHIL0pJLVJIqlQoycxNLS5JzC1QSEktTgYAbgDhFSQAAAA%253D/timespan/P1D";
         var link = azureAlertRequest.Data.AlertContext.Condition.AllOf
             .Select(x => x.LinkToFilteredSearchResultsUI)

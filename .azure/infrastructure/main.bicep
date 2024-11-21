@@ -55,7 +55,12 @@ import { Sku as SlackNotifierSku } from '../modules/functionApp/slackNotifier.bi
 param slackNotifierSku SlackNotifierSku
 
 import { Sku as PostgresSku } from '../modules/postgreSql/create.bicep'
-param postgresSku PostgresSku
+
+param postgresConfiguration {
+  sku: PostgresSku
+  enableIndexTuning: bool
+  enableQueryPerformanceInsight: bool
+}
 
 import { Sku as ServiceBusSku } from '../modules/serviceBus/main.bicep'
 param serviceBusSku ServiceBusSku
@@ -116,6 +121,16 @@ module appInsights '../modules/applicationInsights/create.bicep' = {
     namePrefix: namePrefix
     location: location
     sku: appInsightsSku
+    tags: tags
+  }
+}
+
+module monitorWorkspace '../modules/monitor-workspace/main.bicep' = {
+  scope: resourceGroup
+  name: 'monitorWorkspace'
+  params: {
+    namePrefix: namePrefix
+    location: location
     tags: tags
   }
 }
@@ -199,7 +214,10 @@ module postgresql '../modules/postgreSql/create.bicep' = {
     administratorLoginPassword: contains(keyVaultSourceKeys, 'dialogportenPgAdminPassword${environment}')
       ? srcKeyVaultResource.getSecret('dialogportenPgAdminPassword${environment}')
       : secrets.dialogportenPgAdminPassword
-    sku: postgresSku
+    sku: postgresConfiguration.sku
+    appInsightWorkspaceName: appInsights.outputs.appInsightsWorkspaceName
+    enableIndexTuning: postgresConfiguration.enableIndexTuning
+    enableQueryPerformanceInsight: postgresConfiguration.enableQueryPerformanceInsight
     subnetId: vnet.outputs.postgresqlSubnetId
     vnetId: vnet.outputs.virtualNetworkId
     tags: tags

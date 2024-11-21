@@ -119,7 +119,7 @@ internal sealed class OutboxCdcSubscription : ICdcSubscription<OutboxMessage>, I
     {
         _logger.LogDebug("Consuming replication slot '{ReplicationSlot}'.", _startupOptions.ReplicationSlotName);
         var slot = new PgOutputReplicationSlot(_startupOptions.ReplicationSlotName);
-        var replicationOptions = new PgOutputReplicationOptions(_startupOptions.PublicationName, 1);
+        var replicationOptions = new PgOutputReplicationOptions(_startupOptions.PublicationName, PgOutputProtocolVersion.V1);
         var transactionBatch = new List<OutboxMessage>();
         await foreach (var message in _replicationConnection.StartReplication(slot, replicationOptions, ct))
         {

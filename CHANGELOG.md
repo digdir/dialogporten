@@ -1,5 +1,112 @@
 # Changelog
 
+## [1.37.0](https://github.com/digdir/dialogporten/compare/v1.36.0...v1.37.0) (2024-11-20)
+
+
+### Features
+
+* **performance:** Refactoring and tracing ([#1489](https://github.com/digdir/dialogporten/issues/1489)) ([760c345](https://github.com/digdir/dialogporten/commit/760c3452cb851ec2044101e229e45d79b7d5b6c6))
+
+## [1.36.0](https://github.com/digdir/dialogporten/compare/v1.35.0...v1.36.0) (2024-11-19)
+
+
+### Features
+
+* **azure:** create azure monitor workspace ([#1485](https://github.com/digdir/dialogporten/issues/1485)) ([da0aa8f](https://github.com/digdir/dialogporten/commit/da0aa8f974742c146207e64db817bbb6e732dff2))
+
+
+### Bug Fixes
+
+* **app:** Error details missing when user type is unknown ([#1493](https://github.com/digdir/dialogporten/issues/1493)) ([9fbd2cf](https://github.com/digdir/dialogporten/commit/9fbd2cf505cbab1129c0ba75c6a609fc9e3ea44a))
+* **azure:** enable public access for azure monitor ([#1496](https://github.com/digdir/dialogporten/issues/1496)) ([b0d5794](https://github.com/digdir/dialogporten/commit/b0d5794a5c31f979a85f64f512fb3cb2b000b139))
+* **azure:** ensure monitor workspace is reachable ([#1494](https://github.com/digdir/dialogporten/issues/1494)) ([dc7fc1f](https://github.com/digdir/dialogporten/commit/dc7fc1f354f40c1e4dc5f9a1a0e729f1bc3d171d))
+* **webapi:** Require base service provider scope on search endpoint ([#1476](https://github.com/digdir/dialogporten/issues/1476)) ([8c41f3d](https://github.com/digdir/dialogporten/commit/8c41f3d54edc3edec1f48dc1f701e4b83163535a))
+
+## [1.35.0](https://github.com/digdir/dialogporten/compare/v1.34.0...v1.35.0) (2024-11-15)
+
+
+### Features
+
+* Synchronization of resource policy metadata ([#1411](https://github.com/digdir/dialogporten/issues/1411)) ([193b764](https://github.com/digdir/dialogporten/commit/193b7645ff45155cedc9a952e4322c5e55642cf8))
+
+## [1.34.0](https://github.com/digdir/dialogporten/compare/v1.33.1...v1.34.0) (2024-11-14)
+
+
+### Features
+
+* **azure:** enable index tuning for postgres in YT ([#1455](https://github.com/digdir/dialogporten/issues/1455)) ([69f01ae](https://github.com/digdir/dialogporten/commit/69f01aedcff0eb28b8bff80dfd1cec709e0c4409))
+
+## [1.33.1](https://github.com/digdir/dialogporten/compare/v1.33.0...v1.33.1) (2024-11-14)
+
+
+### Bug Fixes
+
+* **bicep:** Add missing SKU for postgres create ([#1453](https://github.com/digdir/dialogporten/issues/1453)) ([ab8cb03](https://github.com/digdir/dialogporten/commit/ab8cb03d9430bc34608637921a31bc21591a2f1c))
+
+## [1.33.0](https://github.com/digdir/dialogporten/compare/v1.32.1...v1.33.0) (2024-11-14)
+
+
+### Features
+
+* **azure:** Upgrade postgres SKU for prod/yt01 ([#1450](https://github.com/digdir/dialogporten/issues/1450)) ([b7586f2](https://github.com/digdir/dialogporten/commit/b7586f2ea0da43b4b2819f75f7bb2a9c1dcc5ad0))
+
+## [1.32.1](https://github.com/digdir/dialogporten/compare/v1.32.0...v1.32.1) (2024-11-13)
+
+
+### Bug Fixes
+
+* **azure:** ensure postgres configuration run in sequence ([#1448](https://github.com/digdir/dialogporten/issues/1448)) ([a5a6868](https://github.com/digdir/dialogporten/commit/a5a6868037619172a97ca1d1acde85075825adbd))
+
+## [1.32.0](https://github.com/digdir/dialogporten/compare/v1.31.0...v1.32.0) (2024-11-12)
+
+
+### Features
+
+* **graphql:** Set max execution depth to 10 ([#1431](https://github.com/digdir/dialogporten/issues/1431)) ([8845e49](https://github.com/digdir/dialogporten/commit/8845e49cc687230d72a8eea6e65c9c210886d7ee)), closes [#1430](https://github.com/digdir/dialogporten/issues/1430)
+* **performance:** create a k6 purge script to run after creating dialogs ([#1435](https://github.com/digdir/dialogporten/issues/1435)) ([9555d78](https://github.com/digdir/dialogporten/commit/9555d7861fe54ab1530b2ac4cccbb7c41e868c0b))
+* **performance:** Expands search for serviceowners, improved tracing and logging ([#1439](https://github.com/digdir/dialogporten/issues/1439)) ([b1d6eaf](https://github.com/digdir/dialogporten/commit/b1d6eafa159f35659bbd4d878028e8fb364e2666))
+
+## [1.31.0](https://github.com/digdir/dialogporten/compare/v1.30.0...v1.31.0) (2024-11-08)
+
+
+### Features
+
+* **azure:** enable query performance insights for postgres ([#1417](https://github.com/digdir/dialogporten/issues/1417)) ([bb832d8](https://github.com/digdir/dialogporten/commit/bb832d8d923114e204b448d3fbb6a23c249aad3a))
+
+
+### Bug Fixes
+
+* add timeout for health checks ([#1388](https://github.com/digdir/dialogporten/issues/1388)) ([d68cc65](https://github.com/digdir/dialogporten/commit/d68cc65d937c48859f69666a10cc7f860715ade2))
+* **azure:** set diagnostic setting to allow query perf insights ([#1422](https://github.com/digdir/dialogporten/issues/1422)) ([5919258](https://github.com/digdir/dialogporten/commit/5919258284acd0b1416508839d9802480b2938b5))
+
+## [1.30.0](https://github.com/digdir/dialogporten/compare/v1.29.0...v1.30.0) (2024-11-08)
+
+
+### Features
+
+* **performance:** Performance/create serviceowner search ([#1413](https://github.com/digdir/dialogporten/issues/1413)) ([f1096a4](https://github.com/digdir/dialogporten/commit/f1096a4eec7e7ea0b08d34bd4c9776f3c86fcd66))
+* **webapi:** Combine actorDtos ([#1374](https://github.com/digdir/dialogporten/issues/1374)) ([ca18a99](https://github.com/digdir/dialogporten/commit/ca18a993f21e488bfe4be7c167c822a7954b2683))
+* **webapi:** Limit Content-Length / request body size ([#1416](https://github.com/digdir/dialogporten/issues/1416)) ([44be20a](https://github.com/digdir/dialogporten/commit/44be20affccdb8f879b7118ebd69a72bef9d5f50))
+
+## [1.29.0](https://github.com/digdir/dialogporten/compare/v1.28.3...v1.29.0) (2024-11-06)
+
+
+### Features
+
+* **webAPI:** Make all lists nullable in OpenAPI schema ([#1359](https://github.com/digdir/dialogporten/issues/1359)) ([920d749](https://github.com/digdir/dialogporten/commit/920d7493d09e551a4207f61636a7188fea490223))
+
+
+### Bug Fixes
+
+* **graphql:** ensure gql has maskinporten environment set ([#1408](https://github.com/digdir/dialogporten/issues/1408)) ([152417a](https://github.com/digdir/dialogporten/commit/152417aa100bb779e68d302c0674e2f9ed2b649e))
+
+## [1.28.3](https://github.com/digdir/dialogporten/compare/v1.28.2...v1.28.3) (2024-11-06)
+
+
+### Bug Fixes
+
+* avoid crash if testdata file is empty ([#1403](https://github.com/digdir/dialogporten/issues/1403)) ([e0ea0af](https://github.com/digdir/dialogporten/commit/e0ea0afad3a62cf67b495c68405eb420586f80a3))
+
 ## [1.28.2](https://github.com/digdir/dialogporten/compare/v1.28.1...v1.28.2) (2024-11-05)
 
 

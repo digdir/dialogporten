@@ -204,7 +204,7 @@ export default function () {
         expectStatusFor(r).to.equal(400);
         expect(r, 'response').to.have.validJsonBody();
         expect(r.json(), 'response json').to.have.property("errors");
-        expect(r.json().errors, 'errors').to.have.property("Process").with.lengthOf(1);
+        expect(r.json().errors, 'errors').to.have.property("process").with.lengthOf(1);
     })
 
     describe('List with process filter', () => {

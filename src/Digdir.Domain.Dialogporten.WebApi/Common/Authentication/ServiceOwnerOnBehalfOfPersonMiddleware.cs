@@ -37,7 +37,7 @@ public sealed class ServiceOwnerOnBehalfOfPersonMiddleware
         if (!NorwegianPersonIdentifier.TryParse(endUserIdQuery.First(), out var endUserId))
         {
             context.Response.StatusCode = StatusCodes.Status400BadRequest;
-            context.Response.WriteAsJsonAsync(context.ResponseBuilder(
+            context.Response.WriteAsJsonAsync(context.GetResponseOrDefault(
                 context.Response.StatusCode,
                 [
                     new("EndUserId",

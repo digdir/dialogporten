@@ -33,11 +33,11 @@ internal sealed class NotificationProcessingContextFactory : INotificationProces
         bool isFirstAttempt = false,
         CancellationToken cancellationToken = default)
     {
-        var transaction = GetOrAddContext(domainEvent.EventId);
+        var context = GetOrAddContext(domainEvent.EventId);
         try
         {
-            await transaction.Initialize(isFirstAttempt, cancellationToken);
-            return transaction;
+            await context.Initialize(isFirstAttempt, cancellationToken);
+            return context;
         }
         catch (Exception)
         {
@@ -63,14 +63,22 @@ internal sealed class NotificationProcessingContextFactory : INotificationProces
 
     private NotificationProcessingContext GetOrAddContext(Guid eventId)
     {
+        // We keep a strong reference to the context while it's being
+        // created to avoid it being garbage collected prematurely
+        // before we can extract it from the weak reference.
+        NotificationProcessingContext? context;
         var weakContext = _contextByEventId.AddOrUpdate(eventId,
-            addValueFactory: eventId => new(new(_serviceScopeFactory, eventId, onDispose: RemoveContext)),
+            addValueFactory: eventId => new(context = new(_serviceScopeFactory, eventId, onDispose: RemoveContext)),
             // Should the context, for whatever reason, be garbage collected or
             // disposed but still remain in the dictionary, we should recreate it.
-            updateValueFactory: (eventId, old) => TryGetLiveContext(old, out _) ? old
-                : new(new(_serviceScopeFactory, eventId, onDispose: RemoveContext)));
+            updateValueFactory: (eventId, old) => TryGetLiveContext(old, out context) ? old
+                : new(context = new(_serviceScopeFactory, eventId, onDispose: RemoveContext)));
 
-        return TryGetLiveContext(weakContext, out var context) ? context
+        // Although we have a strong reference to __a__ context, it may
+        // not be __the__ context in a multithreaded scenario. We
+        // know that the actual context is in the week reference, so
+        // we extract it before returning.
+        return TryGetLiveContext(weakContext, out context) ? context
             : throw new UnreachableException("The context should be alive at this point in time.");
     }
 
@@ -78,9 +86,9 @@ internal sealed class NotificationProcessingContextFactory : INotificationProces
 
     private async Task ContextHousekeeping()
     {
-        try
+        while (await WaitForNextTickSafeAsync())
         {
-            while (await _cleanupTimer.WaitForNextTickAsync(_cleanupCts.Token))
+            try
             {
                 foreach (var key in _contextByEventId.Keys)
                 {
@@ -91,14 +99,26 @@ internal sealed class NotificationProcessingContextFactory : INotificationProces
                     }
                 }
             }
+            catch (OperationCanceledException)
+            {
+                // Ignore
+            }
+            catch (Exception e)
+            {
+                _logger.LogWarning(e, "An unhandled exception occurred in the notification processing context cleanup task. This may lead to memory leaks.");
+            }
+        }
+    }
+
+    private async ValueTask<bool> WaitForNextTickSafeAsync()
+    {
+        try
+        {
+            return await _cleanupTimer.WaitForNextTickAsync(_cleanupCts.Token);
         }
         catch (OperationCanceledException)
         {
-            // Ignore
-        }
-        catch (Exception e)
-        {
-            _logger.LogWarning(e, "An unhandled exception occurred in the notification processing context cleanup task. This may lead to memory leaks.");
+            return false;
         }
     }
 

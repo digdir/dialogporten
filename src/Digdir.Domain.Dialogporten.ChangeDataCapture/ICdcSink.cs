@@ -41,7 +41,7 @@ internal sealed class MassTransitSink : ICdcSink<OutboxMessage>
     public async Task Send(IReadOnlyCollection<OutboxMessage> outboxMessages, CancellationToken cancellationToken)
     {
         // TODO: Configure uri
-        // TODO: Configure transacton
+        // TODO: Configure transaction
         var endpoint = await _sender.GetSendEndpoint(new Uri("exchange:Digdir.Domain.Dialogporten.Service"));
         await endpoint.SendBatch(
             outboxMessages,

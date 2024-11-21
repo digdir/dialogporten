@@ -173,7 +173,6 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
     }
     private void UpdateLabel(DialogEntity dialog)
     {
-
         if (!_user.TryGetOrganizationNumber(out var organizationNumber))
         {
             _domainContext.AddError(new DomainFailure(nameof(organizationNumber), "Cannot find organization number for current user."));

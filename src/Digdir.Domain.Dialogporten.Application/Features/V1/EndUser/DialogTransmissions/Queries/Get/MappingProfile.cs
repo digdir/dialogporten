@@ -14,9 +14,6 @@ public sealed class MappingProfile : Profile
             .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.TypeId))
             .ForMember(dest => dest.DeletedAt, opt => opt.MapFrom(src => src.Dialog.DeletedAt));
 
-        CreateMap<DialogTransmissionSenderActor, SenderActorDto>()
-            .ForMember(dest => dest.ActorType, opt => opt.MapFrom(src => src.ActorTypeId));
-
         CreateMap<List<DialogTransmissionContent>?, ContentDto?>()
             .ConvertUsing<TransmissionContentOutputConverter<ContentDto>>();
 

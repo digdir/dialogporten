@@ -7,7 +7,7 @@ param location string
 @description('Tags to apply to resources')
 param tags object
 
-resource defaultNSG 'Microsoft.Network/networkSecurityGroups@2023-11-01' = {
+resource defaultNSG 'Microsoft.Network/networkSecurityGroups@2024-03-01' = {
   name: '${namePrefix}-default-nsg'
   location: location
   properties: {
@@ -47,7 +47,7 @@ resource defaultNSG 'Microsoft.Network/networkSecurityGroups@2023-11-01' = {
 }
 
 // https://learn.microsoft.com/en-us/azure/container-apps/firewall-integration?tabs=consumption-only
-resource containerAppEnvironmentNSG 'Microsoft.Network/networkSecurityGroups@2023-11-01' = {
+resource containerAppEnvironmentNSG 'Microsoft.Network/networkSecurityGroups@2024-03-01' = {
   name: '${namePrefix}-container-app-environment-nsg'
   location: location
   properties: {
@@ -146,7 +146,7 @@ resource containerAppEnvironmentNSG 'Microsoft.Network/networkSecurityGroups@202
   tags: tags
 }
 
-resource postgresqlNSG 'Microsoft.Network/networkSecurityGroups@2023-11-01' = {
+resource postgresqlNSG 'Microsoft.Network/networkSecurityGroups@2024-03-01' = {
   name: '${namePrefix}-postgresql-nsg'
   location: location
   properties: {
@@ -185,7 +185,7 @@ resource postgresqlNSG 'Microsoft.Network/networkSecurityGroups@2023-11-01' = {
   tags: tags
 }
 
-resource redisNSG 'Microsoft.Network/networkSecurityGroups@2023-11-01' = {
+resource redisNSG 'Microsoft.Network/networkSecurityGroups@2024-03-01' = {
   name: '${namePrefix}-redis-nsg'
   location: location
   properties: {
@@ -224,7 +224,7 @@ resource redisNSG 'Microsoft.Network/networkSecurityGroups@2023-11-01' = {
   tags: tags
 }
 
-resource serviceBusNSG 'Microsoft.Network/networkSecurityGroups@2023-11-01' = {
+resource serviceBusNSG 'Microsoft.Network/networkSecurityGroups@2024-03-01' = {
   name: '${namePrefix}-service-bus-nsg'
   location: location
   properties: {
@@ -263,7 +263,45 @@ resource serviceBusNSG 'Microsoft.Network/networkSecurityGroups@2023-11-01' = {
   tags: tags
 }
 
-resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-11-01' = {
+resource monitorNSG 'Microsoft.Network/networkSecurityGroups@2024-03-01' = {
+  name: '${namePrefix}-monitor-nsg'
+  location: location
+  properties: {
+    securityRules: [
+      {
+        name: 'AllowAnyCustomAnyInbound'
+        type: 'Microsoft.Network/networkSecurityGroups/securityRules'
+        properties: {
+          protocol: '*'
+          sourcePortRange: '*'
+          destinationPortRange: '*'
+          sourceAddressPrefix: '*'
+          destinationAddressPrefix: '*'
+          access: 'Allow'
+          priority: 100
+          direction: 'Inbound'
+        }
+      }
+      {
+        name: 'AllowAnyCustomAnyOutbound'
+        type: 'Microsoft.Network/networkSecurityGroups/securityRules'
+        properties: {
+          protocol: '*'
+          sourcePortRange: '*'
+          destinationPortRange: '*'
+          sourceAddressPrefix: '*'
+          destinationAddressPrefix: '*'
+          access: 'Allow'
+          priority: 100
+          direction: 'Outbound'
+        }
+      }
+    ]
+  }
+  tags: tags
+}
+
+resource virtualNetwork 'Microsoft.Network/virtualNetworks@2024-03-01' = {
   name: '${namePrefix}-vnet'
   location: location
   properties: {
@@ -334,6 +372,17 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-11-01' = {
           }
         }
       }
+      {
+        name: 'monitorSubnet'
+        properties: {
+          addressPrefix: '10.0.6.0/24'
+          networkSecurityGroup: {
+            id: monitorNSG.id
+          }
+          privateEndpointNetworkPolicies: 'Disabled'
+          privateLinkServiceNetworkPolicies: 'Enabled'
+        }
+      }
     ]
   }
   tags: tags
@@ -361,4 +410,9 @@ output redisSubnetId string = resourceId(
   'Microsoft.Network/virtualNetworks/subnets',
   virtualNetwork.name,
   'redisSubnet'
+)
+output monitorSubnetId string = resourceId(
+  'Microsoft.Network/virtualNetworks/subnets',
+  virtualNetwork.name,
+  'monitorSubnet'
 )

@@ -1,3 +1,4 @@
+using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Events;
 using MediatR;
@@ -14,6 +15,7 @@ internal sealed class DialogEventToAltinnForwarder : DomainEventToAltinnForwarde
     public DialogEventToAltinnForwarder(ICloudEventBus cloudEventBus, IOptions<ApplicationSettings> settings)
         : base(cloudEventBus, settings) { }
 
+    [EndpointName("DialogEventToAltinnForwarder_DialogCreatedDomainEvent")]
     public async Task Handle(DialogCreatedDomainEvent domainEvent, CancellationToken cancellationToken)
     {
         var cloudEvent = new CloudEvent
@@ -30,6 +32,7 @@ internal sealed class DialogEventToAltinnForwarder : DomainEventToAltinnForwarde
         await CloudEventBus.Publish(cloudEvent, cancellationToken);
     }
 
+    [EndpointName("DialogEventToAltinnForwarder_DialogUpdatedDomainEvent")]
     public async Task Handle(DialogUpdatedDomainEvent domainEvent, CancellationToken cancellationToken)
     {
         var cloudEvent = new CloudEvent
@@ -47,6 +50,7 @@ internal sealed class DialogEventToAltinnForwarder : DomainEventToAltinnForwarde
         await CloudEventBus.Publish(cloudEvent, cancellationToken);
     }
 
+    [EndpointName("DialogEventToAltinnForwarder_DialogSeenDomainEvent")]
     public async Task Handle(DialogSeenDomainEvent domainEvent, CancellationToken cancellationToken)
     {
         var cloudEvent = new CloudEvent
@@ -64,6 +68,7 @@ internal sealed class DialogEventToAltinnForwarder : DomainEventToAltinnForwarde
         await CloudEventBus.Publish(cloudEvent, cancellationToken);
     }
 
+    [EndpointName("DialogEventToAltinnForwarder_DialogDeletedDomainEvent")]
     public async Task Handle(DialogDeletedDomainEvent domainEvent, CancellationToken cancellationToken)
     {
         var cloudEvent = new CloudEvent

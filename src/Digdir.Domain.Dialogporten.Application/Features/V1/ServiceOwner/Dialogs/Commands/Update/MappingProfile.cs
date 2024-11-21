@@ -66,20 +66,12 @@ internal sealed class MappingProfile : Profile
             .ForMember(dest => dest.Type, opt => opt.Ignore())
             .ForMember(dest => dest.TypeId, opt => opt.MapFrom(src => src.Type));
 
-        CreateMap<ActivityPerformedByActorDto, DialogActivityPerformedByActor>()
-            .ForMember(dest => dest.ActorType, opt => opt.Ignore())
-            .ForMember(dest => dest.ActorTypeId, opt => opt.MapFrom(src => src.ActorType));
-
         CreateMap<TransmissionDto, DialogTransmission>()
             .ForMember(dest => dest.Type, opt => opt.Ignore())
             .ForMember(dest => dest.TypeId, opt => opt.MapFrom(src => src.Type));
 
         CreateMap<TransmissionContentDto?, List<DialogTransmissionContent>?>()
             .ConvertUsing<TransmissionContentInputConverter<TransmissionContentDto>>();
-
-        CreateMap<TransmissionSenderActorDto, DialogTransmissionSenderActor>()
-            .ForMember(dest => dest.ActorType, opt => opt.Ignore())
-            .ForMember(dest => dest.ActorTypeId, opt => opt.MapFrom(src => src.ActorType));
 
         CreateMap<TransmissionAttachmentDto, DialogTransmissionAttachment>();
 
@@ -98,7 +90,6 @@ internal sealed class MappingProfile : Profile
             .ForMember(dest => dest.Transmissions, opt => opt.Ignore());
         CreateMap<Queries.Get.SearchTagDto, SearchTagDto>();
         CreateMap<Queries.Get.DialogActivityDto, ActivityDto>();
-        CreateMap<Queries.Get.DialogActivityPerformedByActorDto, ActivityPerformedByActorDto>();
         CreateMap<Queries.Get.DialogApiActionDto, ApiActionDto>();
         CreateMap<Queries.Get.DialogApiActionEndpointDto, ApiActionEndpointDto>();
         CreateMap<Queries.Get.DialogGuiActionDto, GuiActionDto>();

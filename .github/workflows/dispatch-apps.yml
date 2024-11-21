@@ -23,6 +23,9 @@ on:
         required: false
         type: boolean
 
+
+run-name: Dispatch apps ${{ inputs.environment }} v${{ inputs.version }}
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref_name }}-${{ inputs.environment }}
 
@@ -37,7 +40,7 @@ jobs:
     uses: ./.github/workflows/workflow-get-current-version.yml
 
   deploy-apps:
-    name: Deploy apps to ${{ inputs.environment }}
+    name: Deploy apps to ${{ inputs.environment }} (v${{ inputs.version }})
     needs:
       - generate-git-short-sha
       - get-current-version

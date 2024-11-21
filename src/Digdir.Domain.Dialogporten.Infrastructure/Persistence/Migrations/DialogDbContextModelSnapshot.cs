@@ -1240,6 +1240,39 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.UseTphMappingStrategy();
                 });
 
+            modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.ResourcePolicyInformation.ResourcePolicyInformation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("current_timestamp at time zone 'utc'");
+
+                    b.Property<int>("MinimumAuthenticationLevel")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Resource")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("current_timestamp at time zone 'utc'");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Resource")
+                        .IsUnique();
+
+                    b.ToTable("ResourcePolicyInformation");
+                });
+
             modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.SubjectResources.SubjectResource", b =>
                 {
                     b.Property<Guid>("Id")

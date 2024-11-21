@@ -40,19 +40,11 @@ internal sealed class MappingProfile : Profile
             .ForMember(dest => dest.Type, opt => opt.Ignore())
             .ForMember(dest => dest.TypeId, opt => opt.MapFrom(src => src.Type));
 
-        CreateMap<ActivityPerformedByActorDto, DialogActivityPerformedByActor>()
-            .ForMember(dest => dest.ActorType, opt => opt.Ignore())
-            .ForMember(dest => dest.ActorTypeId, opt => opt.MapFrom(src => src.ActorType));
-
         CreateMap<ContentDto?, List<DialogContent>?>()
             .ConvertUsing<DialogContentInputConverter<ContentDto>>();
 
         CreateMap<TransmissionContentDto?, List<DialogTransmissionContent>?>()
             .ConvertUsing<TransmissionContentInputConverter<TransmissionContentDto>>();
-
-        CreateMap<TransmissionSenderActorDto, DialogTransmissionSenderActor>()
-            .ForMember(dest => dest.ActorType, opt => opt.Ignore())
-            .ForMember(dest => dest.ActorTypeId, opt => opt.MapFrom(src => src.ActorType));
 
         CreateMap<TransmissionDto, DialogTransmission>()
             .ForMember(dest => dest.Type, opt => opt.Ignore())

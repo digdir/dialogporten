@@ -146,7 +146,7 @@
           "CONNECT"
         ]
       },
-      "MicrosoftAspNetCoreJsonPatchOperations_Operation": {
+      "JsonPatchOperations_Operation": {
         "additionalProperties": false,
         "properties": {
           "from": {
@@ -158,7 +158,7 @@
             "type": "string"
           },
           "operationType": {
-            "$ref": "#/components/schemas/MicrosoftAspNetCoreJsonPatchOperations_OperationType"
+            "$ref": "#/components/schemas/JsonPatchOperations_OperationType"
           },
           "path": {
             "nullable": true,
@@ -170,7 +170,7 @@
         },
         "type": "object"
       },
-      "MicrosoftAspNetCoreJsonPatchOperations_OperationType": {
+      "JsonPatchOperations_OperationType": {
         "description": "",
         "enum": [
           "Add",
@@ -211,6 +211,7 @@
             "items": {
               "$ref": "#/components/schemas/V1EndUserDialogsQueriesSearch_Dialog"
             },
+            "nullable": true,
             "type": "array"
           },
           "orderBy": {
@@ -239,6 +240,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsQueriesSearch_Dialog"
             },
+            "nullable": true,
             "type": "array"
           },
           "orderBy": {
@@ -260,6 +262,7 @@
             "items": {
               "$ref": "#/components/schemas/ProblemDetails_Error"
             },
+            "nullable": true,
             "type": "array"
           },
           "instance": {
@@ -320,6 +323,7 @@
             "items": {
               "$ref": "#/components/schemas/V1CommonLocalizations_Localization"
             },
+            "nullable": true,
             "type": "array"
           }
         },
@@ -340,6 +344,32 @@
         },
         "type": "object"
       },
+      "V1EndUserCommonActors_Actor": {
+        "additionalProperties": false,
+        "properties": {
+          "actorId": {
+            "description": "The identifier of the person or organization that sent the transmission. Mutually exclusive with ActorName.\nMight be omitted if ActorType is \u0022ServiceOwner\u0022.",
+            "example": "urn:altinn:person:identifier-no:12018212345",
+            "nullable": true,
+            "type": "string"
+          },
+          "actorName": {
+            "description": "Specifies the name of the entity that sent the transmission. Mutually exclusive with ActorId. If ActorId\nis supplied, the name will be automatically populated from the name registries.",
+            "example": "Ola Nordmann",
+            "nullable": true,
+            "type": "string"
+          },
+          "actorType": {
+            "description": "The type of actor that sent the transmission.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/Actors_ActorType"
+              }
+            ]
+          }
+        },
+        "type": "object"
+      },
       "V1EndUserDialogActivitiesQueriesGet_Activity": {
         "additionalProperties": false,
         "properties": {
@@ -352,6 +382,7 @@
             "items": {
               "$ref": "#/components/schemas/V1CommonLocalizations_Localization"
             },
+            "nullable": true,
             "type": "array"
           },
           "extendedType": {
@@ -364,7 +395,7 @@
             "type": "string"
           },
           "performedBy": {
-            "$ref": "#/components/schemas/V1EndUserDialogActivitiesQueriesGet_PerformedByActor"
+            "$ref": "#/components/schemas/V1EndUserCommonActors_Actor"
           },
           "transmissionId": {
             "format": "guid",
@@ -373,27 +404,6 @@
           },
           "type": {
             "$ref": "#/components/schemas/DialogsEntitiesActivities_DialogActivityType"
-          }
-        },
-        "type": "object"
-      },
-      "V1EndUserDialogActivitiesQueriesGet_PerformedByActor": {
-        "additionalProperties": false,
-        "properties": {
-          "actorId": {
-            "nullable": true,
-            "type": "string"
-          },
-          "actorName": {
-            "nullable": true,
-            "type": "string"
-          },
-          "actorType": {
-            "$ref": "#/components/schemas/Actors_ActorType"
-          },
-          "id": {
-            "format": "guid",
-            "type": "string"
           }
         },
         "type": "object"
@@ -443,19 +453,7 @@
             "type": "string"
           },
           "performedBy": {
-            "$ref": "#/components/schemas/V1EndUserDialogLabelAssignmentLogQueriesSearch_LabelAssignmentLogActor"
-          }
-        },
-        "type": "object"
-      },
-      "V1EndUserDialogLabelAssignmentLogQueriesSearch_LabelAssignmentLogActor": {
-        "additionalProperties": false,
-        "properties": {
-          "actorId": {
-            "type": "string"
-          },
-          "actorName": {
-            "type": "string"
+            "$ref": "#/components/schemas/V1EndUserCommonActors_Actor"
           }
         },
         "type": "object"
@@ -478,23 +476,7 @@
             "type": "string"
           },
           "seenBy": {
-            "$ref": "#/components/schemas/V1EndUserDialogSeenLogsQueriesGet_SeenLogSeenByActor"
-          }
-        },
-        "type": "object"
-      },
-      "V1EndUserDialogSeenLogsQueriesGet_SeenLogSeenByActor": {
-        "additionalProperties": false,
-        "properties": {
-          "actorId": {
-            "type": "string"
-          },
-          "actorName": {
-            "type": "string"
-          },
-          "id": {
-            "format": "guid",
-            "type": "string"
+            "$ref": "#/components/schemas/V1EndUserCommonActors_Actor"
           }
         },
         "type": "object"
@@ -517,23 +499,7 @@
             "type": "string"
           },
           "seenBy": {
-            "$ref": "#/components/schemas/V1EndUserDialogSeenLogsQueriesSearch_SeenLogSeenByActor"
-          }
-        },
-        "type": "object"
-      },
-      "V1EndUserDialogSeenLogsQueriesSearch_SeenLogSeenByActor": {
-        "additionalProperties": false,
-        "properties": {
-          "actorId": {
-            "type": "string"
-          },
-          "actorName": {
-            "type": "string"
-          },
-          "id": {
-            "format": "guid",
-            "type": "string"
+            "$ref": "#/components/schemas/V1EndUserCommonActors_Actor"
           }
         },
         "type": "object"
@@ -604,6 +570,7 @@
             "items": {
               "$ref": "#/components/schemas/V1EndUserDialogsQueriesGet_DialogActivity"
             },
+            "nullable": true,
             "type": "array"
           },
           "apiActions": {
@@ -611,6 +578,7 @@
             "items": {
               "$ref": "#/components/schemas/V1EndUserDialogsQueriesGet_DialogApiAction"
             },
+            "nullable": true,
             "type": "array"
           },
           "attachments": {
@@ -618,6 +586,7 @@
             "items": {
               "$ref": "#/components/schemas/V1EndUserDialogsQueriesGet_DialogAttachment"
             },
+            "nullable": true,
             "type": "array"
           },
           "content": {
@@ -668,6 +637,7 @@
             "items": {
               "$ref": "#/components/schemas/V1EndUserDialogsQueriesGet_DialogGuiAction"
             },
+            "nullable": true,
             "type": "array"
           },
           "id": {
@@ -713,6 +683,7 @@
             "items": {
               "$ref": "#/components/schemas/V1EndUserDialogsQueriesGet_DialogSeenLog"
             },
+            "nullable": true,
             "type": "array"
           },
           "serviceResource": {
@@ -745,6 +716,7 @@
             "items": {
               "$ref": "#/components/schemas/V1EndUserDialogsQueriesGet_DialogTransmission"
             },
+            "nullable": true,
             "type": "array"
           },
           "updatedAt": {
@@ -770,6 +742,7 @@
             "items": {
               "$ref": "#/components/schemas/V1CommonLocalizations_Localization"
             },
+            "nullable": true,
             "type": "array"
           },
           "extendedType": {
@@ -787,7 +760,7 @@
             "description": "The actor that performed the activity.",
             "oneOf": [
               {
-                "$ref": "#/components/schemas/V1EndUserDialogsQueriesGet_DialogActivityPerformedByActor"
+                "$ref": "#/components/schemas/V1EndUserCommonActors_Actor"
               }
             ]
           },
@@ -802,30 +775,6 @@
             "oneOf": [
               {
                 "$ref": "#/components/schemas/DialogsEntitiesActivities_DialogActivityType"
-              }
-            ]
-          }
-        },
-        "type": "object"
-      },
-      "V1EndUserDialogsQueriesGet_DialogActivityPerformedByActor": {
-        "additionalProperties": false,
-        "properties": {
-          "actorId": {
-            "description": "The identifier of the person or organization that performed the activity.\nMay be omitted if ActorType is \u0022ServiceOwner\u0022.",
-            "nullable": true,
-            "type": "string"
-          },
-          "actorName": {
-            "description": "The name of the person or organization that performed the activity.\nOnly set if the actor type is \u0022PartyRepresentative\u0022.",
-            "nullable": true,
-            "type": "string"
-          },
-          "actorType": {
-            "description": "The type of actor that performed the activity.",
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/Actors_ActorType"
               }
             ]
           }
@@ -851,6 +800,7 @@
             "items": {
               "$ref": "#/components/schemas/V1EndUserDialogsQueriesGet_DialogApiActionEndpoint"
             },
+            "nullable": true,
             "type": "array"
           },
           "id": {
@@ -931,6 +881,7 @@
             "items": {
               "$ref": "#/components/schemas/V1CommonLocalizations_Localization"
             },
+            "nullable": true,
             "type": "array"
           },
           "id": {
@@ -943,6 +894,7 @@
             "items": {
               "$ref": "#/components/schemas/V1EndUserDialogsQueriesGet_DialogAttachmentUrl"
             },
+            "nullable": true,
             "type": "array"
           }
         },
@@ -1034,6 +986,7 @@
             "items": {
               "$ref": "#/components/schemas/V1CommonLocalizations_Localization"
             },
+            "nullable": true,
             "type": "array"
           },
           "url": {
@@ -1071,24 +1024,9 @@
             "description": "The actor that saw the dialog revision.",
             "oneOf": [
               {
-                "$ref": "#/components/schemas/V1EndUserDialogsQueriesGet_DialogSeenLogSeenByActor"
+                "$ref": "#/components/schemas/V1EndUserCommonActors_Actor"
               }
             ]
-          }
-        },
-        "type": "object"
-      },
-      "V1EndUserDialogsQueriesGet_DialogSeenLogSeenByActor": {
-        "additionalProperties": false,
-        "properties": {
-          "actorId": {
-            "description": "The identifier of the person/business that saw the dialog revision.",
-            "example": "urn:altinn:person:identifier-no:01125512345\nurn:altinn:organization:identifier-no:912345678",
-            "type": "string"
-          },
-          "actorName": {
-            "description": "The natural name of the person/business that saw the dialog revision.",
-            "type": "string"
           }
         },
         "type": "object"
@@ -1101,6 +1039,7 @@
             "items": {
               "$ref": "#/components/schemas/V1EndUserDialogsQueriesGet_DialogTransmissionAttachment"
             },
+            "nullable": true,
             "type": "array"
           },
           "authorizationAttribute": {
@@ -1147,7 +1086,7 @@
             "description": "The actor that sent the transmission.",
             "oneOf": [
               {
-                "$ref": "#/components/schemas/V1EndUserDialogsQueriesGet_DialogTransmissionSenderActor"
+                "$ref": "#/components/schemas/V1EndUserCommonActors_Actor"
               }
             ]
           },
@@ -1170,6 +1109,7 @@
             "items": {
               "$ref": "#/components/schemas/V1CommonLocalizations_Localization"
             },
+            "nullable": true,
             "type": "array"
           },
           "id": {
@@ -1182,6 +1122,7 @@
             "items": {
               "$ref": "#/components/schemas/V1EndUserDialogsQueriesGet_DialogTransmissionAttachmentUrl"
             },
+            "nullable": true,
             "type": "array"
           }
         },
@@ -1238,30 +1179,6 @@
             "oneOf": [
               {
                 "$ref": "#/components/schemas/V1CommonContent_ContentValue"
-              }
-            ]
-          }
-        },
-        "type": "object"
-      },
-      "V1EndUserDialogsQueriesGet_DialogTransmissionSenderActor": {
-        "additionalProperties": false,
-        "properties": {
-          "actorId": {
-            "description": "The identifier of the person or organization that sent the transmission.",
-            "example": "urn:altinn:person:identifier-no:12018212345",
-            "type": "string"
-          },
-          "actorName": {
-            "description": "The name of the person or organization that sent the transmission.",
-            "example": "Ola Nordmann",
-            "type": "string"
-          },
-          "actorType": {
-            "description": "The type of actor that sent the transmission.",
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/Actors_ActorType"
               }
             ]
           }
@@ -1394,6 +1311,7 @@
             "items": {
               "$ref": "#/components/schemas/V1EndUserDialogsQueriesSearch_DialogSeenLog"
             },
+            "nullable": true,
             "type": "array"
           },
           "serviceResource": {
@@ -1444,6 +1362,7 @@
             "items": {
               "$ref": "#/components/schemas/V1CommonLocalizations_Localization"
             },
+            "nullable": true,
             "type": "array"
           },
           "extendedType": {
@@ -1461,7 +1380,7 @@
             "description": "The actor that performed the activity.",
             "oneOf": [
               {
-                "$ref": "#/components/schemas/V1EndUserDialogsQueriesSearch_DialogActivityPerformedByActor"
+                "$ref": "#/components/schemas/V1EndUserCommonActors_Actor"
               }
             ]
           },
@@ -1476,30 +1395,6 @@
             "oneOf": [
               {
                 "$ref": "#/components/schemas/DialogsEntitiesActivities_DialogActivityType"
-              }
-            ]
-          }
-        },
-        "type": "object"
-      },
-      "V1EndUserDialogsQueriesSearch_DialogActivityPerformedByActor": {
-        "additionalProperties": false,
-        "properties": {
-          "actorId": {
-            "description": "The identifier of the person or organization that performed the activity.\nMay be omitted if ActorType is \u0022ServiceOwner\u0022.",
-            "nullable": true,
-            "type": "string"
-          },
-          "actorName": {
-            "description": "The name of the person or organization that performed the activity.\nOnly set if the actor type is \u0022PartyRepresentative\u0022.",
-            "nullable": true,
-            "type": "string"
-          },
-          "actorType": {
-            "description": "What type of actor performed the activity.",
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/Actors_ActorType"
               }
             ]
           }
@@ -1532,24 +1427,9 @@
             "description": "The actor that saw the dialog revision.",
             "oneOf": [
               {
-                "$ref": "#/components/schemas/V1EndUserDialogsQueriesSearch_DialogSeenLogSeenByActor"
+                "$ref": "#/components/schemas/V1EndUserCommonActors_Actor"
               }
             ]
-          }
-        },
-        "type": "object"
-      },
-      "V1EndUserDialogsQueriesSearch_DialogSeenLogSeenByActor": {
-        "additionalProperties": false,
-        "properties": {
-          "actorId": {
-            "description": "The identifier of the person/business that saw the dialog revision.",
-            "example": "urn:altinn:person:identifier-no:01125512345\nurn:altinn:organization:identifier-no:912345678",
-            "type": "string"
-          },
-          "actorName": {
-            "description": "The natural name of the person/business that saw the dialog revision.",
-            "type": "string"
           }
         },
         "type": "object"
@@ -1576,6 +1456,7 @@
             "items": {
               "$ref": "#/components/schemas/V1CommonLocalizations_Localization"
             },
+            "nullable": true,
             "type": "array"
           },
           "id": {
@@ -1588,6 +1469,7 @@
             "items": {
               "$ref": "#/components/schemas/V1EndUserDialogTransmissionsQueriesGet_AttachmentUrl"
             },
+            "nullable": true,
             "type": "array"
           }
         },
@@ -1655,33 +1537,6 @@
         },
         "type": "object"
       },
-      "V1EndUserDialogTransmissionsQueriesGet_SenderActor": {
-        "additionalProperties": false,
-        "properties": {
-          "actorId": {
-            "description": "The identifier of the actor.",
-            "type": "string"
-          },
-          "actorName": {
-            "description": "The name of the actor.",
-            "type": "string"
-          },
-          "actorType": {
-            "description": "The type of the actor.",
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/Actors_ActorType"
-              }
-            ]
-          },
-          "id": {
-            "description": "The unique identifier for the sender actor in UUIDv7 format.",
-            "format": "guid",
-            "type": "string"
-          }
-        },
-        "type": "object"
-      },
       "V1EndUserDialogTransmissionsQueriesGet_Transmission": {
         "additionalProperties": false,
         "properties": {
@@ -1690,6 +1545,7 @@
             "items": {
               "$ref": "#/components/schemas/V1EndUserDialogTransmissionsQueriesGet_Attachment"
             },
+            "nullable": true,
             "type": "array"
           },
           "authorizationAttribute": {
@@ -1741,7 +1597,7 @@
             "description": "The sender actor information for the transmission.",
             "oneOf": [
               {
-                "$ref": "#/components/schemas/V1EndUserDialogTransmissionsQueriesGet_SenderActor"
+                "$ref": "#/components/schemas/V1EndUserCommonActors_Actor"
               }
             ]
           },
@@ -1764,6 +1620,7 @@
             "items": {
               "$ref": "#/components/schemas/V1CommonLocalizations_Localization"
             },
+            "nullable": true,
             "type": "array"
           },
           "id": {
@@ -1776,6 +1633,7 @@
             "items": {
               "$ref": "#/components/schemas/V1EndUserDialogTransmissionsQueriesSearch_AttachmentUrl"
             },
+            "nullable": true,
             "type": "array"
           }
         },
@@ -1843,33 +1701,6 @@
         },
         "type": "object"
       },
-      "V1EndUserDialogTransmissionsQueriesSearch_SenderActor": {
-        "additionalProperties": false,
-        "properties": {
-          "actorId": {
-            "description": "The identifier of the actor.",
-            "type": "string"
-          },
-          "actorName": {
-            "description": "The name of the actor.",
-            "type": "string"
-          },
-          "actorType": {
-            "description": "The type of the actor.",
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/Actors_ActorType"
-              }
-            ]
-          },
-          "id": {
-            "description": "The unique identifier for the sender actor in UUIDv7 format.",
-            "format": "guid",
-            "type": "string"
-          }
-        },
-        "type": "object"
-      },
       "V1EndUserDialogTransmissionsQueriesSearch_Transmission": {
         "additionalProperties": false,
         "properties": {
@@ -1878,6 +1709,7 @@
             "items": {
               "$ref": "#/components/schemas/V1EndUserDialogTransmissionsQueriesSearch_Attachment"
             },
+            "nullable": true,
             "type": "array"
           },
           "authorizationAttribute": {
@@ -1929,7 +1761,7 @@
             "description": "The sender actor information for the transmission.",
             "oneOf": [
               {
-                "$ref": "#/components/schemas/V1EndUserDialogTransmissionsQueriesSearch_SenderActor"
+                "$ref": "#/components/schemas/V1EndUserCommonActors_Actor"
               }
             ]
           },
@@ -1991,7 +1823,34 @@
             "items": {
               "$ref": "#/components/schemas/V1EndUserPartiesQueriesGet_AuthorizedParty"
             },
+            "nullable": true,
             "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "V1ServiceOwnerCommonActors_Actor": {
+        "additionalProperties": false,
+        "properties": {
+          "actorId": {
+            "description": "The identifier of the person or organization that sent the transmission. Mutually exclusive with ActorName.\nMight be omitted if ActorType is \u0022ServiceOwner\u0022.",
+            "example": "urn:altinn:person:identifier-no:12018212345",
+            "nullable": true,
+            "type": "string"
+          },
+          "actorName": {
+            "description": "Specifies the name of the entity that sent the transmission. Mutually exclusive with ActorId. If ActorId\nis supplied, the name will be automatically populated from the name registries.",
+            "example": "Ola Nordmann",
+            "nullable": true,
+            "type": "string"
+          },
+          "actorType": {
+            "description": "The type of actor that sent the transmission.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/Actors_ActorType"
+              }
+            ]
           }
         },
         "type": "object"
@@ -2010,6 +1869,7 @@
             "items": {
               "$ref": "#/components/schemas/V1CommonLocalizations_Localization"
             },
+            "nullable": true,
             "type": "array"
           },
           "extendedType": {
@@ -2029,7 +1889,7 @@
             "description": "The actor that performed the activity.",
             "oneOf": [
               {
-                "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsUpdate_ActivityPerformedByActor"
+                "$ref": "#/components/schemas/V1ServiceOwnerCommonActors_Actor"
               }
             ]
           },
@@ -2067,6 +1927,7 @@
             "items": {
               "$ref": "#/components/schemas/V1CommonLocalizations_Localization"
             },
+            "nullable": true,
             "type": "array"
           },
           "extendedType": {
@@ -2079,7 +1940,7 @@
             "type": "string"
           },
           "performedBy": {
-            "$ref": "#/components/schemas/V1ServiceOwnerDialogActivitiesQueriesGet_ActivityPerformedByActor"
+            "$ref": "#/components/schemas/V1ServiceOwnerCommonActors_Actor"
           },
           "transmissionId": {
             "format": "guid",
@@ -2088,27 +1949,6 @@
           },
           "type": {
             "$ref": "#/components/schemas/DialogsEntitiesActivities_DialogActivityType"
-          }
-        },
-        "type": "object"
-      },
-      "V1ServiceOwnerDialogActivitiesQueriesGet_ActivityPerformedByActor": {
-        "additionalProperties": false,
-        "properties": {
-          "actorId": {
-            "nullable": true,
-            "type": "string"
-          },
-          "actorName": {
-            "nullable": true,
-            "type": "string"
-          },
-          "actorType": {
-            "$ref": "#/components/schemas/Actors_ActorType"
-          },
-          "id": {
-            "format": "guid",
-            "type": "string"
           }
         },
         "type": "object"
@@ -2180,6 +2020,7 @@
             "items": {
               "$ref": "#/components/schemas/V1CommonLocalizations_Localization"
             },
+            "nullable": true,
             "type": "array"
           },
           "extendedType": {
@@ -2199,7 +2040,7 @@
             "description": "The actor that performed the activity.",
             "oneOf": [
               {
-                "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsCreate_ActivityPerformedByActor"
+                "$ref": "#/components/schemas/V1ServiceOwnerCommonActors_Actor"
               }
             ]
           },
@@ -2214,32 +2055,6 @@
             "oneOf": [
               {
                 "$ref": "#/components/schemas/DialogsEntitiesActivities_DialogActivityType"
-              }
-            ]
-          }
-        },
-        "type": "object"
-      },
-      "V1ServiceOwnerDialogsCommandsCreate_ActivityPerformedByActor": {
-        "additionalProperties": false,
-        "properties": {
-          "actorId": {
-            "description": "The identifier of the person or organization that performed the activity. Mutually exclusive with ActorName.\nMight be omitted if ActorType is \u0022ServiceOwner\u0022.",
-            "example": "urn:altinn:person:identifier-no:12018212345",
-            "nullable": true,
-            "type": "string"
-          },
-          "actorName": {
-            "description": "Specifies the name of the entity that performed the activity. Mutually exclusive with ActorId. If ActorId\nis supplied, the name will be automatically populated from the name registries.",
-            "example": "Ola Nordmann",
-            "nullable": true,
-            "type": "string"
-          },
-          "actorType": {
-            "description": "What type of actor performed the activity.",
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/Actors_ActorType"
               }
             ]
           }
@@ -2265,6 +2080,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsCreate_ApiActionEndpoint"
             },
+            "nullable": true,
             "type": "array"
           }
         },
@@ -2330,6 +2146,7 @@
             "items": {
               "$ref": "#/components/schemas/V1CommonLocalizations_Localization"
             },
+            "nullable": true,
             "type": "array"
           },
           "urls": {
@@ -2337,6 +2154,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsCreate_AttachmentUrl"
             },
+            "nullable": true,
             "type": "array"
           }
         },
@@ -2433,6 +2251,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsCreate_Activity"
             },
+            "nullable": true,
             "type": "array"
           },
           "apiActions": {
@@ -2440,6 +2259,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsCreate_ApiAction"
             },
+            "nullable": true,
             "type": "array"
           },
           "attachments": {
@@ -2447,6 +2267,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsCreate_Attachment"
             },
+            "nullable": true,
             "type": "array"
           },
           "content": {
@@ -2492,6 +2313,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsCreate_GuiAction"
             },
+            "nullable": true,
             "type": "array"
           },
           "id": {
@@ -2527,6 +2349,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsCreate_SearchTag"
             },
+            "nullable": true,
             "type": "array"
           },
           "serviceResource": {
@@ -2556,6 +2379,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsCreate_Transmission"
             },
+            "nullable": true,
             "type": "array"
           },
           "updatedAt": {
@@ -2621,6 +2445,7 @@
             "items": {
               "$ref": "#/components/schemas/V1CommonLocalizations_Localization"
             },
+            "nullable": true,
             "type": "array"
           },
           "url": {
@@ -2650,6 +2475,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsCreate_TransmissionAttachment"
             },
+            "nullable": true,
             "type": "array"
           },
           "authorizationAttribute": {
@@ -2694,7 +2520,7 @@
             "description": "The actor that sent the transmission.",
             "oneOf": [
               {
-                "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsCreate_TransmissionSenderActor"
+                "$ref": "#/components/schemas/V1ServiceOwnerCommonActors_Actor"
               }
             ]
           },
@@ -2717,6 +2543,7 @@
             "items": {
               "$ref": "#/components/schemas/V1CommonLocalizations_Localization"
             },
+            "nullable": true,
             "type": "array"
           },
           "id": {
@@ -2731,6 +2558,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsCreate_TransmissionAttachmentUrl"
             },
+            "nullable": true,
             "type": "array"
           }
         },
@@ -2792,32 +2620,6 @@
         },
         "type": "object"
       },
-      "V1ServiceOwnerDialogsCommandsCreate_TransmissionSenderActor": {
-        "additionalProperties": false,
-        "properties": {
-          "actorId": {
-            "description": "The identifier of the person or organization that sent the transmission. Mutually exclusive with ActorName.\nMight be omitted if ActorType is \u0022ServiceOwner\u0022.",
-            "example": "urn:altinn:person:identifier-no:12018212345",
-            "nullable": true,
-            "type": "string"
-          },
-          "actorName": {
-            "description": "Specifies the name of the entity that sent the transmission. Mutually exclusive with ActorId. If ActorId\nis supplied, the name will be automatically populated from the name registries.",
-            "example": "Ola Nordmann",
-            "nullable": true,
-            "type": "string"
-          },
-          "actorType": {
-            "description": "The type of actor that sent the transmission.",
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/Actors_ActorType"
-              }
-            ]
-          }
-        },
-        "type": "object"
-      },
       "V1ServiceOwnerDialogsCommandsUpdate_Activity": {
         "additionalProperties": false,
         "properties": {
@@ -2832,6 +2634,7 @@
             "items": {
               "$ref": "#/components/schemas/V1CommonLocalizations_Localization"
             },
+            "nullable": true,
             "type": "array"
           },
           "extendedType": {
@@ -2851,7 +2654,7 @@
             "description": "The actor that performed the activity.",
             "oneOf": [
               {
-                "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsUpdate_ActivityPerformedByActor"
+                "$ref": "#/components/schemas/V1ServiceOwnerCommonActors_Actor"
               }
             ]
           },
@@ -2866,32 +2669,6 @@
             "oneOf": [
               {
                 "$ref": "#/components/schemas/DialogsEntitiesActivities_DialogActivityType"
-              }
-            ]
-          }
-        },
-        "type": "object"
-      },
-      "V1ServiceOwnerDialogsCommandsUpdate_ActivityPerformedByActor": {
-        "additionalProperties": false,
-        "properties": {
-          "actorId": {
-            "description": "The identifier of the person or organization that performed the activity. Mutually exclusive with ActorName.\nMight be omitted if ActorType is \u0022ServiceOwner\u0022.",
-            "example": "urn:altinn:person:identifier-no:12018212345",
-            "nullable": true,
-            "type": "string"
-          },
-          "actorName": {
-            "description": "Specifies the name of the entity that performed the activity. Mutually exclusive with ActorId. If ActorId\nis supplied, the name will be automatically populated from the name registries.",
-            "example": "Ola Nordmann",
-            "nullable": true,
-            "type": "string"
-          },
-          "actorType": {
-            "description": "What type of actor performed the activity.",
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/Actors_ActorType"
               }
             ]
           }
@@ -2917,6 +2694,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsUpdate_ApiActionEndpoint"
             },
+            "nullable": true,
             "type": "array"
           },
           "id": {
@@ -2996,6 +2774,7 @@
             "items": {
               "$ref": "#/components/schemas/V1CommonLocalizations_Localization"
             },
+            "nullable": true,
             "type": "array"
           },
           "id": {
@@ -3010,6 +2789,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsUpdate_AttachmentUrl"
             },
+            "nullable": true,
             "type": "array"
           }
         },
@@ -3113,6 +2893,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsUpdate_Activity"
             },
+            "nullable": true,
             "type": "array"
           },
           "apiActions": {
@@ -3120,6 +2901,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsUpdate_ApiAction"
             },
+            "nullable": true,
             "type": "array"
           },
           "attachments": {
@@ -3127,6 +2909,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsUpdate_Attachment"
             },
+            "nullable": true,
             "type": "array"
           },
           "content": {
@@ -3166,6 +2949,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsUpdate_GuiAction"
             },
+            "nullable": true,
             "type": "array"
           },
           "progress": {
@@ -3179,6 +2963,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsUpdate_SearchTag"
             },
+            "nullable": true,
             "type": "array"
           },
           "status": {
@@ -3194,6 +2979,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsUpdate_Transmission"
             },
+            "nullable": true,
             "type": "array"
           },
           "visibleFrom": {
@@ -3260,6 +3046,7 @@
             "items": {
               "$ref": "#/components/schemas/V1CommonLocalizations_Localization"
             },
+            "nullable": true,
             "type": "array"
           },
           "url": {
@@ -3289,6 +3076,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsUpdate_TransmissionAttachment"
             },
+            "nullable": true,
             "type": "array"
           },
           "authorizationAttribute": {
@@ -3333,7 +3121,7 @@
             "description": "The actor that sent the transmission.",
             "oneOf": [
               {
-                "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsUpdate_TransmissionSenderActor"
+                "$ref": "#/components/schemas/V1ServiceOwnerCommonActors_Actor"
               }
             ]
           },
@@ -3356,6 +3144,7 @@
             "items": {
               "$ref": "#/components/schemas/V1CommonLocalizations_Localization"
             },
+            "nullable": true,
             "type": "array"
           },
           "id": {
@@ -3370,6 +3159,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsUpdate_TransmissionAttachmentUrl"
             },
+            "nullable": true,
             "type": "array"
           }
         },
@@ -3431,32 +3221,6 @@
         },
         "type": "object"
       },
-      "V1ServiceOwnerDialogsCommandsUpdate_TransmissionSenderActor": {
-        "additionalProperties": false,
-        "properties": {
-          "actorId": {
-            "description": "The identifier of the person or organization that sent the transmission. Mutually exclusive with ActorName.\nMight be omitted if ActorType is \u0022ServiceOwner\u0022.",
-            "example": "urn:altinn:person:identifier-no:12018212345",
-            "nullable": true,
-            "type": "string"
-          },
-          "actorName": {
-            "description": "Specifies the name of the entity that sent the transmission. Mutually exclusive with ActorId. If ActorId\nis supplied, the name will be automatically populated from the name registries.",
-            "example": "Ola Nordmann",
-            "nullable": true,
-            "type": "string"
-          },
-          "actorType": {
-            "description": "The type of actor that sent the transmission.",
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/Actors_ActorType"
-              }
-            ]
-          }
-        },
-        "type": "object"
-      },
       "V1ServiceOwnerDialogSeenLogsQueriesGet_SeenLog": {
         "additionalProperties": false,
         "properties": {
@@ -3473,39 +3237,7 @@
             "type": "string"
           },
           "seenBy": {
-            "$ref": "#/components/schemas/V1ServiceOwnerDialogSeenLogsQueriesGet_SeenLogSeenByActor"
-          }
-        },
-        "type": "object"
-      },
-      "V1ServiceOwnerDialogSeenLogsQueriesGet_SeenLogSeenByActor": {
-        "additionalProperties": false,
-        "properties": {
-          "actorId": {
-            "type": "string"
-          },
-          "actorName": {
-            "type": "string"
-          },
-          "id": {
-            "format": "guid",
-            "type": "string"
-          }
-        },
-        "type": "object"
-      },
-      "V1ServiceOwnerDialogSeenLogsQueriesSearch_SeenByActor": {
-        "additionalProperties": false,
-        "properties": {
-          "actorId": {
-            "type": "string"
-          },
-          "actorName": {
-            "type": "string"
-          },
-          "id": {
-            "format": "guid",
-            "type": "string"
+            "$ref": "#/components/schemas/V1ServiceOwnerCommonActors_Actor"
           }
         },
         "type": "object"
@@ -3526,7 +3258,7 @@
             "type": "string"
           },
           "seenBy": {
-            "$ref": "#/components/schemas/V1ServiceOwnerDialogSeenLogsQueriesSearch_SeenByActor"
+            "$ref": "#/components/schemas/V1ServiceOwnerCommonActors_Actor"
           }
         },
         "type": "object"
@@ -3597,6 +3329,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsQueriesGet_DialogActivity"
             },
+            "nullable": true,
             "type": "array"
           },
           "apiActions": {
@@ -3604,6 +3337,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsQueriesGet_DialogApiAction"
             },
+            "nullable": true,
             "type": "array"
           },
           "attachments": {
@@ -3611,6 +3345,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsQueriesGet_DialogAttachment"
             },
+            "nullable": true,
             "type": "array"
           },
           "content": {
@@ -3662,6 +3397,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsQueriesGet_DialogGuiAction"
             },
+            "nullable": true,
             "type": "array"
           },
           "id": {
@@ -3715,6 +3451,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsQueriesGet_DialogSeenLog"
             },
+            "nullable": true,
             "type": "array"
           },
           "serviceResource": {
@@ -3747,6 +3484,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsQueriesGet_DialogTransmission"
             },
+            "nullable": true,
             "type": "array"
           },
           "updatedAt": {
@@ -3779,6 +3517,7 @@
             "items": {
               "$ref": "#/components/schemas/V1CommonLocalizations_Localization"
             },
+            "nullable": true,
             "type": "array"
           },
           "extendedType": {
@@ -3796,7 +3535,7 @@
             "description": "The actor that performed the activity.",
             "oneOf": [
               {
-                "$ref": "#/components/schemas/V1ServiceOwnerDialogsQueriesGet_DialogActivityPerformedByActor"
+                "$ref": "#/components/schemas/V1ServiceOwnerCommonActors_Actor"
               }
             ]
           },
@@ -3811,30 +3550,6 @@
             "oneOf": [
               {
                 "$ref": "#/components/schemas/DialogsEntitiesActivities_DialogActivityType"
-              }
-            ]
-          }
-        },
-        "type": "object"
-      },
-      "V1ServiceOwnerDialogsQueriesGet_DialogActivityPerformedByActor": {
-        "additionalProperties": false,
-        "properties": {
-          "actorId": {
-            "description": "The identifier of the person or organization that performed the activity.\nMay be omitted if ActorType is \u0022ServiceOwner\u0022.",
-            "nullable": true,
-            "type": "string"
-          },
-          "actorName": {
-            "description": "The name of the person or organization that performed the activity.\nOnly set if the actor type is \u0022PartyRepresentative\u0022.",
-            "nullable": true,
-            "type": "string"
-          },
-          "actorType": {
-            "description": "What type of actor performed the activity.",
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/Actors_ActorType"
               }
             ]
           }
@@ -3860,6 +3575,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsQueriesGet_DialogApiActionEndpoint"
             },
+            "nullable": true,
             "type": "array"
           },
           "id": {
@@ -3940,6 +3656,7 @@
             "items": {
               "$ref": "#/components/schemas/V1CommonLocalizations_Localization"
             },
+            "nullable": true,
             "type": "array"
           },
           "id": {
@@ -3952,6 +3669,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsQueriesGet_DialogAttachmentUrl"
             },
+            "nullable": true,
             "type": "array"
           }
         },
@@ -4044,6 +3762,7 @@
             "items": {
               "$ref": "#/components/schemas/V1CommonLocalizations_Localization"
             },
+            "nullable": true,
             "type": "array"
           },
           "url": {
@@ -4080,24 +3799,9 @@
             "description": "The actor that saw the dialog revision.",
             "oneOf": [
               {
-                "$ref": "#/components/schemas/V1ServiceOwnerDialogsQueriesGet_DialogSeenLogSeenByActor"
+                "$ref": "#/components/schemas/V1ServiceOwnerCommonActors_Actor"
               }
             ]
-          }
-        },
-        "type": "object"
-      },
-      "V1ServiceOwnerDialogsQueriesGet_DialogSeenLogSeenByActor": {
-        "additionalProperties": false,
-        "properties": {
-          "actorId": {
-            "description": "The identifier of the person/business that saw the dialog revision.",
-            "example": "urn:altinn:person:identifier-no:01125512345\nurn:altinn:organization:identifier-no:912345678",
-            "type": "string"
-          },
-          "actorName": {
-            "description": "The natural name of the person/business that saw the dialog revision.",
-            "type": "string"
           }
         },
         "type": "object"
@@ -4110,6 +3814,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsQueriesGet_DialogTransmissionAttachment"
             },
+            "nullable": true,
             "type": "array"
           },
           "authorizationAttribute": {
@@ -4157,7 +3862,7 @@
             "description": "The actor that sent the transmission.",
             "oneOf": [
               {
-                "$ref": "#/components/schemas/V1ServiceOwnerDialogsQueriesGet_DialogTransmissionSenderActor"
+                "$ref": "#/components/schemas/V1ServiceOwnerCommonActors_Actor"
               }
             ]
           },
@@ -4180,6 +3885,7 @@
             "items": {
               "$ref": "#/components/schemas/V1CommonLocalizations_Localization"
             },
+            "nullable": true,
             "type": "array"
           },
           "id": {
@@ -4192,6 +3898,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsQueriesGet_DialogTransmissionAttachmentUrl"
             },
+            "nullable": true,
             "type": "array"
           }
         },
@@ -4248,30 +3955,6 @@
             "oneOf": [
               {
                 "$ref": "#/components/schemas/V1CommonContent_ContentValue"
-              }
-            ]
-          }
-        },
-        "type": "object"
-      },
-      "V1ServiceOwnerDialogsQueriesGet_DialogTransmissionSenderActor": {
-        "additionalProperties": false,
-        "properties": {
-          "actorId": {
-            "description": "The identifier of the person or organization that sent the transmission.",
-            "example": "urn:altinn:person:identifier-no:12018212345",
-            "type": "string"
-          },
-          "actorName": {
-            "description": "The name of the person or organization that sent the transmission.",
-            "example": "Ola Nordmann",
-            "type": "string"
-          },
-          "actorType": {
-            "description": "The type of actor that sent the transmission.",
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/Actors_ActorType"
               }
             ]
           }
@@ -4420,6 +4103,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsQueriesSearch_DialogSeenLog"
             },
+            "nullable": true,
             "type": "array"
           },
           "serviceResource": {
@@ -4476,6 +4160,7 @@
             "items": {
               "$ref": "#/components/schemas/V1CommonLocalizations_Localization"
             },
+            "nullable": true,
             "type": "array"
           },
           "extendedType": {
@@ -4493,7 +4178,7 @@
             "description": "The actor that performed the activity.",
             "oneOf": [
               {
-                "$ref": "#/components/schemas/V1ServiceOwnerDialogsQueriesSearch_DialogActivityPerformedByActor"
+                "$ref": "#/components/schemas/V1ServiceOwnerCommonActors_Actor"
               }
             ]
           },
@@ -4508,30 +4193,6 @@
             "oneOf": [
               {
                 "$ref": "#/components/schemas/DialogsEntitiesActivities_DialogActivityType"
-              }
-            ]
-          }
-        },
-        "type": "object"
-      },
-      "V1ServiceOwnerDialogsQueriesSearch_DialogActivityPerformedByActor": {
-        "additionalProperties": false,
-        "properties": {
-          "actorId": {
-            "description": "The identifier of the person or organization that performed the activity.\nMay be omitted if ActorType is \u0022ServiceOwner\u0022.",
-            "nullable": true,
-            "type": "string"
-          },
-          "actorName": {
-            "description": "The name of the person or organization that performed the activity.\nOnly set if the actor type is \u0022PartyRepresentative\u0022.",
-            "nullable": true,
-            "type": "string"
-          },
-          "actorType": {
-            "description": "What type of actor performed the activity.",
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/Actors_ActorType"
               }
             ]
           }
@@ -4564,24 +4225,9 @@
             "description": "The actor that saw the dialog revision.",
             "oneOf": [
               {
-                "$ref": "#/components/schemas/V1ServiceOwnerDialogsQueriesSearch_DialogSeenLogSeenByActor"
+                "$ref": "#/components/schemas/V1ServiceOwnerCommonActors_Actor"
               }
             ]
-          }
-        },
-        "type": "object"
-      },
-      "V1ServiceOwnerDialogsQueriesSearch_DialogSeenLogSeenByActor": {
-        "additionalProperties": false,
-        "properties": {
-          "actorId": {
-            "description": "The identifier of the person/business that saw the dialog revision.",
-            "example": "urn:altinn:person:identifier-no:01125512345\nurn:altinn:organization:identifier-no:912345678",
-            "type": "string"
-          },
-          "actorName": {
-            "description": "The natural name of the person/business that saw the dialog revision.",
-            "type": "string"
           }
         },
         "type": "object"
@@ -4603,6 +4249,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsUpdate_TransmissionAttachment"
             },
+            "nullable": true,
             "type": "array"
           },
           "authorizationAttribute": {
@@ -4647,7 +4294,7 @@
             "description": "The actor that sent the transmission.",
             "oneOf": [
               {
-                "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsUpdate_TransmissionSenderActor"
+                "$ref": "#/components/schemas/V1ServiceOwnerCommonActors_Actor"
               }
             ]
           },
@@ -4670,6 +4317,7 @@
             "items": {
               "$ref": "#/components/schemas/V1CommonLocalizations_Localization"
             },
+            "nullable": true,
             "type": "array"
           },
           "id": {
@@ -4682,6 +4330,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogTransmissionsQueriesGet_AttachmentUrl"
             },
+            "nullable": true,
             "type": "array"
           }
         },
@@ -4749,33 +4398,6 @@
         },
         "type": "object"
       },
-      "V1ServiceOwnerDialogTransmissionsQueriesGet_SenderActor": {
-        "additionalProperties": false,
-        "properties": {
-          "actorId": {
-            "description": "The identifier of the actor.",
-            "type": "string"
-          },
-          "actorName": {
-            "description": "The name of the actor.",
-            "type": "string"
-          },
-          "actorType": {
-            "description": "The type of the actor.",
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/Actors_ActorType"
-              }
-            ]
-          },
-          "id": {
-            "description": "The unique identifier for the sender actor in UUIDv7 format.",
-            "format": "guid",
-            "type": "string"
-          }
-        },
-        "type": "object"
-      },
       "V1ServiceOwnerDialogTransmissionsQueriesGet_Transmission": {
         "additionalProperties": false,
         "properties": {
@@ -4784,6 +4406,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogTransmissionsQueriesGet_Attachment"
             },
+            "nullable": true,
             "type": "array"
           },
           "authorizationAttribute": {
@@ -4831,7 +4454,7 @@
             "description": "The sender actor information for the transmission.",
             "oneOf": [
               {
-                "$ref": "#/components/schemas/V1ServiceOwnerDialogTransmissionsQueriesGet_SenderActor"
+                "$ref": "#/components/schemas/V1ServiceOwnerCommonActors_Actor"
               }
             ]
           },
@@ -4854,6 +4477,7 @@
             "items": {
               "$ref": "#/components/schemas/V1CommonLocalizations_Localization"
             },
+            "nullable": true,
             "type": "array"
           },
           "id": {
@@ -4866,6 +4490,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogTransmissionsQueriesSearch_AttachmentUrl"
             },
+            "nullable": true,
             "type": "array"
           }
         },
@@ -4933,33 +4558,6 @@
         },
         "type": "object"
       },
-      "V1ServiceOwnerDialogTransmissionsQueriesSearch_SenderActor": {
-        "additionalProperties": false,
-        "properties": {
-          "actorId": {
-            "description": "The identifier of the actor.",
-            "type": "string"
-          },
-          "actorName": {
-            "description": "The name of the actor.",
-            "type": "string"
-          },
-          "actorType": {
-            "description": "The type of the actor.",
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/Actors_ActorType"
-              }
-            ]
-          },
-          "id": {
-            "description": "The unique identifier for the sender actor in UUIDv7 format.",
-            "format": "guid",
-            "type": "string"
-          }
-        },
-        "type": "object"
-      },
       "V1ServiceOwnerDialogTransmissionsQueriesSearch_Transmission": {
         "additionalProperties": false,
         "properties": {
@@ -4968,6 +4566,7 @@
             "items": {
               "$ref": "#/components/schemas/V1ServiceOwnerDialogTransmissionsQueriesSearch_Attachment"
             },
+            "nullable": true,
             "type": "array"
           },
           "authorizationAttribute": {
@@ -5015,7 +4614,7 @@
             "description": "The sender actor information for the transmission.",
             "oneOf": [
               {
-                "$ref": "#/components/schemas/V1ServiceOwnerDialogTransmissionsQueriesSearch_SenderActor"
+                "$ref": "#/components/schemas/V1ServiceOwnerCommonActors_Actor"
               }
             ]
           },
@@ -5037,6 +4636,7 @@
             "items": {
               "$ref": "#/components/schemas/V1WellKnownJwksQueriesGet_Jwk"
             },
+            "nullable": true,
             "type": "array"
           }
         },
@@ -5292,7 +4892,7 @@
             }
           },
           {
-            "description": "Filter by Display state ",
+            "description": "Filter by Display state",
             "explode": true,
             "in": "query",
             "name": "systemLabel",
@@ -6419,7 +6019,7 @@
       },
       "patch": {
         "description": "Patches a dialog aggregate with a RFC6902 JSON Patch document. The patch document must be a JSON array of RFC6902 operations.\nSee [https://tools.ietf.org/html/rfc6902](https://tools.ietf.org/html/rfc6902) for more information.\n            \nOptimistic concurrency control is implemented using the If-Match header. Supply the Revision value from the GetDialog endpoint to ensure that the dialog is not modified/deleted by another request in the meantime.",
-        "operationId": "PatchDialogs_Patch",
+        "operationId": "V1ServiceOwnerDialogsPatchDialog",
         "parameters": [
           {
             "in": "path",
@@ -6448,7 +6048,7 @@
             "application/json": {
               "schema": {
                 "items": {
-                  "$ref": "#/components/schemas/MicrosoftAspNetCoreJsonPatchOperations_Operation"
+                  "$ref": "#/components/schemas/JsonPatchOperations_Operation"
                 },
                 "type": "array"
               }
@@ -6545,140 +6145,6 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "example": {
-                "Activities": [
-                  {
-                    "CreatedAt": null,
-                    "Description": [
-                      {
-                        "LanguageCode": "en",
-                        "Value": "Some description"
-                      },
-                      {
-                        "LanguageCode": "nb",
-                        "Value": "En beskrivelse"
-                      }
-                    ],
-                    "ExtendedType": null,
-                    "Id": "8b95d42d-d2b6-4c01-8ca0-a817a4b3c50d",
-                    "PerformedBy": {
-                      "ActorId": null,
-                      "ActorName": null,
-                      "ActorType": 2
-                    },
-                    "TransmissionId": null,
-                    "Type": 3
-                  }
-                ],
-                "ApiActions": [
-                  {
-                    "Action": "submit",
-                    "AuthorizationAttribute": null,
-                    "Endpoints": [
-                      {
-                        "Deprecated": false,
-                        "DocumentationUrl": "https://example.com/some-api-action-doc",
-                        "HttpMethod": 2,
-                        "Id": null,
-                        "RequestSchema": "https://example.com/some-api-action-request-schema",
-                        "ResponseSchema": "https://example.com/some-api-action-response-schema",
-                        "SunsetAt": null,
-                        "Url": "https://example.com/some-api-action",
-                        "Version": "20231015"
-                      }
-                    ],
-                    "Id": "948b07ba-1a82-403e-8eaa-2e5784af07a9"
-                  }
-                ],
-                "Attachments": [
-                  {
-                    "DisplayName": [
-                      {
-                        "LanguageCode": "en",
-                        "Value": "Some display name"
-                      }
-                    ],
-                    "Id": "02a72809-eddd-4192-864d-8f1755d72f4e",
-                    "Urls": [
-                      {
-                        "ConsumerType": 0,
-                        "Id": "858177cb-8584-4d10-a086-3a5defa7a6c3",
-                        "MediaType": null,
-                        "Url": "https://example.com/some-url"
-                      }
-                    ]
-                  }
-                ],
-                "Content": {
-                  "AdditionalInfo": {
-                    "MediaType": "text/markdown",
-                    "Value": [
-                      {
-                        "LanguageCode": "en",
-                        "Value": "Some description with *markdown* support"
-                      }
-                    ]
-                  },
-                  "ExtendedStatus": null,
-                  "MainContentReference": null,
-                  "SenderName": null,
-                  "Summary": {
-                    "MediaType": "text/plain",
-                    "Value": [
-                      {
-                        "LanguageCode": "en",
-                        "Value": "Some Summary"
-                      }
-                    ]
-                  },
-                  "Title": {
-                    "MediaType": "text/plain",
-                    "Value": [
-                      {
-                        "LanguageCode": "en",
-                        "Value": "Some title"
-                      }
-                    ]
-                  }
-                },
-                "DueAt": "2084-04-04T12:13:10.01344\u002B00:00",
-                "ExpiresAt": "2095-05-04T12:13:10.01344\u002B00:00",
-                "ExtendedStatus": "Some extended status",
-                "ExternalReference": "Some external reference",
-                "GuiActions": [
-                  {
-                    "Action": "submit",
-                    "AuthorizationAttribute": null,
-                    "HttpMethod": 1,
-                    "Id": "8c64ecc8-7678-44b2-8788-0b5852dd8fa0",
-                    "IsDeleteDialogAction": false,
-                    "Priority": 1,
-                    "Prompt": null,
-                    "Title": [
-                      {
-                        "LanguageCode": "en",
-                        "Value": "GUI action title"
-                      },
-                      {
-                        "LanguageCode": "nb",
-                        "Value": "GUI action-tittel"
-                      }
-                    ],
-                    "Url": "https://example.com/some-url"
-                  }
-                ],
-                "Progress": 42,
-                "SearchTags": [
-                  {
-                    "Value": "searchTag"
-                  },
-                  {
-                    "Value": "anotherSearchTag"
-                  }
-                ],
-                "Status": 1,
-                "VisibleFrom": "2054-03-04T12:13:10.01344\u002B00:00"
-              },
               "schema": {
                 "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsUpdate_Dialog"
               }
