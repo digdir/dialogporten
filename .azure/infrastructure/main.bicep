@@ -55,9 +55,11 @@ import { Sku as SlackNotifierSku } from '../modules/functionApp/slackNotifier.bi
 param slackNotifierSku SlackNotifierSku
 
 import { Sku as PostgresSku } from '../modules/postgreSql/create.bicep'
+import { StorageConfiguration as PostgresStorageConfig } from '../modules/postgreSql/create.bicep'
 
 param postgresConfiguration {
   sku: PostgresSku
+  storage: PostgresStorageConfig
   enableIndexTuning: bool
   enableQueryPerformanceInsight: bool
 }
@@ -215,6 +217,7 @@ module postgresql '../modules/postgreSql/create.bicep' = {
       ? srcKeyVaultResource.getSecret('dialogportenPgAdminPassword${environment}')
       : secrets.dialogportenPgAdminPassword
     sku: postgresConfiguration.sku
+    storage: postgresConfiguration.storage
     appInsightWorkspaceName: appInsights.outputs.appInsightsWorkspaceName
     enableIndexTuning: postgresConfiguration.enableIndexTuning
     enableQueryPerformanceInsight: postgresConfiguration.enableQueryPerformanceInsight
