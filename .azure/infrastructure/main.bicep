@@ -300,7 +300,7 @@ module containerAppEnv '../modules/containerAppEnv/main.bicep' = {
     location: location
     appInsightWorkspaceName: appInsights.outputs.appInsightsWorkspaceName
     appInsightsConnectionString: appInsights.outputs.connectionString
-    monitorMetricsIngestionEndpoint: monitorWorkspace.outputs.monitorMetricsIngestionEndpoint
+    monitorMetricsIngestionEndpoint: monitorWorkspace.outputs.containerAppEnvironmentMetricsIngestionEndpoint
     userAssignedIdentityId: containerAppIdentity.outputs.managedIdentityId
     subnetId: vnet.outputs.containerAppEnvironmentSubnetId
     tags: tags

@@ -17,11 +17,11 @@ resource monitorWorkspace 'Microsoft.Monitor/accounts@2023-04-03' = {
   tags: tags
 }
 
-resource dataCollectionEndpoint 'Microsoft.Insights/dataCollectionEndpoints@2023-03-11' = {
-  name: '${namePrefix}-monitor'
+resource containerAppEnvironmentDataCollectionEndpoint 'Microsoft.Insights/dataCollectionEndpoints@2023-03-11' = {
+  name: '${namePrefix}-cae-dce'
   location: location
   properties: {
-    description: 'Default DCE created for Monitoring Account'
+    description: 'DCE for Container App Environment'
     networkAcls: {
       publicNetworkAccess: 'Enabled'
     }
@@ -29,12 +29,12 @@ resource dataCollectionEndpoint 'Microsoft.Insights/dataCollectionEndpoints@2023
   tags: tags
 }
 
-resource dataCollectionRule 'Microsoft.Insights/dataCollectionRules@2023-03-11' = {
-  name: '${namePrefix}-monitor'
+resource containerAppEnvironmentDataCollectionRule 'Microsoft.Insights/dataCollectionRules@2023-03-11' = {
+  name: '${namePrefix}-cae-dcr'
   location: location
   properties: {
-    description: 'Default DCR created for Monitoring Account'
-    dataCollectionEndpointId: dataCollectionEndpoint.id
+    description: 'DCR for Container App Environment'
+    dataCollectionEndpointId: containerAppEnvironmentDataCollectionEndpoint.id
     dataSources: {
       prometheusForwarder: [
         {
@@ -69,5 +69,5 @@ resource dataCollectionRule 'Microsoft.Insights/dataCollectionRules@2023-03-11' 
 
 output monitorWorkspaceId string = monitorWorkspace.id
 output monitorWorkspaceName string = monitorWorkspace.name
-output monitorMetricsIngestionEndpoint string = dataCollectionEndpoint.properties.metricsIngestion.endpoint
-output monitorLogsIngestionEndpoint string = dataCollectionEndpoint.properties.logsIngestion.endpoint
+output containerAppEnvironmentMetricsIngestionEndpoint string = containerAppEnvironmentDataCollectionEndpoint.properties.metricsIngestion.endpoint
+output containerAppEnvironmentLogsIngestionEndpoint string = containerAppEnvironmentDataCollectionEndpoint.properties.logsIngestion.endpoint
