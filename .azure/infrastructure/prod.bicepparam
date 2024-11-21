@@ -36,9 +36,9 @@ param postgresConfiguration = {
   }
   storage: {
     storageSizeGB: 256
-    iops: 1100
     autoGrow: 'Enabled'
-    tier: 'Premium'
+    tier: 'P15'
+    type: 'Premium_LRS'
   }
   enableIndexTuning: false
   enableQueryPerformanceInsight: false
