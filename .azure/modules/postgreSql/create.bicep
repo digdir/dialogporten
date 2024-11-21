@@ -24,23 +24,12 @@ param tags object
 
 @export()
 type Sku = {
-  name: 'Standard_B1ms' | 'Standard_B2s' | 'Standard_B4ms' | 'Standard_B8ms' | 'Standard_B12ms' | 'Standard_B16ms' | 'Standard_B20ms' | 'Standard_D4ads_v5' | 'Standard_D8ads_v5'
+  name: 'Standard_B1ms' | 'Standard_B2s' | 'Standard_B4ms' | 'Standard_B8ms' | 'Standard_B12ms' | 'Standard_B16ms' | 'Standard_B20ms' | 'Standard_D4ads_v5'
   tier: 'Burstable' | 'GeneralPurpose' | 'MemoryOptimized'
 }
 
 @description('The SKU of the PostgreSQL server')
 param sku Sku
-
-@export()
-type StorageConfiguration = {
-  storageSizeGB: int
-  iops: int?
-  autoGrow: 'Enabled' | 'Disabled'
-  tier: 'Premium'? // For burstable skus, this is not supported
-}
-
-@description('The storage configuration for the PostgreSQL server')
-param storage StorageConfiguration
 
 @description('Enable query performance insight')
 param enableQueryPerformanceInsight bool
@@ -105,12 +94,7 @@ resource postgres 'Microsoft.DBforPostgreSQL/flexibleServers@2024-08-01' = {
     version: '15'
     administratorLogin: administratorLogin
     administratorLoginPassword: administratorLoginPassword
-    storage: {
-      storageSizeGB: storage.storageSizeGB
-      autoGrow: storage.autoGrow
-      iops: storage.iops
-      tier: storage.tier
-    }
+    storage: { storageSizeGB: 32 }
     dataEncryption: {
       type: 'SystemManaged'
     }

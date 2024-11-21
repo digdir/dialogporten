@@ -34,10 +34,6 @@ param postgresConfiguration = {
     name: 'Standard_B1ms'
     tier: 'Burstable'
   }
-  storage: {
-    storageSizeGB: 32
-    autoGrow: 'Enabled'
-  }
   enableIndexTuning: false
   enableQueryPerformanceInsight: true
 }
