@@ -81,8 +81,12 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
         CancellationToken cancellationToken = default)
     {
         var authorizedPartiesRequest = new AuthorizedPartiesRequest(authenticatedParty);
-        var authorizedParties = await _partiesCache.GetOrSetAsync(authorizedPartiesRequest.GenerateCacheKey(), async token
-             => await PerformAuthorizedPartiesRequest(authorizedPartiesRequest, token), token: cancellationToken);
+
+        // Disabled until this bug is fixed: https://github.com/digdir/dialogporten/issues/1226
+        // var authorizedParties = await _partiesCache.GetOrSetAsync(authorizedPartiesRequest.GenerateCacheKey(), async token
+        // => await PerformAuthorizedPartiesRequest(authorizedPartiesRequest, token), token: cancellationToken);
+
+        var authorizedParties = await PerformAuthorizedPartiesRequest(authorizedPartiesRequest, cancellationToken);
 
         return flatten ? GetFlattenedAuthorizedParties(authorizedParties) : authorizedParties;
     }
