@@ -19,4 +19,4 @@ public class AuthorizedParty : AuthorizedPartyBase
 }
 
 
-public sealed class AuthorizedSubParty : AuthorizedParty;
+public sealed class AuthorizedSubParty : AuthorizedPartyBase;

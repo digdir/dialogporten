@@ -79,7 +79,6 @@ type AuthorizedParty {
 }
 
 type AuthorizedSubParty {
-  subParties: [AuthorizedSubParty!]
   party: String!
   name: String!
   partyType: String!
