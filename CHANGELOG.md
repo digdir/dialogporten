@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.38.0](https://github.com/digdir/dialogporten/compare/v1.37.0...v1.38.0) (2024-11-21)
+
+
+### Features
+
+* **azure:** connect cae to azure monitor ([#1486](https://github.com/digdir/dialogporten/issues/1486)) ([cf18b90](https://github.com/digdir/dialogporten/commit/cf18b90e6a3f950e6f0f7bb539e799058e136312))
+
 ## [1.37.0](https://github.com/digdir/dialogporten/compare/v1.36.0...v1.37.0) (2024-11-20)
 
 
