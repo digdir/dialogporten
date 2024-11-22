@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.39.0](https://github.com/digdir/dialogporten/compare/v1.38.0...v1.39.0) (2024-11-22)
+
+
+### Features
+
+* **azure:** adjust SKU and storage for yt01 and prod ([b7e4909](https://github.com/digdir/dialogporten/commit/b7e490930261ca3470a8bb7da3715529dbe9f445))
+* **azure:** adjust SKU and storage for yt01 and prod ([#1508](https://github.com/digdir/dialogporten/issues/1508)) ([5478275](https://github.com/digdir/dialogporten/commit/5478275de065ba59bca864e3808718231b3725b0))
+* **graphql:** Create separate type for sub-parties ([#1510](https://github.com/digdir/dialogporten/issues/1510)) ([9c75f11](https://github.com/digdir/dialogporten/commit/9c75f113acc77afd27b08199a0b1e4bd49778e53))
+
+
+### Bug Fixes
+
+* **azure:** ensure correct properties are used when adjusting SKU and storage for postgres ([#1514](https://github.com/digdir/dialogporten/issues/1514)) ([c51d2f5](https://github.com/digdir/dialogporten/commit/c51d2f5131a6dc73e1bba61d71550e5e046cfa70))
+* Reenable party list cache, log party name look failure with negative cache TTL ([#1395](https://github.com/digdir/dialogporten/issues/1395)) ([d18bb76](https://github.com/digdir/dialogporten/commit/d18bb76c07bebee46adb447f0b11f614f2851ce4))
+
 ## [1.38.0](https://github.com/digdir/dialogporten/compare/v1.37.0...v1.38.0) (2024-11-21)
 
 
