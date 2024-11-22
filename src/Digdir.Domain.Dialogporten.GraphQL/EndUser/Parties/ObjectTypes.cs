@@ -18,5 +18,4 @@ public sealed class AuthorizedParty : AuthorizedPartyBase
     public List<AuthorizedSubParty>? SubParties { get; init; }
 }
 
-
 public sealed class AuthorizedSubParty : AuthorizedPartyBase;
