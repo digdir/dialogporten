@@ -38,8 +38,6 @@ type StorageConfiguration = {
   autoGrow: 'Enabled' | 'Disabled'
   @description('The type of storage account to use. Default is Premium_LRS.')
   type: 'Premium_LRS' | 'PremiumV2_LRS'
-  @description('Required when type is Premium_LRS or PremiumV2_LRS')
-  tier: 'P1' | 'P2' | 'P3' | 'P4' | 'P6' | 'P10' | 'P15' | 'P20' | 'P30' | 'P40' | 'P50' | 'P60' | 'P70' | 'P80' | null
 }
 
 @description('The storage configuration for the PostgreSQL server')
@@ -112,7 +110,6 @@ resource postgres 'Microsoft.DBforPostgreSQL/flexibleServers@2024-08-01' = {
       storageSizeGB: storage.storageSizeGB
       autoGrow: storage.autoGrow
       type: storage.type
-      tier: storage.tier
     }
     dataEncryption: {
       type: 'SystemManaged'
