@@ -13,7 +13,7 @@ public class AuthorizedPartyBase
     public bool HasOnlyAccessToSubParties { get; init; }
 }
 
-public class AuthorizedParty : AuthorizedPartyBase
+public sealed class AuthorizedParty : AuthorizedPartyBase
 {
     public List<AuthorizedSubParty>? SubParties { get; init; }
 }
