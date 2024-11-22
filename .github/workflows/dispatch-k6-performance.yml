@@ -41,6 +41,11 @@ on:
         required: true
         default: 1m
         type: string
+      traceCalls:
+        description: 'Print traceparent header for each request. Use with cation, as it will use a lot of memory in k6'
+        required: true
+        default: false
+        type: boolean
       testSuitePath:
         description: 'Path to test suite to run'
         required: true
@@ -70,4 +75,5 @@ jobs:
       vus: ${{ fromJson(inputs.vus) }}
       duration: ${{ inputs.duration }}
       tokens: ${{ inputs.tokens }}
-
+      traceCalls: ${{ inputs.traceCalls }}
+      
