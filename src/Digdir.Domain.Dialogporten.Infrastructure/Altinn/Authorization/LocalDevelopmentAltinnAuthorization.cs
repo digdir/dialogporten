@@ -3,6 +3,7 @@ using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
+using Digdir.Domain.Dialogporten.Domain.Parties;
 using Digdir.Domain.Dialogporten.Domain.Parties.Abstractions;
 using Microsoft.EntityFrameworkCore;
 
@@ -53,7 +54,23 @@ internal sealed class LocalDevelopmentAltinnAuthorization : IAltinnAuthorization
 
     [SuppressMessage("Performance", "CA1822:Mark members as static")]
     public async Task<AuthorizedPartiesResult> GetAuthorizedParties(IPartyIdentifier authenticatedParty, bool _ = false, CancellationToken __ = default)
-        => await Task.FromResult(new AuthorizedPartiesResult { AuthorizedParties = [new() { Name = "Local Party", Party = authenticatedParty.FullId, IsCurrentEndUser = true }] });
+        => await Task.FromResult(new AuthorizedPartiesResult
+        {
+            AuthorizedParties = [new()
+            {
+                Name = "Local Party",
+                Party = authenticatedParty.FullId,
+                IsCurrentEndUser = true,
+                SubParties = [
+                    new()
+                    {
+                        Name = "Local Sub Party",
+                        Party = NorwegianOrganizationIdentifier.PrefixWithSeparator + "123456789",
+                        IsCurrentEndUser = true
+                    }
+                ]
+            }]
+        });
 
     public Task<bool> HasListAuthorizationForDialog(DialogEntity dialog, CancellationToken cancellationToken) => Task.FromResult(true);
 }

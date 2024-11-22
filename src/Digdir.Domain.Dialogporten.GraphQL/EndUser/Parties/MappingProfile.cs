@@ -8,5 +8,6 @@ public sealed class MappingProfile : Profile
     public MappingProfile()
     {
         CreateMap<AuthorizedPartyDto, AuthorizedParty>();
+        CreateMap<AuthorizedPartyDto, AuthorizedSubParty>();
     }
 }
