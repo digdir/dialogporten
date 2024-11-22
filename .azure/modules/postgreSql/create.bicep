@@ -24,12 +24,26 @@ param tags object
 
 @export()
 type Sku = {
-  name: 'Standard_B1ms' | 'Standard_B2s' | 'Standard_B4ms' | 'Standard_B8ms' | 'Standard_B12ms' | 'Standard_B16ms' | 'Standard_B20ms' | 'Standard_D4ads_v5'
+  name: 'Standard_B1ms' | 'Standard_B2s' | 'Standard_B4ms' | 'Standard_B8ms' | 'Standard_B12ms' | 'Standard_B16ms' | 'Standard_B20ms' | 'Standard_D4ads_v5' | 'Standard_D8ads_v5'
   tier: 'Burstable' | 'GeneralPurpose' | 'MemoryOptimized'
 }
 
 @description('The SKU of the PostgreSQL server')
 param sku Sku
+
+@export()
+type StorageConfiguration = {
+  @minValue(32)
+  storageSizeGB: int
+  autoGrow: 'Enabled' | 'Disabled'
+  @description('The type of storage account to use. Default is Premium_LRS.')
+  type: 'Premium_LRS' | 'PremiumV2_LRS'
+  @description('Required when type is Premium_LRS or PremiumV2_LRS')
+  tier: 'P1' | 'P2' | 'P3' | 'P4' | 'P6' | 'P10' | 'P15' | 'P20' | 'P30' | 'P40' | 'P50' | 'P60' | 'P70' | 'P80' | null
+}
+
+@description('The storage configuration for the PostgreSQL server')
+param storage StorageConfiguration
 
 @description('Enable query performance insight')
 param enableQueryPerformanceInsight bool
@@ -94,7 +108,12 @@ resource postgres 'Microsoft.DBforPostgreSQL/flexibleServers@2024-08-01' = {
     version: '15'
     administratorLogin: administratorLogin
     administratorLoginPassword: administratorLoginPassword
-    storage: { storageSizeGB: 32 }
+    storage: {
+      storageSizeGB: storage.storageSizeGB
+      autoGrow: storage.autoGrow
+      type: storage.type
+      tier: storage.tier
+    }
     dataEncryption: {
       type: 'SystemManaged'
     }

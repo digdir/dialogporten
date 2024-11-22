@@ -31,11 +31,17 @@ param slackNotifierSku = {
 }
 param postgresConfiguration = {
   sku: {
-    name: 'Standard_D4ads_v5'
+    name: 'Standard_D8ads_v5'
     tier: 'GeneralPurpose'
   }
-  enableQueryPerformanceInsight: false
+  storage: {
+    storageSizeGB: 256
+    autoGrow: 'Enabled'
+    tier: 'P15'
+    type: 'Premium_LRS'
+  }
   enableIndexTuning: false
+  enableQueryPerformanceInsight: false
 }
 
 param redisSku = {
