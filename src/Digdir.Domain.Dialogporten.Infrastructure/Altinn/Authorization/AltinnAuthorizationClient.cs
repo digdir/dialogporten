@@ -86,7 +86,7 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
             => await PerformAuthorizedPartiesRequest(authorizedPartiesRequest, token), token: cancellationToken);
 
         // Temporary logging to debug missing authorized sub parties
-        _logger.LogInformation("Authorized parties for {Party}: {AuthorizedParties}", authenticatedParty, JsonSerializer.Serialize(authorizedParties, SerializerOptions));
+        _logger.LogInformation("Authorized parties for {Party}: {@AuthorizedParties}", authenticatedParty, authorizedParties);
 
         return flatten ? GetFlattenedAuthorizedParties(authorizedParties) : authorizedParties;
     }

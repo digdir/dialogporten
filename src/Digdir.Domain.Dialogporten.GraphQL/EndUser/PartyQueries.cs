@@ -1,5 +1,3 @@
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using AutoMapper;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
@@ -11,12 +9,6 @@ namespace Digdir.Domain.Dialogporten.GraphQL.EndUser;
 
 public partial class Queries
 {
-    private static readonly JsonSerializerOptions SerializerOptions = new()
-    {
-        PropertyNameCaseInsensitive = true,
-        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault
-    };
-
     public async Task<List<AuthorizedParty>> GetParties(
         [Service] ISender mediator,
         [Service] IMapper mapper,
@@ -28,8 +20,8 @@ public partial class Queries
         var result = await mediator.Send(request, cancellationToken);
 
         user.GetPrincipal().TryGetPid(out var pid);
-        logger.LogInformation("GraphQL handler, app result for party {Party}: {AuthorizedParties}",
-            pid, JsonSerializer.Serialize(result, SerializerOptions));
+        logger.LogInformation("GraphQL handler, app result for party {Party}: {@Result}",
+            pid, result);
 
         return mapper.Map<List<AuthorizedParty>>(result.AuthorizedParties);
     }
