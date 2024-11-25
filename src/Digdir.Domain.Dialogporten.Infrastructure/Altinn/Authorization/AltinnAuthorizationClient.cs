@@ -24,7 +24,6 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
     private readonly IFusionCache _partiesCache;
     private readonly IUser _user;
     private readonly ILogger _logger;
-    private readonly IMemoryCache _inMemoryCache;
 
     private static readonly JsonSerializerOptions SerializerOptions = new()
     {
@@ -36,15 +35,13 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
         HttpClient client,
         IFusionCacheProvider cacheProvider,
         IUser user,
-        ILogger<AltinnAuthorizationClient> logger,
-        IMemoryCache inMemoryCache)
+        ILogger<AltinnAuthorizationClient> logger)
     {
         _httpClient = client ?? throw new ArgumentNullException(nameof(client));
         _pdpCache = cacheProvider.GetCache(nameof(Authorization)) ?? throw new ArgumentNullException(nameof(cacheProvider));
         _partiesCache = cacheProvider.GetCache(nameof(AuthorizedPartiesResult)) ?? throw new ArgumentNullException(nameof(cacheProvider));
         _user = user ?? throw new ArgumentNullException(nameof(user));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _inMemoryCache = inMemoryCache;
     }
 
     public async Task<DialogDetailsAuthorizationResult> GetDialogDetailsAuthorization(
