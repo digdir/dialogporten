@@ -84,7 +84,7 @@ jobs:
           token: ${{ secrets.SLACK_BOT_TOKEN }}
           payload: |
             {
-              "channel": ${{ secrets.SLACK_CHANNEL_ID_FOR_RELEASES }},
+              "channel": "${{ secrets.SLACK_CHANNEL_ID_FOR_RELEASES }}",
               "blocks": [
                 {
                     "type": "section",
