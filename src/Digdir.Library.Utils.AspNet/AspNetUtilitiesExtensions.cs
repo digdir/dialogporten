@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Npgsql;
 using OpenTelemetry.Trace;
 using OpenTelemetry.Metrics;
@@ -56,6 +57,11 @@ public static class AspNetUtilitiesExtensions
             ?? Environment.GetEnvironmentVariable("OTEL_EXPORTER_OTLP_ENDPOINT");
         var otelProtocol = builder.Configuration["OpenTelemetry:Protocol"] 
             ?? Environment.GetEnvironmentVariable("OTEL_EXPORTER_OTLP_PROTOCOL");
+
+        if (string.IsNullOrEmpty(otelEndpoint))
+        {
+            builder.Logging.LogWarning("OpenTelemetry endpoint is not configured. Telemetry data will not be exported. Configure using OpenTelemetry:Endpoint in settings or OTEL_EXPORTER_OTLP_ENDPOINT environment variable.");
+        }
 
         builder.Services.AddOpenTelemetry()
             .ConfigureResource(resource => resource
