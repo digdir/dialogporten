@@ -22,7 +22,7 @@ public static class ServiceCollectionExtensions
             .GetSection("Ed25519Keys")
             .Get<Ed25519Keys>();
         Console.WriteLine(dialogportenSettings);
-        
+
         var keyPair = dialogportenSettings!.Primary;
         var kid = keyPair.Kid;
 
