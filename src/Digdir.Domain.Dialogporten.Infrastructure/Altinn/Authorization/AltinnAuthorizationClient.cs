@@ -82,11 +82,11 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
     {
         var authorizedPartiesRequest = new AuthorizedPartiesRequest(authenticatedParty);
 
-        // Disabled until this bug is fixed: https://github.com/digdir/dialogporten/issues/1226
-        // var authorizedParties = await _partiesCache.GetOrSetAsync(authorizedPartiesRequest.GenerateCacheKey(), async token
-        // => await PerformAuthorizedPartiesRequest(authorizedPartiesRequest, token), token: cancellationToken);
+        var authorizedParties = await _partiesCache.GetOrSetAsync(authorizedPartiesRequest.GenerateCacheKey(), async token
+            => await PerformAuthorizedPartiesRequest(authorizedPartiesRequest, token), token: cancellationToken);
 
-        var authorizedParties = await PerformAuthorizedPartiesRequest(authorizedPartiesRequest, cancellationToken);
+        // Temporary logging to debug missing authorized sub parties
+        _logger.LogInformation("Authorized parties for {Party}: {AuthorizedParties}", authenticatedParty, JsonSerializer.Serialize(authorizedParties, SerializerOptions));
 
         return flatten ? GetFlattenedAuthorizedParties(authorizedParties) : authorizedParties;
     }
