@@ -26,7 +26,6 @@ public class CreateDialogTests
 
         var unitOfWorkSub = Substitute.For<IUnitOfWork>();
         var domainContextSub = Substitute.For<IDomainContext>();
-        var userResourceRegistrySub = Substitute.For<IUserResourceRegistry>();
         var resourceRegistrySub = Substitute.For<IResourceRegistry>();
         var serviceAuthorizationSub = Substitute.For<IServiceResourceAuthorizer>();
         var userSub = Substitute.For<IUser>();
@@ -36,10 +35,6 @@ public class CreateDialogTests
         serviceAuthorizationSub
             .AuthorizeServiceResources(Arg.Any<DialogEntity>(), Arg.Any<CancellationToken>())
             .Returns(new Forbidden());
-
-        userResourceRegistrySub
-            .CurrentUserIsOwner(createCommand.ServiceResource, Arg.Any<CancellationToken>())
-            .Returns(true);
 
         resourceRegistrySub
             .GetResourceInformation(createCommand.ServiceResource, Arg.Any<CancellationToken>())
@@ -69,7 +64,6 @@ public class CreateDialogTests
 
         var unitOfWorkSub = Substitute.For<IUnitOfWork>();
         var domainContextSub = Substitute.For<IDomainContext>();
-        var userResourceRegistrySub = Substitute.For<IUserResourceRegistry>();
         var resourceRegistrySub = Substitute.For<IResourceRegistry>();
         var serviceAuthorizationSub = Substitute.For<IServiceResourceAuthorizer>();
         var userSub = Substitute.For<IUser>();
@@ -78,10 +72,6 @@ public class CreateDialogTests
         serviceAuthorizationSub
             .AuthorizeServiceResources(Arg.Any<DialogEntity>(), Arg.Any<CancellationToken>())
             .Returns(new Forbidden());
-
-        userResourceRegistrySub
-            .CurrentUserIsOwner(createCommand.ServiceResource, Arg.Any<CancellationToken>())
-            .Returns(false);
 
         resourceRegistrySub
             .GetResourceInformation(createCommand.ServiceResource, Arg.Any<CancellationToken>())
