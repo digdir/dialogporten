@@ -5,17 +5,18 @@ on:
     branches: [ main ]
     paths-ignore:
       - "tests/k6/**"
-jobs: 
-  runs-on: ubuntu-latest
-  timeout-minutes: 15
-  steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-    - name: set PROJECT variable to point to project
-      run: |
-        PROJECT=$(find . -name '*Digdir.Library.Dialogporten.WebApiClient.csproj' -printf "%p"  -quit)
-        echo "PROJECT ${PROJECT}"
-        echo "PROJECT=${PROJECT}" >> $GITHUB_ENV     - "CHANGELOG.md"
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: set PROJECT variable to point to project
+        run: |
+          PROJECT=$(find . -name '*Digdir.Library.Dialogporten.WebApiClient.csproj' -printf "%p"  -quit)
+          echo "PROJECT ${PROJECT}"
+          echo "PROJECT=${PROJECT}" >> $GITHUB_ENV     - "CHANGELOG.md"
 #
 #jobs:
 #  generate-git-short-sha:
