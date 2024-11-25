@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Altinn.Authorization.ABAC.Xacml.JsonProfile;
@@ -90,9 +91,22 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
         var authorizedParties = await _partiesCache.GetOrSetAsync(cacheKey, async token
             => await PerformAuthorizedPartiesRequest(authorizedPartiesRequest, token), token: cancellationToken);
 
+<<<<<<< HEAD
+        var mcaField = typeof(FusionCache).GetField("_mca", BindingFlags.NonPublic | BindingFlags.Instance);
+        var mcaValue = mcaField?.GetValue(_partiesCache);
+        var mcField = mcaValue!.GetType().GetField("_cache", BindingFlags.NonPublic | BindingFlags.Instance);
+        var mcValue = mcField?.GetValue(mcaValue) as IMemoryCache;
+
+        var inMemoryCacheValue = mcValue!.TryGetValue(cacheKey, out var inMemoryCacheEntry);
+        var inMemoryCacheEntryValue = inMemoryCacheEntry?.GetType().GetProperty("Value")?.GetValue(inMemoryCacheEntry);
+
+        _logger.LogInformation("In memory cache value for {CacheKey}, success: {InMemoryCacheValue} value: {@inMemoryCacheEntryValue}",
+        cacheKey, inMemoryCacheValue, inMemoryCacheEntryValue);
+=======
         var inMemoryCacheValue = _inMemoryCache.TryGetValue<AuthorizedPartiesResult>(cacheKey, out var inMemoryCacheEntry);
         _logger.LogInformation("In memory cache value for {CacheKey}, success: {InMemoryCacheValue} value: {@InMemoryCacheEntry}",
             cacheKey, inMemoryCacheValue, inMemoryCacheEntry);
+>>>>>>> main
 
         // Temporary logging to debug missing authorized sub parties
         _logger.LogInformation("Authorized parties for {Party}: {@AuthorizedParties}", authenticatedParty, authorizedParties);
