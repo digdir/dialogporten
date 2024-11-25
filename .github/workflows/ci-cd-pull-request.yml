@@ -23,13 +23,18 @@ jobs:
         run: |
           PROJECT=$(find . -name '*Digdir.Library.Dialogporten.WebApiClient.csproj' -printf "%p"  -quit)
           echo "PROJECT ${PROJECT}"
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: ./global.json
           
       - name: Build
         run: dotnet build --configuration Release /p:Version=${{ needs.get-current-version.outputs.version }} ${PROJECT}
-        
+
       - name: Pack with debug symbols
         run: dotnet pack --configuration Release /p:Version=${{ needs.get-current-version.outputs.version }} -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg --output . ${PROJECT}
-        
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
