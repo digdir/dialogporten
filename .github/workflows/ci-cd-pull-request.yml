@@ -6,9 +6,16 @@ on:
     paths-ignore:
       - "tests/k6/**"
 jobs:
+  get-current-version:
+    name: Get current version
+    uses: ./.github/workflows/workflow-get-current-version.yml
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    needs:
+      [
+        get-current-version,
+      ]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -16,7 +23,18 @@ jobs:
         run: |
           PROJECT=$(find . -name '*Digdir.Library.Dialogporten.WebApiClient.csproj' -printf "%p"  -quit)
           echo "PROJECT ${PROJECT}"
-          echo "PROJECT=${PROJECT}" >> $GITHUB_ENV     - "CHANGELOG.md"
+          
+      - name: Build
+        run: dotnet build --configuration Release /p:Version=${{ needs.get-current-version.outputs.version }} ${PROJECT}
+        
+      - name: Pack with debug symbols
+        run: dotnet pack --configuration Release /p:Version=${{ needs.get-current-version.outputs.version }} -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg --output . ${PROJECT}
+        
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: package
+          path: '*.*nupkg'
 #
 #jobs:
 #  generate-git-short-sha:
