@@ -5,7 +5,7 @@ using Digdir.Library.Dialogporten.WebApiClient.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 var configuration = new ConfigurationBuilder()
-    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+    .AddJsonFile("appsettings.local.json", optional: false, reloadOnChange: true)
     .Build();
 
 var services = new ServiceCollection();
