@@ -1,6 +1,7 @@
 include:
   - docker-compose-db-redis.yml
   - docker-compose-cdc.yml
+  - docker-compose-otel.yml
 
 services:
   dialogporten-webapi-ingress:
@@ -34,6 +35,8 @@ services:
       - Serilog__MinimumLevel__Default=Debug
       - ASPNETCORE_URLS=http://+:8080
       - ASPNETCORE_ENVIRONMENT=Development
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+      - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
     volumes:
       - ./.aspnet/https:/https
 
@@ -70,5 +73,7 @@ services:
       - Serilog__WriteTo__0__Name=Console
       - Serilog__MinimumLevel__Default=Debug
       - ASPNETCORE_ENVIRONMENT=Development
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+      - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
     volumes:
       - ./.aspnet/https:/https

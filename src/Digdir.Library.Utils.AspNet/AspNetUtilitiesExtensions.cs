@@ -3,6 +3,7 @@ using Digdir.Library.Utils.AspNet.HealthChecks;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
@@ -51,6 +52,11 @@ public static class AspNetUtilitiesExtensions
 
     public static WebApplicationBuilder ConfigureTelemetry(this WebApplicationBuilder builder)
     {
+        var otelEndpoint = builder.Configuration["OpenTelemetry:Endpoint"] 
+            ?? Environment.GetEnvironmentVariable("OTEL_EXPORTER_OTLP_ENDPOINT");
+        var otelProtocol = builder.Configuration["OpenTelemetry:Protocol"] 
+            ?? Environment.GetEnvironmentVariable("OTEL_EXPORTER_OTLP_PROTOCOL");
+
         builder.Services.AddOpenTelemetry()
             .ConfigureResource(resource => resource
                 .AddService(serviceName: builder.Environment.ApplicationName))
@@ -70,21 +76,33 @@ public static class AspNetUtilitiesExtensions
                 tracing.AddHttpClientInstrumentation();
                 tracing.AddNpgsql();
                 tracing.AddSource(MassTransitSource); // MassTransit ActivitySource
+
+                if (!string.IsNullOrEmpty(otelEndpoint))
+                {
+                    tracing.AddOtlpExporter(otlpOptions =>
+                    {
+                        otlpOptions.Endpoint = new Uri(otelEndpoint);
+                        otlpOptions.Protocol = otelProtocol?.ToLowerInvariant() == "http" 
+                            ? OtlpExportProtocol.HttpProtobuf 
+                            : OtlpExportProtocol.Grpc;
+                    });
+                }
             })
             .WithMetrics(metrics =>
             {
                 metrics.AddRuntimeInstrumentation();
+                
+                if (!string.IsNullOrEmpty(otelEndpoint))
+                {
+                    metrics.AddOtlpExporter(otlpOptions =>
+                    {
+                        otlpOptions.Endpoint = new Uri(otelEndpoint);
+                        otlpOptions.Protocol = otelProtocol?.ToLowerInvariant() == "http" 
+                            ? OtlpExportProtocol.HttpProtobuf 
+                            : OtlpExportProtocol.Grpc;
+                    });
+                }
             });
-
-        if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("APPLICATIONINSIGHTS_CONNECTION_STRING")))
-        {
-            builder.Services.AddOpenTelemetry().UseAzureMonitor();
-        }
-        else
-        {
-            // Use Application Insights SDK for local development
-            builder.Services.AddApplicationInsightsTelemetry();
-        }
 
         return builder;
     }
