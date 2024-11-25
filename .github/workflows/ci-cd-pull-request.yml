@@ -23,12 +23,13 @@ jobs:
         run: |
           PROJECT=$(find . -name '*Digdir.Library.Dialogporten.WebApiClient.csproj' -printf "%p"  -quit)
           echo "PROJECT ${PROJECT}"
+          echo "PROJECT=${PROJECT}" >> $GITHUB_ENV
 
       - name: Set up .NET
         uses: actions/setup-dotnet@v4
         with:
           global-json-file: ./global.json
-          
+
       - name: Build
         run: dotnet build --configuration Release /p:Version=${{ needs.get-current-version.outputs.version }} ${PROJECT}
 
