@@ -74,7 +74,7 @@ jobs:
       - name: Send GitHub slack message
         id: slack
         env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
           ENVIRONMENT: ${{ inputs.environment }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
           # statuses
@@ -87,5 +87,7 @@ jobs:
           BUILD_AND_TEST_STATUS: "${{ steps.status-emojis.outputs.BUILD_AND_TEST_EMOJI }}"
         uses: slackapi/slack-github-action@v2.0.0
         with:
-          channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
+          errors: true
+          token: ${{ secrets.SLACK_BOT_TOKEN }}
+          payload-templated: true
           payload-file-path: "./.github/slack-templates/pipeline-failed.json"
