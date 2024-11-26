@@ -9,5 +9,6 @@ internal sealed class MappingProfile : Profile
     {
         CreateMap<AuthorizedPartiesResult, PartiesDto>();
         CreateMap<AuthorizedParty, AuthorizedPartyDto>();
+        CreateMap<AuthorizedSubParty, AuthorizedSubPartyDto>();
     }
 }

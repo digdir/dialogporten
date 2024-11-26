@@ -5,7 +5,7 @@ public sealed class AuthorizedPartiesResult
     public List<AuthorizedParty> AuthorizedParties { get; set; } = [];
 }
 
-public sealed class AuthorizedParty
+public class AuthorizedPartyBase
 {
     public string Party { get; init; } = null!;
     public string Name { get; init; } = null!;
@@ -18,13 +18,18 @@ public sealed class AuthorizedParty
     public bool HasOnlyAccessToSubParties { get; init; }
     public List<string> AuthorizedResources { get; init; } = [];
     public List<string> AuthorizedRoles { get; init; } = [];
+}
 
-    // Only populated in case of flatten = false
-    public List<AuthorizedParty>? SubParties { get; set; }
+public sealed class AuthorizedParty : AuthorizedPartyBase
+{
+    // Only populated in case of "flatten = false"
+    public List<AuthorizedSubParty>? SubParties { get; set; }
 
-    // Only populated in case of flatten = true
+    // Only populated in case of "flatten = true"
     public string? ParentParty { get; set; }
 }
+
+public sealed class AuthorizedSubParty : AuthorizedPartyBase;
 
 public enum AuthorizedPartyType
 {

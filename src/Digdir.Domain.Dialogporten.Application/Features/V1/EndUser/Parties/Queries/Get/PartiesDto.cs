@@ -5,7 +5,7 @@ public sealed class PartiesDto
     public List<AuthorizedPartyDto> AuthorizedParties { get; init; } = [];
 }
 
-public sealed class AuthorizedPartyDto
+public class AuthorizedPartyBaseDto
 {
     public string Party { get; init; } = null!;
     public string Name { get; init; } = null!;
@@ -16,5 +16,11 @@ public sealed class AuthorizedPartyDto
     public bool IsMainAdministrator { get; init; }
     public bool IsAccessManager { get; init; }
     public bool HasOnlyAccessToSubParties { get; init; }
-    public List<AuthorizedPartyDto>? SubParties { get; init; }
 }
+
+public sealed class AuthorizedPartyDto : AuthorizedPartyBaseDto
+{
+    public List<AuthorizedSubPartyDto>? SubParties { get; init; }
+}
+
+public sealed class AuthorizedSubPartyDto : AuthorizedPartyBaseDto;
