@@ -192,7 +192,8 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
                     .Select(x => new ServiceResourceInformation(
                         $"{Constants.ServiceResourcePrefix}{x.Identifier}",
                         x.ResourceType,
-                        x.HasCompetentAuthority.Organization!))
+                        x.HasCompetentAuthority.Organization!,
+                        x.HasCompetentAuthority.OrgCode))
                     .ToArray();
             },
             token: cancellationToken);

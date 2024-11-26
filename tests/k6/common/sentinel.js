@@ -12,7 +12,7 @@ export default function () {
         let continuationToken = "";
         let dialogIdsToPurge = [];
         do {
-            let r = getSO('dialogs/?Search=' + sentinelValue + continuationToken, null, tokenOptions);
+            let r = getSO('dialogs/?Limit=1000&Search=' + sentinelValue + continuationToken, null, tokenOptions);
             expectStatusFor(r).to.equal(200);
             expect(r, 'response').to.have.validJsonBody();
             let response = r.json();
