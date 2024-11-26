@@ -50,7 +50,7 @@ jobs:
         uses: tj-actions/changed-files@v45
         with:
           files: |
-            **/Digdir.Library.Dialogporten.WebApi/**
+            **/Digdir.Library.Dialogporten.WebApiClient/**
       - name: List all changed files
         env:
           ALL_CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
