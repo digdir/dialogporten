@@ -13,6 +13,7 @@ var services = new ServiceCollection();
 services.AddSingleton<IConfiguration>(configuration);
 
 services.AddDialogportenClient();
+
 services.AddDialogTokenVerifer();
 
 var serviceProvider = services.BuildServiceProvider();
