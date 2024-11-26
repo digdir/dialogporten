@@ -55,9 +55,11 @@ import { Sku as SlackNotifierSku } from '../modules/functionApp/slackNotifier.bi
 param slackNotifierSku SlackNotifierSku
 
 import { Sku as PostgresSku } from '../modules/postgreSql/create.bicep'
+import { StorageConfiguration as PostgresStorageConfig } from '../modules/postgreSql/create.bicep'
 
 param postgresConfiguration {
   sku: PostgresSku
+  storage: PostgresStorageConfig
   enableIndexTuning: bool
   enableQueryPerformanceInsight: bool
 }
@@ -215,6 +217,7 @@ module postgresql '../modules/postgreSql/create.bicep' = {
       ? srcKeyVaultResource.getSecret('dialogportenPgAdminPassword${environment}')
       : secrets.dialogportenPgAdminPassword
     sku: postgresConfiguration.sku
+    storage: postgresConfiguration.storage
     appInsightWorkspaceName: appInsights.outputs.appInsightsWorkspaceName
     enableIndexTuning: postgresConfiguration.enableIndexTuning
     enableQueryPerformanceInsight: postgresConfiguration.enableQueryPerformanceInsight
@@ -282,6 +285,16 @@ module slackNotifier '../modules/functionApp/slackNotifier.bicep' = {
   }
 }
 
+module containerAppIdentity '../modules/managedIdentity/main.bicep' = {
+  scope: resourceGroup
+  name: 'containerAppIdentity'
+  params: {
+    name: '${namePrefix}-cae-id'
+     location: location
+    tags: tags
+  }
+}
+
 module containerAppEnv '../modules/containerAppEnv/main.bicep' = {
   scope: resourceGroup
   name: 'containerAppEnv'
@@ -289,8 +302,20 @@ module containerAppEnv '../modules/containerAppEnv/main.bicep' = {
     namePrefix: namePrefix
     location: location
     appInsightWorkspaceName: appInsights.outputs.appInsightsWorkspaceName
+    appInsightsConnectionString: appInsights.outputs.connectionString
+    monitorMetricsIngestionEndpoint: monitorWorkspace.outputs.containerAppEnvironmentMetricsIngestionEndpoint
+    userAssignedIdentityId: containerAppIdentity.outputs.managedIdentityId
     subnetId: vnet.outputs.containerAppEnvironmentSubnetId
     tags: tags
+  }
+}
+
+module monitorMetricsPublisherRoles '../modules/monitor-workspace/addMetricsPublisherRoles.bicep' = {
+  scope: resourceGroup
+  name: 'monitorMetricsPublisherRoles'
+  params: {
+    monitorWorkspaceName: monitorWorkspace.outputs.monitorWorkspaceName
+    principalIds: [containerAppIdentity.outputs.managedIdentityPrincipalId]
   }
 }
 

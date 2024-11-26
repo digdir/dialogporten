@@ -66,6 +66,7 @@ type AttachmentUrl {
 }
 
 type AuthorizedParty {
+  subParties: [AuthorizedSubParty!]
   party: String!
   name: String!
   partyType: String!
@@ -75,7 +76,18 @@ type AuthorizedParty {
   isMainAdministrator: Boolean!
   isAccessManager: Boolean!
   hasOnlyAccessToSubParties: Boolean!
-  subParties: [AuthorizedParty!]
+}
+
+type AuthorizedSubParty {
+  party: String!
+  name: String!
+  partyType: String!
+  isDeleted: Boolean!
+  hasKeyRole: Boolean!
+  isCurrentEndUser: Boolean!
+  isMainAdministrator: Boolean!
+  isAccessManager: Boolean!
+  hasOnlyAccessToSubParties: Boolean!
 }
 
 type Content {

@@ -1,6 +1,6 @@
 namespace Digdir.Domain.Dialogporten.GraphQL.EndUser.Parties;
 
-public sealed class AuthorizedParty
+public class AuthorizedPartyBase
 {
     public string Party { get; init; } = null!;
     public string Name { get; init; } = null!;
@@ -11,5 +11,11 @@ public sealed class AuthorizedParty
     public bool IsMainAdministrator { get; init; }
     public bool IsAccessManager { get; init; }
     public bool HasOnlyAccessToSubParties { get; init; }
-    public List<AuthorizedParty>? SubParties { get; init; }
 }
+
+public sealed class AuthorizedParty : AuthorizedPartyBase
+{
+    public List<AuthorizedSubParty>? SubParties { get; init; }
+}
+
+public sealed class AuthorizedSubParty : AuthorizedPartyBase;
