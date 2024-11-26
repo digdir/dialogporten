@@ -81,8 +81,9 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
         CancellationToken cancellationToken = default)
     {
         var authorizedPartiesRequest = new AuthorizedPartiesRequest(authenticatedParty);
+
         var authorizedParties = await _partiesCache.GetOrSetAsync(authorizedPartiesRequest.GenerateCacheKey(), async token
-             => await PerformAuthorizedPartiesRequest(authorizedPartiesRequest, token), token: cancellationToken);
+            => await PerformAuthorizedPartiesRequest(authorizedPartiesRequest, token), token: cancellationToken);
 
         return flatten ? GetFlattenedAuthorizedParties(authorizedParties) : authorizedParties;
     }
@@ -119,7 +120,10 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
             }
 
             if (parent != null) party.ParentParty = parent.Party;
-            party.SubParties = [];
+
+            // TODO: https://github.com/digdir/dialogporten/issues/1533
+            // Disabling this for now, fixes https://github.com/digdir/dialogporten/issues/1226
+            // party.SubParties = [];
 
             flattenedAuthorizedParties.AuthorizedParties.Add(party);
         }

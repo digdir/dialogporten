@@ -14,13 +14,15 @@ public sealed record ServiceResourceInformation
 {
     public string ResourceType { get; }
     public string OwnerOrgNumber { get; }
+    public string OwnOrgShortName { get; }
     public string ResourceId { get; }
 
-    public ServiceResourceInformation(string resourceId, string resourceType, string ownerOrgNumber)
+    public ServiceResourceInformation(string resourceId, string resourceType, string ownerOrgNumber, string ownOrgShortName)
     {
         ResourceId = resourceId.ToLowerInvariant();
         ResourceType = resourceType.ToLowerInvariant();
         OwnerOrgNumber = ownerOrgNumber.ToLowerInvariant();
+        OwnOrgShortName = ownOrgShortName.ToLowerInvariant();
     }
 }
 

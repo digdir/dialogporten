@@ -34,6 +34,11 @@ param postgresConfiguration = {
     name: 'Standard_B2s'
     tier: 'Burstable'
   }
+  storage: {
+    storageSizeGB: 32
+    autoGrow: 'Enabled'
+    type: 'Premium_LRS'
+  }
   enableIndexTuning: false
   enableQueryPerformanceInsight: true
 }
