@@ -51,13 +51,20 @@ jobs:
         with:
           files: |
             */Digdir.Domain.Dialogporten.WebApi/*
-
+      - name: List all changed files
+        env:
+          ALL_CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
+        run: |
+          for file in ${ALL_CHANGED_FILES}; do
+            echo "$file was changed"
+          done
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
           name: package
 
       - name: Push to NuGet
+
         if: steps.changed-files.outputs.any_changed == 'true'
         run: dotnet nuget push *.nupkg --source https://int.nugettest.org --api-key ${NUGET_API_TEST_KEY}
         env:
