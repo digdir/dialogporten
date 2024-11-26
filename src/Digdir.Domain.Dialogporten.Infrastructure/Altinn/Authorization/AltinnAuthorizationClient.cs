@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Altinn.Authorization.ABAC.Xacml.JsonProfile;
@@ -9,7 +8,6 @@ using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Parties.Abstractions;
 using Digdir.Domain.Dialogporten.Infrastructure.Common.Exceptions;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using ZiggyCreatures.Caching.Fusion;
 
@@ -84,30 +82,8 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
     {
         var authorizedPartiesRequest = new AuthorizedPartiesRequest(authenticatedParty);
 
-        var cacheKey = authorizedPartiesRequest.GenerateCacheKey();
-        var authorizedParties = await _partiesCache.GetOrSetAsync(cacheKey, async token
+        var authorizedParties = await _partiesCache.GetOrSetAsync(authorizedPartiesRequest.GenerateCacheKey(), async token
             => await PerformAuthorizedPartiesRequest(authorizedPartiesRequest, token), token: cancellationToken);
-
-        // Testing https://github.com/digdir/dialogporten/issues/1226
-        try
-        {
-            var mcaField = typeof(FusionCache).GetField("_mca", BindingFlags.NonPublic | BindingFlags.Instance);
-            var mcaValue = mcaField?.GetValue(_partiesCache);
-            var mcField = mcaValue!.GetType().GetField("_cache", BindingFlags.NonPublic | BindingFlags.Instance);
-            var mcValue = mcField?.GetValue(mcaValue) as IMemoryCache;
-
-            var inMemoryCacheValue = mcValue!.TryGetValue(cacheKey, out var inMemoryCacheEntry);
-            var inMemoryCacheEntryValue = inMemoryCacheEntry?.GetType().GetProperty("Value")?.GetValue(inMemoryCacheEntry);
-
-            _logger.LogInformation("In memory cache value for {CacheKey}, success: {InMemoryCacheValue} value: {@inMemoryCacheEntryValue}",
-                cacheKey, inMemoryCacheValue, inMemoryCacheEntryValue);
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e, "Failed to reflect on FusionCache MemoryCache");
-        }
-
-        _logger.LogInformation("Authorized parties for {Party}: {@AuthorizedParties}", authenticatedParty, authorizedParties);
 
         return flatten ? GetFlattenedAuthorizedParties(authorizedParties) : authorizedParties;
     }
@@ -144,7 +120,10 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
             }
 
             if (parent != null) party.ParentParty = parent.Party;
-            party.SubParties = [];
+
+            // TODO: https://github.com/digdir/dialogporten/issues/1533
+            // Disabling this for now, fixes https://github.com/digdir/dialogporten/issues/1226
+            // party.SubParties = [];
 
             flattenedAuthorizedParties.AuthorizedParties.Add(party);
         }
