@@ -88,19 +88,25 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
         var authorizedParties = await _partiesCache.GetOrSetAsync(cacheKey, async token
             => await PerformAuthorizedPartiesRequest(authorizedPartiesRequest, token), token: cancellationToken);
 
-        var mcaField = typeof(FusionCache).GetField("_mca", BindingFlags.NonPublic | BindingFlags.Instance);
-        var mcaValue = mcaField?.GetValue(_partiesCache);
-        var mcField = mcaValue!.GetType().GetField("_cache", BindingFlags.NonPublic | BindingFlags.Instance);
-        var mcValue = mcField?.GetValue(mcaValue) as IMemoryCache;
+        // Testing https://github.com/digdir/dialogporten/issues/1226
+        try
+        {
+            var mcaField = typeof(FusionCache).GetField("_mca", BindingFlags.NonPublic | BindingFlags.Instance);
+            var mcaValue = mcaField?.GetValue(_partiesCache);
+            var mcField = mcaValue!.GetType().GetField("_cache", BindingFlags.NonPublic | BindingFlags.Instance);
+            var mcValue = mcField?.GetValue(mcaValue) as IMemoryCache;
 
-        var inMemoryCacheValue = mcValue!.TryGetValue(cacheKey, out var inMemoryCacheEntry);
-        var inMemoryCacheEntryValue = inMemoryCacheEntry?.GetType().GetProperty("Value")?.GetValue(inMemoryCacheEntry);
+            var inMemoryCacheValue = mcValue!.TryGetValue(cacheKey, out var inMemoryCacheEntry);
+            var inMemoryCacheEntryValue = inMemoryCacheEntry?.GetType().GetProperty("Value")?.GetValue(inMemoryCacheEntry);
 
-        _logger.LogInformation("In memory cache value for {CacheKey}, success: {InMemoryCacheValue} value: {@inMemoryCacheEntryValue}",
-        cacheKey, inMemoryCacheValue, inMemoryCacheEntryValue);
+            _logger.LogInformation("In memory cache value for {CacheKey}, success: {InMemoryCacheValue} value: {@inMemoryCacheEntryValue}",
+                cacheKey, inMemoryCacheValue, inMemoryCacheEntryValue);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Failed to reflect on FusionCache MemoryCache");
+        }
 
-
-        // Temporary logging to debug missing authorized sub parties
         _logger.LogInformation("Authorized parties for {Party}: {@AuthorizedParties}", authenticatedParty, authorizedParties);
 
         return flatten ? GetFlattenedAuthorizedParties(authorizedParties) : authorizedParties;

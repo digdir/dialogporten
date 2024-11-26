@@ -146,6 +146,8 @@ public static class InfrastructureExtensions
         })
         .ConfigureFusionCache(nameof(AuthorizedPartiesResult), new()
         {
+            // Testing https://github.com/digdir/dialogporten/issues/1226
+            SkipMemoryCache = true,
             // We keep authorized parties in a separate cache key, as this originates from a different API
             // and has lees cardinality than the dialog authorization cache (only one per user). We therefore
             // allow a memory cache for this.
