@@ -23,7 +23,8 @@ public sealed class OutboxMessage
             CreatedAt = domainEvent.OccuredAt,
             EventType = eventType.FullName!,
             EventPayload = JsonSerializer.Serialize(domainEvent, eventType),
-            // TODO: Set correlation id
+            // TODO: https://github.com/digdir/dialogporten/issues/...
+            // Set correlation id
             CorrelationId = Guid.NewGuid().ToString()
         };
     }

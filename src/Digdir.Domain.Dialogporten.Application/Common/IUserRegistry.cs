@@ -62,8 +62,11 @@ public sealed class UserRegistry : IUserRegistry
         var userId = GetCurrentUserId();
         var name = userId.Type switch
         {
-            UserIdType.Person or UserIdType.ServiceOwnerOnBehalfOfPerson => await _partyNameRegistry.GetName(userId.ExternalIdWithPrefix, cancellationToken),
-            UserIdType.SystemUser => "System User",// TODO: Implement when SystemUsers are introduced?
+            UserIdType.Person or UserIdType.ServiceOwnerOnBehalfOfPerson =>
+                await _partyNameRegistry.GetName(userId.ExternalIdWithPrefix, cancellationToken),
+            // TODO: https://github.com/digdir/dialogporten/issues/
+            // Implement when SystemUsers are introduced?
+            UserIdType.SystemUser => "System User",
             UserIdType.Unknown => throw new UnreachableException(),
             UserIdType.ServiceOwner => throw new UnreachableException(),
             _ => throw new UnreachableException()

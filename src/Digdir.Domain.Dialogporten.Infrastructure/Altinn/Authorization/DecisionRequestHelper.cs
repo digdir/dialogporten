@@ -191,7 +191,7 @@ internal static class DecisionRequestHelper
             }
             else if (ns == AttributeIdAppInstance)
             {
-                // TODO!
+                // TODO: https://github.com/digdir/dialogporten/issues/...
                 // For app instances, we the syntax of the value is "{partyID}/{instanceID}".
                 // We do not have Altinn partyID in the request, so we cannot support this.
                 // This means we cannot easily support instance specific authorizations for apps.

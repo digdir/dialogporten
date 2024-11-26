@@ -28,9 +28,8 @@ public static class ClaimsPrincipalExtensions
     private const char ScopeClaimSeparator = ' ';
     private const string PidClaim = "pid";
 
-
-    // TODO: This scope is also defined in WebAPI/GQL. Can this be fetched from a common auth lib?
-    // https://github.com/digdir/dialogporten/issues/647
+    // TODO: https://github.com/digdir/dialogporten/issues/647
+    // This scope is also defined in WebAPI/GQL. Can this be fetched from a common auth lib?
     // This could be done for all claims/scopes/prefixes etc, there are duplicates
     public const string ServiceProviderScope = "digdir:dialogporten.serviceprovider";
 

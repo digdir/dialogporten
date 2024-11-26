@@ -14,6 +14,9 @@ indent_size = 4
 insert_final_newline = true
 
 [*.cs]
+// TODO comments should have an associated issue URL
+dotnet_diagnostic.TODO001.issueRegex = https://github.com/digdir/dialogporten/issues/\d+
+
 # Attributes should be on a line above the item they are associated with
 place_attribute_on_same_line = false
 
