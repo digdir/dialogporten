@@ -30,6 +30,7 @@ jobs:
         with:
           global-json-file: ./global.json
 
+      # Kan kanskje byttes ut med build-test som blir kjørt for hele solution?
       - name: Build
         run: dotnet build --configuration Release /p:Version=${{ needs.get-current-version.outputs.version }} ${PROJECT}
 
@@ -51,6 +52,7 @@ jobs:
         with:
           files: |
             **/Digdir.Library.Dialogporten.WebApiClient/**
+      # For testing
       - name: List all changed files
         env:
           ALL_CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
@@ -63,8 +65,8 @@ jobs:
         with:
           name: package
 
+      # Denne må bare kjøres når det merges inn i main. ellers feiler den på duplicates.
       - name: Push to NuGet
-
         if: steps.changed-files.outputs.any_changed == 'true'
         run: dotnet nuget push *.nupkg --source https://int.nugettest.org --api-key ${NUGET_API_TEST_KEY}
         env:
