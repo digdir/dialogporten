@@ -12,6 +12,9 @@ using Npgsql;
 using OpenTelemetry.Trace;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
+using OpenTelemetry;
+using OpenTelemetry.Exporter;
+using OpenTelemetry.Logs;
 
 namespace Digdir.Library.Utils.AspNet;
 
@@ -53,61 +56,57 @@ public static class AspNetUtilitiesExtensions
 
     public static WebApplicationBuilder ConfigureTelemetry(this WebApplicationBuilder builder)
     {
-        var otelEndpoint = builder.Configuration["OpenTelemetry:Endpoint"] 
-            ?? Environment.GetEnvironmentVariable("OTEL_EXPORTER_OTLP_ENDPOINT");
-        var otelProtocol = builder.Configuration["OpenTelemetry:Protocol"] 
-            ?? Environment.GetEnvironmentVariable("OTEL_EXPORTER_OTLP_PROTOCOL");
-
-        if (string.IsNullOrEmpty(otelEndpoint))
-        {
-            builder.Logging.LogWarning("OpenTelemetry endpoint is not configured. Telemetry data will not be exported. Configure using OpenTelemetry:Endpoint in settings or OTEL_EXPORTER_OTLP_ENDPOINT environment variable.");
-        }
+        var serviceName = builder.Environment.ApplicationName;
+        Console.WriteLine($"[OpenTelemetry] Configuring telemetry for service: {serviceName}");
 
         builder.Services.AddOpenTelemetry()
             .ConfigureResource(resource => resource
-                .AddService(serviceName: builder.Environment.ApplicationName))
+                .AddService(serviceName: serviceName))
             .WithTracing(tracing =>
             {
-                if (builder.Environment.IsDevelopment())
-                {
-                    tracing.SetSampler(new AlwaysOnSampler());
-                }
+                // Enable console exporter for debugging
+                tracing.AddConsoleExporter();
 
-                tracing.AddAspNetCoreInstrumentation(options =>
+                tracing.AddAspNetCoreInstrumentation(opts =>
                 {
-                    options.Filter = httpContext =>
-                        !httpContext.Request.Path.StartsWithSegments("/health");
+                    opts.RecordException = true;
+                })
+                .AddHttpClientInstrumentation(opts =>
+                {
+                    opts.RecordException = true;
+                })
+                .AddNpgsql()
+                .AddSource(MassTransitSource);
+
+                // Add OTLP exporter with explicit configuration
+                tracing.AddOtlpExporter(otlpOptions =>
+                {
+                    var endpoint = builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]
+                        ?? "http://otel-collector:4318";
+                    Console.WriteLine($"[OpenTelemetry] Using endpoint: {endpoint}");
+
+                    otlpOptions.Endpoint = new Uri(endpoint);
+                    otlpOptions.Protocol = OtlpExportProtocol.HttpProtobuf;
+                    otlpOptions.ExportProcessorType = ExportProcessorType.Batch;
+                    otlpOptions.TimeoutMilliseconds = 30000;
                 });
-
-                tracing.AddHttpClientInstrumentation();
-                tracing.AddNpgsql();
-                tracing.AddSource(MassTransitSource); // MassTransit ActivitySource
-
-                if (!string.IsNullOrEmpty(otelEndpoint))
-                {
-                    tracing.AddOtlpExporter(otlpOptions =>
-                    {
-                        otlpOptions.Endpoint = new Uri(otelEndpoint);
-                        otlpOptions.Protocol = otelProtocol?.ToLowerInvariant() == "http" 
-                            ? OtlpExportProtocol.HttpProtobuf 
-                            : OtlpExportProtocol.Grpc;
-                    });
-                }
             })
             .WithMetrics(metrics =>
             {
-                metrics.AddRuntimeInstrumentation();
-                
-                if (!string.IsNullOrEmpty(otelEndpoint))
+                metrics.AddRuntimeInstrumentation()
+                    .AddAspNetCoreInstrumentation()
+                    .AddHttpClientInstrumentation();
+
+                metrics.AddOtlpExporter(otlpOptions =>
                 {
-                    metrics.AddOtlpExporter(otlpOptions =>
-                    {
-                        otlpOptions.Endpoint = new Uri(otelEndpoint);
-                        otlpOptions.Protocol = otelProtocol?.ToLowerInvariant() == "http" 
-                            ? OtlpExportProtocol.HttpProtobuf 
-                            : OtlpExportProtocol.Grpc;
-                    });
-                }
+                    var endpoint = builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]
+                        ?? "http://otel-collector:4318";
+
+                    otlpOptions.Endpoint = new Uri(endpoint);
+                    otlpOptions.Protocol = OtlpExportProtocol.HttpProtobuf;
+                    otlpOptions.ExportProcessorType = ExportProcessorType.Batch;
+                    otlpOptions.TimeoutMilliseconds = 30000;
+                });
             });
 
         return builder;

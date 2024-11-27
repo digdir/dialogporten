@@ -15,7 +15,7 @@ services:
     restart: always
 
   dialogporten-webapi:
-    scale: 2
+    scale: 1
     build:
       context: .
       dockerfile: src/Digdir.Domain.Dialogporten.WebApi/Dockerfile
@@ -35,8 +35,11 @@ services:
       - Serilog__MinimumLevel__Default=Debug
       - ASPNETCORE_URLS=http://+:8080
       - ASPNETCORE_ENVIRONMENT=Development
-      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
-      - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
+      - OTEL_EXPORTER_OTLP_PROTOCOL=http
+      - OTEL_SERVICE_NAME=dialogporten-webapi
+      # Add these for debugging
+      - OTEL_LOG_LEVEL=debug
     volumes:
       - ./.aspnet/https:/https
 
@@ -73,7 +76,7 @@ services:
       - Serilog__WriteTo__0__Name=Console
       - Serilog__MinimumLevel__Default=Debug
       - ASPNETCORE_ENVIRONMENT=Development
-      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
-      - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
+      - OTEL_EXPORTER_OTLP_PROTOCOL=http
     volumes:
       - ./.aspnet/https:/https
