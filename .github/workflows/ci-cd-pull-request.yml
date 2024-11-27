@@ -42,7 +42,7 @@ jobs:
     with:
       version: ${{ needs.get-current-version.outputs.version }}-${{ needs.generate-git-short-sha.outputs.gitShortSha }}
     secrets:
-      NUGET_API_TEST_KEY: ${{secrets.NUGET_API_TEST_KEY }}
+      NUGET_API_TEST_KEY: ${{ secrets.NUGET_API_TEST_KEY }}
 
 #  dry-run-deploy-infra:
 #    name: Dry run deploy infrastructure
