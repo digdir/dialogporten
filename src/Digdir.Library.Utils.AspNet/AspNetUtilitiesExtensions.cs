@@ -78,6 +78,7 @@ public static class AspNetUtilitiesExtensions
             {
                 "grpc" => OtlpExportProtocol.Grpc,
                 "http/protobuf" => OtlpExportProtocol.HttpProtobuf,
+                "http" => OtlpExportProtocol.HttpProtobuf,
                 _ => throw new ArgumentException($"Unsupported protocol: {settings.Protocol}")
             };
 
