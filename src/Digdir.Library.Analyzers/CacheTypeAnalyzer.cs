@@ -43,7 +43,12 @@ public class CacheTypeAnalyzer : DiagnosticAnalyzer
     {
         var invocationExpr = (InvocationExpressionSyntax)context.Node;
 
-        if (invocationExpr.Expression is not MemberAccessExpressionSyntax memberAccessExpr || memberAccessExpr.Name.Identifier.Text != "GetOrSetAsync")
+        if (invocationExpr.Expression is not MemberAccessExpressionSyntax memberAccessExpr)
+        {
+            return;
+        }
+
+        if (memberAccessExpr.Name.Identifier.Text != "GetOrSetAsync")
         {
             return;
         }
