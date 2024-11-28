@@ -54,61 +54,67 @@ public static class AspNetUtilitiesExtensions
         return app;
     }
 
-    public static WebApplicationBuilder ConfigureTelemetry(this WebApplicationBuilder builder)
+    public static WebApplicationBuilder ConfigureTelemetry(
+        this WebApplicationBuilder builder,
+        Action<TelemetrySettings, IConfiguration>? configure = null)
     {
         var serviceName = builder.Environment.ApplicationName;
         Console.WriteLine($"[OpenTelemetry] Configuring telemetry for service: {serviceName}");
 
-        builder.Services.AddOpenTelemetry()
+        var settings = new TelemetrySettings();
+        configure?.Invoke(settings, builder.Configuration);
+
+        var telemetryBuilder = builder.Services.AddOpenTelemetry()
             .ConfigureResource(resource => resource
-                .AddService(serviceName: serviceName))
+                .AddService(serviceName: serviceName));
+
+        // Only configure OTLP if both endpoint and protocol are specified
+        if (!string.IsNullOrEmpty(settings.Endpoint) && !string.IsNullOrEmpty(settings.Protocol))
+        {
+            Console.WriteLine($"[OpenTelemetry] Using endpoint: {settings.Endpoint}");
+            Console.WriteLine($"[OpenTelemetry] Using protocol: {settings.Protocol}");
+
+            var protocol = settings.Protocol.ToLowerInvariant() switch
+            {
+                "grpc" => OtlpExportProtocol.Grpc,
+                "http/protobuf" => OtlpExportProtocol.HttpProtobuf,
+                _ => throw new ArgumentException($"Unsupported protocol: {settings.Protocol}")
+            };
+
+            telemetryBuilder.UseOtlpExporter(protocol, new Uri(settings.Endpoint));
+        }
+        else
+        {
+            Console.WriteLine("[OpenTelemetry] OTLP exporter not configured - skipping");
+        }
+
+        telemetryBuilder
             .WithTracing(tracing =>
             {
-                // Enable console exporter for debugging
-                tracing.AddConsoleExporter();
-
                 tracing.AddAspNetCoreInstrumentation(opts =>
-                {
-                    opts.RecordException = true;
-                })
-                .AddHttpClientInstrumentation(opts =>
-                {
-                    opts.RecordException = true;
-                })
-                .AddNpgsql()
-                .AddSource(MassTransitSource);
-
-                // Add OTLP exporter with explicit configuration
-                tracing.AddOtlpExporter(otlpOptions =>
-                {
-                    var endpoint = builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]
-                        ?? "http://otel-collector:4318";
-                    Console.WriteLine($"[OpenTelemetry] Using endpoint: {endpoint}");
-
-                    otlpOptions.Endpoint = new Uri(endpoint);
-                    otlpOptions.Protocol = OtlpExportProtocol.HttpProtobuf;
-                    otlpOptions.ExportProcessorType = ExportProcessorType.Batch;
-                    otlpOptions.TimeoutMilliseconds = 30000;
-                });
+                    {
+                        opts.RecordException = true;
+                    })
+                    .AddHttpClientInstrumentation(opts =>
+                    {
+                        opts.RecordException = true;
+                    })
+                    .AddNpgsql()
+                    .AddSource(MassTransitSource);
             })
             .WithMetrics(metrics =>
             {
                 metrics.AddRuntimeInstrumentation()
                     .AddAspNetCoreInstrumentation()
                     .AddHttpClientInstrumentation();
-
-                metrics.AddOtlpExporter(otlpOptions =>
-                {
-                    var endpoint = builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]
-                        ?? "http://otel-collector:4318";
-
-                    otlpOptions.Endpoint = new Uri(endpoint);
-                    otlpOptions.Protocol = OtlpExportProtocol.HttpProtobuf;
-                    otlpOptions.ExportProcessorType = ExportProcessorType.Batch;
-                    otlpOptions.TimeoutMilliseconds = 30000;
-                });
             });
 
         return builder;
     }
+}
+
+public class TelemetrySettings
+{
+    public string? Endpoint { get; set; }
+    public string? Protocol { get; set; }
 }

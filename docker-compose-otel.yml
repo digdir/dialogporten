@@ -5,14 +5,11 @@ services:
     command: ["--config=/etc/otel-collector-config.yaml"]
     volumes:
       - ./local-otel-configuration/otel-collector-config.yaml:/etc/otel-collector-config.yaml
-      - ./file-exporter:/file-exporter:rwz
     ports:
       - "4317:4317" # OTLP gRPC receiver
       - "4318:4318" # OTLP http receiver
       - "8888:8888" # Prometheus metrics exposed by the collector
       - "8889:8889" # Prometheus exporter metrics
-      - "55679:55679"
-      - "55680:55680"
     depends_on:
       - jaeger
 

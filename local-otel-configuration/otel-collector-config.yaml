@@ -25,8 +25,6 @@ exporters:
     verbosity: detailed
     sampling_initial: 5
     sampling_thereafter: 200
-  file:
-    path: ./file-exporter/filename.json
 
 extensions:
   health_check:
@@ -43,12 +41,12 @@ service:
     traces:
       receivers: [otlp]
       processors: [batch]
-      exporters: [otlp, debug, file]
+      exporters: [otlp, debug]
     metrics:
       receivers: [otlp]
       processors: [batch]
-      exporters: [prometheus, debug, file]
+      exporters: [prometheus, debug]
     logs:
       receivers: [otlp]
       processors: [batch]
-      exporters: [debug, file]
+      exporters: [debug]

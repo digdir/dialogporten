@@ -78,7 +78,11 @@ static void BuildAndRun(string[] args, TelemetryConfiguration telemetryConfigura
 
     var thisAssembly = Assembly.GetExecutingAssembly();
 
-    builder.ConfigureTelemetry();
+    builder.ConfigureTelemetry((settings, configuration) =>
+    {
+        settings.Endpoint = configuration["OTEL_EXPORTER_OTLP_ENDPOINT"];
+        settings.Protocol = configuration["OTEL_EXPORTER_OTLP_PROTOCOL"];
+    });
 
     builder.Services
         // Options setup
