@@ -1,6 +1,6 @@
 ﻿namespace Digdir.Library.Dialogporten.WebApiClient.Integration.Tests;
 
-public sealed class RefitterInterfaceTests : IDisposable
+public sealed class RefitterInterfaceTests
 {
 
     [Fact]
@@ -35,11 +35,11 @@ public sealed class RefitterInterfaceTests : IDisposable
                     // {
                     //     File.Delete(path);
                     // }
-                    // if (File.Exists(newRifitterPath))
-                    // {
-                    //     File.Delete(newRifitterPath);
-                    // }
-                    // Assert.False(File.Exists(newRifitterPath));
+                    if (File.Exists(newRifitterPath))
+                    {
+                        File.Delete(newRifitterPath);
+                    }
+                    Assert.False(File.Exists(newRifitterPath));
                 });
     }
     private static string? GetSolutionRootFolder()
@@ -53,14 +53,4 @@ public sealed class RefitterInterfaceTests : IDisposable
         return solutionFolder;
     }
 
-    public void Dispose()
-    {
-        // var rootPath = GetSolutionRootFolder();
-        // var webApiClientPath = Path.Combine(rootPath!, "src/Digdir.Library.Dialogporten.WebApiClient/Features/V1");
-        // var path = Path.Combine(webApiClientPath, "RefitterInterface.received.cs");
-        // if (File.Exists(path))
-        // {
-        //     File.Delete(path);
-        // }
-    }
 }
