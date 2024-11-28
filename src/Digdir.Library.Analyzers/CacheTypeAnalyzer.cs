@@ -92,11 +92,11 @@ public class CacheTypeAnalyzer : DiagnosticAnalyzer
         }
 
 
-        // This can't be here, ReadOnlyCollection is not a readonly type (╯°□°)╯︵ ┻━┻
-        if (!typeSymbol.IsReadOnly)
-        {
-            return false;
-        }
+        // // This can't be here, ReadOnlyCollection is not a readonly type (╯°□°)╯︵ ┻━┻
+        // if (!typeSymbol.IsReadOnly)
+        // {
+        //     return false;
+        // }
 
         foreach (var member in typeSymbol.GetMembers().OfType<IPropertySymbol>())
         {
