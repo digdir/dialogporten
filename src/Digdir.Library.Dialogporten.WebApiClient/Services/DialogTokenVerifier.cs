@@ -1,3 +1,4 @@
+using System.Buffers.Text;
 using System.Text;
 using System.Text.Json;
 using NSec.Cryptography;
@@ -10,7 +11,7 @@ public sealed class DialogTokenVerifier(string kid, PublicKey publicKey)
     {
         var parts = token.Split('.');
         if (parts.Length != 3) return false;
-        var header = Base64Url.Decode(parts[0]);
+        var header = Base64Url.DecodeFromChars(parts[0]);
 
         var headerJson = JsonSerializer.Deserialize<JsonElement>(header);
         if (headerJson.TryGetProperty("kid", out var value))
@@ -21,7 +22,7 @@ public sealed class DialogTokenVerifier(string kid, PublicKey publicKey)
         {
             return false;
         }
-        var signature = Base64Url.Decode(parts[2]);
+        var signature = Base64Url.DecodeFromChars(parts[2]);
         return SignatureAlgorithm.Ed25519.Verify(publicKey, Encoding.UTF8.GetBytes(parts[0] + '.' + parts[1]), signature);
 
     }
@@ -35,7 +36,7 @@ public sealed class DialogTokenVerifier(string kid, PublicKey publicKey)
             throw new ArgumentException("Invalid dialog token");
         }
 
-        var bodyJson = JsonSerializer.Deserialize<JsonElement>(Base64Url.Decode(parts[1]));
+        var bodyJson = JsonSerializer.Deserialize<JsonElement>(Base64Url.DecodeFromChars(parts[1]));
 
         var fieldsInfo = typeof(DialogTokenClaimTypes).GetFields().Where(f => f.FieldType == typeof(string));
 

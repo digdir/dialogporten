@@ -1,3 +1,4 @@
+using System.Buffers.Text;
 using System.Reflection;
 using Altinn.ApiClients.Maskinporten.Extensions;
 using Altinn.ApiClients.Maskinporten.Services;
@@ -27,7 +28,7 @@ public static class ServiceCollectionExtensions
         var kid = keyPair.Kid;
 
         var publicKey = PublicKey.Import(SignatureAlgorithm.Ed25519,
-            Base64Url.Decode(keyPair.PublicComponent), KeyBlobFormat.RawPublicKey);
+            Base64Url.DecodeFromChars(keyPair.PublicComponent), KeyBlobFormat.RawPublicKey);
         services.AddSingleton(new DialogTokenVerifier(kid, publicKey));
         return services;
     }
