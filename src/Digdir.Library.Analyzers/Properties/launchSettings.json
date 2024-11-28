@@ -2,6 +2,9 @@
   "$schema": "https://json.schemastore.org/launchsettings.json",
   "profiles": {
     "DebugRoslynAnalyzers": {
+      "environmentVariables": {
+        "DOTNET_ROSLYN_DEBUG": "true"
+      },
       "commandName": "DebugRoslynComponent",
       "targetProject": "../Digdir.Library.Analyzers.Sample/Digdir.Library.Analyzers.Sample.csproj"
     }
