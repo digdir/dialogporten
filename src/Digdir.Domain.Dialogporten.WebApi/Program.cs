@@ -83,6 +83,19 @@ static void BuildAndRun(string[] args, TelemetryConfiguration telemetryConfigura
         settings.ServiceName = configuration["OTEL_SERVICE_NAME"];
         settings.Endpoint = configuration["OTEL_EXPORTER_OTLP_ENDPOINT"];
         settings.Protocol = configuration["OTEL_EXPORTER_OTLP_PROTOCOL"];
+
+        var resourceAttributes = configuration["OTEL_RESOURCE_ATTRIBUTES"];
+        if (!string.IsNullOrEmpty(resourceAttributes))
+        {
+            foreach (var attribute in resourceAttributes.Split(','))
+            {
+                var keyValue = attribute.Split('=', 2);
+                if (keyValue.Length == 2)
+                {
+                    settings.ResourceAttributes[keyValue.First().Trim()] = keyValue.Last().Trim();
+                }
+            }
+        }
     });
 
     builder.Services

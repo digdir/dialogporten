@@ -62,18 +62,28 @@ public static class AspNetUtilitiesExtensions
         configure?.Invoke(settings, builder.Configuration);
 
         Console.WriteLine($"[OpenTelemetry] Configuring telemetry for service: {settings.ServiceName}");
+        foreach (var attr in settings.ResourceAttributes)
+        {
+            Console.WriteLine($"[OpenTelemetry] Resource attribute: {attr.Key}={attr.Value}");
+        }
 
         var telemetryBuilder = builder.Services.AddOpenTelemetry()
-            .ConfigureResource(resource => resource
-                .AddService(serviceName: settings.ServiceName));
+            .ConfigureResource(resource =>
+            {
+                var resourceBuilder = resource.AddService(serviceName: settings.ServiceName ?? builder.Environment.ApplicationName);
 
-        // Only configure OTLP if both endpoint and protocol are specified
+                foreach (var attr in settings.ResourceAttributes)
+                {
+                    resourceBuilder.AddAttributes(new[] { new KeyValuePair<string, object>(attr.Key, attr.Value) });
+                }
+            });
+
         if (!string.IsNullOrEmpty(settings.Endpoint) && !string.IsNullOrEmpty(settings.Protocol))
         {
             Console.WriteLine($"[OpenTelemetry] Using endpoint: {settings.Endpoint}");
             Console.WriteLine($"[OpenTelemetry] Using protocol: {settings.Protocol}");
 
-            var protocol = settings.Protocol.ToLowerInvariant() switch
+            var otlpProtocol = settings.Protocol.ToLowerInvariant() switch
             {
                 "grpc" => OtlpExportProtocol.Grpc,
                 "http/protobuf" => OtlpExportProtocol.HttpProtobuf,
@@ -81,7 +91,7 @@ public static class AspNetUtilitiesExtensions
                 _ => throw new ArgumentException($"Unsupported protocol: {settings.Protocol}")
             };
 
-            telemetryBuilder.UseOtlpExporter(protocol, new Uri(settings.Endpoint));
+            telemetryBuilder.UseOtlpExporter(otlpProtocol, new Uri(settings.Endpoint));
         }
         else
         {
@@ -118,4 +128,5 @@ public class TelemetrySettings
     public string? ServiceName { get; set; }
     public string? Endpoint { get; set; }
     public string? Protocol { get; set; }
+    public Dictionary<string, string> ResourceAttributes { get; set; } = new();
 }
