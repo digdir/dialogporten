@@ -21,11 +21,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      #      - name: set PROJECT variable to point to project
-      #        run: |
-      #          PROJECT=$(find . -name '${{inputs.path}}' -printf "%p"  -quit)
-      #          echo "PROJECT ${PROJECT}"
-      #          echo "PROJECT=${PROJECT}" >> $GITHUB_ENV
+      - name: set PROJECT variable to point to project
+        run: |
+          echo ${{inputs.path}}
+          PROJECT=${{inputs.path}}
+          echo "PROJECT ${PROJECT}"
+          echo "PROJECT=${PROJECT}" >> $GITHUB_ENV
 
       - name: Set up .NET
         uses: actions/setup-dotnet@v4
@@ -34,12 +35,12 @@ jobs:
 
       # Kan kanskje byttes ut med build-test som blir kjørt for hele solution?
       - name: Build
-        run: dotnet build --configuration Release /p:Version=${{ inputs.version }} ${{inputs.path}}
+        run: dotnet build --configuration Release /p:Version=${{ inputs.version }} ${{PROJECT}}
 
       # Blir ikke brukt til noe? burde det egt brukes eller bare fjernes? Ser ut som den blir brukt automatisk.
       # Gjør det mye bedre for de som bruker pakken når de debugger
       - name: Pack with debug symbols
-        run: dotnet pack --configuration Release /p:Version=${{ inputs.version }} -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg --output . ${{inputs.path}}
+        run: dotnet pack --configuration Release /p:Version=${{ inputs.version }} -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg --output . ${PROJECT}
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
