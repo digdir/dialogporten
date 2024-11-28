@@ -18,7 +18,7 @@ internal sealed class ServiceOwnerNameRegistryClient : IServiceOwnerNameRegistry
 
     public async Task<ServiceOwnerInfo?> GetServiceOwnerInfo(string orgNumber, CancellationToken cancellationToken)
     {
-        var orgInfoByOrgNumber = await _cache.GetOrSetAsync<Dictionary<string,ServiceOwnerInfo>>(ServiceOwnerShortNameReferenceCacheKey, GetServiceOwnerInfo, token: cancellationToken);
+        var orgInfoByOrgNumber = await _cache.GetOrSetAsync<Dictionary<string, ServiceOwnerInfo>>(ServiceOwnerShortNameReferenceCacheKey, GetServiceOwnerInfo, token: cancellationToken);
         orgInfoByOrgNumber.TryGetValue(orgNumber, out var orgInfo);
 
         return orgInfo;

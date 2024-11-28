@@ -1,4 +1,6 @@
-﻿using System.Globalization;
+﻿using System.Collections.Immutable;
+using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Xml;
 using Altinn.Authorization.ABAC.Utils;
@@ -35,6 +37,7 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
         CancellationToken cancellationToken)
     {
         var resources = await FetchServiceResourceInformation(cancellationToken);
+
         return resources
             .Where(x => x.OwnerOrgNumber == orgNumber)
             .ToList();
@@ -171,11 +174,11 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
         return null;
     }
 
-    private async Task<ServiceResourceInformation[]> FetchServiceResourceInformation(CancellationToken cancellationToken)
+    private async Task<ReadOnlyCollection<ServiceResourceInformation>> FetchServiceResourceInformation(CancellationToken cancellationToken)
     {
         const string searchEndpoint = $"{ResourceRegistryResourceEndpoint}resourcelist";
 
-        return await _cache.GetOrSetAsync(
+        return await _cache.GetOrSetAsync<ReadOnlyCollection<ServiceResourceInformation>>(
             ServiceResourceInformationCacheKey,
             async cToken =>
             {
@@ -194,7 +197,8 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
                         x.ResourceType,
                         x.HasCompetentAuthority.Organization!,
                         x.HasCompetentAuthority.OrgCode))
-                    .ToArray();
+                    .ToList()
+                    .AsReadOnly();
             },
             token: cancellationToken);
     }
