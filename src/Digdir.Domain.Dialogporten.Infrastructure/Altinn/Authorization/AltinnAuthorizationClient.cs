@@ -55,7 +55,7 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
             AltinnActions = dialogEntity.GetAltinnActions()
         };
 
-        return await _pdpCache.GetOrSetAsync(request.GenerateCacheKey(), async token
+        return await _pdpCache.GetOrSetAsync<DialogDetailsAuthorizationResult>(request.GenerateCacheKey(), async token
             => await PerformDialogDetailsAuthorization(request, token), token: cancellationToken);
     }
 

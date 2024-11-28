@@ -16,9 +16,9 @@ public class CacheTypeAnalyzer : DiagnosticAnalyzer
     private static readonly LocalizableString MessageFormatNoTypeArgument = "IFusionCache.GetOrSetAsync cannot be used without a type argument";
     private static readonly LocalizableString DescriptionNoTypeArgument = "Ensure that IFusionCache.GetOrSetAsync is used with a type argument.";
 
-    private static readonly LocalizableString TitleNotImmutableRecord = "Cache type must be an immutable record";
-    private static readonly LocalizableString MessageFormatNotImmutableRecord = "The type used in the cache must be an immutable record, but was {0}";
-    private static readonly LocalizableString DescriptionNotImmutableRecord = "Ensure that the types stored in the caches are immutable records.";
+    private static readonly LocalizableString TitleNotImmutableRecord = "Cache type must be a readonly type";
+    private static readonly LocalizableString MessageFormatNotImmutableRecord = "The type used in the cache must be a readonly, but was {0}";
+    private static readonly LocalizableString DescriptionNotImmutableRecord = "Ensure that the types stored in the caches are readonly.";
 
     private const string Category = "Usage";
 
@@ -66,16 +66,15 @@ public class CacheTypeAnalyzer : DiagnosticAnalyzer
         var semanticModel = context.SemanticModel;
         var typeSymbol = semanticModel.GetTypeInfo(genericTypeArgument).Type;
 
-        if (typeSymbol != null && IsImmutableRecord(typeSymbol)) return;
+        if (typeSymbol != null && IsImmutable(typeSymbol)) return;
         {
             var diagnostic = Diagnostic.Create(RuleNotImmutableRecord, genericTypeArgument.GetLocation(), typeSymbol?.Name);
             context.ReportDiagnostic(diagnostic);
         }
     }
 
-    private static bool IsImmutableRecord(ITypeSymbol typeSymbol)
+    private static bool IsImmutable(ITypeSymbol typeSymbol)
     {
-        // Check if the type is a record and all properties are read-only
-        return typeSymbol.IsRecord && typeSymbol.GetMembers().OfType<IPropertySymbol>().All(p => p.IsReadOnly);
+        return typeSymbol.IsReadOnly && typeSymbol.GetMembers().OfType<IPropertySymbol>().All(p => p.IsReadOnly);
     }
 }

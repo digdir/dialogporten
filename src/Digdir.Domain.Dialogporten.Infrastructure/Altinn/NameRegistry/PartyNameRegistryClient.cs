@@ -30,7 +30,7 @@ internal sealed class PartyNameRegistryClient : IPartyNameRegistry
 
     public async Task<string?> GetName(string externalIdWithPrefix, CancellationToken cancellationToken)
     {
-        return await _cache.GetOrSetAsync<ReadOnlySpan<char>>(
+        return await _cache.GetOrSetAsync<string?>(
             $"Name_{externalIdWithPrefix}",
             async (ctx, ct) =>
             {
@@ -41,7 +41,7 @@ internal sealed class PartyNameRegistryClient : IPartyNameRegistry
                     ctx.Options.Duration = TimeSpan.FromSeconds(10);
                 }
 
-                return name.AsSpan();
+                return name;
             },
             token: cancellationToken);
     }
