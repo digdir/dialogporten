@@ -24,11 +24,11 @@ public class CacheTypeAnalyzer : DiagnosticAnalyzer
 
     private static readonly DiagnosticDescriptor RuleNoTypeArgument = new(
         DiagnosticIdNoTypeArgument, TitleNoTypeArgument, MessageFormatNoTypeArgument,
-        Category, DiagnosticSeverity.Warning, isEnabledByDefault: true, description: DescriptionNoTypeArgument);
+        Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: DescriptionNoTypeArgument);
 
     private static readonly DiagnosticDescriptor RuleNotImmutableRecord = new(
         DiagnosticIdNotImmutableRecord, TitleNotImmutableRecord, MessageFormatNotImmutableRecord,
-        Category, DiagnosticSeverity.Warning, isEnabledByDefault: true, description: DescriptionNotImmutableRecord);
+        Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: DescriptionNotImmutableRecord);
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics
         => [RuleNoTypeArgument, RuleNotImmutableRecord];

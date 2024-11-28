@@ -4,5 +4,5 @@
 
 Rule ID | Category | Severity | Notes
 --------|----------|----------|-------
-CACH001 | Usage | Warning | CacheTypeAnalyzer
-CACH002 | Usage | Warning | CacheTypeAnalyzer
+CACH001 | Usage | Error    | CacheTypeAnalyzer
+CACH002 | Usage | Error    | CacheTypeAnalyzer
