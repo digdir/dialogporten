@@ -58,15 +58,14 @@ public static class AspNetUtilitiesExtensions
         this WebApplicationBuilder builder,
         Action<TelemetrySettings, IConfiguration>? configure = null)
     {
-        var serviceName = builder.Environment.ApplicationName;
-        Console.WriteLine($"[OpenTelemetry] Configuring telemetry for service: {serviceName}");
-
         var settings = new TelemetrySettings();
         configure?.Invoke(settings, builder.Configuration);
 
+        Console.WriteLine($"[OpenTelemetry] Configuring telemetry for service: {settings.ServiceName}");
+
         var telemetryBuilder = builder.Services.AddOpenTelemetry()
             .ConfigureResource(resource => resource
-                .AddService(serviceName: serviceName));
+                .AddService(serviceName: settings.ServiceName));
 
         // Only configure OTLP if both endpoint and protocol are specified
         if (!string.IsNullOrEmpty(settings.Endpoint) && !string.IsNullOrEmpty(settings.Protocol))
@@ -116,6 +115,7 @@ public static class AspNetUtilitiesExtensions
 
 public class TelemetrySettings
 {
+    public string? ServiceName { get; set; }
     public string? Endpoint { get; set; }
     public string? Protocol { get; set; }
 }
