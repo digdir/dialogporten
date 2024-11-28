@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{320B47A0-5EB8-4B6E-8C84-90633A1849CA}"
+	ProjectSection(SolutionItems) = preProject
+		src\Directory.Build.props = src\Directory.Build.props
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Digdir.Domain.Dialogporten.Domain", "src\Digdir.Domain.Dialogporten.Domain\Digdir.Domain.Dialogporten.Domain.csproj", "{6302BDB6-CECE-4F4B-A49D-14128392BC96}"
 EndProject

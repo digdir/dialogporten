@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <ItemGroup>
-<!--        <PackageReference Include="Digdir.Library.Analyzers" Version="1.0.0" />-->
         <PackageReference Include="Altinn.ApiClients.Maskinporten" Version="9.2.1" />
         <PackageReference Include="HotChocolate.Subscriptions.Redis" Version="13.9.14" />
         <PackageReference Include="MassTransit.Azure.ServiceBus.Core" Version="8.3.1" />
@@ -39,11 +38,6 @@
         <InternalsVisibleTo Include="Digdir.Domain.Dialogporten.Application.Integration.Tests"/>
         <InternalsVisibleTo Include="Digdir.Domain.Dialogporten.Infrastructure.Unit.Tests"/>
         <InternalsVisibleTo Include="Digdir.Domain.Dialogporten.GraphQL"/>
-    </ItemGroup>
-
-    <ItemGroup>
-        <ProjectReference Include="..\Digdir.Library.Analyzers\Digdir.Library.Analyzers.csproj"
-                          OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
     </ItemGroup>
 
 </Project>

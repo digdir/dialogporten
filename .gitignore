@@ -6,9 +6,6 @@
 # Local User-specific application configuration
 appsettings.local.json
 
-# LocalNuGetSource
-LocalNuGetSource/
-
 # User-specific files
 *.rsuser
 *.suo

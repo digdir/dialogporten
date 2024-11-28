@@ -15,9 +15,4 @@
         <AnalysisLevel>8</AnalysisLevel>
     </PropertyGroup>
 
-<!--    <ItemGroup>-->
-<!--        <ProjectReference Include="..\Digdir.Library.Analyzers\Digdir.Library.Analyzers.csproj"-->
-<!--                          OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>-->
-<!--    </ItemGroup>-->
-
 </Project>
