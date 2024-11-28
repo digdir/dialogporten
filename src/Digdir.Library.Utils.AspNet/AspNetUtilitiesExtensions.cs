@@ -101,9 +101,15 @@ public static class AspNetUtilitiesExtensions
         telemetryBuilder
             .WithTracing(tracing =>
             {
+                if (builder.Environment.IsDevelopment())
+                {
+                    tracing.SetSampler(new AlwaysOnSampler());
+                }
+
                 tracing.AddAspNetCoreInstrumentation(opts =>
                     {
                         opts.RecordException = true;
+                        opts.Filter = httpContext => !httpContext.Request.Path.StartsWithSegments("/health");
                     })
                     .AddHttpClientInstrumentation(opts =>
                     {
