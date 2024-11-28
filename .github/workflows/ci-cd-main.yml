@@ -108,7 +108,7 @@ jobs:
       version: ${{ needs.get-current-version.outputs.version }}-${{ needs.generate-git-short-sha.outputs.gitShortSha }}
       runMigration: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasMigrationChanges == 'true' }}
 
-  publish-nuget:
+  publish-sdk-to-nuget:
     uses: ./.github/workflows/workflow-publish-nuget.yml
     needs: [ get-current-version, generate-git-short-sha, check-for-changes ]
     if: ${{ needs.check-for-changes.outputs.hasBackendChanges == 'true' || needs.check-for-changes.outputs.hasTestChanges == 'true' }}
