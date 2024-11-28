@@ -38,7 +38,7 @@ services:
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
       - OTEL_EXPORTER_OTLP_PROTOCOL=http
       - OTEL_SERVICE_NAME=dialogporten-webapi
-      - OTEL_RESOURCE_ATTRIBUTES=service.instance.id=dialogporten-webapi-${HOSTNAME},service.namespace=dialogporten-local
+      - OTEL_RESOURCE_ATTRIBUTES=service.instance.id=dialogporten-webapi,service.namespace=dialogporten-local
       # Add these for debugging
       - OTEL_LOG_LEVEL=debug
     volumes:
@@ -80,6 +80,6 @@ services:
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
       - OTEL_EXPORTER_OTLP_PROTOCOL=http
       - OTEL_SERVICE_NAME=dialogporten-graphql
-      - OTEL_RESOURCE_ATTRIBUTES=service.instance.id=dialogporten-graphql-${HOSTNAME},service.namespace=dialogporten-local
+      - OTEL_RESOURCE_ATTRIBUTES=service.instance.id=dialogporten-graphql,service.namespace=dialogporten-local
     volumes:
       - ./.aspnet/https:/https
