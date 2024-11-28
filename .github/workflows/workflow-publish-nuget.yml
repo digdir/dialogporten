@@ -35,8 +35,8 @@ jobs:
 
       # Kan kanskje byttes ut med build-test som blir kjørt for hele solution?
       - name: Build
-        run: dotnet build --configuration Release /p:Version=${{ inputs.version }} ${{PROJECT}}
-
+        run: dotnet build --configuration Release /p:Version=${{ inputs.version }} ${PROJECT}
+     
       - name: Pack with debug symbols
         run: dotnet pack --configuration Release /p:Version=${{ inputs.version }} -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg --output . ${PROJECT}
 
