@@ -37,8 +37,6 @@ jobs:
       - name: Build
         run: dotnet build --configuration Release /p:Version=${{ inputs.version }} ${{PROJECT}}
 
-      # Blir ikke brukt til noe? burde det egt brukes eller bare fjernes? Ser ut som den blir brukt automatisk.
-      # Gjør det mye bedre for de som bruker pakken når de debugger
       - name: Pack with debug symbols
         run: dotnet pack --configuration Release /p:Version=${{ inputs.version }} -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg --output . ${PROJECT}
 
