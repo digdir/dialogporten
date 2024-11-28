@@ -90,6 +90,8 @@ public class CacheTypeAnalyzer : DiagnosticAnalyzer
             return true;
         }
 
+
+        // This can't be here, ReadOnlyCollection is not a readonly type (╯°□°)╯︵ ┻━┻
         if (!typeSymbol.IsReadOnly)
         {
             return false;
