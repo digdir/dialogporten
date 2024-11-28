@@ -40,3 +40,5 @@ services:
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
     volumes:
       - ./local-otel-configuration/grafana-datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
+      - ./local-otel-configuration/grafana-dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yml
+      - ./local-otel-configuration/dashboards:/etc/grafana/provisioning/dashboards
