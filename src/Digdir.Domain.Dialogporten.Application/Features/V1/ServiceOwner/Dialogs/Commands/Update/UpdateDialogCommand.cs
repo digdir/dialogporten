@@ -83,7 +83,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
             .Include(x => x.Transmissions)
             .Include(x => x.DialogEndUserContext)
             .IgnoreQueryFilters()
-            .Where(x => resourceIds.Contains(x.ServiceResource))
+            .WhereIf(!_userResourceRegistry.IsCurrentUserServiceOwnerAdmin(), x => resourceIds.Contains(x.ServiceResource))
             .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
 
         if (dialog is null)
