@@ -114,9 +114,10 @@ jobs:
     if: ${{ needs.check-for-changes.outputs.hasBackendChanges == 'true' || needs.check-for-changes.outputs.hasTestChanges == 'true' }}
     with:
       version: ${{ needs.get-current-version.outputs.version }}-rc.${{ needs.generate-git-short-sha.outputs.gitShortSha }}
+      path: $(find . -name '*Digdir.Library.Dialogporten.WebApiClient.csproj' -printf "%p"  -quit)
     secrets:
-      NUGET_API_TEST_KEY: ${{ secrets.NUGET_API_TEST_KEY }}
-       
+      NUGET_API_KEY: ${{ secrets.NUGET_API_TEST_KEY }}
+  
   deploy-slack-notifier:
     name: Deploy slack notifier (test)
     needs: [ check-for-changes ]

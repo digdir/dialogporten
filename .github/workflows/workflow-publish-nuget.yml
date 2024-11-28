@@ -7,8 +7,12 @@ on:
         description: "Version"
         required: true
         type: string
+      path:
+        description: "Path to project"
+        required: true
+        type: string
     secrets:
-      NUGET_API_TEST_KEY:
+      NUGET_API_KEY:
         required: true
 jobs:
   build:
@@ -17,11 +21,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: set PROJECT variable to point to project
-        run: |
-          PROJECT=$(find . -name '*Digdir.Library.Dialogporten.WebApiClient.csproj' -printf "%p"  -quit)
-          echo "PROJECT ${PROJECT}"
-          echo "PROJECT=${PROJECT}" >> $GITHUB_ENV
+#      - name: set PROJECT variable to point to project
+#        run: |
+#          PROJECT=$(find . -name '*Digdir.Library.Dialogporten.WebApiClient.csproj' -printf "%p"  -quit)
+#          echo "PROJECT ${PROJECT}"
+#          echo "PROJECT=${PROJECT}" >> $GITHUB_ENV
 
       - name: Set up .NET
         uses: actions/setup-dotnet@v4
@@ -30,12 +34,12 @@ jobs:
 
       # Kan kanskje byttes ut med build-test som blir kjørt for hele solution?
       - name: Build
-        run: dotnet build --configuration Release /p:Version=${{ inputs.version }} ${PROJECT}
+        run: dotnet build --configuration Release /p:Version=${{ inputs.version }} ${inputs.path}
 
       # Blir ikke brukt til noe? burde det egt brukes eller bare fjernes? Ser ut som den blir brukt automatisk.
       # Gjør det mye bedre for de som bruker pakken når de debugger
       - name: Pack with debug symbols
-        run: dotnet pack --configuration Release /p:Version=${{ inputs.version }} -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg --output . ${PROJECT}
+        run: dotnet pack --configuration Release /p:Version=${{ inputs.version }} -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg --output . ${inputs.path}
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -52,5 +56,5 @@ jobs:
           name: package
 
       - name: Push to NuGet
-        run: dotnet nuget push *.nupkg --source https://int.nugettest.org --api-key ${{secrets.NUGET_API_TEST_KEY}}
+        run: dotnet nuget push *.nupkg --source https://int.nugettest.org --api-key ${{secrets.NUGET_API_KEY}}
         
