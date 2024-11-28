@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.40.0](https://github.com/digdir/dialogporten/compare/v1.39.0...v1.40.0) (2024-11-26)
+
+
+### Features
+
+* **infra:** Upgrade to PostgreSQL v16  ([#1521](https://github.com/digdir/dialogporten/issues/1521)) ([c67dc27](https://github.com/digdir/dialogporten/commit/c67dc27f76a6975ff411f333a71860dff6cffd54)), closes [#1520](https://github.com/digdir/dialogporten/issues/1520)
+
+
+### Bug Fixes
+
+* **app:** Sub-parties sometimes missing from authorized parties ([#1534](https://github.com/digdir/dialogporten/issues/1534)) ([f47112e](https://github.com/digdir/dialogporten/commit/f47112e1035a8b5954ecac6cf8fc75bd88620d54))
+* Don't rethrow deserialization exceptions from FusionCache ([#1535](https://github.com/digdir/dialogporten/issues/1535)) ([790feb8](https://github.com/digdir/dialogporten/commit/790feb844d1d3076afcc7a7dc34590dc974f79c3))
+* Use service resource org, allow admin-scope to fetch/update dialogs ([#1529](https://github.com/digdir/dialogporten/issues/1529)) ([25277b5](https://github.com/digdir/dialogporten/commit/25277b53714e8b073864cd0b2d98b512e8e0e5b6))
+
 ## [1.39.0](https://github.com/digdir/dialogporten/compare/v1.38.0...v1.39.0) (2024-11-22)
 
 

@@ -8,7 +8,6 @@ using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Parties.Abstractions;
 using Digdir.Domain.Dialogporten.Infrastructure.Common.Exceptions;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using ZiggyCreatures.Caching.Fusion;
 
@@ -23,7 +22,6 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
     private readonly IFusionCache _partiesCache;
     private readonly IUser _user;
     private readonly ILogger _logger;
-    private readonly IMemoryCache _inMemoryCache;
 
     private static readonly JsonSerializerOptions SerializerOptions = new()
     {
@@ -35,15 +33,13 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
         HttpClient client,
         IFusionCacheProvider cacheProvider,
         IUser user,
-        ILogger<AltinnAuthorizationClient> logger,
-        IMemoryCache inMemoryCache)
+        ILogger<AltinnAuthorizationClient> logger)
     {
         _httpClient = client ?? throw new ArgumentNullException(nameof(client));
         _pdpCache = cacheProvider.GetCache(nameof(Authorization)) ?? throw new ArgumentNullException(nameof(cacheProvider));
         _partiesCache = cacheProvider.GetCache(nameof(AuthorizedPartiesResult)) ?? throw new ArgumentNullException(nameof(cacheProvider));
         _user = user ?? throw new ArgumentNullException(nameof(user));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _inMemoryCache = inMemoryCache;
     }
 
     public async Task<DialogDetailsAuthorizationResult> GetDialogDetailsAuthorization(
@@ -86,16 +82,8 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
     {
         var authorizedPartiesRequest = new AuthorizedPartiesRequest(authenticatedParty);
 
-        var cacheKey = authorizedPartiesRequest.GenerateCacheKey();
-        var authorizedParties = await _partiesCache.GetOrSetAsync(cacheKey, async token
+        var authorizedParties = await _partiesCache.GetOrSetAsync(authorizedPartiesRequest.GenerateCacheKey(), async token
             => await PerformAuthorizedPartiesRequest(authorizedPartiesRequest, token), token: cancellationToken);
-
-        var inMemoryCacheValue = _inMemoryCache.TryGetValue<AuthorizedPartiesResult>(cacheKey, out var inMemoryCacheEntry);
-        _logger.LogInformation("In memory cache value for {CacheKey}, success: {InMemoryCacheValue} value: {@InMemoryCacheEntry}",
-            cacheKey, inMemoryCacheValue, inMemoryCacheEntry);
-
-        // Temporary logging to debug missing authorized sub parties
-        _logger.LogInformation("Authorized parties for {Party}: {@AuthorizedParties}", authenticatedParty, authorizedParties);
 
         return flatten ? GetFlattenedAuthorizedParties(authorizedParties) : authorizedParties;
     }
@@ -132,7 +120,10 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
             }
 
             if (parent != null) party.ParentParty = parent.Party;
-            party.SubParties = [];
+
+            // TODO: https://github.com/digdir/dialogporten/issues/1533
+            // Disabling this for now, fixes https://github.com/digdir/dialogporten/issues/1226
+            // party.SubParties = [];
 
             flattenedAuthorizedParties.AuthorizedParties.Add(party);
         }

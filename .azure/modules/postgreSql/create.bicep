@@ -103,7 +103,7 @@ resource postgres 'Microsoft.DBforPostgreSQL/flexibleServers@2024-08-01' = {
   name: postgresServerName
   location: location
   properties: {
-    version: '15'
+    version: '16'
     administratorLogin: administratorLogin
     administratorLoginPassword: administratorLoginPassword
     storage: {

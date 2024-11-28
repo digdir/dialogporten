@@ -32,6 +32,7 @@ using Testcontainers.PostgreSql;
 
 namespace Digdir.Domain.Dialogporten.Application.Integration.Tests.Common;
 
+// ReSharper disable once ClassNeverInstantiated.Global
 public class DialogApplication : IAsyncLifetime
 {
     private IMapper? _mapper;
@@ -39,7 +40,7 @@ public class DialogApplication : IAsyncLifetime
     private ServiceProvider _rootProvider = null!;
     private ServiceProvider _fixtureRootProvider = null!;
     private readonly PostgreSqlContainer _dbContainer = new PostgreSqlBuilder()
-        .WithImage("postgres:15.7")
+        .WithImage("postgres:16.3")
         .Build();
 
     public async Task InitializeAsync()
