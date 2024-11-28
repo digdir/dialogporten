@@ -30,7 +30,8 @@ public class CacheTypeAnalyzer : DiagnosticAnalyzer
         DiagnosticIdNotImmutableRecord, TitleNotImmutableRecord, MessageFormatNotImmutableRecord,
         Category, DiagnosticSeverity.Warning, isEnabledByDefault: true, description: DescriptionNotImmutableRecord);
 
-    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(RuleNoTypeArgument, RuleNotImmutableRecord);
+    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics
+        => [RuleNoTypeArgument, RuleNotImmutableRecord];
 
     public override void Initialize(AnalysisContext context)
     {
