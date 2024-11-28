@@ -36,7 +36,7 @@ jobs:
       environment: "test"
   
   #   TESTING AV NUGET SKAL IKKE SKJØRES I PULL REQUEST
-  publish-nuget:
+  publish-sdk-to-nuget:
     uses: ./.github/workflows/workflow-publish-nuget.yml
     needs: [ get-current-version, generate-git-short-sha, check-for-changes ]
     if: ${{ needs.check-for-changes.outputs.hasBackendChanges == 'true' || needs.check-for-changes.outputs.hasTestChanges == 'true' }}

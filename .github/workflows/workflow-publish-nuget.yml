@@ -11,6 +11,11 @@ on:
         description: "Path to project"
         required: true
         type: string
+      source:
+        description: "Source to push to"
+        required: false
+        type: string
+        default: https://int.nugettest.org
     secrets:
       NUGET_API_KEY:
         required: true
@@ -23,7 +28,6 @@ jobs:
         uses: actions/checkout@v4
       - name: set PROJECT variable to point to project
         run: |
-          echo ${{inputs.path}}
           PROJECT=${{inputs.path}}
           echo "PROJECT ${PROJECT}"
           echo "PROJECT=${PROJECT}" >> $GITHUB_ENV
@@ -33,10 +37,9 @@ jobs:
         with:
           global-json-file: ./global.json
 
-      # Kan kanskje byttes ut med build-test som blir kjørt for hele solution?
       - name: Build
         run: dotnet build --configuration Release /p:Version=${{ inputs.version }} ${PROJECT}
-     
+
       - name: Pack with debug symbols
         run: dotnet pack --configuration Release /p:Version=${{ inputs.version }} -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg --output . ${PROJECT}
 
@@ -55,5 +58,5 @@ jobs:
           name: package
 
       - name: Push to NuGet
-        run: dotnet nuget push *.nupkg --source https://int.nugettest.org --api-key ${{secrets.NUGET_API_KEY}}
+        run: dotnet nuget push *.nupkg --source ${{ inputs.source }} --api-key ${{secrets.NUGET_API_KEY}}
         
