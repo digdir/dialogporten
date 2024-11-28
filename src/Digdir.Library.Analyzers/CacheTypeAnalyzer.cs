@@ -75,6 +75,11 @@ public class CacheTypeAnalyzer : DiagnosticAnalyzer
 
     private static bool IsImmutable(ITypeSymbol typeSymbol)
     {
+        if (typeSymbol.SpecialType == SpecialType.System_String)
+        {
+            return true;
+        }
+
         return typeSymbol.IsReadOnly && typeSymbol.GetMembers().OfType<IPropertySymbol>().All(p => p.IsReadOnly);
     }
 }
