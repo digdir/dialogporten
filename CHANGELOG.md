@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.40.1](https://github.com/digdir/dialogporten/compare/v1.40.0...v1.40.1) (2024-11-29)
+
+
+### Bug Fixes
+
+* **webapi:** Repeat delete requests should return 400 BAD REQUEST ([#1542](https://github.com/digdir/dialogporten/issues/1542)) ([f14861d](https://github.com/digdir/dialogporten/commit/f14861dd72e4bea41e8b8d9e2914966b1ba3f828))
+
 ## [1.40.0](https://github.com/digdir/dialogporten/compare/v1.39.0...v1.40.0) (2024-11-26)
 
 
