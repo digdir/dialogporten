@@ -3,6 +3,7 @@
     "namespace": "Digdir.Library.Dialogporten.WebApiClient.Features.V1",
     "outputFolder": "refitter",
     "operationNameGenerator": "SingleClientFromOperationId",
+    "trimUnusedSchema": true,
     "multipleInterfaces": "ByTag",
     "includeTags": [
         "Serviceowner"

@@ -8,6 +8,8 @@ Install nuget
 
 ## Usage
 
+This library provides extensions methods providing means to create dialogporten clients.
+
 Setup
 
 ```C#
@@ -28,25 +30,24 @@ AppSettings
 
 ```JSON
 {
-    "DialogportenSettings": {
-        "Environment": "",
-        "Maskinporten": {
-            "ClientId": "",
-            "Scope": "",
-            "EncodedJwk": ""
-        }
-    },
-    // Ed25519 keys for validating dialog tokens
-    "Ed25519Keys": {
-        "Primary": {
-            "Kid": "",
-            "PublicComponent": ""
-        },
-        "Secondary": {
-            "Kid": "",
-            "PublicComponent": ""
-        }
+  "DialogportenSettings": {
+    "Environment": "",
+    "Maskinporten": {
+      "ClientId": "",
+      "Scope": "",
+      "EncodedJwk": ""
     }
+  },
+  "Ed25519Keys": {
+    "Primary": {
+      "Kid": "",
+      "PublicComponent": ""
+    },
+    "Secondary": {
+      "Kid": "",
+      "PublicComponent": ""
+    }
+  }
 } 
 ```
 
@@ -190,7 +191,15 @@ Console.WriteLine(patchResponse.IsSuccessStatusCode);
 Console.WriteLine(patchResponse.StatusCode);
 ```
 
-API REFERENCE/STRUCTURE
+DialogToken verification
 
+```C#
+var verifier = serviceProvider.GetRequiredService<DialogTokenVerifier>();
+var token = ""; // Dialog token
+Console.WriteLine(verifier.Verify(token));
+var dict = DialogTokenVerifier.GetDialogTokenClaims(token);
+```
+
+API REFERENCE/STRUCTURE
 
 Links to changelog etc.

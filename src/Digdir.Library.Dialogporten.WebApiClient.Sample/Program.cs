@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using Digdir.Library.Dialogporten.WebApiClient.Extensions;
 using Digdir.Library.Dialogporten.WebApiClient.Features.V1;
+using Digdir.Library.Dialogporten.WebApiClient.Sample;
 using Digdir.Library.Dialogporten.WebApiClient.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,6 +20,8 @@ services.AddDialogTokenVerifer();
 var serviceProvider = services.BuildServiceProvider();
 
 var dialogportenClient = serviceProvider.GetRequiredService<IServiceownerApi>();
+
+var dialogs = new Dialogs(dialogportenClient);
 var verifier = serviceProvider.GetRequiredService<DialogTokenVerifier>();
 var token =
     "eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCIsImtpZCI6ImRldi1wcmltYXJ5LXNpZ25pbmcta2V5In0.eyJqdGkiOiIzNGZhMGViNS0xZGVmLTQxMDYtYWY4YS0xMjljYjNiNTliNDYiLCJjIjoidXJuOmFsdGlubjpwZXJzb246aWRlbnRpZmllci1ubzowODg5NTY5OTY4NCIsImwiOjMsInAiOiJ1cm46YWx0aW5uOnBlcnNvbjppZGVudGlmaWVyLW5vOjA4ODk1Njk5Njg0IiwicyI6InVybjphbHRpbm46cmVzb3VyY2U6c3VwZXItc2ltcGxlLXNlcnZpY2UiLCJpIjoiMDE5MzI1MzgtMzEzZC03NGI1LTg1ZWMtMWI5MGIxMjYzNWRjIiwiYSI6InJlYWQiLCJpc3MiOiJodHRwczovL2xvY2FsaG9zdDo3MjE0L2FwaS92MSIsImlhdCI6MTczMTU3ODk5OCwibmJmIjoxNzMxNTc4OTk4LCJleHAiOjE3MzE1Nzk1OTh9.fL-rpDsXqwOSVk5zMizLZRaFugaz2VfVNf0CjOxIhSdwrkAhh1UfRu5RcD2OK4ddnRrCuz8iKKJyadkek9UGAg";
@@ -43,11 +46,7 @@ var guid = Guid.Parse(response.Content.Replace("\"", "").Trim());
 // var guid = Guid.Parse("0192b307-f5a5-7450-bee2-04a3515337ff");
 var dialog = dialogportenClient.V1ServiceOwnerDialogsGetGetDialog(guid, null!).Result.Content;
 Debug.Assert(dialog != null, nameof(dialog) + " != null");
-Console.WriteLine(dialog.SystemLabel);
-Console.WriteLine(dialog.Status);
-Console.WriteLine(dialog.Org);
-Console.WriteLine(dialog.Progress);
-Console.WriteLine($"Deleted at: {dialog.DeletedAt}");
+Dialogs.PrintGetDialog(dialog);
 Console.WriteLine("==End Get Single Dialog==");
 
 Console.WriteLine("==Start Search Dialogs==");
@@ -85,11 +84,7 @@ Console.WriteLine("==Start Get Single Dialog==");
 // var guid = Guid.Parse("0192b307-f5a5-7450-bee2-04a3515337ff");
 dialog = dialogportenClient.V1ServiceOwnerDialogsGetGetDialog(guid, null!).Result.Content;
 Debug.Assert(dialog != null, nameof(dialog) + " != null");
-Console.WriteLine(dialog.SystemLabel);
-Console.WriteLine(dialog.Status);
-Console.WriteLine(dialog.Org);
-Console.WriteLine(dialog.Progress);
-Console.WriteLine(dialog.DeletedAt);
+Dialogs.PrintGetDialog(dialog);
 Console.WriteLine("==End Get Single Dialog==");
 
 
@@ -97,7 +92,8 @@ result = await dialogportenClient.V1ServiceOwnerDialogsSearchSearchDialog(param)
 Debug.Assert(result != null, nameof(result) + " != null");
 Console.WriteLine(result.Content!.Items.Count);
 Console.WriteLine("== Start Purge Dialog == ");
-var purgeResponse = await dialogportenClient.V1ServiceOwnerDialogsPurgePurgeDialog(guid, dialog.Revision);
+var purgeResponse = await dialogs.Purge(guid, dialog.Revision);
+
 Console.WriteLine($"Purge response status code: {purgeResponse.StatusCode}");
 if (purgeResponse.IsSuccessStatusCode)
 {
