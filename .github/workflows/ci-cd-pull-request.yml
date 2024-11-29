@@ -35,16 +35,16 @@ jobs:
     with:
       environment: "test"
   
-  #   TESTING AV NUGET SKAL IKKE SKJØRES I PULL REQUEST
-  publish-sdk-to-nuget:
-    uses: ./.github/workflows/workflow-publish-nuget.yml
-    needs: [ get-current-version, generate-git-short-sha, check-for-changes ]
-    if: ${{ needs.check-for-changes.outputs.hasBackendChanges == 'true' || needs.check-for-changes.outputs.hasTestChanges == 'true' }}
-    with:
-      version: ${{ needs.get-current-version.outputs.version }}-rc.${{ needs.generate-git-short-sha.outputs.gitShortSha }}
-      path: $(find . -name '*Digdir.Library.Dialogporten.WebApiClient.csproj' -printf "%p"  -quit)
-    secrets:
-      NUGET_API_KEY: ${{ secrets.NUGET_API_TEST_KEY }}
+#  #   TESTING AV NUGET SKAL IKKE SKJØRES I PULL REQUEST
+#  publish-sdk-to-nuget:
+#    uses: ./.github/workflows/workflow-publish-nuget.yml
+#    needs: [ get-current-version, generate-git-short-sha, check-for-changes ]
+#    if: ${{ needs.check-for-changes.outputs.hasBackendChanges == 'true' || needs.check-for-changes.outputs.hasTestChanges == 'true' }}
+#    with:
+#      version: ${{ needs.get-current-version.outputs.version }}-rc.${{ needs.generate-git-short-sha.outputs.gitShortSha }}
+#      path: $(find . -name '*Digdir.Library.Dialogporten.WebApiClient.csproj' -printf "%p"  -quit)
+#    secrets:
+#      NUGET_API_KEY: ${{ secrets.NUGET_API_TEST_KEY }}
 
   dry-run-deploy-infra:
     name: Dry run deploy infrastructure
