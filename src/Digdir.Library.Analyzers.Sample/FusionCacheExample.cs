@@ -16,7 +16,7 @@ public sealed class FusionCacheExample(IFusionCache fusionCache)
             CreateCachedStructCollection, token: cancellationToken);
 
     private static Task<ReadOnlyCollection<CachedStruct>> CreateCachedStructCollection(CancellationToken token)
-        => Task.FromResult(new ReadOnlyCollection<CachedStruct>(new List<CachedStruct>()));
+        => Task.FromResult(new ReadOnlyCollection<CachedStruct>([]));
 
     public async Task<ReadOnlyDictionary<string, CachedStruct>> GetCachedStructDictionary(CancellationToken cancellationToken)
         => await fusionCache.GetOrSetAsync<ReadOnlyDictionary<string, CachedStruct>>("Some key dictionary",
