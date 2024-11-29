@@ -16,8 +16,7 @@ export default function () {
             expectStatusFor(r).to.equal(200);
             expect(r, 'response').to.have.validJsonBody();
             let response = r.json();
-            // pretty json print response
-            console.log("Pre check response: ", JSON.stringify(response, null, 2));
+
             if (response.items && response.items.length > 0) {
                 response.items.forEach((item) => {
                     dialogIdsToPurge.push(item.id);
