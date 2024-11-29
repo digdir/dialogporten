@@ -88,6 +88,7 @@ jobs:
         uses: slackapi/slack-github-action@v2.0.0
         with:
           errors: true
+          method: chat.postMessage
           token: ${{ secrets.SLACK_BOT_TOKEN }}
           payload-templated: true
           payload-file-path: "./.github/slack-templates/pipeline-failed.json"
