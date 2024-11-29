@@ -16,7 +16,6 @@ export default function () {
             expectStatusFor(r).to.equal(200);
             expect(r, 'response').to.have.validJsonBody();
             let response = r.json();
-
             if (response.items && response.items.length > 0) {
                 response.items.forEach((item) => {
                     dialogIdsToPurge.push(item.id);
