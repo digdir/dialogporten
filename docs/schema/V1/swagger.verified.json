@@ -5946,7 +5946,7 @@
             "description": "The given dialog ID was not found or is already deleted."
           },
           "410": {
-            "description": "Entity with the given key(s) is removed"
+            "description": "Entity with the given key(s) is removed."
           },
           "412": {
             "content": {
@@ -6197,7 +6197,7 @@
             "description": "The given dialog ID was not found or is already deleted."
           },
           "410": {
-            "description": "Entity with the given key(s) is removed"
+            "description": "Entity with the given key(s) is removed."
           },
           "412": {
             "content": {
@@ -6495,7 +6495,7 @@
             "description": "The given dialog ID was not found or is already deleted."
           },
           "410": {
-            "description": "Entity with the given key(s) is removed"
+            "description": "Entity with the given key(s) is removed."
           },
           "412": {
             "content": {
@@ -6840,7 +6840,7 @@
             "description": "The given dialog ID was not found or is already deleted."
           },
           "410": {
-            "description": "Entity with the given key(s) is removed"
+            "description": "Entity with the given key(s) is removed."
           },
           "412": {
             "content": {
