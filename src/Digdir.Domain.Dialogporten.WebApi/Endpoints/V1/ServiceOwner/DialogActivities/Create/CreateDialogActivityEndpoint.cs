@@ -35,6 +35,7 @@ public sealed class CreateDialogActivityEndpoint : Endpoint<CreateActivityReques
             StatusCodes.Status201Created,
             StatusCodes.Status400BadRequest,
             StatusCodes.Status404NotFound,
+            StatusCodes.Status410Gone,
             StatusCodes.Status412PreconditionFailed,
             StatusCodes.Status422UnprocessableEntity));
     }
@@ -66,7 +67,7 @@ public sealed class CreateDialogActivityEndpoint : Endpoint<CreateActivityReques
         await result.Match(
             success => SendCreatedAtAsync<GetDialogActivityEndpoint>(new GetActivityQuery { DialogId = dialog.Id, ActivityId = req.Id.Value }, req.Id, cancellation: ct),
             notFound => this.NotFoundAsync(notFound, ct),
-            badRequest => this.BadRequestAsync(badRequest, ct),
+            gone => this.GoneAsync(gone, ct),
             validationError => this.BadRequestAsync(validationError, ct),
             forbidden => this.ForbiddenAsync(forbidden, ct),
             domainError => this.UnprocessableEntityAsync(domainError, ct),
