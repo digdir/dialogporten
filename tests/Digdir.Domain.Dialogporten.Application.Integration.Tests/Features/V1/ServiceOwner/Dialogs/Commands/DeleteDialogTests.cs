@@ -54,8 +54,8 @@ public class DeleteDialogTests(DialogApplication application) : ApplicationColle
         var updateDialogResponse = await Application.Send(updateDialogCommand);
 
         // Assert
-        updateDialogResponse.TryPickT2(out var validationError, out _).Should().BeTrue();
-        validationError.Should().NotBeNull();
-        validationError.Message.Should().Contain(dialogId.ToString());
+        updateDialogResponse.TryPickT2(out var entityDeleted, out _).Should().BeTrue();
+        entityDeleted.Should().NotBeNull();
+        entityDeleted.Message.Should().Contain(dialogId.ToString());
     }
 }
