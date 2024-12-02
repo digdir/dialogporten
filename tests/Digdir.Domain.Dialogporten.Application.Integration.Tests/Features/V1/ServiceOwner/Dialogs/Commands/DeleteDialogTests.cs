@@ -32,7 +32,7 @@ public class DeleteDialogTests(DialogApplication application) : ApplicationColle
     }
 
     [Fact]
-    public async Task Updating_Deleted_Dialog_Should_Return_BadRequest()
+    public async Task Updating_Deleted_Dialog_Should_Return_EntityDeleted()
     {
         // Arrange
         var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog();
