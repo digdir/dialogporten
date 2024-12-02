@@ -15,6 +15,7 @@ using OpenTelemetry.Resources;
 using OpenTelemetry;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Logs;
+using System.Diagnostics;
 
 namespace Digdir.Library.Utils.AspNet;
 
@@ -106,14 +107,26 @@ public static class AspNetUtilitiesExtensions
                     tracing.SetSampler(new AlwaysOnSampler());
                 }
 
-                tracing.AddAspNetCoreInstrumentation(opts =>
+                tracing.AddSource("Azure.*")
+                    .AddAspNetCoreInstrumentation(opts =>
                     {
                         opts.RecordException = true;
                         opts.Filter = httpContext => !httpContext.Request.Path.StartsWithSegments("/health");
                     })
-                    .AddHttpClientInstrumentation(opts =>
+                    .AddHttpClientInstrumentation(o => o.FilterHttpRequestMessage = (_) =>
                     {
-                        opts.RecordException = true;
+                        o.RecordException = true;
+                        // Azure SDKs create their own client span before calling the service using HttpClient
+                        // In this case, we would see two spans corresponding to the same operation
+                        // 1) created by Azure SDK 2) created by HttpClient
+                        // To prevent this duplication we are filtering the span from HttpClient
+                        // as span from Azure SDK contains all relevant information needed.
+                        var parentActivity = Activity.Current?.Parent;
+                        if (parentActivity != null && parentActivity.Source.Name.Equals("Azure.Core.Http", StringComparison.Ordinal))
+                        {
+                            return false;
+                        }
+                        return true;
                     })
                     .AddNpgsql()
                     .AddSource(MassTransitSource);
