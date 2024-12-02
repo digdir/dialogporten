@@ -17,5 +17,57 @@ resource monitorWorkspace 'Microsoft.Monitor/accounts@2023-04-03' = {
   tags: tags
 }
 
+resource containerAppEnvironmentDataCollectionEndpoint 'Microsoft.Insights/dataCollectionEndpoints@2023-03-11' = {
+  name: '${namePrefix}-cae-dce'
+  location: location
+  properties: {
+    description: 'DCE for Container App Environment'
+    networkAcls: {
+      publicNetworkAccess: 'Enabled'
+    }
+  }
+  tags: tags
+}
+
+resource containerAppEnvironmentDataCollectionRule 'Microsoft.Insights/dataCollectionRules@2023-03-11' = {
+  name: '${namePrefix}-cae-dcr'
+  location: location
+  properties: {
+    description: 'DCR for Container App Environment'
+    dataCollectionEndpointId: containerAppEnvironmentDataCollectionEndpoint.id
+    dataSources: {
+      prometheusForwarder: [
+        {
+          streams: [
+            'Microsoft-PrometheusMetrics'
+          ]
+          name: 'PrometheusDataSource'
+        }
+      ]
+    }
+    destinations: {
+      monitoringAccounts: [
+        {
+          accountResourceId: monitorWorkspace.id
+          name: 'MonitoringAccountDestination'
+        }
+      ]
+    }
+    dataFlows: [
+      {
+        streams: [
+          'Microsoft-PrometheusMetrics'
+        ]
+        destinations: [
+          'MonitoringAccountDestination'
+        ]
+      }
+    ]
+  }
+  tags: tags
+}
+
 output monitorWorkspaceId string = monitorWorkspace.id
 output monitorWorkspaceName string = monitorWorkspace.name
+output containerAppEnvironmentMetricsIngestionEndpoint string = containerAppEnvironmentDataCollectionEndpoint.properties.metricsIngestion.endpoint
+output containerAppEnvironmentLogsIngestionEndpoint string = containerAppEnvironmentDataCollectionEndpoint.properties.logsIngestion.endpoint

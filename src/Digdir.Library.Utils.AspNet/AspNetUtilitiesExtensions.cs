@@ -63,7 +63,7 @@ public static class AspNetUtilitiesExtensions
 
                 tracing.AddAspNetCoreInstrumentation(options =>
                 {
-                    options.Filter = (httpContext) =>
+                    options.Filter = httpContext =>
                         !httpContext.Request.Path.StartsWithSegments("/health");
                 });
 

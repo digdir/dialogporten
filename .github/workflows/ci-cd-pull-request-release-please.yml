@@ -77,15 +77,16 @@ jobs:
           text: ${{ github.event.pull_request.body }}
       - name: Send GitHub slack message
         id: slack
-        env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-        uses: slackapi/slack-github-action@v1.27.0
+        uses: slackapi/slack-github-action@v2.0.0
         with:
-          channel-id: ${{ secrets.SLACK_CHANNEL_ID_FOR_RELEASES }}
+          errors: true
+          method: chat.postMessage
+          token: ${{ secrets.SLACK_BOT_TOKEN }}
           payload: |
             {
-                "blocks": [
-                  {
+              "channel": "${{ secrets.SLACK_CHANNEL_ID_FOR_RELEASES }}",
+              "blocks": [
+                {
                     "type": "section",
                     "text": {
                       "type": "mrkdwn",

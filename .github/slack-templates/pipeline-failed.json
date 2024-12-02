@@ -1,4 +1,5 @@
 {
+  "channel": "${{ env.CHANNEL_ID }}",
   "attachments": [
     {
       "color": "#FF0000",

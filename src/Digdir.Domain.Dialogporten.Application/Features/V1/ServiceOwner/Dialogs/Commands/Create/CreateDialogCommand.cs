@@ -30,7 +30,7 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IDomainContext _domainContext;
-    private readonly IUserOrganizationRegistry _userOrganizationRegistry;
+    private readonly IResourceRegistry _resourceRegistry;
     private readonly IServiceResourceAuthorizer _serviceResourceAuthorizer;
     private readonly IUser _user;
 
@@ -40,7 +40,7 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
         IMapper mapper,
         IUnitOfWork unitOfWork,
         IDomainContext domainContext,
-        IUserOrganizationRegistry userOrganizationRegistry,
+        IResourceRegistry resourceRegistry,
         IServiceResourceAuthorizer serviceResourceAuthorizer)
     {
         _user = user ?? throw new ArgumentNullException(nameof(user));
@@ -48,8 +48,8 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _domainContext = domainContext ?? throw new ArgumentNullException(nameof(domainContext));
-        _userOrganizationRegistry = userOrganizationRegistry ?? throw new ArgumentNullException(nameof(userOrganizationRegistry));
-        _serviceResourceAuthorizer = serviceResourceAuthorizer;
+        _resourceRegistry = resourceRegistry ?? throw new ArgumentNullException(nameof(resourceRegistry));
+        _serviceResourceAuthorizer = serviceResourceAuthorizer ?? throw new ArgumentNullException(nameof(serviceResourceAuthorizer));
     }
 
     public async Task<CreateDialogResult> Handle(CreateDialogCommand request, CancellationToken cancellationToken)
@@ -63,12 +63,17 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
             return forbiddenResult;
         }
 
-        dialog.Org = await _userOrganizationRegistry.GetCurrentUserOrgShortName(cancellationToken) ?? string.Empty;
-        if (string.IsNullOrWhiteSpace(dialog.Org))
+        var serviceResourceInformation = await _resourceRegistry.GetResourceInformation(dialog.ServiceResource, cancellationToken);
+        if (serviceResourceInformation is null)
         {
             _domainContext.AddError(new DomainFailure(nameof(DialogEntity.Org),
-                "Cannot find service owner organization shortname for current user. Please ensure that you are logged in as a service owner."));
+                "Cannot find service owner organization shortname for referenced service resource."));
         }
+        else
+        {
+            dialog.Org = serviceResourceInformation.OwnOrgShortName;
+        }
+
         CreateDialogEndUserContext(request, dialog);
         await EnsureNoExistingUserDefinedIds(dialog, cancellationToken);
 

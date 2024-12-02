@@ -335,7 +335,14 @@ public static class InfrastructureExtensions
                 JitterMaxDuration = settings.JitterMaxDuration,
                 EagerRefreshThreshold = settings.EagerRefreshThreshold,
 
-                SkipMemoryCache = settings.SkipMemoryCache
+                SkipMemoryCache = settings.SkipMemoryCache,
+
+                // This will stop deserialization exceptions to be re-thrown, which will cause the factory to run as if
+                // the cache entry was not found. This avoids crashes which otherwise would happen if entities that
+                // are cached are changed in a way that makes them incompatible with the cached version.
+                ReThrowSerializationExceptions = false,
+
+                EnableAutoClone = true
             })
             .WithRegisteredSerializer()
             // If Redis is disabled (eg. in local development or non-web runtimes), we must instruct FusionCache to

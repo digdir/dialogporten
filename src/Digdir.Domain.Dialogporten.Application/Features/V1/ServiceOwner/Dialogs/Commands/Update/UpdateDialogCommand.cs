@@ -83,7 +83,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
             .Include(x => x.Transmissions)
             .Include(x => x.DialogEndUserContext)
             .IgnoreQueryFilters()
-            .Where(x => resourceIds.Contains(x.ServiceResource))
+            .WhereIf(!_userResourceRegistry.IsCurrentUserServiceOwnerAdmin(), x => resourceIds.Contains(x.ServiceResource))
             .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
 
         if (dialog is null)
@@ -93,8 +93,8 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
 
         if (dialog.Deleted)
         {
-            // TODO: When restoration is implemented, add a hint to the error message.
-            // https://github.com/digdir/dialogporten/pull/406
+            // TODO: https://github.com/digdir/dialogporten/issues/1543
+            // When restoration is implemented, add a hint to the error message.
             return new BadRequest($"Entity '{nameof(DialogEntity)}' with key '{request.Id}' is removed, and cannot be updated.");
         }
 

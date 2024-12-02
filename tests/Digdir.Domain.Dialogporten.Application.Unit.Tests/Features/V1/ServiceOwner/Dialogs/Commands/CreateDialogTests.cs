@@ -26,8 +26,7 @@ public class CreateDialogTests
 
         var unitOfWorkSub = Substitute.For<IUnitOfWork>();
         var domainContextSub = Substitute.For<IDomainContext>();
-        var userResourceRegistrySub = Substitute.For<IUserResourceRegistry>();
-        var userOrganizationRegistrySub = Substitute.For<IUserOrganizationRegistry>();
+        var resourceRegistrySub = Substitute.For<IResourceRegistry>();
         var serviceAuthorizationSub = Substitute.For<IServiceResourceAuthorizer>();
         var userSub = Substitute.For<IUser>();
 
@@ -37,13 +36,13 @@ public class CreateDialogTests
             .AuthorizeServiceResources(Arg.Any<DialogEntity>(), Arg.Any<CancellationToken>())
             .Returns(new Forbidden());
 
-        userResourceRegistrySub
-            .CurrentUserIsOwner(createCommand.ServiceResource, Arg.Any<CancellationToken>())
-            .Returns(true);
+        resourceRegistrySub
+            .GetResourceInformation(createCommand.ServiceResource, Arg.Any<CancellationToken>())
+            .Returns(new ServiceResourceInformation(createCommand.ServiceResource, "foo", "912345678", "ttd"));
 
         var commandHandler = new CreateDialogCommandHandler(userSub, dialogDbContextSub,
             mapper, unitOfWorkSub, domainContextSub,
-            userOrganizationRegistrySub, serviceAuthorizationSub);
+            resourceRegistrySub, serviceAuthorizationSub);
 
         // Act
         var result = await commandHandler.Handle(createCommand, CancellationToken.None);
@@ -65,8 +64,7 @@ public class CreateDialogTests
 
         var unitOfWorkSub = Substitute.For<IUnitOfWork>();
         var domainContextSub = Substitute.For<IDomainContext>();
-        var userResourceRegistrySub = Substitute.For<IUserResourceRegistry>();
-        var userOrganizationRegistrySub = Substitute.For<IUserOrganizationRegistry>();
+        var resourceRegistrySub = Substitute.For<IResourceRegistry>();
         var serviceAuthorizationSub = Substitute.For<IServiceResourceAuthorizer>();
         var userSub = Substitute.For<IUser>();
         var createCommand = DialogGenerator.GenerateSimpleFakeDialog();
@@ -75,13 +73,13 @@ public class CreateDialogTests
             .AuthorizeServiceResources(Arg.Any<DialogEntity>(), Arg.Any<CancellationToken>())
             .Returns(new Forbidden());
 
-        userResourceRegistrySub
-            .CurrentUserIsOwner(createCommand.ServiceResource, Arg.Any<CancellationToken>())
-            .Returns(false);
+        resourceRegistrySub
+            .GetResourceInformation(createCommand.ServiceResource, Arg.Any<CancellationToken>())
+            .Returns(new ServiceResourceInformation(createCommand.ServiceResource, "foo", "912345678", "ttd"));
 
         var commandHandler = new CreateDialogCommandHandler(userSub, dialogDbContextSub,
             mapper, unitOfWorkSub, domainContextSub,
-            userOrganizationRegistrySub, serviceAuthorizationSub);
+            resourceRegistrySub, serviceAuthorizationSub);
 
         // Act
         var result = await commandHandler.Handle(createCommand, CancellationToken.None);
