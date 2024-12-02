@@ -31,7 +31,7 @@ public sealed class UpdateDialogCommand : IRequest<UpdateDialogResult>
 }
 
 [GenerateOneOf]
-public sealed partial class UpdateDialogResult : OneOfBase<Success, EntityNotFound, BadRequest, ValidationError, Forbidden, DomainError, ConcurrencyError>;
+public sealed partial class UpdateDialogResult : OneOfBase<Success, EntityNotFound, EntityDeleted, ValidationError, Forbidden, DomainError, ConcurrencyError>;
 
 internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogCommand, UpdateDialogResult>
 {
@@ -95,7 +95,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         {
             // TODO: https://github.com/digdir/dialogporten/issues/1543
             // When restoration is implemented, add a hint to the error message.
-            return new BadRequest($"Entity '{nameof(DialogEntity)}' with key '{request.Id}' is removed, and cannot be updated.");
+            return new EntityDeleted($"Entity '{nameof(DialogEntity)}' with key '{request.Id}' is removed, and cannot be updated.");
         }
 
         // Ensure transmissions have a UUIDv7 ID, needed for the transmission hierarchy validation.
