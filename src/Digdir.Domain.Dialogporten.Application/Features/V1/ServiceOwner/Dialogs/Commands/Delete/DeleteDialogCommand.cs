@@ -19,7 +19,7 @@ public sealed class DeleteDialogCommand : IRequest<DeleteDialogResult>
 }
 
 [GenerateOneOf]
-public sealed partial class DeleteDialogResult : OneOfBase<Success, EntityNotFound, BadRequest, Forbidden, ConcurrencyError>;
+public sealed partial class DeleteDialogResult : OneOfBase<Success, EntityNotFound, EntityDeleted, Forbidden, ConcurrencyError>;
 
 internal sealed class DeleteDialogCommandHandler : IRequestHandler<DeleteDialogCommand, DeleteDialogResult>
 {
@@ -56,7 +56,7 @@ internal sealed class DeleteDialogCommandHandler : IRequestHandler<DeleteDialogC
         {
             // TODO: https://github.com/digdir/dialogporten/issues/1543
             // When restoration is implemented, add a hint to the error message.
-            return new BadRequest($"Entity '{nameof(DialogEntity)}' with key '{request.Id}' has already been removed and cannot be deleted again.");
+            return new EntityDeleted<DialogEntity>(request.Id);
         }
 
         if (!_userResourceRegistry.UserCanModifyResourceType(dialog.ServiceResourceType))

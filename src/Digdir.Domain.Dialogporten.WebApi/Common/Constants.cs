@@ -18,6 +18,7 @@ internal static class Constants
         internal const string ServiceOwnerAuthenticationFailure = "Missing or invalid authentication token. Requires a Maskinporten-token with the scope \"{0}\".";
         internal const string EndUserAuthenticationFailure = "Missing or invalid authentication token. Requires a Maskinporten-token with the scope \"digdir:dialogporten\".";
         internal const string DialogNotFound = "The given dialog ID was not found or is already deleted.";
+        internal const string DialogDeleted = $"Entity with the given key(s) is removed";
         internal const string DialogActivityNotFound = "The given dialog ID was not found or was deleted, or the given activity ID was not found.";
         internal const string DialogTransmissionNotFound = "The given dialog ID was not found or was deleted, or the given transmission ID was not found.";
         internal const string RevisionMismatch = "The supplied If-Match header did not match the current Revision value for the dialog. The request was not applied.";

@@ -56,7 +56,6 @@ public class DeleteDialogTests(DialogApplication application) : ApplicationColle
         // Assert
         updateDialogResponse.TryPickT2(out var validationError, out _).Should().BeTrue();
         validationError.Should().NotBeNull();
-        validationError.Reasons.Should().Contain(e => e.Contains("cannot be updated"));
-        validationError.Reasons.Should().Contain(e => e.Contains(dialogId.ToString()));
+        validationError.Message.Should().Contain(dialogId.ToString());
     }
 }

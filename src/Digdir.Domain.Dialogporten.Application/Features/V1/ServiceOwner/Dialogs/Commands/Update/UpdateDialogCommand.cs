@@ -95,7 +95,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         {
             // TODO: https://github.com/digdir/dialogporten/issues/1543
             // When restoration is implemented, add a hint to the error message.
-            return new EntityDeleted($"Entity '{nameof(DialogEntity)}' with key '{request.Id}' is removed, and cannot be updated.");
+            return new EntityDeleted<DialogEntity>(request.Id);
         }
 
         // Ensure transmissions have a UUIDv7 ID, needed for the transmission hierarchy validation.
