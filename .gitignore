@@ -381,3 +381,5 @@ FodyWeavers.xsd
 # Generated files with tokens
 **/.endusers-with-tokens.csv
 **/.serviceowners-with-tokens.csv
+
+**/http-client.private.env.json
