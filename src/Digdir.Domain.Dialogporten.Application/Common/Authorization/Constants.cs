@@ -1,4 +1,6 @@
-﻿namespace Digdir.Domain.Dialogporten.Application.Common.Authorization;
+﻿using System.Collections.Immutable;
+
+namespace Digdir.Domain.Dialogporten.Application.Common.Authorization;
 
 public static class Constants
 {
@@ -9,4 +11,11 @@ public static class Constants
     public const string CorrespondenceScope = "digdir:dialogporten.correspondence";
     public const string ServiceOwnerAdminScope = "digdir:dialogporten.serviceprovider.admin";
     public const string LegacyHtmlScope = "digdir:dialogporten.serviceprovider.legacyhtml";
+
+    public static readonly ImmutableArray<string> SupportedResourceTypes =
+    [
+        "GenericAccessResource",
+        "AltinnApp",
+        "CorrespondenceService"
+    ];
 }
