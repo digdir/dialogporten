@@ -1,6 +1,6 @@
 ﻿name: Deploy apps
 env:
-  AZ_CLI_VERSION: 2.64.0
+  AZ_CLI_VERSION: 2.67.0
 on:
   workflow_call:
     outputs:
@@ -94,7 +94,7 @@ jobs:
           failOnStdErr: false
           additionalArguments: '--what-if'
           parameters: ./.azure/applications/web-api-migration-job/${{ inputs.environment }}.bicepparam
-      
+
       - name: Deploy migration job (${{ inputs.environment }})
         uses: azure/arm-deploy@v2
         if: ${{!inputs.dryRun}}
@@ -192,7 +192,7 @@ jobs:
           failOnStdErr: false
           additionalArguments: '--what-if'
           parameters: ./.azure/applications/${{ matrix.name }}/${{ inputs.environment }}.bicepparam
-      
+
       - name: Deploy app ${{ matrix.name }}(${{ inputs.environment }})
         uses: azure/arm-deploy@v2
         if: ${{!inputs.dryRun}}
@@ -280,7 +280,7 @@ jobs:
           failOnStdErr: false
           additionalArguments: '--what-if'
           parameters: ./.azure/applications/${{ matrix.name }}/${{ inputs.environment }}.bicepparam
-      
+
       - name: Deploy job ${{ matrix.name }}(${{ inputs.environment }})
         uses: azure/arm-deploy@v2
         if: ${{!inputs.dryRun}}
