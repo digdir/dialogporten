@@ -22,7 +22,7 @@ param timeout int = 60 // Default is 1 minute
 resource availabilityTest 'Microsoft.Insights/webtests@2022-06-15' = {
   name: name
   location: location
-  tags: union(tags, { 
+  tags: union(tags, {
     'hidden-link:${appInsightsId}': 'Resource'
   })
   kind: 'standard'

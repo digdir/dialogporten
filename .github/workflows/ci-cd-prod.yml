@@ -29,7 +29,7 @@ jobs:
   get-current-version:
     name: Get current version
     uses: ./.github/workflows/workflow-get-current-version.yml
-  
+
   dry-run-deploy-infra:
     name: Dry run deploy infra to prod
     if: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasInfraChanges == 'true' }}
@@ -103,7 +103,7 @@ jobs:
       version: ${{ needs.get-current-version.outputs.version }}
       dryRun: true
       runMigration: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasMigrationChanges == 'true' }}
-  
+
   deploy-apps:
     name: Deploy apps to prod
     needs:
