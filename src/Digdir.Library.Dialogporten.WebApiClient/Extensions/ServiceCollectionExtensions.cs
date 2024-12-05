@@ -56,7 +56,7 @@ public static class ServiceCollectionExtensions
         var baseAddress = string.Empty;
         if (dialogportenSettings.Environment == "test")
         {
-            baseAddress = "https://localhost:7214";
+            baseAddress = "https://platform.tt02.altinn.no/dialogporten";
         }
         // Vi registrerer Refit, og legger til den registrerte maskinporten http message handlern
         // Amund: Partial er ikke mulig å finne etter compile time.
