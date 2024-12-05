@@ -1,3 +1,4 @@
+using System.Net;
 using Digdir.Library.Dialogporten.WebApiClient.Extensions;
 using Digdir.Library.Dialogporten.WebApiClient.Features.V1;
 using Microsoft.Extensions.Configuration;
@@ -24,7 +25,23 @@ public class Tests
         var createDialogCommand = CreateCommand();
         var createResponse = await dialogportenClient.V1ServiceOwnerDialogsCreateDialog(createDialogCommand);
         Assert.True(createResponse.IsSuccessStatusCode);
-        Assert.True(Guid.TryParse(createResponse.Content!, out var dialogId));
+        Assert.NotNull(createResponse.Content);
+        Assert.True(Guid.TryParse(createResponse.Content!.Replace("\"", "").Trim(), out var dialogId));
+        List<JsonPatchOperations_Operation> patchDocument =
+        [
+            new()
+            {
+                Op = "replace",
+                OperationType = JsonPatchOperations_OperationType.Replace,
+                Path = "/progress",
+                Value = 50
+            }
+        ];
+        var updateResponse = await dialogportenClient.V1ServiceOwnerDialogsPatchDialog(dialogId, patchDocument, null, CancellationToken.None);
+        Assert.True(updateResponse.IsSuccessStatusCode);
+        var getResponse = await dialogportenClient.V1ServiceOwnerDialogsGetGetDialog(dialogId, null!, CancellationToken.None);
+        Assert.Equal(HttpStatusCode.OK, getResponse.StatusCode);
+        Assert.Equal(getResponse.Content!.Progress!, 50);
         var purgeResponse = await dialogportenClient.V1ServiceOwnerDialogsPurgePurgeDialog(dialogId, null);
         Assert.True(purgeResponse.IsSuccessStatusCode);
 
@@ -143,4 +160,5 @@ public class Tests
         };
         return createDialogCommand;
     }
+
 }
