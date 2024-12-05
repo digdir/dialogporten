@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.41.0](https://github.com/digdir/dialogporten/compare/v1.40.1...v1.41.0) (2024-12-05)
+
+
+### Features
+
+* Enable FusionCache AutoClone ([#1550](https://github.com/digdir/dialogporten/issues/1550)) ([714ad5c](https://github.com/digdir/dialogporten/commit/714ad5c6498a87430408f7f485cd35d0643057c0))
+
 ## [1.40.1](https://github.com/digdir/dialogporten/compare/v1.40.0...v1.40.1) (2024-11-29)
 
 
