@@ -16,7 +16,7 @@ public sealed class SearchActivityQuery : IRequest<SearchActivityResult>
 }
 
 [GenerateOneOf]
-public sealed partial class SearchActivityResult : OneOfBase<List<ActivityDto>, EntityNotFound>;
+public sealed partial class SearchActivityResult : OneOfBase<List<ActivityDto>, EntityNotFound, EntityDeleted>;
 
 internal sealed class SearchActivityQueryHandler : IRequestHandler<SearchActivityQuery, SearchActivityResult>
 {
@@ -38,13 +38,19 @@ internal sealed class SearchActivityQueryHandler : IRequestHandler<SearchActivit
         var dialog = await _db.Dialogs
             .Include(x => x.Activities)
             .IgnoreQueryFilters()
-            .WhereIf(!_userResourceRegistry.IsCurrentUserServiceOwnerAdmin(), x => resourceIds.Contains(x.ServiceResource))
+            .WhereIf(!_userResourceRegistry.IsCurrentUserServiceOwnerAdmin(),
+                x => resourceIds.Contains(x.ServiceResource))
             .FirstOrDefaultAsync(x => x.Id == request.DialogId,
                 cancellationToken: cancellationToken);
 
         if (dialog is null)
         {
             return new EntityNotFound<DialogEntity>(request.DialogId);
+        }
+
+        if (dialog.Deleted)
+        {
+            return new EntityDeleted<DialogEntity>(request.DialogId);
         }
 
         return _mapper.Map<List<ActivityDto>>(dialog.Activities);

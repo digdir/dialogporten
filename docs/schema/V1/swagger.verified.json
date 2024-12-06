@@ -6579,6 +6579,9 @@
               }
             },
             "description": "The given dialog ID was not found or was deleted, or the given activity ID was not found."
+          },
+          "410": {
+            "description": "Entity with the given key(s) is removed."
           }
         },
         "security": [
@@ -6635,7 +6638,10 @@
                 }
               }
             },
-            "description": "Not Found"
+            "description": "The given dialog ID was not found or is already deleted."
+          },
+          "410": {
+            "description": "Entity with the given key(s) is removed."
           }
         },
         "security": [
@@ -6698,7 +6704,10 @@
                 }
               }
             },
-            "description": "Not Found"
+            "description": "The given dialog ID was not found or is already deleted."
+          },
+          "410": {
+            "description": "Entity with the given key(s) is removed."
           }
         },
         "security": [
@@ -6753,6 +6762,9 @@
               }
             },
             "description": "The given dialog ID was not found or is already deleted."
+          },
+          "410": {
+            "description": "Entity with the given key(s) is removed."
           }
         },
         "security": [
@@ -6924,6 +6936,9 @@
               }
             },
             "description": "The given dialog ID was not found or was deleted, or the given transmission ID was not found."
+          },
+          "410": {
+            "description": "Entity with the given key(s) is removed."
           }
         },
         "security": [
