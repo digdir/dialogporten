@@ -35,4 +35,8 @@
       <ProjectReference Include="..\..\src\Digdir.Library.Dialogporten.WebApiClient\Digdir.Library.Dialogporten.WebApiClient.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Remove="refitter\RefitterInterface.cs" />
+    </ItemGroup>
+
 </Project>

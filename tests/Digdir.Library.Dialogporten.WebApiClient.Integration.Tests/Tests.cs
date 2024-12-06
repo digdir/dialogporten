@@ -27,7 +27,6 @@ public class WebApiClientFixture : IDisposable
     public void Dispose()
     {
         GC.SuppressFinalize(this);
-
     }
 }
 
