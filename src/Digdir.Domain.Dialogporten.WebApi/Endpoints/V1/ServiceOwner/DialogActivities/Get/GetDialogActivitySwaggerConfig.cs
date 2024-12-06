@@ -17,5 +17,6 @@ public sealed class GetDialogActivityEndpointSummary : Summary<GetDialogActivity
         Responses[StatusCodes.Status401Unauthorized] = Constants.SwaggerSummary.ServiceOwnerAuthenticationFailure.FormatInvariant(AuthorizationScope.ServiceProvider);
         Responses[StatusCodes.Status403Forbidden] = Constants.SwaggerSummary.AccessDeniedToDialogForChildEntity.FormatInvariant("get");
         Responses[StatusCodes.Status404NotFound] = Constants.SwaggerSummary.DialogActivityNotFound;
+        Responses[StatusCodes.Status410Gone] = Constants.SwaggerSummary.DialogDeleted;
     }
 }

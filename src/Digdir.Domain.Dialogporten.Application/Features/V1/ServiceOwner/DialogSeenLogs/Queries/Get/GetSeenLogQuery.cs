@@ -17,7 +17,7 @@ public sealed class GetSeenLogQuery : IRequest<GetSeenLogResult>
 }
 
 [GenerateOneOf]
-public sealed partial class GetSeenLogResult : OneOfBase<SeenLogDto, EntityNotFound>;
+public sealed partial class GetSeenLogResult : OneOfBase<SeenLogDto, EntityNotFound, EntityDeleted>;
 
 internal sealed class GetSeenLogQueryHandler : IRequestHandler<GetSeenLogQuery, GetSeenLogResult>
 {
@@ -45,13 +45,19 @@ internal sealed class GetSeenLogQueryHandler : IRequestHandler<GetSeenLogQuery, 
             .Include(x => x.SeenLog.Where(x => x.Id == request.SeenLogId))
                 .ThenInclude(x => x.SeenBy)
             .IgnoreQueryFilters()
-            .WhereIf(!_userResourceRegistry.IsCurrentUserServiceOwnerAdmin(), x => resourceIds.Contains(x.ServiceResource))
+            .WhereIf(!_userResourceRegistry.IsCurrentUserServiceOwnerAdmin(),
+                x => resourceIds.Contains(x.ServiceResource))
             .FirstOrDefaultAsync(x => x.Id == request.DialogId,
                 cancellationToken: cancellationToken);
 
         if (dialog is null)
         {
             return new EntityNotFound<DialogEntity>(request.DialogId);
+        }
+
+        if (dialog.Deleted)
+        {
+            return new EntityDeleted<DialogEntity>(request.DialogId);
         }
 
         var seenLog = dialog.SeenLog.FirstOrDefault();

@@ -23,7 +23,8 @@ public sealed class GetDialogActivityEndpoint : Endpoint<GetActivityQuery, Activ
         Group<ServiceOwnerGroup>();
         Description(b => b.ProducesOneOf<ActivityDto>(
             StatusCodes.Status200OK,
-            StatusCodes.Status404NotFound));
+            StatusCodes.Status404NotFound,
+            StatusCodes.Status410Gone));
     }
 
     public override async Task HandleAsync(GetActivityQuery req, CancellationToken ct)
@@ -31,6 +32,7 @@ public sealed class GetDialogActivityEndpoint : Endpoint<GetActivityQuery, Activ
         var result = await _sender.Send(req, ct);
         await result.Match(
             dto => SendOkAsync(dto, ct),
-            notFound => this.NotFoundAsync(notFound, ct));
+            notFound => this.NotFoundAsync(notFound, ct),
+            deleted => this.GoneAsync(deleted, ct));
     }
 }

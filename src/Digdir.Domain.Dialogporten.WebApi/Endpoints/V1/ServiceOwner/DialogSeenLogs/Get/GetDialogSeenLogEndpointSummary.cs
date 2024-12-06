@@ -14,5 +14,7 @@ public sealed class GetDialogSeenLogEndpointSummary : Summary<GetDialogSeenLogEn
                       """;
 
         Responses[StatusCodes.Status200OK] = Constants.SwaggerSummary.ReturnedResult.FormatInvariant("seen log record");
+        Responses[StatusCodes.Status404NotFound] = Constants.SwaggerSummary.DialogNotFound;
+        Responses[StatusCodes.Status410Gone] = Constants.SwaggerSummary.DialogDeleted;
     }
 }

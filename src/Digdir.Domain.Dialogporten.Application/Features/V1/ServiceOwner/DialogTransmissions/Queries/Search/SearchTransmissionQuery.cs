@@ -16,7 +16,7 @@ public sealed class SearchTransmissionQuery : IRequest<SearchTransmissionResult>
 }
 
 [GenerateOneOf]
-public sealed partial class SearchTransmissionResult : OneOfBase<List<TransmissionDto>, EntityNotFound>;
+public sealed partial class SearchTransmissionResult : OneOfBase<List<TransmissionDto>, EntityNotFound, EntityDeleted>;
 
 internal sealed class SearchTransmissionQueryHandler : IRequestHandler<SearchTransmissionQuery, SearchTransmissionResult>
 {
@@ -48,12 +48,21 @@ internal sealed class SearchTransmissionQueryHandler : IRequestHandler<SearchTra
             .Include(x => x.Transmissions)
                 .ThenInclude(x => x.Sender)
             .IgnoreQueryFilters()
-            .WhereIf(!_userResourceRegistry.IsCurrentUserServiceOwnerAdmin(), x => resourceIds.Contains(x.ServiceResource))
+            .WhereIf(!_userResourceRegistry.IsCurrentUserServiceOwnerAdmin(),
+                x => resourceIds.Contains(x.ServiceResource))
             .FirstOrDefaultAsync(x => x.Id == request.DialogId,
                 cancellationToken: cancellationToken);
 
-        return dialog is null
-            ? (SearchTransmissionResult)new EntityNotFound<DialogEntity>(request.DialogId)
-            : _mapper.Map<List<TransmissionDto>>(dialog.Transmissions);
+        if (dialog is null)
+        {
+            return new EntityNotFound<DialogEntity>(request.DialogId);
+        }
+
+        if (dialog.Deleted)
+        {
+            return new EntityDeleted<DialogEntity>(request.DialogId);
+        }
+
+        return _mapper.Map<List<TransmissionDto>>(dialog.Transmissions);
     }
 }
