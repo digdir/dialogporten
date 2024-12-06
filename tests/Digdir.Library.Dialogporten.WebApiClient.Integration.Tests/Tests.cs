@@ -6,10 +6,10 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Digdir.Library.Dialogporten.WebApiClient.Integration.Tests;
 
-public class Tests
+public class WebApiClientFixture : IDisposable
 {
-    [Fact]
-    public async Task Test()
+    public IServiceownerApi DialogportenClient { get; }
+    public WebApiClientFixture()
     {
 
         var configuration = new ConfigurationBuilder().AddUserSecrets<Tests>().Build();
@@ -20,13 +20,53 @@ public class Tests
 
         services.AddDialogportenClient();
         services.AddDialogTokenVerifer();
-        var serviceProvider = services.BuildServiceProvider();
-        var dialogportenClient = serviceProvider.GetRequiredService<IServiceownerApi>();
+        DialogportenClient = services.BuildServiceProvider().GetRequiredService<IServiceownerApi>();
+
+    }
+
+    public void Dispose()
+    {
+        GC.SuppressFinalize(this);
+
+    }
+}
+
+public class Tests : IClassFixture<WebApiClientFixture>, IAsyncDisposable
+{
+    private readonly WebApiClientFixture _fixture;
+    private readonly List<Guid> _dialogIds;
+    public Tests(WebApiClientFixture fixture)
+    {
+        _fixture = fixture;
+        _dialogIds = [];
+    }
+    [Fact]
+    public async Task PurgeTest()
+    {
+
         var createDialogCommand = CreateCommand();
-        var createResponse = await dialogportenClient.V1ServiceOwnerDialogsCreateDialog(createDialogCommand);
+        var createResponse = await _fixture.DialogportenClient.V1ServiceOwnerDialogsCreateDialog(createDialogCommand);
+
         Assert.True(createResponse.IsSuccessStatusCode);
         Assert.NotNull(createResponse.Content);
         Assert.True(Guid.TryParse(createResponse.Content!.Replace("\"", "").Trim(), out var dialogId));
+        var getResponse = await _fixture.DialogportenClient.V1ServiceOwnerDialogsGetGetDialog(dialogId, null!, CancellationToken.None);
+        Assert.Equal(HttpStatusCode.OK, getResponse.StatusCode);
+        Assert.Equal(getResponse.Content!.Progress!, 2);
+        var purgeResponse = await _fixture.DialogportenClient.V1ServiceOwnerDialogsPurgePurgeDialog(dialogId, null);
+        Assert.True(purgeResponse.IsSuccessStatusCode);
+
+    }
+    [Fact]
+    public async Task PatchTest()
+    {
+        var createDialogCommand = CreateCommand();
+        var createResponse = await _fixture.DialogportenClient.V1ServiceOwnerDialogsCreateDialog(createDialogCommand);
+
+        Assert.True(createResponse.IsSuccessStatusCode);
+        Assert.NotNull(createResponse.Content);
+        Assert.True(Guid.TryParse(createResponse.Content!.Replace("\"", "").Trim(), out var dialogId));
+        _dialogIds.Add(dialogId);
         List<JsonPatchOperations_Operation> patchDocument =
         [
             new()
@@ -37,14 +77,8 @@ public class Tests
                 Value = 50
             }
         ];
-        var updateResponse = await dialogportenClient.V1ServiceOwnerDialogsPatchDialog(dialogId, patchDocument, null, CancellationToken.None);
+        var updateResponse = await _fixture.DialogportenClient.V1ServiceOwnerDialogsPatchDialog(dialogId, patchDocument, null, CancellationToken.None);
         Assert.True(updateResponse.IsSuccessStatusCode);
-        var getResponse = await dialogportenClient.V1ServiceOwnerDialogsGetGetDialog(dialogId, null!, CancellationToken.None);
-        Assert.Equal(HttpStatusCode.OK, getResponse.StatusCode);
-        Assert.Equal(getResponse.Content!.Progress!, 50);
-        var purgeResponse = await dialogportenClient.V1ServiceOwnerDialogsPurgePurgeDialog(dialogId, null);
-        Assert.True(purgeResponse.IsSuccessStatusCode);
-
     }
 
     public static V1ServiceOwnerDialogsCommandsCreate_DialogCommand CreateCommand()
@@ -109,7 +143,7 @@ public class Tests
                                 new V1CommonLocalizations_Localization
                                 {
                                     LanguageCode = "nb",
-                                    Value = "Hoved misson"
+                                    Value = "Hoved mission"
                                 }
                             ],
                             Urls =
@@ -133,7 +167,7 @@ public class Tests
                                 new V1CommonLocalizations_Localization
                                 {
                                     LanguageCode = "nb",
-                                    Value = "Tranmission summary"
+                                    Value = "Transmission summary"
                                 }
                             ]
                         },
@@ -145,7 +179,7 @@ public class Tests
                                 new V1CommonLocalizations_Localization
                                 {
                                     LanguageCode = "nb",
-                                    Value = "Tranmission Title"
+                                    Value = "Transmission Title"
                                 }
                             ]
                         }
@@ -161,4 +195,14 @@ public class Tests
         return createDialogCommand;
     }
 
+    public ValueTask DisposeAsync()
+    {
+        GC.SuppressFinalize(this);
+        foreach (var dialogId in _dialogIds)
+        {
+            _fixture.DialogportenClient.V1ServiceOwnerDialogsPurgePurgeDialog(dialogId, null!);
+        }
+
+        return ValueTask.CompletedTask;
+    }
 }
