@@ -46,18 +46,25 @@ public static class ServiceCollectionExtensions
             EncodedJwk = dialogportenSettings!.Maskinporten.EncodedJwk,
             ClientId = dialogportenSettings.Maskinporten.ClientId,
             // Maskinportenmiljø utleded av Dialogporten-miljø
-            Environment = dialogportenSettings.Environment == "prod" ? "prod" : "test",
+            Environment = dialogportenSettings.Environment switch
+            {
+                "prod" => "prod",
+                "test" => "test",
+                _ => "local"
+            },
             Scope = dialogportenSettings.Maskinporten.Scope,
         };
 
         // Vi registrerer en maskinporten klient med oppgite settings, som kan brukes som en http message handler
         services.RegisterMaskinportenClientDefinition<SettingsJwkClientDefinition>("dialogporten-sp-sdk", maskinportenSettings);
 
-        var baseAddress = string.Empty;
-        if (dialogportenSettings.Environment == "test")
+        var baseAddress = dialogportenSettings.Environment switch
         {
-            baseAddress = "https://platform.tt02.altinn.no/dialogporten";
-        }
+            "test" => "https://platform.tt02.altinn.no/dialogporten",
+            "local" => "https://localhost:7214",
+            // "prod" => "https://platform.altinn.no/dialogporten",
+            _ => throw new NotImplementedException()
+        };
         // Vi registrerer Refit, og legger til den registrerte maskinporten http message handlern
         // Amund: Partial er ikke mulig å finne etter compile time.
         var refitClients = Assembly.GetExecutingAssembly().GetTypes()
