@@ -80,6 +80,32 @@ public class Tests : IClassFixture<WebApiClientFixture>, IAsyncDisposable
         Assert.True(updateResponse.IsSuccessStatusCode);
     }
 
+    [Fact]
+    public async Task SearchTest()
+    {
+        var dateOffset = DateTimeOffset.UtcNow;
+        var createDialogCommand = CreateCommand();
+        var createResponse = await _fixture.DialogportenClient.V1ServiceOwnerDialogsCreateDialog(createDialogCommand);
+
+        Assert.True(createResponse.IsSuccessStatusCode);
+        Assert.NotNull(createResponse.Content);
+        Assert.True(Guid.TryParse(createResponse.Content!.Replace("\"", "").Trim(), out var dialogId));
+        _dialogIds.Add(dialogId);
+
+        var param = new V1ServiceOwnerDialogsSearchSearchDialogQueryParams
+        {
+            Party =
+            [
+                "urn:altinn:person:identifier-no:14886498226"
+            ],
+            CreatedAfter = dateOffset
+        };
+        var searchResponse = await _fixture.DialogportenClient.V1ServiceOwnerDialogsSearchSearchDialog(param);
+        Assert.True(searchResponse.IsSuccessStatusCode);
+        Assert.NotNull(searchResponse.Content);
+        Assert.Single(searchResponse.Content!.Items);
+
+    }
     public static V1ServiceOwnerDialogsCommandsCreate_DialogCommand CreateCommand()
     {
         var createDialogCommand = new V1ServiceOwnerDialogsCommandsCreate_DialogCommand
