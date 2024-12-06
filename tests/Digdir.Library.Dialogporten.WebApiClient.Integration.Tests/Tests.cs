@@ -49,9 +49,6 @@ public class Tests : IClassFixture<WebApiClientFixture>, IAsyncDisposable
         Assert.True(createResponse.IsSuccessStatusCode);
         Assert.NotNull(createResponse.Content);
         Assert.True(Guid.TryParse(createResponse.Content!.Replace("\"", "").Trim(), out var dialogId));
-        var getResponse = await _fixture.DialogportenClient.V1ServiceOwnerDialogsGetGetDialog(dialogId, null!, CancellationToken.None);
-        Assert.Equal(HttpStatusCode.OK, getResponse.StatusCode);
-        Assert.Equal(getResponse.Content!.Progress!, 2);
         var purgeResponse = await _fixture.DialogportenClient.V1ServiceOwnerDialogsPurgePurgeDialog(dialogId, null);
         Assert.True(purgeResponse.IsSuccessStatusCode);
 
@@ -80,6 +77,21 @@ public class Tests : IClassFixture<WebApiClientFixture>, IAsyncDisposable
         Assert.True(updateResponse.IsSuccessStatusCode);
     }
 
+    [Fact]
+    public async Task GetTest()
+    {
+        var createDialogCommand = CreateCommand();
+        var createResponse = await _fixture.DialogportenClient.V1ServiceOwnerDialogsCreateDialog(createDialogCommand);
+
+        Assert.True(createResponse.IsSuccessStatusCode);
+        Assert.NotNull(createResponse.Content);
+        Assert.True(Guid.TryParse(createResponse.Content!.Replace("\"", "").Trim(), out var dialogId));
+        _dialogIds.Add(dialogId);
+        var getResponse = await _fixture.DialogportenClient.V1ServiceOwnerDialogsGetGetDialog(dialogId, null!, CancellationToken.None);
+        Assert.Equal(HttpStatusCode.OK, getResponse.StatusCode);
+        Assert.Equal(getResponse.Content!.Progress!, createDialogCommand.Progress);
+
+    }
     [Fact]
     public async Task SearchTest()
     {
