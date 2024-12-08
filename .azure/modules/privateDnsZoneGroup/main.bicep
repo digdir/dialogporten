@@ -7,7 +7,7 @@ resource privateEndpoint 'Microsoft.Network/privateEndpoints@2024-03-01' existin
   name: privateEndpointName
 }
 
-resource pe_dns_zone_group 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2024-03-01' = {
+resource pe_dns_zone_group 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2024-05-01' = {
   name: name
   parent: privateEndpoint
   properties: {
