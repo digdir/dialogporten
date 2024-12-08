@@ -3,7 +3,7 @@ param privateEndpointName string
 param name string
 param dnsZoneGroupName string
 
-resource privateEndpoint 'Microsoft.Network/privateEndpoints@2024-03-01' existing = {
+resource privateEndpoint 'Microsoft.Network/privateEndpoints@2024-05-01' existing = {
   name: privateEndpointName
 }
 
