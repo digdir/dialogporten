@@ -25,7 +25,9 @@ public sealed class DeleteDialogEndpoint : Endpoint<DeleteDialogRequest>
 
         Description(b => b.ProducesOneOf(
             StatusCodes.Status204NoContent,
+            StatusCodes.Status400BadRequest,
             StatusCodes.Status404NotFound,
+            StatusCodes.Status410Gone,
             StatusCodes.Status412PreconditionFailed));
     }
 
@@ -36,6 +38,7 @@ public sealed class DeleteDialogEndpoint : Endpoint<DeleteDialogRequest>
         await result.Match(
             success => SendNoContentAsync(ct),
             notFound => this.NotFoundAsync(notFound, ct),
+            gone => this.GoneAsync(gone, ct),
             forbidden => this.ForbiddenAsync(forbidden, ct),
             concurrencyError => this.PreconditionFailed(ct));
     }

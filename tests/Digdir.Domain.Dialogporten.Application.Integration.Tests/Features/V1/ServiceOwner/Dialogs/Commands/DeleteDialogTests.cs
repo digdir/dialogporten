@@ -32,7 +32,7 @@ public class DeleteDialogTests(DialogApplication application) : ApplicationColle
     }
 
     [Fact]
-    public async Task Updating_Deleted_Dialog_Should_Return_BadRequest()
+    public async Task Updating_Deleted_Dialog_Should_Return_EntityDeleted()
     {
         // Arrange
         var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog();
@@ -54,9 +54,8 @@ public class DeleteDialogTests(DialogApplication application) : ApplicationColle
         var updateDialogResponse = await Application.Send(updateDialogCommand);
 
         // Assert
-        updateDialogResponse.TryPickT2(out var validationError, out _).Should().BeTrue();
-        validationError.Should().NotBeNull();
-        validationError.Reasons.Should().Contain(e => e.Contains("cannot be updated"));
-        validationError.Reasons.Should().Contain(e => e.Contains(dialogId.ToString()));
+        updateDialogResponse.TryPickT2(out var entityDeleted, out _).Should().BeTrue();
+        entityDeleted.Should().NotBeNull();
+        entityDeleted.Message.Should().Contain(dialogId.ToString());
     }
 }

@@ -313,21 +313,23 @@ Use the following steps:
 
 #### Connecting to resources in Azure
 
-There is a `ssh-jumper` virtual machine deployed with the infrastructure. This can be used to create a `ssh`-tunnel into the `vnet`. Use one of the following methods to gain access to resources within the `vnet`:
+There is a `ssh-jumper` virtual machine deployed with the infrastructure. This can be used to create a `ssh`-tunnel into the `vnet`. There are two ways to establish connections:
 
-Ensure you log into the azure CLI using the relevant user and subscription using `az login`.
-
-- Connect to the VNet using the following command:
-   ```
+1. Using `az ssh` commands directly:
+   ```bash
+   # Connect to the VNet using:
    az ssh vm --resource-group dp-be-<env>-rg --vm-name dp-be-<env>-ssh-jumper
-   ```
-   (You may be prompted to install the ssh extension for the azure cli)
-
-- To create an SSH tunnel for accessing specific resources (e.g., PostgreSQL database), use:
-   ```
+   
+   # Or create an SSH tunnel for specific resources (e.g., PostgreSQL database):
    az ssh vm -g dp-be-<env>-rg -n dp-be-<env>-ssh-jumper -- -L 5432:<database-host-name>:5432
    ```
    This example forwards the PostgreSQL default port (5432) to your localhost. Adjust the ports and hostnames as needed for other resources.
+
+   You may be prompted to install the ssh extension.
+
+2. Using the forwarding utility script:
+   
+   See [scripts/forward-bash/README.md](scripts/forward-bash/README.md) for a more user-friendly way to establish database connections through SSH.
 
 ### Applications
 

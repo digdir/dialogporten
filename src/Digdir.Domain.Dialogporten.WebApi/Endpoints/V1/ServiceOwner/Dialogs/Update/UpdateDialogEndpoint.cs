@@ -27,6 +27,7 @@ public sealed class UpdateDialogEndpoint : Endpoint<UpdateDialogRequest>
             StatusCodes.Status204NoContent,
             StatusCodes.Status400BadRequest,
             StatusCodes.Status404NotFound,
+            StatusCodes.Status410Gone,
             StatusCodes.Status412PreconditionFailed,
             StatusCodes.Status422UnprocessableEntity));
     }
@@ -44,7 +45,7 @@ public sealed class UpdateDialogEndpoint : Endpoint<UpdateDialogRequest>
         await updateDialogResult.Match(
             success => SendNoContentAsync(ct),
             notFound => this.NotFoundAsync(notFound, ct),
-            badRequest => this.BadRequestAsync(badRequest, ct),
+            gone => this.GoneAsync(gone, ct),
             validationFailed => this.BadRequestAsync(validationFailed, ct),
             forbidden => this.ForbiddenAsync(forbidden, ct),
             domainError => this.UnprocessableEntityAsync(domainError, ct),

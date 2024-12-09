@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.41.1](https://github.com/digdir/dialogporten/compare/v1.41.0...v1.41.1) (2024-12-09)
+
+
+### Bug Fixes
+
+* **webapi:** Return 410 GONE for sub-resources on soft-deleted dialogs ([#1564](https://github.com/digdir/dialogporten/issues/1564)) ([bb601a9](https://github.com/digdir/dialogporten/commit/bb601a99a2da2f15f3a5411fe756f8bc0df9b344))
+
+## [1.41.0](https://github.com/digdir/dialogporten/compare/v1.40.1...v1.41.0) (2024-12-05)
+
+
+### Features
+
+* Enable FusionCache AutoClone ([#1550](https://github.com/digdir/dialogporten/issues/1550)) ([714ad5c](https://github.com/digdir/dialogporten/commit/714ad5c6498a87430408f7f485cd35d0643057c0))
+
+## [1.40.1](https://github.com/digdir/dialogporten/compare/v1.40.0...v1.40.1) (2024-11-29)
+
+
+### Bug Fixes
+
+* **webapi:** Repeat delete requests should return 400 BAD REQUEST ([#1542](https://github.com/digdir/dialogporten/issues/1542)) ([f14861d](https://github.com/digdir/dialogporten/commit/f14861dd72e4bea41e8b8d9e2914966b1ba3f828))
+
 ## [1.40.0](https://github.com/digdir/dialogporten/compare/v1.39.0...v1.40.0) (2024-11-26)
 
 
