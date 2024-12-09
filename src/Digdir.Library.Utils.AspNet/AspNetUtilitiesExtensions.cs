@@ -16,14 +16,12 @@ using OpenTelemetry;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Logs;
 using System.Diagnostics;
+using Azure.Monitor.OpenTelemetry.Exporter;
 
 namespace Digdir.Library.Utils.AspNet;
 
 public static class AspNetUtilitiesExtensions
 {
-    private const string MassTransitSource = "MassTransit";
-    private const string AzureSource = "Azure.*";
-
     public static IServiceCollection AddAspNetHealthChecks(this IServiceCollection services, Action<AspNetUtilitiesSettings, IServiceProvider>? configure = null)
     {
         var optionsBuilder = services.AddOptions<AspNetUtilitiesSettings>();
@@ -94,49 +92,55 @@ public static class AspNetUtilitiesExtensions
             };
 
             telemetryBuilder.UseOtlpExporter(otlpProtocol, new Uri(settings.Endpoint));
+
+            telemetryBuilder
+                .WithTracing(tracing =>
+                {
+                    if (builder.Environment.IsDevelopment())
+                    {
+                        tracing.SetSampler(new AlwaysOnSampler());
+                    }
+
+                    foreach (var source in settings.TraceSources)
+                    {
+                        tracing.AddSource(source);
+                    }
+
+                    tracing
+                        .AddAspNetCoreInstrumentation(opts =>
+                        {
+                            opts.RecordException = true;
+                            opts.Filter = httpContext => !httpContext.Request.Path.StartsWithSegments("/health");
+                        })
+                        .AddHttpClientInstrumentation(o => o.FilterHttpRequestMessage = (_) =>
+                        {
+                            o.RecordException = true;
+                            var parentActivity = Activity.Current?.Parent;
+                            if (parentActivity != null && parentActivity.Source.Name.Equals("Azure.Core.Http", StringComparison.Ordinal))
+                            {
+                                return false;
+                            }
+                            return true;
+                        })
+                        .AddNpgsql()
+                        .AddFusionCacheInstrumentation();
+                });
         }
         else
         {
             Console.WriteLine("[OpenTelemetry] OTLP exporter not configured - skipping");
         }
 
-        telemetryBuilder
-            .WithTracing(tracing =>
-            {
-                if (builder.Environment.IsDevelopment())
-                {
-                    tracing.SetSampler(new AlwaysOnSampler());
-                }
-
-                foreach (var source in settings.TraceSources)
-                {
-                    tracing.AddSource(source);
-                }
-
-                tracing.AddAspNetCoreInstrumentation(opts =>
-                {
-                    opts.RecordException = true;
-                    opts.Filter = httpContext => !httpContext.Request.Path.StartsWithSegments("/health");
-                })
-                .AddHttpClientInstrumentation(o => o.FilterHttpRequestMessage = (_) =>
-                {
-                    o.RecordException = true;
-                    var parentActivity = Activity.Current?.Parent;
-                    if (parentActivity != null && parentActivity.Source.Name.Equals("Azure.Core.Http", StringComparison.Ordinal))
-                    {
-                        return false;
-                    }
-                    return true;
-                })
-                .AddNpgsql()
-                .AddFusionCacheInstrumentation();
-            })
-            .WithMetrics(metrics =>
+        if (!builder.Environment.IsDevelopment())
+        {
+            telemetryBuilder.WithMetrics(metrics =>
             {
                 metrics.AddRuntimeInstrumentation()
                     .AddAspNetCoreInstrumentation()
-                    .AddHttpClientInstrumentation();
+                    .AddHttpClientInstrumentation()
+                    .AddAzureMonitorMetricExporter();
             });
+        }
 
         return builder;
     }
