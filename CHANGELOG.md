@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.41.1](https://github.com/digdir/dialogporten/compare/v1.41.0...v1.41.1) (2024-12-09)
+
+
+### Bug Fixes
+
+* **webapi:** Return 410 GONE for sub-resources on soft-deleted dialogs ([#1564](https://github.com/digdir/dialogporten/issues/1564)) ([bb601a9](https://github.com/digdir/dialogporten/commit/bb601a99a2da2f15f3a5411fe756f8bc0df9b344))
+
 ## [1.41.0](https://github.com/digdir/dialogporten/compare/v1.40.1...v1.41.0) (2024-12-05)
 
 
