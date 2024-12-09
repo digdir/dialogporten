@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageReleaseNotes>Link to release notes.</PackageReleaseNotes>
+        <PackageLicenseFile>LICENSE</PackageLicenseFile>
+        <Company>Digitaliseringsdirektoratet</Company>
+        <PackageTags>digdir;altinn;dialogporten</PackageTags>
+        <RepositoryType>git</RepositoryType>
+        <RepositoryUrl>https://github.com/digdir/dialogporten</RepositoryUrl>
+        <Version>1.3</Version>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Altinn.ApiClients.Maskinporten" Version="9.2.0"/>
+        <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="9.0.0"/>
+        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.0"/>
+        <PackageReference Include="NSec.Cryptography" Version="24.4.0"/>
+        <PackageReference Include="Refit" Version="8.0.0"/>
+        <PackageReference Include="Refit.HttpClientFactory" Version="8.0.0"/>
+        <None Include="README.md" Pack="true" PackagePath="/"/>
+        <None Include="../../LICENSE" Pack="true" PackagePath="/"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Remove="Program.cs"/>
+    </ItemGroup>
+
+
+</Project>
