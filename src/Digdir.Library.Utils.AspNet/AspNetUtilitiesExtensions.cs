@@ -22,6 +22,7 @@ namespace Digdir.Library.Utils.AspNet;
 public static class AspNetUtilitiesExtensions
 {
     private const string MassTransitSource = "MassTransit";
+    private const string AzureSource = "Azure.*";
 
     public static IServiceCollection AddAspNetHealthChecks(this IServiceCollection services, Action<AspNetUtilitiesSettings, IServiceProvider>? configure = null)
     {
@@ -107,29 +108,28 @@ public static class AspNetUtilitiesExtensions
                     tracing.SetSampler(new AlwaysOnSampler());
                 }
 
-                tracing.AddSource("Azure.*")
-                    .AddAspNetCoreInstrumentation(opts =>
+                foreach (var source in settings.TraceSources)
+                {
+                    tracing.AddSource(source);
+                }
+
+                tracing.AddAspNetCoreInstrumentation(opts =>
+                {
+                    opts.RecordException = true;
+                    opts.Filter = httpContext => !httpContext.Request.Path.StartsWithSegments("/health");
+                })
+                .AddHttpClientInstrumentation(o => o.FilterHttpRequestMessage = (_) =>
+                {
+                    o.RecordException = true;
+                    var parentActivity = Activity.Current?.Parent;
+                    if (parentActivity != null && parentActivity.Source.Name.Equals("Azure.Core.Http", StringComparison.Ordinal))
                     {
-                        opts.RecordException = true;
-                        opts.Filter = httpContext => !httpContext.Request.Path.StartsWithSegments("/health");
-                    })
-                    .AddHttpClientInstrumentation(o => o.FilterHttpRequestMessage = (_) =>
-                    {
-                        o.RecordException = true;
-                        // Azure SDKs create their own client span before calling the service using HttpClient
-                        // In this case, we would see two spans corresponding to the same operation
-                        // 1) created by Azure SDK 2) created by HttpClient
-                        // To prevent this duplication we are filtering the span from HttpClient
-                        // as span from Azure SDK contains all relevant information needed.
-                        var parentActivity = Activity.Current?.Parent;
-                        if (parentActivity != null && parentActivity.Source.Name.Equals("Azure.Core.Http", StringComparison.Ordinal))
-                        {
-                            return false;
-                        }
-                        return true;
-                    })
-                    .AddNpgsql()
-                    .AddSource(MassTransitSource);
+                        return false;
+                    }
+                    return true;
+                })
+                .AddNpgsql()
+                .AddFusionCacheInstrumentation();
             })
             .WithMetrics(metrics =>
             {
@@ -144,8 +144,16 @@ public static class AspNetUtilitiesExtensions
 
 public class TelemetrySettings
 {
+    private const string MassTransitSource = "MassTransit";
+    private const string AzureSource = "Azure.*";
+
     public string? ServiceName { get; set; }
     public string? Endpoint { get; set; }
     public string? Protocol { get; set; }
     public Dictionary<string, string> ResourceAttributes { get; set; } = new();
+    public HashSet<string> TraceSources { get; set; } = new()
+    {
+        AzureSource,
+        MassTransitSource
+    };
 }
