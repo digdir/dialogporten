@@ -51,7 +51,14 @@ static void BuildAndRun(string[] args, TelemetryConfiguration telemetryConfigura
         .AddAzureConfiguration(builder.Environment.EnvironmentName)
         .AddLocalConfiguration(builder.Environment);
 
-    builder.ConfigureTelemetry();
+    builder.ConfigureTelemetry((settings, configuration) =>
+    {
+        settings.ServiceName = configuration["OTEL_SERVICE_NAME"] ?? builder.Environment.ApplicationName;
+        settings.Endpoint = configuration["OTEL_EXPORTER_OTLP_ENDPOINT"];
+        settings.Protocol = configuration["OTEL_EXPORTER_OTLP_PROTOCOL"];
+        settings.AppInsightsConnectionString = configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"];
+        settings.ResourceAttributes = configuration["OTEL_RESOURCE_ATTRIBUTES"];
+    });
 
     builder.Services
         .AddAzureAppConfiguration()

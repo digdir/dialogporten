@@ -68,12 +68,15 @@ static void BuildAndRun(string[] args, TelemetryConfiguration telemetryConfigura
 
     var thisAssembly = Assembly.GetExecutingAssembly();
 
-    builder.ConfigureTelemetry();
-    builder.Services.AddOpenTelemetry()
-        .WithTracing(tracerProviderBuilder =>
-        {
-            tracerProviderBuilder.AddSource(DialogportenGraphQLSource);
-        });
+    builder.ConfigureTelemetry((settings, configuration) =>
+    {
+        settings.ServiceName = configuration["OTEL_SERVICE_NAME"] ?? builder.Environment.ApplicationName;
+        settings.Endpoint = configuration["OTEL_EXPORTER_OTLP_ENDPOINT"];
+        settings.Protocol = configuration["OTEL_EXPORTER_OTLP_PROTOCOL"];
+        settings.AppInsightsConnectionString = configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"];
+        settings.ResourceAttributes = configuration["OTEL_RESOURCE_ATTRIBUTES"];
+        settings.TraceSources.Add(DialogportenGraphQLSource);
+    });
 
     builder.Services
         // Options setup
