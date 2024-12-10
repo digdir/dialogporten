@@ -61,8 +61,6 @@ public static class AspNetUtilitiesExtensions
         var settings = new TelemetrySettings();
         configure?.Invoke(settings, builder.Configuration);
 
-        var logger = builder.Logging.Services.BuildServiceProvider().GetRequiredService<ILoggerFactory>().CreateLogger("TelemetryConfiguration");
-
         Console.WriteLine($"[OpenTelemetry] Configuring telemetry for service: {settings.ServiceName}");
         foreach (var attr in settings.ResourceAttributes)
         {
