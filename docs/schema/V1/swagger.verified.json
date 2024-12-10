@@ -4683,7 +4683,7 @@
       "JWTBearerAuth": {
         "bearerFormat": "JWT",
         "description": "Enter a JWT token to authorize the requests...",
-        "scheme": "Bearer",
+        "scheme": "bearer",
         "type": "http"
       }
     }
