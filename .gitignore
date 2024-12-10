@@ -385,4 +385,4 @@ FodyWeavers.xsd
 **/http-client.private.env.json
 
 # Scratchpad
-src/Digdir.Domain.Dialogporten.Scratchpad/Program.cs
+src/Digdir.Domain.Dialogporten.Scratchpad/*.cs
