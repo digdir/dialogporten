@@ -19,6 +19,7 @@ public sealed class TelemetrySettings
     public string? Endpoint { get; set; }
     public string? Protocol { get; set; }
     public string? AppInsightsConnectionString { get; set; }
+    // Expected format: key1=value1,key2=value2
     public string? ResourceAttributes { get; set; }
     public HashSet<string> TraceSources { get; set; } = new()
     {

@@ -73,16 +73,15 @@ public static class AspNetUtilitiesExtensions
                 {
                     try
                     {
-                        var attributes = System.Web.HttpUtility.ParseQueryString(
-                            resourceAttributes.Replace(',', '&')
-                        );
-                        foreach (string key in attributes.Keys)
+                        var attributes = resourceAttributes
+                            .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                            .Select(pair => pair.Split('=', 2))
+                            .Where(parts => parts.Length == 2 && !string.IsNullOrEmpty(parts[0]))
+                            .Select(parts => new KeyValuePair<string, object>(parts[0].Trim(), parts[1].Trim()));
+
+                        foreach (var attribute in attributes)
                         {
-                            if (!string.IsNullOrEmpty(key))
-                            {
-                                Console.WriteLine($"[OpenTelemetry] Resource attribute: {key}={attributes[key]}");
-                                resourceBuilder.AddAttributes(new[] { new KeyValuePair<string, object>(key, attributes[key] ?? string.Empty) });
-                            }
+                            resourceBuilder.AddAttributes(new[] { attribute });
                         }
                     }
                     catch (Exception ex)
