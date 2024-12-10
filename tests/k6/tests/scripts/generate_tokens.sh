@@ -11,11 +11,14 @@ usage() {
     echo "Usage: $0 <testdatafilepath> <tokens>"
     echo "  <testdatafilepath>: Path to the test data files"
     echo "  <tokens>: Type of tokens to generate (both, enterprise, or personal)"
+    echo "  <limit>: limit number of tokens to generate. 0 means generate all"
+    echo "  <ttl>: Time to live in seconds for the generated tokens"
+    echo "Example: $0 /path/to/testdata both 10 3600"
     exit 1
 }
 
 # Validate arguments
-if [ $# -ne 2 ]; then
+if [ $# -ne 4 ]; then
     usage
 fi
 
@@ -37,6 +40,8 @@ esac
 
 testdatafilepath=$1
 tokens=$2
+limit=$3
+ttl=$4
 
 # Validate tokens argument
 if [[ ! "$tokens" =~ ^(both|enterprise|personal)$ ]]; then
@@ -55,9 +60,13 @@ if [ "$tokens" = "both" ] || [ "$tokens" = "enterprise" ]; then
         exit 1
     fi
     echo "org,orgno,scopes,resource,token" > $serviceowner_tokenfile
+    generated=0
     while IFS=, read -r org orgno scopes resource
     do
-        url="https://altinn-testtools-token-generator.azurewebsites.net/api/GetEnterpriseToken?org=$org&env=$env&orgno=$orgno&ttl=3600"
+        if [ $limit -gt 0 ] && [ $generated -ge $limit ]; then
+            break
+        fi
+        url="https://altinn-testtools-token-generator.azurewebsites.net/api/GetEnterpriseToken?org=$org&env=$env&orgno=$orgno&ttl=$ttl"
         token=$(curl -s -f --get --data-urlencode "scopes=$scopes" $url -u "$tokengenuser:$tokengenpasswd" )
         if [ $? -ne 0 ]; then
             echo "Error: Failed to generate enterprise token for: $env, $org, $orgno, $scopes "
@@ -67,6 +76,8 @@ if [ "$tokens" = "both" ] || [ "$tokens" = "enterprise" ]; then
         status=$?
         if [ $status -ne 0 ]; then
             echo "Error: Failed to write enterprise token to file for: $env, $org, $orgno, $scopes"
+        else
+            ((generated++))
         fi
     done < <(tail -n +2 $serviceowner_datafile)
 fi
@@ -77,9 +88,13 @@ if [ "$tokens" = "both" ] || [ "$tokens" = "personal" ]; then
         exit 1
     fi
     echo "ssn,resource,scopes,token" > $enduser_tokenfile
+    generated=0
     while IFS=, read -r ssn resource scopes
     do
-        url="https://altinn-testtools-token-generator.azurewebsites.net/api/GetPersonalToken?env=$env&scopes=$scopes&pid=$ssn&ttl=3600"
+        if [ $limit -gt 0 ] && [ $generated -ge $limit ]; then
+            break
+        fi
+        url="https://altinn-testtools-token-generator.azurewebsites.net/api/GetPersonalToken?env=$env&scopes=$scopes&pid=$ssn&ttl=$ttl"
         token=$(curl -s -f $url -u "$tokengenuser:$tokengenpasswd" )
         if [ $? -ne 0 ]; then
             echo "Error: Failed to generate personal token for: $ssn, $scopes "
@@ -89,6 +104,8 @@ if [ "$tokens" = "both" ] || [ "$tokens" = "personal" ]; then
         status=$?
         if [ $status -ne 0 ]; then
             echo "Error: Failed to write personal token to file for: $ssn, $scopes"
+        else
+            ((generated++))
         fi
     done < <(tail -n +2 $enduser_datafile)
 fi

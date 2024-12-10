@@ -21,6 +21,14 @@ on:
       tokens:
         required: true
         type: string
+      numberOfTokens:
+        required: false
+        type: number
+        default: 0  
+      ttl:
+        required: false
+        type: number
+        default: 3600  
     secrets:
       TOKEN_GENERATOR_USERNAME:
         required: true
@@ -45,7 +53,7 @@ jobs:
       uses: grafana/setup-k6-action@v1
     - name: Run K6 tests (${{ inputs.testSuitePath }})
       run: |
-        ./tests/k6/tests/scripts/generate_tokens.sh ./tests/k6/tests/performancetest_data ${{ inputs.tokens }} 
+        ./tests/k6/tests/scripts/generate_tokens.sh ./tests/k6/tests/performancetest_data ${{ inputs.tokens }} ${{ inputs.numberOfTokens }} ${{ inputs.ttl }}
         k6 run ${{ inputs.testSuitePath }} --quiet --log-output=stdout --include-system-env-vars \
           --vus=${{ inputs.vus }} --duration=${{ inputs.duration }} --out=cloud --out csv=./results.csv
         grep http_req_duration ./results.csv | sort --field-separator=',' --key=3 -nr | head -10
