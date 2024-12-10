@@ -61,6 +61,8 @@ public static class AspNetUtilitiesExtensions
         var settings = new TelemetrySettings();
         configure?.Invoke(settings, builder.Configuration);
 
+        var logger = builder.Logging.Services.BuildServiceProvider().GetRequiredService<ILoggerFactory>().CreateLogger("TelemetryConfiguration");
+
         Console.WriteLine($"[OpenTelemetry] Configuring telemetry for service: {settings.ServiceName}");
         foreach (var attr in settings.ResourceAttributes)
         {
@@ -112,15 +114,18 @@ public static class AspNetUtilitiesExtensions
                             opts.RecordException = true;
                             opts.Filter = httpContext => !httpContext.Request.Path.StartsWithSegments("/health");
                         })
-                        .AddHttpClientInstrumentation(o => o.FilterHttpRequestMessage = (_) =>
+                        .AddHttpClientInstrumentation(o =>
                         {
                             o.RecordException = true;
-                            var parentActivity = Activity.Current?.Parent;
-                            if (parentActivity != null && parentActivity.Source.Name.Equals("Azure.Core.Http", StringComparison.Ordinal))
+                            o.FilterHttpRequestMessage = (_) =>
                             {
-                                return false;
-                            }
-                            return true;
+                                var parentActivity = Activity.Current?.Parent;
+                                if (parentActivity != null && parentActivity.Source.Name.Equals("Azure.Core.Http", StringComparison.Ordinal))
+                                {
+                                    return false;
+                                }
+                                return true;
+                            };
                         })
                         .AddNpgsql()
                         .AddFusionCacheInstrumentation();
