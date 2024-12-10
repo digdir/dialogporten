@@ -73,6 +73,7 @@ static void BuildAndRun(string[] args, TelemetryConfiguration telemetryConfigura
         settings.ServiceName = configuration["OTEL_SERVICE_NAME"];
         settings.Endpoint = configuration["OTEL_EXPORTER_OTLP_ENDPOINT"];
         settings.Protocol = configuration["OTEL_EXPORTER_OTLP_PROTOCOL"];
+        settings.AppInsightsConnectionString = configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"];
         settings.TraceSources.Add(DialogportenGraphQLSource);
 
         var resourceAttributes = configuration["OTEL_RESOURCE_ATTRIBUTES"];

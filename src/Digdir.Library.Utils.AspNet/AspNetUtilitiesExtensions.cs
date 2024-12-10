@@ -131,7 +131,7 @@ public static class AspNetUtilitiesExtensions
             Console.WriteLine("[OpenTelemetry] OTLP exporter not configured - skipping");
         }
 
-        if (!builder.Environment.IsDevelopment())
+        if (!string.IsNullOrEmpty(settings.AppInsightsConnectionString))
         {
             telemetryBuilder.WithMetrics(metrics =>
             {
@@ -154,6 +154,7 @@ public class TelemetrySettings
     public string? ServiceName { get; set; }
     public string? Endpoint { get; set; }
     public string? Protocol { get; set; }
+    public string? AppInsightsConnectionString { get; set; }
     public Dictionary<string, string> ResourceAttributes { get; set; } = new();
     public HashSet<string> TraceSources { get; set; } = new()
     {
