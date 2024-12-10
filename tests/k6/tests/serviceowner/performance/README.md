@@ -4,7 +4,7 @@ This performance test directory focuses on evaluating the GET and POST endpoints
 
 ### Prerequisites
 Before running the performance test, make sure you have met the following prerequisites:
-- [K6 prerequisites](../../README.md#Prerequisites)
+- [K6 prerequisites](../../../README.md#Prerequisites)
 
 ### Test Files
 The test files associated with this performance test are 
