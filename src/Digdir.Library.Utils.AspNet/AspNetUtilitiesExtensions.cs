@@ -72,9 +72,29 @@ public static class AspNetUtilitiesExtensions
             {
                 var resourceBuilder = resource.AddService(serviceName: settings.ServiceName ?? builder.Environment.ApplicationName);
 
-                foreach (var attr in settings.ResourceAttributes)
+                var resourceAttributes = settings.ResourceAttributes;
+                if (!string.IsNullOrEmpty(resourceAttributes))
                 {
-                    resourceBuilder.AddAttributes(new[] { new KeyValuePair<string, object>(attr.Key, attr.Value) });
+                    try
+                    {
+                        var attributes = System.Web.HttpUtility.ParseQueryString(
+                            resourceAttributes.Replace(',', '&')
+                        );
+                        foreach (string key in attributes.Keys)
+                        {
+                            if (!string.IsNullOrEmpty(key))
+                            {
+                                resourceBuilder.AddAttributes(new[] { new KeyValuePair<string, object>(key, attributes[key] ?? string.Empty) });
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new InvalidOperationException(
+                            "Failed to parse OTEL_RESOURCE_ATTRIBUTES. Expected format: key1=value1,key2=value2",
+                            ex
+                        );
+                    }
                 }
             });
 
@@ -158,7 +178,7 @@ public class TelemetrySettings
     public string? Endpoint { get; set; }
     public string? Protocol { get; set; }
     public string? AppInsightsConnectionString { get; set; }
-    public Dictionary<string, string> ResourceAttributes { get; set; } = new();
+    public string? ResourceAttributes { get; set; }
     public HashSet<string> TraceSources { get; set; } = new()
     {
         AzureSource,

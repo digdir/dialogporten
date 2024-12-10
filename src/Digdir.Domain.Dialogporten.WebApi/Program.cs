@@ -84,31 +84,7 @@ static void BuildAndRun(string[] args, TelemetryConfiguration telemetryConfigura
         settings.Endpoint = configuration["OTEL_EXPORTER_OTLP_ENDPOINT"];
         settings.Protocol = configuration["OTEL_EXPORTER_OTLP_PROTOCOL"];
         settings.AppInsightsConnectionString = configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"];
-
-        var resourceAttributes = configuration["OTEL_RESOURCE_ATTRIBUTES"];
-        if (!string.IsNullOrEmpty(resourceAttributes))
-        {
-            try
-            {
-                var attributes = System.Web.HttpUtility.ParseQueryString(
-                    resourceAttributes.Replace(',', '&')
-                );
-                foreach (string key in attributes.Keys)
-                {
-                    if (!string.IsNullOrEmpty(key))
-                    {
-                        settings.ResourceAttributes[key] = attributes[key] ?? string.Empty;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException(
-                    "Failed to parse OTEL_RESOURCE_ATTRIBUTES. Expected format: key1=value1,key2=value2",
-                    ex
-                );
-            }
-        }
+        settings.ResourceAttributes = configuration["OTEL_RESOURCE_ATTRIBUTES"];
     });
 
     builder.Services
