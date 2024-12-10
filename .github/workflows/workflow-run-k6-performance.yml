@@ -5,7 +5,7 @@ on:
     inputs:
       apiVersion:
         required: true
-        type: string   
+        type: string
       environment:
         required: true
         type: string
@@ -20,7 +20,7 @@ on:
         type: string
       tokens:
         required: true
-        type: string    
+        type: string
     secrets:
       TOKEN_GENERATOR_USERNAME:
         required: true
@@ -48,11 +48,11 @@ jobs:
         ./tests/k6/tests/scripts/generate_tokens.sh ./tests/k6/tests/performancetest_data ${{ inputs.tokens }} 
         k6 run ${{ inputs.testSuitePath }} --quiet --log-output=stdout --include-system-env-vars \
           --vus=${{ inputs.vus }} --duration=${{ inputs.duration }} --out=cloud --out csv=./results.csv
-        grep http_req_duration ./results.csv | sort --field-separator=',' --key=3 -nr | head -10 
+        grep http_req_duration ./results.csv | sort --field-separator=',' --key=3 -nr | head -10
       env:
         API_ENVIRONMENT: ${{ inputs.environment }}
         API_VERSION: ${{ inputs.apiVersion }}
         TOKEN_GENERATOR_USERNAME: ${{ secrets.TOKEN_GENERATOR_USERNAME }}
-        TOKEN_GENERATOR_PASSWORD: ${{ secrets.TOKEN_GENERATOR_PASSWORD }}  
+        TOKEN_GENERATOR_PASSWORD: ${{ secrets.TOKEN_GENERATOR_PASSWORD }}
         K6_CLOUD_TOKEN: ${{ secrets.K6_CLOUD_TOKEN }}
         K6_CLOUD_PROJECT_ID: ${{ secrets.K6_CLOUD_PROJECT_ID }}

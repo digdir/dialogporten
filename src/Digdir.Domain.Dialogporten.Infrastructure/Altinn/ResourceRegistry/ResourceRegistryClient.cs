@@ -13,9 +13,6 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Altinn.ResourceRegistry;
 internal sealed class ResourceRegistryClient : IResourceRegistry
 {
     private const string ServiceResourceInformationCacheKey = "ServiceResourceInformationCacheKey";
-    private const string ResourceTypeGenericAccess = "GenericAccessResource";
-    private const string ResourceTypeAltinnApp = "AltinnApp";
-    private const string ResourceTypeCorrespondence = "CorrespondenceService";
     private const string ResourceRegistryResourceEndpoint = "resourceregistry/api/v1/resource/";
     private const string AuthenticationLevelCategory = "urn:altinn:minimum-authenticationlevel";
 
@@ -185,10 +182,7 @@ internal sealed class ResourceRegistryClient : IResourceRegistry
 
                 return response
                     .Where(x => !string.IsNullOrWhiteSpace(x.HasCompetentAuthority.Organization))
-                    .Where(x => x.ResourceType is
-                        ResourceTypeGenericAccess or
-                        ResourceTypeAltinnApp or
-                        ResourceTypeCorrespondence)
+                    .Where(x => Application.Common.Authorization.Constants.SupportedResourceTypes.Contains(x.ResourceType))
                     .Select(x => new ServiceResourceInformation(
                         $"{Constants.ServiceResourcePrefix}{x.Identifier}",
                         x.ResourceType,

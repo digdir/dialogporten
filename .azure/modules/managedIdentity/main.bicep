@@ -14,4 +14,4 @@ resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-
 }
 
 output managedIdentityId string = managedIdentity.id
-output managedIdentityPrincipalId string = managedIdentity.properties.principalId 
+output managedIdentityPrincipalId string = managedIdentity.properties.principalId

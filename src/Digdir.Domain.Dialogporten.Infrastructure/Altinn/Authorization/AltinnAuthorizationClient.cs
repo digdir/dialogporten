@@ -121,9 +121,7 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
 
             if (parent != null) party.ParentParty = parent.Party;
 
-            // TODO: https://github.com/digdir/dialogporten/issues/1533
-            // Disabling this for now, fixes https://github.com/digdir/dialogporten/issues/1226
-            // party.SubParties = [];
+            party.SubParties = [];
 
             flattenedAuthorizedParties.AuthorizedParties.Add(party);
         }
