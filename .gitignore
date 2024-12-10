@@ -383,3 +383,6 @@ FodyWeavers.xsd
 **/.serviceowners-with-tokens.csv
 
 **/http-client.private.env.json
+
+# Scratchpad
+src/Digdir.Domain.Dialogporten.Scratchpad/Program.cs
