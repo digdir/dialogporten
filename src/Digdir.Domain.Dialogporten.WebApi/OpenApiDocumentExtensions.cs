@@ -7,6 +7,24 @@ namespace Digdir.Domain.Dialogporten.WebApi;
 public static class OpenApiDocumentExtensions
 {
     /// <summary>
+    /// To have this be validated in BlackDuck, we need to lower case the bearer scheme name.
+    /// From editor.swagger.io:
+    /// Structural error at components.securitySchemes.JWTBearerAuth
+    /// should NOT have a `bearerFormat` property without `scheme: bearer` being set
+    /// </summary>
+    /// <param name="openApiDocument"></param>
+    public static void FixJwtBearerCasing(this OpenApiDocument openApiDocument)
+    {
+        foreach (var securityScheme in openApiDocument.Components.SecuritySchemes.Values)
+        {
+            if (securityScheme.Scheme.Equals("Bearer", StringComparison.Ordinal))
+            {
+                securityScheme.Scheme = "bearer";
+            }
+        }
+    }
+
+    /// <summary>
     /// When generating ProblemDetails and ProblemDetails_Error, there is a bug/weird behavior in NSwag or FastEndpoints
     /// which results in certain 'Description' properties being generated when running on f.ex. MacOS,
     /// but not when running on the Ubuntu GitHub Actions runner. This leads to the OpenAPI swagger snapshot test

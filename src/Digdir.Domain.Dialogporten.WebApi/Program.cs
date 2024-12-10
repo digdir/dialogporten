@@ -201,6 +201,7 @@ static void BuildAndRun(string[] args, TelemetryConfiguration telemetryConfigura
                 document.Generator = null;
                 document.ReplaceProblemDetailsDescriptions();
                 document.MakeCollectionsNullable();
+                document.FixJwtBearerCasing();
             };
         }, uiConfig =>
         {
