@@ -62,10 +62,6 @@ public static class AspNetUtilitiesExtensions
         configure?.Invoke(settings, builder.Configuration);
 
         Console.WriteLine($"[OpenTelemetry] Configuring telemetry for service: {settings.ServiceName}");
-        foreach (var attr in settings.ResourceAttributes)
-        {
-            Console.WriteLine($"[OpenTelemetry] Resource attribute: {attr.Key}={attr.Value}");
-        }
 
         var telemetryBuilder = builder.Services.AddOpenTelemetry()
             .ConfigureResource(resource =>
@@ -84,6 +80,7 @@ public static class AspNetUtilitiesExtensions
                         {
                             if (!string.IsNullOrEmpty(key))
                             {
+                                Console.WriteLine($"[OpenTelemetry] Resource attribute: {key}={attributes[key]}");
                                 resourceBuilder.AddAttributes(new[] { new KeyValuePair<string, object>(key, attributes[key] ?? string.Empty) });
                             }
                         }
