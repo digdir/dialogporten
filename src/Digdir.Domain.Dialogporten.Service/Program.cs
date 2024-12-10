@@ -61,13 +61,25 @@ static void BuildAndRun(string[] args, TelemetryConfiguration telemetryConfigura
         var resourceAttributes = configuration["OTEL_RESOURCE_ATTRIBUTES"];
         if (!string.IsNullOrEmpty(resourceAttributes))
         {
-            foreach (var attribute in resourceAttributes.Split(','))
+            try
             {
-                var keyValue = attribute.Split('=', 2);
-                if (keyValue.Length == 2)
+                var attributes = System.Web.HttpUtility.ParseQueryString(
+                    resourceAttributes.Replace(',', '&')
+                );
+                foreach (string key in attributes.Keys)
                 {
-                    settings.ResourceAttributes[keyValue.First().Trim()] = keyValue.Last().Trim();
+                    if (!string.IsNullOrEmpty(key))
+                    {
+                        settings.ResourceAttributes[key] = attributes[key] ?? string.Empty;
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException(
+                    "Failed to parse OTEL_RESOURCE_ATTRIBUTES. Expected format: key1=value1,key2=value2",
+                    ex
+                );
             }
         }
     });
