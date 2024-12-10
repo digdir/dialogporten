@@ -16,6 +16,7 @@ using FluentValidation;
 using Digdir.Domain.Dialogporten.Application;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
+using Digdir.Domain.Dialogporten.Domain.SubjectResources;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.Authorization;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.Events;
 using Digdir.Domain.Dialogporten.Infrastructure.Altinn.NameRegistry;
@@ -160,6 +161,10 @@ public static class InfrastructureExtensions
             // Timeout for the cache to wait for the factory to complete, which when reached without fail-safe data
             // will cause an exception to be thrown
             FactoryHardTimeout = TimeSpan.FromSeconds(10)
+        })
+        .ConfigureFusionCache(nameof(SubjectResource), new()
+        {
+            Duration = TimeSpan.FromMinutes(20)
         });
 
         if (!environment.IsDevelopment())
