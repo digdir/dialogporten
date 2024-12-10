@@ -55,13 +55,13 @@ namespace Digdir.Library.Dialogporten.WebApiClient.Features.V1
         /// <summary>
         /// Only return dialogs created after this date
         /// </summary>
-        [Query] 
+        [Query(Format = "yyyy-MM-ddThh:mm:ssZ")] 
         public System.DateTimeOffset? CreatedAfter { get; set; }
 
         /// <summary>
         /// Only return dialogs created before this date
         /// </summary>
-        [Query] 
+        [Query(Format = "yyyy-MM-ddThh:mm:ssZ")] 
         public System.DateTimeOffset? CreatedBefore { get; set; }
 
         /// <summary>
@@ -162,7 +162,7 @@ namespace Digdir.Library.Dialogporten.WebApiClient.Features.V1
     }
 
     /// <summary>Gets a list of dialogs</summary>
-    [System.CodeDom.Compiler.GeneratedCode("Refitter", "1.4.1.0")]
+    [System.CodeDom.Compiler.GeneratedCode("Refitter", "1.0.0.0")]
     public partial interface IServiceownerApi
     {
         /// <summary>Gets a list of dialogs</summary>
@@ -2898,6 +2898,7 @@ namespace Digdir.Library.Dialogporten.WebApiClient.Features.V1
         /// </summary>
 
         [JsonPropertyName("createdAt")]
+        [JsonConverter(typeof(DateFormatConverter))]
         public System.DateTimeOffset? CreatedAt { get; set; }
 
         /// <summary>
@@ -3628,6 +3629,7 @@ namespace Digdir.Library.Dialogporten.WebApiClient.Features.V1
         /// </summary>
 
         [JsonPropertyName("createdAt")]
+        [JsonConverter(typeof(DateFormatConverter))]
         public System.DateTimeOffset? CreatedAt { get; set; }
 
         /// <summary>
@@ -4120,6 +4122,26 @@ namespace Digdir.Library.Dialogporten.WebApiClient.Features.V1
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public DialogsEntitiesTransmissions_DialogTransmissionType Type { get; set; }
 
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.2.0.0 (NJsonSchema v11.1.0.0 (Newtonsoft.Json v13.0.0.0))")]
+    internal class DateFormatConverter : JsonConverter<System.DateTimeOffset>
+    {
+        public override System.DateTimeOffset Read(ref System.Text.Json.Utf8JsonReader reader, System.Type typeToConvert, System.Text.Json.JsonSerializerOptions options)
+        {
+            var dateTime = reader.GetString();
+            if (dateTime == null)
+            {
+                throw new System.Text.Json.JsonException("Unexpected JsonTokenType.Null");
+            }
+
+            return System.DateTimeOffset.Parse(dateTime);
+        }
+
+        public override void Write(System.Text.Json.Utf8JsonWriter writer, System.DateTimeOffset value, System.Text.Json.JsonSerializerOptions options)
+        {
+            writer.WriteStringValue(value.ToString("yyyy-MM-dd"));
+        }
     }
 
 

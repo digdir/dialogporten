@@ -18,6 +18,7 @@ services.AddDialogTokenVerifer();
 
 
 var serviceProvider = services.BuildServiceProvider();
+var now = DateTime.UtcNow;
 
 var dialogportenClient = serviceProvider.GetRequiredService<IServiceownerApi>();
 
@@ -53,9 +54,10 @@ Console.WriteLine("==End Get Single Dialog==");
 Console.WriteLine("==Start Search Dialogs==");
 var param = new V1ServiceOwnerDialogsSearchSearchDialogQueryParams()
 {
-    SystemLabel = [DialogEndUserContextsEntities_SystemLabel.Default]
+    CreatedAfter = now
 };
 var result = await dialogportenClient.V1ServiceOwnerDialogsSearchSearchDialog(param);
+Console.WriteLine(now);
 Console.WriteLine(result.Content!.Items.Count);
 Console.WriteLine(result.Content.Items.First().Org);
 Console.WriteLine("==End Search Dialogs==");

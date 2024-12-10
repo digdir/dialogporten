@@ -49,8 +49,9 @@ public static class ServiceCollectionExtensions
             Environment = dialogportenSettings.Environment switch
             {
                 "prod" => "prod",
+                "local" => "test",
                 "test" => "test",
-                _ => "local"
+                _ => throw new ArgumentException()
             },
             Scope = dialogportenSettings.Maskinporten.Scope,
         };
@@ -73,6 +74,7 @@ public static class ServiceCollectionExtensions
                 x.IsInterface)
             .ToList();
 
+        ;
         foreach (var refitClient in refitClients)
         {
             services

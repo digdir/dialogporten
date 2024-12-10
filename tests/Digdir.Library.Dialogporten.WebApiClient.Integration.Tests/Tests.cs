@@ -30,39 +30,35 @@ public class WebApiClientFixture : IDisposable
     }
 }
 
-public class Tests : IClassFixture<WebApiClientFixture>, IAsyncDisposable
+public class Tests(WebApiClientFixture fixture) : IClassFixture<WebApiClientFixture>, IDisposable
 {
-    private readonly WebApiClientFixture _fixture;
-    private readonly List<Guid> _dialogIds;
-    public Tests(WebApiClientFixture fixture)
-    {
-        _fixture = fixture;
-        _dialogIds = [];
-    }
+    private readonly List<Guid> _dialogIds = [];
     [Fact]
     public async Task PurgeTest()
     {
 
         var createDialogCommand = CreateCommand();
-        var createResponse = await _fixture.DialogportenClient.V1ServiceOwnerDialogsCreateDialog(createDialogCommand);
+        var createResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsCreateDialog(createDialogCommand);
 
         Assert.True(createResponse.IsSuccessStatusCode);
         Assert.NotNull(createResponse.Content);
         Assert.True(Guid.TryParse(createResponse.Content!.Replace("\"", "").Trim(), out var dialogId));
-        var purgeResponse = await _fixture.DialogportenClient.V1ServiceOwnerDialogsPurgePurgeDialog(dialogId, null);
+        var purgeResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsPurgePurgeDialog(dialogId, null);
         Assert.True(purgeResponse.IsSuccessStatusCode);
 
     }
+
     [Fact]
     public async Task PatchTest()
     {
         var createDialogCommand = CreateCommand();
-        var createResponse = await _fixture.DialogportenClient.V1ServiceOwnerDialogsCreateDialog(createDialogCommand);
+        var createResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsCreateDialog(createDialogCommand);
 
         Assert.True(createResponse.IsSuccessStatusCode);
         Assert.NotNull(createResponse.Content);
         Assert.True(Guid.TryParse(createResponse.Content!.Replace("\"", "").Trim(), out var dialogId));
         _dialogIds.Add(dialogId);
+
         List<JsonPatchOperations_Operation> patchDocument =
         [
             new()
@@ -73,7 +69,7 @@ public class Tests : IClassFixture<WebApiClientFixture>, IAsyncDisposable
                 Value = 50
             }
         ];
-        var updateResponse = await _fixture.DialogportenClient.V1ServiceOwnerDialogsPatchDialog(dialogId, patchDocument, null, CancellationToken.None);
+        var updateResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsPatchDialog(dialogId, patchDocument, null, CancellationToken.None);
         Assert.True(updateResponse.IsSuccessStatusCode);
     }
 
@@ -81,43 +77,59 @@ public class Tests : IClassFixture<WebApiClientFixture>, IAsyncDisposable
     public async Task GetTest()
     {
         var createDialogCommand = CreateCommand();
-        var createResponse = await _fixture.DialogportenClient.V1ServiceOwnerDialogsCreateDialog(createDialogCommand);
+        var createResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsCreateDialog(createDialogCommand);
 
         Assert.True(createResponse.IsSuccessStatusCode);
         Assert.NotNull(createResponse.Content);
         Assert.True(Guid.TryParse(createResponse.Content!.Replace("\"", "").Trim(), out var dialogId));
-        _dialogIds.Add(dialogId);
-        var getResponse = await _fixture.DialogportenClient.V1ServiceOwnerDialogsGetGetDialog(dialogId, null!, CancellationToken.None);
+        var getResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsGetGetDialog(dialogId, null!, CancellationToken.None);
         Assert.Equal(HttpStatusCode.OK, getResponse.StatusCode);
         Assert.Equal(getResponse.Content!.Progress!, createDialogCommand.Progress);
+        await fixture.DialogportenClient.V1ServiceOwnerDialogsPurgePurgeDialog(dialogId, null!);
 
     }
+
     [Fact]
     public async Task SearchTest()
     {
+        // Amund: DateTimeOffset blir sendt over i feil format. Virker som den blir sendt som string og parset fra string igjen.
+        // Usikker på hvordan jeg skal sende i annet format?
+        // Det er nok en implisitt toString som skjer. hvordan skal jeg da gi den format stringen?
+        /*
+         * Amund Q:.
+         *  [x] Refit støtter date format.
+         *  [x] Refitter trenger at swagger sier "date" på format.
+         *  [x] Swagger sier nå "date-time"
+         *  [x] Refit støtter custom date format
+         *  [x] Refitter søtter ikke custom date format
+         *  [x] Få Swagger gen til å generete "date" istedet for "date-time"?
+         *      [x] lag til date-time støtte i refitter
+         *  [x] Legge til støtte for custom date format i Refitter
+         *      [x] Virker doable, Relativt lett leslig kilde kode.
+         *      [ ] Lagde PR inn til refitter repo med forandringene
+         */
         var dateOffset = DateTimeOffset.UtcNow;
+        // Thread.CurrentThread.CurrentCulture.Calendar = new GregorianCalendar(GregorianCalendarTypes.TransliteratedEnglish);
         var createDialogCommand = CreateCommand();
-        var createResponse = await _fixture.DialogportenClient.V1ServiceOwnerDialogsCreateDialog(createDialogCommand);
+        var createResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsCreateDialog(createDialogCommand);
+
 
         Assert.True(createResponse.IsSuccessStatusCode);
         Assert.NotNull(createResponse.Content);
         Assert.True(Guid.TryParse(createResponse.Content!.Replace("\"", "").Trim(), out var dialogId));
-        _dialogIds.Add(dialogId);
 
         var param = new V1ServiceOwnerDialogsSearchSearchDialogQueryParams
         {
-            Party =
-            [
-                "urn:altinn:person:identifier-no:14886498226"
-            ],
             CreatedAfter = dateOffset
         };
-        var searchResponse = await _fixture.DialogportenClient.V1ServiceOwnerDialogsSearchSearchDialog(param);
+        var searchResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsSearchSearchDialog(param, CancellationToken.None);
+        await fixture.DialogportenClient.V1ServiceOwnerDialogsPurgePurgeDialog(dialogId, null!, CancellationToken.None);
         Assert.True(searchResponse.IsSuccessStatusCode);
         Assert.NotNull(searchResponse.Content);
         Assert.Single(searchResponse.Content!.Items);
 
     }
+
     public static V1ServiceOwnerDialogsCommandsCreate_DialogCommand CreateCommand()
     {
         var createDialogCommand = new V1ServiceOwnerDialogsCommandsCreate_DialogCommand
@@ -232,14 +244,13 @@ public class Tests : IClassFixture<WebApiClientFixture>, IAsyncDisposable
         return createDialogCommand;
     }
 
-    public ValueTask DisposeAsync()
+    public async void Dispose()
     {
-        GC.SuppressFinalize(this);
         foreach (var dialogId in _dialogIds)
         {
-            _fixture.DialogportenClient.V1ServiceOwnerDialogsPurgePurgeDialog(dialogId, null!);
+            var purgeResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsPurgePurgeDialog(dialogId, null!);
+            Assert.True(purgeResponse.IsSuccessStatusCode);
         }
-
-        return ValueTask.CompletedTask;
+        GC.SuppressFinalize(this);
     }
 }
