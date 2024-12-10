@@ -80,7 +80,7 @@ static void BuildAndRun(string[] args, TelemetryConfiguration telemetryConfigura
 
     builder.ConfigureTelemetry((settings, configuration) =>
     {
-        settings.ServiceName = configuration["OTEL_SERVICE_NAME"];
+        settings.ServiceName = configuration["OTEL_SERVICE_NAME"] ?? builder.Environment.ApplicationName;
         settings.Endpoint = configuration["OTEL_EXPORTER_OTLP_ENDPOINT"];
         settings.Protocol = configuration["OTEL_EXPORTER_OTLP_PROTOCOL"];
         settings.AppInsightsConnectionString = configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"];
