@@ -25,13 +25,13 @@ jobs:
       K6_CLOUD_TOKEN: ${{ secrets.K6_CLOUD_TOKEN }}
       K6_CLOUD_PROJECT_ID: ${{ secrets.K6_CLOUD_PROJECT_ID }}
     
-    strategy:
-      max-parallel: 1
-      matrix:
-        files: 
-          - "\"tests/k6/tests/serviceowner/serviceOwnerSearchWithThresholds.js\""
-          - "\"tests/k6/tests/serviceowner/createDialogWithThresholds.js\""
-          - "\"tests/k6/tests/enduser/enduserSearchWithThresholds.js\""
+    # strategy:
+    #   max-parallel: 1
+    #   matrix:
+    #     files: 
+    #       - "\"tests/k6/tests/serviceowner/serviceOwnerSearchWithThresholds.js\""
+    #       - "\"tests/k6/tests/serviceowner/createDialogWithThresholds.js\""
+    #       - "\"tests/k6/tests/enduser/enduserSearchWithThresholds.js\""
     with:
       environment: yt01
       apiVersion: v1
@@ -39,7 +39,7 @@ jobs:
       duration: 1m
       tokens: both
       numberOfTokens: 100
-      testSuitePath: "\"tests/k6/tests/serviceowner/serviceOwnerSearchWithThresholds.js\"" # ${{ matrix.files }}
+      testSuitePath: "tests/k6/tests/serviceowner/serviceOwnerSearchWithThresholds.js" # ${{ matrix.files }}
     permissions:
       checks: write
       pull-requests: write
