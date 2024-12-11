@@ -33,28 +33,41 @@ public class WebApiClientFixture : IDisposable
 public class Tests(WebApiClientFixture fixture) : IClassFixture<WebApiClientFixture>, IDisposable
 {
     private readonly List<Guid> _dialogIds = [];
+    // Amund: Invalid Patch, Invalid Update, Search multiple dialog
     [Fact]
-    public async Task PurgeTest()
+    public async Task Create_Invalid_Dialog_Returns_400()
+    {
+
+        var createDialogCommand = CreateCommand();
+        createDialogCommand.Progress = 200;
+        var createResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsCreateDialog(createDialogCommand);
+
+        Assert.Equal(HttpStatusCode.BadRequest, createResponse.StatusCode);
+    }
+    [Fact]
+    public async Task Purge_Dialog_Returns_204()
     {
 
         var createDialogCommand = CreateCommand();
         var createResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsCreateDialog(createDialogCommand);
 
-        Assert.True(createResponse.IsSuccessStatusCode);
+        Assert.Equal(HttpStatusCode.Created, createResponse.StatusCode);
         Assert.NotNull(createResponse.Content);
         Assert.True(Guid.TryParse(createResponse.Content!.Replace("\"", "").Trim(), out var dialogId));
         var purgeResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsPurgePurgeDialog(dialogId, null);
-        Assert.True(purgeResponse.IsSuccessStatusCode);
+        Assert.Equal(HttpStatusCode.NoContent, purgeResponse.StatusCode);
 
+        var getResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsGetGetDialog(dialogId, null!, CancellationToken.None);
+        Assert.Equal(HttpStatusCode.NotFound, getResponse.StatusCode);
     }
 
     [Fact]
-    public async Task PatchTest()
+    public async Task Patch_Dialog_Returns_204()
     {
         var createDialogCommand = CreateCommand();
         var createResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsCreateDialog(createDialogCommand);
 
-        Assert.True(createResponse.IsSuccessStatusCode, createResponse.Error?.Content);
+        Assert.Equal(HttpStatusCode.Created, createResponse.StatusCode);
         Assert.NotNull(createResponse.Content);
         Assert.True(Guid.TryParse(createResponse.Content!.Replace("\"", "").Trim(), out var dialogId));
         _dialogIds.Add(dialogId);
@@ -70,46 +83,48 @@ public class Tests(WebApiClientFixture fixture) : IClassFixture<WebApiClientFixt
             }
         ];
         var patchResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsPatchDialog(dialogId, patchDocument, null, CancellationToken.None);
-        Assert.True(patchResponse.IsSuccessStatusCode);
+        Assert.Equal(HttpStatusCode.NoContent, patchResponse.StatusCode);
     }
 
     [Fact]
-    public async Task GetTest()
+    public async Task Get_Dialog_Returns_200()
     {
         var createDialogCommand = CreateCommand();
         var createResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsCreateDialog(createDialogCommand);
 
-        Assert.True(createResponse.IsSuccessStatusCode);
+        Assert.Equal(HttpStatusCode.Created, createResponse.StatusCode);
         Assert.NotNull(createResponse.Content);
         Assert.True(Guid.TryParse(createResponse.Content!.Replace("\"", "").Trim(), out var dialogId));
+
         var getResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsGetGetDialog(dialogId, null!, CancellationToken.None);
+
         Assert.Equal(HttpStatusCode.OK, getResponse.StatusCode);
         Assert.Equal(getResponse.Content!.Progress!, createDialogCommand.Progress);
-        await fixture.DialogportenClient.V1ServiceOwnerDialogsPurgePurgeDialog(dialogId, null!);
-
+        _dialogIds.Add(dialogId);
     }
 
     [Fact]
-    public async Task UpdateTest()
+    public async Task Update_Dialog_Returns_204()
     {
 
         var createDialogCommand = CreateCommand();
         var createResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsCreateDialog(createDialogCommand);
 
-        Assert.True(createResponse.IsSuccessStatusCode);
+        Assert.Equal(HttpStatusCode.Created, createResponse.StatusCode);
         Assert.NotNull(createResponse.Content);
         Assert.True(Guid.TryParse(createResponse.Content!.Replace("\"", "").Trim(), out var dialogId));
         _dialogIds.Add(dialogId);
 
         var updateDialogCommand = UpdateCommand();
         var updateResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsUpdateDialog(dialogId, updateDialogCommand, null!, CancellationToken.None);
-        Assert.True(updateResponse.IsSuccessStatusCode, updateResponse.Error?.Content);
+        Assert.Equal(HttpStatusCode.NoContent, updateResponse.StatusCode);
+
         var getResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsGetGetDialog(dialogId, null!);
-        Assert.True(getResponse.IsSuccessStatusCode);
+        Assert.Equal(HttpStatusCode.OK, getResponse.StatusCode);
         Assert.Equal(updateDialogCommand.Progress, getResponse.Content!.Progress);
     }
     [Fact]
-    public async Task SearchTest()
+    public async Task Search_Dialog_Returns_200()
     {
         /*
          * Amund Q:.
@@ -135,7 +150,7 @@ public class Tests(WebApiClientFixture fixture) : IClassFixture<WebApiClientFixt
         var createResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsCreateDialog(createDialogCommand);
 
 
-        Assert.True(createResponse.IsSuccessStatusCode);
+        Assert.Equal(HttpStatusCode.Created, createResponse.StatusCode);
         Assert.NotNull(createResponse.Content);
         Assert.True(Guid.TryParse(createResponse.Content!.Replace("\"", "").Trim(), out var dialogId));
         _dialogIds.Add(dialogId);
@@ -144,29 +159,28 @@ public class Tests(WebApiClientFixture fixture) : IClassFixture<WebApiClientFixt
             CreatedAfter = dateOffset
         };
         var searchResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsSearchSearchDialog(param, CancellationToken.None);
-        Assert.True(searchResponse.IsSuccessStatusCode);
+        Assert.Equal(HttpStatusCode.OK, searchResponse.StatusCode);
         Assert.NotNull(searchResponse.Content);
         Assert.Single(searchResponse.Content!.Items);
 
     }
 
     [Fact]
-    public async Task DeleteTest()
+    public async Task Delete_Dialog_Returns_204()
     {
         var createDialogCommand = CreateCommand();
         var createResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsCreateDialog(createDialogCommand);
 
-        Assert.True(createResponse.IsSuccessStatusCode);
+        Assert.Equal(HttpStatusCode.Created, createResponse.StatusCode);
         Assert.NotNull(createResponse.Content);
         Assert.True(Guid.TryParse(createResponse.Content!.Replace("\"", "").Trim(), out var dialogId));
         _dialogIds.Add(dialogId);
 
         var deleteResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsDeleteDialog(dialogId, null);
-
-        Assert.True(deleteResponse.IsSuccessStatusCode);
+        Assert.Equal(HttpStatusCode.NoContent, deleteResponse.StatusCode);
 
         var getResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsGetGetDialog(dialogId, null!);
-        Assert.True(getResponse.IsSuccessStatusCode);
+        Assert.Equal(HttpStatusCode.OK, getResponse.StatusCode);
         Assert.NotNull(getResponse.Content!.DeletedAt);
 
     }
