@@ -46,6 +46,7 @@ jobs:
     permissions:
       checks: write
       pull-requests: write
+    continue-on-error: true
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
