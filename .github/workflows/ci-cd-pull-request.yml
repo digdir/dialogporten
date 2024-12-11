@@ -36,38 +36,35 @@ jobs:
     with:
       environment: "test"
 
-  dry-run-deploy-apps:
-    name: Dry run deploy apps
+  dry-run-deploy-infra:
+    name: Dry run deploy infrastructure
+    uses: ./.github/workflows/workflow-deploy-infra.yml
     needs:
       [
-        get-current-version,
-        check-for-changes,
         generate-git-short-sha,
+        check-for-changes,
+        get-current-version,
+        build-infrastructure,
       ]
-    # we want deployment of apps to be dependent on deployment of infrastructure, but if infrastructure is skipped, we still want to deploy the apps
-    if: ${{ always() && !failure() && !cancelled() && (needs.check-for-changes.outputs.hasBackendChanges == 'true' || needs.check-for-changes.outputs.hasMigrationChanges == 'true') }}
-    uses: ./.github/workflows/workflow-deploy-apps.yml
+    if: ${{ always() && needs.check-for-changes.outputs.hasInfraChanges == 'true' }}
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
       AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-      AZURE_RESOURCE_GROUP_NAME: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
-      AZURE_ENVIRONMENT_KEY_VAULT_NAME: ${{ secrets.AZURE_ENVIRONMENT_KEY_VAULT_NAME }}
-      AZURE_CONTAINER_APP_ENVIRONMENT_NAME: ${{ secrets.AZURE_CONTAINER_APP_ENVIRONMENT_NAME }}
-      AZURE_APP_INSIGHTS_CONNECTION_STRING: ${{ secrets.AZURE_APP_INSIGHTS_CONNECTION_STRING }}
-      AZURE_APP_CONFIGURATION_NAME: ${{ secrets.AZURE_APP_CONFIGURATION_NAME }}
-      AZURE_SERVICE_BUS_NAMESPACE_NAME: ${{ secrets.AZURE_SERVICE_BUS_NAMESPACE_NAME }}
+      AZURE_SOURCE_KEY_VAULT_NAME: ${{ secrets.AZURE_SOURCE_KEY_VAULT_NAME }}
+      AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID: ${{ secrets.AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID }}
+      AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP: ${{ secrets.AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP }}
+      AZURE_SOURCE_KEY_VAULT_SSH_JUMPER_SSH_PUBLIC_KEY: ${{ secrets.AZURE_SOURCE_KEY_VAULT_SSH_JUMPER_SSH_PUBLIC_KEY }}
     with:
       environment: test
       region: norwayeast
-      version: ${{ needs.get-current-version.outputs.version }}-${{ needs.generate-git-short-sha.outputs.gitShortSha }}
-      runMigration: ${{ needs.check-for-changes.outputs.hasMigrationChanges == 'true' }}
       dryRun: true
+      version: ${{ needs.get-current-version.outputs.version }}-${{ needs.generate-git-short-sha.outputs.gitShortSha }}
 
   delete-github-deployments:
     name: Delete GitHub deployments
     uses: ./.github/workflows/workflow-delete-deployments.yml
-    needs: [dry-run-deploy-apps]
+    needs: [dry-run-deploy-infra]
     if: ${{ always() && !failure() && !cancelled() }}
     with:
       gitSha: ${{ github.event.pull_request.head.sha }}
