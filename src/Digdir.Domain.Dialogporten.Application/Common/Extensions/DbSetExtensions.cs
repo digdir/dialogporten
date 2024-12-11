@@ -24,8 +24,8 @@ public static class DbSetExtensions
         var groupedResult = authorizedResources.ResourcesByParties
             .GroupBy(kv => kv.Value, new HashSetEqualityComparer<string>())
             .ToDictionary(
-                g => g.Key, // The shared HashSet<string>
-                g => new HashSet<string>(g.Select(kv => kv.Key)) // Aggregate all keys with this HashSet<string>
+                g => g.Key,
+                g => new HashSet<string>(g.Select(kv => kv.Key))
             );
 
         foreach (var (resources, parties) in groupedResult)
@@ -44,7 +44,7 @@ public static class DbSetExtensions
     }
 }
 
-public class HashSetEqualityComparer<T> : IEqualityComparer<HashSet<T>>
+public sealed class HashSetEqualityComparer<T> : IEqualityComparer<HashSet<T>>
 {
     public bool Equals(HashSet<T>? x, HashSet<T>? y)
     {
