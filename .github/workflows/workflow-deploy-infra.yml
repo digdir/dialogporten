@@ -1,6 +1,4 @@
 name: Deploy infrastructure
-env:
-  AZ_CLI_VERSION: 2.67.0
 on:
   workflow_call:
     secrets:
@@ -72,7 +70,6 @@ jobs:
         uses: azure/CLI@v2
         id: keyvault-keys
         with:
-          azcliversion: ${{ env.AZ_CLI_VERSION }}
           inlineScript: |
             KEY_VAULT_KEYS=$(az keyvault secret list --vault-name ${{ secrets.AZURE_SOURCE_KEY_VAULT_NAME }} --subscription ${{ secrets.AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID }} --query "[].name" -o json | tr -d '\n')
             echo "::set-output name=key-vault-keys::$KEY_VAULT_KEYS"

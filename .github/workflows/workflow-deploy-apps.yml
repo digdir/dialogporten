@@ -1,6 +1,4 @@
 ﻿name: Deploy apps
-env:
-  AZ_CLI_VERSION: 2.67.0
 on:
   workflow_call:
     outputs:
@@ -119,7 +117,6 @@ jobs:
         uses: azure/CLI@v2
         if: ${{!inputs.dryRun}}
         with:
-          azcliversion: ${{ env.AZ_CLI_VERSION }}
           inlineScript: |
             az containerapp job start -n ${{ steps.deploy.outputs.name }} -g ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
 
@@ -129,7 +126,6 @@ jobs:
         id: verify-migration
         timeout-minutes: 3
         with:
-          azcliversion: ${{ env.AZ_CLI_VERSION }}
           inlineScript: |
             ./.github/tools/containerAppJobVerifier.sh ${{ steps.deploy.outputs.name }} ${{ secrets.AZURE_RESOURCE_GROUP_NAME }} ${{ inputs.version }}
 
@@ -224,7 +220,6 @@ jobs:
         id: verify-deployment
         timeout-minutes: 3
         with:
-          azcliversion: ${{ env.AZ_CLI_VERSION }}
           inlineScript: |
             ./.github/tools/revisionVerifier.sh ${{ steps.deploy.outputs.revisionName }} ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
 
