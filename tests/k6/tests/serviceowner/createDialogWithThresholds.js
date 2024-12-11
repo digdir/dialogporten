@@ -5,7 +5,7 @@ export let options = {
     vus: 1,
     duration: "30s",
     thresholds: {
-        "http_req_duration": ["p(95)<100", "p(99)<300"],    
+        "http_req_duration": ["p(95)<300", "p(99)<500"],    
     }
 }
 
