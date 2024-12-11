@@ -55,95 +55,11 @@ concurrency:
   # if the dryrun input is true, we want to cancel any running deployments in order to not block the pipeline e.g for environment approvals
   cancel-in-progress: ${{ inputs.dryRun }}
 jobs:
-  deploy-migration-job:
-    name: Deploy migration job to ${{ inputs.environment }}
-    runs-on: ubuntu-latest
-    if: ${{ inputs.runMigration }}
-    environment: ${{inputs.environment}}
-    permissions:
-      id-token: write
-      contents: read
-    steps:
-      - name: "Checkout GitHub Action"
-        uses: actions/checkout@v4
-
-      - name: OIDC Login to Azure Public Cloud
-        uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
-      - name: Dryrun Deploy migration job (${{ inputs.environment }})
-        uses: azure/arm-deploy@v2
-        if: ${{ inputs.dryRun }}
-        id: deploy-dry-run
-        env:
-          # parameters
-          IMAGE_TAG: ${{ inputs.version }}
-          # secrets
-          AZURE_CONTAINER_APP_ENVIRONMENT_NAME: ${{ secrets.AZURE_CONTAINER_APP_ENVIRONMENT_NAME }}
-          AZURE_ENVIRONMENT_KEY_VAULT_NAME: ${{ secrets.AZURE_ENVIRONMENT_KEY_VAULT_NAME }}
-        with:
-          scope: resourcegroup
-          template: ./.azure/applications/web-api-migration-job/main.bicep
-          resourceGroupName: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
-          deploymentMode: Incremental
-          deploymentName: "web-api-migration-job-${{ inputs.version }}"
-          region: ${{ inputs.region }}
-          failOnStdErr: false
-          additionalArguments: '--what-if'
-          parameters: ./.azure/applications/web-api-migration-job/${{ inputs.environment }}.bicepparam
-
-      - name: Deploy migration job (${{ inputs.environment }})
-        uses: azure/arm-deploy@v2
-        if: ${{!inputs.dryRun}}
-        id: deploy
-        env:
-          # parameters
-          IMAGE_TAG: ${{ inputs.version }}
-          # secrets
-          AZURE_CONTAINER_APP_ENVIRONMENT_NAME: ${{ secrets.AZURE_CONTAINER_APP_ENVIRONMENT_NAME }}
-          AZURE_ENVIRONMENT_KEY_VAULT_NAME: ${{ secrets.AZURE_ENVIRONMENT_KEY_VAULT_NAME }}
-        with:
-          scope: resourcegroup
-          template: ./.azure/applications/web-api-migration-job/main.bicep
-          resourceGroupName: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
-          deploymentMode: Incremental
-          deploymentName: "web-api-migration-job-${{ inputs.version }}"
-          region: ${{ inputs.region }}
-          failOnStdErr: false
-          parameters: ./.azure/applications/web-api-migration-job/${{ inputs.environment }}.bicepparam
-
-      - name: Start migration job
-        uses: azure/CLI@v2
-        if: ${{!inputs.dryRun}}
-        with:
-          azcliversion: ${{ env.AZ_CLI_VERSION }}
-          inlineScript: |
-            az containerapp job start -n ${{ steps.deploy.outputs.name }} -g ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
-
-      - name: Verify migration
-        uses: azure/CLI@v2
-        if: ${{!inputs.dryRun}}
-        id: verify-migration
-        timeout-minutes: 3
-        with:
-          azcliversion: ${{ env.AZ_CLI_VERSION }}
-          inlineScript: |
-            ./.github/tools/containerAppJobVerifier.sh ${{ steps.deploy.outputs.name }} ${{ secrets.AZURE_RESOURCE_GROUP_NAME }} ${{ inputs.version }}
-
-      - name: Logout from azure
-        if: ${{failure() || success()}}
-        continue-on-error: true
-        run: az logout
-
   deploy-apps:
     name: Deploy ${{ matrix.name }} to ${{ inputs.environment }}
     runs-on: ubuntu-latest
     # Should run even though the migration job was skipped
     if: ${{ always() && !failure() && !cancelled() }}
-    needs: deploy-migration-job
     strategy:
       fail-fast: true
       matrix:
@@ -168,6 +84,11 @@ jobs:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Upgrade bicep
+        run: |
+          az bicep upgrade
+
       - name: Dryrun Deploy app ${{ matrix.name }}(${{ inputs.environment }})
         uses: azure/arm-deploy@v2
         if: ${{ inputs.dryRun }}
@@ -226,81 +147,6 @@ jobs:
           azcliversion: ${{ env.AZ_CLI_VERSION }}
           inlineScript: |
             ./.github/tools/revisionVerifier.sh ${{ steps.deploy.outputs.revisionName }} ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
-
-      - name: Logout from azure
-        if: ${{failure() || success()}}
-        continue-on-error: true
-        run: az logout
-
-  deploy-jobs:
-    name: Deploy job ${{ matrix.name }} to ${{ inputs.environment }}
-    runs-on: ubuntu-latest
-    # Should run even though the migration job was skipped
-    if: ${{ always() && !failure() && !cancelled() }}
-    needs: deploy-apps
-    environment: ${{ inputs.environment }}
-    permissions:
-      id-token: write
-      contents: read
-    strategy:
-      fail-fast: true
-      matrix:
-        include:
-          - name: sync-subject-resource-mappings-job
-          - name: sync-resource-policy-information-job
-    steps:
-      - name: "Checkout GitHub Action"
-        uses: actions/checkout@v4
-
-      - name: OIDC Login to Azure Public Cloud
-        uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
-      - name: Dryrun Deploy job ${{ matrix.name }}(${{ inputs.environment }})
-        uses: azure/arm-deploy@v2
-        if: ${{ inputs.dryRun }}
-        id: deploy-dry-run
-        env:
-          # parameters
-          IMAGE_TAG: ${{ inputs.version }}
-          # secrets
-          AZURE_CONTAINER_APP_ENVIRONMENT_NAME: ${{ secrets.AZURE_CONTAINER_APP_ENVIRONMENT_NAME }}
-          AZURE_ENVIRONMENT_KEY_VAULT_NAME: ${{ secrets.AZURE_ENVIRONMENT_KEY_VAULT_NAME }}
-          AZURE_APP_INSIGHTS_CONNECTION_STRING: ${{ secrets.AZURE_APP_INSIGHTS_CONNECTION_STRING }}
-        with:
-          scope: resourcegroup
-          template: ./.azure/applications/${{ matrix.name }}/main.bicep
-          resourceGroupName: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
-          deploymentMode: Incremental
-          deploymentName: ${{ matrix.name }}-${{ inputs.version }}
-          region: ${{ inputs.region }}
-          failOnStdErr: false
-          additionalArguments: '--what-if'
-          parameters: ./.azure/applications/${{ matrix.name }}/${{ inputs.environment }}.bicepparam
-
-      - name: Deploy job ${{ matrix.name }}(${{ inputs.environment }})
-        uses: azure/arm-deploy@v2
-        if: ${{!inputs.dryRun}}
-        id: deploy
-        env:
-          # parameters
-          IMAGE_TAG: ${{ inputs.version }}
-          # secrets
-          AZURE_CONTAINER_APP_ENVIRONMENT_NAME: ${{ secrets.AZURE_CONTAINER_APP_ENVIRONMENT_NAME }}
-          AZURE_ENVIRONMENT_KEY_VAULT_NAME: ${{ secrets.AZURE_ENVIRONMENT_KEY_VAULT_NAME }}
-          AZURE_APP_INSIGHTS_CONNECTION_STRING: ${{ secrets.AZURE_APP_INSIGHTS_CONNECTION_STRING }}
-        with:
-          scope: resourcegroup
-          template: ./.azure/applications/${{ matrix.name }}/main.bicep
-          resourceGroupName: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
-          deploymentMode: Incremental
-          deploymentName: ${{ matrix.name }}-${{ inputs.version }}
-          region: ${{ inputs.region }}
-          failOnStdErr: false
-          parameters: ./.azure/applications/${{ matrix.name }}/${{ inputs.environment }}.bicepparam
 
       - name: Logout from azure
         if: ${{failure() || success()}}
