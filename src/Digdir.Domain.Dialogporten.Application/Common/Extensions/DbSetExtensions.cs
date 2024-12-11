@@ -8,10 +8,9 @@ namespace Digdir.Domain.Dialogporten.Application.Common.Extensions;
 
 public static class DbSetExtensions
 {
-    public static IQueryable<DialogEntity> PrefilterAuthorizedDialogs(this DbSet<DialogEntity> dialogs, DialogSearchAuthorizationResult authorizedResources)
+    public static (string sql, object[] parameters) GeneratePrefilterAuthorizedDialogsSql(DialogSearchAuthorizationResult authorizedResources)
     {
         var parameters = new List<object>();
-        // lang=sql
         var sb = new StringBuilder()
             .AppendLine(CultureInfo.InvariantCulture, $"""
                 SELECT *
@@ -40,9 +39,16 @@ public static class DbSetExtensions
             parameters.Add(resources);
         }
 
-        return dialogs.FromSqlRaw(sb.ToString(), parameters.ToArray());
+        return (sb.ToString(), parameters.ToArray());
+    }
+
+    public static IQueryable<DialogEntity> PrefilterAuthorizedDialogs(this DbSet<DialogEntity> dialogs, DialogSearchAuthorizationResult authorizedResources)
+    {
+        var (sql, parameters) = GeneratePrefilterAuthorizedDialogsSql(authorizedResources);
+        return dialogs.FromSqlRaw(sql, parameters);
     }
 }
+
 
 public sealed class HashSetEqualityComparer<T> : IEqualityComparer<HashSet<T>>
 {
