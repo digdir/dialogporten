@@ -39,7 +39,7 @@ jobs:
       duration: 1m
       tokens: both
       numberOfTokens: 100
-      testSuitePath: ${{ fromJson(matrix.files) }}
+      testSuitePath: ${{ matrix.files }}
     permissions:
       checks: write
       pull-requests: write
