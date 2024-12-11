@@ -176,42 +176,51 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
         return dialogSearchAuthorizationResult;
     }
 
-    private async Task CollapseSubjectResources(DialogSearchAuthorizationResult dialogSearchAuthorizationResult,
+    private async Task CollapseSubjectResources(
+        DialogSearchAuthorizationResult dialogSearchAuthorizationResult,
         AuthorizedPartiesResult authorizedParties,
         List<string> constraintResources,
         CancellationToken cancellationToken)
     {
+        var authorizedPartiesWithRoles = authorizedParties.AuthorizedParties
+            .Where(p => p.AuthorizedRoles.Count != 0)
+            .ToList();
 
-        var subjectsByParties = authorizedParties.AuthorizedParties
-            .Where(x => x.AuthorizedRoles.Count != 0)
-            .ToDictionary(
-                p => p.Party,
-                p => p.AuthorizedRoles);
+        // Extract all unique subjects (authorized roles) from all parties.
+        var uniqueSubjects = authorizedPartiesWithRoles
+            .SelectMany(p => p.AuthorizedRoles)
+            .ToHashSet();
 
-        List<SubjectResource> subjectResources;
-        subjectResources = await GetSubjectResources(
-            subjectsByParties.Values.SelectMany(x => x).Distinct().ToHashSet(),
-            constraintResources,
-            cancellationToken);
+        // Retrieve all subject resource mappings, considering any provided constraints
+        var subjectResources = await GetSubjectResources(uniqueSubjects, constraintResources, cancellationToken);
 
-        foreach (var (party, subjects) in subjectsByParties)
+        // Group resources by subject for O(1) lookups when looping
+        var subjectToResources = subjectResources
+            .GroupBy(sr => sr.Subject)
+            .ToDictionary(g => g.Key, g => g.Select(sr => sr.Resource).ToHashSet());
+
+        foreach (var partyEntry in authorizedPartiesWithRoles)
         {
-            if (!dialogSearchAuthorizationResult.ResourcesByParties.TryGetValue(party, out var resourceList))
+            // Get or create the resource list for the current party, so we can
+            // union the resource level accesses to those granted via roles
+            if (!dialogSearchAuthorizationResult.ResourcesByParties.TryGetValue(partyEntry.Party, out var resourceList))
             {
-                resourceList = new();
-                dialogSearchAuthorizationResult.ResourcesByParties[party] = resourceList;
+                resourceList = new HashSet<string>();
+                dialogSearchAuthorizationResult.ResourcesByParties[partyEntry.Party] = resourceList;
             }
 
-            foreach (var subject in subjects)
+            foreach (var subject in partyEntry.AuthorizedRoles)
             {
-                resourceList.UnionWith(subjectResources.Where(x => x.Subject == subject)
-                    .Select(x => x.Resource));
+                if (subjectToResources.TryGetValue(subject, out var subjectResourceSet))
+                {
+                    resourceList.UnionWith(subjectResourceSet);
+                }
             }
 
-            // Remove the party if it has no resources
+            // Remove the party if it has no authorized resources
             if (resourceList.Count == 0)
             {
-                dialogSearchAuthorizationResult.ResourcesByParties.Remove(party);
+                dialogSearchAuthorizationResult.ResourcesByParties.Remove(partyEntry.Party);
             }
         }
     }
@@ -219,10 +228,9 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
     private async Task<List<SubjectResource>> GetSubjectResources(IEnumerable<string> subjects, List<string> resourceConstraints, CancellationToken cancellationToken)
     {
         // Fetch all subject resources from the database
-        List<SubjectResource> subjectResources;
-        subjectResources = await _subjectResourcesCache.GetOrSetAsync(nameof(SubjectResource), async ct
-                    => await _dialogDbContext.SubjectResources.ToListAsync(cancellationToken: ct),
-                token: cancellationToken);
+        var subjectResources = await _subjectResourcesCache.GetOrSetAsync(nameof(SubjectResource), async ct
+                => await _dialogDbContext.SubjectResources.ToListAsync(cancellationToken: ct),
+            token: cancellationToken);
 
         // Return the subject resources matched with the subjects
         return subjectResources.Where(x => subjects.Contains(x.Subject) && (resourceConstraints.Count == 0 || resourceConstraints.Contains(x.Resource))).ToList();
