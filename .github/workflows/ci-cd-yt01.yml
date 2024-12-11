@@ -29,9 +29,9 @@ jobs:
       max-parallel: 1
       matrix:
         files: 
-          - tests/k6/tests/serviceowner/serviceOwnerSearchWithThresholds.js
-          - tests/k6/tests/serviceowner/createDialogWithThresholds.js
-          - tests/k6/tests/enduser/enduserSearchWithThresholds.js
+          - ./tests/k6/tests/serviceowner/serviceOwnerSearchWithThresholds.js
+          - ./tests/k6/tests/serviceowner/createDialogWithThresholds.js
+          - ./tests/k6/tests/enduser/enduserSearchWithThresholds.js
     with:
       environment: yt01
       apiVersion: v1
