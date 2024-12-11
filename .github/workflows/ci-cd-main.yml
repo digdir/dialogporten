@@ -18,6 +18,8 @@ jobs:
   release-please:
     name: Release please
     runs-on: ubuntu-latest
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
     steps:
       - uses: googleapis/release-please-action@v4
         id: release
@@ -43,17 +45,22 @@ jobs:
     needs: [check-for-changes]
     if: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasBackendChanges == 'true' || needs.check-for-changes.outputs.hasTestChanges == 'true' }}
 
-  publish:
-    name: Build and publish docker images
+  publish-release:
+    name: Build and publish release docker images
     uses: ./.github/workflows/workflow-publish.yml
-    needs:
-      [
-        get-current-version,
-        check-for-changes,
-        generate-git-short-sha,
-        build-and-test,
-      ]
-    if: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasBackendChanges == 'true' }}
+    needs: [release-please, get-current-version, build-and-test]
+    if: ${{ needs.release-please.outputs.release_created == 'true' }}
+    secrets:
+      GCR_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+    with:
+      dockerImageBaseName: ghcr.io/digdir/dialogporten-
+      version: ${{ needs.get-current-version.outputs.version }}
+
+  publish-main:
+    name: Build and publish main docker images
+    uses: ./.github/workflows/workflow-publish.yml
+    needs: [get-current-version, check-for-changes, generate-git-short-sha, build-and-test]
+    if: ${{ needs.release-please.outputs.release_created != 'true' && (github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasBackendChanges == 'true') }}
     secrets:
       GCR_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
     with:
@@ -63,7 +70,7 @@ jobs:
   deploy-infra:
     name: Deploy infra to test
     needs: [get-current-version, check-for-changes, generate-git-short-sha]
-    if: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasInfraChanges == 'true' }}
+    if: ${{ needs.release-please.outputs.release_created != 'true' && (github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasInfraChanges == 'true') }}
     uses: ./.github/workflows/workflow-deploy-infra.yml
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -85,17 +92,16 @@ jobs:
         get-current-version,
         check-for-changes,
         generate-git-short-sha,
-        publish,
+        publish-main,
         deploy-infra,
       ]
     # we want deployment of apps to be dependent on deployment of infrastructure, but if infrastructure is skipped, we still want to deploy the apps
-    if: ${{ always() && !failure() && !cancelled() && (github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasBackendChanges == 'true') }}
+    if: ${{ always() && !failure() && !cancelled() && needs.release-please.outputs.release_created != 'true' && (github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasBackendChanges == 'true') }}
     uses: ./.github/workflows/workflow-deploy-apps.yml
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
       AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-      # todo: consider resolving these in another way since they are created in the infra-step
       AZURE_RESOURCE_GROUP_NAME: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
       AZURE_ENVIRONMENT_KEY_VAULT_NAME: ${{ secrets.AZURE_ENVIRONMENT_KEY_VAULT_NAME }}
       AZURE_CONTAINER_APP_ENVIRONMENT_NAME: ${{ secrets.AZURE_CONTAINER_APP_ENVIRONMENT_NAME }}
@@ -111,7 +117,7 @@ jobs:
   deploy-slack-notifier:
     name: Deploy slack notifier (test)
     needs: [check-for-changes]
-    if: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasSlackNotifierChanges == 'true' }}
+    if: ${{ needs.release-please.outputs.release_created != 'true' && (github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasSlackNotifierChanges == 'true') }}
     uses: ./.github/workflows/workflow-deploy-function.yml
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -127,7 +133,7 @@ jobs:
   publish-schema-npm:
     name: Deploy schema npm package
     needs: [check-for-changes, get-current-version, generate-git-short-sha, deploy-apps]
-    if: ${{ always() && !failure() && !cancelled() && (github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasSchemaChanges == 'true') }}
+    if: ${{ always() && !failure() && !cancelled() && needs.release-please.outputs.release_created != 'true' && (github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasSchemaChanges == 'true') }}
     uses: ./.github/workflows/workflow-publish-schema.yml
     with:
       version: ${{ needs.get-current-version.outputs.version }}-${{ needs.generate-git-short-sha.outputs.gitShortSha }}
@@ -137,7 +143,7 @@ jobs:
   run-e2e-tests:
     name: "Run K6 functional end-to-end tests"
     # we want the end-to-end tests to be dependent on deployment of infrastructure and apps, but if infrastructure is skipped, we still want to run the tests
-    if: ${{ always() && !failure() && !cancelled() && (github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasBackendChanges == 'true' || needs.check-for-changes.outputs.hasTestChanges == 'true') }}
+    if: ${{ always() && !failure() && !cancelled() && needs.release-please.outputs.release_created != 'true' && (github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasBackendChanges == 'true' || needs.check-for-changes.outputs.hasTestChanges == 'true') }}
     needs: [deploy-apps, check-for-changes]
     uses: ./.github/workflows/workflow-run-k6-tests.yml
     secrets:
@@ -159,7 +165,8 @@ jobs:
       deploy-slack-notifier,
       run-e2e-tests,
       publish-schema-npm,
-      publish,
+      publish-release,
+      publish-main,
       build-and-test,
     ]
     if: ${{ always() && failure() && !cancelled() }}
@@ -171,7 +178,8 @@ jobs:
       slack_notifier_status: ${{ needs.deploy-slack-notifier.result }}
       e2e_tests_status: ${{ needs.run-e2e-tests.result }}
       schema_npm_status: ${{ needs.publish-schema-npm.result }}
-      publish_status: ${{ needs.publish.result }}
+      # todo: fix so that we have multiple statuses
+      publish_status: ${{ needs.publish-release.result }}
       build_and_test_status: ${{ needs.build-and-test.result }}
     secrets:
       SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}

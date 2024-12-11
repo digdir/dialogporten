@@ -30,17 +30,6 @@ jobs:
     name: Get current version
     uses: ./.github/workflows/workflow-get-current-version.yml
 
-  publish:
-    name: Build and publish docker images
-    uses: ./.github/workflows/workflow-publish.yml
-    if: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasBackendChanges == 'true' }}
-    needs: [get-current-version, check-for-changes]
-    secrets:
-      GCR_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
-    with:
-      dockerImageBaseName: ghcr.io/digdir/dialogporten-
-      version: ${{ needs.get-current-version.outputs.version }}
-
   deploy-infra:
     name: Deploy infra to yt01
     if: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasInfraChanges == 'true' }}
@@ -74,8 +63,7 @@ jobs:
   deploy-apps:
     name: Deploy apps to yt01
     needs:
-      [get-current-version, check-for-changes, deploy-infra, publish]
-    # we want deployment of apps to be dependent on deployment of infrastructure, but if infrastructure is skipped, we still want to deploy the apps
+      [get-current-version, check-for-changes, deploy-infra]
     if: ${{ always() && !failure() && !cancelled() && (github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasBackendChanges == 'true') }}
     uses: ./.github/workflows/workflow-deploy-apps.yml
     secrets:
@@ -142,7 +130,7 @@ jobs:
 
   send-slack-message-on-failure:
     name: Send Slack message on failure
-    needs: [deploy-infra, deploy-apps, deploy-slack-notifier, run-e2e-tests, publish]
+    needs: [deploy-infra, deploy-apps, deploy-slack-notifier, run-e2e-tests]
     if: ${{ always() && failure() && !cancelled() }}
     uses: ./.github/workflows/workflow-send-ci-cd-status-slack-message.yml
     with:
@@ -151,7 +139,6 @@ jobs:
       apps_status: ${{ needs.deploy-apps.result }}
       slack_notifier_status: ${{ needs.deploy-slack-notifier.result }}
       e2e_tests_status: ${{ needs.run-e2e-tests.result }}
-      publish_status: ${{ needs.publish.result }}
     secrets:
       SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
       SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID_FOR_CI_CD_STATUS }}
