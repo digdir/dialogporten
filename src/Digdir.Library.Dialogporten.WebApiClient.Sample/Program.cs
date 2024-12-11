@@ -54,7 +54,7 @@ Console.WriteLine("==End Get Single Dialog==");
 Console.WriteLine("==Start Search Dialogs==");
 var param = new V1ServiceOwnerDialogsSearchSearchDialogQueryParams()
 {
-    CreatedAfter = now
+    SystemLabel = [DialogEndUserContextsEntities_SystemLabel.Default]
 };
 var result = await dialogportenClient.V1ServiceOwnerDialogsSearchSearchDialog(param);
 Console.WriteLine(now);
@@ -78,6 +78,12 @@ Console.WriteLine(patchResponse.IsSuccessStatusCode);
 Console.WriteLine(patchResponse.StatusCode);
 Console.WriteLine("== End Patch Dialog ==");
 
+Console.WriteLine("== Start update Dialog ==");
+var updateCommand = UpdateCommand();
+var updateResponse = await dialogportenClient.V1ServiceOwnerDialogsUpdateDialog(guid, updateCommand, null, CancellationToken.None);
+Console.WriteLine(updateResponse.StatusCode);
+Console.WriteLine(updateResponse.Error?.Content);
+Console.WriteLine("== End Update Dialog ==");
 Console.WriteLine("== Start Delete Dialog ==");
 var deleteResponse = await dialogportenClient.V1ServiceOwnerDialogsDeleteDialog(guid, null);
 Console.WriteLine(deleteResponse.IsSuccessStatusCode);
@@ -92,7 +98,7 @@ Console.WriteLine("==End Get Single Dialog==");
 
 
 result = await dialogportenClient.V1ServiceOwnerDialogsSearchSearchDialog(param);
-Debug.Assert(result != null, nameof(result) + " != null");
+Debug.Assert(result.Content != null, nameof(result) + " != null");
 Console.WriteLine(result.Content!.Items.Count);
 Console.WriteLine("== Start Purge Dialog == ");
 var purgeResponse = await dialogs.Purge(guid, dialog.Revision);
@@ -104,8 +110,6 @@ if (purgeResponse.IsSuccessStatusCode)
     Console.WriteLine(dialogAfterPurge.StatusCode);
 }
 Console.WriteLine("== End Purge Dialog ==");
-var updateCommand = UpdateCommand();
-await dialogportenClient.V1ServiceOwnerDialogsUpdateDialog(guid, updateCommand, null, CancellationToken.None);
 return;
 
 static V1ServiceOwnerDialogsCommandsCreate_DialogCommand CreateCommand()
@@ -224,6 +228,110 @@ static V1ServiceOwnerDialogsCommandsCreate_DialogCommand CreateCommand()
 
 static V1ServiceOwnerDialogsCommandsUpdate_Dialog UpdateCommand()
 {
-    V1ServiceOwnerDialogsCommandsUpdate_Dialog updateDialog = new();
-    return updateDialog;
+    var createDialogCommand = new V1ServiceOwnerDialogsCommandsUpdate_Dialog
+    {
+        Status = DialogsEntities_DialogStatus.New,
+        Progress = 60,
+        Content = new V1ServiceOwnerDialogsCommandsUpdate_Content
+        {
+            Title = new V1CommonContent_ContentValue
+            {
+                Value =
+                [
+                    new V1CommonLocalizations_Localization
+                    {
+                        LanguageCode = "nb",
+                        Value = "Hoved"
+                    },
+                    new V1CommonLocalizations_Localization
+                    {
+                        LanguageCode = "en",
+                        Value = "Main"
+                    }
+                ],
+                MediaType = "text/plain"
+            },
+            Summary = new V1CommonContent_ContentValue
+            {
+                Value =
+                [
+                    new V1CommonLocalizations_Localization
+                    {
+                        LanguageCode = "nb",
+                        Value = "Hoved Summary"
+                    },
+                    new V1CommonLocalizations_Localization
+                    {
+                        LanguageCode = "en",
+                        Value = "Main Summary"
+                    }
+                ],
+                MediaType = "text/plain"
+            }
+
+
+        },
+        Transmissions =
+        [
+            new V1ServiceOwnerDialogsCommandsUpdate_Transmission
+            {
+                Attachments =
+                [
+                    new V1ServiceOwnerDialogsCommandsUpdate_TransmissionAttachment
+                    {
+                        DisplayName =
+                        [
+                            new V1CommonLocalizations_Localization
+                            {
+                                LanguageCode = "nb",
+                                Value = "Hoved mission"
+                            }
+                        ],
+                        Urls =
+                        [
+                            new V1ServiceOwnerDialogsCommandsUpdate_TransmissionAttachmentUrl
+                            {
+                                ConsumerType = Attachments_AttachmentUrlConsumerType.Gui,
+                                Url = new Uri("https://digdir.apps.tt02.altinn.no/some-other-url")
+                            }
+                        ]
+
+                    }
+                ],
+                Content = new V1ServiceOwnerDialogsCommandsUpdate_TransmissionContent
+                {
+                    Summary = new V1CommonContent_ContentValue
+                    {
+                        MediaType = "text/plain",
+                        Value =
+                        [
+                            new V1CommonLocalizations_Localization
+                            {
+                                LanguageCode = "nb",
+                                Value = "Transmission summary"
+                            }
+                        ]
+                    },
+                    Title = new V1CommonContent_ContentValue
+                    {
+                        MediaType = "text/plain",
+                        Value =
+                        [
+                            new V1CommonLocalizations_Localization
+                            {
+                                LanguageCode = "nb",
+                                Value = "Transmission Title"
+                            }
+                        ]
+                    }
+                },
+                Sender = new V1ServiceOwnerCommonActors_Actor
+                {
+                    ActorType = Actors_ActorType.ServiceOwner
+                },
+                Type = DialogsEntitiesTransmissions_DialogTransmissionType.Information
+            }
+        ]
+    };
+    return createDialogCommand;
 }

@@ -55,49 +55,49 @@ namespace Digdir.Library.Dialogporten.WebApiClient.Features.V1
         /// <summary>
         /// Only return dialogs created after this date
         /// </summary>
-        [Query(Format = "yyyy-MM-ddThh:mm:ssZ")] 
+        [Query(Format = "yyyy-MM-ddTHH:mm:ssZ")] 
         public System.DateTimeOffset? CreatedAfter { get; set; }
 
         /// <summary>
         /// Only return dialogs created before this date
         /// </summary>
-        [Query(Format = "yyyy-MM-ddThh:mm:ssZ")] 
+        [Query(Format = "yyyy-MM-ddTHH:mm:ssZ")] 
         public System.DateTimeOffset? CreatedBefore { get; set; }
 
         /// <summary>
         /// Only return dialogs updated after this date
         /// </summary>
-        [Query] 
+        [Query(Format = "yyyy-MM-ddTHH:mm:ssZ")] 
         public System.DateTimeOffset? UpdatedAfter { get; set; }
 
         /// <summary>
         /// Only return dialogs updated before this date
         /// </summary>
-        [Query] 
+        [Query(Format = "yyyy-MM-ddTHH:mm:ssZ")] 
         public System.DateTimeOffset? UpdatedBefore { get; set; }
 
         /// <summary>
         /// Only return dialogs with due date after this date
         /// </summary>
-        [Query] 
+        [Query(Format = "yyyy-MM-ddTHH:mm:ssZ")] 
         public System.DateTimeOffset? DueAfter { get; set; }
 
         /// <summary>
         /// Only return dialogs with due date before this date
         /// </summary>
-        [Query] 
+        [Query(Format = "yyyy-MM-ddTHH:mm:ssZ")] 
         public System.DateTimeOffset? DueBefore { get; set; }
 
         /// <summary>
         /// Only return dialogs with visible-from date after this date
         /// </summary>
-        [Query] 
+        [Query(Format = "yyyy-MM-ddTHH:mm:ssZ")] 
         public System.DateTimeOffset? VisibleAfter { get; set; }
 
         /// <summary>
         /// Only return dialogs with visible-from date before this date
         /// </summary>
-        [Query] 
+        [Query(Format = "yyyy-MM-ddTHH:mm:ssZ")] 
         public System.DateTimeOffset? VisibleBefore { get; set; }
 
         /// <summary>
@@ -162,7 +162,7 @@ namespace Digdir.Library.Dialogporten.WebApiClient.Features.V1
     }
 
     /// <summary>Gets a list of dialogs</summary>
-    [System.CodeDom.Compiler.GeneratedCode("Refitter", "1.0.0.0")]
+    [System.CodeDom.Compiler.GeneratedCode("Refitter", "1.1.0.0")]
     public partial interface IServiceownerApi
     {
         /// <summary>Gets a list of dialogs</summary>
@@ -255,6 +255,10 @@ namespace Digdir.Library.Dialogporten.WebApiClient.Features.V1
         /// <description>The dialog aggregate was deleted successfully.</description>
         /// </item>
         /// <item>
+        /// <term>400</term>
+        /// <description>Validation error occured. See problem details for a list of errors.</description>
+        /// </item>
+        /// <item>
         /// <term>401</term>
         /// <description>Missing or invalid authentication token. Requires a Maskinporten-token with the scope \"digdir:dialogporten.serviceprovider\".</description>
         /// </item>
@@ -265,6 +269,10 @@ namespace Digdir.Library.Dialogporten.WebApiClient.Features.V1
         /// <item>
         /// <term>404</term>
         /// <description>The given dialog ID was not found or is already deleted.</description>
+        /// </item>
+        /// <item>
+        /// <term>410</term>
+        /// <description>Entity with the given key(s) is removed.</description>
         /// </item>
         /// <item>
         /// <term>412</term>
@@ -392,6 +400,10 @@ namespace Digdir.Library.Dialogporten.WebApiClient.Features.V1
         /// <item>
         /// <term>404</term>
         /// <description>The given dialog ID was not found or is already deleted.</description>
+        /// </item>
+        /// <item>
+        /// <term>410</term>
+        /// <description>Entity with the given key(s) is removed.</description>
         /// </item>
         /// <item>
         /// <term>412</term>
@@ -535,6 +547,10 @@ namespace Digdir.Library.Dialogporten.WebApiClient.Features.V1
         /// <description>The given dialog ID was not found or is already deleted.</description>
         /// </item>
         /// <item>
+        /// <term>410</term>
+        /// <description>Entity with the given key(s) is removed.</description>
+        /// </item>
+        /// <item>
         /// <term>412</term>
         /// <description>The supplied If-Match header did not match the current Revision value for the dialog. The request was not applied.</description>
         /// </item>
@@ -573,6 +589,10 @@ namespace Digdir.Library.Dialogporten.WebApiClient.Features.V1
         /// <term>404</term>
         /// <description>The given dialog ID was not found or was deleted, or the given activity ID was not found.</description>
         /// </item>
+        /// <item>
+        /// <term>410</term>
+        /// <description>Entity with the given key(s) is removed.</description>
+        /// </item>
         /// </list>
         /// </returns>
         [Headers("Accept: application/json, application/problem+json")]
@@ -602,7 +622,11 @@ namespace Digdir.Library.Dialogporten.WebApiClient.Features.V1
         /// </item>
         /// <item>
         /// <term>404</term>
-        /// <description>Not Found</description>
+        /// <description>The given dialog ID was not found or is already deleted.</description>
+        /// </item>
+        /// <item>
+        /// <term>410</term>
+        /// <description>Entity with the given key(s) is removed.</description>
         /// </item>
         /// </list>
         /// </returns>
@@ -633,7 +657,11 @@ namespace Digdir.Library.Dialogporten.WebApiClient.Features.V1
         /// </item>
         /// <item>
         /// <term>404</term>
-        /// <description>Not Found</description>
+        /// <description>The given dialog ID was not found or is already deleted.</description>
+        /// </item>
+        /// <item>
+        /// <term>410</term>
+        /// <description>Entity with the given key(s) is removed.</description>
         /// </item>
         /// </list>
         /// </returns>
@@ -665,6 +693,10 @@ namespace Digdir.Library.Dialogporten.WebApiClient.Features.V1
         /// <item>
         /// <term>404</term>
         /// <description>The given dialog ID was not found or is already deleted.</description>
+        /// </item>
+        /// <item>
+        /// <term>410</term>
+        /// <description>Entity with the given key(s) is removed.</description>
         /// </item>
         /// </list>
         /// </returns>
@@ -706,6 +738,10 @@ namespace Digdir.Library.Dialogporten.WebApiClient.Features.V1
         /// <description>The given dialog ID was not found or is already deleted.</description>
         /// </item>
         /// <item>
+        /// <term>410</term>
+        /// <description>Entity with the given key(s) is removed.</description>
+        /// </item>
+        /// <item>
         /// <term>412</term>
         /// <description>The supplied If-Match header did not match the current Revision value for the dialog. The request was not applied.</description>
         /// </item>
@@ -743,6 +779,10 @@ namespace Digdir.Library.Dialogporten.WebApiClient.Features.V1
         /// <item>
         /// <term>404</term>
         /// <description>The given dialog ID was not found or was deleted, or the given transmission ID was not found.</description>
+        /// </item>
+        /// <item>
+        /// <term>410</term>
+        /// <description>Entity with the given key(s) is removed.</description>
         /// </item>
         /// </list>
         /// </returns>
@@ -2898,7 +2938,6 @@ namespace Digdir.Library.Dialogporten.WebApiClient.Features.V1
         /// </summary>
 
         [JsonPropertyName("createdAt")]
-        [JsonConverter(typeof(DateFormatConverter))]
         public System.DateTimeOffset? CreatedAt { get; set; }
 
         /// <summary>
@@ -3629,7 +3668,6 @@ namespace Digdir.Library.Dialogporten.WebApiClient.Features.V1
         /// </summary>
 
         [JsonPropertyName("createdAt")]
-        [JsonConverter(typeof(DateFormatConverter))]
         public System.DateTimeOffset? CreatedAt { get; set; }
 
         /// <summary>
@@ -4122,26 +4160,6 @@ namespace Digdir.Library.Dialogporten.WebApiClient.Features.V1
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public DialogsEntitiesTransmissions_DialogTransmissionType Type { get; set; }
 
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.2.0.0 (NJsonSchema v11.1.0.0 (Newtonsoft.Json v13.0.0.0))")]
-    internal class DateFormatConverter : JsonConverter<System.DateTimeOffset>
-    {
-        public override System.DateTimeOffset Read(ref System.Text.Json.Utf8JsonReader reader, System.Type typeToConvert, System.Text.Json.JsonSerializerOptions options)
-        {
-            var dateTime = reader.GetString();
-            if (dateTime == null)
-            {
-                throw new System.Text.Json.JsonException("Unexpected JsonTokenType.Null");
-            }
-
-            return System.DateTimeOffset.Parse(dateTime);
-        }
-
-        public override void Write(System.Text.Json.Utf8JsonWriter writer, System.DateTimeOffset value, System.Text.Json.JsonSerializerOptions options)
-        {
-            writer.WriteStringValue(value.ToString("yyyy-MM-dd"));
-        }
     }
 
 

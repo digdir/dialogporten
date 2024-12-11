@@ -4,7 +4,6 @@
     "outputFolder": "refitter",
     "operationNameGenerator": "SingleClientFromOperationId",
     "trimUnusedSchema": true,
-    "useIsoDateFormat": true,
     "multipleInterfaces": "ByTag",
     "includeTags": [
         "Serviceowner"
@@ -14,6 +13,6 @@
     "useDynamicQuerystringParameters": true,
     "outputFilename": "RefitterInterface.cs",
     "codeGeneratorSettings": {
-        "DateFormat": "yyyy-MM-ddThh:mm:ssZ"
+        "dateFormat": "yyyy-MM-ddTHH:mm:ssZ"
     }
 }
