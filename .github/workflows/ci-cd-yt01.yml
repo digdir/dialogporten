@@ -10,7 +10,7 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref_name }}
 
 jobs:
-  
+
 
   run-performance-ci-cd:
     name: "Run K6 performance tests"
@@ -39,7 +39,7 @@ jobs:
       duration: 1m
       tokens: both
       numberOfTokens: 100
-      testSuitePath: "tests/k6/tests/serviceowner/serviceOwnerSearchWithThresholds.js" # ${{ matrix.files }}
+      testSuitePath: tests/k6/tests/serviceowner/serviceOwnerSearchWithThresholds.js # ${{ matrix.files }}
     permissions:
       checks: write
       pull-requests: write
