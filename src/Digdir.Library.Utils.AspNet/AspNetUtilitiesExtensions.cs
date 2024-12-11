@@ -1,4 +1,3 @@
-using Azure.Monitor.OpenTelemetry.AspNetCore;
 using Digdir.Library.Utils.AspNet.HealthChecks;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Builder;
@@ -7,14 +6,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Npgsql;
 using OpenTelemetry.Trace;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry;
 using OpenTelemetry.Exporter;
-using OpenTelemetry.Logs;
 using System.Diagnostics;
 using Azure.Monitor.OpenTelemetry.Exporter;
 
@@ -69,28 +66,27 @@ public static class AspNetUtilitiesExtensions
                 var resourceBuilder = resource.AddService(serviceName: settings.ServiceName ?? builder.Environment.ApplicationName);
 
                 var resourceAttributes = settings.ResourceAttributes;
-                if (!string.IsNullOrEmpty(resourceAttributes))
-                {
-                    try
-                    {
-                        var attributes = resourceAttributes
-                            .Split(',', StringSplitOptions.RemoveEmptyEntries)
-                            .Select(pair => pair.Split('=', 2))
-                            .Where(parts => parts.Length == 2 && !string.IsNullOrEmpty(parts[0]))
-                            .Select(parts => new KeyValuePair<string, object>(parts[0].Trim(), parts[1].Trim()));
+                if (string.IsNullOrEmpty(resourceAttributes)) return;
 
-                        foreach (var attribute in attributes)
-                        {
-                            resourceBuilder.AddAttributes(new[] { attribute });
-                        }
-                    }
-                    catch (Exception ex)
+                try
+                {
+                    var attributes = resourceAttributes
+                        .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                        .Select(pair => pair.Split('=', 2))
+                        .Where(parts => parts.Length == 2 && !string.IsNullOrEmpty(parts[0]))
+                        .Select(parts => new KeyValuePair<string, object>(parts[0].Trim(), parts[1].Trim()));
+
+                    foreach (var attribute in attributes)
                     {
-                        throw new InvalidOperationException(
-                            "Failed to parse OTEL_RESOURCE_ATTRIBUTES. Expected format: key1=value1,key2=value2",
-                            ex
-                        );
+                        resourceBuilder.AddAttributes([attribute]);
                     }
+                }
+                catch (Exception ex)
+                {
+                    throw new InvalidOperationException(
+                        "Failed to parse OTEL_RESOURCE_ATTRIBUTES. Expected format: key1=value1,key2=value2",
+                        ex
+                    );
                 }
             });
 
@@ -131,7 +127,7 @@ public static class AspNetUtilitiesExtensions
                         .AddHttpClientInstrumentation(o =>
                         {
                             o.RecordException = true;
-                            o.FilterHttpRequestMessage = (_) =>
+                            o.FilterHttpRequestMessage = _ =>
                             {
                                 var parentActivity = Activity.Current?.Parent;
                                 if (parentActivity != null && parentActivity.Source.Name.Equals("Azure.Core.Http", StringComparison.Ordinal))

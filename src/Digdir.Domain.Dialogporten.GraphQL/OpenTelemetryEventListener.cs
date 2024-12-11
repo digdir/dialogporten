@@ -2,7 +2,6 @@ using System.Diagnostics;
 using HotChocolate.Execution;
 using HotChocolate.Execution.Instrumentation;
 using Microsoft.AspNetCore.Http.Extensions;
-using OpenTelemetry.Trace;
 
 namespace Digdir.Domain.Dialogporten.GraphQL;
 
