@@ -1,5 +1,6 @@
 name: Deploy infrastructure
-
+env:
+  AZ_CLI_VERSION: 2.67.0
 on:
   workflow_call:
     secrets:
