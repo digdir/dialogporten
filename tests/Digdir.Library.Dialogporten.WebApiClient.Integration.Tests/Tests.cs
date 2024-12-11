@@ -111,9 +111,6 @@ public class Tests(WebApiClientFixture fixture) : IClassFixture<WebApiClientFixt
     [Fact]
     public async Task SearchTest()
     {
-        // Amund: DateTimeOffset blir sendt over i feil format. Virker som den blir sendt som string og parset fra string igjen.
-        // Usikker på hvordan jeg skal sende i annet format?
-        // Det er nok en implisitt toString som skjer. hvordan skal jeg da gi den format stringen?
         /*
          * Amund Q:.
          *  [x] Refit støtter date format.
@@ -141,16 +138,36 @@ public class Tests(WebApiClientFixture fixture) : IClassFixture<WebApiClientFixt
         Assert.True(createResponse.IsSuccessStatusCode);
         Assert.NotNull(createResponse.Content);
         Assert.True(Guid.TryParse(createResponse.Content!.Replace("\"", "").Trim(), out var dialogId));
-
+        _dialogIds.Add(dialogId);
         var param = new V1ServiceOwnerDialogsSearchSearchDialogQueryParams
         {
             CreatedAfter = dateOffset
         };
         var searchResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsSearchSearchDialog(param, CancellationToken.None);
-        await fixture.DialogportenClient.V1ServiceOwnerDialogsPurgePurgeDialog(dialogId, null!, CancellationToken.None);
         Assert.True(searchResponse.IsSuccessStatusCode);
         Assert.NotNull(searchResponse.Content);
         Assert.Single(searchResponse.Content!.Items);
+
+    }
+
+    [Fact]
+    public async Task DeleteTest()
+    {
+        var createDialogCommand = CreateCommand();
+        var createResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsCreateDialog(createDialogCommand);
+
+        Assert.True(createResponse.IsSuccessStatusCode);
+        Assert.NotNull(createResponse.Content);
+        Assert.True(Guid.TryParse(createResponse.Content!.Replace("\"", "").Trim(), out var dialogId));
+        _dialogIds.Add(dialogId);
+
+        var deleteResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsDeleteDialog(dialogId, null);
+
+        Assert.True(deleteResponse.IsSuccessStatusCode);
+
+        var getResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsGetGetDialog(dialogId, null!);
+        Assert.True(getResponse.IsSuccessStatusCode);
+        Assert.NotNull(getResponse.Content!.DeletedAt);
 
     }
 
