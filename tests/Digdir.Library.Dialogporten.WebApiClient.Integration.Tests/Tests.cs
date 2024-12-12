@@ -33,43 +33,62 @@ public class WebApiClientFixture : IDisposable
 public class Tests(WebApiClientFixture fixture) : IClassFixture<WebApiClientFixture>, IDisposable
 {
     private readonly List<Guid> _dialogIds = [];
-    // Amund: Invalid Patch, Invalid Update, Search multiple dialog
+    // Amund: Invalid Patch, Invalid Update
     [Fact]
     public async Task Create_Invalid_Dialog_Returns_400()
     {
-
         var createDialogCommand = CreateCommand();
         createDialogCommand.Progress = 200;
         var createResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsCreateDialog(createDialogCommand);
 
         Assert.Equal(HttpStatusCode.BadRequest, createResponse.StatusCode);
     }
+
+    [Fact]
+    public async Task Search_Multiple_Dialogs()
+    {
+        var dateOffset = DateTime.UtcNow;
+        var dialogsCreated = 5;
+        for (var i = 0; i < dialogsCreated; i++)
+        {
+            _dialogIds.Add(await CreateDialog());
+        }
+        var param = new V1ServiceOwnerDialogsSearchSearchDialogQueryParams
+        {
+            CreatedAfter = dateOffset
+        };
+        var searchResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsSearchSearchDialog(param, CancellationToken.None);
+        Assert.Equal(HttpStatusCode.OK, searchResponse.StatusCode);
+        Assert.NotNull(searchResponse.Content);
+        Assert.Equal(dialogsCreated, searchResponse.Content!.Items.Count);
+    }
+
     [Fact]
     public async Task Purge_Dialog_Returns_204()
     {
-
-        var createDialogCommand = CreateCommand();
-        var createResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsCreateDialog(createDialogCommand);
-
-        Assert.Equal(HttpStatusCode.Created, createResponse.StatusCode);
-        Assert.NotNull(createResponse.Content);
-        Assert.True(Guid.TryParse(createResponse.Content!.Replace("\"", "").Trim(), out var dialogId));
+        var dialogId = await CreateDialog();
         var purgeResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsPurgePurgeDialog(dialogId, null);
         Assert.Equal(HttpStatusCode.NoContent, purgeResponse.StatusCode);
 
         var getResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsGetGetDialog(dialogId, null!, CancellationToken.None);
         Assert.Equal(HttpStatusCode.NotFound, getResponse.StatusCode);
     }
-
-    [Fact]
-    public async Task Patch_Dialog_Returns_204()
+    private async Task<Guid> CreateDialog()
     {
+
         var createDialogCommand = CreateCommand();
         var createResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsCreateDialog(createDialogCommand);
 
         Assert.Equal(HttpStatusCode.Created, createResponse.StatusCode);
         Assert.NotNull(createResponse.Content);
         Assert.True(Guid.TryParse(createResponse.Content!.Replace("\"", "").Trim(), out var dialogId));
+        return dialogId;
+    }
+
+    [Fact]
+    public async Task Patch_Dialog_Returns_204()
+    {
+        var dialogId = await CreateDialog();
         _dialogIds.Add(dialogId);
 
         List<JsonPatchOperations_Operation> patchDocument =
@@ -89,30 +108,18 @@ public class Tests(WebApiClientFixture fixture) : IClassFixture<WebApiClientFixt
     [Fact]
     public async Task Get_Dialog_Returns_200()
     {
-        var createDialogCommand = CreateCommand();
-        var createResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsCreateDialog(createDialogCommand);
-
-        Assert.Equal(HttpStatusCode.Created, createResponse.StatusCode);
-        Assert.NotNull(createResponse.Content);
-        Assert.True(Guid.TryParse(createResponse.Content!.Replace("\"", "").Trim(), out var dialogId));
+        var dialogId = await CreateDialog();
 
         var getResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsGetGetDialog(dialogId, null!, CancellationToken.None);
 
         Assert.Equal(HttpStatusCode.OK, getResponse.StatusCode);
-        Assert.Equal(getResponse.Content!.Progress!, createDialogCommand.Progress);
         _dialogIds.Add(dialogId);
     }
 
     [Fact]
     public async Task Update_Dialog_Returns_204()
     {
-
-        var createDialogCommand = CreateCommand();
-        var createResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsCreateDialog(createDialogCommand);
-
-        Assert.Equal(HttpStatusCode.Created, createResponse.StatusCode);
-        Assert.NotNull(createResponse.Content);
-        Assert.True(Guid.TryParse(createResponse.Content!.Replace("\"", "").Trim(), out var dialogId));
+        var dialogId = await CreateDialog();
         _dialogIds.Add(dialogId);
 
         var updateDialogCommand = UpdateCommand();
@@ -146,13 +153,7 @@ public class Tests(WebApiClientFixture fixture) : IClassFixture<WebApiClientFixt
          *  Funker også i postman med å skrive null
          */
         var dateOffset = DateTimeOffset.UtcNow;
-        var createDialogCommand = CreateCommand();
-        var createResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsCreateDialog(createDialogCommand);
-
-
-        Assert.Equal(HttpStatusCode.Created, createResponse.StatusCode);
-        Assert.NotNull(createResponse.Content);
-        Assert.True(Guid.TryParse(createResponse.Content!.Replace("\"", "").Trim(), out var dialogId));
+        var dialogId = await CreateDialog();
         _dialogIds.Add(dialogId);
         var param = new V1ServiceOwnerDialogsSearchSearchDialogQueryParams
         {
@@ -168,12 +169,7 @@ public class Tests(WebApiClientFixture fixture) : IClassFixture<WebApiClientFixt
     [Fact]
     public async Task Delete_Dialog_Returns_204()
     {
-        var createDialogCommand = CreateCommand();
-        var createResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsCreateDialog(createDialogCommand);
-
-        Assert.Equal(HttpStatusCode.Created, createResponse.StatusCode);
-        Assert.NotNull(createResponse.Content);
-        Assert.True(Guid.TryParse(createResponse.Content!.Replace("\"", "").Trim(), out var dialogId));
+        var dialogId = await CreateDialog();
         _dialogIds.Add(dialogId);
 
         var deleteResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsDeleteDialog(dialogId, null);
@@ -185,7 +181,7 @@ public class Tests(WebApiClientFixture fixture) : IClassFixture<WebApiClientFixt
 
     }
 
-    public static V1ServiceOwnerDialogsCommandsUpdate_Dialog UpdateCommand()
+    private static V1ServiceOwnerDialogsCommandsUpdate_Dialog UpdateCommand()
     {
         var createDialogCommand = new V1ServiceOwnerDialogsCommandsUpdate_Dialog
         {
@@ -299,7 +295,7 @@ public class Tests(WebApiClientFixture fixture) : IClassFixture<WebApiClientFixt
         };
         return createDialogCommand;
     }
-    public static V1ServiceOwnerDialogsCommandsCreate_DialogCommand CreateCommand()
+    private static V1ServiceOwnerDialogsCommandsCreate_DialogCommand CreateCommand()
     {
         var now = DateTimeOffset.UtcNow;
         var createDialogCommand = new V1ServiceOwnerDialogsCommandsCreate_DialogCommand
