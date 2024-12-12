@@ -33,7 +33,6 @@ public class WebApiClientFixture : IDisposable
 public class Tests(WebApiClientFixture fixture) : IClassFixture<WebApiClientFixture>, IDisposable
 {
     private readonly List<Guid> _dialogIds = [];
-    // Amund: Invalid Patch, Invalid Update
     [Fact]
     public async Task Create_Invalid_Dialog_Returns_400()
     {
@@ -116,7 +115,17 @@ public class Tests(WebApiClientFixture fixture) : IClassFixture<WebApiClientFixt
         Assert.Equal(HttpStatusCode.OK, getResponse.StatusCode);
         _dialogIds.Add(dialogId);
     }
+    [Fact]
+    public async Task Update_Invalid_Dialog_Returns_400()
+    {
+        var dialogId = await CreateDialog();
+        _dialogIds.Add(dialogId);
 
+        var updateDialogCommand = UpdateCommand();
+        updateDialogCommand.Progress = 200;
+        var updateResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsUpdateDialog(dialogId, updateDialogCommand, null!, CancellationToken.None);
+        Assert.Equal(HttpStatusCode.BadRequest, updateResponse.StatusCode);
+    }
     [Fact]
     public async Task Update_Dialog_Returns_204()
     {
