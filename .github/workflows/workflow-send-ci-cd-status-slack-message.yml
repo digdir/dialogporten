@@ -22,6 +22,10 @@ on:
         type: string
         description: "Status of the end-to-end tests job"
         default: "skipped"
+      performance_tests_status:
+        type: string
+        description: "Status of the performance tests job"
+        default: "skipped"
       schema_npm_status:
         type: string
         description: "Status of the schema npm publishing job"
@@ -69,6 +73,7 @@ jobs:
             echo "SCHEMA_NPM_EMOJI=$(determine_emoji "${{ inputs.schema_npm_status }}")"
             echo "PUBLISH_EMOJI=$(determine_emoji "${{ inputs.publish_status }}")"
             echo "BUILD_AND_TEST_EMOJI=$(determine_emoji "${{ inputs.build_and_test_status }}")"
+            echo "PERFORMANCE_TESTS_EMOJI=$(determine_emoji "${{ inputs.performance_tests_status }}")"
           } >> "$GITHUB_OUTPUT"
 
       - name: Send GitHub slack message
@@ -85,6 +90,7 @@ jobs:
           SCHEMA_NPM_STATUS: "${{ steps.status-emojis.outputs.SCHEMA_NPM_EMOJI }}"
           PUBLISH_STATUS: "${{ steps.status-emojis.outputs.PUBLISH_EMOJI }}"
           BUILD_AND_TEST_STATUS: "${{ steps.status-emojis.outputs.BUILD_AND_TEST_EMOJI }}"
+          PERFORMANCE_TESTS_STATUS: "${{ steps.status-emojis.outputs.PERFORMANCE_TESTS_EMOJI }}"
         uses: slackapi/slack-github-action@v2.0.0
         with:
           errors: true
