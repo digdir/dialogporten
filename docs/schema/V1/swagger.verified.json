@@ -6747,7 +6747,10 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/V1ServiceOwnerDialogTransmissionsQueriesSearch_Transmission"
+                  "items": {
+                    "$ref": "#/components/schemas/V1ServiceOwnerDialogTransmissionsQueriesSearch_Transmission"
+                  },
+                  "type": "array"
                 }
               }
             },
