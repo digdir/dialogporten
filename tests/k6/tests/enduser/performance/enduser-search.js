@@ -8,14 +8,14 @@ const traceCalls = (__ENV.traceCalls ?? 'false') === 'true';
 export let options = {
     summaryTrendStats: ['avg', 'min', 'med', 'max', 'p(95)', 'p(99)', 'p(99.5)', 'p(99.9)', 'count'],
     thresholds: getDefaultThresholds(['http_req_duration', 'http_reqs'],['enduser search', 
-        'get dialog', 
-        'get dialog activities', 
-        'get dialog activity', 
-        'get seenlogs',
-        'get seenlog',
-        'get transmissions',
-        'get transmission',
-        'get labellog'
+        'enduser get dialog', 
+        'enduser get dialog activities', 
+        'enduser get dialog activity', 
+        'enduser get seenlogs',
+        'enduser get seenlog',
+        'enduser get transmissions',
+        'enduser get transmission',
+        'enduser get labellog'
     ])
 };
 
