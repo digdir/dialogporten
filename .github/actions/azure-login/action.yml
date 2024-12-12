@@ -1,0 +1,28 @@
+name: 'Azure Login with Bicep Upgrade'
+description: 'Login to Azure and upgrade Bicep CLI'
+
+inputs:
+  client-id:
+    description: 'Azure Client ID'
+    required: true
+  tenant-id:
+    description: 'Azure Tenant ID'
+    required: true
+  subscription-id:
+    description: 'Azure Subscription ID'
+    required: true
+env:
+  AZ_CLI_VERSION: 2.67.0
+runs:
+  using: "composite"
+  steps:
+    - name: OIDC Login to Azure Public Cloud
+      uses: azure/login@v2
+      with:
+        client-id: ${{ inputs.client-id }}
+        tenant-id: ${{ inputs.tenant-id }}
+        subscription-id: ${{ inputs.subscription-id }}
+
+    - name: Upgrade Azure Bicep
+      shell: bash
+      run: az bicep upgrade 

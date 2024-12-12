@@ -83,9 +83,6 @@ module privateDnsZone '../privateDnsZone/main.bicep' = {
 
 module privateDnsZoneGroup '../privateDnsZoneGroup/main.bicep' = {
   name: '${namePrefix}-service-bus-privateDnsZoneGroup'
-  dependsOn: [
-    privateDnsZone
-  ]
   params: {
     name: 'default'
     dnsZoneGroupName: 'privatelink-servicebus-windows-net'
