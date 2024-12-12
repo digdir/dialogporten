@@ -13,7 +13,7 @@ export let options = {
         "http_req_duration{name:get transmissions}": ["p(95)<300", "p(99)<500"],
         "http_req_duration{name:get transmission}": ["p(95)<300", "p(99)<500"],
         "http_req_duration{name:get labellog}": ["p(95)<300", "p(99)<500"],
-        "http_reqs{name:search}": [],
+        "http_reqs{name:enduser search}": [],
         "http_reqs{name:get dialog activities}": [],
         "http_reqs{name:get dialog activity}": [],
         "http_reqs{name:get seenlogs}": [],
