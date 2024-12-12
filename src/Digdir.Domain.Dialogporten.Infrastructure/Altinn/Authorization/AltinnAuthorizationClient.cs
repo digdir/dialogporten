@@ -171,70 +171,20 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
                 .ToDictionary(kv => kv.Key, kv => kv.Value),
         };
 
-        await CollapseSubjectResources(dialogSearchAuthorizationResult, authorizedParties, request.ConstraintServiceResources, cancellationToken);
+        await AuthorizationHelper.CollapseSubjectResources(
+            dialogSearchAuthorizationResult,
+            authorizedParties,
+            request.ConstraintServiceResources,
+            GetAllSubjectResources,
+            cancellationToken);
 
         return dialogSearchAuthorizationResult;
     }
 
-    private async Task CollapseSubjectResources(
-        DialogSearchAuthorizationResult dialogSearchAuthorizationResult,
-        AuthorizedPartiesResult authorizedParties,
-        List<string> constraintResources,
-        CancellationToken cancellationToken)
-    {
-        var authorizedPartiesWithRoles = authorizedParties.AuthorizedParties
-            .Where(p => p.AuthorizedRoles.Count != 0)
-            .ToList();
-
-        // Extract all unique subjects (authorized roles) from all parties.
-        var uniqueSubjects = authorizedPartiesWithRoles
-            .SelectMany(p => p.AuthorizedRoles)
-            .ToHashSet();
-
-        // Retrieve all subject resource mappings, considering any provided constraints
-        var subjectResources = await GetSubjectResources(uniqueSubjects, constraintResources, cancellationToken);
-
-        // Group resources by subject for O(1) lookups when looping
-        var subjectToResources = subjectResources
-            .GroupBy(sr => sr.Subject)
-            .ToDictionary(g => g.Key, g => g.Select(sr => sr.Resource).ToHashSet());
-
-        foreach (var partyEntry in authorizedPartiesWithRoles)
-        {
-            // Get or create the resource list for the current party, so we can
-            // union the resource level accesses to those granted via roles
-            if (!dialogSearchAuthorizationResult.ResourcesByParties.TryGetValue(partyEntry.Party, out var resourceList))
-            {
-                resourceList = new HashSet<string>();
-                dialogSearchAuthorizationResult.ResourcesByParties[partyEntry.Party] = resourceList;
-            }
-
-            foreach (var subject in partyEntry.AuthorizedRoles)
-            {
-                if (subjectToResources.TryGetValue(subject, out var subjectResourceSet))
-                {
-                    resourceList.UnionWith(subjectResourceSet);
-                }
-            }
-
-            // Remove the party if it has no authorized resources
-            if (resourceList.Count == 0)
-            {
-                dialogSearchAuthorizationResult.ResourcesByParties.Remove(partyEntry.Party);
-            }
-        }
-    }
-
-    private async Task<List<SubjectResource>> GetSubjectResources(IEnumerable<string> subjects, List<string> resourceConstraints, CancellationToken cancellationToken)
-    {
-        // Fetch all subject resources from the database
-        var subjectResources = await _subjectResourcesCache.GetOrSetAsync(nameof(SubjectResource), async ct
+    private async Task<List<SubjectResource>> GetAllSubjectResources(CancellationToken cancellationToken) =>
+        await _subjectResourcesCache.GetOrSetAsync(nameof(SubjectResource), async ct
                 => await _dialogDbContext.SubjectResources.ToListAsync(cancellationToken: ct),
             token: cancellationToken);
-
-        // Return the subject resources matched with the subjects
-        return subjectResources.Where(x => subjects.Contains(x.Subject) && (resourceConstraints.Count == 0 || resourceConstraints.Contains(x.Resource))).ToList();
-    }
 
     private async Task<DialogDetailsAuthorizationResult> PerformDialogDetailsAuthorization(
         DialogDetailsAuthorizationRequest request, CancellationToken cancellationToken)
