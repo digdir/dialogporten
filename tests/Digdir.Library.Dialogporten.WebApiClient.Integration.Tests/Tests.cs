@@ -44,24 +44,6 @@ public class Tests(WebApiClientFixture fixture) : IClassFixture<WebApiClientFixt
         Assert.Equal(HttpStatusCode.BadRequest, createResponse.StatusCode);
     }
 
-    [Fact]
-    public async Task Search_Multiple_Dialogs()
-    {
-        var dateOffset = DateTime.UtcNow;
-        var dialogsCreated = 5;
-        for (var i = 0; i < dialogsCreated; i++)
-        {
-            _dialogIds.Add(await CreateDialog());
-        }
-        var param = new V1ServiceOwnerDialogsSearchSearchDialogQueryParams
-        {
-            CreatedAfter = dateOffset
-        };
-        var searchResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsSearchSearchDialog(param, CancellationToken.None);
-        Assert.Equal(HttpStatusCode.OK, searchResponse.StatusCode);
-        Assert.NotNull(searchResponse.Content);
-        Assert.Equal(dialogsCreated, searchResponse.Content!.Items.Count);
-    }
 
     [Fact]
     public async Task Purge_Dialog_Returns_204()
@@ -85,6 +67,25 @@ public class Tests(WebApiClientFixture fixture) : IClassFixture<WebApiClientFixt
         return dialogId;
     }
 
+    [Fact]
+    public async Task Patch_Invalid_Dialog_Returns_400()
+    {
+        var dialogId = await CreateDialog();
+        _dialogIds.Add(dialogId);
+
+        List<JsonPatchOperations_Operation> patchDocument =
+        [
+            new()
+            {
+                Op = "replace",
+                OperationType = JsonPatchOperations_OperationType.Replace,
+                Path = "/progress",
+                Value = 500
+            }
+        ];
+        var patchResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsPatchDialog(dialogId, patchDocument, null, CancellationToken.None);
+        Assert.Equal(HttpStatusCode.BadRequest, patchResponse.StatusCode);
+    }
     [Fact]
     public async Task Patch_Dialog_Returns_204()
     {
@@ -164,6 +165,25 @@ public class Tests(WebApiClientFixture fixture) : IClassFixture<WebApiClientFixt
         Assert.NotNull(searchResponse.Content);
         Assert.Single(searchResponse.Content!.Items);
 
+    }
+
+    [Fact]
+    public async Task Search_Multiple_Dialogs()
+    {
+        var dateOffset = DateTime.UtcNow;
+        var dialogsCreated = 5;
+        for (var i = 0; i < dialogsCreated; i++)
+        {
+            _dialogIds.Add(await CreateDialog());
+        }
+        var param = new V1ServiceOwnerDialogsSearchSearchDialogQueryParams
+        {
+            CreatedAfter = dateOffset
+        };
+        var searchResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsSearchSearchDialog(param, CancellationToken.None);
+        Assert.Equal(HttpStatusCode.OK, searchResponse.StatusCode);
+        Assert.NotNull(searchResponse.Content);
+        Assert.Equal(dialogsCreated, searchResponse.Content!.Items.Count);
     }
 
     [Fact]
