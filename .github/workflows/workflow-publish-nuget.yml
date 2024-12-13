@@ -12,7 +12,7 @@ on:
         required: true
         type: string
       source:
-        description: "Source to push to"
+        description: "Nuget Source"
         required: false
         type: string
         default: https://int.nugettest.org

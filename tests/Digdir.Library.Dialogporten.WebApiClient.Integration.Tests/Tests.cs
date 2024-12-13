@@ -168,10 +168,6 @@ public class Tests(WebApiClientFixture fixture) : IClassFixture<WebApiClientFixt
          *  [ ] Vente på preview av refitter blir lansert
          */
 
-        /* Amund: .
-         *  500 Error om jeg sender en null istedet for et tomt array.
-         *  Funker også i postman med å skrive null
-         */
         var dateOffset = DateTimeOffset.UtcNow;
         var createDialogCommand = CreateCommand();
         var dialogId = await CreateDialog(createDialogCommand);

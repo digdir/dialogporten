@@ -203,9 +203,3 @@ var token = ""; // Dialog token
 Console.WriteLine(verifier.Verify(token));
 var dict = DialogTokenVerifier.GetDialogTokenClaims(token);
 ```
-
-API REFERENCE/STRUCTURE
-
-Method name matches with the operationId in the OpenAPI spec
-
-Links to changelog etc.

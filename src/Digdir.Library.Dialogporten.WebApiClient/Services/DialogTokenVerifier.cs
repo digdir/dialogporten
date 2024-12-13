@@ -38,8 +38,8 @@ public sealed class DialogTokenVerifier(string kid, PublicKey publicKey)
 
         var bodyJson = JsonSerializer.Deserialize<JsonElement>(Base64Url.DecodeFromChars(parts[1]));
 
+        // Maps bodyJson -> DialogTokenClaimTypes
         var fieldsInfo = typeof(DialogTokenClaimTypes).GetFields().Where(f => f.FieldType == typeof(string));
-
         foreach (var fieldInfo in fieldsInfo)
         {
             var value = fieldInfo.GetValue("string");
