@@ -7,6 +7,7 @@ using Digdir.Domain.Dialogporten.Application;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.OptionExtensions;
 using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
+using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Update;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
 using Digdir.Domain.Dialogporten.Infrastructure;
 using Digdir.Domain.Dialogporten.WebApi;
@@ -173,12 +174,14 @@ static void BuildAndRun(string[] args, TelemetryConfiguration telemetryConfigura
                             new EndpointNameMetadata(
                                 TypeNameConverter.ToShortName(endpointDefinition.EndpointType)))));
             };
+            // x.Serializer.Options.RespectNullableAnnotations = true;
             x.Serializer.Options.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
             // Do not serialize empty collections
             x.Serializer.Options.TypeInfoResolver = new DefaultJsonTypeInfoResolver
             {
                 Modifiers = { IgnoreEmptyCollections }
             };
+            x.Serializer.Options.Converters.Add(new NonNullableListConverterFactory());
             x.Serializer.Options.Converters.Add(new JsonStringEnumConverter());
             x.Serializer.Options.Converters.Add(new UtcDateTimeOffsetConverter());
             x.Serializer.Options.Converters.Add(new DateTimeNotSupportedConverter());
