@@ -164,8 +164,8 @@ public class Tests(WebApiClientFixture fixture) : IClassFixture<WebApiClientFixt
          *      [x] lag til date-time støtte i refitter
          *  [x] Legge til støtte for custom date format i Refitter
          *      [x] Virker doable, Relativt lett leslig kilde kode.
-         *  [x] Lagde PR med forandringene, blitgt Merget inn
-         *  [ ] Vente på preview av refitter blir lansert
+         *  [x] Lagde PR med forandringene, blitt Merget inn
+         *  [ ] Venter på preview av refitter blir lansert
          */
 
         var dateOffset = DateTimeOffset.UtcNow;
