@@ -3,11 +3,14 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Altinn.Authorization.ABAC.Xacml.JsonProfile;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
+using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Parties.Abstractions;
+using Digdir.Domain.Dialogporten.Domain.SubjectResources;
 using Digdir.Domain.Dialogporten.Infrastructure.Common.Exceptions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using ZiggyCreatures.Caching.Fusion;
 
@@ -20,7 +23,9 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
     private readonly HttpClient _httpClient;
     private readonly IFusionCache _pdpCache;
     private readonly IFusionCache _partiesCache;
+    private readonly IFusionCache _subjectResourcesCache;
     private readonly IUser _user;
+    private readonly IDialogDbContext _dialogDbContext;
     private readonly ILogger _logger;
 
     private static readonly JsonSerializerOptions SerializerOptions = new()
@@ -33,12 +38,15 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
         HttpClient client,
         IFusionCacheProvider cacheProvider,
         IUser user,
+        IDialogDbContext dialogDbContext,
         ILogger<AltinnAuthorizationClient> logger)
     {
         _httpClient = client ?? throw new ArgumentNullException(nameof(client));
         _pdpCache = cacheProvider.GetCache(nameof(Authorization)) ?? throw new ArgumentNullException(nameof(cacheProvider));
         _partiesCache = cacheProvider.GetCache(nameof(AuthorizedPartiesResult)) ?? throw new ArgumentNullException(nameof(cacheProvider));
+        _subjectResourcesCache = cacheProvider.GetCache(nameof(SubjectResource)) ?? throw new ArgumentNullException(nameof(cacheProvider));
         _user = user ?? throw new ArgumentNullException(nameof(user));
+        _dialogDbContext = dialogDbContext ?? throw new ArgumentNullException(nameof(dialogDbContext));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
@@ -94,7 +102,6 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
             [dialog.Party], [dialog.ServiceResource], cancellationToken);
 
         return authorizedResourcesForSearch.ResourcesByParties.Count > 0
-               || authorizedResourcesForSearch.SubjectsByParties.Count > 0
                || authorizedResourcesForSearch.DialogIds.Contains(dialog.Id);
     }
 
@@ -128,9 +135,9 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
     }
 
     private async Task<AuthorizedPartiesResult> PerformAuthorizedPartiesRequest(AuthorizedPartiesRequest authorizedPartiesRequest,
-        CancellationToken token)
+        CancellationToken cancellationToken)
     {
-        var authorizedPartiesDto = await SendAuthorizedPartiesRequest(authorizedPartiesRequest, token);
+        var authorizedPartiesDto = await SendAuthorizedPartiesRequest(authorizedPartiesRequest, cancellationToken);
         if (authorizedPartiesDto is null || authorizedPartiesDto.Count == 0)
         {
             throw new UpstreamServiceException("access-management returned no authorized parties, missing Altinn profile?");
@@ -139,10 +146,10 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
         return AuthorizedPartiesHelper.CreateAuthorizedPartiesResult(authorizedPartiesDto, authorizedPartiesRequest);
     }
 
-    private async Task<DialogSearchAuthorizationResult> PerformDialogSearchAuthorization(DialogSearchAuthorizationRequest request, CancellationToken token)
+    private async Task<DialogSearchAuthorizationResult> PerformDialogSearchAuthorization(DialogSearchAuthorizationRequest request, CancellationToken cancellationToken)
     {
         var partyIdentifier = request.Claims.GetEndUserPartyIdentifier() ?? throw new UnreachableException();
-        var authorizedParties = await GetAuthorizedParties(partyIdentifier, flatten: true, cancellationToken: token);
+        var authorizedParties = await GetAuthorizedParties(partyIdentifier, flatten: true, cancellationToken: cancellationToken);
 
         if (request.ConstraintParties.Count > 0)
         {
@@ -158,22 +165,26 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
                     p => p.Party,
                     p => p.AuthorizedResources
                         .Where(r => request.ConstraintServiceResources.Count == 0 || request.ConstraintServiceResources.Contains(r))
-                        .ToList())
+                        .ToHashSet())
                 // Skip parties with no authorized resources
                 .Where(kv => kv.Value.Count != 0)
                 .ToDictionary(kv => kv.Key, kv => kv.Value),
-
-            SubjectsByParties = authorizedParties.AuthorizedParties
-                .ToDictionary(
-                    p => p.Party,
-                    p => p.AuthorizedRoles)
-                // Skip parties with no authorized roles
-                .Where(kv => kv.Value.Count != 0)
-                .ToDictionary(kv => kv.Key, kv => kv.Value)
         };
+
+        await AuthorizationHelper.CollapseSubjectResources(
+            dialogSearchAuthorizationResult,
+            authorizedParties,
+            request.ConstraintServiceResources,
+            GetAllSubjectResources,
+            cancellationToken);
 
         return dialogSearchAuthorizationResult;
     }
+
+    private async Task<List<SubjectResource>> GetAllSubjectResources(CancellationToken cancellationToken) =>
+        await _subjectResourcesCache.GetOrSetAsync(nameof(SubjectResource), async ct
+                => await _dialogDbContext.SubjectResources.ToListAsync(cancellationToken: ct),
+            token: cancellationToken);
 
     private async Task<DialogDetailsAuthorizationResult> PerformDialogDetailsAuthorization(
         DialogDetailsAuthorizationRequest request, CancellationToken cancellationToken)

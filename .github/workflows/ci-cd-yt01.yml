@@ -140,9 +140,42 @@ jobs:
       checks: write
       pull-requests: write
 
+  run-performance-tests:
+    name: "Run K6 performance tests"
+    # we want the performance tests to be dependent on deployment of infrastructure and apps, but if infrastructure is skipped, we still want to run the tests
+    if: ${{ always() && !failure() && !cancelled() && (github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasBackendChanges == 'true' || needs.check-for-changes.outputs.hasInfraChanges == 'true') }}
+    needs: [deploy-apps, deploy-infra, check-for-changes]
+    #needs: [deploy-apps, check-for-changes]
+    uses: ./.github/workflows/workflow-run-k6-performance.yml
+    secrets:
+      TOKEN_GENERATOR_USERNAME: ${{ secrets.TOKEN_GENERATOR_USERNAME }}
+      TOKEN_GENERATOR_PASSWORD: ${{ secrets.TOKEN_GENERATOR_PASSWORD }}
+      K6_CLOUD_TOKEN: ${{ secrets.K6_CLOUD_TOKEN }}
+      K6_CLOUD_PROJECT_ID: ${{ secrets.K6_CLOUD_PROJECT_ID }}
+    
+    strategy:
+      max-parallel: 1
+      matrix:
+        files: 
+          - tests/k6/tests/serviceowner/serviceOwnerSearchWithThresholds.js
+          - tests/k6/tests/serviceowner/createDialogWithThresholds.js
+          - tests/k6/tests/enduser/enduserSearchWithThresholds.js
+      fail-fast: false  
+    with:
+      environment: yt01
+      apiVersion: v1
+      vus: 1
+      duration: 30s
+      tokens: both
+      numberOfTokens: 100
+      testSuitePath: ${{ matrix.files }}
+    permissions:
+      checks: write
+      pull-requests: write
+
   send-slack-message-on-failure:
     name: Send Slack message on failure
-    needs: [deploy-infra, deploy-apps, deploy-slack-notifier, run-e2e-tests, publish]
+    needs: [deploy-infra, deploy-apps, deploy-slack-notifier, run-e2e-tests, publish, run-performance-tests]
     if: ${{ always() && failure() && !cancelled() }}
     uses: ./.github/workflows/workflow-send-ci-cd-status-slack-message.yml
     with:
@@ -151,6 +184,7 @@ jobs:
       apps_status: ${{ needs.deploy-apps.result }}
       slack_notifier_status: ${{ needs.deploy-slack-notifier.result }}
       e2e_tests_status: ${{ needs.run-e2e-tests.result }}
+      performance_tests_status: ${{ needs.run-performance-tests.result }}
       publish_status: ${{ needs.publish.result }}
     secrets:
       SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
