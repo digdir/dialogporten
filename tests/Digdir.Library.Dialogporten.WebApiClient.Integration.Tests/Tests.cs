@@ -47,17 +47,17 @@ public class Tests(WebApiClientFixture fixture) : IClassFixture<WebApiClientFixt
     [Fact]
     public async Task Purge_Dialog_Returns_204()
     {
-        var dialogId = await CreateDialog();
+        var createDialogCommand = CreateCommand();
+        var dialogId = await CreateDialog(createDialogCommand);
         var purgeResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsPurgePurgeDialog(dialogId, null);
         Assert.Equal(HttpStatusCode.NoContent, purgeResponse.StatusCode);
 
         var getResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsGetGetDialog(dialogId, null!, CancellationToken.None);
         Assert.Equal(HttpStatusCode.NotFound, getResponse.StatusCode);
     }
-    private async Task<Guid> CreateDialog()
+    private async Task<Guid> CreateDialog(V1ServiceOwnerDialogsCommandsCreate_DialogCommand createDialogCommand)
     {
 
-        var createDialogCommand = CreateCommand();
         var createResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsCreateDialog(createDialogCommand);
 
         Assert.Equal(HttpStatusCode.Created, createResponse.StatusCode);
@@ -69,7 +69,8 @@ public class Tests(WebApiClientFixture fixture) : IClassFixture<WebApiClientFixt
     [Fact]
     public async Task Patch_Invalid_Dialog_Returns_400()
     {
-        var dialogId = await CreateDialog();
+        var createDialogCommand = CreateCommand();
+        var dialogId = await CreateDialog(createDialogCommand);
         _dialogIds.Add(dialogId);
 
         List<JsonPatchOperations_Operation> patchDocument =
@@ -88,7 +89,8 @@ public class Tests(WebApiClientFixture fixture) : IClassFixture<WebApiClientFixt
     [Fact]
     public async Task Patch_Dialog_Returns_204()
     {
-        var dialogId = await CreateDialog();
+        var createDialogCommand = CreateCommand();
+        var dialogId = await CreateDialog(createDialogCommand);
         _dialogIds.Add(dialogId);
 
         List<JsonPatchOperations_Operation> patchDocument =
@@ -103,12 +105,18 @@ public class Tests(WebApiClientFixture fixture) : IClassFixture<WebApiClientFixt
         ];
         var patchResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsPatchDialog(dialogId, patchDocument, null, CancellationToken.None);
         Assert.Equal(HttpStatusCode.NoContent, patchResponse.StatusCode);
+
+        var getResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsGetGetDialog(dialogId, null!, CancellationToken.None);
+
+        Assert.Equal(HttpStatusCode.OK, getResponse.StatusCode);
+        Assert.Equal(50, getResponse.Content!.Progress);
     }
 
     [Fact]
     public async Task Get_Dialog_Returns_200()
     {
-        var dialogId = await CreateDialog();
+        var createDialogCommand = CreateCommand();
+        var dialogId = await CreateDialog(createDialogCommand);
 
         var getResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsGetGetDialog(dialogId, null!, CancellationToken.None);
 
@@ -118,7 +126,8 @@ public class Tests(WebApiClientFixture fixture) : IClassFixture<WebApiClientFixt
     [Fact]
     public async Task Update_Invalid_Dialog_Returns_400()
     {
-        var dialogId = await CreateDialog();
+        var createDialogCommand = CreateCommand();
+        var dialogId = await CreateDialog(createDialogCommand);
         _dialogIds.Add(dialogId);
 
         var updateDialogCommand = UpdateCommand();
@@ -129,7 +138,8 @@ public class Tests(WebApiClientFixture fixture) : IClassFixture<WebApiClientFixt
     [Fact]
     public async Task Update_Dialog_Returns_204()
     {
-        var dialogId = await CreateDialog();
+        var createDialogCommand = CreateCommand();
+        var dialogId = await CreateDialog(createDialogCommand);
         _dialogIds.Add(dialogId);
 
         var updateDialogCommand = UpdateCommand();
@@ -163,7 +173,8 @@ public class Tests(WebApiClientFixture fixture) : IClassFixture<WebApiClientFixt
          *  Funker også i postman med å skrive null
          */
         var dateOffset = DateTimeOffset.UtcNow;
-        var dialogId = await CreateDialog();
+        var createDialogCommand = CreateCommand();
+        var dialogId = await CreateDialog(createDialogCommand);
         _dialogIds.Add(dialogId);
         var param = new V1ServiceOwnerDialogsSearchSearchDialogQueryParams
         {
@@ -183,7 +194,9 @@ public class Tests(WebApiClientFixture fixture) : IClassFixture<WebApiClientFixt
         var dialogsCreated = 5;
         for (var i = 0; i < dialogsCreated; i++)
         {
-            _dialogIds.Add(await CreateDialog());
+            var createDialogCommand = CreateCommand();
+            var dialogId = await CreateDialog(createDialogCommand);
+            _dialogIds.Add(dialogId);
         }
         var param = new V1ServiceOwnerDialogsSearchSearchDialogQueryParams
         {
@@ -198,7 +211,8 @@ public class Tests(WebApiClientFixture fixture) : IClassFixture<WebApiClientFixt
     [Fact]
     public async Task Delete_Dialog_Returns_204()
     {
-        var dialogId = await CreateDialog();
+        var createDialogCommand = CreateCommand();
+        var dialogId = await CreateDialog(createDialogCommand);
         _dialogIds.Add(dialogId);
 
         var deleteResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsDeleteDialog(dialogId, null);
@@ -210,20 +224,69 @@ public class Tests(WebApiClientFixture fixture) : IClassFixture<WebApiClientFixt
 
     }
 
+    [Fact]
+    public async Task Create_Dialog_Transmission_returns_201()
+    {
+
+        var createDialogCommand = CreateCommand();
+        createDialogCommand.Transmissions = [];
+        var dialogId = await CreateDialog(createDialogCommand);
+        _dialogIds.Add(dialogId);
+        var createTransmission = new V1ServiceOwnerDialogTransmissionsCreate_TransmissionRequest
+        {
+            Attachments = [],
+            Content = new V1ServiceOwnerDialogsCommandsUpdate_TransmissionContent
+            {
+                Summary = new V1CommonContent_ContentValue
+                {
+                    MediaType = "text/plain",
+                    Value =
+                    [
+                        new V1CommonLocalizations_Localization
+                        {
+                            LanguageCode = "nb",
+                            Value = "Sammendrag"
+                        }
+                    ]
+                },
+                Title = new V1CommonContent_ContentValue
+                {
+                    MediaType = "text/plain",
+                    Value =
+                    [
+                        new V1CommonLocalizations_Localization
+                        {
+                            LanguageCode = "nb",
+                            Value = "Dette er en tittel"
+                        }
+                    ]
+                }
+            },
+            Sender = new V1ServiceOwnerCommonActors_Actor
+            {
+                ActorType = Actors_ActorType.ServiceOwner
+            },
+            Type = DialogsEntitiesTransmissions_DialogTransmissionType.Information
+        };
+        var transmissionResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogTransmissionsCreateDialogTransmission(dialogId, createTransmission, null!);
+        Assert.Equal(HttpStatusCode.Created, transmissionResponse.StatusCode);
+
+    }
     private static V1ServiceOwnerDialogsCommandsUpdate_Dialog UpdateCommand()
     {
         var createDialogCommand = new V1ServiceOwnerDialogsCommandsUpdate_Dialog
         {
             Status = DialogsEntities_DialogStatus.New,
             Progress = 60,
-            SearchTags = [],
             Attachments = [],
             GuiActions = [],
             ApiActions = [],
+            SearchTags = [],
             Content = new V1ServiceOwnerDialogsCommandsUpdate_Content
             {
                 Title = new V1CommonContent_ContentValue
                 {
+                    MediaType = "text/plain",
                     Value =
                     [
                         new V1CommonLocalizations_Localization
@@ -237,7 +300,6 @@ public class Tests(WebApiClientFixture fixture) : IClassFixture<WebApiClientFixt
                             Value = "Main"
                         }
                     ],
-                    MediaType = "text/plain"
                 },
                 Summary = new V1CommonContent_ContentValue
                 {
@@ -320,7 +382,6 @@ public class Tests(WebApiClientFixture fixture) : IClassFixture<WebApiClientFixt
                     Type = DialogsEntitiesTransmissions_DialogTransmissionType.Information
                 }
             ],
-            VisibleFrom = null
         };
         return createDialogCommand;
     }

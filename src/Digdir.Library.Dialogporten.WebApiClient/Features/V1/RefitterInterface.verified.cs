@@ -213,6 +213,10 @@ namespace Digdir.Library.Dialogporten.WebApiClient.Features.V1
         /// <description>The UUID of the created the dialog aggregate. A relative URL to the newly created activity is set in the \"Location\" header.</description>
         /// </item>
         /// <item>
+        /// <term>204</term>
+        /// <description>No Content</description>
+        /// </item>
+        /// <item>
         /// <term>400</term>
         /// <description>Validation error occured. See problem details for a list of errors.</description>
         /// </item>
@@ -531,6 +535,10 @@ namespace Digdir.Library.Dialogporten.WebApiClient.Features.V1
         /// <description>The UUID of the created the dialog activity. A relative URL to the newly created activity is set in the \"Location\" header.</description>
         /// </item>
         /// <item>
+        /// <term>204</term>
+        /// <description>No Content</description>
+        /// </item>
+        /// <item>
         /// <term>400</term>
         /// <description>Validation error occured. See problem details for a list of errors.</description>
         /// </item>
@@ -702,7 +710,7 @@ namespace Digdir.Library.Dialogporten.WebApiClient.Features.V1
         /// </returns>
         [Headers("Accept: application/json, application/problem+json")]
         [Get("/api/v1/serviceowner/dialogs/{dialogId}/transmissions")]
-        Task<IApiResponse<V1ServiceOwnerDialogTransmissionsQueriesSearch_Transmission>> V1ServiceOwnerDialogTransmissionsSearchSearchDialogTransmission(System.Guid dialogId, CancellationToken cancellationToken = default);
+        Task<IApiResponse<ICollection<V1ServiceOwnerDialogTransmissionsQueriesSearch_Transmission>>> V1ServiceOwnerDialogTransmissionsSearchSearchDialogTransmission(System.Guid dialogId, CancellationToken cancellationToken = default);
 
         /// <summary>Adds a transmission to a dialog</summary>
         /// <remarks>
@@ -720,6 +728,10 @@ namespace Digdir.Library.Dialogporten.WebApiClient.Features.V1
         /// <item>
         /// <term>201</term>
         /// <description>The UUID of the created the dialog transmission. A relative URL to the newly created activity is set in the \"Location\" header.</description>
+        /// </item>
+        /// <item>
+        /// <term>204</term>
+        /// <description>No Content</description>
         /// </item>
         /// <item>
         /// <term>400</term>

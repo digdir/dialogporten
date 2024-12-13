@@ -26,7 +26,7 @@
 
     <ItemGroup>
         <Compile Remove="Program.cs"/>
+        <Compile Remove="Features/V1/*.received.cs"/>
     </ItemGroup>
-
 
 </Project>
