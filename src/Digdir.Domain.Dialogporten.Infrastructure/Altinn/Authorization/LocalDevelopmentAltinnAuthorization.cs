@@ -40,19 +40,16 @@ internal sealed class LocalDevelopmentAltinnAuthorization : IAltinnAuthorization
 
         // Keep the number of parties and resources reasonable
         var allParties = dialogData.Select(x => x.Party).Distinct().Take(1000).ToList();
-        var allResources = dialogData.Select(x => x.ServiceResource).Distinct().Take(1000).ToList();
-        var allRoles = await _db.SubjectResources.Select(x => x.Subject).Distinct().Take(30).ToListAsync(cancellationToken);
+        var allResources = dialogData.Select(x => x.ServiceResource).Distinct().Take(1000).ToHashSet();
 
         var authorizedResources = new DialogSearchAuthorizationResult
         {
-            ResourcesByParties = allParties.ToDictionary(party => party, _ => allResources),
-            SubjectsByParties = allParties.ToDictionary(party => party, _ => allRoles)
+            ResourcesByParties = allParties.ToDictionary(party => party, _ => allResources)
         };
 
         return authorizedResources;
     }
 
-    [SuppressMessage("Performance", "CA1822:Mark members as static")]
     public async Task<AuthorizedPartiesResult> GetAuthorizedParties(IPartyIdentifier authenticatedParty, bool _ = false, CancellationToken __ = default)
         => await Task.FromResult(new AuthorizedPartiesResult
         {
@@ -72,5 +69,5 @@ internal sealed class LocalDevelopmentAltinnAuthorization : IAltinnAuthorization
             }]
         });
 
-    public Task<bool> HasListAuthorizationForDialog(DialogEntity dialog, CancellationToken cancellationToken) => Task.FromResult(true);
+    public Task<bool> HasListAuthorizationForDialog(DialogEntity _, CancellationToken __) => Task.FromResult(true);
 }

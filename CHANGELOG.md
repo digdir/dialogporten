@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.41.3](https://github.com/digdir/dialogporten/compare/v1.41.2...v1.41.3) (2024-12-13)
+
+
+### Bug Fixes
+
+* **azure:** adjust SKU and storage for staging ([#1601](https://github.com/digdir/dialogporten/issues/1601)) ([3fb9f95](https://github.com/digdir/dialogporten/commit/3fb9f9501b4db97847aa1ebc0b77efe722811f0a))
+* Collapse subject resource mappings before building sql query ([#1579](https://github.com/digdir/dialogporten/issues/1579)) ([b39c376](https://github.com/digdir/dialogporten/commit/b39c37662f61361b083d7addc60b26ad4e06fab6))
+* **webapi:** Explicit null on non-nullable lists no longer causes 500 INTERNAL SERVER ERROR ([#1602](https://github.com/digdir/dialogporten/issues/1602)) ([2e8b3e6](https://github.com/digdir/dialogporten/commit/2e8b3e6db507efd195245ad829dd7d5a96f272ef))
+
+## [1.41.2](https://github.com/digdir/dialogporten/compare/v1.41.1...v1.41.2) (2024-12-12)
+
+
+### Bug Fixes
+
+* **webapi:** Set correct swagger return type for transmission list ([#1590](https://github.com/digdir/dialogporten/issues/1590)) ([6e88e0c](https://github.com/digdir/dialogporten/commit/6e88e0c13c089d0f4871be2ee95a7f74fb21a51c))
+
 ## [1.41.1](https://github.com/digdir/dialogporten/compare/v1.41.0...v1.41.1) (2024-12-09)
 
 
