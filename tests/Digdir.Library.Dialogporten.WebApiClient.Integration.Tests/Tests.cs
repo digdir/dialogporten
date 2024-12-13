@@ -502,7 +502,6 @@ public class Tests(WebApiClientFixture fixture) : IClassFixture<WebApiClientFixt
                                     Url = new Uri("https://digdir.apps.tt02.altinn.no/some-other-url")
                                 }
                             ]
-
                         }
                     ],
                     Content = new V1ServiceOwnerDialogsCommandsCreate_TransmissionContent
