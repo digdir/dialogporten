@@ -141,21 +141,25 @@ public static class AspNetUtilitiesExtensions
                         .AddNpgsql()
                         .AddFusionCacheInstrumentation();
                 });
-        }
-        else
-        {
-            Console.WriteLine("[OpenTelemetry] OTLP exporter not configured - skipping");
-        }
 
-        if (!string.IsNullOrEmpty(settings.AppInsightsConnectionString))
-        {
             telemetryBuilder.WithMetrics(metrics =>
             {
                 metrics.AddRuntimeInstrumentation()
                     .AddAspNetCoreInstrumentation()
-                    .AddHttpClientInstrumentation()
-                    .AddAzureMonitorMetricExporter();
+                    .AddHttpClientInstrumentation();
+
+                if (!string.IsNullOrEmpty(settings.AppInsightsConnectionString))
+                {
+                    metrics.AddAzureMonitorMetricExporter(options =>
+                    {
+                        options.ConnectionString = settings.AppInsightsConnectionString;
+                    });
+                }
             });
+        }
+        else
+        {
+            Console.WriteLine("[OpenTelemetry] OTLP exporter not configured - skipping");
         }
 
         return builder;
