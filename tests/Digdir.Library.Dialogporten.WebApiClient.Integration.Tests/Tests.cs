@@ -272,6 +272,7 @@ public class Tests(WebApiClientFixture fixture) : IClassFixture<WebApiClientFixt
     {
         var createDialogCommand = new V1ServiceOwnerDialogsCommandsUpdate_Dialog
         {
+            Activities = [],
             Status = DialogsEntities_DialogStatus.New,
             Progress = 60,
             Attachments = [],
@@ -378,6 +379,7 @@ public class Tests(WebApiClientFixture fixture) : IClassFixture<WebApiClientFixt
                     Type = DialogsEntitiesTransmissions_DialogTransmissionType.Information
                 }
             ],
+            VisibleFrom = null,
         };
         return createDialogCommand;
     }
@@ -386,6 +388,7 @@ public class Tests(WebApiClientFixture fixture) : IClassFixture<WebApiClientFixt
         var now = DateTimeOffset.UtcNow;
         var createDialogCommand = new V1ServiceOwnerDialogsCommandsCreate_DialogCommand
         {
+            GuiActions = [],
             Activities =
             [
                 new V1ServiceOwnerDialogsCommandsCreate_Activity
@@ -424,6 +427,7 @@ public class Tests(WebApiClientFixture fixture) : IClassFixture<WebApiClientFixt
                     ]
                 }
             ],
+            Attachments = [],
             // createDialogCommand.Id = Guid.Parse("01927a6d-40d8-728b-b3da-845b680840d9");
             ServiceResource = "urn:altinn:resource:super-simple-service",
             Party = "urn:altinn:person:identifier-no:14886498226",
@@ -473,8 +477,6 @@ public class Tests(WebApiClientFixture fixture) : IClassFixture<WebApiClientFixt
                     ],
                     MediaType = "text/plain"
                 }
-
-
             },
             Transmissions =
             [
@@ -537,8 +539,6 @@ public class Tests(WebApiClientFixture fixture) : IClassFixture<WebApiClientFixt
                     Type = DialogsEntitiesTransmissions_DialogTransmissionType.Information
                 }
             ],
-            UpdatedAt = default,
-            VisibleFrom = null
         };
         return createDialogCommand;
     }
