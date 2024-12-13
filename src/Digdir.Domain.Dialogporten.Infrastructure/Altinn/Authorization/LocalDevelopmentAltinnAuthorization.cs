@@ -50,7 +50,6 @@ internal sealed class LocalDevelopmentAltinnAuthorization : IAltinnAuthorization
         return authorizedResources;
     }
 
-    [SuppressMessage("Performance", "CA1822:Mark members as static")]
     public async Task<AuthorizedPartiesResult> GetAuthorizedParties(IPartyIdentifier authenticatedParty, bool _ = false, CancellationToken __ = default)
         => await Task.FromResult(new AuthorizedPartiesResult
         {
@@ -70,5 +69,5 @@ internal sealed class LocalDevelopmentAltinnAuthorization : IAltinnAuthorization
             }]
         });
 
-    public Task<bool> HasListAuthorizationForDialog(DialogEntity dialog, CancellationToken cancellationToken) => Task.FromResult(true);
+    public Task<bool> HasListAuthorizationForDialog(DialogEntity _, CancellationToken __) => Task.FromResult(true);
 }
