@@ -39,7 +39,7 @@ public class CreateDialogTests : ApplicationCollectionFixture
     public async Task Cant_Create_Dialog_With_UUIDv7_In_Little_Endian_Format()
     {
         // Arrange
-        // Guid created with Medo, Uuid7.NewUuid7().ToGuid(true)
+        // Guid created with Medo, Uuid7.NewUuid7().ToGuid(bigEndian: true)
         var invalidDialogId = Guid.Parse("b2ca9301-c371-ab74-a87b-4ee1416b9655");
 
         var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog(id: invalidDialogId);
