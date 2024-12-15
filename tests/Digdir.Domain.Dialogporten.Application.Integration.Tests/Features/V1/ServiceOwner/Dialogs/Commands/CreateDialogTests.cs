@@ -7,6 +7,7 @@ using Digdir.Domain.Dialogporten.Application.Integration.Tests.Common;
 using Digdir.Domain.Dialogporten.Domain;
 using Digdir.Tool.Dialogporten.GenerateFakeData;
 using FluentAssertions;
+using Medo;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using static Digdir.Domain.Dialogporten.Application.Integration.Tests.UuiDv7Utils;
@@ -38,8 +39,8 @@ public class CreateDialogTests : ApplicationCollectionFixture
     public async Task Cant_Create_Dialog_With_UUIDv7_In_Little_Endian_Format()
     {
         // Arrange
-        // Guid created with Medo, Uuid7.NewUuid7().ToGuid()
-        var invalidDialogId = Guid.Parse("638e9101-6bc7-7975-b392-ba5c5a528c23");
+        // Guid created with Medo, Uuid7.NewUuid7().ToGuid(true)
+        var invalidDialogId = Guid.Parse("b2ca9301-c371-ab74-a87b-4ee1416b9655");
 
         var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog(id: invalidDialogId);
 
