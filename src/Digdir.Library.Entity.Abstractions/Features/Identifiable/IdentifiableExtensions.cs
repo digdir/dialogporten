@@ -37,6 +37,6 @@ public static class IdentifiableExtensions
     public static Guid CreateVersion7() =>
         // We want Guids in big endian format. The default behavior of Medo is big endian,
         // however, the implicit conversion from Medo.Uuid7 to Guid is little endian.
-        // "matchGuidEndianness" is set to true to ensure big endian.
-        Uuid7.NewUuid7().ToGuid(matchGuidEndianness: true);
+        // "bigEndian" is set to true to ensure big endian.
+        Uuid7.NewUuid7().ToGuid(bigEndian: true);
 }
