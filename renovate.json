@@ -32,18 +32,6 @@
     },
     {
       "packagePatterns": [
-        "^HotChocolate"
-      ],
-      "groupName": "HotChocolate (GraphQL) dependencies"
-    },
-    {
-      "packagePatterns": [
-        "^MassTransit"
-      ],
-      "groupName": "MassTransit dependencies"
-    },
-    {
-      "packagePatterns": [
         "^Serilog"
       ],
       "groupName": "Serilog dependencies"
