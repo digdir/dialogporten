@@ -39,7 +39,6 @@ services:
       - OTEL_EXPORTER_OTLP_PROTOCOL=${OTEL_EXPORTER_OTLP_PROTOCOL}
       - OTEL_SERVICE_NAME=dialogporten-webapi
       - OTEL_RESOURCE_ATTRIBUTES=service.instance.id=dialogporten-webapi,service.namespace=${OTEL_NAMESPACE} 
-      - OTEL_LOG_LEVEL=${OTEL_LOG_LEVEL}
     volumes:
       - ./.aspnet/https:/https
 
