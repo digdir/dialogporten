@@ -173,6 +173,7 @@ static void BuildAndRun(string[] args, TelemetryConfiguration telemetryConfigura
                             new EndpointNameMetadata(
                                 TypeNameConverter.ToShortName(endpointDefinition.EndpointType)))));
             };
+            x.Serializer.Options.RespectNullableAnnotations = true;
             x.Serializer.Options.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
             // Do not serialize empty collections
             x.Serializer.Options.TypeInfoResolver = new DefaultJsonTypeInfoResolver
