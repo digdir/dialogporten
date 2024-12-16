@@ -2,9 +2,9 @@
 
 on:
   workflow_dispatch:
-  push:
-    tags:
-      - "v*.*.*"
+#  push:
+#    tags:
+#      - "v*.*.*"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref_name }}
@@ -152,15 +152,15 @@ jobs:
       TOKEN_GENERATOR_PASSWORD: ${{ secrets.TOKEN_GENERATOR_PASSWORD }}
       K6_CLOUD_TOKEN: ${{ secrets.K6_CLOUD_TOKEN }}
       K6_CLOUD_PROJECT_ID: ${{ secrets.K6_CLOUD_PROJECT_ID }}
-    
+
     strategy:
       max-parallel: 1
       matrix:
-        files: 
+        files:
           - tests/k6/tests/serviceowner/serviceOwnerSearchWithThresholds.js
           - tests/k6/tests/serviceowner/createDialogWithThresholds.js
           - tests/k6/tests/enduser/enduserSearchWithThresholds.js
-      fail-fast: false  
+      fail-fast: false
     with:
       environment: yt01
       apiVersion: v1
