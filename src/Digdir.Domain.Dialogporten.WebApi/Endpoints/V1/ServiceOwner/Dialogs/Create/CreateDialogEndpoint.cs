@@ -27,7 +27,8 @@ public sealed class CreateDialogEndpoint : Endpoint<CreateDialogCommand>
         Description(b => b.ProducesOneOf(
             StatusCodes.Status201Created,
             StatusCodes.Status400BadRequest,
-            StatusCodes.Status422UnprocessableEntity));
+            StatusCodes.Status422UnprocessableEntity,
+            StatusCodes.Status409Conflict));
     }
 
     public override async Task HandleAsync(CreateDialogCommand req, CancellationToken ct)
@@ -37,6 +38,7 @@ public sealed class CreateDialogEndpoint : Endpoint<CreateDialogCommand>
             success => SendCreatedAtAsync<GetDialogEndpoint>(new GetDialogQuery { DialogId = success.Value }, success.Value, cancellation: ct),
             domainError => this.UnprocessableEntityAsync(domainError, ct),
             validationError => this.BadRequestAsync(validationError, ct),
-            forbidden => this.ForbiddenAsync(forbidden, ct));
+            forbidden => this.ForbiddenAsync(forbidden, ct),
+            conflict => this.ConflictAsync(conflict, ct));
     }
 }

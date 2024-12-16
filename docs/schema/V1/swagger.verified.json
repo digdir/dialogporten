@@ -2323,6 +2323,10 @@
             "nullable": true,
             "type": "string"
           },
+          "idempotentId": {
+            "nullable": true,
+            "type": "string"
+          },
           "party": {
             "description": "The party code representing the organization or person that the dialog belongs to in URN format.",
             "example": "urn:altinn:person:identifier-no:01125512345\nurn:altinn:organization:identifier-no:912345678",
@@ -5871,6 +5875,9 @@
           },
           "403": {
             "description": "Unauthorized to create a dialog for the given serviceResource (not owned by authenticated organization or has additional scope requirements defined in policy)."
+          },
+          "409": {
+            "description": ""
           },
           "422": {
             "content": {

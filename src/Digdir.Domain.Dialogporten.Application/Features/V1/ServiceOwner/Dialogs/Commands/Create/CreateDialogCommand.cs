@@ -22,7 +22,7 @@ namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialog
 public sealed class CreateDialogCommand : CreateDialogDto, IRequest<CreateDialogResult>;
 
 [GenerateOneOf]
-public sealed partial class CreateDialogResult : OneOfBase<Success<Guid>, DomainError, ValidationError, Forbidden>;
+public sealed partial class CreateDialogResult : OneOfBase<Success<Guid>, DomainError, ValidationError, Forbidden, Conflict>;
 
 internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogCommand, CreateDialogResult>
 {
@@ -72,6 +72,17 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
         else
         {
             dialog.Org = serviceResourceInformation.OwnOrgShortName;
+        }
+
+        if (request.IdempotentId is not null)
+        {
+            var dialogIdempotentId = new IdempotentId(request.IdempotentId, dialog.Org);
+            var dialogQuery = _db.Dialogs.Select(x => x).Where(x => x.IdempotentId == dialogIdempotentId);
+            if (dialogQuery.Any())
+            {
+                return new Conflict($"IdempotencyId: '{request.IdempotentId}' already exists with DialogId '{dialogQuery.First().Id}'");
+            }
+            dialog.IdempotentId = dialogIdempotentId;
         }
 
         CreateDialogEndUserContext(request, dialog);

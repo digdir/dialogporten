@@ -42,6 +42,7 @@ public sealed class DialogEntity :
 
     public string? PrecedingProcess { get; set; }
 
+    public IdempotentId? IdempotentId { get; set; }
 
     // === Dependent relationships ===
     public DialogStatus.Values StatusId { get; set; }
