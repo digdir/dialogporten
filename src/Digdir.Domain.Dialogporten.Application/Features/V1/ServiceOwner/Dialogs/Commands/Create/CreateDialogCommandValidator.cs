@@ -46,7 +46,7 @@ internal sealed class CreateDialogCommandValidator : AbstractValidator<CreateDia
 
         RuleFor(x => x.IdempotentId)
             .MaximumLength(36)
-            .WithMessage("'{{PropertyName}}' must at most 36 characters.");
+            .WithMessage("'{{PropertyName}}' can't be longer than 36 characters.");
 
         RuleFor(x => x.ServiceResource)
             .NotNull()
