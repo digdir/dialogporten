@@ -13,6 +13,7 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 using Digdir.Domain.Dialogporten.Domain.Parties;
 using Digdir.Library.Entity.Abstractions.Features.Identifiable;
+using FluentValidation.Results;
 using MediatR;
 using OneOf;
 using OneOf.Types;
@@ -74,13 +75,15 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
             dialog.Org = serviceResourceInformation.OwnOrgShortName;
         }
 
-        if (request.IdempotentId is not null)
+        // Amund: Trenger Dette blir å komme som en 422 så vi bare hopper over om dialog.org ikke er på plass.
+        if (request.IdempotentId is not null && !string.IsNullOrEmpty(dialog.Org))
         {
             var dialogIdempotentId = new IdempotentId(request.IdempotentId, dialog.Org);
             var dialogQuery = _db.Dialogs.Select(x => x).Where(x => x.IdempotentId == dialogIdempotentId);
             if (dialogQuery.Any())
             {
                 return new Conflict($"IdempotencyId: '{request.IdempotentId}' already exists with DialogId '{dialogQuery.First().Id}'");
+                // return new Conflict(dialogQuery.First().Id.ToString());
             }
             dialog.IdempotentId = dialogIdempotentId;
         }
