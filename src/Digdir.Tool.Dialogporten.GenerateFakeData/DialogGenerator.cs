@@ -242,7 +242,7 @@ public static class DialogGenerator
         DialogTransmissionType.Values? type = null)
     {
         return new Faker<TransmissionDto>()
-            .RuleFor(o => o.Id, _ => Uuid7.NewUuid7().ToGuid(true))
+            .RuleFor(o => o.Id, _ => IdentifiableExtensions.CreateVersion7())
             .RuleFor(o => o.CreatedAt, f => f.Date.Past())
             .RuleFor(o => o.Type, f => type ?? f.PickRandom<DialogTransmissionType.Values>())
             .RuleFor(o => o.Sender, _ => new() { ActorType = ActorType.Values.ServiceOwner })
@@ -262,7 +262,7 @@ public static class DialogGenerator
             .Where(x => x != DialogActivityType.Values.TransmissionOpened).ToList();
 
         return new Faker<ActivityDto>()
-            .RuleFor(o => o.Id, () => Uuid7.NewUuid7().ToGuid(true))
+            .RuleFor(o => o.Id, () => IdentifiableExtensions.CreateVersion7())
             .RuleFor(o => o.CreatedAt, f => f.Date.Past())
             .RuleFor(o => o.ExtendedType, f => new Uri(f.Internet.UrlWithPath(Uri.UriSchemeHttps)))
             .RuleFor(o => o.Type, f => type ?? f.PickRandom(activityTypes))
