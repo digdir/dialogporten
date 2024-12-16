@@ -113,6 +113,68 @@ Besides ordinary unit and integration tests, there are test suites for both func
 
 See `tests/k6/README.md` for more information.
 
+## Health Checks
+
+The project includes integrated health checks that are exposed through standard endpoints:
+- `/health/startup` - Dependency checks
+- `/health/liveness` - Self checks
+- `/health/readiness` - Critical service checks
+- `/health` - General health status
+- `/health/deep` - Comprehensive health check including external services
+
+These health checks are integrated with Azure Container Apps' health probe system and are used to monitor the application's health status.
+
+## Observability with OpenTelemetry
+
+This project uses OpenTelemetry for distributed tracing and metrics collection. The setup includes:
+
+### Core Features
+- Distributed tracing across services
+- Runtime and application metrics
+- Integration with Azure Monitor/Application Insights
+- Support for both OTLP and Azure Monitor exporters
+- Automatic instrumentation for:
+  - ASP.NET Core
+  - HTTP clients
+  - Entity Framework Core
+  - PostgreSQL
+  - FusionCache
+
+### Configuration
+
+OpenTelemetry is configured through environment variables that are automatically provided by Azure Container Apps in production environments:
+
+```json
+{
+    "OTEL_SERVICE_NAME": "your-service-name",
+    "OTEL_EXPORTER_OTLP_ENDPOINT": "http://your-collector:4317",
+    "OTEL_EXPORTER_OTLP_PROTOCOL": "grpc",
+    "OTEL_RESOURCE_ATTRIBUTES": "key1=value1,key2=value2",
+    "APPLICATIONINSIGHTS_CONNECTION_STRING": "your-connection-string"
+}
+```
+
+### Local Development
+
+For local development, the project includes a docker-compose setup with:
+- OpenTelemetry Collector
+- Grafana
+- Other supporting services
+
+To run the local observability stack:
+```bash
+podman compose -f docker-compose-otel.yml up
+```
+
+### Request Filtering
+
+The telemetry setup includes smart filtering to:
+- Exclude health check endpoints from tracing
+- Filter out duplicate traces from Azure SDK clients
+- Only record relevant HTTP client calls
+
+For more details about the OpenTelemetry setup, see the `ConfigureTelemetry` method in `AspNetUtilitiesExtensions.cs`.
+
 ## Updating the SDK in global.json
 When RenovateBot updates `global.json` or base image versions in Dockerfiles, make sure they match. 
 The `global.json` file should always have the same SDK version as the base image in the Dockerfiles. 
