@@ -17,6 +17,24 @@
       "schedule": [
         "every 3 months"
       ]
+    },
+    {
+      "packagePatterns": [
+        "^Npgsql"
+      ],
+      "groupName": "Npgsql dependencies"
+    },
+    {
+      "packagePatterns": [
+        "^Microsoft"
+      ],
+      "groupName": "Microsoft dependencies"
+    },
+    {
+      "packagePatterns": [
+        "^Serilog"
+      ],
+      "groupName": "Serilog dependencies"
     }
   ]
 }
