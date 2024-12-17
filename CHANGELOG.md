@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.42.0](https://github.com/digdir/dialogporten/compare/v1.41.3...v1.42.0) (2024-12-16)
+
+
+### Features
+
+* **apps:** add otel exporter for graphql, service and web-api ([#1528](https://github.com/digdir/dialogporten/issues/1528)) ([cb9238e](https://github.com/digdir/dialogporten/commit/cb9238ef76188b4dde371e08b7ce597645bcd8b7))
+
 ## [1.41.3](https://github.com/digdir/dialogporten/compare/v1.41.2...v1.41.3) (2024-12-13)
 
 
