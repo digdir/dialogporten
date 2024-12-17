@@ -14,6 +14,8 @@ using OpenTelemetry;
 using OpenTelemetry.Exporter;
 using System.Diagnostics;
 using Azure.Monitor.OpenTelemetry.Exporter;
+using OpenTelemetry.Logs;
+using Microsoft.Extensions.Logging;
 
 namespace Digdir.Library.Utils.AspNet;
 
@@ -60,6 +62,7 @@ public static class AspNetUtilitiesExtensions
 
         Console.WriteLine($"[OpenTelemetry] Configuring telemetry for service: {settings.ServiceName}");
 
+        // Rest of the existing telemetry configuration...
         var telemetryBuilder = builder.Services.AddOpenTelemetry()
             .ConfigureResource(resource =>
             {
@@ -156,6 +159,14 @@ public static class AspNetUtilitiesExtensions
                     });
                 }
             });
+
+            if (!builder.Environment.IsDevelopment())
+            {
+                // Clear existing logging providers. If development, we want to keep the console logging.
+                builder.Logging.ClearProviders();
+            }
+
+            telemetryBuilder.WithLogging();
         }
         else
         {
