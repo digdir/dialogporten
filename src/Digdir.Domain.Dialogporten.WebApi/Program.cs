@@ -24,48 +24,20 @@ using Microsoft.AspNetCore.Authorization;
 using NSwag;
 using Serilog;
 using Microsoft.Extensions.Options;
+using Digdir.Domain.Dialogporten.WebApi.Common.Middleware;
 
-// Using two-stage initialization to catch startup errors.
-var telemetryConfiguration = TelemetryConfiguration.CreateDefault();
-Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Warning()
-    .Enrich.WithEnvironmentName()
-    .Enrich.FromLogContext()
-    .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture)
-    .WriteTo.ApplicationInsights(telemetryConfiguration, TelemetryConverter.Traces)
-    .CreateBootstrapLogger();
+// Replace the bootstrap logging setup with basic console logging until proper initialization
+var builder = WebApplication.CreateBuilder(args);
 
 try
 {
-    BuildAndRun(args, telemetryConfiguration);
-}
-catch (Exception ex) when (ex is not OperationCanceledException)
-{
-    Log.Fatal(ex, "Application terminated unexpectedly");
-    throw;
-}
-finally
-{
-    Log.CloseAndFlush();
-}
-
-static void BuildAndRun(string[] args, TelemetryConfiguration telemetryConfiguration)
-{
-    var builder = WebApplication.CreateBuilder(args);
-
+    // Remove the BuildAndRun method and move its contents here
     builder.WebHost.ConfigureKestrel(kestrelOptions =>
     {
         kestrelOptions.Limits.MaxRequestBodySize = Constants.MaxRequestBodySize;
     });
 
-    builder.Host.UseSerilog((context, services, configuration) => configuration
-        .MinimumLevel.Warning()
-        .ReadFrom.Configuration(context.Configuration)
-        .ReadFrom.Services(services)
-        .Enrich.WithEnvironmentName()
-        .Enrich.FromLogContext()
-        .WriteTo.ApplicationInsights(telemetryConfiguration, TelemetryConverter.Traces));
-
+    // Remove Serilog configuration
     builder.Configuration
         .AddAzureConfiguration(builder.Environment.EnvironmentName)
         .AddLocalConfiguration(builder.Environment);
@@ -154,11 +126,9 @@ static void BuildAndRun(string[] args, TelemetryConfiguration telemetryConfigura
 
     var app = builder.Build();
 
-    app.MapAspNetHealthChecks()
-        .MapControllers();
-
+    // Replace UseSerilogRequestLogging with OpenTelemetry middleware
     app.UseHttpsRedirection()
-        .UseSerilogRequestLogging()
+        .UseRequestLogging()
         .UseDefaultExceptionHandler()
         .UseJwtSchemeSelector()
         .UseAuthentication()
@@ -221,6 +191,11 @@ static void BuildAndRun(string[] args, TelemetryConfiguration telemetryConfigura
         });
 
     app.Run();
+}
+catch (Exception ex) when (ex is not OperationCanceledException)
+{
+    Console.WriteLine($"Application terminated unexpectedly: {ex}");
+    throw;
 }
 
 static void IgnoreEmptyCollections(JsonTypeInfo typeInfo)
