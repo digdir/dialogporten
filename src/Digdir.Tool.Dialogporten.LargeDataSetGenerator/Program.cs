@@ -6,14 +6,19 @@ using Npgsql;
 
 #pragma warning disable CA1305
 
-var connString = "Server=localhost;Port=5432;Database=dialogporten;User ID=postgres;Password=;Include Error Detail=True;";
+if (args.Length < 3)
+{
+    Console.WriteLine("Please provide the connection string, interval (in seconds), and end date (in months) as arguments.");
+    return;
+}
 
-// TODO: Disable all indexes and constraints
+var connString = args[0];
+var interval = TimeSpan.FromSeconds(int.Parse(args[1]));
+var endDateMonths = int.Parse(args[2]);
 
 const string startDateString = "1986/01/03 00:00:00 +00:00"; // TODO: Parameterize
 var currentDate = DateTimeOffset.ParseExact(startDateString, "yyyy/MM/dd HH:mm:ss zzz", CultureInfo.InvariantCulture);
-var interval = TimeSpan.FromSeconds(2);
-var endDate = currentDate.AddMonths(8);
+var endDate = currentDate.AddMonths(endDateMonths);
 
 var serviceResources = File.ReadAllLines("./service_resources");
 
