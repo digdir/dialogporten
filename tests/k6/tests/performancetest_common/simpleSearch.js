@@ -20,7 +20,7 @@ function retrieveDialogContent(response, paramsWithToken, getFunction = getEU) {
     if (!items?.length) return;
     const dialogId = items[0].id;
     if (!dialogId) return;
-        
+    console.log("Found dialog with id " + dialogId);  
     getContent(dialogId, paramsWithToken, 'get dialog', '', getFunction);
     getContentChain(dialogId, paramsWithToken, 'get dialog activities', 'get dialog activity', '/activities/', getFunction);
     getContentChain(dialogId, paramsWithToken, 'get seenlogs', 'get seenlog', '/seenlog/', getFunction);
@@ -99,6 +99,7 @@ export function getContentChain(dialogId, paramsWithToken, tag, subtag, endpoint
     };
     let d = getUrl('dialogs/' + dialogId + endpoint, listParams, getFunction);
     let json = d.json();
+    console.log("Found " + json.length + " " + tag + " for endpoint " + dialogId + endpoint);
     if (json.length > 0) {
         const detailParams = {
             ...paramsWithToken,

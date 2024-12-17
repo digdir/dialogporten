@@ -54,5 +54,14 @@ export default function (endUser, resource) {
     let payload = createDialogPayload();
     payload.serviceResource = "urn:altinn:resource:" +resource;
     payload.party = "urn:altinn:person:identifier-no:" + endUser;
+    
+    // const firstTransmission = payload.transmissions[0];
+    // const copyOfFirstTransmission = { ...firstTransmission };
+    // for (let i = 0; i < 155; i++) {
+    //     payload.transmissions.push(copyOfFirstTransmission);
+    // }
+    // console.log(payload.transmissions.length);
+    // console.log(endUser, resource);
+
     return cleanUp(payload);
 }
