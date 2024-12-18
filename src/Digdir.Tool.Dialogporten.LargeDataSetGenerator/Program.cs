@@ -1,24 +1,27 @@
 ﻿using System.Diagnostics;
 using System.Globalization;
 using System.Text;
-using Digdir.Library.Entity.Abstractions.Features.Identifiable;
+using Medo;
 using Npgsql;
 
 #pragma warning disable CA1305
 
-if (args.Length < 3)
+var connString = Environment.GetEnvironmentVariable("CONN_STRING");
+var intervalSeconds = Environment.GetEnvironmentVariable("INTERVAL_SECONDS");
+var endDateMonths = Environment.GetEnvironmentVariable("NUM_MONTHS");
+
+if (string.IsNullOrEmpty(connString) || string.IsNullOrEmpty(intervalSeconds) || string.IsNullOrEmpty(endDateMonths))
 {
-    Console.WriteLine("Please provide the connection string, interval (in seconds), and end date (in months) as arguments.");
+    Console.WriteLine("Please set the environment variables: CONN_STRING, INTERVAL_SECONDS, and NUM_MONTHS.");
     return;
 }
 
-var connString = args[0];
-var interval = TimeSpan.FromSeconds(int.Parse(args[1]));
-var endDateMonths = int.Parse(args[2]);
+var interval = TimeSpan.FromSeconds(int.Parse(intervalSeconds));
+var endDateMonthsInt = int.Parse(endDateMonths);
 
 const string startDateString = "1986/01/03 00:00:00 +00:00"; // TODO: Parameterize
 var currentDate = DateTimeOffset.ParseExact(startDateString, "yyyy/MM/dd HH:mm:ss zzz", CultureInfo.InvariantCulture);
-var endDate = currentDate.AddMonths(endDateMonths);
+var endDate = currentDate.AddMonths(endDateMonthsInt);
 
 var serviceResources = File.ReadAllLines("./service_resources");
 
@@ -36,7 +39,7 @@ while (currentDate < endDate)
     var currentServiceResourceIndex = 0;
     while (currentDate < monthEndDate)
     {
-        var dialogId = IdentifiableExtensions.CreateVersion7(currentDate);
+        var dialogId = Uuid7.NewUuid7(currentDate).ToGuid();
         dialogIds.Add(dialogId);
 
         var serviceResource = serviceResources[currentServiceResourceIndex];

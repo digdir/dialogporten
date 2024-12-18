@@ -2,16 +2,12 @@
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
+        <PublishAot>true</PublishAot>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="NGuid" Version="1.0.0" />
+      <PackageReference Include="Medo.Uuid7" Version="3.0.0" />
       <PackageReference Include="Npgsql" Version="9.0.2" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\Digdir.Domain.Dialogporten.Domain\Digdir.Domain.Dialogporten.Domain.csproj" />
-      <ProjectReference Include="..\Digdir.Library.Entity.Abstractions\Digdir.Library.Entity.Abstractions.csproj" />
     </ItemGroup>
 
     <ItemGroup>
