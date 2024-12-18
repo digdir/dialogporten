@@ -65,7 +65,7 @@ var storageAccountName = take(
   24
 )
 
-resource storageAccount 'Microsoft.Storage/storageAccounts@2023-04-01' = {
+resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = {
   name: storageAccountName
   location: location
   sku: {
@@ -80,7 +80,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-04-01' = {
   tags: tags
 }
 
-resource applicationServicePlan 'Microsoft.Web/serverfarms@2023-12-01' = {
+resource applicationServicePlan 'Microsoft.Web/serverfarms@2024-04-01' = {
   name: '${namePrefix}-slacknotifier-asp'
   location: location
   sku: {
@@ -97,7 +97,7 @@ resource applicationInsights 'Microsoft.Insights/components@2020-02-02' existing
 
 var functionAppNameMaxLength = 40
 var functionAppName = uniqueResourceName('${namePrefix}-slacknotifier-fa', functionAppNameMaxLength)
-resource functionApp 'Microsoft.Web/sites@2023-12-01' = {
+resource functionApp 'Microsoft.Web/sites@2024-04-01' = {
   name: functionAppName
   location: location
   kind: 'functionapp'
@@ -182,7 +182,7 @@ var query = '''
              | extend Details = replace_string(Details, "Digdir.Domain.Dialogporten.", "")
              | project Environment, Type, SeverityLevel, Count, Details
              '''
-resource exceptionOccuredAlertRule 'Microsoft.Insights/scheduledQueryRules@2023-03-15-preview' = {
+resource exceptionOccuredAlertRule 'Microsoft.Insights/scheduledQueryRules@2023-12-01' = {
   name: '${namePrefix}-exception-occured-sqr'
   location: location
   properties: {
