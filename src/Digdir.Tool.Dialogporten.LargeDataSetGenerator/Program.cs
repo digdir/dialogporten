@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Globalization;
 using System.Text;
+using Digdir.Tool.Dialogporten.LargeDataSetGenerator;
 using Medo;
 using Npgsql;
 
@@ -24,8 +25,6 @@ try
 
     var endDate = currentDate.AddMonths(totalNumMonths);
 
-    var serviceResources = File.ReadAllLines("./service_resources");
-
     var totalDialogCreatedStartTimestamp = Stopwatch.GetTimestamp();
 
     var dialogsCreated = 0;
@@ -33,74 +32,56 @@ try
     while (currentDate < endDate)
     {
         var batchEndDate = currentDate.AddDays(batchNumDays);
-        var dialogCsvData = new StringBuilder();
-        dialogCsvData.AppendLine(
-            "Id,CreatedAt,Deleted,DeletedAt,DueAt,ExpiresAt,ExtendedStatus,ExternalReference,Org,Party,PrecedingProcess,Process,Progress,Revision,ServiceResource,ServiceResourceType,StatusId,VisibleFrom,UpdatedAt");
 
-        List<Guid> dialogIds = [];
-        var currentServiceResourceIndex = 0;
-        var dialogBatchStartTimestamp = Stopwatch.GetTimestamp();
+        Console.WriteLine($"Generating dialogs from {currentDate} to {batchEndDate}...");
+        var dialogStartTimestamp = Stopwatch.GetTimestamp();
 
-        while (currentDate < batchEndDate)
-        {
-            var dialogId = Uuid7.NewUuid7(currentDate).ToGuid();
-            dialogIds.Add(dialogId);
-
-            var serviceResource = serviceResources[currentServiceResourceIndex];
-            var formattedDate = currentDate.ToString("yyyy-MM-dd HH:mm:ss zzz");
-            dialogCsvData.AppendLine(
-                $"{dialogId},{formattedDate},FALSE,,,,sql-generated,NULL,ttd,partyHere,NULL,NULL,11,{Guid.NewGuid()},{serviceResource},GenericAccessResource,1,,{formattedDate}");
-
-            currentDate = currentDate.AddSeconds(intervalSeconds);
-            currentServiceResourceIndex = (currentServiceResourceIndex + 1) % serviceResources.Length;
-        }
+        var (dialogIds, dialogCsvData) = Dialog.Generate(currentDate, batchEndDate, intervalSeconds);
 
         using (var conn = new NpgsqlConnection(connString))
         {
             conn.Open();
 
-            using var writer = conn.BeginTextImport(
-                "COPY \"Dialog\" (\"Id\", \"CreatedAt\", \"Deleted\", \"DeletedAt\", \"DueAt\", \"ExpiresAt\", \"ExtendedStatus\", \"ExternalReference\", \"Org\", \"Party\", \"PrecedingProcess\", \"Process\", \"Progress\", \"Revision\", \"ServiceResource\", \"ServiceResourceType\", \"StatusId\", \"VisibleFrom\", \"UpdatedAt\") FROM STDIN (FORMAT csv, HEADER true, NULL '')");
-            writer.Write(dialogCsvData.ToString());
+            using var writer = conn.BeginTextImport(Dialog.CopyCommand);
+            writer.Write(dialogCsvData);
         }
 
         dialogsCreated += dialogIds.Count;
-        Console.WriteLine($"Inserted {dialogIds.Count} dialogs... it took {Stopwatch.GetElapsedTime(dialogBatchStartTimestamp)}");
+        Console.WriteLine($"Inserted {dialogIds.Count} dialogs... it took {Stopwatch.GetElapsedTime(dialogStartTimestamp)}");
+        Console.WriteLine(string.Empty);
 
 
         // Dialog Content:
         var dialogContentStartTimestamp = Stopwatch.GetTimestamp();
-        var dialogContentCsvData = new StringBuilder();
-        dialogContentCsvData.AppendLine("Id,CreatedAt,UpdatedAt,MediaType,DialogId,TypeId");
-
-        List<Guid> dialogContentIds = [];
-        foreach (var dialogId in dialogIds)
-        {
-            var createdAt = currentDate.ToString("yyyy-MM-dd HH:mm:ss zzz");
-            var contentId1 = Uuid7.NewUuid7(currentDate).ToGuid();
-            var contentId2 = Uuid7.NewUuid7(currentDate).ToGuid();
-
-            dialogContentCsvData.AppendLine($"{contentId1},{createdAt},{createdAt},'text/plain',{dialogId},1");
-            dialogContentCsvData.AppendLine($"{contentId2},{createdAt},{createdAt},'text/plain',{dialogId},3");
-
-            dialogContentIds.Add(contentId1);
-            dialogContentIds.Add(contentId2);
-        }
+        var (dialogContentIds, dialogContentCsvData) = DialogContent.Generate(dialogIds, currentDate, intervalSeconds);
 
         using (var conn = new NpgsqlConnection(connString))
         {
             conn.Open();
 
-            using var contentWriter = conn.BeginTextImport(
-                "COPY \"DialogContent\" (\"Id\", \"CreatedAt\", \"UpdatedAt\", \"MediaType\", \"DialogId\", \"TypeId\") FROM STDIN (FORMAT csv, HEADER true, NULL '')");
-            contentWriter.Write(dialogContentCsvData.ToString());
+            using var contentWriter = conn.BeginTextImport(DialogContent.CopyCommand);
+            contentWriter.Write(dialogContentCsvData);
         }
 
         Console.WriteLine($"Inserted {dialogContentIds.Count} dialog content for {dialogIds.Count} dialogs... it took {Stopwatch.GetElapsedTime(dialogContentStartTimestamp)}");
 
+        // Dialog Gui Action:
+        var dialogGuiActionStartTimestamp = Stopwatch.GetTimestamp();
+        var (dialogGuiActionIds, dialogGuiActionCsvData) = GuiAction.Generate(dialogIds, currentDate, intervalSeconds);
+
+        using (var conn = new NpgsqlConnection(connString))
+        {
+            conn.Open();
+
+            using var guiActionWriter = conn.BeginTextImport(GuiAction.CopyCommand);
+            guiActionWriter.Write(dialogGuiActionCsvData);
+        }
+
+        Console.WriteLine($"Inserted {dialogGuiActionIds.Count} dialog gui actions for {dialogIds.Count} dialogs... it took {Stopwatch.GetElapsedTime(dialogGuiActionStartTimestamp)}");
 
 
 
+        currentDate = batchEndDate;
         Console.WriteLine(string.Empty);
     }
 
