@@ -27,7 +27,7 @@ WITH dialog_data AS (
         ts AS "UpdatedAt",
         NULL::timestamptz AS "VisibleFrom",
         ROW_NUMBER() OVER () - 1 AS rownum
-    FROM generate_series('1970-01-01 00:00:00', '1970-09-01 00:00:00', '2 seconds'::INTERVAL) ts
+    FROM generate_series('1970-01-01 00:00:00', '1970-02-01 00:00:00', '10 seconds'::INTERVAL) ts
 )
 , dialog_inserts AS (
 INSERT INTO "Dialog" ("Id", "CreatedAt", "Deleted", "DeletedAt", "DueAt", "ExpiresAt",
@@ -52,7 +52,8 @@ INSERT INTO dialog_keys SELECT id FROM dialog_inserts;
 
 
 -- DialogContent
-CREATE TEMPORARY TABLE dialog_content_keys (
+DROP TABLE IF EXISTS "dialog_content_keys";
+CREATE TEMPORARY TABLE if not exists dialog_content_keys (
     "Id" UUID, PRIMARY KEY ("Id")
 );
 

@@ -11,42 +11,37 @@ try
     Console.WriteLine("Starting large data set generator...");
 
     var connString = Environment.GetEnvironmentVariable("CONN_STRING");
-    var intervalSeconds = Environment.GetEnvironmentVariable("INTERVAL_SECONDS");
-    var endDateMonths = Environment.GetEnvironmentVariable("NUM_MONTHS");
+    var intervalSeconds = int.Parse(Environment.GetEnvironmentVariable("INTERVAL_SECONDS")!);
+    var batchNumDays = int.Parse(Environment.GetEnvironmentVariable("BATCH_NUM_DAYS")!);
+    var startingYear = int.Parse(Environment.GetEnvironmentVariable("STARTING_YEAR")!);
+    var totalNumMonths = int.Parse(Environment.GetEnvironmentVariable("TOTAL_NUM_MONTHS")!);
 
-    if (string.IsNullOrEmpty(connString) || string.IsNullOrEmpty(intervalSeconds) ||
-        string.IsNullOrEmpty(endDateMonths))
-    {
-        Console.WriteLine("Please set the environment variables: CONN_STRING, INTERVAL_SECONDS, and NUM_MONTHS.");
-        return;
-    }
 
-    var interval = TimeSpan.FromSeconds(int.Parse(intervalSeconds));
-    var endDateMonthsInt = int.Parse(endDateMonths);
-
-    const string startDateString = "1970/01/01 00:00:00 +00:00"; // TODO: Parameterize
+    var startDateString = $"{startingYear}/01/01 00:00:00 +00:00";
     var currentDate = DateTimeOffset.ParseExact(
         startDateString, "yyyy/MM/dd HH:mm:ss zzz",
         CultureInfo.InvariantCulture);
 
-    var endDate = currentDate.AddMonths(endDateMonthsInt);
+    var endDate = currentDate.AddMonths(totalNumMonths);
 
     var serviceResources = File.ReadAllLines("./service_resources");
 
-    var startTimestamp = Stopwatch.GetTimestamp();
+    var totalDialogCreatedStartTimestamp = Stopwatch.GetTimestamp();
 
     var dialogsCreated = 0;
 
     while (currentDate < endDate)
     {
-        var monthEndDate = currentDate.AddMonths(1);
+        var batchEndDate = currentDate.AddDays(batchNumDays);
         var dialogCsvData = new StringBuilder();
         dialogCsvData.AppendLine(
             "Id,CreatedAt,Deleted,DeletedAt,DueAt,ExpiresAt,ExtendedStatus,ExternalReference,Org,Party,PrecedingProcess,Process,Progress,Revision,ServiceResource,ServiceResourceType,StatusId,VisibleFrom,UpdatedAt");
 
         List<Guid> dialogIds = [];
         var currentServiceResourceIndex = 0;
-        while (currentDate < monthEndDate)
+        var dialogBatchStartTimestamp = Stopwatch.GetTimestamp();
+
+        while (currentDate < batchEndDate)
         {
             var dialogId = Uuid7.NewUuid7(currentDate).ToGuid();
             dialogIds.Add(dialogId);
@@ -56,7 +51,7 @@ try
             dialogCsvData.AppendLine(
                 $"{dialogId},{formattedDate},FALSE,,,,sql-generated,NULL,ttd,partyHere,NULL,NULL,11,{Guid.NewGuid()},{serviceResource},GenericAccessResource,1,,{formattedDate}");
 
-            currentDate = currentDate.Add(interval);
+            currentDate = currentDate.AddSeconds(intervalSeconds);
             currentServiceResourceIndex = (currentServiceResourceIndex + 1) % serviceResources.Length;
         }
 
@@ -70,12 +65,15 @@ try
         }
 
         dialogsCreated += dialogIds.Count;
-        Console.WriteLine($"Inserted {dialogIds.Count} dialogs...");
+        Console.WriteLine($"Inserted {dialogIds.Count} dialogs... it took {Stopwatch.GetElapsedTime(dialogBatchStartTimestamp)}");
+
 
         // Dialog Content:
+        var dialogContentStartTimestamp = Stopwatch.GetTimestamp();
         var dialogContentCsvData = new StringBuilder();
         dialogContentCsvData.AppendLine("Id,CreatedAt,UpdatedAt,MediaType,DialogId,TypeId");
 
+        List<Guid> dialogContentIds = [];
         foreach (var dialogId in dialogIds)
         {
             var createdAt = currentDate.ToString("yyyy-MM-dd HH:mm:ss zzz");
@@ -84,6 +82,9 @@ try
 
             dialogContentCsvData.AppendLine($"{contentId1},{createdAt},{createdAt},'text/plain',{dialogId},1");
             dialogContentCsvData.AppendLine($"{contentId2},{createdAt},{createdAt},'text/plain',{dialogId},3");
+
+            dialogContentIds.Add(contentId1);
+            dialogContentIds.Add(contentId2);
         }
 
         using (var conn = new NpgsqlConnection(connString))
@@ -95,10 +96,15 @@ try
             contentWriter.Write(dialogContentCsvData.ToString());
         }
 
-        Console.WriteLine($"Inserted dialog content for {dialogIds.Count} dialogs...");
+        Console.WriteLine($"Inserted {dialogContentIds.Count} dialog content for {dialogIds.Count} dialogs... it took {Stopwatch.GetElapsedTime(dialogContentStartTimestamp)}");
+
+
+
+
+        Console.WriteLine(string.Empty);
     }
 
-    var timeItTook = Stopwatch.GetElapsedTime(startTimestamp);
+    var timeItTook = Stopwatch.GetElapsedTime(totalDialogCreatedStartTimestamp);
     Console.WriteLine($"Generated {dialogsCreated} dialogs in {timeItTook}");
 }
 catch (Exception ex)
