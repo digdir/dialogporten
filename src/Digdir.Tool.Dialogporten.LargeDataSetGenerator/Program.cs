@@ -8,6 +8,8 @@ using Npgsql;
 
 try
 {
+    Console.WriteLine("Starting large data set generator...");
+
     var connString = Environment.GetEnvironmentVariable("CONN_STRING");
     var intervalSeconds = Environment.GetEnvironmentVariable("INTERVAL_SECONDS");
     var endDateMonths = Environment.GetEnvironmentVariable("NUM_MONTHS");
@@ -22,7 +24,7 @@ try
     var interval = TimeSpan.FromSeconds(int.Parse(intervalSeconds));
     var endDateMonthsInt = int.Parse(endDateMonths);
 
-    const string startDateString = "1986/01/03 00:00:00 +00:00"; // TODO: Parameterize
+    const string startDateString = "1970/01/01 00:00:00 +00:00"; // TODO: Parameterize
     var currentDate =
         DateTimeOffset.ParseExact(startDateString, "yyyy/MM/dd HH:mm:ss zzz", CultureInfo.InvariantCulture);
     var endDate = currentDate.AddMonths(endDateMonthsInt);
@@ -64,6 +66,7 @@ try
         writer.Write(dialogCsvData.ToString());
 
         dialogsCreated += dialogIds.Count;
+        Console.WriteLine($"Inserted {dialogIds.Count} dialogs...");
     }
 
     var timeItTook = Stopwatch.GetElapsedTime(startTimestamp);

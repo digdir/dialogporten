@@ -2,7 +2,8 @@ ROLLBACK;
 BEGIN TRANSACTION;
 
 -- Dialog
-CREATE TEMPORARY TABLE dialog_keys (
+DROP TABLE IF EXISTS "dialog_keys";
+CREATE TEMPORARY TABLE if not exists dialog_keys (
     "Id" UUID, PRIMARY KEY ("Id")
 );
 
@@ -26,7 +27,7 @@ WITH dialog_data AS (
         ts AS "UpdatedAt",
         NULL::timestamptz AS "VisibleFrom",
         ROW_NUMBER() OVER () - 1 AS rownum
-    FROM generate_series('1970-01-01 00:00:00', '1970-02-01 00:00:00', '2 seconds'::INTERVAL) ts
+    FROM generate_series('1970-01-01 00:00:00', '1970-09-01 00:00:00', '2 seconds'::INTERVAL) ts
 )
 , dialog_inserts AS (
 INSERT INTO "Dialog" ("Id", "CreatedAt", "Deleted", "DeletedAt", "DueAt", "ExpiresAt",
@@ -35,7 +36,7 @@ INSERT INTO "Dialog" ("Id", "CreatedAt", "Deleted", "DeletedAt", "DueAt", "Expir
 SELECT
     d."Id", d."CreatedAt", d."Deleted", d."DeletedAt", d."DueAt", d."ExpiresAt",
     d."ExtendedStatus", d."ExternalReference", d."Org",
-    p.value AS "Party", d."PrecedingProcess", d."Process", d."Progress", d."Revision",
+    'party', d."PrecedingProcess", d."Process", d."Progress", d."Revision",
     s.value AS "ServiceResource", d."ServiceResourceType", d."StatusId", d."UpdatedAt", d."VisibleFrom"
 FROM dialog_data d
 -- This table needs to be created and populated before this query
