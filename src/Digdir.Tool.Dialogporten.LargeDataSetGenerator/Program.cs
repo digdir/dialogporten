@@ -25,8 +25,10 @@ try
     var endDateMonthsInt = int.Parse(endDateMonths);
 
     const string startDateString = "1970/01/01 00:00:00 +00:00"; // TODO: Parameterize
-    var currentDate =
-        DateTimeOffset.ParseExact(startDateString, "yyyy/MM/dd HH:mm:ss zzz", CultureInfo.InvariantCulture);
+    var currentDate = DateTimeOffset.ParseExact(
+        startDateString, "yyyy/MM/dd HH:mm:ss zzz",
+        CultureInfo.InvariantCulture);
+
     var endDate = currentDate.AddMonths(endDateMonthsInt);
 
     var serviceResources = File.ReadAllLines("./service_resources");
@@ -58,15 +60,42 @@ try
             currentServiceResourceIndex = (currentServiceResourceIndex + 1) % serviceResources.Length;
         }
 
-        using var conn = new NpgsqlConnection(connString);
-        conn.Open();
+        using (var conn = new NpgsqlConnection(connString))
+        {
+            conn.Open();
 
-        using var writer = conn.BeginTextImport(
-            "COPY \"Dialog\" (\"Id\", \"CreatedAt\", \"Deleted\", \"DeletedAt\", \"DueAt\", \"ExpiresAt\", \"ExtendedStatus\", \"ExternalReference\", \"Org\", \"Party\", \"PrecedingProcess\", \"Process\", \"Progress\", \"Revision\", \"ServiceResource\", \"ServiceResourceType\", \"StatusId\", \"VisibleFrom\", \"UpdatedAt\") FROM STDIN (FORMAT csv, HEADER true, NULL '')");
-        writer.Write(dialogCsvData.ToString());
+            using var writer = conn.BeginTextImport(
+                "COPY \"Dialog\" (\"Id\", \"CreatedAt\", \"Deleted\", \"DeletedAt\", \"DueAt\", \"ExpiresAt\", \"ExtendedStatus\", \"ExternalReference\", \"Org\", \"Party\", \"PrecedingProcess\", \"Process\", \"Progress\", \"Revision\", \"ServiceResource\", \"ServiceResourceType\", \"StatusId\", \"VisibleFrom\", \"UpdatedAt\") FROM STDIN (FORMAT csv, HEADER true, NULL '')");
+            writer.Write(dialogCsvData.ToString());
+        }
 
         dialogsCreated += dialogIds.Count;
         Console.WriteLine($"Inserted {dialogIds.Count} dialogs...");
+
+        // Dialog Content:
+        var dialogContentCsvData = new StringBuilder();
+        dialogContentCsvData.AppendLine("Id,CreatedAt,UpdatedAt,MediaType,DialogId,TypeId");
+
+        foreach (var dialogId in dialogIds)
+        {
+            var createdAt = currentDate.ToString("yyyy-MM-dd HH:mm:ss zzz");
+            var contentId1 = Uuid7.NewUuid7(currentDate).ToGuid();
+            var contentId2 = Uuid7.NewUuid7(currentDate).ToGuid();
+
+            dialogContentCsvData.AppendLine($"{contentId1},{createdAt},{createdAt},'text/plain',{dialogId},1");
+            dialogContentCsvData.AppendLine($"{contentId2},{createdAt},{createdAt},'text/plain',{dialogId},3");
+        }
+
+        using (var conn = new NpgsqlConnection(connString))
+        {
+            conn.Open();
+
+            using var contentWriter = conn.BeginTextImport(
+                "COPY \"DialogContent\" (\"Id\", \"CreatedAt\", \"UpdatedAt\", \"MediaType\", \"DialogId\", \"TypeId\") FROM STDIN (FORMAT csv, HEADER true, NULL '')");
+            contentWriter.Write(dialogContentCsvData.ToString());
+        }
+
+        Console.WriteLine($"Inserted dialog content for {dialogIds.Count} dialogs...");
     }
 
     var timeItTook = Stopwatch.GetElapsedTime(startTimestamp);
@@ -76,7 +105,6 @@ catch (Exception ex)
 {
     Console.Error.WriteLine(ex.Message);
 }
-
 
 // TODO: Re-enable all indexes and constraints
 #pragma warning restore CA1305
