@@ -25,6 +25,10 @@ param cronExpression string = ''
 @description('The container args for the job (optional)')
 param args string = ''
 
+@description('The ID of the user-assigned managed identity')
+@minLength(1)
+param userAssignedIdentityId string
+
 var isScheduled = !empty(cronExpression)
 
 var scheduledJobProperties = {
@@ -42,11 +46,18 @@ var manualJobProperties = {
   }
 }
 
+resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' existing = {
+  name: last(split(userAssignedIdentityId, '/'))
+}
+
 resource job 'Microsoft.App/jobs@2024-03-01' = {
   name: name
   location: location
   identity: {
-    type: 'SystemAssigned'
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      '${userAssignedIdentityId}': {}
+    }
   }
   properties: {
     configuration: union(
@@ -72,5 +83,5 @@ resource job 'Microsoft.App/jobs@2024-03-01' = {
   tags: tags
 }
 
-output identityPrincipalId string = job.identity.principalId
+output identityPrincipalId string = managedIdentity.properties.principalId
 output name string = job.name
