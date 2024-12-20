@@ -182,7 +182,7 @@ var query = '''
              | extend Details = replace_string(Details, "Digdir.Domain.Dialogporten.", "")
              | project Environment, Type, SeverityLevel, Count, Details
              '''
-resource exceptionOccuredAlertRule 'Microsoft.Insights/scheduledQueryRules@2023-12-01' = {
+resource exceptionOccuredAlertRule 'Microsoft.Insights/scheduledQueryRules@2024-01-01-preview' = {
   name: '${namePrefix}-exception-occured-sqr'
   location: location
   properties: {
