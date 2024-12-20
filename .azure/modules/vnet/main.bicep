@@ -263,44 +263,6 @@ resource serviceBusNSG 'Microsoft.Network/networkSecurityGroups@2024-05-01' = {
   tags: tags
 }
 
-resource monitorNSG 'Microsoft.Network/networkSecurityGroups@2024-05-01' = {
-  name: '${namePrefix}-monitor-nsg'
-  location: location
-  properties: {
-    securityRules: [
-      {
-        name: 'AllowAnyCustomAnyInbound'
-        type: 'Microsoft.Network/networkSecurityGroups/securityRules'
-        properties: {
-          protocol: '*'
-          sourcePortRange: '*'
-          destinationPortRange: '*'
-          sourceAddressPrefix: '*'
-          destinationAddressPrefix: '*'
-          access: 'Allow'
-          priority: 100
-          direction: 'Inbound'
-        }
-      }
-      {
-        name: 'AllowAnyCustomAnyOutbound'
-        type: 'Microsoft.Network/networkSecurityGroups/securityRules'
-        properties: {
-          protocol: '*'
-          sourcePortRange: '*'
-          destinationPortRange: '*'
-          sourceAddressPrefix: '*'
-          destinationAddressPrefix: '*'
-          access: 'Allow'
-          priority: 100
-          direction: 'Outbound'
-        }
-      }
-    ]
-  }
-  tags: tags
-}
-
 resource virtualNetwork 'Microsoft.Network/virtualNetworks@2024-05-01' = {
   name: '${namePrefix}-vnet'
   location: location
@@ -372,17 +334,6 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2024-05-01' = {
           }
         }
       }
-      {
-        name: 'monitorSubnet'
-        properties: {
-          addressPrefix: '10.0.6.0/24'
-          networkSecurityGroup: {
-            id: monitorNSG.id
-          }
-          privateEndpointNetworkPolicies: 'Disabled'
-          privateLinkServiceNetworkPolicies: 'Enabled'
-        }
-      }
     ]
   }
   tags: tags
@@ -410,9 +361,4 @@ output redisSubnetId string = resourceId(
   'Microsoft.Network/virtualNetworks/subnets',
   virtualNetwork.name,
   'redisSubnet'
-)
-output monitorSubnetId string = resourceId(
-  'Microsoft.Network/virtualNetworks/subnets',
-  virtualNetwork.name,
-  'monitorSubnet'
 )
