@@ -26,18 +26,15 @@ using Serilog;
 using Microsoft.Extensions.Options;
 using Digdir.Domain.Dialogporten.WebApi.Common.Middleware;
 
-// Replace the bootstrap logging setup with basic console logging until proper initialization
 var builder = WebApplication.CreateBuilder(args);
 
 try
 {
-    // Remove the BuildAndRun method and move its contents here
     builder.WebHost.ConfigureKestrel(kestrelOptions =>
     {
         kestrelOptions.Limits.MaxRequestBodySize = Constants.MaxRequestBodySize;
     });
 
-    // Remove Serilog configuration
     builder.Configuration
         .AddAzureConfiguration(builder.Environment.EnvironmentName)
         .AddLocalConfiguration(builder.Environment);
@@ -126,7 +123,6 @@ try
 
     var app = builder.Build();
 
-    // Replace UseSerilogRequestLogging with OpenTelemetry middleware
     app.UseHttpsRedirection()
         .UseRequestLogging()
         .UseDefaultExceptionHandler()

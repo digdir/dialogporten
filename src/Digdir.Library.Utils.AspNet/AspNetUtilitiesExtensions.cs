@@ -62,7 +62,6 @@ public static class AspNetUtilitiesExtensions
 
         Console.WriteLine($"[OpenTelemetry] Configuring telemetry for service: {settings.ServiceName}");
 
-        // Rest of the existing telemetry configuration...
         var telemetryBuilder = builder.Services.AddOpenTelemetry()
             .ConfigureResource(resource =>
             {

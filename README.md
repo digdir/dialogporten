@@ -126,11 +126,12 @@ These health checks are integrated with Azure Container Apps' health probe syste
 
 ## Observability with OpenTelemetry
 
-This project uses OpenTelemetry for distributed tracing and metrics collection. The setup includes:
+This project uses OpenTelemetry for distributed tracing, metrics collection, and logging. The setup includes:
 
 ### Core Features
 - Distributed tracing across services
 - Runtime and application metrics
+- Log aggregation and correlation
 - Integration with Azure Monitor/Application Insights
 - Support for both OTLP and Azure Monitor exporters
 - Automatic instrumentation for:
@@ -157,14 +158,71 @@ OpenTelemetry is configured through environment variables that are automatically
 ### Local Development
 
 For local development, the project includes a docker-compose setup with:
-- OpenTelemetry Collector
-- Grafana
-- Other supporting services
+- OpenTelemetry Collector (ports 4317/4318 for OTLP receivers)
+- Grafana (port 3000)
+- Jaeger (port 16686)
+- Loki (port 3100)
+- Prometheus (port 9090)
 
 To run the local observability stack:
 ```bash
 podman compose -f docker-compose-otel.yml up
 ```
+
+### Accessing Observability Tools
+
+Once the local stack is running, you can access the following tools:
+
+#### Distributed Tracing with Jaeger
+- URL: http://localhost:16686
+- Features:
+  - View distributed traces across services
+  - Search by service, operation, or trace ID
+  - Analyze timing and dependencies
+  - Debug request flows and errors
+
+#### Metrics with Prometheus
+- URL: http://localhost:9090
+- Features:
+  - Query raw metrics data
+  - View metric targets and service discovery
+  - Debug metric collection
+
+#### Log Aggregation with Loki
+- Direct URL: http://localhost:3100
+- Grafana Integration: http://localhost:3000 (preferred interface)
+- Features:
+  - Search and filter logs across all services
+  - Correlate logs with traces using trace IDs
+  - Create log-based alerts and dashboards
+  - Use LogQL to query logs:
+    ```logql
+    # Example: Find all error logs
+    {container="web-api"} |= "error"
+    
+    # Example: Find logs with specific trace ID
+    {container=~"web-api|graphql"} |~ "trace_id=([a-f0-9]{32})"
+    ```
+
+#### Metrics and Dashboards in Grafana
+- URL: http://localhost:3000
+- Features:
+  - Pre-configured dashboards for:
+    - Application metrics
+    - Runtime metrics
+    - HTTP request metrics
+  - Data sources:
+    - Prometheus (metrics)
+    - Loki (logs)
+    - Jaeger (traces)
+  - Create custom dashboards
+  - Set up alerts
+
+#### OpenTelemetry Collector Endpoints
+- OTLP gRPC receiver: localhost:4317
+- OTLP HTTP receiver: localhost:4318
+- Prometheus metrics: localhost:8888
+- Prometheus exporter metrics: localhost:8889
 
 ### Request Filtering
 
