@@ -67,6 +67,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Digdir.Library.Utils.AspNet
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Digdir.Tool.Dialogporten.SlackNotifier.Tests", "tests\Digdir.Tool.Dialogporten.SlackNotifier.Tests\Digdir.Tool.Dialogporten.SlackNotifier.Tests.csproj", "{F7DF2792-9C83-49F7-B7DD-556E8EC577DB}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WebApiClient", "WebApiClient", "{9B809C3A-B169-4599-A2D3-A25E87C510FC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Digdir.Library.Dialogporten.WebApiClient", "src\Digdir.Library.Dialogporten.WebApiClient\Digdir.Library.Dialogporten.WebApiClient.csproj", "{714FBB11-ADC0-44E8-A768-D1A59D641D31}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Digdir.Library.Dialogporten.WebApiClient.Sample", "src\Digdir.Library.Dialogporten.WebApiClient.Sample\Digdir.Library.Dialogporten.WebApiClient.Sample.csproj", "{F8CB7159-4346-4436-9C35-BFCFDDE5DC2B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Digdir.Library.Dialogporten.WebApiClient.Integration.Tests", "tests\Digdir.Library.Dialogporten.WebApiClient.Integration.Tests\Digdir.Library.Dialogporten.WebApiClient.Integration.Tests.csproj", "{7014AC47-0DF5-48C1-BD72-EE587FF3278B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -165,6 +173,18 @@ Global
 		{F7DF2792-9C83-49F7-B7DD-556E8EC577DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F7DF2792-9C83-49F7-B7DD-556E8EC577DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F7DF2792-9C83-49F7-B7DD-556E8EC577DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{714FBB11-ADC0-44E8-A768-D1A59D641D31}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{714FBB11-ADC0-44E8-A768-D1A59D641D31}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{714FBB11-ADC0-44E8-A768-D1A59D641D31}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{714FBB11-ADC0-44E8-A768-D1A59D641D31}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F8CB7159-4346-4436-9C35-BFCFDDE5DC2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F8CB7159-4346-4436-9C35-BFCFDDE5DC2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F8CB7159-4346-4436-9C35-BFCFDDE5DC2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F8CB7159-4346-4436-9C35-BFCFDDE5DC2B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7014AC47-0DF5-48C1-BD72-EE587FF3278B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7014AC47-0DF5-48C1-BD72-EE587FF3278B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7014AC47-0DF5-48C1-BD72-EE587FF3278B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7014AC47-0DF5-48C1-BD72-EE587FF3278B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -196,6 +216,10 @@ Global
 		{E389C7C8-9610-40AC-86DC-769B1B7DC78E} = {CADB8189-4AA1-4732-844A-C41DBF3EC8B7}
 		{6A485C65-3613-4A49-A16F-2789119F6F38} = {096E9B69-6783-4446-A895-0B6D7729A0D9}
 		{F7DF2792-9C83-49F7-B7DD-556E8EC577DB} = {CADB8189-4AA1-4732-844A-C41DBF3EC8B7}
+		{9B809C3A-B169-4599-A2D3-A25E87C510FC} = {096E9B69-6783-4446-A895-0B6D7729A0D9}
+		{714FBB11-ADC0-44E8-A768-D1A59D641D31} = {9B809C3A-B169-4599-A2D3-A25E87C510FC}
+		{F8CB7159-4346-4436-9C35-BFCFDDE5DC2B} = {9B809C3A-B169-4599-A2D3-A25E87C510FC}
+		{7014AC47-0DF5-48C1-BD72-EE587FF3278B} = {CADB8189-4AA1-4732-844A-C41DBF3EC8B7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B2FE67FF-7622-4AFB-AD8E-961B6A39D888}
