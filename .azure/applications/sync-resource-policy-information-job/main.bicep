@@ -69,6 +69,10 @@ var containerAppEnvVars = [
     name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
     value: appInsightConnectionString
   }
+  {
+    name: 'AZURE_CLIENT_ID'
+    value: managedIdentity.properties.clientId
+  }
 ]
 
 // Base URL for accessing secrets in the Key Vault
