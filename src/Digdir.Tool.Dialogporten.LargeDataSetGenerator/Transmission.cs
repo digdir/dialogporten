@@ -24,8 +24,7 @@ internal static class Transmission
 
             var formattedDate = currentDate.ToString("yyyy-MM-dd HH:mm:ss zzz");
             transmissionCsvData.AppendLine($"{transmissionId1},{formattedDate},NULL,NULL,1,{dialogId},");
-            transmissionCsvData.AppendLine(
-                $"{transmissionId2},{formattedDate},NULL,NULL,2,{dialogId},{transmissionId1}");
+            transmissionCsvData.AppendLine($"{transmissionId2},{formattedDate},NULL,NULL,2,{dialogId},{transmissionId1}");
 
             transmissionIds.Add(transmissionId1);
             transmissionIds.Add(transmissionId2);

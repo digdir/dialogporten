@@ -16,7 +16,6 @@ try
     var startingYear = int.Parse(Environment.GetEnvironmentVariable("STARTING_YEAR")!);
     var totalNumMonths = int.Parse(Environment.GetEnvironmentVariable("TOTAL_NUM_MONTHS")!);
 
-
     var startDateString = $"{startingYear}/01/01 00:00:00 +00:00";
     var currentDate = DateTimeOffset.ParseExact(
         startDateString, "yyyy/MM/dd HH:mm:ss zzz",

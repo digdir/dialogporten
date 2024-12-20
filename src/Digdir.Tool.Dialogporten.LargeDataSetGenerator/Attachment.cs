@@ -6,9 +6,7 @@ namespace Digdir.Tool.Dialogporten.LargeDataSetGenerator;
 internal static class Attachment
 {
     private const string CsvHeader = "Id,CreatedAt,UpdatedAt,Discriminator,DialogId,TransmissionId";
-
-    public const string CopyCommand =
-        "COPY \"Attachment\" (\"Id\", \"CreatedAt\", \"UpdatedAt\", \"Discriminator\", \"DialogId\", \"TransmissionId\") FROM STDIN (FORMAT csv, HEADER true, NULL '')";
+    public const string CopyCommand = "COPY \"Attachment\" (\"Id\", \"CreatedAt\", \"UpdatedAt\", \"Discriminator\", \"DialogId\", \"TransmissionId\") FROM STDIN (FORMAT csv, HEADER true, NULL '')";
 
     public static (List<Guid> attachmentIds, string attachmentCsvData) Generate(List<Guid> dialogIds, List<Guid> transmissionIds, DateTimeOffset currentDate, int intervalSeconds)
     {

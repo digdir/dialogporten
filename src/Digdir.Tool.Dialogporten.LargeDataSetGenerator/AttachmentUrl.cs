@@ -7,7 +7,6 @@ namespace Digdir.Tool.Dialogporten.LargeDataSetGenerator;
 internal static class AttachmentUrl
 {
     private const string CsvHeader = "Id,CreatedAt,MediaType,Url,ConsumerTypeId,AttachmentId";
-
     public const string CopyCommand = "COPY \"AttachmentUrl\" (\"Id\", \"CreatedAt\", \"MediaType\", \"Url\", \"ConsumerTypeId\", \"AttachmentId\") FROM STDIN (FORMAT csv, HEADER true, NULL '')";
 
     public static string Generate(List<Guid> attachmentIds,
