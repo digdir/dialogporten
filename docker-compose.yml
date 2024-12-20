@@ -1,10 +1,11 @@
 include:
   - docker-compose-db-redis.yml
   - docker-compose-cdc.yml
+  - docker-compose-otel.yml
 
 services:
   dialogporten-webapi-ingress:
-    image: nginx:1.27.2
+    image: nginx:1.27.3
     ports:
       - "7214:80"
     volumes:
@@ -14,7 +15,7 @@ services:
     restart: always
 
   dialogporten-webapi:
-    scale: 2
+    scale: 1
     build:
       context: .
       dockerfile: src/Digdir.Domain.Dialogporten.WebApi/Dockerfile
@@ -34,11 +35,15 @@ services:
       - Serilog__MinimumLevel__Default=Debug
       - ASPNETCORE_URLS=http://+:8080
       - ASPNETCORE_ENVIRONMENT=Development
+      - OTEL_EXPORTER_OTLP_ENDPOINT=${OTEL_EXPORTER_OTLP_ENDPOINT}
+      - OTEL_EXPORTER_OTLP_PROTOCOL=${OTEL_EXPORTER_OTLP_PROTOCOL}
+      - OTEL_SERVICE_NAME=dialogporten-webapi
+      - OTEL_RESOURCE_ATTRIBUTES=service.instance.id=dialogporten-webapi,service.namespace=${OTEL_NAMESPACE} 
     volumes:
       - ./.aspnet/https:/https
 
   dialogporten-graphql-ingress:
-    image: nginx:1.27.2
+    image: nginx:1.27.3
     ports:
       - "7215:80"
     volumes:
@@ -70,5 +75,9 @@ services:
       - Serilog__WriteTo__0__Name=Console
       - Serilog__MinimumLevel__Default=Debug
       - ASPNETCORE_ENVIRONMENT=Development
+      - OTEL_EXPORTER_OTLP_ENDPOINT=${OTEL_EXPORTER_OTLP_ENDPOINT}
+      - OTEL_EXPORTER_OTLP_PROTOCOL=${OTEL_EXPORTER_OTLP_PROTOCOL}
+      - OTEL_SERVICE_NAME=dialogporten-graphql
+      - OTEL_RESOURCE_ATTRIBUTES=service.instance.id=dialogporten-graphql,service.namespace=${OTEL_NAMESPACE}
     volumes:
       - ./.aspnet/https:/https

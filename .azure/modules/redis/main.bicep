@@ -97,9 +97,6 @@ module privateDnsZone '../privateDnsZone/main.bicep' = {
 
 module privateDnsZoneGroup '../privateDnsZoneGroup/main.bicep' = {
   name: '${namePrefix}-redis-privateDnsZoneGroup'
-  dependsOn: [
-    privateDnsZone
-  ]
   params: {
     name: 'default'
     dnsZoneGroupName: 'privatelink-redis-cache-windows-net'

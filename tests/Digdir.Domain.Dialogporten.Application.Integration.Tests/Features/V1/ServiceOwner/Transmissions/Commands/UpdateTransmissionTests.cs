@@ -3,9 +3,9 @@ using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Qu
 using Digdir.Domain.Dialogporten.Application.Integration.Tests.Common;
 using Digdir.Domain.Dialogporten.Domain.Actors;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
+using Digdir.Library.Entity.Abstractions.Features.Identifiable;
 using Digdir.Tool.Dialogporten.GenerateFakeData;
 using FluentAssertions;
-using static Digdir.Domain.Dialogporten.Application.Integration.Tests.UuiDv7Utils;
 
 namespace Digdir.Domain.Dialogporten.Application.Integration.Tests.Features.V1.ServiceOwner.Transmissions.Commands;
 
@@ -122,7 +122,7 @@ public class UpdateTransmissionTests : ApplicationCollectionFixture
 
     private static TransmissionDto UpdateDialogDialogTransmissionDto() => new()
     {
-        Id = GenerateBigEndianUuidV7(),
+        Id = IdentifiableExtensions.CreateVersion7(),
         Type = DialogTransmissionType.Values.Information,
         Sender = new() { ActorType = ActorType.Values.ServiceOwner },
         Content = new()

@@ -78,7 +78,14 @@ static void BuildAndRun(string[] args, TelemetryConfiguration telemetryConfigura
 
     var thisAssembly = Assembly.GetExecutingAssembly();
 
-    builder.ConfigureTelemetry();
+    builder.ConfigureTelemetry((settings, configuration) =>
+    {
+        settings.ServiceName = configuration["OTEL_SERVICE_NAME"] ?? builder.Environment.ApplicationName;
+        settings.Endpoint = configuration["OTEL_EXPORTER_OTLP_ENDPOINT"];
+        settings.Protocol = configuration["OTEL_EXPORTER_OTLP_PROTOCOL"];
+        settings.AppInsightsConnectionString = configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"];
+        settings.ResourceAttributes = configuration["OTEL_RESOURCE_ATTRIBUTES"];
+    });
 
     builder.Services
         // Options setup
@@ -173,6 +180,7 @@ static void BuildAndRun(string[] args, TelemetryConfiguration telemetryConfigura
                             new EndpointNameMetadata(
                                 TypeNameConverter.ToShortName(endpointDefinition.EndpointType)))));
             };
+            x.Serializer.Options.RespectNullableAnnotations = true;
             x.Serializer.Options.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
             // Do not serialize empty collections
             x.Serializer.Options.TypeInfoResolver = new DefaultJsonTypeInfoResolver

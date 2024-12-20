@@ -315,7 +315,7 @@
         "additionalProperties": false,
         "properties": {
           "mediaType": {
-            "description": "Media type of the content (plaintext, Markdown). Can also indicate that the content is embeddable.",
+            "description": "Media type of the content, this can also indicate that the content is embeddable.\nFor a list of supported media types, see (link TBD).",
             "type": "string"
           },
           "value": {
@@ -5853,6 +5853,9 @@
             },
             "description": "The UUID of the created the dialog aggregate. A relative URL to the newly created activity is set in the \u0022Location\u0022 header."
           },
+          "204": {
+            "description": "No Content"
+          },
           "400": {
             "content": {
               "application/problem\u002Bjson": {
@@ -6468,6 +6471,9 @@
             },
             "description": "The UUID of the created the dialog activity. A relative URL to the newly created activity is set in the \u0022Location\u0022 header."
           },
+          "204": {
+            "description": "No Content"
+          },
           "400": {
             "content": {
               "application/problem\u002Bjson": {
@@ -6741,7 +6747,10 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/V1ServiceOwnerDialogTransmissionsQueriesSearch_Transmission"
+                  "items": {
+                    "$ref": "#/components/schemas/V1ServiceOwnerDialogTransmissionsQueriesSearch_Transmission"
+                  },
+                  "type": "array"
                 }
               }
             },
@@ -6824,6 +6833,9 @@
               }
             },
             "description": "The UUID of the created the dialog transmission. A relative URL to the newly created activity is set in the \u0022Location\u0022 header."
+          },
+          "204": {
+            "description": "No Content"
           },
           "400": {
             "content": {

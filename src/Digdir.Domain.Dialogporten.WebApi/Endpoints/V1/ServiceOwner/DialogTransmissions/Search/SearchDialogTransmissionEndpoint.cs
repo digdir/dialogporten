@@ -22,7 +22,7 @@ public sealed class SearchDialogTransmissionEndpoint : Endpoint<SearchTransmissi
         Policies(AuthorizationPolicy.ServiceProvider);
         Group<ServiceOwnerGroup>();
 
-        Description(b => b.ProducesOneOf<TransmissionDto>(
+        Description(b => b.ProducesOneOf<List<TransmissionDto>>(
             StatusCodes.Status200OK,
             StatusCodes.Status404NotFound,
             StatusCodes.Status410Gone));
