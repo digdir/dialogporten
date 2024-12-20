@@ -46,6 +46,12 @@ resource containerAppEnvironment 'Microsoft.App/managedEnvironments@2024-03-01' 
   name: containerAppEnvironmentName
 }
 
+resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
+  name: '${namePrefix}-sync-rp-info-identity'
+  location: location
+  tags: tags
+}
+
 var containerAppEnvVars = [
   {
     name: 'Infrastructure__DialogDbConnectionString'
@@ -62,6 +68,10 @@ var containerAppEnvVars = [
   {
     name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
     value: appInsightConnectionString
+  }
+  {
+    name: 'AZURE_CLIENT_ID'
+    value: managedIdentity.properties.clientId
   }
 ]
 
@@ -94,6 +104,7 @@ module migrationJob '../../modules/containerAppJob/main.bicep' = {
     tags: tags
     cronExpression: jobSchedule
     args: 'sync-resource-policy-information'
+    userAssignedIdentityId: managedIdentity.id
   }
 }
 
