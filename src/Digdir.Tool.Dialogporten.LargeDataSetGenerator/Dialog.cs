@@ -7,12 +7,8 @@ namespace Digdir.Tool.Dialogporten.LargeDataSetGenerator;
 public static class Dialog
 {
     private static readonly string[] ServiceResources = File.ReadAllLines("./service_resources");
-
-    private const string CsvHeader =
-        "Id,CreatedAt,Deleted,DeletedAt,DueAt,ExpiresAt,ExtendedStatus,ExternalReference,Org,Party,PrecedingProcess,Process,Progress,Revision,ServiceResource,ServiceResourceType,StatusId,VisibleFrom,UpdatedAt";
-
-    public const string CopyCommand =
-        "COPY \"Dialog\" (\"Id\", \"CreatedAt\", \"Deleted\", \"DeletedAt\", \"DueAt\", \"ExpiresAt\", \"ExtendedStatus\", \"ExternalReference\", \"Org\", \"Party\", \"PrecedingProcess\", \"Process\", \"Progress\", \"Revision\", \"ServiceResource\", \"ServiceResourceType\", \"StatusId\", \"VisibleFrom\", \"UpdatedAt\") FROM STDIN (FORMAT csv, HEADER true, NULL '')";
+    private const string CsvHeader = "Id,CreatedAt,Deleted,DeletedAt,DueAt,ExpiresAt,ExtendedStatus,ExternalReference,Org,Party,PrecedingProcess,Process,Progress,Revision,ServiceResource,ServiceResourceType,StatusId,VisibleFrom,UpdatedAt";
+    public const string CopyCommand = "COPY \"Dialog\" (\"Id\", \"CreatedAt\", \"Deleted\", \"DeletedAt\", \"DueAt\", \"ExpiresAt\", \"ExtendedStatus\", \"ExternalReference\", \"Org\", \"Party\", \"PrecedingProcess\", \"Process\", \"Progress\", \"Revision\", \"ServiceResource\", \"ServiceResourceType\", \"StatusId\", \"VisibleFrom\", \"UpdatedAt\") FROM STDIN (FORMAT csv, HEADER true, NULL '')";
 
     public static (List<Guid> dialogIds, string dialogCsvData) Generate(DateTimeOffset startDate, DateTimeOffset endDate, int intervalSeconds)
     {
@@ -43,4 +39,3 @@ public static class Dialog
         return (dialogIds, dialogCsvData.ToString());
     }
 }
-#pragma warning restore CA1305

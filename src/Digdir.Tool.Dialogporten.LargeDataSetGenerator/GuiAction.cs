@@ -37,4 +37,3 @@ public static class GuiAction
         return (guiActionIds, guiActionCsvData.ToString());
     }
 }
-#pragma warning restore CA1305

@@ -35,4 +35,3 @@ public static class DialogContent
         return (dialogContentIds, dialogContentCsvData.ToString());
     }
 }
-#pragma warning restore CA1305

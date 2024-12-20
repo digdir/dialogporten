@@ -10,7 +10,12 @@
     "MyConsoleApp": {
       "commandName": "Project",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "INTERVAL_SECONDS": "2",
+        "BATCH_NUM_DAYS": "8",
+        "STARTING_YEAR": "1970",
+        "TOTAL_NUM_MONTHS": "3",
+        "CONN_STRING": "Server=localhost;Port=5432;Database=dialogporten;User ID=postgres;Password=supersecret;Include Error Detail=True;"
       }
     }
   }
