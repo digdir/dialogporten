@@ -3,7 +3,7 @@ using System.Text;
 namespace Digdir.Tool.Dialogporten.LargeDataSetGenerator;
 #pragma warning disable CA1305
 
-public static class Attachment
+internal static class Attachment
 {
     private const string CsvHeader = "Id,CreatedAt,UpdatedAt,Discriminator,DialogId,TransmissionId";
 

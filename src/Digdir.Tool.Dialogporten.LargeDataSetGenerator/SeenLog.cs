@@ -3,7 +3,7 @@ using System.Text;
 namespace Digdir.Tool.Dialogporten.LargeDataSetGenerator;
 #pragma warning disable CA1305
 
-public static class SeenLog
+internal static class SeenLog
 {
     private const string CsvHeader = "Id,CreatedAt,IsViaServiceOwner,DialogId,EndUserTypeId";
 

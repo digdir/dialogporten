@@ -4,7 +4,7 @@ using Medo;
 namespace Digdir.Tool.Dialogporten.LargeDataSetGenerator;
 #pragma warning disable CA1305
 
-public static class Dialog
+internal static class Dialog
 {
     private static readonly string[] ServiceResources = File.ReadAllLines("./service_resources");
     private const string CsvHeader = "Id,CreatedAt,Deleted,DeletedAt,DueAt,ExpiresAt,ExtendedStatus,ExternalReference,Org,Party,PrecedingProcess,Process,Progress,Revision,ServiceResource,ServiceResourceType,StatusId,VisibleFrom,UpdatedAt";

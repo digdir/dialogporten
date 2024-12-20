@@ -4,7 +4,7 @@ using Medo;
 namespace Digdir.Tool.Dialogporten.LargeDataSetGenerator;
 #pragma warning disable CA1305
 
-public static class SearchTags
+internal static class SearchTags
 {
     private const string CsvHeader = "Id,Value,CreatedAt,DialogId";
 

@@ -4,7 +4,7 @@ using Medo;
 namespace Digdir.Tool.Dialogporten.LargeDataSetGenerator;
 #pragma warning disable CA1305
 
-public static class Activity
+internal static class Activity
 {
     private const string CsvHeader = "Id,CreatedAt,ExtendedType,TypeId,TransmissionId,DialogId";
 

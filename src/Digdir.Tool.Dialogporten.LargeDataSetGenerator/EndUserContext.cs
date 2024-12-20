@@ -3,7 +3,7 @@ using System.Text;
 namespace Digdir.Tool.Dialogporten.LargeDataSetGenerator;
 #pragma warning disable CA1305
 
-public static class EndUserContext
+internal static class EndUserContext
 {
     private const string CsvHeader = "Id,CreatedAt,UpdatedAt,Revision,DialogId,SystemLabelId";
     public const string CopyCommand = "COPY \"DialogEndUserContext\" (\"Id\", \"CreatedAt\", \"UpdatedAt\", \"Revision\", \"DialogId\", \"SystemLabelId\") FROM STDIN (FORMAT csv, HEADER true, NULL '')";
