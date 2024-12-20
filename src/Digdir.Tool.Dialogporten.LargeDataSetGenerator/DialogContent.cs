@@ -9,12 +9,12 @@ internal static class DialogContent
     private const string CsvHeader = "Id,CreatedAt,UpdatedAt,MediaType,DialogId,TypeId";
 
     public const string CopyCommand =
-        "COPY \"DialogContent\" (\"Id\", \"CreatedAt\", \"UpdatedAt\", \"MediaType\", \"DialogId\", \"TypeId\") FROM STDIN (FORMAT csv, HEADER true, NULL '')";
+        "COPY \"DialogContent\" (\"Id\", \"CreatedAt\", \"UpdatedAt\", \"MediaType\", \"DialogId\", \"TypeId\") FROM STDIN (FORMAT csv, HEADER false, NULL '')";
 
     public static (List<Guid> dialogContentIds, string dialogContentCsvData) Generate(List<Guid> dialogIds, DateTimeOffset currentDate, int intervalSeconds)
     {
         var dialogContentCsvData = new StringBuilder();
-        dialogContentCsvData.AppendLine(CsvHeader);
+        // dialogContentCsvData.AppendLine(CsvHeader);
 
         List<Guid> dialogContentIds = [];
         foreach (var dialogId in dialogIds)

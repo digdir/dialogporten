@@ -8,12 +8,12 @@ internal static class SearchTags
 {
     private const string CsvHeader = "Id,Value,CreatedAt,DialogId";
 
-    public const string CopyCommand = "COPY \"DialogSearchTag\" (\"Id\", \"Value\", \"CreatedAt\", \"DialogId\") FROM STDIN (FORMAT csv, HEADER true, NULL '')";
+    public const string CopyCommand = "COPY \"DialogSearchTag\" (\"Id\", \"Value\", \"CreatedAt\", \"DialogId\") FROM STDIN (FORMAT csv, HEADER false, NULL '')";
 
     public static string Generate(List<Guid> dialogIds, DateTimeOffset currentDate, int intervalSeconds)
     {
         var searchTagCsvData = new StringBuilder();
-        searchTagCsvData.AppendLine(CsvHeader);
+        // searchTagCsvData.AppendLine(CsvHeader);
 
         foreach (var dialogId in dialogIds)
         {

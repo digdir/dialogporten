@@ -6,12 +6,12 @@ namespace Digdir.Tool.Dialogporten.LargeDataSetGenerator;
 internal static class EndUserContext
 {
     private const string CsvHeader = "Id,CreatedAt,UpdatedAt,Revision,DialogId,SystemLabelId";
-    public const string CopyCommand = "COPY \"DialogEndUserContext\" (\"Id\", \"CreatedAt\", \"UpdatedAt\", \"Revision\", \"DialogId\", \"SystemLabelId\") FROM STDIN (FORMAT csv, HEADER true, NULL '')";
+    public const string CopyCommand = "COPY \"DialogEndUserContext\" (\"Id\", \"CreatedAt\", \"UpdatedAt\", \"Revision\", \"DialogId\", \"SystemLabelId\") FROM STDIN (FORMAT csv, HEADER false, NULL '')";
 
     public static string Generate(List<Guid> dialogIds, DateTimeOffset currentDate, int intervalSeconds)
     {
         var endUserContextCsvData = new StringBuilder();
-        endUserContextCsvData.AppendLine(CsvHeader);
+        // endUserContextCsvData.AppendLine(CsvHeader);
 
         foreach (var dialogId in dialogIds)
         {

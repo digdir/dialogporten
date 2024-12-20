@@ -8,12 +8,12 @@ internal static class TransmissionContent
 {
     private const string CsvHeader = "Id,CreatedAt,UpdatedAt,MediaType,TransmissionId,TypeId";
 
-    public const string CopyCommand = "COPY \"DialogTransmissionContent\" (\"Id\", \"CreatedAt\", \"UpdatedAt\", \"MediaType\", \"TransmissionId\", \"TypeId\") FROM STDIN (FORMAT csv, HEADER true, NULL '')";
+    public const string CopyCommand = "COPY \"DialogTransmissionContent\" (\"Id\", \"CreatedAt\", \"UpdatedAt\", \"MediaType\", \"TransmissionId\", \"TypeId\") FROM STDIN (FORMAT csv, HEADER false, NULL '')";
 
     public static (List<Guid> transmissionContentIds, string transmissionContentCsvData) Generate(List<Guid> transmissionIds, DateTimeOffset currentDate, int intervalSeconds)
     {
         var transmissionContentCsvData = new StringBuilder();
-        transmissionContentCsvData.AppendLine(CsvHeader);
+        // transmissionContentCsvData.AppendLine(CsvHeader);
 
         List<Guid> transmissionContentIds = [];
         foreach (var transmissionId in transmissionIds)

@@ -8,12 +8,12 @@ internal static class GuiAction
 {
     private const string CsvHeader = "Id,CreatedAt,UpdatedAt,Action,Url,AuthorizationAttribute,IsDeleteDialogAction,PriorityId,HttpMethodId,DialogId";
 
-    public const string CopyCommand = "COPY \"DialogGuiAction\" (\"Id\", \"CreatedAt\", \"UpdatedAt\", \"Action\", \"Url\", \"AuthorizationAttribute\", \"IsDeleteDialogAction\", \"PriorityId\", \"HttpMethodId\", \"DialogId\") FROM STDIN (FORMAT csv, HEADER true, NULL '')";
+    public const string CopyCommand = "COPY \"DialogGuiAction\" (\"Id\", \"CreatedAt\", \"UpdatedAt\", \"Action\", \"Url\", \"AuthorizationAttribute\", \"IsDeleteDialogAction\", \"PriorityId\", \"HttpMethodId\", \"DialogId\") FROM STDIN (FORMAT csv, HEADER false, NULL '')";
 
     public static (List<Guid> guiActionIds, string guiActionCsvData) Generate(List<Guid> dialogIds, DateTimeOffset currentDate, int intervalSeconds)
     {
         var guiActionCsvData = new StringBuilder();
-        guiActionCsvData.AppendLine(CsvHeader);
+        // guiActionCsvData.AppendLine(CsvHeader);
 
         List<Guid> guiActionIds = [];
         foreach (var dialogId in dialogIds)

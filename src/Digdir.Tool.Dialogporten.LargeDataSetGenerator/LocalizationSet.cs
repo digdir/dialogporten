@@ -7,12 +7,12 @@ internal static class LocalizationSet
 {
     private const string CsvHeader = "Id,CreatedAt,Discriminator,AttachmentId,GuiActionId,ActivityId,DialogContentId,TransmissionContentId";
 
-    public const string CopyCommand = "COPY \"LocalizationSet\" (\"Id\", \"CreatedAt\", \"Discriminator\", \"AttachmentId\", \"GuiActionId\", \"ActivityId\", \"DialogContentId\", \"TransmissionContentId\") FROM STDIN (FORMAT csv, HEADER true, NULL '')";
+    public const string CopyCommand = "COPY \"LocalizationSet\" (\"Id\", \"CreatedAt\", \"Discriminator\", \"AttachmentId\", \"GuiActionId\", \"ActivityId\", \"DialogContentId\", \"TransmissionContentId\") FROM STDIN (FORMAT csv, HEADER false, NULL '')";
 
     public static (List<Guid> localizationSetIds, string localizationSetCsvData) Generate(List<Guid> attachmentIds, List<Guid> guiActionIds, List<Guid> dialogActivityIds, List<Guid> dialogContentIds, List<Guid> transmissionContentIds, DateTimeOffset currentDate, int _)
     {
         var localizationSetCsvData = new StringBuilder();
-        localizationSetCsvData.AppendLine(CsvHeader);
+        // localizationSetCsvData.AppendLine(CsvHeader);
 
         // TODO: This is wrong, the date cannot be the same for all rows.
         var formattedDate = currentDate.ToString("yyyy-MM-dd HH:mm:ss zzz");

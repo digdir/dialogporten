@@ -7,12 +7,12 @@ internal static class Actor
 {
     private const string CsvHeader = "Id,ActorId,ActorTypeId,ActorName,Discriminator,ActivityId,DialogSeenLogId,TransmissionId,CreatedAt,UpdatedAt,LabelAssignmentLogId";
 
-    public const string CopyCommand = "COPY \"Actor\" (\"Id\", \"ActorId\", \"ActorTypeId\", \"ActorName\", \"Discriminator\", \"ActivityId\", \"DialogSeenLogId\", \"TransmissionId\", \"CreatedAt\", \"UpdatedAt\", \"LabelAssignmentLogId\") FROM STDIN (FORMAT csv, HEADER true, NULL '')";
+    public const string CopyCommand = "COPY \"Actor\" (\"Id\", \"ActorId\", \"ActorTypeId\", \"ActorName\", \"Discriminator\", \"ActivityId\", \"DialogSeenLogId\", \"TransmissionId\", \"CreatedAt\", \"UpdatedAt\", \"LabelAssignmentLogId\") FROM STDIN (FORMAT csv, HEADER false, NULL '')";
 
     public static string Generate(List<Guid> dialogActivityIds, List<Guid> dialogSeenLogIds, List<Guid> transmissionIds, DateTimeOffset currentDate, int _)
     {
         var actorCsvData = new StringBuilder();
-        actorCsvData.AppendLine(CsvHeader);
+        // actorCsvData.AppendLine(CsvHeader);
 
         foreach (var dialogActivityId in dialogActivityIds)
         {

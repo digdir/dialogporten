@@ -8,12 +8,12 @@ internal static class Activity
 {
     private const string CsvHeader = "Id,CreatedAt,ExtendedType,TypeId,TransmissionId,DialogId";
 
-    public const string CopyCommand = "COPY \"DialogActivity\" (\"Id\", \"CreatedAt\", \"ExtendedType\", \"TypeId\", \"TransmissionId\", \"DialogId\") FROM STDIN (FORMAT csv, HEADER true, NULL '')";
+    public const string CopyCommand = "COPY \"DialogActivity\" (\"Id\", \"CreatedAt\", \"ExtendedType\", \"TypeId\", \"TransmissionId\", \"DialogId\") FROM STDIN (FORMAT csv, HEADER false, NULL '')";
 
     public static (List<Guid> activityIds, string activityCsvData) Generate(List<Guid> dialogIds, DateTimeOffset currentDate, int intervalSeconds)
     {
         var activityCsvData = new StringBuilder();
-        activityCsvData.AppendLine(CsvHeader);
+        // activityCsvData.AppendLine(CsvHeader);
 
         List<Guid> activityIds = [];
         foreach (var dialogId in dialogIds)

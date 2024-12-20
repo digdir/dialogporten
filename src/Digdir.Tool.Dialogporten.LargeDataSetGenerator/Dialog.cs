@@ -8,7 +8,7 @@ internal static class Dialog
 {
     private static readonly string[] ServiceResources = File.ReadAllLines("./service_resources");
     private const string CsvHeader = "Id,CreatedAt,Deleted,DeletedAt,DueAt,ExpiresAt,ExtendedStatus,ExternalReference,Org,Party,PrecedingProcess,Process,Progress,Revision,ServiceResource,ServiceResourceType,StatusId,VisibleFrom,UpdatedAt";
-    public const string CopyCommand = "COPY \"Dialog\" (\"Id\", \"CreatedAt\", \"Deleted\", \"DeletedAt\", \"DueAt\", \"ExpiresAt\", \"ExtendedStatus\", \"ExternalReference\", \"Org\", \"Party\", \"PrecedingProcess\", \"Process\", \"Progress\", \"Revision\", \"ServiceResource\", \"ServiceResourceType\", \"StatusId\", \"VisibleFrom\", \"UpdatedAt\") FROM STDIN (FORMAT csv, HEADER true, NULL '')";
+    public const string CopyCommand = "COPY \"Dialog\" (\"Id\", \"CreatedAt\", \"Deleted\", \"DeletedAt\", \"DueAt\", \"ExpiresAt\", \"ExtendedStatus\", \"ExternalReference\", \"Org\", \"Party\", \"PrecedingProcess\", \"Process\", \"Progress\", \"Revision\", \"ServiceResource\", \"ServiceResourceType\", \"StatusId\", \"VisibleFrom\", \"UpdatedAt\") FROM STDIN (FORMAT csv, HEADER false, NULL '')";
 
     public static (List<Guid> dialogIds, string dialogCsvData) Generate(DateTimeOffset startDate, DateTimeOffset endDate, int intervalSeconds)
     {
@@ -16,7 +16,7 @@ internal static class Dialog
 
         var dialogCsvData = new StringBuilder();
 
-        dialogCsvData.AppendLine(CsvHeader);
+        // dialogCsvData.AppendLine(CsvHeader);
 
         var currentServiceResourceIndex = 0;
 

@@ -6,12 +6,12 @@ namespace Digdir.Tool.Dialogporten.LargeDataSetGenerator;
 internal static class Localization
 {
     private const string CsvHeader = "LanguageCode,LocalizationSetId,CreatedAt,UpdatedAt,Value";
-    public const string CopyCommand = "COPY \"Localization\" (\"LanguageCode\", \"LocalizationSetId\", \"CreatedAt\", \"UpdatedAt\", \"Value\") FROM STDIN (FORMAT csv, HEADER true, NULL '')";
+    public const string CopyCommand = "COPY \"Localization\" (\"LanguageCode\", \"LocalizationSetId\", \"CreatedAt\", \"UpdatedAt\", \"Value\") FROM STDIN (FORMAT csv, HEADER false, NULL '')";
 
     public static string Generate(List<Guid> localizationSetIds, DateTimeOffset currentDate)
     {
         var localizationCsvData = new StringBuilder();
-        localizationCsvData.AppendLine(CsvHeader);
+        // localizationCsvData.AppendLine(CsvHeader);
 
         foreach (var localizationSetId in localizationSetIds)
         {

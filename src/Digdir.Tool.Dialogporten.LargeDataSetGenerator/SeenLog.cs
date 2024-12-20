@@ -8,12 +8,12 @@ internal static class SeenLog
     private const string CsvHeader = "Id,CreatedAt,IsViaServiceOwner,DialogId,EndUserTypeId";
 
     public const string CopyCommand =
-        "COPY \"DialogSeenLog\" (\"Id\", \"CreatedAt\", \"IsViaServiceOwner\", \"DialogId\", \"EndUserTypeId\") FROM STDIN (FORMAT csv, HEADER true, NULL '')";
+        "COPY \"DialogSeenLog\" (\"Id\", \"CreatedAt\", \"IsViaServiceOwner\", \"DialogId\", \"EndUserTypeId\") FROM STDIN (FORMAT csv, HEADER false, NULL '')";
 
     public static (List<Guid> seenLogIds, string seenLogCsvData) Generate(List<Guid> dialogIds, DateTimeOffset currentDate, int intervalSeconds)
     {
         var seenLogCsvData = new StringBuilder();
-        seenLogCsvData.AppendLine(CsvHeader);
+        // seenLogCsvData.AppendLine(CsvHeader);
 
         List<Guid> seenLogIds = [];
         foreach (var dialogId in dialogIds)
