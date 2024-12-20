@@ -16,7 +16,8 @@ internal static class Dialog
         var formattedDate = dto.Timestamp.ToString("yyyy-MM-dd HH:mm:ss zzz");
 
         // TODO: ServiceResource/Party round robin
-        return $"{dto.DialogId},{formattedDate},FALSE,,,sql-generated,NULL,ttd,partyHere,NULL,NULL,11,{Guid.NewGuid()},{ServiceResources[0]},GenericAccessResource,1,,{formattedDate}";
+        return
+            $"{dto.DialogId},{formattedDate},FALSE,,,,sql-generated,NULL,ttd,partyHere,NULL,NULL,11,{Guid.NewGuid()},{ServiceResources[0]},GenericAccessResource,1,,{formattedDate}";
         // var dialogCsvData = new StringBuilder();
         //
         // var currentServiceResourceIndex = 0;

@@ -6,6 +6,7 @@ namespace Digdir.Tool.Dialogporten.LargeDataSetGenerator;
 
 internal static class DialogContent
 {
+    public const string CvsHeader = "Id,CreatedAt,UpdatedAt,MediaType,DialogId,TypeId";
     public const string CopyCommand =
         "COPY \"DialogContent\" (\"Id\", \"CreatedAt\", \"UpdatedAt\", \"MediaType\", \"DialogId\", \"TypeId\") FROM STDIN (FORMAT csv, HEADER false, NULL '')";
 

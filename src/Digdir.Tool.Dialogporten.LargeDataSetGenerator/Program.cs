@@ -24,7 +24,8 @@ try
     await using var dataSource = NpgsqlDataSource.Create(connString!);
 
     await using var dialogConnection = await dataSource.OpenConnectionAsync();
-    await using var dialogWriter = dialogConnection.BeginTextImport(Dialog.CopyCommand);
+    // await using var dialogWriter = dialogConnection.BeginTextImport(Dialog.CopyCommand);
+    await using var dialogWriter = await dialogConnection.BeginRawBinaryCopyAsync(Dialog.CopyCommand);
 
     await using var dialogContentConnection = await dataSource.OpenConnectionAsync();
     await using var dialogContentWriter = dialogContentConnection.BeginTextImport(DialogContent.CopyCommand);
@@ -83,22 +84,22 @@ try
     }));
 
 
-    // Dialog Content:
-    tasks.Add(Task.Run(async () =>
-    {
-        var dialogContentStartTimestamp = Stopwatch.GetTimestamp();
-
-        foreach (var dialogTimestamp in dto.GetDialogTimestamps)
-        {
-            var dialogContentCsvData = DialogContent.Generate(dialogTimestamp);
-            await dialogContentWriter.WriteAsync(dialogContentCsvData);
-        }
-
-        // var dialogContentCsvData = DialogContent.Generate(currentDate, batchEndDate, interval);
-        // await dialogContentWriter.WriteAsync(dialogContentCsvData);
-        Console.WriteLine(
-            $"Inserted dialog content... it took {Stopwatch.GetElapsedTime(dialogContentStartTimestamp)}");
-    }));
+    // // Dialog Content:
+    // tasks.Add(Task.Run(async () =>
+    // {
+    //     var dialogContentStartTimestamp = Stopwatch.GetTimestamp();
+    //
+    //     foreach (var dialogTimestamp in dto.GetDialogTimestamps)
+    //     {
+    //         var dialogContentCsvData = DialogContent.Generate(dialogTimestamp);
+    //         await dialogContentWriter.WriteAsync(dialogContentCsvData);
+    //     }
+    //
+    //     // var dialogContentCsvData = DialogContent.Generate(currentDate, batchEndDate, interval);
+    //     // await dialogContentWriter.WriteAsync(dialogContentCsvData);
+    //     Console.WriteLine(
+    //         $"Inserted dialog content... it took {Stopwatch.GetElapsedTime(dialogContentStartTimestamp)}");
+    // }));
 
     //
     // // Dialog Gui Action:
