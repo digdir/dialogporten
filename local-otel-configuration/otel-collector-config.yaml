@@ -25,6 +25,8 @@ exporters:
     verbosity: detailed
     sampling_initial: 5
     sampling_thereafter: 200
+  otlphttp:
+    endpoint: "http://loki:3100/otlp"
 
 extensions:
   health_check:
@@ -49,4 +51,4 @@ service:
     logs:
       receivers: [otlp]
       processors: [batch]
-      exporters: [debug]
+      exporters: [otlphttp, debug]
