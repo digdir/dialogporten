@@ -8,12 +8,18 @@
     <ItemGroup>
       <PackageReference Include="Medo.Uuid7" Version="3.0.0" />
       <PackageReference Include="Npgsql" Version="9.0.2" />
+      <PackageReference Include="UUIDNext" Version="4.0.0" />
     </ItemGroup>
 
     <ItemGroup>
       <None Update="service_resources">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Digdir.Domain.Dialogporten.Domain\Digdir.Domain.Dialogporten.Domain.csproj" />
+      <ProjectReference Include="..\Digdir.Library.Entity.Abstractions\Digdir.Library.Entity.Abstractions.csproj" />
     </ItemGroup>
 
 </Project>

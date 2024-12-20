@@ -1,4 +1,6 @@
 using System.Text;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 using Medo;
 
 namespace Digdir.Tool.Dialogporten.LargeDataSetGenerator;
@@ -6,21 +8,21 @@ namespace Digdir.Tool.Dialogporten.LargeDataSetGenerator;
 
 internal static class Transmission
 {
-    private const string CsvHeader = "Id,CreatedAt,AuthorizationAttribute,ExtendedType,TypeId,DialogId,RelatedTransmissionId";
-
     public const string CopyCommand = "COPY \"DialogTransmission\" (\"Id\", \"CreatedAt\", \"AuthorizationAttribute\", \"ExtendedType\", \"TypeId\", \"DialogId\", \"RelatedTransmissionId\") FROM STDIN (FORMAT csv, HEADER false, NULL '')";
 
-    public static (List<Guid> transmissionIds, string transmissionCsvData) Generate(List<Guid> dialogIds,
-        DateTimeOffset currentDate, int intervalSeconds)
+    public static string Generate(DateTimeOffset currentDate, DateTimeOffset endDate, TimeSpan intervalSeconds)
     {
         var transmissionCsvData = new StringBuilder();
-        // transmissionCsvData.AppendLine(CsvHeader);
 
         List<Guid> transmissionIds = [];
-        foreach (var dialogId in dialogIds)
+
+        while (currentDate < endDate)
         {
-            var transmissionId1 = Uuid7.NewUuid7(currentDate).ToGuid();
-            var transmissionId2 = Uuid7.NewUuid7(currentDate).ToGuid();
+
+            var dialogId = DeterministicUuidV7.Generate(currentDate, nameof(DialogEntity));
+
+            var transmissionId1 = DeterministicUuidV7.Generate(currentDate, nameof(DialogTransmission), 1);
+            var transmissionId2 = DeterministicUuidV7.Generate(currentDate, nameof(DialogTransmission), 2);
 
             var formattedDate = currentDate.ToString("yyyy-MM-dd HH:mm:ss zzz");
             transmissionCsvData.AppendLine($"{transmissionId1},{formattedDate},NULL,NULL,1,{dialogId},");
@@ -29,9 +31,9 @@ internal static class Transmission
             transmissionIds.Add(transmissionId1);
             transmissionIds.Add(transmissionId2);
 
-            currentDate = currentDate.AddSeconds(intervalSeconds);
+            currentDate = currentDate.Add(intervalSeconds);
         }
 
-        return (transmissionIds, transmissionCsvData.ToString());
+        return transmissionCsvData.ToString();
     }
 }

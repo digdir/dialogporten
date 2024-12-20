@@ -9,28 +9,34 @@ internal static class Actor
 
     public const string CopyCommand = "COPY \"Actor\" (\"Id\", \"ActorId\", \"ActorTypeId\", \"ActorName\", \"Discriminator\", \"ActivityId\", \"DialogSeenLogId\", \"TransmissionId\", \"CreatedAt\", \"UpdatedAt\", \"LabelAssignmentLogId\") FROM STDIN (FORMAT csv, HEADER false, NULL '')";
 
-    public static string Generate(List<Guid> dialogActivityIds, List<Guid> dialogSeenLogIds, List<Guid> transmissionIds, DateTimeOffset currentDate, int _)
+    public static string Generate(DateTimeOffset currentDate, DateTimeOffset endDate, TimeSpan interval)
     {
         var actorCsvData = new StringBuilder();
-        // actorCsvData.AppendLine(CsvHeader);
 
-        foreach (var dialogActivityId in dialogActivityIds)
+        while (currentDate < endDate)
         {
-            var formattedDate = currentDate.ToString("yyyy-MM-dd HH:mm:ss zzz");
-            actorCsvData.AppendLine($"{dialogActivityId},NULL,1,'ActorName','DialogActivityPerformedByActor',{dialogActivityId},,,{formattedDate},{formattedDate},");
+            // number of dialog activities?
+
+            currentDate = currentDate.Add(interval);
         }
 
-        foreach (var dialogSeenLogId in dialogSeenLogIds)
-        {
-            var formattedDate = currentDate.ToString("yyyy-MM-dd HH:mm:ss zzz");
-            actorCsvData.AppendLine($"{dialogSeenLogId},NULL,1,'ActorName','DialogSeenLogSeenByActor',,{dialogSeenLogId},,{formattedDate},{formattedDate},");
-        }
-
-        foreach (var transmissionId in transmissionIds)
-        {
-            var formattedDate = currentDate.ToString("yyyy-MM-dd HH:mm:ss zzz");
-            actorCsvData.AppendLine($"{transmissionId},NULL,1,'ActorName','DialogTransmissionSenderActor',,,{transmissionId},{formattedDate},{formattedDate},");
-        }
+        // foreach (var dialogActivityId in dialogActivityIds)
+        // {
+        //     var formattedDate = currentDate.ToString("yyyy-MM-dd HH:mm:ss zzz");
+        //     actorCsvData.AppendLine($"{dialogActivityId},NULL,1,'ActorName','DialogActivityPerformedByActor',{dialogActivityId},,,{formattedDate},{formattedDate},");
+        // }
+        //
+        // foreach (var dialogSeenLogId in dialogSeenLogIds)
+        // {
+        //     var formattedDate = currentDate.ToString("yyyy-MM-dd HH:mm:ss zzz");
+        //     actorCsvData.AppendLine($"{dialogSeenLogId},NULL,1,'ActorName','DialogSeenLogSeenByActor',,{dialogSeenLogId},,{formattedDate},{formattedDate},");
+        // }
+        //
+        // foreach (var transmissionId in transmissionIds)
+        // {
+        //     var formattedDate = currentDate.ToString("yyyy-MM-dd HH:mm:ss zzz");
+        //     actorCsvData.AppendLine($"{transmissionId},NULL,1,'ActorName','DialogTransmissionSenderActor',,,{transmissionId},{formattedDate},{formattedDate},");
+        // }
 
         return actorCsvData.ToString();
     }
