@@ -79,28 +79,28 @@ try
                 var data = generator(timestamp);
                 await writer(data);
 
-                if (timestamp.Counter % 50_000 == 0)
+                if (timestamp.Counter % 200_000 == 0)
                 {
-                    Console.WriteLine($"Inserted 50k dialogs worth of {entityName}");
+                    Console.WriteLine($"Inserted 200k dialogs worth of {entityName}, counter at {timestamp.Counter}");
                 }
             }
             Console.WriteLine($"Inserted {entityName} in {Stopwatch.GetElapsedTime(startTimestamp)}");
         });
 
-    tasks.Add(CreateTask(Dialog.Generate, dialogWriter.WriteLineAsync, "dialogs"));
+    tasks.Add(CreateTask(Localization.Generate, localizationWriter.WriteAsync, "localizations"));
+    tasks.Add(CreateTask(LocalizationSet.Generate, localizationSetWriter.WriteAsync, "localization sets"));
     tasks.Add(CreateTask(DialogContent.Generate, dialogContentWriter.WriteAsync, "dialog content"));
+    tasks.Add(CreateTask(Transmission.Generate, transmissionWriter.WriteAsync, "transmissions"));
     tasks.Add(CreateTask(GuiAction.Generate, guiActionWriter.WriteAsync, "dialog gui actions"));
     tasks.Add(CreateTask(EndUserContext.Generate, endUserContextWriter.WriteLineAsync, "end user contexts"));
-    tasks.Add(CreateTask(SeenLog.Generate, seenLogWriter.WriteLineAsync, "seen logs"));
-    tasks.Add(CreateTask(SearchTags.Generate, searchTagWriter.WriteAsync, "search tags"));
-    tasks.Add(CreateTask(Transmission.Generate, transmissionWriter.WriteAsync, "transmissions"));
     tasks.Add(CreateTask(TransmissionContent.Generate, transmissionContentWriter.WriteAsync, "transmission content"));
     tasks.Add(CreateTask(Activity.Generate, activityWriter.WriteAsync, "activities"));
     tasks.Add(CreateTask(Attachment.Generate, attachmentWriter.WriteAsync, "attachments"));
+    tasks.Add(CreateTask(Dialog.Generate, dialogWriter.WriteLineAsync, "dialogs"));
     tasks.Add(CreateTask(AttachmentUrl.Generate, attachmentUrlWriter.WriteAsync, "attachment URLs"));
     tasks.Add(CreateTask(Actor.Generate, actorWriter.WriteAsync, "actors"));
-    tasks.Add(CreateTask(LocalizationSet.Generate, localizationSetWriter.WriteAsync, "localization sets"));
-    tasks.Add(CreateTask(Localization.Generate, localizationWriter.WriteAsync, "localizations"));
+    tasks.Add(CreateTask(SeenLog.Generate, seenLogWriter.WriteLineAsync, "seen logs"));
+    tasks.Add(CreateTask(SearchTags.Generate, searchTagWriter.WriteAsync, "search tags"));
 
     await Task.WhenAll(tasks);
 
