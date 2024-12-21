@@ -68,13 +68,13 @@ try
     }
 
     // Split Localizations, 28 lines per dialog
-    CreateTask(Localization.Generate, "localizations", Localization.CopyCommand, splits: 14);
+    CreateTask(Localization.Generate, "localizations", Localization.CopyCommand, splits: 6);
 
     // Split LocalizationSets, 14 lines per dialog
-    CreateTask(LocalizationSet.Generate, "localization sets", LocalizationSet.CopyCommand, splits: 7);
+    CreateTask(LocalizationSet.Generate, "localization sets", LocalizationSet.CopyCommand, splits: 3);
 
     // Split AttachmentUrls, 6 lines per dialog
-    CreateTask(AttachmentUrl.Generate, "attachment URLs", AttachmentUrl.CopyCommand, splits: 3);
+    CreateTask(AttachmentUrl.Generate, "attachment URLs", AttachmentUrl.CopyCommand, splits: 2);
 
     // Split Actors, 5 lines per dialog
     CreateTask(Actor.Generate, "actors", Actor.CopyCommand, splits: 2);
