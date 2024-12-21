@@ -12,10 +12,7 @@ internal static class Localization
 {
     public const string CopyCommand = """COPY "Localization" ("LanguageCode", "LocalizationSetId", "CreatedAt", "UpdatedAt", "Value") FROM STDIN (FORMAT csv, HEADER false, NULL '')""";
 
-    public static string GenerateEven(DialogTimestamp dto) => dto.Counter % 2 == 0 ? Generate(dto) : string.Empty;
-    public static string GenerateOdd(DialogTimestamp dto) => dto.Counter % 2 != 0 ? Generate(dto) : string.Empty;
-
-    private static string Generate(DialogTimestamp dto)
+    public static string Generate(DialogTimestamp dto)
     {
         var csvData = new StringBuilder();
 

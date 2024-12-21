@@ -12,8 +12,13 @@ internal sealed class SeedDatabaseDto
         ToDate = toDate;
     }
 
-    public IEnumerable<DialogTimestamp> GetDialogTimestamps =>
-        Enumerable.Range(0, DialogAmount)
+    public IEnumerable<DialogTimestamp> GetDialogTimestamps(int divisor = 1, int remainder = 0)
+    {
+        divisor = Math.Max(1, divisor); // Ensure divisor is at least 1
+        remainder = Math.Max(0, remainder % divisor); // Ensure remainder is valid
+
+        return Enumerable.Range(0, DialogAmount)
+            .Where(x => x % divisor == remainder)
             .Select(x =>
             {
                 var timestamp = FromDate + (Interval * x);
@@ -22,6 +27,8 @@ internal sealed class SeedDatabaseDto
                 var counter = x + 1;
                 return new DialogTimestamp(timestamp, formattedTimestamp, dialogId, counter);
             });
+    }
+
     public DateTimeOffset FromDate { get; }
     public DateTimeOffset ToDate { get; }
     public TimeSpan Interval { get; }
