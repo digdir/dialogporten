@@ -78,6 +78,11 @@ try
             {
                 var data = generator(timestamp);
                 await writer(data);
+
+                if (timestamp.Counter % 50_000 == 0)
+                {
+                    Console.WriteLine($"Inserted 50k dialogs worth of {entityName}");
+                }
             }
             Console.WriteLine($"Inserted {entityName} in {Stopwatch.GetElapsedTime(startTimestamp)}");
         });
