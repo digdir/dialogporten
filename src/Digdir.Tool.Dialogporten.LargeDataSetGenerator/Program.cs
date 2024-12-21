@@ -4,20 +4,18 @@ using Npgsql;
 using Activity = Digdir.Tool.Dialogporten.LargeDataSetGenerator.Activity;
 
 #pragma warning disable CA1305
-
+#pragma warning disable IDE0061
 try
 {
     Console.WriteLine("Starting large data set generator...");
 
     var connString = Environment.GetEnvironmentVariable("CONN_STRING");
-
     var startingDate = DateTimeOffset.Parse(Environment.GetEnvironmentVariable("FROM_DATE")!);
     var endDate = DateTimeOffset.Parse(Environment.GetEnvironmentVariable("TO_DATE")!);
     var dialogAmount = int.Parse(Environment.GetEnvironmentVariable("DIALOG_AMOUNT")!);
 
     var totalDialogCreatedStartTimestamp = Stopwatch.GetTimestamp();
 
-    var tasks = new List<Task>();
 
     await using var dataSource = NpgsqlDataSource.Create(connString!);
 
@@ -65,199 +63,34 @@ try
 
     var dto = new SeedDatabaseDto(startingDate, endDate, dialogAmount);
 
+    var tasks = new List<Task>();
 
-    // DIALOG:
-    tasks.Add(Task.Run(async () =>
-    {
-        var dialogStartTimestamp = Stopwatch.GetTimestamp();
-
-        foreach (var dialogTimestamp in dto.GetDialogTimestamps)
+    Task CreateTask(Func<DialogTimestamp, string> generator, Func<string, Task> writer, string entityName)
+        => Task.Run(async () =>
         {
-            var dialogCsvData = Dialog.Generate(dialogTimestamp);
-            await dialogWriter.WriteLineAsync(dialogCsvData);
-        }
+            var startTimestamp = Stopwatch.GetTimestamp();
+            foreach (var timestamp in dto.GetDialogTimestamps)
+            {
+                var data = generator(timestamp);
+                await writer(data);
+            }
+            Console.WriteLine($"Inserted {entityName} in {Stopwatch.GetElapsedTime(startTimestamp)}");
+        });
 
-        Console.WriteLine($"Inserted dialogs in {Stopwatch.GetElapsedTime(dialogStartTimestamp)}");
-    }));
-
-
-    // Dialog Content:
-    tasks.Add(Task.Run(async () =>
-    {
-        var dialogContentStartTimestamp = Stopwatch.GetTimestamp();
-
-        foreach (var dialogTimestamp in dto.GetDialogTimestamps)
-        {
-            var dialogContentCsvData = DialogContent.Generate(dialogTimestamp);
-            await dialogContentWriter.WriteAsync(dialogContentCsvData);
-        }
-
-        Console.WriteLine($"Inserted dialog content in {Stopwatch.GetElapsedTime(dialogContentStartTimestamp)}");
-    }));
-
-
-    // Dialog Gui Action:
-    tasks.Add(Task.Run(async () =>
-    {
-        var dialogGuiActionStartTimestamp = Stopwatch.GetTimestamp();
-
-        foreach (var dialogTimestamp in dto.GetDialogTimestamps)
-        {
-            var dialogGuiActionCsvData = GuiAction.Generate(dialogTimestamp);
-            await guiActionWriter.WriteAsync(dialogGuiActionCsvData);
-        }
-        Console.WriteLine($"Inserted dialog gui actions in {Stopwatch.GetElapsedTime(dialogGuiActionStartTimestamp)}");
-    }));
-
-
-    // EndUserContext:
-    tasks.Add(Task.Run(async () =>
-    {
-        var endUserContextStartTimestamp = Stopwatch.GetTimestamp();
-        foreach (var dialogTimestamp in dto.GetDialogTimestamps)
-        {
-            var endUserContextCsvData = EndUserContext.Generate(dialogTimestamp);
-            await endUserContextWriter.WriteLineAsync(endUserContextCsvData);
-        }
-
-        Console.WriteLine($"Inserted end user contexts in {Stopwatch.GetElapsedTime(endUserContextStartTimestamp)}");
-    }));
-
-
-    // SeenLog:
-    tasks.Add(Task.Run(async () =>
-    {
-        var seenLogStartTimestamp = Stopwatch.GetTimestamp();
-        foreach (var dialogTimestamp in dto.GetDialogTimestamps)
-        {
-            var seenLogCsvData = SeenLog.Generate(dialogTimestamp);
-            await seenLogWriter.WriteLineAsync(seenLogCsvData);
-        }
-
-        Console.WriteLine($"Inserted seen logs in {Stopwatch.GetElapsedTime(seenLogStartTimestamp)}");
-    }));
-
-
-    // SearchTags:
-    tasks.Add(Task.Run(async () =>
-    {
-        var searchTagStartTimestamp = Stopwatch.GetTimestamp();
-        foreach (var dialogTimestamp in dto.GetDialogTimestamps)
-        {
-            var searchTagCsvData = SearchTags.Generate(dialogTimestamp);
-            await searchTagWriter.WriteAsync(searchTagCsvData);
-        }
-        Console.WriteLine($"Inserted search tags in {Stopwatch.GetElapsedTime(searchTagStartTimestamp)}");
-    }));
-
-
-    // Transmission:
-    tasks.Add(Task.Run(async () =>
-    {
-        var transmissionStartTimestamp = Stopwatch.GetTimestamp();
-        foreach (var dialogTimestamp in dto.GetDialogTimestamps)
-        {
-            var transmissionCsvData = Transmission.Generate(dialogTimestamp);
-            await transmissionWriter.WriteAsync(transmissionCsvData);
-        }
-        Console.WriteLine($"Inserted transmissions in {Stopwatch.GetElapsedTime(transmissionStartTimestamp)}");
-    }));
-
-
-    // TransmissionContent:
-    tasks.Add(Task.Run(async () =>
-    {
-        var transmissionContentStartTimestamp = Stopwatch.GetTimestamp();
-        foreach (var dialogTimestamp in dto.GetDialogTimestamps)
-        {
-            var transmissionContentCsvData = TransmissionContent.Generate(dialogTimestamp);
-            await transmissionContentWriter.WriteAsync(transmissionContentCsvData);
-        }
-
-        Console.WriteLine($"Inserted transmission content in {Stopwatch.GetElapsedTime(transmissionContentStartTimestamp)}");
-    }));
-
-
-    // Activity:
-    tasks.Add(Task.Run(async () =>
-    {
-        var activityStartTimestamp = Stopwatch.GetTimestamp();
-        foreach (var dialogTimestamp in dto.GetDialogTimestamps)
-        {
-            var activityCsvData = Activity.Generate(dialogTimestamp);
-            await activityWriter.WriteAsync(activityCsvData);
-        }
-        Console.WriteLine($"Inserted activities in {Stopwatch.GetElapsedTime(activityStartTimestamp)}");
-    }));
-
-
-    // Attachment:
-    tasks.Add(Task.Run(async () =>
-    {
-        var attachmentStartTimestamp = Stopwatch.GetTimestamp();
-        foreach (var dialogTimestamp in dto.GetDialogTimestamps)
-        {
-            var attachmentCsvData = Attachment.Generate(dialogTimestamp);
-            await attachmentWriter.WriteAsync(attachmentCsvData);
-        }
-
-        Console.WriteLine($"Inserted attachments in {Stopwatch.GetElapsedTime(attachmentStartTimestamp)}");
-    }));
-
-
-    // AttachmentUrl:
-    tasks.Add(Task.Run(async () =>
-    {
-        var attachmentUrlStartTimestamp = Stopwatch.GetTimestamp();
-        foreach (var dialogTimestamp in dto.GetDialogTimestamps)
-        {
-            var attachmentUrlCsvData = AttachmentUrl.Generate(dialogTimestamp);
-            await attachmentUrlWriter.WriteAsync(attachmentUrlCsvData);
-        }
-        Console.WriteLine($"Inserted attachment urls in {Stopwatch.GetElapsedTime(attachmentUrlStartTimestamp)}");
-    }));
-
-
-    // Actor:
-    tasks.Add(Task.Run(async () =>
-    {
-        var actorStartTimestamp = Stopwatch.GetTimestamp();
-        foreach (var dialogTimestamp in dto.GetDialogTimestamps)
-        {
-            var actorCsvData = Actor.Generate(dialogTimestamp);
-            await actorWriter.WriteAsync(actorCsvData);
-        }
-        Console.WriteLine($"Inserted actors in {Stopwatch.GetElapsedTime(actorStartTimestamp)}");
-    }));
-
-
-    // LocalizationSet:
-    tasks.Add(Task.Run(async () =>
-    {
-        var localizationSetStartTimestamp = Stopwatch.GetTimestamp();
-        foreach (var dialogTimestamp in dto.GetDialogTimestamps)
-        {
-            var localizationSetCsvData = LocalizationSet.Generate(dialogTimestamp);
-            await localizationSetWriter.WriteAsync(localizationSetCsvData);
-        }
-
-        Console.WriteLine(
-            $"Inserted localization sets in {Stopwatch.GetElapsedTime(localizationSetStartTimestamp)}");
-    }));
-
-
-    // Localization:
-    tasks.Add(Task.Run(async () =>
-    {
-        var localizationStartTimestamp = Stopwatch.GetTimestamp();
-        foreach (var dialogTimestamp in dto.GetDialogTimestamps)
-        {
-            var localizationCsvData = Localization.Generate(dialogTimestamp);
-            await localizationWriter.WriteAsync(localizationCsvData);
-        }
-
-        Console.WriteLine($"Inserted localizations in {Stopwatch.GetElapsedTime(localizationStartTimestamp)}");
-    }));
+    tasks.Add(CreateTask(Dialog.Generate, dialogWriter.WriteLineAsync, "dialogs"));
+    tasks.Add(CreateTask(DialogContent.Generate, dialogContentWriter.WriteAsync, "dialog content"));
+    tasks.Add(CreateTask(GuiAction.Generate, guiActionWriter.WriteAsync, "dialog gui actions"));
+    tasks.Add(CreateTask(EndUserContext.Generate, endUserContextWriter.WriteLineAsync, "end user contexts"));
+    tasks.Add(CreateTask(SeenLog.Generate, seenLogWriter.WriteLineAsync, "seen logs"));
+    tasks.Add(CreateTask(SearchTags.Generate, searchTagWriter.WriteAsync, "search tags"));
+    tasks.Add(CreateTask(Transmission.Generate, transmissionWriter.WriteAsync, "transmissions"));
+    tasks.Add(CreateTask(TransmissionContent.Generate, transmissionContentWriter.WriteAsync, "transmission content"));
+    tasks.Add(CreateTask(Activity.Generate, activityWriter.WriteAsync, "activities"));
+    tasks.Add(CreateTask(Attachment.Generate, attachmentWriter.WriteAsync, "attachments"));
+    tasks.Add(CreateTask(AttachmentUrl.Generate, attachmentUrlWriter.WriteAsync, "attachment URLs"));
+    tasks.Add(CreateTask(Actor.Generate, actorWriter.WriteAsync, "actors"));
+    tasks.Add(CreateTask(LocalizationSet.Generate, localizationSetWriter.WriteAsync, "localization sets"));
+    tasks.Add(CreateTask(Localization.Generate, localizationWriter.WriteAsync, "localizations"));
 
     await Task.WhenAll(tasks);
 
