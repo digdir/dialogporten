@@ -1,6 +1,7 @@
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 namespace Digdir.Tool.Dialogporten.LargeDataSetGenerator;
 
+#pragma warning disable CA1305
 internal sealed class SeedDatabaseDto
 {
     public SeedDatabaseDto(DateTimeOffset fromDate, DateTimeOffset toDate, int dialogAmount)
@@ -16,9 +17,10 @@ internal sealed class SeedDatabaseDto
             .Select(x =>
             {
                 var timestamp = FromDate + (Interval * x);
+                var formattedTimestamp = timestamp.ToString("yyyy-MM-dd HH:mm:ss zzz");
                 var dialogId = DeterministicUuidV7.Generate(timestamp, nameof(DialogEntity));
                 var counter = x + 1;
-                return new DialogTimestamp(timestamp, dialogId, counter);
+                return new DialogTimestamp(timestamp, formattedTimestamp, dialogId, counter);
             });
     public DateTimeOffset FromDate { get; }
     public DateTimeOffset ToDate { get; }

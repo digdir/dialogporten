@@ -1,42 +1,33 @@
 using System.Text;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 
 namespace Digdir.Tool.Dialogporten.LargeDataSetGenerator;
 #pragma warning disable CA1305
 
 internal static class Actor
 {
-    private const string CsvHeader = "Id,ActorId,ActorTypeId,ActorName,Discriminator,ActivityId,DialogSeenLogId,TransmissionId,CreatedAt,UpdatedAt,LabelAssignmentLogId";
+    public const string CopyCommand = """COPY "Actor" ("Id", "ActorId", "ActorTypeId", "ActorName", "Discriminator", "ActivityId", "DialogSeenLogId", "TransmissionId", "CreatedAt", "UpdatedAt", "LabelAssignmentLogId") FROM STDIN (FORMAT csv, HEADER false, NULL '')""";
 
-    public const string CopyCommand = "COPY \"Actor\" (\"Id\", \"ActorId\", \"ActorTypeId\", \"ActorName\", \"Discriminator\", \"ActivityId\", \"DialogSeenLogId\", \"TransmissionId\", \"CreatedAt\", \"UpdatedAt\", \"LabelAssignmentLogId\") FROM STDIN (FORMAT csv, HEADER false, NULL '')";
-
-    public static string Generate(DateTimeOffset currentDate, DateTimeOffset endDate, TimeSpan interval)
+    public static string Generate(DialogTimestamp dto)
     {
         var actorCsvData = new StringBuilder();
 
-        while (currentDate < endDate)
-        {
-            // number of dialog activities?
+        // DialogActivity
+        var activityId1 = DeterministicUuidV7.Generate(dto.Timestamp, nameof(DialogActivity), Activity.DialogCreatedType);
+        actorCsvData.AppendLine($"{activityId1},NULL,1,'ActorName','DialogActivityPerformedByActor',{activityId1},,,{dto.FormattedTimestamp},{dto.FormattedTimestamp},");
+        var activityId2 = DeterministicUuidV7.Generate(dto.Timestamp, nameof(DialogActivity), Activity.InformationType);
+        actorCsvData.AppendLine($"{activityId2},NULL,1,'ActorName','DialogActivityPerformedByActor',{activityId2},,,{dto.FormattedTimestamp},{dto.FormattedTimestamp},");
 
-            currentDate = currentDate.Add(interval);
-        }
+        // DialogSeenLog
+        actorCsvData.AppendLine($"{dto.DialogId},NULL,1,'ActorName','DialogSeenLogSeenByActor',,{dto.DialogId},,{dto.FormattedTimestamp},{dto.FormattedTimestamp},");
 
-        // foreach (var dialogActivityId in dialogActivityIds)
-        // {
-        //     var formattedDate = currentDate.ToString("yyyy-MM-dd HH:mm:ss zzz");
-        //     actorCsvData.AppendLine($"{dialogActivityId},NULL,1,'ActorName','DialogActivityPerformedByActor',{dialogActivityId},,,{formattedDate},{formattedDate},");
-        // }
-        //
-        // foreach (var dialogSeenLogId in dialogSeenLogIds)
-        // {
-        //     var formattedDate = currentDate.ToString("yyyy-MM-dd HH:mm:ss zzz");
-        //     actorCsvData.AppendLine($"{dialogSeenLogId},NULL,1,'ActorName','DialogSeenLogSeenByActor',,{dialogSeenLogId},,{formattedDate},{formattedDate},");
-        // }
-        //
-        // foreach (var transmissionId in transmissionIds)
-        // {
-        //     var formattedDate = currentDate.ToString("yyyy-MM-dd HH:mm:ss zzz");
-        //     actorCsvData.AppendLine($"{transmissionId},NULL,1,'ActorName','DialogTransmissionSenderActor',,,{transmissionId},{formattedDate},{formattedDate},");
-        // }
+        // Transmission
+        var transmissionId1 = DeterministicUuidV7.Generate(dto.Timestamp, nameof(DialogTransmission), 1);
+        actorCsvData.AppendLine($"{transmissionId1},NULL,1,'ActorName','DialogTransmissionSenderActor',,,{transmissionId1},{dto.FormattedTimestamp},{dto.FormattedTimestamp},");
+
+        var transmissionId2 = DeterministicUuidV7.Generate(dto.Timestamp, nameof(DialogTransmission), 2);
+        actorCsvData.AppendLine($"{transmissionId2},NULL,1,'ActorName','DialogTransmissionSenderActor',,,{transmissionId2},{dto.FormattedTimestamp},{dto.FormattedTimestamp},");
 
         return actorCsvData.ToString();
     }

@@ -1,55 +1,69 @@
 using System.Text;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions.Contents;
 
 namespace Digdir.Tool.Dialogporten.LargeDataSetGenerator;
 #pragma warning disable CA1305
 
 internal static class LocalizationSet
 {
-    private const string CsvHeader = "Id,CreatedAt,Discriminator,AttachmentId,GuiActionId,ActivityId,DialogContentId,TransmissionContentId";
+    public const string CopyCommand = """COPY "LocalizationSet" ("Id", "CreatedAt", "Discriminator", "AttachmentId", "GuiActionId", "ActivityId", "DialogContentId", "TransmissionContentId") FROM STDIN (FORMAT csv, HEADER false, NULL '')""";
 
-    public const string CopyCommand = "COPY \"LocalizationSet\" (\"Id\", \"CreatedAt\", \"Discriminator\", \"AttachmentId\", \"GuiActionId\", \"ActivityId\", \"DialogContentId\", \"TransmissionContentId\") FROM STDIN (FORMAT csv, HEADER false, NULL '')";
-
-    public static (List<Guid> localizationSetIds, string localizationSetCsvData) Generate(List<Guid> attachmentIds, List<Guid> guiActionIds, List<Guid> dialogActivityIds, List<Guid> dialogContentIds, List<Guid> transmissionContentIds, DateTimeOffset currentDate, int _)
+    public static string Generate(DialogTimestamp dto)
     {
         var localizationSetCsvData = new StringBuilder();
-        // localizationSetCsvData.AppendLine(CsvHeader);
 
-        // TODO: This is wrong, the date cannot be the same for all rows.
-        var formattedDate = currentDate.ToString("yyyy-MM-dd HH:mm:ss zzz");
+        // Transmission Attachments
+        var transmissionId1 = DeterministicUuidV7.Generate(dto.Timestamp, nameof(DialogTransmission), 1);
+        localizationSetCsvData.AppendLine($"{transmissionId1},{dto.FormattedTimestamp},'AttachmentDisplayName',{transmissionId1},,,,");
 
-        foreach (var attachmentId in attachmentIds)
-        {
-            localizationSetCsvData.AppendLine($"{attachmentId},{formattedDate},'AttachmentDisplayName',{attachmentId},,,,");
-        }
+        var transmissionId2 = DeterministicUuidV7.Generate(dto.Timestamp, nameof(DialogTransmission), 2);
+        localizationSetCsvData.AppendLine($"{transmissionId2},{dto.FormattedTimestamp},'AttachmentDisplayName',{transmissionId2},,,,");
 
-        foreach (var guiActionId in guiActionIds)
-        {
-            localizationSetCsvData.AppendLine($"{guiActionId},{formattedDate},'DialogGuiActionTitle',,{guiActionId},,,");
-        }
 
-        foreach (var dialogActivityId in dialogActivityIds)
-        {
-            localizationSetCsvData.AppendLine($"{dialogActivityId},{formattedDate},'DialogActivityDescription',,,{dialogActivityId},,");
-        }
+        // DialogAttachment
+        localizationSetCsvData.AppendLine($"{dto.DialogId},{dto.FormattedTimestamp},'AttachmentDisplayName',{dto.DialogId},,,,");
 
-        foreach (var dialogContentId in dialogContentIds)
-        {
-            localizationSetCsvData.AppendLine($"{dialogContentId},{formattedDate},'DialogContentValue',,,,{dialogContentId},");
-        }
 
-        foreach (var transmissionContentId in transmissionContentIds)
-        {
-            localizationSetCsvData.AppendLine($"{transmissionContentId},{formattedDate},'DialogTransmissionContentValue',,,,,{transmissionContentId}");
-        }
+        // GuiAction
+        var guiActionId1 = DeterministicUuidV7.Generate(dto.Timestamp, nameof(DialogGuiAction), 1);
+        localizationSetCsvData.AppendLine($"{guiActionId1},{dto.FormattedTimestamp},'DialogGuiActionTitle',,{guiActionId1},,,");
 
-        var localizationSetIds =
-            attachmentIds
-                .Concat(guiActionIds)
-                .Concat(dialogActivityIds)
-                .Concat(dialogContentIds)
-                .Concat(transmissionContentIds)
-                .ToList();
+        var guiActionId2 = DeterministicUuidV7.Generate(dto.Timestamp, nameof(DialogGuiAction), 2);
+        localizationSetCsvData.AppendLine($"{guiActionId2},{dto.FormattedTimestamp},'DialogGuiActionTitle',,{guiActionId2},,,");
 
-        return (localizationSetIds, localizationSetCsvData.ToString());
+        var guiActionId3 = DeterministicUuidV7.Generate(dto.Timestamp, nameof(DialogGuiAction), 3);
+        localizationSetCsvData.AppendLine($"{guiActionId3},{dto.FormattedTimestamp},'DialogGuiActionTitle',,{guiActionId3},,,");
+
+
+        // DialogActivity
+        var activityId1 = DeterministicUuidV7.Generate(dto.Timestamp, nameof(DialogActivity), Activity.DialogCreatedType);
+        localizationSetCsvData.AppendLine($"{activityId1},{dto.FormattedTimestamp},'DialogActivityDescription',,,{activityId1},,");
+
+        var activityId2 = DeterministicUuidV7.Generate(dto.Timestamp, nameof(DialogActivity), Activity.InformationType);
+        localizationSetCsvData.AppendLine($"{activityId2},{dto.FormattedTimestamp},'DialogActivityDescription',,,{activityId2},,");
+
+
+        // DialogContent
+        var dialogContent1 = DeterministicUuidV7.Generate(dto.Timestamp, nameof(Domain.Dialogporten.Domain.Dialogs.Entities.Contents.DialogContent), 1);
+        localizationSetCsvData.AppendLine($"{dialogContent1},{dto.FormattedTimestamp},'DialogContentValue',,,,{dialogContent1},");
+
+        var dialogContent2 = DeterministicUuidV7.Generate(dto.Timestamp, nameof(Domain.Dialogporten.Domain.Dialogs.Entities.Contents.DialogContent), 2);
+        localizationSetCsvData.AppendLine($"{dialogContent2},{dto.FormattedTimestamp},'DialogContentValue',,,,{dialogContent2},");
+
+
+        // DialogTransmissionContent
+        var contentId1 = DeterministicUuidV7.Generate(dto.Timestamp, nameof(DialogTransmissionContent), 1);
+        localizationSetCsvData.AppendLine($"{contentId1},{dto.FormattedTimestamp},'DialogTransmissionContentValue',,,,,{contentId1}");
+        var contentId2 = DeterministicUuidV7.Generate(dto.Timestamp, nameof(DialogTransmissionContent), 2);
+        localizationSetCsvData.AppendLine($"{contentId2},{dto.FormattedTimestamp},'DialogTransmissionContentValue',,,,,{contentId2}");
+        var contentId3 = DeterministicUuidV7.Generate(dto.Timestamp, nameof(DialogTransmissionContent), 3);
+        localizationSetCsvData.AppendLine($"{contentId3},{dto.FormattedTimestamp},'DialogTransmissionContentValue',,,,,{contentId3}");
+        var contentId4 = DeterministicUuidV7.Generate(dto.Timestamp, nameof(DialogTransmissionContent), 4);
+        localizationSetCsvData.AppendLine($"{contentId4},{dto.FormattedTimestamp},'DialogTransmissionContentValue',,,,,{contentId4}");
+
+        return localizationSetCsvData.ToString();
     }
 }

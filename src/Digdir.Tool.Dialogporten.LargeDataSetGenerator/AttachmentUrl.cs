@@ -1,30 +1,33 @@
 using System.Text;
-using Medo;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 
 namespace Digdir.Tool.Dialogporten.LargeDataSetGenerator;
 #pragma warning disable CA1305
 
 internal static class AttachmentUrl
 {
-    public const string CopyCommand = "COPY \"AttachmentUrl\" (\"Id\", \"CreatedAt\", \"MediaType\", \"Url\", \"ConsumerTypeId\", \"AttachmentId\") FROM STDIN (FORMAT csv, HEADER false, NULL '')";
+    public const string CopyCommand = """COPY "AttachmentUrl" ("Id", "CreatedAt", "MediaType", "Url", "ConsumerTypeId", "AttachmentId") FROM STDIN (FORMAT csv, HEADER false, NULL '')""";
 
-    public static string Generate(DateTimeOffset currentDate, DateTimeOffset endDate, TimeSpan intervalSeconds)
+    public static string Generate(DialogTimestamp dto)
     {
         var attachmentUrlCsvData = new StringBuilder();
 
-        while (currentDate < endDate)
-        {
-            var attachmentId = DeterministicUuidV7.Generate(currentDate, nameof(Domain.Dialogporten.Domain.Attachments.Attachment));
+        var transmissionAttachmentId1 = DeterministicUuidV7.Generate(dto.Timestamp, nameof(DialogTransmission), 1);
+        var attachmentUrlId1 = DeterministicUuidV7.Generate(dto.Timestamp, nameof(Domain.Dialogporten.Domain.Attachments.AttachmentUrl), 1);
+        var attachmentUrlId2 = DeterministicUuidV7.Generate(dto.Timestamp, nameof(Domain.Dialogporten.Domain.Attachments.AttachmentUrl), 2);
+        attachmentUrlCsvData.AppendLine($"{attachmentUrlId1},{dto.FormattedTimestamp},'text/plain','https://digdir.apps.tt02.altinn.no/',1,{transmissionAttachmentId1}");
+        attachmentUrlCsvData.AppendLine($"{attachmentUrlId2},{dto.FormattedTimestamp},'text/plain','https://digdir.apps.tt02.altinn.no/',1,{transmissionAttachmentId1}");
 
-            var attachmentUrlId1 = DeterministicUuidV7.Generate(currentDate, nameof(Domain.Dialogporten.Domain.Attachments.AttachmentUrl), 1);
-            var attachmentUrlId2 = DeterministicUuidV7.Generate(currentDate, nameof(Domain.Dialogporten.Domain.Attachments.AttachmentUrl), 2);
+        var transmissionAttachmentId2 = DeterministicUuidV7.Generate(dto.Timestamp, nameof(DialogTransmission), 2);
+        var attachmentUrlId3 = DeterministicUuidV7.Generate(dto.Timestamp, nameof(Domain.Dialogporten.Domain.Attachments.AttachmentUrl), 3);
+        var attachmentUrlId4 = DeterministicUuidV7.Generate(dto.Timestamp, nameof(Domain.Dialogporten.Domain.Attachments.AttachmentUrl), 4);
+        attachmentUrlCsvData.AppendLine($"{attachmentUrlId3},{dto.FormattedTimestamp},'text/plain','https://digdir.apps.tt02.altinn.no/',1,{transmissionAttachmentId2}");
+        attachmentUrlCsvData.AppendLine($"{attachmentUrlId4},{dto.FormattedTimestamp},'text/plain','https://digdir.apps.tt02.altinn.no/',1,{transmissionAttachmentId2}");
 
-            var formattedDate = currentDate.ToString("yyyy-MM-dd HH:mm:ss zzz");
-            attachmentUrlCsvData.AppendLine($"{attachmentUrlId1},{formattedDate},'text/plain','https://digdir.apps.tt02.altinn.no/',1,{attachmentId}");
-            attachmentUrlCsvData.AppendLine($"{attachmentUrlId2},{formattedDate},'text/plain','https://digdir.apps.tt02.altinn.no/',2,{attachmentId}");
-
-            currentDate = currentDate.Add(intervalSeconds);
-        }
+        var attachmentUrlId5 = DeterministicUuidV7.Generate(dto.Timestamp, nameof(Domain.Dialogporten.Domain.Attachments.AttachmentUrl), 5);
+        var attachmentUrlId6 = DeterministicUuidV7.Generate(dto.Timestamp, nameof(Domain.Dialogporten.Domain.Attachments.AttachmentUrl), 6);
+        attachmentUrlCsvData.AppendLine($"{attachmentUrlId5},{dto.FormattedTimestamp},'text/plain','https://digdir.apps.tt02.altinn.no/',1,{dto.DialogId}");
+        attachmentUrlCsvData.AppendLine($"{attachmentUrlId6},{dto.FormattedTimestamp},'text/plain','https://digdir.apps.tt02.altinn.no/',1,{dto.DialogId}");
 
         return attachmentUrlCsvData.ToString();
     }

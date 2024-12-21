@@ -1,34 +1,32 @@
 using System.Text;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions.Contents;
-using Medo;
 
 namespace Digdir.Tool.Dialogporten.LargeDataSetGenerator;
 #pragma warning disable CA1305
 
 internal static class TransmissionContent
 {
-    public const string CopyCommand = "COPY \"DialogTransmissionContent\" (\"Id\", \"CreatedAt\", \"UpdatedAt\", \"MediaType\", \"TransmissionId\", \"TypeId\") FROM STDIN (FORMAT csv, HEADER false, NULL '')";
+    public const string CopyCommand = """COPY "DialogTransmissionContent" ("Id", "CreatedAt", "UpdatedAt", "MediaType", "TransmissionId", "TypeId") FROM STDIN (FORMAT csv, HEADER false, NULL '')""";
 
-    public static string Generate(DateTimeOffset currentDate, DateTimeOffset endDate, TimeSpan intervalSeconds)
+    public static string Generate(DialogTimestamp dto)
     {
-        var transmissionContentCsvData = new StringBuilder();
-        // transmissionContentCsvData.AppendLine(CsvHeader);
+        var csvData = new StringBuilder();
 
-        while (currentDate < endDate)
-        {
-            var transmissionId = DeterministicUuidV7.Generate(currentDate, nameof(DialogTransmission));
+        var transmissionId1 = DeterministicUuidV7.Generate(dto.Timestamp, nameof(DialogTransmission), 1);
+        var contentId1 = DeterministicUuidV7.Generate(dto.Timestamp, nameof(DialogTransmissionContent), 1);
+        var contentId2 = DeterministicUuidV7.Generate(dto.Timestamp, nameof(DialogTransmissionContent), 2);
 
-            var contentId1 = DeterministicUuidV7.Generate(currentDate, nameof(DialogTransmissionContent), 1);
-            var contentId2 = DeterministicUuidV7.Generate(currentDate, nameof(DialogTransmissionContent), 2);
+        csvData.AppendLine($"{contentId1},{dto.FormattedTimestamp},{dto.FormattedTimestamp},'text/plain',{transmissionId1},1");
+        csvData.AppendLine($"{contentId2},{dto.FormattedTimestamp},{dto.FormattedTimestamp},'text/plain',{transmissionId1},2");
 
-            var formattedDate = currentDate.ToString("yyyy-MM-dd HH:mm:ss zzz");
-            transmissionContentCsvData.AppendLine($"{contentId1},{formattedDate},{formattedDate},'text/plain',{transmissionId},1");
-            transmissionContentCsvData.AppendLine($"{contentId2},{formattedDate},{formattedDate},'text/plain',{transmissionId},2");
+        var transmissionId2 = DeterministicUuidV7.Generate(dto.Timestamp, nameof(DialogTransmission), 2);
+        var contentId3 = DeterministicUuidV7.Generate(dto.Timestamp, nameof(DialogTransmissionContent), 3);
+        var contentId4 = DeterministicUuidV7.Generate(dto.Timestamp, nameof(DialogTransmissionContent), 4);
 
-            currentDate = currentDate.Add(intervalSeconds);
-        }
+        csvData.AppendLine($"{contentId3},{dto.FormattedTimestamp},{dto.FormattedTimestamp},'text/plain',{transmissionId2},1");
+        csvData.AppendLine($"{contentId4},{dto.FormattedTimestamp},{dto.FormattedTimestamp},'text/plain',{transmissionId2},2");
 
-        return transmissionContentCsvData.ToString();
+        return csvData.ToString();
     }
 }

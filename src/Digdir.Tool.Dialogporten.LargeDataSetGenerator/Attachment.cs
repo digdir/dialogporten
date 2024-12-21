@@ -1,5 +1,4 @@
 using System.Text;
-using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 
 namespace Digdir.Tool.Dialogporten.LargeDataSetGenerator;
@@ -7,23 +6,18 @@ namespace Digdir.Tool.Dialogporten.LargeDataSetGenerator;
 
 internal static class Attachment
 {
-    public const string CopyCommand = "COPY \"Attachment\" (\"Id\", \"CreatedAt\", \"UpdatedAt\", \"Discriminator\", \"DialogId\", \"TransmissionId\") FROM STDIN (FORMAT csv, HEADER false, NULL '')";
+    public const string CopyCommand = """COPY "Attachment" ("Id", "CreatedAt", "UpdatedAt", "Discriminator", "DialogId", "TransmissionId") FROM STDIN (FORMAT csv, HEADER false, NULL '')""";
 
-    public static string Generate(DateTimeOffset currentDate, DateTimeOffset endDate, TimeSpan intervalSeconds)
+    public static string Generate(DialogTimestamp dto)
     {
         var attachmentCsvData = new StringBuilder();
 
-        while (currentDate < endDate)
-        {
-            var dialogId = DeterministicUuidV7.Generate(currentDate, nameof(DialogEntity));
-            var transmissionId = DeterministicUuidV7.Generate(currentDate, nameof(DialogTransmission));
+        var transmissionId1 = DeterministicUuidV7.Generate(dto.Timestamp, nameof(DialogTransmission), 1);
+        var transmissionId2 = DeterministicUuidV7.Generate(dto.Timestamp, nameof(DialogTransmission), 2);
+        attachmentCsvData.AppendLine($"{transmissionId1},{dto.FormattedTimestamp},{dto.FormattedTimestamp},'DialogTransmissionAttachment',,{transmissionId1}");
+        attachmentCsvData.AppendLine($"{transmissionId2},{dto.FormattedTimestamp},{dto.FormattedTimestamp},'DialogTransmissionAttachment',,{transmissionId2}");
 
-            var formattedDate = currentDate.ToString("yyyy-MM-dd HH:mm:ss zzz");
-            attachmentCsvData.AppendLine($"{dialogId},{formattedDate},{formattedDate},'DialogAttachment',{dialogId},");
-            attachmentCsvData.AppendLine($"{transmissionId},{formattedDate},{formattedDate},'DialogTransmissionAttachment',,{transmissionId}");
-
-            currentDate = currentDate.Add(intervalSeconds);
-        }
+        attachmentCsvData.AppendLine($"{dto.DialogId},{dto.FormattedTimestamp},{dto.FormattedTimestamp},'DialogAttachment',{dto.DialogId},");
 
         return attachmentCsvData.ToString();
     }
