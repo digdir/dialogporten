@@ -38,6 +38,9 @@ try
                 await using var writer = dbConnection.BeginTextImport(copyCommand);
 
                 var startTimestamp = Stopwatch.GetTimestamp();
+                const int logThreshold = 500_000;
+                var splitLogThreshold = 500_000 / splits;
+
                 foreach (var timestamp in dto.GetDialogTimestamps(splits, splitIndex))
                 {
                     var data = generator(timestamp);
@@ -51,10 +54,10 @@ try
                         await writer.WriteAsync(data);
                     }
 
-                    if (timestamp.Counter % 500_000 == 0)
+                    if (timestamp.Counter % logThreshold == 0)
                     {
                         Console.WriteLine(
-                            $"Inserted 500k dialogs worth of {entityName} (split {splitIndex + 1}/{splits}), counter at {timestamp.Counter}");
+                            $"Inserted {splitLogThreshold} dialogs worth of {entityName} (split {splitIndex + 1}/{splits}), counter at {timestamp.Counter}");
                     }
                 }
 
