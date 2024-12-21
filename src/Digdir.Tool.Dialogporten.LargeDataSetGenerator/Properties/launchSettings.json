@@ -13,7 +13,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development",
         "FROM_DATE": "1905-01-03",
         "TO_DATE": "2023-12-31",
-        "DIALOG_AMOUNT": "100000",
+        "DIALOG_AMOUNT": "100000000",
       }
     }
   }
