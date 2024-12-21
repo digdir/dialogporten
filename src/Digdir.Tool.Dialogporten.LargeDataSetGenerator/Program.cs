@@ -77,6 +77,11 @@ try
             foreach (var timestamp in dto.GetDialogTimestamps)
             {
                 var data = generator(timestamp);
+                if (data == string.Empty)
+                {
+                    continue;
+                }
+
                 await writer(data);
 
                 if (timestamp.Counter % 200_000 == 0)
@@ -87,8 +92,10 @@ try
             Console.WriteLine($"Inserted {entityName} in {Stopwatch.GetElapsedTime(startTimestamp)}");
         });
 
-    tasks.Add(CreateTask(Localization.Generate, localizationWriter.WriteAsync, "localizations"));
-    tasks.Add(CreateTask(LocalizationSet.Generate, localizationSetWriter.WriteAsync, "localization sets"));
+    tasks.Add(CreateTask(Localization.GenerateOdd, localizationWriter.WriteAsync, "localizations (odd)"));
+    tasks.Add(CreateTask(Localization.GenerateEven, localizationWriter.WriteAsync, "localizations (even)"));
+    tasks.Add(CreateTask(LocalizationSet.GenerateOdd, localizationSetWriter.WriteAsync, "localization sets (odd)"));
+    tasks.Add(CreateTask(LocalizationSet.GenerateEven, localizationSetWriter.WriteAsync, "localization sets (odd)"));
     tasks.Add(CreateTask(DialogContent.Generate, dialogContentWriter.WriteAsync, "dialog content"));
     tasks.Add(CreateTask(Transmission.Generate, transmissionWriter.WriteAsync, "transmissions"));
     tasks.Add(CreateTask(GuiAction.Generate, guiActionWriter.WriteAsync, "dialog gui actions"));
