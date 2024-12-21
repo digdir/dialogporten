@@ -14,6 +14,11 @@ try
     var endDate = DateTimeOffset.Parse(Environment.GetEnvironmentVariable("TO_DATE")!);
     var dialogAmount = int.Parse(Environment.GetEnvironmentVariable("DIALOG_AMOUNT")!);
 
+    Console.WriteLine($"Connection string: {connString}");
+    Console.WriteLine($"Starting date: {startingDate}");
+    Console.WriteLine($"End date: {endDate}");
+    Console.WriteLine($"Dialog amount: {dialogAmount}");
+
     var totalDialogCreatedStartTimestamp = Stopwatch.GetTimestamp();
 
 
