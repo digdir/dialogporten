@@ -68,7 +68,7 @@ try
     }
 
     // Split Localizations, 28 lines per dialog
-    CreateTask(Localization.Generate, "localizations", Localization.CopyCommand, splits: 6);
+    CreateTask(Localization.Generate, "localizations", Localization.CopyCommand, splits: 3);
 
     // Split LocalizationSets, 14 lines per dialog
     CreateTask(LocalizationSet.Generate, "localization sets", LocalizationSet.CopyCommand, splits: 3);
