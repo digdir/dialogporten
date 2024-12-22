@@ -83,7 +83,13 @@
           "TransmissionOpened",
           "PaymentMade",
           "SignatureProvided",
-          "DialogOpened"
+          "DialogOpened",
+          "DialogDeleted",
+          "DialogRestored",
+          "SentToSigning",
+          "SentToFormFill",
+          "SentToSendIn",
+          "SentToPayment"
         ],
         "type": "string",
         "x-enumNames": [
@@ -93,7 +99,13 @@
           "TransmissionOpened",
           "PaymentMade",
           "SignatureProvided",
-          "DialogOpened"
+          "DialogOpened",
+          "DialogDeleted",
+          "DialogRestored",
+          "SentToSigning",
+          "SentToFormFill",
+          "SentToSendIn",
+          "SentToPayment"
         ]
       },
       "DialogsEntitiesTransmissions_DialogTransmissionType": {

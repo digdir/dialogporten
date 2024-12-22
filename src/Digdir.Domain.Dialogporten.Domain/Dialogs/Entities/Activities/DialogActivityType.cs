@@ -43,5 +43,35 @@ public sealed class DialogActivityType : AbstractLookupEntity<DialogActivityType
         /// Refers to a dialog that has been opened.
         /// </summary>
         DialogOpened = 7,
+
+        /// <summary>
+        /// Refers to a dialog that has been deleted.
+        /// </summary>
+        DialogDeleted = 8,
+
+        /// <summary>
+        /// Refers to a dialog that has been restored.
+        /// </summary>
+        DialogRestored = 9,
+
+        /// <summary>
+        ///
+        /// </summary>
+        SentToSigning = 10,
+
+        /// <summary>
+        ///
+        /// </summary>
+        SentToFormFill = 11,
+
+        /// <summary>
+        ///
+        /// </summary>
+        SentToSendIn = 12,
+
+        /// <summary>
+        ///
+        /// </summary>
+        SentToPayment = 13,
     }
 }
