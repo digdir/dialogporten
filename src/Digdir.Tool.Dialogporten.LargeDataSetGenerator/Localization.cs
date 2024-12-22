@@ -1,4 +1,3 @@
-using System.Runtime.InteropServices;
 using System.Text;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;

@@ -39,7 +39,7 @@ try
 
                 var startTimestamp = Stopwatch.GetTimestamp();
                 const int logThreshold = 500_000;
-                var splitLogThreshold = 500_000 / splits;
+                var splitLogThreshold = logThreshold / splits;
 
                 foreach (var timestamp in dto.GetDialogTimestamps(splits, splitIndex))
                 {
@@ -107,6 +107,7 @@ try
 catch (Exception ex)
 {
     Console.Error.WriteLine(ex.Message);
+    Console.Error.WriteLine(ex.StackTrace);
 }
 
 // TODO: Re-enable all indexes and constraints
