@@ -127,16 +127,6 @@ module appInsights '../modules/applicationInsights/create.bicep' = {
   }
 }
 
-module monitorWorkspace '../modules/monitor-workspace/main.bicep' = {
-  scope: resourceGroup
-  name: 'monitorWorkspace'
-  params: {
-    namePrefix: namePrefix
-    location: location
-    tags: tags
-  }
-}
-
 module apimAvailabilityTest '../modules/applicationInsights/availabilityTest.bicep' = {
   scope: resourceGroup
   name: 'apimAvailabilityTest'
@@ -303,19 +293,9 @@ module containerAppEnv '../modules/containerAppEnv/main.bicep' = {
     location: location
     appInsightWorkspaceName: appInsights.outputs.appInsightsWorkspaceName
     appInsightsConnectionString: appInsights.outputs.connectionString
-    monitorMetricsIngestionEndpoint: monitorWorkspace.outputs.containerAppEnvironmentMetricsIngestionEndpoint
     userAssignedIdentityId: containerAppIdentity.outputs.managedIdentityId
     subnetId: vnet.outputs.containerAppEnvironmentSubnetId
     tags: tags
-  }
-}
-
-module monitorMetricsPublisherRoles '../modules/monitor-workspace/addMetricsPublisherRoles.bicep' = {
-  scope: resourceGroup
-  name: 'monitorMetricsPublisherRoles'
-  params: {
-    monitorWorkspaceName: monitorWorkspace.outputs.monitorWorkspaceName
-    principalIds: [containerAppIdentity.outputs.managedIdentityPrincipalId]
   }
 }
 
