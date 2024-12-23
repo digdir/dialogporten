@@ -7,14 +7,16 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Library.Entity.Abstractions.Features.Identifiable;
 using Digdir.Tool.Dialogporten.GenerateFakeData;
 using FluentAssertions;
-using ActivityDto = Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Create.ActivityDto;
+
+using UpdateActivityDto =
+    Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Update.ActivityDto;
+using CreateActivityDto =
+    Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Create.ActivityDto;
 
 namespace Digdir.Domain.Dialogporten.Application.Unit.Tests.Features.V1.ServiceOwner.Activities;
 
 public class ActivityValidatorTests
 {
-
-
     public static IEnumerable<object[]> ActivityTypes() =>
         from DialogActivityType.Values activityType in Enum.GetValues(typeof(DialogActivityType.Values))
         select new object[] { activityType, };
@@ -24,18 +26,20 @@ public class ActivityValidatorTests
         DialogActivityType.Values activityType)
     {
         // Arrange
-        var mapper = new MapperConfiguration(cfg => cfg.CreateMap<ActivityDto, Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Update.ActivityDto>()).CreateMapper();
+        var mapper = new MapperConfiguration(cfg => cfg.CreateMap<CreateActivityDto, UpdateActivityDto>()).CreateMapper();
+
         var activity = DialogGenerator.GenerateFakeDialogActivity(type: activityType);
         activity.TransmissionId = IdentifiableExtensions.CreateVersion7();
 
         var localizationValidator = new LocalizationDtosValidator();
         var actorValidator = new ActorValidator();
+
         var createValidator = new CreateDialogDialogActivityDtoValidator(localizationValidator, actorValidator);
         var updateValidator = new UpdateDialogDialogActivityDtoValidator(localizationValidator, actorValidator);
 
         // Act
         var createValidation = createValidator.Validate(activity);
-        var updateValidation = updateValidator.Validate(mapper.Map<Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Update.ActivityDto>(activity));
+        var updateValidation = updateValidator.Validate(mapper.Map<UpdateActivityDto>(activity));
 
         // Assert
         if (activityType == DialogActivityType.Values.TransmissionOpened)
