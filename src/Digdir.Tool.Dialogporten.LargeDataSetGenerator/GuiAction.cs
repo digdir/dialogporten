@@ -1,0 +1,25 @@
+using System.Text;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
+
+namespace Digdir.Tool.Dialogporten.LargeDataSetGenerator;
+#pragma warning disable CA1305
+
+internal static class GuiAction
+{
+    public const string CopyCommand = """COPY "DialogGuiAction" ("Id", "CreatedAt", "UpdatedAt", "Action", "Url", "AuthorizationAttribute", "IsDeleteDialogAction", "PriorityId", "HttpMethodId", "DialogId") FROM STDIN (FORMAT csv, HEADER false, NULL '')""";
+
+    public static string Generate(DialogTimestamp dto)
+    {
+        var guiActionCsvData = new StringBuilder();
+
+        var guiActionId1 = DeterministicUuidV7.Generate(dto.Timestamp, nameof(DialogGuiAction), 1);
+        var guiActionId2 = DeterministicUuidV7.Generate(dto.Timestamp, nameof(DialogGuiAction), 2);
+        var guiActionId3 = DeterministicUuidV7.Generate(dto.Timestamp, nameof(DialogGuiAction), 3);
+
+        guiActionCsvData.AppendLine($"{guiActionId1},{dto.FormattedTimestamp},{dto.FormattedTimestamp},'submit','https://digdir.apps.tt02.altinn.no',NULL,FALSE,1,2,{dto.DialogId}");
+        guiActionCsvData.AppendLine($"{guiActionId2},{dto.FormattedTimestamp},{dto.FormattedTimestamp},'submit','https://digdir.apps.tt02.altinn.no',NULL,FALSE,2,2,{dto.DialogId}");
+        guiActionCsvData.AppendLine($"{guiActionId3},{dto.FormattedTimestamp},{dto.FormattedTimestamp},'submit','https://digdir.apps.tt02.altinn.no',NULL,FALSE,3,2,{dto.DialogId}");
+
+        return guiActionCsvData.ToString();
+    }
+}
