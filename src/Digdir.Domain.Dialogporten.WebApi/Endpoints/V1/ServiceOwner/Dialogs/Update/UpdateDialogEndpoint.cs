@@ -38,7 +38,8 @@ public sealed class UpdateDialogEndpoint : Endpoint<UpdateDialogRequest>
         {
             Id = req.DialogId,
             IfMatchDialogRevision = req.IfMatchDialogRevision,
-            Dto = req.Dto
+            Dto = req.Dto,
+            ProduceDialogEvents = req.ProduceDialogEvents
         };
 
         var updateDialogResult = await _sender.Send(command, ct);
@@ -65,4 +66,6 @@ public sealed class UpdateDialogRequest
 
     [FromHeader(headerName: Constants.IfMatch, isRequired: false, removeFromSchema: true)]
     public Guid? IfMatchDialogRevision { get; set; }
+
+    public bool ProduceDialogEvents { get; init; } = true;
 }

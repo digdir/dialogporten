@@ -27,6 +27,7 @@ public sealed class UpdateDialogCommand : IRequest<UpdateDialogResult>
     public Guid Id { get; set; }
     public Guid? IfMatchDialogRevision { get; set; }
     public UpdateDialogDto Dto { get; set; } = null!;
+    public bool ProduceDialogEvents { get; set; } = true;
 }
 
 [GenerateOneOf]
@@ -163,6 +164,12 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         }
 
         UpdateLabel(dialog);
+
+        if (!request.ProduceDialogEvents)
+        {
+            _unitOfWork.WithoutAggregateSideEffects();
+        }
+
         var saveResult = await _unitOfWork
             .EnableConcurrencyCheck(dialog, request.IfMatchDialogRevision)
             .SaveChangesAsync(cancellationToken);
