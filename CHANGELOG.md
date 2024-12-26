@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.42.1](https://github.com/digdir/dialogporten/compare/v1.42.0...v1.42.1) (2024-12-25)
+
+
+### Bug Fixes
+
+* **webapi:** Only allow transmissionId on TransmissionOpened activities ([#1631](https://github.com/digdir/dialogporten/issues/1631)) ([80261d1](https://github.com/digdir/dialogporten/commit/80261d18af159acd000c2fa06d6ae351aa681d7d))
+
 ## [1.42.0](https://github.com/digdir/dialogporten/compare/v1.41.3...v1.42.0) (2024-12-16)
 
 
