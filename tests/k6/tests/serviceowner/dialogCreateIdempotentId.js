@@ -5,7 +5,7 @@ import {default as dialogToInsert} from './testdata/01-create-dialog.js';
 export default function () {
 
     const dialogs = [];
-
+    let idempotentIndex = 0;
     const navOrg = {
         orgName: "nav",
         orgNo: "889640782",
@@ -14,8 +14,7 @@ export default function () {
 
     describe('Attempt to create dialog with unused idempotentId', () => {
         let dialog = dialogToInsert();
-        let rnd = Math.floor(Math.random() * 1000);
-        let idempotentId = "idempotent" + rnd;
+        let idempotentId = "idempotent" + idempotentIndex++;
 
         dialog.idempotentId = idempotentId;
         let r = postSO('dialogs', dialog);
@@ -23,7 +22,7 @@ export default function () {
 
         expect(r, 'response').to.have.validJsonBody();
         expect(r.json(), 'response json').to.match(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/);
-       
+
         dialogs.push({
             id: r.json(),
             org: null
@@ -31,8 +30,7 @@ export default function () {
     })
 
     describe('Attempt to create dialog with same idempotentId different Org', () => {
-        let rnd = Math.floor(Math.random() * 1000);
-        let idempotentId = "idempotent" + rnd;
+        let idempotentId = "idempotent" + idempotentIndex++;
         let dialog = dialogToInsert();
         dialog.idempotentId = idempotentId;
         dialog.serviceResource = "urn:altinn:resource:app_nav_barnehagelister";
@@ -66,8 +64,7 @@ export default function () {
 
     describe('Attempt to create dialog with used idempotentId', () => {
         let dialog = dialogToInsert();
-        let rnd = Math.floor(Math.random() * 1000);
-        let idempotentId = "idempotent" + rnd;
+        let idempotentId = "idempotent" + idempotentIndex++;
 
         dialog.idempotentId = idempotentId;
         let r = postSO('dialogs', dialog);
