@@ -28,7 +28,6 @@ export default function () {
         });
     })
 
-    // Amund: Trenger å bytte ut Org for å kunne teste
     describe('Attempt to create dialog with same idempotentId different Org', () => {
         let rnd = Math.floor(Math.random() * 1000);
         let idempotentId = "idempotent" + rnd;

@@ -15,7 +15,7 @@ public class DialogDtoBase
     public Guid Id { get; set; }
 
     /// <summary>
-    /// Amund: HUSK
+    ///  A self-defined Id may be provided to support idempotent creation of dialogs.
     /// </summary>
     public string? IdempotentId { get; set; }
 

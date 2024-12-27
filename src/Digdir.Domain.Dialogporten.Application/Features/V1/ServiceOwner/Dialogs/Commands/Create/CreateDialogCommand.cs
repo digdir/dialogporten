@@ -74,14 +74,6 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
         {
             dialog.Org = serviceResourceInformation.OwnOrgShortName;
         }
-        /*
-         *  Amund Q:,
-         *      Om SO skal kunne finne en dialog men deres IdempotentId, må de bruke search dialog, eller vite deres dialogId på forhånd
-         *      En Search med IdempotentId blir bare å gi 0 -> 1 dialog tilbake, search har 0 -> mange.
-         *      Gir ikke dette litt blandede signaler?
-         */
-
-        // Amund: Dette blir å komme som en 422 så vi bare hopper over om dialog.org ikke er på plass.
         if (request.IdempotentId is not null && !string.IsNullOrEmpty(dialog.Org))
         {
             var dialogIdempotentId = new IdempotentId(dialog.Org, request.IdempotentId);
