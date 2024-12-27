@@ -315,7 +315,7 @@
         "additionalProperties": false,
         "properties": {
           "mediaType": {
-            "description": "Media type of the content (plaintext, Markdown). Can also indicate that the content is embeddable.",
+            "description": "Media type of the content, this can also indicate that the content is embeddable.\nFor a list of supported media types, see (link TBD).",
             "type": "string"
           },
           "value": {

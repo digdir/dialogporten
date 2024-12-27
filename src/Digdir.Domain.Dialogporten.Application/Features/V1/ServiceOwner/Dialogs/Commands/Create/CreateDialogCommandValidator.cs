@@ -438,11 +438,11 @@ internal sealed class CreateDialogDialogActivityDtoValidator : AbstractValidator
             .When(x => x.Type != DialogActivityType.Values.Information);
         RuleFor(x => x.TransmissionId)
             .Null()
-            .WithMessage($"A {nameof(DialogActivityType.Values.DialogOpened)} activity cannot reference a transmission.")
-            .When(x => x.Type == DialogActivityType.Values.DialogOpened);
+            .WithMessage($"Only activities of type {nameof(DialogActivityType.Values.TransmissionOpened)} can reference a transmission.")
+            .When(x => x.Type != DialogActivityType.Values.TransmissionOpened);
         RuleFor(x => x.TransmissionId)
             .NotEmpty()
-            .WithMessage($"A {nameof(DialogActivityType.Values.TransmissionOpened)} needs to reference a transmission.")
+            .WithMessage($"An activity of type {nameof(DialogActivityType.Values.TransmissionOpened)} needs to reference a transmission.")
             .When(x => x.Type == DialogActivityType.Values.TransmissionOpened);
     }
 }
