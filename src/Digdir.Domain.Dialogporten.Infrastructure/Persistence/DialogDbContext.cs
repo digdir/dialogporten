@@ -48,6 +48,7 @@ internal sealed class DialogDbContext : DbContext, IDialogDbContext
     public DbSet<LabelAssignmentLog> LabelAssignmentLogs => Set<LabelAssignmentLog>();
     public DbSet<NotificationAcknowledgement> NotificationAcknowledgements => Set<NotificationAcknowledgement>();
     public DbSet<ResourcePolicyInformation> ResourcePolicyInformation => Set<ResourcePolicyInformation>();
+    public DbSet<IdempotentId> IdempotentIds => Set<IdempotentId>();
 
     //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) =>
     //    optionsBuilder.LogTo(Console.WriteLine);
