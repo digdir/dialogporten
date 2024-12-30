@@ -22,6 +22,7 @@ public sealed class CreateDialogEndpointSummary : Summary<CreateDialogEndpoint>
         Responses[StatusCodes.Status400BadRequest] = Constants.SwaggerSummary.ValidationError;
         Responses[StatusCodes.Status401Unauthorized] = Constants.SwaggerSummary.ServiceOwnerAuthenticationFailure.FormatInvariant(AuthorizationScope.ServiceProvider);
         Responses[StatusCodes.Status403Forbidden] = Constants.SwaggerSummary.DialogCreationNotAllowed;
+        Responses[StatusCodes.Status409Conflict] = Constants.SwaggerSummary.IdempotentIdConflict.FormatInvariant("IdempotentId");
         Responses[StatusCodes.Status422UnprocessableEntity] = Constants.SwaggerSummary.DomainError;
     }
 }

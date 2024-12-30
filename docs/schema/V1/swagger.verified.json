@@ -5897,7 +5897,7 @@
             "description": "Unauthorized to create a dialog for the given serviceResource (not owned by authenticated organization or has additional scope requirements defined in policy)."
           },
           "409": {
-            "description": ""
+            "description": "Dialog with IdempotentId IdempotentId has already been created."
           },
           "422": {
             "content": {
