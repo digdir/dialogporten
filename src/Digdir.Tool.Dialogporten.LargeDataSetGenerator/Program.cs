@@ -26,6 +26,9 @@ try
     var dto = new SeedDatabaseDto(startingDate, endDate, dialogAmount);
     var tasks = new List<Task>();
 
+    const int taskRetryDelayInMs = 10000;
+    const int taskRetryLimit = 1000;
+
     void CreateTask(Func<DialogTimestamp, string> generator, string entityName,
         string copyCommand, bool singleLinePerTimestamp = false, int splits = 1)
     {
@@ -34,32 +37,75 @@ try
             var splitIndex = i;
             tasks.Add(Task.Run(async () =>
             {
-                await using var dbConnection = await dataSource.OpenConnectionAsync();
-                await using var writer = dbConnection.BeginTextImport(copyCommand);
-
                 var startTimestamp = Stopwatch.GetTimestamp();
-                const int logThreshold = 500_000;
-                var splitLogThreshold = logThreshold / splits;
+                var counter = 0;
+                // var currentTaskHasFailed = false;
 
-                foreach (var timestamp in dto.GetDialogTimestamps(splits, splitIndex))
+                do
                 {
-                    var data = generator(timestamp);
+                    try
+                    {
+                        await using var dbConnection = await dataSource.OpenConnectionAsync();
+                        var transaction = await dbConnection.BeginTransactionAsync();
+                        await using var writer = dbConnection.BeginTextImport(copyCommand);
 
-                    if (singleLinePerTimestamp)
-                    {
-                        await writer.WriteLineAsync(data);
-                    }
-                    else
-                    {
-                        await writer.WriteAsync(data);
-                    }
+                        try
+                        {
 
-                    if (timestamp.Counter % logThreshold == 0)
+                            const int logThreshold = 500_000;
+                            var splitLogThreshold = logThreshold / splits;
+
+                            foreach (var timestamp in dto.GetDialogTimestamps(splits, splitIndex))
+                            {
+                                var data = generator(timestamp);
+
+                                if (singleLinePerTimestamp)
+                                {
+                                    await writer.WriteLineAsync(data);
+                                }
+                                else
+                                {
+                                    await writer.WriteAsync(data);
+                                }
+
+                                if (timestamp.Counter % logThreshold == 0)
+                                {
+                                    Console.WriteLine(
+                                        $"Inserted {splitLogThreshold} dialogs worth of {entityName} (split {splitIndex + 1}/{splits}), counter at {timestamp.Counter}");
+                                }
+                            }
+
+                            await writer.FlushAsync();
+                            await transaction.CommitAsync();
+
+                            break;
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine();
+                            Console.WriteLine("====================================");
+                            Console.WriteLine($"Insert for table {entityName} failed (split {splitIndex + 1}/{splits}), retrying in {taskRetryDelayInMs}ms");
+                            Console.WriteLine(e.Message);
+                            Console.WriteLine(e.StackTrace);
+                            Console.WriteLine("====================================");
+                            Console.WriteLine();
+                            await transaction.RollbackAsync();
+                            counter++;
+                        }
+                    }
+                    catch (Exception e)
                     {
-                        Console.WriteLine(
-                            $"Inserted {splitLogThreshold} dialogs worth of {entityName} (split {splitIndex + 1}/{splits}), counter at {timestamp.Counter}");
+                        Console.WriteLine();
+                        Console.WriteLine("====================================");
+                        Console.WriteLine($"Database setup failed, either connection or transaction, retrying in {taskRetryDelayInMs}ms");
+                        Console.WriteLine(e.Message);
+                        Console.WriteLine(e.StackTrace);
+                        Console.WriteLine("====================================");
+                        Console.WriteLine();
+                        counter++;
                     }
                 }
+                while (counter < taskRetryLimit);
 
                 Console.WriteLine(
                     $"Inserted {entityName} (split {splitIndex + 1}/{splits}) in {Stopwatch.GetElapsedTime(startTimestamp)}");
