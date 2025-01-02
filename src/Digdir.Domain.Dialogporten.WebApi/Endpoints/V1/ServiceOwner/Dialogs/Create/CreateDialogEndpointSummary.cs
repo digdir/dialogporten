@@ -1,6 +1,7 @@
 using Digdir.Domain.Dialogporten.WebApi.Common;
 using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
+using Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.Common.Headers;
 using FastEndpoints;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.Dialogs.Create;
@@ -9,6 +10,7 @@ public sealed class CreateDialogEndpointSummary : Summary<CreateDialogEndpoint>
 {
     public CreateDialogEndpointSummary()
     {
+        ResponseHeaders = [HttpResponseHeaderExamples.NewDialogRevisionHeader(StatusCodes.Status201Created)];
         Summary = "Creates a new dialog";
         Description = """
                       The dialog is created with the given configuration. For more information see the documentation (link TBD).

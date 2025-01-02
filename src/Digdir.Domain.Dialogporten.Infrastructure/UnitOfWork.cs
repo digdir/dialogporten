@@ -82,6 +82,7 @@ internal sealed class UnitOfWork : IUnitOfWork, IAsyncDisposable, IDisposable
 
     private async Task<SaveChangesResult> SaveChangesAsync_Internal(CancellationToken cancellationToken)
     {
+        Guid newRevision = null!;
         if (!_domainContext.IsValid)
         {
             return new DomainError(_domainContext.Pop());
@@ -119,7 +120,7 @@ internal sealed class UnitOfWork : IUnitOfWork, IAsyncDisposable, IDisposable
         // Interceptors can add domain errors, so check again
         return !_domainContext.IsValid
             ? new DomainError(_domainContext.Pop())
-            : new Success();
+            : new Success<Guid>(newRevision);
     }
 
     private async Task CommitTransactionAsync(CancellationToken cancellationToken)

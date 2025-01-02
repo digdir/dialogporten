@@ -5851,7 +5851,10 @@
                 }
               }
             },
-            "description": "The UUID of the created the dialog aggregate. A relative URL to the newly created activity is set in the \u0022Location\u0022 header."
+            "description": "The UUID of the created the dialog aggregate. A relative URL to the newly created activity is set in the \u0022Location\u0022 header.",
+            "headers": {
+              "x-dialog-new-revision-id": {}
+            }
           },
           "204": {
             "description": "No Content"
