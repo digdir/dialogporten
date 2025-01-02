@@ -39,7 +39,7 @@ try
             {
                 var startTimestamp = Stopwatch.GetTimestamp();
                 var counter = 0;
-                // var currentTaskHasFailed = false;
+                var currentTaskHasFailed = false;
                 do
                 {
                     try
@@ -48,7 +48,7 @@ try
 
                         var dbConnection = new NpgsqlConnection(connString);
                         await dbConnection.OpenAsync();
-                        var transaction = await dbConnection.BeginTransactionAsync();
+                        // var transaction = await dbConnection.BeginTransactionAsync();
                         await using var writer = dbConnection.BeginTextImport(copyCommand);
 
                         try
@@ -69,16 +69,16 @@ try
                                     await writer.WriteAsync(data);
                                 }
 
-                                // if (!currentTaskHasFailed)
-                                // {
-                                //     var random = new Random();
-                                //
-                                //     if (random.Next(10) == 0) // 1 out of 10 chance
-                                //     {
-                                //         currentTaskHasFailed = true;
-                                //         throw new ArgumentNullException("Randomly thrown exception");
-                                //     }
-                                // }
+                                if (!currentTaskHasFailed)
+                                {
+                                    var random = new Random();
+
+                                    if (random.Next(10) == 0) // 1 out of 10 chance
+                                    {
+                                        currentTaskHasFailed = true;
+                                        throw new ArgumentNullException("Randomly thrown exception");
+                                    }
+                                }
 
                                 if (timestamp.Counter % logThreshold == 0)
                                 {
@@ -87,8 +87,9 @@ try
                                 }
                             }
 
+                            writer.Close();
                             // await writer.FlushAsync();
-                            await transaction.CommitAsync();
+                            // await transaction.CommitAsync();
 
                             counter = taskRetryLimit + 20000;
                         }
@@ -101,7 +102,8 @@ try
                             Console.WriteLine(e.StackTrace);
                             Console.WriteLine("====================================");
                             Console.WriteLine();
-                            await transaction.RollbackAsync();
+                            // await transaction.RollbackAsync();
+                            writer.Close();
                             await dbConnection.CloseAsync();
 
                             // await dbConnection.DisposeAsync().ConfigureAwait(false);
@@ -123,6 +125,7 @@ try
                     }
                 }
                 while (counter < taskRetryLimit);
+
 
                 Console.WriteLine(
                     $"Inserted {entityName} (split {splitIndex + 1}/{splits}) in {Stopwatch.GetElapsedTime(startTimestamp)}");
