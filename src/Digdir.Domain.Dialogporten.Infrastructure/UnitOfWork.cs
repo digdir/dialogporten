@@ -97,7 +97,7 @@ internal sealed class UnitOfWork : IUnitOfWork, IAsyncDisposable, IDisposable
 
         if (_aggregateSideEffects)
         {
-            await _dialogDbContext.ChangeTracker.HandleAggregateEntities(_transactionTime.Value, cancellationToken);
+            var result = await _dialogDbContext.ChangeTracker.HandleAggregateEntities(_transactionTime.Value, cancellationToken);
         }
 
         if (!_enableConcurrencyCheck)

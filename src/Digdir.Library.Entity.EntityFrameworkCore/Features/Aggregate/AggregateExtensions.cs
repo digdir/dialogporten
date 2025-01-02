@@ -54,6 +54,7 @@ internal static class AggregateExtensions
 
             if (aggregateNode.Entity is IVersionableEntity versionable)
             {
+                // Return Dictionary<Type, Guid>???????
                 versionable.NewVersion();
             }
         }
