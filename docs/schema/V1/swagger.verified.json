@@ -5851,7 +5851,7 @@
                 }
               }
             },
-            "description": "The UUID of the created the dialog aggregate. A relative URL to the newly created activity is set in the \u0022Location\u0022 header."
+            "description": "The UUID of the created dialog aggregate. A relative URL to the newly created activity is set in the \u0022Location\u0022 header."
           },
           "204": {
             "description": "No Content"
@@ -6469,7 +6469,7 @@
                 }
               }
             },
-            "description": "The UUID of the created the dialog activity. A relative URL to the newly created activity is set in the \u0022Location\u0022 header."
+            "description": "The UUID of the created dialog activity. A relative URL to the newly created activity is set in the \u0022Location\u0022 header."
           },
           "204": {
             "description": "No Content"
@@ -6832,7 +6832,7 @@
                 }
               }
             },
-            "description": "The UUID of the created the dialog transmission. A relative URL to the newly created activity is set in the \u0022Location\u0022 header."
+            "description": "The UUID of the created dialog transmission. A relative URL to the newly created activity is set in the \u0022Location\u0022 header."
           },
           "204": {
             "description": "No Content"
