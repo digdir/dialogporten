@@ -19,4 +19,11 @@ public interface IUnitOfWork
 }
 
 [GenerateOneOf]
-public sealed partial class SaveChangesResult : OneOfBase<Success, DomainError, ConcurrencyError>;
+public sealed partial class SaveChangesResult : OneOfBase<Foo, DomainError, ConcurrencyError>;
+
+#pragma warning disable CA1707
+public sealed class Foo
+#pragma warning restore CA1707
+{
+    public Guid NewDialogRevision { get; set; }
+}
