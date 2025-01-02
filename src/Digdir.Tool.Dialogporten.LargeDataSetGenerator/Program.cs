@@ -22,7 +22,7 @@ try
 
     var totalDialogCreatedStartTimestamp = Stopwatch.GetTimestamp();
 
-    await using var dataSource = NpgsqlDataSource.Create(connString!);
+    // await using var dataSource = NpgsqlDataSource.Create(connString!);
     var dto = new SeedDatabaseDto(startingDate, endDate, dialogAmount);
     var tasks = new List<Task>();
 
@@ -40,18 +40,19 @@ try
                 var startTimestamp = Stopwatch.GetTimestamp();
                 var counter = 0;
                 // var currentTaskHasFailed = false;
-
                 do
                 {
                     try
                     {
-                        await using var dbConnection = await dataSource.OpenConnectionAsync();
+                        // await using var dbConnection = await dataSource.OpenConnectionAsync();
+
+                        var dbConnection = new NpgsqlConnection(connString);
+                        await dbConnection.OpenAsync();
                         var transaction = await dbConnection.BeginTransactionAsync();
                         await using var writer = dbConnection.BeginTextImport(copyCommand);
 
                         try
                         {
-
                             const int logThreshold = 500_000;
                             var splitLogThreshold = logThreshold / splits;
 
@@ -68,6 +69,17 @@ try
                                     await writer.WriteAsync(data);
                                 }
 
+                                // if (!currentTaskHasFailed)
+                                // {
+                                //     var random = new Random();
+                                //
+                                //     if (random.Next(10) == 0) // 1 out of 10 chance
+                                //     {
+                                //         currentTaskHasFailed = true;
+                                //         throw new ArgumentNullException("Randomly thrown exception");
+                                //     }
+                                // }
+
                                 if (timestamp.Counter % logThreshold == 0)
                                 {
                                     Console.WriteLine(
@@ -75,10 +87,10 @@ try
                                 }
                             }
 
-                            await writer.FlushAsync();
+                            // await writer.FlushAsync();
                             await transaction.CommitAsync();
 
-                            break;
+                            counter = taskRetryLimit + 20000;
                         }
                         catch (Exception e)
                         {
@@ -90,7 +102,11 @@ try
                             Console.WriteLine("====================================");
                             Console.WriteLine();
                             await transaction.RollbackAsync();
+                            await dbConnection.CloseAsync();
+
+                            // await dbConnection.DisposeAsync().ConfigureAwait(false);
                             counter++;
+                            Thread.Sleep(taskRetryDelayInMs);
                         }
                     }
                     catch (Exception e)
@@ -103,6 +119,7 @@ try
                         Console.WriteLine("====================================");
                         Console.WriteLine();
                         counter++;
+                        Thread.Sleep(taskRetryDelayInMs);
                     }
                 }
                 while (counter < taskRetryLimit);
@@ -148,7 +165,7 @@ try
     Console.WriteLine(string.Empty);
 
     var timeItTook = Stopwatch.GetElapsedTime(totalDialogCreatedStartTimestamp);
-    Console.WriteLine($"Generates {dialogAmount} in {timeItTook}");
+    Console.WriteLine($"Generated {dialogAmount} in {timeItTook}");
 }
 catch (Exception ex)
 {
