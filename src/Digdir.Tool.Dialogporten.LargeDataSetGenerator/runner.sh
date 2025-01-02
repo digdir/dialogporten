@@ -27,7 +27,7 @@ do
   echo "Loop $i: FROM_DATE=$FROM_DATE, TO_DATE=$TO_DATE"
 
   # Run the dotnet command (commented out for testing the date ranges)
-  # dotnet run -c Release
+  dotnet run -c Release
 
   # Update dates for the next loop
   if $IS_MACOS; then
