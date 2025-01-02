@@ -22,7 +22,7 @@ try
 
     var totalDialogCreatedStartTimestamp = Stopwatch.GetTimestamp();
 
-    // await using var dataSource = NpgsqlDataSource.Create(connString!);
+    await using var dataSource = NpgsqlDataSource.Create(connString!);
     var dto = new SeedDatabaseDto(startingDate, endDate, dialogAmount);
     var tasks = new List<Task>();
 
@@ -39,16 +39,12 @@ try
             {
                 var startTimestamp = Stopwatch.GetTimestamp();
                 var counter = 0;
-                var currentTaskHasFailed = false;
+
                 do
                 {
                     try
                     {
-                        // await using var dbConnection = await dataSource.OpenConnectionAsync();
-
-                        var dbConnection = new NpgsqlConnection(connString);
-                        await dbConnection.OpenAsync();
-                        // var transaction = await dbConnection.BeginTransactionAsync();
+                        await using var dbConnection = await dataSource.OpenConnectionAsync();
                         await using var writer = dbConnection.BeginTextImport(copyCommand);
 
                         try
@@ -69,17 +65,6 @@ try
                                     await writer.WriteAsync(data);
                                 }
 
-                                if (!currentTaskHasFailed)
-                                {
-                                    var random = new Random();
-
-                                    if (random.Next(10) == 0) // 1 out of 10 chance
-                                    {
-                                        currentTaskHasFailed = true;
-                                        throw new ArgumentNullException("Randomly thrown exception");
-                                    }
-                                }
-
                                 if (timestamp.Counter % logThreshold == 0)
                                 {
                                     Console.WriteLine(
@@ -88,25 +73,21 @@ try
                             }
 
                             writer.Close();
-                            // await writer.FlushAsync();
-                            // await transaction.CommitAsync();
-
-                            counter = taskRetryLimit + 20000;
+                            counter = taskRetryLimit;
                         }
                         catch (Exception e)
                         {
                             Console.WriteLine();
                             Console.WriteLine("====================================");
-                            Console.WriteLine($"Insert for table {entityName} failed (split {splitIndex + 1}/{splits}), retrying in {taskRetryDelayInMs}ms");
+                            Console.WriteLine(
+                                $"Insert for table {entityName} failed (split {splitIndex + 1}/{splits}), retrying in {taskRetryDelayInMs}ms");
                             Console.WriteLine(e.Message);
                             Console.WriteLine(e.StackTrace);
                             Console.WriteLine("====================================");
                             Console.WriteLine();
-                            // await transaction.RollbackAsync();
-                            writer.Close();
-                            await dbConnection.CloseAsync();
 
-                            // await dbConnection.DisposeAsync().ConfigureAwait(false);
+                            dbConnection.Close();
+
                             counter++;
                             Thread.Sleep(taskRetryDelayInMs);
                         }
@@ -115,17 +96,17 @@ try
                     {
                         Console.WriteLine();
                         Console.WriteLine("====================================");
-                        Console.WriteLine($"Database setup failed, either connection or transaction, retrying in {taskRetryDelayInMs}ms");
+                        Console.WriteLine(
+                            $"Database setup failed, either connection or transaction, retrying in {taskRetryDelayInMs}ms");
                         Console.WriteLine(e.Message);
                         Console.WriteLine(e.StackTrace);
                         Console.WriteLine("====================================");
                         Console.WriteLine();
+
                         counter++;
                         Thread.Sleep(taskRetryDelayInMs);
                     }
-                }
-                while (counter < taskRetryLimit);
-
+                } while (counter < taskRetryLimit);
 
                 Console.WriteLine(
                     $"Inserted {entityName} (split {splitIndex + 1}/{splits}) in {Stopwatch.GetElapsedTime(startTimestamp)}");
@@ -157,10 +138,10 @@ try
     CreateTask(SearchTags.Generate, "search tags", SearchTags.CopyCommand);
 
     // Single line per dialog
-    CreateTask(Dialog.Generate, "dialogs", Dialog.CopyCommand, singleLinePerTimestamp: true);
     CreateTask(SeenLog.Generate, "seen logs", SeenLog.CopyCommand, singleLinePerTimestamp: true);
     CreateTask(EndUserContext.Generate, "end user contexts", EndUserContext.CopyCommand,
         singleLinePerTimestamp: true);
+    CreateTask(Dialog.Generate, "dialogs", Dialog.CopyCommand, singleLinePerTimestamp: true);
 
     await Task.WhenAll(tasks);
 
