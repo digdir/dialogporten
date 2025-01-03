@@ -27,7 +27,6 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
     private readonly IFusionCache _partiesCache;
     private readonly IFusionCache _subjectResourcesCache;
     private readonly IUser _user;
-    private readonly IDialogDbContext _dialogDbContext;
     private readonly ILogger _logger;
     private readonly IServiceScopeFactory _serviceScopeFactory;
 
@@ -41,7 +40,6 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
         HttpClient client,
         IFusionCacheProvider cacheProvider,
         IUser user,
-        IDialogDbContext dialogDbContext,
         ILogger<AltinnAuthorizationClient> logger,
         IServiceScopeFactory serviceScopeFactory)
     {
@@ -50,7 +48,6 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
         _partiesCache = cacheProvider.GetCache(nameof(AuthorizedPartiesResult)) ?? throw new ArgumentNullException(nameof(cacheProvider));
         _subjectResourcesCache = cacheProvider.GetCache(nameof(SubjectResource)) ?? throw new ArgumentNullException(nameof(cacheProvider));
         _user = user ?? throw new ArgumentNullException(nameof(user));
-        _dialogDbContext = dialogDbContext ?? throw new ArgumentNullException(nameof(dialogDbContext));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _serviceScopeFactory = serviceScopeFactory ?? throw new ArgumentNullException(nameof(serviceScopeFactory));
     }
