@@ -22,6 +22,10 @@ public sealed class SearchDialogQuery : SortablePaginationParameter<SearchDialog
     private string? _searchLanguageCode;
 
     /// <summary>
+    ///  A self-defined Id may be provided to support idempotent creation of dialogs.
+    /// </summary>
+    public string? IdempotentId { get; set; }
+    /// <summary>
     /// Filter by one or more service resources
     /// </summary>
     public List<string>? ServiceResource { get; init; }
@@ -169,6 +173,7 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
         var paginatedList = await dialogQuery
             .Include(x => x.Content)
             .ThenInclude(x => x.Value.Localizations)
+            .WhereIf(request.IdempotentId is not null, x => x.IdempotentId != null && x.IdempotentId.Idempotent == request.IdempotentId)
             .WhereIf(!request.ServiceResource.IsNullOrEmpty(),
                 x => request.ServiceResource!.Contains(x.ServiceResource))
             .WhereIf(!request.Party.IsNullOrEmpty(), x => request.Party!.Contains(x.Party))

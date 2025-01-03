@@ -2323,6 +2323,11 @@
             "nullable": true,
             "type": "string"
           },
+          "idempotentId": {
+            "description": "A self-defined Id may be provided to support idempotent creation of dialogs.\n            ",
+            "nullable": true,
+            "type": "string"
+          },
           "party": {
             "description": "The party code representing the organization or person that the dialog belongs to in URN format.",
             "example": "urn:altinn:person:identifier-no:01125512345\nurn:altinn:organization:identifier-no:912345678",
@@ -3406,6 +3411,11 @@
             "format": "guid",
             "type": "string"
           },
+          "idempotentId": {
+            "description": "A self-defined Id may be provided to support idempotent creation of dialogs.\n            ",
+            "nullable": true,
+            "type": "string"
+          },
           "org": {
             "description": "The service owner code representing the organization (service owner) related to this dialog.",
             "example": "ske",
@@ -4055,6 +4065,11 @@
             "description": "The unique identifier for the dialog in UUIDv7 format.",
             "example": "01913cd5-784f-7d3b-abef-4c77b1f0972d",
             "format": "guid",
+            "type": "string"
+          },
+          "idempotentId": {
+            "description": "A self-defined Id may be provided to support idempotent creation of dialogs.\n            ",
+            "nullable": true,
             "type": "string"
           },
           "latestActivity": {
@@ -5570,6 +5585,15 @@
         "operationId": "V1ServiceOwnerDialogsSearch_SearchDialog",
         "parameters": [
           {
+            "description": "A self-defined Id may be provided to support idempotent creation of dialogs.\n            ",
+            "in": "query",
+            "name": "idempotentId",
+            "schema": {
+              "nullable": true,
+              "type": "string"
+            }
+          },
+          {
             "description": "Filter by one or more service resources",
             "explode": true,
             "in": "query",
@@ -5871,6 +5895,9 @@
           },
           "403": {
             "description": "Unauthorized to create a dialog for the given serviceResource (not owned by authenticated organization or has additional scope requirements defined in policy)."
+          },
+          "409": {
+            "description": "Dialog with IdempotentId IdempotentId has already been created."
           },
           "422": {
             "content": {

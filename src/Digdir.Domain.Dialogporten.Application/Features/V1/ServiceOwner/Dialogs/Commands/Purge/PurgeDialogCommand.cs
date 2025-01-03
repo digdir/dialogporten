@@ -43,6 +43,7 @@ internal sealed class PurgeDialogCommandHandler : IRequestHandler<PurgeDialogCom
         var dialog = await _db.Dialogs
             .Include(x => x.Attachments)
             .Include(x => x.Activities)
+            .Include(x => x.IdempotentId)
             .WhereIf(!_userResourceRegistry.IsCurrentUserServiceOwnerAdmin(), x => resourceIds.Contains(x.ServiceResource))
             .IgnoreQueryFilters()
             .FirstOrDefaultAsync(x => x.Id == request.DialogId, cancellationToken);
@@ -56,7 +57,10 @@ internal sealed class PurgeDialogCommandHandler : IRequestHandler<PurgeDialogCom
         {
             return new Forbidden($"User cannot modify resource type {dialog.ServiceResourceType}.");
         }
-
+        if (dialog.IdempotentId is not null)
+        {
+            _db.IdempotentIds.Remove(dialog.IdempotentId);
+        }
         _db.Dialogs.HardRemove(dialog);
         var saveResult = await _unitOfWork
             .EnableConcurrencyCheck(dialog, request.IfMatchDialogRevision)

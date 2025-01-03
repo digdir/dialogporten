@@ -1,0 +1,3 @@
+org,orgno,scopes,resource
+digdir,991825827,digdir:dialogporten.serviceprovider digdir:dialogporten.serviceprovider.search,super-simple-service
+nav,889640782,digdir:dialogporten.serviceprovider digdir:dialogporten.serviceprovider.search digdir:dialogporten.serviceprovider.legacyhtml altinn:system/notifications.condition.check digdir:dialogporten.correspondence

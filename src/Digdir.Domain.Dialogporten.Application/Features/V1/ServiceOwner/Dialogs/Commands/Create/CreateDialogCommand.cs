@@ -13,6 +13,7 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 using Digdir.Domain.Dialogporten.Domain.Parties;
 using Digdir.Library.Entity.Abstractions.Features.Identifiable;
+using FluentValidation.Results;
 using MediatR;
 using OneOf;
 using OneOf.Types;
@@ -22,7 +23,7 @@ namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialog
 public sealed class CreateDialogCommand : CreateDialogDto, IRequest<CreateDialogResult>;
 
 [GenerateOneOf]
-public sealed partial class CreateDialogResult : OneOfBase<Success<Guid>, DomainError, ValidationError, Forbidden>;
+public sealed partial class CreateDialogResult : OneOfBase<Success<Guid>, DomainError, ValidationError, Forbidden, Conflict>;
 
 internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogCommand, CreateDialogResult>
 {
@@ -72,6 +73,17 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
         else
         {
             dialog.Org = serviceResourceInformation.OwnOrgShortName;
+        }
+        if (request.IdempotentId is not null && !string.IsNullOrEmpty(dialog.Org))
+        {
+            var dialogIdempotentId = new IdempotentId(dialog.Org, request.IdempotentId);
+            var dialogQuery = _db.Dialogs.Select(x => x).Where(x => x.IdempotentId == dialogIdempotentId);
+            if (dialogQuery.Any())
+            {
+                return new Conflict($"IdempotencyId: '{request.IdempotentId}' already exists with DialogId '{dialogQuery.First().Id}'");
+                // return new Conflict(dialogQuery.First().Id.ToString());
+            }
+            dialog.IdempotentId = dialogIdempotentId;
         }
 
         CreateDialogEndUserContext(request, dialog);

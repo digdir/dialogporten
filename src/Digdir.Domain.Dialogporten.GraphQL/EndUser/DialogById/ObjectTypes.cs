@@ -1,5 +1,7 @@
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.GraphQL.EndUser.Common;
 using Digdir.Domain.Dialogporten.GraphQL.EndUser.MutationTypes;
+using DialogStatus = Digdir.Domain.Dialogporten.GraphQL.EndUser.Common.DialogStatus;
 
 namespace Digdir.Domain.Dialogporten.GraphQL.EndUser.DialogById;
 
@@ -33,6 +35,7 @@ public sealed class DialogByIdPayload
 public sealed class Dialog
 {
     public Guid Id { get; set; }
+    public IdempotentId? IdempotentId { get; set; }
     public Guid Revision { get; set; }
     public string Org { get; set; } = null!;
     public string ServiceResource { get; set; } = null!;
