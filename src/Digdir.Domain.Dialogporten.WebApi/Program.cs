@@ -28,7 +28,26 @@ using Digdir.Domain.Dialogporten.WebApi.Common.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Using two-stage initialization to catch startup errors.
+var telemetryConfiguration = TelemetryConfiguration.CreateDefault();
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Warning()
+    .Enrich.WithEnvironmentName()
+    .Enrich.FromLogContext()
+    .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture)
+    .CreateBootstrapLogger();
+
 try
+{
+    BuildAndRun(builder);
+}
+catch (Exception ex) when (ex is not OperationCanceledException)
+{
+    Log.Fatal(ex, "Application terminated unexpectedly");
+    throw;
+}
+
+static void BuildAndRun(WebApplicationBuilder builder)
 {
     builder.WebHost.ConfigureKestrel(kestrelOptions =>
     {
@@ -187,11 +206,6 @@ try
         });
 
     app.Run();
-}
-catch (Exception ex) when (ex is not OperationCanceledException)
-{
-    Console.WriteLine($"Application terminated unexpectedly: {ex}");
-    throw;
 }
 
 static void IgnoreEmptyCollections(JsonTypeInfo typeInfo)
