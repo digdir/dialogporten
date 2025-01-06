@@ -24,7 +24,7 @@ public class UpdateTransmissionTests : ApplicationCollectionFixture
         createDialogCommand.Transmissions.Add(existingTransmission);
         var createCommandResponse = await Application.Send(createDialogCommand);
 
-        var getDialogQuery = new GetDialogQuery { DialogId = createCommandResponse.AsT0.Value };
+        var getDialogQuery = new GetDialogQuery { DialogId = createCommandResponse.AsT0.DialogId };
         var getDialogDto = await Application.Send(getDialogQuery);
 
         var mapper = Application.GetMapper();
@@ -36,7 +36,7 @@ public class UpdateTransmissionTests : ApplicationCollectionFixture
         // Act
         var updateResponse = await Application.Send(new UpdateDialogCommand
         {
-            Id = createCommandResponse.AsT0.Value,
+            Id = createCommandResponse.AsT0.DialogId,
             Dto = updateDialogDto
         });
 
@@ -58,7 +58,7 @@ public class UpdateTransmissionTests : ApplicationCollectionFixture
         createDialogCommand.Transmissions.Add(existingTransmission);
         var createCommandResponse = await Application.Send(createDialogCommand);
 
-        var getDialogQuery = new GetDialogQuery { DialogId = createCommandResponse.AsT0.Value };
+        var getDialogQuery = new GetDialogQuery { DialogId = createCommandResponse.AsT0.DialogId };
         var getDialogDto = await Application.Send(getDialogQuery);
 
         var mapper = Application.GetMapper();
@@ -76,7 +76,7 @@ public class UpdateTransmissionTests : ApplicationCollectionFixture
         // Act
         var updateResponse = await Application.Send(new UpdateDialogCommand
         {
-            Id = createCommandResponse.AsT0.Value,
+            Id = createCommandResponse.AsT0.DialogId,
             Dto = updateDialogDto
         });
 
@@ -97,7 +97,7 @@ public class UpdateTransmissionTests : ApplicationCollectionFixture
         createDialogCommand.Transmissions.Add(existingTransmission);
         var createCommandResponse = await Application.Send(createDialogCommand);
 
-        var getDialogQuery = new GetDialogQuery { DialogId = createCommandResponse.AsT0.Value };
+        var getDialogQuery = new GetDialogQuery { DialogId = createCommandResponse.AsT0.DialogId };
         var getDialogDto = await Application.Send(getDialogQuery);
 
         var mapper = Application.GetMapper();
@@ -110,7 +110,7 @@ public class UpdateTransmissionTests : ApplicationCollectionFixture
         // Act
         var updateResponse = await Application.Send(new UpdateDialogCommand
         {
-            Id = createCommandResponse.AsT0.Value,
+            Id = createCommandResponse.AsT0.DialogId,
             Dto = updateDialogDto
         });
 
