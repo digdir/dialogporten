@@ -187,7 +187,7 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
             {
                 using var scope = _serviceScopeFactory.CreateScope();
                 var dbContext = scope.ServiceProvider.GetRequiredService<DialogDbContext>();
-                return await dbContext.SubjectResources.ToListAsync(cancellationToken: ct);
+                return await dbContext.SubjectResources.AsNoTracking().ToListAsync(cancellationToken: ct);
             },
             token: cancellationToken);
 
