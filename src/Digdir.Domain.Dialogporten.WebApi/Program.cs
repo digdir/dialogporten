@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Diagnostics;
 using System.Globalization;
 using System.Reflection;
 using System.Text.Json.Serialization;
@@ -7,26 +8,32 @@ using Digdir.Domain.Dialogporten.Application;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.OptionExtensions;
 using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
-using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
 using Digdir.Domain.Dialogporten.Infrastructure;
 using Digdir.Domain.Dialogporten.WebApi;
 using Digdir.Domain.Dialogporten.WebApi.Common;
 using Digdir.Domain.Dialogporten.WebApi.Common.Authentication;
 using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
+using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
 using Digdir.Domain.Dialogporten.WebApi.Common.Json;
 using Digdir.Domain.Dialogporten.WebApi.Common.Swagger;
 using Digdir.Library.Utils.AspNet;
+using Azure.Monitor.OpenTelemetry.Exporter;
 using FastEndpoints;
 using FastEndpoints.Swagger;
 using FluentValidation;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Authorization;
-using NSwag;
-using Serilog;
 using Microsoft.Extensions.Options;
-using Digdir.Domain.Dialogporten.WebApi.Common.Middleware;
-
-var builder = WebApplication.CreateBuilder(args);
+using Npgsql;
+using NSwag;
+using OpenTelemetry;
+using OpenTelemetry.Exporter;
+using OpenTelemetry.Logs;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
+using Serilog;
+using Serilog.Sinks.OpenTelemetry;
 
 // Using two-stage initialization to catch startup errors.
 var telemetryConfiguration = TelemetryConfiguration.CreateDefault();
@@ -39,7 +46,7 @@ Log.Logger = new LoggerConfiguration()
 
 try
 {
-    BuildAndRun(builder);
+    BuildAndRun(args);
 }
 catch (Exception ex) when (ex is not OperationCanceledException)
 {
@@ -47,11 +54,44 @@ catch (Exception ex) when (ex is not OperationCanceledException)
     throw;
 }
 
-static void BuildAndRun(WebApplicationBuilder builder)
+static void BuildAndRun(string[] args)
 {
+    var builder = WebApplication.CreateBuilder(args);
+
     builder.WebHost.ConfigureKestrel(kestrelOptions =>
     {
         kestrelOptions.Limits.MaxRequestBodySize = Constants.MaxRequestBodySize;
+    });
+
+    builder.Host.UseSerilog((context, services, configuration) =>
+    {
+        var loggerConfig = configuration
+            .MinimumLevel.Warning()
+            .ReadFrom.Configuration(context.Configuration)
+            .ReadFrom.Services(services)
+            .Enrich.WithEnvironmentName()
+            .Enrich.FromLogContext();
+
+        var otlpEndpoint = context.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"];
+        if (!string.IsNullOrEmpty(otlpEndpoint))
+        {
+            var protocol = context.Configuration["OTEL_EXPORTER_OTLP_PROTOCOL"] switch
+            {
+                "grpc" => OtlpProtocol.Grpc,
+                "http/protobuf" => OtlpProtocol.HttpProtobuf,
+                _ => throw new InvalidOperationException($"Invalid OTLP protocol: {context.Configuration["OTEL_EXPORTER_OTLP_PROTOCOL"]}")
+            };
+
+            loggerConfig.WriteTo.OpenTelemetry(options =>
+            {
+                options.Endpoint = otlpEndpoint;
+                options.Protocol = protocol;
+            });
+        }
+        else
+        {
+            loggerConfig.WriteTo.Console(formatProvider: CultureInfo.InvariantCulture);
+        }
     });
 
     builder.Configuration
@@ -66,16 +106,8 @@ static void BuildAndRun(WebApplicationBuilder builder)
 
     var thisAssembly = Assembly.GetExecutingAssembly();
 
-    builder.ConfigureTelemetry((settings, configuration) =>
-    {
-        settings.ServiceName = configuration["OTEL_SERVICE_NAME"] ?? builder.Environment.ApplicationName;
-        settings.Endpoint = configuration["OTEL_EXPORTER_OTLP_ENDPOINT"];
-        settings.Protocol = configuration["OTEL_EXPORTER_OTLP_PROTOCOL"];
-        settings.AppInsightsConnectionString = configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"];
-        settings.ResourceAttributes = configuration["OTEL_RESOURCE_ATTRIBUTES"];
-    });
-
     builder.Services
+        .AddDialogportenTelemetry(builder.Configuration, builder.Environment)
         // Options setup
         .ConfigureOptions<AuthorizationOptionsSetup>()
 
@@ -143,7 +175,7 @@ static void BuildAndRun(WebApplicationBuilder builder)
     var app = builder.Build();
 
     app.UseHttpsRedirection()
-        .UseRequestLogging()
+        .UseSerilogRequestLogging()
         .UseDefaultExceptionHandler()
         .UseJwtSchemeSelector()
         .UseAuthentication()
