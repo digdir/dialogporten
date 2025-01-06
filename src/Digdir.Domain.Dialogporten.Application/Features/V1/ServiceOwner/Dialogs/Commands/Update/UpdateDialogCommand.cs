@@ -167,6 +167,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
 
         if (!request.ProduceDialogEvents)
         {
+            // can't do this, send bool through event
             _unitOfWork.WithoutAggregateSideEffects();
         }
 
