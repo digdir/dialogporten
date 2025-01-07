@@ -16,16 +16,6 @@ on:
           - test
           - staging
           - yt01
-      tokens:
-        description: 'Tokens to generate; for create dialog, search, none, or both'
-        required: true
-        default: 'both'
-        type: choice
-        options:
-          - both
-          - enterprise
-          - personal
-          - none
       tag:
         description: 'tag the performance test'
         required: true
@@ -61,13 +51,10 @@ jobs:
     secrets:
       TOKEN_GENERATOR_USERNAME: ${{ secrets.TOKEN_GENERATOR_USERNAME }}
       TOKEN_GENERATOR_PASSWORD: ${{ secrets.TOKEN_GENERATOR_PASSWORD }}
-      K6_CLOUD_TOKEN: ${{ secrets.K6_CLOUD_TOKEN }}
-      K6_CLOUD_PROJECT_ID: ${{ secrets.K6_CLOUD_PROJECT_ID }}
     with:
       environment: ${{ inputs.environment }}
       apiVersion: ${{ inputs.apiVersion }}
       testSuitePath: ${{ inputs.testSuitePath }}
       vus: ${{ fromJson(inputs.vus) }}
       duration: ${{ inputs.duration }}
-      tokens: ${{ inputs.tokens }}
 
