@@ -10,7 +10,7 @@ public class ClaimsPrincipalExtensionsTests
     {
         // Arrange
         var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity([
-            new Claim("acr", "idporten-loa-substantial")
+            new Claim("http://schemas.microsoft.com/claims/authnclassreference", "idporten-loa-substantial") // acr
         ]));
 
         // Act
@@ -26,7 +26,7 @@ public class ClaimsPrincipalExtensionsTests
     {
         // Arrange
         var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity([
-            new Claim("acr", "idporten-loa-high")
+            new Claim("http://schemas.microsoft.com/claims/authnclassreference", "idporten-loa-high") // acr
         ]));
 
         // Act
