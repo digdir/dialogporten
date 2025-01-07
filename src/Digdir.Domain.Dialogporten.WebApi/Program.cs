@@ -36,12 +36,11 @@ using Serilog;
 using Serilog.Sinks.OpenTelemetry;
 
 // Using two-stage initialization to catch startup errors.
-var telemetryConfiguration = TelemetryConfiguration.CreateDefault();
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Warning()
     .Enrich.WithEnvironmentName()
     .Enrich.FromLogContext()
-    .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture)
+    .WriteTo.OpenTelemetryOrConsole()
     .CreateBootstrapLogger();
 
 try
@@ -53,6 +52,10 @@ catch (Exception ex) when (ex is not OperationCanceledException)
     Log.Fatal(ex, "Application terminated unexpectedly");
     throw;
 }
+finally
+{
+    Log.CloseAndFlush();
+}
 
 static void BuildAndRun(string[] args)
 {
@@ -63,40 +66,17 @@ static void BuildAndRun(string[] args)
         kestrelOptions.Limits.MaxRequestBodySize = Constants.MaxRequestBodySize;
     });
 
-    builder.Host.UseSerilog((context, services, configuration) =>
-    {
-        var loggerConfig = configuration
-            .MinimumLevel.Warning()
-            .ReadFrom.Configuration(context.Configuration)
-            .ReadFrom.Services(services)
-            .Enrich.WithEnvironmentName()
-            .Enrich.FromLogContext();
-
-        var otlpEndpoint = context.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"];
-        if (!string.IsNullOrEmpty(otlpEndpoint))
-        {
-            var protocol = context.Configuration["OTEL_EXPORTER_OTLP_PROTOCOL"] switch
-            {
-                "grpc" => OtlpProtocol.Grpc,
-                "http/protobuf" => OtlpProtocol.HttpProtobuf,
-                _ => throw new InvalidOperationException($"Invalid OTLP protocol: {context.Configuration["OTEL_EXPORTER_OTLP_PROTOCOL"]}")
-            };
-
-            loggerConfig.WriteTo.OpenTelemetry(options =>
-            {
-                options.Endpoint = otlpEndpoint;
-                options.Protocol = protocol;
-            });
-        }
-        else
-        {
-            loggerConfig.WriteTo.Console(formatProvider: CultureInfo.InvariantCulture);
-        }
-    });
-
     builder.Configuration
         .AddAzureConfiguration(builder.Environment.EnvironmentName)
         .AddLocalConfiguration(builder.Environment);
+
+    builder.Host.UseSerilog((context, services, configuration) => configuration
+        .MinimumLevel.Warning()
+        .ReadFrom.Configuration(context.Configuration)
+        .ReadFrom.Services(services)
+        .Enrich.WithEnvironmentName()
+        .Enrich.FromLogContext()
+        .WriteTo.OpenTelemetryOrConsole(context.Configuration));
 
     builder.Services
         .AddOptions<WebApiSettings>()
