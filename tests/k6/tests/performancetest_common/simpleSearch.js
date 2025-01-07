@@ -7,6 +7,7 @@ import { expect, expectStatusFor } from "../../common/testimports.js";
 import { describe } from '../../common/describe.js';
 import { getEU, postGQ, getSO } from '../../common/request.js';
 import { getGraphqlParty } from '../performancetest_data/graphql-search.js';
+import { getEnterpriseToken, getPersonalToken } from './getTokens.js';
 
 /**
  * Retrieves the content for a dialog.
@@ -20,7 +21,6 @@ function retrieveDialogContent(response, paramsWithToken, getFunction = getEU) {
     if (!items?.length) return;
     const dialogId = items[0].id;
     if (!dialogId) return;
-    console.log("Found dialog with id " + dialogId);  
     getContent(dialogId, paramsWithToken, 'get dialog', '', getFunction);
     getContentChain(dialogId, paramsWithToken, 'get dialog activities', 'get dialog activity', '/activities/', getFunction);
     getContentChain(dialogId, paramsWithToken, 'get seenlogs', 'get seenlog', '/seenlog/', getFunction);
@@ -45,7 +45,7 @@ export function enduserSearch(enduser, traceCalls) {
     var traceparent = uuidv4();
     let paramsWithToken = {
         headers: {
-            Authorization: "Bearer " + enduser.token,
+            Authorization: "Bearer " + getPersonalToken(enduser),
             traceparent: traceparent
         },
         tags: { name: 'enduser search' } 
@@ -99,7 +99,6 @@ export function getContentChain(dialogId, paramsWithToken, tag, subtag, endpoint
     };
     let d = getUrl('dialogs/' + dialogId + endpoint, listParams, getFunction);
     let json = d.json();
-    console.log("Found " + json.length + " " + tag + " for endpoint " + dialogId + endpoint);
     if (json.length > 0) {
         const detailParams = {
             ...paramsWithToken,
@@ -133,7 +132,7 @@ export function graphqlSearch(enduser, traceCalls) {
     let traceparent = uuidv4();
     let paramsWithToken = {
         headers: {
-            Authorization: "Bearer " + enduser.token,
+            Authorization: "Bearer " + getPersonalToken(enduser),
             traceparent: traceparent,
             'User-Agent': 'dialogporten-k6-graphql-search'
         },
@@ -161,7 +160,7 @@ export function serviceownerSearch(serviceowner, enduser, tag_name, traceCalls, 
     let traceparent = uuidv4();
     let paramsWithToken = {
         headers: {
-            Authorization: "Bearer " + serviceowner.token,
+            Authorization: "Bearer " + getEnterpriseToken(serviceowner),
             traceparent: traceparent
         },
         tags: { name: tag_name }

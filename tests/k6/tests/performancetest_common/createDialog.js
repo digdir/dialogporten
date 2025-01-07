@@ -7,6 +7,7 @@ import { postSO, purgeSO } from "../../common/request.js";
 import { expect } from "../../common/testimports.js";
 import dialogToInsert from "../performancetest_data/01-create-dialog.js";
 import { default as transmissionToInsert } from "../performancetest_data/create-transmission.js";
+import { getEnterpriseToken } from "./getTokens.js";
 
 /**
  * Creates a dialog.
@@ -14,16 +15,18 @@ import { default as transmissionToInsert } from "../performancetest_data/create-
  * @param {Object} serviceOwner - The service owner object.
  * @param {Object} endUser - The end user object.
  */
+
 export function createDialog(serviceOwner, endUser, traceCalls) {
     var traceparent = uuidv4();
 
     var paramsWithToken = {
         headers: {
-            Authorization: "Bearer " + serviceOwner.token,
+            Authorization: "Bearer " + getEnterpriseToken(serviceOwner),
             traceparent: traceparent
         },
         tags: { name: 'create dialog' }
     };
+    
     if (traceCalls) {
         paramsWithToken.tags.traceparent = traceparent;
         paramsWithToken.tags.enduser = endUser.ssn;
@@ -31,10 +34,8 @@ export function createDialog(serviceOwner, endUser, traceCalls) {
 
     describe('create dialog', () => {
         let r = postSO('dialogs', dialogToInsert(endUser.ssn, endUser.resource), paramsWithToken);
-        console.log(r.body);
         expect(r.status, 'response status').to.equal(201);
     });
-
 }
 
 /**
@@ -47,7 +48,7 @@ export function createAndRemoveDialog(serviceOwner, endUser, traceCalls) {
     var traceparent = uuidv4(); 
     var paramsWithToken = {
         headers: {
-            Authorization: "Bearer " + serviceOwner.token,
+            Authorization: "Bearer " + getEnterpriseToken(serviceOwner),
             traceparent: traceparent
         },
         tags: { name: 'create dialog' }
@@ -86,7 +87,7 @@ export function createTransmissions(serviceOwner, endUser, traceCalls, numberOfT
 
     var paramsWithToken = {
         headers: {
-            Authorization: "Bearer " + serviceOwner.token,
+            Authorization: "Bearer " + getEnterpriseToken(serviceOwner),
             traceparent: traceparent
         },
         tags: { name: 'create dialog' }
@@ -120,7 +121,7 @@ export function createTransmission(dialogId, relatedTransmissionId, serviceOwner
 
     var paramsWithToken = {
         headers: {
-            Authorization: "Bearer " + serviceOwner.token,
+            Authorization: "Bearer " + getEnterpriseToken(serviceOwner),
             traceparent: traceparent
         },
         tags: { name: 'create transmission' }
