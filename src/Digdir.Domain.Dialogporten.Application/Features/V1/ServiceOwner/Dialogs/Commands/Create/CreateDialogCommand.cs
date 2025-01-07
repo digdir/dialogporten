@@ -21,8 +21,10 @@ namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialog
 
 public sealed class CreateDialogCommand : CreateDialogDto, IRequest<CreateDialogResult>;
 
+public sealed record CreateDialogSuccess(Guid DialogId, Guid Revision);
+
 [GenerateOneOf]
-public sealed partial class CreateDialogResult : OneOfBase<Success<Guid>, DomainError, ValidationError, Forbidden>;
+public sealed partial class CreateDialogResult : OneOfBase<CreateDialogSuccess, DomainError, ValidationError, Forbidden>;
 
 internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogCommand, CreateDialogResult>
 {
@@ -93,7 +95,7 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
         await _db.Dialogs.AddAsync(dialog, cancellationToken);
         var saveResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
         return saveResult.Match<CreateDialogResult>(
-            success => new Success<Guid>(dialog.Id),
+            success => new CreateDialogSuccess(dialog.Id, dialog.Revision),
             domainError => domainError,
             concurrencyError => throw new UnreachableException("Should never get a concurrency error when creating a new dialog"));
     }

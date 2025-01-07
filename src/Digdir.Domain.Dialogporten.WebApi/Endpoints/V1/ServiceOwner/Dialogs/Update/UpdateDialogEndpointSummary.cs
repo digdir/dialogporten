@@ -1,6 +1,7 @@
 using Digdir.Domain.Dialogporten.WebApi.Common;
 using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
+using Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.Common.Headers;
 using FastEndpoints;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.Dialogs.Update;
@@ -15,6 +16,7 @@ public sealed class UpdateDialogEndpointSummary : Summary<UpdateDialogEndpoint>
 
                        {Constants.SwaggerSummary.OptimisticConcurrencyNote}
                        """;
+        ResponseHeaders = [HttpResponseHeaderExamples.NewDialogETagHeader(StatusCodes.Status204NoContent)];
         Responses[StatusCodes.Status204NoContent] = Constants.SwaggerSummary.Updated.FormatInvariant("aggregate");
         Responses[StatusCodes.Status400BadRequest] = Constants.SwaggerSummary.ValidationError;
         Responses[StatusCodes.Status401Unauthorized] =
