@@ -1,6 +1,5 @@
 using Azure.Monitor.OpenTelemetry.Exporter;
 using Npgsql;
-using OpenTelemetry;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
@@ -15,6 +14,9 @@ namespace Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
 
 internal static class OpenTelemetryExtensions
 {
+    private const string OtelExporterOtlpEndpoint = "OTEL_EXPORTER_OTLP_ENDPOINT";
+    private const string OtelExporterOtlpProtocol = "OTEL_EXPORTER_OTLP_PROTOCOL";
+
     public static IServiceCollection AddDialogportenTelemetry(
         this IServiceCollection services,
         IConfiguration configuration,
@@ -99,21 +101,40 @@ internal static class OpenTelemetryExtensions
             .Services;
     }
 
-    public static LoggerConfiguration OpenTelemetryOrConsole(this LoggerSinkConfiguration writeTo, IConfiguration? configuration = null)
+    public static LoggerConfiguration OpenTelemetryOrConsole(this LoggerSinkConfiguration writeTo, HostBuilderContext context)
     {
-        const string otelExporterOtlpEndpoint = "OTEL_EXPORTER_OTLP_ENDPOINT";
-        const string otelExporterOtlpProtocol = "OTEL_EXPORTER_OTLP_PROTOCOL";
-        var otelEndpoint = configuration?[otelExporterOtlpEndpoint] ?? Environment.GetEnvironmentVariable(otelExporterOtlpEndpoint);
-        var otelProtocol = configuration?[otelExporterOtlpProtocol] ?? Environment.GetEnvironmentVariable(otelExporterOtlpProtocol);
+        var otelEndpoint = context.Configuration[OtelExporterOtlpEndpoint];
+        var otelProtocol = context.Configuration[OtelExporterOtlpProtocol];
         return otelEndpoint switch
         {
-            null => writeTo.Console(formatProvider: CultureInfo.InvariantCulture),
-            not null when Enum.TryParse<OtlpProtocol>(otelProtocol, out var protocol) => writeTo.OpenTelemetry(options =>
-            {
-                options.Endpoint = otelEndpoint;
-                options.Protocol = protocol;
-            }),
-            _ => throw new InvalidOperationException($"Invalid otel protocol: {otelProtocol}")
+            null when context.HostingEnvironment.IsDevelopment() => writeTo.Console(formatProvider: CultureInfo.InvariantCulture),
+            not null when
+                Enum.TryParse<OtlpProtocol>(otelProtocol, out var protocol)
+                && Uri.IsWellFormedUriString(otelEndpoint, UriKind.Absolute)
+                => writeTo.OpenTelemetry(options =>
+                {
+                    options.Endpoint = otelEndpoint;
+                    options.Protocol = protocol;
+                }),
+            _ => throw new InvalidOperationException($"Invalid otel config. Endpoint: {otelEndpoint}, Protocol: {otelProtocol}")
+        };
+    }
+
+    public static LoggerConfiguration TryWriteToOpenTelemetry(this LoggerConfiguration config)
+    {
+        var otelEndpoint = Environment.GetEnvironmentVariable(OtelExporterOtlpEndpoint);
+        var otelProtocol = Environment.GetEnvironmentVariable(OtelExporterOtlpProtocol);
+        return otelEndpoint switch
+        {
+            not null when
+                Enum.TryParse<OtlpProtocol>(otelProtocol, out var protocol)
+                && Uri.IsWellFormedUriString(otelEndpoint, UriKind.Absolute)
+                => config.WriteTo.OpenTelemetry(options =>
+                {
+                    options.Endpoint = otelEndpoint;
+                    options.Protocol = protocol;
+                }),
+            _ => config
         };
     }
 }

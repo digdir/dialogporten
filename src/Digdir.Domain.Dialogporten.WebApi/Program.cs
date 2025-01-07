@@ -40,7 +40,8 @@ Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Warning()
     .Enrich.WithEnvironmentName()
     .Enrich.FromLogContext()
-    .WriteTo.OpenTelemetryOrConsole()
+    .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture)
+    .TryWriteToOpenTelemetry()
     .CreateBootstrapLogger();
 
 try
@@ -76,7 +77,7 @@ static void BuildAndRun(string[] args)
         .ReadFrom.Services(services)
         .Enrich.WithEnvironmentName()
         .Enrich.FromLogContext()
-        .WriteTo.OpenTelemetryOrConsole(context.Configuration));
+        .WriteTo.OpenTelemetryOrConsole(context));
 
     builder.Services
         .AddOptions<WebApiSettings>()
