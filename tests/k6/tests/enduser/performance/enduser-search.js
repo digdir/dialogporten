@@ -28,7 +28,7 @@ export default function() {
         enduserSearch(endUsers[0], traceCalls);
     }
     else {
-        for (let i = 0; i < endUsersWithTokens.length; i++) {
+        for (let i = 0; i < endUsers.length; i++) {
             enduserSearch(endUsers[i], traceCalls);
         }
     }
