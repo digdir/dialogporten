@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.44.0](https://github.com/digdir/dialogporten/compare/v1.43.0...v1.44.0) (2025-01-07)
+
+
+### Features
+
+* **webapi:** Add ETag to response headers ([#1645](https://github.com/digdir/dialogporten/issues/1645)) ([7a32e60](https://github.com/digdir/dialogporten/commit/7a32e601061b42400aa1c94b61be69ff7c9d0ec9))
+
+
+### Bug Fixes
+
+* disable slack notifier ([#1655](https://github.com/digdir/dialogporten/issues/1655)) ([554fc8b](https://github.com/digdir/dialogporten/commit/554fc8b3294c125b0e8561ebcbfe254e75fede1c))
+
 ## [1.43.0](https://github.com/digdir/dialogporten/compare/v1.42.1...v1.43.0) (2025-01-07)
 
 
