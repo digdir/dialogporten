@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.43.0](https://github.com/digdir/dialogporten/compare/v1.42.1...v1.43.0) (2025-01-07)
+
+
+### Features
+
+* Add additional types to DialogActivity ([#1629](https://github.com/digdir/dialogporten/issues/1629)) ([feb1347](https://github.com/digdir/dialogporten/commit/feb1347c0a79406e0a8f6bb312faad42c8db7eec))
+
+
+### Bug Fixes
+
+* **app:** Add dedicated scope and dbcontext to GetSubjectResources ([#1648](https://github.com/digdir/dialogporten/issues/1648)) ([d1040e4](https://github.com/digdir/dialogporten/commit/d1040e41e2b09d1b8e3388ada4790ab1d63c738b))
+* revert azure monitor workspace ([#1624](https://github.com/digdir/dialogporten/issues/1624)) ([d66b155](https://github.com/digdir/dialogporten/commit/d66b155f3e6749466c344ee9aa9319810f65cf6c))
+
 ## [1.42.1](https://github.com/digdir/dialogporten/compare/v1.42.0...v1.42.1) (2024-12-25)
 
 
