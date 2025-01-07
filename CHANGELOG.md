@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.44.1](https://github.com/digdir/dialogporten/compare/v1.44.0...v1.44.1) (2025-01-07)
+
+
+### Bug Fixes
+
+* **ci:** Use correct size for yt01 db ([#1658](https://github.com/digdir/dialogporten/issues/1658)) ([e18e5f7](https://github.com/digdir/dialogporten/commit/e18e5f7e44556e1a4173906303ccef14aeb9de13))
+
 ## [1.44.0](https://github.com/digdir/dialogporten/compare/v1.43.0...v1.44.0) (2025-01-07)
 
 
