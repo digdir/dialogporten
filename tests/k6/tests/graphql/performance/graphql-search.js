@@ -4,7 +4,7 @@
  */
 
 import { getDefaultThresholds } from '../../performancetest_common/getDefaultThresholds.js';
-import { endUsersWithTokens as endUsers } from '../../performancetest_common/readTestdata.js';
+import { endUsers } from '../../performancetest_common/readTestdata.js';
 import { graphqlSearch } from "../../performancetest_common/simpleSearch.js";
 
 const isSingleUserMode = (__ENV.isSingleUserMode ?? 'false') === 'true';    
