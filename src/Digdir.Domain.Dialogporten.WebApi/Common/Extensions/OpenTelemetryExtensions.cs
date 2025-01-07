@@ -6,6 +6,10 @@ using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using System.Diagnostics;
+using System.Globalization;
+using Serilog;
+using Serilog.Configuration;
+using Serilog.Sinks.OpenTelemetry;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
 
@@ -94,5 +98,23 @@ internal static class OpenTelemetryExtensions
                 }
             })
             .Services;
+    }
+
+    public static LoggerConfiguration OpenTelemetryOrConsole(this LoggerSinkConfiguration writeTo, IConfiguration? configuration = null)
+    {
+        const string otelExporterOtlpEndpoint = "OTEL_EXPORTER_OTLP_ENDPOINT";
+        const string otelExporterOtlpProtocol = "OTEL_EXPORTER_OTLP_PROTOCOL";
+        var otelEndpoint = configuration?[otelExporterOtlpEndpoint] ?? Environment.GetEnvironmentVariable(otelExporterOtlpEndpoint);
+        var otelProtocol = configuration?[otelExporterOtlpProtocol] ?? Environment.GetEnvironmentVariable(otelExporterOtlpProtocol);
+        return otelEndpoint switch
+        {
+            null => writeTo.Console(formatProvider: CultureInfo.InvariantCulture),
+            not null when Enum.TryParse<OtlpProtocol>(otelProtocol, out var protocol) => writeTo.OpenTelemetry(options =>
+            {
+                options.Endpoint = otelEndpoint;
+                options.Protocol = protocol;
+            }),
+            _ => throw new InvalidOperationException($"Invalid otel protocol: {otelProtocol}")
+        };
     }
 }
