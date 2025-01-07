@@ -108,22 +108,6 @@ jobs:
       version: ${{ needs.get-current-version.outputs.version }}-${{ needs.generate-git-short-sha.outputs.gitShortSha }}
       runMigration: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasMigrationChanges == 'true' }}
 
-  deploy-slack-notifier:
-    name: Deploy slack notifier (test)
-    needs: [check-for-changes]
-    if: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasSlackNotifierChanges == 'true' }}
-    uses: ./.github/workflows/workflow-deploy-function.yml
-    secrets:
-      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-      # todo: resolve this automatically, or use tags
-      AZURE_FUNCTION_APP_NAME: ${{ secrets.AZURE_SLACK_NOTIFIER_FUNCTION_APP_NAME }}
-    with:
-      function-app-name: "slack-notifier"
-      function-project-path: "./src/Digdir.Tool.Dialogporten.SlackNotifier"
-      environment: test
-
   publish-schema-npm:
     name: Deploy schema npm package
     needs: [check-for-changes, get-current-version, generate-git-short-sha, deploy-apps]
@@ -156,7 +140,6 @@ jobs:
     needs: [
       deploy-infra,
       deploy-apps,
-      deploy-slack-notifier,
       run-e2e-tests,
       publish-schema-npm,
       publish,
@@ -168,7 +151,6 @@ jobs:
       environment: test
       infra_status: ${{ needs.deploy-infra.result }}
       apps_status: ${{ needs.deploy-apps.result }}
-      slack_notifier_status: ${{ needs.deploy-slack-notifier.result }}
       e2e_tests_status: ${{ needs.run-e2e-tests.result }}
       schema_npm_status: ${{ needs.publish-schema-npm.result }}
       publish_status: ${{ needs.publish.result }}
