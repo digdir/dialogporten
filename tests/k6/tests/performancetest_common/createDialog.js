@@ -104,7 +104,6 @@ export function createTransmissions(serviceOwner, endUser, traceCalls, numberOfT
         expect(r.status, 'response status').to.equal(201);
     });
 
-    console.log(dialogId);
     let relatedTransmissionId = 0;
     for (let i = 0; i < numberOfTransmissions; i++) {
         
@@ -126,15 +125,9 @@ export function createTransmission(dialogId, relatedTransmissionId, serviceOwner
         },
         tags: { name: 'create transmission' }
     };
-    
 
     describe('create transmission', () => {
-        if (relatedTransmissionId == 0) {
-            console.log('creating new transmission-thread');
-        }
-
         let r = postSO('dialogs/' + dialogId + '/transmissions', transmissionToInsert(relatedTransmissionId), paramsWithToken);
-        console.log(r.body);
         expect(r.status, 'response status').to.equal(201);
         return r.json();
     });
