@@ -20,7 +20,7 @@ public static class ClaimsPrincipalExtensions
     private const char IdDelimiter = ':';
     private const string IdPrefix = "0192";
     private const string AltinnClaimPrefix = "urn:altinn:";
-    private const string IdportenAuthLevelClaim = "acr";
+    private const string IdportenAuthLevelClaim = "http://schemas.microsoft.com/claims/authnclassreference";
     private const string AuthorizationDetailsClaim = "authorization_details";
     private const string AuthorizationDetailsType = "urn:altinn:systemuser";
     private const string AltinnAuthLevelClaim = "urn:altinn:authlevel";
