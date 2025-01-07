@@ -42,6 +42,7 @@ on:
           - 'tests/k6/tests/serviceowner/performance/serviceowner-search.js'
           - 'tests/k6/tests/enduser/performance/enduser-search.js'
           - 'tests/k6/tests/graphql/performance/graphql-search.js'
+          - 'tests/k6/tests/serviceowner/performance/create-transmissions.js'
 
 run-name: ${{ inputs.tag }} vus ${{ inputs.vus }} duration ${{ inputs.duration }}
 jobs:

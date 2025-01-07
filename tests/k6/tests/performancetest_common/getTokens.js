@@ -1,7 +1,7 @@
 import { fetchToken } from "../../common/token.js";
 
 const tokenGeneratorEnv = __ENV.API_ENVIRONMENT || 'yt01';
-const tokenTtl = 3600
+const tokenTtl = __ENV.TTL || 3600;
 
 export function getEnterpriseToken(serviceOwner) {  
     var tokenOptions = {
