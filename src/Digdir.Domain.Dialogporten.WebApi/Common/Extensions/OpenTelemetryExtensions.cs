@@ -23,7 +23,6 @@ internal static class OpenTelemetryExtensions
         {
             "grpc" => OtlpExportProtocol.Grpc,
             "http/protobuf" => OtlpExportProtocol.HttpProtobuf,
-            "http" => OtlpExportProtocol.HttpProtobuf,
             _ => throw new ArgumentException($"Unsupported protocol: {configuration["OTEL_EXPORTER_OTLP_PROTOCOL"]}")
         };
 
