@@ -51,9 +51,6 @@ param appConfigurationSku AppConfigurationSku
 import { Sku as AppInsightsSku } from '../modules/applicationInsights/create.bicep'
 param appInsightsSku AppInsightsSku
 
-import { Sku as SlackNotifierSku } from '../modules/functionApp/slackNotifier.bicep'
-param slackNotifierSku SlackNotifierSku
-
 import { Sku as PostgresSku } from '../modules/postgreSql/create.bicep'
 import { StorageConfiguration as PostgresStorageConfig } from '../modules/postgreSql/create.bicep'
 
@@ -262,19 +259,6 @@ module copyEnvironmentSecrets '../modules/keyvault/copySecrets.bicep' = {
   }
 }
 
-module slackNotifier '../modules/functionApp/slackNotifier.bicep' = {
-  name: 'slackNotifier'
-  scope: resourceGroup
-  params: {
-    location: location
-    keyVaultName: environmentKeyVault.outputs.name
-    namePrefix: namePrefix
-    applicationInsightsName: appInsights.outputs.appInsightsName
-    sku: slackNotifierSku
-    tags: tags
-  }
-}
-
 module containerAppIdentity '../modules/managedIdentity/main.bicep' = {
   scope: resourceGroup
   name: 'containerAppIdentity'
@@ -299,15 +283,6 @@ module containerAppEnv '../modules/containerAppEnv/main.bicep' = {
   }
 }
 
-module appInsightsReaderAccessPolicy '../modules/applicationInsights/addReaderRoles.bicep' = {
-  scope: resourceGroup
-  name: 'appInsightsReaderAccessPolicy'
-  params: {
-    appInsightsName: appInsights.outputs.appInsightsName
-    principalIds: [slackNotifier.outputs.functionAppPrincipalId]
-  }
-}
-
 module postgresConnectionStringAppConfig '../modules/appConfiguration/upsertKeyValue.bicep' = {
   scope: resourceGroup
   name: 'AppConfig_Add_DialogDbConnectionString'
@@ -329,15 +304,6 @@ module redisConnectionStringAppConfig '../modules/appConfiguration/upsertKeyValu
     value: redis.outputs.connectionStringSecretUri
     keyValueType: 'keyVaultReference'
     tags: tags
-  }
-}
-
-module keyVaultReaderAccessPolicy '../modules/keyvault/addReaderRoles.bicep' = {
-  scope: resourceGroup
-  name: 'keyVaultReaderAccessPolicyFunctions'
-  params: {
-    keyvaultName: environmentKeyVault.outputs.name
-    principalIds: [slackNotifier.outputs.functionAppPrincipalId]
   }
 }
 
