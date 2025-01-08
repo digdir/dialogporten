@@ -127,10 +127,12 @@ export function createTransmission(dialogId, relatedTransmissionId, serviceOwner
         tags: { name: 'create transmission' }
     };
 
+    let newRelatedTransmissionId;
     describe('create transmission', () => {
         let r = postSO('dialogs/' + dialogId + '/transmissions', transmissionToInsert(relatedTransmissionId), paramsWithToken);
         expect(r.status, 'response status').to.equal(201);
-        return r.json();
+        newRelatedTransmissionId = r.json();
     });
+    return newRelatedTransmissionId;
 }
 

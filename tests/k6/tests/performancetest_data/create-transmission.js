@@ -1,10 +1,10 @@
 
-import { uuidv4 } from "../../common/uuid.js";
+import { uuidv7 } from "../../common/uuid.js";
 
 export default function (relatedTransmissionId) {
     let transmission = {
-        "id": uuidv4,
-        "createdAt": "2024-12-13T12:29:04.540Z",
+        "id": uuidv7(),
+        "createdAt": new Date().toISOString(),
         "authorizationAttribute": "element1",
         "extendedType": "string",
         "type": "Information",

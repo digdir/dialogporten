@@ -17,7 +17,7 @@ const traceCalls = (__ENV.traceCalls ?? 'false') === 'true';
  * @property {string[]} summaryTrendStats - The summary trend statistics to include in the test results.
  * @property {object} thresholds - The thresholds for the test metrics.
  */
-export let options = {
+export const options = {
     summaryTrendStats: ['avg', 'min', 'med', 'max', 'p(95)', 'p(99)', 'p(99.5)', 'p(99.9)', 'count'],
     thresholds: getDefaultThresholds(['http_req_duration', 'http_reqs'],['graphql search'])
 };
