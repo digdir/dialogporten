@@ -94,9 +94,17 @@ if [ ${#missing_args[@]} -ne 0 ]; then
     exit 1
 fi
 
-k6 archive $filename -e API_VERSION=v1 -e API_ENVIRONMENT=yt01 -e TOKEN_GENERATOR_USERNAME=$tokengenuser -e TOKEN_GENERATOR_PASSWORD=$tokengenpasswd
-# Create configmap from archive.tar
-kubectl create configmap $configmapname --from-file=archive.tar
+# Create the k6 archive
+if ! k6 archive $filename -e API_VERSION=v1 -e API_ENVIRONMENT=yt01 -e TOKEN_GENERATOR_USERNAME=$tokengenuser -e TOKEN_GENERATOR_PASSWORD=$tokengenpasswd; then
+    echo "Error: Failed to create k6 archive"
+    exit 1
+fi
+# Create the configmap from the archive
+if ! kubectl create configmap $configmapname --from-file=archive.tar; then
+    echo "Error: Failed to create configmap"
+    rm archive.tar
+    exit 1
+fi
 
 # Create the config.yml file from a string
 cat <<EOF > config.yml
