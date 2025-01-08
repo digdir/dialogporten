@@ -7,7 +7,7 @@ import { getDefaultThresholds } from '../../performancetest_common/getDefaultThr
 import { createTransmissions } from '../../performancetest_common/createDialog.js';
 import { serviceOwners, endUsers } from '../../performancetest_common/readTestdata.js';
 
-export let options = {
+export const options = {
     summaryTrendStats: ['avg', 'min', 'med', 'max', 'p(95)', 'p(99)', 'p(99.5)', 'p(99.9)', 'count'],
     thresholds: getDefaultThresholds(['http_req_duration', 'http_reqs'],['create dialog', 'create transmission'])
 };
@@ -30,9 +30,9 @@ export default function() {
     }
     else {
         let serviceOwner = randomItem(serviceOwners);
-        for (let i = 0; i < endUsers.length; i++) {
-            createTransmissions(serviceOwner, endUsers[i], traceCalls, numberOfTransmissions, maxTransmissionsInThread);
-        }   
+        for (const endUser of endUsers) {
+            createTransmissions(serviceOwner, endUser, traceCalls, numberOfTransmissions, maxTransmissionsInThread);
+        }  
     }
   }
 

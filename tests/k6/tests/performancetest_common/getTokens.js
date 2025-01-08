@@ -4,7 +4,7 @@ const tokenGeneratorEnv = __ENV.API_ENVIRONMENT || 'yt01';
 const tokenTtl = __ENV.TTL || 3600;
 
 export function getEnterpriseToken(serviceOwner) {  
-    var tokenOptions = {
+    const tokenOptions = {
         scopes: serviceOwner.scopes, 
         orgName: serviceOwner.org,
         orgNo: serviceOwner.orgno
@@ -14,7 +14,7 @@ export function getEnterpriseToken(serviceOwner) {
 }
 
 export function getPersonalToken(endUser) {
-    var tokenOptions = {
+    const tokenOptions = {
         scopes: endUser.scopes, 
         ssn: endUser.ssn
     }

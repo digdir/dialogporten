@@ -83,9 +83,9 @@ export function createAndRemoveDialog(serviceOwner, endUser, traceCalls) {
  * @param {Object} endUser - The end user object.
  */
 export function createTransmissions(serviceOwner, endUser, traceCalls, numberOfTransmissions, maxTransmissionsInThread) {
-    var traceparent = uuidv4();
+    let traceparent = uuidv4();
 
-    var paramsWithToken = {
+    let paramsWithToken = {
         headers: {
             Authorization: "Bearer " + getEnterpriseToken(serviceOwner),
             traceparent: traceparent
@@ -117,9 +117,9 @@ export function createTransmissions(serviceOwner, endUser, traceCalls, numberOfT
 }
 
 export function createTransmission(dialogId, relatedTransmissionId, serviceOwner, traceCalls) {
-    var traceparent = uuidv4();
+    let traceparent = uuidv4();
 
-    var paramsWithToken = {
+    let paramsWithToken = {
         headers: {
             Authorization: "Bearer " + getEnterpriseToken(serviceOwner),
             traceparent: traceparent
