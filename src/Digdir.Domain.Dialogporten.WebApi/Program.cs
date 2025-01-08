@@ -15,6 +15,7 @@ using Digdir.Domain.Dialogporten.WebApi.Common.Authentication;
 using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 using Digdir.Domain.Dialogporten.WebApi.Common.Json;
 using Digdir.Domain.Dialogporten.WebApi.Common.Swagger;
+using Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.Dialogs.Patch;
 using Digdir.Library.Utils.AspNet;
 using FastEndpoints;
 using FastEndpoints.Swagger;
@@ -78,7 +79,14 @@ static void BuildAndRun(string[] args, TelemetryConfiguration telemetryConfigura
 
     var thisAssembly = Assembly.GetExecutingAssembly();
 
-    builder.ConfigureTelemetry();
+    builder.ConfigureTelemetry((settings, configuration) =>
+    {
+        settings.ServiceName = configuration["OTEL_SERVICE_NAME"] ?? builder.Environment.ApplicationName;
+        settings.Endpoint = configuration["OTEL_EXPORTER_OTLP_ENDPOINT"];
+        settings.Protocol = configuration["OTEL_EXPORTER_OTLP_PROTOCOL"];
+        settings.AppInsightsConnectionString = configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"];
+        settings.ResourceAttributes = configuration["OTEL_RESOURCE_ATTRIBUTES"];
+    });
 
     builder.Services
         // Options setup
@@ -118,6 +126,9 @@ static void BuildAndRun(string[] args, TelemetryConfiguration telemetryConfigura
                 // generic "2" suffix duplicate names get, so we add a "SO" suffix to the serviceowner specific schemas.
                 // This should match the operationIds used for service owners.
                 s.AddServiceOwnerSuffixToSchemas();
+
+                // Adding ResponseHeaders for PATCH MVC controller
+                s.OperationProcessors.Add(new ProducesResponseHeaderOperationProcessor());
             };
         })
         .AddControllers(options => options.InputFormatters.Insert(0, JsonPatchInputFormatter.Get()))
