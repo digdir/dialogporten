@@ -1,3 +1,4 @@
+using System.Collections.Frozen;
 using MediatR;
 
 namespace Digdir.Domain.Dialogporten.Domain.Common.EventPublisher;
@@ -16,4 +17,9 @@ public interface IDomainEvent : INotification
     /// The time in which the event, as well as all the actual changes occured.
     /// </summary>
     DateTimeOffset OccuredAt { get; set; }
+
+    /// <summary>
+    /// Read-only dictionary of metadata.
+    /// </summary>
+    public FrozenDictionary<string, string> Metadata { get; set; }
 }

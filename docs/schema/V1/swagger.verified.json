@@ -3236,9 +3236,6 @@
       "V1ServiceOwnerDialogsCreate_DialogRequest": {
         "additionalProperties": false,
         "properties": {
-          "disableEvents": {
-            "type": "boolean"
-          },
           "dto": {
             "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsCreate_Dialog"
           }
@@ -4259,9 +4256,6 @@
       "V1ServiceOwnerDialogsUpdate_DialogRequest": {
         "additionalProperties": false,
         "properties": {
-          "disableEvents": {
-            "type": "boolean"
-          },
           "dto": {
             "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsUpdate_Dialog"
           }

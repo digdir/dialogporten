@@ -2,6 +2,7 @@
 using AutoMapper;
 using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Common.Authorization;
+using Digdir.Domain.Dialogporten.Application.Common.Behaviours;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
@@ -15,13 +16,12 @@ using Digdir.Domain.Dialogporten.Domain.Parties;
 using Digdir.Library.Entity.Abstractions.Features.Identifiable;
 using MediatR;
 using OneOf;
-using OneOf.Types;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Create;
 
-public sealed class CreateDialogCommand : IRequest<CreateDialogResult>
+public sealed class CreateDialogCommand : IRequest<CreateDialogResult>, IAltinnEventDisabler
 {
-    public bool DisableEvents { get; init; }
+    public bool DisableAltinnEvents { get; init; }
     public CreateDialogDto Dto { get; set; } = null!;
 }
 
@@ -97,7 +97,7 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
             maxWidth: 1));
 
         await _db.Dialogs.AddAsync(dialog, cancellationToken);
-        var saveResult = await _unitOfWork.SaveChangesAsync(request.DisableEvents, cancellationToken);
+        var saveResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
         return saveResult.Match<CreateDialogResult>(
             success => new CreateDialogSuccess(dialog.Id, dialog.Revision),
             domainError => domainError,

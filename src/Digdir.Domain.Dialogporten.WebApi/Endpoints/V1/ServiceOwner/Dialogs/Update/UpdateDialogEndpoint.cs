@@ -39,7 +39,7 @@ public sealed class UpdateDialogEndpoint : Endpoint<UpdateDialogRequest>
             Id = req.DialogId,
             IfMatchDialogRevision = req.IfMatchDialogRevision,
             Dto = req.Dto,
-            DisableEvents = req.DisableEvents
+            DisableAltinnEvents = req.DisableAltinnEvents ?? false
         };
 
         var updateDialogResult = await _sender.Send(command, ct);
@@ -67,5 +67,6 @@ public sealed class UpdateDialogRequest
     [FromHeader(headerName: Constants.IfMatch, isRequired: false, removeFromSchema: true)]
     public Guid? IfMatchDialogRevision { get; set; }
 
-    public bool DisableEvents { get; init; }
+    [QueryParam]
+    public bool? DisableAltinnEvents { get; init; }
 }

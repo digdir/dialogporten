@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Reflection;
 using Digdir.Domain.Dialogporten.Application.Common.Authorization;
+using Digdir.Domain.Dialogporten.Domain;
 using MediatR.NotificationPublishers;
 
 namespace Digdir.Domain.Dialogporten.Application;
@@ -31,6 +32,9 @@ public static class ApplicationExtensions
         // 'CreatedAt', not 'Created At'.
         ValidatorOptions.Global.DisplayNameResolver = (_, member, _) => member?.Name;
 
+        // AddDomain
+        // Lag lik extension i domain
+
         services
             // Framework
             .AddAutoMapper(thisAssembly)
@@ -47,6 +51,7 @@ public static class ApplicationExtensions
             .AddSingleton<ICompactJwsGenerator, Ed25519Generator>()
 
             // Scoped
+            .AddDomain()
             .AddScoped<IDomainContext, DomainContext>()
             .AddScoped<ITransactionTime, TransactionTime>()
             .AddScoped<IDialogTokenGenerator, DialogTokenGenerator>()
@@ -59,7 +64,8 @@ public static class ApplicationExtensions
             .AddTransient<IUserParties, UserParties>()
             .AddTransient<IClock, Clock>()
             .AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>))
-            .AddTransient(typeof(IPipelineBehavior<,>), typeof(DomainContextBehaviour<,>));
+            .AddTransient(typeof(IPipelineBehavior<,>), typeof(DomainContextBehaviour<,>))
+            .AddTransient(typeof(IPipelineBehavior<,>), typeof(DomainAltinnEventOptOutBehaviour<,>));
 
         if (!environment.IsDevelopment())
         {

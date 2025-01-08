@@ -60,11 +60,11 @@ internal sealed class UnitOfWork : IUnitOfWork, IAsyncDisposable, IDisposable
     public async Task BeginTransactionAsync(CancellationToken cancellationToken = default)
         => _transaction ??= await _dialogDbContext.Database.BeginTransactionAsync(cancellationToken);
 
-    public async Task<SaveChangesResult> SaveChangesAsync(bool disableEvents = false, CancellationToken cancellationToken = default)
+    public async Task<SaveChangesResult> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         try
         {
-            var result = await SaveChangesAsync_Internal(disableEvents, cancellationToken);
+            var result = await SaveChangesAsync_Internal(cancellationToken);
 
             // If it is not a success, rollback the transaction
             await (result.IsT0
@@ -80,7 +80,7 @@ internal sealed class UnitOfWork : IUnitOfWork, IAsyncDisposable, IDisposable
         }
     }
 
-    private async Task<SaveChangesResult> SaveChangesAsync_Internal(bool disableEvents, CancellationToken cancellationToken)
+    private async Task<SaveChangesResult> SaveChangesAsync_Internal(CancellationToken cancellationToken)
     {
         if (!_domainContext.IsValid)
         {
@@ -96,7 +96,7 @@ internal sealed class UnitOfWork : IUnitOfWork, IAsyncDisposable, IDisposable
 
         if (_aggregateSideEffects)
         {
-            await _dialogDbContext.ChangeTracker.HandleAggregateEntities(_transactionTime.Value, disableEvents, cancellationToken);
+            await _dialogDbContext.ChangeTracker.HandleAggregateEntities(_transactionTime.Value, cancellationToken);
         }
 
         if (!_enableConcurrencyCheck)

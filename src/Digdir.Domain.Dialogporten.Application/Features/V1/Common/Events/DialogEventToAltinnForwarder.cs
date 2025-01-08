@@ -18,6 +18,7 @@ internal sealed class DialogEventToAltinnForwarder : DomainEventToAltinnForwarde
     [EndpointName("DialogEventToAltinnForwarder_DialogCreatedDomainEvent")]
     public async Task Handle(DialogCreatedDomainEvent domainEvent, CancellationToken cancellationToken)
     {
+        domainEvent.Metadata.TryGetValue("DisableEvents", out var value);
         var cloudEvent = new CloudEvent
         {
             Id = domainEvent.EventId,
