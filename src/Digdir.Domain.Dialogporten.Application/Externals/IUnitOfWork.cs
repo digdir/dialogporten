@@ -8,7 +8,7 @@ namespace Digdir.Domain.Dialogporten.Application.Externals;
 public interface IUnitOfWork
 {
     IUnitOfWork WithoutAggregateSideEffects();
-    Task<SaveChangesResult> SaveChangesAsync(CancellationToken cancellationToken = default);
+    Task<SaveChangesResult> SaveChangesAsync(bool disableEvents = false, CancellationToken cancellationToken = default);
 
     IUnitOfWork EnableConcurrencyCheck<TEntity>(
         TEntity? entity,

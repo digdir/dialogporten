@@ -62,7 +62,7 @@ internal sealed class SyncSubjectMapCommandHandler : IRequestHandler<SyncSubject
                 mergeCount += batchMergeCount;
             }
 
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken: cancellationToken);
             if (mergeCount > 0)
             {
                 _logger.LogInformation("Successfully synced {UpdatedAmount} total subject-resources. Changes committed.", mergeCount);

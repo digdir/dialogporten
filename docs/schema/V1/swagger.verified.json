@@ -3241,9 +3241,6 @@
           },
           "dto": {
             "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsCreate_Dialog"
-          },
-          "produceDialogEvents": {
-            "type": "boolean"
           }
         },
         "type": "object"
@@ -4267,9 +4264,6 @@
           },
           "dto": {
             "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsUpdate_Dialog"
-          },
-          "produceDialogEvents": {
-            "type": "boolean"
           }
         },
         "type": "object"

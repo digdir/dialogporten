@@ -15,7 +15,7 @@ internal static class AggregateExtensions
     private static readonly EntityEntryComparer _entityEntryComparer = new();
 
     internal static async Task<ChangeTracker> HandleAggregateEntities(this ChangeTracker changeTracker,
-        DateTimeOffset utcNow, CancellationToken cancellationToken)
+        DateTimeOffset utcNow, bool disableEvents, CancellationToken cancellationToken)
     {
         var aggregateNodeByEntry = await changeTracker
             .Entries()
@@ -26,22 +26,22 @@ internal static class AggregateExtensions
         {
             if (aggregateNode.Entity is IAggregateCreatedHandler created && aggregateNode.IsAdded())
             {
-                created.OnCreate(aggregateNode, utcNow);
+                created.OnCreate(aggregateNode, utcNow, disableEvents);
             }
 
             if (aggregateNode.Entity is IAggregateUpdatedHandler updated && aggregateNode.IsModified())
             {
-                updated.OnUpdate(aggregateNode, utcNow);
+                updated.OnUpdate(aggregateNode, utcNow, disableEvents);
             }
 
             if (aggregateNode.Entity is IAggregateDeletedHandler deleted && aggregateNode.IsDeleted())
             {
-                deleted.OnDelete(aggregateNode, utcNow);
+                deleted.OnDelete(aggregateNode, utcNow, disableEvents);
             }
 
             if (aggregateNode.Entity is IAggregateRestoredHandler restored && aggregateNode.IsRestored())
             {
-                restored.OnRestore(aggregateNode, utcNow);
+                restored.OnRestore(aggregateNode, utcNow, disableEvents);
             }
 
             if (aggregateNode.Entity is IUpdateableEntity updatable)

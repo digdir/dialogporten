@@ -165,15 +165,9 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
 
         UpdateLabel(dialog);
 
-        if (!request.DisableEvents)
-        {
-            // can't do this, send bool through event
-            _unitOfWork.WithoutAggregateSideEffects();
-        }
-
         var saveResult = await _unitOfWork
             .EnableConcurrencyCheck(dialog, request.IfMatchDialogRevision)
-            .SaveChangesAsync(cancellationToken);
+            .SaveChangesAsync(request.DisableEvents, cancellationToken);
 
         return saveResult.Match<UpdateDialogResult>(
             success => new UpdateDialogSuccess(dialog.Revision),

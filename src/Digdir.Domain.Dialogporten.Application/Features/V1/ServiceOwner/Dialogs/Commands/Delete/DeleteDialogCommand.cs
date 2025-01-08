@@ -69,7 +69,7 @@ internal sealed class DeleteDialogCommandHandler : IRequestHandler<DeleteDialogC
         _db.Dialogs.SoftRemove(dialog);
         var saveResult = await _unitOfWork
             .EnableConcurrencyCheck(dialog, request.IfMatchDialogRevision)
-            .SaveChangesAsync(cancellationToken);
+            .SaveChangesAsync(cancellationToken: cancellationToken);
 
         return saveResult.Match<DeleteDialogResult>(
             success => new DeleteDialogSuccess(dialog.Revision),

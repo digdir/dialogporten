@@ -41,13 +41,15 @@ public static class EntityLibraryEfCoreExtensions
     /// </remarks>
     /// <param name="changeTracker">The change tracker.</param>
     /// <param name="utcNow">The time in UTC in which the changes took place.</param>
+    /// <param name="disableEvents">Domain events will be created internally, but not sent anywhere</param>
     /// <param name="cancellationToken">A token for requesting cancellation of the operation.</param>
     /// <returns>The same <see cref="ChangeTracker"/> instance so that multiple calls can be chained.</returns>
     public static Task<ChangeTracker> HandleAggregateEntities(
         this ChangeTracker changeTracker,
         DateTimeOffset utcNow,
+        bool disableEvents = false,
         CancellationToken cancellationToken = default)
-        => AggregateExtensions.HandleAggregateEntities(changeTracker, utcNow, cancellationToken);
+        => AggregateExtensions.HandleAggregateEntities(changeTracker, utcNow, disableEvents, cancellationToken);
 
     /// <summary>
     /// Updates the properties and sets the correct <see cref="EntityState"/> on the <see cref="ChangeTracker"/> for the entities implementing the following abstractions.
