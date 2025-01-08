@@ -20,7 +20,8 @@ public static class ClaimsPrincipalExtensions
     private const char IdDelimiter = ':';
     private const string IdPrefix = "0192";
     private const string AltinnClaimPrefix = "urn:altinn:";
-    private const string IdportenAuthLevelClaim = "http://schemas.microsoft.com/claims/authnclassreference";
+    private const string IdportenAuthLevelClaim = "acr"; // acr
+    private const string IdportenAuthLevelClaimUrl = "http://schemas.microsoft.com/claims/authnclassreference"; // acr
     private const string AuthorizationDetailsClaim = "authorization_details";
     private const string AuthorizationDetailsType = "urn:altinn:systemuser";
     private const string AltinnAuthLevelClaim = "urn:altinn:authlevel";
@@ -188,7 +189,9 @@ public static class ClaimsPrincipalExtensions
             return true;
         }
 
-        if (claimsPrincipal.TryGetClaimValue(IdportenAuthLevelClaim, out claimValue))
+        // Something is converting "acr" to "http://schemas.microsoft.com/claims/authnclassreference"
+        // https://github.com/IdentityServer/IdentityServer3/blob/master/source/Core/Configuration/Hosting/ClaimMap.cs also maps "acr" to "http://schemas.microsoft.com/claims/authnclassreference"
+        if (claimsPrincipal.TryGetClaimValue(IdportenAuthLevelClaimUrl, out claimValue) || claimsPrincipal.TryGetClaimValue(IdportenAuthLevelClaim, out claimValue))
         {
             // The acr claim value is either "idporten-loa-substantial" (previously "Level3") or "idporten-loa-high" (previously "Level4")
             // https://docs.digdir.no/docs/idporten/oidc/oidc_protocol_new_idporten#new-acr-values
