@@ -1,4 +1,3 @@
-using Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.Dialogs.Update;
 using NJsonSchema;
 using NSwag;
 

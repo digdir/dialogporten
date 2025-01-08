@@ -1,5 +1,51 @@
 # Changelog
 
+## [1.44.1](https://github.com/digdir/dialogporten/compare/v1.44.0...v1.44.1) (2025-01-07)
+
+
+### Bug Fixes
+
+* **ci:** Use correct size for yt01 db ([#1658](https://github.com/digdir/dialogporten/issues/1658)) ([e18e5f7](https://github.com/digdir/dialogporten/commit/e18e5f7e44556e1a4173906303ccef14aeb9de13))
+
+## [1.44.0](https://github.com/digdir/dialogporten/compare/v1.43.0...v1.44.0) (2025-01-07)
+
+
+### Features
+
+* **webapi:** Add ETag to response headers ([#1645](https://github.com/digdir/dialogporten/issues/1645)) ([7a32e60](https://github.com/digdir/dialogporten/commit/7a32e601061b42400aa1c94b61be69ff7c9d0ec9))
+
+
+### Bug Fixes
+
+* disable slack notifier ([#1655](https://github.com/digdir/dialogporten/issues/1655)) ([554fc8b](https://github.com/digdir/dialogporten/commit/554fc8b3294c125b0e8561ebcbfe254e75fede1c))
+
+## [1.43.0](https://github.com/digdir/dialogporten/compare/v1.42.1...v1.43.0) (2025-01-07)
+
+
+### Features
+
+* Add additional types to DialogActivity ([#1629](https://github.com/digdir/dialogporten/issues/1629)) ([feb1347](https://github.com/digdir/dialogporten/commit/feb1347c0a79406e0a8f6bb312faad42c8db7eec))
+
+
+### Bug Fixes
+
+* **app:** Add dedicated scope and dbcontext to GetSubjectResources ([#1648](https://github.com/digdir/dialogporten/issues/1648)) ([d1040e4](https://github.com/digdir/dialogporten/commit/d1040e41e2b09d1b8e3388ada4790ab1d63c738b))
+* revert azure monitor workspace ([#1624](https://github.com/digdir/dialogporten/issues/1624)) ([d66b155](https://github.com/digdir/dialogporten/commit/d66b155f3e6749466c344ee9aa9319810f65cf6c))
+
+## [1.42.1](https://github.com/digdir/dialogporten/compare/v1.42.0...v1.42.1) (2024-12-25)
+
+
+### Bug Fixes
+
+* **webapi:** Only allow transmissionId on TransmissionOpened activities ([#1631](https://github.com/digdir/dialogporten/issues/1631)) ([80261d1](https://github.com/digdir/dialogporten/commit/80261d18af159acd000c2fa06d6ae351aa681d7d))
+
+## [1.42.0](https://github.com/digdir/dialogporten/compare/v1.41.3...v1.42.0) (2024-12-16)
+
+
+### Features
+
+* **apps:** add otel exporter for graphql, service and web-api ([#1528](https://github.com/digdir/dialogporten/issues/1528)) ([cb9238e](https://github.com/digdir/dialogporten/commit/cb9238ef76188b4dde371e08b7ce597645bcd8b7))
+
 ## [1.41.3](https://github.com/digdir/dialogporten/compare/v1.41.2...v1.41.3) (2024-12-13)
 
 

@@ -4,9 +4,9 @@ using Digdir.Domain.Dialogporten.Application.Integration.Tests.Common;
 using Digdir.Domain.Dialogporten.Domain;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions.Contents;
+using Digdir.Library.Entity.Abstractions.Features.Identifiable;
 using Digdir.Tool.Dialogporten.GenerateFakeData;
 using FluentAssertions;
-using static Digdir.Domain.Dialogporten.Application.Integration.Tests.UuiDv7Utils;
 
 namespace Digdir.Domain.Dialogporten.Application.Integration.Tests.Features.V1.ServiceOwner.Transmissions.Commands;
 
@@ -19,7 +19,7 @@ public class CreateTransmissionTests : ApplicationCollectionFixture
     public async Task Can_Create_Simple_Transmission()
     {
         // Arrange
-        var dialogId = GenerateBigEndianUuidV7();
+        var dialogId = IdentifiableExtensions.CreateVersion7();
         var createCommand = DialogGenerator.GenerateSimpleFakeDialog(id: dialogId);
 
         var transmission = DialogGenerator.GenerateFakeDialogTransmissions(1)[0];
@@ -30,7 +30,7 @@ public class CreateTransmissionTests : ApplicationCollectionFixture
 
         // Assert
         response.TryPickT0(out var success, out _).Should().BeTrue();
-        success.Value.Should().Be(dialogId);
+        success.DialogId.Should().Be(dialogId);
         var transmissionEntities = await Application.GetDbEntities<DialogTransmission>();
         transmissionEntities.Should().HaveCount(1);
         transmissionEntities.First().DialogId.Should().Be(dialogId);
@@ -41,10 +41,10 @@ public class CreateTransmissionTests : ApplicationCollectionFixture
     public async Task Can_Create_Transmission_With_Embeddable_Content()
     {
         // Arrange
-        var dialogId = GenerateBigEndianUuidV7();
+        var dialogId = IdentifiableExtensions.CreateVersion7();
         var createCommand = DialogGenerator.GenerateSimpleFakeDialog(id: dialogId);
 
-        var transmissionId = GenerateBigEndianUuidV7();
+        var transmissionId = IdentifiableExtensions.CreateVersion7();
         var transmission = DialogGenerator.GenerateFakeDialogTransmissions(1)[0];
 
         const string contentUrl = "https://example.com/transmission";
@@ -62,7 +62,7 @@ public class CreateTransmissionTests : ApplicationCollectionFixture
 
         // Assert
         response.TryPickT0(out var success, out _).Should().BeTrue();
-        success.Value.Should().Be(dialogId);
+        success.DialogId.Should().Be(dialogId);
 
         var transmissionEntities = await Application.GetDbEntities<DialogTransmission>();
         transmissionEntities.Should().HaveCount(1);

@@ -36,7 +36,11 @@ public sealed class DeleteDialogEndpoint : Endpoint<DeleteDialogRequest>
         var command = new DeleteDialogCommand { Id = req.DialogId, IfMatchDialogRevision = req.IfMatchDialogRevision };
         var result = await _sender.Send(command, ct);
         await result.Match(
-            success => SendNoContentAsync(ct),
+            success =>
+            {
+                HttpContext.Response.Headers.Append(Constants.ETag, success.Revision.ToString());
+                return SendNoContentAsync(ct);
+            },
             notFound => this.NotFoundAsync(notFound, ct),
             gone => this.GoneAsync(gone, ct),
             forbidden => this.ForbiddenAsync(forbidden, ct),

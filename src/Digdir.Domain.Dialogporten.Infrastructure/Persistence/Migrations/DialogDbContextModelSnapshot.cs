@@ -17,7 +17,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.10")
+                .HasAnnotation("ProductVersion", "9.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -561,6 +561,36 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         {
                             Id = 7,
                             Name = "DialogOpened"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Name = "DialogDeleted"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Name = "DialogRestored"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Name = "SentToSigning"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Name = "SentToFormFill"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            Name = "SentToSendIn"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            Name = "SentToPayment"
                         });
                 });
 
@@ -607,7 +637,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.Property<int>("Id")
                         .HasColumnType("integer");
 
-                    b.Property<string[]>("AllowedMediaTypes")
+                    b.PrimitiveCollection<string[]>("AllowedMediaTypes")
                         .IsRequired()
                         .HasColumnType("text[]");
 
@@ -980,7 +1010,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.Property<int>("Id")
                         .HasColumnType("integer");
 
-                    b.Property<string[]>("AllowedMediaTypes")
+                    b.PrimitiveCollection<string[]>("AllowedMediaTypes")
                         .IsRequired()
                         .HasColumnType("text[]");
 

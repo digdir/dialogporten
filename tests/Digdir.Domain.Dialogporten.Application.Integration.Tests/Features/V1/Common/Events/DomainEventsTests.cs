@@ -11,9 +11,9 @@ using FluentAssertions;
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Delete;
 using Digdir.Domain.Dialogporten.Domain.Attachments;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Events.Activities;
+using Digdir.Library.Entity.Abstractions.Features.Identifiable;
 using MassTransit.Internals;
 using MassTransit.Testing;
-using static Digdir.Domain.Dialogporten.Application.Integration.Tests.UuiDv7Utils;
 
 namespace Digdir.Domain.Dialogporten.Application.Integration.Tests.Features.V1.Common.Events;
 
@@ -30,6 +30,20 @@ public class DomainEventsTests(DialogApplication application) : ApplicationColle
         });
 
         Mapper = mapperConfiguration.CreateMapper();
+    }
+
+    [Fact]
+    public void All_DialogActivityTypes_Must_Have_A_Mapping_In_CloudEventTypes()
+    {
+        // Arrange
+        var allActivityTypes = Enum.GetValues<DialogActivityType.Values>().ToList();
+
+        // Act/Assert
+        allActivityTypes.ForEach(activityType =>
+        {
+            Action act = () => CloudEventTypes.Get(activityType.ToString());
+            act.Should().NotThrow($"all activity types must have a mapping in {nameof(CloudEventTypes)} ({activityType} is missing)");
+        });
     }
 
     [Fact]
@@ -126,7 +140,7 @@ public class DomainEventsTests(DialogApplication application) : ApplicationColle
     {
         // Arrange
         var harness = await Application.ConfigureServicesWithMassTransitTestHarness();
-        var dialogId = GenerateBigEndianUuidV7();
+        var dialogId = IdentifiableExtensions.CreateVersion7();
         var createDialogCommand = DialogGenerator.GenerateFakeDialog(
             id: dialogId,
             attachments: []);
@@ -174,7 +188,7 @@ public class DomainEventsTests(DialogApplication application) : ApplicationColle
     {
         // Arrange
         var harness = await Application.ConfigureServicesWithMassTransitTestHarness();
-        var dialogId = GenerateBigEndianUuidV7();
+        var dialogId = IdentifiableExtensions.CreateVersion7();
         var createDialogCommand = DialogGenerator.GenerateFakeDialog(id: dialogId, attachments: [], activities: []);
 
         await Application.Send(createDialogCommand);
@@ -204,7 +218,7 @@ public class DomainEventsTests(DialogApplication application) : ApplicationColle
     {
         // Arrange
         var harness = await Application.ConfigureServicesWithMassTransitTestHarness();
-        var dialogId = GenerateBigEndianUuidV7();
+        var dialogId = IdentifiableExtensions.CreateVersion7();
         var createDialogCommand = DialogGenerator.GenerateFakeDialog(id: dialogId, attachments: [], activities: []);
 
         await Application.Send(createDialogCommand);
