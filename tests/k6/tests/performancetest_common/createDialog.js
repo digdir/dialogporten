@@ -82,15 +82,15 @@ export function createAndRemoveDialog(serviceOwner, endUser, traceCalls) {
  * @param {Object} serviceOwner - The service owner object.
  * @param {Object} endUser - The end user object.
  */
-export function createTransmissions(serviceOwner, endUser, traceCalls, numberOfTransmissions, maxTransmissionsInThread) {
+export function createTransmissions(serviceOwner, endUser, traceCalls, numberOfTransmissions, maxTransmissionsInThread, testid) {
     let traceparent = uuidv4();
-
+    
     let paramsWithToken = {
         headers: {
             Authorization: "Bearer " + getEnterpriseToken(serviceOwner),
             traceparent: traceparent
         },
-        tags: { name: 'create dialog' }
+        tags: { name: 'create dialog', testid: testid }
     };
     if (traceCalls) {
         paramsWithToken.tags.traceparent = traceparent;
@@ -107,7 +107,7 @@ export function createTransmissions(serviceOwner, endUser, traceCalls, numberOfT
     let relatedTransmissionId = 0;
     for (let i = 0; i < numberOfTransmissions; i++) {
         
-        relatedTransmissionId = createTransmission(dialogId, relatedTransmissionId, serviceOwner, traceCalls);
+        relatedTransmissionId = createTransmission(dialogId, relatedTransmissionId, serviceOwner, traceCalls, testid);
         // Max transmissions in thread reached, start new thread
         if (i%maxTransmissionsInThread === 0) {
             relatedTransmissionId = 0;
@@ -116,7 +116,7 @@ export function createTransmissions(serviceOwner, endUser, traceCalls, numberOfT
 
 }
 
-export function createTransmission(dialogId, relatedTransmissionId, serviceOwner, traceCalls) {
+export function createTransmission(dialogId, relatedTransmissionId, serviceOwner, traceCalls, testid) {
     let traceparent = uuidv4();
 
     let paramsWithToken = {
@@ -124,7 +124,7 @@ export function createTransmission(dialogId, relatedTransmissionId, serviceOwner
             Authorization: "Bearer " + getEnterpriseToken(serviceOwner),
             traceparent: traceparent
         },
-        tags: { name: 'create transmission' }
+        tags: { name: 'create transmission', testid: testid }
     };
 
     let newRelatedTransmissionId;

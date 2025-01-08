@@ -16,6 +16,7 @@ const isSingleUserMode = (__ENV.isSingleUserMode ?? 'false') === 'true';
 const traceCalls = (__ENV.traceCalls ?? 'false') === 'true';
 const numberOfTransmissions = (__ENV.numberOfTransmissions ?? '10');
 const maxTransmissionsInThread = (__ENV.maxTransmissionsInThread ?? '100');
+const testid = (__ENV.TESTID ?? 'createTransmissions');
 
 export default function() {
     if (!endUsers || endUsers.length === 0) {
@@ -24,14 +25,13 @@ export default function() {
     if (!serviceOwners || serviceOwners.length === 0) {
         throw new Error('No service owners loaded for testing');
     } 
-    
     if (isSingleUserMode) {
-      createTransmissions(serviceOwners[0], endUsers[0], traceCalls, numberOfTransmissions, maxTransmissionsInThread);
+      createTransmissions(serviceOwners[0], endUsers[0], traceCalls, numberOfTransmissions, maxTransmissionsInThread, testid);
     }
     else {
         let serviceOwner = randomItem(serviceOwners);
         for (const endUser of endUsers) {
-            createTransmissions(serviceOwner, endUser, traceCalls, numberOfTransmissions, maxTransmissionsInThread);
+            createTransmissions(serviceOwner, endUser, traceCalls, numberOfTransmissions, maxTransmissionsInThread, testid);
         }  
     }
   }

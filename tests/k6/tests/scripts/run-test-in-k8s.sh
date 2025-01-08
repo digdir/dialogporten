@@ -93,9 +93,11 @@ if [ ${#missing_args[@]} -ne 0 ]; then
     help
     exit 1
 fi
+# Set testid to name + timestamp
+testid="${name}_$(date '+%Y%m%dT%H%M%S')"
 
 # Create the k6 archive
-if ! k6 archive $filename -e API_VERSION=v1 -e API_ENVIRONMENT=yt01 -e TOKEN_GENERATOR_USERNAME=$tokengenuser -e TOKEN_GENERATOR_PASSWORD=$tokengenpasswd; then
+if ! k6 archive $filename -e API_VERSION=v1 -e API_ENVIRONMENT=yt01 -e TOKEN_GENERATOR_USERNAME=$tokengenuser -e TOKEN_GENERATOR_PASSWORD=$tokengenpasswd -e TESTID=$testid; then
     echo "Error: Failed to create k6 archive"
     exit 1
 fi
@@ -123,9 +125,12 @@ spec:
     env:
       - name: K6_PROMETHEUS_RW_SERVER_URL
         value: "http://kube-prometheus-stack-prometheus.monitoring:9090/api/v1/write"
+      - name: K6_PROMETHEUS_RW_TREND_STATS
+        value: "avg,min,med,max,p(95),p(99),p(99.5),p(99.9),count"
     metadata:
       labels:
         k6-test: $name
+    
 EOF
 # Apply the config.yml configuration
 kubectl apply -f config.yml
