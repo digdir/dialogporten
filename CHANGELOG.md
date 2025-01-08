@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.44.2](https://github.com/digdir/dialogporten/compare/v1.44.1...v1.44.2) (2025-01-08)
+
+
+### Bug Fixes
+
+* **webi:** Add missing type on ETag response headers ([#1666](https://github.com/digdir/dialogporten/issues/1666)) ([df559ed](https://github.com/digdir/dialogporten/commit/df559ed7f7a1a09a1a3771dd5cc9c3526d781e3e))
+
 ## [1.44.1](https://github.com/digdir/dialogporten/compare/v1.44.0...v1.44.1) (2025-01-07)
 
 
