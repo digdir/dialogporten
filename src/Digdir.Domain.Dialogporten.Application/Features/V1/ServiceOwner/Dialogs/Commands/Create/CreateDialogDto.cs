@@ -316,6 +316,12 @@ public sealed class ActivityDto
 public sealed class ApiActionDto
 {
     /// <summary>
+    /// A UUIDv7 used for merging existing data, unknown IDs will be ignored as this entity does not support user-defined IDs.
+    /// </summary>
+    /// <example>01913cd5-784f-7d3b-abef-4c77b1f0972d</example>
+    public Guid? Id { get; set; }
+
+    /// <summary>
     /// String identifier for the action, corresponding to the "action" attributeId used in the XACML service policy,
     /// which by default is the policy belonging to the service referred to by "serviceResource" in the dialog.
     /// </summary>
@@ -394,6 +400,12 @@ public sealed class ApiActionEndpointDto
 public sealed class GuiActionDto
 {
     /// <summary>
+    /// A UUIDv7 used for merging existing data, unknown IDs will be ignored as this entity does not support user-defined IDs.
+    /// </summary>
+    /// <example>01913cd5-784f-7d3b-abef-4c77b1f0972d</example>
+    public Guid? Id { get; set; }
+
+    /// <summary>
     /// The action identifier for the action, corresponding to the "action" attributeId used in the XACML service policy.
     /// </summary>
     public string Action { get; set; } = null!;
@@ -455,6 +467,11 @@ public sealed class GuiActionDto
 
 public sealed class AttachmentDto
 {
+    /// <summary>
+    /// The unique identifier for the attachment in UUIDv7 format.
+    /// </summary>
+    public Guid? Id { get; set; }
+
     /// <summary>
     /// The display name of the attachment that should be used in GUIs.
     /// </summary>
