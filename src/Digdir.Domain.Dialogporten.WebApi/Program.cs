@@ -214,6 +214,7 @@ static void BuildAndRun(string[] args, TelemetryConfiguration telemetryConfigura
                 document.ReplaceProblemDetailsDescriptions();
                 document.MakeCollectionsNullable();
                 document.FixJwtBearerCasing();
+                document.RemoveSystemStringHeaderTitles();
             };
         }, uiConfig =>
         {

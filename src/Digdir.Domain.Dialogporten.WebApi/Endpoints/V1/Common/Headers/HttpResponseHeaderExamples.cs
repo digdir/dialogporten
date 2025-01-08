@@ -9,5 +9,6 @@ public static class HttpResponseHeaderExamples
         => new(statusCode, Constants.ETag)
         {
             Description = "The new UUID ETag of the dialog",
+            Example = "123e4567-e89b-12d3-a456-426614174000"
         };
 }
