@@ -1,6 +1,6 @@
 /**
- * Performance test for creating a dialog
- * Run: k6 run tests/k6/tests/serviceowner/performance/create-dialog.js --vus 1 --iterations 1
+ * Performance test for creating dialogs with transmissions
+ * Run: k6 run tests/k6/tests/serviceowner/performance/create-transmissions.js --vus 1 --iterations 1 -e numberOfTransmissions=100
  */
 import { randomItem } from 'https://jslib.k6.io/k6-utils/1.4.0/index.js';
 import { getDefaultThresholds } from '../../performancetest_common/getDefaultThresholds.js';
@@ -15,6 +15,7 @@ export let options = {
 const isSingleUserMode = (__ENV.isSingleUserMode ?? 'false') === 'true';
 const traceCalls = (__ENV.traceCalls ?? 'false') === 'true';
 const numberOfTransmissions = (__ENV.numberOfTransmissions ?? '10');
+const maxTransmissionsInThread = (__ENV.maxTransmissionsInThread ?? '100');
 
 export default function() {
     if (!endUsers || endUsers.length === 0) {
@@ -25,12 +26,12 @@ export default function() {
     } 
     
     if (isSingleUserMode) {
-      createTransmissions(serviceOwners[0], endUsers[0], traceCalls, numberOfTransmissions);
+      createTransmissions(serviceOwners[0], endUsers[0], traceCalls, numberOfTransmissions, maxTransmissionsInThread);
     }
     else {
         let serviceOwner = randomItem(serviceOwners);
         for (let i = 0; i < endUsers.length; i++) {
-            createTransmissions(serviceOwner, endUsers[i], traceCalls, numberOfTransmissions);
+            createTransmissions(serviceOwner, endUsers[i], traceCalls, numberOfTransmissions, maxTransmissionsInThread);
         }   
     }
   }

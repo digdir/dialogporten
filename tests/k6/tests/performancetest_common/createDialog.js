@@ -82,7 +82,7 @@ export function createAndRemoveDialog(serviceOwner, endUser, traceCalls) {
  * @param {Object} serviceOwner - The service owner object.
  * @param {Object} endUser - The end user object.
  */
-export function createTransmissions(serviceOwner, endUser, traceCalls, numberOfTransmissions) {
+export function createTransmissions(serviceOwner, endUser, traceCalls, numberOfTransmissions, maxTransmissionsInThread) {
     var traceparent = uuidv4();
 
     var paramsWithToken = {
@@ -108,7 +108,8 @@ export function createTransmissions(serviceOwner, endUser, traceCalls, numberOfT
     for (let i = 0; i < numberOfTransmissions; i++) {
         
         relatedTransmissionId = createTransmission(dialogId, relatedTransmissionId, serviceOwner, traceCalls);
-        if (i%100 === 0) {
+        // Max transmissions in thread reached, start new thread
+        if (i%maxTransmissionsInThread === 0) {
             relatedTransmissionId = 0;
         }
     }
