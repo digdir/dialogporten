@@ -27,7 +27,7 @@ public sealed class UpdateDialogCommand : IRequest<UpdateDialogResult>
     public Guid Id { get; set; }
     public Guid? IfMatchDialogRevision { get; set; }
     public UpdateDialogDto Dto { get; set; } = null!;
-    public bool ProduceDialogEvents { get; set; } = true;
+    public bool DisableEvents { get; set; }
 }
 
 [GenerateOneOf]
@@ -165,7 +165,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
 
         UpdateLabel(dialog);
 
-        if (!request.ProduceDialogEvents)
+        if (!request.DisableEvents)
         {
             // can't do this, send bool through event
             _unitOfWork.WithoutAggregateSideEffects();

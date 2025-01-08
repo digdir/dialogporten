@@ -21,7 +21,7 @@ namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialog
 
 public sealed class CreateDialogCommand : IRequest<CreateDialogResult>
 {
-    public bool ProduceDialogEvents { get; init; } = true;
+    public bool DisableEvents { get; init; }
     public CreateDialogDto Dto { get; set; } = null!;
 }
 

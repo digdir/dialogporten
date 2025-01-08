@@ -63,7 +63,7 @@ public class DeleteDialogTests(DialogApplication application) : ApplicationColle
     public async Task DeleteDialogCommand_Should_Return_New_Revision()
     {
         // Arrange
-        var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog();
+        var createDialogCommand = DialogGenerator.GenerateSimpleFakeCreateDialogCommand();
         var createDialogResponse = await Application.Send(createDialogCommand);
 
         var dialogId = createDialogResponse.AsT0.DialogId;

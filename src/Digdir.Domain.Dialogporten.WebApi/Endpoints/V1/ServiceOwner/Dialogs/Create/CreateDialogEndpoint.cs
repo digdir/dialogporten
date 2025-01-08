@@ -33,7 +33,7 @@ public sealed class CreateDialogEndpoint : Endpoint<CreateDialogRequest>
 
     public override async Task HandleAsync(CreateDialogRequest req, CancellationToken ct)
     {
-        var command = new CreateDialogCommand { Dto = req.Dto, ProduceDialogEvents = req.ProduceDialogEvents };
+        var command = new CreateDialogCommand { Dto = req.Dto, DisableEvents = req.DisableEvents };
         var result = await _sender.Send(command, ct);
         await result.Match(
             success =>
@@ -50,7 +50,7 @@ public sealed class CreateDialogEndpoint : Endpoint<CreateDialogRequest>
 
 public sealed class CreateDialogRequest
 {
-    public bool ProduceDialogEvents { get; init; } = true;
+    public bool DisableEvents { get; init; }
 
     [FromBody]
     public CreateDialogDto Dto { get; set; } = null!;

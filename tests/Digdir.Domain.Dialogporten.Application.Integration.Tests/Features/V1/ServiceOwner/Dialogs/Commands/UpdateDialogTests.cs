@@ -20,7 +20,7 @@ public class UpdateDialogTests(DialogApplication application) : ApplicationColle
     public async Task UpdateDialogCommand_Should_Return_New_Revision()
     {
         // Arrange
-        var createCommandResponse = await Application.Send(DialogGenerator.GenerateSimpleFakeDialog());
+        var createCommandResponse = await Application.Send(DialogGenerator.GenerateSimpleFakeCreateDialogCommand());
 
         var getDialogQuery = new GetDialogQuery { DialogId = createCommandResponse.AsT0.DialogId };
         var getDialogDto = await Application.Send(getDialogQuery);

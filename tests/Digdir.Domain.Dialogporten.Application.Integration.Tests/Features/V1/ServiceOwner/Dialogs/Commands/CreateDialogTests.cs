@@ -415,7 +415,7 @@ public class CreateDialogTests : ApplicationCollectionFixture
     public async Task CreateDialogCommand_Should_Return_Revision()
     {
         // Arrange
-        var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog();
+        var createDialogCommand = DialogGenerator.GenerateSimpleFakeCreateDialogCommand();
 
         // Act
         var response = await Application.Send(createDialogCommand);
