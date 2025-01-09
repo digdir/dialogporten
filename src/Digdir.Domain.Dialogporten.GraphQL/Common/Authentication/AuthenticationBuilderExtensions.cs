@@ -11,7 +11,6 @@ internal static class AuthenticationBuilderExtensions
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        // JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
         var jwtTokenSchemas = configuration
             .GetSection(GraphQlSettings.SectionName)
             .Get<GraphQlSettings>()?
