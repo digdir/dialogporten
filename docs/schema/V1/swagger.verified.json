@@ -5873,7 +5873,11 @@
             "description": "The UUID of the created dialog aggregate. A relative URL to the newly created activity is set in the \u0022Location\u0022 header.",
             "headers": {
               "Etag": {
-                "description": "The new UUID ETag of the dialog"
+                "description": "The new UUID ETag of the dialog",
+                "example": "123e4567-e89b-12d3-a456-426614174000",
+                "schema": {
+                  "type": "string"
+                }
               }
             }
           },
@@ -5947,7 +5951,11 @@
             "description": "The dialog aggregate was deleted successfully.",
             "headers": {
               "Etag": {
-                "description": "The new UUID ETag of the dialog"
+                "description": "The new UUID ETag of the dialog",
+                "example": "123e4567-e89b-12d3-a456-426614174000",
+                "schema": {
+                  "type": "string"
+                }
               }
             }
           },
@@ -6108,7 +6116,11 @@
             "description": "Patch was successfully applied.",
             "headers": {
               "Etag": {
-                "description": "The new UUID ETag of the dialog"
+                "description": "The new UUID ETag of the dialog",
+                "example": "123e4567-e89b-12d3-a456-426614174000",
+                "schema": {
+                  "type": "string"
+                }
               }
             }
           },
@@ -6208,7 +6220,11 @@
             "description": "The dialog aggregate was updated successfully.",
             "headers": {
               "Etag": {
-                "description": "The new UUID ETag of the dialog"
+                "description": "The new UUID ETag of the dialog",
+                "example": "123e4567-e89b-12d3-a456-426614174000",
+                "schema": {
+                  "type": "string"
+                }
               }
             }
           },
@@ -6511,7 +6527,11 @@
             "description": "The UUID of the created dialog activity. A relative URL to the newly created activity is set in the \u0022Location\u0022 header.",
             "headers": {
               "Etag": {
-                "description": "The new UUID ETag of the dialog"
+                "description": "The new UUID ETag of the dialog",
+                "example": "123e4567-e89b-12d3-a456-426614174000",
+                "schema": {
+                  "type": "string"
+                }
               }
             }
           },
@@ -6879,7 +6899,11 @@
             "description": "The UUID of the created dialog transmission. A relative URL to the newly created activity is set in the \u0022Location\u0022 header.",
             "headers": {
               "Etag": {
-                "description": "The new UUID ETag of the dialog"
+                "description": "The new UUID ETag of the dialog",
+                "example": "123e4567-e89b-12d3-a456-426614174000",
+                "schema": {
+                  "type": "string"
+                }
               }
             }
           },

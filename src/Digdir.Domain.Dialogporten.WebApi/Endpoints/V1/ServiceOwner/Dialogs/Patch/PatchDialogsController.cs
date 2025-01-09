@@ -60,7 +60,7 @@ public sealed class PatchDialogsController : ControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status412PreconditionFailed)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status422UnprocessableEntity)]
-    [ProducesResponseHeader(StatusCodes.Status204NoContent, Constants.ETag, "The new UUID ETag of the dialog")]
+    [ProducesResponseHeader(StatusCodes.Status204NoContent, Constants.ETag, "The new UUID ETag of the dialog", "123e4567-e89b-12d3-a456-426614174000")]
     public async Task<IActionResult> Patch(
         [FromRoute] Guid dialogId,
         [FromHeader(Name = Constants.IfMatch)] Guid? etag,

@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Reflection;
+using NJsonSchema;
 using NSwag;
 using NSwag.Generation.Processors;
 using NSwag.Generation.Processors.Contexts;
@@ -21,6 +22,11 @@ public sealed class ProducesResponseHeaderOperationProcessor : IOperationProcess
         var header = new OpenApiHeader
         {
             Description = headerAttribute.Description,
+            Example = headerAttribute.Example,
+            Schema = new JsonSchema
+            {
+                Type = headerAttribute.Type
+            }
         };
 
         response.Headers.Add(headerAttribute.HeaderName, header);
