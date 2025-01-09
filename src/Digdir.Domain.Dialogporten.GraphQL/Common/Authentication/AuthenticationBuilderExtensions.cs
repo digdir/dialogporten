@@ -1,6 +1,7 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Diagnostics;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace Digdir.Domain.Dialogporten.GraphQL.Common.Authentication;
 
@@ -10,6 +11,7 @@ internal static class AuthenticationBuilderExtensions
         this IServiceCollection services,
         IConfiguration configuration)
     {
+        // JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
         var jwtTokenSchemas = configuration
             .GetSection(GraphQlSettings.SectionName)
             .Get<GraphQlSettings>()?
@@ -21,6 +23,10 @@ internal static class AuthenticationBuilderExtensions
             throw new UnreachableException();
 
         services.AddSingleton<ITokenIssuerCache, TokenIssuerCache>();
+
+        // Turn off mapping InboundClaims names to its longer version
+        // "acr" => "http://schemas.microsoft.com/claims/authnclassreference"
+        JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
 
         var authenticationBuilder = services.AddAuthentication();
 
