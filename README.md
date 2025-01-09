@@ -6,7 +6,7 @@
 
 #### Prerequisites
 
-- [.NET 8 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0) (see [global.json](global.json) for the currently required version)
+- [.NET 9 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/9.0) (see [global.json](global.json) for the currently required version)
 
 #### Installing Podman (Mac)
 
@@ -34,14 +34,14 @@ brew install docker-compose
 #### Prerequisites
 
 - [Git](https://git-scm.com/download/win)
-- [.NET 8 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
+- [.NET 9 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/9.0)
 - [WSL2](https://docs.microsoft.com/en-us/windows/wsl/install) (To install, open a PowerShell admin window and run `wsl --install`)
 - [Virtual Machine Platform](https://support.microsoft.com/en-us/windows/enable-virtualization-on-windows-11-pcs-c5578302-6e43-4b4b-a449-8ced115f58e1) (Installs with WSL2, see the link above)
 
 #### Installing Podman (Windows)
 
 1. Install [Podman Desktop](https://podman.io/getting-started/installation).
-. 
+ 
 2. Start Podman Desktop and follow instructions to install Podman.
 
 3. Follow instructions in Podman Desktop to create and start a Podman machine.
@@ -391,7 +391,7 @@ There is a `ssh-jumper` virtual machine deployed with the infrastructure. This c
 
 2. Using the forwarding utility script:
    
-   See [scripts/forward-bash/README.md](scripts/forward-bash/README.md) for a more user-friendly way to establish database connections through SSH.
+   See [scripts/database-forwarder/README.md](scripts/database-forwarder/README.md) for a more user-friendly way to establish database connections through SSH.
 
 ### Applications
 

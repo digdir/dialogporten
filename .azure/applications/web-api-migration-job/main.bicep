@@ -34,10 +34,20 @@ resource containerAppEnvironment 'Microsoft.App/managedEnvironments@2024-03-01' 
   name: containerAppEnvironmentName
 }
 
+resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
+  name: '${namePrefix}-migration-job-identity'
+  location: location
+  tags: tags
+}
+
 var containerAppEnvVars = [
   {
     name: 'Infrastructure__DialogDbConnectionString'
     secretRef: 'dbconnectionstring'
+  }
+  {
+    name: 'AZURE_CLIENT_ID'
+    value: managedIdentity.properties.clientId
   }
 ]
 
@@ -62,6 +72,7 @@ module migrationJob '../../modules/containerAppJob/main.bicep' = {
     environmentVariables: containerAppEnvVars
     secrets: secrets
     tags: tags
+    userAssignedIdentityId: managedIdentity.id
   }
 }
 
@@ -69,9 +80,9 @@ module keyVaultReaderAccessPolicy '../../modules/keyvault/addReaderRoles.bicep' 
   name: 'keyVaultReaderAccessPolicy-${name}'
   params: {
     keyvaultName: environmentKeyVaultName
-    principalIds: [migrationJob.outputs.identityPrincipalId]
+    principalIds: [managedIdentity.properties.principalId]
   }
 }
 
-output identityPrincipalId string = migrationJob.outputs.identityPrincipalId
+output identityPrincipalId string = managedIdentity.properties.principalId
 output name string = migrationJob.outputs.name

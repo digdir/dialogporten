@@ -30,7 +30,7 @@ public class CreateTransmissionTests : ApplicationCollectionFixture
 
         // Assert
         response.TryPickT0(out var success, out _).Should().BeTrue();
-        success.Value.Should().Be(dialogId);
+        success.DialogId.Should().Be(dialogId);
         var transmissionEntities = await Application.GetDbEntities<DialogTransmission>();
         transmissionEntities.Should().HaveCount(1);
         transmissionEntities.First().DialogId.Should().Be(dialogId);
@@ -62,7 +62,7 @@ public class CreateTransmissionTests : ApplicationCollectionFixture
 
         // Assert
         response.TryPickT0(out var success, out _).Should().BeTrue();
-        success.Value.Should().Be(dialogId);
+        success.DialogId.Should().Be(dialogId);
 
         var transmissionEntities = await Application.GetDbEntities<DialogTransmission>();
         transmissionEntities.Should().HaveCount(1);

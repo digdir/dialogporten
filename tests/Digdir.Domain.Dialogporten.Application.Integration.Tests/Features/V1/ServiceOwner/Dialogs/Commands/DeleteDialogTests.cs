@@ -18,7 +18,7 @@ public class DeleteDialogTests(DialogApplication application) : ApplicationColle
         var createDialogResponse = await Application.Send(createDialogCommand);
 
         // Act
-        var dialogId = createDialogResponse.AsT0.Value;
+        var dialogId = createDialogResponse.AsT0.DialogId;
         var deleteDialogCommand = new DeleteDialogCommand { Id = dialogId };
         await Application.Send(deleteDialogCommand);
 
@@ -38,7 +38,7 @@ public class DeleteDialogTests(DialogApplication application) : ApplicationColle
         var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog();
         var createDialogResponse = await Application.Send(createDialogCommand);
 
-        var dialogId = createDialogResponse.AsT0.Value;
+        var dialogId = createDialogResponse.AsT0.DialogId;
         var deleteDialogCommand = new DeleteDialogCommand { Id = dialogId };
         await Application.Send(deleteDialogCommand);
 
@@ -58,4 +58,26 @@ public class DeleteDialogTests(DialogApplication application) : ApplicationColle
         entityDeleted.Should().NotBeNull();
         entityDeleted.Message.Should().Contain(dialogId.ToString());
     }
+
+    [Fact]
+    public async Task DeleteDialogCommand_Should_Return_New_Revision()
+    {
+        // Arrange
+        var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog();
+        var createDialogResponse = await Application.Send(createDialogCommand);
+
+        var dialogId = createDialogResponse.AsT0.DialogId;
+        var oldRevision = createDialogResponse.AsT0.Revision;
+
+        // Act
+        var deleteDialogCommand = new DeleteDialogCommand { Id = dialogId };
+        var deleteDialogResponse = await Application.Send(deleteDialogCommand);
+
+        // Assert
+        deleteDialogResponse.TryPickT0(out var success, out _).Should().BeTrue();
+        success.Should().NotBeNull();
+        success.Revision.Should().NotBeEmpty();
+        success.Revision.Should().NotBe(oldRevision);
+    }
+
 }

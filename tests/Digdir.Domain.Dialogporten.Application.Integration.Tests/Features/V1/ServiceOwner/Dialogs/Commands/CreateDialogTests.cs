@@ -83,7 +83,7 @@ public class CreateDialogTests : ApplicationCollectionFixture
         // Assert
         response.TryPickT0(out var success, out _).Should().BeTrue();
         success.Should().NotBeNull();
-        success.Value.Should().Be(validDialogId);
+        success.DialogId.Should().Be(validDialogId);
     }
 
     [Fact]
@@ -98,7 +98,7 @@ public class CreateDialogTests : ApplicationCollectionFixture
 
         // Assert
         response.TryPickT0(out var success, out _).Should().BeTrue();
-        success.Value.Should().Be(expectedDialogId);
+        success.DialogId.Should().Be(expectedDialogId);
     }
 
     [Fact]
@@ -113,7 +113,7 @@ public class CreateDialogTests : ApplicationCollectionFixture
 
         // Assert
         result.TryPickT0(out var success, out _).Should().BeTrue();
-        success.Value.Should().Be(expectedDialogId);
+        success.DialogId.Should().Be(expectedDialogId);
     }
 
     [Fact]
@@ -136,7 +136,7 @@ public class CreateDialogTests : ApplicationCollectionFixture
 
         // Assert
         createDialogResult.TryPickT0(out var dialogCreatedSuccess, out _).Should().BeTrue();
-        dialogCreatedSuccess.Value.Should().Be(dialogId);
+        dialogCreatedSuccess.DialogId.Should().Be(dialogId);
 
         getDialogQuery.Should().NotBeNull();
         getDialogResponse.TryPickT0(out var dialog, out _).Should().BeTrue();
@@ -408,6 +408,20 @@ public class CreateDialogTests : ApplicationCollectionFixture
         // Assert
         response.TryPickT0(out var success, out _).Should().BeTrue();
         success.Should().NotBeNull();
-        success.Value.Should().Be(expectedDialogId);
+        success.DialogId.Should().Be(expectedDialogId);
+    }
+
+    [Fact]
+    public async Task CreateDialogCommand_Should_Return_Revision()
+    {
+        // Arrange
+        var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog();
+
+        // Act
+        var response = await Application.Send(createDialogCommand);
+
+        // Assert
+        response.TryPickT0(out var success, out _).Should().BeTrue();
+        success.Revision.Should().NotBeEmpty();
     }
 }

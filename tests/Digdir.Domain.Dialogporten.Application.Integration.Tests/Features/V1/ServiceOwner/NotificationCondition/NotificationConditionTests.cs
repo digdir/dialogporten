@@ -40,7 +40,7 @@ public class NotificationConditionTests(DialogApplication application) : Applica
         var response = await Application.Send(createDialogCommand);
         response.TryPickT0(out var dialogId, out _);
 
-        var notificationConditionQuery = CreateNotificationConditionQuery(dialogId.Value, activityType, conditionType);
+        var notificationConditionQuery = CreateNotificationConditionQuery(dialogId.DialogId, activityType, conditionType);
 
         if (activityType is DialogActivityType.Values.TransmissionOpened)
         {
@@ -93,11 +93,11 @@ public class NotificationConditionTests(DialogApplication application) : Applica
         var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog();
 
         var response = await Application.Send(createDialogCommand);
-        response.TryPickT0(out var dialogId, out _);
+        response.TryPickT0(out var success, out _);
 
-        await Application.Send(new DeleteDialogCommand { Id = dialogId.Value });
+        await Application.Send(new DeleteDialogCommand { Id = success.DialogId });
 
-        var notificationConditionQuery = CreateNotificationConditionQuery(dialogId.Value);
+        var notificationConditionQuery = CreateNotificationConditionQuery(success.DialogId);
 
         // Act
         var queryResult = await Application.Send(notificationConditionQuery);
@@ -106,7 +106,7 @@ public class NotificationConditionTests(DialogApplication application) : Applica
         queryResult.TryPickT3(out var deleted, out _);
         queryResult.IsT3.Should().BeTrue();
         deleted.Should().NotBeNull();
-        deleted.Message.Should().Contain(dialogId.Value.ToString());
+        deleted.Message.Should().Contain(success.DialogId.ToString());
     }
 
     private static NotificationConditionQuery CreateNotificationConditionQuery(Guid dialogId,

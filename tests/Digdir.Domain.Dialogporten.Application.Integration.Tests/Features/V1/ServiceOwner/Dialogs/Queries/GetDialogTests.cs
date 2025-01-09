@@ -21,7 +21,7 @@ public class GetDialogTests : ApplicationCollectionFixture
         var createCommandResponse = await Application.Send(createDialogCommand);
 
         // Act
-        var response = await Application.Send(new GetDialogQuery { DialogId = createCommandResponse.AsT0.Value });
+        var response = await Application.Send(new GetDialogQuery { DialogId = createCommandResponse.AsT0.DialogId });
 
         // Assert
         response.TryPickT0(out var result, out _).Should().BeTrue();
@@ -41,7 +41,7 @@ public class GetDialogTests : ApplicationCollectionFixture
         var createCommandResponse = await Application.Send(createCommand);
 
         // Act
-        var response = await Application.Send(new GetDialogQuery { DialogId = createCommandResponse.AsT0.Value });
+        var response = await Application.Send(new GetDialogQuery { DialogId = createCommandResponse.AsT0.DialogId });
 
         // Assert
         response.TryPickT0(out var result, out _).Should().BeTrue();

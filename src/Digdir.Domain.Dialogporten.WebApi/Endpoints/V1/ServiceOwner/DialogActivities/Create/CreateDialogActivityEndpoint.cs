@@ -65,7 +65,16 @@ public sealed class CreateDialogActivityEndpoint : Endpoint<CreateActivityReques
 
         var result = await _sender.Send(updateDialogCommand, ct);
         await result.Match(
-            success => SendCreatedAtAsync<GetDialogActivityEndpoint>(new GetActivityQuery { DialogId = dialog.Id, ActivityId = req.Id.Value }, req.Id, cancellation: ct),
+            success =>
+            {
+                HttpContext.Response.Headers.Append(Constants.ETag, success.Revision.ToString());
+                return SendCreatedAtAsync<GetDialogActivityEndpoint>(
+                    new GetActivityQuery
+                    {
+                        DialogId = dialog.Id,
+                        ActivityId = req.Id.Value
+                    }, req.Id, cancellation: ct);
+            },
             notFound => this.NotFoundAsync(notFound, ct),
             gone => this.GoneAsync(gone, ct),
             validationError => this.BadRequestAsync(validationError, ct),

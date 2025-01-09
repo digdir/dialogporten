@@ -9,7 +9,7 @@
         <PackageReference Include="HotChocolate.Data.EntityFramework" Version="13.9.14" />
         <PackageReference Include="HotChocolate.AspNetCore.Authorization" Version="13.9.14" />
         <PackageReference Include="Microsoft.Azure.AppConfiguration.AspNetCore" Version="8.0.0" />
-        <PackageReference Include="Serilog.AspNetCore" Version="8.0.3" />
+        <PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
         <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.3.0" />
         <PackageReference Include="System.Drawing.Common" Version="9.0.0" />
         <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.3.0" />

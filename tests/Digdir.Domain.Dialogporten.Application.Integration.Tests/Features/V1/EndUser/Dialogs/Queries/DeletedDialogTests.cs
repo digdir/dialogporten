@@ -16,7 +16,7 @@ public class DeletedDialogTests(DialogApplication application) : ApplicationColl
         var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog();
         var createDialogResponse = await Application.Send(createDialogCommand);
 
-        var dialogId = createDialogResponse.AsT0.Value;
+        var dialogId = createDialogResponse.AsT0.DialogId;
         var deleteDialogCommand = new DeleteDialogCommand { Id = dialogId };
         await Application.Send(deleteDialogCommand);
 
