@@ -1,4 +1,5 @@
 using AutoMapper;
+using Digdir.Domain.Dialogporten.Application.Common.Pagination.Order;
 using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Queries.Get;
 using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Queries.Search;
 using Digdir.Domain.Dialogporten.GraphQL.EndUser.DialogById;
@@ -32,14 +33,42 @@ public partial class Queries
     {
         var searchDialogQuery = mapper.Map<SearchDialogQuery>(input);
 
+        // Test sending in continuation token, but not order by, and vice versa
+        OrderSet<SearchDialogQueryOrderDefinition, IntermediateDialogDto>? orderSet = null;
+        if (input.OrderBy != null && !input.OrderBy.TryToOrderSet(out orderSet))
+        {
+            // error
+        }
+
+        searchDialogQuery.OrderBy = orderSet;
+
         var result = await mediator.Send(searchDialogQuery, cancellationToken);
 
         return result.Match(
-            mapper.Map<SearchDialogsPayload>,
+            paginatedList =>
+            {
+                var mappedResult = mapper.Map<SearchDialogsPayload>(paginatedList);
+                mappedResult.OrderBy = paginatedList.OrderBy.ToSearchDialogSortTypeList();
+                return mappedResult;
+            },
             validationError => new SearchDialogsPayload
             {
                 Errors = [.. validationError.Errors.Select(x => new SearchDialogValidationError { Message = x.ErrorMessage })]
             },
             forbidden => new SearchDialogsPayload { Errors = [new SearchDialogForbidden()] });
     }
+}
+
+[GraphQLDescription("If more than one property is set, is bad.")]
+public sealed class SearchDialogSortType
+{
+    public SortDirection? CreatedAt { get; set; }
+    public SortDirection? UpdatedAt { get; set; }
+    public SortDirection? DueAt { get; set; }
+}
+
+public enum SortDirection
+{
+    ASC,
+    DESC
 }

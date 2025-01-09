@@ -11,7 +11,8 @@ public sealed class MappingProfile : Profile
         CreateMap<SearchDialogInput, SearchDialogQuery>()
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status));
 
-        CreateMap<PaginatedList<DialogDto>, SearchDialogsPayload>();
+        CreateMap<PaginatedList<DialogDto>, SearchDialogsPayload>()
+            .ForMember(dest => dest.OrderBy, opt => opt.Ignore());
 
         CreateMap<ContentDto, SearchContent>();
 

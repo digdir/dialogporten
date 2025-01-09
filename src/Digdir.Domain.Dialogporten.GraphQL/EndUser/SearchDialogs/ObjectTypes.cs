@@ -1,3 +1,7 @@
+using System.Globalization;
+using System.Text;
+using Digdir.Domain.Dialogporten.Application.Common.Pagination.Order;
+using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Queries.Search;
 using Digdir.Domain.Dialogporten.GraphQL.EndUser.Common;
 using Digdir.Domain.Dialogporten.GraphQL.EndUser.MutationTypes;
 
@@ -23,8 +27,13 @@ public sealed class SearchDialogsPayload
 {
     public List<SearchDialog>? Items { get; set; }
     public bool HasNextPage { get; set; }
+
+    [GraphQLDescription("Use this token to fetch the next page of dialogs, must be used in combination with OrderBy")]
     public string? ContinuationToken { get; set; }
-    public string? OrderBy { get; set; }
+
+    [GraphQLDescription("Use this OrderBy to fetch the next page of dialogs, must be used in combination with ContinuationToken")]
+    public List<SearchDialogSortType> OrderBy { get; set; } = null!;
+
     public List<ISearchDialogError> Errors { get; set; } = [];
 }
 
@@ -103,6 +112,55 @@ public sealed class SearchDialogInput
     [GraphQLDescription("Search string for free text search. Will attempt to fuzzily match in all free text fields in the aggregate")]
     public string? Search { get; init; }
 
-    [GraphQLDescription("Limit free text search to texts with this language code, e.g. 'no', 'en'. Culture codes will be normalized to neutral language codes (ISO 639). Default: search all culture codes")]
+    [GraphQLDescription("Limit free text search to texts with this language code, e.g. 'nb', 'en'. Culture codes will be normalized to neutral language codes (ISO 639). Default: search all culture codes")]
     public string? SearchLanguageCode { get; init; }
+
+    [GraphQLDescription("Limit the number of results returned, defaults to 100, max 1000")]
+    public int? Limit { get; set; }
+
+    [GraphQLDescription("Continuation token for pagination")]
+    public string? ContinuationToken { get; init; }
+
+    [GraphQLDescription("Sort the results by one or more fields")]
+    public List<SearchDialogSortType>? OrderBy { get; set; }
+}
+
+
+internal static class SearchDialogSortTypeExtensions
+{
+    public static bool TryToOrderSet(this List<SearchDialogSortType> searchDialogSortTypes,
+        out OrderSet<SearchDialogQueryOrderDefinition, IntermediateDialogDto>? orderSet)
+    {
+
+        var stringBuilder = new StringBuilder();
+        foreach (var orderBy in searchDialogSortTypes)
+        {
+            if (orderBy.CreatedAt != null)
+            {
+                stringBuilder.Append(CultureInfo.InvariantCulture, $"createdAt_{orderBy.CreatedAt},");
+                continue;
+            }
+            if (orderBy.UpdatedAt != null)
+            {
+                stringBuilder.Append(CultureInfo.InvariantCulture, $"updatedAt_{orderBy.UpdatedAt},");
+                continue;
+            }
+            if (orderBy.DueAt != null)
+            {
+                stringBuilder.Append(CultureInfo.InvariantCulture, $"dueAt_{orderBy.DueAt},");
+            }
+
+        }
+
+        if (OrderSet<SearchDialogQueryOrderDefinition, IntermediateDialogDto>.TryParse(stringBuilder.ToString(),
+                out var parsedOrderSet))
+        {
+            orderSet = parsedOrderSet;
+            return true;
+        }
+
+        orderSet = null;
+        return false;
+    }
+
 }
