@@ -11,6 +11,7 @@ using Digdir.Library.Entity.Abstractions;
 using Digdir.Library.Entity.Abstractions.Features.Aggregate;
 using Digdir.Library.Entity.Abstractions.Features.SoftDeletable;
 using Digdir.Library.Entity.Abstractions.Features.Versionable;
+using Medo;
 
 namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 
@@ -19,7 +20,8 @@ public sealed class DialogEntity :
     ISoftDeletableEntity,
     IVersionableEntity,
     IAggregateChangedHandler,
-    IEventPublisher
+    IEventPublisher,
+    IAggregateRestoredHandler
 {
     public Guid Id { get; set; }
     public Guid Revision { get; set; }
@@ -84,6 +86,15 @@ public sealed class DialogEntity :
     public void OnDelete(AggregateNode self, DateTimeOffset utcNow)
         => _domainEvents.Add(new DialogDeletedDomainEvent(Id, ServiceResource, Party, Process, PrecedingProcess));
 
+    // Amund Q: Burde Denne finnes?
+    public void OnRestore(AggregateNode self, DateTimeOffset utcNow) =>
+        _domainEvents.Add(new DialogRestoredDomainEvent(Id, ServiceResource, Party, Process, PrecedingProcess));
+
+    public void Restore()
+    {
+        DeletedAt = null;
+        Deleted = false;
+    }
     public void UpdateSeenAt(string endUserId, DialogUserType.Values userTypeId, string? endUserName)
     {
         var lastSeenAt = SeenLog

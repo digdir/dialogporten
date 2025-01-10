@@ -19,7 +19,7 @@ internal static class AggregateExtensions
     {
         var aggregateNodeByEntry = await changeTracker
             .Entries()
-            .Where(x => x.State is EntityState.Added or EntityState.Modified or EntityState.Deleted)
+            .Where(x => x.State is EntityState.Added or EntityState.Modified or EntityState.Deleted) // Amund Q: Må denne også oppdateres?
             .GetAggregateNodeByEntry(cancellationToken);
 
         foreach (var (_, aggregateNode) in aggregateNodeByEntry)

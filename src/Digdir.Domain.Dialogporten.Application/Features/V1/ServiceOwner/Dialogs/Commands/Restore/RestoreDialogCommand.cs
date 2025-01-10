@@ -3,8 +3,9 @@ using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
+using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Content;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
-using Digdir.Library.Entity.Abstractions.Features.SoftDeletable;
+using Digdir.Library.Entity.Abstractions.Features.Versionable;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
@@ -55,8 +56,10 @@ internal sealed class RestoreDialogCommandHandler : IRequestHandler<RestoreDialo
         {
             return new RestoreDialogSuccess(dialog.Revision);
         }
-        dialog.Restore();
-
+        dialog.Restore(); // Amund: Restore lager ny Rev
+        dialog.NewVersion();
+        dialog.OnRestore(null!, TransactionTime);
+        // Amund Q: ConcurrencyCheck weird, Manuelt laging av ny rev vil feile checken?. Dual writes == Bad, må gjøres i en write
         var saveResult = await _unitOfWork
             .WithoutAggregateSideEffects()
             .EnableConcurrencyCheck(dialog, request.IfMatchDialogRevision)
