@@ -10,7 +10,6 @@ using Digdir.Domain.Dialogporten.Infrastructure;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.OptionExtensions;
 using Digdir.Domain.Dialogporten.GraphQL;
 using Digdir.Library.Utils.AspNet;
-using Microsoft.ApplicationInsights.Extensibility;
 using Serilog;
 using FluentValidation;
 using HotChocolate.AspNetCore;
