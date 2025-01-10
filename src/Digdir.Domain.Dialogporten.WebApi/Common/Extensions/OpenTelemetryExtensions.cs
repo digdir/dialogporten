@@ -108,15 +108,21 @@ internal static class OpenTelemetryExtensions
         return otelEndpoint switch
         {
             null when context.HostingEnvironment.IsDevelopment() => writeTo.Console(formatProvider: CultureInfo.InvariantCulture),
-            not null when
-                Enum.TryParse<OtlpProtocol>(otelProtocol, out var protocol)
-                && Uri.IsWellFormedUriString(otelEndpoint, UriKind.Absolute)
-                => writeTo.OpenTelemetry(options =>
+            not null when Uri.IsWellFormedUriString(otelEndpoint, UriKind.Absolute) => otelProtocol?.ToLowerInvariant() switch
+            {
+                "grpc" => writeTo.OpenTelemetry(options =>
                 {
                     options.Endpoint = otelEndpoint;
-                    options.Protocol = protocol;
+                    options.Protocol = OtlpProtocol.Grpc;
                 }),
-            _ => throw new InvalidOperationException($"Invalid otel config. Endpoint: {otelEndpoint}, Protocol: {otelProtocol}")
+                "http/protobuf" => writeTo.OpenTelemetry(options =>
+                {
+                    options.Endpoint = otelEndpoint;
+                    options.Protocol = OtlpProtocol.HttpProtobuf;
+                }),
+                _ => throw new InvalidOperationException($"Invalid otel protocol: {otelProtocol}")
+            },
+            _ => throw new InvalidOperationException($"Invalid otel endpoint: {otelEndpoint}")
         };
     }
 
@@ -126,14 +132,20 @@ internal static class OpenTelemetryExtensions
         var otelProtocol = Environment.GetEnvironmentVariable(OtelExporterOtlpProtocol);
         return otelEndpoint switch
         {
-            not null when
-                Enum.TryParse<OtlpProtocol>(otelProtocol, out var protocol)
-                && Uri.IsWellFormedUriString(otelEndpoint, UriKind.Absolute)
-                => config.WriteTo.OpenTelemetry(options =>
+            not null when Uri.IsWellFormedUriString(otelEndpoint, UriKind.Absolute) => otelProtocol?.ToLowerInvariant() switch
+            {
+                "grpc" => config.WriteTo.OpenTelemetry(options =>
                 {
                     options.Endpoint = otelEndpoint;
-                    options.Protocol = protocol;
+                    options.Protocol = OtlpProtocol.Grpc;
                 }),
+                "http/protobuf" => config.WriteTo.OpenTelemetry(options =>
+                {
+                    options.Endpoint = otelEndpoint;
+                    options.Protocol = OtlpProtocol.HttpProtobuf;
+                }),
+                _ => config
+            },
             _ => config
         };
     }
