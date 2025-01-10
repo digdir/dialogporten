@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
-        <NoWarn>1591</NoWarn>
+        <NoWarn>1591</NoWarn> <!-- Disable warnings for missing XML comments -->
     </PropertyGroup>
 
     <ItemGroup>
