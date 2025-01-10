@@ -3,9 +3,8 @@ using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
-using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Content;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
-using Digdir.Library.Entity.Abstractions.Features.Versionable;
+using Digdir.Library.Entity.Abstractions.Features.SoftDeletable;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
@@ -41,7 +40,6 @@ internal sealed class RestoreDialogCommandHandler : IRequestHandler<RestoreDialo
         var resourceIds = await _userResourceRegistry.GetCurrentUserResourceIds(cancellationToken);
 
         var dialog = await _db.Dialogs
-            .Include(x => x.Activities)
             .WhereIf(!_userResourceRegistry.IsCurrentUserServiceOwnerAdmin(), x => resourceIds.Contains(x.ServiceResource))
             .IgnoreQueryFilters()
             .FirstOrDefaultAsync(x => x.Id == request.DialogId, cancellationToken);
@@ -56,12 +54,12 @@ internal sealed class RestoreDialogCommandHandler : IRequestHandler<RestoreDialo
         {
             return new RestoreDialogSuccess(dialog.Revision);
         }
+
         dialog.Restore(); // Amund: Restore lager ny Rev
-        dialog.NewVersion();
-        dialog.OnRestore(null!, TransactionTime);
+
         // Amund Q: ConcurrencyCheck weird, Manuelt laging av ny rev vil feile checken?. Dual writes == Bad, må gjøres i en write
         var saveResult = await _unitOfWork
-            .WithoutAggregateSideEffects()
+            .DisableUpdatableFilter()
             .EnableConcurrencyCheck(dialog, request.IfMatchDialogRevision)
             .SaveChangesAsync(cancellationToken);
 

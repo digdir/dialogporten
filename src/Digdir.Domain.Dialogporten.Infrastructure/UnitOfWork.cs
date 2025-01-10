@@ -25,10 +25,10 @@ internal sealed class UnitOfWork : IUnitOfWork, IAsyncDisposable, IDisposable
     private readonly DialogDbContext _dialogDbContext;
     private readonly ITransactionTime _transactionTime;
     private readonly IDomainContext _domainContext;
+    private readonly SaveChangesOptions _saveChangesOptions = new();
 
     private IDbContextTransaction? _transaction;
 
-    private bool _aggregateSideEffects = true;
     private bool _enableConcurrencyCheck;
 
     public UnitOfWork(DialogDbContext dialogDbContext, ITransactionTime transactionTime, IDomainContext domainContext)
@@ -51,14 +51,26 @@ internal sealed class UnitOfWork : IUnitOfWork, IAsyncDisposable, IDisposable
         return this;
     }
 
-    public IUnitOfWork WithoutAggregateSideEffects()
+    public async Task BeginTransactionAsync(CancellationToken cancellationToken = default)
+        => _transaction ??= await _dialogDbContext.Database.BeginTransactionAsync(cancellationToken);
+
+    public IUnitOfWork DisableAggregateFilter()
     {
-        _aggregateSideEffects = false;
+        _saveChangesOptions.EnableAggregateFilter = false;
         return this;
     }
 
-    public async Task BeginTransactionAsync(CancellationToken cancellationToken = default)
-        => _transaction ??= await _dialogDbContext.Database.BeginTransactionAsync(cancellationToken);
+    public IUnitOfWork DisableVersionableFilter()
+    {
+        _saveChangesOptions.EnableVersionableFilter = false;
+        return this;
+    }
+
+    public IUnitOfWork DisableUpdatableFilter()
+    {
+        _saveChangesOptions.EnableUpdatableFilter = false;
+        return this;
+    }
 
     public async Task<SaveChangesResult> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
@@ -92,12 +104,10 @@ internal sealed class UnitOfWork : IUnitOfWork, IAsyncDisposable, IDisposable
             return new Success();
         }
 
-        _dialogDbContext.ChangeTracker.HandleAuditableEntities(_transactionTime.Value);
-
-        if (_aggregateSideEffects)
-        {
-            await _dialogDbContext.ChangeTracker.HandleAggregateEntities(_transactionTime.Value, cancellationToken);
-        }
+        await _dialogDbContext.ChangeTracker.HandleAuditableEntities(
+            _transactionTime.Value,
+            _saveChangesOptions,
+            cancellationToken);
 
         if (!_enableConcurrencyCheck)
         {
@@ -184,5 +194,21 @@ internal sealed class UnitOfWork : IUnitOfWork, IAsyncDisposable, IDisposable
     {
         _transaction?.Dispose();
         _transaction = null;
+    }
+
+    // Although the entity framework supports all the options,
+    // enabling some of them ia an incredibly bad idea. Therefore,
+    // only some of them have setters until the day we actually
+    // have a use case for them.
+    private sealed class SaveChangesOptions : IEntityOptions
+    {
+        public bool EnableSoftDeletableFilter { get; } = true;
+        public bool EnableImmutableFilter { get; } = true;
+        public bool EnableVersionableFilter { get; set; } = true;
+        public bool EnableUpdatableFilter { get; set; } = true;
+        public bool EnableCreatableFilter { get; } = true;
+        public bool EnableLookupFilter { get; } = true;
+        public bool EnableIdentifiableFilter { get; } = true;
+        public bool EnableAggregateFilter { get; set; } = true;
     }
 }

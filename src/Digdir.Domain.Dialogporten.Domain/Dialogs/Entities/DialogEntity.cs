@@ -90,11 +90,6 @@ public sealed class DialogEntity :
     public void OnRestore(AggregateNode self, DateTimeOffset utcNow) =>
         _domainEvents.Add(new DialogRestoredDomainEvent(Id, ServiceResource, Party, Process, PrecedingProcess));
 
-    public void Restore()
-    {
-        DeletedAt = null;
-        Deleted = false;
-    }
     public void UpdateSeenAt(string endUserId, DialogUserType.Values userTypeId, string? endUserName)
     {
         var lastSeenAt = SeenLog
