@@ -24,18 +24,13 @@ param appConfigurationSku = {
 param appInsightsSku = {
   name: 'PerGB2018'
 }
-param slackNotifierSku = {
-  storageAccountName: 'Standard_LRS'
-  applicationServicePlanName: 'Y1'
-  applicationServicePlanTier: 'Dynamic'
-}
 param postgresConfiguration = {
   sku: {
     name: 'Standard_D8ads_v5'
     tier: 'GeneralPurpose'
   }
   storage: {
-    storageSizeGB: 256
+    storageSizeGB: 2048
     autoGrow: 'Enabled'
     type: 'Premium_LRS'
   }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Diagnostics;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Common.Authentication;
 
@@ -23,6 +24,10 @@ internal static class AuthenticationBuilderExtensions
         }
 
         services.AddSingleton<ITokenIssuerCache, TokenIssuerCache>();
+
+        // Turn off mapping InboundClaims names to its longer version
+        // "acr" => "http://schemas.microsoft.com/claims/authnclassreference"
+        JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
 
         var authenticationBuilder = services.AddAuthentication();
 

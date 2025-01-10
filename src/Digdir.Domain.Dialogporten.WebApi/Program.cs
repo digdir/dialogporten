@@ -16,24 +16,15 @@ using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
 using Digdir.Domain.Dialogporten.WebApi.Common.Json;
 using Digdir.Domain.Dialogporten.WebApi.Common.Swagger;
+using Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.Dialogs.Patch;
 using Digdir.Library.Utils.AspNet;
-using Azure.Monitor.OpenTelemetry.Exporter;
 using FastEndpoints;
 using FastEndpoints.Swagger;
 using FluentValidation;
-using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
-using Npgsql;
 using NSwag;
-using OpenTelemetry;
-using OpenTelemetry.Exporter;
-using OpenTelemetry.Logs;
-using OpenTelemetry.Metrics;
-using OpenTelemetry.Resources;
-using OpenTelemetry.Trace;
 using Serilog;
-using Serilog.Sinks.OpenTelemetry;
 
 // Using two-stage initialization to catch startup errors.
 Log.Logger = new LoggerConfiguration()
@@ -126,6 +117,9 @@ static void BuildAndRun(string[] args)
                 // generic "2" suffix duplicate names get, so we add a "SO" suffix to the serviceowner specific schemas.
                 // This should match the operationIds used for service owners.
                 s.AddServiceOwnerSuffixToSchemas();
+
+                // Adding ResponseHeaders for PATCH MVC controller
+                s.OperationProcessors.Add(new ProducesResponseHeaderOperationProcessor());
             };
         })
         .AddControllers(options => options.InputFormatters.Insert(0, JsonPatchInputFormatter.Get()))
@@ -156,7 +150,6 @@ static void BuildAndRun(string[] args)
     var app = builder.Build();
 
     app.UseHttpsRedirection()
-        .UseSerilogRequestLogging()
         .UseDefaultExceptionHandler()
         .UseJwtSchemeSelector()
         .UseAuthentication()
@@ -208,6 +201,7 @@ static void BuildAndRun(string[] args)
                 document.ReplaceProblemDetailsDescriptions();
                 document.MakeCollectionsNullable();
                 document.FixJwtBearerCasing();
+                document.RemoveSystemStringHeaderTitles();
             };
         }, uiConfig =>
         {

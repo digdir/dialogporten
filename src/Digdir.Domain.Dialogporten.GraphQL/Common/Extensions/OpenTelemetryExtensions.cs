@@ -10,12 +10,13 @@ using Serilog;
 using Serilog.Configuration;
 using Serilog.Sinks.OpenTelemetry;
 
-namespace Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
+namespace Digdir.Domain.Dialogporten.GraphQL.Common.Extensions;
 
 internal static class OpenTelemetryExtensions
 {
     private const string OtelExporterOtlpEndpoint = "OTEL_EXPORTER_OTLP_ENDPOINT";
     private const string OtelExporterOtlpProtocol = "OTEL_EXPORTER_OTLP_PROTOCOL";
+    private const string DialogportenGraphQLSource = "Dialogporten.GraphQL";
 
     public static IServiceCollection AddDialogportenTelemetry(
         this IServiceCollection services,
@@ -69,6 +70,7 @@ internal static class OpenTelemetryExtensions
                     .AddEntityFrameworkCoreInstrumentation()
                     .AddNpgsql()
                     .AddFusionCacheInstrumentation()
+                    .AddSource(DialogportenGraphQLSource)
                     .AddOtlpExporter(options =>
                     {
                         options.Endpoint = new Uri(endpoint, "/v1/traces");

@@ -66,7 +66,13 @@ public sealed class CreateDialogTransmissionEndpoint : Endpoint<CreateTransmissi
         var result = await _sender.Send(updateDialogCommand, ct);
 
         await result.Match(
-            success => SendCreatedAtAsync<GetDialogTransmissionEndpoint>(new GetTransmissionQuery { DialogId = dialog.Id, TransmissionId = req.Id.Value }, req.Id, cancellation: ct),
+            success =>
+            {
+                HttpContext.Response.Headers.Append(Constants.ETag, success.Revision.ToString());
+                return SendCreatedAtAsync<GetDialogTransmissionEndpoint>(
+                    new GetTransmissionQuery { DialogId = dialog.Id, TransmissionId = req.Id.Value }, req.Id,
+                    cancellation: ct);
+            },
             notFound => this.NotFoundAsync(notFound, ct),
             gone => this.GoneAsync(gone, ct),
             validationError => this.BadRequestAsync(validationError, ct),

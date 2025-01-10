@@ -10,7 +10,7 @@ using Serilog;
 using Serilog.Configuration;
 using Serilog.Sinks.OpenTelemetry;
 
-namespace Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
+namespace Digdir.Domain.Dialogporten.Service.Common.Extensions;
 
 internal static class OpenTelemetryExtensions
 {
@@ -68,7 +68,6 @@ internal static class OpenTelemetryExtensions
                     })
                     .AddEntityFrameworkCoreInstrumentation()
                     .AddNpgsql()
-                    .AddFusionCacheInstrumentation()
                     .AddOtlpExporter(options =>
                     {
                         options.Endpoint = new Uri(endpoint, "/v1/traces");

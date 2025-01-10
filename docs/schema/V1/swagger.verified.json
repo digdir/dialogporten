@@ -83,7 +83,13 @@
           "TransmissionOpened",
           "PaymentMade",
           "SignatureProvided",
-          "DialogOpened"
+          "DialogOpened",
+          "DialogDeleted",
+          "DialogRestored",
+          "SentToSigning",
+          "SentToFormFill",
+          "SentToSendIn",
+          "SentToPayment"
         ],
         "type": "string",
         "x-enumNames": [
@@ -93,7 +99,13 @@
           "TransmissionOpened",
           "PaymentMade",
           "SignatureProvided",
-          "DialogOpened"
+          "DialogOpened",
+          "DialogDeleted",
+          "DialogRestored",
+          "SentToSigning",
+          "SentToFormFill",
+          "SentToSendIn",
+          "SentToPayment"
         ]
       },
       "DialogsEntitiesTransmissions_DialogTransmissionType": {
@@ -5851,7 +5863,16 @@
                 }
               }
             },
-            "description": "The UUID of the created dialog aggregate. A relative URL to the newly created activity is set in the \u0022Location\u0022 header."
+            "description": "The UUID of the created dialog aggregate. A relative URL to the newly created activity is set in the \u0022Location\u0022 header.",
+            "headers": {
+              "Etag": {
+                "description": "The new UUID ETag of the dialog",
+                "example": "123e4567-e89b-12d3-a456-426614174000",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "204": {
             "description": "No Content"
@@ -5920,7 +5941,16 @@
         ],
         "responses": {
           "204": {
-            "description": "The dialog aggregate was deleted successfully."
+            "description": "The dialog aggregate was deleted successfully.",
+            "headers": {
+              "Etag": {
+                "description": "The new UUID ETag of the dialog",
+                "example": "123e4567-e89b-12d3-a456-426614174000",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "400": {
             "content": {
@@ -6076,7 +6106,16 @@
         },
         "responses": {
           "204": {
-            "description": "Patch was successfully applied."
+            "description": "Patch was successfully applied.",
+            "headers": {
+              "Etag": {
+                "description": "The new UUID ETag of the dialog",
+                "example": "123e4567-e89b-12d3-a456-426614174000",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "400": {
             "content": {
@@ -6171,7 +6210,16 @@
         },
         "responses": {
           "204": {
-            "description": "The dialog aggregate was updated successfully."
+            "description": "The dialog aggregate was updated successfully.",
+            "headers": {
+              "Etag": {
+                "description": "The new UUID ETag of the dialog",
+                "example": "123e4567-e89b-12d3-a456-426614174000",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "400": {
             "content": {
@@ -6469,7 +6517,16 @@
                 }
               }
             },
-            "description": "The UUID of the created dialog activity. A relative URL to the newly created activity is set in the \u0022Location\u0022 header."
+            "description": "The UUID of the created dialog activity. A relative URL to the newly created activity is set in the \u0022Location\u0022 header.",
+            "headers": {
+              "Etag": {
+                "description": "The new UUID ETag of the dialog",
+                "example": "123e4567-e89b-12d3-a456-426614174000",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "204": {
             "description": "No Content"
@@ -6832,7 +6889,16 @@
                 }
               }
             },
-            "description": "The UUID of the created dialog transmission. A relative URL to the newly created activity is set in the \u0022Location\u0022 header."
+            "description": "The UUID of the created dialog transmission. A relative URL to the newly created activity is set in the \u0022Location\u0022 header.",
+            "headers": {
+              "Etag": {
+                "description": "The new UUID ETag of the dialog",
+                "example": "123e4567-e89b-12d3-a456-426614174000",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "204": {
             "description": "No Content"
