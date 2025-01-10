@@ -105,23 +105,13 @@ internal static class OpenTelemetryExtensions
     {
         var otelEndpoint = context.Configuration[OtelExporterOtlpEndpoint];
         var otelProtocol = context.Configuration[OtelExporterOtlpProtocol];
+
         return otelEndpoint switch
         {
-            null when context.HostingEnvironment.IsDevelopment() => writeTo.Console(formatProvider: CultureInfo.InvariantCulture),
-            not null when Uri.IsWellFormedUriString(otelEndpoint, UriKind.Absolute) => otelProtocol?.ToLowerInvariant() switch
-            {
-                "grpc" => writeTo.OpenTelemetry(options =>
-                {
-                    options.Endpoint = otelEndpoint;
-                    options.Protocol = OtlpProtocol.Grpc;
-                }),
-                "http/protobuf" => writeTo.OpenTelemetry(options =>
-                {
-                    options.Endpoint = otelEndpoint;
-                    options.Protocol = OtlpProtocol.HttpProtobuf;
-                }),
-                _ => throw new InvalidOperationException($"Invalid otel protocol: {otelProtocol}")
-            },
+            null =>
+                writeTo.Console(formatProvider: CultureInfo.InvariantCulture),
+            not null when Uri.IsWellFormedUriString(otelEndpoint, UriKind.Absolute) =>
+                writeTo.OpenTelemetry(ConfigureOtlpSink(otelEndpoint, ParseOtlpProtocol(otelProtocol))),
             _ => throw new InvalidOperationException($"Invalid otel endpoint: {otelEndpoint}")
         };
     }
@@ -130,23 +120,37 @@ internal static class OpenTelemetryExtensions
     {
         var otelEndpoint = Environment.GetEnvironmentVariable(OtelExporterOtlpEndpoint);
         var otelProtocol = Environment.GetEnvironmentVariable(OtelExporterOtlpProtocol);
-        return otelEndpoint switch
+
+        if (otelEndpoint is null || !Uri.IsWellFormedUriString(otelEndpoint, UriKind.Absolute))
         {
-            not null when Uri.IsWellFormedUriString(otelEndpoint, UriKind.Absolute) => otelProtocol?.ToLowerInvariant() switch
-            {
-                "grpc" => config.WriteTo.OpenTelemetry(options =>
-                {
-                    options.Endpoint = otelEndpoint;
-                    options.Protocol = OtlpProtocol.Grpc;
-                }),
-                "http/protobuf" => config.WriteTo.OpenTelemetry(options =>
-                {
-                    options.Endpoint = otelEndpoint;
-                    options.Protocol = OtlpProtocol.HttpProtobuf;
-                }),
-                _ => config
-            },
-            _ => config
+            return config;
+        }
+
+        try
+        {
+            var protocol = ParseOtlpProtocol(otelProtocol);
+            return config.WriteTo.OpenTelemetry(ConfigureOtlpSink(otelEndpoint, protocol));
+        }
+        catch (ArgumentException)
+        {
+            return config;
+        }
+    }
+
+    private static OtlpProtocol ParseOtlpProtocol(string? protocol)
+    {
+        return protocol?.ToLowerInvariant() switch
+        {
+            "grpc" => OtlpProtocol.Grpc,
+            "http/protobuf" => OtlpProtocol.HttpProtobuf,
+            _ => throw new ArgumentException($"Unsupported OTLP protocol: {protocol}")
         };
     }
+
+    private static Action<OpenTelemetrySinkOptions> ConfigureOtlpSink(string endpoint, OtlpProtocol protocol) =>
+        options =>
+        {
+            options.Endpoint = endpoint;
+            options.Protocol = protocol;
+        };
 }
