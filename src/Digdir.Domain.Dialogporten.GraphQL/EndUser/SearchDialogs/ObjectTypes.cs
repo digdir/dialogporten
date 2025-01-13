@@ -37,7 +37,7 @@ public sealed class SearchDialogsPayload
     public List<ISearchDialogError> Errors { get; set; } = [];
 }
 
-[GraphQLDescription("If more than one property is set, is bad.")]
+[GraphQLDescription("Set only one property per object. If more than one property is set, there is no guarantee which one will be used.")]
 public sealed class SearchDialogSortType
 {
     public SortDirection? CreatedAt { get; set; }
