@@ -13,8 +13,8 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 using Digdir.Domain.Dialogporten.Domain.Parties;
 using Digdir.Library.Entity.Abstractions.Features.Identifiable;
-using FluentValidation.Results;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using OneOf;
 using OneOf.Types;
 
@@ -74,16 +74,24 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
         {
             dialog.Org = serviceResourceInformation.OwnOrgShortName;
         }
-        if (request.IdempotentId is not null && !string.IsNullOrEmpty(dialog.Org))
+
+        if (request.IdempotentKey is not null && !string.IsNullOrEmpty(dialog.Org))
         {
-            var dialogIdempotentId = new IdempotentId(dialog.Org, request.IdempotentId);
-            var dialogQuery = _db.Dialogs.Select(x => x).Where(x => x.IdempotentId == dialogIdempotentId);
-            if (dialogQuery.Any())
+            var dialogQuery = await _db.Dialogs
+                .Select(x => new
+                {
+                    x.Id,
+                    x.IdempotentKey,
+                    x.Org
+                })
+                .Where(x => x.IdempotentKey == request.IdempotentKey && x.Org == dialog.Org)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if (dialogQuery is not null)
             {
-                return new Conflict($"IdempotencyId: '{request.IdempotentId}' already exists with DialogId '{dialogQuery.First().Id}'");
-                // return new Conflict(dialogQuery.First().Id.ToString());
+                return new Conflict($"IdempotencyId: '{request.IdempotentKey}' already exists with DialogId '{dialogQuery.Id}'");
             }
-            dialog.IdempotentId = dialogIdempotentId;
+            dialog.IdempotentKey = request.IdempotentKey;
         }
 
         CreateDialogEndUserContext(request, dialog);

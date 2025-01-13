@@ -2323,7 +2323,7 @@
             "nullable": true,
             "type": "string"
           },
-          "idempotentId": {
+          "idempotentKey": {
             "description": "A self-defined Id may be provided to support idempotent creation of dialogs.\n            ",
             "nullable": true,
             "type": "string"
@@ -3411,7 +3411,7 @@
             "format": "guid",
             "type": "string"
           },
-          "idempotentId": {
+          "idempotentKey": {
             "description": "A self-defined Id may be provided to support idempotent creation of dialogs.\n            ",
             "nullable": true,
             "type": "string"

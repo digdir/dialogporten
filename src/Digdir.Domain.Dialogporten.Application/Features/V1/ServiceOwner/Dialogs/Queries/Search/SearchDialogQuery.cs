@@ -173,7 +173,7 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
         var paginatedList = await dialogQuery
             .Include(x => x.Content)
             .ThenInclude(x => x.Value.Localizations)
-            .WhereIf(request.IdempotentId is not null, x => x.IdempotentId != null && x.IdempotentId.Idempotent == request.IdempotentId)
+            .WhereIf(request.IdempotentId is not null, x => x.IdempotentKey != null && x.IdempotentKey == request.IdempotentId)
             .WhereIf(!request.ServiceResource.IsNullOrEmpty(),
                 x => request.ServiceResource!.Contains(x.ServiceResource))
             .WhereIf(!request.Party.IsNullOrEmpty(), x => request.Party!.Contains(x.Party))

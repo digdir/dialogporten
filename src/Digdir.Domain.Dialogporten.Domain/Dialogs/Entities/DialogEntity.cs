@@ -23,6 +23,7 @@ public sealed class DialogEntity :
 {
     public Guid Id { get; set; }
     public Guid Revision { get; set; }
+    public string? IdempotentKey { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
     public DateTimeOffset UpdatedAt { get; set; }
     public bool Deleted { get; set; }
@@ -42,7 +43,6 @@ public sealed class DialogEntity :
 
     public string? PrecedingProcess { get; set; }
 
-    public IdempotentId? IdempotentId { get; set; }
 
     // === Dependent relationships ===
     public DialogStatus.Values StatusId { get; set; }

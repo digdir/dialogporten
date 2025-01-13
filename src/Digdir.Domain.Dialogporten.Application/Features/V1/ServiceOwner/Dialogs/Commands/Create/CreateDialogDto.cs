@@ -22,7 +22,7 @@ public class CreateDialogDto
     /// <summary>
     ///  A self-defined Id may be provided to support idempotent creation of dialogs.
     /// </summary>
-    public string? IdempotentId { get; set; }
+    public string? IdempotentKey { get; set; }
 
     /// <summary>
     /// The service identifier for the service that the dialog is related to in URN-format.

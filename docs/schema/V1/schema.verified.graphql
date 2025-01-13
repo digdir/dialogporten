@@ -106,7 +106,6 @@ type ContentValue {
 
 type Dialog {
   id: UUID!
-  idempotentId: IdempotentId
   revision: UUID!
   org: String!
   serviceResource: String!
@@ -167,11 +166,6 @@ type GuiAction {
   httpMethod: HttpVerb!
   title: [Localization!]!
   prompt: [Localization!]
-}
-
-type IdempotentId {
-  org: String!
-  idempotent: String!
 }
 
 type Localization {

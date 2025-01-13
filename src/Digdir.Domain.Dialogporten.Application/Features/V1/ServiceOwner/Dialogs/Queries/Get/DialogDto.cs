@@ -22,7 +22,7 @@ public sealed class DialogDto
     /// <summary>
     ///  A self-defined Id may be provided to support idempotent creation of dialogs.
     /// </summary>
-    public string? IdempotentId { get; set; }
+    public string? IdempotentKey { get; set; }
 
     /// <summary>
     /// The unique identifier for the revision in UUIDv4 format.

@@ -45,7 +45,6 @@ public interface IDialogDbContext
     DbSet<LabelAssignmentLog> LabelAssignmentLogs { get; }
     DbSet<ResourcePolicyInformation> ResourcePolicyInformation { get; }
 
-    DbSet<IdempotentId> IdempotentIds { get; }
 
     /// <summary>
     /// Validate a property on the <typeparamref name="TEntity"/> using a lambda

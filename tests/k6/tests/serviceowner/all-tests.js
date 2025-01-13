@@ -5,7 +5,7 @@ import { default as concurrency } from './concurrency.js';
 import { default as createDialogWithThresholds } from './createDialogWithThresholds.js';
 import { default as dialogCreateActivity } from './dialogCreateActivity.js';
 import { default as dialogCreateExternalResource } from './dialogCreateExternalResource.js';
-import { default as dialogCreateIdempotentId } from './dialogCreateIdempotentId.js';
+import { default as dialogCreateIdempotentKey } from './dialogCreateIdempotentKey.js';
 import { default as dialogCreateInvalidActionCount } from './dialogCreateInvalidActionCount.js';
 import { default as dialogCreateInvalidProcess } from './dialogCreateInvalidProcess.js';
 import { default as dialogCreatePatchDelete } from './dialogCreatePatchDelete.js';
@@ -22,7 +22,7 @@ export default function() {
   createDialogWithThresholds();
   dialogCreateActivity();
   dialogCreateExternalResource();
-  dialogCreateIdempotentId();
+  dialogCreateIdempotentKey();
   dialogCreateInvalidActionCount();
   dialogCreateInvalidProcess();
   dialogCreatePatchDelete();

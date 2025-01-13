@@ -22,5 +22,6 @@ internal sealed class DialogEntityConfiguration : IEntityTypeConfiguration<Dialo
         builder.HasIndex(x => x.ServiceResource);
         builder.HasIndex(x => x.Party);
         builder.HasIndex(x => x.Process);
+        builder.HasIndex(x => new { x.Org, x.IdempotentKey }).IsUnique();
     }
 }

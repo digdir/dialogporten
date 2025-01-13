@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(DialogDbContext))]
-    [Migration("20241216084435_AddIdempontentKey")]
+    [Migration("20250113122026_AddIdempontentKey")]
     partial class AddIdempontentKey
     {
         /// <inheritdoc />
@@ -721,11 +721,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
 
-                    b.Property<string>("IdempotentIdIdempotent")
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
-                    b.Property<string>("IdempotentIdOrg")
+                    b.Property<string>("IdempotentKey")
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
 
@@ -798,7 +794,8 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("UpdatedAt");
 
-                    b.HasIndex("IdempotentIdIdempotent", "IdempotentIdOrg");
+                    b.HasIndex("Org", "IdempotentKey")
+                        .IsUnique();
 
                     b.ToTable("Dialog", (string)null);
                 });
@@ -948,21 +945,6 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                             Id = 4,
                             Name = "ServiceOwnerOnBehalfOfPerson"
                         });
-                });
-
-            modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.IdempotentId", b =>
-                {
-                    b.Property<string>("Idempotent")
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
-                    b.Property<string>("Org")
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
-                    b.HasKey("Idempotent", "Org");
-
-                    b.ToTable("IdempotentId");
                 });
 
             modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions.Contents.DialogTransmissionContent", b =>
@@ -1853,12 +1835,6 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         .HasForeignKey("StatusId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.HasOne("Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.IdempotentId", "IdempotentId")
-                        .WithMany()
-                        .HasForeignKey("IdempotentIdIdempotent", "IdempotentIdOrg");
-
-                    b.Navigation("IdempotentId");
 
                     b.Navigation("Status");
                 });

@@ -14,7 +14,6 @@ internal sealed class MappingProfile : Profile
         // See IntermediateSearchDialogDto
         CreateMap<IntermediateDialogDto, DialogDto>();
         CreateMap<DialogEntity, IntermediateDialogDto>()
-            .ForMember(dest => dest.IdempotentId, opt => opt.MapFrom(src => src.IdempotentId != null ? src.IdempotentId.Idempotent : null))
             .ForMember(dest => dest.LatestActivity, opt => opt.MapFrom(src => src.Activities
                 .OrderByDescending(activity => activity.CreatedAt).ThenByDescending(activity => activity.Id)
                 .FirstOrDefault()
