@@ -139,7 +139,6 @@ public sealed class SearchDialogInput
     public List<SearchDialogSortType>? OrderBy { get; set; }
 }
 
-
 internal static class SearchDialogSortTypeExtensions
 {
     public static List<SearchDialogSortType> ToSearchDialogSortTypeList(
