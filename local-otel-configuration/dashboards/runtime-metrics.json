@@ -85,13 +85,19 @@
             "type": "timeseries",
             "targets": [
                 {
-                    "datasource": {
-                        "type": "prometheus",
-                        "uid": "Prometheus"
-                    },
                     "expr": "dialogporten_process_runtime_dotnet_gc_heap_size_bytes",
                     "legendFormat": "Heap Size",
                     "refId": "A"
+                },
+                {
+                    "expr": "dialogporten_process_runtime_dotnet_gc_committed_memory_size_bytes",
+                    "legendFormat": "Committed Memory",
+                    "refId": "B"
+                },
+                {
+                    "expr": "dialogporten_dotnet_process_memory_working_set_bytes",
+                    "legendFormat": "Working Set",
+                    "refId": "C"
                 }
             ]
         },
@@ -171,13 +177,14 @@
             "type": "timeseries",
             "targets": [
                 {
-                    "datasource": {
-                        "type": "prometheus",
-                        "uid": "Prometheus"
-                    },
                     "expr": "rate(dialogporten_process_runtime_dotnet_gc_collections_count_total[5m])",
-                    "legendFormat": "Gen {{generation}}",
+                    "legendFormat": "Collections/sec",
                     "refId": "A"
+                },
+                {
+                    "expr": "rate(dialogporten_process_runtime_dotnet_gc_duration_nanoseconds_total[5m])",
+                    "legendFormat": "GC Duration/sec",
+                    "refId": "B"
                 }
             ]
         },
@@ -257,22 +264,19 @@
             "type": "timeseries",
             "targets": [
                 {
-                    "datasource": {
-                        "type": "prometheus",
-                        "uid": "Prometheus"
-                    },
                     "expr": "dialogporten_process_runtime_dotnet_thread_pool_queue_length",
                     "legendFormat": "Queue Length",
                     "refId": "A"
                 },
                 {
-                    "datasource": {
-                        "type": "prometheus",
-                        "uid": "Prometheus"
-                    },
                     "expr": "dialogporten_process_runtime_dotnet_thread_pool_threads_count",
                     "legendFormat": "Thread Count",
                     "refId": "B"
+                },
+                {
+                    "expr": "rate(dialogporten_process_runtime_dotnet_thread_pool_completed_items_count_total[5m])",
+                    "legendFormat": "Completed Items/sec",
+                    "refId": "C"
                 }
             ]
         },
@@ -352,20 +356,12 @@
             "type": "timeseries",
             "targets": [
                 {
-                    "datasource": {
-                        "type": "prometheus",
-                        "uid": "Prometheus"
-                    },
-                    "expr": "rate(dialogporten_process_runtime_dotnet_exceptions_count_total[$__rate_interval])",
+                    "expr": "rate(dialogporten_process_runtime_dotnet_exceptions_count_total[5m])",
                     "legendFormat": "Exceptions/sec",
                     "refId": "A"
                 },
                 {
-                    "datasource": {
-                        "type": "prometheus",
-                        "uid": "Prometheus"
-                    },
-                    "expr": "rate(dialogporten_process_runtime_dotnet_monitor_lock_contention_count_total[$__rate_interval])",
+                    "expr": "rate(dialogporten_process_runtime_dotnet_monitor_lock_contention_count_total[5m])",
                     "legendFormat": "Lock Contentions/sec",
                     "refId": "B"
                 }
