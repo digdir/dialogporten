@@ -83,7 +83,7 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
 
             if (dialogId != default)
             {
-                return new Conflict($"IdempotencyId: '{request.IdempotentKey}' already exists with DialogId '{dialogId}'");
+                return new Conflict($"IdempotencyKey: '{request.IdempotentKey}' already exists with DialogId '{dialogId}'");
             }
             dialog.IdempotentKey = request.IdempotentKey;
         }
