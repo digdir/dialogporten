@@ -147,32 +147,29 @@ internal static class SearchDialogSortTypeExtensions
     {
         List<SearchDialogSortType> searchDialogSortTypes = [];
         var orderByParts = orderBy.Split(',');
-        // updatedAt_desc,dueAt_asc,
 
-        foreach (var orderByPart in orderByParts)
-        {
-            var parts = orderByPart.Split('_');
-            if (parts.Length != 2)
+        var sortTypes = orderByParts
+            .Select(orderByPart => orderByPart.Split('_'))
+            .Where(parts => parts.Length == 2)
+            .Select(parts => new
             {
-                continue;
-            }
-
-            var sortDirection = parts[1] switch
+                parts,
+                sortDirection = parts[1] switch
+                {
+                    "Asc" => SortDirection.Asc,
+                    "Desc" => SortDirection.Desc,
+                    _ => throw new ArgumentOutOfRangeException()
+                }
+            })
+            .Select(t => t.parts[0] switch
             {
-                "Asc" => SortDirection.Asc,
-                "Desc" => SortDirection.Desc,
-                _ => throw new ArgumentOutOfRangeException()
-            };
-
-            searchDialogSortTypes.Add(parts[0] switch
-            {
-                "createdAt" => new SearchDialogSortType { CreatedAt = sortDirection },
-                "updatedAt" => new SearchDialogSortType { UpdatedAt = sortDirection },
-                "dueAt" => new SearchDialogSortType { DueAt = sortDirection },
+                "createdAt" => new SearchDialogSortType { CreatedAt = t.sortDirection },
+                "updatedAt" => new SearchDialogSortType { UpdatedAt = t.sortDirection },
+                "dueAt" => new SearchDialogSortType { DueAt = t.sortDirection },
                 _ => throw new ArgumentOutOfRangeException()
             });
-        }
 
+        searchDialogSortTypes.AddRange(sortTypes);
         return searchDialogSortTypes;
     }
 
