@@ -215,6 +215,13 @@ type SearchDialogForbidden implements SearchDialogError {
   message: String!
 }
 
+"If more than one property is set, is bad."
+type SearchDialogSortType {
+  createdAt: SortDirection
+  updatedAt: SortDirection
+  dueAt: SortDirection
+}
+
 type SearchDialogValidationError implements SearchDialogError {
   message: String!
 }
@@ -222,8 +229,10 @@ type SearchDialogValidationError implements SearchDialogError {
 type SearchDialogsPayload {
   items: [SearchDialog!]
   hasNextPage: Boolean!
+  "Use this token to fetch the next page of dialogs, must be used in combination with OrderBy"
   continuationToken: String
-  orderBy: String
+  "Use this OrderBy to fetch the next page of dialogs, must be used in combination with ContinuationToken"
+  orderBy: [SearchDialogSortType!]!
   errors: [SearchDialogError!]!
 }
 
@@ -294,8 +303,21 @@ input SearchDialogInput {
   dueBefore: DateTime
   "Search string for free text search. Will attempt to fuzzily match in all free text fields in the aggregate"
   search: String
-  "Limit free text search to texts with this language code, e.g. 'no', 'en'. Culture codes will be normalized to neutral language codes (ISO 639). Default: search all culture codes"
+  "Limit free text search to texts with this language code, e.g. 'nb', 'en'. Culture codes will be normalized to neutral language codes (ISO 639). Default: search all culture codes"
   searchLanguageCode: String
+  "Limit the number of results returned, defaults to 100, max 1000"
+  limit: Int
+  "Continuation token for pagination"
+  continuationToken: String
+  "Sort the results by one or more fields"
+  orderBy: [SearchDialogSortTypeInput!]
+}
+
+"If more than one property is set, is bad."
+input SearchDialogSortTypeInput {
+  createdAt: SortDirection
+  updatedAt: SortDirection
+  dueAt: SortDirection
 }
 
 input SetSystemLabelInput {
@@ -372,6 +394,11 @@ enum HttpVerb {
   OPTIONS
   TRACE
   CONNECT
+}
+
+enum SortDirection {
+  ASC
+  DESC
 }
 
 enum SystemLabel {

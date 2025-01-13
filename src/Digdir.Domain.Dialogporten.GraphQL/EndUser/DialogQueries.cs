@@ -37,7 +37,7 @@ public partial class Queries
         OrderSet<SearchDialogQueryOrderDefinition, IntermediateDialogDto>? orderSet = null;
         if (input.OrderBy != null && !input.OrderBy.TryToOrderSet(out orderSet))
         {
-            // error
+            // error, how can this happen?
         }
 
         searchDialogQuery.OrderBy = orderSet;
@@ -57,18 +57,4 @@ public partial class Queries
             },
             forbidden => new SearchDialogsPayload { Errors = [new SearchDialogForbidden()] });
     }
-}
-
-[GraphQLDescription("If more than one property is set, is bad.")]
-public sealed class SearchDialogSortType
-{
-    public SortDirection? CreatedAt { get; set; }
-    public SortDirection? UpdatedAt { get; set; }
-    public SortDirection? DueAt { get; set; }
-}
-
-public enum SortDirection
-{
-    ASC,
-    DESC
 }

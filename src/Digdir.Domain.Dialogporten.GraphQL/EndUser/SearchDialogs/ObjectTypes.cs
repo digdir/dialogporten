@@ -37,6 +37,20 @@ public sealed class SearchDialogsPayload
     public List<ISearchDialogError> Errors { get; set; } = [];
 }
 
+[GraphQLDescription("If more than one property is set, is bad.")]
+public sealed class SearchDialogSortType
+{
+    public SortDirection? CreatedAt { get; set; }
+    public SortDirection? UpdatedAt { get; set; }
+    public SortDirection? DueAt { get; set; }
+}
+
+public enum SortDirection
+{
+    Asc,
+    Desc
+}
+
 public sealed class SearchDialog
 {
     public Guid Id { get; set; }
@@ -128,10 +142,43 @@ public sealed class SearchDialogInput
 
 internal static class SearchDialogSortTypeExtensions
 {
+    public static List<SearchDialogSortType> ToSearchDialogSortTypeList(
+        this string orderBy)
+    {
+        List<SearchDialogSortType> searchDialogSortTypes = [];
+        var orderByParts = orderBy.Split(',');
+        // updatedAt_desc,dueAt_asc,
+
+        foreach (var orderByPart in orderByParts)
+        {
+            var parts = orderByPart.Split('_');
+            if (parts.Length != 2)
+            {
+                continue;
+            }
+
+            var sortDirection = parts[1] switch
+            {
+                "Asc" => SortDirection.Asc,
+                "Desc" => SortDirection.Desc,
+                _ => throw new ArgumentOutOfRangeException()
+            };
+
+            searchDialogSortTypes.Add(parts[0] switch
+            {
+                "createdAt" => new SearchDialogSortType { CreatedAt = sortDirection },
+                "updatedAt" => new SearchDialogSortType { UpdatedAt = sortDirection },
+                "dueAt" => new SearchDialogSortType { DueAt = sortDirection },
+                _ => throw new ArgumentOutOfRangeException()
+            });
+        }
+
+        return searchDialogSortTypes;
+    }
+
     public static bool TryToOrderSet(this List<SearchDialogSortType> searchDialogSortTypes,
         out OrderSet<SearchDialogQueryOrderDefinition, IntermediateDialogDto>? orderSet)
     {
-
         var stringBuilder = new StringBuilder();
         foreach (var orderBy in searchDialogSortTypes)
         {
@@ -162,5 +209,4 @@ internal static class SearchDialogSortTypeExtensions
         orderSet = null;
         return false;
     }
-
 }
