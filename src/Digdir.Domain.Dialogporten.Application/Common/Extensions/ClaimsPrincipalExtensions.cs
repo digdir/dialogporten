@@ -30,7 +30,7 @@ public static class ClaimsPrincipalExtensions
 
 
     // TODO: This scope is also defined in WebAPI/GQL. Can this be fetched from a common auth lib?
-    // https://github.com/digdir/dialogporten/issues/647
+    // https://github.com/altinn/dialogporten/issues/647
     // This could be done for all claims/scopes/prefixes etc, there are duplicates
     public const string ServiceProviderScope = "digdir:dialogporten.serviceprovider";
 

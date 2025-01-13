@@ -23,7 +23,7 @@ param containerAppEnvironmentName string
 param environmentKeyVaultName string
 
 var namePrefix = 'dp-be-${environment}'
-var baseImageUrl = 'ghcr.io/digdir/dialogporten-'
+var baseImageUrl = 'ghcr.io/altinn/dialogporten-'
 var tags = {
   Environment: environment
   Product: 'Dialogporten'

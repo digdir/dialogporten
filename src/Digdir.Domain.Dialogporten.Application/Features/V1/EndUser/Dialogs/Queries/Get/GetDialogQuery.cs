@@ -119,7 +119,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
         }
 
         // TODO: What if name lookup fails
-        // https://github.com/digdir/dialogporten/issues/387
+        // https://github.com/altinn/dialogporten/issues/387
         dialog.UpdateSeenAt(
             currentUserInformation.UserId.ExternalIdWithPrefix,
             currentUserInformation.UserId.Type,

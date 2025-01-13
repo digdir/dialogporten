@@ -32,7 +32,7 @@ param jobSchedule string
 param appInsightConnectionString string
 
 var namePrefix = 'dp-be-${environment}'
-var baseImageUrl = 'ghcr.io/digdir/dialogporten-'
+var baseImageUrl = 'ghcr.io/altinn/dialogporten-'
 var tags = {
   FullName: '${namePrefix}-sync-subject-resource-mappings'
   Environment: environment
