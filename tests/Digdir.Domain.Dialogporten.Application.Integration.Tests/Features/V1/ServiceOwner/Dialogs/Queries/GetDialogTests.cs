@@ -49,13 +49,7 @@ public class GetDialogTests : ApplicationCollectionFixture
         result.Should().BeEquivalentTo(createCommand, options => options
             .Excluding(x => x.UpdatedAt)
             .Excluding(x => x.CreatedAt)
-            .Excluding(x => x.SystemLabel)
-            .For(x => x.Attachments)
-                .Exclude(x => x.Id)
-            .For(x => x.ApiActions)
-                .Exclude(x => x.Id)
-            .For(x => x.GuiActions)
-                .Exclude(x => x.Id));
+            .Excluding(x => x.SystemLabel));
     }
     // TODO: Add tests
 }

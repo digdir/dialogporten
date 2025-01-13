@@ -316,7 +316,7 @@ public sealed class ActivityDto
 public sealed class ApiActionDto
 {
     /// <summary>
-    /// A UUIDv7 used for merging existing data, unknown IDs will be ignored as this entity does not support user-defined IDs.
+    /// A self-defined UUIDv7 may be provided to support idempotent creation of Api Actions. If not provided, a new UUIDv7 will be generated.
     /// </summary>
     /// <example>01913cd5-784f-7d3b-abef-4c77b1f0972d</example>
     public Guid? Id { get; set; }
@@ -400,7 +400,7 @@ public sealed class ApiActionEndpointDto
 public sealed class GuiActionDto
 {
     /// <summary>
-    /// A UUIDv7 used for merging existing data, unknown IDs will be ignored as this entity does not support user-defined IDs.
+    /// A self-defined UUIDv7 may be provided to support idempotent creation of Gui Actions. If not provided, a new UUIDv7 will be generated.
     /// </summary>
     /// <example>01913cd5-784f-7d3b-abef-4c77b1f0972d</example>
     public Guid? Id { get; set; }
@@ -468,7 +468,7 @@ public sealed class GuiActionDto
 public sealed class AttachmentDto
 {
     /// <summary>
-    /// The unique identifier for the attachment in UUIDv7 format.
+    /// A self-defined UUIDv7 may be provided to support idempotent creation of attachments. If not provided, a new UUIDv7 will be generated.
     /// </summary>
     public Guid? Id { get; set; }
 
