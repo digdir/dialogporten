@@ -1,3 +1,4 @@
+using AppAny.HotChocolate.FluentValidation;
 using AutoMapper;
 using Digdir.Domain.Dialogporten.Application.Common.Pagination.Continuation;
 using Digdir.Domain.Dialogporten.Application.Common.Pagination.Order;
@@ -29,6 +30,7 @@ public partial class Queries
     public async Task<SearchDialogsPayload> SearchDialogs(
         [Service] ISender mediator,
         [Service] IMapper mapper,
+        [UseFluentValidation, UseValidator<SearchDialogInputValidator>]
         SearchDialogInput input,
         CancellationToken cancellationToken)
     {

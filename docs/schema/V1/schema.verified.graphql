@@ -215,6 +215,10 @@ type SearchDialogForbidden implements SearchDialogError {
   message: String!
 }
 
+type SearchDialogOrderByParsingError implements SearchDialogError {
+  message: String!
+}
+
 "Set only one property per object. If more than one property is set, there is no guarantee which one will be used."
 type SearchDialogSortType {
   createdAt: SortDirection
