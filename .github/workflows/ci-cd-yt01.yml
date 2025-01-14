@@ -38,7 +38,7 @@ jobs:
     secrets:
       GCR_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
     with:
-      dockerImageBaseName: ghcr.io/digdir/dialogporten-
+      dockerImageBaseName: ghcr.io/altinn/dialogporten-
       version: ${{ needs.get-current-version.outputs.version }}
 
   deploy-infra:

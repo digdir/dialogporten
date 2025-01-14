@@ -10,28 +10,25 @@ using Digdir.Domain.Dialogporten.Infrastructure;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.OptionExtensions;
 using Digdir.Domain.Dialogporten.GraphQL;
 using Digdir.Library.Utils.AspNet;
-using Microsoft.ApplicationInsights.Extensibility;
 using Serilog;
 using FluentValidation;
 using HotChocolate.AspNetCore;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
+using Digdir.Domain.Dialogporten.GraphQL.Common.Extensions;
 
-const string DialogportenGraphQLSource = "Dialogporten.GraphQL";
-
-var telemetryConfiguration = TelemetryConfiguration.CreateDefault();
 // Using two-stage initialization to catch startup errors.
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Warning()
-    .Enrich.FromLogContext()
     .Enrich.WithEnvironmentName()
+    .Enrich.FromLogContext()
     .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture)
-    .WriteTo.ApplicationInsights(telemetryConfiguration, TelemetryConverter.Traces)
+    .TryWriteToOpenTelemetry()
     .CreateBootstrapLogger();
 
 try
 {
-    BuildAndRun(args, telemetryConfiguration);
+    BuildAndRun(args);
 }
 catch (Exception ex) when (ex is not OperationCanceledException)
 {
@@ -43,22 +40,21 @@ finally
     Log.CloseAndFlush();
 }
 
-static void BuildAndRun(string[] args, TelemetryConfiguration telemetryConfiguration)
+static void BuildAndRun(string[] args)
 {
     var builder = WebApplication.CreateBuilder(args);
+
+    builder.Configuration
+        .AddAzureConfiguration(builder.Environment.EnvironmentName)
+        .AddLocalConfiguration(builder.Environment);
 
     builder.Host.UseSerilog((context, services, configuration) => configuration
         .MinimumLevel.Warning()
         .ReadFrom.Configuration(context.Configuration)
         .ReadFrom.Services(services)
-        .Enrich.FromLogContext()
         .Enrich.WithEnvironmentName()
-        .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture)
-        .WriteTo.ApplicationInsights(telemetryConfiguration, TelemetryConverter.Traces));
-
-    builder.Configuration
-        .AddAzureConfiguration(builder.Environment.EnvironmentName)
-        .AddLocalConfiguration(builder.Environment);
+        .Enrich.FromLogContext()
+        .WriteTo.OpenTelemetryOrConsole(context));
 
     builder.Services
         .AddOptions<GraphQlSettings>()
@@ -67,16 +63,6 @@ static void BuildAndRun(string[] args, TelemetryConfiguration telemetryConfigura
         .ValidateOnStart();
 
     var thisAssembly = Assembly.GetExecutingAssembly();
-
-    builder.ConfigureTelemetry((settings, configuration) =>
-    {
-        settings.ServiceName = configuration["OTEL_SERVICE_NAME"] ?? builder.Environment.ApplicationName;
-        settings.Endpoint = configuration["OTEL_EXPORTER_OTLP_ENDPOINT"];
-        settings.Protocol = configuration["OTEL_EXPORTER_OTLP_PROTOCOL"];
-        settings.AppInsightsConnectionString = configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"];
-        settings.ResourceAttributes = configuration["OTEL_RESOURCE_ATTRIBUTES"];
-        settings.TraceSources.Add(DialogportenGraphQLSource);
-    });
 
     builder.Services
         // Options setup
@@ -130,7 +116,6 @@ static void BuildAndRun(string[] args, TelemetryConfiguration telemetryConfigura
         .UseAuthentication()
         .UseAuthorization()
         .UseMiddleware<DialogTokenMiddleware>()
-        .UseSerilogRequestLogging()
         .UseAzureConfiguration();
 
     app.MapGraphQL()
