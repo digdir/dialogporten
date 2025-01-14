@@ -43,7 +43,10 @@ public partial class Queries
         OrderSet<SearchDialogQueryOrderDefinition, IntermediateDialogDto>? orderSet = null;
         if (input.OrderBy != null && !input.OrderBy.TryToOrderSet(out orderSet))
         {
-            // error, how can this happen?
+            return new SearchDialogsPayload
+            {
+                Errors = [new SearchDialogOrderByParsingError()]
+            };
         }
 
         searchDialogQuery.OrderBy = orderSet;
