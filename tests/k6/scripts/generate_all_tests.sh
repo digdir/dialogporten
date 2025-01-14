@@ -15,7 +15,7 @@ FUNCTION_BODY=""
 
 # Get all *.js files in the directory except for "all-tests.js"
 for JS_FILE in "$DIRECTORY_PATH"/*.js; do
-    if [[ $DIRECTORY_PATH != *"performance"* ]]; then
+    if [[ $DIRECTORY_PATH != *"/performance/"* ]]; then
         BASE_NAME=$(basename "$JS_FILE" .js)
 
         if [[ "$BASE_NAME" != "all-tests" ]]; then
