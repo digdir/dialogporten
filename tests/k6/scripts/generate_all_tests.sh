@@ -13,19 +13,20 @@ fi
 IMPORT_STATEMENTS=""
 FUNCTION_BODY=""
 
-# Get all *.js files in the directory except for "all-tests.js"
 for JS_FILE in "$DIRECTORY_PATH"/*.js; do
-    if [[ $DIRECTORY_PATH != *"/performance/"* ]]; then
-        BASE_NAME=$(basename "$JS_FILE" .js)
-
-        if [[ "$BASE_NAME" != "all-tests" ]]; then
-            # Append to import strings
-            IMPORT_STATEMENTS="${IMPORT_STATEMENTS}import { default as ${BASE_NAME} } from './${BASE_NAME}.js';"$'\n'
-
-            # Append to function body
-            FUNCTION_BODY="${FUNCTION_BODY}  ${BASE_NAME}();"$'\n'
-        fi
+    # Skip files in the "performance" directory or the "all-tests.js" file
+    if [[ $DIRECTORY_PATH == *"/performance/"* ]] ||
+    [[ $(basename "$JS_FILE" .js) == "all-tests" ]]; then
+        continue
     fi
+
+    BASE_NAME=$(basename "$JS_FILE" .js)
+
+    # Append to import strings
+    IMPORT_STATEMENTS="${IMPORT_STATEMENTS}import { default as ${BASE_NAME} } from './${BASE_NAME}.js';"$'\n'
+
+    # Append to function body
+    FUNCTION_BODY="${FUNCTION_BODY}  ${BASE_NAME}();"$'\n'
 done
 
 # Combine all the content
