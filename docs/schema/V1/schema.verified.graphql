@@ -237,9 +237,8 @@ type SearchDialogValidationError implements SearchDialogError {
 type SearchDialogsPayload {
   items: [SearchDialog!]
   hasNextPage: Boolean!
-  "Use this token to fetch the next page of dialogs, must be used in combination with OrderBy"
+  "Use this token to fetch the next page of dialogs, must be used in combination with OrderBy from the previous response"
   continuationToken: String
-  "Use this OrderBy to fetch the next page of dialogs, must be used in combination with ContinuationToken"
   orderBy: [SearchDialogSortType!]!
   errors: [SearchDialogError!]!
 }

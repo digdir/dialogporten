@@ -34,10 +34,9 @@ public sealed class SearchDialogsPayload
     public List<SearchDialog>? Items { get; set; }
     public bool HasNextPage { get; set; }
 
-    [GraphQLDescription("Use this token to fetch the next page of dialogs, must be used in combination with OrderBy")]
+    [GraphQLDescription("Use this token to fetch the next page of dialogs, must be used in combination with OrderBy from the previous response")]
     public string? ContinuationToken { get; set; }
 
-    [GraphQLDescription("Use this OrderBy to fetch the next page of dialogs, must be used in combination with ContinuationToken")]
     public List<SearchDialogSortType> OrderBy { get; set; } = [];
 
     public List<ISearchDialogError> Errors { get; set; } = [];
