@@ -12,12 +12,14 @@ internal static class SearchDialogSortTypeExtensions
     {
         List<SearchDialogSortType> searchDialogSortTypes = [];
 
-        orderBy = orderBy
+        var orderByParts = orderBy
             .ToLower(CultureInfo.InvariantCulture)
-            .Replace("id_desc", "", StringComparison.OrdinalIgnoreCase)
-            .Replace("id_asc", "", StringComparison.OrdinalIgnoreCase);
+            .Split(',', StringSplitOptions.RemoveEmptyEntries)
+            .Where(part => !part.Equals("id_desc", StringComparison.OrdinalIgnoreCase) &&
+                           !part.Equals("id_asc", StringComparison.OrdinalIgnoreCase))
+            .ToList();
 
-        foreach (var orderByPart in orderBy.Split(','))
+        foreach (var orderByPart in orderByParts)
         {
             var parts = orderByPart.Split('_');
             if (parts.Length != 2)
@@ -55,11 +57,13 @@ internal static class SearchDialogSortTypeExtensions
                 stringBuilder.Append(CultureInfo.InvariantCulture, $"createdAt_{orderBy.CreatedAt},");
                 continue;
             }
+
             if (orderBy.UpdatedAt != null)
             {
                 stringBuilder.Append(CultureInfo.InvariantCulture, $"updatedAt_{orderBy.UpdatedAt},");
                 continue;
             }
+
             if (orderBy.DueAt != null)
             {
                 stringBuilder.Append(CultureInfo.InvariantCulture, $"dueAt_{orderBy.DueAt},");
