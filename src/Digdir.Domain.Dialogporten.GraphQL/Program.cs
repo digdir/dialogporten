@@ -15,7 +15,7 @@ using FluentValidation;
 using HotChocolate.AspNetCore;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
-using Digdir.Domain.Dialogporten.GraphQL.Common.Extensions;
+using OpenTelemetry.Trace;
 
 // Using two-stage initialization to catch startup errors.
 Log.Logger = new LoggerConfiguration()
@@ -85,6 +85,13 @@ static void BuildAndRun(string[] args)
         // Add controllers
         .AddControllers()
             .Services
+
+        // Telemetry
+        .AddDialogportenTelemetry(builder.Configuration, builder.Environment,
+            configureTracing: x => x
+                .AddSource("Dialogporten.GraphQL")
+                .AddFusionCacheInstrumentation()
+                .AddAspNetCoreInstrumentationExcludingHealthPaths())
 
         // Add health checks with the well-known URLs
         .AddAspNetHealthChecks((x, y) => x.HealthCheckSettings.HttpGetEndpointsToCheck = y
