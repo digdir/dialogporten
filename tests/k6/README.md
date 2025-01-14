@@ -27,9 +27,9 @@ The scripts will use locally installed `k6` if available. Failing that, it will 
 
 For information about the performance tests, see the following README files:
 
-- [ServiceOwner](tests/serviceowner/performance/README.md)
-- [GraphQL](tests/graphql/performance/README.md)
-- [EndUser](tests/enduser/performance/README.md)
+- [ServiceOwner](./tests/serviceowner/performance/README.md)
+- [GraphQL](./tests/graphql/performance/README.md)
+- [EndUser](./tests/enduser/performance/README.md)
 
 ## Test suites
 
