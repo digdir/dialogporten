@@ -24,6 +24,7 @@ public static class AspNetUtilitiesExtensions
 {
     private const string OtelExporterOtlpEndpoint = "OTEL_EXPORTER_OTLP_ENDPOINT";
     private const string OtelExporterOtlpProtocol = "OTEL_EXPORTER_OTLP_PROTOCOL";
+
     public static IServiceCollection AddDialogportenTelemetry(
         this IServiceCollection services,
         IConfiguration configuration,
