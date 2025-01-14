@@ -89,8 +89,8 @@ static void BuildAndRun(string[] args)
 
         // Telemetry
         .AddDialogportenTelemetry(builder.Configuration, builder.Environment,
-            configureMetrics: x => x.AddAspNetCoreInstrumentation(),
-            configureTracing: x => x
+            additionalMetrics: x => x.AddAspNetCoreInstrumentation(),
+            additionalTracing: x => x
                 .AddSource("Dialogporten.GraphQL")
                 .AddFusionCacheInstrumentation()
                 .AddAspNetCoreInstrumentationExcludingHealthPaths())

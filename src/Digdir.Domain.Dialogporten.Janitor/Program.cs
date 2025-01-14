@@ -57,7 +57,7 @@ static void BuildAndRun(string[] args)
 
     builder.Services
         .AddDialogportenTelemetry(builder.Configuration, builder.Environment,
-            configureTracing: x => x.AddFusionCacheInstrumentation())
+            additionalTracing: x => x.AddFusionCacheInstrumentation())
         .AddApplication(builder.Configuration, builder.Environment)
         .AddInfrastructure(builder.Configuration, builder.Environment)
             .WithoutPubSubCapabilities()

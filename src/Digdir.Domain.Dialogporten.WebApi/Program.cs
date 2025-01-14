@@ -81,8 +81,8 @@ static void BuildAndRun(string[] args)
 
     builder.Services
         .AddDialogportenTelemetry(builder.Configuration, builder.Environment,
-            configureMetrics: x => x.AddAspNetCoreInstrumentation(),
-            configureTracing: x => x
+            additionalMetrics: x => x.AddAspNetCoreInstrumentation(),
+            additionalTracing: x => x
                 .AddFusionCacheInstrumentation()
                 .AddAspNetCoreInstrumentationExcludingHealthPaths())
         // Options setup
