@@ -8,7 +8,7 @@ START_DATE="1980-01-02"
 END_DATE="1980-03-28"
 
 export DIALOG_AMOUNT="10000"
-export CONN_STRING="Server=localhost;Port=5432;Database=dialogporten;User ID=postgres;Password=supersecret;Include Error Detail=True;"
+export CONN_STRING="" # DO NOT COMMIT
 
 # Detect platform (macOS or Linux)
 IS_MACOS=false
@@ -47,4 +47,3 @@ END_TIME=$(date +%s)
 # Calculate and print total execution time
 TOTAL_TIME=$((END_TIME - START_TIME))
 echo "Script completed in $TOTAL_TIME seconds 🚀"
-

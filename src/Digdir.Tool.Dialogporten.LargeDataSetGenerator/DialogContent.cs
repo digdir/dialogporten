@@ -1,7 +1,6 @@
 using System.Text;
 
 namespace Digdir.Tool.Dialogporten.LargeDataSetGenerator;
-#pragma warning disable CA1305
 
 internal static class DialogContent
 {

@@ -3,7 +3,6 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions.Contents;
 
 namespace Digdir.Tool.Dialogporten.LargeDataSetGenerator;
-#pragma warning disable CA1305
 
 internal static class TransmissionContent
 {

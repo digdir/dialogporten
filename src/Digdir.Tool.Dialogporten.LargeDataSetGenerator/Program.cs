@@ -3,12 +3,21 @@ using Digdir.Tool.Dialogporten.LargeDataSetGenerator;
 using Npgsql;
 using Activity = Digdir.Tool.Dialogporten.LargeDataSetGenerator.Activity;
 
-#pragma warning disable CA1305
-#pragma warning disable IDE0061
-
 try
 {
     Console.WriteLine("Starting large data set generator...");
+
+    if (!File.Exists("./parties"))
+    {
+        Console.Error.WriteLine("No file 'parties' found, exiting...");
+        Environment.Exit(1);
+    }
+
+    if (!File.Exists("./service_resources"))
+    {
+        Console.Error.WriteLine("No file 'service_resources' found, exiting...");
+        Environment.Exit(1);
+    }
 
     var connString = Environment.GetEnvironmentVariable("CONN_STRING");
     var startingDate = DateTimeOffset.Parse(Environment.GetEnvironmentVariable("FROM_DATE")!);

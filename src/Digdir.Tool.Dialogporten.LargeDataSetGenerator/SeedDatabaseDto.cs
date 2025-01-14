@@ -1,7 +1,6 @@
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 namespace Digdir.Tool.Dialogporten.LargeDataSetGenerator;
 
-#pragma warning disable CA1305
 internal sealed class SeedDatabaseDto
 {
     public SeedDatabaseDto(DateTimeOffset fromDate, DateTimeOffset toDate, int dialogAmount)

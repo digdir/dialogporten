@@ -2,7 +2,6 @@ using System.Text;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 
 namespace Digdir.Tool.Dialogporten.LargeDataSetGenerator;
-#pragma warning disable CA1305
 
 internal static class Activity
 {
@@ -10,9 +9,6 @@ internal static class Activity
 
     public const int DialogCreatedType = 1;
     public const int InformationType = 2;
-
-    public const int EntitiesPerParent = 2;
-    // public const int EntitiesPerBatch = EntitiesPerParent * Dialog.EntitiesPerBatch;
 
     public static string Generate(DialogTimestamp dto)
     {
