@@ -165,6 +165,3 @@ catch (Exception ex)
     Console.Error.WriteLine(ex.Message);
     Console.Error.WriteLine(ex.StackTrace);
 }
-
-// TODO: Re-enable all indexes and constraints
-#pragma warning restore CA1305
