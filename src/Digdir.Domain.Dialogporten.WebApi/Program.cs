@@ -23,6 +23,7 @@ using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
 using NSwag;
+using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 using Serilog;
 
@@ -80,6 +81,7 @@ static void BuildAndRun(string[] args)
 
     builder.Services
         .AddDialogportenTelemetry(builder.Configuration, builder.Environment,
+            configureMetrics: x => x.AddAspNetCoreInstrumentation(),
             configureTracing: x => x
                 .AddFusionCacheInstrumentation()
                 .AddAspNetCoreInstrumentationExcludingHealthPaths())

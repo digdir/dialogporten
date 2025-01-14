@@ -29,7 +29,8 @@ public static class AspNetUtilitiesExtensions
         this IServiceCollection services,
         IConfiguration configuration,
         IHostEnvironment environment,
-        Action<TracerProviderBuilder>? configureTracing = null)
+        Action<TracerProviderBuilder>? configureTracing = null,
+        Action<MeterProviderBuilder>? configureMetrics = null)
     {
         if (!Uri.IsWellFormedUriString(configuration[OtelExporterOtlpEndpoint], UriKind.Absolute))
             return services;
@@ -83,7 +84,6 @@ public static class AspNetUtilitiesExtensions
             .WithMetrics(metrics =>
             {
                 metrics.AddRuntimeInstrumentation()
-                    .AddAspNetCoreInstrumentation()
                     .AddHttpClientInstrumentation();
 
                 var appInsightsConnectionString = configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"];
@@ -102,6 +102,8 @@ public static class AspNetUtilitiesExtensions
                         options.Protocol = otlpProtocol;
                     });
                 }
+
+                configureMetrics?.Invoke(metrics);
             })
             .Services;
     }

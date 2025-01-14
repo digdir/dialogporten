@@ -15,6 +15,7 @@ using FluentValidation;
 using HotChocolate.AspNetCore;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
+using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 
 // Using two-stage initialization to catch startup errors.
@@ -88,6 +89,7 @@ static void BuildAndRun(string[] args)
 
         // Telemetry
         .AddDialogportenTelemetry(builder.Configuration, builder.Environment,
+            configureMetrics: x => x.AddAspNetCoreInstrumentation(),
             configureTracing: x => x
                 .AddSource("Dialogporten.GraphQL")
                 .AddFusionCacheInstrumentation()
