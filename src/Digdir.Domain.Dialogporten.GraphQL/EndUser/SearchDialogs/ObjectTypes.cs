@@ -145,30 +145,36 @@ internal static class SearchDialogSortTypeExtensions
         this string orderBy)
     {
         List<SearchDialogSortType> searchDialogSortTypes = [];
-        var orderByParts = orderBy.Split(',');
 
-        var sortTypes = orderByParts
-            .Select(orderByPart => orderByPart.Split('_'))
-            .Where(parts => parts.Length == 2)
-            .Select(parts => new
+        orderBy = orderBy
+            .ToLower(CultureInfo.InvariantCulture)
+            .Replace("id_desc", "", StringComparison.OrdinalIgnoreCase)
+            .Replace("id_asc", "", StringComparison.OrdinalIgnoreCase);
+
+        foreach (var orderByPart in orderBy.Split(','))
+        {
+            var parts = orderByPart.Split('_');
+            if (parts.Length != 2)
             {
-                parts,
-                sortDirection = parts[1] switch
-                {
-                    "Asc" => SortDirection.Asc,
-                    "Desc" => SortDirection.Desc,
-                    _ => throw new ArgumentOutOfRangeException()
-                }
-            })
-            .Select(t => t.parts[0] switch
+                continue;
+            }
+
+            var sortDirection = parts[1] switch
             {
-                "createdAt" => new SearchDialogSortType { CreatedAt = t.sortDirection },
-                "updatedAt" => new SearchDialogSortType { UpdatedAt = t.sortDirection },
-                "dueAt" => new SearchDialogSortType { DueAt = t.sortDirection },
-                _ => throw new ArgumentOutOfRangeException()
+                "asc" => SortDirection.Asc,
+                "desc" => SortDirection.Desc,
+                _ => throw new InvalidOperationException("Invalid sort direction")
+            };
+
+            searchDialogSortTypes.Add(parts[0] switch
+            {
+                "createdat" => new SearchDialogSortType { CreatedAt = sortDirection },
+                "updatedat" => new SearchDialogSortType { UpdatedAt = sortDirection },
+                "dueat" => new SearchDialogSortType { DueAt = sortDirection },
+                _ => throw new InvalidOperationException("Invalid sort field")
             });
+        }
 
-        searchDialogSortTypes.AddRange(sortTypes);
         return searchDialogSortTypes;
     }
 

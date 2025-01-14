@@ -1,4 +1,5 @@
 using AutoMapper;
+using Digdir.Domain.Dialogporten.Application.Common.Pagination.Continuation;
 using Digdir.Domain.Dialogporten.Application.Common.Pagination.Order;
 using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Queries.Get;
 using Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Queries.Search;
@@ -33,7 +34,12 @@ public partial class Queries
     {
         var searchDialogQuery = mapper.Map<SearchDialogQuery>(input);
 
-        // Test sending in continuation token, but not order by, and vice versa
+        if (ContinuationTokenSet<SearchDialogQueryOrderDefinition, IntermediateDialogDto>.TryParse(
+                input.ContinuationToken, out var continuationTokenSet))
+        {
+            searchDialogQuery.ContinuationToken = continuationTokenSet;
+        }
+
         OrderSet<SearchDialogQueryOrderDefinition, IntermediateDialogDto>? orderSet = null;
         if (input.OrderBy != null && !input.OrderBy.TryToOrderSet(out orderSet))
         {

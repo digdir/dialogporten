@@ -10,7 +10,7 @@ public class PaginationParameter<TOrderDefinition, TTarget>
 {
     private readonly int _limit = PaginationConstants.DefaultLimit;
 
-    public ContinuationTokenSet<TOrderDefinition, TTarget>? ContinuationToken { get; init; }
+    public ContinuationTokenSet<TOrderDefinition, TTarget>? ContinuationToken { get; set; }
 
     public int? Limit
     {
