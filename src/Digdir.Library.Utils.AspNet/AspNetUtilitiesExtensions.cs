@@ -57,11 +57,6 @@ public static class AspNetUtilitiesExtensions
                 }
 
                 tracing
-                    .AddAspNetCoreInstrumentation(opts =>
-                    {
-                        opts.RecordException = true;
-                        opts.Filter = httpContext => !httpContext.Request.Path.StartsWithSegments("/health");
-                    })
                     .AddHttpClientInstrumentation(o =>
                     {
                         o.RecordException = true;
