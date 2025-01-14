@@ -326,20 +326,32 @@ input SetSystemLabelInput {
 }
 
 enum ActivityType {
-  "Refers to a dialog that has been created."
+  "Indicates that a dialog has been created."
   DIALOG_CREATED
-  "Refers to a dialog that has been closed."
+  "Indicates that a dialog has been closed."
   DIALOG_CLOSED
   "Information from the service provider, not (directly) related to any transmission."
   INFORMATION
-  "Refers to a transmission that has been opened."
+  "Indicates that a transmission has been opened."
   TRANSMISSION_OPENED
   "Indicates that payment has been made."
   PAYMENT_MADE
   "Indicates that a signature has been provided."
   SIGNATURE_PROVIDED
-  "Refers to a dialog that has been opened."
+  "Indicates that a dialog has been opened."
   DIALOG_OPENED
+  "Indicates that a dialog has been deleted."
+  DIALOG_DELETED
+  "Indicates that a dialog has been restored."
+  DIALOG_RESTORED
+  "Indicates that a dialog has been sent to signing."
+  SENT_TO_SIGNING
+  "Indicates that a dialog has been sent to form fill."
+  SENT_TO_FORM_FILL
+  "Indicates that a dialog has been sent to send in."
+  SENT_TO_SEND_IN
+  "Indicates that a dialog has been sent to payment."
+  SENT_TO_PAYMENT
 }
 
 enum ActorType {
