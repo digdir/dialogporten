@@ -134,9 +134,6 @@ jobs:
     secrets:
       TOKEN_GENERATOR_USERNAME: ${{ secrets.TOKEN_GENERATOR_USERNAME }}
       TOKEN_GENERATOR_PASSWORD: ${{ secrets.TOKEN_GENERATOR_PASSWORD }}
-      K6_CLOUD_TOKEN: ${{ secrets.K6_CLOUD_TOKEN }}
-      K6_CLOUD_PROJECT_ID: ${{ secrets.K6_CLOUD_PROJECT_ID }}
-
     strategy:
       max-parallel: 1
       matrix:
@@ -150,8 +147,6 @@ jobs:
       apiVersion: v1
       vus: 1
       duration: 30s
-      tokens: both
-      numberOfTokens: 100
       testSuitePath: ${{ matrix.files }}
     permissions:
       checks: write
