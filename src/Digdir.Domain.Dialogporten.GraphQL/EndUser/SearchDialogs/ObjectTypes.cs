@@ -198,7 +198,6 @@ internal static class SearchDialogSortTypeExtensions
             {
                 stringBuilder.Append(CultureInfo.InvariantCulture, $"dueAt_{orderBy.DueAt},");
             }
-
         }
 
         if (OrderSet<SearchDialogQueryOrderDefinition, IntermediateDialogDto>.TryParse(stringBuilder.ToString(),
