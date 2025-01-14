@@ -38,10 +38,10 @@ try
     const int taskRetryDelayInMs = 10000;
     const int taskRetryLimit = 1000;
 
-    void CreateTask(Func<DialogTimestamp, string> generator, string entityName,
-        string copyCommand, bool singleLinePerTimestamp = false, int splits = 1)
+    void CreateCopyTask(Func<DialogTimestamp, string> generator, string entityName,
+        string copyCommand, bool singleLinePerTimestamp = false, int numberOfTasks = 1)
     {
-        for (var i = 0; i < splits; i++)
+        for (var i = 0; i < numberOfTasks; i++)
         {
             var splitIndex = i;
             tasks.Add(Task.Run(async () =>
@@ -59,9 +59,9 @@ try
                         try
                         {
                             const int logThreshold = 500_000;
-                            var splitLogThreshold = logThreshold / splits;
+                            var splitLogThreshold = logThreshold / numberOfTasks;
 
-                            foreach (var timestamp in dto.GetDialogTimestamps(splits, splitIndex))
+                            foreach (var timestamp in dto.GetDialogTimestamps(numberOfTasks, splitIndex))
                             {
                                 var data = generator(timestamp);
 
@@ -77,7 +77,7 @@ try
                                 if (timestamp.Counter % logThreshold == 0)
                                 {
                                     Console.WriteLine(
-                                        $"Inserted {splitLogThreshold} dialogs worth of {entityName} (split {splitIndex + 1}/{splits}), counter at {timestamp.Counter}");
+                                        $"Inserted {splitLogThreshold} dialogs worth of {entityName} (split {splitIndex + 1}/{numberOfTasks}), counter at {timestamp.Counter}");
                                 }
                             }
 
@@ -89,7 +89,7 @@ try
                             Console.WriteLine();
                             Console.WriteLine("====================================");
                             Console.WriteLine(
-                                $"Insert for table {entityName} failed (split {splitIndex + 1}/{splits}), retrying in {taskRetryDelayInMs}ms");
+                                $"Insert for table {entityName} failed (split {splitIndex + 1}/{numberOfTasks}), retrying in {taskRetryDelayInMs}ms");
                             Console.WriteLine(e.Message);
                             Console.WriteLine(e.StackTrace);
                             Console.WriteLine("====================================");
@@ -118,39 +118,39 @@ try
                 } while (counter < taskRetryLimit);
 
                 Console.WriteLine(
-                    $"Inserted {entityName} (split {splitIndex + 1}/{splits}) in {Stopwatch.GetElapsedTime(startTimestamp)}");
+                    $"Inserted {entityName} (split {splitIndex + 1}/{numberOfTasks}) in {Stopwatch.GetElapsedTime(startTimestamp)}");
             }));
         }
     }
 
     // Split Localizations, 28 lines per dialog
-    CreateTask(Localization.Generate, "localizations", Localization.CopyCommand, splits: 3);
+    CreateCopyTask(Localization.Generate, "localizations", Localization.CopyCommand, numberOfTasks: 3);
 
     // Split LocalizationSets, 14 lines per dialog
-    CreateTask(LocalizationSet.Generate, "localization sets", LocalizationSet.CopyCommand, splits: 3);
+    CreateCopyTask(LocalizationSet.Generate, "localization sets", LocalizationSet.CopyCommand, numberOfTasks: 3);
 
     // Split AttachmentUrls, 6 lines per dialog
-    CreateTask(AttachmentUrl.Generate, "attachment URLs", AttachmentUrl.CopyCommand, splits: 2);
+    CreateCopyTask(AttachmentUrl.Generate, "attachment URLs", AttachmentUrl.CopyCommand, numberOfTasks: 2);
 
     // Split Actors, 5 lines per dialog
-    CreateTask(Actor.Generate, "actors", Actor.CopyCommand, splits: 2);
+    CreateCopyTask(Actor.Generate, "actors", Actor.CopyCommand, numberOfTasks: 2);
 
     // Split TransmissionContent, 4 lines per dialog
-    CreateTask(TransmissionContent.Generate, "transmission content", TransmissionContent.CopyCommand, splits: 2);
+    CreateCopyTask(TransmissionContent.Generate, "transmission content", TransmissionContent.CopyCommand, numberOfTasks: 2);
 
     // No split, 2-3 lines per dialog
-    CreateTask(DialogContent.Generate, "dialog content", DialogContent.CopyCommand);
-    CreateTask(Transmission.Generate, "transmissions", Transmission.CopyCommand);
-    CreateTask(GuiAction.Generate, "dialog gui actions", GuiAction.CopyCommand);
-    CreateTask(Activity.Generate, "activities", Activity.CopyCommand);
-    CreateTask(Attachment.Generate, "attachments", Attachment.CopyCommand);
-    CreateTask(SearchTags.Generate, "search tags", SearchTags.CopyCommand);
+    CreateCopyTask(DialogContent.Generate, "dialog content", DialogContent.CopyCommand);
+    CreateCopyTask(Transmission.Generate, "transmissions", Transmission.CopyCommand);
+    CreateCopyTask(GuiAction.Generate, "dialog gui actions", GuiAction.CopyCommand);
+    CreateCopyTask(Activity.Generate, "activities", Activity.CopyCommand);
+    CreateCopyTask(Attachment.Generate, "attachments", Attachment.CopyCommand);
+    CreateCopyTask(SearchTags.Generate, "search tags", SearchTags.CopyCommand);
 
     // Single line per dialog
-    CreateTask(SeenLog.Generate, "seen logs", SeenLog.CopyCommand, singleLinePerTimestamp: true);
-    CreateTask(EndUserContext.Generate, "end user contexts", EndUserContext.CopyCommand,
+    CreateCopyTask(SeenLog.Generate, "seen logs", SeenLog.CopyCommand, singleLinePerTimestamp: true);
+    CreateCopyTask(EndUserContext.Generate, "end user contexts", EndUserContext.CopyCommand,
         singleLinePerTimestamp: true);
-    CreateTask(Dialog.Generate, "dialogs", Dialog.CopyCommand, singleLinePerTimestamp: true);
+    CreateCopyTask(Dialog.Generate, "dialogs", Dialog.CopyCommand, singleLinePerTimestamp: true);
 
     await Task.WhenAll(tasks);
 
