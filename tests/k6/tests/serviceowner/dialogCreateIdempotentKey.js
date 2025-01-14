@@ -1,22 +1,18 @@
-import {describe, expect, expectStatusFor, postSO, purgeSO} from '../../common/testimports.js'
+import {describe, expect, expectStatusFor, postSO, purgeSO, uuidv7} from '../../common/testimports.js'
 import {default as dialogToInsert} from './testdata/01-create-dialog.js';
 
 
 export default function () {
 
     const dialogs = [];
-    let idempotentIndex = 0;
     const navOrg = {
         orgName: "nav",
         orgNo: "889640782",
-        scopes: "digdir:dialogporten.serviceprovider digdir:dialogporten.serviceprovider.search digdir:dialogporten.serviceprovider.legacyhtml altinn:system/notifications.condition.check digdir:dialogporten.correspondence"
     };
 
     describe('Attempt to create dialog with unused idempotentKey', () => {
         let dialog = dialogToInsert();
-        let idempotentKey = "idempotent" + idempotentIndex++;
-
-        dialog.idempotentKey = idempotentKey;
+        dialog.idempotentKey = uuidv7();
         let r = postSO('dialogs', dialog);
         expectStatusFor(r).to.equal(201);
 
@@ -30,9 +26,8 @@ export default function () {
     })
 
     describe('Attempt to create dialog with same idempotentKey different Org', () => {
-        let idempotentKey = "idempotent" + idempotentIndex++;
         let dialog = dialogToInsert();
-        dialog.idempotentKey = idempotentKey;
+        dialog.idempotentKey = uuidv7();
         dialog.serviceResource = "urn:altinn:resource:app_nav_barnehagelister";
         dialog.activities[2].performedBy.actorId = "urn:altinn:organization:identifier-no:889640782";
 
@@ -48,7 +43,7 @@ export default function () {
         })
 
         dialog = dialogToInsert();
-        dialog.idempotentKey = idempotentKey;
+        dialog.idempotentKey = uuidv7();
 
         let responseDigdir = postSO('dialogs', dialog);
         expectStatusFor(responseDigdir).to.equal(201);
@@ -64,9 +59,7 @@ export default function () {
 
     describe('Attempt to create dialog with used idempotentKey', () => {
         let dialog = dialogToInsert();
-        let idempotentKey = "idempotent" + idempotentIndex++;
-
-        dialog.idempotentKey = idempotentKey;
+        dialog.idempotentKey = uuidv7();
         let r = postSO('dialogs', dialog);
         expectStatusFor(r).to.equal(201);
 
@@ -84,15 +77,13 @@ export default function () {
 
         expect(r, 'response').to.have.validJsonBody();
         expect(r.json(), 'response json').to.property('errors');
-        expect(r.json()['errors'], 'response json errors').to.property('Conflict');
-        expect(r.json()['errors']['Conflict'][0], 'response json Conflict').to.contain(dialogId);
+        expect(r.json()['errors'], 'response json errors').to.property('IdempotentKey');
+        expect(r.json()['errors']['IdempotentKey'][0], 'response json Conflict').to.contain(dialogId);
     })
 
     describe('Attempt to create dialog with too long idempotentKey', () => {
         let dialog = dialogToInsert();
-        let idempotentKey = "this idempotent id is way to long the length of this idempotent id exceeds the 36 character limit";
-
-        dialog.idempotentKey = idempotentKey;
+        dialog.idempotentKey = "this idempotent id is way to long the length of this idempotent id exceeds the 36 character limit";
 
         let r = postSO('dialogs', dialog);
         expectStatusFor(r).to.equal(400);
