@@ -20,7 +20,7 @@ public class CreateDialogDto
     public Guid? Id { get; set; }
 
     /// <summary>
-    ///  A self-defined Id may be provided to support idempotent creation of dialogs.
+    /// A self-defined Id may be provided to support idempotent creation of dialogs.
     /// </summary>
     public string? IdempotentKey { get; set; }
 

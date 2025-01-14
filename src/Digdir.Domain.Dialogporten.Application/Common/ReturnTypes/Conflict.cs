@@ -2,8 +2,12 @@ using FluentValidation.Results;
 
 namespace Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 
-public sealed record Conflict(string Message)
+public sealed record Conflict(IEnumerable<ConflictError> Conflicts)
 {
-    private const string ConflictMessage = "Conflict";
-    public List<ValidationFailure> ToValidationResults() => [new(ConflictMessage, Message)];
+    public Conflict(ConflictError error) : this([error]) { }
+    public List<ValidationFailure> ToValidationResults() => Conflicts
+        .Select(x => new ValidationFailure(x.PropertyName, x.ErrorMessage))
+        .ToList();
 }
+
+public sealed record ConflictError(string PropertyName, string ErrorMessage);

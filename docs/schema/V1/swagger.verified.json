@@ -2324,7 +2324,7 @@
             "type": "string"
           },
           "idempotentKey": {
-            "description": "A self-defined Id may be provided to support idempotent creation of dialogs.\n            ",
+            "description": "A self-defined Id may be provided to support idempotent creation of dialogs.",
             "nullable": true,
             "type": "string"
           },
@@ -4067,7 +4067,7 @@
             "format": "guid",
             "type": "string"
           },
-          "idempotentId": {
+          "idempotentKey": {
             "description": "A self-defined Id may be provided to support idempotent creation of dialogs.\n            ",
             "nullable": true,
             "type": "string"
@@ -5585,9 +5585,9 @@
         "operationId": "V1ServiceOwnerDialogsSearch_SearchDialog",
         "parameters": [
           {
-            "description": "A self-defined Id may be provided to support idempotent creation of dialogs.\n            ",
+            "description": "Filter by IdempotentKey ",
             "in": "query",
-            "name": "idempotentId",
+            "name": "idempotentKey",
             "schema": {
               "nullable": true,
               "type": "string"
@@ -5897,7 +5897,7 @@
             "description": "Unauthorized to create a dialog for the given serviceResource (not owned by authenticated organization or has additional scope requirements defined in policy)."
           },
           "409": {
-            "description": "Dialog with IdempotentId 01941821-ffca-73a1-9335-435a882be014 has already been created."
+            "description": "Dialog with IdempotentKey 01941821-ffca-73a1-9335-435a882be014 has already been created."
           },
           "422": {
             "content": {

@@ -13,8 +13,8 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
             migrationBuilder.AddColumn<string>(
                 name: "IdempotentKey",
                 table: "Dialog",
-                type: "character varying(255)",
-                maxLength: 255,
+                type: "character varying(36)",
+                maxLength: 36,
                 nullable: true);
 
             migrationBuilder.CreateIndex(

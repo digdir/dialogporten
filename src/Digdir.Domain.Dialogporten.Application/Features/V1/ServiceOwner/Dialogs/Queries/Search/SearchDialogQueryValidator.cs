@@ -19,7 +19,7 @@ internal sealed class SearchDialogQueryValidator : AbstractValidator<SearchDialo
             .MinimumLength(3)
             .When(x => x.Search is not null);
 
-        RuleFor(x => x.IdempotentId)
+        RuleFor(x => x.IdempotentKey)
             .MaximumLength(36)
             .WithMessage("'{{PropertyName}}' can't be longer than 36 characters.");
 

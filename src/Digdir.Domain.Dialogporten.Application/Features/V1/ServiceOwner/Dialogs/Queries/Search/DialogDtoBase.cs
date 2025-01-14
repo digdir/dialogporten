@@ -17,7 +17,7 @@ public class DialogDtoBase
     /// <summary>
     ///  A self-defined Id may be provided to support idempotent creation of dialogs.
     /// </summary>
-    public string? IdempotentId { get; set; }
+    public string? IdempotentKey { get; set; }
 
     /// <summary>
     /// The service owner code representing the organization (service owner) related to this dialog.
