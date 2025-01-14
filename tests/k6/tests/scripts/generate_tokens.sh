@@ -34,7 +34,7 @@ case $API_ENVIRONMENT in
     "yt01")
         env="yt01" ;;
     "localdev")
-        env="tt02" ;;
+        env="at21" ;;
     *)
         echo "Error: Unknown api environment $API_ENVIRONMENT"
         exit 1 ;;
