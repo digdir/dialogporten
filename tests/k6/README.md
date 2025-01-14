@@ -23,6 +23,14 @@ Run `Get-Help .\run.ps1` or `./run.sh --help` for usage information.
 
 The scripts will use locally installed `k6` if available. Failing that, it will attempt to use Docker with [grafana/k6](https://hub.docker.com/r/grafana/k6)
 
+## Performance tests
+
+For information about the performance tests, see the following README files:
+
+- [ServiceOwner](./tests/serviceowner/performance/README.md)
+- [GraphQL](./tests/graphql/performance/README.md)
+- [EndUser](./tests/enduser/performance/README.md)
+
 ## Test suites
 
 Various test suites are defined withing the `suites` directory. A suite consists of 

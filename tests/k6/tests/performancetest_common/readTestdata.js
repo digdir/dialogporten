@@ -23,12 +23,11 @@ function readCsv(filename) {
   } 
 }
 
-const filenameServiceowners = '../performancetest_data/.serviceowners-with-tokens.csv';
 if (!__ENV.API_ENVIRONMENT) {
   throw new Error('API_ENVIRONMENT must be set');
 }
 const filenameEndusers = `../performancetest_data/endusers-${__ENV.API_ENVIRONMENT}.csv`;
-const filenameEndusersWithTokens = '../performancetest_data/.endusers-with-tokens.csv';
+const filenameServiceowners = `../performancetest_data/serviceowners-${__ENV.API_ENVIRONMENT}.csv`;
 
 /**
  * SharedArray variable that stores the service owners data.
@@ -53,14 +52,4 @@ export const endUsers = new SharedArray('endUsers', function () {
   return readCsv(filenameEndusers); 
 });
 
-/**
- * SharedArray variable that stores the end users with tokens data.
- * The data is parsed from the CSV file specified by the filenameEndusersWithTokens variable.
- * 
- * @name endUsersWithTokens
- * @type {SharedArray}
- */
-export const endUsersWithTokens = new SharedArray('endUsersWithTokens', function () {
-  return readCsv(filenameEndusersWithTokens);
-});
 
