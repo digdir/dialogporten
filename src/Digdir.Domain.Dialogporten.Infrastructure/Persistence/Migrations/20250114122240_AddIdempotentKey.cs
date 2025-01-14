@@ -5,7 +5,7 @@
 namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class AddIdempontentKey : Migration
+    public partial class AddIdempotentKey : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

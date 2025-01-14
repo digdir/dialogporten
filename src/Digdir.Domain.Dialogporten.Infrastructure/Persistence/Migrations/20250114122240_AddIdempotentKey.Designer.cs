@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(DialogDbContext))]
-    [Migration("20250114083514_AddIdempontentKey")]
-    partial class AddIdempontentKey
+    [Migration("20250114122240_AddIdempotentKey")]
+    partial class AddIdempotentKey
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -564,6 +564,36 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         {
                             Id = 7,
                             Name = "DialogOpened"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Name = "DialogDeleted"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Name = "DialogRestored"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Name = "SentToSigning"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Name = "SentToFormFill"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            Name = "SentToSendIn"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            Name = "SentToPayment"
                         });
                 });
 
