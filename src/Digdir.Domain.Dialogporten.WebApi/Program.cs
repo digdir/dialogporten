@@ -15,6 +15,7 @@ using Digdir.Domain.Dialogporten.WebApi.Common.Authentication;
 using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
 using Digdir.Domain.Dialogporten.WebApi.Common.Json;
 using Digdir.Domain.Dialogporten.WebApi.Common.Swagger;
+using Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.Dialogs.Patch;
 using Digdir.Library.Utils.AspNet;
 using FastEndpoints;
 using FastEndpoints.Swagger;
@@ -125,6 +126,9 @@ static void BuildAndRun(string[] args, TelemetryConfiguration telemetryConfigura
                 // generic "2" suffix duplicate names get, so we add a "SO" suffix to the serviceowner specific schemas.
                 // This should match the operationIds used for service owners.
                 s.AddServiceOwnerSuffixToSchemas();
+
+                // Adding ResponseHeaders for PATCH MVC controller
+                s.OperationProcessors.Add(new ProducesResponseHeaderOperationProcessor());
             };
         })
         .AddControllers(options => options.InputFormatters.Insert(0, JsonPatchInputFormatter.Get()))
@@ -210,6 +214,7 @@ static void BuildAndRun(string[] args, TelemetryConfiguration telemetryConfigura
                 document.ReplaceProblemDetailsDescriptions();
                 document.MakeCollectionsNullable();
                 document.FixJwtBearerCasing();
+                document.RemoveSystemStringHeaderTitles();
             };
         }, uiConfig =>
         {

@@ -20,7 +20,7 @@ public class ActivityLogTests(DialogApplication application) : ApplicationCollec
         var (_, createCommandResponse) = await GenerateDialogWithActivity();
 
         // Act
-        var response = await Application.Send(new GetDialogQuery { DialogId = createCommandResponse.AsT0.Value });
+        var response = await Application.Send(new GetDialogQuery { DialogId = createCommandResponse.AsT0.DialogId });
 
         // Assert
         response.TryPickT0(out var result, out _).Should().BeTrue();
@@ -64,13 +64,17 @@ public class ActivityLogTests(DialogApplication application) : ApplicationCollec
         // Arrange
         var (_, createCommandResponse) = await GenerateDialogWithActivity();
 
-        var getDialogResult = await Application.Send(new GetDialogQuery { DialogId = createCommandResponse.AsT0.Value });
+        var getDialogResult = await Application.Send(new GetDialogQuery
+        {
+            DialogId = createCommandResponse.AsT0.DialogId
+        });
+
         var activityId = getDialogResult.AsT0.Activities.First().Id;
 
         // Act
         var response = await Application.Send(new GetActivityQuery
         {
-            DialogId = createCommandResponse.AsT0.Value,
+            DialogId = createCommandResponse.AsT0.DialogId,
             ActivityId = activityId
         });
 

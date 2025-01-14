@@ -19,7 +19,9 @@ public sealed class DeleteDialogCommand : IRequest<DeleteDialogResult>
 }
 
 [GenerateOneOf]
-public sealed partial class DeleteDialogResult : OneOfBase<Success, EntityNotFound, EntityDeleted, Forbidden, ConcurrencyError>;
+public sealed partial class DeleteDialogResult : OneOfBase<DeleteDialogSuccess, EntityNotFound, EntityDeleted, Forbidden, ConcurrencyError>;
+
+public sealed record DeleteDialogSuccess(Guid Revision);
 
 internal sealed class DeleteDialogCommandHandler : IRequestHandler<DeleteDialogCommand, DeleteDialogResult>
 {
@@ -54,7 +56,7 @@ internal sealed class DeleteDialogCommandHandler : IRequestHandler<DeleteDialogC
 
         if (dialog.Deleted)
         {
-            // TODO: https://github.com/digdir/dialogporten/issues/1543
+            // TODO: https://github.com/altinn/dialogporten/issues/1543
             // When restoration is implemented, add a hint to the error message.
             return new EntityDeleted<DialogEntity>(request.Id);
         }
@@ -70,7 +72,7 @@ internal sealed class DeleteDialogCommandHandler : IRequestHandler<DeleteDialogC
             .SaveChangesAsync(cancellationToken);
 
         return saveResult.Match<DeleteDialogResult>(
-            success => success,
+            success => new DeleteDialogSuccess(dialog.Revision),
             domainError => throw new UnreachableException("Should never get a domain error when deleting a dialog"),
             concurrencyError => concurrencyError);
     }
