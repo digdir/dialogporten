@@ -9,6 +9,11 @@ public interface ISearchDialogError
     public string Message { get; set; }
 }
 
+public sealed class SearchDialogContinuationTokenParsingError : ISearchDialogError
+{
+    public string Message { get; set; } = "An error occurred while parsing the ContinuationToken parameter";
+}
+
 public sealed class SearchDialogOrderByParsingError : ISearchDialogError
 {
     public string Message { get; set; } = "An error occurred while parsing the OrderBy parameter";

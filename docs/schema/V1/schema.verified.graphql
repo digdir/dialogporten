@@ -211,6 +211,10 @@ type SearchDialog {
   seenSinceLastUpdate: [SeenLog!]!
 }
 
+type SearchDialogContinuationTokenParsingError implements SearchDialogError {
+  message: String!
+}
+
 type SearchDialogForbidden implements SearchDialogError {
   message: String!
 }

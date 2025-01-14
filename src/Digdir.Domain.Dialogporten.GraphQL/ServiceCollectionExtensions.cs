@@ -28,6 +28,7 @@ public static class ServiceCollectionExtensions
             .AddType<SearchDialogForbidden>()
             .AddType<SetSystemLabelEntityNotFound>()
             .AddType<SearchDialogOrderByParsingError>()
+            .AddType<SearchDialogContinuationTokenParsingError>()
             .AddMaxExecutionDepthRule(12)
             .AddInstrumentation()
             .InitializeOnStartup()

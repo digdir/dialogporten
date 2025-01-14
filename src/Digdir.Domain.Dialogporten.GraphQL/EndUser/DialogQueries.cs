@@ -36,11 +36,16 @@ public partial class Queries
     {
         var searchDialogQuery = mapper.Map<SearchDialogQuery>(input);
 
-        if (ContinuationTokenSet<SearchDialogQueryOrderDefinition, IntermediateDialogDto>.TryParse(
+        if (!ContinuationTokenSet<SearchDialogQueryOrderDefinition, IntermediateDialogDto>.TryParse(
                 input.ContinuationToken, out var continuationTokenSet))
         {
-            searchDialogQuery.ContinuationToken = continuationTokenSet;
+            return new SearchDialogsPayload
+            {
+                Errors = [new SearchDialogContinuationTokenParsingError()]
+            };
         }
+
+        searchDialogQuery.ContinuationToken = continuationTokenSet;
 
         OrderSet<SearchDialogQueryOrderDefinition, IntermediateDialogDto>? orderSet = null;
         if (input.OrderBy != null && !input.OrderBy.TryToOrderSet(out orderSet))
