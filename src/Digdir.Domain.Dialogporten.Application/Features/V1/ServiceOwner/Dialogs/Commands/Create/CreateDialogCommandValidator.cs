@@ -269,6 +269,9 @@ internal sealed class CreateDialogDialogAttachmentDtoValidator : AbstractValidat
         IValidator<IEnumerable<LocalizationDto>> localizationsValidator,
         IValidator<AttachmentUrlDto> urlValidator)
     {
+        RuleFor(x => x.Id)
+            .IsValidUuidV7()
+            .UuidV7TimestampIsInPast();
         RuleFor(x => x.DisplayName)
             .SetValidator(localizationsValidator);
         RuleFor(x => x.Urls)
@@ -336,6 +339,9 @@ internal sealed class CreateDialogDialogGuiActionDtoValidator : AbstractValidato
     public CreateDialogDialogGuiActionDtoValidator(
         IValidator<IEnumerable<LocalizationDto>> localizationsValidator)
     {
+        RuleFor(x => x.Id)
+            .IsValidUuidV7()
+            .UuidV7TimestampIsInPast();
         RuleFor(x => x.Action)
             .NotEmpty()
             .MaximumLength(Constants.DefaultMaxStringLength);
@@ -365,6 +371,9 @@ internal sealed class CreateDialogDialogApiActionDtoValidator : AbstractValidato
     public CreateDialogDialogApiActionDtoValidator(
         IValidator<ApiActionEndpointDto> apiActionEndpointValidator)
     {
+        RuleFor(x => x.Id)
+            .IsValidUuidV7()
+            .UuidV7TimestampIsInPast();
         RuleFor(x => x.Action)
             .NotEmpty()
             .MaximumLength(Constants.DefaultMaxStringLength);

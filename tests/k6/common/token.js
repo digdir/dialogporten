@@ -31,7 +31,7 @@ function getCacheKey(tokenType, tokenOptions) {
   return `${tokenType}|${tokenOptions.scopes}|${tokenOptions.orgName}|${tokenOptions.orgNo}|${tokenOptions.ssn}`;
 }
 
-function fetchToken(url, tokenOptions, type) {
+export function fetchToken(url, tokenOptions, type) {
   const currentTime = Math.floor(Date.now() / 1000);  
   const cacheKey = getCacheKey(type, tokenOptions);
 
