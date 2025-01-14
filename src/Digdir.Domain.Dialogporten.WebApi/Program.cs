@@ -148,6 +148,9 @@ static void BuildAndRun(string[] args)
 
     var app = builder.Build();
 
+    app.MapAspNetHealthChecks()
+        .MapControllers();
+
     app.UseHttpsRedirection()
         .UseDefaultExceptionHandler()
         .UseJwtSchemeSelector()
