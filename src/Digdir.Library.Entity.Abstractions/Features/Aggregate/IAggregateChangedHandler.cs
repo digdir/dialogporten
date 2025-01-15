@@ -18,8 +18,7 @@ public interface IAggregateCreatedHandler
     /// </summary>
     /// <param name="self">The aggregate representing this entity with metadata.</param>
     /// <param name="utcNow">The timestamp of the creation event in UTC time.</param>
-    /// <param name="disableEvents">Domain events will be created internally, but not sent anywhere</param>
-    void OnCreate(AggregateNode self, DateTimeOffset utcNow, bool disableEvents = false);
+    void OnCreate(AggregateNode self, DateTimeOffset utcNow);
 }
 
 /// <summary>
@@ -32,8 +31,7 @@ public interface IAggregateUpdatedHandler
     /// </summary>
     /// <param name="self">The aggregate representing this entity with metadata.</param>
     /// <param name="utcNow">The timestamp of the update event in UTC time.</param>
-    /// <param name="disableEvents">Domain events will be created internally, but not sent anywhere</param>
-    void OnUpdate(AggregateNode self, DateTimeOffset utcNow, bool disableEvents = false);
+    void OnUpdate(AggregateNode self, DateTimeOffset utcNow);
 }
 
 /// <summary>
@@ -46,8 +44,7 @@ public interface IAggregateDeletedHandler
     /// </summary>
     /// <param name="self">The aggregate representing this entity with metadata.</param>
     /// <param name="utcNow">The timestamp of the deletion event in UTC time.</param>
-    /// <param name="disableEvents">Domain events will be created internally, but not sent anywhere</param>
-    void OnDelete(AggregateNode self, DateTimeOffset utcNow, bool disableEvents = false);
+    void OnDelete(AggregateNode self, DateTimeOffset utcNow);
 }
 
 /// <summary>
@@ -60,6 +57,5 @@ public interface IAggregateRestoredHandler
     /// </summary>
     /// <param name="self">The aggregate representing this entity with metadata.</param>
     /// <param name="utcNow">The timestamp of the restoration event in UTC time.</param>
-    /// <param name="disableEvents">Domain events will be created internally, but not sent anywhere</param>
-    void OnRestore(AggregateNode self, DateTimeOffset utcNow, bool disableEvents = false);
+    void OnRestore(AggregateNode self, DateTimeOffset utcNow);
 }

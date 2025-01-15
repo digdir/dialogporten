@@ -75,13 +75,13 @@ public sealed class DialogEntity :
 
     public DialogEndUserContext DialogEndUserContext { get; set; } = null!;
 
-    public void OnCreate(AggregateNode self, DateTimeOffset utcNow, bool disableEvents = false)
+    public void OnCreate(AggregateNode self, DateTimeOffset utcNow)
         => _domainEvents.Add(new DialogCreatedDomainEvent(Id, ServiceResource, Party, Process, PrecedingProcess));
 
-    public void OnUpdate(AggregateNode self, DateTimeOffset utcNow, bool disableEvents = false)
+    public void OnUpdate(AggregateNode self, DateTimeOffset utcNow)
         => _domainEvents.Add(new DialogUpdatedDomainEvent(Id, ServiceResource, Party, Process, PrecedingProcess));
 
-    public void OnDelete(AggregateNode self, DateTimeOffset utcNow, bool disableEvents = false)
+    public void OnDelete(AggregateNode self, DateTimeOffset utcNow)
         => _domainEvents.Add(new DialogDeletedDomainEvent(Id, ServiceResource, Party, Process, PrecedingProcess));
 
     public void UpdateSeenAt(string endUserId, DialogUserType.Values userTypeId, string? endUserName)

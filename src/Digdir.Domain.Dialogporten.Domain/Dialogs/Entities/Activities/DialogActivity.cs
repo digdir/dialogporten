@@ -31,7 +31,7 @@ public sealed class DialogActivity : IImmutableEntity, IAggregateCreatedHandler,
     [AggregateChild]
     public DialogActivityPerformedByActor PerformedBy { get; set; } = null!;
 
-    public void OnCreate(AggregateNode self, DateTimeOffset utcNow, bool disableEvents = false)
+    public void OnCreate(AggregateNode self, DateTimeOffset utcNow)
     {
         _domainEvents.Add(new DialogActivityCreatedDomainEvent(
             DialogId, Id, TypeId, Dialog.Party,
