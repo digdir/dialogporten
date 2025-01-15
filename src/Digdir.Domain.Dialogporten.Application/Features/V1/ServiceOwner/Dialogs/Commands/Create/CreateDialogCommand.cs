@@ -15,6 +15,7 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 using Digdir.Domain.Dialogporten.Domain.Parties;
 using Digdir.Library.Entity.Abstractions.Features.Identifiable;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using OneOf;
 using OneOf.Types;
 
@@ -24,7 +25,7 @@ public sealed class CreateDialogCommand : CreateDialogDto, IRequest<CreateDialog
 public sealed record CreateDialogSuccess(Guid DialogId, Guid Revision);
 
 [GenerateOneOf]
-public sealed partial class CreateDialogResult : OneOfBase<CreateDialogSuccess, DomainError, ValidationError, Forbidden>;
+public sealed partial class CreateDialogResult : OneOfBase<CreateDialogSuccess, DomainError, ValidationError, Forbidden, Conflict>;
 
 internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogCommand, CreateDialogResult>
 {
@@ -74,6 +75,23 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
         else
         {
             dialog.Org = serviceResourceInformation.OwnOrgShortName;
+        }
+
+        if (request.IdempotentKey is not null && !string.IsNullOrEmpty(dialog.Org))
+        {
+            var dialogId = await _db.Dialogs
+                .Where(x => x.IdempotentKey == request.IdempotentKey && x.Org == dialog.Org)
+                .Select(x => x.Id)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if (dialogId != default)
+            {
+                return new Conflict(
+                    new ConflictError(
+                        nameof(request.IdempotentKey),
+                        $"'{request.IdempotentKey}' already exists with DialogId '{dialogId}'"
+                    ));
+            }
         }
 
         CreateDialogEndUserContext(request, dialog);
