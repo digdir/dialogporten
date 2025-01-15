@@ -1,4 +1,3 @@
-using System.Collections.Frozen;
 using System.Collections.ObjectModel;
 using MediatR;
 
