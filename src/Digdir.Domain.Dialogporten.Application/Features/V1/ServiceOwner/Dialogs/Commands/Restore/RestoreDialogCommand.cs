@@ -55,9 +55,8 @@ internal sealed class RestoreDialogCommandHandler : IRequestHandler<RestoreDialo
             return new RestoreDialogSuccess(dialog.Revision);
         }
 
-        dialog.Restore(); // Amund: Restore lager ny Rev
+        dialog.Restore();
 
-        // Amund Q: ConcurrencyCheck weird, Manuelt laging av ny rev vil feile checken?. Dual writes == Bad, må gjøres i en write
         var saveResult = await _unitOfWork
             .DisableUpdatableFilter()
             .EnableConcurrencyCheck(dialog, request.IfMatchDialogRevision)
