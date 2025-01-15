@@ -127,7 +127,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
 
         var saveResult = await _unitOfWork
             .WithoutAggregateSideEffects()
-            .SaveChangesAsync(cancellationToken: cancellationToken);
+            .SaveChangesAsync(cancellationToken);
 
         saveResult.Switch(
             success => { },

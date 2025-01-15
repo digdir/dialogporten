@@ -63,7 +63,7 @@ internal sealed class SetSystemLabelCommandHandler : IRequestHandler<SystemLabel
 
         var saveResult = await _unitOfWork
                                .EnableConcurrencyCheck(dialog.DialogEndUserContext, request.IfMatchDialogRevision)
-                               .SaveChangesAsync(cancellationToken: cancellationToken);
+                               .SaveChangesAsync(cancellationToken);
         return saveResult.Match<SetSystemLabelResult>(
             success => success,
             domainError => domainError,
