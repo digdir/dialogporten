@@ -60,7 +60,7 @@ internal sealed class PurgeDialogCommandHandler : IRequestHandler<PurgeDialogCom
         _db.Dialogs.HardRemove(dialog);
         var saveResult = await _unitOfWork
             .EnableConcurrencyCheck(dialog, request.IfMatchDialogRevision)
-            .SaveChangesAsync(cancellationToken: cancellationToken);
+            .SaveChangesAsync(cancellationToken);
 
         return saveResult.Match<PurgeDialogResult>(
             success => success,
