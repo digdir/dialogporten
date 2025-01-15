@@ -96,7 +96,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
 
         if (dialog.Deleted)
         {
-            // TODO: https://github.com/digdir/dialogporten/issues/1543
+            // TODO: https://github.com/altinn/dialogporten/issues/1543
             // When restoration is implemented, add a hint to the error message.
             return new EntityDeleted<DialogEntity>(request.Id);
         }

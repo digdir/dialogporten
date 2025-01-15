@@ -10,7 +10,9 @@ if (-not (Test-Path $DirectoryPath -PathType Container)) {
 }
 
 # Get all *.js files in the directory except for "all-tests.js"
-$jsFiles = Get-ChildItem -Path $DirectoryPath -Filter "*.js" | Where-Object { $_.Name -ne "all-tests.js" }
+$jsFiles = Get-ChildItem -Path $DirectoryPath -Filter "*.js" |
+    Where-Object { $_.Name -ne "all-tests.js" } |
+    Where-Object { $_.Directory.FullName -notlike "$(Join-Path -ChildPath "$(Join-Path 'performance' '*')" -Path *)" } #  OS agnostic "*/performance/*" 
 
 # Create the import strings
 $importStatements = $jsFiles | ForEach-Object {

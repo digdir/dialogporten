@@ -10,6 +10,7 @@ using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
 using Digdir.Domain.Dialogporten.Domain.Actors;
 using Digdir.Domain.Dialogporten.Domain.Common;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
+using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Actions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 using Digdir.Domain.Dialogporten.Domain.Parties;
@@ -148,6 +149,24 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
         if (existingTransmissionAttachmentIds.Count != 0)
         {
             _domainContext.AddError(DomainFailure.EntityExists<DialogTransmissionAttachment>(existingTransmissionAttachmentIds));
+        }
+
+        var existingAttachmentIds = await _db.GetExistingIds(dialog.Attachments, cancellationToken);
+        if (existingAttachmentIds.Count != 0)
+        {
+            _domainContext.AddError(DomainFailure.EntityExists<DialogAttachment>(existingAttachmentIds));
+        }
+
+        var existingGuiActionIds = await _db.GetExistingIds(dialog.GuiActions, cancellationToken);
+        if (existingGuiActionIds.Count != 0)
+        {
+            _domainContext.AddError(DomainFailure.EntityExists<DialogGuiAction>(existingGuiActionIds));
+        }
+
+        var existingApiActionIds = await _db.GetExistingIds(dialog.ApiActions, cancellationToken);
+        if (existingApiActionIds.Count != 0)
+        {
+            _domainContext.AddError(DomainFailure.EntityExists<DialogApiAction>(existingApiActionIds));
         }
     }
 }

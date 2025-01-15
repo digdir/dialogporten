@@ -314,7 +314,7 @@ public static class DialogGenerator
         DialogActivityType.Values? type = null)
     {
         // Temporarily removing the ActivityType TransmissionOpened from the list of possible types for random picking.
-        // Going to have a look at re-writing the generator https://github.com/digdir/dialogporten/issues/1123
+        // Going to have a look at re-writing the generator https://github.com/altinn/dialogporten/issues/1123
         var activityTypes = Enum.GetValues<DialogActivityType.Values>()
             .Where(x => x != DialogActivityType.Values.TransmissionOpened).ToList();
 
@@ -335,6 +335,7 @@ public static class DialogGenerator
     public static List<ApiActionDto> GenerateFakeDialogApiActions()
     {
         return new Faker<ApiActionDto>()
+            .RuleFor(o => o.Id, () => IdentifiableExtensions.CreateVersion7())
             .RuleFor(o => o.Action, f => f.Random.AlphaNumeric(8))
             .RuleFor(o => o.Endpoints, _ => GenerateFakeDialogApiActionEndpoints())
             .Generate(new Randomizer().Number(1, 4));
@@ -360,6 +361,7 @@ public static class DialogGenerator
         var hasPrimary = false;
         var hasSecondary = false;
         return new Faker<GuiActionDto>()
+            .RuleFor(o => o.Id, () => IdentifiableExtensions.CreateVersion7())
             .RuleFor(o => o.Action, f => f.Random.AlphaNumeric(8))
             .RuleFor(o => o.Priority, _ =>
             {
@@ -388,6 +390,7 @@ public static class DialogGenerator
     public static List<AttachmentDto> GenerateFakeDialogAttachments(int? count = null)
     {
         return new Faker<AttachmentDto>()
+            .RuleFor(o => o.Id, _ => IdentifiableExtensions.CreateVersion7())
             .RuleFor(o => o.DisplayName, f => GenerateFakeLocalizations(f.Random.Number(2, 5)))
             .RuleFor(o => o.Urls, _ => GenerateFakeDialogAttachmentUrls())
             .Generate(count ?? new Randomizer().Number(1, 6));
