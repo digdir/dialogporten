@@ -34,7 +34,13 @@ public sealed class PurgeDialogEndpoint : Endpoint<PurgeDialogRequest>
 
     public override async Task HandleAsync(PurgeDialogRequest req, CancellationToken ct)
     {
-        var command = new PurgeDialogCommand { DialogId = req.DialogId, IfMatchDialogRevision = req.IfMatchDialogRevision };
+        var command = new PurgeDialogCommand
+        {
+            DialogId = req.DialogId,
+            IfMatchDialogRevision = req.IfMatchDialogRevision,
+            DisableAltinnEvents = req.DisableAltinnEvents ?? false
+        };
+
         var result = await _sender.Send(command, ct);
         await result.Match(
             success => SendNoContentAsync(ct),
@@ -51,6 +57,9 @@ public sealed class PurgeDialogRequest
 
     [FromHeader(headerName: Constants.IfMatch, isRequired: false, removeFromSchema: true)]
     public Guid? IfMatchDialogRevision { get; init; }
+
+    [HideFromDocs]
+    public bool? DisableAltinnEvents { get; init; }
 }
 
 
@@ -66,10 +75,16 @@ public sealed class PurgeDialogRequestBinder : IRequestBinder<PurgeDialogRequest
         ctx.HttpContext.Request.Headers.TryGetValue(Constants.IfMatch, out var revisionHeader);
         var revisionFound = Guid.TryParse(revisionHeader, out var revision);
 
+        if (bool.TryParse(ctx.HttpContext.Request.Query["disableAltinnEvents"], out var disableAltinnEvents))
+        {
+
+        }
+
         return ValueTask.FromResult(new PurgeDialogRequest
         {
             DialogId = dialogId,
-            IfMatchDialogRevision = revisionFound ? revision : null
+            IfMatchDialogRevision = revisionFound ? revision : null,
+            DisableAltinnEvents = disableAltinnEvents ? disableAltinnEvents : null
         });
     }
 }

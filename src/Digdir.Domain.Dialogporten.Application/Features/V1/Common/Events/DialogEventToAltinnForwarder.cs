@@ -1,5 +1,6 @@
 using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Externals;
+using Digdir.Domain.Dialogporten.Domain.Common.DomainEvents;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Events;
 using MediatR;
 using Microsoft.Extensions.Options;
@@ -18,6 +19,11 @@ internal sealed class DialogEventToAltinnForwarder : DomainEventToAltinnForwarde
     [EndpointName("DialogEventToAltinnForwarder_DialogCreatedDomainEvent")]
     public async Task Handle(DialogCreatedDomainEvent domainEvent, CancellationToken cancellationToken)
     {
+        if (domainEvent.ShouldNotBeSentToAltinn())
+        {
+            return;
+        }
+
         var cloudEvent = new CloudEvent
         {
             Id = domainEvent.EventId,
@@ -35,6 +41,11 @@ internal sealed class DialogEventToAltinnForwarder : DomainEventToAltinnForwarde
     [EndpointName("DialogEventToAltinnForwarder_DialogUpdatedDomainEvent")]
     public async Task Handle(DialogUpdatedDomainEvent domainEvent, CancellationToken cancellationToken)
     {
+        if (domainEvent.ShouldNotBeSentToAltinn())
+        {
+            return;
+        }
+
         var cloudEvent = new CloudEvent
         {
             Id = domainEvent.EventId,
@@ -53,6 +64,11 @@ internal sealed class DialogEventToAltinnForwarder : DomainEventToAltinnForwarde
     [EndpointName("DialogEventToAltinnForwarder_DialogSeenDomainEvent")]
     public async Task Handle(DialogSeenDomainEvent domainEvent, CancellationToken cancellationToken)
     {
+        if (domainEvent.ShouldNotBeSentToAltinn())
+        {
+            return;
+        }
+
         var cloudEvent = new CloudEvent
         {
             Id = domainEvent.EventId,
@@ -71,6 +87,11 @@ internal sealed class DialogEventToAltinnForwarder : DomainEventToAltinnForwarde
     [EndpointName("DialogEventToAltinnForwarder_DialogDeletedDomainEvent")]
     public async Task Handle(DialogDeletedDomainEvent domainEvent, CancellationToken cancellationToken)
     {
+        if (domainEvent.ShouldNotBeSentToAltinn())
+        {
+            return;
+        }
+
         var cloudEvent = new CloudEvent
         {
             Id = domainEvent.EventId,
