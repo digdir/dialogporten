@@ -1,5 +1,3 @@
-using System.Collections.ObjectModel;
-
 namespace Digdir.Domain.Dialogporten.Domain.Common.DomainEvents;
 
 public sealed class DomainEventContext : IDomainEventContext
@@ -9,5 +7,4 @@ public sealed class DomainEventContext : IDomainEventContext
     public Dictionary<string, string> GetMetadata() => _metadata;
 
     public void AddMetadata(string key, string value) => _metadata[key] = value;
-
 }

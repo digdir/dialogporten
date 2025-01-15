@@ -1,5 +1,3 @@
-using System.Collections.ObjectModel;
-
 namespace Digdir.Domain.Dialogporten.Domain.Common.DomainEvents;
 
 public interface IDomainEventContext
