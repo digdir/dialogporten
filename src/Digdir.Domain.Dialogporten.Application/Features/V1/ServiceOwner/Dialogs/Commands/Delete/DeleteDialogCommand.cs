@@ -16,7 +16,7 @@ public sealed class DeleteDialogCommand : IRequest<DeleteDialogResult>, IAltinnE
 {
     public Guid Id { get; set; }
     public Guid? IfMatchDialogRevision { get; set; }
-    public bool DisableAltinnEvents { get; }
+    public bool DisableAltinnEvents { get; set; }
 }
 
 [GenerateOneOf]
