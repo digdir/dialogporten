@@ -32,9 +32,6 @@ public static class ApplicationExtensions
         // 'CreatedAt', not 'Created At'.
         ValidatorOptions.Global.DisplayNameResolver = (_, member, _) => member?.Name;
 
-        // AddDomain
-        // Lag lik extension i domain
-
         services
             // Framework
             .AddAutoMapper(thisAssembly)
