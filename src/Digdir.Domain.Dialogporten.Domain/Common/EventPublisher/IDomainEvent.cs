@@ -1,4 +1,3 @@
-using System.Collections.ObjectModel;
 using MediatR;
 
 namespace Digdir.Domain.Dialogporten.Domain.Common.EventPublisher;
@@ -19,7 +18,7 @@ public interface IDomainEvent : INotification
     DateTimeOffset OccuredAt { get; set; }
 
     /// <summary>
-    /// Read-only dictionary of metadata.
+    /// Dictionary of metadata.
     /// </summary>
-    public ReadOnlyDictionary<string, string> Metadata { get; set; }
+    public Dictionary<string, string> Metadata { get; set; }
 }

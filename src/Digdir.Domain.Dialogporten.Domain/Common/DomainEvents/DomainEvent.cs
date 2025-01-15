@@ -1,5 +1,4 @@
-﻿using System.Collections.ObjectModel;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 using Digdir.Domain.Dialogporten.Domain.Common.EventPublisher;
 
 namespace Digdir.Domain.Dialogporten.Domain.Common.DomainEvents;
@@ -13,5 +12,5 @@ public abstract record DomainEvent : IDomainEvent
     public DateTimeOffset OccuredAt { get; set; }
 
     [JsonInclude]
-    public ReadOnlyDictionary<string, string> Metadata { get; set; } = new(new Dictionary<string, string>());
+    public Dictionary<string, string> Metadata { get; set; } = [];
 }
