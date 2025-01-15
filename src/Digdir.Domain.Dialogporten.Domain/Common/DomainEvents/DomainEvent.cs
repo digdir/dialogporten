@@ -1,4 +1,5 @@
 ﻿using System.Collections.Frozen;
+using System.Collections.ObjectModel;
 using System.Text.Json.Serialization;
 using Digdir.Domain.Dialogporten.Domain.Common.EventPublisher;
 
@@ -13,5 +14,5 @@ public abstract record DomainEvent : IDomainEvent
     public DateTimeOffset OccuredAt { get; set; }
 
     [JsonInclude]
-    public FrozenDictionary<string, string> Metadata { get; set; } = FrozenDictionary<string, string>.Empty;
+    public ReadOnlyDictionary<string, string> Metadata { get; set; } = new(new Dictionary<string, string>());
 }

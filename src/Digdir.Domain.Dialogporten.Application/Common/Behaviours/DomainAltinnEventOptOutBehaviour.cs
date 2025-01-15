@@ -1,3 +1,4 @@
+using Digdir.Domain.Dialogporten.Domain.Common;
 using Digdir.Domain.Dialogporten.Domain.Common.DomainEvents;
 using MediatR;
 
@@ -17,7 +18,7 @@ internal sealed class DomainAltinnEventOptOutBehaviour<TRequest, TResponse> : IP
     {
         if (request.DisableAltinnEvents)
         {
-            _domainEventContext.AddMetadata("DisableEvents", "true");
+            _domainEventContext.AddMetadata(Constants.DisableAltinnEvents, "true");
         }
 
         return next();

@@ -1,4 +1,5 @@
 using System.Collections.Frozen;
+using System.Collections.ObjectModel;
 using MediatR;
 
 namespace Digdir.Domain.Dialogporten.Domain.Common.EventPublisher;
@@ -21,5 +22,5 @@ public interface IDomainEvent : INotification
     /// <summary>
     /// Read-only dictionary of metadata.
     /// </summary>
-    public FrozenDictionary<string, string> Metadata { get; set; }
+    public ReadOnlyDictionary<string, string> Metadata { get; set; }
 }
