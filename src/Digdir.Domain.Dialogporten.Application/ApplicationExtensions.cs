@@ -33,6 +33,9 @@ public static class ApplicationExtensions
         ValidatorOptions.Global.DisplayNameResolver = (_, member, _) => member?.Name;
 
         services
+            // Domain
+            .AddDomain()
+
             // Framework
             .AddAutoMapper(thisAssembly)
             .AddMediatR(x =>
@@ -48,7 +51,6 @@ public static class ApplicationExtensions
             .AddSingleton<ICompactJwsGenerator, Ed25519Generator>()
 
             // Scoped
-            .AddDomain()
             .AddScoped<IDomainContext, DomainContext>()
             .AddScoped<ITransactionTime, TransactionTime>()
             .AddScoped<IDialogTokenGenerator, DialogTokenGenerator>()
