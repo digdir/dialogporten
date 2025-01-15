@@ -54,4 +54,7 @@ public sealed class DeleteDialogRequest
 
     [FromHeader(headerName: Constants.IfMatch, isRequired: false, removeFromSchema: true)]
     public Guid? IfMatchDialogRevision { get; set; }
+
+    // [HideFromDocs]
+    // public bool? DisableAltinnEvents { get; init; }
 }

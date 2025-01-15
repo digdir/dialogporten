@@ -11,7 +11,6 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Activities;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 using Digdir.Domain.Dialogporten.Domain.Http;
 using Digdir.Library.Entity.Abstractions.Features.Identifiable;
-using Medo;
 
 namespace Digdir.Tool.Dialogporten.GenerateFakeData;
 

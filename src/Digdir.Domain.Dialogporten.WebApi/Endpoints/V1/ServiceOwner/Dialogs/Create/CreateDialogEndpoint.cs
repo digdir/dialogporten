@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Create;
+﻿using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Create;
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Queries.Get;
 using Digdir.Domain.Dialogporten.WebApi.Common;
 using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
@@ -34,7 +33,7 @@ public sealed class CreateDialogEndpoint : Endpoint<CreateDialogRequest>
 
     public override async Task HandleAsync(CreateDialogRequest req, CancellationToken ct)
     {
-        var command = new CreateDialogCommand { Dto = req.Dto, DisableAltinnEvents = req.DisableEvents ?? false };
+        var command = new CreateDialogCommand { Dto = req.Dto, DisableAltinnEvents = req.DisableAltinnEvents ?? false };
         var result = await _sender.Send(command, ct);
         await result.Match(
             success =>
@@ -52,7 +51,7 @@ public sealed class CreateDialogEndpoint : Endpoint<CreateDialogRequest>
 public sealed class CreateDialogRequest
 {
     [HideFromDocs]
-    public bool? DisableEvents { get; init; }
+    public bool? DisableAltinnEvents { get; init; }
 
     [FromBody]
     public CreateDialogDto Dto { get; set; } = null!;
