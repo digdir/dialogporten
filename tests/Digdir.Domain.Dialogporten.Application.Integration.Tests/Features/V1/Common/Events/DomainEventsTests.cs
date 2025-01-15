@@ -245,4 +245,79 @@ public class DomainEventsTests(DialogApplication application) : ApplicationColle
         cloudEvents.Should().ContainSingle(cloudEvent =>
             cloudEvent.Type == CloudEventTypes.Get(nameof(DialogDeletedDomainEvent)));
     }
+
+    [Fact]
+    public async Task AltinnEvents_Should_Be_Disabled_When_DisableAltinnEvents_Is_Set()
+    {
+        // Arrange - Create
+        var harness = await Application.ConfigureServicesWithMassTransitTestHarness();
+
+        var activity = DialogGenerator.GenerateFakeDialogActivity(DialogActivityType.Values.Information);
+        var initialProgress = 1;
+
+        var createDialogCommand = DialogGenerator.GenerateFakeCreateDialogCommand(
+            disableAltinnEvents: true,
+            activities: [activity],
+            attachments: [],
+            progress: initialProgress);
+        var dto = createDialogCommand.Dto;
+
+        // Act - Create
+        await Application.Send(createDialogCommand);
+        await harness.Consumed
+            .SelectAsync<DialogCreatedDomainEvent>(x => x.Context.Message.DialogId == dto.Id)
+            .FirstOrDefault();
+        await harness.Consumed
+            .SelectAsync<DialogActivityCreatedDomainEvent>(x => x.Context.Message.DialogId == dto.Id)
+            .FirstOrDefault();
+
+        // Arrange - Update
+        var getDialogResult = await Application.Send(new GetDialogQuery { DialogId = dto.Id!.Value });
+        getDialogResult.TryPickT0(out var getDialogDto, out _);
+
+        var updateDialogDto = Mapper.Map<UpdateDialogDto>(getDialogDto);
+        updateDialogDto.Progress = ++initialProgress;
+        var updateDialogCommand = new UpdateDialogCommand
+        {
+            Id = dto.Id!.Value,
+            Dto = updateDialogDto,
+            DisableAltinnEvents = true
+        };
+
+        // Act - Update
+        await Application.Send(updateDialogCommand);
+        await harness.Consumed
+            .SelectAsync<DialogUpdatedDomainEvent>(x => x.Context.Message.DialogId == dto.Id)
+            .FirstOrDefault();
+
+        // Arrange - Delete
+        var deleteDialogCommand = new DeleteDialogCommand
+        {
+            Id = dto.Id!.Value,
+            DisableAltinnEvents = true
+        };
+
+        // Act - Delete
+        await Application.Send(deleteDialogCommand);
+        await harness.Consumed
+            .SelectAsync<DialogDeletedDomainEvent>(x => x.Context.Message.DialogId == dto.Id)
+            .FirstOrDefault();
+
+        // Arrange - Purge
+        var purgeCommand = new PurgeDialogCommand
+        {
+            DialogId = dto.Id!.Value,
+            DisableAltinnEvents = true
+        };
+
+        // Act - Purge
+        await Application.Send(purgeCommand);
+        await harness.Consumed
+            .SelectAsync<DialogDeletedDomainEvent>(x => x.Context.Message.DialogId == dto.Id)
+            .FirstOrDefault();
+
+        // Assert
+        var cloudEvents = Application.PopPublishedCloudEvents();
+        cloudEvents.Should().BeEmpty();
+    }
 }
