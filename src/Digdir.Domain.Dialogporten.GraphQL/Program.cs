@@ -86,6 +86,9 @@ static void BuildAndRun(string[] args)
         .AddControllers()
             .Services
 
+        //Telemetry
+        .AddDialogportenTelemetry(builder.Configuration, builder.Environment)
+
         // Add health checks with the well-known URLs
         .AddAspNetHealthChecks((x, y) => x.HealthCheckSettings.HttpGetEndpointsToCheck = y
             .GetRequiredService<IOptions<GraphQlSettings>>().Value?
