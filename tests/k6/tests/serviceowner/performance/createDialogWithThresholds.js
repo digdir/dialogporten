@@ -1,4 +1,4 @@
-import { default as run } from "./performance/create-dialog.js";
+import { default as run } from "./create-dialog.js";
 
 export let options = {
     summaryTrendStats: ['avg', 'min', 'med', 'max', 'p(95)', 'p(99)', 'p(99.5)', 'p(99.9)', 'count'],
