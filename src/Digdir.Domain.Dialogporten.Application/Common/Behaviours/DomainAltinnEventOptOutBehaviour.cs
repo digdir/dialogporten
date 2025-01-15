@@ -18,7 +18,7 @@ internal sealed class DomainAltinnEventOptOutBehaviour<TRequest, TResponse> : IP
     {
         if (request.DisableAltinnEvents)
         {
-            _domainEventContext.AddMetadata(Constants.DisableAltinnEvents, "true");
+            _domainEventContext.AddMetadata(Constants.DisableAltinnEvents, bool.TrueString);
         }
 
         return next();
