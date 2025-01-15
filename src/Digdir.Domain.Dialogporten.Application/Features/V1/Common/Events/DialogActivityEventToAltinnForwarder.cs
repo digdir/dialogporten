@@ -1,5 +1,6 @@
 using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Externals;
+using Digdir.Domain.Dialogporten.Domain.Common.DomainEvents;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Events.Activities;
 using MediatR;
 using Microsoft.Extensions.Options;
@@ -15,6 +16,11 @@ internal sealed class DialogActivityEventToAltinnForwarder : DomainEventToAltinn
     [EndpointName("DialogEventToAltinnForwarder_DialogActivityCreatedDomainEvent")]
     public async Task Handle(DialogActivityCreatedDomainEvent domainEvent, CancellationToken cancellationToken)
     {
+        if (domainEvent.Metadata.ShouldDisableAltinnEvents())
+        {
+            return;
+        }
+
         var cloudEvent = new CloudEvent
         {
             Id = domainEvent.EventId,

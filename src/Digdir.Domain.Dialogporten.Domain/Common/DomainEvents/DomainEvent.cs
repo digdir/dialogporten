@@ -1,5 +1,4 @@
-﻿using System.Collections.Frozen;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Text.Json.Serialization;
 using Digdir.Domain.Dialogporten.Domain.Common.EventPublisher;
 
@@ -15,4 +14,10 @@ public abstract record DomainEvent : IDomainEvent
 
     [JsonInclude]
     public ReadOnlyDictionary<string, string> Metadata { get; set; } = new(new Dictionary<string, string>());
+}
+
+public static class DomainEventMetadataExtensions
+{
+    public static bool ShouldDisableAltinnEvents(this ReadOnlyDictionary<string, string> metadata)
+        => metadata.TryGetValue(Constants.DisableAltinnEvents, out var value) && value == "true";
 }
