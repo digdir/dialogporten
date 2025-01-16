@@ -64,7 +64,7 @@ public partial class Queries
             paginatedList =>
             {
                 var mappedResult = mapper.Map<SearchDialogsPayload>(paginatedList);
-                mappedResult.OrderBy = paginatedList.OrderBy.ToSearchDialogSortTypeList();
+                mappedResult.OrderBy = paginatedList.OrderBy.AsSpan().ToSearchDialogSortTypeList();
                 return mappedResult;
             },
             validationError => new SearchDialogsPayload

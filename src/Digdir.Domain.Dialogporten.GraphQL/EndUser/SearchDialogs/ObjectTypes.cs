@@ -1,3 +1,4 @@
+using Digdir.Domain.Dialogporten.Application.Common.Pagination.Order;
 using Digdir.Domain.Dialogporten.GraphQL.EndUser.Common;
 using Digdir.Domain.Dialogporten.GraphQL.EndUser.MutationTypes;
 
@@ -45,15 +46,9 @@ public sealed class SearchDialogsPayload
 [GraphQLDescription("Set only one property per object.")]
 public sealed class SearchDialogSortType
 {
-    public SortDirection? CreatedAt { get; set; }
-    public SortDirection? UpdatedAt { get; set; }
-    public SortDirection? DueAt { get; set; }
-}
-
-public enum SortDirection
-{
-    Asc,
-    Desc
+    public OrderDirection? CreatedAt { get; set; }
+    public OrderDirection? UpdatedAt { get; set; }
+    public OrderDirection? DueAt { get; set; }
 }
 
 public sealed class SearchDialog
