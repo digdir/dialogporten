@@ -5,7 +5,7 @@ using Digdir.Domain.Dialogporten.Domain.Dialogs.Events.Activities;
 using MediatR;
 using Microsoft.Extensions.Options;
 
-namespace Digdir.Domain.Dialogporten.Application.Features.V1.Common.Events;
+namespace Digdir.Domain.Dialogporten.Application.Features.V1.Common.Events.AltinnForwarders;
 
 internal sealed class DialogActivityEventToAltinnForwarder : DomainEventToAltinnForwarderBase,
     INotificationHandler<DialogActivityCreatedDomainEvent>
