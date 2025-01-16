@@ -20,7 +20,6 @@ public sealed class PurgeDialogEndpoint : Endpoint<PurgeDialogRequest>
     public override void Configure()
     {
         Post("dialogs/{dialogId}/actions/purge");
-        RequestBinder(new PurgeDialogRequestBinder());
         Policies(AuthorizationPolicy.ServiceProvider);
         Group<ServiceOwnerGroup>();
 
@@ -60,31 +59,4 @@ public sealed class PurgeDialogRequest
 
     [HideFromDocs]
     public bool? DisableAltinnEvents { get; init; }
-}
-
-
-
-// Custom request binder to avoid attempted automatic deserialization of the Request body if the content type is application/json
-public sealed class PurgeDialogRequestBinder : IRequestBinder<PurgeDialogRequest>
-{
-    public ValueTask<PurgeDialogRequest> BindAsync(BinderContext ctx, CancellationToken ct)
-    {
-        if (!Guid.TryParse(ctx.HttpContext.Request.RouteValues["dialogId"]?.ToString()!, out var dialogId))
-            return ValueTask.FromResult(new PurgeDialogRequest());
-
-        ctx.HttpContext.Request.Headers.TryGetValue(Constants.IfMatch, out var revisionHeader);
-        var revisionFound = Guid.TryParse(revisionHeader, out var revision);
-
-        if (bool.TryParse(ctx.HttpContext.Request.Query["disableAltinnEvents"], out var disableAltinnEvents))
-        {
-
-        }
-
-        return ValueTask.FromResult(new PurgeDialogRequest
-        {
-            DialogId = dialogId,
-            IfMatchDialogRevision = revisionFound ? revision : null,
-            DisableAltinnEvents = disableAltinnEvents ? disableAltinnEvents : null
-        });
-    }
 }
