@@ -16,20 +16,41 @@ services:
 
   # Jaeger for trace visualization
   jaeger:
-    image: jaegertracing/all-in-one:1.64.0
+    image: jaegertracing/all-in-one:1.65.0
     ports:
       - "16686:16686" # Jaeger UI
       - "14250:14250" # Model used by collector
     environment:
       - COLLECTOR_OTLP_ENABLED=true
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "localhost:16686"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
 
   # Prometheus for metrics
   prometheus:
-    image: prom/prometheus:v3.0.1
+    image: prom/prometheus:v3.1.0
     volumes:
       - ./local-otel-configuration/prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
       - "9090:9090"
+
+  # Loki for log aggregation
+  loki:
+    image: grafana/loki:3.3.2
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./local-otel-configuration/loki-config.yaml:/etc/loki/local-config.yaml
+    command: -config.file=/etc/loki/local-config.yaml
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --tries=1 -O- http://localhost:3100/ready"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
 
   # Grafana for metrics visualization
   grafana:
@@ -43,3 +64,5 @@ services:
       - ./local-otel-configuration/grafana-datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
       - ./local-otel-configuration/grafana-dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yml
       - ./local-otel-configuration/dashboards:/etc/grafana/provisioning/dashboards
+    depends_on:
+      - loki

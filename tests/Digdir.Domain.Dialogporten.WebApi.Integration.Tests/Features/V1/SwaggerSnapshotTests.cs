@@ -36,7 +36,7 @@ public class SwaggerSnapshotTests : IClassFixture<WebApplicationFactory<Program>
         // Running client.GetAsync("/swagger/v1/swagger.json"); on Windows and Mac will produce
         // different ordering of the results (although the content is the same). So we force an
         // alphabetical ordering of the properties to make the test deterministic.
-        // Ref: https://github.com/digdir/dialogporten/issues/996
+        // Ref: https://github.com/altinn/dialogporten/issues/996
         var orderedSwagger = SortJson(newSwagger);
 
         // Assert

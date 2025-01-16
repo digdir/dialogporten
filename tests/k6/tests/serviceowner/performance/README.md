@@ -10,6 +10,7 @@ Before running the performance test, make sure you have met the following prereq
 The test files associated with this performance test are 
 - `create-dialog.js`
 - `create-remove-dialog.js`
+- `create-transmissions.js`
 - `serviceowner-search.js`
 - `purge-dialogs.js` (used for cleanup after test)
 
@@ -21,23 +22,18 @@ To run the performance test, follow the instructions below:
 ```shell
 cd tests/k6/tests/serviceowner/performance
 ```
-2. Generate tokens using the script below. Make sure to replace `<username>`, `<passwd>` and `<(test|staging|yt01)>` with your actual desired values:
+2. Run the test using the following command. Replace `<test-file>`, `<(test|staging|yt01)>`, `<vus>`, and `<duration>` with the desired values:
 ```shell
-TOKEN_GENERATOR_USERNAME=<username> \
-TOKEN_GENERATOR_PASSWORD=<passwd> API_ENVIRONMENT=<(test|staging|yt01)> \
-../../scripts/generate_tokens.sh ../../performancetest_data both
-```
-3. Run the test using the following command. Replace `<test-file>`, `<(test|staging|yt01)>`, `<vus>`, and `<duration>` with the desired values:
-```shell
+TOKEN_GENERATOR_USERNAME=<username> TOKEN_GENERATOR_PASSWORD=<passwd> \
 k6 run <test-file> -e API_VERSION=v1 \
 -e API_ENVIRONMENT=<(test|staging|yt01)> \
 --vus=<vus> --duration=<duration>
 ```
-4. Refer to the k6 documentation for more information on usage.
+3. Refer to the k6 documentation for more information on usage.
 
 #### From GitHub Actions
 To run the performance test using GitHub Actions, follow these steps:
-1. Go to the [GitHub Actions](https://github.com/digdir/dialogporten/actions/workflows/dispatch-k6-performance.yml) page.
+1. Go to the [GitHub Actions](https://github.com/altinn/dialogporten/actions/workflows/dispatch-k6-performance.yml) page.
 2. Select "Run workflow" and fill in the required parameters.
 3. Tag the performance test with a descriptive name.
 
@@ -49,22 +45,15 @@ To run the performance test locally using GitHub Actions and act, perform the fo
 ```file
 TOKEN_GENERATOR_USERNAME:<username>
 TOKEN_GENERATOR_PASSWORD:<passwd>
-K6_CLOUD_PROJECT_ID=**
-K6_CLOUD_TOKEN=**
-K6_PROMETHEUS_RW_USERNAME=**
-K6_PROMETHEUS_RW_PASSWORD=**
-K6_PROMETHEUS_RW_SERVER_URL=**
 ```
-    Replace `<username>` and `<passwd>`, same as for generating tokens above. Fill in the K6_* values if available, 
-    used for reporting to Grafana cloud 
+    Replace `<username>` and `<passwd>`, same as for generating tokens above.
 ##### IMPORTANT: Ensure this file is added to .gitignore to prevent accidental commits of sensitive information. Never commit actual credentials to version control.
 4. Run `act` using the command below. Replace `<path-to-testscript>`, `<vus>`, `<duration>` and `<(personal|enterprise|both)>` with the desired values:
 ```shell
 act workflow_dispatch -j k6-performance -s GITHUB_TOKEN=`gh auth token` \
 --container-architecture linux/amd64 --artifact-server-path $HOME/.act \ 
 --input vus=<vus> --input duration=<duration> \ 
---input testSuitePath=<path-to-testscript> \ 
---input tokens=<(personal|enterprise|both)>
+--input testSuitePath=<path-to-testscript> 
 ```
 
 Example of command:
@@ -72,8 +61,7 @@ Example of command:
 act workflow_dispatch -j k6-performance -s GITHUB_TOKEN=`gh auth token` \
 --container-architecture linux/amd64 --artifact-server-path $HOME/.act \ 
 --input vus=10 --input duration=5m \ 
---input testSuitePath=tests/k6/tests/serviceowner/performance/create-dialog.js \ 
---input tokens=enterprise
+--input testSuitePath=tests/k6/tests/serviceowner/performance/create-dialog.js
 ```
 
 #### Clean up
@@ -97,7 +85,4 @@ Replace `<(test|staging|yt01)>` with the appropriate environment where the test 
 This script will remove any dialogs created during the performance test, ensuring a clean state for future tests.
 
 ### Test Results
-The test results can be found in the GitHub Actions run log and in App Insights. Currently, the results are exported to a private Grafana instance. Refer to the `.secrets` file mentioned earlier for more details.
-
-### TODO
-- Fix reporting
+The test results can be found in the GitHub Actions run log, grafana and in App Insights.

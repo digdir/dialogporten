@@ -8,7 +8,7 @@
   "author": "DigDir",
   "main": "src/index.js",
   "repository": {
-    "url": "git+https://github.com/digdir/dialogporten.git"
+    "url": "git+https://github.com/Altinn/dialogporten.git"
   },
   "scripts": {
     "build": "./gql-to-js.js",
