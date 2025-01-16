@@ -54,5 +54,6 @@ export default function (endUser, resource) {
     let payload = createDialogPayload();
     payload.serviceResource = "urn:altinn:resource:" +resource;
     payload.party = "urn:altinn:person:identifier-no:" + endUser;
+    
     return cleanUp(payload);
 }
