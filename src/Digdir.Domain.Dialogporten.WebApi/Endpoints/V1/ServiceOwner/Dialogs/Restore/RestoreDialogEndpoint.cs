@@ -1,6 +1,7 @@
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Restore;
 using Digdir.Domain.Dialogporten.WebApi.Common;
 using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
+using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
 using Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.Common.Extensions;
 using FastEndpoints;
 using MediatR;
@@ -22,7 +23,6 @@ public sealed class RestoreDialogEndpoint : Endpoint<RestoreDialogRequest>
         Policies(AuthorizationPolicy.ServiceProvider);
         Group<ServiceOwnerGroup>();
 
-        // Amund: Husk å sjækk om OneOf e rætt
         Description(b => b
             .Accepts<RestoreDialogRequest>()
             .ProducesOneOf(
@@ -39,8 +39,14 @@ public sealed class RestoreDialogEndpoint : Endpoint<RestoreDialogRequest>
             IfMatchDialogRevision = req.IfMatchDialogRevision
         };
         var result = await _sender.Send(command, ct);
-        // Amund: Husk
-        return result.Match();
+        await result.Match(
+            success =>
+            {
+                HttpContext.Response.Headers.Append(Constants.ETag, success.Revision.ToString());
+                return SendNoContentAsync(ct);
+            },
+            notFound => this.NotFoundAsync(notFound, ct),
+            concurrencyError => this.PreconditionFailed(ct));
     }
 }
 

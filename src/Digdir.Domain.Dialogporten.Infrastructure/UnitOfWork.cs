@@ -72,6 +72,12 @@ internal sealed class UnitOfWork : IUnitOfWork, IAsyncDisposable, IDisposable
         return this;
     }
 
+    public IUnitOfWork DisableSoftDeletableFilter()
+    {
+        _saveChangesOptions.EnableSoftDeletableFilter = false;
+        return this;
+    }
+
     public async Task<SaveChangesResult> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         try
@@ -202,7 +208,7 @@ internal sealed class UnitOfWork : IUnitOfWork, IAsyncDisposable, IDisposable
     // have a use case for them.
     private sealed class SaveChangesOptions : IEntityOptions
     {
-        public bool EnableSoftDeletableFilter { get; } = true;
+        public bool EnableSoftDeletableFilter { get; set; } = true;
         public bool EnableImmutableFilter { get; } = true;
         public bool EnableVersionableFilter { get; set; } = true;
         public bool EnableUpdatableFilter { get; set; } = true;

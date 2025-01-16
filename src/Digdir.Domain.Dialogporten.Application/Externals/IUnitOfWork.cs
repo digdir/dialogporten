@@ -19,6 +19,7 @@ public interface IUnitOfWork
     IUnitOfWork DisableAggregateFilter();
     IUnitOfWork DisableVersionableFilter();
     IUnitOfWork DisableUpdatableFilter();
+    IUnitOfWork DisableSoftDeletableFilter();
 }
 
 [GenerateOneOf]

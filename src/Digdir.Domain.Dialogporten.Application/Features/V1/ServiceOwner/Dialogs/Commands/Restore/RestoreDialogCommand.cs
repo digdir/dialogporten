@@ -18,7 +18,7 @@ public sealed class RestoreDialogCommand : IRequest<RestoreDialogResult>
 }
 
 [GenerateOneOf]
-public sealed partial class RestoreDialogResult : OneOfBase<RestoreDialogSuccess, EntityNotFound, Forbidden, ConcurrencyError>;
+public sealed partial class RestoreDialogResult : OneOfBase<RestoreDialogSuccess, EntityNotFound, ConcurrencyError>;
 
 public sealed record RestoreDialogSuccess(Guid Revision);
 
@@ -44,7 +44,6 @@ internal sealed class RestoreDialogCommandHandler : IRequestHandler<RestoreDialo
             .IgnoreQueryFilters()
             .FirstOrDefaultAsync(x => x.Id == request.DialogId, cancellationToken);
 
-        // Amund: More Checks
         if (dialog is null)
         {
             return new EntityNotFound<DialogEntity>(request.DialogId);
@@ -59,6 +58,7 @@ internal sealed class RestoreDialogCommandHandler : IRequestHandler<RestoreDialo
 
         var saveResult = await _unitOfWork
             .DisableUpdatableFilter()
+            .DisableSoftDeletableFilter()
             .EnableConcurrencyCheck(dialog, request.IfMatchDialogRevision)
             .SaveChangesAsync(cancellationToken);
 
