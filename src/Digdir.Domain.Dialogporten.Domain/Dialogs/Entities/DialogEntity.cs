@@ -86,7 +86,6 @@ public sealed class DialogEntity :
     public void OnDelete(AggregateNode self, DateTimeOffset utcNow)
         => _domainEvents.Add(new DialogDeletedDomainEvent(Id, ServiceResource, Party, Process, PrecedingProcess));
 
-    // Amund Q: Burde Denne finnes?
     public void OnRestore(AggregateNode self, DateTimeOffset utcNow) =>
         _domainEvents.Add(new DialogRestoredDomainEvent(Id, ServiceResource, Party, Process, PrecedingProcess));
 
