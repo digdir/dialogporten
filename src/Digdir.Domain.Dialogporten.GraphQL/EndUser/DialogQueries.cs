@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using AppAny.HotChocolate.FluentValidation;
 using AutoMapper;
 using Digdir.Domain.Dialogporten.Application.Common.Pagination.Continuation;
@@ -36,8 +37,9 @@ public partial class Queries
     {
         var searchDialogQuery = mapper.Map<SearchDialogQuery>(input);
 
-        if (!ContinuationTokenSet<SearchDialogQueryOrderDefinition, IntermediateDialogDto>.TryParse(
-                input.ContinuationToken, out var continuationTokenSet))
+        ContinuationTokenSet<SearchDialogQueryOrderDefinition, IntermediateDialogDto>? continuationTokenSet = null;
+        if (input.ContinuationToken != null && !ContinuationTokenSet<SearchDialogQueryOrderDefinition, IntermediateDialogDto>.TryParse(
+                input.ContinuationToken, out continuationTokenSet))
         {
             return new SearchDialogsPayload
             {
