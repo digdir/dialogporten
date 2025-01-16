@@ -11,7 +11,6 @@ using Digdir.Library.Entity.Abstractions;
 using Digdir.Library.Entity.Abstractions.Features.Aggregate;
 using Digdir.Library.Entity.Abstractions.Features.SoftDeletable;
 using Digdir.Library.Entity.Abstractions.Features.Versionable;
-using Medo;
 
 namespace Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 
