@@ -225,9 +225,9 @@ type SearchDialogOrderByParsingError implements SearchDialogError {
 
 "Set only one property per object."
 type SearchDialogSortType {
-  createdAt: SortDirection
-  updatedAt: SortDirection
-  dueAt: SortDirection
+  createdAt: OrderDirection
+  updatedAt: OrderDirection
+  dueAt: OrderDirection
 }
 
 type SearchDialogValidationError implements SearchDialogError {
@@ -322,9 +322,9 @@ input SearchDialogInput {
 
 "Set only one property per object."
 input SearchDialogSortTypeInput {
-  createdAt: SortDirection
-  updatedAt: SortDirection
-  dueAt: SortDirection
+  createdAt: OrderDirection
+  updatedAt: OrderDirection
+  dueAt: OrderDirection
 }
 
 input SetSystemLabelInput {
@@ -415,7 +415,7 @@ enum HttpVerb {
   CONNECT
 }
 
-enum SortDirection {
+enum OrderDirection {
   ASC
   DESC
 }
