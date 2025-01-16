@@ -36,8 +36,9 @@ public partial class Queries
     {
         var searchDialogQuery = mapper.Map<SearchDialogQuery>(input);
 
-        if (!ContinuationTokenSet<SearchDialogQueryOrderDefinition, IntermediateDialogDto>.TryParse(
-                input.ContinuationToken, out var continuationTokenSet))
+        ContinuationTokenSet<SearchDialogQueryOrderDefinition, IntermediateDialogDto>? continuationTokenSet = null;
+        if (input.ContinuationToken != null && !ContinuationTokenSet<SearchDialogQueryOrderDefinition, IntermediateDialogDto>.TryParse(
+                input.ContinuationToken, out continuationTokenSet))
         {
             return new SearchDialogsPayload
             {
@@ -64,7 +65,7 @@ public partial class Queries
             paginatedList =>
             {
                 var mappedResult = mapper.Map<SearchDialogsPayload>(paginatedList);
-                mappedResult.OrderBy = paginatedList.OrderBy.ToSearchDialogSortTypeList();
+                mappedResult.OrderBy = paginatedList.OrderBy.AsSpan().ToSearchDialogSortTypeList();
                 return mappedResult;
             },
             validationError => new SearchDialogsPayload
