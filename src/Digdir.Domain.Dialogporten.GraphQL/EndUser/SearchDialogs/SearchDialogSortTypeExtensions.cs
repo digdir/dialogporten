@@ -44,9 +44,15 @@ internal static class SearchDialogSortTypeExtensions
         return searchDialogSortTypes;
     }
 
-    public static bool TryToOrderSet(this List<SearchDialogSortType> searchDialogSortTypes,
+    public static bool TryToOrderSet(this List<SearchDialogSortType>? searchDialogSortTypes,
         out OrderSet<SearchDialogQueryOrderDefinition, IntermediateDialogDto>? orderSet)
     {
+        if (searchDialogSortTypes is null)
+        {
+            orderSet = null;
+            return false;
+        }
+
         var stringBuilder = new StringBuilder();
         foreach (var orderBy in searchDialogSortTypes)
         {
