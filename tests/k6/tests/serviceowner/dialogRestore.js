@@ -15,6 +15,7 @@ export default function () {
     let dialogId = null;
     let initialSystemLabel = "Bin";
     let initialEtag = null;
+    let initialUpdatedAt = null;
 
     const restoreDialog = (dialogId, eTag = null) => {
         let header = eTag ? {'headers': {'Etag': eTag}} : null
@@ -31,6 +32,12 @@ export default function () {
 
         dialogId = r.json();
         initialEtag = r.headers.Etag;
+
+        let getResponse = getSO('dialogs/' + dialogId);
+        expectStatusFor(getResponse).to.equal(200);
+        expect(getResponse, 'get response').to.have.validJsonBody();
+        expect(getResponse.json(), 'get response body').to.have.property('updatedAt');
+        initialUpdatedAt = getResponse.json()['updatedAt']
     });
 
     describe('Restore not deleted dialog', () => {
@@ -53,6 +60,7 @@ export default function () {
         expect(getResponse, 'get response').to.have.validJsonBody();
         expect(getResponse.json(), 'get response body').to.have.property('systemLabel');
         expect(getResponse.json()['systemLabel'], 'get response systemlabel').to.equal(initialSystemLabel);
+        expect(getResponse.json()['updatedAt'], 'get response updatedAt').to.equal(initialUpdatedAt);
     });
 
     describe('Clean up', () => {
