@@ -16,7 +16,7 @@ internal static class SearchDialogSortTypeExtensions
         {
             var order = orderSet[orderSetEnumerator.Current];
             var orderEnumerator = order.Split(PaginationConstants.OrderDelimiter);
-            
+
             // ignore empty part
             if (!orderEnumerator.MoveNext())
             {
@@ -29,18 +29,18 @@ internal static class SearchDialogSortTypeExtensions
             {
                 continue;
             }
-            
+
             var dir = PaginationConstants.DefaultOrderDirection;
-            if (orderEnumerator.MoveNext() && 
+            if (orderEnumerator.MoveNext() &&
                 !Enum.TryParse(order[orderEnumerator.Current], ignoreCase: true, out dir))
             {
                 throw new InvalidOperationException("Invalid sort direction");
             }
-            
+
             var factory = GetSearchDialogSortTypeFactory(field);
             searchDialogSortTypes.Add(factory(dir));
         }
-        
+
         return searchDialogSortTypes;
     }
 
@@ -85,17 +85,17 @@ internal static class SearchDialogSortTypeExtensions
         {
             return CreatedAtFactory;
         }
-        
+
         if (field.Equals("updatedat", StringComparison.OrdinalIgnoreCase))
         {
             return UpdatedAtFactory;
         }
-        
+
         if (field.Equals("dueat", StringComparison.OrdinalIgnoreCase))
         {
             return DuAtFactory;
         }
-        
+
         throw new InvalidOperationException("Invalid sort field");
     }
 
