@@ -822,7 +822,8 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.HasIndex("UpdatedAt");
 
                     b.HasIndex("Org", "IdempotentKey")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("\"IdempotentKey\" is not null");
 
                     b.ToTable("Dialog", (string)null);
                 });

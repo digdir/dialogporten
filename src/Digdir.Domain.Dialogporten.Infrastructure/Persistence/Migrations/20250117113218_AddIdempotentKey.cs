@@ -21,7 +21,8 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                 name: "IX_Dialog_Org_IdempotentKey",
                 table: "Dialog",
                 columns: new[] { "Org", "IdempotentKey" },
-                unique: true);
+                unique: true,
+                filter: "\"IdempotentKey\" is not null");
         }
 
         /// <inheritdoc />

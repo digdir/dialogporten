@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(DialogDbContext))]
-    [Migration("20250114122240_AddIdempotentKey")]
+    [Migration("20250117113218_AddIdempotentKey")]
     partial class AddIdempotentKey
     {
         /// <inheritdoc />
@@ -825,7 +825,8 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.HasIndex("UpdatedAt");
 
                     b.HasIndex("Org", "IdempotentKey")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("\"IdempotentKey\" is not null");
 
                     b.ToTable("Dialog", (string)null);
                 });
