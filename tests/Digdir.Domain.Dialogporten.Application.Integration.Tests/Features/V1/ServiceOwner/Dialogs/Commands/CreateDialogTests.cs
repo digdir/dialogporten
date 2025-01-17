@@ -5,11 +5,11 @@ using Digdir.Domain.Dialogporten.Application.Features.V1.Common.Localizations;
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Queries.Get;
 using Digdir.Domain.Dialogporten.Application.Integration.Tests.Common;
 using Digdir.Domain.Dialogporten.Domain;
+using Digdir.Library.Entity.Abstractions.Features.Identifiable;
 using Digdir.Tool.Dialogporten.GenerateFakeData;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using static Digdir.Domain.Dialogporten.Application.Integration.Tests.UuiDv7Utils;
 
 namespace Digdir.Domain.Dialogporten.Application.Integration.Tests.Features.V1.ServiceOwner.Dialogs.Commands;
 
@@ -38,8 +38,8 @@ public class CreateDialogTests : ApplicationCollectionFixture
     public async Task Cant_Create_Dialog_With_UUIDv7_In_Little_Endian_Format()
     {
         // Arrange
-        // Guid created with Medo, Uuid7.NewUuid7().ToGuid()
-        var invalidDialogId = Guid.Parse("638e9101-6bc7-7975-b392-ba5c5a528c23");
+        // Guid created with Medo, Uuid7.NewUuid7().ToGuid(bigEndian: true)
+        var invalidDialogId = Guid.Parse("b2ca9301-c371-ab74-a87b-4ee1416b9655");
 
         var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog(id: invalidDialogId);
 
@@ -56,7 +56,7 @@ public class CreateDialogTests : ApplicationCollectionFixture
     {
         // Arrange
         var timestamp = DateTimeOffset.UtcNow.AddSeconds(1);
-        var invalidDialogId = GenerateBigEndianUuidV7(timestamp);
+        var invalidDialogId = IdentifiableExtensions.CreateVersion7(timestamp);
 
         var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog(id: invalidDialogId);
 
@@ -73,7 +73,7 @@ public class CreateDialogTests : ApplicationCollectionFixture
     {
         // Arrange
         var timestamp = DateTimeOffset.UtcNow.AddSeconds(-1);
-        var validDialogId = GenerateBigEndianUuidV7(timestamp);
+        var validDialogId = IdentifiableExtensions.CreateVersion7(timestamp);
 
         var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog(id: validDialogId);
 
@@ -83,14 +83,14 @@ public class CreateDialogTests : ApplicationCollectionFixture
         // Assert
         response.TryPickT0(out var success, out _).Should().BeTrue();
         success.Should().NotBeNull();
-        success.Value.Should().Be(validDialogId);
+        success.DialogId.Should().Be(validDialogId);
     }
 
     [Fact]
     public async Task Create_CreatesDialog_WhenDialogIsSimple()
     {
         // Arrange
-        var expectedDialogId = GenerateBigEndianUuidV7();
+        var expectedDialogId = IdentifiableExtensions.CreateVersion7();
         var createCommand = DialogGenerator.GenerateSimpleFakeDialog(id: expectedDialogId);
 
         // Act
@@ -98,14 +98,14 @@ public class CreateDialogTests : ApplicationCollectionFixture
 
         // Assert
         response.TryPickT0(out var success, out _).Should().BeTrue();
-        success.Value.Should().Be(expectedDialogId);
+        success.DialogId.Should().Be(expectedDialogId);
     }
 
     [Fact]
     public async Task Create_CreateDialog_WhenDialogIsComplex()
     {
         // Arrange
-        var expectedDialogId = GenerateBigEndianUuidV7();
+        var expectedDialogId = IdentifiableExtensions.CreateVersion7();
         var createDialogCommand = DialogGenerator.GenerateFakeDialog(id: expectedDialogId);
 
         // Act
@@ -113,14 +113,14 @@ public class CreateDialogTests : ApplicationCollectionFixture
 
         // Assert
         result.TryPickT0(out var success, out _).Should().BeTrue();
-        success.Value.Should().Be(expectedDialogId);
+        success.DialogId.Should().Be(expectedDialogId);
     }
 
     [Fact]
     public async Task Can_Create_Dialog_With_UpdatedAt_Supplied()
     {
         // Arrange
-        var dialogId = GenerateBigEndianUuidV7();
+        var dialogId = IdentifiableExtensions.CreateVersion7();
         var createdAt = DateTimeOffset.UtcNow.AddYears(-20);
         var updatedAt = DateTimeOffset.UtcNow.AddYears(-15);
         var createDialogCommand = DialogGenerator.GenerateFakeDialog(id: dialogId, updatedAt: updatedAt, createdAt: createdAt);
@@ -136,7 +136,7 @@ public class CreateDialogTests : ApplicationCollectionFixture
 
         // Assert
         createDialogResult.TryPickT0(out var dialogCreatedSuccess, out _).Should().BeTrue();
-        dialogCreatedSuccess.Value.Should().Be(dialogId);
+        dialogCreatedSuccess.DialogId.Should().Be(dialogId);
 
         getDialogQuery.Should().NotBeNull();
         getDialogResponse.TryPickT0(out var dialog, out _).Should().BeTrue();
@@ -387,7 +387,7 @@ public class CreateDialogTests : ApplicationCollectionFixture
     public async Task Can_Create_MainContentRef_Content_With_Embeddable_Html_MediaType_With_Correct_Scope()
     {
         // Arrange
-        var expectedDialogId = GenerateBigEndianUuidV7();
+        var expectedDialogId = IdentifiableExtensions.CreateVersion7();
         var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog(id: expectedDialogId);
         createDialogCommand.Content.MainContentReference = new ContentValueDto
         {
@@ -408,6 +408,20 @@ public class CreateDialogTests : ApplicationCollectionFixture
         // Assert
         response.TryPickT0(out var success, out _).Should().BeTrue();
         success.Should().NotBeNull();
-        success.Value.Should().Be(expectedDialogId);
+        success.DialogId.Should().Be(expectedDialogId);
+    }
+
+    [Fact]
+    public async Task CreateDialogCommand_Should_Return_Revision()
+    {
+        // Arrange
+        var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog();
+
+        // Act
+        var response = await Application.Send(createDialogCommand);
+
+        // Assert
+        response.TryPickT0(out var success, out _).Should().BeTrue();
+        success.Revision.Should().NotBeEmpty();
     }
 }

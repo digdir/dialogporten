@@ -16,9 +16,6 @@ param appInsightWorkspaceName string
 @description('The Application Insights connection string')
 param appInsightsConnectionString string
 
-@description('The metrics ingestion endpoint of the Azure Monitor workspace')
-param monitorMetricsIngestionEndpoint string
-
 @description('The ID of the user-assigned managed identity')
 param userAssignedIdentityId string
 
@@ -56,18 +53,6 @@ resource containerAppEnv 'Microsoft.App/managedEnvironments@2024-02-02-preview' 
       }
       logsConfiguration: {
         destinations: ['appInsights']
-      }
-      metricsConfiguration: {
-        destinations: ['metrics-ingestion']
-      }
-      destinationsConfiguration: {
-        otlpConfigurations: [
-          {
-            endpoint: monitorMetricsIngestionEndpoint
-            name: 'metrics-ingestion'
-            insecure: false
-          }
-        ]
       }
     }
   }

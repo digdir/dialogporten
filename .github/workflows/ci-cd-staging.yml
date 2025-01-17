@@ -20,7 +20,7 @@ jobs:
 
   check-for-changes:
     name: Check for changes
-    needs: [ get-versions-from-github ]
+    needs: [get-versions-from-github]
     uses: ./.github/workflows/workflow-check-for-changes.yml
     with:
       infra_base_sha: ${{ needs.get-versions-from-github.outputs.infra_version_sha }}
@@ -33,7 +33,7 @@ jobs:
   deploy-infra:
     name: Deploy infra to staging
     if: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasInfraChanges == 'true' }}
-    needs: [ get-current-version, check-for-changes ]
+    needs: [get-current-version, check-for-changes]
     uses: ./.github/workflows/workflow-deploy-infra.yml
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -50,7 +50,7 @@ jobs:
 
   store-infra-version:
     name: Store Latest Deployed Infra Version as GitHub Variable
-    needs: [ deploy-infra, get-current-version ]
+    needs: [deploy-infra, get-current-version]
     if: ${{ needs.deploy-infra.result == 'success' }}
     uses: ./.github/workflows/workflow-store-github-env-variable.yml
     with:
@@ -64,17 +64,17 @@ jobs:
     name: Build and publish docker images
     uses: ./.github/workflows/workflow-publish.yml
     if: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasBackendChanges == 'true' }}
-    needs: [ get-current-version, check-for-changes ]
+    needs: [get-current-version, check-for-changes]
     secrets:
       GCR_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
     with:
-      dockerImageBaseName: ghcr.io/digdir/dialogporten-
+      dockerImageBaseName: ghcr.io/altinn/dialogporten-
       version: ${{ needs.get-current-version.outputs.version }}
 
   deploy-apps:
     name: Deploy apps to staging
     needs:
-      [ get-current-version, check-for-changes, deploy-infra, publish ]
+      [get-current-version, check-for-changes, deploy-infra, publish]
     if: ${{ always() && !failure() && !cancelled() && (github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasBackendChanges == 'true') }}
     uses: ./.github/workflows/workflow-deploy-apps.yml
     secrets:
@@ -105,7 +105,7 @@ jobs:
   
   store-apps-version:
     name: Store Latest Deployed Apps Version as GitHub Variable
-    needs: [ deploy-apps, get-current-version ]
+    needs: [deploy-apps, get-current-version]
     if: ${{ always() && !failure() && !cancelled() && (github.event_name == 'workflow_dispatch' || needs.deploy-apps.outputs.deployment_executed == 'true') }}
     uses: ./.github/workflows/workflow-store-github-env-variable.yml
     with:
@@ -115,25 +115,9 @@ jobs:
     secrets:
       GH_TOKEN: ${{ secrets.RELEASE_VERSION_STORAGE_PAT }}
 
-  deploy-slack-notifier:
-    name: Deploy slack notifier (staging)
-    needs: [ check-for-changes ]
-    if: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasSlackNotifierChanges == 'true' }}
-    uses: ./.github/workflows/workflow-deploy-function.yml
-    secrets:
-      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-      # todo: resolve this automatically, or use tags
-      AZURE_FUNCTION_APP_NAME: ${{ secrets.AZURE_SLACK_NOTIFIER_FUNCTION_APP_NAME }}
-    with:
-      function-app-name: "slack-notifier"
-      function-project-path: "./src/Digdir.Tool.Dialogporten.SlackNotifier"
-      environment: staging
-
   publish-schema-npm:
     name: Publish schema npm package
-    needs: [ check-for-changes, get-current-version, deploy-apps ]
+    needs: [check-for-changes, get-current-version, deploy-apps]
     if: ${{ always() && !failure() && !cancelled() && (github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasSchemaChanges == 'true') }}
     uses: ./.github/workflows/workflow-publish-schema.yml
     with:
@@ -145,7 +129,7 @@ jobs:
     name: "Run K6 functional end-to-end tests"
     # we want the end-to-end tests to be dependent on deployment of infrastructure and apps, but if infrastructure is skipped, we still want to run the tests
     if: ${{ always() && !failure() && !cancelled() && (github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasBackendChanges == 'true') }}
-    needs: [ deploy-apps, check-for-changes ]
+    needs: [deploy-apps, check-for-changes]
     uses: ./.github/workflows/workflow-run-k6-tests.yml
     secrets:
       TOKEN_GENERATOR_USERNAME: ${{ secrets.TOKEN_GENERATOR_USERNAME }}
@@ -160,14 +144,13 @@ jobs:
 
   send-slack-message-on-failure:
     name: Send Slack message on failure
-    needs: [ deploy-infra, deploy-apps, deploy-slack-notifier, run-e2e-tests, publish-schema-npm, publish ]
+    needs: [deploy-infra, deploy-apps, run-e2e-tests, publish-schema-npm, publish]
     if: ${{ always() && failure() && !cancelled() }}
     uses: ./.github/workflows/workflow-send-ci-cd-status-slack-message.yml
     with:
       environment: staging
       infra_status: ${{ needs.deploy-infra.result }}
       apps_status: ${{ needs.deploy-apps.result }}
-      slack_notifier_status: ${{ needs.deploy-slack-notifier.result }}
       e2e_tests_status: ${{ needs.run-e2e-tests.result }}
       schema_npm_status: ${{ needs.publish-schema-npm.result }}
       publish_status: ${{ needs.publish.result }}

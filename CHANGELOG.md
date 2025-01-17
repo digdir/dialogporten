@@ -1,5 +1,76 @@
 # Changelog
 
+## [1.45.0](https://github.com/Altinn/dialogporten/compare/v1.44.2...v1.45.0) (2025-01-15)
+
+
+### Features
+
+* added id to attachments, ApiActions and GuiActions in DialogCreate ([#1670](https://github.com/Altinn/dialogporten/issues/1670)) ([470e5a9](https://github.com/Altinn/dialogporten/commit/470e5a916c331f31b4015a3847d566c5d99276da))
+* **apps:** export logs to open telemetry endpoint ([#1617](https://github.com/Altinn/dialogporten/issues/1617)) ([1a71763](https://github.com/Altinn/dialogporten/commit/1a71763647b92fe7780dd7982c6b2f00f4d0d50e))
+* **janitor:** add otlp logger for janitor ([#1686](https://github.com/Altinn/dialogporten/issues/1686)) ([2e1656b](https://github.com/Altinn/dialogporten/commit/2e1656b787eb0d47142b92e2453215e47a6760f3))
+
+
+### Bug Fixes
+
+* **app:** Add missing telemetry setup GraphQL and Service ([#1695](https://github.com/Altinn/dialogporten/issues/1695)) ([601a826](https://github.com/Altinn/dialogporten/commit/601a8268a4763c87925bffe3352297edd1e191d0))
+* Authentication level claim is 0 in dialog token ([#1654](https://github.com/Altinn/dialogporten/issues/1654)) ([37e545a](https://github.com/Altinn/dialogporten/commit/37e545a0da0c1c5d354c7b2cb8ab4ca163a2bf17))
+* **graphql:** Add missing activity types ([#1684](https://github.com/Altinn/dialogporten/issues/1684)) ([a0697ae](https://github.com/Altinn/dialogporten/commit/a0697aee2c850156df25503b42bd667377cc6aab))
+* **graphql:** Set max execution depth to allow inspection query ([#1679](https://github.com/Altinn/dialogporten/issues/1679)) ([6265110](https://github.com/Altinn/dialogporten/commit/62651109ce308be85b92495c6a4a8bf5f4decf6c)), closes [#1680](https://github.com/Altinn/dialogporten/issues/1680)
+* **web-api:** re-enable health checks ([#1681](https://github.com/Altinn/dialogporten/issues/1681)) ([96c2c3e](https://github.com/Altinn/dialogporten/commit/96c2c3e8d3e7de98bb4ec5ae0eba08d713598987))
+
+## [1.44.2](https://github.com/digdir/dialogporten/compare/v1.44.1...v1.44.2) (2025-01-08)
+
+
+### Bug Fixes
+
+* **webi:** Add missing type on ETag response headers ([#1666](https://github.com/digdir/dialogporten/issues/1666)) ([df559ed](https://github.com/digdir/dialogporten/commit/df559ed7f7a1a09a1a3771dd5cc9c3526d781e3e))
+
+## [1.44.1](https://github.com/digdir/dialogporten/compare/v1.44.0...v1.44.1) (2025-01-07)
+
+
+### Bug Fixes
+
+* **ci:** Use correct size for yt01 db ([#1658](https://github.com/digdir/dialogporten/issues/1658)) ([e18e5f7](https://github.com/digdir/dialogporten/commit/e18e5f7e44556e1a4173906303ccef14aeb9de13))
+
+## [1.44.0](https://github.com/digdir/dialogporten/compare/v1.43.0...v1.44.0) (2025-01-07)
+
+
+### Features
+
+* **webapi:** Add ETag to response headers ([#1645](https://github.com/digdir/dialogporten/issues/1645)) ([7a32e60](https://github.com/digdir/dialogporten/commit/7a32e601061b42400aa1c94b61be69ff7c9d0ec9))
+
+
+### Bug Fixes
+
+* disable slack notifier ([#1655](https://github.com/digdir/dialogporten/issues/1655)) ([554fc8b](https://github.com/digdir/dialogporten/commit/554fc8b3294c125b0e8561ebcbfe254e75fede1c))
+
+## [1.43.0](https://github.com/digdir/dialogporten/compare/v1.42.1...v1.43.0) (2025-01-07)
+
+
+### Features
+
+* Add additional types to DialogActivity ([#1629](https://github.com/digdir/dialogporten/issues/1629)) ([feb1347](https://github.com/digdir/dialogporten/commit/feb1347c0a79406e0a8f6bb312faad42c8db7eec))
+
+
+### Bug Fixes
+
+* **app:** Add dedicated scope and dbcontext to GetSubjectResources ([#1648](https://github.com/digdir/dialogporten/issues/1648)) ([d1040e4](https://github.com/digdir/dialogporten/commit/d1040e41e2b09d1b8e3388ada4790ab1d63c738b))
+* revert azure monitor workspace ([#1624](https://github.com/digdir/dialogporten/issues/1624)) ([d66b155](https://github.com/digdir/dialogporten/commit/d66b155f3e6749466c344ee9aa9319810f65cf6c))
+
+## [1.42.1](https://github.com/digdir/dialogporten/compare/v1.42.0...v1.42.1) (2024-12-25)
+
+
+### Bug Fixes
+
+* **webapi:** Only allow transmissionId on TransmissionOpened activities ([#1631](https://github.com/digdir/dialogporten/issues/1631)) ([80261d1](https://github.com/digdir/dialogporten/commit/80261d18af159acd000c2fa06d6ae351aa681d7d))
+
+## [1.42.0](https://github.com/digdir/dialogporten/compare/v1.41.3...v1.42.0) (2024-12-16)
+
+
+### Features
+
+* **apps:** add otel exporter for graphql, service and web-api ([#1528](https://github.com/digdir/dialogporten/issues/1528)) ([cb9238e](https://github.com/digdir/dialogporten/commit/cb9238ef76188b4dde371e08b7ce597645bcd8b7))
+
 ## [1.41.3](https://github.com/digdir/dialogporten/compare/v1.41.2...v1.41.3) (2024-12-13)
 
 

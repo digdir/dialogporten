@@ -269,6 +269,9 @@ internal sealed class CreateDialogDialogAttachmentDtoValidator : AbstractValidat
         IValidator<IEnumerable<LocalizationDto>> localizationsValidator,
         IValidator<AttachmentUrlDto> urlValidator)
     {
+        RuleFor(x => x.Id)
+            .IsValidUuidV7()
+            .UuidV7TimestampIsInPast();
         RuleFor(x => x.DisplayName)
             .SetValidator(localizationsValidator);
         RuleFor(x => x.Urls)
@@ -336,6 +339,9 @@ internal sealed class CreateDialogDialogGuiActionDtoValidator : AbstractValidato
     public CreateDialogDialogGuiActionDtoValidator(
         IValidator<IEnumerable<LocalizationDto>> localizationsValidator)
     {
+        RuleFor(x => x.Id)
+            .IsValidUuidV7()
+            .UuidV7TimestampIsInPast();
         RuleFor(x => x.Action)
             .NotEmpty()
             .MaximumLength(Constants.DefaultMaxStringLength);
@@ -365,6 +371,9 @@ internal sealed class CreateDialogDialogApiActionDtoValidator : AbstractValidato
     public CreateDialogDialogApiActionDtoValidator(
         IValidator<ApiActionEndpointDto> apiActionEndpointValidator)
     {
+        RuleFor(x => x.Id)
+            .IsValidUuidV7()
+            .UuidV7TimestampIsInPast();
         RuleFor(x => x.Action)
             .NotEmpty()
             .MaximumLength(Constants.DefaultMaxStringLength);
@@ -434,11 +443,11 @@ internal sealed class CreateDialogDialogActivityDtoValidator : AbstractValidator
             .When(x => x.Type != DialogActivityType.Values.Information);
         RuleFor(x => x.TransmissionId)
             .Null()
-            .WithMessage($"A {nameof(DialogActivityType.Values.DialogOpened)} activity cannot reference a transmission.")
-            .When(x => x.Type == DialogActivityType.Values.DialogOpened);
+            .WithMessage($"Only activities of type {nameof(DialogActivityType.Values.TransmissionOpened)} can reference a transmission.")
+            .When(x => x.Type != DialogActivityType.Values.TransmissionOpened);
         RuleFor(x => x.TransmissionId)
             .NotEmpty()
-            .WithMessage($"A {nameof(DialogActivityType.Values.TransmissionOpened)} needs to reference a transmission.")
+            .WithMessage($"An activity of type {nameof(DialogActivityType.Values.TransmissionOpened)} needs to reference a transmission.")
             .When(x => x.Type == DialogActivityType.Values.TransmissionOpened);
     }
 }

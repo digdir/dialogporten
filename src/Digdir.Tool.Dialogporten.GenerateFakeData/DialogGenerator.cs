@@ -242,7 +242,7 @@ public static class DialogGenerator
         DialogTransmissionType.Values? type = null)
     {
         return new Faker<TransmissionDto>()
-            .RuleFor(o => o.Id, _ => Uuid7.NewUuid7().ToGuid(true))
+            .RuleFor(o => o.Id, _ => IdentifiableExtensions.CreateVersion7())
             .RuleFor(o => o.CreatedAt, f => f.Date.Past())
             .RuleFor(o => o.Type, f => type ?? f.PickRandom<DialogTransmissionType.Values>())
             .RuleFor(o => o.Sender, _ => new() { ActorType = ActorType.Values.ServiceOwner })
@@ -257,12 +257,12 @@ public static class DialogGenerator
     public static List<ActivityDto> GenerateFakeDialogActivities(int? count = null, DialogActivityType.Values? type = null)
     {
         // Temporarily removing the ActivityType TransmissionOpened from the list of possible types for random picking.
-        // Going to have a look at re-writing the generator https://github.com/digdir/dialogporten/issues/1123
+        // Going to have a look at re-writing the generator https://github.com/altinn/dialogporten/issues/1123
         var activityTypes = Enum.GetValues<DialogActivityType.Values>()
             .Where(x => x != DialogActivityType.Values.TransmissionOpened).ToList();
 
         return new Faker<ActivityDto>()
-            .RuleFor(o => o.Id, () => Uuid7.NewUuid7().ToGuid(true))
+            .RuleFor(o => o.Id, () => IdentifiableExtensions.CreateVersion7())
             .RuleFor(o => o.CreatedAt, f => f.Date.Past())
             .RuleFor(o => o.ExtendedType, f => new Uri(f.Internet.UrlWithPath(Uri.UriSchemeHttps)))
             .RuleFor(o => o.Type, f => type ?? f.PickRandom(activityTypes))
@@ -274,6 +274,7 @@ public static class DialogGenerator
     public static List<ApiActionDto> GenerateFakeDialogApiActions()
     {
         return new Faker<ApiActionDto>()
+            .RuleFor(o => o.Id, () => IdentifiableExtensions.CreateVersion7())
             .RuleFor(o => o.Action, f => f.Random.AlphaNumeric(8))
             .RuleFor(o => o.Endpoints, _ => GenerateFakeDialogApiActionEndpoints())
             .Generate(new Randomizer().Number(1, 4));
@@ -299,6 +300,7 @@ public static class DialogGenerator
         var hasPrimary = false;
         var hasSecondary = false;
         return new Faker<GuiActionDto>()
+            .RuleFor(o => o.Id, () => IdentifiableExtensions.CreateVersion7())
             .RuleFor(o => o.Action, f => f.Random.AlphaNumeric(8))
             .RuleFor(o => o.Priority, _ =>
             {
@@ -327,6 +329,7 @@ public static class DialogGenerator
     public static List<AttachmentDto> GenerateFakeDialogAttachments(int? count = null)
     {
         return new Faker<AttachmentDto>()
+            .RuleFor(o => o.Id, _ => IdentifiableExtensions.CreateVersion7())
             .RuleFor(o => o.DisplayName, f => GenerateFakeLocalizations(f.Random.Number(2, 5)))
             .RuleFor(o => o.Urls, _ => GenerateFakeDialogAttachmentUrls())
             .Generate(count ?? new Randomizer().Number(1, 6));

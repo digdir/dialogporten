@@ -19,7 +19,6 @@ using Digdir.Library.Entity.Abstractions.Features.Identifiable;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
-using OneOf.Types;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Update;
 
@@ -31,7 +30,9 @@ public sealed class UpdateDialogCommand : IRequest<UpdateDialogResult>
 }
 
 [GenerateOneOf]
-public sealed partial class UpdateDialogResult : OneOfBase<Success, EntityNotFound, EntityDeleted, ValidationError, Forbidden, DomainError, ConcurrencyError>;
+public sealed partial class UpdateDialogResult : OneOfBase<UpdateDialogSuccess, EntityNotFound, EntityDeleted, ValidationError, Forbidden, DomainError, ConcurrencyError>;
+
+public sealed record UpdateDialogSuccess(Guid Revision);
 
 internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogCommand, UpdateDialogResult>
 {
@@ -93,7 +94,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
 
         if (dialog.Deleted)
         {
-            // TODO: https://github.com/digdir/dialogporten/issues/1543
+            // TODO: https://github.com/altinn/dialogporten/issues/1543
             // When restoration is implemented, add a hint to the error message.
             return new EntityDeleted<DialogEntity>(request.Id);
         }
@@ -167,7 +168,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
             .SaveChangesAsync(cancellationToken);
 
         return saveResult.Match<UpdateDialogResult>(
-            success => success,
+            success => new UpdateDialogSuccess(dialog.Revision),
             domainError => domainError,
             concurrencyError => concurrencyError);
     }

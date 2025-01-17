@@ -3,12 +3,12 @@
   "version": "1.0.11",
   "description": "GraphQl schema and OpenAPI spec for Dialogporten",
   "engines": {
-    "node": "20"
+    "node": "22"
   },
   "author": "DigDir",
   "main": "src/index.js",
   "repository": {
-    "url": "git+https://github.com/digdir/dialogporten.git"
+    "url": "git+https://github.com/Altinn/dialogporten.git"
   },
   "scripts": {
     "build": "./gql-to-js.js",
@@ -16,7 +16,7 @@
     "test": "npm run build && vitest run --test-timeout=10000"
   },
   "devDependencies": {
-    "vitest": "2.1.3",
+    "vitest": "2.1.8",
     "glob": "11.0.0",
     "graphql-tag": "2.12.6"
   },

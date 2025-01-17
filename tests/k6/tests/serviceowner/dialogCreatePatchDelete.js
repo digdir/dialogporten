@@ -15,7 +15,9 @@ import {default as dialogToInsert} from './testdata/01-create-dialog.js';
 
 export default function () {
 
+    let dialogIds = [];
     let dialogId = null;
+    let attachmentId = null;
     let eTag = null;
     let newApiActionEndpointUrl = null;
 
@@ -28,6 +30,28 @@ export default function () {
         dialogId = r.json();
     });
 
+
+    describe('Perform dialog create with specifed attachmentId', () => {
+        let dialog = dialogToInsert();
+        attachmentId = uuidv7();
+        dialog.transmissions[0].attachments[0].id = attachmentId;
+        let r = postSO('dialogs', dialog);
+        expectStatusFor(r).to.equal(201);
+        expect(r, 'response').to.have.validJsonBody();
+        expect(r.json(), 'response json').to.match(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/)
+
+        dialogIds.push(r.json());
+    });
+
+    describe('Perform dialog create with taken specifed attachmentId', () => {
+        let dialog = dialogToInsert();
+        dialog.transmissions[0].attachments[0].id = attachmentId;
+        let r = postSO('dialogs', dialog);
+        expectStatusFor(r).to.equal(422);
+        expect(r, 'response').to.have.validJsonBody();
+        expect(r.json(), 'response json').to.have.property('errors');
+
+    });
     describe('Perform dialog get', () => {
         let r = getSO('dialogs/' + dialogId);
         expectStatusFor(r).to.equal(200);
@@ -190,4 +214,10 @@ export default function () {
         expect(r.json(), 'response json').to.have.property('errors');
     });
 
+    describe('Clean up', () => {
+        for (let i = 0; i < dialogIds.length; i++) {
+            let r = purgeSO('dialogs/' + dialogIds[i]);
+            expectStatusFor(r).to.equal(204);
+        }
+    });
 }

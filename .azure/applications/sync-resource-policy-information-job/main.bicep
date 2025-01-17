@@ -32,7 +32,7 @@ param jobSchedule string
 param appInsightConnectionString string
 
 var namePrefix = 'dp-be-${environment}'
-var baseImageUrl = 'ghcr.io/digdir/dialogporten-'
+var baseImageUrl = 'ghcr.io/altinn/dialogporten-'
 var tags = {
   FullName: '${namePrefix}-sync-resource-policy-information'
   Environment: environment
@@ -44,6 +44,12 @@ var name = '${namePrefix}-sync-rp-info'
 
 resource containerAppEnvironment 'Microsoft.App/managedEnvironments@2024-03-01' existing = {
   name: containerAppEnvironmentName
+}
+
+resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
+  name: '${namePrefix}-sync-rp-info-identity'
+  location: location
+  tags: tags
 }
 
 var containerAppEnvVars = [
@@ -62,6 +68,10 @@ var containerAppEnvVars = [
   {
     name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
     value: appInsightConnectionString
+  }
+  {
+    name: 'AZURE_CLIENT_ID'
+    value: managedIdentity.properties.clientId
   }
 ]
 
@@ -94,6 +104,7 @@ module migrationJob '../../modules/containerAppJob/main.bicep' = {
     tags: tags
     cronExpression: jobSchedule
     args: 'sync-resource-policy-information'
+    userAssignedIdentityId: managedIdentity.id
   }
 }
 
