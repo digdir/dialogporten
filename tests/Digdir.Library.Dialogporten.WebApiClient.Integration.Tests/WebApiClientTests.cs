@@ -12,7 +12,9 @@ public class WebApiClientFixture : IDisposable
     public WebApiClientFixture()
     {
 
-        var configuration = new ConfigurationBuilder().AddUserSecrets<WebApiClientTests>().Build();
+        var configuration = new ConfigurationBuilder()
+            .AddUserSecrets<WebApiClientTests>()
+            .AddEnvironmentVariables().Build();
         // .AddJsonFile("appsettings.local.json", optional: false, reloadOnChange: true)
         var services = new ServiceCollection();
 
