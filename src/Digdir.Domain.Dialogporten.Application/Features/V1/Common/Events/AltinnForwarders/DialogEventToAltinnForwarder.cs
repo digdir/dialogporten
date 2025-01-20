@@ -88,8 +88,6 @@ internal sealed class DialogEventToAltinnForwarder : DomainEventToAltinnForwarde
     [EndpointName("DialogEventToAltinnForwarder_DialogDeletedDomainEvent")]
     public async Task Handle(DialogDeletedDomainEvent domainEvent, CancellationToken cancellationToken)
     {
-        // TODO: add test, guard rails, reflection.
-        // All handlers in AltinnForwarders folder
         if (domainEvent.ShouldNotBeSentToAltinn())
         {
             return;
