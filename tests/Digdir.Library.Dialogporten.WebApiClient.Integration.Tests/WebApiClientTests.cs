@@ -20,7 +20,7 @@ public class WebApiClientFixture : IDisposable
         // .AddJsonFile("appsettings.local.json", optional: false, reloadOnChange: true)
         var services = new ServiceCollection();
         services.AddSingleton<IConfiguration>(configuration);
-        
+
         services.AddDialogportenClient();
         services.AddDialogTokenVerifer();
         DialogportenClient = services.BuildServiceProvider().GetRequiredService<IServiceownerApi>();
