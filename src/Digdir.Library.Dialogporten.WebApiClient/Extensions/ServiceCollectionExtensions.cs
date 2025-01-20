@@ -34,18 +34,15 @@ public static class ServiceCollectionExtensions
     }
     public static IServiceCollection AddDialogportenClient(this IServiceCollection services)
     {
-        // Bygge en service provider for å få hentet ut settings         
         var provider = services.BuildServiceProvider();
         var dialogportenSettings = provider.GetRequiredService<IConfiguration>()
             .GetSection("DialogportenSettings")
             .Get<DialogportenSettings>();
 
-        // Vi mapper denne til en Maskinporten setting
         var maskinportenSettings = new MaskinportenSettings()
         {
             EncodedJwk = dialogportenSettings!.Maskinporten.EncodedJwk,
             ClientId = dialogportenSettings.Maskinporten.ClientId,
-            // Maskinportenmiljø utleded av Dialogporten-miljø
             Environment = dialogportenSettings.Environment switch
             {
                 "prod" => "prod",
@@ -56,25 +53,21 @@ public static class ServiceCollectionExtensions
             Scope = dialogportenSettings.Maskinporten.Scope,
         };
 
-        // Vi registrerer en maskinporten klient med oppgite settings, som kan brukes som en http message handler
         services.RegisterMaskinportenClientDefinition<SettingsJwkClientDefinition>("dialogporten-sp-sdk", maskinportenSettings);
 
         var baseAddress = dialogportenSettings.Environment switch
         {
             "test" => "https://platform.tt02.altinn.no/dialogporten",
             "local" => "https://localhost:7214",
-            // "prod" => "https://platform.altinn.no/dialogporten",
+            "prod" => "https://platform.altinn.no/dialogporten",
             _ => throw new NotImplementedException()
         };
-        // Vi registrerer Refit, og legger til den registrerte maskinporten http message handlern
-        // Amund: Partial er ikke mulig å finne etter compile time.
         var refitClients = Assembly.GetExecutingAssembly().GetTypes()
             .Where(x =>
                 x.Namespace!.StartsWith("Digdir.Library.Dialogporten.WebApiClient.Features.V1", StringComparison.InvariantCulture) &&
                 x.IsInterface)
             .ToList();
 
-        ;
         foreach (var refitClient in refitClients)
         {
             services
@@ -85,9 +78,6 @@ public static class ServiceCollectionExtensions
                 })
                 .AddMaskinportenHttpMessageHandler<SettingsJwkClientDefinition>("dialogporten-sp-sdk");
         }
-
-        // Vi registrerer vår egen API-abstraksjon, som selv tar inn og wrapper IDialgportenApi, som nå er "maskinporten-powered"
-        // services.AddSingleton<IDialogportenClient, DialogportenClient>();
 
         return services;
     }
