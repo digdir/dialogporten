@@ -38,6 +38,7 @@ public static class ServiceCollectionExtensions
             .GetSection("DialogportenSettings")
             .Get<DialogportenSettings>();
 
+        Console.WriteLine(dialogportenSettings);
         var maskinportenSettings = new MaskinportenSettings()
         {
             EncodedJwk = dialogportenSettings!.Maskinporten.EncodedJwk,
