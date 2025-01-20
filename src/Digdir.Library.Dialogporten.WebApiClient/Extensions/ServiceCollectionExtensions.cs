@@ -25,7 +25,7 @@ public static class ServiceCollectionExtensions
 
         var keyPair = dialogportenSettings!.Primary;
         var kid = keyPair.Kid;
-
+        Console.WriteLine(keyPair);
         var publicKey = PublicKey.Import(SignatureAlgorithm.Ed25519,
             Base64Url.DecodeFromChars(keyPair.PublicComponent), KeyBlobFormat.RawPublicKey);
         services.AddSingleton(new DialogTokenVerifier(kid, publicKey));

@@ -1,4 +1,5 @@
 using System.Net;
+using Digdir.Library.Dialogporten.WebApiClient.Config;
 using Digdir.Library.Dialogporten.WebApiClient.Extensions;
 using Digdir.Library.Dialogporten.WebApiClient.Features.V1;
 using Microsoft.Extensions.Configuration;
@@ -14,12 +15,12 @@ public class WebApiClientFixture : IDisposable
 
         var configuration = new ConfigurationBuilder()
             .AddUserSecrets<WebApiClientTests>()
-            .AddEnvironmentVariables().Build();
+            .AddEnvironmentVariables()
+            .Build();
         // .AddJsonFile("appsettings.local.json", optional: false, reloadOnChange: true)
         var services = new ServiceCollection();
-
         services.AddSingleton<IConfiguration>(configuration);
-
+        
         services.AddDialogportenClient();
         services.AddDialogTokenVerifer();
         DialogportenClient = services.BuildServiceProvider().GetRequiredService<IServiceownerApi>();
