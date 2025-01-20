@@ -20,10 +20,40 @@ public interface IDialogportenSettings
     /// <summary>
     /// The Maskinporten environment. Valid values are ver1, ver2, test or prod
     /// </summary>
-    string Environment { get; set; }
+    MaskinportenEnvironment Environment { get; set; }
 
     /// <summary>
     /// Base64 Encoded Json Web Key 
     /// </summary>
+    /// <remarks>
+    /// Security considerations:
+    /// - Store this value in a secure configuration store or key vault
+    /// - Ensure the value is properly Base64 encoded
+    /// - Protect this value in memory and logs
+    /// </remarks>
     string EncodedJwk { get; set; }
+}
+
+public enum MaskinportenEnvironment
+{
+    /// <summary>
+    /// Version 1 environment
+    /// </summary>
+    Ver1,
+
+    /// <summary>
+    /// Version 2 environment
+    /// </summary>
+    Ver2,
+
+    /// <summary>
+    /// Test environment
+    /// </summary>
+    Test,
+
+    /// <summary>
+    /// Production environment
+    /// </summary>
+    Prod
+
 }
