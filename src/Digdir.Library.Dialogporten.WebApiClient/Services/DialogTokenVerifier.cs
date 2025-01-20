@@ -42,7 +42,7 @@ public sealed class DialogTokenVerifier(string kid, PublicKey publicKey)
         var fieldsInfo = typeof(DialogTokenClaimTypes).GetFields().Where(f => f.FieldType == typeof(string));
         foreach (var fieldInfo in fieldsInfo)
         {
-            var value = fieldInfo.GetValue("string");
+            var value = fieldInfo.GetValue(null);
             if (value != null && bodyJson.TryGetProperty(value.ToString()!, out var jsonValue))
             {
                 claims.Add(value.ToString()!, jsonValue);

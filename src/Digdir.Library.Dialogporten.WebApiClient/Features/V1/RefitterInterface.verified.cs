@@ -199,7 +199,7 @@ namespace Digdir.Library.Dialogporten.WebApiClient.Features.V1
         /// <remarks>
         /// The dialog is created with the given configuration. For more information see the documentation (link TBD).
         /// 
-        /// For detailed information on validation rules, see [the source for CreateDialogCommandValidator](https://github.com/digdir/dialogporten/blob/main/src/Digdir.Domain.Dialogporten.Application/Features/V1/ServiceOwner/Dialogs/Commands/Create/CreateDialogCommandValidator.cs)
+        /// For detailed information on validation rules, see [the source for CreateDialogCommandValidator](https://github.com/altinn/dialogporten/blob/main/src/Digdir.Domain.Dialogporten.Application/Features/V1/ServiceOwner/Dialogs/Commands/Create/CreateDialogCommandValidator.cs)
         /// </remarks>
         /// <returns>
         /// A <see cref="Task"/> representing the <see cref="IApiResponse"/> instance containing the result:
@@ -210,7 +210,7 @@ namespace Digdir.Library.Dialogporten.WebApiClient.Features.V1
         /// </listheader>
         /// <item>
         /// <term>201</term>
-        /// <description>The UUID of the created the dialog aggregate. A relative URL to the newly created activity is set in the \"Location\" header.</description>
+        /// <description>The UUID of the created dialog aggregate. A relative URL to the newly created activity is set in the \"Location\" header.</description>
         /// </item>
         /// <item>
         /// <term>204</term>
@@ -532,7 +532,7 @@ namespace Digdir.Library.Dialogporten.WebApiClient.Features.V1
         /// </listheader>
         /// <item>
         /// <term>201</term>
-        /// <description>The UUID of the created the dialog activity. A relative URL to the newly created activity is set in the \"Location\" header.</description>
+        /// <description>The UUID of the created dialog activity. A relative URL to the newly created activity is set in the \"Location\" header.</description>
         /// </item>
         /// <item>
         /// <term>204</term>
@@ -727,7 +727,7 @@ namespace Digdir.Library.Dialogporten.WebApiClient.Features.V1
         /// </listheader>
         /// <item>
         /// <term>201</term>
-        /// <description>The UUID of the created the dialog transmission. A relative URL to the newly created activity is set in the \"Location\" header.</description>
+        /// <description>The UUID of the created dialog transmission. A relative URL to the newly created activity is set in the \"Location\" header.</description>
         /// </item>
         /// <item>
         /// <term>204</term>
@@ -949,6 +949,24 @@ namespace Digdir.Library.Dialogporten.WebApiClient.Features.V1
         [System.Runtime.Serialization.EnumMember(Value = @"DialogOpened")]
         DialogOpened = 6,
 
+        [System.Runtime.Serialization.EnumMember(Value = @"DialogDeleted")]
+        DialogDeleted = 7,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"DialogRestored")]
+        DialogRestored = 8,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"SentToSigning")]
+        SentToSigning = 9,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"SentToFormFill")]
+        SentToFormFill = 10,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"SentToSendIn")]
+        SentToSendIn = 11,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"SentToPayment")]
+        SentToPayment = 12,
+
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.2.0.0 (NJsonSchema v11.1.0.0 (Newtonsoft.Json v13.0.0.0))")]
@@ -1160,7 +1178,8 @@ namespace Digdir.Library.Dialogporten.WebApiClient.Features.V1
     public partial class V1CommonContent_ContentValue
     {
         /// <summary>
-        /// Media type of the content (plaintext, Markdown). Can also indicate that the content is embeddable.
+        /// Media type of the content, this can also indicate that the content is embeddable.
+        /// <br/>For a list of supported media types, see (link TBD).
         /// </summary>
 
         [JsonPropertyName("mediaType")]
@@ -1443,6 +1462,13 @@ namespace Digdir.Library.Dialogporten.WebApiClient.Features.V1
         [JsonPropertyName("endpoints")]
         public ICollection<V1ServiceOwnerDialogsCommandsCreate_ApiActionEndpoint> Endpoints { get; set; }
 
+        /// <summary>
+        /// A self-defined UUIDv7 may be provided to support idempotent creation of Api Actions. If not provided, a new UUIDv7 will be generated.
+        /// </summary>
+
+        [JsonPropertyName("id")]
+        public System.Guid? Id { get; set; }
+
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.2.0.0 (NJsonSchema v11.1.0.0 (Newtonsoft.Json v13.0.0.0))")]
@@ -1520,6 +1546,13 @@ namespace Digdir.Library.Dialogporten.WebApiClient.Features.V1
 
         [JsonPropertyName("displayName")]
         public ICollection<V1CommonLocalizations_Localization> DisplayName { get; set; }
+
+        /// <summary>
+        /// A self-defined UUIDv7 may be provided to support idempotent creation of attachments. If not provided, a new UUIDv7 will be generated.
+        /// </summary>
+
+        [JsonPropertyName("id")]
+        public System.Guid? Id { get; set; }
 
         /// <summary>
         /// The URLs associated with the attachment, each referring to a different representation of the attachment.
@@ -1808,6 +1841,13 @@ namespace Digdir.Library.Dialogporten.WebApiClient.Features.V1
         [JsonPropertyName("httpMethod")]
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public Http_HttpVerb? HttpMethod { get; set; }
+
+        /// <summary>
+        /// A self-defined UUIDv7 may be provided to support idempotent creation of Gui Actions. If not provided, a new UUIDv7 will be generated.
+        /// </summary>
+
+        [JsonPropertyName("id")]
+        public System.Guid? Id { get; set; }
 
         /// <summary>
         /// Indicates whether the action results in the dialog being deleted. Used by frontends to implement custom UX
@@ -2105,7 +2145,7 @@ namespace Digdir.Library.Dialogporten.WebApiClient.Features.V1
         public ICollection<V1ServiceOwnerDialogsCommandsUpdate_ApiActionEndpoint> Endpoints { get; set; }
 
         /// <summary>
-        /// A UUIDv7 used for merging existing data, unknown IDs will be ignored as this entity does not support user-defined IDs.
+        /// A self-defined UUIDv7 may be provided to support idempotent additions of Api Actions. If not provided, a new UUIDv7 will be generated.
         /// </summary>
 
         [JsonPropertyName("id")]
@@ -2197,7 +2237,7 @@ namespace Digdir.Library.Dialogporten.WebApiClient.Features.V1
         public ICollection<V1CommonLocalizations_Localization> DisplayName { get; set; }
 
         /// <summary>
-        /// A UUIDv7 used for merging existing data, unknown IDs will be ignored as this entity does not support user-defined IDs.
+        /// A self-defined UUIDv7 may be provided to support idempotent additions of attachments. If not provided, a new UUIDv7 will be generated.
         /// </summary>
 
         [JsonPropertyName("id")]
@@ -2434,7 +2474,7 @@ namespace Digdir.Library.Dialogporten.WebApiClient.Features.V1
         public Http_HttpVerb? HttpMethod { get; set; }
 
         /// <summary>
-        /// A UUIDv7 used for merging existing data, unknown IDs will be ignored as this entity does not support user-defined IDs.
+        /// A self-defined UUIDv7 may be provided to support idempotent additions of Gui Actions. If not provided, a new UUIDv7 will be generated.
         /// </summary>
 
         [JsonPropertyName("id")]
@@ -2581,7 +2621,7 @@ namespace Digdir.Library.Dialogporten.WebApiClient.Features.V1
         public ICollection<V1CommonLocalizations_Localization> DisplayName { get; set; }
 
         /// <summary>
-        /// A self-defined UUIDv7 may be provided to support idempotent creation of transmission attachments. If not provided, a new UUIDv7 will be generated.
+        /// A self-defined UUIDv7 may be provided to support idempotent additions of transmission attachments. If not provided, a new UUIDv7 will be generated.
         /// </summary>
 
         [JsonPropertyName("id")]

@@ -46,12 +46,16 @@ if (response.IsSuccessStatusCode)
     Console.WriteLine(response.StatusCode);
     Console.WriteLine(response.Content);
 }
+else
+{
+    Console.WriteLine(response.StatusCode);
+}
+Debug.Assert(response.Content != null, "response.Content != null");
 Console.WriteLine("== End Create Dialog ==");
 
 
 // Get single dialog SO
 Console.WriteLine("==Start Get Single Dialog==");
-Debug.Assert(response.Content != null, "response.Content != null");
 var guid = Guid.Parse(response.Content.Replace("\"", "").Trim());
 var dialog = dialogportenClient.V1ServiceOwnerDialogsGetGetDialog(guid, null!).Result.Content;
 Debug.Assert(dialog != null, nameof(dialog) + " != null");
@@ -131,6 +135,11 @@ static V1ServiceOwnerDialogsCommandsCreate_DialogCommand CreateCommand()
 {
     return new V1ServiceOwnerDialogsCommandsCreate_DialogCommand
     {
+        Activities = [],
+        ApiActions = [],
+        GuiActions = [],
+        Attachments = [],
+        SearchTags = [],
         ServiceResource = "urn:altinn:resource:super-simple-service",
         Party = "urn:altinn:person:identifier-no:14886498226",
         SystemLabel = DialogEndUserContextsEntities_SystemLabel.Default,
@@ -175,6 +184,7 @@ static V1ServiceOwnerDialogsCommandsCreate_DialogCommand CreateCommand()
 
 
         },
+        Id = null,
         Transmissions =
         [
             new V1ServiceOwnerDialogsCommandsCreate_Transmission
