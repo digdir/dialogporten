@@ -17,6 +17,7 @@ using Digdir.Domain.Dialogporten.Domain.Parties;
 using Digdir.Library.Entity.Abstractions.Features.Identifiable;
 using MediatR;
 using OneOf;
+using AuthConstants = Digdir.Domain.Dialogporten.Application.Common.Authorization.Constants;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Create;
 
@@ -38,6 +39,7 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
     private readonly IUnitOfWork _unitOfWork;
     private readonly IDomainContext _domainContext;
     private readonly IResourceRegistry _resourceRegistry;
+    private readonly IUserResourceRegistry _userResourceRegistry;
     private readonly IServiceResourceAuthorizer _serviceResourceAuthorizer;
     private readonly IUser _user;
 
@@ -48,6 +50,7 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
         IUnitOfWork unitOfWork,
         IDomainContext domainContext,
         IResourceRegistry resourceRegistry,
+        IUserResourceRegistry userResourceRegistry,
         IServiceResourceAuthorizer serviceResourceAuthorizer)
     {
         _user = user ?? throw new ArgumentNullException(nameof(user));
@@ -56,11 +59,17 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _domainContext = domainContext ?? throw new ArgumentNullException(nameof(domainContext));
         _resourceRegistry = resourceRegistry ?? throw new ArgumentNullException(nameof(resourceRegistry));
+        _userResourceRegistry = userResourceRegistry;
         _serviceResourceAuthorizer = serviceResourceAuthorizer ?? throw new ArgumentNullException(nameof(serviceResourceAuthorizer));
     }
 
     public async Task<CreateDialogResult> Handle(CreateDialogCommand request, CancellationToken cancellationToken)
     {
+        if (request.DisableAltinnEvents && !_userResourceRegistry.IsCurrentUserServiceOwnerAdmin())
+        {
+            return new Forbidden(AuthConstants.DisableAltinnEventsRequiresAdminScope);
+        }
+
         var dialog = _mapper.Map<DialogEntity>(request.Dto);
 
         await _serviceResourceAuthorizer.SetResourceType(dialog, cancellationToken);
