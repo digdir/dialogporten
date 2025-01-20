@@ -12,7 +12,7 @@ public class WebApiClientFixture : IDisposable
     public WebApiClientFixture()
     {
 
-        var configuration = new ConfigurationBuilder().AddUserSecrets<Tests>().Build();
+        var configuration = new ConfigurationBuilder().AddUserSecrets<WebApiClientTests>().Build();
         // .AddJsonFile("appsettings.local.json", optional: false, reloadOnChange: true)
         var services = new ServiceCollection();
 
@@ -30,7 +30,7 @@ public class WebApiClientFixture : IDisposable
     }
 }
 
-public class Tests(WebApiClientFixture fixture) : IClassFixture<WebApiClientFixture>, IDisposable
+public class WebApiClientTests(WebApiClientFixture fixture) : IClassFixture<WebApiClientFixture>, IDisposable
 {
     private readonly List<Guid> _dialogIds = [];
     [Fact]
@@ -153,20 +153,6 @@ public class Tests(WebApiClientFixture fixture) : IClassFixture<WebApiClientFixt
     [Fact]
     public async Task Search_Dialog_Returns_200()
     {
-        /*
-         * Amund Q:.
-         *  [x] Refit støtter date format.
-         *  [x] Refitter trenger at swagger sier "date" på format.
-         *  [x] Swagger sier nå "date-time"
-         *  [x] Refit støtter custom date format
-         *  [x] Refitter søtter ikke custom date format
-         *  [x] Få Swagger gen til å generete "date" istedet for "date-time"?
-         *      [x] lag til date-time støtte i refitter
-         *  [x] Legge til støtte for custom date format i Refitter
-         *      [x] Virker doable, Relativt lett leslig kilde kode.
-         *  [x] Lagde PR med forandringene, blitt Merget inn
-         *  [ ] Venter på preview av refitter blir lansert
-         */
 
         var dateOffset = DateTimeOffset.UtcNow;
         var createDialogCommand = CreateCommand();
