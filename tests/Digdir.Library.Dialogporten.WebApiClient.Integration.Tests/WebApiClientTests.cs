@@ -169,10 +169,12 @@ public class WebApiClientTests(WebApiClientFixture fixture) : IClassFixture<WebA
 
         var dateOffset = DateTimeOffset.UtcNow;
         var createDialogCommand = CreateCommand();
+        createDialogCommand.SystemLabel = DialogEndUserContextsEntities_SystemLabel.Bin;
         var dialogId = await CreateDialog(createDialogCommand);
         var param = new V1ServiceOwnerDialogsSearchSearchDialogQueryParams
         {
-            CreatedAfter = dateOffset
+            CreatedAfter = dateOffset,
+            SystemLabel = [DialogEndUserContextsEntities_SystemLabel.Bin]
         };
         var searchResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsSearchSearchDialog(param, CancellationToken.None);
         Assert.Equal(HttpStatusCode.OK, searchResponse.StatusCode);
@@ -197,7 +199,8 @@ public class WebApiClientTests(WebApiClientFixture fixture) : IClassFixture<WebA
         }
         var param = new V1ServiceOwnerDialogsSearchSearchDialogQueryParams
         {
-            CreatedAfter = dateOffset
+            CreatedAfter = dateOffset,
+            SystemLabel = [DialogEndUserContextsEntities_SystemLabel.Default]
         };
         var searchResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsSearchSearchDialog(param, CancellationToken.None);
         Assert.Equal(HttpStatusCode.OK, searchResponse.StatusCode);
