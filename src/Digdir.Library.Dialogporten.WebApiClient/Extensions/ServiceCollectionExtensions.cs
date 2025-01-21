@@ -24,15 +24,7 @@ public static class ServiceCollectionExtensions
             .Get<Ed25519Keys>();
 
         var keyPair = dialogportenSettings!.Primary;
-        if (keyPair == null)
-        {
-            throw new ArgumentException("Missing Ed25519 key");
-        }
         var kid = keyPair.Kid;
-        if (kid == null)
-        {
-            throw new ArgumentException("Missing Ed25519 key id");
-        }
         try
         {
 
