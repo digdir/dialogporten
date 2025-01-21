@@ -9,7 +9,6 @@ using Microsoft.Extensions.DependencyInjection;
 using NSec.Cryptography;
 using Refit;
 using MaskinportenSettings = Altinn.ApiClients.Maskinporten.Config.MaskinportenSettings;
-// using MaskinportenSettings = Altinn.Apiclient.Serviceowner.Config.MaskinportenSettings;
 
 namespace Digdir.Library.Dialogporten.WebApiClient.Extensions;
 
@@ -37,7 +36,6 @@ public static class ServiceCollectionExtensions
             .GetSection("DialogportenSettings")
             .Get<DialogportenSettings>();
 
-        Console.WriteLine(dialogportenSettings);
         var maskinportenSettings = new MaskinportenSettings()
         {
             EncodedJwk = dialogportenSettings!.Maskinporten.EncodedJwk,
@@ -49,7 +47,7 @@ public static class ServiceCollectionExtensions
                 "test" => "test",
                 _ => throw new ArgumentException()
             },
-            Scope = dialogportenSettings.Maskinporten.Scope,
+            Scope = dialogportenSettings.Maskinporten.Scope
         };
 
         services.RegisterMaskinportenClientDefinition<SettingsJwkClientDefinition>("dialogporten-sp-sdk", maskinportenSettings);

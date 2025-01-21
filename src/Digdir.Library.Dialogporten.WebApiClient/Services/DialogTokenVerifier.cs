@@ -10,19 +10,21 @@ public sealed class DialogTokenVerifier(string kid, PublicKey publicKey)
     public bool Verify(string token)
     {
         var parts = token.Split('.');
-        if (parts.Length != 3) return false;
-        var header = Base64Url.DecodeFromChars(parts[0]);
-
-        var headerJson = JsonSerializer.Deserialize<JsonElement>(header);
-        if (headerJson.TryGetProperty("kid", out var value))
-        {
-            if (value.GetString() != kid) return false;
-        }
-        else
+        if (parts.Length != 3)
         {
             return false;
         }
+        var header = Base64Url.DecodeFromChars(parts[0]);
+
+        var headerJson = JsonSerializer.Deserialize<JsonElement>(header);
+
+        if (!headerJson.TryGetProperty("kid", out var value) && value.GetString() != kid)
+        {
+            return false;
+        }
+
         var signature = Base64Url.DecodeFromChars(parts[2]);
+
         return SignatureAlgorithm.Ed25519.Verify(publicKey, Encoding.UTF8.GetBytes(parts[0] + '.' + parts[1]), signature);
 
     }
