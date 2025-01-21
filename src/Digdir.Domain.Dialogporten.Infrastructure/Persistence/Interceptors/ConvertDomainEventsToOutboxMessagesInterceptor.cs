@@ -61,12 +61,10 @@ internal sealed class ConvertDomainEventsToOutboxMessagesInterceptor : SaveChang
             return await base.SavingChangesAsync(eventData, result, cancellationToken);
         }
 
-        var domainEventMetadata = _domainEventContext.GetMetadata();
-
         EnsureLazyLoadedServices();
         foreach (var domainEvent in _domainEvents)
         {
-            domainEvent.Metadata = domainEventMetadata;
+            domainEvent.Metadata = _domainEventContext.Metadata;
             domainEvent.OccuredAt = _transactionTime.Value;
         }
 
