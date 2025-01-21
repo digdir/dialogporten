@@ -22,7 +22,7 @@ public class WebApiClientFixture : IDisposable
         services.AddSingleton<IConfiguration>(configuration);
 
         services.AddDialogportenClient();
-        services.AddDialogTokenVerifer();
+        // services.AddDialogTokenVerifer();
         DialogportenClient = services.BuildServiceProvider().GetRequiredService<IServiceownerApi>();
 
     }
