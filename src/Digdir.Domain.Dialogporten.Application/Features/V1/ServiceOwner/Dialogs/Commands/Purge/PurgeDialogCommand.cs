@@ -41,11 +41,6 @@ internal sealed class PurgeDialogCommandHandler : IRequestHandler<PurgeDialogCom
 
     public async Task<PurgeDialogResult> Handle(PurgeDialogCommand request, CancellationToken cancellationToken)
     {
-        if (request.DisableAltinnEvents && !_userResourceRegistry.IsCurrentUserServiceOwnerAdmin())
-        {
-            return new Forbidden(Constants.DisableAltinnEventsRequiresAdminScope);
-        }
-
         var resourceIds = await _userResourceRegistry.GetCurrentUserResourceIds(cancellationToken);
 
         var dialog = await _db.Dialogs

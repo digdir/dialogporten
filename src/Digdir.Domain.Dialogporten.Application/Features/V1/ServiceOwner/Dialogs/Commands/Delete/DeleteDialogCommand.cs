@@ -43,11 +43,6 @@ internal sealed class DeleteDialogCommandHandler : IRequestHandler<DeleteDialogC
 
     public async Task<DeleteDialogResult> Handle(DeleteDialogCommand request, CancellationToken cancellationToken)
     {
-        if (request.DisableAltinnEvents && !_userResourceRegistry.IsCurrentUserServiceOwnerAdmin())
-        {
-            return new Forbidden(Constants.DisableAltinnEventsRequiresAdminScope);
-        }
-
         var resourceIds = await _userResourceRegistry.GetCurrentUserResourceIds(cancellationToken);
 
         var dialog = await _db.Dialogs

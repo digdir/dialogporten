@@ -27,7 +27,6 @@ public class CreateDialogTests
         var unitOfWorkSub = Substitute.For<IUnitOfWork>();
         var domainContextSub = Substitute.For<IDomainContext>();
         var resourceRegistrySub = Substitute.For<IResourceRegistry>();
-        var userResourceRegistrySub = Substitute.For<IUserResourceRegistry>();
         var serviceAuthorizationSub = Substitute.For<IServiceResourceAuthorizer>();
         var userSub = Substitute.For<IUser>();
 
@@ -43,7 +42,7 @@ public class CreateDialogTests
 
         var commandHandler = new CreateDialogCommandHandler(userSub, dialogDbContextSub,
             mapper, unitOfWorkSub, domainContextSub,
-            resourceRegistrySub, userResourceRegistrySub, serviceAuthorizationSub);
+            resourceRegistrySub, serviceAuthorizationSub);
 
         // Act
         var result = await commandHandler.Handle(createCommand, CancellationToken.None);
@@ -66,7 +65,6 @@ public class CreateDialogTests
         var unitOfWorkSub = Substitute.For<IUnitOfWork>();
         var domainContextSub = Substitute.For<IDomainContext>();
         var resourceRegistrySub = Substitute.For<IResourceRegistry>();
-        var userResourceRegistrySub = Substitute.For<IUserResourceRegistry>();
         var serviceAuthorizationSub = Substitute.For<IServiceResourceAuthorizer>();
         var userSub = Substitute.For<IUser>();
         var createCommand = DialogGenerator.GenerateSimpleFakeCreateDialogCommand();
@@ -81,7 +79,7 @@ public class CreateDialogTests
 
         var commandHandler = new CreateDialogCommandHandler(userSub, dialogDbContextSub,
             mapper, unitOfWorkSub, domainContextSub,
-            resourceRegistrySub, userResourceRegistrySub, serviceAuthorizationSub);
+            resourceRegistrySub, serviceAuthorizationSub);
 
         // Act
         var result = await commandHandler.Handle(createCommand, CancellationToken.None);
