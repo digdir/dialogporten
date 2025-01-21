@@ -193,13 +193,14 @@ public class WebApiClientTests(WebApiClientFixture fixture) : IClassFixture<WebA
         for (var i = 0; i < dialogsCreated; i++)
         {
             var createDialogCommand = CreateCommand();
+            createDialogCommand.SystemLabel = DialogEndUserContextsEntities_SystemLabel.Archive;
             var dialogId = await CreateDialog(createDialogCommand);
             dialogIds.Add(dialogId);
         }
         var param = new V1ServiceOwnerDialogsSearchSearchDialogQueryParams
         {
             CreatedAfter = dateOffset,
-            SystemLabel = [DialogEndUserContextsEntities_SystemLabel.Default]
+            SystemLabel = [DialogEndUserContextsEntities_SystemLabel.Archive]
         };
         var searchResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsSearchSearchDialog(param, CancellationToken.None);
         Assert.Equal(HttpStatusCode.OK, searchResponse.StatusCode);
