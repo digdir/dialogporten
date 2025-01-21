@@ -19,7 +19,7 @@ internal sealed class DialogEventToAltinnForwarder : DomainEventToAltinnForwarde
     [EndpointName("DialogEventToAltinnForwarder_DialogCreatedDomainEvent")]
     public async Task Handle(DialogCreatedDomainEvent domainEvent, CancellationToken cancellationToken)
     {
-        if (domainEvent.ShouldNotBeSentToAltinn())
+        if (domainEvent.ShouldNotBeSentToAltinnEvents())
         {
             return;
         }
@@ -42,7 +42,7 @@ internal sealed class DialogEventToAltinnForwarder : DomainEventToAltinnForwarde
     [EndpointName("DialogEventToAltinnForwarder_DialogUpdatedDomainEvent")]
     public async Task Handle(DialogUpdatedDomainEvent domainEvent, CancellationToken cancellationToken)
     {
-        if (domainEvent.ShouldNotBeSentToAltinn())
+        if (domainEvent.ShouldNotBeSentToAltinnEvents())
         {
             return;
         }
@@ -65,7 +65,7 @@ internal sealed class DialogEventToAltinnForwarder : DomainEventToAltinnForwarde
     [EndpointName("DialogEventToAltinnForwarder_DialogSeenDomainEvent")]
     public async Task Handle(DialogSeenDomainEvent domainEvent, CancellationToken cancellationToken)
     {
-        if (domainEvent.ShouldNotBeSentToAltinn())
+        if (domainEvent.ShouldNotBeSentToAltinnEvents())
         {
             return;
         }
@@ -88,7 +88,7 @@ internal sealed class DialogEventToAltinnForwarder : DomainEventToAltinnForwarde
     [EndpointName("DialogEventToAltinnForwarder_DialogDeletedDomainEvent")]
     public async Task Handle(DialogDeletedDomainEvent domainEvent, CancellationToken cancellationToken)
     {
-        if (domainEvent.ShouldNotBeSentToAltinn())
+        if (domainEvent.ShouldNotBeSentToAltinnEvents())
         {
             return;
         }

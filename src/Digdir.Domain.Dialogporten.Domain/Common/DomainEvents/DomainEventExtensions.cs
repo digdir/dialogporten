@@ -4,6 +4,6 @@ namespace Digdir.Domain.Dialogporten.Domain.Common.DomainEvents;
 
 public static class DomainEventExtensions
 {
-    public static bool ShouldNotBeSentToAltinn(this IDomainEvent domainEvent)
+    public static bool ShouldNotBeSentToAltinnEvents(this IDomainEvent domainEvent)
         => domainEvent.Metadata.TryGetValue(Constants.DisableAltinnEvents, out var value) && value == bool.TrueString;
 }
