@@ -34,14 +34,6 @@ internal sealed class ValidationBehaviour<TRequest, TResponse> : IPipelineBehavi
             return await next();
         }
 
-        foreach (var failure in failures)
-        {
-            if (failure.PropertyName.StartsWith("dto.", StringComparison.Ordinal))
-            {
-                failure.PropertyName = failure.PropertyName[4..];
-            }
-        }
-
         if (OneOfExtensions.TryConvertToOneOf<TResponse>(new ValidationError(failures), out var result))
         {
             return result;
