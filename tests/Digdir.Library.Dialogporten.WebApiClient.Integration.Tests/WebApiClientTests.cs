@@ -16,8 +16,8 @@ public class WebApiClientFixture : IDisposable
         var configuration = new ConfigurationBuilder()
             .AddUserSecrets<WebApiClientTests>()
             .AddEnvironmentVariables()
+            // .AddJsonFile("appsettings.local.json", optional: false, reloadOnChange: true)
             .Build();
-        // .AddJsonFile("appsettings.local.json", optional: false, reloadOnChange: true)
         var services = new ServiceCollection();
         services.AddSingleton<IConfiguration>(configuration);
 

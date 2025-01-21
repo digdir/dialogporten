@@ -23,9 +23,8 @@ public static class ServiceCollectionExtensions
             .GetSection("Ed25519Keys")
             .Get<Ed25519Keys>();
 
-        var keyPair = dialogportenSettings!.Primary;
-        var kid = keyPair.Kid;
-        Console.WriteLine(keyPair);
+        var keyPair = dialogportenSettings!.Primary ?? throw new ArgumentException("Missing Ed25519 key");
+        var kid = keyPair.Kid ?? throw new ArgumentException("Missing Ed25519 key id");
         var publicKey = PublicKey.Import(SignatureAlgorithm.Ed25519,
             Base64Url.DecodeFromChars(keyPair.PublicComponent), KeyBlobFormat.RawPublicKey);
         services.AddSingleton(new DialogTokenVerifier(kid, publicKey));
