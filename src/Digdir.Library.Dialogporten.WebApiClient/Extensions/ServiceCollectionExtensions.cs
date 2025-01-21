@@ -25,18 +25,10 @@ public static class ServiceCollectionExtensions
 
         var keyPair = dialogportenSettings!.Primary;
         var kid = keyPair.Kid;
-        try
-        {
-
-            var publicKey = PublicKey.Import(SignatureAlgorithm.Ed25519,
-                Base64Url.DecodeFromChars(keyPair.PublicComponent), KeyBlobFormat.RawPublicKey);
-            services.AddSingleton(new DialogTokenVerifier(kid, publicKey));
-            return services;
-        }
-        catch (Exception e)
-        {
-            throw new FormatException(keyPair.PublicComponent, e);
-        }
+        var publicKey = PublicKey.Import(SignatureAlgorithm.Ed25519,
+            Base64Url.DecodeFromChars(keyPair.PublicComponent), KeyBlobFormat.RawPublicKey);
+        services.AddSingleton(new DialogTokenVerifier(kid, publicKey));
+        return services;
     }
     public static IServiceCollection AddDialogportenClient(this IServiceCollection services)
     {
