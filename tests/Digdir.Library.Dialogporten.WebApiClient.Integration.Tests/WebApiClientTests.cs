@@ -1,5 +1,4 @@
 using System.Net;
-using Digdir.Library.Dialogporten.WebApiClient.Config;
 using Digdir.Library.Dialogporten.WebApiClient.Extensions;
 using Digdir.Library.Dialogporten.WebApiClient.Features.V1;
 using Microsoft.Extensions.Configuration;
@@ -57,7 +56,7 @@ public class WebApiClientTests(WebApiClientFixture fixture) : IClassFixture<WebA
         var getResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsGetGetDialog(dialogId, null!, CancellationToken.None);
         Assert.Equal(HttpStatusCode.NotFound, getResponse.StatusCode);
     }
-    private async Task<Guid> CreateDialog(V1ServiceOwnerDialogsCommandsCreate_DialogCommand createDialogCommand)
+    private async Task<Guid> CreateDialog(V1ServiceOwnerDialogsCommandsCreate_Dialog createDialogCommand)
     {
 
         var createResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsCreateDialog(createDialogCommand);
@@ -396,9 +395,9 @@ public class WebApiClientTests(WebApiClientFixture fixture) : IClassFixture<WebA
         };
         return createDialogCommand;
     }
-    private static V1ServiceOwnerDialogsCommandsCreate_DialogCommand CreateCommand()
+    private static V1ServiceOwnerDialogsCommandsCreate_Dialog CreateCommand()
     {
-        var createDialogCommand = new V1ServiceOwnerDialogsCommandsCreate_DialogCommand
+        var createDialogCommand = new V1ServiceOwnerDialogsCommandsCreate_Dialog
         {
             GuiActions = [],
             Activities =

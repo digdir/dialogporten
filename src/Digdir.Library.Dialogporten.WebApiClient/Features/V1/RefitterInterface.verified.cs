@@ -236,7 +236,7 @@ namespace Digdir.Library.Dialogporten.WebApiClient.Features.V1
         /// </returns>
         [Headers("Accept: application/json, application/problem+json")]
         [Post("/api/v1/serviceowner/dialogs")]
-        Task<IApiResponse<string>> V1ServiceOwnerDialogsCreateDialog([Body, AliasAs("CreateDialogCommand")] V1ServiceOwnerDialogsCommandsCreate_DialogCommand createDialogCommand, CancellationToken cancellationToken = default);
+        Task<IApiResponse<string>> V1ServiceOwnerDialogsCreateDialog([Body] V1ServiceOwnerDialogsCommandsCreate_Dialog dto, CancellationToken cancellationToken = default);
 
         /// <summary>Deletes a dialog</summary>
         /// <remarks>
@@ -1644,7 +1644,7 @@ namespace Digdir.Library.Dialogporten.WebApiClient.Features.V1
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.2.0.0 (NJsonSchema v11.1.0.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class V1ServiceOwnerDialogsCommandsCreate_DialogCommand
+    public partial class V1ServiceOwnerDialogsCommandsCreate_Dialog
     {
         /// <summary>
         /// An immutable list of activities associated with the dialog.

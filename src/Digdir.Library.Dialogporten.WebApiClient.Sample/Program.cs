@@ -122,9 +122,9 @@ if (purgeResponse.IsSuccessStatusCode)
 Console.WriteLine("== End Purge Dialog ==");
 return;
 
-static V1ServiceOwnerDialogsCommandsCreate_DialogCommand CreateCommand()
+static V1ServiceOwnerDialogsCommandsCreate_Dialog CreateCommand()
 {
-    return new V1ServiceOwnerDialogsCommandsCreate_DialogCommand
+    return new V1ServiceOwnerDialogsCommandsCreate_Dialog
     {
         Activities = [],
         ApiActions = [],
