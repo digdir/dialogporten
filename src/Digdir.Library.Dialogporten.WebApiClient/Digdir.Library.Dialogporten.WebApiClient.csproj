@@ -4,7 +4,6 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <PackageReadmeFile>README.md</PackageReadmeFile>
-        <PackageReleaseNotes>Link to release notes.</PackageReleaseNotes>
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
         <Company>Digitaliseringsdirektoratet</Company>
         <PackageTags>digdir;altinn;dialogporten</PackageTags>

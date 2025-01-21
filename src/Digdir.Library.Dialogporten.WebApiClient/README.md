@@ -27,31 +27,33 @@ services.AddSingleton<IConfiguration>(configuration);
 
 services.AddDialogportenClient();
 services.AddDialogTokenVerifer();
+
 var dialogportenClient = serviceProvider.GetRequiredService<IServiceownerApi>();
+var verifier = serviceProvider.GetRequiredService<DialogTokenVerifier>();
 ```
 
 AppSettings
 
 ```JSON
 {
-  "DialogportenSettings": {
-    "Environment": "",
-    "Maskinporten": {
-      "ClientId": "",
-      "Scope": "",
-      "EncodedJwk": ""
-    }
-  },
-  "Ed25519Keys": {
-    "Primary": {
-      "Kid": "",
-      "PublicComponent": ""
+    "DialogportenSettings": {
+        "Environment": "",
+        "Maskinporten": {
+            "ClientId": "",
+            "Scope": "",
+            "EncodedJwk": ""
+        }
     },
-    "Secondary": {
-      "Kid": "",
-      "PublicComponent": ""
+    "Ed25519Keys": {
+        "Primary": {
+            "Kid": "",
+            "PublicComponent": ""
+        },
+        "Secondary": {
+            "Kid": "",
+            "PublicComponent": ""
+        }
     }
-  }
 } 
 ```
 
