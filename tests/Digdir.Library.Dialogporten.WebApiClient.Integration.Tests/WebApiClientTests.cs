@@ -35,7 +35,6 @@ public class WebApiClientFixture : IDisposable
 
 public class WebApiClientTests(WebApiClientFixture fixture) : IClassFixture<WebApiClientFixture>, IDisposable
 {
-    private readonly List<Guid> _dialogIds = [];
     [Fact]
     public async Task Create_Invalid_Dialog_Returns_400()
     {
@@ -74,7 +73,6 @@ public class WebApiClientTests(WebApiClientFixture fixture) : IClassFixture<WebA
     {
         var createDialogCommand = CreateCommand();
         var dialogId = await CreateDialog(createDialogCommand);
-        _dialogIds.Add(dialogId);
 
         List<JsonPatchOperations_Operation> patchDocument =
         [
@@ -88,13 +86,15 @@ public class WebApiClientTests(WebApiClientFixture fixture) : IClassFixture<WebA
         ];
         var patchResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsPatchDialog(dialogId, patchDocument, null, CancellationToken.None);
         Assert.Equal(HttpStatusCode.BadRequest, patchResponse.StatusCode);
+
+        var purgeResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsPurgePurgeDialog(dialogId, null);
+        Assert.Equal(HttpStatusCode.NoContent, purgeResponse.StatusCode);
     }
     [Fact]
     public async Task Patch_Dialog_Returns_204()
     {
         var createDialogCommand = CreateCommand();
         var dialogId = await CreateDialog(createDialogCommand);
-        _dialogIds.Add(dialogId);
 
         List<JsonPatchOperations_Operation> patchDocument =
         [
@@ -113,6 +113,9 @@ public class WebApiClientTests(WebApiClientFixture fixture) : IClassFixture<WebA
 
         Assert.Equal(HttpStatusCode.OK, getResponse.StatusCode);
         Assert.Equal(50, getResponse.Content!.Progress);
+
+        var purgeResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsPurgePurgeDialog(dialogId, null);
+        Assert.Equal(HttpStatusCode.NoContent, purgeResponse.StatusCode);
     }
 
     [Fact]
@@ -124,26 +127,29 @@ public class WebApiClientTests(WebApiClientFixture fixture) : IClassFixture<WebA
         var getResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsGetGetDialog(dialogId, null!, CancellationToken.None);
 
         Assert.Equal(HttpStatusCode.OK, getResponse.StatusCode);
-        _dialogIds.Add(dialogId);
+
+        var purgeResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsPurgePurgeDialog(dialogId, null);
+        Assert.Equal(HttpStatusCode.NoContent, purgeResponse.StatusCode);
     }
     [Fact]
     public async Task Update_Invalid_Dialog_Returns_400()
     {
         var createDialogCommand = CreateCommand();
         var dialogId = await CreateDialog(createDialogCommand);
-        _dialogIds.Add(dialogId);
 
         var updateDialogCommand = UpdateCommand();
         updateDialogCommand.Progress = 200;
         var updateResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsUpdateDialog(dialogId, updateDialogCommand, null!, CancellationToken.None);
         Assert.Equal(HttpStatusCode.BadRequest, updateResponse.StatusCode);
+
+        var purgeResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsPurgePurgeDialog(dialogId, null);
+        Assert.Equal(HttpStatusCode.NoContent, purgeResponse.StatusCode);
     }
     [Fact]
     public async Task Update_Dialog_Returns_204()
     {
         var createDialogCommand = CreateCommand();
         var dialogId = await CreateDialog(createDialogCommand);
-        _dialogIds.Add(dialogId);
 
         var updateDialogCommand = UpdateCommand();
         var updateResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsUpdateDialog(dialogId, updateDialogCommand, null!, CancellationToken.None);
@@ -152,6 +158,10 @@ public class WebApiClientTests(WebApiClientFixture fixture) : IClassFixture<WebA
         var getResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsGetGetDialog(dialogId, null!);
         Assert.Equal(HttpStatusCode.OK, getResponse.StatusCode);
         Assert.Equal(updateDialogCommand.Progress, getResponse.Content!.Progress);
+
+
+        var purgeResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsPurgePurgeDialog(dialogId, null);
+        Assert.Equal(HttpStatusCode.NoContent, purgeResponse.StatusCode);
     }
     [Fact]
     public async Task Search_Dialog_Returns_200()
@@ -160,7 +170,6 @@ public class WebApiClientTests(WebApiClientFixture fixture) : IClassFixture<WebA
         var dateOffset = DateTimeOffset.UtcNow;
         var createDialogCommand = CreateCommand();
         var dialogId = await CreateDialog(createDialogCommand);
-        _dialogIds.Add(dialogId);
         var param = new V1ServiceOwnerDialogsSearchSearchDialogQueryParams
         {
             CreatedAfter = dateOffset
@@ -170,6 +179,8 @@ public class WebApiClientTests(WebApiClientFixture fixture) : IClassFixture<WebA
         Assert.NotNull(searchResponse.Content);
         Assert.Single(searchResponse.Content!.Items);
 
+        var purgeResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsPurgePurgeDialog(dialogId, null);
+        Assert.Equal(HttpStatusCode.NoContent, purgeResponse.StatusCode);
     }
 
     [Fact]
@@ -177,11 +188,12 @@ public class WebApiClientTests(WebApiClientFixture fixture) : IClassFixture<WebA
     {
         var dateOffset = DateTime.UtcNow;
         var dialogsCreated = 5;
+        var dialogIds = new List<Guid>();
         for (var i = 0; i < dialogsCreated; i++)
         {
             var createDialogCommand = CreateCommand();
             var dialogId = await CreateDialog(createDialogCommand);
-            _dialogIds.Add(dialogId);
+            dialogIds.Add(dialogId);
         }
         var param = new V1ServiceOwnerDialogsSearchSearchDialogQueryParams
         {
@@ -191,6 +203,11 @@ public class WebApiClientTests(WebApiClientFixture fixture) : IClassFixture<WebA
         Assert.Equal(HttpStatusCode.OK, searchResponse.StatusCode);
         Assert.NotNull(searchResponse.Content);
         Assert.Equal(dialogsCreated, searchResponse.Content!.Items.Count);
+        for (var i = 0; i < dialogsCreated; i++)
+        {
+            var purgeResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsPurgePurgeDialog(dialogIds[i], null);
+            Assert.Equal(HttpStatusCode.NoContent, purgeResponse.StatusCode);
+        }
     }
 
     [Fact]
@@ -198,7 +215,6 @@ public class WebApiClientTests(WebApiClientFixture fixture) : IClassFixture<WebA
     {
         var createDialogCommand = CreateCommand();
         var dialogId = await CreateDialog(createDialogCommand);
-        _dialogIds.Add(dialogId);
 
         var deleteResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsDeleteDialog(dialogId, null);
         Assert.Equal(HttpStatusCode.NoContent, deleteResponse.StatusCode);
@@ -207,6 +223,8 @@ public class WebApiClientTests(WebApiClientFixture fixture) : IClassFixture<WebA
         Assert.Equal(HttpStatusCode.OK, getResponse.StatusCode);
         Assert.NotNull(getResponse.Content!.DeletedAt);
 
+        var purgeResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsPurgePurgeDialog(dialogId, null);
+        Assert.Equal(HttpStatusCode.NoContent, purgeResponse.StatusCode);
     }
 
     [Fact]
@@ -216,7 +234,6 @@ public class WebApiClientTests(WebApiClientFixture fixture) : IClassFixture<WebA
         var createDialogCommand = CreateCommand();
         createDialogCommand.Transmissions = [];
         var dialogId = await CreateDialog(createDialogCommand);
-        _dialogIds.Add(dialogId);
         var createTransmission = new V1ServiceOwnerDialogTransmissionsCreate_TransmissionRequest
         {
             Attachments = [],
@@ -255,6 +272,10 @@ public class WebApiClientTests(WebApiClientFixture fixture) : IClassFixture<WebA
         };
         var transmissionResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogTransmissionsCreateDialogTransmission(dialogId, createTransmission, null!);
         Assert.Equal(HttpStatusCode.Created, transmissionResponse.StatusCode);
+
+
+        var purgeResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsPurgePurgeDialog(dialogId, null);
+        Assert.Equal(HttpStatusCode.NoContent, purgeResponse.StatusCode);
 
     }
     private static V1ServiceOwnerDialogsCommandsUpdate_Dialog UpdateCommand()
@@ -531,13 +552,8 @@ public class WebApiClientTests(WebApiClientFixture fixture) : IClassFixture<WebA
         return createDialogCommand;
     }
 
-    public async void Dispose()
+    public void Dispose()
     {
-        foreach (var dialogId in _dialogIds)
-        {
-            var purgeResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsPurgePurgeDialog(dialogId, null!);
-            Assert.True(purgeResponse.IsSuccessStatusCode);
-        }
         GC.SuppressFinalize(this);
     }
 }
