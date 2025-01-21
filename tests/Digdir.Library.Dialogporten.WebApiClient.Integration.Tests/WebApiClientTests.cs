@@ -159,7 +159,6 @@ public class WebApiClientTests(WebApiClientFixture fixture) : IClassFixture<WebA
         Assert.Equal(HttpStatusCode.OK, getResponse.StatusCode);
         Assert.Equal(updateDialogCommand.Progress, getResponse.Content!.Progress);
 
-
         var purgeResponse = await fixture.DialogportenClient.V1ServiceOwnerDialogsPurgePurgeDialog(dialogId, null);
         Assert.Equal(HttpStatusCode.NoContent, purgeResponse.StatusCode);
     }
@@ -398,7 +397,6 @@ public class WebApiClientTests(WebApiClientFixture fixture) : IClassFixture<WebA
     }
     private static V1ServiceOwnerDialogsCommandsCreate_DialogCommand CreateCommand()
     {
-        var now = DateTimeOffset.UtcNow;
         var createDialogCommand = new V1ServiceOwnerDialogsCommandsCreate_DialogCommand
         {
             GuiActions = [],
@@ -406,7 +404,6 @@ public class WebApiClientTests(WebApiClientFixture fixture) : IClassFixture<WebA
             [
                 new V1ServiceOwnerDialogsCommandsCreate_Activity
                 {
-                    CreatedAt = now,
                     Description =
                     [
                         new V1CommonLocalizations_Localization
