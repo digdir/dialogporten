@@ -23,12 +23,28 @@ public static class ServiceCollectionExtensions
             .GetSection("Ed25519Keys")
             .Get<Ed25519Keys>();
 
-        var keyPair = dialogportenSettings!.Primary ?? throw new ArgumentException("Missing Ed25519 key");
-        var kid = keyPair.Kid ?? throw new ArgumentException("Missing Ed25519 key id");
-        var publicKey = PublicKey.Import(SignatureAlgorithm.Ed25519,
-            Base64Url.DecodeFromChars(keyPair.PublicComponent), KeyBlobFormat.RawPublicKey);
-        services.AddSingleton(new DialogTokenVerifier(kid, publicKey));
-        return services;
+        var keyPair = dialogportenSettings!.Primary;
+        if (keyPair == null)
+        {
+            throw new ArgumentException("Missing Ed25519 key");
+        }
+        var kid = keyPair.Kid;
+        if (kid == null)
+        {
+            throw new ArgumentException("Missing Ed25519 key id");
+        }
+        try
+        {
+
+            var publicKey = PublicKey.Import(SignatureAlgorithm.Ed25519,
+                Base64Url.DecodeFromChars(keyPair.PublicComponent), KeyBlobFormat.RawPublicKey);
+            services.AddSingleton(new DialogTokenVerifier(kid, publicKey));
+            return services;
+        }
+        catch (Exception e)
+        {
+            throw new FormatException(keyPair.PublicComponent, e);
+        }
     }
     public static IServiceCollection AddDialogportenClient(this IServiceCollection services)
     {
