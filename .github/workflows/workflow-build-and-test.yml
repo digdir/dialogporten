@@ -3,6 +3,17 @@ name: Build and test .NET
 on:
   workflow_dispatch:
   workflow_call:
+    secrets:
+      DIALOGPORTEN_MASKINPORTEN_ENCODEDJWK:
+        required: true
+      DIALOGPORTEN_MASKINPORTEN_CLIENTID:
+        required: true
+      DIALOGPORTEN_MASKINPORTEN_SCOPE:
+        required: true
+      ED25519KEYS_PRIMARY_KID:
+        required: true
+      ED25519KEYS_PRIMARY_PUBLICCOMPONENT:
+        required: true
 
 jobs:
   build-and-test:

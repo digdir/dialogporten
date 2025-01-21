@@ -23,6 +23,12 @@ jobs:
     uses: ./.github/workflows/workflow-build-and-test.yml
     needs: [ check-for-changes ]
     if: ${{ needs.check-for-changes.outputs.hasBackendChanges == 'true' || needs.check-for-changes.outputs.hasTestChanges == 'true' }}
+    secrets:
+      DIALOGPORTEN_MASKINPORTEN_ENCODEDJWK: ${{ secrets.DIALOGPORTEN_MASKINPORTEN_ENCODEDJWK }}
+      DIALOGPORTEN_MASKINPORTEN_CLIENTID: ${{ secrets.DIALOGPORTEN_MASKINPORTEN_CLIENTID }}
+      DIALOGPORTEN_MASKINPORTEN_SCOPE: ${{ secrets.DIALOGPORTEN_MASKINPORTEN_SCOPE }}
+      ED25519KEYS_PRIMARY_KID: ${{ secrets.ED25519KEYS_PRIMARY_KID }}
+      ED25519KEYS_PRIMARY_PUBLICCOMPONENT: ${{ secrets.ED25519KEYS_PRIMARY_PUBLICCOMPONENT }}
   
   build-infrastructure:
     uses: ./.github/workflows/workflow-build-infrastructure.yml
