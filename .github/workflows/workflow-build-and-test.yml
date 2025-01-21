@@ -26,7 +26,7 @@ jobs:
           DialogportenSettings:Environment: "test"
           DialogportenSettings:Maskinporten:ClientId: "${{secrets.DIALOGPORTEN_MASKINPORTEN_CLIENTID}}"
           DialogportenSettings:Maskinporten:Scope: "${{secrets.DIALOGPORTEN_MASKINPORTEN_SCOPE}}"
-          DialogportenSettings:Maskinporten:EncodedJwk: ${{secrets.DIALOGPORTEN_MASKINPORTEN_ENCODEDJWK}}
-          Ed25519Keys:Primary:Kid: ${{secrets.ED25519KEYS_PRIMARY_KID}}
-          Ed25519Keys:Primary:PublicComponent: ${{secrets.ED25519KEYS_PRIMARY_PUBLICCOMPONENT}}
+          DialogportenSettings:Maskinporten:EncodedJwk: "${{secrets.DIALOGPORTEN_MASKINPORTEN_ENCODEDJWK}}"
+          Ed25519Keys:Primary:Kid: "${{secrets.ED25519KEYS_PRIMARY_KID}}"
+          Ed25519Keys:Primary:PublicComponent: "${{secrets.ED25519KEYS_PRIMARY_PUBLICCOMPONENT}}"
         run: dotnet test --no-build --configuration Release
