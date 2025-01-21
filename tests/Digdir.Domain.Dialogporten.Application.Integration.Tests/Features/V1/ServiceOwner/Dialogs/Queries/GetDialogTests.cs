@@ -18,7 +18,6 @@ public class GetDialogTests : ApplicationCollectionFixture
         var expectedDialogId = IdentifiableExtensions.CreateVersion7();
         var createDialogCommand = DialogGenerator.GenerateSimpleFakeCreateDialogCommand(id: expectedDialogId);
         var createCommandResponse = await Application.Send(createDialogCommand);
-        var dto = createDialogCommand.Dto;
 
         // Act
         var response = await Application.Send(new GetDialogQuery { DialogId = createCommandResponse.AsT0.DialogId });
@@ -39,7 +38,6 @@ public class GetDialogTests : ApplicationCollectionFixture
         var expectedDialogId = IdentifiableExtensions.CreateVersion7();
         var createCommand = DialogGenerator.GenerateFakeCreateDialogCommand(id: expectedDialogId);
         var createCommandResponse = await Application.Send(createCommand);
-        var dto = createCommand.Dto;
 
         // Act
         var response = await Application.Send(new GetDialogQuery { DialogId = createCommandResponse.AsT0.DialogId });
