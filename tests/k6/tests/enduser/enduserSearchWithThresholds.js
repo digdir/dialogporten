@@ -5,7 +5,7 @@ export let options = {
     vus: 1,
     duration: "30s",
     thresholds: {
-        "http_req_duration{name:enduser search}": ["p(95)<300", "p(99)<500"],
+        "http_req_duration{name:enduser search}": ["p(95)<30", "p(99)<50"],
         "http_req_duration{name:get dialog}": ["p(95)<300", "p(99)<500"],
         "http_req_duration{name:get dialog activities}": ["p(95)<300", "p(99)<500"],
         "http_req_duration{name:get dialog activity}": ["p(95)<300", "p(99)<500"],

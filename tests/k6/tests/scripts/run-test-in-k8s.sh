@@ -155,7 +155,7 @@ kubectl wait --for=jsonpath='{.status.stage}'=finished testrun/$name --timeout=$
 print_logs
 
 cleanup() {
-    #local exit_code=$?
+    local exit_code=$failed
     echo "Sleeping for 15s and then cleaning up resources..."
     sleep 15
     if [ -f "config.yml" ]; then
@@ -169,7 +169,6 @@ cleanup() {
     
     rm -f archive.tar
     
-    #exit $exit_code
+    exit $exit_code
 }
-cleanup
-exit $failed
+cleanup EXIT
