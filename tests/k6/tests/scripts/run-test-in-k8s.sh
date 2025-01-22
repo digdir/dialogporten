@@ -171,4 +171,4 @@ cleanup() {
     
     exit $exit_code
 }
-cleanup EXIT
+trap cleanup EXIT
