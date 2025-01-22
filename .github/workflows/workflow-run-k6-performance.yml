@@ -32,14 +32,11 @@ on:
         required: true
 permissions:
   id-token: write
-  contents: write
+  contents: read
 jobs:
   k6-test:
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
-    permissions:
-      checks: write
-      pull-requests: write
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
