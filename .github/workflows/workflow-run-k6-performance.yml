@@ -45,7 +45,7 @@ jobs:
       with:
         client-id: ${{ secrets.AZURE_CLIENT_ID }}
         tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-        subscription-id: "1ce8e9af-c2d6-44e7-9c5e-099a308056fe"
+        allow-no-subscriptions: true
     - name: Populate kubeconfig with k6 context
       id: populate_kubeconfig_with_k6_context
       shell: bash
