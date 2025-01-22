@@ -3,6 +3,8 @@
 tokengenuser=${TOKEN_GENERATOR_USERNAME}
 tokengenpasswd=${TOKEN_GENERATOR_PASSWORD}
 
+kubectl config set-context --current --namespace=dialogporten
+
 # Validate required environment variables
 if [ -z "$TOKEN_GENERATOR_USERNAME" ] || [ -z "$TOKEN_GENERATOR_PASSWORD" ]; then
     echo "Error: TOKEN_GENERATOR_USERNAME and TOKEN_GENERATOR_PASSWORD must be set"
@@ -28,16 +30,16 @@ print_logs() {
     K8S_NAMESPACE="${K8S_NAMESPACE:-default}"
     LOG_TIMEOUT="${LOG_TIMEOUT:-60}"
     # Verify kubectl access
-    if ! kubectl -n dialogporten --context "$K8S_CONTEXT" -n "$K8S_NAMESPACE" get pods &>/dev/null; then
+    if ! kubectl get pods &>/dev/null; then
         echo "Error: Failed to access Kubernetes cluster"
         return 1
     fi
-    for pod in $(kubectl -n dialogporten --context "$K8S_CONTEXT" -n "$K8S_NAMESPACE" get pods -l "$POD_LABEL" -o name); do 
+    for pod in $(kubectl get pods -l "$POD_LABEL" -o name); do 
         if [[ $pod != *"initializer"* ]]; then
             echo ---------------------------
             echo $pod
             echo ---------------------------
-            kubectl -n dialogporten --context "$K8S_CONTEXT" -n "$K8S_NAMESPACE" logs --tail=-1 $pod
+            kubectl logs --tail=-1 $pod
         fi
     done
 }
@@ -102,7 +104,7 @@ if ! k6 archive $filename -e API_VERSION=v1 -e API_ENVIRONMENT=yt01 -e TOKEN_GEN
     exit 1
 fi
 # Create the configmap from the archive
-if ! kubectl -n dialogporten create configmap $configmapname --from-file=archive.tar; then
+if ! kubectl create configmap $configmapname --from-file=archive.tar; then
     echo "Error: Failed to create configmap"
     rm archive.tar
     exit 1
@@ -137,11 +139,11 @@ spec:
     
 EOF
 # Apply the config.yml configuration
-kubectl apply -f config.yml -n dialogporten
+kubectl apply -f config.yml
 
 # Wait for the job to finish
 wait_timeout="${duration}100s"
-kubectl --context k6tests-cluster -n dialogporten wait --for=jsonpath='{.status.stage}'=finished testrun/$name --timeout=$wait_timeout
+kubectl wait --for=jsonpath='{.status.stage}'=finished testrun/$name --timeout=$wait_timeout
 sleep 60
 # Print the logs of the pods
 print_logs
@@ -151,12 +153,12 @@ cleanup() {
     echo "Sleeping for 15s and then cleaning up resources..."
     sleep 15
     if [ -f "config.yml" ]; then
-        kubectl delete -f config.yml -n dialogporten --ignore-not-found || true
+        kubectl delete -f config.yml --ignore-not-found || true
         rm -f config.yml
     fi
     
-    if kubectl -n dialogporten get configmap $configmapname &>/dev/null; then
-        kubectl -n dialogporten delete configmap $configmapname --ignore-not-found || true
+    if kubectl get configmap $configmapname &>/dev/null; then
+        kubectl delete configmap $configmapname --ignore-not-found || true
     fi
     
     rm -f archive.tar
