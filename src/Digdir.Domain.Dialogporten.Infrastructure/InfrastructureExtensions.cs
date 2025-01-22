@@ -167,7 +167,7 @@ public static class InfrastructureExtensions
             Duration = TimeSpan.FromMinutes(20)
         });
 
-        if (environment.Equals("yt01"))
+        if (environment.IsEnvironment("yt01"))
         {
             services.ReplaceTransient<ICloudEventBus, ConsoleLogEventBus>();
         }
