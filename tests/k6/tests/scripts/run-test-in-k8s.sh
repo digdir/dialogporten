@@ -165,4 +165,4 @@ cleanup() {
     
     exit $exit_code
 }
-#trap cleanup EXIT
+trap cleanup EXIT
