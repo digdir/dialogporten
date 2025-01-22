@@ -31,6 +31,11 @@ on:
         required: true
         default: 1m
         type: string
+      parallelism:
+        description: 'Number of parallel test runs'
+        required: true
+        default: 1
+        type: number  
       testSuitePath:
         description: 'Path to test suite to run'
         required: true
@@ -58,4 +63,5 @@ jobs:
       testSuitePath: ${{ inputs.testSuitePath }}
       vus: ${{ fromJson(inputs.vus) }}
       duration: ${{ inputs.duration }}
+      parallelism: ${{ fromJson(inputs.parallelism) }}
 

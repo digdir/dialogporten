@@ -115,7 +115,7 @@ kind: TestRun
 metadata:
   name: $name
 spec:
-  arguments: --out experimental-prometheus-rw --vus=$vus --duration=$duration
+  arguments: --out experimental-prometheus-rw --vus=$vus --duration=$duration --tag testid=$testid
   parallelism: $parallelism
   script:
     configMap:
@@ -130,6 +130,9 @@ spec:
     metadata:
       labels:
         k6-test: $name
+    resources:
+      requests:
+        memory: "200Mi"
     
 EOF
 # Apply the config.yml configuration
@@ -138,14 +141,14 @@ kubectl apply -f config.yml
 # Wait for the job to finish
 wait_timeout="${duration}100s"
 kubectl --context k6tests-cluster wait --for=jsonpath='{.status.stage}'=finished testrun/$name --timeout=$wait_timeout
-
+sleep 60
 # Print the logs of the pods
 print_logs
 
 cleanup() {
     local exit_code=$?
-    echo "Cleaning up resources..."
-    
+    echo "Sleeping for 15s and then cleaning up resources..."
+    sleep 15
     if [ -f "config.yml" ]; then
         kubectl delete -f config.yml --ignore-not-found || true
         rm -f config.yml
@@ -159,4 +162,4 @@ cleanup() {
     
     exit $exit_code
 }
-trap cleanup EXIT
+#trap cleanup EXIT
