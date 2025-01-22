@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.47.1](https://github.com/Altinn/dialogporten/compare/v1.47.0...v1.47.1) (2025-01-22)
+
+
+### Bug Fixes
+
+* **service:** Set minimum log level Information for ConsoleLogEventBus ([#1725](https://github.com/Altinn/dialogporten/issues/1725)) ([247a325](https://github.com/Altinn/dialogporten/commit/247a32503c62fea09048bddf3debc80b1a3f663a))
+
 ## [1.47.0](https://github.com/Altinn/dialogporten/compare/v1.46.0...v1.47.0) (2025-01-22)
 
 
