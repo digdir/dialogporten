@@ -2,6 +2,7 @@
 
 tokengenuser=${TOKEN_GENERATOR_USERNAME}
 tokengenpasswd=${TOKEN_GENERATOR_PASSWORD}
+failed=0
 
 kubectl config set-context --current --namespace=dialogporten
 
@@ -29,6 +30,7 @@ print_logs() {
     K8S_CONTEXT="${K8S_CONTEXT:-k6tests-cluster}"
     K8S_NAMESPACE="${K8S_NAMESPACE:-default}"
     LOG_TIMEOUT="${LOG_TIMEOUT:-60}"
+    
     # Verify kubectl access
     if ! kubectl get pods &>/dev/null; then
         echo "Error: Failed to access Kubernetes cluster"
@@ -40,6 +42,11 @@ print_logs() {
             echo $pod
             echo ---------------------------
             kubectl logs --tail=-1 $pod
+            status=`kubectl get $pod -o jsonpath='{.status.phase}'`
+            if [ "$status" != "Succeeded" ]; then
+                failed=1
+            fi
+            echo
         fi
     done
 }
@@ -144,12 +151,11 @@ kubectl apply -f config.yml
 # Wait for the job to finish
 wait_timeout="${duration}100s"
 kubectl wait --for=jsonpath='{.status.stage}'=finished testrun/$name --timeout=$wait_timeout
-sleep 30
 # Print the logs of the pods
 print_logs
 
 cleanup() {
-    local exit_code=$?
+    #local exit_code=$?
     echo "Sleeping for 15s and then cleaning up resources..."
     sleep 15
     if [ -f "config.yml" ]; then
@@ -163,6 +169,7 @@ cleanup() {
     
     rm -f archive.tar
     
-    exit $exit_code
+    #exit $exit_code
 }
-trap cleanup EXIT
+cleanup
+exit $failed
