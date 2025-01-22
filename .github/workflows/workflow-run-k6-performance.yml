@@ -32,7 +32,7 @@ on:
         required: true
 permissions:
   id-token: write
-  contents: read
+  contents: write
 jobs:
   k6-test:
     runs-on: ubuntu-latest
