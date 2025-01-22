@@ -26,6 +26,10 @@ on:
         required: true
       TOKEN_GENERATOR_PASSWORD:
         required: true
+      AZURE_CLIENT_ID:
+        required: true
+      AZURE_TENANT_ID:
+        required: true
 jobs:
   k6-test:
     runs-on: ubuntu-latest
@@ -41,7 +45,6 @@ jobs:
       with:
         client-id: ${{ secrets.AZURE_CLIENT_ID }}
         tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
     - name: Populate kubeconfig with k6 context
       id: populate_kubeconfig_with_k6_context
       shell: bash
