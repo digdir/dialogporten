@@ -144,7 +144,7 @@ kubectl apply -f config.yml
 # Wait for the job to finish
 wait_timeout="${duration}100s"
 kubectl wait --for=jsonpath='{.status.stage}'=finished testrun/$name --timeout=$wait_timeout
-sleep 60
+sleep 30
 # Print the logs of the pods
 print_logs
 
@@ -165,4 +165,4 @@ cleanup() {
     
     exit $exit_code
 }
-#trap cleanup EXIT
+trap cleanup EXIT
