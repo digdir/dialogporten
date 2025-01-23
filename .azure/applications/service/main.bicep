@@ -42,7 +42,7 @@ param appConfigurationName string
 @minLength(3)
 param environmentKeyVaultName string
 
-@description('The percentage of traces to sample')
+@description('The ratio of traces to sample (between 0.0 and 1.0). Lower values reduce logging volume.')
 @minLength(1)
 param otelTraceSamplerRatio string
 
