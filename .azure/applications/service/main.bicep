@@ -42,6 +42,10 @@ param appConfigurationName string
 @minLength(3)
 param environmentKeyVaultName string
 
+@description('The percentage of traces to sample')
+@minLength(1)
+param otelTraceSamplerPercentage string
+
 @description('The scaling configuration for the container app')
 param scale Scale = {
   minReplicas: 2
@@ -115,6 +119,14 @@ var containerAppEnvVars = [
   {
     name: 'Infrastructure__MassTransit__Host'
     value: 'sb://${serviceBusNamespaceName}.servicebus.windows.net/'
+  }
+  {
+    name: 'OTEL_TRACES_SAMPLER'
+    value: 'parentbased_traceidratio'
+  }
+  {
+    name: 'OTEL_TRACES_SAMPLER_ARG'
+    value: otelTraceSamplerPercentage
   }
 ]
 
