@@ -44,7 +44,7 @@ param environmentKeyVaultName string
 
 @description('The percentage of traces to sample')
 @minLength(1)
-param otelTraceSamplerPercentage string
+param otelTraceSamplerRatio string
 
 @description('The scaling configuration for the container app')
 param scale Scale = {
@@ -126,7 +126,7 @@ var containerAppEnvVars = [
   }
   {
     name: 'OTEL_TRACES_SAMPLER_ARG'
-    value: otelTraceSamplerPercentage
+    value: otelTraceSamplerRatio
   }
 ]
 
