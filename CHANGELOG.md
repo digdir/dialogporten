@@ -1,5 +1,33 @@
 # Changelog
 
+## [1.47.2](https://github.com/Altinn/dialogporten/compare/v1.47.1...v1.47.2) (2025-01-23)
+
+
+### Bug Fixes
+
+* **service:** Avoid too many logs in app insights ([#1730](https://github.com/Altinn/dialogporten/issues/1730)) ([4fd2497](https://github.com/Altinn/dialogporten/commit/4fd2497fd55ad77f0c90116064a2414c700d9f34))
+
+## [1.47.1](https://github.com/Altinn/dialogporten/compare/v1.47.0...v1.47.1) (2025-01-22)
+
+
+### Bug Fixes
+
+* **service:** Set minimum log level Information for ConsoleLogEventBus ([#1725](https://github.com/Altinn/dialogporten/issues/1725)) ([247a325](https://github.com/Altinn/dialogporten/commit/247a32503c62fea09048bddf3debc80b1a3f663a))
+
+## [1.47.0](https://github.com/Altinn/dialogporten/compare/v1.46.0...v1.47.0) (2025-01-22)
+
+
+### Features
+
+* Manual release ([#1723](https://github.com/Altinn/dialogporten/issues/1723)) ([6d093d1](https://github.com/Altinn/dialogporten/commit/6d093d1b5fde84f8e58546d6a64dd553cb3eddab))
+
+## [1.46.0](https://github.com/Altinn/dialogporten/compare/v1.45.1...v1.46.0) (2025-01-21)
+
+
+### Features
+
+* **webapi:** Add option to disable Altinn event generation ([#1633](https://github.com/Altinn/dialogporten/issues/1633)) ([dda7c1f](https://github.com/Altinn/dialogporten/commit/dda7c1f8ece73c092a62fbe1bae42bb553b1e1d5))
+
 ## [1.45.1](https://github.com/Altinn/dialogporten/compare/v1.45.0...v1.45.1) (2025-01-18)
 
 
