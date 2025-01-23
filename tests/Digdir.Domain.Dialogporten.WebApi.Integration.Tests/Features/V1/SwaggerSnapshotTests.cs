@@ -2,7 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously. If tests are run in DEBUG mode, this is expected.
 
 namespace Digdir.Domain.Dialogporten.WebApi.Integration.Tests.Features.V1;
 
@@ -30,17 +30,16 @@ public class SwaggerSnapshotTests : IClassFixture<WebApplicationFactory<Program>
         // Act
         var newSwagger = File.ReadAllText(newSwaggerPath);
 
-        // Amund: Stemmer dette lenger?
         // The order of the properties in the swagger.json file is not cross-platform deterministic.
-        // Running client.GetAsync("/swagger/v1/swagger.json"); on Windows and Mac will produce
+        // Running Nswag on Windows and Mac will produce
         // different ordering of the results (although the content is the same). So we force an
         // alphabetical ordering of the properties to make the test deterministic.
         // Ref: https://github.com/altinn/dialogporten/issues/996
-        // var orderedSwagger = SortJson(newSwagger);
+        var orderedSwagger = SortJson(newSwagger);
 
         // Assert
 
-        await Verify(newSwagger, extension: "json")
+        await Verify(orderedSwagger, extension: "json")
             .UseFileName("swagger")
             .UseDirectory(swaggerPath);
 #else
