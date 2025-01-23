@@ -1,6 +1,9 @@
+#if DEBUG
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously.
+#endif
+
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously. If tests are run in DEBUG mode, this is expected.
 
 namespace Digdir.Domain.Dialogporten.WebApi.Unit.Tests.Features.V1;
 
@@ -35,7 +38,8 @@ public class SwaggerSnapshotTests
             .UseFileName("swagger")
             .UseDirectory(swaggerPath);
 #else
-        Assert.Fail("Swagger snapshot tests are not supported in DEBUG mode. Swagger is NOT generated in DEBUG mode, this is to keep build times low. therefore this test will always fail. Run in RELEASE mode to enable.");
+        Assert.Fail(
+            "Swagger snapshot tests are not supported in DEBUG mode. Swagger is NOT generated in DEBUG mode, this is to keep build times low. therefore this test will always fail. Run in RELEASE mode to enable.");
 
 #endif
     }
