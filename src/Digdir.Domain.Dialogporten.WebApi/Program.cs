@@ -85,8 +85,8 @@ static void BuildAndRun(string[] args)
         // Clean architecture projects
         .AddApplication(builder.Configuration, builder.Environment)
         .AddInfrastructure(builder.Configuration, builder.Environment)
-            .WithPubCapabilities()
-            .Build()
+        .WithPubCapabilities()
+        .Build()
 
         // Asp infrastructure
         .AddExceptionHandler<GlobalExceptionHandler>()
@@ -122,8 +122,8 @@ static void BuildAndRun(string[] args)
             };
         })
         .AddControllers(options => options.InputFormatters.Insert(0, JsonPatchInputFormatter.Get()))
-            .AddNewtonsoftJson()
-            .Services
+        .AddNewtonsoftJson()
+        .Services
         // Add health checks with the retrieved URLs
         .AddAspNetHealthChecks((x, y) => x.HealthCheckSettings.HttpGetEndpointsToCheck = y
             .GetRequiredService<IOptions<WebApiSettings>>().Value?
@@ -147,7 +147,6 @@ static void BuildAndRun(string[] args)
     }
 
     var app = builder.Build();
-
     app.MapAspNetHealthChecks()
         .MapControllers();
 
@@ -178,7 +177,10 @@ static void BuildAndRun(string[] args)
             // Do not serialize empty collections
             x.Serializer.Options.TypeInfoResolver = new DefaultJsonTypeInfoResolver
             {
-                Modifiers = { IgnoreEmptyCollections }
+                Modifiers =
+                {
+                    IgnoreEmptyCollections
+                }
             };
             x.Serializer.Options.Converters.Add(new JsonStringEnumConverter());
             x.Serializer.Options.Converters.Add(new UtcDateTimeOffsetConverter());
@@ -198,7 +200,10 @@ static void BuildAndRun(string[] args)
                     .ToString();
 
                 document.Servers.Clear();
-                document.Servers.Add(new OpenApiServer { Url = dialogportenBaseUri });
+                document.Servers.Add(new OpenApiServer
+                {
+                    Url = dialogportenBaseUri
+                });
                 document.Generator = null;
                 document.ReplaceProblemDetailsDescriptions();
                 document.MakeCollectionsNullable();
@@ -214,6 +219,24 @@ static void BuildAndRun(string[] args)
             uiConfig.DocumentPath = dialogPrefix + "/swagger/{documentName}/swagger.json";
         });
 
+    /*await app.ExportSwaggerJsonAndExitAsync(
+        c =>
+        {
+            c.SwaggerDocumentName = "v1"; //must match doc name above
+            c.Language = GenerationLanguage.CSharp;
+            c.OutputPath = Path.Combine(app.Environment.WebRootPath, "ApiClients", "CSharp");
+            c.ClientNamespaceName = "MyCompanyName";
+            c.ClientClassName = "MyCsClient";
+            c.CreateZipArchive = true; //if you'd like a zip file as well
+        },
+        c =>
+        {
+            c.SwaggerDocumentName = "v1";
+            c.Language = GenerationLanguage.TypeScript;
+            c.OutputPath = Path.Combine(app.Environment.WebRootPath, "ApiClients", "Typescript");
+            c.ClientNamespaceName = "MyCompanyName";
+            c.ClientClassName = "MyTsClient";
+        });*/
     app.Run();
 }
 

@@ -43,9 +43,18 @@
         <ProjectReference Include="..\Digdir.Tool.Dialogporten.GenerateFakeData\Digdir.Tool.Dialogporten.GenerateFakeData.csproj"/>
     </ItemGroup>
 
-    <Target Name="NSwag" AfterTargets="PostBuildEvent">
-        <Exec WorkingDirectory="$(ProjectDir)" EnvironmentVariables="ASPNETCORE_ENVIRONMENT=Development" Command="$(NSwagExe_net90) aspnetcore2openapi /assembly:Digdir.Domain.Dialogporten.WebApi.dll /documentName:v1 /output:swagger.json"/>
-    </Target>
+    <!--    <Target Name="NSwag" AfterTargets="PostBuildEvent">-->
+    <!--        <Exec WorkingDirectory="$(ProjectDir)" EnvironmentVariables="ASPNETCORE_ENVIRONMENT=Development" Command="$(NSwagExe_net90) run"/>-->
+    <!--    </Target>-->
+
+    <Target Name="NSwag" AfterTargets="Build" Condition="$(Configuration)=='Debug'">
+        <Exec WorkingDirectory="$(ProjectDir)" EnvironmentVariables="ASPNETCORE_ENVIRONMENT=Development" Command="$(NSwagExe_net90) aspnetcore2openapi /nobuild:true /project:$(MSBuildProjectFullPath) /output:$(MSBuildProjectDirectory)/swagger.json"/>
+    </Target> 
+
+<!--    <Target Name="ClientGen" AfterTargets="Build">-->
+<!--        <Exec WorkingDirectory="$(RunWorkingDirectory)"-->
+<!--              Command="$(RunCommand) &#45;&#45;generateclients true"/>-->
+<!--    </Target>-->
 
 
 </Project>
