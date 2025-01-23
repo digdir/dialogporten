@@ -14,7 +14,6 @@
     <ItemGroup>
         <None Include="README.md" Pack="true" PackagePath="/"/>
         <None Include="../../LICENSE" Pack="true" PackagePath="/"/>
-        <None Include="../../docs/schema/v1/swagger.json"/>
         <ProjectReference Include="..\Digdir.Domain.Dialogporten.WebApi\Digdir.Domain.Dialogporten.WebApi.csproj"
                           ReferenceOutputAssembly="false"
                           Condition="$(Configuration)=='Release'"/>

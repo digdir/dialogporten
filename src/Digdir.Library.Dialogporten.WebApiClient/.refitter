@@ -1,5 +1,5 @@
 {
-    "openApiPath": "../../docs/schema/v1/swagger.json",
+    "openApiPath": "../Digdir.Domain.Dialogporten.WebApi/bin/Release/net9.0/swagger.json",
     "namespace": "Digdir.Library.Dialogporten.WebApiClient.Features.V1",
     "outputFolder": "Features/V1",
     "operationNameGenerator": "SingleClientFromOperationId",

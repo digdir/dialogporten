@@ -66,7 +66,7 @@ static void BuildAndRun(string[] args)
         .ReadFrom.Configuration(context.Configuration)
         .ReadFrom.Services(services)
         .Enrich.WithEnvironmentName()
-        .Enrich.FromLogContext()
+    .Enrich.FromLogContext()
         .WriteTo.OpenTelemetryOrConsole(context));
 
     builder.Services
@@ -104,6 +104,26 @@ static void BuildAndRun(string[] args)
             x.RemoveEmptyRequestSchema = true;
             x.DocumentSettings = s =>
             {
+                s.PostProcess = document =>
+                {
+                    var dialogportenBaseUri = builder.Configuration
+                        .GetSection(ApplicationSettings.ConfigurationSectionName)
+                        .Get<ApplicationSettings>()!
+                        .Dialogporten
+                        .BaseUri
+                        .ToString();
+
+                    document.Servers.Clear();
+                    document.Servers.Add(new OpenApiServer
+                    {
+                        Url = dialogportenBaseUri
+                    });
+                    document.Generator = null;
+                    document.ReplaceProblemDetailsDescriptions();
+                    document.MakeCollectionsNullable();
+                    document.FixJwtBearerCasing();
+                    document.RemoveSystemStringHeaderTitles();
+                };
                 s.Title = "Dialogporten";
                 s.DocumentName = "v1";
                 s.Version = "v1";
@@ -188,29 +208,7 @@ static void BuildAndRun(string[] args)
             x.Errors.ResponseBuilder = ErrorResponseBuilderExtensions.ResponseBuilder;
         })
         .UseAddSwaggerCorsHeader()
-        .UseSwaggerGen(config =>
-        {
-            config.PostProcess = (document, _) =>
-            {
-                var dialogportenBaseUri = builder.Configuration
-                    .GetSection(ApplicationSettings.ConfigurationSectionName)
-                    .Get<ApplicationSettings>()!
-                    .Dialogporten
-                    .BaseUri
-                    .ToString();
-
-                document.Servers.Clear();
-                document.Servers.Add(new OpenApiServer
-                {
-                    Url = dialogportenBaseUri
-                });
-                document.Generator = null;
-                document.ReplaceProblemDetailsDescriptions();
-                document.MakeCollectionsNullable();
-                document.FixJwtBearerCasing();
-                document.RemoveSystemStringHeaderTitles();
-            };
-        }, uiConfig =>
+        .UseSwaggerGen(uiConfig: uiConfig =>
         {
             // Hide schemas view
             uiConfig.DefaultModelsExpandDepth = -1;
@@ -219,24 +217,6 @@ static void BuildAndRun(string[] args)
             uiConfig.DocumentPath = dialogPrefix + "/swagger/{documentName}/swagger.json";
         });
 
-    /*await app.ExportSwaggerJsonAndExitAsync(
-        c =>
-        {
-            c.SwaggerDocumentName = "v1"; //must match doc name above
-            c.Language = GenerationLanguage.CSharp;
-            c.OutputPath = Path.Combine(app.Environment.WebRootPath, "ApiClients", "CSharp");
-            c.ClientNamespaceName = "MyCompanyName";
-            c.ClientClassName = "MyCsClient";
-            c.CreateZipArchive = true; //if you'd like a zip file as well
-        },
-        c =>
-        {
-            c.SwaggerDocumentName = "v1";
-            c.Language = GenerationLanguage.TypeScript;
-            c.OutputPath = Path.Combine(app.Environment.WebRootPath, "ApiClients", "Typescript");
-            c.ClientNamespaceName = "MyCompanyName";
-            c.ClientClassName = "MyTsClient";
-        });*/
     app.Run();
 }
 

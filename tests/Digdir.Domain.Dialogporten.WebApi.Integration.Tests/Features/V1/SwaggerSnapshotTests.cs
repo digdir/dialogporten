@@ -2,6 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 
 namespace Digdir.Domain.Dialogporten.WebApi.Integration.Tests.Features.V1;
 
@@ -17,6 +18,7 @@ public class SwaggerSnapshotTests : IClassFixture<WebApplicationFactory<Program>
     [Fact]
     public async Task FailIfSwaggerSnapshotDoesNotMatch()
     {
+#if RELEASE
         // Arrange
         // This test checks for changes against the published version of the swagger.verified.json file
         // The file is located at /docs/schema/ on the solution root
@@ -24,30 +26,33 @@ public class SwaggerSnapshotTests : IClassFixture<WebApplicationFactory<Program>
         // of the npm package located in the same folder
         var rootPath = Utils.GetSolutionRootFolder();
         var swaggerPath = Path.Combine(rootPath!, "docs/schema/V1");
-
-        var client = _webApplicationFactory
-            .WithWebHostBuilder(builder => builder.UseEnvironment("test"))
-            .CreateClient();
-
+        var newSwaggerPath = Path.Combine(rootPath!, "src/Digdir.Domain.Dialogporten.WebApi/bin/Release/net9.0/swagger.json");
         // Act
-        var response = await client.GetAsync("/swagger/v1/swagger.json");
-        var newSwagger = await response.Content.ReadAsStringAsync();
+        var newSwagger = File.ReadAllText(newSwaggerPath);
+
+        // Amund: Stemmer dette lenger?
         // The order of the properties in the swagger.json file is not cross-platform deterministic.
         // Running client.GetAsync("/swagger/v1/swagger.json"); on Windows and Mac will produce
         // different ordering of the results (although the content is the same). So we force an
         // alphabetical ordering of the properties to make the test deterministic.
         // Ref: https://github.com/altinn/dialogporten/issues/996
-        var orderedSwagger = SortJson(newSwagger);
+        // var orderedSwagger = SortJson(newSwagger);
 
         // Assert
-        response.EnsureSuccessStatusCode();
 
-        await Verify(orderedSwagger, extension: "json")
+        await Verify(newSwagger, extension: "json")
             .UseFileName("swagger")
             .UseDirectory(swaggerPath);
+#else
+        Assert.Fail("Swagger snapshot tests are not supported in DEBUG mode. Swagger is NOT generated in DEBUG mode, this is to keep build times low. therefore this test will always fail. Run in RELEASE mode to enable.");
+
+#endif
     }
 
-    private static readonly JsonSerializerOptions SerializerOptions = new() { WriteIndented = true };
+    private static readonly JsonSerializerOptions SerializerOptions = new()
+    {
+        WriteIndented = true
+    };
 
     private static string SortJson(string jsonString)
     {
