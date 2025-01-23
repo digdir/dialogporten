@@ -1,19 +1,11 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.Testing;
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously. If tests are run in DEBUG mode, this is expected.
 
-namespace Digdir.Domain.Dialogporten.WebApi.Integration.Tests.Features.V1;
+namespace Digdir.Domain.Dialogporten.WebApi.Unit.Tests.Features.V1;
 
-public class SwaggerSnapshotTests : IClassFixture<WebApplicationFactory<Program>>
+public class SwaggerSnapshotTests
 {
-    private readonly WebApplicationFactory<Program> _webApplicationFactory;
-
-    public SwaggerSnapshotTests(WebApplicationFactory<Program> webApplicationFactory)
-    {
-        _webApplicationFactory = webApplicationFactory;
-    }
 
     [Fact]
     public async Task FailIfSwaggerSnapshotDoesNotMatch()
@@ -28,7 +20,7 @@ public class SwaggerSnapshotTests : IClassFixture<WebApplicationFactory<Program>
         var swaggerPath = Path.Combine(rootPath!, "docs/schema/V1");
         var newSwaggerPath = Path.Combine(rootPath!, "src/Digdir.Domain.Dialogporten.WebApi/bin/Release/net9.0/swagger.json");
         // Act
-        var newSwagger = File.ReadAllText(newSwaggerPath);
+        var newSwagger = await File.ReadAllTextAsync(newSwaggerPath);
 
         // The order of the properties in the swagger.json file is not cross-platform deterministic.
         // Running Nswag on Windows and Mac will produce

@@ -49,7 +49,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Digdir.Domain.Dialogporten.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Digdir.Tool.Dialogporten.Ed25519KeyPairGenerator", "src\Digdir.Tool.Dialogporten.Ed25519KeyPairGenerator\Digdir.Tool.Dialogporten.Ed25519KeyPairGenerator.csproj", "{030909AA-5B61-46B4-9B74-0D2D779478FF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Digdir.Domain.Dialogporten.WebApi.Integration.Tests", "tests\Digdir.Domain.Dialogporten.WebApi.Integration.Tests\Digdir.Domain.Dialogporten.WebApi.Integration.Tests.csproj", "{42004236-D45C-4A1F-9FF9-CF12B7388389}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Digdir.Domain.Dialogporten.WebApi.Unit.Tests", "tests\Digdir.Domain.Dialogporten.WebApi.Unit.Tests\Digdir.Domain.Dialogporten.WebApi.Unit.Tests.csproj", "{42004236-D45C-4A1F-9FF9-CF12B7388389}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Digdir.Domain.Dialogporten.GraphQL", "src\Digdir.Domain.Dialogporten.GraphQL\Digdir.Domain.Dialogporten.GraphQL.csproj", "{234FE24D-1047-4E29-A625-1EB406C37A2D}"
 EndProject
