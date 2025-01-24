@@ -8,7 +8,7 @@
         <Company>Digitaliseringsdirektoratet</Company>
         <PackageTags>digdir;altinn;dialogporten</PackageTags>
         <RepositoryType>git</RepositoryType>
-        <RepositoryUrl>https://github.com/digdir/dialogporten</RepositoryUrl>
+        <RepositoryUrl>https://github.com/altinn/dialogporten</RepositoryUrl>
     </PropertyGroup>
 
     <ItemGroup>
