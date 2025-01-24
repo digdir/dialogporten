@@ -19,27 +19,18 @@ export let options = {
         'get transmission'])
 };
 
-/**
- * Perform a service owner search.
- * In single user mode, the first service owner and end user with token is used. Only one iteration is performed.
- * In multi user mode, a random service owner and end user with token is used.
- */
-export default function() {
-    if (!endUsers || endUsers.length === 0) {
-        throw new Error('No end users loaded for testing');
-    } 
-    if (!serviceOwners || serviceOwners.length === 0) {
-        throw new Error('No service owners loaded for testing');
+export function setup() {
+    const totalVus = exec.test.options.scenarios.default.vus;
+    let parts = [];
+    for (let i = 1; i <= totalVus; i++) {
+        parts.push(endUsersPart(totalVus, i));
     }
-
-    if (isSingleUserMode) {
-        serviceownerSearch(serviceOwners[0], endUsers[0], tag_name, traceCalls);
-    }
-    else {
-        let serviceOwner = randomItem(serviceOwners);
-        for (let i = 0; i < endUsers.length; i++) {
-            serviceownerSearch(serviceOwner, endUsers[i], tag_name, traceCalls);
-        }
-    }
-}
+    return parts;
+  }
+  
+  export default function(data) {
+    const myEndUsers = data[exec.vu.idInTest - 1];
+    const ix = exec.vu.iterationInInstance % myEndUsers.length;
+    serviceownerSearch(serviceOwner, myEndUsers[ix], tag_name, traceCalls);
+  }
 

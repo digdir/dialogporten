@@ -52,4 +52,23 @@ export const endUsers = new SharedArray('endUsers', function () {
   return readCsv(filenameEndusers); 
 });
 
+export function endUsersPart(totalVus, vuId) {
+  const endUsersLength = endUsers.length;
+  if (totalVus == 1) {
+      return endUsers.slice(0, endUsersLength);
+  }
+  let usersPerVU = Math.floor(endUsersLength / totalVus);
+  let extras = endUsersLength % totalVus;
+  let ixStart = (vuId-1) * usersPerVU;
+  if (vuId <= extras) {
+      usersPerVU++;
+      ixStart += vuId - 1;
+  }
+  else {
+      ixStart += extras;
+  }
+  //console.log("Index:" +ixStart + ", usersPerVU: " + usersPerVU + ", extras: " + extras + ", endUsersLength: " + endUsersLength + ", totalVus: " + totalVus); 
+  return endUsers.slice(ixStart, ixStart + usersPerVU);
+}
+
 
