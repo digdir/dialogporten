@@ -69,7 +69,7 @@ jobs:
     - name: Run K6 tests (${{ inputs.testSuitePath }})
       run: |
         echo "Running k6 test suite ${{ inputs.testSuitePath }} with ${{ inputs.vus }} VUs for ${{ inputs.duration }}"
-        testSuiteFileName=basename ${{ inputs.testSuitePath }} .js
+        testSuiteFileName=$(basename "${{ inputs.testSuitePath }}")
         echo $testSuiteFileName
         ./tests/k6/tests/scripts/run-test-in-k8s.sh -f ${{ inputs.testSuitePath }} -c k6-enduser-search -n k6-enduser-search -v ${{ inputs.vus }} -d ${{ inputs.duration }} -p ${{ inputs.parallelism }}
       env:
