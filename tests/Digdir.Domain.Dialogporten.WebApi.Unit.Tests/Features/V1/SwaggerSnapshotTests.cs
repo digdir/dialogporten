@@ -22,6 +22,7 @@ public class SwaggerSnapshotTests
         var rootPath = Utils.GetSolutionRootFolder();
         var swaggerPath = Path.Combine(rootPath!, "docs/schema/V1");
         var newSwaggerPath = Path.Combine(rootPath!, "src/Digdir.Domain.Dialogporten.WebApi/bin/Release/net9.0/swagger.json");
+        Assert.True(File.Exists(newSwaggerPath), $"Swagger file not found at {newSwaggerPath}. Make sure you have built the project in RELEASE mode.");
         // Act
         var newSwagger = await File.ReadAllTextAsync(newSwaggerPath);
 
