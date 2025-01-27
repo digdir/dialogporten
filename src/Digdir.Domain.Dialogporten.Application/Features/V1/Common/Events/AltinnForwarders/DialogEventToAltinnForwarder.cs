@@ -28,7 +28,7 @@ internal sealed class DialogEventToAltinnForwarder : DomainEventToAltinnForwarde
         {
             Id = domainEvent.EventId,
             Type = CloudEventTypes.Get(nameof(DialogCreatedDomainEvent)),
-            Time = domainEvent.OccurredAt,
+            Time = domainEvent.OccuredAt,
             Resource = domainEvent.ServiceResource,
             ResourceInstance = domainEvent.DialogId.ToString(),
             Subject = domainEvent.Party,
@@ -51,7 +51,7 @@ internal sealed class DialogEventToAltinnForwarder : DomainEventToAltinnForwarde
         {
             Id = domainEvent.EventId,
             Type = CloudEventTypes.Get(nameof(DialogUpdatedDomainEvent)),
-            Time = domainEvent.OccurredAt,
+            Time = domainEvent.OccuredAt,
             Resource = domainEvent.ServiceResource,
             ResourceInstance = domainEvent.DialogId.ToString(),
             Subject = domainEvent.Party,
@@ -74,7 +74,7 @@ internal sealed class DialogEventToAltinnForwarder : DomainEventToAltinnForwarde
         {
             Id = domainEvent.EventId,
             Type = CloudEventTypes.Get(nameof(DialogSeenDomainEvent)),
-            Time = domainEvent.OccurredAt,
+            Time = domainEvent.OccuredAt,
             Resource = domainEvent.ServiceResource,
             ResourceInstance = domainEvent.DialogId.ToString(),
             Subject = domainEvent.Party,
@@ -97,7 +97,7 @@ internal sealed class DialogEventToAltinnForwarder : DomainEventToAltinnForwarde
         {
             Id = domainEvent.EventId,
             Type = CloudEventTypes.Get(nameof(DialogDeletedDomainEvent)),
-            Time = domainEvent.OccurredAt,
+            Time = domainEvent.OccuredAt,
             Resource = domainEvent.ServiceResource,
             ResourceInstance = domainEvent.DialogId.ToString(),
             Subject = domainEvent.Party,

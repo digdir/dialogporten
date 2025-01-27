@@ -20,7 +20,7 @@ public sealed class OutboxMessage
         return new()
         {
             EventId = domainEvent.EventId,
-            CreatedAt = domainEvent.OccurredAt,
+            CreatedAt = domainEvent.OccuredAt,
             EventType = eventType.FullName!,
             EventPayload = JsonSerializer.Serialize(domainEvent, eventType),
             // TODO: Set correlation id
