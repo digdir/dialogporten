@@ -52,7 +52,7 @@ export const endUsers = new SharedArray('endUsers', function () {
   return readCsv(filenameEndusers); 
 });
 
-export function endUsersPart(totalVus, vuId) {
+function endUsersPart(totalVus, vuId) {
   const endUsersLength = endUsers.length;
   if (totalVus == 1) {
       return endUsers.slice(0, endUsersLength);

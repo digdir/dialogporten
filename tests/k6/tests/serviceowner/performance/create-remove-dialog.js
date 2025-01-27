@@ -4,7 +4,7 @@
  */
 import exec from 'k6/execution';
 import { getDefaultThresholds } from '../../performancetest_common/getDefaultThresholds.js';
-import { serviceOwners, endUsersPart } from "../../performancetest_common/readTestdata.js";
+import { serviceOwners } from "../../performancetest_common/readTestdata.js";
 import { createAndRemoveDialog } from '../../performancetest_common/createDialog.js';
 export { setup as setup } from '../../performancetest_common/readTestdata.js';
 
