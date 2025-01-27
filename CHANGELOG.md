@@ -1,5 +1,60 @@
 # Changelog
 
+## [1.47.2](https://github.com/Altinn/dialogporten/compare/v1.47.1...v1.47.2) (2025-01-23)
+
+
+### Bug Fixes
+
+* **service:** Avoid too many logs in app insights ([#1730](https://github.com/Altinn/dialogporten/issues/1730)) ([4fd2497](https://github.com/Altinn/dialogporten/commit/4fd2497fd55ad77f0c90116064a2414c700d9f34))
+
+## [1.47.1](https://github.com/Altinn/dialogporten/compare/v1.47.0...v1.47.1) (2025-01-22)
+
+
+### Bug Fixes
+
+* **service:** Set minimum log level Information for ConsoleLogEventBus ([#1725](https://github.com/Altinn/dialogporten/issues/1725)) ([247a325](https://github.com/Altinn/dialogporten/commit/247a32503c62fea09048bddf3debc80b1a3f663a))
+
+## [1.47.0](https://github.com/Altinn/dialogporten/compare/v1.46.0...v1.47.0) (2025-01-22)
+
+
+### Features
+
+* Manual release ([#1723](https://github.com/Altinn/dialogporten/issues/1723)) ([6d093d1](https://github.com/Altinn/dialogporten/commit/6d093d1b5fde84f8e58546d6a64dd553cb3eddab))
+
+## [1.46.0](https://github.com/Altinn/dialogporten/compare/v1.45.1...v1.46.0) (2025-01-21)
+
+
+### Features
+
+* **webapi:** Add option to disable Altinn event generation ([#1633](https://github.com/Altinn/dialogporten/issues/1633)) ([dda7c1f](https://github.com/Altinn/dialogporten/commit/dda7c1f8ece73c092a62fbe1bae42bb553b1e1d5))
+
+## [1.45.1](https://github.com/Altinn/dialogporten/compare/v1.45.0...v1.45.1) (2025-01-18)
+
+
+### Bug Fixes
+
+* **graphql:** Add missing search parameters for paging and sorting ([#1671](https://github.com/Altinn/dialogporten/issues/1671)) ([02f2335](https://github.com/Altinn/dialogporten/commit/02f2335d7eb2dde1e0a6e95e5ccc9918b1b15b34))
+* Removed .AsSingleQuery from EndUser Search query ([#1707](https://github.com/Altinn/dialogporten/issues/1707)) ([2a3153b](https://github.com/Altinn/dialogporten/commit/2a3153b216f6a9e02ebef4d343d52f7b83cd248d))
+* **webapi:** Use correct language code for norwegian in OpenApi description ([#1705](https://github.com/Altinn/dialogporten/issues/1705)) ([ce0a07d](https://github.com/Altinn/dialogporten/commit/ce0a07d4622839a5f1c3f467ab83950d7750d49e))
+
+## [1.45.0](https://github.com/Altinn/dialogporten/compare/v1.44.2...v1.45.0) (2025-01-15)
+
+
+### Features
+
+* added id to attachments, ApiActions and GuiActions in DialogCreate ([#1670](https://github.com/Altinn/dialogporten/issues/1670)) ([470e5a9](https://github.com/Altinn/dialogporten/commit/470e5a916c331f31b4015a3847d566c5d99276da))
+* **apps:** export logs to open telemetry endpoint ([#1617](https://github.com/Altinn/dialogporten/issues/1617)) ([1a71763](https://github.com/Altinn/dialogporten/commit/1a71763647b92fe7780dd7982c6b2f00f4d0d50e))
+* **janitor:** add otlp logger for janitor ([#1686](https://github.com/Altinn/dialogporten/issues/1686)) ([2e1656b](https://github.com/Altinn/dialogporten/commit/2e1656b787eb0d47142b92e2453215e47a6760f3))
+
+
+### Bug Fixes
+
+* **app:** Add missing telemetry setup GraphQL and Service ([#1695](https://github.com/Altinn/dialogporten/issues/1695)) ([601a826](https://github.com/Altinn/dialogporten/commit/601a8268a4763c87925bffe3352297edd1e191d0))
+* Authentication level claim is 0 in dialog token ([#1654](https://github.com/Altinn/dialogporten/issues/1654)) ([37e545a](https://github.com/Altinn/dialogporten/commit/37e545a0da0c1c5d354c7b2cb8ab4ca163a2bf17))
+* **graphql:** Add missing activity types ([#1684](https://github.com/Altinn/dialogporten/issues/1684)) ([a0697ae](https://github.com/Altinn/dialogporten/commit/a0697aee2c850156df25503b42bd667377cc6aab))
+* **graphql:** Set max execution depth to allow inspection query ([#1679](https://github.com/Altinn/dialogporten/issues/1679)) ([6265110](https://github.com/Altinn/dialogporten/commit/62651109ce308be85b92495c6a4a8bf5f4decf6c)), closes [#1680](https://github.com/Altinn/dialogporten/issues/1680)
+* **web-api:** re-enable health checks ([#1681](https://github.com/Altinn/dialogporten/issues/1681)) ([96c2c3e](https://github.com/Altinn/dialogporten/commit/96c2c3e8d3e7de98bb4ec5ae0eba08d713598987))
+
 ## [1.44.2](https://github.com/digdir/dialogporten/compare/v1.44.1...v1.44.2) (2025-01-08)
 
 
