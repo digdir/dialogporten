@@ -49,7 +49,7 @@ on:
           - 'tests/k6/tests/graphql/performance/graphql-search.js'
           - 'tests/k6/tests/serviceowner/performance/create-transmissions.js'
 
-run-name: ${{ inputs.tag }} vus ${{ inputs.vus }} duration ${{ inputs.duration }}
+run-name: ${{ inputs.tag }} ${{ inputs.vus }}/${{ inputs.duration }}/${{ inputs.parallelism }}
 jobs:
   k6-performance:
     name: "Run K6 performance test"

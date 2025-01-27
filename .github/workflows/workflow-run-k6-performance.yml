@@ -68,7 +68,7 @@ jobs:
       uses: grafana/setup-k6-action@v1
     - name: Run K6 tests (${{ inputs.testSuitePath }})
       run: |
-        echo "Running k6 test suite ${{ inputs.testSuitePath }} with ${{ inputs.vus }} VUs for ${{ inputs.duration }}"
+        echo "Running k6 test suite ${{ inputs.testSuitePath }} with ${{ inputs.vus }} VUs for ${{ inputs.duration }} on ${{ inputs.parallelism }} parallelism"
         k6configName=$(basename "${{ inputs.testSuitePath }}" .js)
         k6configName="k6-${k6configName}"
         ./tests/k6/tests/scripts/run-test-in-k8s.sh -f ${{ inputs.testSuitePath }} -c $k6configName -n $k6configName -v ${{ inputs.vus }} -d ${{ inputs.duration }} -p ${{ inputs.parallelism }}
