@@ -66,7 +66,7 @@ static void BuildAndRun(string[] args)
         .ReadFrom.Configuration(context.Configuration)
         .ReadFrom.Services(services)
         .Enrich.WithEnvironmentName()
-    .Enrich.FromLogContext()
+        .Enrich.FromLogContext()
         .WriteTo.OpenTelemetryOrConsole(context));
 
     builder.Services
@@ -85,8 +85,8 @@ static void BuildAndRun(string[] args)
         // Clean architecture projects
         .AddApplication(builder.Configuration, builder.Environment)
         .AddInfrastructure(builder.Configuration, builder.Environment)
-        .WithPubCapabilities()
-        .Build()
+            .WithPubCapabilities()
+            .Build()
 
         // Asp infrastructure
         .AddExceptionHandler<GlobalExceptionHandler>()
@@ -142,8 +142,8 @@ static void BuildAndRun(string[] args)
             };
         })
         .AddControllers(options => options.InputFormatters.Insert(0, JsonPatchInputFormatter.Get()))
-        .AddNewtonsoftJson()
-        .Services
+            .AddNewtonsoftJson()
+            .Services
         // Add health checks with the retrieved URLs
         .AddAspNetHealthChecks((x, y) => x.HealthCheckSettings.HttpGetEndpointsToCheck = y
             .GetRequiredService<IOptions<WebApiSettings>>().Value?
@@ -197,10 +197,7 @@ static void BuildAndRun(string[] args)
             // Do not serialize empty collections
             x.Serializer.Options.TypeInfoResolver = new DefaultJsonTypeInfoResolver
             {
-                Modifiers =
-                {
-                    IgnoreEmptyCollections
-                }
+                Modifiers = { IgnoreEmptyCollections }
             };
             x.Serializer.Options.Converters.Add(new JsonStringEnumConverter());
             x.Serializer.Options.Converters.Add(new UtcDateTimeOffsetConverter());
