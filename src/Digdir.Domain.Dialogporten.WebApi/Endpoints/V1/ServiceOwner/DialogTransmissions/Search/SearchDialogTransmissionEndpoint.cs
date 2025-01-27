@@ -22,9 +22,10 @@ public sealed class SearchDialogTransmissionEndpoint : Endpoint<SearchTransmissi
         Policies(AuthorizationPolicy.ServiceProvider);
         Group<ServiceOwnerGroup>();
 
-        Description(b => b.ProducesOneOf<TransmissionDto>(
+        Description(b => b.ProducesOneOf<List<TransmissionDto>>(
             StatusCodes.Status200OK,
-            StatusCodes.Status404NotFound));
+            StatusCodes.Status404NotFound,
+            StatusCodes.Status410Gone));
     }
 
     public override async Task HandleAsync(SearchTransmissionQuery req, CancellationToken ct)
@@ -32,6 +33,7 @@ public sealed class SearchDialogTransmissionEndpoint : Endpoint<SearchTransmissi
         var result = await _sender.Send(req, ct);
         await result.Match(
             dto => SendOkAsync(dto, ct),
-            notFound => this.NotFoundAsync(notFound, ct));
+            notFound => this.NotFoundAsync(notFound, ct),
+            deleted => this.GoneAsync(deleted, ct));
     }
 }

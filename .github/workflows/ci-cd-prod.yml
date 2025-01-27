@@ -29,7 +29,7 @@ jobs:
   get-current-version:
     name: Get current version
     uses: ./.github/workflows/workflow-get-current-version.yml
-  
+
   dry-run-deploy-infra:
     name: Dry run deploy infra to prod
     if: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasInfraChanges == 'true' }}
@@ -103,7 +103,7 @@ jobs:
       version: ${{ needs.get-current-version.outputs.version }}
       dryRun: true
       runMigration: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasMigrationChanges == 'true' }}
-  
+
   deploy-apps:
     name: Deploy apps to prod
     needs:
@@ -139,22 +139,6 @@ jobs:
     secrets:
       GH_TOKEN: ${{ secrets.RELEASE_VERSION_STORAGE_PAT }}
 
-  deploy-slack-notifier:
-    name: Deploy slack notifier (prod)
-    needs: [check-for-changes]
-    if: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasSlackNotifierChanges == 'true' }}
-    uses: ./.github/workflows/workflow-deploy-function.yml
-    secrets:
-      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-      # todo: resolve this automatically, or use tags
-      AZURE_FUNCTION_APP_NAME: ${{ secrets.AZURE_SLACK_NOTIFIER_FUNCTION_APP_NAME }}
-    with:
-      function-app-name: "slack-notifier"
-      function-project-path: "./src/Digdir.Tool.Dialogporten.SlackNotifier"
-      environment: prod
-
   # run-e2e-tests:
   #   name: "Run K6 functional end-to-end tests"
   #   # we want the end-to-end tests to be dependent on deployment of infrastructure and apps, but if infrastructure is skipped, we still want to run the tests
@@ -174,14 +158,13 @@ jobs:
 
   send-slack-message-on-failure:
     name: Send Slack message on failure
-    needs: [deploy-infra, deploy-apps, deploy-slack-notifier]
+    needs: [deploy-infra, deploy-apps]
     if: ${{ always() && failure() && !cancelled() }}
     uses: ./.github/workflows/workflow-send-ci-cd-status-slack-message.yml
     with:
       environment: prod
       infra_status: ${{ needs.deploy-infra.result }}
       apps_status: ${{ needs.deploy-apps.result }}
-      slack_notifier_status: ${{ needs.deploy-slack-notifier.result }}
     secrets:
       SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
       SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID_FOR_CI_CD_STATUS }}

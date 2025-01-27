@@ -1,6 +1,4 @@
 ﻿name: Deploy apps
-env:
-  AZ_CLI_VERSION: 2.64.0
 on:
   workflow_call:
     outputs:
@@ -67,8 +65,8 @@ jobs:
       - name: "Checkout GitHub Action"
         uses: actions/checkout@v4
 
-      - name: OIDC Login to Azure Public Cloud
-        uses: azure/login@v2
+      - name: Azure Login
+        uses: ./.github/actions/azure-login
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
@@ -94,7 +92,7 @@ jobs:
           failOnStdErr: false
           additionalArguments: '--what-if'
           parameters: ./.azure/applications/web-api-migration-job/${{ inputs.environment }}.bicepparam
-      
+
       - name: Deploy migration job (${{ inputs.environment }})
         uses: azure/arm-deploy@v2
         if: ${{!inputs.dryRun}}
@@ -119,7 +117,6 @@ jobs:
         uses: azure/CLI@v2
         if: ${{!inputs.dryRun}}
         with:
-          azcliversion: ${{ env.AZ_CLI_VERSION }}
           inlineScript: |
             az containerapp job start -n ${{ steps.deploy.outputs.name }} -g ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
 
@@ -129,7 +126,6 @@ jobs:
         id: verify-migration
         timeout-minutes: 3
         with:
-          azcliversion: ${{ env.AZ_CLI_VERSION }}
           inlineScript: |
             ./.github/tools/containerAppJobVerifier.sh ${{ steps.deploy.outputs.name }} ${{ secrets.AZURE_RESOURCE_GROUP_NAME }} ${{ inputs.version }}
 
@@ -162,12 +158,13 @@ jobs:
       - name: "Checkout GitHub Action"
         uses: actions/checkout@v4
 
-      - name: OIDC Login to Azure Public Cloud
-        uses: azure/login@v2
+      - name: Azure Login
+        uses: ./.github/actions/azure-login
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
       - name: Dryrun Deploy app ${{ matrix.name }}(${{ inputs.environment }})
         uses: azure/arm-deploy@v2
         if: ${{ inputs.dryRun }}
@@ -192,7 +189,7 @@ jobs:
           failOnStdErr: false
           additionalArguments: '--what-if'
           parameters: ./.azure/applications/${{ matrix.name }}/${{ inputs.environment }}.bicepparam
-      
+
       - name: Deploy app ${{ matrix.name }}(${{ inputs.environment }})
         uses: azure/arm-deploy@v2
         if: ${{!inputs.dryRun}}
@@ -223,7 +220,6 @@ jobs:
         id: verify-deployment
         timeout-minutes: 3
         with:
-          azcliversion: ${{ env.AZ_CLI_VERSION }}
           inlineScript: |
             ./.github/tools/revisionVerifier.sh ${{ steps.deploy.outputs.revisionName }} ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
 
@@ -252,8 +248,8 @@ jobs:
       - name: "Checkout GitHub Action"
         uses: actions/checkout@v4
 
-      - name: OIDC Login to Azure Public Cloud
-        uses: azure/login@v2
+      - name: Azure Login
+        uses: ./.github/actions/azure-login
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
@@ -280,7 +276,7 @@ jobs:
           failOnStdErr: false
           additionalArguments: '--what-if'
           parameters: ./.azure/applications/${{ matrix.name }}/${{ inputs.environment }}.bicepparam
-      
+
       - name: Deploy job ${{ matrix.name }}(${{ inputs.environment }})
         uses: azure/arm-deploy@v2
         if: ${{!inputs.dryRun}}

@@ -1,4 +1,4 @@
-/* 
+/*
   This module copies secrets from a source Key Vault to a destination Key Vault and adds references to those secrets in App Configuration.
 */
 // Source

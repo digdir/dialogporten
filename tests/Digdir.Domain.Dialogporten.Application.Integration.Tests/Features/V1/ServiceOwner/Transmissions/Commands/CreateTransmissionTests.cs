@@ -4,9 +4,9 @@ using Digdir.Domain.Dialogporten.Application.Integration.Tests.Common;
 using Digdir.Domain.Dialogporten.Domain;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions.Contents;
+using Digdir.Library.Entity.Abstractions.Features.Identifiable;
 using Digdir.Tool.Dialogporten.GenerateFakeData;
 using FluentAssertions;
-using static Digdir.Domain.Dialogporten.Application.Integration.Tests.UuiDv7Utils;
 
 namespace Digdir.Domain.Dialogporten.Application.Integration.Tests.Features.V1.ServiceOwner.Transmissions.Commands;
 
@@ -19,18 +19,18 @@ public class CreateTransmissionTests : ApplicationCollectionFixture
     public async Task Can_Create_Simple_Transmission()
     {
         // Arrange
-        var dialogId = GenerateBigEndianUuidV7();
-        var createCommand = DialogGenerator.GenerateSimpleFakeDialog(id: dialogId);
+        var dialogId = IdentifiableExtensions.CreateVersion7();
+        var createCommand = DialogGenerator.GenerateSimpleFakeCreateDialogCommand(id: dialogId);
 
         var transmission = DialogGenerator.GenerateFakeDialogTransmissions(1)[0];
-        createCommand.Transmissions = [transmission];
+        createCommand.Dto.Transmissions = [transmission];
 
         // Act
         var response = await Application.Send(createCommand);
 
         // Assert
         response.TryPickT0(out var success, out _).Should().BeTrue();
-        success.Value.Should().Be(dialogId);
+        success.DialogId.Should().Be(dialogId);
         var transmissionEntities = await Application.GetDbEntities<DialogTransmission>();
         transmissionEntities.Should().HaveCount(1);
         transmissionEntities.First().DialogId.Should().Be(dialogId);
@@ -41,10 +41,10 @@ public class CreateTransmissionTests : ApplicationCollectionFixture
     public async Task Can_Create_Transmission_With_Embeddable_Content()
     {
         // Arrange
-        var dialogId = GenerateBigEndianUuidV7();
-        var createCommand = DialogGenerator.GenerateSimpleFakeDialog(id: dialogId);
+        var dialogId = IdentifiableExtensions.CreateVersion7();
+        var createCommand = DialogGenerator.GenerateSimpleFakeCreateDialogCommand(id: dialogId);
 
-        var transmissionId = GenerateBigEndianUuidV7();
+        var transmissionId = IdentifiableExtensions.CreateVersion7();
         var transmission = DialogGenerator.GenerateFakeDialogTransmissions(1)[0];
 
         const string contentUrl = "https://example.com/transmission";
@@ -55,14 +55,14 @@ public class CreateTransmissionTests : ApplicationCollectionFixture
             Value = [new LocalizationDto { LanguageCode = "nb", Value = contentUrl }]
         };
 
-        createCommand.Transmissions = [transmission];
+        createCommand.Dto.Transmissions = [transmission];
 
         // Act
         var response = await Application.Send(createCommand);
 
         // Assert
         response.TryPickT0(out var success, out _).Should().BeTrue();
-        success.Value.Should().Be(dialogId);
+        success.DialogId.Should().Be(dialogId);
 
         var transmissionEntities = await Application.GetDbEntities<DialogTransmission>();
         transmissionEntities.Should().HaveCount(1);
@@ -79,7 +79,7 @@ public class CreateTransmissionTests : ApplicationCollectionFixture
     public async Task Cannot_Create_Transmission_Embeddable_Content_With_Http_Url()
     {
         // Arrange
-        var createCommand = DialogGenerator.GenerateSimpleFakeDialog();
+        var createCommand = DialogGenerator.GenerateSimpleFakeCreateDialogCommand();
 
         var transmission = DialogGenerator.GenerateFakeDialogTransmissions(1)[0];
 
@@ -89,7 +89,7 @@ public class CreateTransmissionTests : ApplicationCollectionFixture
             Value = [new LocalizationDto { LanguageCode = "nb", Value = "http://example.com/transmission" }]
         };
 
-        createCommand.Transmissions = [transmission];
+        createCommand.Dto.Transmissions = [transmission];
 
         // Act
         var response = await Application.Send(createCommand);
@@ -105,7 +105,7 @@ public class CreateTransmissionTests : ApplicationCollectionFixture
     public async Task Can_Create_Related_Transmission_With_Null_Id()
     {
         // Arrange
-        var createCommand = DialogGenerator.GenerateSimpleFakeDialog();
+        var createCommand = DialogGenerator.GenerateSimpleFakeCreateDialogCommand();
         var transmissions = DialogGenerator.GenerateFakeDialogTransmissions(2);
 
         transmissions[0].RelatedTransmissionId = transmissions[1].Id;
@@ -114,7 +114,7 @@ public class CreateTransmissionTests : ApplicationCollectionFixture
         // on all transmissions before validating the hierarchy.
         transmissions[0].Id = null;
 
-        createCommand.Transmissions = transmissions;
+        createCommand.Dto.Transmissions = transmissions;
 
         // Act
         var response = await Application.Send(createCommand);

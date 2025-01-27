@@ -12,7 +12,7 @@ export default function () {
         let continuationToken = "";
         let dialogIdsToPurge = [];
         do {
-            let r = getSO('dialogs/?Search=' + sentinelValue + continuationToken, null, tokenOptions);
+            let r = getSO('dialogs/?Limit=1000&Search=' + sentinelValue + continuationToken, null, tokenOptions);
             expectStatusFor(r).to.equal(200);
             expect(r, 'response').to.have.validJsonBody();
             let response = r.json();
@@ -27,13 +27,14 @@ export default function () {
 
         if (dialogIdsToPurge.length > 0) {
             console.error("Found " + dialogIdsToPurge.length + " unpurged dialogs, make sure that all tests clean up after themselves. Purging ...");
-            dialogIdsToPurge.forEach((id) => {
+            dialogIdsToPurge = dialogIdsToPurge.filter((id) => {
                 console.warn("Sentinel purging dialog with id: " + id)
                 let r = purgeSO('dialogs/' + id, null, tokenOptions);
                 if (r.status != 204) {
                     console.error("Failed to purge dialog with id: " + id);
-                    console.log(r);
+                    return true; // Keep in the array if purge failed
                 }
+                return false; // Remove from the array if purge succeeded
             });
         }
 

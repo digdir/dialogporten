@@ -13,10 +13,10 @@ public class DeletedDialogTests(DialogApplication application) : ApplicationColl
     public async Task Fetching_Deleted_Dialog_Should_Return_Gone()
     {
         // Arrange
-        var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog();
+        var createDialogCommand = DialogGenerator.GenerateSimpleFakeCreateDialogCommand();
         var createDialogResponse = await Application.Send(createDialogCommand);
 
-        var dialogId = createDialogResponse.AsT0.Value;
+        var dialogId = createDialogResponse.AsT0.DialogId;
         var deleteDialogCommand = new DeleteDialogCommand { Id = dialogId };
         await Application.Send(deleteDialogCommand);
 

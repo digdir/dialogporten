@@ -3,11 +3,11 @@ function Get-RandomCharacters([int]$length, [string]$characters) {
     $private:ofs=""
     return [string]$characters[$random]
 }
-function Scramble-String([string]$inputString){     
-    $characterArray = $inputString.ToCharArray()   
-    $scrambledStringArray = $characterArray | Get-Random -Count $characterArray.Length     
+function Scramble-String([string]$inputString){
+    $characterArray = $inputString.ToCharArray()
+    $scrambledStringArray = $characterArray | Get-Random -Count $characterArray.Length
     $outputString = -join $scrambledStringArray
-    return $outputString 
+    return $outputString
 }
 function GeneratePassword{
     param(

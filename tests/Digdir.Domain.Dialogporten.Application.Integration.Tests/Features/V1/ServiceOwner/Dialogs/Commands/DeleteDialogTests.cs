@@ -14,11 +14,11 @@ public class DeleteDialogTests(DialogApplication application) : ApplicationColle
     public async Task Deleting_Dialog_Should_Set_DeletedAt()
     {
         // Arrange
-        var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog();
+        var createDialogCommand = DialogGenerator.GenerateSimpleFakeCreateDialogCommand();
         var createDialogResponse = await Application.Send(createDialogCommand);
 
         // Act
-        var dialogId = createDialogResponse.AsT0.Value;
+        var dialogId = createDialogResponse.AsT0.DialogId;
         var deleteDialogCommand = new DeleteDialogCommand { Id = dialogId };
         await Application.Send(deleteDialogCommand);
 
@@ -32,13 +32,13 @@ public class DeleteDialogTests(DialogApplication application) : ApplicationColle
     }
 
     [Fact]
-    public async Task Updating_Deleted_Dialog_Should_Return_BadRequest()
+    public async Task Updating_Deleted_Dialog_Should_Return_EntityDeleted()
     {
         // Arrange
-        var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog();
+        var createDialogCommand = DialogGenerator.GenerateSimpleFakeCreateDialogCommand();
         var createDialogResponse = await Application.Send(createDialogCommand);
 
-        var dialogId = createDialogResponse.AsT0.Value;
+        var dialogId = createDialogResponse.AsT0.DialogId;
         var deleteDialogCommand = new DeleteDialogCommand { Id = dialogId };
         await Application.Send(deleteDialogCommand);
 
@@ -54,9 +54,30 @@ public class DeleteDialogTests(DialogApplication application) : ApplicationColle
         var updateDialogResponse = await Application.Send(updateDialogCommand);
 
         // Assert
-        updateDialogResponse.TryPickT2(out var validationError, out _).Should().BeTrue();
-        validationError.Should().NotBeNull();
-        validationError.Reasons.Should().Contain(e => e.Contains("cannot be updated"));
-        validationError.Reasons.Should().Contain(e => e.Contains(dialogId.ToString()));
+        updateDialogResponse.TryPickT2(out var entityDeleted, out _).Should().BeTrue();
+        entityDeleted.Should().NotBeNull();
+        entityDeleted.Message.Should().Contain(dialogId.ToString());
     }
+
+    [Fact]
+    public async Task DeleteDialogCommand_Should_Return_New_Revision()
+    {
+        // Arrange
+        var createDialogCommand = DialogGenerator.GenerateSimpleFakeCreateDialogCommand();
+        var createDialogResponse = await Application.Send(createDialogCommand);
+
+        var dialogId = createDialogResponse.AsT0.DialogId;
+        var oldRevision = createDialogResponse.AsT0.Revision;
+
+        // Act
+        var deleteDialogCommand = new DeleteDialogCommand { Id = dialogId };
+        var deleteDialogResponse = await Application.Send(deleteDialogCommand);
+
+        // Assert
+        deleteDialogResponse.TryPickT0(out var success, out _).Should().BeTrue();
+        success.Should().NotBeNull();
+        success.Revision.Should().NotBeEmpty();
+        success.Revision.Should().NotBe(oldRevision);
+    }
+
 }

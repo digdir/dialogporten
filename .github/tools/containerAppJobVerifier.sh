@@ -31,25 +31,25 @@ echo " "
 
 verify_job_succeeded() {
   local current_job_execution
-  
+
   current_job_execution=$(az containerapp job execution list -n "$job_name" -g "$resource_group" --query "$query_filter" 2>/dev/null)
 
   if [ -z "$current_job_execution" ]; then
       echo "No job execution found for job $job_name"
       return 1
   fi
-    
+
   current_job_execution_name=$(echo $current_job_execution | jq -r '.name')
   current_job_execution_status=$(echo $current_job_execution | jq -r '.status')
 
   echo "Container: $current_job_execution_name"
   echo "Running status: $current_job_execution_status"
-  
+
   # Check job execution status
   if [[ $current_job_execution_status == "Succeeded" ]]; then
     return 0  # OK!
   elif [[ $current_job_execution_status == "Failed" ]]; then
-    echo "Job execution failed. Exiting script." 
+    echo "Job execution failed. Exiting script."
     exit 1
   else
     return 1  # Not OK!

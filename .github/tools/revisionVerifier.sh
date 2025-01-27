@@ -58,7 +58,7 @@ attempt=1
 while true; do
   verify_revision
   result=$?
-  
+
   case $result in
     $EXIT_SUCCESS)
       echo "Revision $revision_name is healthy and running"

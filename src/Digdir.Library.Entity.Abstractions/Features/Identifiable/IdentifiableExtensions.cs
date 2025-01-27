@@ -32,11 +32,15 @@ public static class IdentifiableExtensions
 
     /// <summary>
     /// Creates a new version 7 UUID.
+    ///
     /// </summary>
     /// <returns>A new version 7 UUID in big endian format.</returns>
-    public static Guid CreateVersion7() =>
-        // We want Guids in big endian format. The default behavior of Medo is big endian,
-        // however, the implicit conversion from Medo.Uuid7 to Guid is little endian.
-        // "matchGuidEndianness" is set to true to ensure big endian.
-        Uuid7.NewUuid7().ToGuid(matchGuidEndianness: true);
+    // We want Guids in big endian text representation.
+    // The default behavior of Medo is bigEndian text representation,
+    // Setting bigEndian to false for two reasons:
+    // 1. Use the parameter name explicitly in case the Medo API changes
+    // 2. Make it clear that we want big endian text representation, which means little endian byte order
+    public static Guid CreateVersion7(DateTimeOffset? timeStamp = null) => timeStamp is null
+        ? Uuid7.NewUuid7().ToGuid(bigEndian: false)
+        : Uuid7.NewUuid7(timeStamp.Value).ToGuid(bigEndian: false);
 }

@@ -25,17 +25,29 @@ public sealed class DeleteDialogEndpoint : Endpoint<DeleteDialogRequest>
 
         Description(b => b.ProducesOneOf(
             StatusCodes.Status204NoContent,
+            StatusCodes.Status400BadRequest,
             StatusCodes.Status404NotFound,
+            StatusCodes.Status410Gone,
             StatusCodes.Status412PreconditionFailed));
     }
 
     public override async Task HandleAsync(DeleteDialogRequest req, CancellationToken ct)
     {
-        var command = new DeleteDialogCommand { Id = req.DialogId, IfMatchDialogRevision = req.IfMatchDialogRevision };
+        var command = new DeleteDialogCommand
+        {
+            Id = req.DialogId,
+            IfMatchDialogRevision = req.IfMatchDialogRevision,
+            DisableAltinnEvents = req.DisableAltinnEvents ?? false
+        };
         var result = await _sender.Send(command, ct);
         await result.Match(
-            success => SendNoContentAsync(ct),
+            success =>
+            {
+                HttpContext.Response.Headers.Append(Constants.ETag, success.Revision.ToString());
+                return SendNoContentAsync(ct);
+            },
             notFound => this.NotFoundAsync(notFound, ct),
+            gone => this.GoneAsync(gone, ct),
             forbidden => this.ForbiddenAsync(forbidden, ct),
             concurrencyError => this.PreconditionFailed(ct));
     }
@@ -47,4 +59,7 @@ public sealed class DeleteDialogRequest
 
     [FromHeader(headerName: Constants.IfMatch, isRequired: false, removeFromSchema: true)]
     public Guid? IfMatchDialogRevision { get; set; }
+
+    [HideFromDocs]
+    public bool? DisableAltinnEvents { get; init; }
 }

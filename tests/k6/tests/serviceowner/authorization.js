@@ -5,6 +5,7 @@ export default function () {
 
     let validSo = null;
     let invalidSo = { orgName: "other", orgNo: "310778737" };
+    let validSoAdmin = { orgName: "other", orgNo: "310778737", scopes: "digdir:dialogporten.serviceprovider digdir:dialogporten.serviceprovider.admin" };
 
     let dialog = dialogToInsert();
     let transmissionId = null; // known after successful insert
@@ -18,12 +19,16 @@ export default function () {
 
     let permutations = [
         [ true, validSo ],
-        [ false, invalidSo ]
+        [ false, invalidSo ],
+        [ true, validSoAdmin ]
     ];
 
     permutations.forEach(([shouldSucceed, tokenOptions]) => {
         let logPrefix = shouldSucceed ? "Allow" : "Deny";
         let logSuffix = shouldSucceed ? "valid serviceowner" : "invalid serviceowner"
+        if (tokenOptions && tokenOptions["scopes"] && tokenOptions["scopes"].indexOf("admin") > -1) {
+            logSuffix += " (admin)";
+        }
 
         describe(`${logPrefix} dialog create as ${logSuffix}`, () => {
             let r = postSO('dialogs', dialog, null, tokenOptions);

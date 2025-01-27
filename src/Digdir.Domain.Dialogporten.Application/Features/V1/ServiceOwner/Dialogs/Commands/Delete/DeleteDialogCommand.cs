@@ -1,5 +1,7 @@
 ﻿using System.Diagnostics;
 using Digdir.Domain.Dialogporten.Application.Common;
+using Digdir.Domain.Dialogporten.Application.Common.Behaviours;
+using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
@@ -7,18 +9,20 @@ using Digdir.Library.Entity.EntityFrameworkCore.Features.SoftDeletable;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
-using OneOf.Types;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Delete;
 
-public sealed class DeleteDialogCommand : IRequest<DeleteDialogResult>
+public sealed class DeleteDialogCommand : IRequest<DeleteDialogResult>, IAltinnEventDisabler
 {
     public Guid Id { get; set; }
     public Guid? IfMatchDialogRevision { get; set; }
+    public bool DisableAltinnEvents { get; set; }
 }
 
 [GenerateOneOf]
-public sealed partial class DeleteDialogResult : OneOfBase<Success, EntityNotFound, Forbidden, ConcurrencyError>;
+public sealed partial class DeleteDialogResult : OneOfBase<DeleteDialogSuccess, EntityNotFound, EntityDeleted, Forbidden, ConcurrencyError>;
+
+public sealed record DeleteDialogSuccess(Guid Revision);
 
 internal sealed class DeleteDialogCommandHandler : IRequestHandler<DeleteDialogCommand, DeleteDialogResult>
 {
@@ -42,12 +46,20 @@ internal sealed class DeleteDialogCommandHandler : IRequestHandler<DeleteDialogC
 
         var dialog = await _db.Dialogs
             .Include(x => x.Activities)
-            .Where(x => resourceIds.Contains(x.ServiceResource))
+            .WhereIf(!_userResourceRegistry.IsCurrentUserServiceOwnerAdmin(), x => resourceIds.Contains(x.ServiceResource))
+            .IgnoreQueryFilters()
             .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
 
         if (dialog is null)
         {
             return new EntityNotFound<DialogEntity>(request.Id);
+        }
+
+        if (dialog.Deleted)
+        {
+            // TODO: https://github.com/altinn/dialogporten/issues/1543
+            // When restoration is implemented, add a hint to the error message.
+            return new EntityDeleted<DialogEntity>(request.Id);
         }
 
         if (!_userResourceRegistry.UserCanModifyResourceType(dialog.ServiceResourceType))
@@ -61,7 +73,7 @@ internal sealed class DeleteDialogCommandHandler : IRequestHandler<DeleteDialogC
             .SaveChangesAsync(cancellationToken);
 
         return saveResult.Match<DeleteDialogResult>(
-            success => success,
+            success => new DeleteDialogSuccess(dialog.Revision),
             domainError => throw new UnreachableException("Should never get a domain error when deleting a dialog"),
             concurrencyError => concurrencyError);
     }

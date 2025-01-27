@@ -1,5 +1,6 @@
 using AutoMapper;
 using Digdir.Domain.Dialogporten.Application.Common;
+using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
@@ -17,7 +18,7 @@ public sealed class GetTransmissionQuery : IRequest<GetTransmissionResult>
 }
 
 [GenerateOneOf]
-public sealed partial class GetTransmissionResult : OneOfBase<TransmissionDto, EntityNotFound>;
+public sealed partial class GetTransmissionResult : OneOfBase<TransmissionDto, EntityNotFound, EntityDeleted>;
 
 internal sealed class GetTransmissionQueryHandler : IRequestHandler<GetTransmissionQuery, GetTransmissionResult>
 {
@@ -50,13 +51,19 @@ internal sealed class GetTransmissionQueryHandler : IRequestHandler<GetTransmiss
             .Include(x => x.Transmissions)
                 .ThenInclude(x => x.Sender)
             .IgnoreQueryFilters()
-            .Where(x => resourceIds.Contains(x.ServiceResource))
+            .WhereIf(!_userResourceRegistry.IsCurrentUserServiceOwnerAdmin(),
+                x => resourceIds.Contains(x.ServiceResource))
             .FirstOrDefaultAsync(x => x.Id == request.DialogId,
                 cancellationToken: cancellationToken);
 
         if (dialog is null)
         {
             return new EntityNotFound<DialogEntity>(request.DialogId);
+        }
+
+        if (dialog.Deleted)
+        {
+            return new EntityDeleted<DialogEntity>(request.DialogId);
         }
 
         var transmission = dialog.Transmissions.FirstOrDefault();

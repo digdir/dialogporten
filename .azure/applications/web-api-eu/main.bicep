@@ -45,8 +45,12 @@ param appConfigurationName string
 @secure()
 param environmentKeyVaultName string
 
+@description('The ratio of traces to sample (between 0.0 and 1.0). Lower values reduce logging volume.')
+@minLength(1)
+param otelTraceSamplerRatio string
+
 var namePrefix = 'dp-be-${environment}'
-var baseImageUrl = 'ghcr.io/digdir/dialogporten-'
+var baseImageUrl = 'ghcr.io/altinn/dialogporten-'
 var tags = {
   Environment: environment
   Product: 'Dialogporten'
@@ -58,6 +62,12 @@ resource appConfiguration 'Microsoft.AppConfiguration/configurationStores@2023-0
 
 resource containerAppEnvironment 'Microsoft.App/managedEnvironments@2024-03-01' existing = {
   name: containerAppEnvironmentName
+}
+
+resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
+  name: '${namePrefix}-webapi-eu-identity'
+  location: location
+  tags: tags
 }
 
 var containerAppEnvVars = [
@@ -76,6 +86,18 @@ var containerAppEnvVars = [
   {
     name: 'ASPNETCORE_URLS'
     value: 'http://+:8080'
+  }
+  {
+    name: 'AZURE_CLIENT_ID'
+    value: managedIdentity.properties.clientId
+  }
+  {
+    name: 'OTEL_TRACES_SAMPLER'
+    value: 'parentbased_traceidratio'
+  }
+  {
+    name: 'OTEL_TRACES_SAMPLER_ARG'
+    value: otelTraceSamplerRatio
   }
 ]
 
@@ -159,6 +181,7 @@ module containerApp '../../modules/containerApp/main.bicep' = {
     probes: probes
     revisionSuffix: revisionSuffix
     scale: scale
+    userAssignedIdentityId: managedIdentity.id
   }
 }
 
@@ -166,7 +189,7 @@ module keyVaultReaderAccessPolicy '../../modules/keyvault/addReaderRoles.bicep' 
   name: 'keyVaultReaderAccessPolicy-${containerAppName}'
   params: {
     keyvaultName: environmentKeyVaultResource.name
-    principalIds: [containerApp.outputs.identityPrincipalId]
+    principalIds: [managedIdentity.properties.principalId]
   }
 }
 
@@ -174,7 +197,7 @@ module appConfigReaderAccessPolicy '../../modules/appConfiguration/addReaderRole
   name: 'appConfigReaderAccessPolicy-${containerAppName}'
   params: {
     appConfigurationName: appConfigurationName
-    principalIds: [containerApp.outputs.identityPrincipalId]
+    principalIds: [managedIdentity.properties.principalId]
   }
 }
 

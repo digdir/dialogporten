@@ -62,7 +62,7 @@ resource redis 'Microsoft.Cache/Redis@2023-08-01' = {
 // private endpoint name max characters is 80
 var redisPrivateEndpointName = uniqueResourceName('${namePrefix}-redis-pe', 80)
 
-resource redisPrivateEndpoint 'Microsoft.Network/privateEndpoints@2024-03-01' = {
+resource redisPrivateEndpoint 'Microsoft.Network/privateEndpoints@2024-05-01' = {
   name: redisPrivateEndpointName
   location: location
   properties: {
@@ -97,9 +97,6 @@ module privateDnsZone '../privateDnsZone/main.bicep' = {
 
 module privateDnsZoneGroup '../privateDnsZoneGroup/main.bicep' = {
   name: '${namePrefix}-redis-privateDnsZoneGroup'
-  dependsOn: [
-    privateDnsZone
-  ]
   params: {
     name: 'default'
     dnsZoneGroupName: 'privatelink-redis-cache-windows-net'

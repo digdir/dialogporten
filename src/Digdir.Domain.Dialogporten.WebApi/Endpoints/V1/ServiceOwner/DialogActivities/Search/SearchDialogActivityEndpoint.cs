@@ -27,6 +27,7 @@ public sealed class SearchDialogActivityEndpoint : Endpoint<SearchActivityQuery,
         var result = await _sender.Send(req, ct);
         await result.Match(
             dto => SendOkAsync(dto, ct),
-            notFound => this.NotFoundAsync(notFound, ct));
+            notFound => this.NotFoundAsync(notFound, ct),
+            deleted => this.GoneAsync(deleted, ct));
     }
 }

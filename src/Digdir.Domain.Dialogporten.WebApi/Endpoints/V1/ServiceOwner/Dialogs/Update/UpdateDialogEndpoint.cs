@@ -27,6 +27,7 @@ public sealed class UpdateDialogEndpoint : Endpoint<UpdateDialogRequest>
             StatusCodes.Status204NoContent,
             StatusCodes.Status400BadRequest,
             StatusCodes.Status404NotFound,
+            StatusCodes.Status410Gone,
             StatusCodes.Status412PreconditionFailed,
             StatusCodes.Status422UnprocessableEntity));
     }
@@ -37,14 +38,19 @@ public sealed class UpdateDialogEndpoint : Endpoint<UpdateDialogRequest>
         {
             Id = req.DialogId,
             IfMatchDialogRevision = req.IfMatchDialogRevision,
-            Dto = req.Dto
+            Dto = req.Dto,
+            DisableAltinnEvents = req.DisableAltinnEvents ?? false
         };
 
         var updateDialogResult = await _sender.Send(command, ct);
         await updateDialogResult.Match(
-            success => SendNoContentAsync(ct),
+            success =>
+            {
+                HttpContext.Response.Headers.Append(Constants.ETag, success.Revision.ToString());
+                return SendNoContentAsync(ct);
+            },
             notFound => this.NotFoundAsync(notFound, ct),
-            badRequest => this.BadRequestAsync(badRequest, ct),
+            gone => this.GoneAsync(gone, ct),
             validationFailed => this.BadRequestAsync(validationFailed, ct),
             forbidden => this.ForbiddenAsync(forbidden, ct),
             domainError => this.UnprocessableEntityAsync(domainError, ct),
@@ -60,4 +66,7 @@ public sealed class UpdateDialogRequest
 
     [FromHeader(headerName: Constants.IfMatch, isRequired: false, removeFromSchema: true)]
     public Guid? IfMatchDialogRevision { get; set; }
+
+    [HideFromDocs]
+    public bool? DisableAltinnEvents { get; init; }
 }

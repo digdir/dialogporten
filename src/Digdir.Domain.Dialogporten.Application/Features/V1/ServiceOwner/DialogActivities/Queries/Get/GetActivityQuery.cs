@@ -1,5 +1,6 @@
 using AutoMapper;
 using Digdir.Domain.Dialogporten.Application.Common;
+using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
@@ -17,7 +18,7 @@ public sealed class GetActivityQuery : IRequest<GetActivityResult>
 }
 
 [GenerateOneOf]
-public sealed partial class GetActivityResult : OneOfBase<ActivityDto, EntityNotFound>;
+public sealed partial class GetActivityResult : OneOfBase<ActivityDto, EntityNotFound, EntityDeleted>;
 
 internal sealed class GetActivityQueryHandler : IRequestHandler<GetActivityQuery, GetActivityResult>
 {
@@ -43,13 +44,19 @@ internal sealed class GetActivityQueryHandler : IRequestHandler<GetActivityQuery
             .Include(x => x.Activities.Where(x => x.Id == request.ActivityId))
                 .ThenInclude(x => x.Description!.Localizations)
             .IgnoreQueryFilters()
-            .Where(x => resourceIds.Contains(x.ServiceResource))
+            .WhereIf(!_userResourceRegistry.IsCurrentUserServiceOwnerAdmin(),
+                x => resourceIds.Contains(x.ServiceResource))
             .FirstOrDefaultAsync(x => x.Id == request.DialogId,
                 cancellationToken: cancellationToken);
 
         if (dialog is null)
         {
             return new EntityNotFound<DialogEntity>(request.DialogId);
+        }
+
+        if (dialog.Deleted)
+        {
+            return new EntityDeleted<DialogEntity>(request.DialogId);
         }
 
         var activity = dialog.Activities.FirstOrDefault();

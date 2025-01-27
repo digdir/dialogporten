@@ -9,6 +9,7 @@ internal sealed class LocalDevelopmentResourceRegistry : IResourceRegistry
 {
     private const string LocalResourceType = "LocalResourceType";
     private const string LocalOrgId = "742859274";
+    private const string LocalOrgShortName = "ttd";
     private static readonly HashSet<ServiceResourceInformation> CachedResourceIds = new(new ServiceResourceInformationEqualityComparer());
     private readonly IDialogDbContext _db;
 
@@ -26,7 +27,7 @@ internal sealed class LocalDevelopmentResourceRegistry : IResourceRegistry
 
         foreach (var id in newIds)
         {
-            CachedResourceIds.Add(new ServiceResourceInformation(id, LocalResourceType, orgNumber));
+            CachedResourceIds.Add(new ServiceResourceInformation(id, LocalResourceType, orgNumber, LocalOrgShortName));
         }
 
         return CachedResourceIds;
@@ -35,7 +36,7 @@ internal sealed class LocalDevelopmentResourceRegistry : IResourceRegistry
     public Task<ServiceResourceInformation?> GetResourceInformation(string serviceResourceId, CancellationToken cancellationToken)
     {
         return Task.FromResult<ServiceResourceInformation?>(
-            new ServiceResourceInformation(serviceResourceId, LocalResourceType, LocalOrgId));
+            new ServiceResourceInformation(serviceResourceId, LocalResourceType, LocalOrgId, LocalOrgShortName));
     }
 
     [SuppressMessage("Performance", "CA1822:Mark members as static")]

@@ -6,7 +6,7 @@
 
 #### Prerequisites
 
-- [.NET 8 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0) (see [global.json](global.json) for the currently required version)
+- [.NET 9 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/9.0) (see [global.json](global.json) for the currently required version)
 
 #### Installing Podman (Mac)
 
@@ -34,14 +34,14 @@ brew install docker-compose
 #### Prerequisites
 
 - [Git](https://git-scm.com/download/win)
-- [.NET 8 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
+- [.NET 9 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/9.0)
 - [WSL2](https://docs.microsoft.com/en-us/windows/wsl/install) (To install, open a PowerShell admin window and run `wsl --install`)
 - [Virtual Machine Platform](https://support.microsoft.com/en-us/windows/enable-virtualization-on-windows-11-pcs-c5578302-6e43-4b4b-a449-8ced115f58e1) (Installs with WSL2, see the link above)
 
 #### Installing Podman (Windows)
 
 1. Install [Podman Desktop](https://podman.io/getting-started/installation).
-. 
+ 
 2. Start Podman Desktop and follow instructions to install Podman.
 
 3. Follow instructions in Podman Desktop to create and start a Podman machine.
@@ -111,7 +111,127 @@ dotnet ef migrations add TestMigration
 
 Besides ordinary unit and integration tests, there are test suites for both functional and non-functional end-to-end tests implemented with [K6](https://k6.io/).
 
-See `tests/k6/README.md` for more information.
+See [tests/k6/README.md](tests/k6/README.md) for more information.
+
+## Health Checks
+
+The project includes integrated health checks that are exposed through standard endpoints:
+- `/health/startup` - Dependency checks
+- `/health/liveness` - Self checks
+- `/health/readiness` - Critical service checks
+- `/health` - General health status
+- `/health/deep` - Comprehensive health check including external services
+
+These health checks are integrated with Azure Container Apps' health probe system and are used to monitor the application's health status.
+
+## Observability with OpenTelemetry
+
+This project uses OpenTelemetry for distributed tracing, metrics collection, and logging. The setup includes:
+
+### Core Features
+- Distributed tracing across services
+- Runtime and application metrics
+- Log aggregation and correlation
+- Integration with Azure Monitor/Application Insights
+- Support for both OTLP and Azure Monitor exporters
+- Automatic instrumentation for:
+  - ASP.NET Core
+  - HTTP clients
+  - Entity Framework Core
+  - PostgreSQL
+  - FusionCache
+
+### Configuration
+
+OpenTelemetry is configured through environment variables that are automatically provided by Azure Container Apps in production environments:
+
+```json
+{
+    "OTEL_SERVICE_NAME": "your-service-name",
+    "OTEL_EXPORTER_OTLP_ENDPOINT": "http://your-collector:4317",
+    "OTEL_EXPORTER_OTLP_PROTOCOL": "grpc",
+    "OTEL_RESOURCE_ATTRIBUTES": "key1=value1,key2=value2",
+    "APPLICATIONINSIGHTS_CONNECTION_STRING": "your-connection-string"
+}
+```
+
+### Local Development
+
+For local development, the project includes a docker-compose setup with:
+- OpenTelemetry Collector (ports 4317/4318 for OTLP receivers)
+- Grafana (port 3000)
+- Jaeger (port 16686)
+- Loki (port 3100)
+- Prometheus (port 9090)
+
+To run the local observability stack:
+```bash
+podman compose -f docker-compose-otel.yml up
+```
+
+### Accessing Observability Tools
+
+Once the local stack is running, you can access the following tools:
+
+#### Distributed Tracing with Jaeger
+- URL: http://localhost:16686
+- Features:
+  - View distributed traces across services
+  - Search by service, operation, or trace ID
+  - Analyze timing and dependencies
+  - Debug request flows and errors
+
+#### Metrics with Prometheus
+- URL: http://localhost:9090
+- Features:
+  - Query raw metrics data
+  - View metric targets and service discovery
+  - Debug metric collection
+
+#### Log Aggregation with Loki
+- Direct URL: http://localhost:3100
+- Grafana Integration: http://localhost:3000 (preferred interface)
+- Features:
+  - Search and filter logs across all services
+  - Correlate logs with traces using trace IDs
+  - Create log-based alerts and dashboards
+  - Use LogQL to query logs:
+    ```logql
+    # Example: Find all error logs
+    {container="web-api"} |= "error"
+    
+    # Example: Find logs with specific trace ID
+    {container=~"web-api|graphql"} |~ "trace_id=([a-f0-9]{32})"
+    ```
+
+#### Metrics and Dashboards in Grafana
+- URL: http://localhost:3000
+- Features:
+  - Pre-configured dashboards for:
+    - Application metrics
+    - Runtime metrics
+    - HTTP request metrics
+  - Data sources:
+    - Prometheus (metrics)
+    - Loki (logs)
+    - Jaeger (traces)
+  - Create custom dashboards
+  - Set up alerts
+
+#### OpenTelemetry Collector Endpoints
+- OTLP gRPC receiver: localhost:4317
+- OTLP HTTP receiver: localhost:4318
+- Prometheus metrics: localhost:8888
+- Prometheus exporter metrics: localhost:8889
+
+### Request Filtering
+
+The telemetry setup includes smart filtering to:
+- Exclude health check endpoints from tracing
+- Filter out duplicate traces from Azure SDK clients
+- Only record relevant HTTP client calls
+
+For more details about the OpenTelemetry setup, see the `ConfigureTelemetry` method in `AspNetUtilitiesExtensions.cs`.
 
 ## Updating the SDK in global.json
 When RenovateBot updates `global.json` or base image versions in Dockerfiles, make sure they match. 
@@ -190,7 +310,7 @@ For pull requests, the title must follow [Conventional Commits](https://www.conv
 The title of the PR will be used as the commit message when squashing/merging the pull request, and the body of the PR will be used as the description.
 
 This title will be used to generate the changelog (using [Release Please](https://github.com/google-github-actions/release-please-action))
-Using `fix` will add to "Bug Fixes", `feat` will add to "Features". All the others,`chore`, `ci`, etc., will be ignored. ([Example release](https://github.com/digdir/dialogporten/releases/tag/v1.12.0))
+Using `fix` will add to "Bug Fixes", `feat` will add to "Features". All the others,`chore`, `ci`, etc., will be ignored. ([Example release](https://github.com/altinn/dialogporten/releases/tag/v1.12.0))
 
 ## Deployment
 
@@ -313,21 +433,23 @@ Use the following steps:
 
 #### Connecting to resources in Azure
 
-There is a `ssh-jumper` virtual machine deployed with the infrastructure. This can be used to create a `ssh`-tunnel into the `vnet`. Use one of the following methods to gain access to resources within the `vnet`:
+There is a `ssh-jumper` virtual machine deployed with the infrastructure. This can be used to create a `ssh`-tunnel into the `vnet`. There are two ways to establish connections:
 
-Ensure you log into the azure CLI using the relevant user and subscription using `az login`.
-
-- Connect to the VNet using the following command:
-   ```
+1. Using `az ssh` commands directly:
+   ```bash
+   # Connect to the VNet using:
    az ssh vm --resource-group dp-be-<env>-rg --vm-name dp-be-<env>-ssh-jumper
-   ```
-   (You may be prompted to install the ssh extension for the azure cli)
-
-- To create an SSH tunnel for accessing specific resources (e.g., PostgreSQL database), use:
-   ```
+   
+   # Or create an SSH tunnel for specific resources (e.g., PostgreSQL database):
    az ssh vm -g dp-be-<env>-rg -n dp-be-<env>-ssh-jumper -- -L 5432:<database-host-name>:5432
    ```
    This example forwards the PostgreSQL default port (5432) to your localhost. Adjust the ports and hostnames as needed for other resources.
+
+   You may be prompted to install the ssh extension.
+
+2. Using the forwarding utility script:
+   
+   See [scripts/database-forwarder/README.md](scripts/database-forwarder/README.md) for a more user-friendly way to establish database connections through SSH.
 
 ### Applications
 

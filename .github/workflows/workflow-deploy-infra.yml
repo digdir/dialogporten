@@ -1,8 +1,4 @@
 name: Deploy infrastructure
-
-env:
-  AZ_CLI_VERSION: 2.64.0
-
 on:
   workflow_call:
     secrets:
@@ -63,8 +59,8 @@ jobs:
         with:
           ref: ${{ inputs.ref }}
 
-      - name: OIDC Login to Azure Public Cloud
-        uses: azure/login@v2
+      - name: Azure Login
+        uses: ./.github/actions/azure-login
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
@@ -74,7 +70,6 @@ jobs:
         uses: azure/CLI@v2
         id: keyvault-keys
         with:
-          azcliversion: ${{ env.AZ_CLI_VERSION }}
           inlineScript: |
             KEY_VAULT_KEYS=$(az keyvault secret list --vault-name ${{ secrets.AZURE_SOURCE_KEY_VAULT_NAME }} --subscription ${{ secrets.AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID }} --query "[].name" -o json | tr -d '\n')
             echo "::set-output name=key-vault-keys::$KEY_VAULT_KEYS"
@@ -111,7 +106,7 @@ jobs:
           failOnStdErr: false
           additionalArguments: '--what-if'
           parameters: ./.azure/infrastructure/${{ inputs.environment }}.bicepparam
-      
+
       - name: Deploy infrastructure (${{ inputs.environment }})
         uses: azure/arm-deploy@v2
         if: ${{ !inputs.dryRun }}
