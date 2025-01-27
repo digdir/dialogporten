@@ -7,8 +7,8 @@
  */
 
 import papaparse from 'https://jslib.k6.io/papaparse/5.1.1/index.js';
-import { SharedArray } from "k6/data";
-
+import { SharedArray } from 'k6/data';
+import exec from 'k6/execution';
 /**
  * Function to read the CSV file specified by the filename parameter.
  * @param {} filename 
@@ -67,8 +67,16 @@ export function endUsersPart(totalVus, vuId) {
   else {
       ixStart += extras;
   }
-  //console.log("Index:" +ixStart + ", usersPerVU: " + usersPerVU + ", extras: " + extras + ", endUsersLength: " + endUsersLength + ", totalVus: " + totalVus); 
   return endUsers.slice(ixStart, ixStart + usersPerVU);
+}
+
+export function setup() {
+  const totalVus = exec.test.options.scenarios.default.vus;
+  let parts = [];
+  for (let i = 1; i <= totalVus; i++) {
+      parts.push(endUsersPart(totalVus, i));
+  }
+  return parts;
 }
 
 

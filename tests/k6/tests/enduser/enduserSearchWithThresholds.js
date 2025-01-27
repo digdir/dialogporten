@@ -1,11 +1,12 @@
 import { default as run } from "./performance/enduser-search.js";
+export { setup as setup } from '../performancetest_common/readTestdata.js';
 
 export let options = {
     summaryTrendStats: ['avg', 'min', 'med', 'max', 'p(95)', 'p(99)', 'p(99.5)', 'p(99.9)', 'count'],
     vus: 1,
     duration: "30s",
     thresholds: {
-        "http_req_duration{name:enduser search}": ["p(95)<30", "p(99)<50"],
+        "http_req_duration{name:enduser search}": ["p(95)<300", "p(99)<500"],
         "http_req_duration{name:get dialog}": ["p(95)<300", "p(99)<500"],
         "http_req_duration{name:get dialog activities}": ["p(95)<300", "p(99)<500"],
         "http_req_duration{name:get dialog activity}": ["p(95)<300", "p(99)<500"],

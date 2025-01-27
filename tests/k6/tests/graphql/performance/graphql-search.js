@@ -4,10 +4,9 @@
  */
 import exec from 'k6/execution';
 import { getDefaultThresholds } from '../../performancetest_common/getDefaultThresholds.js';
-import { endUsersPart } from '../../performancetest_common/readTestdata.js';
 import { graphqlSearch } from "../../performancetest_common/simpleSearch.js";
+export { setup as setup } from '../../performancetest_common/readTestdata.js';
 
-const isSingleUserMode = (__ENV.isSingleUserMode ?? 'false') === 'true';    
 const traceCalls = (__ENV.traceCalls ?? 'false') === 'true';
 
 
@@ -21,15 +20,6 @@ export const options = {
     summaryTrendStats: ['avg', 'min', 'med', 'max', 'p(95)', 'p(99)', 'p(99.5)', 'p(99.9)', 'count'],
     thresholds: getDefaultThresholds(['http_req_duration', 'http_reqs'],['graphql search'])
 };
-
-export function setup() {
-    const totalVus = exec.test.options.scenarios.default.vus;
-    let parts = [];
-    for (let i = 1; i <= totalVus; i++) {
-        parts.push(endUsersPart(totalVus, i));
-    }
-    return parts;
-  }
 
 export default function(data) {
     const myEndUsers = data[exec.vu.idInTest - 1];

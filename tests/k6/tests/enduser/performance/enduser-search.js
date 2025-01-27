@@ -1,7 +1,7 @@
 import exec from 'k6/execution';
 import { enduserSearch } from '../../performancetest_common/simpleSearch.js'
 import { getDefaultThresholds } from '../../performancetest_common/getDefaultThresholds.js';
-import { endUsersPart } from '../../performancetest_common/readTestdata.js';
+export { setup as setup } from '../../performancetest_common/readTestdata.js';
 
 const traceCalls = (__ENV.traceCalls ?? 'false') === 'true';
 
@@ -18,15 +18,6 @@ export let options = {
         'get labellog'
     ])
 };
-
-export function setup() {
-    const totalVus = exec.test.options.scenarios.default.vus;
-    let parts = [];
-    for (let i = 1; i <= totalVus; i++) {
-        parts.push(endUsersPart(totalVus, i));
-    }
-    return parts;
-  }
 
 export default function(data) {
     const myEndUsers = data[exec.vu.idInTest - 1];
