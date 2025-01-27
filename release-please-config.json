@@ -28,16 +28,6 @@
       "type": "chore",
       "hidden": false,
       "section": "Miscellaneous Chores"
-    },
-    {
-      "type": "build",
-      "hidden": false,
-      "section": "Miscellaneous Chores"
-    },
-    {
-      "type": "docs",
-      "hidden": false,
-      "section": "Docs"
     }
   ],
   "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json"
