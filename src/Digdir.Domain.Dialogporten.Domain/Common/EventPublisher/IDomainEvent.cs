@@ -15,7 +15,14 @@ public interface IDomainEvent : INotification
     /// <summary>
     /// The time in which the event, as well as all the actual changes, occurred.
     /// </summary>
-    DateTimeOffset OccuredAt { get; set; }
+    // This contains a typo and will be removed as soon as we are
+    // sure there are no references to it remaining on the message bus.
+    DateTimeOffset? OccuredAt { get; set; }
+
+    /// <summary>
+    /// The time in which the event, as well as all the actual changes, occurred.
+    /// </summary>
+    DateTimeOffset? OccurredAt { get; set; }
 
     /// <summary>
     /// Dictionary of metadata.

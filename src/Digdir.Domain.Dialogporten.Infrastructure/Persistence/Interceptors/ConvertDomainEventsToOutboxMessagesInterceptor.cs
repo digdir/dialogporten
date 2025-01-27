@@ -65,7 +65,7 @@ internal sealed class ConvertDomainEventsToOutboxMessagesInterceptor : SaveChang
         foreach (var domainEvent in _domainEvents)
         {
             domainEvent.Metadata = _domainEventContext.Metadata;
-            domainEvent.OccuredAt = _transactionTime.Value;
+            domainEvent.OccurredAt = _transactionTime.Value;
         }
 
         await Task.WhenAll(_domainEvents
