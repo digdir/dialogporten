@@ -1,7 +1,7 @@
-import exec from 'k6/execution';
 import { serviceownerSearch } from '../../performancetest_common/simpleSearch.js'
 import { getDefaultThresholds } from '../../performancetest_common/getDefaultThresholds.js';
 import { serviceOwners } from '../../performancetest_common/readTestdata.js';
+import { validateTestData } from '../../performancetest_common/readTestdata.js';
 export { setup as setup } from '../../performancetest_common/readTestdata.js';
 
 const tag_name = 'serviceowner search';
@@ -20,8 +20,7 @@ export let options = {
 };
   
 export default function(data) {
-    const myEndUsers = data[exec.vu.idInTest - 1];
-    const ix = exec.vu.iterationInInstance % myEndUsers.length;
-    serviceownerSearch(serviceOwners[0], myEndUsers[ix], tag_name, traceCalls);
+    const { endUsers, index } = validateTestData(data, serviceOwners);
+    serviceownerSearch(serviceOwners[0], endUsers[index], tag_name, traceCalls);
 }
 

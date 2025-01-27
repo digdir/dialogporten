@@ -79,4 +79,23 @@ export function setup() {
   return parts;
 }
 
+export function validateTestData(data, serviceOwners=null) {
+    if (!Array.isArray(data) || !data[exec.vu.idInTest - 1]) {
+        throw new Error('Invalid data structure: expected array of end users');
+    }
+    const myEndUsers = data[exec.vu.idInTest - 1];
+    if (!Array.isArray(myEndUsers) || myEndUsers.length === 0) {
+        throw new Error('Invalid end users array: expected non-empty array');
+    }
+    if (serviceOwners !== null) {
+        if (!Array.isArray(serviceOwners) || serviceOwners.length === 0) {
+            throw new Error('Invalid service owners array: expected non-empty array');
+        }
+    }
+    return {
+        endUsers: myEndUsers,
+        index: exec.vu.iterationInInstance % myEndUsers.length
+    };
+}
+
 

@@ -2,8 +2,8 @@
  * The performance test for GraphQL search.
  * Run: k6 run tests/k6/tests/graphql/performance/graphql-search.js --vus 1 --iterations 1 -e env=yt01
  */
-import exec from 'k6/execution';
 import { getDefaultThresholds } from '../../performancetest_common/getDefaultThresholds.js';
+import { validateTestData } from '../../performancetest_common/readTestdata.js';
 import { graphqlSearch } from "../../performancetest_common/simpleSearch.js";
 export { setup as setup } from '../../performancetest_common/readTestdata.js';
 
@@ -22,9 +22,8 @@ export const options = {
 };
 
 export default function(data) {
-    const myEndUsers = data[exec.vu.idInTest - 1];
-    const ix = exec.vu.iterationInInstance % myEndUsers.length;
-    graphqlSearch(myEndUsers[ix], traceCalls);  
+    const { endUsers, index } = validateTestData(data);
+    graphqlSearch(endUsers[index], traceCalls);  
 }
 
 

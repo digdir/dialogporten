@@ -2,10 +2,10 @@
  * Performance test for creating dialogs with transmissions
  * Run: k6 run tests/k6/tests/serviceowner/performance/create-transmissions.js --vus 1 --iterations 1 -e numberOfTransmissions=100
  */
-import exec from 'k6/execution';
 import { getDefaultThresholds } from '../../performancetest_common/getDefaultThresholds.js';
 import { createTransmissions } from '../../performancetest_common/createDialog.js';
 import { serviceOwners } from '../../performancetest_common/readTestdata.js';
+import { validateTestData } from '../../performancetest_common/readTestdata.js';
 export { setup as setup } from '../../performancetest_common/readTestdata.js';
 
 export const options = {
@@ -19,8 +19,7 @@ const maxTransmissionsInThread = (__ENV.maxTransmissionsInThread ?? '100');
 const testid = (__ENV.TESTID ?? 'createTransmissions');
   
 export default function(data) {
-    const myEndUsers = data[exec.vu.idInTest - 1];
-    const ix = exec.vu.iterationInInstance % myEndUsers.length;
-    createTransmissions(serviceOwners[0], myEndUsers[ix], traceCalls, numberOfTransmissions, maxTransmissionsInThread, testid);
+    const { endUsers, index } = validateTestData(data, serviceOwners);
+    createTransmissions(serviceOwners[0], endUsers[index], traceCalls, numberOfTransmissions, maxTransmissionsInThread, testid);
 }
 

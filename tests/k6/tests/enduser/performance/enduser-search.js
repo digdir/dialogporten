@@ -1,6 +1,6 @@
-import exec from 'k6/execution';
 import { enduserSearch } from '../../performancetest_common/simpleSearch.js'
 import { getDefaultThresholds } from '../../performancetest_common/getDefaultThresholds.js';
+import { validateTestData } from '../../performancetest_common/readTestdata.js';
 export { setup as setup } from '../../performancetest_common/readTestdata.js';
 
 const traceCalls = (__ENV.traceCalls ?? 'false') === 'true';
@@ -20,8 +20,7 @@ export let options = {
 };
 
 export default function(data) {
-    const myEndUsers = data[exec.vu.idInTest - 1];
-    const ix = exec.vu.iterationInInstance % myEndUsers.length;
-    enduserSearch(myEndUsers[ix], traceCalls);  
+    const { endUsers, index } = validateTestData(data);
+    enduserSearch(endUsers[index], traceCalls);  
 }
 
