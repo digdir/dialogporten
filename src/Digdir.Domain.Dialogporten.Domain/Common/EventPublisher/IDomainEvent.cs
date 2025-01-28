@@ -15,8 +15,7 @@ public interface IDomainEvent : INotification
     /// <summary>
     /// The time at which the event, as well as all the actual changes, occurred.
     /// </summary>
-    // This contains a typo and will be removed as soon as we are
-    // sure there are no references to it remaining on the message bus.
+    [Obsolete($"Use {nameof(OccurredAt)} instead")]
     DateTimeOffset OccuredAt { get; set; }
 
     /// <summary>
@@ -24,8 +23,11 @@ public interface IDomainEvent : INotification
     /// </summary>
     DateTimeOffset OccurredAt
     {
+        // Will be removed once all events in the database/on the bus have been consumed
+#pragma warning disable CS0618 // Type or member is obsolete
         get => OccuredAt;
         set => OccuredAt = value;
+#pragma warning restore CS0618 // Type or member is obsolete
     }
 
     /// <summary>
