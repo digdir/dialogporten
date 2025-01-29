@@ -1,5 +1,7 @@
 ﻿name: CI/CD Staging
 
+run-name: CI/CD Staging ${{ github.event.client_payload.version && format('({0})', github.event.client_payload.version) || '' }}
+
 on:
   workflow_dispatch:
   repository_dispatch:
