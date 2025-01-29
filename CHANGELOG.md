@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.47.4](https://github.com/Altinn/dialogporten/compare/v1.47.3...v1.47.4) (2025-01-29)
+
+
+### Miscellaneous Chores
+
+* **deps:** update dependency coverlet.collector to 6.0.4 ([#1750](https://github.com/Altinn/dialogporten/issues/1750)) ([7d8bb26](https://github.com/Altinn/dialogporten/commit/7d8bb26d77c8f0a6b9ab62b84974c4595c63c02c))
+* **deps:** update dependency vitest to v3.0.3 ([#1748](https://github.com/Altinn/dialogporten/issues/1748)) ([6ee8d28](https://github.com/Altinn/dialogporten/commit/6ee8d280a60031096284624c0e7540acbc3a1704))
+* **deps:** update otel/opentelemetry-collector-contrib docker tag to v0.118.0 ([#1751](https://github.com/Altinn/dialogporten/issues/1751)) ([2e3ae4d](https://github.com/Altinn/dialogporten/commit/2e3ae4dcd3f4497c687aa005d05057c28f30629e))
+* Misc. typos ([#1740](https://github.com/Altinn/dialogporten/issues/1740)) ([d83c7a0](https://github.com/Altinn/dialogporten/commit/d83c7a06d33c62ce3c2cafba401631e71c261161))
+
 ## [1.47.3](https://github.com/Altinn/dialogporten/compare/v1.47.2...v1.47.3) (2025-01-28)
 
 
