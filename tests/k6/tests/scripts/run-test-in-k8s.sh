@@ -125,7 +125,7 @@ metadata:
   name: $name
   namespace: dialogporten
 spec:
-  arguments: --out experimental-prometheus-rw --vus=$vus --duration=$duration --tag testid=$testid
+  arguments: --out experimental-prometheus-rw --vus=$vus --duration=$duration --tag testid=$testid --log-output=none
   parallelism: $parallelism
   script:
     configMap:
