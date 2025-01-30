@@ -118,3 +118,10 @@ public enum DialogStatus
     [GraphQLDescription("The dialogue was completed. This typically means that the dialogue is moved to a GUI archive or similar.")]
     Completed = 6
 }
+
+public enum SystemLabel
+{
+    Default = 1,
+    Bin = 2,
+    Archive = 3
+}

@@ -296,6 +296,8 @@ input SearchDialogInput {
   externalReference: String
   "Filter by status"
   status: [DialogStatus!]
+  "Filter by system label"
+  systemLabel: [SystemLabel!]
   "Only return dialogs created after this date"
   createdAfter: DateTime
   "Only return dialogs created before this date"
