@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.47.5](https://github.com/Altinn/dialogporten/compare/v1.47.4...v1.47.5) (2025-01-30)
+
+
+### Bug Fixes
+
+* **auth:** Allow .noconsent scope in EndUser auth policy ([#1760](https://github.com/Altinn/dialogporten/issues/1760)) ([d770779](https://github.com/Altinn/dialogporten/commit/d7707797a91e30c4db4a2ae70b746bb661d9b835))
+* **auth:** Split values when checking EndUser scopes ([#1764](https://github.com/Altinn/dialogporten/issues/1764)) ([5957e7d](https://github.com/Altinn/dialogporten/commit/5957e7dbb84c316c35d212609b7480dae47ab42b))
+
+
+### Miscellaneous Chores
+
+* Add FormSubmitted and FormSaved to ActivityType ([#1742](https://github.com/Altinn/dialogporten/issues/1742)) ([4b9bad0](https://github.com/Altinn/dialogporten/commit/4b9bad002d90e06425bb6782a0a945c6a841f1f1))
+* **deps:** update dependency ziggycreatures.fusioncache to v2 ([#1752](https://github.com/Altinn/dialogporten/issues/1752)) ([dd24928](https://github.com/Altinn/dialogporten/commit/dd24928c2905ad3edd69539b2038082794dbfa1b))
+* **perfomance:** Fixing github action to run performance tests in k8s ([#1739](https://github.com/Altinn/dialogporten/issues/1739)) ([166d53d](https://github.com/Altinn/dialogporten/commit/166d53d58381ab16d706a1ff5ad635e115946d4a))
+* Remove old OccuredAt property on DomainEvent ([#1758](https://github.com/Altinn/dialogporten/issues/1758)) ([67ee75d](https://github.com/Altinn/dialogporten/commit/67ee75dcc0479eac4a561b8aa37b47c12a5075b1))
+
 ## [1.47.4](https://github.com/Altinn/dialogporten/compare/v1.47.3...v1.47.4) (2025-01-29)
 
 
