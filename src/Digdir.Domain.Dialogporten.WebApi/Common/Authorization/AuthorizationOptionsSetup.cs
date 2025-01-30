@@ -32,7 +32,7 @@ internal sealed class AuthorizationOptionsSetup : IConfigureOptions<Authorizatio
             {
                 var userScopes = context.User
                     .FindAll(AuthorizationPolicyBuilderExtensions.ScopeClaim)
-                    .Select(s => s.Value)
+                    .SelectMany(s => s.Value.Split(" "))
                     .ToList();
 
                 return userScopes.Contains(AuthorizationScope.EndUser) ||
