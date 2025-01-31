@@ -107,11 +107,10 @@ internal sealed class PopulateActorNameInterceptor : SaveChangesInterceptor
             {
                 actor.ActorNameEntity = actorNameEntity;
             }
-            // Amund Q:
-            //  Siden ActorName skal fjernes fra Actor senere og dette vil gjøre at man blir mer tvingt sjekke nye ActorNameEntity? 
-            //  Dem kommer fra eks. UpdateSeenLog som sender in Name og Id. actor.ActorName blir ikke satt av Iterceptor lenger.
-            //  Men om det blir lagt til manuelt så blir den med i DB
-            //  Den må uansett byttes om ikke fjernes. siden interceptor ikke overskriver den lenger. dette kan føre til feil mellom actor.ActorName og  actor.ActorNameEntity.ActorName
+
+            // ActorName is not set/overwritten by the Interceptor.
+            // In cases where ActorName and ActorId is given, ActorName might not equal ActorNameEntity.ActorName
+            // ActorName should not be used when ActorNameEntity is used therefore its set to null 
             actor.ActorName = null;
         }
 
