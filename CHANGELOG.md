@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.47.7](https://github.com/Altinn/dialogporten/compare/v1.47.6...v1.47.7) (2025-01-31)
+
+
+### Bug Fixes
+
+* **deps:** ensure traces are sent to application insights ([#1776](https://github.com/Altinn/dialogporten/issues/1776)) ([f4df2f3](https://github.com/Altinn/dialogporten/commit/f4df2f315ecb65970a8ced4dd8319c3d18edac65))
+
+
+### Miscellaneous Chores
+
+* **yt01:** Disable Information log level for event publishing ([#1773](https://github.com/Altinn/dialogporten/issues/1773)) ([3b821d0](https://github.com/Altinn/dialogporten/commit/3b821d0c55a95a4cdf9c86e84562a6d4651d0f2d))
+
 ## [1.47.6](https://github.com/Altinn/dialogporten/compare/v1.47.5...v1.47.6) (2025-01-31)
 
 
