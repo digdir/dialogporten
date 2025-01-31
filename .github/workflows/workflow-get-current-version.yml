@@ -7,16 +7,12 @@ on:
       version:
         description: "Version"
         value: ${{ jobs.get-current-version.outputs.version }}
-      version_sha:
-        description: "SHA of the version tag"
-        value: ${{ jobs.get-current-version.outputs.version_sha }}
 jobs:
   get-current-version:
     name: Filter
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.set-current-version.outputs.version }}
-      version_sha: ${{ steps.get-version-sha.outputs.sha }}
     steps:
       - name: "Checkout GitHub Action"
         uses: actions/checkout@v4
@@ -25,9 +21,3 @@ jobs:
       - name: Set current version
         id: set-current-version
         run: echo "version=$(cat version.txt)" >> $GITHUB_OUTPUT
-      - name: Get version SHA
-        id: get-version-sha
-        run: |
-          VERSION=$(cat version.txt)
-          SHA=$(git rev-list -n 1 v${VERSION})
-          echo "sha=$SHA" >> $GITHUB_OUTPUT
