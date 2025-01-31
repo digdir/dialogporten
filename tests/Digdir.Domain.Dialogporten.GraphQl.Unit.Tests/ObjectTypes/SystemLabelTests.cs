@@ -7,7 +7,7 @@ namespace Digdir.Domain.Dialogporten.GraphQl.Unit.Tests.ObjectTypes;
 public class SystemLabelTests
 {
     [Fact]
-    public void Activity_Types_In_GraphQl_Must_Match_Domain_Types()
+    public void SystemLabel_Types_In_GraphQl_Must_Match_Domain_Types()
     {
         // Arrange
         var domainTypes = Enum.GetValues(typeof(DomainSystemLabel)).Cast<DomainSystemLabel>().ToList();
