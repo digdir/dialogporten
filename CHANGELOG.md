@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.47.6](https://github.com/Altinn/dialogporten/compare/v1.47.5...v1.47.6) (2025-01-31)
+
+
+### Bug Fixes
+
+* **graphql:** Add SystemLabel search filter ([#1767](https://github.com/Altinn/dialogporten/issues/1767)) ([431c529](https://github.com/Altinn/dialogporten/commit/431c529ebecd8e21463545f85f91b9107f86b57c))
+
+
+### Miscellaneous Chores
+
+* **deps:** update dependency vitest to v3.0.4 ([#1769](https://github.com/Altinn/dialogporten/issues/1769)) ([e43b119](https://github.com/Altinn/dialogporten/commit/e43b1197b0b5aed3a4174e7adccb0d9a73f252da))
+* Test 0.5 sampler ratio in yt01 ([#1770](https://github.com/Altinn/dialogporten/issues/1770)) ([cd69edb](https://github.com/Altinn/dialogporten/commit/cd69edbc7d1f450d6d556a4f73811c8e208fbf06))
+
 ## [1.47.5](https://github.com/Altinn/dialogporten/compare/v1.47.4...v1.47.5) (2025-01-30)
 
 
