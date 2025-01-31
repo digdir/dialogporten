@@ -49,7 +49,7 @@ internal sealed class GetTransmissionQueryHandler : IRequestHandler<GetTransmiss
                 .ThenInclude(x => x.Attachments.OrderBy(x => x.CreatedAt).ThenBy(x => x.Id))
                 .ThenInclude(x => x.Urls.OrderBy(x => x.CreatedAt).ThenBy(x => x.Id))
             .Include(x => x.Transmissions)
-                .ThenInclude(x => x.Sender)
+                .ThenInclude(x => x.Sender).ThenInclude(x => x.ActorNameEntity)
             .IgnoreQueryFilters()
             .WhereIf(!_userResourceRegistry.IsCurrentUserServiceOwnerAdmin(),
                 x => resourceIds.Contains(x.ServiceResource))

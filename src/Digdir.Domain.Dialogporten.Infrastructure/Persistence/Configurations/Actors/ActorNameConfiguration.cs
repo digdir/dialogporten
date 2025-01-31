@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Configurations.Actors;
 
-public sealed class ActorNameConfiguration : IEntityTypeConfiguration<ActorName>
+internal sealed class ActorNameConfiguration : IEntityTypeConfiguration<ActorName>
 {
     public void Configure(EntityTypeBuilder<ActorName> builder)
     {

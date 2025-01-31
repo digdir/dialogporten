@@ -92,15 +92,27 @@ internal sealed class PopulateActorNameInterceptor : SaveChangesInterceptor
 
             var actorNameEntity = await dbContext.Set<ActorName>()
                 .FirstOrDefaultAsync(x => x.ActorId == actor.ActorId && x.Name == actorName, cancellationToken);
-
-            actor.ActorNameEntity = actorNameEntity ?? new ActorName
+            if (actorNameEntity is null)
             {
-                Id = IdentifiableExtensions.CreateVersion7(),
-                CreatedAt = _transactionTime.Value,
-                Name = actorName,
-                ActorId = actor.ActorId!
-            };
-            actor.ActorName = actorName;
+                actor.ActorNameEntity = new ActorName
+                {
+                    Id = IdentifiableExtensions.CreateVersion7(),
+                    CreatedAt = _transactionTime.Value,
+                    Name = actorName,
+                    ActorId = actor.ActorId!
+                };
+                dbContext.Add(actor.ActorNameEntity);
+            }
+            else
+            {
+                actor.ActorNameEntity = actorNameEntity;
+            }
+            // Amund Q:
+            //  Siden ActorName skal fjernes fra Actor senere og dette vil gjøre at man blir mer tvingt sjekke nye ActorNameEntity? 
+            //  Dem kommer fra eks. UpdateSeenLog som sender in Name og Id. actor.ActorName blir ikke satt av Iterceptor lenger.
+            //  Men om det blir lagt til manuelt så blir den med i DB
+            //  Den må uansett byttes om ikke fjernes. siden interceptor ikke overskriver den lenger. dette kan føre til feil mellom actor.ActorName og  actor.ActorNameEntity.ActorName
+            actor.ActorName = null;
         }
 
         _hasBeenExecuted = true;
