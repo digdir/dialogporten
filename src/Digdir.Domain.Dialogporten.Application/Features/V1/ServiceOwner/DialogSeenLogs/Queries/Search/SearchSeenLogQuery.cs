@@ -41,7 +41,8 @@ internal sealed class SearchSeenLogQueryHandler : IRequestHandler<SearchSeenLogQ
         var dialog = await _db.Dialogs
             .AsNoTracking()
             .Include(x => x.SeenLog)
-                .ThenInclude(x => x.SeenBy).ThenInclude(x => x.ActorNameEntity)
+                .ThenInclude(x => x.SeenBy)
+                .ThenInclude(x => x.ActorNameEntity)
             .IgnoreQueryFilters()
             .WhereIf(!_userResourceRegistry.IsCurrentUserServiceOwnerAdmin(),
                 x => resourceIds.Contains(x.ServiceResource))
