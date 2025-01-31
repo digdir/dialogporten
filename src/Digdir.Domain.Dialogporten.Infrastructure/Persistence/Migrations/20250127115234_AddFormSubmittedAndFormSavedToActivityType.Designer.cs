@@ -3,6 +3,7 @@ using System;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(DialogDbContext))]
-    partial class DialogDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250127115234_AddFormSubmittedAndFormSavedToActivityType")]
+    partial class AddFormSubmittedAndFormSavedToActivityType
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -37,9 +40,6 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
 
-                    b.Property<Guid?>("ActorNameEntityId")
-                        .HasColumnType("uuid");
-
                     b.Property<int>("ActorTypeId")
                         .HasColumnType("integer");
 
@@ -60,8 +60,6 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ActorNameEntityId");
-
                     b.HasIndex("ActorTypeId");
 
                     b.ToTable("Actor");
@@ -69,36 +67,6 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.HasDiscriminator().HasValue("Actor");
 
                     b.UseTphMappingStrategy();
-                });
-
-            modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.Actors.ActorName", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasDefaultValueSql("gen_random_uuid()");
-
-                    b.Property<string>("ActorId")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("current_timestamp at time zone 'utc'");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ActorId", "Name")
-                        .IsUnique();
-
-                    b.ToTable("ActorName");
                 });
 
             modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.Actors.ActorType", b =>
@@ -1734,17 +1702,11 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Digdir.Domain.Dialogporten.Domain.Actors.Actor", b =>
                 {
-                    b.HasOne("Digdir.Domain.Dialogporten.Domain.Actors.ActorName", "ActorNameEntity")
-                        .WithMany()
-                        .HasForeignKey("ActorNameEntityId");
-
                     b.HasOne("Digdir.Domain.Dialogporten.Domain.Actors.ActorType", "ActorType")
                         .WithMany()
                         .HasForeignKey("ActorTypeId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.Navigation("ActorNameEntity");
 
                     b.Navigation("ActorType");
                 });
