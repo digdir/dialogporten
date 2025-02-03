@@ -57,10 +57,10 @@ static void BuildAndRun(string[] args)
         kestrelOptions.Limits.MaxRequestBodySize = Constants.MaxRequestBodySize;
     });
 
-    builder.Host.ConfigureHostOptions(options =>
-    {
-        options.ShutdownTimeout = TimeSpan.FromSeconds(30);
-    });
+    builder.Services.AddSingleton<IHostLifetime>(sp => new DelayedShutdownHostLifetime(
+        sp.GetRequiredService<IHostApplicationLifetime>(),
+        TimeSpan.FromSeconds(10)
+    ));
 
     builder.Configuration
         .AddAzureConfiguration(builder.Environment.EnvironmentName)
