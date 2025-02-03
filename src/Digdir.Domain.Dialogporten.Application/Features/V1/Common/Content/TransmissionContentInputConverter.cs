@@ -53,6 +53,8 @@ internal sealed class TransmissionContentInputConverter<TTransmissionContent> :
             {
                 TypeId = transmissionContentType.Id,
                 Value = sourceValue.Value,
+                // Temporary converting of deprecated media types
+                // TODO: https://github.com/Altinn/dialogporten/issues/1782
                 MediaType = sourceValue.MediaType.MapDeprecatedMediaType()
             });
         }
