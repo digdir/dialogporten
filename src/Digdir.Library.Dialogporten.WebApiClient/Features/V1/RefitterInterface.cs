@@ -223,7 +223,7 @@ namespace Digdir.Library.Dialogporten.WebApiClient.Features.V1
         /// </item>
         /// <item>
         /// <term>400</term>
-        /// <description>Validation error occured. See problem details for a list of errors.</description>
+        /// <description>Validation error occurred. See problem details for a list of errors.</description>
         /// </item>
         /// <item>
         /// <term>401</term>
@@ -247,7 +247,7 @@ namespace Digdir.Library.Dialogporten.WebApiClient.Features.V1
         /// </item>
         /// <item>
         /// <term>422</term>
-        /// <description>Domain error occured. See problem details for a list of errors.</description>
+        /// <description>Domain error occurred. See problem details for a list of errors.</description>
         /// </item>
         /// </list>
         /// </returns>
@@ -379,7 +379,7 @@ namespace Digdir.Library.Dialogporten.WebApiClient.Features.V1
         /// </item>
         /// <item>
         /// <term>400</term>
-        /// <description>Validation error occured. See problem details for a list of errors.</description>
+        /// <description>Validation error occurred. See problem details for a list of errors.</description>
         /// </item>
         /// <item>
         /// <term>401</term>
@@ -403,7 +403,7 @@ namespace Digdir.Library.Dialogporten.WebApiClient.Features.V1
         /// </item>
         /// <item>
         /// <term>422</term>
-        /// <description>Domain error occured. See problem details for a list of errors.</description>
+        /// <description>Domain error occurred. See problem details for a list of errors.</description>
         /// </item>
         /// </list>
         /// </returns>
@@ -469,7 +469,7 @@ namespace Digdir.Library.Dialogporten.WebApiClient.Features.V1
         /// </item>
         /// <item>
         /// <term>400</term>
-        /// <description>Validation error occured. See problem details for a list of errors.</description>
+        /// <description>Validation error occurred. See problem details for a list of errors.</description>
         /// </item>
         /// <item>
         /// <term>401</term>
@@ -517,7 +517,7 @@ namespace Digdir.Library.Dialogporten.WebApiClient.Features.V1
         /// </item>
         /// <item>
         /// <term>400</term>
-        /// <description>Validation error occured. See problem details for a list of errors.</description>
+        /// <description>Validation error occurred. See problem details for a list of errors.</description>
         /// </item>
         /// <item>
         /// <term>401</term>
@@ -537,7 +537,7 @@ namespace Digdir.Library.Dialogporten.WebApiClient.Features.V1
         /// </item>
         /// <item>
         /// <term>422</term>
-        /// <description>Domain error occured. See problem details for a list of errors.</description>
+        /// <description>Domain error occurred. See problem details for a list of errors.</description>
         /// </item>
         /// </list>
         /// </returns>
@@ -598,7 +598,7 @@ namespace Digdir.Library.Dialogporten.WebApiClient.Features.V1
         /// </item>
         /// <item>
         /// <term>400</term>
-        /// <description>Validation error occured. See problem details for a list of errors.</description>
+        /// <description>Validation error occurred. See problem details for a list of errors.</description>
         /// </item>
         /// <item>
         /// <term>401</term>
@@ -610,7 +610,7 @@ namespace Digdir.Library.Dialogporten.WebApiClient.Features.V1
         /// </item>
         /// <item>
         /// <term>422</term>
-        /// <description>Domain error occured. See problem details for a list of errors.</description>
+        /// <description>Domain error occurred. See problem details for a list of errors.</description>
         /// </item>
         /// </list>
         /// </returns>
@@ -707,7 +707,7 @@ namespace Digdir.Library.Dialogporten.WebApiClient.Features.V1
         /// </item>
         /// <item>
         /// <term>400</term>
-        /// <description>Validation error occured. See problem details for a list of errors.</description>
+        /// <description>Validation error occurred. See problem details for a list of errors.</description>
         /// </item>
         /// <item>
         /// <term>401</term>
@@ -731,7 +731,7 @@ namespace Digdir.Library.Dialogporten.WebApiClient.Features.V1
         /// </item>
         /// <item>
         /// <term>422</term>
-        /// <description>Domain error occured. See problem details for a list of errors.</description>
+        /// <description>Domain error occurred. See problem details for a list of errors.</description>
         /// </item>
         /// </list>
         /// </returns>
@@ -2183,6 +2183,12 @@ namespace Digdir.Library.Dialogporten.WebApiClient.Features.V1
 
         [System.Runtime.Serialization.EnumMember(Value = @"SentToPayment")]
         SentToPayment = 12,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"FormSubmitted")]
+        FormSubmitted = 13,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"FormSaved")]
+        FormSaved = 14,
 
     }
 
