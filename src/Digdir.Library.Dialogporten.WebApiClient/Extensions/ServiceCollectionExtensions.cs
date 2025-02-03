@@ -1,4 +1,5 @@
 using System.Buffers.Text;
+using System.CodeDom.Compiler;
 using System.Reflection;
 using Altinn.ApiClients.Maskinporten.Extensions;
 using Altinn.ApiClients.Maskinporten.Services;
@@ -62,7 +63,8 @@ public static class ServiceCollectionExtensions
         var refitClients = Assembly.GetExecutingAssembly().GetTypes()
             .Where(x =>
                 x.Namespace!.StartsWith("Digdir.Library.Dialogporten.WebApiClient.Features.V1", StringComparison.InvariantCulture) &&
-                x.IsInterface)
+                x.IsInterface &&
+                x.GetCustomAttribute<GeneratedCodeAttribute>()?.Tool == "Refitter")
             .ToList();
 
         foreach (var refitClient in refitClients)
@@ -75,6 +77,26 @@ public static class ServiceCollectionExtensions
                 })
                 .AddMaskinportenHttpMessageHandler<SettingsJwkClientDefinition>("dialogporten-sp-sdk");
         }
+
+        return services;
+    }
+
+    public static IServiceCollection AddDialogportenClient(this IServiceCollection services, Action<DialogportenSettings> configureOptions)
+    {
+        var dialogportenSettings = new DialogportenSettings();
+        configureOptions.Invoke(dialogportenSettings);
+        services.ConfigureOptions(dialogportenSettings);
+
+        services.RegisterMaskinportenClientDefinition<SettingsJwkClientDefinition>("dialogporten-sp-sdk", dialogportenSettings.Maskinporten);
+        
+        var refitClients = AssemblyMarker.Assembly.GetTypes()
+            .Where(x =>
+                x.Namespace!.StartsWith("Digdir.Library.Dialogporten.WebApiClient.Features.V1", StringComparison.InvariantCulture) &&
+                x.IsInterface &&
+                x.GetCustomAttribute<GeneratedCodeAttribute>()?.Tool == "Refitter")
+            .ToList();
+
+        
 
         return services;
     }

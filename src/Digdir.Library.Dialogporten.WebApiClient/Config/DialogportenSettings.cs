@@ -1,8 +1,10 @@
+using Altinn.ApiClients.Maskinporten.Config;
+
 namespace Digdir.Library.Dialogporten.WebApiClient.Config;
 
 public class DialogportenSettings
 {
-    public string Environment { get; set; } = null!;
+    public string BaseUri { get; set; } = null!;
     public MaskinportenSettings Maskinporten { get; set; } = null!;
 }
 
