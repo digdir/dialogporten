@@ -22,7 +22,9 @@ internal sealed class ContentValueDtoValidator : AbstractValidator<ContentValueD
         RuleFor(x => x.MediaType)
             .NotEmpty()
             .Must(value => value is not null && contentType.AllowedMediaTypes
-                // Manually adding this for backwards compatibility, until correspondence is updated and deployed
+                // Manually adding this for backwards compatibility,
+                // until correspondence is updated and deployed
+                // TODO: https://github.com/Altinn/dialogporten/issues/1782
                 .Append(MediaTypes.EmbeddableMarkdownDeprecated).Contains(value))
             .WithMessage($"{{PropertyName}} '{{PropertyValue}}' is not allowed for content type {contentType.Name}. " +
                          $"Allowed media types are {string.Join(", ", contentType.AllowedMediaTypes.Select(x => $"'{x}'"))}");
@@ -76,7 +78,9 @@ internal sealed class ContentValueDtoValidator : AbstractValidator<ContentValueD
                 => contentType.AllowedMediaTypes.Append(MediaTypes.LegacyHtml).ToArray(),
             DialogContentType.Values.MainContentReference when UserHasLegacyHtmlScope(user)
                 => contentType.AllowedMediaTypes.Append(MediaTypes.LegacyEmbeddableHtml)
-                    // Manually adding this for backwards compatibility, until correspondence is updated and deployed
+                    // Manually adding this for backwards compatibility,
+                    // until correspondence is updated and deployed
+                    // TODO: https://github.com/Altinn/dialogporten/issues/1782
                     .Append(MediaTypes.EmbeddableMarkdownDeprecated)
                     .Append(MediaTypes.LegacyEmbeddableHtmlDeprecated).ToArray(),
             DialogContentType.Values.MainContentReference

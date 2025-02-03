@@ -14,3 +14,18 @@ public static class MediaTypes
     public const string Markdown = "text/markdown";
     public const string PlainText = "text/plain";
 }
+
+// Temporary mapping for deprecated media types,
+// we will support both old and new media types
+// until correspondence is updated and deployed
+// TODO: https://github.com/Altinn/dialogporten/issues/1782
+public static class MediaTypeExtensions
+{
+    public static string MapDeprecatedMediaType(this string mediaType)
+        => mediaType switch
+        {
+            MediaTypes.EmbeddableMarkdownDeprecated => MediaTypes.EmbeddableMarkdown,
+            MediaTypes.LegacyEmbeddableHtmlDeprecated => MediaTypes.LegacyEmbeddableHtml,
+            _ => mediaType
+        };
+}
