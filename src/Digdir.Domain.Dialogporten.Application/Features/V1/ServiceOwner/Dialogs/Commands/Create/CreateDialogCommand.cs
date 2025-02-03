@@ -115,11 +115,11 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
             })
         {
             var dialogId = await _db.Dialogs
-                .Where(x => x.IdempotentKey == request.IdempotentKey && x.Org == dialog.Org)
+                .Where(x => x.IdempotentKey == request.Dto.IdempotentKey && x.Org == dialog.Org)
                 .Select(x => x.Id)
                 .FirstOrDefaultAsync(cancellationToken);
 
-            return new Conflict(new ConflictError(nameof(request.IdempotentKey), $"'{request.IdempotentKey}' already exists with DialogId '{dialogId}'"));
+            return new Conflict(new ConflictError(nameof(request.Dto.IdempotentKey), $"'{request.Dto.IdempotentKey}' already exists with DialogId '{dialogId}'"));
         }
 
         return saveResult.Match<CreateDialogResult>(
