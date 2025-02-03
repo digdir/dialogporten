@@ -2,7 +2,7 @@ using System.Runtime.InteropServices;
 
 namespace Digdir.Domain.Dialogporten.WebApi;
 
-public class DelayedShutdownHostLifetime : IHostLifetime, IDisposable
+public sealed class DelayedShutdownHostLifetime : IHostLifetime, IDisposable
 {
     private readonly IHostApplicationLifetime _applicationLifetime;
     private readonly TimeSpan _delay;
@@ -30,7 +30,7 @@ public class DelayedShutdownHostLifetime : IHostLifetime, IDisposable
         return Task.CompletedTask;
     }
 
-    protected void HandleSignal(PosixSignalContext ctx)
+    private void HandleSignal(PosixSignalContext ctx)
     {
         ctx.Cancel = true;
         Task.Delay(_delay).ContinueWith(t => _applicationLifetime.StopApplication());
