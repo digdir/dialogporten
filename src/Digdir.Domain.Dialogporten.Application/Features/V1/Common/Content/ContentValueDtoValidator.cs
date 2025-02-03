@@ -28,7 +28,7 @@ internal sealed class ContentValueDtoValidator : AbstractValidator<ContentValueD
                 .Append(MediaTypes.EmbeddableMarkdownDeprecated).Contains(value))
             .WithMessage($"{{PropertyName}} '{{PropertyValue}}' is not allowed for content type {contentType.Name}. " +
                          $"Allowed media types are {string.Join(", ", contentType.AllowedMediaTypes
-                             // Removing the deprecated from the list of allowed media types in the error message
+                             // Removing the deprecated values from the list of allowed media types in the error message
                              .Where(x => !x.Equals(MediaTypes.EmbeddableMarkdownDeprecated, StringComparison.Ordinal))
                              .Select(x => $"'{x}'"))}");
 
@@ -57,7 +57,7 @@ internal sealed class ContentValueDtoValidator : AbstractValidator<ContentValueD
             .Must(value => value is not null && allowedMediaTypes.Contains(value))
             .WithMessage($"{{PropertyName}} '{{PropertyValue}}' is not allowed for content type {contentType.Name}. " +
                          $"Allowed media types are {string.Join(", ", allowedMediaTypes
-                             // Removing the deprecated from the list of allowed media types in the error message
+                             // Removing the deprecated values from the list of allowed media types in the error message
                              .Where(x => !x.Equals(MediaTypes.EmbeddableMarkdownDeprecated, StringComparison.Ordinal) &&
                                          !x.Equals(MediaTypes.LegacyEmbeddableHtmlDeprecated, StringComparison.Ordinal))
                              .Select(x => $"'{x}'"))}");
