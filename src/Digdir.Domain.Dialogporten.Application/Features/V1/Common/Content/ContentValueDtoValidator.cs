@@ -21,7 +21,9 @@ internal sealed class ContentValueDtoValidator : AbstractValidator<ContentValueD
     {
         RuleFor(x => x.MediaType)
             .NotEmpty()
-            .Must(value => value is not null && contentType.AllowedMediaTypes.Contains(value))
+            .Must(value => value is not null && contentType.AllowedMediaTypes
+                // Manually adding this for backwards compatibility, until correspondence is updated and deployed
+                .Append(MediaTypes.EmbeddableMarkdownDeprecated).Contains(value))
             .WithMessage($"{{PropertyName}} '{{PropertyValue}}' is not allowed for content type {contentType.Name}. " +
                          $"Allowed media types are {string.Join(", ", contentType.AllowedMediaTypes.Select(x => $"'{x}'"))}");
 
@@ -73,7 +75,12 @@ internal sealed class ContentValueDtoValidator : AbstractValidator<ContentValueD
             DialogContentType.Values.AdditionalInfo when UserHasLegacyHtmlScope(user)
                 => contentType.AllowedMediaTypes.Append(MediaTypes.LegacyHtml).ToArray(),
             DialogContentType.Values.MainContentReference when UserHasLegacyHtmlScope(user)
-                => contentType.AllowedMediaTypes.Append(MediaTypes.LegacyEmbeddableHtml).ToArray(),
+                => contentType.AllowedMediaTypes.Append(MediaTypes.LegacyEmbeddableHtml)
+                    // Manually adding this for backwards compatibility, until correspondence is updated and deployed
+                    .Append(MediaTypes.EmbeddableMarkdownDeprecated)
+                    .Append(MediaTypes.LegacyEmbeddableHtmlDeprecated).ToArray(),
+            DialogContentType.Values.MainContentReference
+                => contentType.AllowedMediaTypes.Append(MediaTypes.EmbeddableMarkdownDeprecated).ToArray(),
             _ => contentType.AllowedMediaTypes
         };
     private static bool UserHasLegacyHtmlScope(IUser? user)
