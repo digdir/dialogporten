@@ -97,7 +97,7 @@ public sealed class SearchDialogQuery : SortablePaginationParameter<SearchDialog
     public string? Search { get; init; }
 
     /// <summary>
-    /// Limit free text search to texts with this language code, e.g. 'no', 'en'. Culture codes will be normalized to neutral language codes (ISO 639). Default: search all culture codes
+    /// Limit free text search to texts with this language code, e.g. 'nb', 'en'. Culture codes will be normalized to neutral language codes (ISO 639). Default: search all culture codes
     /// </summary>
     public string? SearchLanguageCode
     {
@@ -143,8 +143,6 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
 
     public async Task<SearchDialogResult> Handle(SearchDialogQuery request, CancellationToken cancellationToken)
     {
-        var currentUserInfo = await _userRegistry.GetCurrentUserInformation(cancellationToken);
-
         var searchExpression = Expressions.LocalizedSearchExpression(request.Search, request.SearchLanguageCode);
         var authorizedResources = await _altinnAuthorization.GetAuthorizedResourcesForSearch(
             request.Party ?? [],
@@ -158,7 +156,6 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
 
         var paginatedList = await _db.Dialogs
             .PrefilterAuthorizedDialogs(authorizedResources)
-            .AsSingleQuery()
             .AsNoTracking()
             .Include(x => x.Content)
             .ThenInclude(x => x.Value.Localizations)
@@ -188,7 +185,7 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
 
         foreach (var seenLog in paginatedList.Items.SelectMany(x => x.SeenSinceLastUpdate))
         {
-            seenLog.IsCurrentEndUser = IdentifierMasker.GetMaybeMaskedIdentifier(currentUserInfo.UserId.ExternalIdWithPrefix) == seenLog.SeenBy.ActorId;
+            seenLog.IsCurrentEndUser = IdentifierMasker.GetMaybeMaskedIdentifier(_userRegistry.GetCurrentUserId().ExternalIdWithPrefix) == seenLog.SeenBy.ActorId;
         }
 
         return paginatedList.ConvertTo(_mapper.Map<DialogDto>);

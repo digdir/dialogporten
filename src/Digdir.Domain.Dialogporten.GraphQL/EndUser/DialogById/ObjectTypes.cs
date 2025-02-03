@@ -1,5 +1,4 @@
 using Digdir.Domain.Dialogporten.GraphQL.EndUser.Common;
-using Digdir.Domain.Dialogporten.GraphQL.EndUser.MutationTypes;
 
 namespace Digdir.Domain.Dialogporten.GraphQL.EndUser.DialogById;
 

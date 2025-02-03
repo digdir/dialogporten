@@ -1,5 +1,5 @@
+using Digdir.Domain.Dialogporten.Application.Common.Pagination.Order;
 using Digdir.Domain.Dialogporten.GraphQL.EndUser.Common;
-using Digdir.Domain.Dialogporten.GraphQL.EndUser.MutationTypes;
 
 namespace Digdir.Domain.Dialogporten.GraphQL.EndUser.SearchDialogs;
 
@@ -7,6 +7,16 @@ namespace Digdir.Domain.Dialogporten.GraphQL.EndUser.SearchDialogs;
 public interface ISearchDialogError
 {
     public string Message { get; set; }
+}
+
+public sealed class SearchDialogContinuationTokenParsingError : ISearchDialogError
+{
+    public string Message { get; set; } = "An error occurred while parsing the ContinuationToken parameter";
+}
+
+public sealed class SearchDialogOrderByParsingError : ISearchDialogError
+{
+    public string Message { get; set; } = "An error occurred while parsing the OrderBy parameter";
 }
 
 public sealed class SearchDialogForbidden : ISearchDialogError
@@ -23,9 +33,21 @@ public sealed class SearchDialogsPayload
 {
     public List<SearchDialog>? Items { get; set; }
     public bool HasNextPage { get; set; }
+
+    [GraphQLDescription("Use this token to fetch the next page of dialogs, must be used in combination with OrderBy from the previous response")]
     public string? ContinuationToken { get; set; }
-    public string? OrderBy { get; set; }
+
+    public List<SearchDialogSortType> OrderBy { get; set; } = [];
+
     public List<ISearchDialogError> Errors { get; set; } = [];
+}
+
+[GraphQLDescription("Set only one property per object.")]
+public sealed class SearchDialogSortType
+{
+    public OrderDirection? CreatedAt { get; set; }
+    public OrderDirection? UpdatedAt { get; set; }
+    public OrderDirection? DueAt { get; set; }
 }
 
 public sealed class SearchDialog
@@ -82,6 +104,9 @@ public sealed class SearchDialogInput
     [GraphQLDescription("Filter by status")]
     public List<DialogStatus>? Status { get; init; }
 
+    [GraphQLDescription("Filter by system label")]
+    public List<SystemLabel>? SystemLabel { get; init; }
+
     [GraphQLDescription("Only return dialogs created after this date")]
     public DateTimeOffset? CreatedAfter { get; init; }
 
@@ -103,6 +128,15 @@ public sealed class SearchDialogInput
     [GraphQLDescription("Search string for free text search. Will attempt to fuzzily match in all free text fields in the aggregate")]
     public string? Search { get; init; }
 
-    [GraphQLDescription("Limit free text search to texts with this language code, e.g. 'no', 'en'. Culture codes will be normalized to neutral language codes (ISO 639). Default: search all culture codes")]
+    [GraphQLDescription("Limit free text search to texts with this language code, e.g. 'nb', 'en'. Culture codes will be normalized to neutral language codes (ISO 639). Default: search all culture codes")]
     public string? SearchLanguageCode { get; init; }
+
+    [GraphQLDescription("Limit the number of results returned, defaults to 100, max 1000")]
+    public int? Limit { get; set; }
+
+    [GraphQLDescription("Continuation token for pagination")]
+    public string? ContinuationToken { get; init; }
+
+    [GraphQLDescription("Sort the results by one or more fields")]
+    public List<SearchDialogSortType>? OrderBy { get; set; }
 }
