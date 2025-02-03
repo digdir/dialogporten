@@ -162,7 +162,7 @@ namespace Digdir.Library.Dialogporten.WebApiClient.Features.V1
     }
 
     /// <summary>Gets a list of dialog transmissions</summary>
-    [System.CodeDom.Compiler.GeneratedCode("Refitter", "1.5.0.0")]
+    [System.CodeDom.Compiler.GeneratedCode("Refitter", "1.5.2.0")]
     public partial interface IServiceownerApi
     {
         /// <summary>Gets a list of dialog transmissions</summary>
