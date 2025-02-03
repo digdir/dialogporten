@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.47.8](https://github.com/Altinn/dialogporten/compare/v1.47.7...v1.47.8) (2025-02-03)
+
+
+### Bug Fixes
+
+* **web-api:** ensure graceful shutdown ([#1784](https://github.com/Altinn/dialogporten/issues/1784)) ([509aa33](https://github.com/Altinn/dialogporten/commit/509aa3371ecc7c87cc8f40232a4016783546a934))
+
+
+### Miscellaneous Chores
+
+* **deps:** update peter-evans/repository-dispatch action to v3 ([#1778](https://github.com/Altinn/dialogporten/issues/1778)) ([8be436e](https://github.com/Altinn/dialogporten/commit/8be436e39c0bb6b5d326027062faed3996eeb446))
+* Remove unneeded name lookup ([#1781](https://github.com/Altinn/dialogporten/issues/1781)) ([3cbdc9d](https://github.com/Altinn/dialogporten/commit/3cbdc9d81b1844d3e5a365c9478840df2b3e015f))
+
 ## [1.47.7](https://github.com/Altinn/dialogporten/compare/v1.47.6...v1.47.7) (2025-01-31)
 
 
