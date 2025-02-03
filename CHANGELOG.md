@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.48.1](https://github.com/Altinn/dialogporten/compare/v1.48.0...v1.48.1) (2025-02-03)
+
+
+### Bug Fixes
+
+* Disable efbundle migration timeout ([#1787](https://github.com/Altinn/dialogporten/issues/1787)) ([7d01034](https://github.com/Altinn/dialogporten/commit/7d01034048141d68ed9cc9b716444d79ed2a9d76))
+
 ## [1.48.0](https://github.com/Altinn/dialogporten/compare/v1.47.8...v1.48.0) (2025-02-03)
 
 
