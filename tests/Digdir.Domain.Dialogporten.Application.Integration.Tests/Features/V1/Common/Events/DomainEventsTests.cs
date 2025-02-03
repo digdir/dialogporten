@@ -273,7 +273,7 @@ public class DomainEventsTests(DialogApplication application) : ApplicationColle
         await Application.Send(restoreDialogCommand);
 
         await harness.Consumed
-            .SelectAsync<DialogDeletedDomainEvent>(x => x.Context.Message.DialogId == dialogId)
+            .SelectAsync<DialogRestoredDomainEvent>(x => x.Context.Message.DialogId == dialogId)
             .FirstOrDefault();
 
         var cloudEvents = Application.PopPublishedCloudEvents();
