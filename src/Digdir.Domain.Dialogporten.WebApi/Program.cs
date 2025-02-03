@@ -57,6 +57,11 @@ static void BuildAndRun(string[] args)
         kestrelOptions.Limits.MaxRequestBodySize = Constants.MaxRequestBodySize;
     });
 
+    builder.Host.ConfigureHostOptions(options =>
+    {
+        options.ShutdownTimeout = TimeSpan.FromSeconds(30);
+    });
+
     builder.Configuration
         .AddAzureConfiguration(builder.Environment.EnvironmentName)
         .AddLocalConfiguration(builder.Environment);
@@ -147,6 +152,13 @@ static void BuildAndRun(string[] args)
     }
 
     var app = builder.Build();
+
+    // Add graceful shutdown middleware before other middleware
+    app.Use(async (context, next) =>
+    {
+        context.RequestAborted = default; // Ignore client disconnects
+        await next();
+    });
 
     app.MapAspNetHealthChecks()
         .MapControllers();
