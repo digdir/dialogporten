@@ -1,6 +1,4 @@
 using Digdir.Domain.Dialogporten.GraphQL.EndUser.Common;
-using Digdir.Domain.Dialogporten.GraphQL.EndUser.MutationTypes;
-using DialogStatus = Digdir.Domain.Dialogporten.GraphQL.EndUser.Common.DialogStatus;
 
 namespace Digdir.Domain.Dialogporten.GraphQL.EndUser.DialogById;
 

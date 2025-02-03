@@ -1,10 +1,11 @@
 using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Externals;
+using Digdir.Domain.Dialogporten.Domain.Common.DomainEvents;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Events.Activities;
 using MediatR;
 using Microsoft.Extensions.Options;
 
-namespace Digdir.Domain.Dialogporten.Application.Features.V1.Common.Events;
+namespace Digdir.Domain.Dialogporten.Application.Features.V1.Common.Events.AltinnForwarders;
 
 internal sealed class DialogActivityEventToAltinnForwarder : DomainEventToAltinnForwarderBase,
     INotificationHandler<DialogActivityCreatedDomainEvent>
@@ -15,11 +16,16 @@ internal sealed class DialogActivityEventToAltinnForwarder : DomainEventToAltinn
     [EndpointName("DialogEventToAltinnForwarder_DialogActivityCreatedDomainEvent")]
     public async Task Handle(DialogActivityCreatedDomainEvent domainEvent, CancellationToken cancellationToken)
     {
+        if (domainEvent.ShouldNotBeSentToAltinnEvents())
+        {
+            return;
+        }
+
         var cloudEvent = new CloudEvent
         {
             Id = domainEvent.EventId,
             Type = CloudEventTypes.Get(domainEvent.TypeId.ToString()),
-            Time = domainEvent.OccuredAt,
+            Time = domainEvent.OccurredAt,
             Resource = domainEvent.ServiceResource,
             ResourceInstance = domainEvent.DialogId.ToString(),
             Subject = domainEvent.Party,

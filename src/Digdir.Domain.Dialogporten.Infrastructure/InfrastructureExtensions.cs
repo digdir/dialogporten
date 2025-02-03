@@ -167,6 +167,11 @@ public static class InfrastructureExtensions
             Duration = TimeSpan.FromMinutes(20)
         });
 
+        if (environment.IsEnvironment("yt01"))
+        {
+            services.ReplaceTransient<ICloudEventBus, ConsoleLogEventBus>();
+        }
+
         if (!environment.IsDevelopment())
         {
             return;
@@ -340,7 +345,8 @@ public static class InfrastructureExtensions
                 JitterMaxDuration = settings.JitterMaxDuration,
                 EagerRefreshThreshold = settings.EagerRefreshThreshold,
 
-                SkipMemoryCache = settings.SkipMemoryCache,
+                SkipMemoryCacheWrite = settings.SkipMemoryCache,
+                SkipMemoryCacheRead = settings.SkipMemoryCache,
 
                 // This will stop deserialization exceptions to be re-thrown, which will cause the factory to run as if
                 // the cache entry was not found. This avoids crashes which otherwise would happen if entities that

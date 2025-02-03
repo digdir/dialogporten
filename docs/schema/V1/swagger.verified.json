@@ -89,7 +89,9 @@
           "SentToSigning",
           "SentToFormFill",
           "SentToSendIn",
-          "SentToPayment"
+          "SentToPayment",
+          "FormSubmitted",
+          "FormSaved"
         ],
         "type": "string",
         "x-enumNames": [
@@ -105,7 +107,9 @@
           "SentToSigning",
           "SentToFormFill",
           "SentToSendIn",
-          "SentToPayment"
+          "SentToPayment",
+          "FormSubmitted",
+          "FormSaved"
         ]
       },
       "DialogsEntitiesTransmissions_DialogTransmissionType": {
@@ -2268,7 +2272,7 @@
         },
         "type": "object"
       },
-      "V1ServiceOwnerDialogsCommandsCreate_DialogCommand": {
+      "V1ServiceOwnerDialogsCommandsCreate_Dialog": {
         "additionalProperties": false,
         "properties": {
           "activities": {
@@ -3254,6 +3258,15 @@
                 "$ref": "#/components/schemas/V1CommonContent_ContentValue"
               }
             ]
+          }
+        },
+        "type": "object"
+      },
+      "V1ServiceOwnerDialogsCreate_DialogRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "dto": {
+            "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsCreate_Dialog"
           }
         },
         "type": "object"
@@ -5888,14 +5901,12 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsCreate_DialogCommand"
+                "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsCreate_Dialog"
               }
             }
           },
-          "description": "",
           "required": true,
-          "x-name": "CreateDialogCommand",
-          "x-position": 1
+          "x-name": "dto"
         },
         "responses": {
           "201": {
@@ -5929,7 +5940,7 @@
                 }
               }
             },
-            "description": "Validation error occured. See problem details for a list of errors."
+            "description": "Validation error occurred. See problem details for a list of errors."
           },
           "401": {
             "description": "Missing or invalid authentication token. Requires a Maskinporten-token with the scope \u0022digdir:dialogporten.serviceprovider\u0022."
@@ -5948,7 +5959,7 @@
                 }
               }
             },
-            "description": "Domain error occured. See problem details for a list of errors."
+            "description": "Domain error occurred. See problem details for a list of errors."
           }
         },
         "security": [
@@ -6007,7 +6018,7 @@
                 }
               }
             },
-            "description": "Validation error occured. See problem details for a list of errors."
+            "description": "Validation error occurred. See problem details for a list of errors."
           },
           "401": {
             "description": "Missing or invalid authentication token. Requires a Maskinporten-token with the scope \u0022digdir:dialogporten.serviceprovider\u0022."
@@ -6172,7 +6183,7 @@
                 }
               }
             },
-            "description": "Validation error occured. See problem details for a list of errors."
+            "description": "Validation error occurred. See problem details for a list of errors."
           },
           "401": {
             "description": "Missing or invalid authentication token. Requires a Maskinporten-token with the scope \\\u0022digdir:dialogporten.serviceprovider\\\u0022"
@@ -6208,7 +6219,7 @@
                 }
               }
             },
-            "description": "Domain error occured. See problem details for a list of errors."
+            "description": "Domain error occurred. See problem details for a list of errors."
           }
         },
         "security": [
@@ -6276,7 +6287,7 @@
                 }
               }
             },
-            "description": "Validation error occured. See problem details for a list of errors."
+            "description": "Validation error occurred. See problem details for a list of errors."
           },
           "401": {
             "description": "Missing or invalid authentication token. Requires a Maskinporten-token with the scope \u0022digdir:dialogporten.serviceprovider\u0022."
@@ -6315,7 +6326,7 @@
                 }
               }
             },
-            "description": "Domain error occured. See problem details for a list of errors."
+            "description": "Domain error occurred. See problem details for a list of errors."
           }
         },
         "security": [
@@ -6586,7 +6597,7 @@
                 }
               }
             },
-            "description": "Validation error occured. See problem details for a list of errors."
+            "description": "Validation error occurred. See problem details for a list of errors."
           },
           "401": {
             "description": "Missing or invalid authentication token. Requires a Maskinporten-token with the scope \u0022digdir:dialogporten.serviceprovider\u0022."
@@ -6625,7 +6636,7 @@
                 }
               }
             },
-            "description": "Domain error occured. See problem details for a list of errors."
+            "description": "Domain error occurred. See problem details for a list of errors."
           }
         },
         "security": [
@@ -6958,7 +6969,7 @@
                 }
               }
             },
-            "description": "Validation error occured. See problem details for a list of errors."
+            "description": "Validation error occurred. See problem details for a list of errors."
           },
           "401": {
             "description": "Missing or invalid authentication token. Requires a Maskinporten-token with the scope \u0022digdir:dialogporten.serviceprovider\u0022."
@@ -6997,7 +7008,7 @@
                 }
               }
             },
-            "description": "Domain error occured. See problem details for a list of errors."
+            "description": "Domain error occurred. See problem details for a list of errors."
           }
         },
         "security": [

@@ -17,7 +17,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.0")
+                .HasAnnotation("ProductVersion", "9.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -591,6 +591,16 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         {
                             Id = 13,
                             Name = "SentToPayment"
+                        },
+                        new
+                        {
+                            Id = 14,
+                            Name = "FormSubmitted"
+                        },
+                        new
+                        {
+                            Id = 15,
+                            Name = "FormSaved"
                         });
                 });
 
