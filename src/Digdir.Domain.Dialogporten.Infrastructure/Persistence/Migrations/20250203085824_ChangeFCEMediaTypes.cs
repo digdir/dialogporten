@@ -25,7 +25,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                 value: new[] { "application/vnd.dialogporten.frontchannelembed-url;type=text/markdown" });
 
             migrationBuilder.Sql("""
-                                 -- Update MediaType in DialogContent table
+                                 -- Update MediaType in DialogContent
                                  UPDATE public."DialogContent"
                                  SET "MediaType" = CASE
                                      WHEN "MediaType" = 'application/vnd.dialogporten.frontchannelembed+json;type=html'
@@ -37,7 +37,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                                  WHERE "MediaType" IN ('application/vnd.dialogporten.frontchannelembed+json;type=html',
                                     'application/vnd.dialogporten.frontchannelembed+json;type=markdown');
                                  
-                                 -- Update MediaType in DialogTransmissionContent table
+                                 -- Update MediaType in DialogTransmissionContent
                                  UPDATE public."DialogTransmissionContent"
                                  SET "MediaType" = CASE
                                      WHEN "MediaType" = 'application/vnd.dialogporten.frontchannelembed+json;type=html'
