@@ -57,11 +57,6 @@ static void BuildAndRun(string[] args)
         kestrelOptions.Limits.MaxRequestBodySize = Constants.MaxRequestBodySize;
     });
 
-    builder.Services.AddSingleton<IHostLifetime>(sp => new DelayedShutdownHostLifetime(
-        sp.GetRequiredService<IHostApplicationLifetime>(),
-        TimeSpan.FromSeconds(10)
-    ));
-
     builder.Configuration
         .AddAzureConfiguration(builder.Environment.EnvironmentName)
         .AddLocalConfiguration(builder.Environment);
@@ -79,6 +74,11 @@ static void BuildAndRun(string[] args)
         .Bind(builder.Configuration.GetSection(WebApiSettings.SectionName))
         .ValidateFluently()
         .ValidateOnStart();
+
+    builder.Services.AddSingleton<IHostLifetime>(sp => new DelayedShutdownHostLifetime(
+            sp.GetRequiredService<IHostApplicationLifetime>(),
+            TimeSpan.FromSeconds(10)
+        ));
 
     var thisAssembly = Assembly.GetExecutingAssembly();
 
