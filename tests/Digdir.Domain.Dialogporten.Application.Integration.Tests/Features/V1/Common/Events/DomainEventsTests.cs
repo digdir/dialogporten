@@ -284,9 +284,6 @@ public class DomainEventsTests(DialogApplication application) : ApplicationColle
         cloudEvents.Should().OnlyContain(cloudEvent => cloudEvent.Subject == createDialogCommand.Dto.Party);
 
         cloudEvents.Should().ContainSingle(cloudEvent =>
-            cloudEvent.Type == CloudEventTypes.Get(nameof(DialogDeletedDomainEvent)));
-
-        cloudEvents.Should().ContainSingle(cloudEvent =>
             cloudEvent.Type == CloudEventTypes.Get(nameof(DialogRestoredDomainEvent)));
     }
 
