@@ -1,6 +1,5 @@
 using Digdir.Domain.Dialogporten.Application.Common.Pagination.Order;
 using Digdir.Domain.Dialogporten.GraphQL.EndUser.Common;
-using Digdir.Domain.Dialogporten.GraphQL.EndUser.MutationTypes;
 
 namespace Digdir.Domain.Dialogporten.GraphQL.EndUser.SearchDialogs;
 
@@ -104,6 +103,9 @@ public sealed class SearchDialogInput
 
     [GraphQLDescription("Filter by status")]
     public List<DialogStatus>? Status { get; init; }
+
+    [GraphQLDescription("Filter by system label")]
+    public List<SystemLabel>? SystemLabel { get; init; }
 
     [GraphQLDescription("Only return dialogs created after this date")]
     public DateTimeOffset? CreatedAfter { get; init; }
