@@ -19,9 +19,6 @@ internal sealed class SearchDialogQueryValidator : AbstractValidator<SearchDialo
             .MinimumLength(3)
             .When(x => x.Search is not null);
 
-        RuleFor(x => x.IdempotentKey)
-            .MaximumLength(36);
-
         RuleFor(x => x.SearchLanguageCode)
             .Must(x => x is null || Localization.IsValidCultureCode(x))
             .WithMessage(searchQuery =>
