@@ -153,13 +153,6 @@ static void BuildAndRun(string[] args)
 
     var app = builder.Build();
 
-    // Add graceful shutdown middleware before other middleware
-    app.Use(async (context, next) =>
-    {
-        context.RequestAborted = default; // Ignore client disconnects
-        await next();
-    });
-
     app.MapAspNetHealthChecks()
         .MapControllers();
 
