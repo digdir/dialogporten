@@ -66,11 +66,11 @@ while [[ $# -gt 0 ]]; do
             shift 2
             ;;
         -c|--configmapname)
-            configmapname="${2,,}"
+            configmapname="$2"
             shift 2
             ;;
         -n|--name)
-            name="${2,,}"
+            name="$2"
             shift 2
             ;;
         -v|--vus)
@@ -115,6 +115,8 @@ if [ ${#missing_args[@]} -ne 0 ]; then
     help
     exit 1
 fi
+name=$(echo "$name" | tr '[:upper:]' '[:lower:]')
+configmapname=$(echo "$configmapname" | tr '[:upper:]' '[:lower:]')
 # Set testid to name + timestamp
 testid="${name}_$(date '+%Y%m%dT%H%M%S')"
 
@@ -124,7 +126,7 @@ if $breakpoint; then
 fi
 # Create the k6 archive
 
-if ! k6 archive $filename -e API_VERSION=v1 -e API_ENVIRONMENT=yt01 -e TOKEN_GENERATOR_USERNAME=$tokengenuser -e TOKEN_GENERATOR_PASSWORD=$tokengenpasswd -e TESTID=$testid "$archive_args"; then
+if ! k6 archive $filename -e API_VERSION=v1 -e API_ENVIRONMENT=yt01 -e TOKEN_GENERATOR_USERNAME=$tokengenuser -e TOKEN_GENERATOR_PASSWORD=$tokengenpasswd -e TESTID=$testid $archive_args; then
     echo "Error: Failed to create k6 archive"
     exit 1
 fi
