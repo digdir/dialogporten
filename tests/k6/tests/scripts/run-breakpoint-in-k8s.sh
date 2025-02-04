@@ -62,7 +62,7 @@ while [[ $# -gt 0 ]]; do
             shift 2
             ;;
         -c|--configmapname)
-            configmapname="$2"
+            configmapname="${2,,}"
             shift 2
             ;;
         -n|--name)
