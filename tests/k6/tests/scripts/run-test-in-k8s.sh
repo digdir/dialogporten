@@ -61,11 +61,11 @@ while [[ $# -gt 0 ]]; do
             shift 2
             ;;
         -c|--configmapname)
-            configmapname="$2"
+            configmapname="${2,,}"
             shift 2
             ;;
         -n|--name)
-            name="$2"
+            name="${2,,}"
             shift 2
             ;;
         -v|--vus)
