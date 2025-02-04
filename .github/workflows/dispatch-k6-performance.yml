@@ -66,4 +66,7 @@ jobs:
       vus: ${{ fromJson(inputs.vus) }}
       duration: ${{ inputs.duration }}
       parallelism: ${{ fromJson(inputs.parallelism) }}
+      breakpoint: false
+      abortOnFail: false
+
 

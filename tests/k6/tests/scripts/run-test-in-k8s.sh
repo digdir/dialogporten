@@ -86,8 +86,8 @@ while [[ $# -gt 0 ]]; do
             shift 2
             ;;
         -b|--breakpoint)    
-            breakpoint=true
-            shift 1
+            breakpoint="$2"
+            shift 2
             ;;
         -a|--abort)
             abort_on_fail="$2"
