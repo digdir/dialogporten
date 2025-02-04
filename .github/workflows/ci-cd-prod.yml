@@ -44,7 +44,6 @@ jobs:
       environment: prod
       region: norwayeast
       version: ${{ needs.get-current-version.outputs.version }}
-      ref: ${{ needs.get-current-version.outputs.version_sha }}
 
   store-infra-version:
     name: Store Latest Deployed Infra Version as GitHub Variable
@@ -80,7 +79,7 @@ jobs:
       region: norwayeast
       version: ${{ needs.get-current-version.outputs.version }}
       runMigration: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasMigrationChanges == 'true' }}
-      ref: ${{ needs.get-current-version.outputs.version_sha }}
+
   store-apps-version:
     name: Store Latest Deployed Apps Version as GitHub Variable
     needs: [deploy-apps, get-current-version]
