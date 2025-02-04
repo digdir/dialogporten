@@ -1,5 +1,73 @@
 # Changelog
 
+## [1.48.1](https://github.com/Altinn/dialogporten/compare/v1.48.0...v1.48.1) (2025-02-03)
+
+
+### Bug Fixes
+
+* Disable efbundle migration timeout ([#1787](https://github.com/Altinn/dialogporten/issues/1787)) ([7d01034](https://github.com/Altinn/dialogporten/commit/7d01034048141d68ed9cc9b716444d79ed2a9d76))
+
+## [1.48.0](https://github.com/Altinn/dialogporten/compare/v1.47.8...v1.48.0) (2025-02-03)
+
+
+### Features
+
+* **app:** Change FCE MediaTypes ([#1729](https://github.com/Altinn/dialogporten/issues/1729)) ([ef4e0a4](https://github.com/Altinn/dialogporten/commit/ef4e0a43f9e14469398ffcce2d1b99cf134f8f2a))
+
+## [1.47.8](https://github.com/Altinn/dialogporten/compare/v1.47.7...v1.47.8) (2025-02-03)
+
+
+### Bug Fixes
+
+* **web-api:** ensure graceful shutdown ([#1784](https://github.com/Altinn/dialogporten/issues/1784)) ([509aa33](https://github.com/Altinn/dialogporten/commit/509aa3371ecc7c87cc8f40232a4016783546a934))
+
+
+### Miscellaneous Chores
+
+* **deps:** update peter-evans/repository-dispatch action to v3 ([#1778](https://github.com/Altinn/dialogporten/issues/1778)) ([8be436e](https://github.com/Altinn/dialogporten/commit/8be436e39c0bb6b5d326027062faed3996eeb446))
+* Remove unneeded name lookup ([#1781](https://github.com/Altinn/dialogporten/issues/1781)) ([3cbdc9d](https://github.com/Altinn/dialogporten/commit/3cbdc9d81b1844d3e5a365c9478840df2b3e015f))
+
+## [1.47.7](https://github.com/Altinn/dialogporten/compare/v1.47.6...v1.47.7) (2025-01-31)
+
+
+### Bug Fixes
+
+* **deps:** ensure traces are sent to application insights ([#1776](https://github.com/Altinn/dialogporten/issues/1776)) ([f4df2f3](https://github.com/Altinn/dialogporten/commit/f4df2f315ecb65970a8ced4dd8319c3d18edac65))
+
+
+### Miscellaneous Chores
+
+* **yt01:** Disable Information log level for event publishing ([#1773](https://github.com/Altinn/dialogporten/issues/1773)) ([3b821d0](https://github.com/Altinn/dialogporten/commit/3b821d0c55a95a4cdf9c86e84562a6d4651d0f2d))
+
+## [1.47.6](https://github.com/Altinn/dialogporten/compare/v1.47.5...v1.47.6) (2025-01-31)
+
+
+### Bug Fixes
+
+* **graphql:** Add SystemLabel search filter ([#1767](https://github.com/Altinn/dialogporten/issues/1767)) ([431c529](https://github.com/Altinn/dialogporten/commit/431c529ebecd8e21463545f85f91b9107f86b57c))
+
+
+### Miscellaneous Chores
+
+* **deps:** update dependency vitest to v3.0.4 ([#1769](https://github.com/Altinn/dialogporten/issues/1769)) ([e43b119](https://github.com/Altinn/dialogporten/commit/e43b1197b0b5aed3a4174e7adccb0d9a73f252da))
+* Test 0.5 sampler ratio in yt01 ([#1770](https://github.com/Altinn/dialogporten/issues/1770)) ([cd69edb](https://github.com/Altinn/dialogporten/commit/cd69edbc7d1f450d6d556a4f73811c8e208fbf06))
+
+## [1.47.5](https://github.com/Altinn/dialogporten/compare/v1.47.4...v1.47.5) (2025-01-30)
+
+
+### Bug Fixes
+
+* **auth:** Allow .noconsent scope in EndUser auth policy ([#1760](https://github.com/Altinn/dialogporten/issues/1760)) ([d770779](https://github.com/Altinn/dialogporten/commit/d7707797a91e30c4db4a2ae70b746bb661d9b835))
+* **auth:** Split values when checking EndUser scopes ([#1764](https://github.com/Altinn/dialogporten/issues/1764)) ([5957e7d](https://github.com/Altinn/dialogporten/commit/5957e7dbb84c316c35d212609b7480dae47ab42b))
+
+
+### Miscellaneous Chores
+
+* Add FormSubmitted and FormSaved to ActivityType ([#1742](https://github.com/Altinn/dialogporten/issues/1742)) ([4b9bad0](https://github.com/Altinn/dialogporten/commit/4b9bad002d90e06425bb6782a0a945c6a841f1f1))
+* **deps:** update dependency ziggycreatures.fusioncache to v2 ([#1752](https://github.com/Altinn/dialogporten/issues/1752)) ([dd24928](https://github.com/Altinn/dialogporten/commit/dd24928c2905ad3edd69539b2038082794dbfa1b))
+* **perfomance:** Fixing github action to run performance tests in k8s ([#1739](https://github.com/Altinn/dialogporten/issues/1739)) ([166d53d](https://github.com/Altinn/dialogporten/commit/166d53d58381ab16d706a1ff5ad635e115946d4a))
+* Remove old OccuredAt property on DomainEvent ([#1758](https://github.com/Altinn/dialogporten/issues/1758)) ([67ee75d](https://github.com/Altinn/dialogporten/commit/67ee75dcc0479eac4a561b8aa37b47c12a5075b1))
+
 ## [1.47.4](https://github.com/Altinn/dialogporten/compare/v1.47.3...v1.47.4) (2025-01-29)
 
 

@@ -1,3 +1,5 @@
+using Digdir.Domain.Dialogporten.GraphQL.EndUser.Common;
+
 namespace Digdir.Domain.Dialogporten.GraphQL.EndUser.MutationTypes;
 
 public sealed class SetSystemLabelPayload
@@ -10,13 +12,6 @@ public sealed class SetSystemLabelInput
 {
     public Guid DialogId { get; set; }
     public SystemLabel Label { get; set; }
-}
-
-public enum SystemLabel
-{
-    Default = 1,
-    Bin = 2,
-    Archive = 3
 }
 
 [InterfaceType("SetSystemLabelError")]
