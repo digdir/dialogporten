@@ -21,6 +21,7 @@ help() {
     echo "  -t, --target         Specify the target number of virtual users"
     echo "  -d, --duration       Specify the duration of the test"
     echo "  -p, --parallelism    Specify the level of parallelism"
+    echo "  -a, --abort          Specify whether to abort on fail or not"
     echo "  -h, --help           Show this help message"
     exit 0
 }
@@ -69,7 +70,7 @@ while [[ $# -gt 0 ]]; do
             shift 2
             ;;
         -t|--target)
-            vus="$2"
+            target_vus="$2"
             shift 2
             ;;
         -d|--duration)
@@ -78,6 +79,10 @@ while [[ $# -gt 0 ]]; do
             ;;
         -p|--parallelism)
             parallelism="$2"
+            shift 2
+            ;;
+        -a|--abort)
+            abort_on_fail="$2"
             shift 2
             ;;
         *)
@@ -93,9 +98,10 @@ missing_args=()
 [ -z "$filename" ] && missing_args+=("filename (-f)")
 [ -z "$configmapname" ] && missing_args+=("configmapname (-c)")
 [ -z "$name" ] && missing_args+=("name (-n)")
-[ -z "$vus" ] && missing_args+=("target (-t)")
+[ -z "$target_vus" ] && missing_args+=("target (-t)")
 [ -z "$duration" ] && missing_args+=("duration (-d)")
 [ -z "$parallelism" ] && missing_args+=("parallelism (-p)")
+[ -z "$abort_on_fail" ] && missing_args+=("abort (-a)")
 
 if [ ${#missing_args[@]} -ne 0 ]; then
     echo "Error: Missing required arguments: ${missing_args[*]}"
@@ -106,7 +112,7 @@ fi
 testid="${name}_$(date '+%Y%m%dT%H%M%S')"
 
 # Create the k6 archive
-if ! k6 archive $filename -e API_VERSION=v1 -e API_ENVIRONMENT=yt01 -e TOKEN_GENERATOR_USERNAME=$tokengenuser -e TOKEN_GENERATOR_PASSWORD=$tokengenpasswd -e TESTID=$testid -e stages_target=$vus -e stages_duration=$duration -e abort_on_fail=false; then
+if ! k6 archive $filename -e API_VERSION=v1 -e API_ENVIRONMENT=yt01 -e TOKEN_GENERATOR_USERNAME=$tokengenuser -e TOKEN_GENERATOR_PASSWORD=$tokengenpasswd -e TESTID=$testid -e stages_target=$target_vus -e stages_duration=$duration -e abort_on_fail=$abort_on_fail; then
     echo "Error: Failed to create k6 archive"
     exit 1
 fi

@@ -1,0 +1,82 @@
+name: Run K6 breakpoint tests
+
+on:
+  workflow_call:
+    inputs:
+      apiVersion:
+        required: true
+        type: string
+      environment:
+        required: true
+        type: string
+      testSuitePath:
+        required: true
+        type: string
+      targetVus:
+        required: true
+        type: number
+      duration:
+        required: true
+        type: string
+      parallelism:
+        required: true
+        type: number
+      abortOnFail:
+        required: true
+        type: boolean
+    secrets:
+      TOKEN_GENERATOR_USERNAME:
+        required: true
+      TOKEN_GENERATOR_PASSWORD:
+        required: true
+      AZURE_CLIENT_ID:
+        required: true
+      AZURE_TENANT_ID:
+        required: true
+permissions:
+  id-token: write
+  contents: read
+jobs:
+  k6-test:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: OIDC Login to Azure Public Cloud
+      uses: azure/login@v2
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        allow-no-subscriptions: true
+    - name: Populate kubeconfig with k6 context
+      id: populate_kubeconfig_with_k6_context
+      shell: bash
+      run: |
+        if ! az aks install-cli; then
+          echo "Failed to install kubectl CLI"
+          exit 1
+        fi
+
+        if ! az aks get-credentials --resource-group k6tests-rg --name k6tests-cluster; then
+          echo "Failed to populate kubeconfig"
+          exit 1
+        fi
+
+        if ! kubelogin convert-kubeconfig -l azurecli; then
+          echo "Failed to convert kubeconfig"
+          exit 1
+        fi
+    - name: Setup k6
+      uses: grafana/setup-k6-action@v1
+    - name: Run K6 breakpoint tests (${{ inputs.testSuitePath }})
+      run: |
+        echo "Running k6 breakpoint test suite ${{ inputs.testSuitePath }} with ${{ inputs.targetVus }} target VUs for ${{ inputs.duration }} on ${{ inputs.parallelism }} parallelism, abort on fail is ${{ inputs.abortOnFail }}"
+        k6configName=$(basename "${{ inputs.testSuitePath }}" .js)
+        k6configName="k6-${k6configName}"
+        ./tests/k6/tests/scripts/run-breakpoint-in-k8s.sh -f ${{ inputs.testSuitePath }} -c $k6configName -n $k6configName -v ${{ inputs.vus }} -d ${{ inputs.duration }} -p ${{ inputs.parallelism }}
+      env:
+        API_ENVIRONMENT: ${{ inputs.environment }}
+        API_VERSION: ${{ inputs.apiVersion }}
+        TOKEN_GENERATOR_USERNAME: ${{ secrets.TOKEN_GENERATOR_USERNAME }}
+        TOKEN_GENERATOR_PASSWORD: ${{ secrets.TOKEN_GENERATOR_PASSWORD }}
