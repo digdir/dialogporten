@@ -18,7 +18,7 @@ help() {
     echo "  -f, --filename       Specify the filename of the k6 script archive"
     echo "  -c, --configmapname  Specify the name of the configmap to create"
     echo "  -n, --name           Specify the name of the test run"
-    echo "  -t, --target         Specify the target number of virtual users"
+    echo "  -v, --vus            Specify the number of virtual users"
     echo "  -d, --duration       Specify the duration of the test"
     echo "  -p, --parallelism    Specify the level of parallelism"
     echo "  -b, --breakpoint     Flag to set breakpoint test or not"
@@ -73,8 +73,8 @@ while [[ $# -gt 0 ]]; do
             name="${2,,}"
             shift 2
             ;;
-        -t|--target)
-            target_vus="$2"
+        -v|--vus)
+            vus="$2"
             shift 2
             ;;
         -d|--duration)
@@ -106,7 +106,7 @@ missing_args=()
 [ -z "$filename" ] && missing_args+=("filename (-f)")
 [ -z "$configmapname" ] && missing_args+=("configmapname (-c)")
 [ -z "$name" ] && missing_args+=("name (-n)")
-[ -z "$target_vus" ] && missing_args+=("target (-t)")
+[ -z "vus" ] && missing_args+=("vus (-v)")
 [ -z "$duration" ] && missing_args+=("duration (-d)")
 [ -z "$parallelism" ] && missing_args+=("parallelism (-p)")
 
@@ -120,7 +120,7 @@ testid="${name}_$(date '+%Y%m%dT%H%M%S')"
 
 # Create the k6 archive
 if $breakpoint; then
-    if ! k6 archive $filename -e API_VERSION=v1 -e API_ENVIRONMENT=yt01 -e TOKEN_GENERATOR_USERNAME=$tokengenuser -e TOKEN_GENERATOR_PASSWORD=$tokengenpasswd -e TESTID=$testid -e stages_target=$target_vus -e stages_duration=$duration -e abort_on_fail=$abort_on_fail; then
+    if ! k6 archive $filename -e API_VERSION=v1 -e API_ENVIRONMENT=yt01 -e TOKEN_GENERATOR_USERNAME=$tokengenuser -e TOKEN_GENERATOR_PASSWORD=$tokengenpasswd -e TESTID=$testid -e stages_target=$vus -e stages_duration=$duration -e abort_on_fail=$abort_on_fail; then
         echo "Error: Failed to create k6 archive"
         exit 1
     fi
