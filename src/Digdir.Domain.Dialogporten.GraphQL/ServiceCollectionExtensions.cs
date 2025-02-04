@@ -13,6 +13,7 @@ public static class ServiceCollectionExtensions
     {
         return services
             .AddGraphQLServer()
+            .ModifyCostOptions(o => o.ApplyCostDefaults = false)
             // This assumes that subscriptions have been set up by the infrastructure
             .AddSubscriptionType<Subscriptions>()
             .AddAuthorization()
