@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.48.2](https://github.com/Altinn/dialogporten/compare/v1.48.1...v1.48.2) (2025-02-04)
+
+
+### Miscellaneous Chores
+
+* Add DelayedShutdownHostLifetime to GraphQL and Service ([#1785](https://github.com/Altinn/dialogporten/issues/1785)) ([34dea8c](https://github.com/Altinn/dialogporten/commit/34dea8c08790278dc8872ef84de92bb6b6ecf857))
+* Reduce CPU load threshold, up initialDelays ([#1789](https://github.com/Altinn/dialogporten/issues/1789)) ([26abb48](https://github.com/Altinn/dialogporten/commit/26abb48aad2797558cf74bd76475bfe6537dac36))
+* refactor production deployment flow ([#1771](https://github.com/Altinn/dialogporten/issues/1771)) ([1b79f01](https://github.com/Altinn/dialogporten/commit/1b79f0107a9893d22981e18ddd30423808b8b663))
+* Simplify 404 NotFound swagger text ([#1791](https://github.com/Altinn/dialogporten/issues/1791)) ([1d4bc9a](https://github.com/Altinn/dialogporten/commit/1d4bc9ac552d3f15eae82e520a488987c824f8b7))
+
 ## [1.48.1](https://github.com/Altinn/dialogporten/compare/v1.48.0...v1.48.1) (2025-02-03)
 
 

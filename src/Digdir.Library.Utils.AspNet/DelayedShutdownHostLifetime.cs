@@ -1,6 +1,7 @@
 using System.Runtime.InteropServices;
+using Microsoft.Extensions.Hosting;
 
-namespace Digdir.Domain.Dialogporten.WebApi;
+namespace Digdir.Library.Utils.AspNet;
 
 public sealed class DelayedShutdownHostLifetime : IHostLifetime, IDisposable
 {
@@ -14,19 +15,16 @@ public sealed class DelayedShutdownHostLifetime : IHostLifetime, IDisposable
         _delay = delay;
     }
 
-    public Task StopAsync(CancellationToken cancellationToken)
-    {
-        return Task.CompletedTask;
-    }
+    public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 
     public Task WaitForStartAsync(CancellationToken cancellationToken)
     {
-        _disposables = new IDisposable[]
-        {
+        _disposables =
+        [
             PosixSignalRegistration.Create(PosixSignal.SIGINT, HandleSignal),
             PosixSignalRegistration.Create(PosixSignal.SIGQUIT, HandleSignal),
             PosixSignalRegistration.Create(PosixSignal.SIGTERM, HandleSignal)
-        };
+        ];
         return Task.CompletedTask;
     }
 
@@ -38,7 +36,7 @@ public sealed class DelayedShutdownHostLifetime : IHostLifetime, IDisposable
 
     public void Dispose()
     {
-        foreach (var disposable in _disposables ?? Enumerable.Empty<IDisposable>())
+        foreach (var disposable in _disposables ?? [])
         {
             disposable.Dispose();
         }
