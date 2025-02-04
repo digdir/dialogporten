@@ -16,17 +16,16 @@ public class GetDialogTests : ApplicationCollectionFixture
     {
         // Arrange
         var expectedDialogId = IdentifiableExtensions.CreateVersion7();
-        var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog(id: expectedDialogId);
-
+        var createDialogCommand = DialogGenerator.GenerateSimpleFakeCreateDialogCommand(id: expectedDialogId);
         var createCommandResponse = await Application.Send(createDialogCommand);
 
         // Act
-        var response = await Application.Send(new GetDialogQuery { DialogId = createCommandResponse.AsT0.Value });
+        var response = await Application.Send(new GetDialogQuery { DialogId = createCommandResponse.AsT0.DialogId });
 
         // Assert
         response.TryPickT0(out var result, out _).Should().BeTrue();
         result.Should().NotBeNull();
-        result.Should().BeEquivalentTo(createDialogCommand, options => options
+        result.Should().BeEquivalentTo(createDialogCommand.Dto, options => options
             .Excluding(x => x.UpdatedAt)
             .Excluding(x => x.CreatedAt)
             .Excluding(x => x.SystemLabel));
@@ -37,16 +36,16 @@ public class GetDialogTests : ApplicationCollectionFixture
     {
         // Arrange
         var expectedDialogId = IdentifiableExtensions.CreateVersion7();
-        var createCommand = DialogGenerator.GenerateFakeDialog(id: expectedDialogId);
+        var createCommand = DialogGenerator.GenerateFakeCreateDialogCommand(id: expectedDialogId);
         var createCommandResponse = await Application.Send(createCommand);
 
         // Act
-        var response = await Application.Send(new GetDialogQuery { DialogId = createCommandResponse.AsT0.Value });
+        var response = await Application.Send(new GetDialogQuery { DialogId = createCommandResponse.AsT0.DialogId });
 
         // Assert
         response.TryPickT0(out var result, out _).Should().BeTrue();
         result.Should().NotBeNull();
-        result.Should().BeEquivalentTo(createCommand, options => options
+        result.Should().BeEquivalentTo(createCommand.Dto, options => options
             .Excluding(x => x.UpdatedAt)
             .Excluding(x => x.CreatedAt)
             .Excluding(x => x.SystemLabel));

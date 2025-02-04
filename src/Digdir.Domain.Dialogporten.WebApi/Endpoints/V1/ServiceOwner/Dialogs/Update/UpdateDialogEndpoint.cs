@@ -38,12 +38,17 @@ public sealed class UpdateDialogEndpoint : Endpoint<UpdateDialogRequest>
         {
             Id = req.DialogId,
             IfMatchDialogRevision = req.IfMatchDialogRevision,
-            Dto = req.Dto
+            Dto = req.Dto,
+            DisableAltinnEvents = req.DisableAltinnEvents ?? false
         };
 
         var updateDialogResult = await _sender.Send(command, ct);
         await updateDialogResult.Match(
-            success => SendNoContentAsync(ct),
+            success =>
+            {
+                HttpContext.Response.Headers.Append(Constants.ETag, success.Revision.ToString());
+                return SendNoContentAsync(ct);
+            },
             notFound => this.NotFoundAsync(notFound, ct),
             gone => this.GoneAsync(gone, ct),
             validationFailed => this.BadRequestAsync(validationFailed, ct),
@@ -61,4 +66,7 @@ public sealed class UpdateDialogRequest
 
     [FromHeader(headerName: Constants.IfMatch, isRequired: false, removeFromSchema: true)]
     public Guid? IfMatchDialogRevision { get; set; }
+
+    [HideFromDocs]
+    public bool? DisableAltinnEvents { get; init; }
 }

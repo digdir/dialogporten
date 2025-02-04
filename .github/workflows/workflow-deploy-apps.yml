@@ -4,7 +4,7 @@ on:
     outputs:
       deployment_executed:
         description: "Indicates if the deployment was actually executed"
-        value: ${{ jobs.deploy-apps.result == 'success' && jobs.deploy-jobs.result == 'success' && !inputs.dryRun }}
+        value: ${{ jobs.deploy-apps.result == 'success' && (jobs.deploy-jobs.result == 'success' || jobs.deploy-jobs.result == 'skipped') && !inputs.dryRun }}
     secrets:
       AZURE_CLIENT_ID:
         required: true
@@ -124,7 +124,7 @@ jobs:
         uses: azure/CLI@v2
         if: ${{!inputs.dryRun}}
         id: verify-migration
-        timeout-minutes: 3
+        timeout-minutes: 60
         with:
           inlineScript: |
             ./.github/tools/containerAppJobVerifier.sh ${{ steps.deploy.outputs.name }} ${{ secrets.AZURE_RESOURCE_GROUP_NAME }} ${{ inputs.version }}

@@ -3,14 +3,15 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Altinn.Authorization.ABAC.Xacml.JsonProfile;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
-using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities;
 using Digdir.Domain.Dialogporten.Domain.Parties.Abstractions;
 using Digdir.Domain.Dialogporten.Domain.SubjectResources;
 using Digdir.Domain.Dialogporten.Infrastructure.Common.Exceptions;
+using Digdir.Domain.Dialogporten.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ZiggyCreatures.Caching.Fusion;
 
@@ -25,8 +26,8 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
     private readonly IFusionCache _partiesCache;
     private readonly IFusionCache _subjectResourcesCache;
     private readonly IUser _user;
-    private readonly IDialogDbContext _dialogDbContext;
     private readonly ILogger _logger;
+    private readonly IServiceScopeFactory _serviceScopeFactory;
 
     private static readonly JsonSerializerOptions SerializerOptions = new()
     {
@@ -38,16 +39,16 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
         HttpClient client,
         IFusionCacheProvider cacheProvider,
         IUser user,
-        IDialogDbContext dialogDbContext,
-        ILogger<AltinnAuthorizationClient> logger)
+        ILogger<AltinnAuthorizationClient> logger,
+        IServiceScopeFactory serviceScopeFactory)
     {
         _httpClient = client ?? throw new ArgumentNullException(nameof(client));
         _pdpCache = cacheProvider.GetCache(nameof(Authorization)) ?? throw new ArgumentNullException(nameof(cacheProvider));
         _partiesCache = cacheProvider.GetCache(nameof(AuthorizedPartiesResult)) ?? throw new ArgumentNullException(nameof(cacheProvider));
         _subjectResourcesCache = cacheProvider.GetCache(nameof(SubjectResource)) ?? throw new ArgumentNullException(nameof(cacheProvider));
         _user = user ?? throw new ArgumentNullException(nameof(user));
-        _dialogDbContext = dialogDbContext ?? throw new ArgumentNullException(nameof(dialogDbContext));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _serviceScopeFactory = serviceScopeFactory ?? throw new ArgumentNullException(nameof(serviceScopeFactory));
     }
 
     public async Task<DialogDetailsAuthorizationResult> GetDialogDetailsAuthorization(
@@ -180,10 +181,13 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
 
         return dialogSearchAuthorizationResult;
     }
-
     private async Task<List<SubjectResource>> GetAllSubjectResources(CancellationToken cancellationToken) =>
-        await _subjectResourcesCache.GetOrSetAsync(nameof(SubjectResource), async ct
-                => await _dialogDbContext.SubjectResources.ToListAsync(cancellationToken: ct),
+        await _subjectResourcesCache.GetOrSetAsync(nameof(SubjectResource), async ct =>
+            {
+                using var scope = _serviceScopeFactory.CreateScope();
+                var dbContext = scope.ServiceProvider.GetRequiredService<DialogDbContext>();
+                return await dbContext.SubjectResources.AsNoTracking().ToListAsync(cancellationToken: ct);
+            },
             token: cancellationToken);
 
     private async Task<DialogDetailsAuthorizationResult> PerformDialogDetailsAuthorization(

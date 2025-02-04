@@ -7,37 +7,36 @@ using Digdir.Domain.Dialogporten.Application;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.OptionExtensions;
 using Digdir.Domain.Dialogporten.Application.Externals.Presentation;
-using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
 using Digdir.Domain.Dialogporten.Infrastructure;
 using Digdir.Domain.Dialogporten.WebApi;
 using Digdir.Domain.Dialogporten.WebApi.Common;
 using Digdir.Domain.Dialogporten.WebApi.Common.Authentication;
 using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
+using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
 using Digdir.Domain.Dialogporten.WebApi.Common.Json;
 using Digdir.Domain.Dialogporten.WebApi.Common.Swagger;
+using Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.Dialogs.Patch;
 using Digdir.Library.Utils.AspNet;
 using FastEndpoints;
 using FastEndpoints.Swagger;
 using FluentValidation;
-using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Options;
 using NSwag;
 using Serilog;
-using Microsoft.Extensions.Options;
 
 // Using two-stage initialization to catch startup errors.
-var telemetryConfiguration = TelemetryConfiguration.CreateDefault();
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Warning()
     .Enrich.WithEnvironmentName()
     .Enrich.FromLogContext()
     .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture)
-    .WriteTo.ApplicationInsights(telemetryConfiguration, TelemetryConverter.Traces)
+    .TryWriteToOpenTelemetry()
     .CreateBootstrapLogger();
 
 try
 {
-    BuildAndRun(args, telemetryConfiguration);
+    BuildAndRun(args);
 }
 catch (Exception ex) when (ex is not OperationCanceledException)
 {
@@ -49,7 +48,7 @@ finally
     Log.CloseAndFlush();
 }
 
-static void BuildAndRun(string[] args, TelemetryConfiguration telemetryConfiguration)
+static void BuildAndRun(string[] args)
 {
     var builder = WebApplication.CreateBuilder(args);
 
@@ -58,17 +57,17 @@ static void BuildAndRun(string[] args, TelemetryConfiguration telemetryConfigura
         kestrelOptions.Limits.MaxRequestBodySize = Constants.MaxRequestBodySize;
     });
 
+    builder.Configuration
+        .AddAzureConfiguration(builder.Environment.EnvironmentName)
+        .AddLocalConfiguration(builder.Environment);
+
     builder.Host.UseSerilog((context, services, configuration) => configuration
         .MinimumLevel.Warning()
         .ReadFrom.Configuration(context.Configuration)
         .ReadFrom.Services(services)
         .Enrich.WithEnvironmentName()
         .Enrich.FromLogContext()
-        .WriteTo.ApplicationInsights(telemetryConfiguration, TelemetryConverter.Traces));
-
-    builder.Configuration
-        .AddAzureConfiguration(builder.Environment.EnvironmentName)
-        .AddLocalConfiguration(builder.Environment);
+        .WriteTo.OpenTelemetryOrConsole(context));
 
     builder.Services
         .AddOptions<WebApiSettings>()
@@ -76,18 +75,15 @@ static void BuildAndRun(string[] args, TelemetryConfiguration telemetryConfigura
         .ValidateFluently()
         .ValidateOnStart();
 
+    builder.Services.AddSingleton<IHostLifetime>(sp => new DelayedShutdownHostLifetime(
+            sp.GetRequiredService<IHostApplicationLifetime>(),
+            TimeSpan.FromSeconds(10)
+        ));
+
     var thisAssembly = Assembly.GetExecutingAssembly();
 
-    builder.ConfigureTelemetry((settings, configuration) =>
-    {
-        settings.ServiceName = configuration["OTEL_SERVICE_NAME"] ?? builder.Environment.ApplicationName;
-        settings.Endpoint = configuration["OTEL_EXPORTER_OTLP_ENDPOINT"];
-        settings.Protocol = configuration["OTEL_EXPORTER_OTLP_PROTOCOL"];
-        settings.AppInsightsConnectionString = configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"];
-        settings.ResourceAttributes = configuration["OTEL_RESOURCE_ATTRIBUTES"];
-    });
-
     builder.Services
+        .AddDialogportenTelemetry(builder.Configuration, builder.Environment)
         // Options setup
         .ConfigureOptions<AuthorizationOptionsSetup>()
 
@@ -125,6 +121,9 @@ static void BuildAndRun(string[] args, TelemetryConfiguration telemetryConfigura
                 // generic "2" suffix duplicate names get, so we add a "SO" suffix to the serviceowner specific schemas.
                 // This should match the operationIds used for service owners.
                 s.AddServiceOwnerSuffixToSchemas();
+
+                // Adding ResponseHeaders for PATCH MVC controller
+                s.OperationProcessors.Add(new ProducesResponseHeaderOperationProcessor());
             };
         })
         .AddControllers(options => options.InputFormatters.Insert(0, JsonPatchInputFormatter.Get()))
@@ -158,7 +157,6 @@ static void BuildAndRun(string[] args, TelemetryConfiguration telemetryConfigura
         .MapControllers();
 
     app.UseHttpsRedirection()
-        .UseSerilogRequestLogging()
         .UseDefaultExceptionHandler()
         .UseJwtSchemeSelector()
         .UseAuthentication()
@@ -210,6 +208,7 @@ static void BuildAndRun(string[] args, TelemetryConfiguration telemetryConfigura
                 document.ReplaceProblemDetailsDescriptions();
                 document.MakeCollectionsNullable();
                 document.FixJwtBearerCasing();
+                document.RemoveSystemStringHeaderTitles();
             };
         }, uiConfig =>
         {

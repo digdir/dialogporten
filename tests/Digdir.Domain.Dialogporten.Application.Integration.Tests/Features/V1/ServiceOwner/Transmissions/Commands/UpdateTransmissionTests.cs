@@ -18,13 +18,13 @@ public class UpdateTransmissionTests : ApplicationCollectionFixture
     public async Task Can_Create_Simple_Transmission_In_Update()
     {
         // Arrange
-        var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog();
+        var createDialogCommand = DialogGenerator.GenerateSimpleFakeCreateDialogCommand();
         var existingTransmission = DialogGenerator.GenerateFakeDialogTransmissions(1).First();
 
-        createDialogCommand.Transmissions.Add(existingTransmission);
+        createDialogCommand.Dto.Transmissions.Add(existingTransmission);
         var createCommandResponse = await Application.Send(createDialogCommand);
 
-        var getDialogQuery = new GetDialogQuery { DialogId = createCommandResponse.AsT0.Value };
+        var getDialogQuery = new GetDialogQuery { DialogId = createCommandResponse.AsT0.DialogId };
         var getDialogDto = await Application.Send(getDialogQuery);
 
         var mapper = Application.GetMapper();
@@ -36,7 +36,7 @@ public class UpdateTransmissionTests : ApplicationCollectionFixture
         // Act
         var updateResponse = await Application.Send(new UpdateDialogCommand
         {
-            Id = createCommandResponse.AsT0.Value,
+            Id = createCommandResponse.AsT0.DialogId,
             Dto = updateDialogDto
         });
 
@@ -53,12 +53,12 @@ public class UpdateTransmissionTests : ApplicationCollectionFixture
     public async Task Can_Update_Related_Transmission_With_Null_Id()
     {
         // Arrange
-        var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog();
+        var createDialogCommand = DialogGenerator.GenerateSimpleFakeCreateDialogCommand();
         var existingTransmission = DialogGenerator.GenerateFakeDialogTransmissions(1).First();
-        createDialogCommand.Transmissions.Add(existingTransmission);
+        createDialogCommand.Dto.Transmissions.Add(existingTransmission);
         var createCommandResponse = await Application.Send(createDialogCommand);
 
-        var getDialogQuery = new GetDialogQuery { DialogId = createCommandResponse.AsT0.Value };
+        var getDialogQuery = new GetDialogQuery { DialogId = createCommandResponse.AsT0.DialogId };
         var getDialogDto = await Application.Send(getDialogQuery);
 
         var mapper = Application.GetMapper();
@@ -76,7 +76,7 @@ public class UpdateTransmissionTests : ApplicationCollectionFixture
         // Act
         var updateResponse = await Application.Send(new UpdateDialogCommand
         {
-            Id = createCommandResponse.AsT0.Value,
+            Id = createCommandResponse.AsT0.DialogId,
             Dto = updateDialogDto
         });
 
@@ -92,12 +92,12 @@ public class UpdateTransmissionTests : ApplicationCollectionFixture
     public async Task Cannot_Include_Old_Transmissions_In_UpdateCommand()
     {
         // Arrange
-        var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog();
+        var createDialogCommand = DialogGenerator.GenerateSimpleFakeCreateDialogCommand();
         var existingTransmission = DialogGenerator.GenerateFakeDialogTransmissions(count: 1).First();
-        createDialogCommand.Transmissions.Add(existingTransmission);
+        createDialogCommand.Dto.Transmissions.Add(existingTransmission);
         var createCommandResponse = await Application.Send(createDialogCommand);
 
-        var getDialogQuery = new GetDialogQuery { DialogId = createCommandResponse.AsT0.Value };
+        var getDialogQuery = new GetDialogQuery { DialogId = createCommandResponse.AsT0.DialogId };
         var getDialogDto = await Application.Send(getDialogQuery);
 
         var mapper = Application.GetMapper();
@@ -110,7 +110,7 @@ public class UpdateTransmissionTests : ApplicationCollectionFixture
         // Act
         var updateResponse = await Application.Send(new UpdateDialogCommand
         {
-            Id = createCommandResponse.AsT0.Value,
+            Id = createCommandResponse.AsT0.DialogId,
             Dto = updateDialogDto
         });
 

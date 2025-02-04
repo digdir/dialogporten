@@ -17,14 +17,17 @@ public class SeenLogTests(DialogApplication application) : ApplicationCollection
     public async Task Get_Dialog_SeenLog_Should_Return_User_Ids_Unhashed()
     {
         // Arrange
-        var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog();
+        var createDialogCommand = DialogGenerator.GenerateSimpleFakeCreateDialogCommand();
         var createCommandResponse = await Application.Send(createDialogCommand);
 
         // Call EndUser API to trigger SeenLog
-        await Application.Send(new GetDialogQueryEndUser { DialogId = createCommandResponse.AsT0.Value });
+        await Application.Send(new GetDialogQueryEndUser { DialogId = createCommandResponse.AsT0.DialogId });
 
         // Act
-        var response = await Application.Send(new GetDialogQueryServiceOwner { DialogId = createCommandResponse.AsT0.Value });
+        var response = await Application.Send(new GetDialogQueryServiceOwner
+        {
+            DialogId = createCommandResponse.AsT0.DialogId
+        });
 
         // Assert
         response.TryPickT0(out var result, out _).Should().BeTrue();
@@ -41,16 +44,16 @@ public class SeenLogTests(DialogApplication application) : ApplicationCollection
     public async Task Search_Dialog_SeenLog_Should_Return_User_Ids_Unhashed()
     {
         // Arrange
-        var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog();
+        var createDialogCommand = DialogGenerator.GenerateSimpleFakeCreateDialogCommand();
         var createCommandResponse = await Application.Send(createDialogCommand);
 
         // Trigger SeenLog
-        await Application.Send(new GetDialogQueryEndUser { DialogId = createCommandResponse.AsT0.Value });
+        await Application.Send(new GetDialogQueryEndUser { DialogId = createCommandResponse.AsT0.DialogId });
 
         // Act
         var response = await Application.Send(new SearchDialogQuery
         {
-            ServiceResource = [createDialogCommand.ServiceResource]
+            ServiceResource = [createDialogCommand.Dto.ServiceResource]
         });
 
         // Assert
@@ -70,16 +73,20 @@ public class SeenLogTests(DialogApplication application) : ApplicationCollection
     public async Task Get_SeenLog_Should_Return_User_Ids_Unhashed()
     {
         // Arrange
-        var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog();
+        var createDialogCommand = DialogGenerator.GenerateSimpleFakeCreateDialogCommand();
         var createCommandResponse = await Application.Send(createDialogCommand);
 
-        var triggerSeenLogResponse = await Application.Send(new GetDialogQueryEndUser { DialogId = createCommandResponse.AsT0.Value });
+        var triggerSeenLogResponse = await Application.Send(new GetDialogQueryEndUser
+        {
+            DialogId = createCommandResponse.AsT0.DialogId
+        });
+
         var seenLogId = triggerSeenLogResponse.AsT0.SeenSinceLastUpdate.Single().Id;
 
         // Act
         var response = await Application.Send(new GetSeenLogQuery
         {
-            DialogId = createCommandResponse.AsT0.Value,
+            DialogId = createCommandResponse.AsT0.DialogId,
             SeenLogId = seenLogId
         });
 
@@ -96,16 +103,16 @@ public class SeenLogTests(DialogApplication application) : ApplicationCollection
     public async Task Search_SeenLog_Should_Return_User_Ids_Unhashed()
     {
         // Arrange
-        var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog();
+        var createDialogCommand = DialogGenerator.GenerateSimpleFakeCreateDialogCommand();
         var createCommandResponse = await Application.Send(createDialogCommand);
 
         // Trigger SeenLog
-        await Application.Send(new GetDialogQueryEndUser { DialogId = createCommandResponse.AsT0.Value });
+        await Application.Send(new GetDialogQueryEndUser { DialogId = createCommandResponse.AsT0.DialogId });
 
         // Act
         var response = await Application.Send(new SearchSeenLogQuery
         {
-            DialogId = createCommandResponse.AsT0.Value
+            DialogId = createCommandResponse.AsT0.DialogId
         });
 
         // Assert

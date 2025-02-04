@@ -28,7 +28,7 @@ public class NotificationConditionTests(DialogApplication application) : Applica
         bool expectedSendNotificationValue)
     {
         // Arrange
-        var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog();
+        var createDialogCommand = DialogGenerator.GenerateSimpleFakeCreateDialogCommand();
         switch (conditionType)
         {
             case NotificationConditionType.Exists when expectedSendNotificationValue:
@@ -40,11 +40,11 @@ public class NotificationConditionTests(DialogApplication application) : Applica
         var response = await Application.Send(createDialogCommand);
         response.TryPickT0(out var dialogId, out _);
 
-        var notificationConditionQuery = CreateNotificationConditionQuery(dialogId.Value, activityType, conditionType);
+        var notificationConditionQuery = CreateNotificationConditionQuery(dialogId.DialogId, activityType, conditionType);
 
         if (activityType is DialogActivityType.Values.TransmissionOpened)
         {
-            var transmissionId = createDialogCommand.Transmissions.FirstOrDefault()?.Id ?? Guid.NewGuid();
+            var transmissionId = createDialogCommand.Dto.Transmissions.FirstOrDefault()?.Id ?? Guid.NewGuid();
             notificationConditionQuery.TransmissionId = transmissionId;
         }
 
@@ -62,13 +62,13 @@ public class NotificationConditionTests(DialogApplication application) : Applica
         DialogActivityType.Values activityType)
     {
         var activity = DialogGenerator.GenerateFakeDialogActivity(type: activityType);
-        createDialogCommand.Activities.Add(activity);
+        createDialogCommand.Dto.Activities.Add(activity);
 
         if (activityType is not DialogActivityType.Values.TransmissionOpened) return;
 
         var transmission = DialogGenerator.GenerateFakeDialogTransmissions(type: DialogTransmissionType.Values.Information)[0];
-        createDialogCommand.Transmissions.Add(transmission);
-        createDialogCommand.Activities[0].TransmissionId = createDialogCommand.Transmissions[0].Id;
+        createDialogCommand.Dto.Transmissions.Add(transmission);
+        createDialogCommand.Dto.Activities[0].TransmissionId = createDialogCommand.Dto.Transmissions[0].Id;
     }
 
     [Fact]
@@ -90,14 +90,14 @@ public class NotificationConditionTests(DialogApplication application) : Applica
     public async Task Gone_Should_Be_Returned_When_Dialog_Is_Deleted()
     {
         // Arrange
-        var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog();
+        var createDialogCommand = DialogGenerator.GenerateSimpleFakeCreateDialogCommand();
 
         var response = await Application.Send(createDialogCommand);
-        response.TryPickT0(out var dialogId, out _);
+        response.TryPickT0(out var success, out _);
 
-        await Application.Send(new DeleteDialogCommand { Id = dialogId.Value });
+        await Application.Send(new DeleteDialogCommand { Id = success.DialogId });
 
-        var notificationConditionQuery = CreateNotificationConditionQuery(dialogId.Value);
+        var notificationConditionQuery = CreateNotificationConditionQuery(success.DialogId);
 
         // Act
         var queryResult = await Application.Send(notificationConditionQuery);
@@ -106,7 +106,7 @@ public class NotificationConditionTests(DialogApplication application) : Applica
         queryResult.TryPickT3(out var deleted, out _);
         queryResult.IsT3.Should().BeTrue();
         deleted.Should().NotBeNull();
-        deleted.Message.Should().Contain(dialogId.Value.ToString());
+        deleted.Message.Should().Contain(success.DialogId.ToString());
     }
 
     private static NotificationConditionQuery CreateNotificationConditionQuery(Guid dialogId,

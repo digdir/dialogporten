@@ -61,11 +61,26 @@ public sealed class CreateDialogActivityEndpoint : Endpoint<CreateActivityReques
 
         updateDialogDto.Activities.Add(req);
 
-        var updateDialogCommand = new UpdateDialogCommand { Id = req.DialogId, IfMatchDialogRevision = req.IfMatchDialogRevision, Dto = updateDialogDto };
+        var updateDialogCommand = new UpdateDialogCommand
+        {
+            Id = req.DialogId,
+            IfMatchDialogRevision = req.IfMatchDialogRevision,
+            Dto = updateDialogDto,
+            DisableAltinnEvents = req.DisableAltinnEvents ?? false
+        };
 
         var result = await _sender.Send(updateDialogCommand, ct);
         await result.Match(
-            success => SendCreatedAtAsync<GetDialogActivityEndpoint>(new GetActivityQuery { DialogId = dialog.Id, ActivityId = req.Id.Value }, req.Id, cancellation: ct),
+            success =>
+            {
+                HttpContext.Response.Headers.Append(Constants.ETag, success.Revision.ToString());
+                return SendCreatedAtAsync<GetDialogActivityEndpoint>(
+                    new GetActivityQuery
+                    {
+                        DialogId = dialog.Id,
+                        ActivityId = req.Id.Value
+                    }, req.Id, cancellation: ct);
+            },
             notFound => this.NotFoundAsync(notFound, ct),
             gone => this.GoneAsync(gone, ct),
             validationError => this.BadRequestAsync(validationError, ct),
@@ -81,4 +96,7 @@ public sealed class CreateActivityRequest : ActivityDto
 
     [FromHeader(headerName: Constants.IfMatch, isRequired: false, removeFromSchema: true)]
     public Guid? IfMatchDialogRevision { get; set; }
+
+    [HideFromDocs]
+    public bool? DisableAltinnEvents { get; init; }
 }

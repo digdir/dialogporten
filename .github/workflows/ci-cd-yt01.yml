@@ -1,10 +1,11 @@
 ﻿name: CI/CD YT01
 
+run-name: CI/CD YT01 ${{ github.event.client_payload.version && format('({0})', github.event.client_payload.version) || '' }}
+
 on:
   workflow_dispatch:
-#  push:
-#    tags:
-#      - "v*.*.*"
+  repository_dispatch:
+    types: [release_created]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref_name }}
@@ -29,17 +30,6 @@ jobs:
   get-current-version:
     name: Get current version
     uses: ./.github/workflows/workflow-get-current-version.yml
-
-  publish:
-    name: Build and publish docker images
-    uses: ./.github/workflows/workflow-publish.yml
-    if: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasBackendChanges == 'true' }}
-    needs: [get-current-version, check-for-changes]
-    secrets:
-      GCR_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
-    with:
-      dockerImageBaseName: ghcr.io/digdir/dialogporten-
-      version: ${{ needs.get-current-version.outputs.version }}
 
   deploy-infra:
     name: Deploy infra to yt01
@@ -74,7 +64,7 @@ jobs:
   deploy-apps:
     name: Deploy apps to yt01
     needs:
-      [get-current-version, check-for-changes, deploy-infra, publish]
+      [get-current-version, check-for-changes, deploy-infra]
     # we want deployment of apps to be dependent on deployment of infrastructure, but if infrastructure is skipped, we still want to deploy the apps
     if: ${{ always() && !failure() && !cancelled() && (github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasBackendChanges == 'true') }}
     uses: ./.github/workflows/workflow-deploy-apps.yml
@@ -98,7 +88,7 @@ jobs:
   store-apps-version:
     name: Store Latest Deployed Apps Version as GitHub Variable
     needs: [deploy-apps, get-current-version]
-    if: ${{ always() && !failure() && !cancelled() && (github.event_name == 'workflow_dispatch' || needs.deploy-apps.outputs.deployment_executed == 'true') }}
+    if: ${{ always() && !failure() && (github.event_name == 'workflow_dispatch' || needs.deploy-apps.outputs.deployment_executed == 'true') }}
     uses: ./.github/workflows/workflow-store-github-env-variable.yml
     with:
       variable_name: LATEST_DEPLOYED_APPS_VERSION
@@ -106,22 +96,6 @@ jobs:
       environment: yt01
     secrets:
       GH_TOKEN: ${{ secrets.RELEASE_VERSION_STORAGE_PAT }}
-
-  deploy-slack-notifier:
-    name: Deploy slack notifier (yt01)
-    needs: [check-for-changes]
-    if: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasSlackNotifierChanges == 'true' }}
-    uses: ./.github/workflows/workflow-deploy-function.yml
-    secrets:
-      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-      # todo: resolve this automatically, or use tags
-      AZURE_FUNCTION_APP_NAME: ${{ secrets.AZURE_SLACK_NOTIFIER_FUNCTION_APP_NAME }}
-    with:
-      function-app-name: "slack-notifier"
-      function-project-path: "./src/Digdir.Tool.Dialogporten.SlackNotifier"
-      environment: yt01
 
   run-e2e-tests:
     name: "Run K6 functional end-to-end tests"
@@ -146,28 +120,23 @@ jobs:
     if: ${{ always() && !failure() && !cancelled() && (github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasBackendChanges == 'true' || needs.check-for-changes.outputs.hasInfraChanges == 'true') }}
     needs: [deploy-apps, deploy-infra, check-for-changes]
     #needs: [deploy-apps, check-for-changes]
-    uses: ./.github/workflows/workflow-run-k6-performance.yml
+    uses: ./.github/workflows/workflow-run-k6-ci-cd-yt01.yml
     secrets:
       TOKEN_GENERATOR_USERNAME: ${{ secrets.TOKEN_GENERATOR_USERNAME }}
       TOKEN_GENERATOR_PASSWORD: ${{ secrets.TOKEN_GENERATOR_PASSWORD }}
-      K6_CLOUD_TOKEN: ${{ secrets.K6_CLOUD_TOKEN }}
-      K6_CLOUD_PROJECT_ID: ${{ secrets.K6_CLOUD_PROJECT_ID }}
-
     strategy:
       max-parallel: 1
       matrix:
         files:
-          - tests/k6/tests/serviceowner/serviceOwnerSearchWithThresholds.js
-          - tests/k6/tests/serviceowner/createDialogWithThresholds.js
-          - tests/k6/tests/enduser/enduserSearchWithThresholds.js
+          - tests/k6/tests/serviceowner/performance/serviceOwnerSearchWithThresholds.js
+          - tests/k6/tests/serviceowner/performance/createDialogWithThresholds.js
+          - tests/k6/tests/enduser/performance/enduserSearchWithThresholds.js
       fail-fast: false
     with:
       environment: yt01
       apiVersion: v1
       vus: 1
       duration: 30s
-      tokens: both
-      numberOfTokens: 100
       testSuitePath: ${{ matrix.files }}
     permissions:
       checks: write
@@ -175,17 +144,15 @@ jobs:
 
   send-slack-message-on-failure:
     name: Send Slack message on failure
-    needs: [deploy-infra, deploy-apps, deploy-slack-notifier, run-e2e-tests, publish, run-performance-tests]
+    needs: [deploy-infra, deploy-apps, run-e2e-tests, run-performance-tests]
     if: ${{ always() && failure() && !cancelled() }}
     uses: ./.github/workflows/workflow-send-ci-cd-status-slack-message.yml
     with:
       environment: yt01
       infra_status: ${{ needs.deploy-infra.result }}
       apps_status: ${{ needs.deploy-apps.result }}
-      slack_notifier_status: ${{ needs.deploy-slack-notifier.result }}
       e2e_tests_status: ${{ needs.run-e2e-tests.result }}
       performance_tests_status: ${{ needs.run-performance-tests.result }}
-      publish_status: ${{ needs.publish.result }}
     secrets:
       SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
       SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID_FOR_CI_CD_STATUS }}

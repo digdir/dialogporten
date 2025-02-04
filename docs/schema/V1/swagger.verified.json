@@ -83,7 +83,15 @@
           "TransmissionOpened",
           "PaymentMade",
           "SignatureProvided",
-          "DialogOpened"
+          "DialogOpened",
+          "DialogDeleted",
+          "DialogRestored",
+          "SentToSigning",
+          "SentToFormFill",
+          "SentToSendIn",
+          "SentToPayment",
+          "FormSubmitted",
+          "FormSaved"
         ],
         "type": "string",
         "x-enumNames": [
@@ -93,7 +101,15 @@
           "TransmissionOpened",
           "PaymentMade",
           "SignatureProvided",
-          "DialogOpened"
+          "DialogOpened",
+          "DialogDeleted",
+          "DialogRestored",
+          "SentToSigning",
+          "SentToFormFill",
+          "SentToSendIn",
+          "SentToPayment",
+          "FormSubmitted",
+          "FormSaved"
         ]
       },
       "DialogsEntitiesTransmissions_DialogTransmissionType": {
@@ -2082,6 +2098,13 @@
             },
             "nullable": true,
             "type": "array"
+          },
+          "id": {
+            "description": "A self-defined UUIDv7 may be provided to support idempotent creation of Api Actions. If not provided, a new UUIDv7 will be generated.",
+            "example": "01913cd5-784f-7d3b-abef-4c77b1f0972d",
+            "format": "guid",
+            "nullable": true,
+            "type": "string"
           }
         },
         "type": "object"
@@ -2148,6 +2171,12 @@
             },
             "nullable": true,
             "type": "array"
+          },
+          "id": {
+            "description": "A self-defined UUIDv7 may be provided to support idempotent creation of attachments. If not provided, a new UUIDv7 will be generated.",
+            "format": "guid",
+            "nullable": true,
+            "type": "string"
           },
           "urls": {
             "description": "The URLs associated with the attachment, each referring to a different representation of the attachment.",
@@ -2243,7 +2272,7 @@
         },
         "type": "object"
       },
-      "V1ServiceOwnerDialogsCommandsCreate_DialogCommand": {
+      "V1ServiceOwnerDialogsCommandsCreate_Dialog": {
         "additionalProperties": false,
         "properties": {
           "activities": {
@@ -2419,6 +2448,13 @@
                 "$ref": "#/components/schemas/Http_HttpVerb"
               }
             ]
+          },
+          "id": {
+            "description": "A self-defined UUIDv7 may be provided to support idempotent creation of Gui Actions. If not provided, a new UUIDv7 will be generated.",
+            "example": "01913cd5-784f-7d3b-abef-4c77b1f0972d",
+            "format": "guid",
+            "nullable": true,
+            "type": "string"
           },
           "isDeleteDialogAction": {
             "description": "Indicates whether the action results in the dialog being deleted. Used by frontends to implement custom UX\nfor delete actions.",
@@ -2698,7 +2734,7 @@
             "type": "array"
           },
           "id": {
-            "description": "A UUIDv7 used for merging existing data, unknown IDs will be ignored as this entity does not support user-defined IDs.",
+            "description": "A self-defined UUIDv7 may be provided to support idempotent additions of Api Actions. If not provided, a new UUIDv7 will be generated.",
             "example": "01913cd5-784f-7d3b-abef-4c77b1f0972d",
             "format": "guid",
             "nullable": true,
@@ -2778,7 +2814,7 @@
             "type": "array"
           },
           "id": {
-            "description": "A UUIDv7 used for merging existing data, unknown IDs will be ignored as this entity does not support user-defined IDs.",
+            "description": "A self-defined UUIDv7 may be provided to support idempotent additions of attachments. If not provided, a new UUIDv7 will be generated.",
             "example": "01913cd5-784f-7d3b-abef-4c77b1f0972d",
             "format": "guid",
             "nullable": true,
@@ -3015,7 +3051,7 @@
             ]
           },
           "id": {
-            "description": "A UUIDv7 used for merging existing data, unknown IDs will be ignored as this entity does not support user-defined IDs.",
+            "description": "A self-defined UUIDv7 may be provided to support idempotent additions of Gui Actions. If not provided, a new UUIDv7 will be generated.",
             "example": "01913cd5-784f-7d3b-abef-4c77b1f0972d",
             "format": "guid",
             "nullable": true,
@@ -3148,7 +3184,7 @@
             "type": "array"
           },
           "id": {
-            "description": "A self-defined UUIDv7 may be provided to support idempotent creation of transmission attachments. If not provided, a new UUIDv7 will be generated.",
+            "description": "A self-defined UUIDv7 may be provided to support idempotent additions of transmission attachments. If not provided, a new UUIDv7 will be generated.",
             "example": "01913cd5-784f-7d3b-abef-4c77b1f0972d",
             "format": "guid",
             "nullable": true,
@@ -3217,6 +3253,15 @@
                 "$ref": "#/components/schemas/V1CommonContent_ContentValue"
               }
             ]
+          }
+        },
+        "type": "object"
+      },
+      "V1ServiceOwnerDialogsCreate_DialogRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "dto": {
+            "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsCreate_Dialog"
           }
         },
         "type": "object"
@@ -4915,7 +4960,7 @@
             }
           },
           {
-            "description": "Limit free text search to texts with this language code, e.g. \u0027no\u0027, \u0027en\u0027. Culture codes will be normalized to neutral language codes (ISO 639). Default: search all culture codes",
+            "description": "Limit free text search to texts with this language code, e.g. \u0027nb\u0027, \u0027en\u0027. Culture codes will be normalized to neutral language codes (ISO 639). Default: search all culture codes",
             "in": "query",
             "name": "searchLanguageCode",
             "schema": {
@@ -5756,7 +5801,7 @@
             }
           },
           {
-            "description": "Limit free text search to texts with this language code, e.g. \u0027no\u0027, \u0027en\u0027. Culture codes will be normalized to neutral language codes (ISO 639). Default: search all culture codes",
+            "description": "Limit free text search to texts with this language code, e.g. \u0027nb\u0027, \u0027en\u0027. Culture codes will be normalized to neutral language codes (ISO 639). Default: search all culture codes",
             "in": "query",
             "name": "searchLanguageCode",
             "schema": {
@@ -5826,20 +5871,18 @@
         ]
       },
       "post": {
-        "description": "The dialog is created with the given configuration. For more information see the documentation (link TBD).\n\nFor detailed information on validation rules, see [the source for CreateDialogCommandValidator](https://github.com/digdir/dialogporten/blob/main/src/Digdir.Domain.Dialogporten.Application/Features/V1/ServiceOwner/Dialogs/Commands/Create/CreateDialogCommandValidator.cs)",
+        "description": "The dialog is created with the given configuration. For more information see the documentation (link TBD).\n\nFor detailed information on validation rules, see [the source for CreateDialogCommandValidator](https://github.com/altinn/dialogporten/blob/main/src/Digdir.Domain.Dialogporten.Application/Features/V1/ServiceOwner/Dialogs/Commands/Create/CreateDialogCommandValidator.cs)",
         "operationId": "V1ServiceOwnerDialogsCreate_Dialog",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsCreate_DialogCommand"
+                "$ref": "#/components/schemas/V1ServiceOwnerDialogsCommandsCreate_Dialog"
               }
             }
           },
-          "description": "",
           "required": true,
-          "x-name": "CreateDialogCommand",
-          "x-position": 1
+          "x-name": "dto"
         },
         "responses": {
           "201": {
@@ -5851,7 +5894,16 @@
                 }
               }
             },
-            "description": "The UUID of the created the dialog aggregate. A relative URL to the newly created activity is set in the \u0022Location\u0022 header."
+            "description": "The UUID of the created dialog aggregate. A relative URL to the newly created activity is set in the \u0022Location\u0022 header.",
+            "headers": {
+              "Etag": {
+                "description": "The new UUID ETag of the dialog",
+                "example": "123e4567-e89b-12d3-a456-426614174000",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "204": {
             "description": "No Content"
@@ -5864,7 +5916,7 @@
                 }
               }
             },
-            "description": "Validation error occured. See problem details for a list of errors."
+            "description": "Validation error occurred. See problem details for a list of errors."
           },
           "401": {
             "description": "Missing or invalid authentication token. Requires a Maskinporten-token with the scope \u0022digdir:dialogporten.serviceprovider\u0022."
@@ -5880,7 +5932,7 @@
                 }
               }
             },
-            "description": "Domain error occured. See problem details for a list of errors."
+            "description": "Domain error occurred. See problem details for a list of errors."
           }
         },
         "security": [
@@ -5920,7 +5972,16 @@
         ],
         "responses": {
           "204": {
-            "description": "The dialog aggregate was deleted successfully."
+            "description": "The dialog aggregate was deleted successfully.",
+            "headers": {
+              "Etag": {
+                "description": "The new UUID ETag of the dialog",
+                "example": "123e4567-e89b-12d3-a456-426614174000",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "400": {
             "content": {
@@ -5930,7 +5991,7 @@
                 }
               }
             },
-            "description": "Validation error occured. See problem details for a list of errors."
+            "description": "Validation error occurred. See problem details for a list of errors."
           },
           "401": {
             "description": "Missing or invalid authentication token. Requires a Maskinporten-token with the scope \u0022digdir:dialogporten.serviceprovider\u0022."
@@ -6076,7 +6137,16 @@
         },
         "responses": {
           "204": {
-            "description": "Patch was successfully applied."
+            "description": "Patch was successfully applied.",
+            "headers": {
+              "Etag": {
+                "description": "The new UUID ETag of the dialog",
+                "example": "123e4567-e89b-12d3-a456-426614174000",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "400": {
             "content": {
@@ -6086,7 +6156,7 @@
                 }
               }
             },
-            "description": "Validation error occured. See problem details for a list of errors."
+            "description": "Validation error occurred. See problem details for a list of errors."
           },
           "401": {
             "description": "Missing or invalid authentication token. Requires a Maskinporten-token with the scope \\\u0022digdir:dialogporten.serviceprovider\\\u0022"
@@ -6122,7 +6192,7 @@
                 }
               }
             },
-            "description": "Domain error occured. See problem details for a list of errors."
+            "description": "Domain error occurred. See problem details for a list of errors."
           }
         },
         "security": [
@@ -6171,7 +6241,16 @@
         },
         "responses": {
           "204": {
-            "description": "The dialog aggregate was updated successfully."
+            "description": "The dialog aggregate was updated successfully.",
+            "headers": {
+              "Etag": {
+                "description": "The new UUID ETag of the dialog",
+                "example": "123e4567-e89b-12d3-a456-426614174000",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "400": {
             "content": {
@@ -6181,7 +6260,7 @@
                 }
               }
             },
-            "description": "Validation error occured. See problem details for a list of errors."
+            "description": "Validation error occurred. See problem details for a list of errors."
           },
           "401": {
             "description": "Missing or invalid authentication token. Requires a Maskinporten-token with the scope \u0022digdir:dialogporten.serviceprovider\u0022."
@@ -6220,7 +6299,7 @@
                 }
               }
             },
-            "description": "Domain error occured. See problem details for a list of errors."
+            "description": "Domain error occurred. See problem details for a list of errors."
           }
         },
         "security": [
@@ -6469,7 +6548,16 @@
                 }
               }
             },
-            "description": "The UUID of the created the dialog activity. A relative URL to the newly created activity is set in the \u0022Location\u0022 header."
+            "description": "The UUID of the created dialog activity. A relative URL to the newly created activity is set in the \u0022Location\u0022 header.",
+            "headers": {
+              "Etag": {
+                "description": "The new UUID ETag of the dialog",
+                "example": "123e4567-e89b-12d3-a456-426614174000",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "204": {
             "description": "No Content"
@@ -6482,7 +6570,7 @@
                 }
               }
             },
-            "description": "Validation error occured. See problem details for a list of errors."
+            "description": "Validation error occurred. See problem details for a list of errors."
           },
           "401": {
             "description": "Missing or invalid authentication token. Requires a Maskinporten-token with the scope \u0022digdir:dialogporten.serviceprovider\u0022."
@@ -6521,7 +6609,7 @@
                 }
               }
             },
-            "description": "Domain error occured. See problem details for a list of errors."
+            "description": "Domain error occurred. See problem details for a list of errors."
           }
         },
         "security": [
@@ -6832,7 +6920,16 @@
                 }
               }
             },
-            "description": "The UUID of the created the dialog transmission. A relative URL to the newly created activity is set in the \u0022Location\u0022 header."
+            "description": "The UUID of the created dialog transmission. A relative URL to the newly created activity is set in the \u0022Location\u0022 header.",
+            "headers": {
+              "Etag": {
+                "description": "The new UUID ETag of the dialog",
+                "example": "123e4567-e89b-12d3-a456-426614174000",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "204": {
             "description": "No Content"
@@ -6845,7 +6942,7 @@
                 }
               }
             },
-            "description": "Validation error occured. See problem details for a list of errors."
+            "description": "Validation error occurred. See problem details for a list of errors."
           },
           "401": {
             "description": "Missing or invalid authentication token. Requires a Maskinporten-token with the scope \u0022digdir:dialogporten.serviceprovider\u0022."
@@ -6884,7 +6981,7 @@
                 }
               }
             },
-            "description": "Domain error occured. See problem details for a list of errors."
+            "description": "Domain error occurred. See problem details for a list of errors."
           }
         },
         "security": [

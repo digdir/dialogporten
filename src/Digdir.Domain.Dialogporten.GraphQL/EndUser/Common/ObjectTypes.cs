@@ -52,16 +52,16 @@ public enum ActorType
 
 public enum ActivityType
 {
-    [GraphQLDescription("Refers to a dialog that has been created.")]
+    [GraphQLDescription("Indicates that a dialog has been created.")]
     DialogCreated = 1,
 
-    [GraphQLDescription("Refers to a dialog that has been closed.")]
+    [GraphQLDescription("Indicates that a dialog has been closed.")]
     DialogClosed = 2,
 
     [GraphQLDescription("Information from the service provider, not (directly) related to any transmission.")]
     Information = 3,
 
-    [GraphQLDescription("Refers to a transmission that has been opened.")]
+    [GraphQLDescription("Indicates that a transmission has been opened.")]
     TransmissionOpened = 4,
 
     [GraphQLDescription("Indicates that payment has been made.")]
@@ -70,8 +70,32 @@ public enum ActivityType
     [GraphQLDescription("Indicates that a signature has been provided.")]
     SignatureProvided = 6,
 
-    [GraphQLDescription("Refers to a dialog that has been opened.")]
+    [GraphQLDescription("Indicates that a dialog has been opened.")]
     DialogOpened = 7,
+
+    [GraphQLDescription("Indicates that a dialog has been deleted.")]
+    DialogDeleted = 8,
+
+    [GraphQLDescription("Indicates that a dialog has been restored.")]
+    DialogRestored = 9,
+
+    [GraphQLDescription("Indicates that a dialog has been sent to signing.")]
+    SentToSigning = 10,
+
+    [GraphQLDescription("Indicates that a dialog has been sent to form fill.")]
+    SentToFormFill = 11,
+
+    [GraphQLDescription("Indicates that a dialog has been sent to send in.")]
+    SentToSendIn = 12,
+
+    [GraphQLDescription("Indicates that a dialog has been sent to payment.")]
+    SentToPayment = 13,
+
+    [GraphQLDescription("Indicates that a form associated with the dialog has been submitted.")]
+    FormSubmitted = 14,
+
+    [GraphQLDescription("Indicates that a form associated with the dialog has been saved.")]
+    FormSaved = 15,
 }
 
 public enum DialogStatus
@@ -93,4 +117,11 @@ public enum DialogStatus
 
     [GraphQLDescription("The dialogue was completed. This typically means that the dialogue is moved to a GUI archive or similar.")]
     Completed = 6
+}
+
+public enum SystemLabel
+{
+    Default = 1,
+    Bin = 2,
+    Archive = 3
 }

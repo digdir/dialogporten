@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Digdir.Domain.Dialogporten.Application.Common;
 using Digdir.Domain.Dialogporten.Application.Common.Authorization;
+using Digdir.Domain.Dialogporten.Application.Common.Behaviours;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions.Enumerables;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
@@ -19,19 +20,21 @@ using Digdir.Library.Entity.Abstractions.Features.Identifiable;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
-using OneOf.Types;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Update;
 
-public sealed class UpdateDialogCommand : IRequest<UpdateDialogResult>
+public sealed class UpdateDialogCommand : IRequest<UpdateDialogResult>, IAltinnEventDisabler
 {
     public Guid Id { get; set; }
     public Guid? IfMatchDialogRevision { get; set; }
     public UpdateDialogDto Dto { get; set; } = null!;
+    public bool DisableAltinnEvents { get; set; }
 }
 
 [GenerateOneOf]
-public sealed partial class UpdateDialogResult : OneOfBase<Success, EntityNotFound, EntityDeleted, ValidationError, Forbidden, DomainError, ConcurrencyError>;
+public sealed partial class UpdateDialogResult : OneOfBase<UpdateDialogSuccess, EntityNotFound, EntityDeleted, ValidationError, Forbidden, DomainError, ConcurrencyError>;
+
+public sealed record UpdateDialogSuccess(Guid Revision);
 
 internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogCommand, UpdateDialogResult>
 {
@@ -93,7 +96,7 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
 
         if (dialog.Deleted)
         {
-            // TODO: https://github.com/digdir/dialogporten/issues/1543
+            // TODO: https://github.com/altinn/dialogporten/issues/1543
             // When restoration is implemented, add a hint to the error message.
             return new EntityDeleted<DialogEntity>(request.Id);
         }
@@ -162,12 +165,13 @@ internal sealed class UpdateDialogCommandHandler : IRequestHandler<UpdateDialogC
         }
 
         UpdateLabel(dialog);
+
         var saveResult = await _unitOfWork
             .EnableConcurrencyCheck(dialog, request.IfMatchDialogRevision)
             .SaveChangesAsync(cancellationToken);
 
         return saveResult.Match<UpdateDialogResult>(
-            success => success,
+            success => new UpdateDialogSuccess(dialog.Revision),
             domainError => domainError,
             concurrencyError => concurrencyError);
     }

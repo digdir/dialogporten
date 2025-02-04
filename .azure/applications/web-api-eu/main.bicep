@@ -45,8 +45,12 @@ param appConfigurationName string
 @secure()
 param environmentKeyVaultName string
 
+@description('The ratio of traces to sample (between 0.0 and 1.0). Lower values reduce logging volume.')
+@minLength(1)
+param otelTraceSamplerRatio string
+
 var namePrefix = 'dp-be-${environment}'
-var baseImageUrl = 'ghcr.io/digdir/dialogporten-'
+var baseImageUrl = 'ghcr.io/altinn/dialogporten-'
 var tags = {
   Environment: environment
   Product: 'Dialogporten'
@@ -87,12 +91,20 @@ var containerAppEnvVars = [
     name: 'AZURE_CLIENT_ID'
     value: managedIdentity.properties.clientId
   }
+  {
+    name: 'OTEL_TRACES_SAMPLER'
+    value: 'parentbased_traceidratio'
+  }
+  {
+    name: 'OTEL_TRACES_SAMPLER_ARG'
+    value: otelTraceSamplerRatio
+  }
 ]
 
 @description('The scaling configuration for the container app')
 param scale Scale = {
   minReplicas: 2
-  maxReplicas: 10
+  maxReplicas: 20
   rules: [
     {
       name: 'cpu'
@@ -100,7 +112,7 @@ param scale Scale = {
         type: 'cpu'
         metadata: {
           type: 'Utilization'
-          value: '70'
+          value: '50'
         }
       }
     }
@@ -129,6 +141,7 @@ var probes = [
   {
     periodSeconds: 5
     initialDelaySeconds: 2
+    timeoutSeconds: 3
     type: 'Liveness'
     httpGet: {
       path: '/health/liveness'
@@ -137,7 +150,9 @@ var probes = [
   }
   {
     periodSeconds: 5
-    initialDelaySeconds: 2
+    initialDelaySeconds: 20
+    timeoutSeconds: 3
+    failureThreshold: 6
     type: 'Readiness'
     httpGet: {
       path: '/health/readiness'
@@ -146,7 +161,9 @@ var probes = [
   }
   {
     periodSeconds: 5
-    initialDelaySeconds: 2
+    initialDelaySeconds: 10
+    timeoutSeconds: 3
+    failureThreshold: 6
     type: 'Startup'
     httpGet: {
       path: '/health/startup'

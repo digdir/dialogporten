@@ -17,11 +17,41 @@ namespace Digdir.Domain.Dialogporten.Application.Integration.Tests.Features.V1.S
 public class UpdateDialogTests(DialogApplication application) : ApplicationCollectionFixture(application)
 {
     [Fact]
+    public async Task UpdateDialogCommand_Should_Return_New_Revision()
+    {
+        // Arrange
+        var createCommandResponse = await Application.Send(DialogGenerator.GenerateSimpleFakeCreateDialogCommand());
+
+        var getDialogQuery = new GetDialogQuery { DialogId = createCommandResponse.AsT0.DialogId };
+        var getDialogDto = await Application.Send(getDialogQuery);
+        var oldRevision = getDialogDto.AsT0.Revision;
+
+        var mapper = Application.GetMapper();
+        var updateDialogDto = mapper.Map<UpdateDialogDto>(getDialogDto.AsT0);
+
+        // Update progress
+        updateDialogDto.Progress = (updateDialogDto.Progress % 100) + 1;
+
+        // Act
+        var updateResponse = await Application.Send(new UpdateDialogCommand
+        {
+            Id = createCommandResponse.AsT0.DialogId,
+            Dto = updateDialogDto
+        });
+
+        // Assert
+        updateResponse.TryPickT0(out var success, out _).Should().BeTrue();
+        success.Should().NotBeNull();
+        success.Revision.Should().NotBeEmpty();
+        success.Revision.Should().NotBe(oldRevision);
+    }
+
+    [Fact]
     public async Task Cannot_Include_Old_Activities_To_UpdateCommand()
     {
         // Arrange
         var (_, createCommandResponse) = await GenerateDialogWithActivity();
-        var getDialogQuery = new GetDialogQuery { DialogId = createCommandResponse.AsT0.Value };
+        var getDialogQuery = new GetDialogQuery { DialogId = createCommandResponse.AsT0.DialogId };
         var getDialogDto = await Application.Send(getDialogQuery);
 
         var mapper = Application.GetMapper();
@@ -39,7 +69,11 @@ public class UpdateDialogTests(DialogApplication application) : ApplicationColle
         });
 
         // Act
-        var updateResponse = await Application.Send(new UpdateDialogCommand { Id = createCommandResponse.AsT0.Value, Dto = updateDialogDto });
+        var updateResponse = await Application.Send(new UpdateDialogCommand
+        {
+            Id = createCommandResponse.AsT0.DialogId,
+            Dto = updateDialogDto
+        });
 
         // Assert
         updateResponse.TryPickT5(out var domainError, out _).Should().BeTrue();
@@ -51,12 +85,12 @@ public class UpdateDialogTests(DialogApplication application) : ApplicationColle
     public async Task Cannot_Include_Old_Transmissions_In_UpdateCommand()
     {
         // Arrange
-        var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog();
+        var createDialogCommand = DialogGenerator.GenerateSimpleFakeCreateDialogCommand();
         var existingTransmission = DialogGenerator.GenerateFakeDialogTransmissions(count: 1).First();
-        createDialogCommand.Transmissions.Add(existingTransmission);
+        createDialogCommand.Dto.Transmissions.Add(existingTransmission);
         var createCommandResponse = await Application.Send(createDialogCommand);
 
-        var getDialogQuery = new GetDialogQuery { DialogId = createCommandResponse.AsT0.Value };
+        var getDialogQuery = new GetDialogQuery { DialogId = createCommandResponse.AsT0.DialogId };
         var getDialogDto = await Application.Send(getDialogQuery);
 
         var mapper = Application.GetMapper();
@@ -76,7 +110,11 @@ public class UpdateDialogTests(DialogApplication application) : ApplicationColle
         });
 
         // Act
-        var updateResponse = await Application.Send(new UpdateDialogCommand { Id = createCommandResponse.AsT0.Value, Dto = updateDialogDto });
+        var updateResponse = await Application.Send(new UpdateDialogCommand
+        {
+            Id = createCommandResponse.AsT0.DialogId,
+            Dto = updateDialogDto
+        });
 
         // Assert
         updateResponse.TryPickT5(out var domainError, out _).Should().BeTrue();
@@ -86,11 +124,11 @@ public class UpdateDialogTests(DialogApplication application) : ApplicationColle
 
     private async Task<(CreateDialogCommand, CreateDialogResult)> GenerateDialogWithActivity()
     {
-        var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog();
+        var createDialogCommand = DialogGenerator.GenerateSimpleFakeCreateDialogCommand();
         var activity = DialogGenerator.GenerateFakeDialogActivity(type: DialogActivityType.Values.Information);
         activity.PerformedBy.ActorId = DialogGenerator.GenerateRandomParty(forcePerson: true);
         activity.PerformedBy.ActorName = null;
-        createDialogCommand.Activities.Add(activity);
+        createDialogCommand.Dto.Activities.Add(activity);
         var createCommandResponse = await Application.Send(createDialogCommand);
         return (createDialogCommand, createCommandResponse);
     }

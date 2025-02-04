@@ -21,6 +21,14 @@ internal static class CloudEventTypes
         nameof(DialogActivityType.Values.PaymentMade) => "dialogporten.dialog.activity.payment-made.v1",
         nameof(DialogActivityType.Values.SignatureProvided) => "dialogporten.dialog.activity.signature-provided.v1",
         nameof(DialogActivityType.Values.DialogOpened) => "dialogporten.dialog.activity.dialog-opened.v1",
+        nameof(DialogActivityType.Values.DialogDeleted) => "dialogporten.dialog.activity.dialog-deleted.v1",
+        nameof(DialogActivityType.Values.DialogRestored) => "dialogporten.dialog.activity.dialog-restored.v1",
+        nameof(DialogActivityType.Values.SentToSigning) => "dialogporten.dialog.activity.sent-to-signing.v1",
+        nameof(DialogActivityType.Values.SentToFormFill) => "dialogporten.dialog.activity.sent-to-form-fill.v1",
+        nameof(DialogActivityType.Values.SentToSendIn) => "dialogporten.dialog.activity.sent-to-send-in.v1",
+        nameof(DialogActivityType.Values.SentToPayment) => "dialogporten.dialog.activity.sent-to-payment.v1",
+        nameof(DialogActivityType.Values.FormSubmitted) => "dialogporten.dialog.activity.form-submitted.v1",
+        nameof(DialogActivityType.Values.FormSaved) => "dialogporten.dialog.activity.form-saved.v1",
 
         _ => throw new ArgumentOutOfRangeException(nameof(eventName), eventName, null)
     };

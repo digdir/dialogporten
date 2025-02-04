@@ -14,10 +14,6 @@ on:
         type: string
         description: "Status of the apps deployment job"
         default: "skipped"
-      slack_notifier_status:
-        type: string
-        description: "Status of the Slack notifier deployment job"
-        default: "skipped"
       e2e_tests_status:
         type: string
         description: "Status of the end-to-end tests job"
@@ -37,6 +33,14 @@ on:
       build_and_test_status:
         type: string
         description: "Status of the build and test job"
+        default: "skipped"
+      release_please_status:
+        type: string
+        description: "Status of the release-please job"
+        default: "skipped"
+      notify_release_created_status:
+        type: string
+        description: "Status of the notify-release-created job"
         default: "skipped"
     secrets:
       SLACK_BOT_TOKEN:
@@ -68,12 +72,13 @@ jobs:
           {
             echo "INFRA_EMOJI=$(determine_emoji "${{ inputs.infra_status }}")"
             echo "APPS_EMOJI=$(determine_emoji "${{ inputs.apps_status }}")"
-            echo "SLACK_NOTIFIER_EMOJI=$(determine_emoji "${{ inputs.slack_notifier_status }}")"
             echo "E2E_TESTS_EMOJI=$(determine_emoji "${{ inputs.e2e_tests_status }}")"
             echo "SCHEMA_NPM_EMOJI=$(determine_emoji "${{ inputs.schema_npm_status }}")"
             echo "PUBLISH_EMOJI=$(determine_emoji "${{ inputs.publish_status }}")"
             echo "BUILD_AND_TEST_EMOJI=$(determine_emoji "${{ inputs.build_and_test_status }}")"
             echo "PERFORMANCE_TESTS_EMOJI=$(determine_emoji "${{ inputs.performance_tests_status }}")"
+            echo "RELEASE_PLEASE_EMOJI=$(determine_emoji "${{ inputs.release_please_status }}")"
+            echo "NOTIFY_RELEASE_CREATED_EMOJI=$(determine_emoji "${{ inputs.notify_release_created_status }}")"
           } >> "$GITHUB_OUTPUT"
 
       - name: Send GitHub slack message
@@ -85,12 +90,13 @@ jobs:
           # statuses
           INFRA_STATUS: "${{ steps.status-emojis.outputs.INFRA_EMOJI }}"
           APPS_STATUS: "${{ steps.status-emojis.outputs.APPS_EMOJI }}"
-          SLACK_NOTIFIER_STATUS: "${{ steps.status-emojis.outputs.SLACK_NOTIFIER_EMOJI }}"
           E2E_TESTS_STATUS: "${{ steps.status-emojis.outputs.E2E_TESTS_EMOJI }}"
           SCHEMA_NPM_STATUS: "${{ steps.status-emojis.outputs.SCHEMA_NPM_EMOJI }}"
           PUBLISH_STATUS: "${{ steps.status-emojis.outputs.PUBLISH_EMOJI }}"
           BUILD_AND_TEST_STATUS: "${{ steps.status-emojis.outputs.BUILD_AND_TEST_EMOJI }}"
           PERFORMANCE_TESTS_STATUS: "${{ steps.status-emojis.outputs.PERFORMANCE_TESTS_EMOJI }}"
+          RELEASE_PLEASE_STATUS: "${{ steps.status-emojis.outputs.RELEASE_PLEASE_EMOJI }}"
+          NOTIFY_RELEASE_CREATED_STATUS: "${{ steps.status-emojis.outputs.NOTIFY_RELEASE_CREATED_EMOJI }}"
         uses: slackapi/slack-github-action@v2.0.0
         with:
           errors: true

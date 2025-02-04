@@ -1,8 +1,8 @@
 import { enduserSearch } from '../../performancetest_common/simpleSearch.js'
 import { getDefaultThresholds } from '../../performancetest_common/getDefaultThresholds.js';
-import { endUsersWithTokens } from '../../performancetest_common/readTestdata.js';
+import { validateTestData } from '../../performancetest_common/readTestdata.js';
+export { setup as setup } from '../../performancetest_common/readTestdata.js';
 
-const isSingleUserMode = (__ENV.isSingleUserMode ?? 'false') === 'true';
 const traceCalls = (__ENV.traceCalls ?? 'false') === 'true';
 
 export let options = {
@@ -19,18 +19,8 @@ export let options = {
     ])
 };
 
-export default function() {
-    if (!endUsersWithTokens || endUsersWithTokens.length === 0) {
-        throw new Error('No end users loaded for testing');
-    }
-      
-    if (isSingleUserMode) {
-        enduserSearch(endUsersWithTokens[0], traceCalls);
-    }
-    else {
-        for (let i = 0; i < endUsersWithTokens.length; i++) {
-            enduserSearch(endUsersWithTokens[i], traceCalls);
-        }
-    }
+export default function(data) {
+    const { endUsers, index } = validateTestData(data);
+    enduserSearch(endUsers[index], traceCalls);  
 }
 

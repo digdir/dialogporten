@@ -20,7 +20,7 @@ public class ActivityLogTests(DialogApplication application) : ApplicationCollec
         var (_, createCommandResponse) = await GenerateDialogWithActivity();
 
         // Act
-        var response = await Application.Send(new GetDialogQuery { DialogId = createCommandResponse.AsT0.Value });
+        var response = await Application.Send(new GetDialogQuery { DialogId = createCommandResponse.AsT0.DialogId });
 
         // Assert
         response.TryPickT0(out var result, out _).Should().BeTrue();
@@ -43,7 +43,7 @@ public class ActivityLogTests(DialogApplication application) : ApplicationCollec
         // Act
         var response = await Application.Send(new SearchDialogQuery
         {
-            ServiceResource = [createDialogCommand.ServiceResource]
+            ServiceResource = [createDialogCommand.Dto.ServiceResource]
         });
 
         // Assert
@@ -64,13 +64,17 @@ public class ActivityLogTests(DialogApplication application) : ApplicationCollec
         // Arrange
         var (_, createCommandResponse) = await GenerateDialogWithActivity();
 
-        var getDialogResult = await Application.Send(new GetDialogQuery { DialogId = createCommandResponse.AsT0.Value });
+        var getDialogResult = await Application.Send(new GetDialogQuery
+        {
+            DialogId = createCommandResponse.AsT0.DialogId
+        });
+
         var activityId = getDialogResult.AsT0.Activities.First().Id;
 
         // Act
         var response = await Application.Send(new GetActivityQuery
         {
-            DialogId = createCommandResponse.AsT0.Value,
+            DialogId = createCommandResponse.AsT0.DialogId,
             ActivityId = activityId
         });
 
@@ -85,11 +89,11 @@ public class ActivityLogTests(DialogApplication application) : ApplicationCollec
 
     private async Task<(CreateDialogCommand, CreateDialogResult)> GenerateDialogWithActivity()
     {
-        var createDialogCommand = DialogGenerator.GenerateSimpleFakeDialog();
+        var createDialogCommand = DialogGenerator.GenerateSimpleFakeCreateDialogCommand();
         var activity = DialogGenerator.GenerateFakeDialogActivity(type: DialogActivityType.Values.Information);
         activity.PerformedBy.ActorId = DialogGenerator.GenerateRandomParty(forcePerson: true);
         activity.PerformedBy.ActorName = null;
-        createDialogCommand.Activities.Add(activity);
+        createDialogCommand.Dto.Activities.Add(activity);
         var createCommandResponse = await Application.Send(createDialogCommand);
         return (createDialogCommand, createCommandResponse);
     }

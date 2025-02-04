@@ -17,7 +17,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.10")
+                .HasAnnotation("ProductVersion", "9.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -561,6 +561,46 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         {
                             Id = 7,
                             Name = "DialogOpened"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Name = "DialogDeleted"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Name = "DialogRestored"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Name = "SentToSigning"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Name = "SentToFormFill"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            Name = "SentToSendIn"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            Name = "SentToPayment"
+                        },
+                        new
+                        {
+                            Id = 14,
+                            Name = "FormSubmitted"
+                        },
+                        new
+                        {
+                            Id = 15,
+                            Name = "FormSaved"
                         });
                 });
 
@@ -607,7 +647,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.Property<int>("Id")
                         .HasColumnType("integer");
 
-                    b.Property<string[]>("AllowedMediaTypes")
+                    b.PrimitiveCollection<string[]>("AllowedMediaTypes")
                         .IsRequired()
                         .HasColumnType("text[]");
 
@@ -678,7 +718,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         new
                         {
                             Id = 6,
-                            AllowedMediaTypes = new[] { "application/vnd.dialogporten.frontchannelembed+json;type=markdown" },
+                            AllowedMediaTypes = new[] { "application/vnd.dialogporten.frontchannelembed-url;type=text/markdown" },
                             MaxLength = 1023,
                             Name = "MainContentReference",
                             OutputInList = false,
@@ -980,7 +1020,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                     b.Property<int>("Id")
                         .HasColumnType("integer");
 
-                    b.Property<string[]>("AllowedMediaTypes")
+                    b.PrimitiveCollection<string[]>("AllowedMediaTypes")
                         .IsRequired()
                         .HasColumnType("text[]");
 
@@ -1019,7 +1059,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         new
                         {
                             Id = 3,
-                            AllowedMediaTypes = new[] { "application/vnd.dialogporten.frontchannelembed+json;type=markdown" },
+                            AllowedMediaTypes = new[] { "application/vnd.dialogporten.frontchannelembed-url;type=text/markdown" },
                             MaxLength = 1023,
                             Name = "ContentReference",
                             Required = false
