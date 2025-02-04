@@ -18,7 +18,6 @@ public static class ServiceCollectionExtensions
             .AddAuthorization()
             .RegisterDbContextFactory<DialogDbContext>()
             .AddFluentValidation()
-            .AddDiagnosticEventListener<OpenTelemetryEventListener>()
             .AddQueryType<Queries>()
             .AddMutationType<Mutations>()
             .AddType<DialogByIdDeleted>()

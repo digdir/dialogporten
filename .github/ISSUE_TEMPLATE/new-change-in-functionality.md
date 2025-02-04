@@ -26,8 +26,8 @@ If there are guidelines on architecture or other implementation choices, they ar
 ```
 
 ```[tasklist]
-### Threat modelling
-- [ ] Does this change introduce any potential security issues?
+### Threat Modelling
+- [ ] I have considered potential security risks (if risks were found, please list them below)
 ```
 
 ### Acceptance criteria

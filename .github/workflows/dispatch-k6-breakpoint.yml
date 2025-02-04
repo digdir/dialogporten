@@ -1,4 +1,4 @@
-name: Run K6 performance test
+name: Run k6 breakpoint test
 
 on:
   workflow_dispatch:
@@ -17,39 +17,42 @@ on:
           - staging
           - yt01
       tag:
-        description: 'tag the performance test'
+        description: 'tag the breakpoint test'
         required: true
-        default: 'Performance test'
+        default: 'Breakpoint test'
         type: string
-      vus:
-        description: 'Number of VUS'
+      targetVus:
+        description: 'Target number of VUS'
         required: true
-        default: 1
+        default: 100
         type: number
       duration:
-        description: 'Duration of test, ie 30s, 1m, 10m'
+        description: 'Target duration of test, ie 30s, 1m, 10m'
         required: true
-        default: 1m
+        default: 20m
         type: string
       parallelism:
         description: 'Number of parallel test runs'
         required: true
         default: 1
-        type: number  
+        type: number
+      abortOnFail:
+        description: 'Abort on fail'
+        required: true
+        default: true
+        type: boolean  
       testSuitePath:
         description: 'Path to test suite to run'
         required: true
-        default: 'tests/k6/tests/serviceowner/performance/create-dialog.js'
+        default: 'tests/k6/tests/serviceowner/performance/createDialogBreakpoint.js'
         type: choice
         options:
-          - 'tests/k6/tests/serviceowner/performance/create-dialog.js'
-          - 'tests/k6/tests/serviceowner/performance/create-remove-dialog.js'
-          - 'tests/k6/tests/serviceowner/performance/serviceowner-search.js'
-          - 'tests/k6/tests/enduser/performance/enduser-search.js'
-          - 'tests/k6/tests/graphql/performance/graphql-search.js'
-          - 'tests/k6/tests/serviceowner/performance/create-transmissions.js'
+          - 'tests/k6/tests/serviceowner/performance/createDialogBreakpoint.js'
+          - 'tests/k6/tests/serviceowner/performance/createTransmissionsBreakpoint.js'
+          - 'tests/k6/tests/serviceowner/performance/serviceownerSearchBreakpoint.js'
+          - 'tests/k6/tests/enduser/performance/enduserSearchBreakpoint.js'
 
-run-name: ${{ inputs.tag }} ${{ inputs.vus }}/${{ inputs.duration }}/${{ inputs.parallelism }}
+run-name: ${{ inputs.tag }} ${{ inputs.targetVus }}/${{ inputs.duration }}/${{ inputs.parallelism }}
 jobs:
   k6-performance:
     name: "Run K6 performance test"
@@ -63,10 +66,9 @@ jobs:
       environment: ${{ inputs.environment }}
       apiVersion: ${{ inputs.apiVersion }}
       testSuitePath: ${{ inputs.testSuitePath }}
-      vus: ${{ fromJson(inputs.vus) }}
+      vus: ${{ fromJson(inputs.targetVus) }}
       duration: ${{ inputs.duration }}
       parallelism: ${{ fromJson(inputs.parallelism) }}
-      breakpoint: false
-      abortOnFail: false
-
+      abortOnFail: ${{ inputs.abortOnFail }}
+      breakpoint: true
 
