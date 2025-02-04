@@ -21,6 +21,8 @@ help() {
     echo "  -v, --vus            Specify the number of virtual users"
     echo "  -d, --duration       Specify the duration of the test"
     echo "  -p, --parallelism    Specify the level of parallelism"
+    echo "  -b, --breakpoint     Flag to set breakpoint test or not"
+    echo "  -a, --abort          Flag to specify whether to abort on fail or not, only used in breakpoint tests"
     echo "  -h, --help           Show this help message"
     exit 0
 }
@@ -51,6 +53,9 @@ print_logs() {
     done
 }
 
+breakpoint=false
+abort_on_fail=false
+
 while [[ $# -gt 0 ]]; do
     case "$1" in
         -h|--help)
@@ -80,6 +85,14 @@ while [[ $# -gt 0 ]]; do
             parallelism="$2"
             shift 2
             ;;
+        -b|--breakpoint)    
+            breakpoint=true
+            shift 1
+            ;;
+        -a|--abort)
+            abort_on_fail="$2"
+            shift 2
+            ;;
         *)
             echo "Invalid option: $1"
             help
@@ -106,10 +119,17 @@ fi
 testid="${name}_$(date '+%Y%m%dT%H%M%S')"
 
 # Create the k6 archive
-if ! k6 archive $filename -e API_VERSION=v1 -e API_ENVIRONMENT=yt01 -e TOKEN_GENERATOR_USERNAME=$tokengenuser -e TOKEN_GENERATOR_PASSWORD=$tokengenpasswd -e TESTID=$testid; then
-    echo "Error: Failed to create k6 archive"
-    exit 1
-fi
+if $breakpoint; then
+    if ! k6 archive $filename -e API_VERSION=v1 -e API_ENVIRONMENT=yt01 -e TOKEN_GENERATOR_USERNAME=$tokengenuser -e TOKEN_GENERATOR_PASSWORD=$tokengenpasswd -e TESTID=$testid -e stages_target=$vus -e stages_duration=$duration -e abort_on_fail=$abort_on_fail; then
+        echo "Error: Failed to create k6 archive"
+        exit 1
+    fi
+else
+    if ! k6 archive $filename -e API_VERSION=v1 -e API_ENVIRONMENT=yt01 -e TOKEN_GENERATOR_USERNAME=$tokengenuser -e TOKEN_GENERATOR_PASSWORD=$tokengenpasswd -e TESTID=$testid; then
+        echo "Error: Failed to create k6 archive"
+        exit 1
+    fi
+fi    
 # Create the configmap from the archive
 if ! kubectl create configmap $configmapname --from-file=archive.tar; then
     echo "Error: Failed to create configmap"
@@ -118,6 +138,10 @@ if ! kubectl create configmap $configmapname --from-file=archive.tar; then
 fi
 
 # Create the config.yml file from a string
+arguments="--out experimental-prometheus-rw --vus=$vus --duration=$duration --tag testid=$testid --log-output=none"
+if $breakpoint; then
+    arguments="--out experimental-prometheus-rw --tag testid=$testid --log-output=none"
+fi
 cat <<EOF > config.yml
 apiVersion: k6.io/v1alpha1
 kind: TestRun
@@ -125,7 +149,7 @@ metadata:
   name: $name
   namespace: dialogporten
 spec:
-  arguments: --out experimental-prometheus-rw --vus=$vus --duration=$duration --tag testid=$testid --log-output=none
+  arguments: $arguments 
   parallelism: $parallelism
   script:
     configMap:

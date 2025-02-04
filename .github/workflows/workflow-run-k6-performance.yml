@@ -71,7 +71,7 @@ jobs:
         echo "Running k6 test suite ${{ inputs.testSuitePath }} with ${{ inputs.vus }} VUs for ${{ inputs.duration }} on ${{ inputs.parallelism }} parallelism"
         k6configName=$(basename "${{ inputs.testSuitePath }}" .js)
         k6configName="k6-${k6configName}"
-        ./tests/k6/tests/scripts/run-breakpoint-in-k8s.sh -f ${{ inputs.testSuitePath }} -c $k6configName -n $k6configName -v ${{ inputs.vus }} -d ${{ inputs.duration }} -p ${{ inputs.parallelism }}
+        ./tests/k6/tests/scripts/run-test-in-k8s.sh -f ${{ inputs.testSuitePath }} -c $k6configName -n $k6configName -v ${{ inputs.vus }} -d ${{ inputs.duration }} -p ${{ inputs.parallelism }}
       env:
         API_ENVIRONMENT: ${{ inputs.environment }}
         API_VERSION: ${{ inputs.apiVersion }}
