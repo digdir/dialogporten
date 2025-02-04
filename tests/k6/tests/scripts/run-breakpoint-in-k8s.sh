@@ -66,7 +66,7 @@ while [[ $# -gt 0 ]]; do
             shift 2
             ;;
         -n|--name)
-            name="$2"
+            name="${2,,}"
             shift 2
             ;;
         -t|--target)
