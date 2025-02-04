@@ -51,6 +51,10 @@ static void BuildAndRun(string[] args)
         .WriteTo.OpenTelemetryOrConsole(context));
 
     builder.Services
+        .AddSingleton<IHostLifetime>(sp => new DelayedShutdownHostLifetime(
+                sp.GetRequiredService<IHostApplicationLifetime>(),
+                TimeSpan.FromSeconds(10)
+            ))
         .AddDialogportenTelemetry(builder.Configuration, builder.Environment)
         .AddAzureAppConfiguration()
         .AddApplication(builder.Configuration, builder.Environment)

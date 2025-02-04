@@ -1,6 +1,7 @@
 using System.Runtime.InteropServices;
+using Microsoft.Extensions.Hosting;
 
-namespace Digdir.Domain.Dialogporten.WebApi;
+namespace Digdir.Library.Utils.AspNet;
 
 public sealed class DelayedShutdownHostLifetime : IHostLifetime, IDisposable
 {

@@ -65,6 +65,10 @@ static void BuildAndRun(string[] args)
     var thisAssembly = Assembly.GetExecutingAssembly();
 
     builder.Services
+        .AddSingleton<IHostLifetime>(sp => new DelayedShutdownHostLifetime(
+                sp.GetRequiredService<IHostApplicationLifetime>(),
+                TimeSpan.FromSeconds(10)
+            ))
         // Options setup
         .ConfigureOptions<AuthorizationOptionsSetup>()
 
