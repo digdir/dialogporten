@@ -104,7 +104,7 @@ var containerAppEnvVars = [
 @description('The scaling configuration for the container app')
 param scale Scale = {
   minReplicas: 2
-  maxReplicas: 10
+  maxReplicas: 20
   rules: [
     {
       name: 'cpu'
@@ -112,7 +112,7 @@ param scale Scale = {
         type: 'cpu'
         metadata: {
           type: 'Utilization'
-          value: '70'
+          value: '50'
         }
       }
     }
@@ -141,6 +141,7 @@ var probes = [
   {
     periodSeconds: 5
     initialDelaySeconds: 2
+    timeoutSeconds: 3
     type: 'Liveness'
     httpGet: {
       path: '/health/liveness'
@@ -149,7 +150,9 @@ var probes = [
   }
   {
     periodSeconds: 5
-    initialDelaySeconds: 2
+    initialDelaySeconds: 20
+    timeoutSeconds: 3
+    failureThreshold: 6
     type: 'Readiness'
     httpGet: {
       path: '/health/readiness'
@@ -158,7 +161,9 @@ var probes = [
   }
   {
     periodSeconds: 5
-    initialDelaySeconds: 2
+    initialDelaySeconds: 10
+    timeoutSeconds: 3
+    failureThreshold: 6
     type: 'Startup'
     httpGet: {
       path: '/health/startup'
