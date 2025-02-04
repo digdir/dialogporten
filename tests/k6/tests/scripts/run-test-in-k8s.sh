@@ -118,18 +118,17 @@ fi
 # Set testid to name + timestamp
 testid="${name}_$(date '+%Y%m%dT%H%M%S')"
 
+archive_args=""
+if breakpoint; then
+    archive_args="-e stages_target=$vus -e stages_duration=$duration -e abort_on_fail=$abort_on_fail"
+fi
 # Create the k6 archive
-if $breakpoint; then
-    if ! k6 archive $filename -e API_VERSION=v1 -e API_ENVIRONMENT=yt01 -e TOKEN_GENERATOR_USERNAME=$tokengenuser -e TOKEN_GENERATOR_PASSWORD=$tokengenpasswd -e TESTID=$testid -e stages_target=$vus -e stages_duration=$duration -e abort_on_fail=$abort_on_fail; then
-        echo "Error: Failed to create k6 archive"
-        exit 1
-    fi
-else
-    if ! k6 archive $filename -e API_VERSION=v1 -e API_ENVIRONMENT=yt01 -e TOKEN_GENERATOR_USERNAME=$tokengenuser -e TOKEN_GENERATOR_PASSWORD=$tokengenpasswd -e TESTID=$testid; then
-        echo "Error: Failed to create k6 archive"
-        exit 1
-    fi
-fi    
+
+if ! k6 archive $filename -e API_VERSION=v1 -e API_ENVIRONMENT=yt01 -e TOKEN_GENERATOR_USERNAME=$tokengenuser -e TOKEN_GENERATOR_PASSWORD=$tokengenpasswd -e TESTID=$testid "$archive_args"; then
+    echo "Error: Failed to create k6 archive"
+    exit 1
+fi
+   
 # Create the configmap from the archive
 if ! kubectl create configmap $configmapname --from-file=archive.tar; then
     echo "Error: Failed to create configmap"
