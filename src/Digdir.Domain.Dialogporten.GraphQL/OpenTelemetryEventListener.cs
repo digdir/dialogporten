@@ -21,7 +21,7 @@ public sealed class OpenTelemetryEventListener : ExecutionDiagnosticEventListene
 #endif
 
         var operationName = context.Request.OperationName ?? "UnknownOperation";
-        var operationPath = $"{operationName} - {context.Request.}";
+        var operationPath = $"{operationName} - {context.Request.QueryHash}";
 
         var activity = ActivitySource.StartActivity($"GraphQL {operationPath}", ActivityKind.Server);
 
