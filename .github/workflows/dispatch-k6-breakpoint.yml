@@ -70,4 +70,5 @@ jobs:
       duration: ${{ inputs.duration }}
       parallelism: ${{ fromJson(inputs.parallelism) }}
       abortOnFail: ${{ inputs.abortOnFail }}
+      breakpoint: true
 
