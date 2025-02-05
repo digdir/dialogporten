@@ -18,6 +18,11 @@ on:
       duration:
         required: true
         type: string
+      ref:
+        description: "The branch or tag ref to run the tests on. Using default checkout ref if not provided."
+        required: false
+        default: ${{ github.ref }}
+        type: string
     secrets:
       TOKEN_GENERATOR_USERNAME:
         required: true
@@ -33,6 +38,8 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        ref: ${{ inputs.ref }}
     - name: Setup k6
       uses: grafana/setup-k6-action@v1
     - name: Run K6 tests (${{ inputs.testSuitePath }})
