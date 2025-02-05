@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.48.4](https://github.com/Altinn/dialogporten/compare/v1.48.3...v1.48.4) (2025-02-05)
+
+
+### Miscellaneous Chores
+
+* **dev:** Downgrade local Grafana to match Azure version ([#1807](https://github.com/Altinn/dialogporten/issues/1807)) ([01ab68d](https://github.com/Altinn/dialogporten/commit/01ab68dd41ec243c77ecdff518e060d2b7dd8ab9))
+* **graphql:** Upgrade to HotChocolate v15 ([#1640](https://github.com/Altinn/dialogporten/issues/1640)) ([eeafaf4](https://github.com/Altinn/dialogporten/commit/eeafaf44522704bed953edabf4ef90c3c2e6d945))
+
 ## [1.48.3](https://github.com/Altinn/dialogporten/compare/v1.48.2...v1.48.3) (2025-02-05)
 
 
