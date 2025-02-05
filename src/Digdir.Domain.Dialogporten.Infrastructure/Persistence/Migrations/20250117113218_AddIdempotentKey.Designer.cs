@@ -3,6 +3,7 @@ using System;
 using Digdir.Domain.Dialogporten.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,13 +12,15 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(DialogDbContext))]
-    partial class DialogDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250117113218_AddIdempotentKey")]
+    partial class AddIdempotentKey
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.1")
+                .HasAnnotation("ProductVersion", "9.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -591,16 +594,6 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         {
                             Id = 13,
                             Name = "SentToPayment"
-                        },
-                        new
-                        {
-                            Id = 14,
-                            Name = "FormSubmitted"
-                        },
-                        new
-                        {
-                            Id = 15,
-                            Name = "FormSaved"
                         });
                 });
 
@@ -718,7 +711,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         new
                         {
                             Id = 6,
-                            AllowedMediaTypes = new[] { "application/vnd.dialogporten.frontchannelembed-url;type=text/markdown" },
+                            AllowedMediaTypes = new[] { "application/vnd.dialogporten.frontchannelembed+json;type=markdown" },
                             MaxLength = 1023,
                             Name = "MainContentReference",
                             OutputInList = false,
@@ -1067,7 +1060,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         new
                         {
                             Id = 3,
-                            AllowedMediaTypes = new[] { "application/vnd.dialogporten.frontchannelembed-url;type=text/markdown" },
+                            AllowedMediaTypes = new[] { "application/vnd.dialogporten.frontchannelembed+json;type=markdown" },
                             MaxLength = 1023,
                             Name = "ContentReference",
                             Required = false
