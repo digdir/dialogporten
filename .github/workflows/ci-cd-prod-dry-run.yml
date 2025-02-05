@@ -44,6 +44,7 @@ jobs:
       region: norwayeast
       version: ${{ github.event.client_payload.version }}
       dryRun: true
+      ref: "refs/tags/v${{ github.event.client_payload.version }}"
 
   dry-run-deploy-apps:
     name: Dry run deploy apps to prod
@@ -67,7 +68,8 @@ jobs:
       version: ${{ github.event.client_payload.version }}
       dryRun: true
       runMigration: ${{ needs.check-for-changes.outputs.hasMigrationChanges == 'true' }}
-
+      ref: "refs/tags/v${{ github.event.client_payload.version }}"
+      
   send-slack-message-on-failure:
     name: Send Slack message on failure
     needs: [dry-run-deploy-infra, dry-run-deploy-apps]

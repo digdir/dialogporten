@@ -60,6 +60,7 @@ jobs:
       environment: prod
       region: norwayeast
       version: ${{ inputs.version }}
+      ref: "refs/tags/v${{ inputs.version }}"
 
   store-infra-version:
     name: Store Latest Deployed Infra Version as GitHub Variable
@@ -95,6 +96,7 @@ jobs:
       region: norwayeast
       version: ${{ inputs.version }}
       runMigration: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasMigrationChanges == 'true' }}
+      ref: "refs/tags/v${{ inputs.version }}"
 
   store-apps-version:
     name: Store Latest Deployed Apps Version as GitHub Variable

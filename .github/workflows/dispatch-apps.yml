@@ -60,3 +60,4 @@ jobs:
       region: norwayeast
       version: ${{ inputs.version }}
       runMigration: ${{ inputs.runMigration }}
+      ref: "refs/tags/v${{ inputs.version }}"

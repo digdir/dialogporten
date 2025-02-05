@@ -43,6 +43,7 @@ jobs:
       environment: yt01
       region: norwayeast
       version: ${{ github.event.client_payload.version }}
+      ref: "refs/tags/v${{ github.event.client_payload.version }}"
 
   store-infra-version:
     name: Store Latest Deployed Infra Version as GitHub Variable
@@ -77,7 +78,7 @@ jobs:
       region: norwayeast
       version: ${{ github.event.client_payload.version }}
       runMigration: ${{ needs.check-for-changes.outputs.hasMigrationChanges == 'true' }}
-
+      ref: "refs/tags/v${{ github.event.client_payload.version }}"
   store-apps-version:
     name: Store Latest Deployed Apps Version as GitHub Variable
     needs: [deploy-apps]
@@ -103,6 +104,7 @@ jobs:
       environment: yt01
       apiVersion: v1
       testSuitePath: tests/k6/suites/all-single-pass.js
+      ref: "refs/tags/v${{ github.event.client_payload.version }}"
     permissions:
       checks: write
       pull-requests: write
@@ -131,6 +133,7 @@ jobs:
       vus: 1
       duration: 30s
       testSuitePath: ${{ matrix.files }}
+      ref: "refs/tags/v${{ github.event.client_payload.version }}"
     permissions:
       checks: write
       pull-requests: write
