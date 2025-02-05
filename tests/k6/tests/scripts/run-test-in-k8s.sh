@@ -1,5 +1,7 @@
 #!/bin/bash
 
+API_VERSION=${API_VERSION:-v1}
+API_ENVIRONMENT=${API_ENVIRONMENT:-yt01}
 failed=0
 kubectl config set-context --current --namespace=dialogporten
 
@@ -117,7 +119,10 @@ if $breakpoint; then
 fi
 # Create the k6 archive
 
-if ! k6 archive $filename -e API_VERSION=v1 -e API_ENVIRONMENT=yt01 -e TESTID=$testid $archive_args; then
+if ! k6 archive $filename \
+     -e API_VERSION="$API_VERSION" \
+     -e API_ENVIRONMENT="$API_ENVIRONMENT" \
+     -e TESTID=$testid $archive_args; then
     echo "Error: Failed to create k6 archive"
     exit 1
 fi
