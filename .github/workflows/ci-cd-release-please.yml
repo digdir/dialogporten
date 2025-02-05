@@ -6,7 +6,7 @@
 # 2.3. Triggers staging and yt01 deployment via repository dispatch
 
 name: CI/CD Release Please
-
+description: When new releases are created, this workflow builds and publishes docker images and notify other environments about it through dispatch
 on:
   push:
     branches: [main]
