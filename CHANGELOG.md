@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.48.4](https://github.com/Altinn/dialogporten/compare/v1.48.3...v1.48.4) (2025-02-05)
+
+
+### Miscellaneous Chores
+
+* **dev:** Downgrade local Grafana to match Azure version ([#1807](https://github.com/Altinn/dialogporten/issues/1807)) ([01ab68d](https://github.com/Altinn/dialogporten/commit/01ab68dd41ec243c77ecdff518e060d2b7dd8ab9))
+* **graphql:** Upgrade to HotChocolate v15 ([#1640](https://github.com/Altinn/dialogporten/issues/1640)) ([eeafaf4](https://github.com/Altinn/dialogporten/commit/eeafaf44522704bed953edabf4ef90c3c2e6d945))
+
+## [1.48.3](https://github.com/Altinn/dialogporten/compare/v1.48.2...v1.48.3) (2025-02-05)
+
+
+### Miscellaneous Chores
+
+* **deps:** bump vitest from 3.0.4 to 3.0.5 ([#1798](https://github.com/Altinn/dialogporten/issues/1798)) ([7c306fd](https://github.com/Altinn/dialogporten/commit/7c306fd26af346cd6cfca6811d04063366da4c48))
+* **deps:** update bicep dependencies (major) ([#1621](https://github.com/Altinn/dialogporten/issues/1621)) ([6fef560](https://github.com/Altinn/dialogporten/commit/6fef560461f2b6c745bb2f41c2ecb8eb4e0c95e1))
+* **deps:** update dotnet monorepo ([#1800](https://github.com/Altinn/dialogporten/issues/1800)) ([0d08537](https://github.com/Altinn/dialogporten/commit/0d08537beefcf260b4ade4727afa71ea1e818098))
+* **deps:** update masstransit monorepo to 8.3.5 ([#1801](https://github.com/Altinn/dialogporten/issues/1801)) ([3f35e0f](https://github.com/Altinn/dialogporten/commit/3f35e0f8a2c66d1c804e3d6e1ab16cd7802e36eb))
+* **graphql:** Remove custom OTEL event listener ([#1797](https://github.com/Altinn/dialogporten/issues/1797)) ([56adb3f](https://github.com/Altinn/dialogporten/commit/56adb3faddf2071d3c9f5f9ea6f511171aa8df3b))
+* **performance:** Adding breakpoint tests ([#1793](https://github.com/Altinn/dialogporten/issues/1793)) ([fe93b20](https://github.com/Altinn/dialogporten/commit/fe93b207402738ebc3982f2bcece9f184adc09db))
+* Remove CDC and obsolete version property from docker compose ([#1796](https://github.com/Altinn/dialogporten/issues/1796)) ([663734c](https://github.com/Altinn/dialogporten/commit/663734c2f4a21a259f1892f4cbe5ba7e7d5d85b6))
+
 ## [1.48.2](https://github.com/Altinn/dialogporten/compare/v1.48.1...v1.48.2) (2025-02-04)
 
 
