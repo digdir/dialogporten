@@ -28,10 +28,6 @@ on:
         required: true
         type: boolean
     secrets:
-      TOKEN_GENERATOR_USERNAME:
-        required: true
-      TOKEN_GENERATOR_PASSWORD:
-        required: true
       AZURE_CLIENT_ID:
         required: true
       AZURE_TENANT_ID:
@@ -81,5 +77,3 @@ jobs:
       env:
         API_ENVIRONMENT: ${{ inputs.environment }}
         API_VERSION: ${{ inputs.apiVersion }}
-        TOKEN_GENERATOR_USERNAME: ${{ secrets.TOKEN_GENERATOR_USERNAME }}
-        TOKEN_GENERATOR_PASSWORD: ${{ secrets.TOKEN_GENERATOR_PASSWORD }}
