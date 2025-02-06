@@ -86,7 +86,7 @@ jobs:
   publish-sdk-to-nuget:
     uses: ./.github/workflows/workflow-publish-nuget.yml
     needs: [ get-current-version, check-for-changes ]
-    if: ${{ needs.check-for-changes.outputs.hasBackendChanges == 'true' || needs.check-for-changes.outputs.hasTestChanges == 'true' }}
+    if: ${{ needs.check-for-changes.outputs.hasSchemaChanges == 'true' }}
     with:
       version: ${{ needs.get-current-version.outputs.version }}
       path: 'src/Digdir.Library.Dialogporten.WebApiClient/Digdir.Library.Dialogporten.WebApiClient.csproj'
