@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.48.5](https://github.com/Altinn/dialogporten/compare/v1.48.4...v1.48.5) (2025-02-06)
+
+
+### Miscellaneous Chores
+
+* **performance:** use sealed secrets in k8s ([#1811](https://github.com/Altinn/dialogporten/issues/1811)) ([9aa86f9](https://github.com/Altinn/dialogporten/commit/9aa86f95de4df532c7900d1804cfb4468e7e5711))
+* Remove CDC project ([#1812](https://github.com/Altinn/dialogporten/issues/1812)) ([17399e7](https://github.com/Altinn/dialogporten/commit/17399e7fe0dad8f71fe5772f14459de3cf33863b))
+* **yt01:** Large data set generator ([#1626](https://github.com/Altinn/dialogporten/issues/1626)) ([870ccd3](https://github.com/Altinn/dialogporten/commit/870ccd34a7dc2f0ab3b347eddba11db7299c9c59))
+
 ## [1.48.4](https://github.com/Altinn/dialogporten/compare/v1.48.3...v1.48.4) (2025-02-05)
 
 
