@@ -109,6 +109,7 @@ internal sealed class DialogEventToAltinnForwarder : DomainEventToAltinnForwarde
         await CloudEventBus.Publish(cloudEvent, cancellationToken);
     }
 
+    [EndpointName("DialogEventToAltinnForwarder_DialogRestoredDomainEvent")]
     public async Task Handle(DialogRestoredDomainEvent domainEvent, CancellationToken cancellationToken)
     {
         if (domainEvent.ShouldNotBeSentToAltinnEvents())
