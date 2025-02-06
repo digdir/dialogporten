@@ -84,7 +84,7 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
         }
 
         var dialogId = await GetExistingDialogIdByIdempotentKey(dialog, cancellationToken);
-        if (dialogId is null)
+        if (dialogId is not null)
         {
             return new Conflict(nameof(dialog.IdempotentKey), $"'{dialog.IdempotentKey}' already exists with DialogId '{dialogId}'");
         }
@@ -112,6 +112,7 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
             domainError => domainError,
             concurrencyError => throw new UnreachableException("Should never get a concurrency error when creating a new dialog"));
     }
+
     private async Task<Guid?> GetExistingDialogIdByIdempotentKey(DialogEntity dialog, CancellationToken cancellationToken)
     {
         if (dialog.IdempotentKey is null || string.IsNullOrEmpty(dialog.Org))
@@ -119,16 +120,11 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
             return null;
         }
         var dialogId = await _db.Dialogs
-            .Where(x => x.IdempotentKey == dialog.IdempotentKey && x.Org == dialog.Org)
+            .Where(x => x.Org == dialog.Org && x.IdempotentKey == dialog.IdempotentKey)
             .Select(x => x.Id)
             .FirstOrDefaultAsync(cancellationToken);
 
-        if (dialogId != Guid.Empty)
-        {
-            return null;
-        }
-
-        return dialogId;
+        return dialogId == Guid.Empty ? null : dialogId;
     }
 
     private void CreateDialogEndUserContext(CreateDialogCommand request, DialogEntity dialog)
