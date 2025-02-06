@@ -6,7 +6,6 @@
 # 2.3. Triggers staging and yt01 deployment via repository dispatch
 
 name: CI/CD Release Please
-
 on:
   push:
     branches: [main]

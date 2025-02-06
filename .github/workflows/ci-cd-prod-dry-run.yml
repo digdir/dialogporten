@@ -1,9 +1,8 @@
-﻿name: CI/CD Production
-
+﻿# Runs a dry-run deployment of production whenever a new release is created
+name: CI/CD Production Dry Run
 run-name: CI/CD Production Dry Run ${{ github.event.client_payload.version && format('({0})', github.event.client_payload.version) || '' }}
 
 on:
-  workflow_dispatch:
   repository_dispatch:
     types: [release_created]
 
@@ -27,14 +26,10 @@ jobs:
       infra_base_sha: ${{ needs.get-versions-from-github.outputs.infra_version_sha }}
       apps_base_sha: ${{ needs.get-versions-from-github.outputs.apps_version_sha }}
 
-  get-current-version:
-    name: Get current version
-    uses: ./.github/workflows/workflow-get-current-version.yml
-
   dry-run-deploy-infra:
     name: Dry run deploy infra to prod
-    if: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasInfraChanges == 'true' }}
-    needs: [get-current-version, check-for-changes]
+    if: ${{ needs.check-for-changes.outputs.hasInfraChanges == 'true' }}
+    needs: [check-for-changes]
     uses: ./.github/workflows/workflow-deploy-infra.yml
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -47,15 +42,14 @@ jobs:
     with:
       environment: prod
       region: norwayeast
-      version: ${{ needs.get-current-version.outputs.version }}
+      version: ${{ github.event.client_payload.version }}
       dryRun: true
+      ref: "refs/tags/v${{ github.event.client_payload.version }}"
 
   dry-run-deploy-apps:
     name: Dry run deploy apps to prod
-    needs:
-      [get-current-version, check-for-changes, dry-run-deploy-infra]
-    # we want deployment of apps to be dependent on deployment of infrastructure, but if infrastructure is skipped, we still want to dry-run deploy the apps
-    if: ${{ always() && !failure() && !cancelled() && (github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasBackendChanges == 'true') }}
+    needs: [check-for-changes, dry-run-deploy-infra]
+    if: ${{ always() && !failure() && !cancelled() && needs.check-for-changes.outputs.hasBackendChanges == 'true' }}
     uses: ./.github/workflows/workflow-deploy-apps.yml
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -71,10 +65,11 @@ jobs:
     with:
       environment: prod
       region: norwayeast
-      version: ${{ needs.get-current-version.outputs.version }}
+      version: ${{ github.event.client_payload.version }}
       dryRun: true
-      runMigration: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasMigrationChanges == 'true' }}
-
+      runMigration: ${{ needs.check-for-changes.outputs.hasMigrationChanges == 'true' }}
+      ref: "refs/tags/v${{ github.event.client_payload.version }}"
+      
   send-slack-message-on-failure:
     name: Send Slack message on failure
     needs: [dry-run-deploy-infra, dry-run-deploy-apps]
