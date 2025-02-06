@@ -7,6 +7,9 @@
         <PackageTags>digdir;altinn;dialogporten</PackageTags>
         <RepositoryType>git</RepositoryType>
         <RepositoryUrl>https://github.com/altinn/dialogporten</RepositoryUrl>
+        <PackageId>Altinn.ApiClients.Dialogporten</PackageId>
+        <AssemblyName>Altinn.ApiClients.Dialogporten</AssemblyName>
+        <RootNamespace>Altinn.ApiClients.Dialogporten</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>

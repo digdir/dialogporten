@@ -1,5 +1,4 @@
-using Digdir.Library.Dialogporten.WebApiClient.Features.V1;
-using Refit;
+using Altinn.ApiClients.Dialogporten.Features.V1;
 
 namespace Digdir.Library.Dialogporten.WebApiClient.Sample;
 

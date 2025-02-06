@@ -1,60 +1,96 @@
 using System.Buffers.Text;
 using System.Text;
 using System.Text.Json;
+using Altinn.ApiClients.Dialogporten.Config;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using NSec.Cryptography;
 
-namespace Digdir.Library.Dialogporten.WebApiClient.Services;
+namespace Altinn.ApiClients.Dialogporten.Services;
 
-public sealed class DialogTokenVerifier(string kid, PublicKey publicKey)
+public interface IDialogTokenVerifier
 {
-    public bool Verify(string token)
+    bool Verify(ReadOnlySpan<char> token);
+}
+
+internal sealed class DialogTokenVerifier : IDialogTokenVerifier
+{
+    private readonly string _kid;
+    private readonly PublicKey _publicKey;
+    public DialogTokenVerifier(IOptions<DialogportenSettings> options)
     {
-        var parts = token.Split('.');
-        if (parts.Length != 3)
+        _kid = options.Value.Ed25519Keys.Primary.Kid;
+        _publicKey = PublicKey.Import(SignatureAlgorithm.Ed25519,
+            Base64Url.DecodeFromChars(options.Value.Ed25519Keys.Primary.PublicComponent), KeyBlobFormat.RawPublicKey);
+    }
+    public bool Verify(ReadOnlySpan<char> token)
+    {
+        var tokenPartEnumerator = token.Split('.');
+        if (!tokenPartEnumerator.MoveNext())
         {
             return false;
         }
-        var header = Base64Url.DecodeFromChars(parts[0]);
+
+        var header = Base64Url.DecodeFromChars(token[tokenPartEnumerator.Current]);
+        if (!tokenPartEnumerator.MoveNext())
+        {
+            return false;
+        }
+
+        var body = Base64Url.DecodeFromChars(token[tokenPartEnumerator.Current]);
+        if (!tokenPartEnumerator.MoveNext())
+        {
+            return false;
+        }
+
+        var signature = Base64Url.DecodeFromChars(token[tokenPartEnumerator.Current]);
+        if (tokenPartEnumerator.MoveNext())
+        {
+            return false;
+        }
+
 
         var headerJson = JsonSerializer.Deserialize<JsonElement>(header);
 
-        if (!headerJson.TryGetProperty("kid", out var value) && value.GetString() != kid)
+        if (!headerJson.TryGetProperty("kid", out var value) && value.GetString() != _kid)
         {
             return false;
         }
 
-        var signature = Base64Url.DecodeFromChars(parts[2]);
+        var headerAndBody = header
+            .Append((byte)'.')
+            .Concat(body)
+            .ToArray();
 
-        return SignatureAlgorithm.Ed25519.Verify(publicKey, Encoding.UTF8.GetBytes(parts[0] + '.' + parts[1]), signature);
+        if (!SignatureAlgorithm.Ed25519.Verify(_publicKey, headerAndBody, signature))
+        {
+            return false;
+        }
 
+        var bodyJson = JsonSerializer.Deserialize<JsonElement>(body);
+
+        return TryGetExpires(bodyJson, out var expiresOffset) &&
+               expiresOffset >= DateTimeOffset.UtcNow;
     }
-    public static Dictionary<string, object?> GetDialogTokenClaims(string token)
+
+    private static bool TryGetExpires(JsonElement bodyJson, out DateTimeOffset expires)
     {
-        var claims = new Dictionary<string, object?>();
-
-        var parts = token.Split('.');
-        if (parts.Length != 3)
+        expires = default;
+        if (!bodyJson.TryGetProperty(DialogTokenClaimTypes.Expires, out var expiresElement))
         {
-            throw new ArgumentException("Invalid dialog token");
+            return false;
         }
 
-        var bodyJson = JsonSerializer.Deserialize<JsonElement>(Base64Url.DecodeFromChars(parts[1]));
-
-        // Maps bodyJson -> DialogTokenClaimTypes
-        var fieldsInfo = typeof(DialogTokenClaimTypes).GetFields().Where(f => f.FieldType == typeof(string));
-        foreach (var fieldInfo in fieldsInfo)
+        if (!expiresElement.TryGetInt32(out var expiresIn))
         {
-            var value = fieldInfo.GetValue(null);
-            if (value != null && bodyJson.TryGetProperty(value.ToString()!, out var jsonValue))
-            {
-                claims.Add(value.ToString()!, jsonValue);
-            }
+            return false;
         }
-        return claims;
+        expires = DateTimeOffset.FromUnixTimeSeconds(expiresIn);
+        return true;
     }
 }
 
-public static class DialogTokenClaimTypes
+internal static class DialogTokenClaimTypes
 {
     public const string JwtId = "jti";
     public const string Issuer = "iss";

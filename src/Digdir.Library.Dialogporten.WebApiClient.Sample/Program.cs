@@ -1,8 +1,8 @@
 ﻿using System.Diagnostics;
-using Digdir.Library.Dialogporten.WebApiClient.Extensions;
-using Digdir.Library.Dialogporten.WebApiClient.Features.V1;
+using Altinn.ApiClients.Dialogporten.Config;
+using Altinn.ApiClients.Dialogporten.Extensions;
+using Altinn.ApiClients.Dialogporten.Features.V1;
 using Digdir.Library.Dialogporten.WebApiClient.Sample;
-using Digdir.Library.Dialogporten.WebApiClient.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -14,10 +14,8 @@ var configuration = new ConfigurationBuilder()
 var services = new ServiceCollection();
 
 services.AddSingleton<IConfiguration>(configuration);
-
-services.AddDialogportenClient();
-services.AddDialogTokenVerifer();
-
+var settings = configuration.GetSection("DialogportenSettings").Get<DialogportenSettings>()!;
+services.AddDialogportenClient(settings);
 
 var serviceProvider = services.BuildServiceProvider();
 var now = DateTime.UtcNow;
@@ -101,12 +99,6 @@ dialog = dialogportenClient.V1ServiceOwnerDialogsGetGetDialog(guid, null!).Resul
 Debug.Assert(dialog != null, nameof(dialog) + " != null");
 Dialogs.PrintGetDialog(dialog);
 Console.WriteLine("==End Get Single Dialog==");
-
-
-result = await dialogportenClient.V1ServiceOwnerDialogsSearchSearchDialog(param);
-Debug.Assert(result.Content != null, nameof(result) + " != null");
-Console.WriteLine(result.Content!.Items.Count);
-
 
 Console.WriteLine("== Start Purge Dialog == ");
 var purgeResponse = await dialogportenClient.V1ServiceOwnerDialogsPurgePurgeDialog(guid, dialog.Revision);

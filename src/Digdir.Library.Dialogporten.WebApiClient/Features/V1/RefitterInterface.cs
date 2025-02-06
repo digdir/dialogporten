@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 #nullable enable annotations
 
-namespace Digdir.Library.Dialogporten.WebApiClient.Features.V1
+namespace Altinn.ApiClients.Dialogporten.Features.V1
 {
     public class V1ServiceOwnerDialogsSearchSearchDialogQueryParams
     {
@@ -825,7 +825,7 @@ namespace Digdir.Library.Dialogporten.WebApiClient.Features.V1
 #pragma warning disable 8625 // Disable "CS8625 Cannot convert null literal to non-nullable reference type"
 #pragma warning disable 8765 // Disable "CS8765 Nullability of type of parameter doesn't match overridden member (possibly because of nullability attributes)."
 
-namespace Digdir.Library.Dialogporten.WebApiClient.Features.V1
+namespace Altinn.ApiClients.Dialogporten.Features.V1
 {
     using System = global::System;
 

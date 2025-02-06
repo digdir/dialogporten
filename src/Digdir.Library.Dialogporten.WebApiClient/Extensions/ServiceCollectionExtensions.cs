@@ -1,68 +1,30 @@
-using System.Buffers.Text;
 using System.CodeDom.Compiler;
 using System.Reflection;
+using Altinn.ApiClients.Dialogporten.Config;
+using Altinn.ApiClients.Dialogporten.Services;
 using Altinn.ApiClients.Maskinporten.Extensions;
 using Altinn.ApiClients.Maskinporten.Services;
-using Digdir.Library.Dialogporten.WebApiClient.Config;
-using Digdir.Library.Dialogporten.WebApiClient.Services;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using NSec.Cryptography;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 using Refit;
-using MaskinportenSettings = Altinn.ApiClients.Maskinporten.Config.MaskinportenSettings;
 
-namespace Digdir.Library.Dialogporten.WebApiClient.Extensions;
+namespace Altinn.ApiClients.Dialogporten.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-
-    public static IServiceCollection AddDialogTokenVerifer(this IServiceCollection services)
+    public static IServiceCollection AddDialogportenClient(this IServiceCollection services, DialogportenSettings settings)
     {
-        var provider = services.BuildServiceProvider();
-        var dialogportenSettings = provider.GetRequiredService<IConfiguration>()
-            .GetSection("Ed25519Keys")
-            .Get<Ed25519Keys>();
-
-        var keyPair = dialogportenSettings!.Primary;
-        var kid = keyPair.Kid;
-        var publicKey = PublicKey.Import(SignatureAlgorithm.Ed25519,
-            Base64Url.DecodeFromChars(keyPair.PublicComponent), KeyBlobFormat.RawPublicKey);
-        services.AddSingleton(new DialogTokenVerifier(kid, publicKey));
-        return services;
-    }
-    public static IServiceCollection AddDialogportenClient(this IServiceCollection services)
-    {
-        var provider = services.BuildServiceProvider();
-        var dialogportenSettings = provider.GetRequiredService<IConfiguration>()
-            .GetSection("DialogportenSettings")
-            .Get<DialogportenSettings>();
-
-        var maskinportenSettings = new MaskinportenSettings()
+        if (!settings.Validate())
         {
-            EncodedJwk = dialogportenSettings!.Maskinporten.EncodedJwk,
-            ClientId = dialogportenSettings.Maskinporten.ClientId,
-            Environment = dialogportenSettings.Environment switch
-            {
-                "prod" => "prod",
-                "local" => "test",
-                "test" => "test",
-                _ => throw new ArgumentException()
-            },
-            Scope = dialogportenSettings.Maskinporten.Scope
-        };
+            throw new InvalidOperationException("Invalid configuration");
+        }
+        services.TryAddSingleton<IOptions<DialogportenSettings>>(new OptionsWrapper<DialogportenSettings>(settings));
 
-        services.RegisterMaskinportenClientDefinition<SettingsJwkClientDefinition>("dialogporten-sp-sdk", maskinportenSettings);
+        services.RegisterMaskinportenClientDefinition<SettingsJwkClientDefinition>("dialogporten-sp-sdk", settings.Maskinporten);
 
-        var baseAddress = dialogportenSettings.Environment switch
-        {
-            "test" => "https://platform.tt02.altinn.no/dialogporten",
-            "local" => "https://localhost:7214",
-            "prod" => "https://platform.altinn.no/dialogporten",
-            _ => throw new NotImplementedException()
-        };
-        var refitClients = Assembly.GetExecutingAssembly().GetTypes()
+        var refitClients = AssemblyMarker.Assembly.GetTypes()
             .Where(x =>
-                x.Namespace!.StartsWith("Digdir.Library.Dialogporten.WebApiClient.Features.V1", StringComparison.InvariantCulture) &&
                 x.IsInterface &&
                 x.GetCustomAttribute<GeneratedCodeAttribute>()?.Tool == "Refitter")
             .ToList();
@@ -71,13 +33,11 @@ public static class ServiceCollectionExtensions
         {
             services
                 .AddRefitClient(refitClient)
-                .ConfigureHttpClient(c =>
-                {
-                    c.BaseAddress = new Uri(baseAddress);
-                })
+                .ConfigureHttpClient(c => c.BaseAddress = new Uri(settings.BaseUri))
                 .AddMaskinportenHttpMessageHandler<SettingsJwkClientDefinition>("dialogporten-sp-sdk");
         }
 
+        services.TryAddSingleton<IDialogTokenVerifier, DialogTokenVerifier>();
         return services;
     }
 
@@ -85,19 +45,6 @@ public static class ServiceCollectionExtensions
     {
         var dialogportenSettings = new DialogportenSettings();
         configureOptions.Invoke(dialogportenSettings);
-        services.ConfigureOptions(dialogportenSettings);
-
-        services.RegisterMaskinportenClientDefinition<SettingsJwkClientDefinition>("dialogporten-sp-sdk", dialogportenSettings.Maskinporten);
-        
-        var refitClients = AssemblyMarker.Assembly.GetTypes()
-            .Where(x =>
-                x.Namespace!.StartsWith("Digdir.Library.Dialogporten.WebApiClient.Features.V1", StringComparison.InvariantCulture) &&
-                x.IsInterface &&
-                x.GetCustomAttribute<GeneratedCodeAttribute>()?.Tool == "Refitter")
-            .ToList();
-
-        
-
-        return services;
+        return services.AddDialogportenClient(dialogportenSettings);
     }
 }
