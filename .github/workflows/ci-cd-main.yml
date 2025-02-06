@@ -104,7 +104,7 @@ jobs:
     if: ${{ needs.check-for-changes.outputs.hasSchemaChanges == 'true' }}
     with:
       version: ${{ needs.get-current-version.outputs.version }}-rc.${{ needs.generate-git-short-sha.outputs.gitShortSha }}
-      path: $(find . -name '*Digdir.Library.Dialogporten.WebApiClient.csproj' -printf "%p"  -quit)
+      path: 'src/Digdir.Library.Dialogporten.WebApiClient.csproj'
     secrets:
       NUGET_API_KEY: ${{ secrets.NUGET_API_TEST_KEY }}
       
