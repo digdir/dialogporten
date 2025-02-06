@@ -20,7 +20,8 @@ public sealed class CreateDialogDto
     public Guid? Id { get; set; }
 
     /// <summary>
-    /// A self-defined Id may be provided to support idempotent creation of dialogs.
+    /// An optional key to ensure idempotency in dialog creation. If provided, it allows for the safe re-submission of the same dialog creation request without creating duplicate entries.
+
     /// </summary>
     public string? IdempotentKey { get; set; }
 
