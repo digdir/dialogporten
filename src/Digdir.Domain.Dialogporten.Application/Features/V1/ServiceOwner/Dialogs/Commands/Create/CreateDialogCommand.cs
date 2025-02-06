@@ -83,6 +83,18 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
             dialog.Org = serviceResourceInformation.OwnOrgShortName;
         }
 
+        if (request.Dto.IdempotentKey is not null && !string.IsNullOrEmpty(dialog.Org))
+        {
+            var dialogId = await _db.Dialogs
+                .Where(x => x.IdempotentKey == request.Dto.IdempotentKey && x.Org == dialog.Org).Select(x => x.Id)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if (dialogId != default)
+            {
+                return new Conflict(nameof(DialogEntity.IdempotentKey), $"'{request.Dto.IdempotentKey}' already exists with DialogId '{dialogId}'");
+            }
+            dialog.IdempotentKey = request.Dto.IdempotentKey;
+        }
 
         CreateDialogEndUserContext(request, dialog);
         await EnsureNoExistingUserDefinedIds(dialog, cancellationToken);
@@ -92,7 +104,6 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
         {
             transmission.Id = transmission.Id.CreateVersion7IfDefault();
         }
-
         _domainContext.AddErrors(dialog.Transmissions.ValidateReferenceHierarchy(
             keySelector: x => x.Id,
             parentKeySelector: x => x.RelatedTransmissionId,
@@ -102,26 +113,7 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
 
         await _db.Dialogs.AddAsync(dialog, cancellationToken);
 
-        SaveChangesResult saveResult;
-        try
-        {
-            saveResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
-        }
-        catch (DbUpdateException e)
-            when (e.InnerException is PostgresException
-            {
-                SqlState: "23505", // unique violation
-                ConstraintName: "IX_Dialog_Org_IdempotentKey"
-            })
-        {
-            var dialogId = await _db.Dialogs
-                .Where(x => x.IdempotentKey == request.Dto.IdempotentKey && x.Org == dialog.Org)
-                .Select(x => x.Id)
-                .FirstOrDefaultAsync(cancellationToken);
-
-            return new Conflict(new ConflictError(nameof(request.Dto.IdempotentKey), $"'{request.Dto.IdempotentKey}' already exists with DialogId '{dialogId}'"));
-        }
-
+        var saveResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
         return saveResult.Match<CreateDialogResult>(
             success => new CreateDialogSuccess(dialog.Id, dialog.Revision),
             domainError => domainError,
@@ -192,4 +184,5 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
             _domainContext.AddError(DomainFailure.EntityExists<DialogApiAction>(existingApiActionIds));
         }
     }
+
 }
