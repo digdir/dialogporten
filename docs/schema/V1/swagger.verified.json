@@ -5085,7 +5085,7 @@
                 }
               }
             },
-            "description": "The given dialog ID was not found or is already deleted."
+            "description": "The given dialog ID was not found."
           }
         },
         "security": [
@@ -6034,7 +6034,7 @@
                 }
               }
             },
-            "description": "The given dialog ID was not found or is already deleted."
+            "description": "The given dialog ID was not found."
           },
           "410": {
             "description": "Entity with the given key(s) is removed."
@@ -6108,7 +6108,7 @@
                 }
               }
             },
-            "description": "The given dialog ID was not found or is already deleted."
+            "description": "The given dialog ID was not found."
           }
         },
         "security": [
@@ -6303,7 +6303,7 @@
                 }
               }
             },
-            "description": "The given dialog ID was not found or is already deleted."
+            "description": "The given dialog ID was not found."
           },
           "410": {
             "description": "Entity with the given key(s) is removed."
@@ -6382,7 +6382,7 @@
                 }
               }
             },
-            "description": "The given dialog ID was not found or is already deleted."
+            "description": "The given dialog ID was not found."
           },
           "412": {
             "content": {
@@ -6613,7 +6613,7 @@
                 }
               }
             },
-            "description": "The given dialog ID was not found or is already deleted."
+            "description": "The given dialog ID was not found."
           },
           "410": {
             "description": "Entity with the given key(s) is removed."
@@ -6759,7 +6759,7 @@
                 }
               }
             },
-            "description": "The given dialog ID was not found or is already deleted."
+            "description": "The given dialog ID was not found."
           },
           "410": {
             "description": "Entity with the given key(s) is removed."
@@ -6825,7 +6825,7 @@
                 }
               }
             },
-            "description": "The given dialog ID was not found or is already deleted."
+            "description": "The given dialog ID was not found."
           },
           "410": {
             "description": "Entity with the given key(s) is removed."
@@ -6885,7 +6885,7 @@
                 }
               }
             },
-            "description": "The given dialog ID was not found or is already deleted."
+            "description": "The given dialog ID was not found."
           },
           "410": {
             "description": "Entity with the given key(s) is removed."
@@ -6985,7 +6985,7 @@
                 }
               }
             },
-            "description": "The given dialog ID was not found or is already deleted."
+            "description": "The given dialog ID was not found."
           },
           "410": {
             "description": "Entity with the given key(s) is removed."

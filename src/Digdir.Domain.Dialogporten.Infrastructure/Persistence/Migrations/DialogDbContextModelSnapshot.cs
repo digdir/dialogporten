@@ -718,7 +718,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         new
                         {
                             Id = 6,
-                            AllowedMediaTypes = new[] { "application/vnd.dialogporten.frontchannelembed+json;type=markdown" },
+                            AllowedMediaTypes = new[] { "application/vnd.dialogporten.frontchannelembed-url;type=text/markdown" },
                             MaxLength = 1023,
                             Name = "MainContentReference",
                             OutputInList = false,
@@ -1067,7 +1067,7 @@ namespace Digdir.Domain.Dialogporten.Infrastructure.Persistence.Migrations
                         new
                         {
                             Id = 3,
-                            AllowedMediaTypes = new[] { "application/vnd.dialogporten.frontchannelembed+json;type=markdown" },
+                            AllowedMediaTypes = new[] { "application/vnd.dialogporten.frontchannelembed-url;type=text/markdown" },
                             MaxLength = 1023,
                             Name = "ContentReference",
                             Required = false

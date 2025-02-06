@@ -1,5 +1,72 @@
 # Changelog
 
+## [1.48.5](https://github.com/Altinn/dialogporten/compare/v1.48.4...v1.48.5) (2025-02-06)
+
+
+### Miscellaneous Chores
+
+* **performance:** use sealed secrets in k8s ([#1811](https://github.com/Altinn/dialogporten/issues/1811)) ([9aa86f9](https://github.com/Altinn/dialogporten/commit/9aa86f95de4df532c7900d1804cfb4468e7e5711))
+* Remove CDC project ([#1812](https://github.com/Altinn/dialogporten/issues/1812)) ([17399e7](https://github.com/Altinn/dialogporten/commit/17399e7fe0dad8f71fe5772f14459de3cf33863b))
+* **yt01:** Large data set generator ([#1626](https://github.com/Altinn/dialogporten/issues/1626)) ([870ccd3](https://github.com/Altinn/dialogporten/commit/870ccd34a7dc2f0ab3b347eddba11db7299c9c59))
+
+## [1.48.4](https://github.com/Altinn/dialogporten/compare/v1.48.3...v1.48.4) (2025-02-05)
+
+
+### Miscellaneous Chores
+
+* **dev:** Downgrade local Grafana to match Azure version ([#1807](https://github.com/Altinn/dialogporten/issues/1807)) ([01ab68d](https://github.com/Altinn/dialogporten/commit/01ab68dd41ec243c77ecdff518e060d2b7dd8ab9))
+* **graphql:** Upgrade to HotChocolate v15 ([#1640](https://github.com/Altinn/dialogporten/issues/1640)) ([eeafaf4](https://github.com/Altinn/dialogporten/commit/eeafaf44522704bed953edabf4ef90c3c2e6d945))
+
+## [1.48.3](https://github.com/Altinn/dialogporten/compare/v1.48.2...v1.48.3) (2025-02-05)
+
+
+### Miscellaneous Chores
+
+* **deps:** bump vitest from 3.0.4 to 3.0.5 ([#1798](https://github.com/Altinn/dialogporten/issues/1798)) ([7c306fd](https://github.com/Altinn/dialogporten/commit/7c306fd26af346cd6cfca6811d04063366da4c48))
+* **deps:** update bicep dependencies (major) ([#1621](https://github.com/Altinn/dialogporten/issues/1621)) ([6fef560](https://github.com/Altinn/dialogporten/commit/6fef560461f2b6c745bb2f41c2ecb8eb4e0c95e1))
+* **deps:** update dotnet monorepo ([#1800](https://github.com/Altinn/dialogporten/issues/1800)) ([0d08537](https://github.com/Altinn/dialogporten/commit/0d08537beefcf260b4ade4727afa71ea1e818098))
+* **deps:** update masstransit monorepo to 8.3.5 ([#1801](https://github.com/Altinn/dialogporten/issues/1801)) ([3f35e0f](https://github.com/Altinn/dialogporten/commit/3f35e0f8a2c66d1c804e3d6e1ab16cd7802e36eb))
+* **graphql:** Remove custom OTEL event listener ([#1797](https://github.com/Altinn/dialogporten/issues/1797)) ([56adb3f](https://github.com/Altinn/dialogporten/commit/56adb3faddf2071d3c9f5f9ea6f511171aa8df3b))
+* **performance:** Adding breakpoint tests ([#1793](https://github.com/Altinn/dialogporten/issues/1793)) ([fe93b20](https://github.com/Altinn/dialogporten/commit/fe93b207402738ebc3982f2bcece9f184adc09db))
+* Remove CDC and obsolete version property from docker compose ([#1796](https://github.com/Altinn/dialogporten/issues/1796)) ([663734c](https://github.com/Altinn/dialogporten/commit/663734c2f4a21a259f1892f4cbe5ba7e7d5d85b6))
+
+## [1.48.2](https://github.com/Altinn/dialogporten/compare/v1.48.1...v1.48.2) (2025-02-04)
+
+
+### Miscellaneous Chores
+
+* Add DelayedShutdownHostLifetime to GraphQL and Service ([#1785](https://github.com/Altinn/dialogporten/issues/1785)) ([34dea8c](https://github.com/Altinn/dialogporten/commit/34dea8c08790278dc8872ef84de92bb6b6ecf857))
+* Reduce CPU load threshold, up initialDelays ([#1789](https://github.com/Altinn/dialogporten/issues/1789)) ([26abb48](https://github.com/Altinn/dialogporten/commit/26abb48aad2797558cf74bd76475bfe6537dac36))
+* refactor production deployment flow ([#1771](https://github.com/Altinn/dialogporten/issues/1771)) ([1b79f01](https://github.com/Altinn/dialogporten/commit/1b79f0107a9893d22981e18ddd30423808b8b663))
+* Simplify 404 NotFound swagger text ([#1791](https://github.com/Altinn/dialogporten/issues/1791)) ([1d4bc9a](https://github.com/Altinn/dialogporten/commit/1d4bc9ac552d3f15eae82e520a488987c824f8b7))
+
+## [1.48.1](https://github.com/Altinn/dialogporten/compare/v1.48.0...v1.48.1) (2025-02-03)
+
+
+### Bug Fixes
+
+* Disable efbundle migration timeout ([#1787](https://github.com/Altinn/dialogporten/issues/1787)) ([7d01034](https://github.com/Altinn/dialogporten/commit/7d01034048141d68ed9cc9b716444d79ed2a9d76))
+
+## [1.48.0](https://github.com/Altinn/dialogporten/compare/v1.47.8...v1.48.0) (2025-02-03)
+
+
+### Features
+
+* **app:** Change FCE MediaTypes ([#1729](https://github.com/Altinn/dialogporten/issues/1729)) ([ef4e0a4](https://github.com/Altinn/dialogporten/commit/ef4e0a43f9e14469398ffcce2d1b99cf134f8f2a))
+
+## [1.47.8](https://github.com/Altinn/dialogporten/compare/v1.47.7...v1.47.8) (2025-02-03)
+
+
+### Bug Fixes
+
+* **web-api:** ensure graceful shutdown ([#1784](https://github.com/Altinn/dialogporten/issues/1784)) ([509aa33](https://github.com/Altinn/dialogporten/commit/509aa3371ecc7c87cc8f40232a4016783546a934))
+
+
+### Miscellaneous Chores
+
+* **deps:** update peter-evans/repository-dispatch action to v3 ([#1778](https://github.com/Altinn/dialogporten/issues/1778)) ([8be436e](https://github.com/Altinn/dialogporten/commit/8be436e39c0bb6b5d326027062faed3996eeb446))
+* Remove unneeded name lookup ([#1781](https://github.com/Altinn/dialogporten/issues/1781)) ([3cbdc9d](https://github.com/Altinn/dialogporten/commit/3cbdc9d81b1844d3e5a365c9478840df2b3e015f))
+
 ## [1.47.7](https://github.com/Altinn/dialogporten/compare/v1.47.6...v1.47.7) (2025-01-31)
 
 
