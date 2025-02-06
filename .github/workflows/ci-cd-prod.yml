@@ -1,5 +1,5 @@
-﻿name: CI/CD Production
-description: Deploys the specified version to production
+﻿# Deploys the specified version to production
+name: CI/CD Production
 run-name: CI/CD Production ${{ inputs.version && format('({0})', inputs.version) || '' }}
 
 on:

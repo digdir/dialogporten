@@ -1,5 +1,5 @@
-﻿name: CI/CD Pull Request Release Please
-description: Run dry-runs of staging deployment on release PRs
+﻿# Run dry-runs of staging deployment on release PRs
+name: CI/CD Pull Request Release Please
 on:
   pull_request:
     branches: [main]

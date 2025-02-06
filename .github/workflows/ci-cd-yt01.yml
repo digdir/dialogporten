@@ -1,5 +1,5 @@
-﻿name: CI/CD YT01
-description: Deploys the created release to yt01
+﻿# Deploys the created release to yt01
+name: CI/CD YT01
 run-name: CI/CD YT01 ${{ github.event.client_payload.version && format('({0})', github.event.client_payload.version) || '' }}
 
 on:

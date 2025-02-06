@@ -1,5 +1,5 @@
+# Checks the title of a PR to ensure it follows the correct format
 name: "PR Title Checker"
-description: Checks the title of a PR to ensure it follows the correct format
 on:
   pull_request_target:
     types: [opened, edited, reopened, synchronize]

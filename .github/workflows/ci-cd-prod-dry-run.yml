@@ -1,5 +1,5 @@
-﻿name: CI/CD Production Dry Run
-description: Runs a dry-run deployment of production whenever a new release is created
+﻿# Runs a dry-run deployment of production whenever a new release is created
+name: CI/CD Production Dry Run
 run-name: CI/CD Production Dry Run ${{ github.event.client_payload.version && format('({0})', github.event.client_payload.version) || '' }}
 
 on:

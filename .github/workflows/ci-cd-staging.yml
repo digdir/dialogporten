@@ -1,5 +1,5 @@
-﻿name: CI/CD Staging
-description: Deploys the created release to staging
+﻿# Deploys the created release to staging
+name: CI/CD Staging
 run-name: CI/CD Staging ${{ github.event.client_payload.version && format('({0})', github.event.client_payload.version) || '' }}
 
 on:
