@@ -202,7 +202,7 @@ internal sealed class UnitOfWork : IUnitOfWork, IAsyncDisposable, IDisposable
         _transaction = null;
     }
 
-    // Although the Entity Framework supports all the options,
+    // Although Digdir.Library.Entity.EntityFrameworkCore supports all the options,
     // But we only have use cases for some of them. Therefore,
     // only some of them have setters until the day we actually
     // have a use case for them.
