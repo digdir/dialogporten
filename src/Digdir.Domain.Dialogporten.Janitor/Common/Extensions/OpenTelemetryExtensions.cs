@@ -54,13 +54,21 @@ internal static class OpenTelemetryExtensions
                     .AddHttpClientInstrumentation(o =>
                     {
                         o.RecordException = true;
-                        o.FilterHttpRequestMessage = _ =>
+                        o.FilterHttpRequestMessage = message =>
                         {
+                            // Filter out Azure Core HTTP requests (including Storage)
                             var parentActivity = Activity.Current?.Parent;
                             if (parentActivity != null && parentActivity.Source.Name.Equals("Azure.Core.Http", StringComparison.Ordinal))
                             {
                                 return false;
                             }
+
+                            // Filter out Key Vault requests
+                            if (message.RequestUri?.Host.EndsWith(".vault.azure.net", StringComparison.OrdinalIgnoreCase) == true)
+                            {
+                                return false;
+                            }
+
                             return true;
                         };
                     })
