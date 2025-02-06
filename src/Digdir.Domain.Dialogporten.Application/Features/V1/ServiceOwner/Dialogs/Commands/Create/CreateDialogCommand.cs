@@ -83,17 +83,10 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
             dialog.Org = serviceResourceInformation.OwnOrgShortName;
         }
 
-        if (request.Dto.IdempotentKey is not null && !string.IsNullOrEmpty(dialog.Org))
+        var dialogId = await GetExistingDialogIdByIdempotentKey(dialog, cancellationToken);
+        if (dialogId is null)
         {
-            var dialogId = await _db.Dialogs
-                .Where(x => x.IdempotentKey == request.Dto.IdempotentKey && x.Org == dialog.Org).Select(x => x.Id)
-                .FirstOrDefaultAsync(cancellationToken);
-
-            if (dialogId != default)
-            {
-                return new Conflict(nameof(DialogEntity.IdempotentKey), $"'{request.Dto.IdempotentKey}' already exists with DialogId '{dialogId}'");
-            }
-            dialog.IdempotentKey = request.Dto.IdempotentKey;
+            return new Conflict(nameof(dialog.IdempotentKey), $"'{dialog.IdempotentKey}' already exists with DialogId '{dialogId}'");
         }
 
         CreateDialogEndUserContext(request, dialog);
@@ -118,6 +111,24 @@ internal sealed class CreateDialogCommandHandler : IRequestHandler<CreateDialogC
             success => new CreateDialogSuccess(dialog.Id, dialog.Revision),
             domainError => domainError,
             concurrencyError => throw new UnreachableException("Should never get a concurrency error when creating a new dialog"));
+    }
+    private async Task<Guid?> GetExistingDialogIdByIdempotentKey(DialogEntity dialog, CancellationToken cancellationToken)
+    {
+        if (dialog.IdempotentKey is null || string.IsNullOrEmpty(dialog.Org))
+        {
+            return null;
+        }
+        var dialogId = await _db.Dialogs
+            .Where(x => x.IdempotentKey == dialog.IdempotentKey && x.Org == dialog.Org)
+            .Select(x => x.Id)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if (dialogId != Guid.Empty)
+        {
+            return null;
+        }
+
+        return dialogId;
     }
 
     private void CreateDialogEndUserContext(CreateDialogCommand request, DialogEntity dialog)
