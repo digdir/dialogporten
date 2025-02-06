@@ -3,6 +3,8 @@
 #endif
 
 using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
+using System.Runtime.Versioning;
 using System.Text.Json;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Unit.Tests.Features.V1;
@@ -21,6 +23,7 @@ public class SwaggerSnapshotTests
         // of the npm package located in the same folder
         var rootPath = Utils.GetSolutionRootFolder();
         var swaggerPath = Path.Combine(rootPath!, "docs/schema/V1");
+
         var newSwaggerPath = Path.Combine(rootPath!, "src/Digdir.Domain.Dialogporten.WebApi/bin/Release/net9.0/swagger.json");
         Assert.True(File.Exists(newSwaggerPath), $"Swagger file not found at {newSwaggerPath}. Make sure you have built the project in RELEASE mode.");
         // Act
