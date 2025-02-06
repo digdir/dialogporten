@@ -6421,7 +6421,7 @@
                 }
               }
             },
-            "description": "The given dialog ID was not found or is already deleted."
+            "description": "The given dialog ID was not found."
           },
           "412": {
             "content": {
