@@ -1,18 +1,21 @@
+using System.Diagnostics;
+using System.Globalization;
 using Azure.Monitor.OpenTelemetry.Exporter;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Npgsql;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
-using System.Diagnostics;
-using System.Globalization;
 using Serilog;
 using Serilog.Configuration;
 using Serilog.Sinks.OpenTelemetry;
 
-namespace Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
+namespace Digdir.Library.Utils.AspNet;
 
-internal static class OpenTelemetryExtensions
+public static class OpenTelemetryExtensions
 {
     private const string OtelExporterOtlpEndpoint = "OTEL_EXPORTER_OTLP_ENDPOINT";
     private const string OtelExporterOtlpProtocol = "OTEL_EXPORTER_OTLP_PROTOCOL";
@@ -20,7 +23,9 @@ internal static class OpenTelemetryExtensions
     public static IServiceCollection AddDialogportenTelemetry(
         this IServiceCollection services,
         IConfiguration configuration,
-        IHostEnvironment environment)
+        IHostEnvironment environment,
+        Action<TracerProviderBuilder>? additionalTracing = null,
+        Action<MeterProviderBuilder>? additionalMetrics = null)
     {
         if (!Uri.IsWellFormedUriString(configuration[OtelExporterOtlpEndpoint], UriKind.Absolute))
             return services;
@@ -48,17 +53,11 @@ internal static class OpenTelemetryExtensions
                 }
 
                 tracing
-                    .AddAspNetCoreInstrumentation(opts =>
-                    {
-                        opts.RecordException = true;
-                        opts.Filter = httpContext => !httpContext.Request.Path.StartsWithSegments("/health");
-                    })
                     .AddHttpClientInstrumentation(o =>
                     {
                         o.RecordException = true;
                         o.FilterHttpRequestMessage = message =>
                         {
-                            // Filter out Azure Core HTTP requests (including Storage)
                             var parentActivity = Activity.Current?.Parent;
                             if (parentActivity != null && parentActivity.Source.Name.Equals("Azure.Core.Http", StringComparison.Ordinal))
                             {
@@ -76,17 +75,17 @@ internal static class OpenTelemetryExtensions
                     })
                     .AddEntityFrameworkCoreInstrumentation()
                     .AddNpgsql()
-                    .AddFusionCacheInstrumentation()
                     .AddOtlpExporter(options =>
                     {
                         options.Endpoint = new Uri(endpoint, "/v1/traces");
                         options.Protocol = otlpProtocol;
                     });
+
+                additionalTracing?.Invoke(tracing);
             })
             .WithMetrics(metrics =>
             {
                 metrics.AddRuntimeInstrumentation()
-                    .AddAspNetCoreInstrumentation()
                     .AddHttpClientInstrumentation();
 
                 var appInsightsConnectionString = configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"];
@@ -105,6 +104,8 @@ internal static class OpenTelemetryExtensions
                         options.Protocol = otlpProtocol;
                     });
                 }
+
+                additionalMetrics?.Invoke(metrics);
             })
             .Services;
     }
@@ -161,4 +162,13 @@ internal static class OpenTelemetryExtensions
             options.Endpoint = endpoint;
             options.Protocol = protocol;
         };
+
+    public static TracerProviderBuilder AddAspNetCoreInstrumentationExcludingHealthPaths(this TracerProviderBuilder builder)
+    {
+        return builder.AddAspNetCoreInstrumentation(opts =>
+        {
+            opts.RecordException = true;
+            opts.Filter = httpContext => !httpContext.Request.Path.StartsWithSegments("/health");
+        });
+    }
 }
