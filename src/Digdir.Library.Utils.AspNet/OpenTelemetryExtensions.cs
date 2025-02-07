@@ -73,7 +73,6 @@ public static class OpenTelemetryExtensions
                             return true;
                         };
                     })
-                    .AddEntityFrameworkCoreInstrumentation()
                     .AddNpgsql()
                     .AddOtlpExporter(options =>
                     {
