@@ -57,7 +57,7 @@ public sealed class SearchDialogQuery : SortablePaginationParameter<SearchDialog
     /// If set to 'exclude', the result will only include non-deleted dialogs
     /// If set to 'only', the result will only include deleted dialogs
     /// </summary>
-    public DeletedFilter Deleted { get; set; } = DeletedFilter.Exclude;
+    public DeletedFilter? Deleted { get; set; } = DeletedFilter.Exclude;
 
     /// <summary>
     /// Only return dialogs created after this date

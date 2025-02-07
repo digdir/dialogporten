@@ -5712,13 +5712,13 @@
             "description": "If set to \u0027include\u0027, the result will include both deleted and non-deleted dialogs\nIf set to \u0027exclude\u0027, the result will only include non-deleted dialogs\nIf set to \u0027only\u0027, the result will only include deleted dialogs",
             "in": "query",
             "name": "deleted",
-            "required": true,
             "schema": {
               "allOf": [
                 {
                   "$ref": "#/components/schemas/V1Common_dFilter"
                 }
-              ]
+              ],
+              "nullable": true
             }
           },
           {
