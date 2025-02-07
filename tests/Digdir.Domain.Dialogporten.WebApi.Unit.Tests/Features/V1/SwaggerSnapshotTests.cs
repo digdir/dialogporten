@@ -1,10 +1,8 @@
 #if DEBUG
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously.
-#endif
+#endif // DEBUG
 
 using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
-using System.Runtime.Versioning;
 using System.Text.Json;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Unit.Tests.Features.V1;
@@ -24,7 +22,12 @@ public class SwaggerSnapshotTests
         var rootPath = Utils.GetSolutionRootFolder();
         var swaggerPath = Path.Combine(rootPath!, "docs/schema/V1");
 
+#if NET9_0
         var newSwaggerPath = Path.Combine(rootPath!, "src/Digdir.Domain.Dialogporten.WebApi/bin/Release/net9.0/swagger.json");
+#else // NET9_0
+        Assert.Fail("Swagger snapshot tests are only supported in .NET 9.0.");
+#endif // NET9_0
+
         Assert.True(File.Exists(newSwaggerPath), $"Swagger file not found at {newSwaggerPath}. Make sure you have built the project in RELEASE mode.");
         // Act
         var newSwagger = await File.ReadAllTextAsync(newSwaggerPath);
@@ -41,11 +44,11 @@ public class SwaggerSnapshotTests
         await Verify(orderedSwagger, extension: "json")
             .UseFileName("swagger")
             .UseDirectory(swaggerPath);
-#else
+#else // RELEASE
         Assert.Fail(
             "Swagger snapshot tests are not supported in DEBUG mode. Swagger is NOT generated in DEBUG mode, this is to keep build times low. therefore this test will always fail. Run in RELEASE mode to enable.");
 
-#endif
+#endif // RELEASE
     }
 
     private static readonly JsonSerializerOptions SerializerOptions = new()
