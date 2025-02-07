@@ -44,7 +44,7 @@ public class SwaggerSnapshotTests
             .UseDirectory(swaggerPath);
 #else // RELEASE
         Assert.Fail(
-            "Swagger snapshot tests are not supported in DEBUG mode. Swagger is NOT generated in DEBUG mode, this is to keep build times low. therefore this test will always fail. Run in RELEASE mode to enable.");
+            "Swagger snapshot tests are not supported in DEBUG mode. Swagger is NOT generated in DEBUG mode, this is to keep build times low. Therefore, this test will always fail. Run in RELEASE mode to enable.");
 
 #endif // RELEASE
     }
