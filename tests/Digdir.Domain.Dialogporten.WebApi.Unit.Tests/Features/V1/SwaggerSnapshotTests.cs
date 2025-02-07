@@ -24,8 +24,6 @@ public class SwaggerSnapshotTests
 
 #if NET9_0
         var newSwaggerPath = Path.Combine(rootPath!, "src/Digdir.Domain.Dialogporten.WebApi/bin/Release/net9.0/swagger.json");
-#else // NET9_0
-        Assert.Fail("Swagger snapshot tests are only supported in .NET 9.0.");
 #endif // NET9_0
 
         Assert.True(File.Exists(newSwaggerPath), $"Swagger file not found at {newSwaggerPath}. Make sure you have built the project in RELEASE mode.");
