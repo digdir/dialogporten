@@ -52,6 +52,13 @@ public sealed class SearchDialogQuery : SortablePaginationParameter<SearchDialog
     public List<DialogStatus.Values>? Status { get; init; }
 
     /// <summary>
+    /// If set to true, the result will only include deleted dialogs
+    /// If set to false, the result will not include deleted dialogs
+    /// If set to null, the result will include both deleted and non-deleted dialogs
+    /// </summary>
+    public bool? Deleted { get; set; } = false;
+
+    /// <summary>
     /// Only return dialogs created after this date
     /// </summary>
     public DateTimeOffset? CreatedAfter { get; init; }
@@ -166,6 +173,16 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
             dialogQuery = _db.Dialogs.PrefilterAuthorizedDialogs(authorizedResources);
         }
 
+        if (!request.Deleted.HasValue)
+        {
+            // Include both deleted and non-deleted dialogs
+            dialogQuery.IgnoreQueryFilters();
+        }
+        else
+        {
+            dialogQuery = dialogQuery.Where(x => x.Deleted == request.Deleted);
+        }
+
         var paginatedList = await dialogQuery
             .Include(x => x.Content)
             .ThenInclude(x => x.Value.Localizations)
@@ -192,7 +209,6 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
                 x.SearchTags.Any(x => EF.Functions.ILike(x.Value, request.Search!))
             )
             .Where(x => resourceIds.Contains(x.ServiceResource))
-            .IgnoreQueryFilters()
             .ProjectTo<IntermediateDialogDto>(_mapper.ConfigurationProvider)
             .ToPaginatedListAsync(request, cancellationToken: cancellationToken);
 

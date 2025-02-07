@@ -5695,6 +5695,15 @@
             "style": "form"
           },
           {
+            "description": "If set to true, the result will only include deleted dialogs\nIf set to false, the result will not include deleted dialogs\nIf set to null, the result will include both deleted and non-deleted dialogs",
+            "in": "query",
+            "name": "deleted",
+            "schema": {
+              "nullable": true,
+              "type": "boolean"
+            }
+          },
+          {
             "description": "Only return dialogs created after this date",
             "in": "query",
             "name": "createdAfter",
