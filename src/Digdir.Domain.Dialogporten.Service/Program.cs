@@ -9,7 +9,7 @@ using Digdir.Domain.Dialogporten.Service.Common;
 using Digdir.Library.Utils.AspNet;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Digdir.Domain.Dialogporten.Service.Common.Extensions;
+using OpenTelemetry.Metrics;
 
 // Using two-stage initialization to catch startup errors.
 Log.Logger = new LoggerConfiguration()
@@ -56,7 +56,9 @@ static void BuildAndRun(string[] args)
     ));
 
     builder.Services
-        .AddDialogportenTelemetry(builder.Configuration, builder.Environment)
+        .AddDialogportenTelemetry(builder.Configuration, builder.Environment,
+            additionalMetrics: x => x.AddAspNetCoreInstrumentation(),
+            additionalTracing: x => x.AddAspNetCoreInstrumentationExcludingHealthPaths())
         .AddAzureAppConfiguration()
         .AddApplication(builder.Configuration, builder.Environment)
         .AddInfrastructure(builder.Configuration, builder.Environment)
