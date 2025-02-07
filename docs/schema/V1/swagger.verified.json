@@ -327,6 +327,20 @@
         },
         "type": "object"
       },
+      "V1Common_dFilter": {
+        "description": "",
+        "enum": [
+          "Exclude",
+          "Include",
+          "Only"
+        ],
+        "type": "string",
+        "x-enumNames": [
+          "Exclude",
+          "Include",
+          "Only"
+        ]
+      },
       "V1CommonContent_ContentValue": {
         "additionalProperties": false,
         "properties": {
@@ -5695,12 +5709,16 @@
             "style": "form"
           },
           {
-            "description": "If set to true, the result will only include deleted dialogs\nIf set to false, the result will not include deleted dialogs\nIf set to null, the result will include both deleted and non-deleted dialogs",
+            "description": "If set to \u0027include\u0027, the result will include both deleted and non-deleted dialogs\nIf set to \u0027exclude\u0027, the result will only include non-deleted dialogs\nIf set to \u0027only\u0027, the result will only include deleted dialogs",
             "in": "query",
             "name": "deleted",
+            "required": true,
             "schema": {
-              "nullable": true,
-              "type": "boolean"
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/V1Common_dFilter"
+                }
+              ]
             }
           },
           {
