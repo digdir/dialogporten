@@ -51,7 +51,7 @@ on:
         required: false
         default: ${{ github.ref }}
         type: string
-  
+
 concurrency:
   # Existing runs are cancelled if someone repeatedly commits to their own Pull Request (PR). However, it does not stop others' dry runs or actual deployments from the main branch.
   # Also, the cancellation does not occur on merges to the main branch. Therefore, if multiple merges to main are performed simultaneously, they will just be queued up.
@@ -228,7 +228,7 @@ jobs:
         uses: azure/CLI@v2
         if: ${{!inputs.dryRun}}
         id: verify-deployment
-        timeout-minutes: 3
+        timeout-minutes: 10
         with:
           inlineScript: |
             ./.github/tools/revisionVerifier.sh ${{ steps.deploy.outputs.revisionName }} ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
