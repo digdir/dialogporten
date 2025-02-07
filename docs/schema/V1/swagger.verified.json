@@ -4073,6 +4073,12 @@
             "format": "date-time",
             "type": "string"
           },
+          "deletedAt": {
+            "description": "If deleted, the date and time when the deletion was performed.",
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
           "dueAt": {
             "description": "The due date for the dialog. This is the last date when the dialog is expected to be completed.",
             "example": "2022-12-31T23:59:59Z",

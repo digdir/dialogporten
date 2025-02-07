@@ -192,6 +192,7 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
                 x.SearchTags.Any(x => EF.Functions.ILike(x.Value, request.Search!))
             )
             .Where(x => resourceIds.Contains(x.ServiceResource))
+            .IgnoreQueryFilters()
             .ProjectTo<IntermediateDialogDto>(_mapper.ConfigurationProvider)
             .ToPaginatedListAsync(request, cancellationToken: cancellationToken);
 
