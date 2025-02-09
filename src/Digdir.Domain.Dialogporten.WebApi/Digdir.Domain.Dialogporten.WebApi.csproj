@@ -8,7 +8,7 @@
 
     <ItemGroup>
         <PackageReference Include="Azure.Identity" Version="1.13.2" />
-        <PackageReference Include="FastEndpoints.Swagger" Version="5.33.0"/>
+        <PackageReference Include="FastEndpoints.Swagger" Version="5.34.0"/>
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.1" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="9.0.1" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.1" />
