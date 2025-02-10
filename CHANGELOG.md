@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.49.0](https://github.com/Altinn/dialogporten/compare/v1.48.5...v1.49.0) (2025-02-10)
+
+
+### Features
+
+* Restore dialog action ([#1702](https://github.com/Altinn/dialogporten/issues/1702)) ([331d492](https://github.com/Altinn/dialogporten/commit/331d492c0c5b42fb4faf6d704fe3dbb74245e574))
+* **webapi:** Option to include deleted dialogs in ServiceOwner dialog search ([#1816](https://github.com/Altinn/dialogporten/issues/1816)) ([5403063](https://github.com/Altinn/dialogporten/commit/540306363a29085e2c2c130dd078a3c4fbed68c7))
+
+
+### Miscellaneous Chores
+
+* **ci:** Increase container app verification timeout ([#1819](https://github.com/Altinn/dialogporten/issues/1819)) ([fe5377a](https://github.com/Altinn/dialogporten/commit/fe5377a9a7819d224550ed793c75354440949c0b))
+* **deps:** update dependency fastendpoints.swagger to 5.34.0 ([#1822](https://github.com/Altinn/dialogporten/issues/1822)) ([8ce7e0e](https://github.com/Altinn/dialogporten/commit/8ce7e0e1be693623532e4f5a92e5ee1f1fd98916))
+* **deps:** update dependency uuidnext to 4.1.0 ([#1823](https://github.com/Altinn/dialogporten/issues/1823)) ([dfa5ce0](https://github.com/Altinn/dialogporten/commit/dfa5ce0316d8d13d4bc739cdfc109485496eb0de))
+* **deps:** update masstransit monorepo to 8.3.6 ([#1821](https://github.com/Altinn/dialogporten/issues/1821)) ([6fbb41f](https://github.com/Altinn/dialogporten/commit/6fbb41f5aeaefd135996490f33339d18718a5477))
+* refactor and add filters for telemetry ([#1813](https://github.com/Altinn/dialogporten/issues/1813)) ([fd10351](https://github.com/Altinn/dialogporten/commit/fd10351a4e55b819ae0ba1403e5ca7d0e42b73a6))
+
 ## [1.48.5](https://github.com/Altinn/dialogporten/compare/v1.48.4...v1.48.5) (2025-02-06)
 
 
