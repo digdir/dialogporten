@@ -344,6 +344,19 @@ public class DomainEventsTests(DialogApplication application) : ApplicationColle
             .SelectAsync<DialogDeletedDomainEvent>(x => x.Context.Message.DialogId == dto.Id)
             .FirstOrDefault();
 
+        // Arrange - Restore
+        var restoreDialogCommand = new RestoreDialogCommand
+        {
+            DialogId = dto.Id!.Value,
+            DisableAltinnEvents = true
+        };
+
+        // Act - Restore
+        await Application.Send(restoreDialogCommand);
+        await harness.Consumed
+            .SelectAsync<DialogRestoredDomainEvent>(x => x.Context.Message.DialogId == dto.Id)
+            .FirstOrDefault();
+
         // Arrange - Purge
         var purgeCommand = new PurgeDialogCommand
         {
