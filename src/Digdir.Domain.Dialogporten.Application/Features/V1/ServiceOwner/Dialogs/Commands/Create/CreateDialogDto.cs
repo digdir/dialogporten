@@ -21,7 +21,6 @@ public sealed class CreateDialogDto
 
     /// <summary>
     /// An optional key to ensure idempotency in dialog creation. If provided, it allows for the safe re-submission of the same dialog creation request without creating duplicate entries.
-
     /// </summary>
     public string? IdempotentKey { get; set; }
 
