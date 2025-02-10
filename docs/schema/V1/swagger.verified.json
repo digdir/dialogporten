@@ -327,6 +327,20 @@
         },
         "type": "object"
       },
+      "V1Common_dFilter": {
+        "description": "",
+        "enum": [
+          "Exclude",
+          "Include",
+          "Only"
+        ],
+        "type": "string",
+        "x-enumNames": [
+          "Exclude",
+          "Include",
+          "Only"
+        ]
+      },
       "V1CommonContent_ContentValue": {
         "additionalProperties": false,
         "properties": {
@@ -4073,6 +4087,12 @@
             "format": "date-time",
             "type": "string"
           },
+          "deletedAt": {
+            "description": "If deleted, the date and time when the deletion was performed.",
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
           "dueAt": {
             "description": "The due date for the dialog. This is the last date when the dialog is expected to be completed.",
             "example": "2022-12-31T23:59:59Z",
@@ -5687,6 +5707,19 @@
               "type": "array"
             },
             "style": "form"
+          },
+          {
+            "description": "If set to \u0027include\u0027, the result will include both deleted and non-deleted dialogs\nIf set to \u0027exclude\u0027, the result will only include non-deleted dialogs\nIf set to \u0027only\u0027, the result will only include deleted dialogs",
+            "in": "query",
+            "name": "deleted",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/V1Common_dFilter"
+                }
+              ],
+              "nullable": true
+            }
           },
           {
             "description": "Only return dialogs created after this date",
