@@ -2353,7 +2353,7 @@
             "type": "string"
           },
           "idempotentKey": {
-            "description": "A self-defined Id may be provided to support idempotent creation of dialogs.",
+            "description": "An optional key to ensure idempotency in dialog creation. If provided, it allows for the safe re-submission of the same dialog creation request without creating duplicate entries.",
             "nullable": true,
             "type": "string"
           },
@@ -3457,7 +3457,7 @@
             "type": "string"
           },
           "idempotentKey": {
-            "description": "A self-defined Id may be provided to support idempotent creation of dialogs.\n            ",
+            "description": "An optional key to ensure idempotency in dialog creation. If provided, it allows for the safe re-submission of the same dialog creation request without creating duplicate entries.\n            ",
             "nullable": true,
             "type": "string"
           },
@@ -4110,11 +4110,6 @@
             "description": "The unique identifier for the dialog in UUIDv7 format.",
             "example": "01913cd5-784f-7d3b-abef-4c77b1f0972d",
             "format": "guid",
-            "type": "string"
-          },
-          "idempotentKey": {
-            "description": "A self-defined Id may be provided to support idempotent creation of dialogs.\n            ",
-            "nullable": true,
             "type": "string"
           },
           "latestActivity": {
@@ -5629,15 +5624,6 @@
         "description": "Performs a search for dialogs, returning a paginated list of dialogs. For more information see the documentation (link TBD).\n\n* All date parameters must contain explicit time zone. Example: 2023-10-27T10:00:00Z or 2023-10-27T10:00:00\u002B01:00\n* See \u0022continuationToken\u0022 in the response for how to get the next page of results.\n* hasNextPage will be set to true if there are more items to get.",
         "operationId": "V1ServiceOwnerDialogsSearch_SearchDialog",
         "parameters": [
-          {
-            "description": "Filter by IdempotentKey ",
-            "in": "query",
-            "name": "idempotentKey",
-            "schema": {
-              "nullable": true,
-              "type": "string"
-            }
-          },
           {
             "description": "Filter by one or more service resources",
             "explode": true,
