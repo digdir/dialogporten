@@ -163,7 +163,6 @@ public sealed class DialogSeenLogDto
     public bool IsCurrentEndUser { get; set; }
 }
 
-
 public sealed class DialogActivityDto
 {
     /// <summary>

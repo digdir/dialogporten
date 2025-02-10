@@ -20,6 +20,11 @@ public sealed class DialogDto
     public Guid Id { get; set; }
 
     /// <summary>
+    ///  An optional key to ensure idempotency in dialog creation. If provided, it allows for the safe re-submission of the same dialog creation request without creating duplicate entries.
+    /// </summary>
+    public string? IdempotentKey { get; set; }
+
+    /// <summary>
     /// The unique identifier for the revision in UUIDv4 format.
     /// </summary>
     /// <example>a312cb9c-7632-43c2-aa38-69b06aed56ca</example>
@@ -270,7 +275,6 @@ public sealed class DialogSeenLogDto
     public bool IsCurrentEndUser { get; set; }
 }
 
-
 public sealed class ContentDto
 {
     /// <summary>
@@ -371,7 +375,6 @@ public sealed class DialogActivityDto
     /// </summary>
     public List<LocalizationDto> Description { get; set; } = [];
 }
-
 
 public sealed class DialogApiActionDto
 {

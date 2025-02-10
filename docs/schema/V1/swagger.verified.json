@@ -2366,6 +2366,11 @@
             "nullable": true,
             "type": "string"
           },
+          "idempotentKey": {
+            "description": "An optional key to ensure idempotency in dialog creation. If provided, it allows for the safe re-submission of the same dialog creation request without creating duplicate entries.",
+            "nullable": true,
+            "type": "string"
+          },
           "party": {
             "description": "The party code representing the organization or person that the dialog belongs to in URN format.",
             "example": "urn:altinn:person:identifier-no:01125512345\nurn:altinn:organization:identifier-no:912345678",
@@ -3463,6 +3468,11 @@
             "description": "The unique identifier for the dialog in UUIDv7 format.",
             "example": "01913cd5-784f-7d3b-abef-4c77b1f0972d",
             "format": "guid",
+            "type": "string"
+          },
+          "idempotentKey": {
+            "description": "An optional key to ensure idempotency in dialog creation. If provided, it allows for the safe re-submission of the same dialog creation request without creating duplicate entries.\n            ",
+            "nullable": true,
             "type": "string"
           },
           "org": {
@@ -5956,6 +5966,9 @@
           },
           "403": {
             "description": "Unauthorized to create a dialog for the given serviceResource (not owned by authenticated organization or has additional scope requirements defined in policy)."
+          },
+          "409": {
+            "description": "Dialog with IdempotentKey 01941821-ffca-73a1-9335-435a882be014 has already been created."
           },
           "422": {
             "content": {

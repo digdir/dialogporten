@@ -20,6 +20,11 @@ public sealed class CreateDialogDto
     public Guid? Id { get; set; }
 
     /// <summary>
+    /// An optional key to ensure idempotency in dialog creation. If provided, it allows for the safe re-submission of the same dialog creation request without creating duplicate entries.
+    /// </summary>
+    public string? IdempotentKey { get; set; }
+
+    /// <summary>
     /// The service identifier for the service that the dialog is related to in URN-format.
     /// This corresponds to a resource in the Altinn Resource Registry, which the authenticated organization
     /// must own, i.e., be listed as the "competent authority" in the Resource Registry entry.
