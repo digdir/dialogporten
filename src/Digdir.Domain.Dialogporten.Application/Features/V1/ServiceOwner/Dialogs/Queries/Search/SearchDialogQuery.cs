@@ -52,12 +52,17 @@ public sealed class SearchDialogQuery : SortablePaginationParameter<SearchDialog
     /// </summary>
     public List<DialogStatus.Values>? Status { get; init; }
 
+    private DeletedFilter? _deleted = DeletedFilter.Exclude;
     /// <summary>
     /// If set to 'include', the result will include both deleted and non-deleted dialogs
     /// If set to 'exclude', the result will only include non-deleted dialogs
     /// If set to 'only', the result will only include deleted dialogs
     /// </summary>
-    public DeletedFilter? Deleted { get; set; } = DeletedFilter.Exclude;
+    public DeletedFilter? Deleted
+    {
+        get => _deleted;
+        set => _deleted = value ?? DeletedFilter.Exclude;
+    }
 
     /// <summary>
     /// Only return dialogs created after this date
