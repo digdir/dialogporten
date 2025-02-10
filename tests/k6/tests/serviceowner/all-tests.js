@@ -10,6 +10,7 @@ import { default as dialogCreateInvalidProcess } from './dialogCreateInvalidProc
 import { default as dialogCreatePatchDelete } from './dialogCreatePatchDelete.js';
 import { default as dialogCreateUpdatePatchDeleteCorrespondenceResource } from './dialogCreateUpdatePatchDeleteCorrespondenceResource.js';
 import { default as dialogDetails } from './dialogDetails.js';
+import { default as dialogRestore } from './dialogRestore.js';
 import { default as dialogSearch } from './dialogSearch.js';
 import { default as dialogUpdateActivity } from './dialogUpdateActivity.js';
 
@@ -25,6 +26,7 @@ export default function() {
   dialogCreatePatchDelete();
   dialogCreateUpdatePatchDeleteCorrespondenceResource();
   dialogDetails();
+  dialogRestore();
   dialogSearch();
   dialogUpdateActivity();
 }

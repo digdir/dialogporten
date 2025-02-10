@@ -23,6 +23,8 @@ using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
 using NSwag;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Trace;
 using Serilog;
 
 // Using two-stage initialization to catch startup errors.
@@ -83,7 +85,11 @@ static void BuildAndRun(string[] args)
     var thisAssembly = Assembly.GetExecutingAssembly();
 
     builder.Services
-        .AddDialogportenTelemetry(builder.Configuration, builder.Environment)
+        .AddDialogportenTelemetry(builder.Configuration, builder.Environment,
+            additionalMetrics: x => x.AddAspNetCoreInstrumentation(),
+            additionalTracing: x => x
+                .AddFusionCacheInstrumentation()
+                .AddAspNetCoreInstrumentationExcludingHealthPaths())
         // Options setup
         .ConfigureOptions<AuthorizationOptionsSetup>()
 

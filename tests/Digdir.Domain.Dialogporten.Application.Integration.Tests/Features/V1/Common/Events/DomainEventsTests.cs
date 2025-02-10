@@ -9,6 +9,7 @@ using Digdir.Tool.Dialogporten.GenerateFakeData;
 using AutoMapper;
 using FluentAssertions;
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Delete;
+using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Restore;
 using Digdir.Domain.Dialogporten.Domain.Attachments;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Events.Activities;
 using Digdir.Library.Entity.Abstractions.Features.Identifiable;
@@ -244,6 +245,46 @@ public class DomainEventsTests(DialogApplication application) : ApplicationColle
 
         cloudEvents.Should().ContainSingle(cloudEvent =>
             cloudEvent.Type == CloudEventTypes.Get(nameof(DialogDeletedDomainEvent)));
+    }
+
+    [Fact]
+    public async Task Creates_CloudEvent_When_Dialog_Is_Restored()
+    {
+        // Arrange
+        var harness = await Application.ConfigureServicesWithMassTransitTestHarness();
+        var dialogId = IdentifiableExtensions.CreateVersion7();
+        var createDialogCommand = DialogGenerator.GenerateSimpleFakeCreateDialogCommand(dialogId);
+
+        await Application.Send(createDialogCommand);
+
+        var deleteDialogCommand = new DeleteDialogCommand
+        {
+            Id = dialogId
+        };
+
+        await Application.Send(deleteDialogCommand);
+
+        // Act
+        var restoreDialogCommand = new RestoreDialogCommand
+        {
+            DialogId = dialogId
+        };
+
+        await Application.Send(restoreDialogCommand);
+
+        await harness.Consumed
+            .SelectAsync<DialogRestoredDomainEvent>(x => x.Context.Message.DialogId == dialogId)
+            .FirstOrDefault();
+
+        var cloudEvents = Application.PopPublishedCloudEvents();
+
+        // Assert
+        cloudEvents.Should().OnlyContain(cloudEvent => cloudEvent.ResourceInstance == dialogId.ToString());
+        cloudEvents.Should().OnlyContain(cloudEvent => cloudEvent.Resource == createDialogCommand.Dto.ServiceResource);
+        cloudEvents.Should().OnlyContain(cloudEvent => cloudEvent.Subject == createDialogCommand.Dto.Party);
+
+        cloudEvents.Should().ContainSingle(cloudEvent =>
+            cloudEvent.Type == CloudEventTypes.Get(nameof(DialogRestoredDomainEvent)));
     }
 
     [Fact]
