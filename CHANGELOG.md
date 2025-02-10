@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.50.0](https://github.com/Altinn/dialogporten/compare/v1.49.0...v1.50.0) (2025-02-10)
+
+
+### Features
+
+* Add idempotentId ([#1638](https://github.com/Altinn/dialogporten/issues/1638)) ([e2665ca](https://github.com/Altinn/dialogporten/commit/e2665ca07061050a1f18969769335ee62cff9549))
+
+
+### Bug Fixes
+
+* **webapi:** Correctly handle deleted filter null value on ServiceOwner search ([#1826](https://github.com/Altinn/dialogporten/issues/1826)) ([b93e591](https://github.com/Altinn/dialogporten/commit/b93e591d3cb6cf7bf2b707b54912820ad434a54a))
+
 ## [1.49.0](https://github.com/Altinn/dialogporten/compare/v1.48.5...v1.49.0) (2025-02-10)
 
 
