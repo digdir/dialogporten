@@ -36,7 +36,8 @@ public sealed class RestoreDialogEndpoint : Endpoint<RestoreDialogRequest>
         var command = new RestoreDialogCommand
         {
             DialogId = req.DialogId,
-            IfMatchDialogRevision = req.IfMatchDialogRevision
+            IfMatchDialogRevision = req.IfMatchDialogRevision,
+            DisableAltinnEvents = req.DisableAltinnEvents ?? false
         };
         var result = await _sender.Send(command, ct);
         await result.Match(
@@ -56,4 +57,7 @@ public sealed class RestoreDialogRequest
 
     [FromHeader(headerName: Constants.IfMatch, isRequired: false, removeFromSchema: true)]
     public Guid? IfMatchDialogRevision { get; init; }
+
+    [HideFromDocs]
+    public bool? DisableAltinnEvents { get; init; }
 }

@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Digdir.Domain.Dialogporten.Application.Common;
+using Digdir.Domain.Dialogporten.Application.Common.Behaviours;
 using Digdir.Domain.Dialogporten.Application.Common.Extensions;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
@@ -11,10 +12,11 @@ using OneOf;
 
 namespace Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Restore;
 
-public sealed class RestoreDialogCommand : IRequest<RestoreDialogResult>
+public sealed class RestoreDialogCommand : IRequest<RestoreDialogResult>, IAltinnEventDisabler
 {
     public Guid DialogId { get; set; }
     public Guid? IfMatchDialogRevision { get; set; }
+    public bool DisableAltinnEvents { get; set; }
 }
 
 [GenerateOneOf]
