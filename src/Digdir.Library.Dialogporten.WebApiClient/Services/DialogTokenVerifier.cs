@@ -1,6 +1,7 @@
 using System.Buffers.Text;
 using System.Text.Json;
 using Altinn.ApiClients.Dialogporten.Config;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NSec.Cryptography;
