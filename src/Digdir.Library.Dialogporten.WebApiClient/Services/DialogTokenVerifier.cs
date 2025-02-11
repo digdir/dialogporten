@@ -3,7 +3,6 @@ using System.Text.Json;
 using Altinn.ApiClients.Dialogporten.Config;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 using NSec.Cryptography;
 
 namespace Altinn.ApiClients.Dialogporten.Services;
@@ -115,16 +114,6 @@ internal static class DialogTokenClaimTypes
     public const string Actions = "a";
 }
 
-internal sealed class JsonWebKeyTypes
-{
-    public const string Kty = "kty";
-    public const string Use = "use";
-    public const string Kid = "kid";
-    public const string Crv = "crv";
-    public const string X = "x";
-    public const string Alg = "alg";
-}
-
 internal class EdDsaSecurityKeysCacheService : IHostedService, IDisposable
 {
     public static List<PublicKey> PublicKeys => _keys;
@@ -221,4 +210,16 @@ internal class EdDsaSecurityKeysCacheService : IHostedService, IDisposable
         var newKeys = keys.ToList();
         _keys = newKeys; // Atomic replace
     }
+
+
+}
+
+internal sealed class JsonWebKeyTypes
+{
+    public const string Kty = "kty";
+    public const string Use = "use";
+    public const string Kid = "kid";
+    public const string Crv = "crv";
+    public const string X = "x";
+    public const string Alg = "alg";
 }
