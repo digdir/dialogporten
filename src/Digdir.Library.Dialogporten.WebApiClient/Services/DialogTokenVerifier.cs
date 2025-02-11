@@ -196,8 +196,14 @@ internal class EdDsaSecurityKeysCacheService : IHostedService, IDisposable
                 var response = await httpClient.GetStringAsync(endpoint, cancellationToken);
                 var jwks = JsonSerializer.Deserialize<JsonElement>(response);
 
-                if (jwks.TryGetProperty(JsonWebKeyTypes.X, out var publicKey))
+                if (!jwks.TryGetProperty(JsonWebKeyTypes.X, out var publicKey) || !jwks.TryGetProperty(JsonWebKeyTypes.Alg, out var alg))
                 {
+                    continue;
+                }
+
+                if (alg.GetString() == "EdDSA")
+                {
+
                     keys.Add(PublicKey.Import(
                         SignatureAlgorithm.Ed25519,
                         Base64Url.DecodeFromChars(publicKey.GetString()),
