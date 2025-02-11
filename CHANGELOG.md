@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.50.1](https://github.com/Altinn/dialogporten/compare/v1.50.0...v1.50.1) (2025-02-10)
+
+
+### Bug Fixes
+
+* **webapi:** Add missing DisableAltinnEvents flag to restore dialog endpoint ([#1828](https://github.com/Altinn/dialogporten/issues/1828)) ([c71e648](https://github.com/Altinn/dialogporten/commit/c71e6481bf24b4640427850975def167ff515900))
+
 ## [1.50.0](https://github.com/Altinn/dialogporten/compare/v1.49.0...v1.50.0) (2025-02-10)
 
 
