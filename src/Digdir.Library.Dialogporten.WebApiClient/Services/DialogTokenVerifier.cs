@@ -37,21 +37,21 @@ internal sealed class DialogTokenVerifier : IDialogTokenVerifier
             // Amund: Sparer ca 3 operations i IL med å lagre i egen variabel først
             var current = tokenPartEnumerator.Current;
             Span<byte> header = stackalloc byte[current.End.Value - current.Start.Value];
-            if (!tokenPartEnumerator.MoveNext() || !Base64Url.TryDecodeFromChars(token[tokenPartEnumerator.Current], header, out var headerLength))
+            if (!tokenPartEnumerator.MoveNext() || !Base64Url.TryDecodeFromChars(token[current], header, out var headerLength))
             {
                 return false;
             }
 
             current = tokenPartEnumerator.Current;
             Span<byte> body = stackalloc byte[current.End.Value - current.Start.Value];
-            if (!tokenPartEnumerator.MoveNext() || !Base64Url.TryDecodeFromChars(token[tokenPartEnumerator.Current], body, out var bodyLength))
+            if (!tokenPartEnumerator.MoveNext() || !Base64Url.TryDecodeFromChars(token[current], body, out var bodyLength))
             {
                 return false;
             }
 
             current = tokenPartEnumerator.Current;
             Span<byte> signature = stackalloc byte[current.End.Value - current.Start.Value];
-            if (tokenPartEnumerator.MoveNext() && !Base64Url.TryDecodeFromChars(token[tokenPartEnumerator.Current], signature, out _))
+            if (tokenPartEnumerator.MoveNext() && !Base64Url.TryDecodeFromChars(token[current], signature, out _))
             {
                 return false;
             }
