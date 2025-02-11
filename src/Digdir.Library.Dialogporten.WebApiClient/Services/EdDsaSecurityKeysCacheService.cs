@@ -1,39 +1,33 @@
 using System.Buffers.Text;
-using System.Text.Json;
+using System.Net;
+using Altinn.ApiClients.Dialogporten.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NSec.Cryptography;
 
 namespace Altinn.ApiClients.Dialogporten.Services;
 
-internal class EdDsaSecurityKeysCacheService : IHostedService, IDisposable
+internal class EdDsaSecurityKeysCacheService : BackgroundService
 {
     public static List<PublicKey> PublicKeys => _keys;
-    private static volatile List<PublicKey> _keys = new();
+    private static volatile List<PublicKey> _keys = [];
 
     private PeriodicTimer? _timer;
-    private readonly IHttpClientFactory _httpClientFactory;
     private readonly ILogger<EdDsaSecurityKeysCacheService> _logger;
 
     private readonly TimeSpan _refreshInterval = TimeSpan.FromHours(12);
+    private readonly IServiceScopeFactory _serviceScopeFactory;
 
-    // In this service we allow keys for all non-production environments for
-    // simplicity. Usually one would only allow a single environment (issuer) here,
-    // which we could get from an injected IConfiguration/IOptions
-    private readonly List<string> _wellKnownEndpoints =
-    [
-        //"https://localhost:7214/api/v1/.well-known/jwks.json",
-        "https://altinn-dev-api.azure-api.net/dialogporten/api/v1/.well-known/jwks.json",
-        "https://platform.tt02.altinn.no/dialogporten/api/v1/.well-known/https://altinn-dev-api.azure-api.net/dialogporten/api/v1/.well-known/jwks.jsonhttps://altinn-dev-api.azure-api.net/dialogporten/api/v1/.well-known/jwks.jsonjwks.json"
-    ];
+    private const string EdDsaAlg = "EdDSA";
 
-    public EdDsaSecurityKeysCacheService(IHttpClientFactory httpClientFactory, ILogger<EdDsaSecurityKeysCacheService> logger)
+    public EdDsaSecurityKeysCacheService(ILogger<EdDsaSecurityKeysCacheService> logger, IServiceScopeFactory serviceScopeFactory)
     {
-        _httpClientFactory = httpClientFactory;
         _logger = logger;
+        _serviceScopeFactory = serviceScopeFactory;
     }
 
-    public async Task StartAsync(CancellationToken cancellationToken)
+    protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
         _ = Task.Run(async () =>
         {
@@ -54,72 +48,39 @@ internal class EdDsaSecurityKeysCacheService : IHostedService, IDisposable
         await RefreshAsync(cancellationToken);
     }
 
-    public Task StopAsync(CancellationToken cancellationToken)
+    public override Task StopAsync(CancellationToken cancellationToken)
     {
         _timer?.Dispose();
+        base.Dispose();
         return Task.CompletedTask;
     }
 
-    public void Dispose()
+    public override void Dispose()
     {
         _timer?.Dispose();
+        base.Dispose();
     }
 
     private async Task RefreshAsync(CancellationToken cancellationToken)
     {
-        var httpClient = _httpClientFactory.CreateClient();
-        var keys = new List<PublicKey>();
+        using var scope = _serviceScopeFactory.CreateScope();
+        var dialogportenApi = scope.ServiceProvider.GetRequiredService<IInternalDialogportenApi>();
+        var response = await dialogportenApi.GetJwks(cancellationToken);
 
-        foreach (var endpoint in _wellKnownEndpoints)
+        if (response.StatusCode != HttpStatusCode.OK || response.Content == null)
         {
-            try
-            {
-                var response = await httpClient.GetStringAsync(endpoint, cancellationToken);
-                var jwks = JsonSerializer.Deserialize<JsonElement>(response);
-
-                if (!jwks.TryGetProperty("keys", out var keysElement))
-                {
-                    continue;
-                }
-                foreach (var jwk in keysElement.EnumerateArray())
-                {
-
-                    if (!jwk.TryGetProperty(JsonWebKeyTypes.X, out var publicKey) || !jwk.TryGetProperty(JsonWebKeyTypes.Alg, out var alg))
-                    {
-                        continue;
-                    }
-
-                    if (alg.GetString() == "EdDSA")
-                    {
-
-                        keys.Add(PublicKey.Import(
-                            SignatureAlgorithm.Ed25519,
-                            Base64Url.DecodeFromChars(publicKey.GetString()),
-                            KeyBlobFormat.RawPublicKey));
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogWarning(ex, "Failed to retrieve keys from {endpoint}", endpoint);
-            }
+            return;
         }
 
-        _logger.LogInformation("Refreshed EdDsa keys cache with {count} keys", keys.Count);
+        var keys = response.Content.Keys
+            .Where(x => StringComparer.OrdinalIgnoreCase.Equals(x.Alg, EdDsaAlg))
+            .Select(k => PublicKey.Import(
+                SignatureAlgorithm.Ed25519,
+                Base64Url.DecodeFromChars(k.X),
+                KeyBlobFormat.RawPublicKey))
+            .ToList();
 
-        var newKeys = keys.ToList();
-        _keys = newKeys; // Atomic replace
+        _keys = keys;
+
     }
-
-
-}
-
-internal sealed class JsonWebKeyTypes
-{
-    public const string Kty = "kty";
-    public const string Use = "use";
-    public const string Kid = "kid";
-    public const string Crv = "crv";
-    public const string X = "x";
-    public const string Alg = "alg";
 }

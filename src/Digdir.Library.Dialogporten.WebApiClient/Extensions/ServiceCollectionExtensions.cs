@@ -1,6 +1,7 @@
 using System.CodeDom.Compiler;
 using System.Reflection;
 using Altinn.ApiClients.Dialogporten.Config;
+using Altinn.ApiClients.Dialogporten.Interfaces;
 using Altinn.ApiClients.Dialogporten.Services;
 using Altinn.ApiClients.Maskinporten.Extensions;
 using Altinn.ApiClients.Maskinporten.Services;
@@ -36,6 +37,10 @@ public static class ServiceCollectionExtensions
                 .ConfigureHttpClient(c => c.BaseAddress = new Uri(settings.BaseUri))
                 .AddMaskinportenHttpMessageHandler<SettingsJwkClientDefinition>("dialogporten-sp-sdk");
         }
+
+        services
+            .AddRefitClient<IInternalDialogportenApi>()
+            .ConfigureHttpClient(c => c.BaseAddress = new Uri(settings.BaseUri));
 
         services.TryAddSingleton<IDialogTokenVerifier, DialogTokenVerifier>();
         return services;
