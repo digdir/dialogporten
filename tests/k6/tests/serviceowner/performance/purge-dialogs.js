@@ -11,7 +11,6 @@ import { uuidv4 } from 'https://jslib.k6.io/k6-utils/1.4.0/index.js';
 import { getSO, purgeSO } from '../../../common/request.js';
 import { serviceOwners } from '../../performancetest_common/readTestdata.js';
 import { expect, expectStatusFor } from "../../../common/testimports.js";
-import { getDefaultThresholds } from '../../performancetest_common/getDefaultThresholds.js';
 import { describe } from '../../../common/describe.js';
 import { sentinelPerformanceValue as sentinelValue } from '../../../common/config.js';
 
@@ -64,9 +63,10 @@ function getDialogs(serviceOwner) {
 
 export let options = {
     summaryTrendStats: ['avg', 'min', 'med', 'max', 'p(95)', 'p(99)', 'p(99.5)', 'p(99.9)', 'count'],
-    thresholds: getDefaultThresholds(['http_req_duration', 'http_reqs'],[
-      'purge dialog'
-    ]),
+    thresholds: {
+        "http_req_duration{name:purge dialog}": [],
+        "http_reqs{name:purge dialog}": []
+    },
     setupTimeout: '4m',
 };
 

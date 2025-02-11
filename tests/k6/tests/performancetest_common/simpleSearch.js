@@ -41,11 +41,14 @@ function log(items, traceCalls, enduser) {
  * @param {Object} enduser - The end user.
  * @returns {void}
  */
-export function enduserSearch(enduser, traceCalls) {
+export function enduserSearch(enduser, token, traceCalls) {
+    if (token == null) {
+        token = getPersonalToken({ ssn: enduser, scopes: "digdir:dialogporten" });
+    }
     var traceparent = uuidv4();
     let paramsWithToken = {
         headers: {
-            Authorization: "Bearer " + getPersonalToken(enduser),
+            Authorization: "Bearer " + token,
             traceparent: traceparent
         },
         tags: { name: 'enduser search' } 
@@ -54,7 +57,7 @@ export function enduserSearch(enduser, traceCalls) {
         paramsWithToken.tags.traceparent = traceparent;
         paramsWithToken.tags.enduser = enduser.ssn;
     }
-    let defaultParty = "urn:altinn:person:identifier-no:" + enduser.ssn;
+    let defaultParty = "urn:altinn:person:identifier-no:" + enduser;
     let defaultFilter = "?Party=" + defaultParty;
     describe('Perform enduser dialog list', () => {
         let r = getEU('dialogs' + defaultFilter, paramsWithToken);
@@ -128,11 +131,14 @@ export function getUrl(url, paramsWithToken, getFunction = getEU) {
  * @param {Object} enduser - The enduser object containing the token.
  * @returns {void}
  */
-export function graphqlSearch(enduser, traceCalls) {
+export function graphqlSearch(enduser, token,  traceCalls) {
+    if (token == null) {
+        token = getPersonalToken({ ssn: enduser, scopes: "digdir:dialogporten" });
+    }
     let traceparent = uuidv4();
     let paramsWithToken = {
         headers: {
-            Authorization: "Bearer " + getPersonalToken(enduser),
+            Authorization: "Bearer " + token,
             traceparent: traceparent,
             'User-Agent': 'dialogporten-k6-graphql-search'
         },
@@ -171,7 +177,7 @@ export function serviceownerSearch(serviceowner, enduser, tag_name, traceCalls, 
     }
 
     let enduserid = encodeURIComponent(`urn:altinn:person:identifier-no:${enduser.ssn}`);
-    let serviceResource = encodeURIComponent(`urn:altinn:resource:${serviceowner.resource}`);
+    let serviceResource = encodeURIComponent(`urn:altinn:resource:${enduser.resource}`);
     let defaultFilter = `?enduserid=${enduserid}&serviceResource=${serviceResource}`;
     describe('Perform serviceowner dialog list', () => {
         let r = getSO('dialogs' + defaultFilter, paramsWithToken);

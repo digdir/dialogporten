@@ -1,5 +1,7 @@
-export { setup as setup } from '../../performancetest_common/readTestdata.js';
-import { default as run } from "./enduser-search.js";
+import { default as run} from "./enduser-search.js";
+import { getEndUserTokens } from '../../../common/token.js';
+
+const numberOfEndUsers = 100;
 
 export let options = {
     summaryTrendStats: ['avg', 'min', 'med', 'max', 'p(95)', 'p(99)', 'p(99.5)', 'p(99.9)', 'count'],
@@ -23,6 +25,14 @@ export let options = {
         "http_reqs{name:get dialog}": [], 
         "http_reqs{name:get labellog}": [], 
     }
+}
+
+export function setup() {
+    const tokenOptions = {
+        scopes: "digdir:dialogporten"
+    }
+    const endusers = getEndUserTokens(numberOfEndUsers, tokenOptions);
+    return endusers
 }
 
 export default function (data) { run(data); }

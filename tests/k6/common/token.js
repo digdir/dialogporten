@@ -21,7 +21,7 @@ const encodedCredentials = encoding.b64encode(credentials);
 const tokenRequestOptions = {
   headers: {
     Authorization: `Basic ${encodedCredentials}`,
-  },
+  }
 };
 
 let cachedTokens = {};
@@ -65,6 +65,17 @@ export function getEnduserTokenFromGenerator(tokenOptions = null) {
   let fullTokenOptions = extend({}, defaultTokenOptions, tokenOptions);
   const url = `http://altinn-testtools-token-generator.azurewebsites.net/api/GetPersonalToken?env=${tokenGeneratorEnv}&scopes=${encodeURIComponent(fullTokenOptions.scopes)}&pid=${fullTokenOptions.ssn}&ttl=${tokenTtl}`;
   return fetchToken(url, fullTokenOptions, `end user (ssn:${fullTokenOptions.ssn}, tokenGeneratorEnv:${tokenGeneratorEnv})`);
+}
+
+export function getEndUserTokens(count, tokenOptions = null) {
+  let fullTokenOptions = extend({}, defaultTokenOptions, tokenOptions);
+  const url = `http://altinn-testtools-token-generator.azurewebsites.net/api/GetPersonalToken?env=${tokenGeneratorEnv}&scopes=${encodeURIComponent(fullTokenOptions.scopes)}&bulkCount=${count}&ttl=${tokenTtl}`;
+  tokenRequestOptions.timeout = 600000;
+  let response = http.get(url, tokenRequestOptions);
+  if (response.status != 200) {
+    throw new Error(`Failed getting tokens: ${response.status_text}`);
+  }
+  return response.json();                                       
 }
 
 export function getDefaultEnduserOrgNo() {
