@@ -31,36 +31,40 @@ internal sealed class DialogTokenVerifier : IDialogTokenVerifier
             return false;
         }
 
-        var header = Base64Url.DecodeFromChars(token[tokenPartEnumerator.Current]);
-        if (!tokenPartEnumerator.MoveNext())
+        // Amund Q: Sparer ca 3 operations i IL med å lagre i egen variabel først
+        var current = tokenPartEnumerator.Current;
+        Span<byte> header = stackalloc byte[current.End.Value - current.Start.Value];
+        var headerLength = 0;
+        if (!tokenPartEnumerator.MoveNext() && !Base64Url.TryDecodeFromChars(token[tokenPartEnumerator.Current], header, out headerLength))
         {
             return false;
         }
 
-        var body = Base64Url.DecodeFromChars(token[tokenPartEnumerator.Current]);
-        if (!tokenPartEnumerator.MoveNext())
+        current = tokenPartEnumerator.Current;
+        Span<byte> body = stackalloc byte[current.End.Value - current.Start.Value];
+        var bodyLength = 0;
+        if (!tokenPartEnumerator.MoveNext() && !Base64Url.TryDecodeFromChars(token[tokenPartEnumerator.Current], body, out bodyLength))
         {
             return false;
         }
 
-        var signature = Base64Url.DecodeFromChars(token[tokenPartEnumerator.Current]);
-        if (tokenPartEnumerator.MoveNext())
+        current = tokenPartEnumerator.Current;
+        Span<byte> signature = stackalloc byte[current.End.Value - current.Start.Value];
+        if (tokenPartEnumerator.MoveNext() && !Base64Url.TryDecodeFromChars(token[tokenPartEnumerator.Current], signature, out _))
         {
             return false;
         }
-
 
         var headerJson = JsonSerializer.Deserialize<JsonElement>(header);
-
         if (!headerJson.TryGetProperty("kid", out var value) && value.GetString() != _kid)
         {
             return false;
         }
 
-        var headerAndBody = header
-            .Append((byte)'.')
-            .Concat(body)
-            .ToArray();
+        Span<byte> headerAndBody = stackalloc byte[headerLength + bodyLength + 1];
+        header[..headerLength].CopyTo(headerAndBody);
+        headerAndBody[header.Length] = (byte)'.';
+        body[..bodyLength].CopyTo(headerAndBody[(header.Length + 1)..]);
 
         if (!SignatureAlgorithm.Ed25519.Verify(_publicKey, headerAndBody, signature))
         {
