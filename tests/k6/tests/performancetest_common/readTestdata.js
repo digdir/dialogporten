@@ -54,7 +54,6 @@ export const endUsers = new SharedArray('endUsers', function () {
 
 export function endUsersPart(totalVus, vuId) {
   const endUsersLength = endUsers.length;
-  console.log("totalVus:", totalVus, "vuId:", vuId, "endUsersLength:", endUsersLength);
   if (totalVus == 1) {
       return endUsers.slice(0, endUsersLength);
   }
@@ -73,8 +72,6 @@ export function endUsersPart(totalVus, vuId) {
 
 export function setup() {
   const totalVus = exec.test.options.scenarios.default.vus;
-  console.log("totalVus:", totalVus);
-  console.log(exec.test.options);
   let parts = [];
   for (let i = 1; i <= totalVus; i++) {
       parts.push(endUsersPart(totalVus, i));
@@ -83,7 +80,6 @@ export function setup() {
 }
 
 export function validateTestData(data, serviceOwners=null) {
-    console.log(data);
     if (!Array.isArray(data) || !data[exec.vu.idInTest - 1]) {
         throw new Error('Invalid data structure: expected array of end users');
     }
