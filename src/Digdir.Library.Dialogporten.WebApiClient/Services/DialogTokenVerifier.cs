@@ -31,7 +31,7 @@ internal sealed class DialogTokenVerifier : IDialogTokenVerifier
             return false;
         }
 
-        // Amund Q: Sparer ca 3 operations i IL med å lagre i egen variabel først
+        // Amund: Sparer ca 3 operations i IL med å lagre i egen variabel først
         var current = tokenPartEnumerator.Current;
         Span<byte> header = stackalloc byte[current.End.Value - current.Start.Value];
         var headerLength = 0;
