@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.50.2](https://github.com/Altinn/dialogporten/compare/v1.50.1...v1.50.2) (2025-02-12)
+
+
+### Miscellaneous Chores
+
+* **ci:** Set OTEL sample ratio to 0 in yt01 ([#1861](https://github.com/Altinn/dialogporten/issues/1861)) ([1c3908c](https://github.com/Altinn/dialogporten/commit/1c3908c66600c4fe92d9fe42accf456a7e2b226e))
+* **deps:** Add FusionCache package grouping in Renovate config ([#1860](https://github.com/Altinn/dialogporten/issues/1860)) ([d8f00d0](https://github.com/Altinn/dialogporten/commit/d8f00d0cc20d8d556b79549655eacd62a90ef836))
+* **deps:** update dependency verify.xunit to 28.10.1 ([#1838](https://github.com/Altinn/dialogporten/issues/1838)) ([d44593a](https://github.com/Altinn/dialogporten/commit/d44593ac949857c7f8a7ba667310cc863a1bbd62))
+* **performance:** refactor generating tokens ([#1843](https://github.com/Altinn/dialogporten/issues/1843)) ([c9933e1](https://github.com/Altinn/dialogporten/commit/c9933e18e344cf09929b2238d7236e9370c45b0c))
+
 ## [1.50.1](https://github.com/Altinn/dialogporten/compare/v1.50.0...v1.50.1) (2025-02-10)
 
 
