@@ -11,7 +11,7 @@ public interface ITokenIssuerCache
 
 public sealed class TokenIssuerCache : ITokenIssuerCache, IDisposable
 {
-    private readonly Dictionary<string, string> _issuerMappings = new();
+    private readonly Dictionary<string, string> _issuerMappings = [];
     private readonly SemaphoreSlim _initializationSemaphore = new(1, 1);
     private bool _initialized;
     private readonly IReadOnlyCollection<JwtBearerTokenSchemasOptions> _jwtTokenSchemas;
