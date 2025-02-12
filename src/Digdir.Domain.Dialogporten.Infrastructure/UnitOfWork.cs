@@ -117,7 +117,7 @@ internal sealed class UnitOfWork : IUnitOfWork, IAsyncDisposable, IDisposable
 
         if (!_enableConcurrencyCheck)
         {
-            // Attempt to save changes without concurrency check
+            // Attempt to save changes without a concurrency check
             await ConcurrencyRetryPolicy.ExecuteAsync(_dialogDbContext.SaveChangesAsync, cancellationToken);
         }
         else
