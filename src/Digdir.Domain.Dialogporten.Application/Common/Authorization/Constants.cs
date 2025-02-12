@@ -39,12 +39,12 @@ public static class AuthorizationScope
     public const string ServiceProviderSearch = "digdir:dialogporten.serviceprovider.search";
 
     /// <summary>
-    /// Allows the creation of dialogs on behalf of all service owners. 
+    /// Allows the modification (create/update/delete) of dialogs on behalf of all service owners regardless of the authenticated user.
     /// </summary>
     public const string ServiceOwnerAdminScope = "digdir:dialogporten.serviceprovider.admin";
 
     /// <summary>
-    /// Allows the user to be able to provide html content as part of the dialog. This is used to migrate old correspondence messages to dialogs.
+    /// Allows the user to be able to provide HTML content as part of the dialog. This is used to migrate old correspondence messages to dialogs.
     /// </summary>
     public const string LegacyHtmlScope = "digdir:dialogporten.serviceprovider.legacyhtml";
 
@@ -54,7 +54,7 @@ public static class AuthorizationScope
     public const string EndUser = "digdir:dialogporten";
 
     /// <summary>
-    /// ???
+    /// Same as EndUser, but does not prompt the user with a consent dialog when logging in with IdPorten.
     /// </summary>
     public const string EndUserNoConsent = "digdir:dialogporten.noconsent";
 
