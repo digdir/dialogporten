@@ -8,7 +8,7 @@ param location string
 param tags object
 
 @description('Whether to purge data immediately after 30 days in Application Insights')
-param immediatePurgeDataOn30Days
+param immediatePurgeDataOn30Days bool
 
 @export()
 type Sku = {
