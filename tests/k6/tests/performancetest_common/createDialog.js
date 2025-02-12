@@ -1,7 +1,7 @@
 /**
  * Common functions for creating dialogs.
  */
-import { uuidv4 } from 'https://jslib.k6.io/k6-utils/1.4.0/index.js';
+import { uuidv4 } from '../../common/k6-utils.js';
 import { describe } from "../../common/describe.js";
 import { postSO, purgeSO } from "../../common/request.js";
 import { expect } from "../../common/testimports.js";

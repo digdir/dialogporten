@@ -1,6 +1,6 @@
 import { enduserSearch, emptySearchThresholds } from '../../performancetest_common/simpleSearch.js'
 import { getEndUserTokens } from '../../../common/token.js';
-import { randomItem } from 'https://jslib.k6.io/k6-utils/1.4.0/index.js';
+import { randomItem } from '../../../common/k6-utils.js';
 
 const defaultNumberOfEndUsers = 2799; // Max number of endusers from altinn-testtools now. 
 
