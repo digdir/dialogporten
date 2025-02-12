@@ -4,6 +4,8 @@ param environment = 'yt01'
 param location = 'norwayeast'
 param keyVaultSourceKeys = json(readEnvironmentVariable('AZURE_KEY_VAULT_SOURCE_KEYS'))
 
+param appInsightsPurgeDataOn30Days = true
+
 param redisVersion = '6.0'
 
 // secrets

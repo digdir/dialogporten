@@ -1,27 +1,15 @@
-import { serviceownerSearch } from '../../performancetest_common/simpleSearch.js'
-import { serviceOwners, endUsersPart, validateTestData } from '../../performancetest_common/readTestdata.js';
+import { default as run, options as _options } from './serviceowner-search.js'
+import { endUsersPart } from '../../performancetest_common/readTestdata.js';
 
-const traceCalls = (__ENV.traceCalls ?? 'false') === 'true';
 const stages_duration = (__ENV.stages_duration ?? '1m');
 const stages_target = (__ENV.stages_target ?? '5');
 const abort_on_fail = (__ENV.abort_on_fail ?? 'true') === 'true';
-const tag_name = 'serviceowner search';
 
 export let options = {
     summaryTrendStats: ['avg', 'min', 'med', 'max', 'p(95)', 'p(99)', 'p(99.5)', 'p(99.9)', 'count'],
     thresholds: {
-        "http_req_duration{name:serviceowner search}": [{ threshold: "max<5000", abortOnFail: abort_on_fail }],
-        "http_req_duration{name:get dialog activities}": [{ threshold: "max<5000", abortOnFail: abort_on_fail }],
-        "http_req_duration{name:get dialog activity}": [{ threshold: "max<5000", abortOnFail: abort_on_fail }],
-        "http_req_duration{name:get seenlogs}": [{ threshold: "max<5000", abortOnFail: abort_on_fail }],
-        "http_req_duration{name:get transmissions}": [{ threshold: "max<5000", abortOnFail: abort_on_fail }],
-        "http_req_duration{name:get transmission}": [{ threshold: "max<5000", abortOnFail: abort_on_fail }],
-        "http_reqs{name:get dialog activities}": [],
-        "http_reqs{name:get dialog activity}": [],
-        "http_reqs{name:get seenlogs}": [],
-        "http_reqs{name:get transmissions}": [],
-        "http_reqs{name:get transmission}": [],
-        "http_reqs{name:serviceowner search}": [],   
+        ..._options.thresholds,
+        "http_req_duration{scenario:default}": [{ threshold: "max<5000", abortOnFail: abort_on_fail }],
     },
     executor: 'ramping-arrival-rate', //Assure load increase if the system slows
     stages: [
@@ -38,7 +26,5 @@ export function setup() {
     return parts;
 }
 
-export default function(data) {
-    const { endUsers, index } = validateTestData(data, serviceOwners);
-    serviceownerSearch(serviceOwners[0], endUsers[index], tag_name, traceCalls);
-}
+export default function(data) { run(data);}
+
