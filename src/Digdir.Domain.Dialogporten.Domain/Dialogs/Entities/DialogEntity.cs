@@ -19,10 +19,12 @@ public sealed class DialogEntity :
     ISoftDeletableEntity,
     IVersionableEntity,
     IAggregateChangedHandler,
-    IEventPublisher
+    IEventPublisher,
+    IAggregateRestoredHandler
 {
     public Guid Id { get; set; }
     public Guid Revision { get; set; }
+    public string? IdempotentKey { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
     public DateTimeOffset UpdatedAt { get; set; }
     public bool Deleted { get; set; }
@@ -83,6 +85,9 @@ public sealed class DialogEntity :
 
     public void OnDelete(AggregateNode self, DateTimeOffset utcNow)
         => _domainEvents.Add(new DialogDeletedDomainEvent(Id, ServiceResource, Party, Process, PrecedingProcess));
+
+    public void OnRestore(AggregateNode self, DateTimeOffset utcNow) =>
+        _domainEvents.Add(new DialogRestoredDomainEvent(Id, ServiceResource, Party, Process, PrecedingProcess));
 
     public void UpdateSeenAt(string endUserId, DialogUserType.Values userTypeId, string? endUserName)
     {

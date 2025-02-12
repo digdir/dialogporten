@@ -8,6 +8,7 @@ internal static class CloudEventTypes
     internal static string Get(string eventName) => eventName switch
     {
         // Dialog
+        nameof(DialogRestoredDomainEvent) => "dialogporten.dialog.restored.v1",
         nameof(DialogCreatedDomainEvent) => "dialogporten.dialog.created.v1",
         nameof(DialogUpdatedDomainEvent) => "dialogporten.dialog.updated.v1",
         nameof(DialogDeletedDomainEvent) => "dialogporten.dialog.deleted.v1",
