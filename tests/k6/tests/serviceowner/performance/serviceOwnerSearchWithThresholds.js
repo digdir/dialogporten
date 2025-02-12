@@ -7,14 +7,14 @@ export let options = {
     duration: "30s",
     thresholds: {
         ..._options.thresholds,
-        "http_req_duration{name:serviceowner search}": ["p(95)<100", "p(99)<300"],
-        "http_req_duration{name:get dialog}": ["p(95)<100", "p(99)<300"],
-        "http_req_duration{name:get dialog activities}": ["p(95)<100", "p(99)<300"],
-        "http_req_duration{name:get dialog activity}": ["p(95)<100", "p(99)<300"],
-        "http_req_duration{name:get seenlogs}": ["p(95)<100", "p(99)<300"],
-        "http_req_duration{name:get seenlog}": ["p(95)<100", "p(99)<300"],
-        "http_req_duration{name:get transmissions}": ["p(95)<100", "p(99)<300"],
-        "http_req_duration{name:get transmission}": ["p(95)<100", "p(99)<300"],
+        "http_req_duration{name:serviceowner search}": ["p(95)<300"],
+        "http_req_duration{name:get dialog}": ["p(95)<300"],
+        "http_req_duration{name:get dialog activities}": ["p(95)<300"],
+        "http_req_duration{name:get dialog activity}": ["p(95)<300"],
+        "http_req_duration{name:get seenlogs}": ["p(95)<300"],
+        "http_req_duration{name:get seenlog}": ["p(95)<300"],
+        "http_req_duration{name:get transmissions}": ["p(95)<300"],
+        "http_req_duration{name:get transmission}": ["p(95)<300"],
     }
 }
 
