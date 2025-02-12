@@ -6,7 +6,7 @@ namespace Digdir.Domain.Dialogporten.GraphQL.Common.Authentication;
 
 public interface ITokenIssuerCache
 {
-    public Task<string?> GetIssuerForScheme(string schemeName);
+    Task<string?> GetIssuerForScheme(string schemeName);
 }
 
 public sealed class TokenIssuerCache : ITokenIssuerCache, IDisposable
