@@ -9,6 +9,25 @@ import { getEU, postGQ, getSO } from '../../common/request.js';
 import { getGraphqlParty } from '../performancetest_data/graphql-search.js';
 import { getEnterpriseToken, getPersonalToken } from './getTokens.js';
 
+export const emptySearchThresholds = {
+    "http_req_duration{scenario:default}": [],
+    "http_req_duration{name:get dialog}": [],
+    "http_req_duration{name:get dialog activities}": [],
+    "http_req_duration{name:get dialog activity}": [],
+    "http_req_duration{name:get seenlogs}": [],
+    "http_req_duration{name:get seenlog}": [],
+    "http_req_duration{name:get transmissions}": [],
+    "http_req_duration{name:get transmission}": [],
+    "http_reqs{scenario:default}": [],
+    "http_reqs{name:get dialog activities}": [],
+    "http_reqs{name:get dialog activity}": [],
+    "http_reqs{name:get seenlogs}": [],
+    "http_reqs{name:get seenlog}": [],
+    "http_reqs{name:get transmissions}": [],
+    "http_reqs{name:get transmission}": [],
+    "http_reqs{name:get dialog}": [], 
+}
+
 /**
  * Retrieves the content for a dialog.
  * Get dialog, dialog activities, seenlogs, labellog, and transmissions.

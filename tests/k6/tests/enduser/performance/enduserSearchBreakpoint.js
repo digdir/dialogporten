@@ -1,5 +1,4 @@
-import { default as run, setup as _setup } from "./enduser-search.js";
-import { options as _options } from "./enduser-search.js";
+import { default as run, setup as _setup, options as _options } from "./enduser-search.js";
 
 const stages_duration = (__ENV.stages_duration ?? '1m');
 const stages_target = (__ENV.stages_target ?? '5');
