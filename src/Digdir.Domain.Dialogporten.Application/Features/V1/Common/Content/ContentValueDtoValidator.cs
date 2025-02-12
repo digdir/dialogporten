@@ -96,5 +96,5 @@ internal sealed class ContentValueDtoValidator : AbstractValidator<ContentValueD
             _ => contentType.AllowedMediaTypes
         };
     private static bool UserHasLegacyHtmlScope(IUser? user)
-        => user is not null && user.GetPrincipal().HasScope(Constants.LegacyHtmlScope);
+        => user is not null && user.GetPrincipal().HasScope(AuthorizationScope.LegacyHtmlScope);
 }
