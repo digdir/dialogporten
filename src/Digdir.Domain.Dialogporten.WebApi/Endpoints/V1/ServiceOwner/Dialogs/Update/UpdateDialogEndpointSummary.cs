@@ -1,8 +1,8 @@
-using Digdir.Domain.Dialogporten.WebApi.Common;
-using Digdir.Domain.Dialogporten.WebApi.Common.Authorization;
+using Digdir.Domain.Dialogporten.Application.Common.Authorization;
 using Digdir.Domain.Dialogporten.WebApi.Common.Extensions;
 using Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.Common.Headers;
 using FastEndpoints;
+using Constants = Digdir.Domain.Dialogporten.WebApi.Common.Constants;
 
 namespace Digdir.Domain.Dialogporten.WebApi.Endpoints.V1.ServiceOwner.Dialogs.Update;
 
