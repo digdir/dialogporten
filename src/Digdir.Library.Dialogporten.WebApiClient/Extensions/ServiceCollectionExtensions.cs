@@ -42,6 +42,8 @@ public static class ServiceCollectionExtensions
             .AddRefitClient<IInternalDialogportenApi>()
             .ConfigureHttpClient(c => c.BaseAddress = new Uri(settings.BaseUri));
 
+        services.TryAddSingleton<EdDsaSecurityKeysCacheService>();
+
         services.TryAddSingleton<IDialogTokenVerifier, DialogTokenVerifier>();
         return services;
     }
