@@ -39,9 +39,10 @@ on:
       testSuitePath:
         description: 'Path to test suite to run'
         required: true
-        default: 'tests/k6/tests/serviceowner/performance/create-dialog.js'
+        default: 'tests/k6/tests/enduser/performance/enduserSearchWithThresholds.js'
         type: choice
         options:
+          - 'tests/k6/tests/enduser/performance/enduserSearchWithThresholds.js'
           - 'tests/k6/tests/serviceowner/performance/create-dialog.js'
           - 'tests/k6/tests/serviceowner/performance/create-remove-dialog.js'
           - 'tests/k6/tests/serviceowner/performance/serviceowner-search.js'
