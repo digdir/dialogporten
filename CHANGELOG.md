@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.50.3](https://github.com/Altinn/dialogporten/compare/v1.50.2...v1.50.3) (2025-02-12)
+
+
+### Miscellaneous Chores
+
+* **ci:** Purge Application Insights data older than 30 days in yt01 ([#1863](https://github.com/Altinn/dialogporten/issues/1863)) ([70931cf](https://github.com/Altinn/dialogporten/commit/70931cfcfcff9b9b24069a5868cdeefa334371d0))
+* Consolidate all scopes to one location with xml doc. ([#1864](https://github.com/Altinn/dialogporten/issues/1864)) ([f8cdb36](https://github.com/Altinn/dialogporten/commit/f8cdb367415595977a691eaf173e7983bca94ecd))
+
 ## [1.50.2](https://github.com/Altinn/dialogporten/compare/v1.50.1...v1.50.2) (2025-02-12)
 
 
