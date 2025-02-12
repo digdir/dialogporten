@@ -8,13 +8,15 @@ const abort_on_fail = (__ENV.abort_on_fail ?? 'true') === 'true';
 export let options = {
     setupTimeout: '10m',
     summaryTrendStats: _options.summaryTrendStats,
-    thresholds: _options.thresholds,
+    thresholds: {
+        ..._options.thresholds,
+        "http_req_duration{scenario:default}": [{ threshold: "max<5000", abortOnFail: abort_on_fail }]
+    },
     executor: 'ramping-arrival-rate', //Assure load increase if the system slows
     stages: [
         { duration: stages_duration, target: stages_target }, // simulate ramp-up of traffic from 1 to stages_target users over stages_duration
     ],
 }
-options.thresholds["http_req_duration{scenario:default}"] = [{ threshold: "max<5000", abortOnFail: abort_on_fail }]; 
 
 export function setup() { return _setup(); }
 export default function(data) { run(data);}

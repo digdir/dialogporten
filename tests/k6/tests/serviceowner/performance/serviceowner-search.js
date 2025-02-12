@@ -8,10 +8,13 @@ const traceCalls = (__ENV.traceCalls ?? 'false') === 'true';
 
 export let options = {
     summaryTrendStats: ['avg', 'min', 'med', 'max', 'p(95)', 'p(99)', 'p(99.5)', 'p(99.9)', 'count'],
-    thresholds: emptySearchThresholds
+    thresholds: {
+        ...emptySearchThresholds,
+        "http_req_duration{name:serviceowner search}": [],
+        "http_reqs{name:serviceowner search}": []
+    }
 };
-options.thresholds[`http_req_duration{name:serviceowner search}`] = [];
-options.thresholds[`http_reqs{name:serviceowner search}`] = [];
+
   
 export default function(data) {
     const { endUsers, index } = validateTestData(data, serviceOwners);
