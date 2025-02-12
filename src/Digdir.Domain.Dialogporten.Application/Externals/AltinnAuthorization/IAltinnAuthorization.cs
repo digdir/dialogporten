@@ -5,16 +5,16 @@ namespace Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
 
 public interface IAltinnAuthorization
 {
-    public Task<DialogDetailsAuthorizationResult> GetDialogDetailsAuthorization(
+    Task<DialogDetailsAuthorizationResult> GetDialogDetailsAuthorization(
         DialogEntity dialogEntity,
         CancellationToken cancellationToken = default);
 
-    public Task<DialogSearchAuthorizationResult> GetAuthorizedResourcesForSearch(
+    Task<DialogSearchAuthorizationResult> GetAuthorizedResourcesForSearch(
         List<string> constraintParties,
         List<string> constraintServiceResources,
         CancellationToken cancellationToken = default);
 
-    public Task<AuthorizedPartiesResult> GetAuthorizedParties(IPartyIdentifier authenticatedParty, bool flatten = false,
+    Task<AuthorizedPartiesResult> GetAuthorizedParties(IPartyIdentifier authenticatedParty, bool flatten = false,
         CancellationToken cancellationToken = default);
 
     Task<bool> HasListAuthorizationForDialog(DialogEntity dialog, CancellationToken cancellationToken);
