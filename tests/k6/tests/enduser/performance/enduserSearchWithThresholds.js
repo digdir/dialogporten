@@ -2,6 +2,7 @@ import { default as run, options as _options, setup as _setup } from "./enduser-
 
 const numberOfEndUsers = 2000; // Remove when altinn-testtools bulk get of endusers/tokens is fast
 export let options = {
+    setupTimeout: '10m',
     summaryTrendStats: ['avg', 'min', 'med', 'max', 'p(95)', 'p(99)', 'p(99.5)', 'p(99.9)', 'count'],
     vus: 1,
     duration: "30s",
