@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.50.5](https://github.com/Altinn/dialogporten/compare/v1.50.4...v1.50.5) (2025-02-13)
+
+
+### Miscellaneous Chores
+
+* **k6:** Consolidate k6-utils import URLs ([#1869](https://github.com/Altinn/dialogporten/issues/1869)) ([09b3722](https://github.com/Altinn/dialogporten/commit/09b372283cdc33b1923f1a6f11922dacbeb183f0))
+* Misc. formatting, typos ([#1868](https://github.com/Altinn/dialogporten/issues/1868)) ([5de894f](https://github.com/Altinn/dialogporten/commit/5de894f53dc3c2ce63ccc976067867d96430edce))
+* **performance:** Adjust thresholds ([#1870](https://github.com/Altinn/dialogporten/issues/1870)) ([3e6e3b9](https://github.com/Altinn/dialogporten/commit/3e6e3b9db45f6e94cbebc6363621420c7e83ad5d))
+
 ## [1.50.4](https://github.com/Altinn/dialogporten/compare/v1.50.3...v1.50.4) (2025-02-12)
 
 
