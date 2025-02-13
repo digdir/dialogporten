@@ -140,6 +140,8 @@ jobs:
     permissions:
       checks: write
       pull-requests: write
+      id-token: write
+      contents: read
 
   send-slack-message-on-failure:
     name: Send Slack message on failure
