@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.50.6](https://github.com/Altinn/dialogporten/compare/v1.50.5...v1.50.6) (2025-02-13)
+
+
+### Miscellaneous Chores
+
+* **performance:** Add correct permissions to ci-cd-yt01 ([#1873](https://github.com/Altinn/dialogporten/issues/1873)) ([dee14db](https://github.com/Altinn/dialogporten/commit/dee14db3ca90dd300cf19d0459e15e68f64ceed8))
+
 ## [1.50.5](https://github.com/Altinn/dialogporten/compare/v1.50.4...v1.50.5) (2025-02-13)
 
 
